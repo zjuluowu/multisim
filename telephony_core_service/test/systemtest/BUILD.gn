@@ -1,0 +1,222 @@
+config("production_headers") {
+  include_dirs = [ "stubs/include" ]
+  foreach(dir,
+          [
+            "services/sim/include",
+            "interfaces/innerkits/include",
+            "interfaces/innerkits/ims/include",
+            "interfaces/innerkits/satellite",
+            "services/tel_ril/include",
+            "services/network_search/include",
+            "services/core/include",
+            "services/telephony_ext_wrapper/include",
+            "utils/common/include",
+            "utils/log/include",
+            "utils/preferences/include",
+            "common/capability_mgr/include",
+          ]) {
+    include_dirs += [ "$production_root/$dir" ]
+  }
+  include_dirs += [ "/usr/include/libxml2" ]
+  defines = [ "LOG_DOMAIN=0xD001F04" ]
+}
+config("production_execution_evidence") {
+  cflags_cc = [
+    "-fprofile-instr-generate",
+    "-fcoverage-mapping",
+  ]
+}
+
+# Original implementation sources, not copied and not mixed with fixtures/stubs.
+source_set("sim_production_host") {
+  sources = [
+    "$production_root/services/sim/src/sim_manager.cpp",
+    "$production_root/services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp",
+  ]
+  configs += [
+    ":production_headers",
+    ":production_execution_evidence",
+  ]
+}
+source_set("platform_boundaries") {
+  sources = [ "stubs/parameter_service.cpp" ]
+  include_dirs = [
+    "stubs/include",
+    "$gtest_root/googletest/include",
+    "$gtest_root/googlemock/include",
+  ]
+}
+source_set("external_service_boundaries") {
+  sources = [ "stubs/external_services.cpp" ]
+  include_dirs = [
+    "stubs",
+    "stubs/include",
+    "$gtest_root/googletest/include",
+    "$gtest_root/googlemock/include",
+  ]
+}
+source_set("component_launcher") {
+  sources = [ "support/capacity_probe.cpp" ]
+  configs += [ ":production_headers" ]
+}
+static_library("googletest") {
+  sources = [ "$gtest_root/googletest/src/gtest-all.cc" ]
+  include_dirs = [
+    "$gtest_root/googletest/include",
+    "$gtest_root/googletest",
+  ]
+}
+static_library("googlemock") {
+  sources = [ "$gtest_root/googlemock/src/gmock-all.cc" ]
+  include_dirs = [
+    "$gtest_root/googlemock/include",
+    "$gtest_root/googlemock",
+    "$gtest_root/googletest/include",
+  ]
+  deps = [ ":googletest" ]
+}
+executable("sim_component_test") {
+  sources = [ "tests/capacity_test.cpp" ]
+  include_dirs = [
+    "$gtest_root/googletest/include",
+    "$gtest_root/googlemock/include",
+    "support",
+    "stubs",
+  ]
+  deps = [
+    ":component_launcher",
+    ":googlemock",
+    ":platform_boundaries",
+    ":sim_production_host",
+  ]
+  ldflags = [
+    "-Wl,-Map,sim_component_test.map",
+    "-fprofile-instr-generate",
+  ]
+}
+
+config("initialization_standard_headers") {
+  if (openssl_root != "") {
+    include_dirs = [
+      "$openssl_root/usr/include",
+      "$openssl_root/usr/include/x86_64-linux-gnu",
+    ]
+  }
+  cflags_cc = [
+    "-include",
+    rebase_path("stubs/include/host_standard_prelude.h", root_build_dir),
+  ]
+}
+
+# Optional initialization closure audit. Not part of the runnable capacity suite.
+source_set("sim_initialization_production_host") {
+  sources = [
+    "$production_root/services/sim/src/card_file_detect_manager.cpp",
+    "$production_root/services/sim/src/csim_file_controller.cpp",
+    "$production_root/services/sim/src/esim_manager.cpp",
+    "$production_root/services/sim/src/icc_dialling_numbers_cache.cpp",
+    "$production_root/services/sim/src/icc_dialling_numbers_handler.cpp",
+    "$production_root/services/sim/src/icc_dialling_numbers_manager.cpp",
+    "$production_root/services/sim/src/icc_file.cpp",
+    "$production_root/services/sim/src/icc_file_controller.cpp",
+    "$production_root/services/sim/src/icc_operator_privilege_controller.cpp",
+    "$production_root/services/sim/src/icc_operator_rule.cpp",
+    "$production_root/services/sim/src/icc_state.cpp",
+    "$production_root/services/sim/src/isim_file.cpp",
+    "$production_root/services/sim/src/isim_file_controller.cpp",
+    "$production_root/services/sim/src/mcc_pool.cpp",
+    "$production_root/services/sim/src/multi_sim_controller.cpp",
+    "$production_root/services/sim/src/multi_sim_helper.cpp",
+    "$production_root/services/sim/src/multi_sim_monitor.cpp",
+    "$production_root/services/sim/src/operator_config_cache.cpp",
+    "$production_root/services/sim/src/operator_config_hisysevent.cpp",
+    "$production_root/services/sim/src/operator_config_loader.cpp",
+    "$production_root/services/sim/src/operator_file_parser.cpp",
+    "$production_root/services/sim/src/operator_matching_rule.cpp",
+    "$production_root/services/sim/src/pdp_profile_rdb_helper.cpp",
+    "$production_root/services/sim/src/plmn_file.cpp",
+    "$production_root/services/sim/src/radio_protocol_controller.cpp",
+    "$production_root/services/sim/src/ruim_file.cpp",
+    "$production_root/services/sim/src/ruim_file_controller.cpp",
+    "$production_root/services/sim/src/sim_account_callback_death_recipient.cpp",
+    "$production_root/services/sim/src/sim_account_manager.cpp",
+    "$production_root/services/sim/src/sim_char_decode.cpp",
+    "$production_root/services/sim/src/sim_file.cpp",
+    "$production_root/services/sim/src/sim_file_controller.cpp",
+    "$production_root/services/sim/src/sim_file_init.cpp",
+    "$production_root/services/sim/src/sim_file_manager.cpp",
+    "$production_root/services/sim/src/sim_file_parse.cpp",
+    "$production_root/services/sim/src/sim_number_decode.cpp",
+    "$production_root/services/sim/src/sim_rdb_helper.cpp",
+    "$production_root/services/sim/src/sim_sms_controller.cpp",
+    "$production_root/services/sim/src/sim_sms_manager.cpp",
+    "$production_root/services/sim/src/sim_state_handle.cpp",
+    "$production_root/services/sim/src/sim_state_manager.cpp",
+    "$production_root/services/sim/src/sim_state_tracker.cpp",
+    "$production_root/services/sim/src/sim_utils.cpp",
+    "$production_root/services/sim/src/stk_controller.cpp",
+    "$production_root/services/sim/src/stk_manager.cpp",
+    "$production_root/services/sim/src/tag_service.cpp",
+    "$production_root/services/sim/src/telephony_data_helper.cpp",
+    "$production_root/services/sim/src/usim_dialling_numbers_service.cpp",
+    "$production_root/services/sim/src/usim_file_controller.cpp",
+    "$production_root/services/sim/src/voice_mail_constants.cpp",
+  ]
+  configs += [
+    ":production_headers",
+    ":production_execution_evidence",
+    ":initialization_standard_headers",
+  ]
+}
+executable("sim_initialization_link_probe") {
+  sources = [ "support/initialization_link_probe.cpp" ]
+  configs += [ ":production_headers" ]
+  deps = [
+    ":googlemock",
+    ":platform_boundaries",
+    ":sim_initialization_production_host",
+    ":sim_production_host",
+  ]
+  ldflags = [ "-fprofile-instr-generate" ]
+}
+
+# Infrastructure self-checks only: these never count as SIM production scenarios.
+executable("platform_adapter_test") {
+  sources = [
+    "tests/event_adapter_test.cpp",
+    "tests/external_services_test.cpp",
+    "tests/ril_adapter_test.cpp",
+  ]
+  include_dirs = [
+    "stubs",
+    "$gtest_root/googlemock/include",
+    "$gtest_root/googletest/include",
+  ]
+  configs += [ ":production_headers" ]
+  deps = [
+    ":external_service_boundaries",
+    ":googlemock",
+  ]
+}
+
+source_set("bootstrap_launcher") {
+  sources = [ "support/bootstrap_probe.cpp" ]
+  configs += [ ":production_headers" ]
+}
+executable("sim_bootstrap_characterization") {
+  sources = [ "tests/bootstrap_test.cpp" ]
+  include_dirs = [
+    "support",
+    "$gtest_root/googletest/include",
+  ]
+  deps = [
+    ":bootstrap_launcher",
+    ":googlemock",
+    ":platform_boundaries",
+    ":sim_production_host",
+  ]
+  ldflags = [
+    "-Wl,-Map,sim_bootstrap_characterization.map",
+    "-fprofile-instr-generate",
+  ]
+}

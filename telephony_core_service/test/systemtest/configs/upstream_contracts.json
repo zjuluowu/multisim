@@ -1,0 +1,354 @@
+{
+  "schema_version": 1,
+  "working_repository": "zjuluowu/multisim",
+  "working_sha": "2841c6f60635853a929c1755dc08f5543a89eb83",
+  "source_policy": "Public references, not asserted matching hmos_trunk; no test sources fetched or reused",
+  "repositories": [
+    {
+      "repository": "ability_ability_base",
+      "branch_observed": "master",
+      "sha": "7088813d55e1592093557d2b2d5e40a47177b7a0"
+    },
+    {
+      "repository": "ability_ability_runtime",
+      "branch_observed": "master",
+      "sha": "969de904c1f1ebabcfddd553ab589110b5c51811"
+    },
+    {
+      "repository": "distributeddatamgr_data_share",
+      "branch_observed": "master",
+      "sha": "81761d5a2eb78282decd31f4b1e9f6fc1574782b"
+    },
+    {
+      "repository": "hiviewdfx_hisysevent",
+      "branch_observed": "master",
+      "sha": "c1534f0d63d34b17bfd248fe6ddd4d70a26a9552"
+    },
+    {
+      "repository": "notification_common_event_service",
+      "branch_observed": "master",
+      "sha": "372695ec9fbe779aea0a42ecdad849bc372b38c7"
+    },
+    {
+      "repository": "notification_eventhandler",
+      "branch_observed": "master",
+      "sha": "9c2641763fd4c598637d8f68bd908e5912f96583"
+    },
+    {
+      "repository": "resourceschedule_ffrt",
+      "branch_observed": "master",
+      "sha": "1d559e70feda31fa8afd45d564daa242660e4edd"
+    },
+    {
+      "repository": "systemabilitymgr_samgr",
+      "branch_observed": "master",
+      "sha": "d697f4cbf8c1c37d44e69a6d5ff3d506b02a904d"
+    },
+    {
+      "repository": "telephony_cellular_data",
+      "branch_observed": "master",
+      "sha": "be17a60e5cfbdf50c3570baf4ef6680eb70618d0"
+    },
+    {
+      "repository": "telephony_data_storage",
+      "branch_observed": "master",
+      "sha": "843a8be7f8d1dc304870a3999b754a03c6cce57d"
+    },
+    {
+      "repository": "telephony_state_registry",
+      "branch_observed": "master",
+      "sha": "0d8cdf08c890303c2e075c91f014bb77485e9890",
+      "scope": "tree inspected; local fork supplies Notify interface"
+    },
+    {
+      "repository": "drivers_interface",
+      "branch_observed": "master",
+      "sha": "ad769275f8456e288f9981b4d09f7a76efeafeed",
+      "scope": "revision identified; HDI not part of this host runtime"
+    }
+  ],
+  "files": [
+    {
+      "repository": "ability_ability_base",
+      "sha": "7088813d55e1592093557d2b2d5e40a47177b7a0",
+      "path": "interfaces/kits/native/configuration/include/configuration.h",
+      "sha256": "91c92f6b97f5162e3998b32fe127cdc9d285e156228999a9cf466e2e251008cc",
+      "source_url": "https://github.com/openharmony/ability_ability_base/blob/7088813d55e1592093557d2b2d5e40a47177b7a0/interfaces/kits/native/configuration/include/configuration.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "ability_ability_base",
+      "sha": "7088813d55e1592093557d2b2d5e40a47177b7a0",
+      "path": "interfaces/kits/native/want/include/want.h",
+      "sha256": "0b5f19248a2024dcca7a6e9ba1d02806d2ff8d26aa35a75bf8f379867a105682",
+      "source_url": "https://github.com/openharmony/ability_ability_base/blob/7088813d55e1592093557d2b2d5e40a47177b7a0/interfaces/kits/native/want/include/want.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "ability_ability_runtime",
+      "sha": "969de904c1f1ebabcfddd553ab589110b5c51811",
+      "path": "interfaces/inner_api/ability_manager/include/ability_manager_client.h",
+      "sha256": "f10e0389563e54ae8d8df905d261e18ed59b516a945b0fad4c4c7e1749f08c2c",
+      "source_url": "https://github.com/openharmony/ability_ability_runtime/blob/969de904c1f1ebabcfddd553ab589110b5c51811/interfaces/inner_api/ability_manager/include/ability_manager_client.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "ability_ability_runtime",
+      "sha": "969de904c1f1ebabcfddd553ab589110b5c51811",
+      "path": "interfaces/inner_api/app_manager/include/appmgr/app_mgr_client.h",
+      "sha256": "a09f9a824d1a776a3feccd956ab18b54cf590b5d8234334d6c4d1a7dfee875be",
+      "source_url": "https://github.com/openharmony/ability_ability_runtime/blob/969de904c1f1ebabcfddd553ab589110b5c51811/interfaces/inner_api/app_manager/include/appmgr/app_mgr_client.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "distributeddatamgr_data_share",
+      "sha": "81761d5a2eb78282decd31f4b1e9f6fc1574782b",
+      "path": "interfaces/inner_api/common/include/datashare_predicates.h",
+      "sha256": "1eb8a5e96a5e068050dac89119f18b3eb10b83105812e869c7bb9454cba3ca5b",
+      "source_url": "https://github.com/openharmony/distributeddatamgr_data_share/blob/81761d5a2eb78282decd31f4b1e9f6fc1574782b/interfaces/inner_api/common/include/datashare_predicates.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "distributeddatamgr_data_share",
+      "sha": "81761d5a2eb78282decd31f4b1e9f6fc1574782b",
+      "path": "interfaces/inner_api/common/include/datashare_value_object.h",
+      "sha256": "60211b05254d2e5b3b80dd2253c909dd8e806ca07b188aea29cf5bdc9dc6a681",
+      "source_url": "https://github.com/openharmony/distributeddatamgr_data_share/blob/81761d5a2eb78282decd31f4b1e9f6fc1574782b/interfaces/inner_api/common/include/datashare_value_object.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "distributeddatamgr_data_share",
+      "sha": "81761d5a2eb78282decd31f4b1e9f6fc1574782b",
+      "path": "interfaces/inner_api/common/include/datashare_values_bucket.h",
+      "sha256": "dde5f37c9f9099cad4846b2013c6f97279d79266fabd33bfc0b2bfb9f3f23eab",
+      "source_url": "https://github.com/openharmony/distributeddatamgr_data_share/blob/81761d5a2eb78282decd31f4b1e9f6fc1574782b/interfaces/inner_api/common/include/datashare_values_bucket.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "distributeddatamgr_data_share",
+      "sha": "81761d5a2eb78282decd31f4b1e9f6fc1574782b",
+      "path": "interfaces/inner_api/consumer/include/datashare_helper.h",
+      "sha256": "cdfccc0f54b76294dbe9eb890f18d9e680164d2fc9e997caa98e1a49d8d12823",
+      "source_url": "https://github.com/openharmony/distributeddatamgr_data_share/blob/81761d5a2eb78282decd31f4b1e9f6fc1574782b/interfaces/inner_api/consumer/include/datashare_helper.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "distributeddatamgr_data_share",
+      "sha": "81761d5a2eb78282decd31f4b1e9f6fc1574782b",
+      "path": "interfaces/inner_api/consumer/include/datashare_result_set.h",
+      "sha256": "1171bc906a19a85691f64fbe1bc10eda4dd05534ace110254ede4b3984ebda37",
+      "source_url": "https://github.com/openharmony/distributeddatamgr_data_share/blob/81761d5a2eb78282decd31f4b1e9f6fc1574782b/interfaces/inner_api/consumer/include/datashare_result_set.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "hiviewdfx_hisysevent",
+      "sha": "c1534f0d63d34b17bfd248fe6ddd4d70a26a9552",
+      "path": "interfaces/native/innerkits/hisysevent/include/hisysevent.h",
+      "sha256": "5f840a68257e5421f4a9ed5557156e257fe8301b8a5df3e00f54b86ccbd6a832",
+      "source_url": "https://github.com/openharmony/hiviewdfx_hisysevent/blob/c1534f0d63d34b17bfd248fe6ddd4d70a26a9552/interfaces/native/innerkits/hisysevent/include/hisysevent.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "notification_common_event_service",
+      "sha": "372695ec9fbe779aea0a42ecdad849bc372b38c7",
+      "path": "interfaces/inner_api/common_event_data.h",
+      "sha256": "3ca55cf6dd9b0857ac5c6e8d7d14caca6ef92879e6825083701b846af7994f27",
+      "source_url": "https://github.com/openharmony/notification_common_event_service/blob/372695ec9fbe779aea0a42ecdad849bc372b38c7/interfaces/inner_api/common_event_data.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "notification_common_event_service",
+      "sha": "372695ec9fbe779aea0a42ecdad849bc372b38c7",
+      "path": "interfaces/inner_api/common_event_manager.h",
+      "sha256": "ef33f669752fcf10d77e500b6b7aff448a1a15a9af0204ecceeaddcad455e4c6",
+      "source_url": "https://github.com/openharmony/notification_common_event_service/blob/372695ec9fbe779aea0a42ecdad849bc372b38c7/interfaces/inner_api/common_event_manager.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "notification_common_event_service",
+      "sha": "372695ec9fbe779aea0a42ecdad849bc372b38c7",
+      "path": "interfaces/inner_api/common_event_publish_info.h",
+      "sha256": "2b20cda0665f7c60b36780c537b60c7ed631fe7bb3ec58cf0255ce29c752013a",
+      "source_url": "https://github.com/openharmony/notification_common_event_service/blob/372695ec9fbe779aea0a42ecdad849bc372b38c7/interfaces/inner_api/common_event_publish_info.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "notification_common_event_service",
+      "sha": "372695ec9fbe779aea0a42ecdad849bc372b38c7",
+      "path": "interfaces/inner_api/common_event_subscribe_info.h",
+      "sha256": "b8805e9bddb9cef0c19775a59f4421848d9565ffaca37f450cd37f027d8093fd",
+      "source_url": "https://github.com/openharmony/notification_common_event_service/blob/372695ec9fbe779aea0a42ecdad849bc372b38c7/interfaces/inner_api/common_event_subscribe_info.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "notification_common_event_service",
+      "sha": "372695ec9fbe779aea0a42ecdad849bc372b38c7",
+      "path": "interfaces/inner_api/common_event_subscriber.h",
+      "sha256": "2a1b55ff37e4ade52c04a480a7ffb10de975dcaf5a60aa0f1bfb89a889b5967a",
+      "source_url": "https://github.com/openharmony/notification_common_event_service/blob/372695ec9fbe779aea0a42ecdad849bc372b38c7/interfaces/inner_api/common_event_subscriber.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "notification_common_event_service",
+      "sha": "372695ec9fbe779aea0a42ecdad849bc372b38c7",
+      "path": "interfaces/inner_api/common_event_support.h",
+      "sha256": "bb5203c0ada83bad4c9660f96f75e6b573e692113bbec653a9d4cb1f7d4c34dc",
+      "source_url": "https://github.com/openharmony/notification_common_event_service/blob/372695ec9fbe779aea0a42ecdad849bc372b38c7/interfaces/inner_api/common_event_support.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "notification_eventhandler",
+      "sha": "9c2641763fd4c598637d8f68bd908e5912f96583",
+      "path": "interfaces/inner_api/event_handler.h",
+      "sha256": "0042ac3712923129b88f6e2cdfea7e276ba469c0781e1e14ec781ab435db83a9",
+      "source_url": "https://github.com/openharmony/notification_eventhandler/blob/9c2641763fd4c598637d8f68bd908e5912f96583/interfaces/inner_api/event_handler.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "notification_eventhandler",
+      "sha": "9c2641763fd4c598637d8f68bd908e5912f96583",
+      "path": "interfaces/inner_api/inner_event.h",
+      "sha256": "03af3ffdcb3c10a4bf579531b4201ed865e28dce20e95918965679e952f21950",
+      "source_url": "https://github.com/openharmony/notification_eventhandler/blob/9c2641763fd4c598637d8f68bd908e5912f96583/interfaces/inner_api/inner_event.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "resourceschedule_ffrt",
+      "sha": "1d559e70feda31fa8afd45d564daa242660e4edd",
+      "path": "interfaces/kits/cpp/condition_variable.h",
+      "sha256": "54fea0de4942b3c98b398ace019d01700a02eacdb548b75b8f5dcdaa74b09fce",
+      "source_url": "https://github.com/openharmony/resourceschedule_ffrt/blob/1d559e70feda31fa8afd45d564daa242660e4edd/interfaces/kits/cpp/condition_variable.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "resourceschedule_ffrt",
+      "sha": "1d559e70feda31fa8afd45d564daa242660e4edd",
+      "path": "interfaces/kits/cpp/mutex.h",
+      "sha256": "0bd7b4b19a1393242f07949eac8955f14a6f8ea54aeccd99c729057888975c27",
+      "source_url": "https://github.com/openharmony/resourceschedule_ffrt/blob/1d559e70feda31fa8afd45d564daa242660e4edd/interfaces/kits/cpp/mutex.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "resourceschedule_ffrt",
+      "sha": "1d559e70feda31fa8afd45d564daa242660e4edd",
+      "path": "interfaces/kits/cpp/queue.h",
+      "sha256": "c682926da88b390cd71c1c48d2d864406eff0f50da81841fef637c178ef931fd",
+      "source_url": "https://github.com/openharmony/resourceschedule_ffrt/blob/1d559e70feda31fa8afd45d564daa242660e4edd/interfaces/kits/cpp/queue.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "resourceschedule_ffrt",
+      "sha": "1d559e70feda31fa8afd45d564daa242660e4edd",
+      "path": "interfaces/kits/cpp/task.h",
+      "sha256": "82aad7fe64e4af8cec55e01dca8148148e83db716a8084a9fe38b11263e0ed4f",
+      "source_url": "https://github.com/openharmony/resourceschedule_ffrt/blob/1d559e70feda31fa8afd45d564daa242660e4edd/interfaces/kits/cpp/task.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "systemabilitymgr_samgr",
+      "sha": "d697f4cbf8c1c37d44e69a6d5ff3d506b02a904d",
+      "path": "interfaces/innerkits/samgr_proxy/include/if_system_ability_manager.h",
+      "sha256": "52bfa3c8e7faeabb58ea584106599359f5354874d5e5e3778a113f0b6455a633",
+      "source_url": "https://github.com/openharmony/systemabilitymgr_samgr/blob/d697f4cbf8c1c37d44e69a6d5ff3d506b02a904d/interfaces/innerkits/samgr_proxy/include/if_system_ability_manager.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "systemabilitymgr_samgr",
+      "sha": "d697f4cbf8c1c37d44e69a6d5ff3d506b02a904d",
+      "path": "interfaces/innerkits/samgr_proxy/include/iservice_registry.h",
+      "sha256": "01d0d2bfd45c72b7deb1568b3ea0645198b0d3f3c22499f4102be2685ca4268c",
+      "source_url": "https://github.com/openharmony/systemabilitymgr_samgr/blob/d697f4cbf8c1c37d44e69a6d5ff3d506b02a904d/interfaces/innerkits/samgr_proxy/include/iservice_registry.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "telephony_cellular_data",
+      "sha": "be17a60e5cfbdf50c3570baf4ef6680eb70618d0",
+      "path": "interfaces/innerkits/cellular_data_client.h",
+      "sha256": "9391fa29e26db7036222341e17e8ee2bb3060c124004a42f26383a17bf59cd56",
+      "source_url": "https://github.com/openharmony/telephony_cellular_data/blob/be17a60e5cfbdf50c3570baf4ef6680eb70618d0/interfaces/innerkits/cellular_data_client.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "distributeddatamgr_data_share",
+      "sha": "81761d5a2eb78282decd31f4b1e9f6fc1574782b",
+      "path": "frameworks/native/common/src/datashare_abs_result_set.cpp",
+      "sha256": "2e5b8612ccb4910e2489404e1853703b6274cdc35f7fbbe0c1ef1a110a8356be",
+      "source_url": "https://github.com/openharmony/distributeddatamgr_data_share/blob/81761d5a2eb78282decd31f4b1e9f6fc1574782b/frameworks/native/common/src/datashare_abs_result_set.cpp",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "distributeddatamgr_data_share",
+      "sha": "81761d5a2eb78282decd31f4b1e9f6fc1574782b",
+      "path": "frameworks/native/common/src/datashare_result_set.cpp",
+      "sha256": "67d8d044250fbffee29f59891229c436418aeca8d740bdf15ee12c8276927d45",
+      "source_url": "https://github.com/openharmony/distributeddatamgr_data_share/blob/81761d5a2eb78282decd31f4b1e9f6fc1574782b/frameworks/native/common/src/datashare_result_set.cpp",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "distributeddatamgr_data_share",
+      "sha": "81761d5a2eb78282decd31f4b1e9f6fc1574782b",
+      "path": "interfaces/inner_api/common/include/datashare_errno.h",
+      "sha256": "5e4a8e75b043e941ce48c167a04382c95e0b30a30976ffb305fc3e687acf577d",
+      "source_url": "https://github.com/openharmony/distributeddatamgr_data_share/blob/81761d5a2eb78282decd31f4b1e9f6fc1574782b/interfaces/inner_api/common/include/datashare_errno.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "distributeddatamgr_data_share",
+      "sha": "81761d5a2eb78282decd31f4b1e9f6fc1574782b",
+      "path": "interfaces/inner_api/common/include/datashare_predicates_objects.h",
+      "sha256": "9b7c7ae0e7e20d157c4193ba93d87a286156c4a1ac31977d29e445c70bf1e9e7",
+      "source_url": "https://github.com/openharmony/distributeddatamgr_data_share/blob/81761d5a2eb78282decd31f4b1e9f6fc1574782b/interfaces/inner_api/common/include/datashare_predicates_objects.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "distributeddatamgr_data_share",
+      "sha": "81761d5a2eb78282decd31f4b1e9f6fc1574782b",
+      "path": "interfaces/inner_api/consumer/include/datashare_abs_result_set.h",
+      "sha256": "c971e7250ca32eabc611785a1131bc7424c0ccbea2dc6035e2870e0b2b33b4fd",
+      "source_url": "https://github.com/openharmony/distributeddatamgr_data_share/blob/81761d5a2eb78282decd31f4b1e9f6fc1574782b/interfaces/inner_api/consumer/include/datashare_abs_result_set.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "ability_ability_base",
+      "sha": "7088813d55e1592093557d2b2d5e40a47177b7a0",
+      "path": "interfaces/kits/native/configuration/include/global_configuration_key.h",
+      "sha256": "bb14fc0d50377f6951d948ceeb72786e094ddfa9ee55d22f93022762d412e747",
+      "source_url": "https://github.com/openharmony/ability_ability_base/blob/7088813d55e1592093557d2b2d5e40a47177b7a0/interfaces/kits/native/configuration/include/global_configuration_key.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "notification_common_event_service",
+      "sha": "372695ec9fbe779aea0a42ecdad849bc372b38c7",
+      "path": "frameworks/native/src/common_event_support.cpp",
+      "sha256": "4226d9bff957078f8cf3d4b1165e91a207e8fafffe20d051723ad11458bde945",
+      "source_url": "https://github.com/openharmony/notification_common_event_service/blob/372695ec9fbe779aea0a42ecdad849bc372b38c7/frameworks/native/src/common_event_support.cpp",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "telephony_data_storage",
+      "sha": "843a8be7f8d1dc304870a3999b754a03c6cce57d",
+      "path": "sim/include/sim_data.h",
+      "sha256": "d38a4ef437ad856795090db909896db16660f8e6e336d2947e777a4ef2284ea7",
+      "source_url": "https://github.com/openharmony/telephony_data_storage/blob/843a8be7f8d1dc304870a3999b754a03c6cce57d/sim/include/sim_data.h",
+      "license": "Apache-2.0; original source notice retained where vendored"
+    }
+  ],
+  "fork_gaps": {
+    "sim_data.h": [
+      "EFUST",
+      "EHPLMN",
+      "GID1",
+      "GID2",
+      "IS_ESIM",
+      "LSI",
+      "MCC",
+      "MNC",
+      "MNC_LEN",
+      "OPERATOR_NAME",
+      "OPKEY",
+      "PHY_CARD",
+      "SIM_LABEL_INDEX",
+      "SPN"
+    ]
+  }
+}

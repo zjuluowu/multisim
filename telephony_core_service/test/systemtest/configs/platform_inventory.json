@@ -1,0 +1,390 @@
+{
+  "scope": "sim_manager.cpp textual recursive includes; conditional includes not preprocessed; not compiler closure",
+  "head": "2841c6f60635853a929c1755dc08f5543a89eb83",
+  "production_headers_scanned": 93,
+  "unresolved_in_repo": [
+    {
+      "header": "cJSON.h",
+      "consumers": [
+        "services/sim/include/operator_file_parser.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "common_event.h",
+      "consumers": [
+        "services/sim/include/icc_file.h",
+        "services/sim/include/operator_config_loader.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "common_event_manager.h",
+      "consumers": [
+        "services/sim/include/icc_file.h",
+        "services/sim/include/operator_config_loader.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "common_event_support.h",
+      "consumers": [
+        "services/sim/include/icc_file.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "config_policy_utils.h",
+      "consumers": [
+        "services/sim/include/operator_config_loader.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "datashare_helper.h",
+      "consumers": [
+        "services/sim/include/sim_rdb_helper.h",
+        "services/sim/include/telephony_data_helper.h",
+        "services/sim/include/operator_config_loader.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "datashare_predicates.h",
+      "consumers": [
+        "services/sim/include/sim_rdb_helper.h",
+        "services/sim/include/operator_config_loader.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "datashare_result_set.h",
+      "consumers": [
+        "services/sim/include/sim_rdb_helper.h",
+        "services/sim/include/operator_config_loader.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "datashare_values_bucket.h",
+      "consumers": [
+        "services/sim/include/card_file_detect_manager.h",
+        "services/sim/include/sim_rdb_helper.h",
+        "services/sim/include/operator_config_loader.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "errors.h",
+      "consumers": [
+        "interfaces/innerkits/include/telephony_errors.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Pinned official C Utils reference; fork version matching not asserted"
+    },
+    {
+      "header": "event_handler.h",
+      "consumers": [
+        "services/sim/include/sim_manager.h",
+        "utils/common/include/tel_event_handler.h",
+        "interfaces/innerkits/satellite/i_satellite_core_callback.h",
+        "services/tel_ril/include/observer_handler.h",
+        "interfaces/innerkits/include/i_sim_manager.h",
+        "services/sim/include/sim_utils.h",
+        "services/sim/include/sim_file_manager.h",
+        "services/sim/include/sim_data_type.h",
+        "services/sim/include/operator_config_loader.h",
+        "services/sim/include/sim_sms_manager.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "event_runner.h",
+      "consumers": [
+        "interfaces/innerkits/include/i_tel_ril_manager.h",
+        "services/sim/include/sim_utils.h",
+        "services/sim/include/sim_file_manager.h",
+        "services/sim/include/sim_data_type.h",
+        "services/sim/include/sim_sms_manager.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "ffrt.h",
+      "consumers": [
+        "services/sim/src/sim_manager.cpp",
+        "services/sim/include/multi_sim_controller.h",
+        "services/sim/include/sim_state_manager.h",
+        "services/sim/include/sim_state_handle.h",
+        "services/sim/include/sim_state_handle.h",
+        "services/sim/include/icc_file.h",
+        "services/sim/include/radio_protocol_controller.h",
+        "services/sim/include/multi_sim_monitor.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "ffrt_inner.h",
+      "consumers": [
+        "services/sim/include/sim_manager.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "hilog/log.h",
+      "consumers": [
+        "utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "if_system_ability_manager.h",
+      "consumers": [
+        "services/sim/include/multi_sim_controller.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "inner_event.h",
+      "consumers": [
+        "interfaces/innerkits/include/i_icc_file.h",
+        "services/sim/include/stk_controller.h",
+        "services/sim/include/operator_config_loader.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "iremote_broker.h",
+      "consumers": [
+        "interfaces/innerkits/include/telephony_observer_broker.h",
+        "services/sim/include/operator_config_loader.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "iremote_object.h",
+      "consumers": [
+        "interfaces/innerkits/include/telephony_state_registry_client.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "iremote_proxy.h",
+      "consumers": [
+        "interfaces/innerkits/satellite/i_satellite_core_callback.h",
+        "interfaces/innerkits/include/sim_account_callback.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "iremote_stub.h",
+      "consumers": [
+        "interfaces/innerkits/satellite/satellite_core_callback.h",
+        "interfaces/innerkits/satellite/satellite_core_callback_stub.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "iservice_registry.h",
+      "consumers": [
+        "services/sim/include/sim_rdb_helper.h",
+        "services/sim/include/telephony_data_helper.h",
+        "services/sim/include/sim_state_tracker.h",
+        "services/sim/include/operator_config_loader.h",
+        "services/sim/include/multi_sim_monitor.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "libxml/parser.h",
+      "consumers": [
+        "services/sim/include/operator_config_loader.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Real Linux libxml2 compile headers; XML business not run"
+    },
+    {
+      "header": "libxml/xmlmemory.h",
+      "consumers": [
+        "services/sim/include/operator_config_loader.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Real Linux libxml2 compile headers; XML business not run"
+    },
+    {
+      "header": "message_parcel.h",
+      "consumers": [
+        "interfaces/innerkits/include/i_icc_file.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "nocopyable.h",
+      "consumers": [
+        "services/telephony_ext_wrapper/include/telephony_ext_wrapper.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "os_account_manager_wrapper.h",
+      "consumers": [
+        "services/sim/include/multi_sim_monitor.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "parameter.h",
+      "consumers": [
+        "interfaces/innerkits/include/telephony_types.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Implemented read-only controlled GetParameter; no SIM business return values"
+    },
+    {
+      "header": "parameters.h",
+      "consumers": [
+        "interfaces/innerkits/include/telephony_types.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "parcel.h",
+      "consumers": [
+        "interfaces/innerkits/include/sim_state_type.h",
+        "interfaces/innerkits/include/operator_config_types.h",
+        "interfaces/innerkits/include/network_search_types.h",
+        "interfaces/innerkits/include/cell_information.h",
+        "interfaces/innerkits/include/network_state.h",
+        "interfaces/innerkits/include/signal_information.h",
+        "interfaces/innerkits/include/network_information.h",
+        "interfaces/innerkits/include/tel_ril_base_parcel.h",
+        "interfaces/innerkits/include/response_esim_result.h",
+        "interfaces/innerkits/include/esim_state_type.h",
+        "interfaces/innerkits/include/dialling_numbers_info.h",
+        "services/sim/include/plmn_file.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "result_set.h",
+      "consumers": [
+        "services/sim/include/sim_rdb_helper.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "securec.h",
+      "consumers": [
+        "services/sim/include/operator_config_matchsim_info.h",
+        "services/sim/include/sim_char_decode.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "singleton.h",
+      "consumers": [
+        "services/telephony_ext_wrapper/include/telephony_ext_wrapper.h",
+        "services/sim/include/telephony_data_helper.h",
+        "interfaces/innerkits/include/telephony_state_registry_client.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "stdint.h",
+      "consumers": [
+        "services/sim/include/voice_mail_constants.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Linux standard library headers"
+    },
+    {
+      "header": "stdlib.h",
+      "consumers": [
+        "services/sim/include/sim_utils.h",
+        "services/sim/include/sim_char_decode.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Linux standard library headers"
+    },
+    {
+      "header": "string_ex.h",
+      "consumers": [
+        "services/sim/include/sim_utils.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "system_ability_definition.h",
+      "consumers": [
+        "services/sim/include/sim_rdb_helper.h",
+        "services/sim/include/telephony_data_helper.h",
+        "services/sim/include/stk_controller.h",
+        "services/sim/include/operator_config_loader.h",
+        "services/sim/include/multi_sim_monitor.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "system_ability_status_change_stub.h",
+      "consumers": [
+        "services/sim/include/sim_file_manager.h",
+        "services/sim/include/stk_controller.h",
+        "services/sim/include/multi_sim_monitor.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "uri.h",
+      "consumers": [
+        "services/sim/include/sim_rdb_helper.h",
+        "services/sim/include/telephony_data_helper.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    },
+    {
+      "header": "want.h",
+      "consumers": [
+        "services/telephony_ext_wrapper/include/telephony_ext_wrapper.h",
+        "services/sim/include/multi_sim_controller.h",
+        "services/sim/include/sim_state_handle.h",
+        "services/sim/include/icc_file.h",
+        "services/sim/include/operator_config_loader.h"
+      ],
+      "status": "UNRESOLVED_INTERFACE_SOURCE",
+      "current_solution": "Minimal compile-only host declaration, or basic Linux primitive; see docs/dependencies.md; platform behavior not covered"
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "head_sha": "2841c6f60635853a929c1755dc08f5543a89eb83",
+  "level": "B",
+  "device_required": false,
+  "resolved": [
+    {
+      "module": "GoogleTest/GoogleMock",
+      "source": "configs/dependency_lock.json",
+      "status": "BUILD_AND_RUN_VERIFIED"
+    },
+    {
+      "module": "InnerEvent envelope",
+      "source": "stubs/include/compile_declarations.h",
+      "status": "INFRA_SELF_CHECKS_PASS",
+      "scope": "payload ownership and metadata only; no scheduler"
+    },
+    {
+      "module": "ITelRilManager",
+      "source": "stubs/mock_tel_ril_manager.h",
+      "status": "INFRA_SELF_CHECK_PASS",
+      "scope": "126 real interface overrides; no SIM business execution in self-check"
+    },
+    {
+      "module": "OpenSSL headers",
+      "source": "configs/dependency_lock.json",
+      "status": "REAL_FIXED_HEADERS_COMPILE_PROBE_VERIFIED",
+      "scope": "archive extracted to /tmp; no crypto runtime verification"
+    },
+    {
+      "module": "securec headers",
+      "source": "configs/dependency_lock.json",
+      "status": "PINNED_GENUINE_DECLARATIONS",
+      "scope": "no runtime implementation"
+    },
+    {
+      "module": "RefBase",
+      "source": "stubs/include/refbase.h",
+      "status": "DECLARATION_ONLY",
+      "scope": "construct/destruct declarations; no refcount/ABI compatibility"
+    },
+    {
+      "module": "DataShare Query/cursor/value subset",
+      "source": "configs/upstream_contracts.json",
+      "status": "INFRA_SELF_CHECKS_PASS",
+      "scope": "explicit GoogleMock responses; no real storage or SIM accounts"
+    },
+    {
+      "module": "CommonEvent publication envelope",
+      "source": "configs/upstream_contracts.json",
+      "status": "INFRA_SELF_CHECKS_PASS",
+      "scope": "no subscriber delivery, permission or ordered scheduling"
+    }
+  ],
+  "upstream_inspected": [
+    {
+      "repository": "https://github.com/openharmony/telephony_data_storage",
+      "checkout": "/mnt/e/github/telephony/telephony_data_storage",
+      "branch": "DETACHED_HEAD",
+      "sha": "843a8be7f8d1dc304870a3999b754a03c6cce57d",
+      "header": "sim/include/sim_data.h",
+      "sha256": "b950df9a5aae55360566817e7e09983dae0f78d21231eca4ef2d4fa332ff3964",
+      "matching_current_fork": false,
+      "missing_fields": [
+        "EFUST",
+        "EHPLMN",
+        "GID1",
+        "GID2",
+        "IS_ESIM",
+        "LSI",
+        "MCC",
+        "MNC",
+        "MNC_LEN",
+        "OPERATOR_NAME",
+        "OPKEY",
+        "PHY_CARD",
+        "SIM_LABEL_INDEX",
+        "SPN"
+      ],
+      "used_for_build": false
+    },
+    {
+      "repository": "https://github.com/openharmony/telephony_cellular_data",
+      "checkout": "/mnt/e/github/telephony/telephony_cellular_data",
+      "sha": "29d6fa9c6105c6e39a9a765048868e4631ffbb8f",
+      "matching_current_fork": "NOT_VERIFIED",
+      "used_for_build": false
+    }
+  ],
+  "unresolved": [
+    "matching telephony_data_storage/sim_data.h schema constants",
+    "AppExecFwk Configuration and AppMgr interface",
+    "AbilityManager interface",
+    "HiSysEvent interface and external sink",
+    "CellularData client interface/version",
+    "CommonEvent publisher/subscriber contracts",
+    "DataShare query/result interfaces and controlled empty namespace",
+    "SA/registry external boundary",
+    "ffrt task/queue and actual production TelEventHandler/TelEventQueue runtime"
+  ],
+  "latest_initialization_audit": {
+    "output": "/tmp/sim-upstream-initialization-audit/initialization_audit.json",
+    "status": "BLOCKED",
+    "executed": false,
+    "compiled_objects": 29,
+    "missing_headers": [
+      "ability_manager_client.h",
+      "cellular_data_client.h",
+      "hisysevent.h"
+    ],
+    "fork_schema_gap": "14 symbols absent upstream; not guessed"
+  }
+}

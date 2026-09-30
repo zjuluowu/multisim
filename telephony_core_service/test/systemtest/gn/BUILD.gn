@@ -1,0 +1,42 @@
+config("host") {
+  cflags_cc = [
+    "-std=c++17",
+    "-O2",
+    "-flto=full",
+    "-fwhole-program-vtables",
+    "-fvirtual-function-elimination",
+    "-fvisibility=hidden",
+    "-ffunction-sections",
+    "-fdata-sections",
+  ]
+  ldflags = [
+    "-flto=full",
+    "-fuse-ld=gold",
+    "-Wl,--gc-sections",
+    "-pthread",
+  ]
+}
+toolchain("linux") {
+  tool("cxx") {
+    command = "clang++ {{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} -MMD -MF {{output}}.d -c {{source}} -o {{output}}"
+    depfile = "{{output}}.d"
+    depsformat = "gcc"
+    outputs =
+        [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.o" ]
+    description = "CXX {{source}}"
+  }
+  tool("alink") {
+    command = "ar rcs {{output}} {{inputs}}"
+    outputs = [ "{{target_out_dir}}/lib{{target_output_name}}.a" ]
+    default_output_extension = ".a"
+    output_prefix = "lib"
+  }
+  tool("link") {
+    command = "clang++ {{ldflags}} -o {{output}} {{inputs}} {{libs}}"
+    outputs = [ "{{root_out_dir}}/{{target_output_name}}" ]
+    description = "LINK {{output}}"
+  }
+  tool("stamp") {
+    command = "touch {{output}}"
+  }
+}

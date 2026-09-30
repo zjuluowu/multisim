@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "design_only": false,
+  "cases": [
+    {
+      "case_id": "SIM-B-001",
+      "level": "B",
+      "status": "BLOCKED",
+      "executed": false,
+      "oracle_ids": [
+        "O-H01",
+        "O-H02",
+        "O-L01",
+        "O-Q01",
+        "O-Q08",
+        "O-Q10"
+      ],
+      "design": "docs/cases/SIM-B-001.md",
+      "reason": "Linux component state/account/RIL/event host closure not implemented; original service entry capability investigation remains unresolved. No physical device required for intended level B."
+    },
+    {
+      "case_id": "SIM-B-002",
+      "level": "B",
+      "status": "BLOCKED",
+      "executed": false,
+      "oracle_ids": [
+        "O-C01",
+        "O-H01",
+        "O-H02",
+        "O-L02",
+        "O-Q03",
+        "O-Q06",
+        "O-Q09",
+        "O-Q10"
+      ],
+      "design": "docs/cases/SIM-B-002.md",
+      "reason": "Linux component state/account/RIL/event host closure not implemented; original service entry capability investigation remains unresolved. No physical device required for intended level B."
+    },
+    {
+      "case_id": "SIM-B-003",
+      "level": "B",
+      "status": "BLOCKED",
+      "executed": false,
+      "oracle_ids": [
+        "O-C01",
+        "O-C02",
+        "O-C03",
+        "O-H01",
+        "O-H02",
+        "O-L03",
+        "O-Q05",
+        "O-Q06",
+        "O-Q09",
+        "O-Q10"
+      ],
+      "design": "docs/cases/SIM-B-003.md",
+      "reason": "Linux component state/account/RIL/event host closure not implemented; original service entry capability investigation remains unresolved. No physical device required for intended level B."
+    },
+    {
+      "case_id": "SIM-B-004",
+      "level": "B",
+      "status": "BLOCKED",
+      "executed": false,
+      "oracle_ids": [
+        "O-C01",
+        "O-C02",
+        "O-C03",
+        "O-H01",
+        "O-H02",
+        "O-L04",
+        "O-Q05",
+        "O-Q06",
+        "O-Q07",
+        "O-Q09"
+      ],
+      "design": "docs/cases/SIM-B-004.md",
+      "reason": "Linux component state/account/RIL/event host closure not implemented; original service entry capability investigation remains unresolved. No physical device required for intended level B."
+    },
+    {
+      "case_id": "SIM-B-005",
+      "level": "B",
+      "status": "BLOCKED",
+      "executed": false,
+      "oracle_ids": [
+        "O-C01",
+        "O-H01",
+        "O-H02",
+        "O-H03",
+        "O-L05",
+        "O-Q01",
+        "O-Q06",
+        "O-Q09",
+        "O-Q10"
+      ],
+      "design": "docs/cases/SIM-B-005.md",
+      "reason": "Linux component state/account/RIL/event host closure not implemented; original service entry capability investigation remains unresolved. No physical device required for intended level B."
+    },
+    {
+      "case_id": "SIM-COMP-001",
+      "level": "B",
+      "status": "AUTOMATED",
+      "execution_status": "PASS",
+      "executed": true,
+      "oracle_ids": [
+        "O-C11",
+        "O-H01",
+        "O-H02",
+        "O-L06"
+      ],
+      "design": "docs/cases/SIM-COMP-001.md",
+      "evidence": "/tmp/sim-component-final/result.json",
+      "scope": "capacity query only; not the five service cases"
+    },
+    {
+      "case_id": "SIM-CHAR-001",
+      "level": "C",
+      "status": "BLOCKED",
+      "executed": false,
+      "oracle_ids": [
+        "O-H01",
+        "O-H02",
+        "O-Q01",
+        "O-Q10",
+        "O-Q11"
+      ],
+      "design": "docs/cases/SIM-CHAR-001.md",
+      "reason": "Narrow capacity host cannot link real state/account methods; no internal business stubs allowed"
+    }
+  ]
+}

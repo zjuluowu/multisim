@@ -1,0 +1,247 @@
+{
+  "head": "2841c6f60635853a929c1755dc08f5543a89eb83",
+  "runtime_baseline_captured": true,
+  "oracles": [
+    {
+      "oracle_id": "O-C01",
+      "classification": "CONFIRMED_CONTRACT",
+      "claim": "状态含义：UNKNOWN/NOT_PRESENT/LOCKED/NOT_READY/READY/LOADED 不混同",
+      "source": "interfaces/innerkits/include/sim_state_type.h:87–118；interfaces/kits/js/@ohos.telephony.sim.d.ts:2747–2793",
+      "preconditions": "已初始化、有效并获准Slot；合成输入按真实RIL协议合法构造；收敛后判断状态语义，不固定READY vs LOADED的最终精确值",
+      "enforcement": "强制：Absent→NOT_PRESENT；PIN→LOCKED；Ready数据完整→READY或LOADED；业务成功错误码的具体值另审",
+      "review_status": "DOCUMENT_VERIFIED",
+      "runtime_verified": false
+    },
+    {
+      "oracle_id": "O-C02",
+      "classification": "CONFIRMED_CONTRACT",
+      "claim": "账户 slotIndex 是设备槽索引，simId 是卡标识",
+      "source": "interfaces/kits/js/@ohos.telephony.sim.d.ts:2250–2290；core_service_client.h:358–367",
+      "preconditions": "查询成功并返回账户时；不保证账户何时可见或simId生成规则",
+      "enforcement": "强制：返回账户的slotIndex与所查询有效Slot一致；simId只作不透明身份记录",
+      "review_status": "DOCUMENT_VERIFIED",
+      "runtime_verified": false
+    },
+    {
+      "oracle_id": "O-C03",
+      "classification": "CONFIRMED_CONTRACT",
+      "claim": "ICCID查询是指定Slot的卡身份",
+      "source": "interfaces/innerkits/include/core_service_client.h:240；core_service_sim.cpp:178–196",
+      "preconditions": "授权系统/native caller；成功查询；已通过RIL文件响应提供合成卡数据",
+      "enforcement": "强制：成功结果与对应合成卡在内存一致；不在日志输出值",
+      "review_status": "DOCUMENT_VERIFIED",
+      "runtime_verified": false
+    },
+    {
+      "oracle_id": "O-H01",
+      "classification": "CONFIRMED_CONTRACT",
+      "claim": "测试拓扑、隔离、脱敏和结果真实性",
+      "source": "用户任务第3/6/9/10/12节",
+      "preconditions": "全部准备/执行/报告",
+      "enforcement": "强制：业务生产逻辑实际执行才可标B通过；无真实身份外泄；cleanup failure阻断下一例；未执行不能PASS",
+      "review_status": "USER_REQUIREMENT",
+      "runtime_verified": false
+    },
+    {
+      "oracle_id": "O-H02",
+      "classification": "CONFIRMED_CONTRACT",
+      "claim": "有界等待且不以固定sleep/线程顺序作为正确性",
+      "source": "用户任务第10节",
+      "preconditions": "所有异步例",
+      "enforcement": "强制：达到声明的公开收敛条件或timeout明确失败/阻塞；超时预算是测试设施参数而非产品SLA",
+      "review_status": "USER_REQUIREMENT",
+      "runtime_verified": false
+    },
+    {
+      "oracle_id": "O-H03",
+      "classification": "CONFIRMED_CONTRACT",
+      "claim": "真实卡危险操作默认禁用",
+      "source": "用户任务第9/10节",
+      "preconditions": "PIN/Profile等所有入口",
+      "enforcement": "强制：本套件只允许合成拓扑，真实硬件后端不执行UnlockPin/Profile删除/reset",
+      "review_status": "USER_REQUIREMENT",
+      "runtime_verified": false
+    },
+    {
+      "oracle_id": "O-L01",
+      "classification": "LEGACY_BEHAVIOR",
+      "claim": "HasSimCard/GetSimState 接收成功与回调成功两个通道",
+      "source": "core_service_sim.cpp:63–120；core_service_client.cpp:364–403",
+      "preconditions": "待运行采集；并非已采集基线",
+      "enforcement": "当前禁止精确业务断言；运行后记录返回、callback有无及错误",
+      "review_status": "STATIC_CANDIDATE_NOT_CAPTURED",
+      "runtime_verified": false
+    },
+    {
+      "oracle_id": "O-L02",
+      "classification": "LEGACY_BEHAVIOR",
+      "claim": "无卡状态候选success+NOT_PRESENT、空active list候选NO_SIM_CARD",
+      "source": "sim_manager.cpp:176–184；multi_sim_controller.cpp:1965–1983",
+      "preconditions": "外部边界确立Absent；已初始化；无历史账户环境",
+      "enforcement": "待运行；不可直接认定永久错误码契约",
+      "review_status": "STATIC_CANDIDATE_NOT_CAPTURED",
+      "runtime_verified": false
+    },
+    {
+      "oracle_id": "O-L03",
+      "classification": "LEGACY_BEHAVIOR",
+      "claim": "Ready身份文件加载后账户可见候选行为",
+      "source": "sim_manager.cpp:840起；multi_sim_controller.cpp:1204–1234",
+      "preconditions": "生产文件加载、DataShare成功、Active策略固定",
+      "enforcement": "待运行记录账户数量/错误/映射；未Ready不能臆定隐藏所有账户",
+      "review_status": "STATIC_CANDIDATE_NOT_CAPTURED",
+      "runtime_verified": false
+    },
+    {
+      "oracle_id": "O-L04",
+      "classification": "LEGACY_BEHAVIOR",
+      "claim": "SetShowName的账户通知与返回候选",
+      "source": "sim_manager.cpp:445–456；core_service_sim.cpp:571–641",
+      "preconditions": "授权、双卡合成数据、成功存储响应",
+      "enforcement": "待运行记录局部修改与所有外部影响；不精确一次",
+      "review_status": "STATIC_CANDIDATE_NOT_CAPTURED",
+      "runtime_verified": false
+    },
+    {
+      "oracle_id": "O-L05",
+      "classification": "LEGACY_BEHAVIOR",
+      "claim": "PIN状态转换及解锁响应转发候选",
+      "source": "sim_state_handle.cpp:918–923；core_service_sim.cpp:688–733",
+      "preconditions": "PIN合成输入/响应，无真实卡",
+      "enforcement": "待运行记录LockStatusResponse/状态/事件；不臆定PIN错误的次数语义",
+      "review_status": "STATIC_CANDIDATE_NOT_CAPTURED",
+      "runtime_verified": false
+    },
+    {
+      "oracle_id": "O-Q01",
+      "classification": "OPEN_QUESTION",
+      "claim": "未知/未就绪/无卡及错误码区分",
+      "source": "sim_manager.cpp:155–184；sim_state_handle.cpp:151/:164",
+      "preconditions": "SIM负责人确认初始化和错误语义",
+      "enforcement": "不得强制业务断言",
+      "review_status": "PENDING_OWNER",
+      "runtime_verified": false
+    },
+    {
+      "oracle_id": "O-Q02",
+      "classification": "OPEN_QUESTION",
+      "claim": "Primary与默认Data的联动条件",
+      "source": "multi_sim_controller.cpp:1522/:1689",
+      "preconditions": "Radio策略、平台配置与用户设置路径",
+      "enforcement": "不得强制总是联动/总是不联动",
+      "review_status": "PENDING_OWNER",
+      "runtime_verified": false
+    },
+    {
+      "oracle_id": "O-Q03",
+      "classification": "OPEN_QUESTION",
+      "claim": "无有效卡时Voice/SMS/Data/Primary无效值",
+      "source": "telephony_types.h:40–44；multi_sim_controller.cpp:1234起",
+      "preconditions": "各角色接口分别确认；失败返回与out参数分别记录",
+      "enforcement": "不得断言默认角色必须始终有效",
+      "review_status": "PENDING_OWNER",
+      "runtime_verified": false
+    },
+    {
+      "oracle_id": "O-Q04",
+      "classification": "OPEN_QUESTION",
+      "claim": "Profile停用后的active/all账户可见性",
+      "source": "multi_sim_controller.cpp:1965/1985；eSIM条件构建",
+      "preconditions": "Profile状态与SIM Active不能混同；需eSIM SDK/设备",
+      "enforcement": "不得强制账户删除/隐藏",
+      "review_status": "PENDING_OWNER",
+      "runtime_verified": false
+    },
+    {
+      "oracle_id": "O-Q05",
+      "classification": "OPEN_QUESTION",
+      "claim": "simId稳定性、Slot逆映射与Subscription的关系",
+      "source": "sim_manager.cpp:622–651；MultiSIM/07 第2/4节冲突",
+      "preconditions": "当前无新的Subscription公共模型；重启/换卡分别确认",
+      "enforcement": "不得断言simId==slot、永久唯一或跨重启不变；同轮双向映射先采集",
+      "review_status": "PENDING_OWNER",
+      "runtime_verified": false
+    },
+    {
+      "oracle_id": "O-Q06",
+      "classification": "OPEN_QUESTION",
+      "claim": "事件重复、必要数量、公共事件与查询的偏序",
+      "source": "sim_state_handle.cpp:481/:827/:905–928",
+      "preconditions": "订阅时点、状态改变与重发条件",
+      "enforcement": "不强制exactly-once；次数上限及事件必达待确认",
+      "review_status": "PENDING_OWNER",
+      "runtime_verified": false
+    },
+    {
+      "oracle_id": "O-Q07",
+      "classification": "OPEN_QUESTION",
+      "claim": "过渡期一致性、局部改名隔离与允许的角色联动",
+      "source": "multi_sim_controller.cpp、sim_manager.cpp:445–456；用户第8节",
+      "preconditions": "仅稳定终态；业务负责人确定SIM1哪些属性不得变",
+      "enforcement": "暂不强制双卡完整快照一致、毫秒时序或并发完全确定",
+      "review_status": "PENDING_OWNER",
+      "runtime_verified": false
+    },
+    {
+      "oracle_id": "O-Q08",
+      "classification": "OPEN_QUESTION",
+      "claim": "公开转发入口对slot0/1的capability拒绝",
+      "source": "multi_sims_capability_manager.cpp:30–32；.h:23；core_service_sim.cpp:98",
+      "preconditions": "当前静态分支slot!=3拒绝；不能用桩覆盖生产判断",
+      "enforcement": "阻塞公开入口正常业务场景；由负责人确认是当前需求/缺陷/需下层组件范围",
+      "review_status": "PENDING_OWNER",
+      "runtime_verified": false
+    },
+    {
+      "oracle_id": "O-Q09",
+      "classification": "OPEN_QUESTION",
+      "claim": "必要对外请求、重试与请求参数",
+      "source": "i_tel_ril_manager.h:206；sim_state_handle.cpp:551；生产账户DataShare请求",
+      "preconditions": "只有明确外部协议参数可检查；初始化允许额外合法请求",
+      "enforcement": "RIL状态/文件请求先记录；无契约不要求精确一次或内部偏序",
+      "review_status": "PENDING_OWNER",
+      "runtime_verified": false
+    },
+    {
+      "oracle_id": "O-Q10",
+      "classification": "OPEN_QUESTION",
+      "claim": "Ready/PIN场景active账户数量及权限剥离行为",
+      "source": "core_service_sim.cpp:376/:644；multi_sim_controller.cpp:1204/:1965",
+      "preconditions": "权限、历史记录、Active/profile分别固定",
+      "enforcement": "不得强制Locked没有账户或所有Ready均自动active",
+      "review_status": "PENDING_OWNER",
+      "runtime_verified": false
+    },
+    {
+      "oracle_id": "O-C11",
+      "classification": "CONFIRMED_CONTRACT",
+      "claim": "GetMaxSimCount返回槽数量；数量不应为负",
+      "source": "interfaces/kits/js/@ohos.telephony.sim.d.ts:701–710；ISimManager::GetMaxSimCount",
+      "preconditions": "合法受控参数配置；只验证组件容量查询，非JS/IPC路径",
+      "enforcement": "ASSERT_GE(observed,0)；不强制精确数量/卡状态/产品支持上限",
+      "review_status": "DOCUMENT_VERIFIED",
+      "runtime_verified": true
+    },
+    {
+      "oracle_id": "O-L06",
+      "classification": "LEGACY_BEHAVIOR",
+      "claim": "当前未调用OnInit的组件容量查询，在单槽固定参数下观测为1",
+      "source": "/tmp/sim-component-verified/normal.xml、result.json和coverage-export.log；本版本sim_manager.cpp及telephony_types.h",
+      "preconditions": "capacity-parameter-v1；new process；virtual modem false；构造后仅GetMaxSimCount；固定host工具链",
+      "enforcement": "精确值仅做Legacy/Split差异人工评审，不作为永久业务Oracle",
+      "review_status": "RUNTIME_CAPTURED",
+      "runtime_verified": true
+    },
+    {
+      "oracle_id": "O-Q11",
+      "classification": "OPEN_QUESTION",
+      "claim": "未调用OnInit时组件公开状态/账户查询的可观察行为与正式Absent是否可区分",
+      "source": "interfaces/innerkits/include/i_sim_manager.h; services/sim/src/sim_manager.cpp:155–184,355–363,613–620",
+      "preconditions": "仅受控组件生命周期Characterization候选；生产依赖尚未链接，未采集",
+      "enforcement": "不设置强制业务断言；实际采集后再建立Legacy基线，差异人工评审",
+      "review_status": "NOT_EXECUTED_LINK_BLOCKED",
+      "runtime_verified": false
+    }
+  ],
+  "baseline_scope": "Only O-L06 capacity-parameter-v1; original O-L01..05 remain not captured"
+}

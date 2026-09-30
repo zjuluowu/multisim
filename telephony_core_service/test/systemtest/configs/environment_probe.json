@@ -1,0 +1,138 @@
+{
+  "recorded_at_utc": "2026-09-30T03:20:13.232049+00:00",
+  "purpose": "INVESTIGATION_ONLY_NOT_TEST_EXECUTION",
+  "head": "2841c6f60635853a929c1755dc08f5543a89eb83",
+  "working_directory": "/mnt/e/github/multisim/telephony_core_service",
+  "test_execution_count": 0,
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "2841c6f60635853a929c1755dc08f5543a89eb83\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "--show-toplevel"
+      ],
+      "exit_code": 0,
+      "stdout": "/mnt/e/github/multisim\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "exit_code": 0,
+      "stdout": "main\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "gn",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "1000 (03d10f1)\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "ninja",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "1.11.1\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "g++",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "clang++",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "Ubuntu clang version 18.1.3 (1ubuntu1)\nTarget: x86_64-pc-linux-gnu\nThread model: posix\nInstalledDir: /usr/bin\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "uname",
+        "-a"
+      ],
+      "exit_code": 0,
+      "stdout": "Linux LuoWuComputer 6.18.33.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun 18 21:54:43 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "cat",
+        "/etc/os-release"
+      ],
+      "exit_code": 0,
+      "stdout": "PRETTY_NAME=\"Ubuntu 24.04.4 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.4 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "bash",
+        "-c",
+        "command -v gn ninja hb g++ clang++ pkg-config"
+      ],
+      "exit_code": 0,
+      "stdout": "/usr/bin/gn\n/usr/bin/ninja\n/usr/bin/g++\n/usr/bin/clang++\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "ls",
+        "/usr/include/gtest",
+        "/usr/src/googletest",
+        "/mnt/e/github/multisim/build/test.gni",
+        "/mnt/e/github/multisim/build/ohos.gni",
+        "/mnt/e/github/multisim/.gn"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "ls: cannot access '/usr/include/gtest': No such file or directory\nls: cannot access '/usr/src/googletest': No such file or directory\nls: cannot access '/mnt/e/github/multisim/build/test.gni': No such file or directory\nls: cannot access '/mnt/e/github/multisim/build/ohos.gni': No such file or directory\nls: cannot access '/mnt/e/github/multisim/.gn': No such file or directory\n"
+    },
+    {
+      "argv": [
+        "gn",
+        "gen",
+        "/tmp/sim-systemtest-investigation-no-root"
+      ],
+      "exit_code": 1,
+      "stdout": "ERROR Can't find source root.\nI could not find a \".gn\" file in the current directory or any parent,\nand the --root command-line argument was not specified.\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "g++",
+        "-fsyntax-only",
+        "-Iservices/sim/include",
+        "-Iinterfaces/innerkits/include",
+        "services/sim/src/sim_state_manager.cpp"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "In file included from services/sim/src/sim_state_manager.cpp:16:\nservices/sim/include/sim_state_manager.h:19:10: fatal error: ffrt.h: No such file or directory\n   19 | #include <ffrt.h>\n      |          ^~~~~~~~\ncompilation terminated.\n"
+    }
+  ]
+}

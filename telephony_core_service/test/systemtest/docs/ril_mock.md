@@ -1,0 +1,13 @@
+# GoogleMock RIL边界设施设计
+
+替换接口为当前 interfaces/innerkits/include/i_tel_ril_manager.h 的 ITelRilManager；真实职责为向Modem发送请求、回传正式事件并注册通知，不包含SIM状态解析或账户计算。此接口是SIM到RIL的外部边界，可替换；ISimManager与SimStateHandle不得Mock。
+
+Mock从当前生产头文件的126个纯虚方法签名独立生成，不读取现有测试Mock。重载与全部override由编译验证。生成器记录接口SHA256并拒绝未知返回类型/参数格式；不在构建时自动下载或改写生产接口。
+
+未配置bool方法默认false，整数请求默认TELEPHONY_ERR_RIL_CMD_FAIL。必须使用StrictMock：未预期请求为测试失败，不以框架默认0冒称成功。场景EXPECT_CALL仅配置需要的协议行为；默认不要求精确次数或顺序。
+
+正式GetSimStatus场景响应应使用当前接口的InnerEvent id、param、owner以及SimCardStatusInfo payload，由场景指定simState/simType/合成身份。实际消费来源services/sim/src/sim_state_handle.cpp:634–687。响应构造只搬运这些外部协议值，不计算公开SIM状态。
+
+当前只进行INFRA-RIL-001设施自检：验证Mock通过真实ITelRilManager类型调用，场景动作返回匹配event id/param的SimCardStatusInfo，验证实际输入Slot与协议字段；Oracle RIL-TRANSPORT为本设施协议，不是SIM业务Oracle。不将纯Mock自检标为B，不计业务用例完成数。SIM生产初始化仍未能执行。
+
+生命周期：Mock在新GTest进程作用域内创建/销毁；响应所有权由InnerEvent管理。目前不实现生产事件队列投递、订阅生命周期或延迟/乱序，禁止宣称已运行卡状态场景。后续必须通过正式事件owner的队列发送，避免直接调用私有ProcessEvent。外部请求捕获只输出Slot/事件别名，身份只做内存相等布尔比较；全部设施输入为合成数据。

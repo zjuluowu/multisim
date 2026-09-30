@@ -1,0 +1,793 @@
+{
+  "repository": "zjuluowu/multisim",
+  "branch": "main",
+  "head": "2841c6f60635853a929c1755dc08f5543a89eb83",
+  "basis": "working tree; hashes distinguish dirty content from HEAD",
+  "files": [
+    {
+      "path": "BUILD.gn",
+      "sha256": "bb7093d33af5fed7efdc409d4c20ee0e17cf52491fb464dcadbf5300ea72200e",
+      "lf_normalized_sha256": "cda4816a5befd972f3da97988b23c8acab26157503cb2f075f77b8c44cfcca7e"
+    },
+    {
+      "path": "telephony_core_service.gni",
+      "sha256": "7994c333b99ebe8b78b7b372f8eb5e4dee80dd05e25209988cd433da393571eb",
+      "lf_normalized_sha256": "e4c861c9fa986c9a2ec1741a374932894ffb26f85dc9499599d35721ef559161"
+    },
+    {
+      "path": "test/BUILD.gn",
+      "sha256": "8ec1017416c4f2ef4d05d5f62525fe6b340c99dee3854411deb80c52a2d387b3",
+      "lf_normalized_sha256": "651ff1ffcf3ceb0db583862f42951f52636b22b7b541e03cc47127155c1be727"
+    },
+    {
+      "path": "test/core_service_test.gni",
+      "sha256": "dca0fa5a2c37088a706fe03dc57093c118a28464624fc3f395225a09e004305e",
+      "lf_normalized_sha256": "38adcfbfa02733fc67b67defef776c714744860afe570e7a1c0346d87a0e67d7"
+    },
+    {
+      "path": "test/unittest/sim_gtest/BUILD.gn",
+      "sha256": "2f123828c7abc6c529a0380e91aad635b09941be2d8a095e0208ae30662051ef",
+      "lf_normalized_sha256": "ac388fdd5293bb3988b5840e9a4fd276e732db0b61b331e1cfdee5f081ac2b19"
+    },
+    {
+      "path": "interfaces/innerkits/BUILD.gn",
+      "sha256": "bde7536fb9e030da0aa97f25527aa7992a155fb516a64b7e81cbd84f7651d663",
+      "lf_normalized_sha256": "5bfd3aa4e19f0eb8cca248e895447cadf6df29e28ac496067cce1d99c35d3195"
+    },
+    {
+      "path": "interfaces/innerkits/include/i_sim_manager.h",
+      "sha256": "1c4847ff04d97ef6be3eddba57fcafded7c60afcf368d667c1b852736728de9d",
+      "lf_normalized_sha256": "0456f3753dfafdcb55d5bb18002e5a9626513b3340be806150dba6967b944230"
+    },
+    {
+      "path": "interfaces/innerkits/include/i_tel_ril_manager.h",
+      "sha256": "aecd4286633b981cf6334e9866a5f8c901eb4d77f00058df785d5cb0d4d1bbb0",
+      "lf_normalized_sha256": "e4d6f790e91abf92981ed61460b4a7fd3d876936f67bd6b60878c028b30c60c6"
+    },
+    {
+      "path": "interfaces/innerkits/include/core_service_client.h",
+      "sha256": "8832a274bbd3beec6ed2aa1917fd3f326fb7e898a28ac55d11bc60a93c79ca0b",
+      "lf_normalized_sha256": "faa49494f73dcd4f36191629e967565f983f122097ee1e2daac30441ec994a20"
+    },
+    {
+      "path": "interfaces/innerkits/include/sim_state_type.h",
+      "sha256": "3dcf768479d0510d7f5529aedba5cae85d6b4ed16b8863140c1f792b9af2e516",
+      "lf_normalized_sha256": "a8c0b3ead5a99a6070b8c9fbebbb8d20fdaf00e6baeeba86c320a75ca87626e5"
+    },
+    {
+      "path": "interfaces/innerkits/include/telephony_types.h",
+      "sha256": "23f708c8df2d20914cd086510b7aca85d9e9709db856dd9811f2f657f0167019",
+      "lf_normalized_sha256": "efe4a0a12dc63f962d839b6c7e1f96a141fff4ee10ff8ac8e42f59b05d6c7d04"
+    },
+    {
+      "path": "interfaces/kits/js/@ohos.telephony.sim.d.ts",
+      "sha256": "3605b5a40d191377d03915d5510a703476f5ad5c2c3953214a3d8945ac0de703",
+      "lf_normalized_sha256": "6b6af6ed1ea5bd97454c7373075eb6fd1e558922960cfd34abbb19612b0a548a"
+    },
+    {
+      "path": "services/core/src/core_service.cpp",
+      "sha256": "606b0793ebe0c1b71d1c6a3478593715262eab6371de169d6d6846986b45d559",
+      "lf_normalized_sha256": "d22215b9d1f90783b92626aaa51dafcc24a08d93e7e9c1a031dce77915aee47d"
+    },
+    {
+      "path": "services/core/src/core_service_sim.cpp",
+      "sha256": "391b4b26595ce6dd12e5a711a6b19e23c34a8f4f736b50ec1bf2c853fcd4abc0",
+      "lf_normalized_sha256": "ae4d714121c24de4f0eba12559a40f74255f52017a829950808f47adbd27bbe9"
+    },
+    {
+      "path": "services/core/include/core_service_sim.h",
+      "sha256": "62b2387369c3df34be5c7aee7b2a3203249481f64bc7eb6bd0f0a7e0f67676d6",
+      "lf_normalized_sha256": "fd818aaa1c98af0a1cacbf9a2cdc0419b3db7fa5cba8d213031555df63da2245"
+    },
+    {
+      "path": "frameworks/native/src/core_service_client.cpp",
+      "sha256": "725aa5252a94f268528ee96df929b5976d7a2475220b60101b2f77667805e03c",
+      "lf_normalized_sha256": "31dc8e7d9707f78d03615ad6dc3917c8121a8238f39ba02c0a13a08cd7021fac"
+    },
+    {
+      "path": "frameworks/native/src/core_manager_inner.cpp",
+      "sha256": "a65c75931f490f064a788e4438c22887d38c9aae65f589265d78f4a2b746839f",
+      "lf_normalized_sha256": "8167fc0a5e475a9c82b4fb2d00aaaf23141b20f66a2c0c558927433541eeebe1"
+    },
+    {
+      "path": "common/capability_mgr/src/multi_sims_capability_manager.cpp",
+      "sha256": "99196c1fdc0282d14fd4338b0cf5ec403dc7d2c0eb255fbdc83f10c031a5f157",
+      "lf_normalized_sha256": "1117ee5ba6618b4904b9d2d12973912460e0513e8049deec77fe1ce79891f226"
+    },
+    {
+      "path": "common/capability_mgr/include/multi_sims_capability_manager.h",
+      "sha256": "db44cd8d754395e43ff3100d9d38dda7109432fa2d58678cbbfb9652ac0a3f0a",
+      "lf_normalized_sha256": "29e22052a49359e4d0f13c69078ee4dc65bfe0670cf2d5b9ea3a9717e9bcf932"
+    },
+    {
+      "path": "services/etc/param/telephony.para",
+      "sha256": "9ff45641a6373b94054c856ca756fd81923a8937b15f22d6737e29e320927052",
+      "lf_normalized_sha256": "86b07bf0dddd586797cdc3ce928fe7247da1e1c312f45b52dcdd65de17eea984"
+    },
+    {
+      "path": "utils/common/src/telephony_permission.cpp",
+      "sha256": "a3bb9764c269ab51bd772c0ef5454ec53bce48a788c9e0b8abdbc51b217eae94",
+      "lf_normalized_sha256": "3ead60a37b3e50bad9c2175e2dbf6b130b47e5be0574298f786a36d49ea21611"
+    },
+    {
+      "path": "services/sim/include/card_file_detect_manager.h",
+      "sha256": "56f2ef5ac57914fe3310543aefd9417d30f5d4c45b4e63d1d36c13247ff2485a",
+      "lf_normalized_sha256": "9796a0ecf3a757c95250e2288c6ee9296139ef1e364be04a4cb4bc0e3554591e"
+    },
+    {
+      "path": "services/sim/include/csim_file_controller.h",
+      "sha256": "2ae9a49d59bb1cf0439637734c2244bc064bc783c1d4096819affafe27df0a3f",
+      "lf_normalized_sha256": "226063d3ec04004ea6cc4ee53d8b7b2d6e6a3cb4412fc1bebebdffe6b72ae345"
+    },
+    {
+      "path": "services/sim/include/esim_controller.h",
+      "sha256": "f404c69a5b1b25687157da425073d52281431b3c72b34424462b91355d224abb",
+      "lf_normalized_sha256": "9c8d4c97aa826caad3445f83c4f0839de087ac8c27844c3360b6ebe861c276f3"
+    },
+    {
+      "path": "services/sim/include/esim_file.h",
+      "sha256": "736c0d865757614d70d56bfddec570ed1f8457e21b103e7c0bceb1d59ac6a11c",
+      "lf_normalized_sha256": "266ea2814abad4775e1026ab47c783393d5331005b7976c1649c866d7a43effb"
+    },
+    {
+      "path": "services/sim/include/esim_manager.h",
+      "sha256": "2c2d00e82931bd3b196904ceccd9170a2be427850a31f4eaab344f8d97edcb21",
+      "lf_normalized_sha256": "b5b974bb4edaa2f207a57fa49d6c35fc38569c6e57705ffd1c0c3a15b1cf0f6e"
+    },
+    {
+      "path": "services/sim/include/icc_dialling_numbers_cache.h",
+      "sha256": "d5b39eae36cf4d0554cebea78a9690670d104e0d8ffbd5885be4f691933a2585",
+      "lf_normalized_sha256": "839f98ca11659bd5b1ca19387f53d05761d0a797dfe5c0c46abfdfec66824b0e"
+    },
+    {
+      "path": "services/sim/include/icc_dialling_numbers_handler.h",
+      "sha256": "fd97633f8ee762b92876113404e3c9741df783e9f3574612759a25388bf70a3c",
+      "lf_normalized_sha256": "e25a85e00b0e8c01f0688d704bb35fa69fb7789ee6ceef74a204c7063e0f5e47"
+    },
+    {
+      "path": "services/sim/include/icc_dialling_numbers_manager.h",
+      "sha256": "765fe1d3ab2e0c9df915a4eb1badb681840d40f206917ad4ac51fa63599f3546",
+      "lf_normalized_sha256": "c5966a88e9f1271a262d110725d2d1259d384ebd2f8e2ec01869627a8c03a1b8"
+    },
+    {
+      "path": "services/sim/include/icc_file.h",
+      "sha256": "fd164ea4f0a90c1decc3797e027bd03a4207be7b534e2371434a08d7ce39141d",
+      "lf_normalized_sha256": "b71f7c319c4a8bf5a9b6074270ef8006dab72ebaab03c856ef2d279fda8eff61"
+    },
+    {
+      "path": "services/sim/include/icc_file_controller.h",
+      "sha256": "41c84b1b3e27864486ddd273d362b5590497b9134f12267cbb72242b140a6d99",
+      "lf_normalized_sha256": "73bafcba0cc87478c1fe8329197b2e63491ec766375adb09c31e629a054752a3"
+    },
+    {
+      "path": "services/sim/include/icc_operator_privilege_controller.h",
+      "sha256": "cfd47e09861630d575f2cebed900405b6f96b9ebc9f1435b7fe86da2c1e83b57",
+      "lf_normalized_sha256": "ce5e9de76a1a5011aea11de107f8b9b094eefcb0aa1f46371c1370ca5f4346e6"
+    },
+    {
+      "path": "services/sim/include/icc_operator_rule.h",
+      "sha256": "e4db57a639e95eeb28a03eeab8f19caea7a5d64e14188051d44f474996b61fda",
+      "lf_normalized_sha256": "7acf16c6ab125bb3a937c5e726f0e51934bb829dba3187a1c3d4661e19380fde"
+    },
+    {
+      "path": "services/sim/include/icc_state.h",
+      "sha256": "126b1859a9d503f9afa6748cf7dd648668888a41badcf2bba0830905c3f8e480",
+      "lf_normalized_sha256": "7ef055687664f7609d4de641afdad1cb3ffdc95e9b731e76caebe9632f31f701"
+    },
+    {
+      "path": "services/sim/include/isim_file.h",
+      "sha256": "a1b4f23c347715f62604a558511a59a9d462951bc57f1a5c299fdb0298c1dea8",
+      "lf_normalized_sha256": "0a4d46f92cf16784d0a2e8a6e7b8d6343544f5781954b1851f2d23b9acb84abd"
+    },
+    {
+      "path": "services/sim/include/isim_file_controller.h",
+      "sha256": "c4d98052522882943cb15102428fed85abdaa28589067d4cb7a89bad1044962f",
+      "lf_normalized_sha256": "980d4b17e0bbc9ea19bb0529cae287c582b102a65b73565c94afec9daf2febb3"
+    },
+    {
+      "path": "services/sim/include/mcc_pool.h",
+      "sha256": "5a681f97d05facf58b08c88bb5aa295b051bba17237606ab470bc54393cedba3",
+      "lf_normalized_sha256": "396569e8419371cd0279525852b85443aac69e8700451beab0f3917fc4bd750f"
+    },
+    {
+      "path": "services/sim/include/multi_sim_controller.h",
+      "sha256": "1b4d53c48559a29e749322066714f6f8a861f76f062d50be7483a86e4679e61d",
+      "lf_normalized_sha256": "5f2cc8be512c2a5d5496def0222fa3d31ed779688a4ec57e69c23f54e912c92e"
+    },
+    {
+      "path": "services/sim/include/multi_sim_helper.h",
+      "sha256": "d45cc227256b623c02d39abf8facd7af971eb31088675e4f84c745f23022b73a",
+      "lf_normalized_sha256": "eea2d8df4cacd126380da54eb7613c9e6e45686d5db0e1420953217315465307"
+    },
+    {
+      "path": "services/sim/include/multi_sim_monitor.h",
+      "sha256": "ee442a41a4c55f4a15fa513bf2ced5f43a9174ae4d206c13fb263763b6651a77",
+      "lf_normalized_sha256": "73207677625f2e44946b5b1f4f03eb3df2f3f5606bc06734ae9dd5ed71dba1c6"
+    },
+    {
+      "path": "services/sim/include/operator_config_cache.h",
+      "sha256": "9737754bc706cdcce21ff6057e4992f67f6e6fb7757465dde8f91752b5a331f8",
+      "lf_normalized_sha256": "75b90c53273a2a828cc408ef5a1eee12503487f3f3a61b1c2f92716ac2b4b96e"
+    },
+    {
+      "path": "services/sim/include/operator_config_hisysevent.h",
+      "sha256": "bc69cb2479dc1e04ef948178d9f9c5170035afd38a17f19a824e01918abd5958",
+      "lf_normalized_sha256": "d23a92cc54bbdb8035127adfc880c36d26ca0617da834b26a5ce8be660424a9a"
+    },
+    {
+      "path": "services/sim/include/operator_config_hisysevent_enum.h",
+      "sha256": "6cffde8c35f3c2e28ac494c42622ba444059dafe8a2e74c4f9590e3672e62695",
+      "lf_normalized_sha256": "e232569ca3464d3ce94e2fc9a1b1d495e86481531fe5052578d74b7f37cea843"
+    },
+    {
+      "path": "services/sim/include/operator_config_loader.h",
+      "sha256": "f037154a79f35d8163aef1d53ab375128c1fc825d4d9832865bb92c562ffe513",
+      "lf_normalized_sha256": "f0c7a7daf8b1c7e34f38178f92708f472eea434edb7a902f64b2e6abf46d8678"
+    },
+    {
+      "path": "services/sim/include/operator_config_matchsim_info.h",
+      "sha256": "47c92d98080fd57f6f9f94f451e250b2d1fcb3bb0eafaa432240f3acc83d5225",
+      "lf_normalized_sha256": "b07197d0de955b9c8780e20169a3b3fbcd60b34e9e813c7f4ab54424fb5c8f80"
+    },
+    {
+      "path": "services/sim/include/operator_file_parser.h",
+      "sha256": "32cd4aa79851e83b8a8c25742c64fbfdf439e21b7b27ff8fd77585a05e472956",
+      "lf_normalized_sha256": "fa2642431aa09d16ca9543f5dfe5884d8903726bc21123993b1b6ae37e4fbc45"
+    },
+    {
+      "path": "services/sim/include/operator_matching_rule.h",
+      "sha256": "aaa248adde1b9a3ecb132607b878f6e3079bdc70b99e1deeaa3eea5cc300c30b",
+      "lf_normalized_sha256": "bff37f552cca58d3bf4d04721daf302503df2ef0a1bc280896014bff538c41bc"
+    },
+    {
+      "path": "services/sim/include/pdp_profile_rdb_helper.h",
+      "sha256": "a4a123a286ca5ecb7b6f4ae9156afcbc43a4fef0d6ce5c6f68e6978cc9caef31",
+      "lf_normalized_sha256": "10386ee1771e5ff546a23667dee2555ec5e83be8d29d937e50167ea76eebe0af"
+    },
+    {
+      "path": "services/sim/include/plmn_file.h",
+      "sha256": "6833d6b929365de9651a9d361b96701e99972250a0dc6ff6c2a356922d572f4c",
+      "lf_normalized_sha256": "ebced6e316ad006128f0a8c1539a62068b89b76db150a3881d2c93e8de52cd33"
+    },
+    {
+      "path": "services/sim/include/radio_protocol_controller.h",
+      "sha256": "cc4edd209b6988079ca193d87874458099704f3d70b7e4a924c457f84e9a07bf",
+      "lf_normalized_sha256": "772541eff145aaa07751cc8ddcc330732db52d87ec12b0a9e97d3341b3246268"
+    },
+    {
+      "path": "services/sim/include/ruim_file.h",
+      "sha256": "f545a1c4a743df5b4cc3c71f3c7604fa90c913aadaf41df3af89f1977b42621f",
+      "lf_normalized_sha256": "802d19e78c55122a178385e1d3652a79ece935b12515b16c7941b91322882fd4"
+    },
+    {
+      "path": "services/sim/include/ruim_file_controller.h",
+      "sha256": "eafe54563c966129f5494b4b1424541a6b50da6bd2145e3d7815560850ff4e24",
+      "lf_normalized_sha256": "f6070e224dd7eafba7d77b46f3ffc0a1c39e08fb54176dad9e3f7123bd51a37f"
+    },
+    {
+      "path": "services/sim/include/sim_account_callback_death_recipient.h",
+      "sha256": "d18ef991ff21d2bafb0da6f57a76d1f3a4281c90110e786125fd0f9e5f4a4558",
+      "lf_normalized_sha256": "43ff58950d1851d510a6d75f6c688738e1589ecdab4605bf86630b3deaabdac9"
+    },
+    {
+      "path": "services/sim/include/sim_account_manager.h",
+      "sha256": "ad48a3ac97333ae49ddae05b861acff2c877c052e9aa838b29246cfbb5d3ce62",
+      "lf_normalized_sha256": "d23c7dde1238b7ad5781dd2393921327fd07dbadd579eaa43413e88054025318"
+    },
+    {
+      "path": "services/sim/include/sim_cache_sync_manager.h",
+      "sha256": "d0853008944cb9b26ce92d66dcd7d3704177c01d02715dad1732aa72005fe6f9",
+      "lf_normalized_sha256": "b35946f115f71e102c48896ba6416c28c27f0091e4e1bda5793ded32e63bc950"
+    },
+    {
+      "path": "services/sim/include/sim_char_decode.h",
+      "sha256": "032eba75e58aa7b3f0610009c62a0009fcce92902582e5a8e96cd500a8687bab",
+      "lf_normalized_sha256": "31b123fb5e82d97635eb4b517d2c9c7e987cabe3739e3d49438486f95227be24"
+    },
+    {
+      "path": "services/sim/include/sim_constant.h",
+      "sha256": "1f1bf114d30411cae34889d005ddd94bc46491d40bbd861cf417474659e80a12",
+      "lf_normalized_sha256": "4d7e83409181add15606fd0e6853ebce7792a7d20643b20b70f93464352ce1ec"
+    },
+    {
+      "path": "services/sim/include/sim_data_type.h",
+      "sha256": "e80c834a862ddfe6eaf61615d293bd2319e6414bbb963b0376f6371bfb8cc1f8",
+      "lf_normalized_sha256": "79b5de7b3a3bff6dd0f6cf46282c73069771c17ea78bee3c4731b81755c3f57d"
+    },
+    {
+      "path": "services/sim/include/sim_file.h",
+      "sha256": "fb925f0f671d11cff9bbe9adb84c052812b7a108474d65119d4589debdf04d97",
+      "lf_normalized_sha256": "20986741e662bdd808c936dfdb43ec34b82029fc07832211a4e86b13bce3cfa9"
+    },
+    {
+      "path": "services/sim/include/sim_file_controller.h",
+      "sha256": "790150da5f88b71c9556c58a8868371d446286a19b047bf2c845e57e67986f12",
+      "lf_normalized_sha256": "6a925f27165bbd24b412f04441aa089460a209459252cbf94958ccc14a4349f3"
+    },
+    {
+      "path": "services/sim/include/sim_file_init.h",
+      "sha256": "f9c55109e55cc1ef50de0e760f7245e60c9c854b2b0d201babe4dde7b8052e9a",
+      "lf_normalized_sha256": "da7ca3975c1c6ca4b2ed93e6eba34171b4e1f9f8c86eb6a59898fe39bb98cd94"
+    },
+    {
+      "path": "services/sim/include/sim_file_manager.h",
+      "sha256": "1e06f37aa1eef179c644d62eefb0fda1ec051001bffff5052cc6afdb29f1e428",
+      "lf_normalized_sha256": "6e949021392d5086410737735220b44adedd0f153fe8da29ff21c9efc87f6910"
+    },
+    {
+      "path": "services/sim/include/sim_file_parse.h",
+      "sha256": "f526406178ca67dc92f3402d0999497078087a3f7e9a943e4f7811435076e3f0",
+      "lf_normalized_sha256": "f2d70f563c7156df8e6f4daa76b74c98114290b66391fb393899a87c191517f3"
+    },
+    {
+      "path": "services/sim/include/sim_manager.h",
+      "sha256": "f7f797bd6fd0d22baa830c7ddcc497db31a6df347279a5dfd142b76143ea8b21",
+      "lf_normalized_sha256": "534b88e68da393ec82ab8a5e1d86c1532f083ec2ab00ffebf001b8db28fcc534"
+    },
+    {
+      "path": "services/sim/include/sim_number_decode.h",
+      "sha256": "c6647736f164711601f25fafba5c709c6af454aebb05e2699f1ad2492f44e8bd",
+      "lf_normalized_sha256": "9d3d5934200c89e574de4d72fa93b2fd4d85e6704685556f9e4ca63ba7dcf48d"
+    },
+    {
+      "path": "services/sim/include/sim_rdb_helper.h",
+      "sha256": "ba531979c2f1fb14d614299a216804323568510fe95e2166ea71ec7f6a27c6f1",
+      "lf_normalized_sha256": "af190620158c080a8c464127be8fcd729afda4690eb4f026199da977f1df2a11"
+    },
+    {
+      "path": "services/sim/include/sim_rdb_info.h",
+      "sha256": "6cfe8998bac00ab1cd7e6f81b2dfd7e6dcb3fae0428aa9667416e6609ec08763",
+      "lf_normalized_sha256": "9f655851f651fe1903a50d44896976d79c78b5000d1950b83585e61486d59277"
+    },
+    {
+      "path": "services/sim/include/sim_sms_controller.h",
+      "sha256": "dc90a2073910ffd591f443a89a98cc80e5cdeb67b0dd8359622e51cccac1d665",
+      "lf_normalized_sha256": "027e49889985accc5924e0c152158bfb334b91605dfaea9ff2ceeec5eb5b6172"
+    },
+    {
+      "path": "services/sim/include/sim_sms_manager.h",
+      "sha256": "ae67af5e95f8bf387a770c4c946c7cc727404b7129e9edb7b897e2dc7479c58b",
+      "lf_normalized_sha256": "a0999cb2933ca5dea32d2afeede7ec88bbb085733e767791d8ca11cb155a11b5"
+    },
+    {
+      "path": "services/sim/include/sim_state_handle.h",
+      "sha256": "35dbef815c04d0312efc1ec996ecda0be448c49ceb7b5832542e90d9d5b1a5f9",
+      "lf_normalized_sha256": "ca3730df0b3e3f7472db8c8433d6203f5afe257d3ba0a311887b8111ff561205"
+    },
+    {
+      "path": "services/sim/include/sim_state_manager.h",
+      "sha256": "177968f5a26f8453726535b0a5691d69d449db040c12262ac99a01348abb7519",
+      "lf_normalized_sha256": "ff5064482ae62a8f1ae5b5bb6155a2a860aac0c1ff52895c3bae9a8e06b1483b"
+    },
+    {
+      "path": "services/sim/include/sim_state_tracker.h",
+      "sha256": "1d463cd6f81d53428e987217de26a8ae4f847a0dd4f25eec50728876296441d5",
+      "lf_normalized_sha256": "49ae35423ccf9d744825c7948130ecb14d448655ceb9327f2392dadbce642b93"
+    },
+    {
+      "path": "services/sim/include/sim_utils.h",
+      "sha256": "7b9585e6951f4dc4e6a0ac12edf7f2c10a81c89a29ecc599226f921e1c0afa74",
+      "lf_normalized_sha256": "0032f85b6decb284781d4987ab3079c77095052e01d1c4eba7439485051ef67b"
+    },
+    {
+      "path": "services/sim/include/start_osu_result_callback.h",
+      "sha256": "71465f4f3e441a690afffb7af4240a458d12c211fde9c5294b6c6814ba42dc7f",
+      "lf_normalized_sha256": "7510919aecc8fa04d3bb40070ead52a7ffabe8c511cd0c0e65167e036c5e41a5"
+    },
+    {
+      "path": "services/sim/include/stk_controller.h",
+      "sha256": "39f5b71a48c9c3ec3511e7522cad98000e1b4d0942b5ce4bf158886ac1cf56a7",
+      "lf_normalized_sha256": "a8456571c3641e8c1e98f101b4ff3c0803cfe080ba0883ce11211500329988f4"
+    },
+    {
+      "path": "services/sim/include/stk_manager.h",
+      "sha256": "30dc50b33332a973601472147c2d5fe98c339f4448235a0b599223976478882e",
+      "lf_normalized_sha256": "36e9ee98a35304584abd3ed18973beae107fb90594a163983674cbdf64bd5a92"
+    },
+    {
+      "path": "services/sim/include/tag_service.h",
+      "sha256": "384af1672ac4c85a92e2907dd093c6b8871f7aeb31ddbd0dc49e9739baf02062",
+      "lf_normalized_sha256": "bca35146f0ffe760823c9955f90afdd610c79df6b52342f5704c0c3fa2bb237f"
+    },
+    {
+      "path": "services/sim/include/telephony_data_helper.h",
+      "sha256": "2af2b765831a44e1128e9816e24e25cae19f28854a64c16723b69d8b9dd7849c",
+      "lf_normalized_sha256": "5409f110f4b4b2faea2fb69400cbfc7115725870c68ba7fdf59cb475db8c6c40"
+    },
+    {
+      "path": "services/sim/include/usim_dialling_numbers_service.h",
+      "sha256": "f03b80937432e785f8021adfe439dbf1200d884042dcdf44d6ccea8604486d09",
+      "lf_normalized_sha256": "ad9af32a511e17106f526dceb676b783826a6b0f755067c4cdf51c05ae08c54b"
+    },
+    {
+      "path": "services/sim/include/usim_file_controller.h",
+      "sha256": "23ff7b6a81ff8ccbe93124f8fa1ea6e86bdbaad036b0dd655971b57667504867",
+      "lf_normalized_sha256": "0955206cb762657b2247d69838c0e30ecd660df86a96097d09c3aebfdfa2447a"
+    },
+    {
+      "path": "services/sim/include/usim_function_handle.h",
+      "sha256": "421ad119791c45d100648c049f8a812717772e9eb41a610f3cd7b09ecbfd2393",
+      "lf_normalized_sha256": "e5d83b022562737d88409495577d1fe3288661280acf545eb6e68914b1db87ad"
+    },
+    {
+      "path": "services/sim/include/voice_mail_constants.h",
+      "sha256": "bcc2614376ca1cb9c8a3e9c60a713e3db452647bc2de60a7d15eecedca720d9c",
+      "lf_normalized_sha256": "4a192b5fba35f2cf1ece3181215c1a88274da4b6c1fd8cadbd244df02fa6c873"
+    },
+    {
+      "path": "services/sim/src/card_file_detect_manager.cpp",
+      "sha256": "985e896e4f11353b075b14dfe0a61ebf450c4e846daa15c5296577fcd5a2dc4a",
+      "lf_normalized_sha256": "2986acdc382f702f0a08ee15d446d68e9a9dec846189a90e322effe762425c41"
+    },
+    {
+      "path": "services/sim/src/csim_file_controller.cpp",
+      "sha256": "75f97ec8e56290ed8e06b130e3a528e937b7cf2b8decf8b8fde5a44deae7b0df",
+      "lf_normalized_sha256": "9a5df536c65668d0311eece5c8b4ed33274928c64a0f84ed20854ab6002135e4"
+    },
+    {
+      "path": "services/sim/src/esim_controller.cpp",
+      "sha256": "7d5e220c80a439b282016ac955a81acdd547b86311468e68fe2863ecddeedcef",
+      "lf_normalized_sha256": "2f1398ed0b5602dfcb027a1a0e976ad8b40cef4ac36c80a7050c3d2ddb3f13fe"
+    },
+    {
+      "path": "services/sim/src/esim_file.cpp",
+      "sha256": "406408b1be0bc87cb6a355fdd638e59590289dbb7cec71c70cd32664680751f1",
+      "lf_normalized_sha256": "8d12f4920d325d874fba2862ab71d09da412844a160331d8ab86993bb022960f"
+    },
+    {
+      "path": "services/sim/src/esim_manager.cpp",
+      "sha256": "a283ed9ab601e39bebbe6a126554b07ef632995035db885d39b4d76c8ba03118",
+      "lf_normalized_sha256": "c13572bf449e181015515e73a1febdc31d524bc22c57a245d3f783598920b7a2"
+    },
+    {
+      "path": "services/sim/src/icc_dialling_numbers_cache.cpp",
+      "sha256": "bb50ad7aeb94c89becbc293825eef2d4fa1d90cb059bd963b75c3878a47c42c2",
+      "lf_normalized_sha256": "f150a14d526073d183c0526e05fd17d52c3ee4e7b2da431191517bfa2cbd63ed"
+    },
+    {
+      "path": "services/sim/src/icc_dialling_numbers_handler.cpp",
+      "sha256": "2c9ad83c38d1cdcf6cd180f63100d5f8b4acfa4f45c3ca09a94db63148c1ffef",
+      "lf_normalized_sha256": "ecb85157d9cdbbcdd57d395c0f306173c2d29d7e2920a363d95eac97f7360a0e"
+    },
+    {
+      "path": "services/sim/src/icc_dialling_numbers_manager.cpp",
+      "sha256": "513277b60722ce2a05effe9b3c20207eedc6056f91660bb5462a5d2feb73210e",
+      "lf_normalized_sha256": "2cb843d3f346f32db86b7fd5762cae21e16f08b9a636f380dc1d83ab55f92a92"
+    },
+    {
+      "path": "services/sim/src/icc_file.cpp",
+      "sha256": "a65c9aece74a72a54111f96d75f7bdb27ff5fa99e15fae2b48bd649c6373ef95",
+      "lf_normalized_sha256": "1a7a5d641fd5ce0e900f9a050b6b931a96066317073c000750fb4a7febd934ad"
+    },
+    {
+      "path": "services/sim/src/icc_file_controller.cpp",
+      "sha256": "4d44b65aad64e2f73a54995162d983e89aa26ee18f3ea6168483f2ec6f53d7b1",
+      "lf_normalized_sha256": "397c7805e3130236c355a0144a868bd8d091ebe7347e6856cb07e995f5fd3471"
+    },
+    {
+      "path": "services/sim/src/icc_operator_privilege_controller.cpp",
+      "sha256": "9c63e664f8815d7c439d0d1d487621232df826cc217809c6164dfb927dcdc950",
+      "lf_normalized_sha256": "f187b2b37586dc44341af1dd84a15d6af360425c1269d4ef802ea02b5f6d3c2f"
+    },
+    {
+      "path": "services/sim/src/icc_operator_rule.cpp",
+      "sha256": "e38da28e76fd370e84b1890f0b0ecdd1bcff3a615b0220c14864f7872f5b0fb5",
+      "lf_normalized_sha256": "03b27f8ec60614f63d603fa3091ca2d10125fe5881f492f0d3ab387faf2b8ed2"
+    },
+    {
+      "path": "services/sim/src/icc_state.cpp",
+      "sha256": "8d7eb2612dd731cdbc7437cf3cdcc39961047920fe5c3ec309c4b5fe84a1cdc7",
+      "lf_normalized_sha256": "f44d7f4ba3a3dec16a0edb9ba8b24b6d1bcb66f50fce9d79f936626ba0d9e7cd"
+    },
+    {
+      "path": "services/sim/src/isim_file.cpp",
+      "sha256": "65b62df56377b37140dc2d1d341d78ac2bde4b7a5d74144f0d3aa4e5a4323b93",
+      "lf_normalized_sha256": "4188245e8b75135bb6c25cceda03ca3010898eb59afe617029121f08ab06b844"
+    },
+    {
+      "path": "services/sim/src/isim_file_controller.cpp",
+      "sha256": "2b71183784bb10d294f1690332efda7754c24a2b614a62d645a28794cb7898f5",
+      "lf_normalized_sha256": "95aa7256dc134971062364beb6feee28241e1a0f07b873b7754b69dc97fea590"
+    },
+    {
+      "path": "services/sim/src/mcc_pool.cpp",
+      "sha256": "4131f61f63f783a5b7887bc7bc6657db7e3fd726d47be0d6dbaf499e44d0ba67",
+      "lf_normalized_sha256": "80cc2ae1a89632a726d04b87f33c5832f80d34e3ef60ae513767b2204fe4ab89"
+    },
+    {
+      "path": "services/sim/src/multi_sim_controller.cpp",
+      "sha256": "273d9d827618cb8e7718d81cb2ea2af2839c080573466cc18cb340d165083312",
+      "lf_normalized_sha256": "76605daff6a316b9ec411a4c6c7b2cd2d5701ce5449df1cee44ca05bbda26161"
+    },
+    {
+      "path": "services/sim/src/multi_sim_helper.cpp",
+      "sha256": "8ceb28186aa90c31fb35091c094367686d1ed5281b8e73e55bfe94b8646d1d0b",
+      "lf_normalized_sha256": "dfeb08121cf1c87b9941516fb58c03ef4d25d47b65c85dd45052f55635eb78d9"
+    },
+    {
+      "path": "services/sim/src/multi_sim_monitor.cpp",
+      "sha256": "5b2c3196a927b5abf683b411519d71372b80eb6c91a62ed46e043eeabcc174d8",
+      "lf_normalized_sha256": "341bf8715e2f0539fd59c1ea0f87846fe04a1b422780f63eaa6acd195270075c"
+    },
+    {
+      "path": "services/sim/src/operator_config_cache.cpp",
+      "sha256": "a213d16ac425b604c4505b747e9a38c4560cf4189ddff149a2c0a86861ba1ca7",
+      "lf_normalized_sha256": "f7775f108824046f6f81f669a0580eed4a25641844dee18e4ab8b8883c2f914a"
+    },
+    {
+      "path": "services/sim/src/operator_config_hisysevent.cpp",
+      "sha256": "4539e01d132a16fcb7de4a667817fd7e2982fcdfb0909adb078ea08b7f783d2d",
+      "lf_normalized_sha256": "1d3a868297ab72cb15a57826539bd8bec8a4938d7350420b32537283617c2fe6"
+    },
+    {
+      "path": "services/sim/src/operator_config_loader.cpp",
+      "sha256": "7dbbebff431d0fab60de3866f2aec94e4862cbee6c6d10402ce4e1e4890ffc56",
+      "lf_normalized_sha256": "c60bcac6ed36932444beeee10b21107492f2ea55c18d21d28e06d2167e70a42a"
+    },
+    {
+      "path": "services/sim/src/operator_file_parser.cpp",
+      "sha256": "80927a2fe1bb5ff68fd6945eeca02879a0780ab4d6f549eb978131b6ab952c26",
+      "lf_normalized_sha256": "d8f4fce48474dd866360896168ea63ebc37c7c2ea2be0580d1ba9583f4a62e43"
+    },
+    {
+      "path": "services/sim/src/operator_matching_rule.cpp",
+      "sha256": "d3b684414813dc257ad0b59b20096af87456c247d3cc90cbfadd1256623d0187",
+      "lf_normalized_sha256": "65066b9aa8f1b824839398f3e21e04f4a883e5e679ac0df06a4935d9f97b919e"
+    },
+    {
+      "path": "services/sim/src/pdp_profile_rdb_helper.cpp",
+      "sha256": "63042264f2b341f4fe30f22bec579a4efb520e33cecf3f05b90bf1ddf2f3930a",
+      "lf_normalized_sha256": "dffc17c008029ed133639683871ebf57a9e6593284e248113516c121280b6927"
+    },
+    {
+      "path": "services/sim/src/plmn_file.cpp",
+      "sha256": "bc76602aaf34f1a74926d24af42f70ba4c1e29e70f8793e074fce6921eda46b5",
+      "lf_normalized_sha256": "ce91952f395f202d3ed4212c8495fbf684e1e9aa7bcea0ccde3d1101c7b23c35"
+    },
+    {
+      "path": "services/sim/src/radio_protocol_controller.cpp",
+      "sha256": "014d325b3e05b226b2263d26ad685065abe2ff351e1b4672cdf5e3b664e5584a",
+      "lf_normalized_sha256": "7391942fa10b22e4692b1873716d4827be68dbbe85ff63587f243e3096d79102"
+    },
+    {
+      "path": "services/sim/src/ruim_file.cpp",
+      "sha256": "01d03269de3baeffe6f01348f4f78e2c896c7429e4fd99b0b518ca104dfeeb7e",
+      "lf_normalized_sha256": "877c3bac9a228ba9d9bff685b3787e3cb25c5172b9bdbb203a480332692a3e9b"
+    },
+    {
+      "path": "services/sim/src/ruim_file_controller.cpp",
+      "sha256": "e618b025feb8e68da10e70159e33243646bd759e8992d92fa8643536241c1c06",
+      "lf_normalized_sha256": "e56479355d8189162beb8199828fbee46c522188093efb52947a9ca04b10cee9"
+    },
+    {
+      "path": "services/sim/src/sim_account_callback_death_recipient.cpp",
+      "sha256": "02b2521e25e12aa76ce190b4d6cbe1e6a058a9dc5cf0856737188ba2a21eaf55",
+      "lf_normalized_sha256": "480adf72c92a5c68285cbfbcf87a7cf15c161eee3bb8c5fc98d11da82eee09c1"
+    },
+    {
+      "path": "services/sim/src/sim_account_manager.cpp",
+      "sha256": "a787f1ae3d7fac7342e6b2752edf37a281ed34d7d1bc17411069fce0097175d0",
+      "lf_normalized_sha256": "e76d7e9595830bfb36565ee4bc61d1eb83cb4cacc1e0a349323bf8e78b29f108"
+    },
+    {
+      "path": "services/sim/src/sim_cache_sync_manager.cpp",
+      "sha256": "4646d15e621b667134736326d9a629e93cb75bfb93647c8cb4c8ae740eb98e7b",
+      "lf_normalized_sha256": "8e83385b4153687d02dc2227a7e95295521e893513158fff0dbc6e2b4444b34a"
+    },
+    {
+      "path": "services/sim/src/sim_char_decode.cpp",
+      "sha256": "fc881232ef8ca7d050adee1c53fff1b5b47973af23e4f79d9edb745efbeb530a",
+      "lf_normalized_sha256": "6d1bd0e24a958ccce41b4c05148b231a3292f95b4075a057be0d18a36657da50"
+    },
+    {
+      "path": "services/sim/src/sim_file.cpp",
+      "sha256": "38242a3fed97e7e8ebe52015f7036de5fc9a7f5765969720c3ac3a9d33440288",
+      "lf_normalized_sha256": "99c1ea187dca42af87d87f56eec6dbd14786772258c237025de3d4adfdfc6b03"
+    },
+    {
+      "path": "services/sim/src/sim_file_controller.cpp",
+      "sha256": "a86802f6e1d7073d1628b605028f43288fae788814139e0418eb49c8e8c26779",
+      "lf_normalized_sha256": "bbd724bc8d20eb154f81dfa4389d81519d14b9cc579c954fa349afc9d30b1570"
+    },
+    {
+      "path": "services/sim/src/sim_file_init.cpp",
+      "sha256": "e86d8e63287a3393e6afafee38865aab81a22104682b5d46151b26819bd9470e",
+      "lf_normalized_sha256": "3e331c90149589fbade06a178a3f808d1ed072521d0473e2878e6e47390af345"
+    },
+    {
+      "path": "services/sim/src/sim_file_manager.cpp",
+      "sha256": "d46fb91dc4e01c580343de87bdb1fdab7e55c6fbd4ca457788b5dfda9c8c3753",
+      "lf_normalized_sha256": "12045e75e5299fda095155cb8aa2358f62a43f936df9d55aadbf4d95fb47752a"
+    },
+    {
+      "path": "services/sim/src/sim_file_parse.cpp",
+      "sha256": "92710b0601359be4c43acb0fc67901d94a7cd9fc6d2eb5f4a6fbfafc12ff9931",
+      "lf_normalized_sha256": "9d91141762124f4211d8e5bf234a3acf98dbe47c2f513c9e6ccc7fcb03dfc57b"
+    },
+    {
+      "path": "services/sim/src/sim_manager.cpp",
+      "sha256": "dc8fd160a9d06097aa4995274364118ed82f46b3b63ff7c57f49e58e3ae1d1a3",
+      "lf_normalized_sha256": "334f6c418971c94053c762b9f9d1ae801ebe957bfa152a37c59c7127125e66f2"
+    },
+    {
+      "path": "services/sim/src/sim_number_decode.cpp",
+      "sha256": "62d4c045e294ce07eb81a83b1c0fc2dad7bb6d5380bb13a6cc33c020005a0ca2",
+      "lf_normalized_sha256": "929240de7614c05edb4a79b751870cfafc4973f2f7505af43aa906d224d7f1b8"
+    },
+    {
+      "path": "services/sim/src/sim_rdb_helper.cpp",
+      "sha256": "50802df023b4a3dca3748648f0fa73c11ebe4ca7d5f76c2a91ba77f3bc6fc4e2",
+      "lf_normalized_sha256": "99656cbd23c29e0575de75c9ba439eaca65c2c4f1c72e6b6528efe9496538c23"
+    },
+    {
+      "path": "services/sim/src/sim_sms_controller.cpp",
+      "sha256": "89bc1c436920f652a4890a0fc399dd98024c59e3dfb64ed3cf2e15a9c7cbaaff",
+      "lf_normalized_sha256": "044e456c3fd8e5128503a6a9db8f0268fe9c5c5c069e309b34cfba4cf53bd0db"
+    },
+    {
+      "path": "services/sim/src/sim_sms_manager.cpp",
+      "sha256": "044d8947abfd5b422c586aaa624e59951082c9e168325505da58980a9090970e",
+      "lf_normalized_sha256": "4c8d5148cb7585bb5691e12214cfeb13352c9d9b117beed94e57dc10674ef1f3"
+    },
+    {
+      "path": "services/sim/src/sim_state_handle.cpp",
+      "sha256": "2b2bcfa6cdf2368da9f4e1ee20300e147da73ac458428ddb0194e231c83154c7",
+      "lf_normalized_sha256": "1d15e3456ba6afd0b504b73fcd23bcc12c286132cbb566d77765b195f52d273d"
+    },
+    {
+      "path": "services/sim/src/sim_state_manager.cpp",
+      "sha256": "3322e321c3bf9cc44636dc6125e58ecd35a8340f25cbf47dfb1072810a67da42",
+      "lf_normalized_sha256": "99d044a1d839d6a9e57bfa46a0755328c523286f2bd410eefeb49c89a7b52b06"
+    },
+    {
+      "path": "services/sim/src/sim_state_tracker.cpp",
+      "sha256": "0b6889fc681adf00de667dd077397eae64491d92e1a5075285502873c39bbf1c",
+      "lf_normalized_sha256": "0ebadb176c101095d8561c1f7eb55fa108c8757016a4d71e630e8242df44ea4c"
+    },
+    {
+      "path": "services/sim/src/sim_utils.cpp",
+      "sha256": "10e1ca1d78f5d1888d2f287cb7e549ed503091ae0eedd8dc150c7e15d8657f0f",
+      "lf_normalized_sha256": "6241ac8f606e1733aa7beeb49e38fbf2f14efaf2164d4c0e1542c5e606211d60"
+    },
+    {
+      "path": "services/sim/src/start_osu_result_callback.cpp",
+      "sha256": "8124249ef7109c6bf34c20d9d324cf93c89b95a4ab79089332136179a7f23397",
+      "lf_normalized_sha256": "c905245e34a428115fe0a7a012ec52af982a8acee93051759dfad2a2f9813cc8"
+    },
+    {
+      "path": "services/sim/src/stk_controller.cpp",
+      "sha256": "56307892141d6f88b3593cb25a42bbd77099a7b545ad283a8da7a248d2de0daf",
+      "lf_normalized_sha256": "1af5a6625a341e946b2f52073c236414b4d8f8a3acba481b16db6ea8775768f1"
+    },
+    {
+      "path": "services/sim/src/stk_manager.cpp",
+      "sha256": "156b43dd965cf5d9af22a5fe0185f5f5b6de4f59c2d7846ec2438eaa8f2b5629",
+      "lf_normalized_sha256": "1cfd69b4581e385f28fd020efe0067a9d5fa77b77d9f6d33d74cdbc1c3990b3f"
+    },
+    {
+      "path": "services/sim/src/tag_service.cpp",
+      "sha256": "3f1a54a33ccd48833759c132a37807d969f03908836d8fd9ab3239382bf5491d",
+      "lf_normalized_sha256": "9ce64e8f84e6cffe0fd68b801005cf54acddaec2131e45fa2258d97ab32f1595"
+    },
+    {
+      "path": "services/sim/src/telephony_data_helper.cpp",
+      "sha256": "b37360554b054a65cf9a302bea6bccb0cb521ee6b28124f4bb7c895320dd7201",
+      "lf_normalized_sha256": "e58f4c19eea337887705e6ac2dd19003418a94083e7f1fb713f8648ea631477d"
+    },
+    {
+      "path": "services/sim/src/usim_dialling_numbers_service.cpp",
+      "sha256": "83982a35f0d53cfbce7522f9c637d536bea6ba2cb87d9eb77039ad4c098bc6df",
+      "lf_normalized_sha256": "fcd794d834f7fd1e62f074ba925dd897f575dd2f9351e4405183e08e2142da14"
+    },
+    {
+      "path": "services/sim/src/usim_file_controller.cpp",
+      "sha256": "77f86a997487cb7cb665c2922f5add132fa0acee0ba6695d25b79c38c56ef2cd",
+      "lf_normalized_sha256": "75e66a9550201da634cb2a78975739caa05b0f50c00530dae247b658b141d76d"
+    },
+    {
+      "path": "services/sim/src/voice_mail_constants.cpp",
+      "sha256": "21daca19e9a77006ec704a25c7c72764a349b9a40340495c8669a71015c4e190",
+      "lf_normalized_sha256": "ed4e43caf5e615fc403bf262417909d004e36e867d182f8ca4fd4b8df305a3d9"
+    },
+    {
+      "path": "services/sim/test/common_event_test.h",
+      "sha256": "86098f7974a400bac892083a0963d4ce9adc6c8cd2e0892052d65e67458aa7ae",
+      "lf_normalized_sha256": "32101ab79d3f022c0040c5ddb2742c1d23e0f462b41473ca4cef170335b13430"
+    },
+    {
+      "path": "services/sim/test/test.cpp",
+      "sha256": "e7753222a0a7a1bc863cc0b457c407655a7cb06878c3335d898ea13ac7b4160a",
+      "lf_normalized_sha256": "f9c4af40a6f316a0f99ed0797c7300b811e1cb3382e2af415f8948e6437cc136"
+    },
+    {
+      "path": "docs/MultiSIM/01_sim_subsystem_baseline.md",
+      "sha256": "78c1af2d6337931976a32633c22f546920eb7fff5bb1c7b1fbb99a7cea3523a9",
+      "lf_normalized_sha256": "78c1af2d6337931976a32633c22f546920eb7fff5bb1c7b1fbb99a7cea3523a9"
+    },
+    {
+      "path": "docs/MultiSIM/02_current_architecture_and_evolution.md",
+      "sha256": "fe2c9a78f06b92959004b4d9e23c6b8978164c151845fc32e99e52336bd06df0",
+      "lf_normalized_sha256": "fe2c9a78f06b92959004b4d9e23c6b8978164c151845fc32e99e52336bd06df0"
+    },
+    {
+      "path": "docs/MultiSIM/03_esim_slot_and_sa_boundary.md",
+      "sha256": "76872db1c7faf4e75ff8480fe140f9596026bb0f59d814a87db90b6549f397f6",
+      "lf_normalized_sha256": "76872db1c7faf4e75ff8480fe140f9596026bb0f59d814a87db90b6549f397f6"
+    },
+    {
+      "path": "docs/MultiSIM/04_ddd_target_architecture.md",
+      "sha256": "16e090b87da1e5e3715a9f43338aefdc5d66835c15b9a6834421745a623262d4",
+      "lf_normalized_sha256": "16e090b87da1e5e3715a9f43338aefdc5d66835c15b9a6834421745a623262d4"
+    },
+    {
+      "path": "docs/MultiSIM/05_detailed_class_and_data_model.md",
+      "sha256": "b9fe27085c747ac34d20eb73e5b4a43a8b6114cc6d793fde491b1b28be16fbda",
+      "lf_normalized_sha256": "b9fe27085c747ac34d20eb73e5b4a43a8b6114cc6d793fde491b1b28be16fbda"
+    },
+    {
+      "path": "docs/MultiSIM/06_refactoring_proposal_slides.md",
+      "sha256": "0fbf0e4e21470192a1f595a60951c323a3822f0a0a566fbaeb40a2537ff75b67",
+      "lf_normalized_sha256": "0fbf0e4e21470192a1f595a60951c323a3822f0a0a566fbaeb40a2537ff75b67"
+    },
+    {
+      "path": "docs/MultiSIM/07_subscription_refactoring_status.md",
+      "sha256": "ef3299b3fdd8574c8263f7d3698b389b2bbf995156a3895eaea3ab6394d41a19",
+      "lf_normalized_sha256": "ef3299b3fdd8574c8263f7d3698b389b2bbf995156a3895eaea3ab6394d41a19"
+    },
+    {
+      "path": "docs/MultiSIM/readme.txt",
+      "sha256": "4f07d2c0d5900f0d12486358f93bb968efb1d1621363eb494acfd59d058df8a5",
+      "lf_normalized_sha256": "4f07d2c0d5900f0d12486358f93bb968efb1d1621363eb494acfd59d058df8a5"
+    },
+    {
+      "path": "docs/knowledge/code_map/conditional-build.md",
+      "sha256": "86846e4b7ff75a916d38ee8f5e3e441ac102ee7a4295e3c1f7e82f23a8b46cba",
+      "lf_normalized_sha256": "618c29887f405a8926787a67b8867b72f6196bab89dd3e6c927534f142ad3220"
+    },
+    {
+      "path": "docs/knowledge/code_map/modules.md",
+      "sha256": "505b98f242056007433b4690255baf4856fbc9e7d1a55b511cbcd313c7d63fd9",
+      "lf_normalized_sha256": "ffc637deb1186314ffad2ed075bd3f48be81d7753f0f53fd448465b3d193aff6"
+    },
+    {
+      "path": "docs/knowledge/code_map/ril-capabilities.md",
+      "sha256": "125fe282e03908e03ab4c9b8cf4e0f1a9816dbb05e44475e8197f312c93c84ca",
+      "lf_normalized_sha256": "1236485e37054f136c8833afd79f79edf1119469cc4b7f18986b8e756d257dfe"
+    },
+    {
+      "path": "docs/knowledge/expert/constraints.md",
+      "sha256": "3f629fe49c8a7e7d87025f80bf90567faf2ed2079e5609490945cc3e4c4af868",
+      "lf_normalized_sha256": "1f8b99468c40cede7cea45d76b9cabdee7e2fa7d2c7b7ebbf3c7e66c2d3e6ef0"
+    },
+    {
+      "path": "docs/knowledge/expert/historical-issues.md",
+      "sha256": "289018af7761ebf33089fb387c39419f266f77ae2fdfcf2dd998fc250269d10a",
+      "lf_normalized_sha256": "b56a1fb96bd84af9a8bdfb6625bc4b50803d46fbcd5404714cc4453819f06f54"
+    },
+    {
+      "path": "docs/knowledge/routing/new-interface.md",
+      "sha256": "e948769404dfcb0f945dfdc33c31080ee8a8abdc96e8f50f223f6084a46a8370",
+      "lf_normalized_sha256": "89815e4d1592dee61624dadf0aaa3ed07bedbb9b31cd0086151943cac2ab1cd9"
+    },
+    {
+      "path": "docs/knowledge/routing/permissions.md",
+      "sha256": "eee9fc36763340fd56750dfb42e286ac41d79d66824f69408f28505923c64ff1",
+      "lf_normalized_sha256": "2d87b09305190d7ddb2fbe1351c37822a042677038a209fac71e799fb834fbcb"
+    },
+    {
+      "path": "docs/knowledge/routing/repo-boundary.md",
+      "sha256": "fdcc274a887404251c23234f8415cc1e7096e65df2509b38b53c790c65620fdf",
+      "lf_normalized_sha256": "500b69d788522e0b6a29a2c6283bd611bc4c1f6994448f8d94f765de6dc0a0db"
+    },
+    {
+      "path": "docs/knowledge/verify/build-test.md",
+      "sha256": "049e5e160c24c13e10214dbe9fa48f0d222e7dcfd646bfd40b6692d4da108777",
+      "lf_normalized_sha256": "d3eef879389a4e9edecc6cc97e6916aba96df2d3607c5872429610587f01842f"
+    },
+    {
+      "path": "docs/openharmony_telephony_core_service_SIM_software_design.md",
+      "sha256": "97bc95d8c52bc26534627cac20231dafdd3145968d7868c18245e3c43dffe4a9",
+      "lf_normalized_sha256": "ed09ea202048d02dfdb147910f32a5b6908f5ded82b9a9255d8a5c42e07866a1"
+    }
+  ]
+}

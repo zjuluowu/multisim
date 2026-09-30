@@ -1,0 +1,18 @@
+declare_args() {
+  gtest_root = ""
+  production_root = ""
+  openssl_root = ""
+}
+assert(gtest_root != "", "Pass a verified, pinned GoogleTest source directory")
+assert(production_root != "",
+       "Pass the current unmodified Core repository directory")
+set_default_toolchain("//gn:linux")
+set_defaults("source_set") {
+  configs = [ "//gn:host" ]
+}
+set_defaults("static_library") {
+  configs = [ "//gn:host" ]
+}
+set_defaults("executable") {
+  configs = [ "//gn:host" ]
+}
