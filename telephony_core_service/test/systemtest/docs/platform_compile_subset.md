@@ -1,0 +1,38 @@
+# 平台编译子集与数据协议核对
+
+工作仓基线：df8f2f017f83c70145b20255b4e9042f7a5fd923，依据当前工作树。
+
+## FACT / SOURCE_EVIDENCE
+
+- AbilityManagerClient来自ability_ability_runtime@969de904c1f1ebabcfddd553ab589110b5c51811，interfaces/inner_api/ability_manager/include/ability_manager_client.h:55、611–615；GetInstance和StartExtensionAbility保留签名。ExtensionAbilityType来源bundlemanager_bundle_framework@2fa234a99a17eabd5d5e1f60a2e004f464a27d71，interfaces/inner_api/appexecfwk_base/include/extension_ability_info.h:50–108，仅支持SERVICE=3与UNSPECIFIED=255。
+- ElementName请求载体来源ability_ability_base@7088813d55e1592093557d2b2d5e40a47177b7a0，interfaces/kits/native/want/include/element_name.h:30–38；适配保存device/bundle/ability/module，Want::SetElement保存载体，没有Parcelable/Binder。
+- CellularDataClient来自telephony_cellular_data@be17a60e5cfbdf50c3570baf4ef6680eb70618d0，interfaces/innerkits/cellular_data_client.h:26–44；仅声明继承/生命周期、IsConnect、EnableCellularData。当前multi_sim_controller.cpp引用该头，但未在本切片执行其服务调用。
+- HiSysEvent来自hiviewdfx_hisysevent@c1534f0d63d34b17bfd248fe6ddd4d70a26a9552，interfaces/native/innerkits/hisysevent/include/hisysevent.h:225、256–267。领域字符串和EventType数字取真实定义；宏映射到已核实的domain字符串Write重载声明。未实现上游新式domain模板屏蔽、序列化、上传或日志存储。
+- SystemAbility编号采用systemabilitymgr_samgr@d697f4cbf8c1c37d44e69a6d5ff3d506b02a904d的真实system_ability_definition.h，原版权和摘要保留于dependency_lock。Client/GetSystemAbility/订阅声明来自同SHA的iservice_registry.h和if_system_ability_manager.h，没有SA/Binder运行实现。
+- CommonEventSupport新增10个常量逐项解析固定SHA的common_event_support.cpp；不是按名称臆造action。Unlike谓词签名来自固定DataSharePredicates头:267，只捕获请求，不解释SQL。
+
+每个外部来源与摘要列于configs/upstream_contracts.json。以上编译子集没有未知接口默认成功实现；进入未实现函数必须链接失败。不存在以这些声明证明真实平台功能的结论。
+
+## 数据协议公开版本调查
+
+实际执行git ls-remote --heads https://github.com/openharmony/telephony_data_storage.git，退出0。GitHub master与weekly_20230411为843a8be7f8d1dc304870a3999b754a03c6cce57d；列出的公开Release分支包括OpenHarmony-3.1、3.2。当前读取的sim/include/sim_data.h仍缺configs/upstream_contracts.json列出的14个fork符号。
+
+INFERENCE：所调查GitHub镜像没有提供可直接确认的当前fork扩展协议；不能据分支列表证明所有历史提交均不存在这些字段，也不能声称整个OpenHarmony没有定义它们。
+
+OPEN_QUESTION：需要匹配hmos_trunk的telephony_data_storage/sim_data.h或可审查的外部字段协议来源。禁止猜字段字符串、以任意值补宏或按内部数据库结构定义业务PASS。若继续调查其他镜像/分支，必须单独固定仓库、分支、SHA并逐项核对。
+
+ENVIRONMENT_LIMITATION：这是源码/软件接口版本缺口，不是B层级需要真实设备的理由。原始SIM状态/账户场景在真实初始化闭包、正式RIL驱动和可观察终态成立前持续BLOCKED。
+
+## 2026-10-08 声明闭包推进（设计与支持范围）
+
+- HUKS六份真实固定头：security_huks@334b31453086b90ebe8ab70cc8d9e90cd6694149；不实现密钥服务或加解密，不作为通过密码学验证的证据。
+- ConfigPolicy真实头：customization_config_policy@9763b8ec4bbd7b28acb1c8d8c0a13afd299998f8。cJSON真实头：third_party_cJSON@28dba43de56de279d1b5b74565f4277c89c50f35（MIT）。目前只声明，未提供配置发现/JSON运行库。
+- 参数/watcher真实头：startup_init@970d25f5bda91afa7e02fce69d134b716d0b141d的interfaces/innerkits/include/syspara；不会默认成功注册watcher或设置参数。system::GetIntParameter使用真实四参数声明，C GetIntParameter也保留真实声明。
+- string_ex及Parcel::WriteCString来源c_utils@3bdc11e0；OS账户wrapper来自ability_runtime@969de904的真实生产deps_wrapper头，未复制任何测试Mock。
+- Bundle局部声明来自固定bundle_mgr_interface.h:179、bundle_info.h:33–35、bundle_constants.h:43，只支持GetBundleInfo请求/返回载体，没有Proxy/Binder/权限实现；未提供服务时不能判isSystemApp=true。
+- native pointer host_refptr支持新分配对象的单次ownership adoption、共享副本、弱引用identity及promote；source为固定refbase.h。存活使用std shared/weak control block，不是OHOS intrusive ABI；禁止重复从同一已拥有raw pointer创建新control block。weak identity在对象销毁后保留，promote失败；不解引用失效identity。iface_cast只支持本地实际实现接口对象，不创建远程Proxy。
+- HILOG_COMM_INFO/ERROR与现有日志sink一样丢弃格式参数，只用于敏感信息隔离，不作为Oracle。
+
+设施用例先行设计：INFRA-PTR-001 / PTR-OWNERSHIP 验证单次adoption/共享复制及最后owner释放后销毁；INFRA-PTR-002 / PTR-WEAK 验证存活promote、owner释放后promote=null而identity仍非null、显式reset后为空；INFRA-PTR-003 / PTR-LOCAL-CAST 验证实际实现的本地接口可cast、不支持接口返回null。无卡/Slot/权限/persist全部N/A，同步执行，进程看门狗10s，独立对象每例清理，无身份输出；仅INFRA不计SIM业务数。强制断言逐项关联上述Oracle。
+
+Gitee额外调查：telephony_data_storage/master@bb397b28578cbaea30a5d957043d646962a59230的sim_data.h与固定GitHub文件字节一致，仍缺14符号。明确未选入构建，不声称找到了匹配版本。

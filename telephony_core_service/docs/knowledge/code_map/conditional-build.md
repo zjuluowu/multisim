@@ -1,6 +1,6 @@
 # 代码地图：条件编译分支
 
-本仓存在三组条件编译，默认关闭的分支不参与常规 CI，改动回归风险高：
+本仓有以下主要条件编译；当前gni中eSIM、卫星缺省关闭，产品global_parts可启用。不能由缺省值推断实际产品或CI覆盖：
 
 ## 分支总览
 
@@ -24,3 +24,7 @@
 - eSIM 相关：simlabel 映射、逻辑通道"重复关闭"是历史问题高发区（见 docs/knowledge/expert/historical-issues.md）
 - eSIM 服务是独立 SA（66250），经 EsimServiceClient 异步加载（frameworks/native/src/esim_service_client.cpp:29）
 - getimei 在 esim 开卡时读 slot2（历史提交 bfccb76ee），改动 IMEI 逻辑注意 eSIM 场景
+
+## 部署与新设计口径
+
+telephony_trust.json配置4010与66250共宿主于telephony。独立SA不等于独立进程或故障隔离；Core卡侧Runtime与66250任务接口分别保留。四槽/eSIM N是条件产品目标，不表示全部构建已支持；Linux受控B套件也不验证真实设备Feature矩阵。见[专项说明](../../MultiSIM/03_esim_slot_and_sa_boundary.md)。

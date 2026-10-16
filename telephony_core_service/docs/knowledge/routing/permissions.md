@@ -19,12 +19,16 @@
 ## 决策规则
 
 1. 新接口返回**位置相关**（小区、物理信道、频点、邻区）→ 走 LOCATION 权限路径（对照 getCellInformation）
-2. 新接口返回**设备标识/卡标识**（IMEI/ICCID/MSISDN）→ GET_TELEPHONY_STATE
+2. **设备标识/卡信息**须逐方法核实；IMEI/ICCID通常涉及GET_TELEPHONY_STATE，号码不能据此统一：当前CoreServiceSim::GetSimTelephoneNumber校验GET_PHONE_NUMBERS
 3. 不确定时查 `interfaces/kits/js/*.d.ts` 中同类接口的权限声明 + frameworks/js 下权限宏
 4. 权限拒绝时统一走 ConverErrorMessageWithPermissionForJs 转换，不裸抛错误码
 
 ## 多卡能力管控
 
-- 多卡 slot3 能力仅允许系统应用/原生调用：common/capability_mgr/multi_sims_capability_manager.cpp
+- 指定slot3能力在该方法内允许Native/Shell token或系统应用；非指定slot返回false：common/capability_mgr/src/multi_sims_capability_manager.cpp
 - 新增"能力查询"类接口需过 capability 检查（IsMultiSimsCapabilitySupported 模式见历史提交 e29829e03）
 - 修改 capability 异步逻辑需谨慎（DTS2026082001864 有 async bug 史）
+
+## 本次SIM重构限制
+
+不新增公开接口或权限规则，不因四槽/SlotRegistry目标改变capability行为。组件ISimManager测试不经过真实入口鉴权，不能证明服务入口、Native/Shell或应用权限矩阵。D-018等输入来源待补时保持原规则，不能把capability拒绝直接报为生产缺陷。

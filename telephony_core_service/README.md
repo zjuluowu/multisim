@@ -132,7 +132,7 @@ For details about the complete description of JavaScript APIs and sample code, s
 
 ## Usage Guidelines<a name="section370mcpsimp"></a>
 
-### Network Search<a name="section393mcpsimp"></a> 
+### Network Search<a name="section393mcpsimp"></a>
 
 The function of obtaining the network status is used as an example. The process is as follows:
 
@@ -219,3 +219,7 @@ The function of querying the status of a specified SIM card is used as an exampl
 [drivers_peripheral](https://gitee.com/openharmony/drivers_peripheral)
 
 [telephony\_ril\_adapter](https://gitee.com/openharmony/telephony_ril_adapter/blob/master/README.md)
+
+## SIM architecture and controlled Linux tests
+
+See the [current design index](docs/README.md), [design decisions](docs/MultiSIM/08_design_unification_decisions.md), and [Linux component harness](test/systemtest/README.md). The Version3 architecture is a proposed target, not an implemented production layout. Product hardware requirements above apply to device integration; controlled level-B Linux tests use real SIM production logic and mocked external boundaries without a physical SIM/Modem. They do not validate SA/IPC, real permissions or device behavior.

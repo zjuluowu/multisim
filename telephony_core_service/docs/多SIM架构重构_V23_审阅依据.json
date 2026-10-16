@@ -1,0 +1,1302 @@
+{
+  "review_date": "2026-10-15",
+  "head_sha": "df8f2f017f83c70145b20255b4e9042f7a5fd923",
+  "working_tree": "DIRTY; source hashes define reviewed content",
+  "source_pptx_sha256": "e95a076d17ae092d73499902dff92577cf8dd3a3877536a079c0c94fd4d1ebee",
+  "output_pptx_sha256": "316720f8e57207ea84b9db77b09fa264ced18c964b5d322717a1c7c679eb7953",
+  "slide_count": 81,
+  "briefing_pages": [
+    1,
+    7,
+    8,
+    12,
+    15,
+    20,
+    22,
+    25,
+    26,
+    36,
+    38,
+    40,
+    41
+  ],
+  "substantive_pages": [
+    1,
+    2,
+    4,
+    5,
+    6,
+    7,
+    8,
+    11,
+    12,
+    15,
+    16,
+    20,
+    26,
+    28,
+    29,
+    32,
+    35,
+    36,
+    37,
+    38,
+    39,
+    41,
+    43,
+    44,
+    45,
+    51,
+    60,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71,
+    72,
+    80
+  ],
+  "layout_pages": [
+    34,
+    48,
+    49,
+    53,
+    54,
+    62,
+    67
+  ],
+  "paragraph_edits": 161,
+  "evidence": [
+    {
+      "id": "SRC-01",
+      "classification": "FACT",
+      "path": "BUILD.gn",
+      "start_line": 30,
+      "end_line": 118,
+      "sha256": "bb7093d33af5fed7efdc409d4c20ee0e17cf52491fb464dcadbf5300ea72200e",
+      "claim": "SIM源码与Core组装在同一个tel_core_service共享库目标；独立SIM SO尚属目标"
+    },
+    {
+      "id": "SRC-02",
+      "classification": "FACT",
+      "path": "services/core/src/core_service.cpp",
+      "start_line": 92,
+      "end_line": 154,
+      "sha256": "606b0793ebe0c1b71d1c6a3478593715262eab6371de169d6d6846986b45d559",
+      "claim": "RIL、eSIM、SIM、搜网与CoreManagerInner初始化装配；现有停止顺序"
+    },
+    {
+      "id": "SRC-03",
+      "classification": "FACT",
+      "path": "services/sim/src/sim_manager.cpp",
+      "start_line": 41,
+      "end_line": 152,
+      "sha256": "dc8fd160a9d06097aa4995274364118ed82f46b3b63ff7c57f49e58e3ae1d1a3",
+      "claim": "按slot组织多组Manager；公开OnInit创建实际SIM生产对象"
+    },
+    {
+      "id": "SRC-04",
+      "classification": "FACT_STATIC_RISK",
+      "path": "services/sim/src/sim_state_handle.cpp",
+      "start_line": 403,
+      "end_line": 445,
+      "sha256": "2b2bcfa6cdf2368da9f4e1ee20300e147da73ac458428ddb0194e231c83154c7",
+      "claim": "日志map解引用未判end；同状态分支不更新iccid_；未证明运行故障"
+    },
+    {
+      "id": "SRC-05",
+      "classification": "FACT_STATIC_RISK",
+      "path": "services/sim/src/sim_state_handle.cpp",
+      "start_line": 832,
+      "end_line": 856,
+      "sha256": "2b2bcfa6cdf2368da9f4e1ee20300e147da73ac458428ddb0194e231c83154c7",
+      "claim": "事件表回调后按类型进入完成通道；超时事件的影响待复现"
+    },
+    {
+      "id": "SRC-06",
+      "classification": "FACT",
+      "path": "services/sim/src/sim_state_handle.cpp",
+      "start_line": 61,
+      "end_line": 118,
+      "sha256": "2b2bcfa6cdf2368da9f4e1ee20300e147da73ac458428ddb0194e231c83154c7",
+      "claim": "EVENT_MATCH_SIM_TIMEOUT属于memberFuncMap_，PIN完成有专用通道"
+    },
+    {
+      "id": "SRC-07",
+      "classification": "FACT",
+      "path": "services/sim/src/sim_state_manager.cpp",
+      "start_line": 171,
+      "end_line": 225,
+      "sha256": "3322e321c3bf9cc44636dc6125e58ecd35a8340f25cbf47dfb1072810a67da42",
+      "claim": "通用完成标志与PIN专用等待并存；解锁成功可能设NOT_READY"
+    },
+    {
+      "id": "SRC-08",
+      "classification": "FACT_STATIC_RISK",
+      "path": "utils/common/include/enum_convert.h",
+      "start_line": 350,
+      "end_line": 356,
+      "sha256": "f9125966ff4e880857802ffe2a05178814cf60e6e1b95b20cff1144b626d2782",
+      "claim": "状态字符串字典仅列UNKNOWN、ABSENT、READY、PIN、PUK"
+    },
+    {
+      "id": "SRC-09",
+      "classification": "FACT",
+      "path": "services/sim/include/icc_state.h",
+      "start_line": 23,
+      "end_line": 36,
+      "sha256": "126b1859a9d503f9afa6748cf7dd648668888a41badcf2bba0830905c3f8e480",
+      "claim": "当前卡状态协议还定义4至11；日志影响取决于实际输入与宏"
+    },
+    {
+      "id": "SRC-10",
+      "classification": "FACT",
+      "path": "services/sim/src/sim_state_handle.cpp",
+      "start_line": 635,
+      "end_line": 687,
+      "sha256": "2b2bcfa6cdf2368da9f4e1ee20300e147da73ac458428ddb0194e231c83154c7",
+      "claim": "已有切换阶段与specifiedIccid准入保护，不能忽略或删除"
+    },
+    {
+      "id": "SRC-11",
+      "classification": "FACT_STATIC_RISK",
+      "path": "services/sim/src/sim_file.cpp",
+      "start_line": 180,
+      "end_line": 265,
+      "sha256": "38242a3fed97e7e8ebe52015f7036de5fc9a7f5765969720c3ac3a9d33440288",
+      "claim": "文件响应按fileToGet_处理；Records通知先于LOADED回写，运行影响待验证"
+    },
+    {
+      "id": "SRC-12",
+      "classification": "FACT",
+      "path": "services/sim/src/icc_file.cpp",
+      "start_line": 775,
+      "end_line": 783,
+      "sha256": "a65c9aece74a72a54111f96d75f7bdb27ff5fa99e15fae2b48bd649c6373ef95",
+      "claim": "文件流程通过StateManager设置SimState并更新State Registry"
+    },
+    {
+      "id": "SRC-13",
+      "classification": "FACT",
+      "path": "services/sim/src/multi_sim_controller.cpp",
+      "start_line": 1478,
+      "end_line": 1527,
+      "sha256": "273d9d827618cb8e7718d81cb2ea2af2839c080573466cc18cb340d165083312",
+      "claim": "Primary路径包含Radio、参数、广播、失败恢复与默认Data联动"
+    },
+    {
+      "id": "SRC-14",
+      "classification": "FACT",
+      "path": "services/sim/src/multi_sim_controller.cpp",
+      "start_line": 1685,
+      "end_line": 1697,
+      "sha256": "273d9d827618cb8e7718d81cb2ea2af2839c080573466cc18cb340d165083312",
+      "claim": "SavePrimarySlotIdInfo联动默认Data；Data参数和运行缓存写路径"
+    },
+    {
+      "id": "SRC-15",
+      "classification": "FACT",
+      "path": "services/sim/src/radio_protocol_controller.cpp",
+      "start_line": 32,
+      "end_line": 73,
+      "sha256": "014d325b3e05b226b2263d26ad685065abe2ff351e1b4672cdf5e3b664e5584a",
+      "claim": "当前RadioProtocol初始化最多两个槽；不能外推产品所有并发能力"
+    },
+    {
+      "id": "SRC-16",
+      "classification": "FACT",
+      "path": "frameworks/native/src/esim_service_client.cpp",
+      "start_line": 25,
+      "end_line": 90,
+      "sha256": "8c2de9bb90719af676091876b8d522805720f38d18ce855f7d82ac46b5dcf4d8",
+      "claim": "客户端加载SA 66250，不证明服务实现、进程独立或故障隔离"
+    },
+    {
+      "id": "SRC-17",
+      "classification": "FACT",
+      "path": "interfaces/innerkits/IEsimService.idl",
+      "start_line": 25,
+      "end_line": 75,
+      "sha256": "e82ae0d9d1c49db689ff21eee8ec68d55e49f06cd6b9d21c7c6f36abd2bacbd1",
+      "claim": "下载、OSU、Profile切换和portIndex的正式声明"
+    },
+    {
+      "id": "SRC-18",
+      "classification": "FACT",
+      "path": "interfaces/innerkits/include/i_sim_manager.h",
+      "start_line": 29,
+      "end_line": 182,
+      "sha256": "1c4847ff04d97ef6be3eddba57fcafded7c60afcf368d667c1b852736728de9d",
+      "claim": "公开InnerKit组件边界；未声明虚析构或Stop，不自动构成稳定ABI"
+    },
+    {
+      "id": "SRC-19",
+      "classification": "FACT",
+      "path": "interfaces/innerkits/include/i_esim_manager.h",
+      "start_line": 25,
+      "end_line": 91,
+      "sha256": "e7f94dc77fbfdd47411e166a2b0cdbace095d6ff04a4c4711f0dd5d2ef838bb0",
+      "claim": "Core eSIM运行组件接口；析构/生命周期仍需工厂约定"
+    },
+    {
+      "id": "SRC-20",
+      "classification": "FACT",
+      "path": "common/capability_mgr/src/multi_sims_capability_manager.cpp",
+      "start_line": 28,
+      "end_line": 41,
+      "sha256": "99196c1fdc0282d14fd4338b0cf5ec403dc7d2c0eb255fbdc83f10c031a5f157",
+      "claim": "非SLOT_3_INDEX返回false；组件测试不覆盖或绕过此入口规则"
+    },
+    {
+      "id": "SRC-21",
+      "classification": "FACT",
+      "path": "services/sim/src/multi_sim_monitor.cpp",
+      "start_line": 415,
+      "end_line": 508,
+      "sha256": "5b2c3196a927b5abf683b411519d71372b80eb6c91a62ed46e043eeabcc174d8",
+      "claim": "SIM经CoreManagerInner订阅外部依赖；拆分前需审计回调端口"
+    },
+    {
+      "id": "SRC-22",
+      "classification": "DOCUMENT_DIFFERENT_BASELINE",
+      "path": "docs/MultiSIM/07_subscription_refactoring_status.md",
+      "start_line": 20,
+      "end_line": 61,
+      "sha256": "ef3299b3fdd8574c8263f7d3698b389b2bbf995156a3895eaea3ab6394d41a19",
+      "claim": "Shadow实现状态属于另一个仓库/分支，当前工作仓未发现相关生产文件"
+    },
+    {
+      "id": "SRC-23",
+      "classification": "PRIOR_EXECUTION_RECORD",
+      "path": "test/systemtest/docs/run_record.md",
+      "start_line": 158,
+      "end_line": 181,
+      "sha256": "dcfefba17329879f4f82ad2e13e64a1777c48446d62f25b25678f72fe1ce15a4",
+      "claim": "2026-10-08容量1 PASS、设施16 PASS、负控预期失败；初始化BLOCKED，本次未重跑"
+    },
+    {
+      "id": "SRC-24",
+      "classification": "FACT",
+      "path": "test/systemtest/configs/storage_protocol_requirements.json",
+      "start_line": 1,
+      "end_line": 313,
+      "sha256": "728f754731d0548f68f9d82d71c5ef16ead1b6430f1ab5e2b8997aff0ba24fb8",
+      "claim": "14个外部协议符号未知；不能编造字段或用Mock重写SIM结果"
+    },
+    {
+      "id": "SRC-25",
+      "classification": "FACT",
+      "path": "test/systemtest/docs/oracle_catalog.md",
+      "start_line": 1,
+      "end_line": 58,
+      "sha256": "973be3d5463e4b68ba4624e94f65a72ca76a8fec15cd4be15da9de1507de88cd",
+      "claim": "确认契约、实采Legacy及OPEN_QUESTION分开；不能把候选INV自动晋升"
+    }
+  ],
+  "page_evidence": {
+    "4": [
+      "SRC-02",
+      "SRC-16",
+      "SRC-17"
+    ],
+    "5": [
+      "SRC-15",
+      "SRC-17"
+    ],
+    "6": [
+      "SRC-03",
+      "SRC-13"
+    ],
+    "7": [
+      "SRC-01",
+      "SRC-23",
+      "SRC-24"
+    ],
+    "8": [
+      "SRC-03",
+      "SRC-13",
+      "SRC-17"
+    ],
+    "9": [
+      "SRC-03",
+      "SRC-10"
+    ],
+    "10": [
+      "SRC-13",
+      "SRC-21"
+    ],
+    "11": [
+      "SRC-04",
+      "SRC-07",
+      "SRC-11",
+      "SRC-12"
+    ],
+    "12": [
+      "SRC-04",
+      "SRC-05",
+      "SRC-06",
+      "SRC-07",
+      "SRC-08",
+      "SRC-09",
+      "SRC-10",
+      "SRC-11"
+    ],
+    "15": [
+      "SRC-02",
+      "SRC-16",
+      "SRC-17"
+    ],
+    "20": [
+      "SRC-01",
+      "SRC-22"
+    ],
+    "24": [
+      "SRC-15"
+    ],
+    "25": [
+      "SRC-15"
+    ],
+    "26": [
+      "SRC-13",
+      "SRC-14",
+      "SRC-25"
+    ],
+    "28": [
+      "SRC-04",
+      "SRC-11"
+    ],
+    "35": [
+      "SRC-21"
+    ],
+    "36": [
+      "SRC-01",
+      "SRC-02",
+      "SRC-18",
+      "SRC-19"
+    ],
+    "37": [
+      "SRC-13",
+      "SRC-22"
+    ],
+    "38": [
+      "SRC-23",
+      "SRC-24",
+      "SRC-25"
+    ],
+    "39": [
+      "SRC-04",
+      "SRC-05",
+      "SRC-11",
+      "SRC-25"
+    ],
+    "40": [
+      "SRC-23"
+    ],
+    "41": [
+      "SRC-01",
+      "SRC-18",
+      "SRC-23",
+      "SRC-24"
+    ],
+    "51": [
+      "SRC-22"
+    ],
+    "60": [
+      "SRC-16",
+      "SRC-17"
+    ],
+    "62": [
+      "SRC-03",
+      "SRC-21"
+    ],
+    "67": [
+      "SRC-01",
+      "SRC-02",
+      "SRC-18",
+      "SRC-19",
+      "SRC-21"
+    ],
+    "68": [
+      "SRC-24"
+    ],
+    "69": [
+      "SRC-25"
+    ],
+    "70": [
+      "SRC-23",
+      "SRC-25"
+    ],
+    "71": [
+      "SRC-07"
+    ],
+    "73": [
+      "SRC-05",
+      "SRC-06",
+      "SRC-07"
+    ],
+    "74": [
+      "SRC-11"
+    ],
+    "75": [
+      "SRC-11",
+      "SRC-12"
+    ],
+    "78": [
+      "SRC-18",
+      "SRC-19"
+    ]
+  },
+  "changes": [
+    {
+      "page": 1,
+      "before": "AOSP、DDD、软件设计哲学与状态治理",
+      "after": "基于当前代码的架构判断、分阶段迁移与验证"
+    },
+    {
+      "page": 1,
+      "before": "业务与设计判断  /  总体方案  /  技术附录",
+      "after": "当前事实  /  目标设计  /  实施门禁  /  技术附录"
+    },
+    {
+      "page": 1,
+      "before": "架构综合评审  /  V22 · 2026.10",
+      "after": "代码审阅优化  /  V23 · 2026.10.15"
+    },
+    {
+      "page": 2,
+      "before": "主报告 P3–41 按问题推导方案，源码、模型与协议细节放在技术附录",
+      "after": "主报告 P3–41；源码证据见逐页备注，历史数据与目标协议在附录中分级标明"
+    },
+    {
+      "page": 2,
+      "before": "主报告说明设计判断，技术附录提供可追溯的细节依据",
+      "after": "建议先讲 P7 决策与 P38 进展，再按问题展开；P41 给出实施门禁"
+    },
+    {
+      "page": 4,
+      "before": "下载、授权与 Profile 业务协作",
+      "after": "IDL 声明下载、OSU 与 Profile 请求"
+    },
+    {
+      "page": 4,
+      "before": "接口：业务请求 / 回调",
+      "after": "接口：业务请求 / 回调；实现仓待核实"
+    },
+    {
+      "page": 4,
+      "before": "连线表示能力协作，非链接或进程依赖。Core 内部模块已标注，其余按部件或服务列示。",
+      "after": "连线表示能力协作。SA 66250 的消费接口已核实；其服务实现、进程与恢复责任未在本仓验证。"
+    },
+    {
+      "page": 5,
+      "before": "附件反映相应历史基线的支持范围，实际产品能力还需结合 Feature、RIL 与设备核对",
+      "after": "当前源码：RadioProtocol 初始化最多两个槽；产品卡数与并发能力仍需分别核实"
+    },
+    {
+      "page": 5,
+      "before": "主要面向双 pSIM + eSIM 订阅",
+      "after": "历史附件描述双 pSIM + eSIM"
+    },
+    {
+      "page": 5,
+      "before": "eSIM 位置受电路、参数和产品配置影响",
+      "after": "当前产品支持范围未完成运行验收"
+    },
+    {
+      "page": 5,
+      "before": "历史扫描数值与四卡工作量估计保留为待复核资料，不作为当前代码测量、硬件能力或排期承诺。",
+      "after": "依据：radio_protocol_controller.cpp:40；接口含 Port 不代表账户、映射和设备链路已完整支持 MEP。"
+    },
+    {
+      "page": 6,
+      "before": "现有多SIM架构使扩卡成本与版本风险持续上升",
+      "after": "扩卡需要跨模块联动：成本风险需用基线量化"
+    },
+    {
+      "page": 6,
+      "before": "三卡扩展暴露跨模块联动，四卡需要可复用的模型与一致性机制",
+      "after": "代码已显示账户、角色、Radio 与 eSIM 耦合；成本趋势是设计判断，尚无人天实测"
+    },
+    {
+      "page": 6,
+      "before": "扩展成本非线性上升",
+      "after": "扩展联动范围扩大"
+    },
+    {
+      "page": 6,
+      "before": "3卡→4卡仍需重复投入，扩展成本非线性上升",
+      "after": "3卡→4卡应测量联动文件与回归组合"
+    },
+    {
+      "page": 6,
+      "before": "问题修复伴生新问题，连锁副作用明显",
+      "after": "跨模块修复存在副作用风险，需反例验证"
+    },
+    {
+      "page": 6,
+      "before": "持续性维护成本与版本风险同步上升",
+      "after": "维护与版本风险需用同类变更比较"
+    },
+    {
+      "page": 7,
+      "before": "核心挑战：能力扩展与状态可信度同时受限",
+      "after": "评审建议：先建立行为基线，再拆分与迁移"
+    },
+    {
+      "page": 7,
+      "before": "业务需要可持续的多卡演进，也需要能判断当前对象和业务是否可用",
+      "after": "保留身份、位置、角色与资源分离的方向；按可验证切片推进，避免一次改写全部协议"
+    },
+    {
+      "page": 7,
+      "before": "这次设计同时回答两件事：怎样扩展多 SIM，怎样让状态变化可解释、可验证",
+      "after": "当前：SIM 仍在 Core SO；状态与账户最小切片尚未运行"
+    },
+    {
+      "page": 7,
+      "before": "业务挑战",
+      "after": "推进顺序"
+    },
+    {
+      "page": 7,
+      "before": "现有设计带来的负担",
+      "after": "当前依据与约束"
+    },
+    {
+      "page": 7,
+      "before": "需要达到的结果",
+      "after": "进入下一阶段的门禁"
+    },
+    {
+      "page": 7,
+      "before": "增加卡数与卡形态",
+      "after": "01 先打通 Linux 边界基线"
+    },
+    {
+      "page": 7,
+      "before": "身份、位置、角色和资源联动变化",
+      "after": "容量已跑；无卡与账户仍 BLOCKED"
+    },
+    {
+      "page": 7,
+      "before": "数量分支扩散到多个模块",
+      "after": "匹配外部协议，不伪造 SIM 结果"
+    },
+    {
+      "page": 7,
+      "before": "能力变化有明确修改范围",
+      "after": "RIL 正式输入驱动生产逻辑"
+    },
+    {
+      "page": 7,
+      "before": "管理订阅与通信并发分别表达",
+      "after": "公开状态与账户可观察、可收敛"
+    },
+    {
+      "page": 7,
+      "before": "换卡、切换与重启",
+      "after": "02 再做同进程 SO 拆分"
+    },
+    {
+      "page": 7,
+      "before": "同一位置对应的对象和加载轮次变化",
+      "after": "CoreManagerInner 与生命周期仍耦合"
+    },
+    {
+      "page": 7,
+      "before": "旧结果与当前状态难以准确区分",
+      "after": "不改变 IPC、数据库与 Primary 联动"
+    },
+    {
+      "page": 7,
+      "before": "业务状态有清晰归属与有效期",
+      "after": "链接无环、行为差分与停止排空"
+    },
+    {
+      "page": 7,
+      "before": "成功、未知和恢复各有语义",
+      "after": "同进程不宣称故障隔离"
+    },
+    {
+      "page": 7,
+      "before": "保持既有通信业务",
+      "after": "03 按事实 Owner 逐条迁移"
+    },
+    {
+      "page": 7,
+      "before": "接口、启动依赖、设备副作用高度耦合",
+      "after": "模型、会话与加载协议均属目标设计"
+    },
+    {
+      "page": 7,
+      "before": "局部改动可能影响外围业务",
+      "after": "Shadow 只读，不双发设备命令"
+    },
+    {
+      "page": 7,
+      "before": "外部契约有独立保护",
+      "after": "每条写路径有契约、负控与回退证据"
+    },
+    {
+      "page": 7,
+      "before": "设计变化可验证且满足回退条件",
+      "after": "未验证场景保持 BLOCKED"
+    },
+    {
+      "page": 7,
+      "before": "后续用代码与反例解释设计缺口，再由问题推导边界和协议。",
+      "after": "本次请评审：拆分范围、首批契约和依赖负责人；未来拓扑与持久化另设验收门禁。"
+    },
+    {
+      "page": 8,
+      "before": "先看索引与调用链承接了什么知识，再解释为何修改会传播",
+      "after": "当前工作树已核实索引、主卡联动与 Port 入口；后果需结合受控运行验证"
+    },
+    {
+      "page": 8,
+      "before": "这些源码形态提供设计诊断依据，具体路径与运行影响仍需按目标版本核对。",
+      "after": "证据：SimManager:61–66；MultiSimController:1478–1527；IEsimService.idl:48–53。详见备注。"
+    },
+    {
+      "page": 11,
+      "before": "源码基线 b2ddf49 · 事实、加载过程、命令结果和兼容投影未形成统一协议",
+      "after": "当前工作树 df8f2f01 + 未提交内容；历史 b2ddf49 在本仓不可解析"
+    },
+    {
+      "page": 11,
+      "before": "已确认结构：卡应用、文件完成与业务流程共同影响对外 SimState",
+      "after": "已核实：Handle、Manager 与 IccFile 均参与状态更新；运行影响尚待验证"
+    },
+    {
+      "page": 12,
+      "before": "区分代码行为已确认与生产影响待验证；已有保护继续保留",
+      "after": "静态核实四个风险入口；未注入复现，不把候选风险报告为已发生故障"
+    },
+    {
+      "page": 12,
+      "before": "统计超时进入通用完成分支：已确认",
+      "after": "超时事件进入通用完成分支：静态已确认"
+    },
+    {
+      "page": 12,
+      "before": "对同步请求的实际影响：待注入复现",
+      "after": "PIN 已有专用等待；其他命令影响待复现"
+    },
+    {
+      "page": 12,
+      "before": "READY/A → READY/B 可跳过缓存更新",
+      "after": "同状态时 iccid_ 更新分支可被跳过"
+    },
+    {
+      "page": 12,
+      "before": "中间状态与指定 ICCID 过滤需核对",
+      "after": "已有 specifiedIccid 过滤；场景仍待复现"
+    },
+    {
+      "page": 12,
+      "before": "serial 关联已存在；加载代次不足",
+      "after": "RIL 有 serial；文件层主要按计数收敛"
+    },
+    {
+      "page": 12,
+      "before": "跨轮旧请求影响缓存：待调度验证",
+      "after": "是否跨轮污染：待正式响应交错验证"
+    },
+    {
+      "page": 15,
+      "before": "依据附件 01 / 03 的接口与初始化证据，分别表达服务边界和进程内运行责任",
+      "after": "本仓已核实 SA 66250 消费端、IDL 与 Core 初始化；服务实现仓仍需配合核实"
+    },
+    {
+      "page": 15,
+      "before": "本地模型沿用既有服务契约，Core 运行接口与独立 eSIM SA 各有职责",
+      "after": "接口存在可确认协作边界；主编排与恢复责任不能仅由 SA 编号推断"
+    },
+    {
+      "page": 15,
+      "before": "Profile 下载、切换、OSU 等服务接口",
+      "after": "IDL 声明下载、切换、OSU 与回调"
+    },
+    {
+      "page": 16,
+      "before": "模型关系图用于消除术语歧义，不用于直接决定事务或聚合边界",
+      "after": "已核对 AOSP 官方 MEP 说明；对象关系用于术语参考，不直接决定本地聚合"
+    },
+    {
+      "page": 20,
+      "before": "四个业务上下文组织变化责任，运行支撑与兼容边界保持明确协作",
+      "after": "目标方案：四个候选业务上下文；当前源码尚未按这些 Owner 迁移"
+    },
+    {
+      "page": 20,
+      "before": "各 Owner 维护事实与规则，公开必要语义并隐藏其实现变化",
+      "after": "先用无卡与角色查询验证边界，再按写路径引入必要 Owner"
+    },
+    {
+      "page": 26,
+      "before": "默认语音、短信、数据按各自契约计算，不以 primarySlot 代替所有角色",
+      "after": "目标上区分角色；当前 Primary 成功会联动默认 Data，兼容阶段保留该行为"
+    },
+    {
+      "page": 26,
+      "before": "Active SIM、默认角色和 Primary Slot 的旧语义分别冻结，由 ACL 映射；不得统一成一个隐含状态。",
+      "after": "当前证据：MultiSimController:1522、1689。无卡默认值、回退与偏好保留仍待契约确认。"
+    },
+    {
+      "page": 28,
+      "before": "模型回答谁维护规则，本章进一步说明请求、会话、加载与发布如何保护这些规则",
+      "after": "目标内部协议，尚未实现；先覆盖当前行为，再引入会话、加载和发布保护"
+    },
+    {
+      "page": 29,
+      "before": "以下是目标内部契约，既有外部 API 的完成承诺由 ACL 单独适配",
+      "after": "候选内部契约：需确认持久化与恢复成本；不能直接改变既有外部 API 完成承诺"
+    },
+    {
+      "page": 32,
+      "before": "完成证据持久化后才宣告成功，设备结果未知时保留核实责任",
+      "after": "目标长操作协议；可靠持久化与恢复能力是实施前置，不属于当前拆 SO 切片"
+    },
+    {
+      "page": 35,
+      "before": "composition 统一装配与生命周期，核心规则可脱离真实设备独立测试",
+      "after": "目标：composition 注入外部依赖；当前仍有 CoreManagerInner 调用，尚未闭合"
+    },
+    {
+      "page": 36,
+      "before": "系统级测试防护网与独立 SIM SO 分别支撑可验证和可隔离",
+      "after": "Linux 组件防护网保护行为；同进程独立 SO 形成依赖与链接边界"
+    },
+    {
+      "page": 36,
+      "before": "libtel_sim_service.z.so 的边界由契约定义，构建拆分保持现有业务行为",
+      "after": "libtel_sim_service.z.so 是目标产物，当前未生成；同进程不提供崩溃隔离"
+    },
+    {
+      "page": 36,
+      "before": "创建、启动、Stop、销毁成对定义",
+      "after": "创建、启动、停止、销毁契约待补齐"
+    },
+    {
+      "page": 36,
+      "before": "API、事件、数据库与状态 Trace",
+      "after": "API、回调、事件、查询与对外请求"
+    },
+    {
+      "page": 36,
+      "before": "行为基线与 Legacy / Split 差分",
+      "after": "同场景 Legacy / Split 差分"
+    },
+    {
+      "page": 37,
+      "before": "既有 IPC、状态机和启动约束纳入基线；影子路径只能读取或纯计算",
+      "after": "分阶段方案，非当前实现：先基线、再机械拆分，最后按 Owner 迁移写路径"
+    },
+    {
+      "page": 37,
+      "before": "拆分事实来源和版本，停用旧权威写入",
+      "after": "先只读投影；验收后逐条切换写入"
+    },
+    {
+      "page": 38,
+      "before": "系统级测试：同一外部契约贯穿拆分与业务重构",
+      "after": "测试进展：容量已运行，状态与账户仍阻塞"
+    },
+    {
+      "page": 38,
+      "before": "结合现有测试套件设计，按风险建立可执行场景和独立判定规则",
+      "after": "2026-10-08 执行记录；本次未重跑 SIM 测试。Linux B：GN/Ninja + GoogleTest/GoogleMock"
+    },
+    {
+      "page": 38,
+      "before": "测试对象是系统行为，Fake RIL 隔离故障，真实设备确认能力边界",
+      "after": "B 链路：独立测试进程 → ISimManager → 真实生产源码 → 受控外部依赖"
+    },
+    {
+      "page": 38,
+      "before": "测试组",
+      "after": "分组 / 层级"
+    },
+    {
+      "page": 38,
+      "before": "主要覆盖",
+      "after": "实际结果与证据"
+    },
+    {
+      "page": 38,
+      "before": "关键断言",
+      "after": "覆盖边界 / 下一步"
+    },
+    {
+      "page": 38,
+      "before": "ST01–ST04",
+      "after": "容量查询 / B"
+    },
+    {
+      "page": 38,
+      "before": "生命周期、身份、订阅、默认角色",
+      "after": "SIM-COMP-001：1 PASS"
+    },
+    {
+      "page": 38,
+      "before": "换槽身份策略、角色回退",
+      "after": "实际执行 GetMaxSimCount"
+    },
+    {
+      "page": 38,
+      "before": "查询与通知满足同一契约",
+      "after": "未 OnInit，不代表无卡或服务就绪"
+    },
+    {
+      "page": 38,
+      "before": "ST05–ST08",
+      "after": "适配设施 / INFRA"
+    },
+    {
+      "page": 38,
+      "before": "多卡隔离、Radio、eSIM、持久化恢复",
+      "after": "16 PASS；另：容量负控预期 FAIL"
+    },
+    {
+      "page": 38,
+      "before": "MEP 映射与容量约束",
+      "after": "含事件、RIL、存储、指针载体"
+    },
+    {
+      "page": 38,
+      "before": "重启恢复、未知结果复核",
+      "after": "设施自检不计 SIM 业务用例"
+    },
+    {
+      "page": 38,
+      "before": "ST09–ST13",
+      "after": "首批五场景 / B"
+    },
+    {
+      "page": 38,
+      "before": "事件、故障、并发、跨域、兼容",
+      "after": "服务入口、无卡、Ready、双卡、PIN"
+    },
+    {
+      "page": 38,
+      "before": "重复 / 乱序 / 迟到不会串写",
+      "after": "状态与账户：14 个外部协议字段缺失"
+    },
+    {
+      "page": 38,
+      "before": "错误码、事件时序及状态可见性",
+      "after": "服务入口：capability 独立阻塞"
+    },
+    {
+      "page": 38,
+      "before": "双构建差分",
+      "after": "Legacy / Split"
+    },
+    {
+      "page": 38,
+      "before": "Legacy 与 Split 使用同一测试套件",
+      "after": "工具已具备容量差分；无真实 Split 结果"
+    },
+    {
+      "page": 38,
+      "before": "比较 API、事件、数据库与 Trace",
+      "after": "比较公开输出、稳定状态与对外请求"
+    },
+    {
+      "page": 38,
+      "before": "已知缺陷单列，不固化错误行为",
+      "after": "Legacy 差异人工审查"
+    },
+    {
+      "page": 38,
+      "before": "非确定字段有明确比较规则",
+      "after": "不比较数据库表、内部次数与日志顺序"
+    },
+    {
+      "page": 38,
+      "before": "发布门禁",
+      "after": "真实设备 / A"
+    },
+    {
+      "page": 38,
+      "before": "已批准 P0 清单全部通过",
+      "after": "SA、IPC、权限与 Modem 均未覆盖"
+    },
+    {
+      "page": 38,
+      "before": "Feature / 设备矩阵、性能与回退",
+      "after": "另设设备矩阵和授权条件"
+    },
+    {
+      "page": 38,
+      "before": "覆盖率分母固定为已批准场景",
+      "after": "组件 PASS 不证明设备端到端正确"
+    },
+    {
+      "page": 38,
+      "before": "不能推导所有状态或设备已覆盖",
+      "after": "未运行保持 SKIP / BLOCKED"
+    },
+    {
+      "page": 38,
+      "before": "最小 P0 先覆盖启动、热插拔、角色切换、eSIM、重启、失败和并发，再持续扩展组合。",
+      "after": "下一切片：匹配存储协议 → 生产链接 → GMock 正式输入建立 Absent → 状态与账户查询。"
+    },
+    {
+      "page": 39,
+      "before": "Fake RIL + 虚拟时钟 + 可控队列；同时观察 API、数据库、事件与禁止副作用",
+      "after": "目标：GMock RIL + 受控调度；验证公开 API、事件、稳定状态与外部请求"
+    },
+    {
+      "page": 39,
+      "before": "以下是待执行的目标测试，不代表已通过；预期由冻结契约与不变量共同定义。",
+      "after": "这些场景均未运行；虚拟时钟未实现，现有队列使用真实线程与有界收敛等待。"
+    },
+    {
+      "page": 41,
+      "before": "方案结论与设计待决约束",
+      "after": "实施路线与评审决策：以行为证据逐级放行"
+    },
+    {
+      "page": 41,
+      "before": "逻辑模型、状态协议与兼容边界共同回答两类核心问题",
+      "after": "方向保留；范围、接口和责任先冻结，每个阶段有可审查的产物与退出条件"
+    },
+    {
+      "page": 41,
+      "before": "方案可解释、可实现和可验证，最终规则仍需在目标产品与固定基线上冻结",
+      "after": "本轮请求：确认拆分范围、首批 Oracle 与外部依赖责任；不一次承诺未来全部拓扑"
+    },
+    {
+      "page": 41,
+      "before": "设计判断",
+      "after": "阶段 / 责任"
+    },
+    {
+      "page": 41,
+      "before": "方案的明确回答",
+      "after": "交付与验收门禁"
+    },
+    {
+      "page": 41,
+      "before": "仍需确认或验证",
+      "after": "前置 / 待决项"
+    },
+    {
+      "page": 41,
+      "before": "怎样支持多 SIM 演进",
+      "after": "G1 行为基线 / 测试 + 依赖方"
+    },
+    {
+      "page": 41,
+      "before": "稳定身份与当前位置分开",
+      "after": "真实生产链路跑通无卡状态与账户"
+    },
+    {
+      "page": 41,
+      "before": "能力、映射、角色和资源各有责任",
+      "after": "用例、Oracle、负控、清理与结果齐全"
+    },
+    {
+      "page": 41,
+      "before": "身份重用、重装与迁移策略",
+      "after": "匹配存储协议的 14 个字段"
+    },
+    {
+      "page": 41,
+      "before": "设备、Feature 与业务并发能力矩阵",
+      "after": "无卡与未就绪、账户保留语义"
+    },
+    {
+      "page": 41,
+      "before": "怎样治理状态混乱",
+      "after": "G2 机械拆分 / Core + SIM"
+    },
+    {
+      "page": 41,
+      "before": "事实唯一归属，旧结果按有效期准入",
+      "after": "同 SA、同进程、旧业务单一路径"
+    },
+    {
+      "page": 41,
+      "before": "提交后发布，未知设备效果核实恢复",
+      "after": "链接无环、Feature 构建与行为差分"
+    },
+    {
+      "page": 41,
+      "before": "必要 Records 与旧 LOADED 含义",
+      "after": "CoreManagerInner、销毁与排空"
+    },
+    {
+      "page": 41,
+      "before": "会话作用域、回放和完成契约",
+      "after": "符号、ABI 与全量重建策略"
+    },
+    {
+      "page": 41,
+      "before": "怎样保持既有行为",
+      "after": "G3 模型迁移 / 领域团队"
+    },
+    {
+      "page": 41,
+      "before": "公开契约、设备端口与 ACL 独立定义",
+      "after": "只读 Shadow 后逐条切换唯一 writer"
+    },
+    {
+      "page": 41,
+      "before": "稳定黑盒边界和受控 writer 切换",
+      "after": "F01–F04 反例、未知效果与回退验证"
+    },
+    {
+      "page": 41,
+      "before": "eSIM 唯一主编排与设备排空",
+      "after": "身份、角色、会话及加载契约"
+    },
+    {
+      "page": 41,
+      "before": "存储兼容、权限、ABI 与回退条件",
+      "after": "eSIM 主编排及持久化迁移"
+    },
+    {
+      "page": 41,
+      "before": "怎样判断设计有效",
+      "after": "G4 产品扩展 / 平台 + 业务"
+    },
+    {
+      "page": 41,
+      "before": "历史反例、契约和依赖检查",
+      "after": "按实际能力验收 MEP / N 订阅 / M 资源"
+    },
+    {
+      "page": 41,
+      "before": "同类需求比较理解与修改成本",
+      "after": "同类变更、性能、设备矩阵与恢复证据"
+    },
+    {
+      "page": 41,
+      "before": "实际产品测试和真机能力验证",
+      "after": "具体产品拓扑与并发规格"
+    },
+    {
+      "page": 41,
+      "before": "启动、内存、时延及恢复预算",
+      "after": "数据提供方、设备与性能预算"
+    },
+    {
+      "page": 41,
+      "before": "本材料提供目标设计与验证依据，静态证据和测试设计不等于产品运行验收。",
+      "after": "G1 未完成前不宣称防护网覆盖状态与账户；任一阶段失败保留证据，不升级完成状态。"
+    },
+    {
+      "page": 43,
+      "before": "合入热点：状态与文件生命周期持续共同变化",
+      "after": "历史热点资料：用于审查选点，统计尚待复核"
+    },
+    {
+      "page": 43,
+      "before": "2024-01-01 至 2026-09-30 · 第一父链按合入单元统计，排除两次大批量改造",
+      "after": "原稿统计窗口 2024-01-01 至 2026-09-30；原始仓库 SHA、样本与脚本未提供"
+    },
+    {
+      "page": 43,
+      "before": "484 个 SIM 合入样本；StateManager 的 69.4% 修改同时涉及 Handle",
+      "after": "原稿声称样本 484、共变 69.4%；本轮未复算，不作为当前测量结果"
+    },
+    {
+      "page": 43,
+      "before": "合入次数",
+      "after": "原稿次数 / 待核"
+    },
+    {
+      "page": 44,
+      "before": "逐项审查净补丁，区分关键路径回退、重新引入和目标治理建议",
+      "after": "原稿历史链保留待复核；当前源码可确认结构风险，历史净补丁未在本仓复核"
+    },
+    {
+      "page": 44,
+      "before": "已核查变化",
+      "after": "原稿记录 / 待核"
+    },
+    {
+      "page": 44,
+      "before": "合入链代表责任演进；回退原因与线上影响，须有独立缺陷及运行记录才能认定。",
+      "after": "历史 PR、耗时与回退链均待补原始提交；不能由这些资料认定线上故障或重构收益。"
+    },
+    {
+      "page": 45,
+      "before": "九条历史链与十项源码发现互相校准；统计只用于筛选，设计依据来自具体补丁",
+      "after": "原稿九条历史链作为审查线索；补丁、基线与复现未齐，不作为本轮已核实事实"
+    },
+    {
+      "page": 45,
+      "before": "净补丁体现的反复 / 关联",
+      "after": "原稿关联记录 / 待核"
+    },
+    {
+      "page": 51,
+      "before": "依据附件 04 / 05 细化来源互斥、身份延续和当前 / 历史关系",
+      "after": "候选身份策略；当前仓无 Subscription Shadow 实现，附件 07 来自另一分支"
+    },
+    {
+      "page": 60,
+      "before": "IEsimService 是独立 SA 契约，IEsimManager 是 Core 内运行接口，二者作用不同",
+      "after": "已核实两个接口；独立 SA 的实现与主编排未核实，以下为待冻结的协作方案"
+    },
+    {
+      "page": 60,
+      "before": "既有 eSIM SA 组织对外业务流程",
+      "after": "候选：既有 eSIM SA 主导业务流程"
+    },
+    {
+      "page": 66,
+      "before": "  system_tests/",
+      "after": "  # 独立测试位于 test/systemtest/"
+    },
+    {
+      "page": 66,
+      "before": "tests/ 与 specs/            故障、契约与验收",
+      "after": "specs/                     领域契约与设计依据"
+    },
+    {
+      "page": 66,
+      "before": "这是一份目标组织建议。拆分 SO 不要求先移动到所有目标目录，不创建空壳类或转发层。",
+      "after": "生产目录是候选组织；独立防护网固定在 test/systemtest/，不依赖旧测试目标或辅助源码。"
+    },
+    {
+      "page": 67,
+      "before": "libtel_core_service.z.so 通过稳定接口依赖 libtel_sim_service.z.so",
+      "after": "目标：Core → SIM 单向链接；当前 BUILD.gn 仍将 SIM 源码编入 Core"
+    },
+    {
+      "page": 67,
+      "before": "稳定黑盒边界由工厂、公开接口、可替换依赖和可观测输出共同形成",
+      "after": "阻塞重点：CoreManagerInner 回调依赖、工厂销毁、在途回调与跨 DSO 构建"
+    },
+    {
+      "page": 67,
+      "before": "只导出稳定接口与工厂",
+      "after": "接口仍是 InnerKit；工厂与 ABI 待冻结"
+    },
+    {
+      "page": 67,
+      "before": "外部协作与约束",
+      "after": "先消除的依赖与生命周期风险"
+    },
+    {
+      "page": 67,
+      "before": "通过 ITelRilManager 等端口协作",
+      "after": "Core 回调改为明确注入端口"
+    },
+    {
+      "page": 67,
+      "before": "跨 SO 的销毁、回调与 Stop 协议明确",
+      "after": "接口无虚析构；采用工厂销毁契约"
+    },
+    {
+      "page": 67,
+      "before": "可观测输出：API、事件、数据库与 Trace",
+      "after": "输出：公开返回、回调、事件、状态与外部请求"
+    },
+    {
+      "page": 67,
+      "before": "同一套黑盒用例验证拆分前后行为",
+      "after": "同一套边界用例做真实双版本差分"
+    },
+    {
+      "page": 67,
+      "before": ".so 只是构建和部署边界。测试接缝与可观测输出决定黑盒是否稳定、问题是否可定位。",
+      "after": "同进程 SO 不提供故障隔离；C++ 接口兼容、导出符号、全量重建与停止排空必须单独验收。"
+    },
+    {
+      "page": 68,
+      "before": "独立 SO 机械拆分不改数据库，数据模型演进在正式重构阶段单独验收",
+      "after": "拆 SO 不改数据库；当前外部 SimData 版本尚不匹配，先补协议再审查迁移"
+    },
+    {
+      "page": 69,
+      "before": "规则 ID 为本方案示例；预期依据独立于实现，关联请求、会话、提交与契约",
+      "after": "INV-* 为目标设计 ID，不自动等同已确认 Oracle；先冻结前提，再建立强制业务断言"
+    },
+    {
+      "page": 70,
+      "before": "确定性调度与故障注入覆盖异步系统的关键风险",
+      "after": "受控场景用于覆盖选定风险，不证明所有并发交错；设施与业务执行分开统计"
+    },
+    {
+      "page": 70,
+      "before": "经确认的旧外部行为与例外",
+      "after": "确认契约 / 实采 Legacy / 待决问题"
+    },
+    {
+      "page": 70,
+      "before": "虚拟时钟 + 脚本化设备 + 受控任务队列。断言业务结果、事件次数与禁止副作用。",
+      "after": "GMock 仅替换外部依赖。事件次数与必要偏序须有契约；虚拟时钟仍属目标设施。"
+    },
+    {
+      "page": 71,
+      "before": "资源与时延目标由产品和平台基线确定，方案不凭空承诺百分比或毫秒收益。",
+      "after": "新增同步沿用 ffrt 原语；现有 std/ffrt 混用不等于已统一。资源预算须先实测再承诺。"
+    },
+    {
+      "page": 72,
+      "before": "SessionRef 统一表示端点会话，报告中的 sessionEpoch 与 loadGeneration 不再新增同义字段",
+      "after": "目标标识协议，当前未接入生产；先定义作用域、重启失效和设备响应关联，再实施"
+    },
+    {
+      "page": 80,
+      "before": "需可靠通知的业务事实随状态提交记录，技术日志与普通消息保持原机制",
+      "after": "候选恢复协议；仅对确认需可靠通知的事实采用，不纳入机械拆分范围"
+    },
+    {
+      "page": 80,
+      "before": "按恢复需要选同库 outbox 或轻量日志，允许重复投递与幂等处理，不强制引入消息框架。",
+      "after": "outbox / 日志需数据提供方确认原子性、迁移与回退；允许重复投递，不承诺跨设备原子事务。"
+    }
+  ],
+  "external_references": [
+    {
+      "url": "https://source.android.com/docs/core/connect/esim-mep",
+      "access_date": "2026-10-15",
+      "version": "unversioned official documentation; not local production baseline",
+      "scope": "MEP physical slot/port/logical mapping terminology only; detailed original AOSP call chains not fully reaudited"
+    }
+  ],
+  "validation": {
+    "pptx_schema_relationships_content_types": "PASS",
+    "validator_exit_code": 0,
+    "validator_command": [
+      "python3",
+      "/home/luowu/.codex/skills/pptx/scripts/office/validate.py",
+      "/mnt/e/github/multisim/telephony_core_service/docs/多SIM架构重构_问题分析与软件设计_V23_代码审阅优化.pptx",
+      "--original",
+      "/mnt/e/github/multisim/telephony_core_service/docs/多SIM架构重构_问题分析与软件设计_V22.pptx"
+    ],
+    "pythonpath": "/tmp/sim-ppt-v22/python",
+    "render_exit_code": 0,
+    "render_command": [
+      "python3",
+      "/tmp/sim-ppt-v22/render.py",
+      "/mnt/e/github/multisim/telephony_core_service/docs/多SIM架构重构_问题分析与软件设计_V23_代码审阅优化.pptx",
+      "/tmp/sim-ppt-v22"
+    ],
+    "renderer": "LibreOffice 24.2.7.2, extracted under /tmp; no system install",
+    "render_warning": "javaldx unavailable; no Java functionality used",
+    "fonts": "Microsoft YaHei and Microsoft YaHei Bold available from local Windows font directory; fonts not distributed",
+    "rendered_pages": 81,
+    "visual_review": "81 pages inspected via 7 contact sheets; dense/changed slides also inspected full-size; 7 table layout repairs verified",
+    "changed_paragraphs_present_in_pdf": 161,
+    "text_outside_page": 0,
+    "original_relationships_unchanged": true,
+    "original_slide_order_unchanged": true,
+    "custom_show_valid_slide_references": 13,
+    "original_pptx_unchanged": true,
+    "source_evidence_hashes_verified": 25,
+    "production_code_changes_in_this_task": false,
+    "sim_tests_reexecuted_in_this_task": false,
+    "source_build_executed_in_this_task": false,
+    "powerpoint_native_render": "NOT_RUN; rendering verified in LibreOffice with actual source font",
+    "pdf_sha256": "0f1be196468cf783c2c12d3bfa2855e2ae7300021d9d2d095cea5e1466c59d2b",
+    "pdf_file": "多SIM架构重构_问题分析与软件设计_V23_代码审阅优化.pdf"
+  }
+}

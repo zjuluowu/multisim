@@ -1,5 +1,7 @@
 # 当前仓库与 Linux 环境调查
 
+> 历史调查快照：下文版本、依赖缺失和零执行结论限定于2026-09-30首次调查，不代表当前状态。Linux host方案后已获批准，GoogleTest及容量/INFRA切片已有实测；现行架构与进度见[设计对齐](design_alignment.md)、[运行记录](run_record.md)和[当前状态](../../../docs/MultiSIM/07_subscription_refactoring_status.md)。旧文档版本表对应刷新前原稿，现保存于docs/history。
+
 调查日期：2026-09-30。源码引用均相对 `telephony_core_service/`，以 HEAD `2841c6f60635853a929c1755dc08f5543a89eb83` 及工作树摘要为定位基准。没有联网引用上游源码；origin 是 `https://github.com/zjuluowu/multisim.git`，upstream 配置是 `https://github.com/openharmony/telephony_core_service.git`，未 fetch，也未假定 upstream 当前分支/SHA。
 
 ## 1. 仓库与工作树

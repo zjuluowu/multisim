@@ -1,0 +1,1241 @@
+{
+  "schema_version": "1.0",
+  "date": "2026-10-15",
+  "purpose": "设计统一审视清单；不是测试执行报告或业务批准记录",
+  "repository": {
+    "name": "zjuluowu/multisim",
+    "branch": "main",
+    "head_sha": "df8f2f017f83c70145b20255b4e9042f7a5fd923",
+    "dirty": true,
+    "source_basis": "实际工作树；源码摘要不可仅用HEAD代替"
+  },
+  "authority_order": [
+    "docs/MultiSIM/08_design_unification_decisions.md",
+    "docs/SIM_Refactored_Software_Architecture_Design_Version3.md",
+    "docs/SIM_Layered_Architecture_Class_Design_Version3.md",
+    "current guides and test design"
+  ],
+  "input_version": "0.3",
+  "current_version": "0.3.1",
+  "implementation_status": "PROPOSED_NOT_IMPLEMENTED",
+  "production_refactoring_gate": "PHASE0_NOT_READY",
+  "imported_baseline": {
+    "manifest": "hmos_dev_20260813",
+    "core_service": "738f51f6",
+    "relationship_to_current": "来源标签，未证明与当前工作树相同"
+  },
+  "missing_external_sources": [
+    "07-decision-and-conflict-log.md",
+    "09-business-decision-request.md",
+    "openharmony_sim_cross_repository_interface_inventory.md"
+  ],
+  "open_approvals": [
+    "D-002/D-005四槽",
+    "D-006 NULL写入",
+    "D-016事务与迁移",
+    "X-1十类异步事件目录"
+  ],
+  "open_contracts": [
+    "无卡与未就绪及账户保留",
+    "身份跨删除/重装延续",
+    "DISABLED兼容投影",
+    "默认角色失效及Primary策略",
+    "事件重复/sticky与关键偏序",
+    "存储提供方真实事务与反查",
+    "Modem分命令超时与未知效果恢复"
+  ],
+  "unified_design": {
+    "contexts": [
+      "Subscription Topology",
+      "Profile Operation",
+      "Radio Assignment",
+      "Compatibility"
+    ],
+    "aggregates": {
+      "TopologyAggregate": "TopologyManager",
+      "ProfileOperationAggregate": "OperationCoordinator",
+      "RadioAssignmentAggregate": "RadioResourceArbiter"
+    },
+    "targets": [
+      "SlotTarget",
+      "CardApplicationTarget",
+      "SubscriptionTarget"
+    ],
+    "acl": "一个逻辑ACL；入站/查询/出站分工",
+    "generation": "BindingGeneration与RecordsGeneration独立",
+    "event_catalog": [
+      "CardPresenceChanged",
+      "TopologyChanged",
+      "SubscriptionDiscovered",
+      "SubscriptionRemoved",
+      "OperationCompleted",
+      "OperationFailed",
+      "OperationCompensated",
+      "RoleAssignmentChanged",
+      "ModemAssignmentChanged",
+      "ResourceDegraded"
+    ],
+    "core_compatibility": "保留CoreManagerInner消费侧契约；内部Host Ports注入解耦",
+    "storage": "既有DataShare/参数；DirectDb待证，NULL需门禁；不新增schema/outbox/持久操作日志",
+    "implementation_switch": "分构建Legacy/Split，不新增运行期Feature Flag"
+  },
+  "decisions": [
+    "DU-01",
+    "DU-02",
+    "DU-03",
+    "DU-04",
+    "DU-05",
+    "DU-06",
+    "DU-07",
+    "DU-08",
+    "DU-09",
+    "DU-10",
+    "DU-11",
+    "DU-12",
+    "DU-13",
+    "DU-14",
+    "DU-15",
+    "DU-16",
+    "DU-17",
+    "DU-18",
+    "DU-19",
+    "DU-20",
+    "DU-21",
+    "DU-22"
+  ],
+  "prior_execution": {
+    "date": "2026-10-08",
+    "source": "test/systemtest/docs/run_record.md",
+    "component_B_pass": 1,
+    "infrastructure_pass": 16,
+    "negative_control_expected_fail": 1,
+    "original_business_cases_blocked": [
+      "SIM-B-001",
+      "SIM-B-002",
+      "SIM-B-003",
+      "SIM-B-004",
+      "SIM-B-005"
+    ],
+    "characterization_candidate_blocked": "SIM-CHAR-001",
+    "initialization_compiled_objects": 45,
+    "initialization_diagnostics": 43,
+    "storage_protocol_missing_members": 14,
+    "initialization_link_reached": false,
+    "new_execution_this_revision": false
+  },
+  "coverage_limits": [
+    "SA注册发现",
+    "实际Client/Proxy/Stub IPC",
+    "未经过的服务入口检查",
+    "真实权限和capability",
+    "真实Modem/平台服务/设备行为"
+  ],
+  "archives": [
+    {
+      "original_path": "docs/openharmony_telephony_core_service_SIM_software_design.md",
+      "archive_path": "docs/history/pre_unification_20261015/openharmony_telephony_core_service_SIM_software_design.md",
+      "original_sha256": "97bc95d8c52bc26534627cac20231dafdd3145968d7868c18245e3c43dffe4a9",
+      "original_payload_bytes": 59545
+    },
+    {
+      "original_path": "docs/MultiSIM/01_sim_subsystem_baseline.md",
+      "archive_path": "docs/history/pre_unification_20261015/MultiSIM/01_sim_subsystem_baseline.md",
+      "original_sha256": "78c1af2d6337931976a32633c22f546920eb7fff5bb1c7b1fbb99a7cea3523a9",
+      "original_payload_bytes": 58330
+    },
+    {
+      "original_path": "docs/MultiSIM/02_current_architecture_and_evolution.md",
+      "archive_path": "docs/history/pre_unification_20261015/MultiSIM/02_current_architecture_and_evolution.md",
+      "original_sha256": "fe2c9a78f06b92959004b4d9e23c6b8978164c151845fc32e99e52336bd06df0",
+      "original_payload_bytes": 37874
+    },
+    {
+      "original_path": "docs/MultiSIM/03_esim_slot_and_sa_boundary.md",
+      "archive_path": "docs/history/pre_unification_20261015/MultiSIM/03_esim_slot_and_sa_boundary.md",
+      "original_sha256": "76872db1c7faf4e75ff8480fe140f9596026bb0f59d814a87db90b6549f397f6",
+      "original_payload_bytes": 13433
+    },
+    {
+      "original_path": "docs/MultiSIM/04_ddd_target_architecture.md",
+      "archive_path": "docs/history/pre_unification_20261015/MultiSIM/04_ddd_target_architecture.md",
+      "original_sha256": "16e090b87da1e5e3715a9f43338aefdc5d66835c15b9a6834421745a623262d4",
+      "original_payload_bytes": 53872
+    },
+    {
+      "original_path": "docs/MultiSIM/05_detailed_class_and_data_model.md",
+      "archive_path": "docs/history/pre_unification_20261015/MultiSIM/05_detailed_class_and_data_model.md",
+      "original_sha256": "b9fe27085c747ac34d20eb73e5b4a43a8b6114cc6d793fde491b1b28be16fbda",
+      "original_payload_bytes": 51115
+    },
+    {
+      "original_path": "docs/MultiSIM/06_refactoring_proposal_slides.md",
+      "archive_path": "docs/history/pre_unification_20261015/MultiSIM/06_refactoring_proposal_slides.md",
+      "original_sha256": "0fbf0e4e21470192a1f595a60951c323a3822f0a0a566fbaeb40a2537ff75b67",
+      "original_payload_bytes": 31124
+    },
+    {
+      "original_path": "docs/MultiSIM/07_subscription_refactoring_status.md",
+      "archive_path": "docs/history/pre_unification_20261015/MultiSIM/07_subscription_refactoring_status.md",
+      "original_sha256": "ef3299b3fdd8574c8263f7d3698b389b2bbf995156a3895eaea3ab6394d41a19",
+      "original_payload_bytes": 10972
+    },
+    {
+      "original_path": "docs/多SIM架构重构_软件设计说明书_V22.md",
+      "archive_path": "docs/history/pre_unification_20261015/多SIM架构重构_软件设计说明书_V22.md",
+      "original_sha256": "8dac15a9683e129e9071c78473ecf83874aa7564f0ff869d743b86cbe532a21d",
+      "original_payload_bytes": 388564
+    },
+    {
+      "original_path": "docs/SIM_Refactored_Software_Architecture_Design_Version3.md",
+      "archive_path": "docs/history/pre_unification_20261015/SIM_Refactored_Software_Architecture_Design_Version3.md",
+      "original_sha256": "c367460e077e950a8b35822f9925093b6faecb4d04c17300acd4bff261d36dca",
+      "original_payload_bytes": 33688
+    },
+    {
+      "original_path": "docs/SIM_Layered_Architecture_Class_Design_Version3.md",
+      "archive_path": "docs/history/pre_unification_20261015/SIM_Layered_Architecture_Class_Design_Version3.md",
+      "original_sha256": "0acdc45904a5e0a9f5ce49835e709f133e88a8ab3db48ea4ea6cdfe3fa721027",
+      "original_payload_bytes": 49998
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "BUILD.gn",
+      "sha256": "bb7093d33af5fed7efdc409d4c20ee0e17cf52491fb464dcadbf5300ea72200e",
+      "start_line": 30,
+      "symbol_or_locator": "ohos_shared_library\\(\"tel_core_service\"\\)",
+      "classification": "FACT_STATIC",
+      "supports": "当前Core目标仍编入SIM源码；不是独立SIM目标",
+      "decisions": [
+        "DU-09"
+      ],
+      "execution_claim": false
+    },
+    {
+      "path": "telephony_core_service.gni",
+      "sha256": "7994c333b99ebe8b78b7b372f8eb5e4dee80dd05e25209988cd433da393571eb",
+      "start_line": 21,
+      "symbol_or_locator": "core_service_support_esim",
+      "classification": "FACT_STATIC",
+      "supports": "条件编译由构建配置决定",
+      "decisions": [
+        "DU-06",
+        "DU-22"
+      ],
+      "execution_claim": false
+    },
+    {
+      "path": "services/etc/init/telephony_trust.json",
+      "sha256": "01f3b98c1dcbe3476e568f71c33b25d3c3eba5ef64381ad4ea818ffd1ec93601",
+      "start_line": 2,
+      "symbol_or_locator": "\"process\"",
+      "classification": "FACT_STATIC",
+      "supports": "telephony进程配置含4010和66250；未做设备加载验收",
+      "decisions": [
+        "DU-08"
+      ],
+      "execution_claim": false
+    },
+    {
+      "path": "services/core/src/core_service.cpp",
+      "sha256": "606b0793ebe0c1b71d1c6a3478593715262eab6371de169d6d6846986b45d559",
+      "start_line": 92,
+      "symbol_or_locator": "bool CoreService::Init",
+      "classification": "FACT_STATIC",
+      "supports": "当前RIL/SIM/搜网等对象装配",
+      "decisions": [
+        "DU-07",
+        "DU-09"
+      ],
+      "execution_claim": false
+    },
+    {
+      "path": "interfaces/innerkits/include/i_sim_manager.h",
+      "sha256": "1c4847ff04d97ef6be3eddba57fcafded7c60afcf368d667c1b852736728de9d",
+      "start_line": 29,
+      "symbol_or_locator": "class ISimManager",
+      "classification": "FACT_STATIC",
+      "supports": "InnerKit组件公开声明；接口无虚析构",
+      "decisions": [
+        "DU-04",
+        "DU-09"
+      ],
+      "execution_claim": false
+    },
+    {
+      "path": "interfaces/innerkits/include/i_esim_manager.h",
+      "sha256": "e7f94dc77fbfdd47411e166a2b0cdbace095d6ff04a4c4711f0dd5d2ef838bb0",
+      "start_line": 32,
+      "symbol_or_locator": "class IEsimManager",
+      "classification": "FACT_STATIC",
+      "supports": "既有eSIM组件接口无虚析构",
+      "decisions": [
+        "DU-09"
+      ],
+      "execution_claim": false
+    },
+    {
+      "path": "interfaces/innerkits/include/core_manager_inner.h",
+      "sha256": "d510c7d2b6c4ebf26257856a6ff78f681af11eda5db9f5174ce1a5e076633a9c",
+      "start_line": 37,
+      "symbol_or_locator": "class CoreManagerInner",
+      "classification": "FACT_STATIC",
+      "supports": "既有消费侧组件门面",
+      "decisions": [
+        "DU-07"
+      ],
+      "execution_claim": false
+    },
+    {
+      "path": "frameworks/native/src/core_manager_inner.cpp",
+      "sha256": "a65c75931f490f064a788e4438c22887d38c9aae65f589265d78f4a2b746839f",
+      "start_line": 40,
+      "symbol_or_locator": "void CoreManagerInner::OnInit",
+      "classification": "FACT_STATIC",
+      "supports": "既有注入和委托",
+      "decisions": [
+        "DU-07"
+      ],
+      "execution_claim": false
+    },
+    {
+      "path": "interfaces/innerkits/include/telephony_types.h",
+      "sha256": "23f708c8df2d20914cd086510b7aca85d9e9709db856dd9811f2f657f0167019",
+      "start_line": 54,
+      "symbol_or_locator": "DC_MD_MAX_SLOT_COUNT",
+      "classification": "FACT_STATIC",
+      "supports": "默认参数/逻辑槽与分布式常量须分开",
+      "decisions": [
+        "DU-06"
+      ],
+      "execution_claim": false
+    },
+    {
+      "path": "services/etc/param/telephony.para",
+      "sha256": "9ff45641a6373b94054c856ca756fd81923a8937b15f22d6737e29e320927052",
+      "start_line": 14,
+      "symbol_or_locator": "const.telephony.slotCount",
+      "classification": "FACT_STATIC",
+      "supports": "当前默认slotCount为1",
+      "decisions": [
+        "DU-06"
+      ],
+      "execution_claim": false
+    },
+    {
+      "path": "services/sim/src/sim_manager.cpp",
+      "sha256": "dc8fd160a9d06097aa4995274364118ed82f46b3b63ff7c57f49e58e3ae1d1a3",
+      "start_line": 41,
+      "symbol_or_locator": "bool SimManager::OnInit",
+      "classification": "FACT_STATIC",
+      "supports": "真实生产初始化各SIM子模块",
+      "decisions": [
+        "DU-03",
+        "DU-20"
+      ],
+      "execution_claim": false
+    },
+    {
+      "path": "services/sim/src/sim_manager.cpp",
+      "sha256": "dc8fd160a9d06097aa4995274364118ed82f46b3b63ff7c57f49e58e3ae1d1a3",
+      "start_line": 176,
+      "symbol_or_locator": "int32_t SimManager::GetSimState",
+      "classification": "FACT_STATIC",
+      "supports": "无卡派生非通用DISABLED转换",
+      "decisions": [
+        "DU-14"
+      ],
+      "execution_claim": false
+    },
+    {
+      "path": "services/sim/src/sim_manager.cpp",
+      "sha256": "dc8fd160a9d06097aa4995274364118ed82f46b3b63ff7c57f49e58e3ae1d1a3",
+      "start_line": 1569,
+      "symbol_or_locator": "int32_t SimManager::GetMaxSimCount",
+      "classification": "FACT_STATIC",
+      "supports": "既有已执行容量切片对应生产符号",
+      "decisions": [
+        "DU-20"
+      ],
+      "execution_claim": false
+    },
+    {
+      "path": "services/sim/src/sim_state_handle.cpp",
+      "sha256": "2b2bcfa6cdf2368da9f4e1ee20300e147da73ac458428ddb0194e231c83154c7",
+      "start_line": 832,
+      "symbol_or_locator": "void SimStateHandle::ProcessEvent",
+      "classification": "FACT_STATIC",
+      "supports": "事件分发事实与错误路径风险，不据静态推断宣称生产缺陷",
+      "decisions": [
+        "DU-15",
+        "DU-16"
+      ],
+      "execution_claim": false
+    },
+    {
+      "path": "services/sim/src/sim_state_manager.cpp",
+      "sha256": "3322e321c3bf9cc44636dc6125e58ecd35a8340f25cbf47dfb1072810a67da42",
+      "start_line": 90,
+      "symbol_or_locator": "SimStateManager::GetSimState",
+      "classification": "FACT_STATIC",
+      "supports": "既有状态查询/锁关系",
+      "decisions": [
+        "DU-14",
+        "DU-16"
+      ],
+      "execution_claim": false
+    },
+    {
+      "path": "services/sim/src/sim_file.cpp",
+      "sha256": "38242a3fed97e7e8ebe52015f7036de5fc9a7f5765969720c3ac3a9d33440288",
+      "start_line": 55,
+      "symbol_or_locator": "SimFile::",
+      "classification": "FACT_STATIC",
+      "supports": "卡文件生产处理与加载轮次需保留",
+      "decisions": [
+        "DU-15"
+      ],
+      "execution_claim": false
+    },
+    {
+      "path": "services/sim/src/icc_file.cpp",
+      "sha256": "a65c9aece74a72a54111f96d75f7bdb27ff5fa99e15fae2b48bd649c6373ef95",
+      "start_line": 41,
+      "symbol_or_locator": "IccFile::",
+      "classification": "FACT_STATIC",
+      "supports": "独立Records加载状态/通知",
+      "decisions": [
+        "DU-10",
+        "DU-15"
+      ],
+      "execution_claim": false
+    },
+    {
+      "path": "services/sim/src/sim_rdb_helper.cpp",
+      "sha256": "50802df023b4a3dca3748648f0fa73c11ebe4ca7d5f76c2a91ba77f3bc6fc4e2",
+      "start_line": 94,
+      "symbol_or_locator": "int SimRdbHelper::Insert",
+      "classification": "FACT_STATIC",
+      "supports": "账户CRUD委托DataShare而非据类名认定直写",
+      "decisions": [
+        "DU-12",
+        "DU-13"
+      ],
+      "execution_claim": false
+    },
+    {
+      "path": "services/sim/src/multi_sim_controller.cpp",
+      "sha256": "273d9d827618cb8e7718d81cb2ea2af2839c080573466cc18cb340d165083312",
+      "start_line": 1478,
+      "symbol_or_locator": "int32_t MultiSimController::SetPrimarySlotId\\(",
+      "classification": "FACT_STATIC",
+      "supports": "Primary路径包含默认Data联动",
+      "decisions": [
+        "DU-02"
+      ],
+      "execution_claim": false
+    },
+    {
+      "path": "services/sim/src/radio_protocol_controller.cpp",
+      "sha256": "014d325b3e05b226b2263d26ad685065abe2ff351e1b4672cdf5e3b664e5584a",
+      "start_line": 32,
+      "symbol_or_locator": "void RadioProtocolController::Init",
+      "classification": "FACT_STATIC",
+      "supports": "初始化槽数按DUAL_SLOT_COUNT截断",
+      "decisions": [
+        "DU-06"
+      ],
+      "execution_claim": false
+    },
+    {
+      "path": "interfaces/innerkits/include/sim_state_type.h",
+      "sha256": "3dcf768479d0510d7f5529aedba5cae85d6b4ed16b8863140c1f792b9af2e516",
+      "start_line": 84,
+      "symbol_or_locator": "enum class SimState",
+      "classification": "FACT_STATIC",
+      "supports": "既有公开六值状态枚举",
+      "decisions": [
+        "DU-14",
+        "DU-22"
+      ],
+      "execution_claim": false
+    },
+    {
+      "path": "common/capability_mgr/src/multi_sims_capability_manager.cpp",
+      "sha256": "99196c1fdc0282d14fd4338b0cf5ec403dc7d2c0eb255fbdc83f10c031a5f157",
+      "start_line": 28,
+      "symbol_or_locator": "bool MultiSimsCapabilityMgr::IsMultiSimsCapabilitySupported",
+      "classification": "FACT_STATIC",
+      "supports": "非指定slot返回false；指定slot校验token类别及系统应用",
+      "decisions": [
+        "DU-06",
+        "DU-22"
+      ],
+      "execution_claim": false
+    },
+    {
+      "path": "services/core/src/core_service_sim.cpp",
+      "sha256": "391b4b26595ce6dd12e5a711a6b19e23c34a8f4f736b50ec1bf2c853fcd4abc0",
+      "start_line": 1090,
+      "symbol_or_locator": "int32_t CoreServiceSim::GetSimTelephoneNumber",
+      "classification": "FACT_STATIC",
+      "supports": "号码权限必须逐方法核实",
+      "decisions": [
+        "DU-22"
+      ],
+      "execution_claim": false
+    },
+    {
+      "path": "frameworks/native/src/esim_service_client.cpp",
+      "sha256": "8c2de9bb90719af676091876b8d522805720f38d18ce855f7d82ac46b5dcf4d8",
+      "start_line": 29,
+      "symbol_or_locator": "ESIM_SERVICE",
+      "classification": "FACT_STATIC",
+      "supports": "66250客户端真实调用边界；不证明远端内部实现",
+      "decisions": [
+        "DU-08"
+      ],
+      "execution_claim": false
+    },
+    {
+      "path": "interfaces/innerkits/IEsimService.idl",
+      "sha256": "e82ae0d9d1c49db689ff21eee8ec68d55e49f06cd6b9d21c7c6f36abd2bacbd1",
+      "start_line": 25,
+      "symbol_or_locator": "interface OHOS.Telephony.IEsimService \\{",
+      "classification": "FACT_STATIC",
+      "supports": "eSIM既有IDL能力边界",
+      "decisions": [
+        "DU-08"
+      ],
+      "execution_claim": false
+    },
+    {
+      "path": "services/sim/src/stk_controller.cpp",
+      "sha256": "56307892141d6f88b3593cb25a42bbd77099a7b545ad283a8da7a248d2de0daf",
+      "start_line": 60,
+      "symbol_or_locator": "StkController::",
+      "classification": "FACT_STATIC",
+      "supports": "STK生产能力及公共输出必须保留",
+      "decisions": [
+        "DU-03",
+        "DU-10"
+      ],
+      "execution_claim": false
+    }
+  ],
+  "documents": [
+    {
+      "path": "README.md",
+      "status": "CURRENT_INDEX",
+      "sha256": "77e6708809f66dcc261ba1e072af6046c6158d021d4ea3df8d74a0485b37e4de",
+      "previous_sha256": "8a512c88ee9badc15d87aacbd34d759eec45a080dca3483ec43298af08df23e0",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "README_zh.md",
+      "status": "CURRENT_INDEX",
+      "sha256": "42efddfb14640e1655043cdccdfa620f113e9630c6728223008974343c641b2e",
+      "previous_sha256": "d022f5b8619083fec35b78c4680460a6650bb8b6b7b3fbf15a4e7b85f3bca83f",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/MultiSIM/01_sim_subsystem_baseline.md",
+      "status": "CURRENT_BASELINE",
+      "sha256": "a2f1f781711fef03c04dd0b81b61e2dc49b8b94e17faf194102074cec5162403",
+      "previous_sha256": "78c1af2d6337931976a32633c22f546920eb7fff5bb1c7b1fbb99a7cea3523a9",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/MultiSIM/02_current_architecture_and_evolution.md",
+      "status": "CURRENT_BASELINE",
+      "sha256": "7f45260e62969aa79ef621b9058033c113ffd030ab42f3f42d4aa90108633079",
+      "previous_sha256": "fe2c9a78f06b92959004b4d9e23c6b8978164c151845fc32e99e52336bd06df0",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/MultiSIM/03_esim_slot_and_sa_boundary.md",
+      "status": "CURRENT_BASELINE",
+      "sha256": "056a26cea372b1744e2dc161b80990fe7fed3006802f7f8ebce4bbcf0d566487",
+      "previous_sha256": "76872db1c7faf4e75ff8480fe140f9596026bb0f59d814a87db90b6549f397f6",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/MultiSIM/04_ddd_target_architecture.md",
+      "status": "CURRENT_DESIGN_GUIDE",
+      "sha256": "2cfb7b8301e58b26ccd2e2f45c5fd2d734f2ce0af564455035a721b898c4c0de",
+      "previous_sha256": "16e090b87da1e5e3715a9f43338aefdc5d66835c15b9a6834421745a623262d4",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/MultiSIM/05_detailed_class_and_data_model.md",
+      "status": "CURRENT_DESIGN_GUIDE",
+      "sha256": "fe47e4e41d713a3fefa7c9dedf61f95d9d1b2e4ba177d597f74363570aee0bb7",
+      "previous_sha256": "b9fe27085c747ac34d20eb73e5b4a43a8b6114cc6d793fde491b1b28be16fbda",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/MultiSIM/06_refactoring_proposal_slides.md",
+      "status": "CURRENT_DESIGN_GUIDE",
+      "sha256": "907b23cb5d20f1427b05b7d08908d3c417a38c0e6901ea44bce3fc5409faf851",
+      "previous_sha256": "0fbf0e4e21470192a1f595a60951c323a3822f0a0a566fbaeb40a2537ff75b67",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/MultiSIM/07_subscription_refactoring_status.md",
+      "status": "CURRENT_STATUS",
+      "sha256": "be361073f07ae518641e780990270f6da04f8e586368cd4e6906c65813458d01",
+      "previous_sha256": "ef3299b3fdd8574c8263f7d3698b389b2bbf995156a3895eaea3ab6394d41a19",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/MultiSIM/08_design_unification_decisions.md",
+      "status": "CURRENT_DESIGN_GUIDE",
+      "sha256": "7ce017dd93e6243632dd4274ec46621d2e5a8fb366c235b2146cdf81affed9e6",
+      "previous_sha256": null,
+      "change": "NEW",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/MultiSIM/readme.txt",
+      "status": "CURRENT_DESIGN_GUIDE",
+      "sha256": "00a86348cc40a07b1db679b0c96bd73020802835265011a9e379796ef80292ba",
+      "previous_sha256": "4f07d2c0d5900f0d12486358f93bb968efb1d1621363eb494acfd59d058df8a5",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/README.md",
+      "status": "CURRENT_INDEX",
+      "sha256": "782a278d0bdb521a991db4d098364ce72bf0c6e6c32c420abf914c4206307630",
+      "previous_sha256": null,
+      "change": "NEW",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/SIM_Layered_Architecture_Class_Design_Version3.md",
+      "status": "CURRENT_TARGET_PROPOSED_0.3.1",
+      "sha256": "c8764c7c94bcf3706e15f84aca64b95b7855d9d0d7635b54ed5bc8abd82b5ec2",
+      "previous_sha256": "0acdc45904a5e0a9f5ce49835e709f133e88a8ab3db48ea4ea6cdfe3fa721027",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/SIM_Refactored_Software_Architecture_Design_Version3.md",
+      "status": "CURRENT_TARGET_PROPOSED_0.3.1",
+      "sha256": "454d7a1d30610685f1bc43a7033fe99724162b84c59edd8db9679cce563debce",
+      "previous_sha256": "c367460e077e950a8b35822f9925093b6faecb4d04c17300acd4bff261d36dca",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/history/pre_unification_20261015/MultiSIM/01_sim_subsystem_baseline.md",
+      "status": "SUPERSEDED_ARCHIVE",
+      "sha256": "d5ca7f13d0a915eb9c4db5ed18a1474823aed94050423519ad036bb3167f77fe",
+      "previous_sha256": null,
+      "change": "NEW",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/history/pre_unification_20261015/MultiSIM/02_current_architecture_and_evolution.md",
+      "status": "SUPERSEDED_ARCHIVE",
+      "sha256": "adea3e3c9ae33fddbd014621982fb101bf21d13d2dff17b821a47d9f18545948",
+      "previous_sha256": null,
+      "change": "NEW",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/history/pre_unification_20261015/MultiSIM/03_esim_slot_and_sa_boundary.md",
+      "status": "SUPERSEDED_ARCHIVE",
+      "sha256": "d40bdb808c911aafd042245378716fef08c9b19ee56cf20526b3b72924eebf06",
+      "previous_sha256": null,
+      "change": "NEW",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/history/pre_unification_20261015/MultiSIM/04_ddd_target_architecture.md",
+      "status": "SUPERSEDED_ARCHIVE",
+      "sha256": "36aa193e24e54562caeb59b09cedc7a58219ede32b566ca3bebcfbf2a46f57fe",
+      "previous_sha256": null,
+      "change": "NEW",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/history/pre_unification_20261015/MultiSIM/05_detailed_class_and_data_model.md",
+      "status": "SUPERSEDED_ARCHIVE",
+      "sha256": "679e61020f8fee1e7675007fb481e5a6cde40eeef99f6cb042e3a9387b05b6d4",
+      "previous_sha256": null,
+      "change": "NEW",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/history/pre_unification_20261015/MultiSIM/06_refactoring_proposal_slides.md",
+      "status": "SUPERSEDED_ARCHIVE",
+      "sha256": "59086c39f15d04dd3bc647010dee206001cee31830516843c07b17b81f323d64",
+      "previous_sha256": null,
+      "change": "NEW",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/history/pre_unification_20261015/MultiSIM/07_subscription_refactoring_status.md",
+      "status": "SUPERSEDED_ARCHIVE",
+      "sha256": "f897f76ef206ac703069a6e7064adafb5331c8b1c5d20a543b65511f78db4bf4",
+      "previous_sha256": null,
+      "change": "NEW",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/history/pre_unification_20261015/README.md",
+      "status": "SUPERSEDED_ARCHIVE",
+      "sha256": "0e016dd47ec736264dff6b26f8bca9135e3699f3fa77e15e0003016b4aa79918",
+      "previous_sha256": null,
+      "change": "NEW",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/history/pre_unification_20261015/SIM_Layered_Architecture_Class_Design_Version3.md",
+      "status": "HISTORICAL_INPUT",
+      "sha256": "dc4b6bc48cd7d0030786a8abcb8a28487d19dcaac20bbb34e9543ca151b4fbed",
+      "previous_sha256": null,
+      "change": "NEW",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/history/pre_unification_20261015/SIM_Refactored_Software_Architecture_Design_Version3.md",
+      "status": "HISTORICAL_INPUT",
+      "sha256": "8451fd9aaef06b64479422cb3adbf2f30629bf96cf3535a0e3258e570fec83f6",
+      "previous_sha256": null,
+      "change": "NEW",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/history/pre_unification_20261015/openharmony_telephony_core_service_SIM_software_design.md",
+      "status": "SUPERSEDED_ARCHIVE",
+      "sha256": "285a01112f30ab21922fa9a1ee159b97150ebaf630f400246101634512b3e6d8",
+      "previous_sha256": null,
+      "change": "NEW",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/history/pre_unification_20261015/多SIM架构重构_软件设计说明书_V22.md",
+      "status": "SUPERSEDED_ARCHIVE",
+      "sha256": "5bfca7fb5c9c7962051404eadf8ef482bfd7597ed3c53ed0a6b037ed01887ceb",
+      "previous_sha256": null,
+      "change": "NEW",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/knowledge/code_map/conditional-build.md",
+      "status": "CURRENT_KNOWLEDGE",
+      "sha256": "b30060ca8889fd88745b71d33589333060c0a9ec4e41d269a60c8a467fd3a68d",
+      "previous_sha256": "86846e4b7ff75a916d38ee8f5e3e441ac102ee7a4295e3c1f7e82f23a8b46cba",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/knowledge/code_map/modules.md",
+      "status": "CURRENT_KNOWLEDGE",
+      "sha256": "3dc30466af27091dd520b034e03ada94f10ca31df70066dd5bde2cf7bc2394c4",
+      "previous_sha256": "505b98f242056007433b4690255baf4856fbc9e7d1a55b511cbcd313c7d63fd9",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/knowledge/code_map/ril-capabilities.md",
+      "status": "CURRENT_KNOWLEDGE",
+      "sha256": "125fe282e03908e03ab4c9b8cf4e0f1a9816dbb05e44475e8197f312c93c84ca",
+      "previous_sha256": "125fe282e03908e03ab4c9b8cf4e0f1a9816dbb05e44475e8197f312c93c84ca",
+      "change": "UNCHANGED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/knowledge/expert/constraints.md",
+      "status": "CURRENT_KNOWLEDGE",
+      "sha256": "dfa222365afad7f0095b93d8c76f36e13a74ea9a4e5959665928f37873feb6d1",
+      "previous_sha256": "3f629fe49c8a7e7d87025f80bf90567faf2ed2079e5609490945cc3e4c4af868",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/knowledge/expert/historical-issues.md",
+      "status": "CURRENT_KNOWLEDGE",
+      "sha256": "d3396e507e889ced295a89066aad006c04ac27d7505b89cafde7ae0abc865ceb",
+      "previous_sha256": "289018af7761ebf33089fb387c39419f266f77ae2fdfcf2dd998fc250269d10a",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/knowledge/routing/new-interface.md",
+      "status": "CURRENT_KNOWLEDGE",
+      "sha256": "b3971033109d72a8098f810d4d27d60a15062517c0373d5dd6f087c122b059a0",
+      "previous_sha256": "e948769404dfcb0f945dfdc33c31080ee8a8abdc96e8f50f223f6084a46a8370",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/knowledge/routing/permissions.md",
+      "status": "CURRENT_KNOWLEDGE",
+      "sha256": "49e285f929fde4577303ceb537874fb4f3fefa9f80a0e8d8114f819ff4da94d7",
+      "previous_sha256": "eee9fc36763340fd56750dfb42e286ac41d79d66824f69408f28505923c64ff1",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/knowledge/routing/repo-boundary.md",
+      "status": "CURRENT_KNOWLEDGE",
+      "sha256": "f18c450da84d772ab12b509bc5c27500662b40778e471c79a936d1acd6e78efa",
+      "previous_sha256": "fdcc274a887404251c23234f8415cc1e7096e65df2509b38b53c790c65620fdf",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/knowledge/verify/build-test.md",
+      "status": "CURRENT_KNOWLEDGE",
+      "sha256": "20f0fe522768d9587eae62e70bbb91667820d452dea12214433ef24c2fe3b948",
+      "previous_sha256": "049e5e160c24c13e10214dbe9fa48f0d222e7dcfd646bfd40b6692d4da108777",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/openharmony_telephony_core_service_SIM_software_design.md",
+      "status": "CURRENT_REDIRECT",
+      "sha256": "fdaf0120132ace13e3d0d2b43fdc376453c005a1cf75b16436ec10c3a3e8d6df",
+      "previous_sha256": "97bc95d8c52bc26534627cac20231dafdd3145968d7868c18245e3c43dffe4a9",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/多SIM架构重构_V23_代码审查与优化说明.md",
+      "status": "HISTORICAL_REVIEW_WITH_CURRENT_SCOPE_NOTICE",
+      "sha256": "9e72a8e5814ec13c5a87e88445d5288598af4b9f70d974a13223925a10bdef6f",
+      "previous_sha256": "5b86354750df211b95bd0493466e752367b48c77b659c926af791f0ce5a73d80",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/多SIM架构重构_V23_审阅依据.json",
+      "status": "HISTORICAL_REVIEW_ARTIFACT_UNMODIFIED",
+      "sha256": "9631c8d38ee10cd7563e685c861703967750f1addb1fa78cd4dd8f575fba8d39",
+      "previous_sha256": "9631c8d38ee10cd7563e685c861703967750f1addb1fa78cd4dd8f575fba8d39",
+      "change": "UNCHANGED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/多SIM架构重构_软件设计说明书_V22.md",
+      "status": "CURRENT_REDIRECT",
+      "sha256": "5785d05b3732a0f13c910d32392e35120f0c1cc0404872af8f92ade8d45ce7b5",
+      "previous_sha256": "8dac15a9683e129e9071c78473ecf83874aa7564f0ff869d743b86cbe532a21d",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/多SIM架构重构_问题分析与软件设计_V22.pptx",
+      "status": "HISTORICAL_REVIEW_ARTIFACT_UNMODIFIED",
+      "sha256": "e95a076d17ae092d73499902dff92577cf8dd3a3877536a079c0c94fd4d1ebee",
+      "previous_sha256": "e95a076d17ae092d73499902dff92577cf8dd3a3877536a079c0c94fd4d1ebee",
+      "change": "UNCHANGED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/多SIM架构重构_问题分析与软件设计_V23_代码审阅优化.pdf",
+      "status": "HISTORICAL_REVIEW_ARTIFACT_UNMODIFIED",
+      "sha256": "0f1be196468cf783c2c12d3bfa2855e2ae7300021d9d2d095cea5e1466c59d2b",
+      "previous_sha256": "0f1be196468cf783c2c12d3bfa2855e2ae7300021d9d2d095cea5e1466c59d2b",
+      "change": "UNCHANGED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "docs/多SIM架构重构_问题分析与软件设计_V23_代码审阅优化.pptx",
+      "status": "HISTORICAL_REVIEW_ARTIFACT_UNMODIFIED",
+      "sha256": "316720f8e57207ea84b9db77b09fa264ced18c964b5d322717a1c7c679eb7953",
+      "previous_sha256": "316720f8e57207ea84b9db77b09fa264ced18c964b5d322717a1c7c679eb7953",
+      "change": "UNCHANGED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/README.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "8ee2b8e46edd31e564cbad6e28cc97f9f9d8aea1a577968e5c439dfa2fd15830",
+      "previous_sha256": "50b4adfcfde127e7b9824541e6b0acb3ba40da145c1e2a9ec708beac5d102af8",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/architecture.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "356fe3120dd656951a28252cf557b8dc901e925af5f8296b88a0d197f4bbd08f",
+      "previous_sha256": "219411246bbdb94703bcb8e2c3d4081770bb4767074b8b3b9205336f891360fc",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/blocked_resolution_oct08.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "6db60fdcd0958199c416d503717d0229d202146e3ac672ac40c611d26b4e76d5",
+      "previous_sha256": "6db60fdcd0958199c416d503717d0229d202146e3ac672ac40c611d26b4e76d5",
+      "change": "UNCHANGED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/boundaries.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "188a93395daa816792a7d52a15439151c4e0d2db559f43bbd094a909866bc0f6",
+      "previous_sha256": "c7f5095479efa13bacb4e00169f0e880b2d34af5cc870f77243bddbf7dd25c13",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/capability_investigation.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "1bec458e6211b3fd90f93376449227eb41f36b90904419ff35a6e7418cd4347a",
+      "previous_sha256": "1bec458e6211b3fd90f93376449227eb41f36b90904419ff35a6e7418cd4347a",
+      "change": "UNCHANGED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/cases/INFRA-EVENT-004.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "9800846000fcd8768ab3bfa663ade93ca6d88bd5d67b01d97d321810ccf8885a",
+      "previous_sha256": "9800846000fcd8768ab3bfa663ade93ca6d88bd5d67b01d97d321810ccf8885a",
+      "change": "UNCHANGED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/cases/INFRA-EVENT-005.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "b4d534df526dc6708eb1937d42370e3591baeecf8ee4e9783a94e7df32af8c6d",
+      "previous_sha256": "b4d534df526dc6708eb1937d42370e3591baeecf8ee4e9783a94e7df32af8c6d",
+      "change": "UNCHANGED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/cases/INFRA-FFRT-001.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "27445ee13b95c64de2af9e44da145265437bccbee9abce75a9509524a7d969aa",
+      "previous_sha256": "27445ee13b95c64de2af9e44da145265437bccbee9abce75a9509524a7d969aa",
+      "change": "UNCHANGED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/cases/INFRA-FFRT-002.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "3f355b70bedbf3ccb7ca3b5a28cf0a243a4cd46d13b77075ef7062c2962fd4b2",
+      "previous_sha256": "3f355b70bedbf3ccb7ca3b5a28cf0a243a4cd46d13b77075ef7062c2962fd4b2",
+      "change": "UNCHANGED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/cases/INFRA-PTR-001.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "777f6903a3b7defcc7279986d4c3d1cbd2631cf5d027aa1c6bd77ef00ec34c6d",
+      "previous_sha256": "777f6903a3b7defcc7279986d4c3d1cbd2631cf5d027aa1c6bd77ef00ec34c6d",
+      "change": "UNCHANGED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/cases/INFRA-PTR-002.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "264f12d6d8e3cd6a8f3f1f1e528c4d1af425728776e19fa5e8c9d4a6a58f1cac",
+      "previous_sha256": "264f12d6d8e3cd6a8f3f1f1e528c4d1af425728776e19fa5e8c9d4a6a58f1cac",
+      "change": "UNCHANGED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/cases/INFRA-PTR-003.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "8fe56c269246de0c74557293bc672c6905f3d398977208577ab5f200ca236971",
+      "previous_sha256": "8fe56c269246de0c74557293bc672c6905f3d398977208577ab5f200ca236971",
+      "change": "UNCHANGED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/cases/README.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "2a46c0c857609386e426f055f6f476ca70563c5ecd6b2515b90e5cfbd6e40bd0",
+      "previous_sha256": "8db756dc01ab458a6b74ca18a9e8861cc3107deb3c6fe8033d107a9adae2b8ac",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/cases/SIM-B-001.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "4564dd2ff68072aa372b812d08adeea3edaeaacce804036b411268918433b5da",
+      "previous_sha256": "603f3822d5844810d9c10177d7b47ede1254352efb6bc91e995722a9cdac8ca9",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/cases/SIM-B-002.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "81c6a4e6fb91c519401389bdfb79f40e760a5900d51c73006a48d03f649dcffd",
+      "previous_sha256": "09bba892b83791b6c6b2265d866fb0bd7fa90159b83ee7d3219d1c2010cbe221",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/cases/SIM-B-003.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "27eb54bdc4e0b456a2c021c1b131316f2530feca93799e507fbca6d950dd0597",
+      "previous_sha256": "a064f7fc779f577a062cc01145c3ac512c98fd4efb9ba4c7ef8a43e7f44148ef",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/cases/SIM-B-004.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "66c0adfe5360c7a2160df0a46bda2080a2a1b3cdb746a506927ba1e7c8770096",
+      "previous_sha256": "e44e9f9484c24872851f5383f8be5ec6626dd49815c27f0ac380f7421d785522",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/cases/SIM-B-005.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "c526961a82bea60c2a667d671d59d2b4ec78725f25d63e15eeb278f4bd673c3c",
+      "previous_sha256": "3bed61251fadf6902753f4ad733f4836166d25f47101167d1c733a7daca91321",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/cases/SIM-CHAR-001.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "5ba2374ea2acf8ab5d1ecbd3c641fd5b3e26921bd9db8604dfd00935c269f1fb",
+      "previous_sha256": "5ba2374ea2acf8ab5d1ecbd3c641fd5b3e26921bd9db8604dfd00935c269f1fb",
+      "change": "UNCHANGED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/cases/SIM-COMP-001.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "168a014fb10e06c0f0897126a6887b2dde6869aa421064bf38146a3d40e5f07b",
+      "previous_sha256": "168a014fb10e06c0f0897126a6887b2dde6869aa421064bf38146a3d40e5f07b",
+      "change": "UNCHANGED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/component_entry.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "712da3c6d6dc464879220700ea46a44b8363fedbe53707c2672c06dfb60ed988",
+      "previous_sha256": "e3d0905ee00a7f020d033f09d5d58838cd5f47c9b5e2b1bf965dfb8270d68bba",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/dependencies.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "e1e773aabbad54e7994a2d2c5e23104a85fa5a96bdfd953e7252e45b7febe169",
+      "previous_sha256": "b8cbe4965b163f545437ca70e46cac408b1a85f0e71cc1592c133070c136557b",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/design_alignment.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "b6d7b9f7f67b18358a470c2aadc78e4e79ad8c3dbc52b48ccb1bff81df809b15",
+      "previous_sha256": null,
+      "change": "NEW",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/event_adapter.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "296d9f72168cec052a86606dda3746b2f8f9afcd2f305dacaa594d03e8cad7e4",
+      "previous_sha256": "7861931580f76c0bcd4a3e8f524de00531993b4651bc090f534cd5b218f297e3",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/execution_plan.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "8f646306eccf40e12708061ada731999a41c8509194da8133219809234ebeb16",
+      "previous_sha256": "52d8d3eb3417726585737580ace491542c18c13cf87ae970029d681218ed545c",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/ffrt_runtime.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "881a73b1f9604dd251d25ec2f0ac8a6d686c502b6e654db004df0212f901fcb6",
+      "previous_sha256": "881a73b1f9604dd251d25ec2f0ac8a6d686c502b6e654db004df0212f901fcb6",
+      "change": "UNCHANGED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/initialization_closure.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "377b742479fa349a5f33ad59a6ce19488ab755ba7f5356e0f21de575add97761",
+      "previous_sha256": "223a250440f16dabf39383d80cbfe0c3dcd59bf8df577b636fbb047674d80727",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/investigation.md",
+      "status": "ANNOTATED_INITIAL_INVESTIGATION",
+      "sha256": "a38d64324d73e4e41ee39e8e2b3f473dee1a5a43afa27b1397911c89f1b0894c",
+      "previous_sha256": "791de6cbaff04ca608e4b542b01d1a43fc39b32256105fac450109fc49a8bc97",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/linux_gmock_scenarios.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "edb2f64c33821ba56447fccd2be559184c52995f94a60c0fbd8c91b069855353",
+      "previous_sha256": "edb2f64c33821ba56447fccd2be559184c52995f94a60c0fbd8c91b069855353",
+      "change": "UNCHANGED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/oracle_catalog.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "38f42fce566e55f960d07181d62247f5ae30e0794c5dc601f4164de100bf76f2",
+      "previous_sha256": "973be3d5463e4b68ba4624e94f65a72ca76a8fec15cd4be15da9de1507de88cd",
+      "change": "REFRESHED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/platform_compile_subset.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "1f6eafbfb663f8810fa3c99a55e47b430bb2b531a3280628b4a2a5785f6f3569",
+      "previous_sha256": "1f6eafbfb663f8810fa3c99a55e47b430bb2b531a3280628b4a2a5785f6f3569",
+      "change": "UNCHANGED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/ril_mock.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "634c8f4814986a4099bc0561899cd6c78dc75d291578b352e834814f3d8a5321",
+      "previous_sha256": "634c8f4814986a4099bc0561899cd6c78dc75d291578b352e834814f3d8a5321",
+      "change": "UNCHANGED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/run_record.md",
+      "status": "PRIOR_EXECUTION_APPEND_ONLY",
+      "sha256": "dcfefba17329879f4f82ad2e13e64a1777c48446d62f25b25678f72fe1ce15a4",
+      "previous_sha256": "dcfefba17329879f4f82ad2e13e64a1777c48446d62f25b25678f72fe1ce15a4",
+      "change": "UNCHANGED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/suite_matrix.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "33df9fcf487c51c840266fbf7204368415fcbeba74a733be32ba3c06f52d616d",
+      "previous_sha256": "33df9fcf487c51c840266fbf7204368415fcbeba74a733be32ba3c06f52d616d",
+      "change": "UNCHANGED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    },
+    {
+      "path": "test/systemtest/docs/upstream_external_contracts.md",
+      "status": "TEST_DESIGN_AND_SCOPE",
+      "sha256": "d8b8c693ac7caab4c81d09528e273aea4e8610c58e6d1d76929a9c3a5319f01e",
+      "previous_sha256": "d8b8c693ac7caab4c81d09528e273aea4e8610c58e6d1d76929a9c3a5319f01e",
+      "change": "UNCHANGED",
+      "review_scope": "架构/来源/状态一致性；未重新验证全部方法契约或执行测试"
+    }
+  ],
+  "validation": {
+    "active_markdown_files": 58,
+    "local_file_links_checked": 133,
+    "missing_local_links": [],
+    "unclosed_fences": [],
+    "duplicate_numbered_sections_in_canonical": [],
+    "production_files_checked": 617,
+    "production_changes": [],
+    "archived_originals_checked": 11,
+    "archive_payload_failures": [],
+    "changed_or_new_markdown_files": 53,
+    "status": "PASS_STATIC_ONLY",
+    "python": "3.12.3",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "canonical_version": "0.3.1",
+    "canonical_event_catalog_match": true,
+    "target_model_names_checked": true,
+    "document_sha256_checks": 77,
+    "source_anchor_sha256_checks": 26,
+    "unchanged_historical_artifacts_checks": 5,
+    "original_business_cases": [
+      {
+        "case_id": "SIM-B-001",
+        "oracle_id_set_unchanged": true,
+        "status": "BLOCKED",
+        "executed": false
+      },
+      {
+        "case_id": "SIM-B-002",
+        "oracle_id_set_unchanged": true,
+        "status": "BLOCKED",
+        "executed": false
+      },
+      {
+        "case_id": "SIM-B-003",
+        "oracle_id_set_unchanged": true,
+        "status": "BLOCKED",
+        "executed": false
+      },
+      {
+        "case_id": "SIM-B-004",
+        "oracle_id_set_unchanged": true,
+        "status": "BLOCKED",
+        "executed": false
+      },
+      {
+        "case_id": "SIM-B-005",
+        "oracle_id_set_unchanged": true,
+        "status": "BLOCKED",
+        "executed": false
+      }
+    ],
+    "production_digest_before": "c90f7c93ca696e2456ad3e7efeb4bb0caeac9d1d61e659844fed59ce41eb5d82",
+    "production_digest_after": "c90f7c93ca696e2456ad3e7efeb4bb0caeac9d1d61e659844fed59ce41eb5d82",
+    "production_digest_format": "SHA256 of compact sorted-key JSON array of {path,sha256}, rows sorted by path",
+    "whitespace_check": {
+      "command": [
+        "git",
+        "-c",
+        "core.whitespace=cr-at-eol",
+        "diff",
+        "--check",
+        "--",
+        "docs",
+        "README.md",
+        "README_zh.md",
+        "test/systemtest/README.md",
+        "test/systemtest/docs"
+      ],
+      "exit_code": 0,
+      "note": "既有CRLF保留；cr-at-eol不把CR视为尾随空白"
+    },
+    "commands": [
+      {
+        "argv": [
+          "/usr/bin/python3",
+          "/tmp/sim-doc-unification-20261015/check_docs.py"
+        ],
+        "exit_code": 0
+      },
+      {
+        "argv": [
+          "/usr/bin/python3",
+          "/tmp/sim-doc-unification-20261015/final_validate.py"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "build_executed": false,
+    "gtest_executed": false,
+    "hb_executed": false,
+    "device_verification": false,
+    "mermaid_visual_rendering": false,
+    "anchor_fragment_validation": false,
+    "scope_note": "验证文件链接存在性、围栏和规范章节号、模型/目录一致性及摘要；不宣称语义证明、渲染验收或代码运行。历史归档中的旧相对链接按原稿保留。"
+  },
+  "self_hash_policy": "不递归收录本清单自身摘要；其余文档为生成时SHA256。清单不包含真实卡身份。"
+}

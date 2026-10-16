@@ -1,12 +1,14 @@
 # 依赖解决清单、源码target与兼容偏差
 
+> 当前总览（2026-10-15）：固定GoogleTest/GoogleMock已解决；Linux FFRT及真实生产事件传输、host本地指针已有INFRA运行证据。SIM状态/账户初始化仍因14个fork存储协议字段阻塞，链接未到达，其他平台运行提供者未闭合。下文首批容量清单保留其来源及当时支持范围，后续实现以[FFRT/事件运行范围](ffrt_runtime.md)、[平台声明子集](platform_compile_subset.md)及[执行记录](run_record.md)为准。文档对齐未重跑测试。
+
 ## GoogleTest：已解决并独立验证
 
 当前仓库没有可复用GoogleTest源码/目标。扩大搜索发现另一工程host/tests/gtest的头/预编译库，但版本不可核实，且不属于当前仓公共设施，未引用。选择官方v1.15.2，git ls-remote解析并固定提交`b514bdc898e2951020cbdca1304b75f5950d1f59`；来源https://github.com/google/googletest，BSD-3-Clause。锁定archive SHA256=`9257316d65d6259f6596bc4fa5464092305ab3f3d9dc6d7e5780ab462d8baa64`，完整源码tree摘要在configs/dependency_lock.json。
 
-显式获取（构建脚本不会执行下载）：下载lock中archive_url到输出目录；离线把同archive传入prepare_dependencies.py --archive ... --destination ...，验证SHA256后解压。runner再次校验整个source tree，防止使用未知机器库。实际GN编译官方googletest/src/gtest-all.cc成独立static_library；自己的main，不使用GMock。未通过CMake/Meson构建。
+显式获取（构建脚本不会执行下载）：下载lock中archive_url到输出目录；离线把同archive传入prepare_dependencies.py --archive ... --destination ...，验证SHA256后解压。runner再次校验整个source tree，防止使用未知机器库。实际GN编译官方googletest/src/gtest-all.cc成独立static_library；自己的main；首批未使用GMock，当前已链接同一固定版本GoogleMock。未通过CMake/Meson构建。
 
-## 平台接口：不是GoogleTest问题
+## 首批容量接口清单（历史范围）：不是GoogleTest问题
 
 configs/platform_inventory.json记录sim_manager.cpp文本递归include扫描：93个生产文件，40个未在本仓include目录解析的名字；其中stdint.h/stdlib.h是标准库，libxml来自Linux安装，不算平台缺失。该清单含条件分支，不冒称预处理后最小闭包。
 
@@ -51,7 +53,7 @@ host O2/full-LTO、默认exceptions/RTTI与根生产Os/no-exceptions/no-rtti不�
 
 当前更新：Linux 场景通过固定版本 GoogleMock 构造外部参数边界，生产目标不变；详见 [Linux GoogleMock 方案](linux_gmock_scenarios.md)。早期手写桩描述属于历史记录。原五条业务场景仍 BLOCKED。
 
-## 当前增量：正式协议设施与初始化审计
+## 协议设施与初始化审计的中间增量记录（后续状态见页首）
 
 新增GoogleMock `MockTelRilManager`，签名来自本仓真实 ITelRilManager，显式生成/`--check`核实126个override；未配置默认返回失败，使用StrictMock。它只替换外部RIL，不替换SIM业务；正式状态响应设施自检单独标INFRA。
 

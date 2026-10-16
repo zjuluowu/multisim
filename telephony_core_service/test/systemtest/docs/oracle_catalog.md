@@ -45,3 +45,18 @@ O-C01只确认状态含义，RIL CardStatusInfo字段合法性与完整加载条
 
 
 O-Q11：未初始化组件公开查询候选；OPEN_QUESTION，源码sim_manager.cpp:155–184/613–620。实际链接失败，未采集；不建立Legacy基线，不设置强制业务断言。见SIM-CHAR-001设计。
+
+
+## 本地指针设施Oracle（不计SIM业务契约）
+
+| Oracle ID | 分类 / 来源 | 适用前提与强制证据 | 实测 |
+|---|---|---|---|
+| PTR-OWNERSHIP | VERIFIED_INVARIANT，限定host所有权模型；固定c_utils refbase.h与标准共享所有权 | 新对象仅adopt一次；复制保留身份与生存期，最后强owner释放销毁 | INFRA-PTR-001 PASS |
+| PTR-WEAK | VERIFIED_INVARIANT，限定host模型；c_utils@3bdc11e00e7bf6e577cee300ad51045ca9958efd/base/include/refbase.h:1348、1525、1543 | 弱identity不等于对象存活；销毁后promote为空，reset后identity为空；失效identity不解引用 | INFRA-PTR-002 PASS |
+| PTR-LOCAL-CAST | VERIFIED_INVARIANT，限定本地兼容适配的类型安全 | 实际实现接口可转换，不支持/null返回null；没有远程Proxy创建 | INFRA-PTR-003 PASS |
+
+以上不是OHOS intrusive ABI、IPC或SIM产品不变量；每例完整设计见cases，来源与偏差见platform_compile_subset.md。2026-10-08实际命令、SHA、工具链、退出码与XML/JSON见run_record.md。
+
+## 2026-10-15设计一致性说明
+
+现行目标采用V3四Context/三聚合/分类目标，见[设计对齐](design_alignment.md)。目标INV/DU及缺失来源的D-/REL-/FLOW编号不自动成为业务Oracle；当前生产接口/数据源与原有用例状态保持，未通过文档更新晋升PASS。

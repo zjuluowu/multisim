@@ -22,7 +22,7 @@ Given：以下初态及拓扑经过正式边界构造且所有准备证据可用
 
 卡数量=1；pSIM；Profile/eSIM=N/A；Slot0；SimId由公开结果记录，Locked时账户可见性待O-Q10；Subscription=N/A。Active/默认Voice/SMS/Data/Primary只记录；Radio=已初始化；网络=无注册；权限native+GET/SET；合成用户；独立空存储。backend必须synthetic，真实PIN路径禁用。
 
-组件入口=真实ISimManager，公开构造SimManager并调用OnInit；非Mock ISimManager。SA/服务入口不在本例覆盖。参数在生产静态缓存初始化前固定。受控桩配置版本拟议sim-host-boundaries-v1（尚未实现）。状态/账户生产依赖闭包与事件运行适配未完成时不能构造这些前提；组件测试不经过服务capability，不等于绕过生产服务检查。
+组件入口=真实ISimManager，公开构造SimManager并调用OnInit；非Mock ISimManager。SA/服务入口不在本例覆盖。参数在生产静态缓存初始化前固定。受控桩配置版本拟议sim-host-boundaries-v1（尚未实现）。状态/账户生产依赖闭包与SIM初始化所需平台运行适配未闭合时不能构造这些前提；组件测试不经过服务capability，不等于绕过生产服务检查。
 
 ## 5. Initial State
 
@@ -92,7 +92,7 @@ DoD：Oracle审核、host产品链接证据、合法边界输入、有效负向�
 
 ## 15. Suite Matrix / Combination Coverage
 
-M-PIN；1卡/Locked/受控响应；真实卡PIN DEVICE_REQUIRED且未授权。状态BLOCKED，自动化=false，未执行。扩展条件：host适配确认、固定SDK/GoogleTest版本、产品拓扑核实、业务Oracle确认。A另在设备验证；C只有真实采集后才可标已记录。
+M-PIN；1卡/Locked/受控响应；真实卡PIN DEVICE_REQUIRED且未授权。状态BLOCKED，自动化=false，未执行。扩展条件：host方案已批准、GoogleTest已固定；待补匹配平台协议/运行闭包、产品拓扑核实、业务Oracle确认。A另在设备验证；C只有真实采集后才可标已记录。
 
 
 Linux目标修订：无实体设备；GoogleMock仅替换RIL/DataShare/事件/StateRegistry等外部边界。初始化依赖实测编译阻塞见 [依赖闭包审计](../initialization_closure.md)。服务入口SIM-B-001仍独立BLOCKED。

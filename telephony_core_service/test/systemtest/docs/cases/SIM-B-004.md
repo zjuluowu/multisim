@@ -22,7 +22,7 @@ Given：以下初态及拓扑经过正式边界构造且所有准备证据可用
 
 卡数量=2；pSIM+pSIM；Profile=N/A；Slot0/1；SimId通过账户结果获得并映射别名，不假定连续或等于Slot；Subscription=N/A。Active=两卡脚本策略固定并记录；默认Voice/SMS/Data、Primary固定初始配置且只观察允许联动；Radio已初始化；网络无注册；native+GET/SET及敏感查询授权；独立合成用户/存储。没有产品2-slot证据时运行GTEST_SKIP或准备BLOCKED。
 
-组件入口=真实ISimManager，公开构造SimManager并调用OnInit；非Mock ISimManager。SA/服务入口不在本例覆盖。参数在生产静态缓存初始化前固定。受控桩配置版本拟议sim-host-boundaries-v1（尚未实现）。状态/账户生产依赖闭包与事件运行适配未完成时不能构造这些前提；组件测试不经过服务capability，不等于绕过生产服务检查。
+组件入口=真实ISimManager，公开构造SimManager并调用OnInit；非Mock ISimManager。SA/服务入口不在本例覆盖。参数在生产静态缓存初始化前固定。受控桩配置版本拟议sim-host-boundaries-v1（尚未实现）。状态/账户生产依赖闭包与SIM初始化所需平台运行适配未闭合时不能构造这些前提；组件测试不经过服务capability，不等于绕过生产服务检查。
 
 ## 5. Initial State
 
@@ -92,7 +92,7 @@ DoD：Oracle审核、host产品链接证据、合法边界输入、有效负向�
 
 ## 15. Suite Matrix / Combination Coverage
 
-M-2PSIM；2卡/Ready/局部操作/隔离（待确认）。状态BLOCKED，自动化=false，未执行。扩展条件：host适配确认、固定SDK/GoogleTest版本、产品拓扑核实、业务Oracle确认。A另在设备验证；C只有真实采集后才可标已记录。
+M-2PSIM；2卡/Ready/局部操作/隔离（待确认）。状态BLOCKED，自动化=false，未执行。扩展条件：host方案已批准、GoogleTest已固定；待补匹配平台协议/运行闭包、产品拓扑核实、业务Oracle确认。A另在设备验证；C只有真实采集后才可标已记录。
 
 
 Linux目标修订：无实体设备；GoogleMock仅替换RIL/DataShare/事件/StateRegistry等外部边界。初始化依赖实测编译阻塞见 [依赖闭包审计](../initialization_closure.md)。服务入口SIM-B-001仍独立BLOCKED。

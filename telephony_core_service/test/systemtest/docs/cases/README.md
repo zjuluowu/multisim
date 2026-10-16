@@ -10,4 +10,4 @@
 | [SIM-B-004](./SIM-B-004.md) | 双pSIM账户映射与SIM2局部操作隔离 | B拟议；C待采集 | BLOCKED / 未执行 |
 | [SIM-B-005](./SIM-B-005.md) | 受控PIN Locked状态与合成响应 | B拟议；C待采集 | BLOCKED / 未执行 |
 
-批准组件入口后新增：[SIM-COMP-001](SIM-COMP-001.md)容量查询，Level B，AUTOMATED / PASS；不同于上表五条服务入口例。
+批准组件入口后新增：[SIM-COMP-001](SIM-COMP-001.md)容量查询，Level B，AUTOMATED / PASS；不替代上表五条业务例：001保留服务入口，002–005采用已批准的ISimManager组件边界。现行架构见[设计对齐](../design_alignment.md)，不改变各例Oracle和BLOCKED状态。

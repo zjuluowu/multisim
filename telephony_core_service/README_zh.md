@@ -218,3 +218,7 @@
 [drivers_peripheral](https://gitee.com/openharmony/drivers_peripheral)
 
 [telephony\_ril\_adapter](https://gitee.com/openharmony/telephony_ril_adapter/blob/master/README_zh.md)
+
+## SIM架构设计与Linux受控测试
+
+现行方案见[文档入口](docs/README.md)、[冲突统一裁决](docs/MultiSIM/08_design_unification_decisions.md)和[独立测试工程](test/systemtest/README.md)。Version3为目标设计，不表示三聚合或独立SIM SO已落地。上文硬件约束针对设备集成；B层Linux受控组件测试执行真实生产逻辑，以GoogleMock构造外部依赖，不要求实体卡/Modem，也不据此证明真实SA/IPC/权限或设备行为。

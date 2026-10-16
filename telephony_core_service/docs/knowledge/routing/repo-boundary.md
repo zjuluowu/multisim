@@ -26,3 +26,9 @@
 1. 任务涉及"状态机决策/业务规则/数据库表"→ 先怀疑独立仓
 2. 任务涉及"RIL 命令收发/unsol 上报/hisysevent 埋点/SIM 文件/搜网状态"→ 本仓
 3. 不确定时 `git remote -v`+ 查 bundle.json part_name=core_service
+
+## SIM统一设计的边界补充
+
+现行入口见[文档索引](../../README.md)。CoreManagerInner是既有共宿主消费门面，不能因内部解耦直接删除或改变调用契约；非SIM实现可通过私有Host Ports注入。
+
+telephony_trust.json配置其他SA与Core共宿主，不表示它们的业务实现属于本仓。SIM短信存储、卡电话簿和RIL信令属于本仓，完整短信/通话/数据连接与数据提供方业务仍属外仓。当前SIM账户CRUD已核实DataShare；本仓直写RDB、提供方事务/反查等须另补证据，不从RdbHelper名称推导。

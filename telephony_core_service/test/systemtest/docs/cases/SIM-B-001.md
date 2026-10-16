@@ -91,4 +91,4 @@ DoD：Oracle审核、host产品链接证据、合法边界输入、有效负向�
 
 ## 15. Suite Matrix / Combination Coverage
 
-M-ENTRY；启动/未报告状态；所有设备路径另列DEVICE_REQUIRED。状态BLOCKED，自动化=false，未执行。扩展条件：host适配确认、固定SDK/GoogleTest版本、产品拓扑核实、capability入口问题处理、业务Oracle确认。A另在设备验证；C只有真实采集后才可标已记录。
+M-ENTRY；启动/未报告状态；所有设备路径另列DEVICE_REQUIRED。状态BLOCKED，自动化=false，未执行。扩展条件：host方案已批准、GoogleTest已固定；待补匹配平台协议/运行闭包、产品拓扑核实、capability入口问题处理、业务Oracle确认。A另在设备验证；C只有真实采集后才可标已记录。

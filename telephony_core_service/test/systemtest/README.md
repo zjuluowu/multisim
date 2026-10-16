@@ -4,7 +4,9 @@
 
 原五条服务入口候选仍全部BLOCKED；没有验证无卡/Ready/账户/PIN/双卡隔离、SA注册/发现、真实Client/Proxy/Stub IPC、服务入口检查、真实权限/capability、Modem或设备。当前不满足原始全部第一阶段标准，也不宣称真实设备系统测试完成。
 
-基线：`zjuluowu/multisim`，main，HEAD `2841c6f60635853a929c1755dc08f5543a89eb83` + 工作树摘要。所有新增/修改只在本目录；没有提交/推送。
+当前工作仓：`zjuluowu/multisim/main@df8f2f017f83c70145b20255b4e9042f7a5fd923` + 未提交工作树；历史执行各有自己的SHA/摘要，不能回写。本测试实现限定本目录；本轮另刷新docs设计，未重跑SIM测试。
+
+现行目标设计及对Oracle、Phase0和差分的影响见[设计对齐](docs/design_alignment.md)与[架构入口](../../docs/README.md)。
 
 - [组件入口核实](docs/component_entry.md)
 - [服务入口capability调查](docs/capability_investigation.md)
@@ -45,7 +47,7 @@ BUILD.gn把未修改生产源、平台边界、启动器、GoogleTest和测试�
 
 ## 后续场景推进与实测阻塞
 
-已补齐InnerEvent信封的类型/所有权适配，以及真实ITelRilManager接口的GoogleMock设施。运行器额外输出adapter.xml，9项INFRA自检单独计数，不能增加SIM业务用例完成数。原五条仍BLOCKED；新增未初始化C基线候选也因真实生产方法未能链接而BLOCKED，未采集Legacy行为。
+已补齐InnerEvent信封的类型/所有权适配，以及真实ITelRilManager接口的GoogleMock设施。运行器额外输出adapter.xml，16项INFRA自检单独计数，不能增加SIM业务用例完成数。原五条仍BLOCKED；新增未初始化C基线候选也因真实生产方法未能链接而BLOCKED，未采集Legacy行为。
 
 - [真实初始化依赖审计](docs/initialization_closure.md)
 - [事件适配范围](docs/event_adapter.md)、[RIL Mock设计](docs/ril_mock.md)
@@ -60,4 +62,6 @@ python3 test/systemtest/scripts/audit_initialization.py --gtest-root /tmp/sim-sy
 
 平台准备失败由initialization_audit.json记录BLOCKED/executed=false与真实编译诊断，保持主容量套件独立可运行。运行器清除已知旧XML，避免准备失败遗留过期PASS。Windows挂载源的未来文件时间通过有界时间条件等待处理，属于构建准备，不是SIM行为Oracle或固定sleep判通过。
 
-上游外部接口分析见 [upstream_external_contracts.md](docs/upstream_external_contracts.md)，12个仓库的分支、固定SHA、源码路径及摘要见 [upstream_contracts.json](configs/upstream_contracts.json)。新增DataShare游标/Query与公共事件发布边界通过GoogleMock显式配置，未提供服务时失败。运行器验证固定原始平台头摘要，差分要求相同外部契约清单。FFRT运行时仍是设计方案，尚未实现；不等同已运行SIM初始化。
+上游外部接口分析见 [upstream_external_contracts.md](docs/upstream_external_contracts.md)，参考仓库的分支、固定SHA、源码路径及摘要见 [upstream_contracts.json](configs/upstream_contracts.json)。新增DataShare游标/Query与公共事件发布边界通过GoogleMock显式配置，未提供服务时失败。运行器验证固定原始平台头摘要，差分要求相同外部契约清单。FFRT队列子集及真实生产TelEventHandler/TelEventQueue已运行，详见docs/ffrt_runtime.md；不等同已运行SIM初始化。
+
+最新依赖处理见 [BLOCKED处理记录](docs/blocked_resolution_oct08.md)：21份原始平台头已固定摘要；初始化目标45个对象编译成功，当前编译错误仅剩14个未匹配存储协议字段。整体初始化编译/链接仍BLOCKED，未运行状态/账户场景。

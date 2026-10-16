@@ -1,69 +1,25 @@
-MultiSIM DDD 架构文档索引
-=========================
+SIM架构现行索引（2026-10-15）
+============================
 
-目录用途
---------
-本目录保存 telephony_core_service 面向多 Subscription 的 DDD 架构演进文档。
-需要完整了解方案时，建议按文件名前缀从小到大阅读。
+先读 ../README.md 和 08_design_unification_decisions.md。
+总体规范：../SIM_Refactored_Software_Architecture_Design_Version3.md（SIM-SAD-001 v0.3.1）
+类设计：../SIM_Layered_Architecture_Class_Design_Version3.md（SIM-CLASS-001 v0.3.1）
 
-01_sim_subsystem_baseline.md
-----------------------------
-SIM 子系统现状基线。说明当前功能范围、4+1 架构视图、模块职责、进程与部署
-视图、接口、异步执行、持久化、安全、可靠性、构建和测试结构。用于了解现有
-代码实现的起点。
+01：当前源码事实与边界，不包含其他分支的实现完成声明。
+02：问题证据与演进；统计和反例分别标记证据等级。
+03：eSIM、slot、66250及共宿主边界。
+04：统一目标导读，使用V3四Context/三聚合，不另立规范。
+05：当前类、字段、目标与兼容映射，不等同新表设计。
+06：基于统一设计的评审提纲，不代表代码完成。
+07：当前仓进展与真实测试记录，不采用其他仓gitlink状态。
+08：新旧冲突取舍、代码依据、条件目标与待决来源。
+design_alignment_manifest.json：本轮输入、归档、源码摘要和验证。
 
-02_current_architecture_and_evolution.md
-----------------------------------------
-当前 MultiSIM 与 pSIM/eSIM 架构评估。定义核心术语，澄清当前三卡模型，分析
-以 slot 为中心的实现方式，汇总历史演进及反复出现的模式，并识别能力、拓扑、
-资源、事务、扩展、事件、缓存和治理方面的缺口。
+三类目标为SlotTarget/CardApplicationTarget/SubscriptionTarget；不伪造simId。
+公开API、IPC、schema、部署和厂商ABI冻结；无运行期Feature Flag。
+十类内部异步领域事件不替代既有通知与回执。
+Phase0未就绪；容量B1 PASS、INFRA16 PASS，原五业务场景BLOCKED。
 
-03_esim_slot_and_sa_boundary.md
--------------------------------
-eSIM 部署边界专项分析。说明当前 slot 到 eSIM 的隐式映射链、portIndex 与 ICCID
-的作用，以及 eUICC Profile 管理为何使用独立 eSIM System Ability，而 Core
-Service 仍保留 SIM 与 RIL 运行时能力。用于区分部署边界与 DDD 领域边界。
-
-04_ddd_target_architecture.md
------------------------------
-DDD 目标架构主文档。诊断身份、拓扑、资源和事务失真；定义以
-CardHardwareEndpoint 分叉硬件、以 Subscription 归一业务的模型；规定限界上下文、
-聚合、不变量、Process Manager/Saga、并发版本控制、兼容边界和分阶段迁移策略。
-
-05_detailed_class_and_data_model.md
------------------------------------
-详细设计输入。给出当前与目标类图、实体/值对象/关联实体定义、关系基数、逻辑
-数据模型、字段映射、聚合边界、事件与事务约束，以及现有类的迁移映射。用于设计
-具体类、存储结构和接口。
-
-06_refactoring_proposal_slides.md
---------------------------------
-架构评审与立项汇报用 Marp 幻灯片。概述问题、目标架构、分阶段交付计划、风险、
-治理规则、成功指标和推荐的 pSIM + eSIM MEP 验证场景。它是汇报材料，不替代
-详细设计文档。
-
-文档关系
---------
-01 描述现有 SIM 子系统。
-02 记录当前 MultiSIM 架构和历史演进证据。
-03 解答 eSIM slot 与 System Ability 的部署边界问题。
-04 是规范性的 DDD 目标架构。
-05 将 04 细化为类和数据模型设计。
-06 汇总方案，供评审和决策使用。
-
-已删除材料
-------------
-- 已存在更高版本的 Version1 和 Version2 草稿。
-- 与 Version3 完全相同的无版本类模型文档。
-- 内容已归并到 02、04、05 的独立关系模型和 slot-centric 分析文档。
-- `architecture_with_deps.md`：由 Repomix 自动生成的源码快照，不是可维护的架构文档。
-
-维护规则
---------
-- 当前实现基线变化时更新 01 和 02。
-- eSIM 路由或 System Ability 部署变化时更新 03。
-- 修改目标架构、领域边界或兼容策略前更新 04。
-- 已批准的类、持久化、接口和事件设计变更更新 05。
-- 决策或交付计划变化后更新 06。
-- 日常刷新不再创建带版本后缀的文件。保留稳定文件名，在文档内部维护版本记录；
-  仍有价值的旧设计理由归入相应主题文档。
+旧完整正文保存在 ../history/pre_unification_20261015/。
+V22/V23二进制与审阅报告是历史评审资料，不作为并行实施规范。
+方案变更同步SAD、类设计、08及专题；运行状态须有真实命令与结果。

@@ -1,64 +1,62 @@
-# 最小切片、机器可读结果与 Legacy/Split 差分
+# 最小切片、机器结果与Legacy/Split差分
 
-原设计顺序作为历史保留；当前已实施容量组件切片，见文末与run_record.md。
+更新：2026-10-15。Linux host组件方案已获批准，现行架构关系见[设计对齐](design_alignment.md)。本文件替代早期等待批准的计划；历史执行证据保持原日期和SHA。
 
-## 有条件的实施顺序
+## 已执行与剩余顺序
 
-1. 完成当前调查/边界/15项设计/Oracle审查输入（已写文档；业务审查未完成）。批准architecture.md中host产品目标/适配选项，并确定公开入口范围。保留生产capability分支，不能绕过。
-2. 固定GoogleTest、平台接口SDK、GN/编译器、C++标准和参数宏；取得平台host机制证据或批准本目录最小GN适配。只创建自身构建入口，不引用旧测试/Mock。
-3. 编译真实产品target探针，记录缺失头/符号闭包；把业务依赖仍编入产品target，平台依赖登记替身。先确认最小入口能执行真实SimManager状态查询，而非仅Mock转发成功。
-4. 开发独立进程runner、外部RIL注册与状态响应、runtime最低适配、XML/JSON输出和隔离清理。首个业务切片推荐SIM-B-002 Absent，其次001生命周期探测；两者同时报告入口阻塞或正式降级组件范围。
-5. 有效负向控制：仅在已确认Oracle的证据校验中破坏合成身份相等结果/执行标志/清理结果，验证检测器失败。没有身份路径时先验证O-H01设施控制；不修改生产源码来制造红灯。baseline replay差异审核不是生产正确性红灯。
-6. 实际运行Absent，必须证明输入来自正式RIL边界、输出来自公开查询、产品源target真实参与、清理成功；保留命令/环境/退出码/数量。此时才可将该条标AUTOMATED及PASS。
-7. 加Ready文件响应与账户存储协议；实际采集O-L03后添加单卡目标。再双卡映射/隔离及PIN受控响应。每个条件不足用SKIP/BLOCKED，不能以查到Ready一项覆盖全部能力。
-8. Legacy输出基线固定后，Split使用同输入/权限/桩脚本/收敛条件运行；差分分类详见下表。
+2026-10-08记录为容量B层1 PASS、INFRA16 PASS、容量负控按预期FAIL；原五条业务场景与C候选仍BLOCKED。不是五条已完成，不代表无卡/账户初始化成功。详见[运行记录](run_record.md)、[阻塞处理](blocked_resolution_oct08.md)。
 
-本轮停止在1之后：host源码编译适配需用户确认、公开入口异常需负责人判断、GoogleTest及平台SDK缺失。五条测试设计不满足用户“至少一个关键场景执行SIM生产逻辑”的整体验收条件，当前第一阶段整体未完成。
+1. 取得匹配版本的14个存储协议字段及提供方语义，冻结来源而非猜测声明；逐项补齐初始化真实生产闭包。编译/链接成功与生产逻辑可驱动分别给证据。
+2. 完成正式RIL状态、存储提供方及必要平台回调适配，验证生命周期、错误、命名空间和清理；不以SIM业务桩补缺。
+3. 用ISimManager及正式外部输入建立Absent，公开查询状态与账户，采用有界收敛并关联Oracle。未确认无卡/未就绪/账户保留行为标OPEN或实采后LEGACY，不推导永久契约。
+4. 执行最小切片，保留命令、SHA/工作树摘要、工具链、退出码、生产参与及脱敏XML/JSON；确认契约支持时加有效负控。无确认契约不制造规范。
+5. 再扩展单pSIM Ready、双卡关系/隔离及受控PIN Locked；条件不足分别SKIP/BLOCKED。不将设施用例或容量测试替代原五业务场景。
+6. Phase0/G1事实与轨迹齐备后分别评审G2拆SO、G3迁移writer和G4产品扩展。文档中的目标不授权改公共接口、schema、权限或外仓。
 
-## 结果协议 v1（设计，未实现运行器）
+原服务入口SIM-B-001独立调查capability来源与初始化链。不得删除/强制通过检查，也不能因组件通过晋升服务入口通过；拒绝是规则、环境缺失还是缺陷仍依证据判断。
 
-产物：每case子进程GoogleTest XML（--gtest_output=xml），父runner整合JSON。预备编译失败只写JSON BLOCKED，gtest_execution=null，不生成伪执行XML。并行执行尚未支持；首批串行且一用例一进程，cleanup失败阻断队列。
+## 机器结果：当前实现与完整设计分开
 
-JSON字段约定：
+当前scripts/run.py已提供容量切片及负控的XML/JSON；INFRA输出见其运行说明。初始化审计可记录准备阶段BLOCKED，不生成假GoogleTest已执行XML。完整业务结果协议仍为逐项待实现/验收设计，不能因字段表存在声称运行器全部支持。
 
-| 字段 | 必填语义 |
+| 字段组 | 必填语义 |
 |---|---|
-| schema_version / run_id / revision_label | 协议版本、唯一运行ID、Legacy或Split标签 |
-| repository / head_sha / dirty / source_manifest_digest | 仓库及实际文件基线；HEAD不足时必须摘要 |
-| toolchain / environment | gn/ninja/cxx/gTest/SDK版本、target_os、cpu、OS/WSL、编译命令和退出码 |
-| case_id / oracle_ids / level | Case和每条可观察证据的Oracle分类；B或C，禁止默认A |
-| topology / permission_profile / stub_config_version / scenario_digest | 卡数与Slot数、pSIM/eSIM、匿名slot关系、权限、调度脚本摘要 |
-| status / executed / reason / blocking_stage | PASS/FAIL/SKIP/BLOCKED；编译/配置/初始化/业务阶段区分 |
-| production_target / production_source_manifest / link_manifest | 实际产品代码参与链接证据；源码名单不等于运行覆盖 |
-| observations | API接收/回调返回、稳定状态、账户别名关系、事件语义、外部请求必要参数；逐条Oracle关联 |
-| convergence | condition_id、budget、elapsed、timed_out；公开条件支持证据，设施预算不是业务SLA |
-| safety | synthetic_only、identity_plaintext_emitted=false、危险操作策略、字段白名单检查结果 |
-| cleanup / restore | 临时命名空间/进程回收、成功标志、失败原因、是否阻断后例 |
-| commands / exit_codes / counts / artifacts | 实际构建与运行命令；测试总数和PASS/FAIL/SKIP/BLOCKED；产物路径 |
+| revision / repository / source_manifest | HEAD、dirty及参与文件摘要；Legacy/Split版本标签 |
+| toolchain / environment / commands | GN、Ninja、编译器、GoogleTest、平台声明版本，实际命令及退出码 |
+| case_id / oracle_ids / level | 每条证据关联Oracle来源，B/C；不得默认A |
+| topology / permission / stub_config | 卡与槽关系、匿名身份、权限、输入脚本版本/摘要 |
+| status / executed / reason / blocking_stage | PASS/FAIL/SKIP/BLOCKED，准备失败不得记作测试运行 |
+| production / link_manifest | 实际目标、源码和链接证据；编译清单不等于运行覆盖 |
+| observations / convergence | 公开结果、事件、稳定关系、正式请求；收敛条件、预算、elapsed、timeout |
+| safety / cleanup / restore | 合成输入与报告脱敏、隔离命名空间、清理恢复及失败阻断 |
+| counts / artifacts | 实际测试数量、分类状态、XML/JSON及审计产物 |
 
-O-H01/O-H02管控机器证据真实性。任何“已编译/运行/通过”都带实际命令、SHA+摘要、工具链、exit code、数量和安全证据。当前configs/cases.json是候选设计状态，绝不是执行报告。configs/environment_probe.json只记录环境调查。
+configs/cases.json是候选设计状态，不是运行报告。原始历史SHA和结果不被本轮基线回写。强制断言逐条关联Oracle，DU/INV及外部来源编号不自动等于CONFIRMED_CONTRACT。
 
-身份控制：fixture内存保存合成ICCID/IMSI/EID/号码/PIN，报告只写CARD-A/CARD-B或relation_equal布尔值。真实敏感数据不收集；不以可枚举hash代替脱敏。GTest ASSERT不直接比较/打印完整身份字符串，只比较bool并用别名诊断；XML、JSON、差分及生产日志捕获同样按白名单过滤。默认丢弃可能含身份的原始生产日志，仅使用明确脱敏字段辅助诊断。源文件hash是代码基线摘要，与身份脱敏不同。
+## 收敛、隔离与安全
 
-清理：父runner创建安全随机临时目录，限制所有store/参数文件路径在命名空间内；先空环境后生产启动。正常场景保存公开快照后退出子进程，父runner检查退出、清理目录、恢复桩/环境；异常watchdog终止子进程，仍执行清理，失败阻断后例。持久化重启场景保留同一隔离namespace给第二个子进程，用例末一次清理。不得保存真实参数/数据库到共享系统环境。
+以可观察稳定条件和有界等待判定，不用固定长sleep或毫秒级线程顺序。桩可调度事件，生产实际线程范围须记录；不承诺穷尽交错。绑定代次不能替代同卡RecordsGeneration；合法切换造成的新会话按因果关联处理。
 
-## Legacy/Split 差分规则
+每用例独立进程/临时命名空间，先初始化、后启动，退出后核查和清理；清理失败阻断后续。重启持久化用例显式共享仅该用例的命名空间，用例末恢复。Linux进程重启不等于设备重启，桩重置不等于真实Modem恢复。
 
-| 比较项 | 自动判定/审核规则 |
+身份只在内存比较，输出别名或布尔关系，不让ICCID/IMSI/EID/号码进入ASSERT诊断、XML、JSON、普通日志或差分；真实数据不能以可枚举散列冒充脱敏。生产日志默认不直接转存，使用白名单证据。真实错误PIN尝试、Profile删除和eUICC重置默认禁用。
+
+取消等待、超时和Git回退不等于外部效果撤销；恢复需事实重查并隔离迟到结果，不盲目重发设备命令或恢复旧身份。运行期操作存储不提供跨重启同OperationId续跑承诺。
+
+## Legacy/Split差分
+
+同一套边界用例分别链接两种产物，不新增运行期Feature Flag、不双发硬件命令。只读Shadow不成为writer。当前compare_results.py只支持已实现的容量证据，尚无Split执行记录，不能复制Legacy结果伪造差分通过。
+
+| 比较项 | 判定 |
 |---|---|
-| 已确认API返回语义、错误码 | 只有来源确认的精确码可强制；其余O-L进入人工评审 |
-| 稳定状态、身份与账户关系 | 按来源语义比较，simId输出匿名关系；不能隐藏可能影响契约的稳定ID变化，需单独O-Q05确认 |
-| 必须/禁止事件与必要偏序 | 只有确认Oracle支持的集合/偏序；重复次数允许范围待确认 |
-| 收敛 | 同输入固定预算，分别记录timed_out；产品SLA未确认不比较毫秒级性能 |
-| 对外请求 | 只slot/sim对象及必要协议参数、必须/禁止语义；重试/额外查询不按无依据次数判错 |
-| LEGACY_BEHAVIOR | 实际运行捕获后比对，差异进入人工审核，不自动声明Split错误 |
-| OPEN_QUESTION | 保留观察差异和来源，不自动判错 |
-| 内部类、IPC次数、SO符号、普通日志顺序、内部调用次数 | 不比较 |
+| 已确认API返回/错误码、稳定状态与账户关系 | 按对应Oracle强制；匿名化不隐藏影响契约的ID关系变化 |
+| 必须/禁止事件、关键偏序 | 仅比较有来源的语义；不假定恰好一次或全局顺序 |
+| 收敛 | 固定场景和预算，记录timeout；设施预算不是未确认的产品SLA |
+| 正式对外请求 | 目标slot/sim与必要参数、必须/禁止语义；不比较无契约次数 |
+| LEGACY_BEHAVIOR | 真实采集后差异进入人工审视，不自动判旧/新错误 |
+| OPEN_QUESTION | 记录差异与待确认点，不作强制业务判错 |
+| 内部类、SO符号、IPC次数、普通日志顺序、数据库表 | 不作为业务比较项 |
 
-每条比较以Case+Oracle关联；固定RIL输入/响应/事件队列、DataShare脚本、权限与初始持久化环境。任何环境/源码/配置变化显式写diff_context；无法保证一致标不可比/BLOCKED而非失败。默认不规定并发最终值完全确定，后续采用经确认的合法状态集合与偏序。
+固定输入、响应、权限、初态和桩版本；环境不一致记录不可比/BLOCKED。并发只验证已确认的合法结果集合与必要偏序，不假定最终结果唯一。真实IPC/平台投递/设备恢复仍须另有A层证据。
 
-平台与SA拆分相关观察可能需A补充：B不经过真实IPC，不能证明IPC ABI、SA可发现性、平台公共事件投递、真实存储恢复或Modem行为。当前没有Split执行版本，也没有Legacy实测基线。
-
-## 当前实施状态
-
-用户已批准组件适配，实际完成新SIM-COMP-001只读容量切片及有效检查器负控；路径与证据见run_record.md。原五条服务入口场景和Absent初始化仍BLOCKED，不用容量通过替代它们。GoogleTest依赖已解决，状态/账户所需平台运行时语义未解决。
+本次只刷新设计与计划，未新增执行证据。

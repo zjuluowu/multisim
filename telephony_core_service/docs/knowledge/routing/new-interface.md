@@ -59,3 +59,7 @@
 | 只在客户端缓存字段，不写入跨进程 parcel | 字段写入 IPC payload（proxy 序列化） |
 | 跳过中间层直接改服务端 | 从入口到派发逐层核对透传 |
 | 漏改测试 mock → 编译失败 | 18 文件清单内同步测试文件 |
+
+## 当前SIM内部重构不新增接口
+
+本页是未来获准接口演进时的工程清单；现行SIM方案冻结公开API、IPC和既有InnerKit消费契约，不包含追加接口的授权。OperationId、三类目标和十类领域事件保持内部，不直接追加JS枚举、CES载荷或IPC transaction。详见[统一裁决](../../MultiSIM/08_design_unification_decisions.md)。

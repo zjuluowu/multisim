@@ -40,3 +40,9 @@
 | services/tel_ril/src/tel_ril_network.cpp | 搜网相关 RIL 命令/上报 |
 | frameworks/native/src/core_manager_inner.cpp | 客户端内部单例（RIL 直达口） |
 | frameworks/js/network_search/src/napi_radio.cpp | radio NAPI 主实现（约 4100 行） |
+
+## 当前实现与目标设计分开
+
+上表是现有代码定位；数量和行号是历史辅助信息，不作为架构收益指标。目标文档见[统一入口](../../README.md)，采用四Context/三聚合，但当前源目录尚无这些聚合、DomainEventBus或旧文档宣称的Subscription Shadow。
+
+CoreManagerInner包含实际消费侧委托与注入契约，不只是可删除的Service Locator。新增test/systemtest为独立Linux GN/Ninja+GoogleTest/GoogleMock防护网，不依赖旧测试目标；实际仅容量B1 PASS、INFRA16 PASS，原五场景BLOCKED。

@@ -52,3 +52,7 @@
 - 高风险入口 → code_map（modules.md 关键文件索引）
 - 隐式约束/失效模式 → expert（constraints.md 失败模式表）
 - 验证回归 → verify（build-test.md）
+
+## 历史线索的适用范围
+
+本文件的提交/DTS/PR条目用于定位，不因本次文档刷新自动成为当前已复现故障或验收契约。未提供原始基线/缺陷记录的统计不作因果结论。现行迁移目标与待决事项见[统一裁决](../../MultiSIM/08_design_unification_decisions.md)，不以历史其他分支完成记录证明本仓已实施。

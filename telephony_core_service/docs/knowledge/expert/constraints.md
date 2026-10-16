@@ -4,7 +4,7 @@
 
 1. **禁止** 修改/重排已有 IPC 接口码（interfaces/innerkits/include/core_service_ipc_interface_code.h）——只允许追加，改码需同步 stub/proxy/client/测试 mock 5+ 处
 2. **禁止** 对已有公共 API（interfaces/kits/）做不兼容变更（签名/权限/返回值语义）
-3. **禁止** 新增并发代码使用 `std::mutex`——本仓已迁移 `ffrt::mutex`（sim_state_manager.cpp、network_search_state.cpp 已改，历史 DTS2026090406270）；沿用同模块既有锁原语
+3. **禁止** 新增并发代码使用 `std::mutex`——新增同步采用 `ffrt` 原语；当前 SimStateManager 仍有 std::mutex 与 ffrt::mutex 并存，不能声称已全量迁移；按共享状态既有保护关系审查
 4. **禁止** 在条件编译分支（eSIM/卫星/telephony_ext）外使用其类型；分支内改动需验证默认构建不受影响
 5. **禁止** 删除失败的测试用例来"通过"
 6. **禁止** 未明确用户请求时提交代码
@@ -28,3 +28,11 @@
 | 超大 parcel/数组 | channelConfig 等列表无上限检查崩溃 | 参照 network_register.cpp:203 MAX_SIZE 检查 |
 | NAPI 回调未注销 | JS 回调悬挂 | 参照既有 napi 回调 manager（napi_ims_reg_info_callback_manager） |
 | so 体积膨胀 | libradio.z.so 超限 | ANI 层改动注意依赖（7bd88cb53） |
+
+## SIM重构的现行冻结与目标边界
+
+现行方案见[统一裁决](../../MultiSIM/08_design_unification_decisions.md)和[SAD](../../SIM_Refactored_Software_Architecture_Design_Version3.md)。四Context/三聚合/分类目标属于目标设计，未在当前生产实现中完成。
+
+本阶段不新增公开API/IPC/SA/进程/schema/厂商ABI或运行期实现切换Flag；“接口码只追加”不是本阶段追加授权。保持CoreManagerInner消费侧契约，内部注入端口可以解耦，不整体删除门面或迁入非SIM业务。
+
+目标Owner单写，Domain纯规则不依赖平台I/O；Application锁外执行DB/RIL/IPC/Hook并受控提交。取消等待不等于硬件中断；回退需处理设备副作用与数据兼容。四槽和NULL迁移须补来源及能力证据，不能由设计文档自动授权。

@@ -49,3 +49,17 @@ hb build -T //base/telephony/core_service/test/fuzztest:fuzztest
 2. 改代码中：同步 18 文件标准集（新增接口时）
 3. 改代码后：`rg` 一致性检查 → hb build（有环境时）→ 对应 gtest → fuzzer（解码类）
 4. 全部通过后由用户决定提交（禁止擅自提交）
+
+## 独立Linux组件防护网与文档刷新
+
+完整OHOS产品构建仍需上述完整树；test/systemtest有已批准的独立Linux GN适配，不是ohos_unittest，不能将主机测试结果当设备/SA/IPC通过。
+
+从Core目录执行的当前入口示例（本次文档刷新未执行）：
+
+```sh
+python3 test/systemtest/scripts/run.py --gtest-root <固定版本GoogleTest源码目录> --output <输出目录>
+```
+
+固定依赖、Clang18/gold/C++17、命令及2026-10-08真实结果见[test工程README](../../../test/systemtest/README.md)和[执行记录](../../../test/systemtest/docs/run_record.md)。容量B1 PASS、INFRA16 PASS与原五业务BLOCKED分开。编译45个初始化对象不表示初始化已链接/运行。
+
+文档统一只做来源、链接、代码摘要和一致性静态检查，不宣称hb/gTest/fuzzer已运行。架构Phase0未就绪不妨碍已授权host设施推进，也不授权生产重构。

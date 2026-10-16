@@ -22,7 +22,7 @@ flowchart LR
     S -->|对外状态通知| T
 ```
 
-推荐 Linux 入口是生产 CoreServiceSim 的公开服务转发方法，承载真实 SimManager，不使用它的 GetSimManager 读取内部状态。它是 CoreService 委托的公共 C++入口（core_service.cpp:479、:585、:637），不是对用户暴露的独立 SA。该路径不经过 CoreServiceClient/GetProxy、IPC transaction、CoreServiceStub、真实 Binder、OnStart SA 注册，也不验证 NAPI 的错误码转换。若必须完整 CoreService 入口，需扩大 host 链接闭包；在 architecture.md 列为选择。不能用组件内部 ISimManager 查询结果冒称已验证整个服务 API。
+当前默认Linux业务入口为已批准的ISimManager组件，详见component_entry.md。下图保留SIM-B-001的BLOCKED服务入口设计，不代表默认实施路径；该拟议服务路径是生产CoreServiceSim的公开转发方法，承载真实 SimManager，不使用它的 GetSimManager 读取内部状态。它是 CoreService 委托的公共 C++入口（core_service.cpp:479、:585、:637），不是对用户暴露的独立 SA。该路径不经过 CoreServiceClient/GetProxy、IPC transaction、CoreServiceStub、真实 Binder、OnStart SA 注册，也不验证 NAPI 的错误码转换。若必须完整 CoreService 入口，需扩大 host 链接闭包；在 architecture.md 列为选择。不能用组件内部 ISimManager 查询结果冒称已验证整个服务 API。
 
 ## 入口清单
 
@@ -56,3 +56,7 @@ flowchart LR
 异步控制：RIL脚本可控投递顺序，生产线程不规定执行顺序；只判断公开收敛与契约支持的偏序。事件观察从公开发布接口捕获，不读取 observerHandler/internal event maps。允许查询、重试、多次同值事件；次数无业务依据时不作断言。
 
 生命周期：推荐一用例一个子进程。先创建临时命名空间/固定权限/参数/RIL脚本，后装配生产对象；正常退出等待完成响应、注销外部订阅、关闭队列，父进程验证进程结束和临时目录清理。生产 SimManager 没有已核实的整体 DeInit 契约，不能声称 fixture 析构就足以隔离。残留进程或清理失败直接阻断后续例并记录基础设施失败。
+
+## 2026-10-15设计一致性说明
+
+现行目标采用V3四Context/三聚合/分类目标，见[设计对齐](design_alignment.md)。目标INV/DU及缺失来源的D-/REL-/FLOW编号不自动成为业务Oracle；当前生产接口/数据源与原有用例状态保持，未通过文档更新晋升PASS。
