@@ -46,7 +46,7 @@
 
 ### 2.2 目标分层架构（TARGET）
 
-下图保留蓝本的 API / Application / Domain / Infrastructure / RIL 视图，并将 R（生产卡运行支撑）和 H（宿主装配）显式标出。Compatibility/ACL 作为应用边界中的兼容职责呈现；是否把它另称为第四个业务 Bounded Context，见 §3 与 §8.2 的口径说明。
+下图保留蓝本的 API / Application / Domain / Infrastructure / RIL 视图，并将 R（生产卡运行支撑）和 H（宿主装配）显式标出。Compatibility/ACL 作为应用边界中的兼容职责呈现；是否把它另称为第四个业务 Bounded Context，见 §1 与 §3 的口径说明。
 
 ```mermaid
 flowchart TB
@@ -57,12 +57,14 @@ flowchart TB
         SIMAPI["既有 SimManager / ISimManager"]
         ESIMAPI["既有 Core eSIM 接口 / IEsimManager"]
         ESCLIENT["既有 EsimServiceClient"]
+        SUBAPI["Subscription API（仅经单独批准后）"]
     end
     subgraph APP["Application Layer"]
-        SIMAPP["SimAppService（旧 SIM API 用例翻译）"]
+        SIMAPP["SimAppService（旧 SIM API 用例协调）"]
         SUBAPP["SubscriptionAppService（仅在另行批准新 API 后启用）"]
         EUAPP["Core eUICC 本地用例入口"]
         ACL["ACL / Compatibility：LegacySlotView、查询投影、旧格式输出"]
+        APPPORT["Application Ports：Execution / Observation / Host"]
     end
     subgraph DOMAIN["Domain Layer（目标业务规则）"]
         T["Subscription Topology<br/>TopologyAggregate / TopologyManager"]
@@ -70,11 +72,12 @@ flowchart TB
         A["Radio Resource<br/>AssignmentAggregate / RadioResourceArbiter"]
         BUS["同进程 DomainEventBus<br/>提交后内部通知"]
         R["Card Runtime 支撑<br/>State / EF / Records / Security / STK / eUICC"]
-        PORTS["内层 Ports：Repository / Execution / Observation"]
+        REPOS["Domain Repository Ports<br/>Topology / Assignment / Operation"]
     end
     subgraph INFRA["Infrastructure Layer + Host Assembly"]
         RILAD["RIL Adapter：请求/回调转 Observation"]
-        DBAD["DataShare Adapter：SimRdbHelper 现有路径"]
+        DBAD["DataShare Adapter"]
+        OPAD["RuntimeOperationRepository<br/>默认内存实现"]
         PARAM["System Parameter Adapter"]
         EUAD["Core eUICC Adapter：本地 APDU 执行"]
         VENDOR["VendorHook Adapter：既有 dlopen 函数指针"]
@@ -91,30 +94,40 @@ flowchart TB
     BIND --> SIMAPI
     IPC --> SIMAPI
     INNER --> SIMAPI
-    SIMAPI --> SIMAPP
     ESIMAPI --> EUAPP
-    SIMAPP --> ACL
-    SUBAPP -.仅获批后.-> ACL
-    ACL --> T
-    ACL --> A
-    ACL --> O
+    SIMAPI --> ACL
+    ACL --> SIMAPP
+    SUBAPI -.仅获批后.-> SUBAPP
     SIMAPP --> T
     SIMAPP --> A
     SIMAPP --> O
+    SUBAPP --> T
+    SUBAPP --> A
+    SUBAPP --> O
+    EUAPP --> O
     O --> R
-    T --> PORTS
-    A --> PORTS
-    O --> PORTS
-    R --> PORTS
+    T -.只读 Snapshot.-> ACL
+    A -.只读 Snapshot.-> ACL
+    O -.只读状态/结果.-> ACL
+    R -.只读卡视图.-> ACL
+    ACL --> SIMAPI
+    ACL --> BIND
+    T --> REPOS
+    A --> REPOS
+    O --> REPOS
+    SIMAPP --> APPPORT
+    EUAPP --> APPPORT
+    R --> APPPORT
+    APPPORT -.implemented by.-> RILAD
+    APPPORT -.implemented by.-> EUAD
+    APPPORT -.implemented by.-> VENDOR
+    APPPORT -.implemented by.-> EVT
+    REPOS -.implemented by.-> DBAD
+    REPOS -.implemented by.-> PARAM
+    REPOS -.implemented by.-> OPAD
     T -.已提交事实.-> BUS
     A -.已提交事实.-> BUS
     O -.已提交结果.-> BUS
-    PORTS -.implemented by.-> RILAD
-    PORTS -.implemented by.-> DBAD
-    PORTS -.implemented by.-> PARAM
-    PORTS -.implemented by.-> EUAD
-    PORTS -.implemented by.-> VENDOR
-    PORTS -.implemented by.-> EVT
     HOST --> SIMAPP
     HOST --> R
     RILAD --> HRIL --> MODEM
@@ -131,11 +144,11 @@ flowchart TB
 |---|---|---|
 | API → Application | API 负责旧契约、权限、参数/回调边界；通过应用服务处理用例，不直接改 Aggregate。 | TARGET；静态依赖检查建议。不得借此改变现有权限和错误顺序。 |
 | Application → Domain | Application 编排准入、目标解析、外部效果、Owner 提交及完成输出；Domain 保持纯业务规则。 | TARGET；简单查询可走只读视图，不强制经过 OperationCoordinator。 |
-| Domain → Infrastructure | Domain 仅依赖内层类型/抽象，不 import 具体实现；Adapter 由 H 装配。 | TARGET；具体 Ports 放在 Domain 还是 Application 必须统一，不能循环依赖。 |
+| Domain → Infrastructure | Domain 依赖抽象、不 import 具体实现；Repository Port 与聚合规则同属领域边界，执行/观察/宿主 Port 由应用用例拥有，Adapter 由 H 装配。 | TARGET；端口按语义归属，禁止循环依赖和 Domain→具体 Infrastructure。 |
 | Infrastructure → Application/Domain | Adapter 实现 Port、发出 Observation/Result；不直接调用 DomainService、改聚合或旁路 Application。 | TARGET；回调通过 ingress/Owner 门控。 |
 | Compatibility → 核心事实 | Compatibility 只读派生旧接口视图和旧格式输出，不写 T/A/O 权威状态。 | TARGET；任何需要修改事实的旧 API 转换成应用命令。 |
 | 跨聚合协作 | 使用 Command、不可变快照/值类型及已接受领域事件，不传共享可写 Aggregate。 | TARGET；同一端到端效果只由一个主协调者发出。 |
-| DomainEventBus | 仅同一进程内，提交后异步通知；不替代 IPC、RadioEvent、CommonEvent、Registry、CES 或回调。 | 目标内部机制；无跨 SA/进程传输能力，无默认全局顺序/恰好一次保证。 |
+| DomainEventBus | 仅同一进程内，提交后异步通知；不替代 IPC、RadioEvent、CommonEvent、Registry、CES 或回调。 | 目标内部机制；无跨 SA/进程传输能力，无默认全局顺序/恰好一次保证。若要求单调序号，须定义其作用域并在 Owner 提交点分配。 |
 | API/部署边界 | 本轮不新增公开 API、IPC、SA、进程、schema 或运行期开关。 | 当前统一设计约束；蓝本中新增接口项均须单独批准后才能成为实施目标。 |
 
 ## 3. Bounded Context 到组件映射（TARGET）
@@ -149,9 +162,11 @@ flowchart TB
 | TopologyAggregate | `TopologyManager` | `MultiSimController` 的 ICCID/账户/映射职责（部分） | PROPOSED | 管理已核实的账户、槽事实、绑定及 Snapshot；保留现有 simId 分配/查找行为，不宣称跨删除或设备永久身份。 |
 | TopologyRepository Port | `ITopologyRepository` | 无独立 Port；缓存嵌在 Controller | PROPOSED | 抽象账户/拓扑读写；只采用现有受支持持久化契约。 |
 | Repository Adapter | `TopologyRepositoryImpl` | `SimRdbHelper` + Controller 缓存 | PROPOSED | 当前 `SimRdbHelper` 实际使用 DataShare；不得据命名声称 NativeRdb 直写或 DB 与快照原子。 |
-| SlotRegistry | `SlotRegistry` | `TELEPHONY_SLOT_COUNT`、各处槽位检查 | PROPOSED | 收敛配置基数查询；需要覆盖产品可配置性和分布式槽规则，不以替换常量名代替配置核验。 |
+| SlotRegistry | `SlotRegistry` | `SIM_SLOT_COUNT*` 宏、`slotCount_` 与多个槽位边界检查（[当前定义](../interfaces/innerkits/include/telephony_types.h#L30-L63)） | PROPOSED | 蓝本使用的 `TELEPHONY_SLOT_COUNT` 标识未在当前源码检出；目标应收敛现有多种容量来源，并覆盖产品可配置性/分布式槽规则，不能仅替换常量名。 |
 | CardDetector | `CardDetector` | `MultiSimMonitor` / `MultiSimHelper::IsEsim`（部分） | PROPOSED | 将卡型检测封装为输入观察；不得把 ATR/类型识别等同于账户身份发现。 |
 | RIL Adapter | `RilAdapter` | `TelRilManager` / `TelRilSim`（部分） | PROPOSED | 适配 RIL 请求和响应；回调先转类型化 Observation，不直接写拓扑。 |
+
+**迁移关键点：**将 `MultiSimController` 中 `InitIccId`、`UpdateDataByIccId`、标签/账户查询等拓扑职责逐项迁入 T；缓存从槽索引结构整理为带身份、绑定和来源的 Snapshot。蓝本所说将槽位基数收敛至 SlotRegistry 是目标清理工作，不能借此改变产品槽位能力；`MultiSimHelper::IsEsim()` 的 ATR/类型判断进入 CardDetector，但仍与账户身份发现分开。
 
 ### 3.2 Profile / Business Operation Context
 
@@ -163,6 +178,8 @@ flowchart TB
 | Core eUICC Adapter | `EuiccAdapter` | `EsimManager` + `EsimFile` + `TelRilManager` | PROPOSED | 封装本地逻辑通道/APDU/回执；保留真实卡侧调用链和错误语义。 |
 | CardChannel | `ICardChannel`、可选 `PsimCardChannel` | PSIM/eSIM 文件与 APDU 路径无统一 CardChannel 抽象 | PROPOSED | 仅在确有共同契约时引入；不能把 PSIM EF I/O 与 eSIM APDU 强行合并成相同协议。 |
 
+**迁移关键点：**在既有可用操作入口上关联内部 OperationId/step/attempt，不新增公共 IDL 参数；RIL/eUICC 回调由 ingress 做门控。Core `EsimManager`/`EsimFile` 负责本地 APDU 与卡侧原语；SA 66250 的下载/OSU 主流程保留单一远端 Owner。
+
 ### 3.3 Radio Resource Context
 
 | 领域概念 | 目标组件 | 当前对应 | 状态 | 职责与迁移关键点 |
@@ -171,6 +188,8 @@ flowchart TB
 | AssignmentRepository Port | `IAssignmentRepository` | 无独立 Port；系统参数/缓存散布 | PROPOSED | 抽象当前可持久化的 Assignment 事实；不得由新接口虚构新的参数或存储表。 |
 | Assignment Adapter | `AssignmentRepositoryImpl` | 系统参数 + DataShare 路径（按字段不同） | PROPOSED | 参数与 DataShare 是不同外部资源，无跨资源原子性保证。 |
 | RolePolicy | `RoleAssignmentPolicy` | `MultiSimController::SetDefault*` 等（部分） | PROPOSED | 保留 Voice、SMS、Data 各自读取/回退差异及 Primary→Data 联动。 |
+
+**迁移关键点：**`SetDefaultVoiceSlotId`、`SetDefaultSmsSlotId`、`SetDefaultCellularDataSlotId` 的角色决策进入 A；`RadioProtocolController::SetRadioProtocol` 的异步设备效果由 O 关联、A 提供资源计划、RIL Adapter 执行。不能仅用新仲裁器替换现有 condition-variable 等待而丢失超时、响应、回退和设备效果核验语义。
 
 ### 3.4 Compatibility / ACL（横切实现职责）
 
@@ -189,7 +208,7 @@ flowchart TB
 | Core SA 4010 | `sa_profile/4010.json` 指定 `process=telephony`、`name=4010`、`libtel_core_service.z.so`（[配置](../sa_profile/4010.json#L1-L11)）。 | 静态配置不证明设备已启动。 |
 | Core / SIM / RIL 构建 | 根 `BUILD.gn` 把 Core、SIM、搜网、RIL 源编入 `tel_core_service`（[目标和源清单](../BUILD.gn#L30-L45)、[SIM/RIL/Core](../BUILD.gn#L67-L138)）。 | 当前没有独立生产 SIM SO。 |
 | Core eSIM | `core_service_support_esim` 默认关闭，可由产品配置开启（[开关](../telephony_core_service.gni#L14-L40)、[条件源](../BUILD.gn#L139-L145)）。 | 不是所有产品都包含 Core eSIM Runtime。 |
-| SA 身份 66250 | 本仓 `EsimServiceClient` 获取既有 `IEsimService` proxy；`telephony_trust.json` 同时列出 4010、66250（[客户端加载](../frameworks/native/src/esim_service_client.cpp#L65-L115)、[信任配置](../services/etc/init/telephony_trust.json#L1-L14)）。 | 不能据此证明 66250 服务实现、独立进程或故障隔离；当前统一裁决认为配置支持共宿主，进程实况仍须产品侧核实。 |
+| SA 身份 66250 | 本仓 `EsimServiceClient` 获取既有 `IEsimService` proxy；`telephony_trust.json` 的 `process=telephony` 条目同时列出 4010、66250（[客户端加载](../frameworks/native/src/esim_service_client.cpp#L65-L115)、[信任配置](../services/etc/init/telephony_trust.json#L1-L14)）。 | 这只是配置事实；不能单凭它证明设备实际进程、服务实现位置或故障隔离。 |
 | `telephony_ext` | `TelephonyExtWrapper` 对 `libtelephony_ext_service.z.so` 执行 `dlopen`/`dlsym` 并调用函数指针（[wrapper](../services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp#L22-L64)）。 | 同进程插件边界，不是 IPC/SA。 |
 | eSIM 两条路径 | 高层 Download/OSU 经 `EsimServiceClient → IEsimService`；本地 APDU 经 `CoreService → EsimManager → EsimFile → TelRilManager → HDI RIL`（[IDL/Client](../interfaces/innerkits/IEsimService.idl#L25-L53)、[APDU链路](../services/core/src/core_service.cpp#L1150-L1172)）。 | 不可合并成单一服务内调用链。 |
 
@@ -204,8 +223,8 @@ flowchart LR
         CORE -.dlopen/dlsym.-> EXT["telephony_ext 插件"]
         SIMSO -.本地执行 Adapter.-> RIL
         SIMSO --> BUS["进程内 DomainEventBus"]
-        CORE -.既有 SA 客户端 IPC/callback.-> SA66250["既有 SA 身份 66250<br/>服务实现/进程需产品证据"]
     end
+    APP -.EsimServiceClient / 既有服务 IPC/callback.-> SA66250["既有 SA 身份 66250<br/>服务实现/进程需产品证据"]
     SIMSO --> DS["DataShare / 系统参数 / Registry / CES"]
     RIL --> MODEM["HDI RIL / Modem / UICC / eUICC"]
 ```
@@ -213,6 +232,13 @@ flowchart LR
 蓝本中的“`esim_service` SA 66250 独立进程、OperationCoordinator/OperationRepository 位于该进程”不能作为当前事实，且与本仓当前统一设计“保持既有 SA/进程、不新增服务；本地 OperationCoordinator 在 SIM 私有 SO，66250 保留其既有高层任务主流程”不一致。若确需把 66250 确认为独立部署并迁移 Owner，须先有产品服务配置/实现证据、跨进程协议和唯一主编排裁决；在此之前图中把 66250 画为外部既有服务契约，不断言进程位置。
 
 同样，蓝本中的 `IEsimManager`、`ISubscription` 拆分或新增 OperationId 公共参数属于 IPC/API 契约演进，不是本次目标部署的一部分；目标私有 SIM SO 先作为同进程链接/责任边界，不能宣称独立故障隔离。真实的 `dlopen` 调用方向是 Core/Wrapper 加载并调用扩展库，不能将 `telephony_ext.so` 画成“IPC 端点”。
+
+| 蓝本部署项 | 核验/裁决 | 本文采用口径 |
+|---|---|---|
+| Core SA 4010 留在 `telephony` | 当前 profile/构建支持 SA 4010 的配置；目标保持既有宿主。 | TARGET：Core + 私有 SIM SO 同进程，不新增 SA。 |
+| eSIM SA 66250 独立进程 | SA ID 和 `process=telephony` trust 配置可见；本仓未包含该服务实现或实际设备进程清单。独立进程/故障隔离未证实。 | OPEN：保持既有 `EsimServiceClient` IPC 契约；进程位置不画成事实或已批准目标。 |
+| 66250 内运行第二个 OperationCoordinator | 与“一个端到端任务只有一个主编排者”冲突，也与本仓目标由 SIM OperationCoordinator 管本地操作、远端服务保留其高层任务相冲突。 | 不采用双 Owner。若批准拆分，必须重新明确端到端操作所有权和协议。 |
+| `telephony_ext` 通过 IPC 访问 | 当前实现是 `dlopen`/`dlsym` 函数指针调用。 | 同进程插件；目标通过 Host/Vendor Adapter 保持 ABI，不改画成 IPC。 |
 
 ## 5. 线程模型与回调准入
 
@@ -457,7 +483,7 @@ flowchart TB
 | `SimFileManager`、`IccFile`、`SimFile` 等 | 卡型路由、EF 读写、解析、加载计数、Records 与状态回写。 | R 的 application/records/codec；LoadSession 和 RecordsGeneration 是渐进门控建议。 | SIM SO 内复用原生产算法；RIL 执行接口不迁入领域层。 | 不把计数/serial 当作同一代次；不改变合法刷新和对外完成时点。 |
 | SIM SMS、电话簿、STK、运营商配置 | 卡内短信、ADN/FDN/PBR、STK 流程、运营商匹配/权限与 APN 初始化协作。 | R 对应 sms_storage、phonebook、stk、carrier 子模块；外部投递/联系人/数据业务留原仓。 | 卡侧代码在 SIM SO；SMS/Data/联系人提供方及业务服务仍在各自 SA/仓。 | 不扩展职责到完整 SMS、联系人、Call、Data 服务；保留 PIN2、文件多阶段和专用事件语义。 |
 | Core `EsimManager` / `EsimFile` / `EsimController` | 本地 eUICC 信息、逻辑通道、APDU、认证、卡侧 Profile 原语和回执。 | R/CoreEuiccAdapter；O 仅管理本地步骤/等待关联；T 接受核实后的拓扑观察。 | 条件 Core eSIM Runtime 位于 SIM SO；HDI RIL 仍按原路径。 | 不把所有卡侧原语转给 66250；保留 Port/slot 输入及外层返回与内层 enumResult 差异。 |
-| `EsimServiceClient` / 66250 | Client 加载 SA 66250 并调用既有 IDL 任务方法。 | I 的 ExistingEsimServiceAdapter/ReplyAdapter；远端任务主编排仍归既有服务。 | 66250 身份和已有 IPC 保持；配置当前将其与 4010 同列 `telephony`。 | 不复制下载/OSU 主流程；服务实现、重启恢复和设备实际装载需外仓/产品核验。 |
+| `EsimServiceClient` / 66250 | Client 加载 SA 66250 并调用既有 IDL 任务方法。 | I 的 ExistingEsimServiceAdapter/ReplyAdapter；远端任务主编排仍归既有服务。 | 66250 身份和已有 IPC 保持；trust 配置的 `process=telephony` 下同时列有 4010 与 66250，但仍须产品运行配置确认实际装载。 | 不复制下载/OSU 主流程；服务实现、重启恢复和设备实际装载需外仓/产品核验。 |
 | `RadioProtocolController` | 三阶段 Radio Protocol 操作、slot/Modem 映射、回调和等待。 | A 保持期望角色/资源决策；O 关联切换流程；RilExecutionAdapter 承担既有协议执行。 | Adapter 和 Owner 在 SIM SO；RIL/HDI 路径维持原宿主。 | 不因目标接口而把当前协议状态说成无关联；保留已有 session/响应机制。 |
 | `TelRilManager`、`TelRilSim` | 各信令模块适配 HDI RIL、Observer/请求回调。 | Host RIL Port/Execution Adapter + RilCallbackAdapter/CommandIngress。 | 现有 Core/RIL 构建位置可保持，不由 SIM 聚合接管全部信令。 | Adapter 的回调只映射并提交观察/结果；不直接改聚合，也不绕过 Application 调用 DomainService。 |
 | `SimRdbHelper` / 参数 API | DataShare 账户 CRUD 与参数读写混在 Controller 流程。 | Topology/Assignment Repository 接口由 I Adapter 实现；参数独立 Adapter。 | SIM SO 内端口/适配代码；DataShare 服务和参数服务外部。 | 新 Repository 名称不证明新表/直写/事务；锁不保证多个连接、DataShare 与参数原子性。 |
@@ -518,7 +544,7 @@ flowchart TB
 
 - [当前源码基线](MultiSIM/01_sim_subsystem_baseline.md#L5-L20)：功能范围、构建部署和 RIL/eSIM 装配。
 - [当前架构问题与演进](MultiSIM/02_current_architecture_and_evolution.md#L19-L29)：旧职责交叠与拆分约束。
-- [eSIM 与部署边界](MultiSIM/03_esim_slot_and_sa_boundary.md#L5-L11)：SA 66250、共宿主和 eSIM 双通道。
+- [eSIM 与部署边界](MultiSIM/03_esim_slot_and_sa_boundary.md#L5-L11)：SA 66250 配置边界和 eSIM 双通道。
 - [统一设计裁决](MultiSIM/08_design_unification_decisions.md#L15-L36)：方案冲突、存储、事件、Owner 和状态结论。
 - [详细功能迁移主表](SIM_Architecture_Refactor_Design.md#L358-L424)：SIM-001～SIM-060 的当前模块、证据、目标层和迁移限制。
 - [构建产物与目标部署](SIM_Architecture_Refactor_Design.md#L143-L169)、[目标 SO/链接建议](SIM_Architecture_Refactor_Design.md#L276-L295)。
