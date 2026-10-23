@@ -139,7 +139,7 @@ flowchart LR
 
 **Core eSIM 两条路径必须分画：**
 
-1. 高层 Download/OSU 等任务：Framework → `EsimServiceClient` → SA 66250 `IEsimService`；ID L/方法声明见 [IEsimService.idl](../interfaces/innerkits/IEsimService.idl#L25-L53)，客户端调用见 [esim_service_client.cpp](../frameworks/native/src/esim_service_client.cpp#L202-L210)。
+1. 高层 Download/OSU 等任务：Framework → `EsimServiceClient` → SA 66250 `IEsimService`；IDL/方法声明见 [IEsimService.idl](../interfaces/innerkits/IEsimService.idl#L25-L53)，客户端调用见 [esim_service_client.cpp](../frameworks/native/src/esim_service_client.cpp#L202-L210)。
 2. Core 卡侧 APDU：Core `SendApduData` → `EsimManager` → `EsimFile` → `TelRilManager` → HDI RIL；见 [CoreService](../services/core/src/core_service.cpp#L1150-L1172)、[EsimManager](../services/sim/src/esim_manager.cpp#L230-L239)、[EsimFile](../services/sim/src/esim_file.cpp#L1692-L1725)、[TelRilSim](../services/tel_ril/src/tel_ril_sim.cpp#L451-L458)。
 
 ### 3.2 目标部署图（TARGET）
