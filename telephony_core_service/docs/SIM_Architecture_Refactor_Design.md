@@ -1,6 +1,6 @@
 # SIM 架构重构设计
 
-文档：`SIM_Architecture_Refactor_Design.md`。核查及复审修订日期：2026-10-22。状态：现状按证据逐项静态核查，覆盖计数不代表所有方法语义核查完成；目标为设计建议，尚未实施。本文是唯一交付主文档，来源清单、冲突闭环、证据及待决事项均在第 9 章。此次修订闭环八项审阅意见，见 9.7；旧文档与历史执行记录保留原貌。
+文档：`SIM_Architecture_Refactor_Design.md`。源码核查及首轮复审日期：2026-10-22；补充设计一致性复审：2026-10-23。状态：现状按证据逐项静态核查，覆盖计数不代表所有方法语义核查完成；目标为设计建议，尚未实施。本文是架构主规范，来源清单、冲突闭环、证据及待决事项均在第 9 章；补充文档只展开视图，不建立另一套规范。八项首轮审阅见 9.7，新同步补充设计的核查与裁决见 9.8；历史执行记录保留原貌。
 
 ## 1. 设计结论、范围与代码基线
 
@@ -29,6 +29,7 @@
 | 工作区/Git 根 | `/mnt/e/github/multisim`；仅发现这一 Git 根；无本地完整 OHOS `.repo` 产品树 | `telephony_core_service` 是普通目录，没有独立 `.git`/当前 gitlink；不能套用旧 submodule 版本 |
 | 仓库/分支/生产证据基线 | `https://github.com/zjuluowu/multisim.git`，`main` | 生产基线 `db876e551a3fac0922f98c7b358392326663ccc1`，下文简称 B1；这是冻结证据基线，不是持续变化的分支 HEAD |
 | 此次复审起点 B2 | HEAD `c9ea006254c2e703b3c42b8baf6a71c0f20d7a49`；主文档提交 `96f238593ef55b1beb9ac096de6f4de4a9def1d5` | B1→B2 仅新增本主文档及接口说明；生产源码无提交差异。复审起点索引为空，主文档无未提交修改；原 W1 改动仍保留 |
+| 补充设计复审起点 B3 | HEAD `801877c95ab8d37c60cb60dc210e796be6b96599`；主文档首轮修订提交 `a4a97355bc221cf5869ac97cae04d0a0b2bbd9e6` | a4a97355→B3 仅新增补充分层设计并更新文档入口；未带入生产代码变化。本轮修订范围为本文、补充设计和 README，证据及历史执行记录仍按原基线解释 |
 | 最近上游同步 | B1 将 Core 105 个文件同步到 `openharmony/telephony_core_service@b2ddf49ab0fc21f0d7f3628c702913c5d18e7977` | 上游提交是同步来源，不是本地全部文档/测试的版本；本轮不拉取覆盖工作树 |
 | 初始未提交状态 W1 | 948 个 tracked 修改条目、22 个 untracked 条目（目录按 Git 折叠）；忽略行尾差异后 21 个 tracked 文件有实质改动 | 实质改动集中于 `test/systemtest`；未提交文件、测试设施和换行差异均纳入审阅，不覆盖 |
 | 文档输入 | 多数现行稿声明 `df8f2f01 + dirty`；V3 输入又引用 `hmos_dev_20260813/core@738f51f6` | 都是来源版本标签，不作为 B1 代码事实；具体清单见 9.1 |
@@ -141,6 +142,7 @@ flowchart TB
 
 可核实的跨层/回路：文件加载→`IccFile::NotifyRegistrySimState`→状态 Manager→Registry；Handle 缺卡→CoreManagerInner→SIM 账户重置；MultiSimController 自动主卡选择→CoreManagerInner→SIM→Controller；File→CoreManagerInner→运营商配置。搜网又持 SIM 接口。见 [E06](#e06)、[E15](#e15)、[E27](#e27)、[E61](#e61)。这些是拆 SO 前必须分类的依赖，不能将 CoreManagerInner 整体搬到 SIM，也不能为“无环”删除生产调用。
 
+<a id="current-deployment"></a>
 ### 3.3 原架构部署图与构建关系
 
 ```mermaid
@@ -184,6 +186,7 @@ flowchart LR
 | eUICC 通道/命令结果/eid/普通与低优先级对象 | EsimFile；Manager 持两组对象；enabledProfileNum 经 TelProfileUtil | 共享 eUICC 实体、通道关闭重试；Profile 数量不是订阅绑定 [E45](#e45)、[E46](#e46)、[E76](#e76) |
 | 平台订阅、账户 callback/death recipient、重试事件 | Monitor、Tracker、各 Manager/Controller、EsimServiceClient | 反注册多在析构；Core OnStop 没有新的全局 drain 保证 [E03](#e03)、[E32](#e32)、[E53](#e53) |
 
+<a id="current-flows"></a>
 ### 3.5 当前主要业务如何完成
 
 当前两项不能统一改写的规则（F，B1/W1）：
@@ -206,6 +209,7 @@ eSIM：高层任务走已有服务；卡侧 Switch/认证/安装/通知等通过
 
 ## 4. 目标 DDD 架构：上下文、分层、模块、接口与部署
 
+<a id="target-contexts"></a>
 ### 4.1 从业务责任推导上下文
 
 推导顺序：空槽/锁卡/插卡/账户/激活/切换/恢复场景→区分 slot、账户、应用、Profile 与资源→冻结外部契约→确定身份/会话/完成不变量→给状态指定写者→形成下表→选择层和私有接口。无需先套入固定的五类或六类 Context。
@@ -251,6 +255,7 @@ flowchart LR
 
 这张图有交互回路，但不意味着源代码相互 include：T/A 只发布快照或返回纯数据；O 通过应用层命令接收器提交结果；R 不引用 T/A 的具体类。宿主装配将回调注入。跨上下文事件只通知已接受事实，不替代旧同步完成点。
 
+<a id="target-layers"></a>
 ### 4.3 目标分层与源代码依赖方向
 
 ```mermaid
@@ -278,6 +283,7 @@ flowchart TB
 | 卡协议 | 现有文件/安全/通道/编解码 | R 封装复用，逐条引入会话门控 | 不用桩重写卡规则或更改真实卡协议 |
 | 部署 | Core/SIM/搜网/RIL 同 SO，已有 SA/进程 | 同 SA/进程，新增私有 SIM SO 为链接边界 | SO 不提供崩溃隔离或独立服务身份 |
 
+<a id="target-deployment"></a>
 ### 4.4 目标模块、建议目录与部署边界
 
 下列目录是目标建议，不创建文件。表 5.1 中 `T/...` 等均相对于这些根路径。私有“接口”仅供同版本组件链接，不是新增公开 API/IPC。
@@ -299,6 +305,7 @@ G2a 先在原 SO 内整理“原实现 + 私有桥”的依赖和所有权，G2b
 
 目标部署仍为 telephony：SA4010/旧 Core SO→SIM SO（含 R 及本地 eSIM Runtime）→公共 utils；Core 同时保留搜网/RIL。66250 独立服务身份和其现有加载方式保持，SIM SO 不含该服务的下载网络/OSU 主流程。详见 7.4 的跨 SO 生命周期协议。
 
+<a id="target-contracts"></a>
 ### 4.5 关键类、状态与内部接口设计
 
 建议类是逻辑职责，不要求按表建类数。T 的 `TopologyService` 是应用写入口，`AccountTopology` 持账户/绑定事实；A 的 `AssignmentService/AssignmentPolicy` 管角色与资源意图；O 的 `OperationCoordinator/OperationContext` 管本地步骤；R 的 `CardRuntime/LoadSession/ChannelLease` 封装生产对象；C 的 `LegacyQueryFacade/CompletionPlan` 保持旧输出。
@@ -371,6 +378,7 @@ classDiagram
 
 O 的业务状态建议为 `Accepted→Executing→Reconciling?→Succeeded/Failed/Unresolved`；等待关系另为 `Waiting→Delivered/TimedOut/CancelledWait/CallerDied`。`EffectKnowledge={NotSent,Rejected,ConfirmedApplied,ConfirmedNotApplied,Unknown}` 与等待状态正交；取消等待不等于设备已取消。等待结束后可继续接纳归属有效的设备结果，但不重复完成旧回调；操作已终结时，晚到证据进入 R 的资源核对接收器，不复活旧 OperationContext。未知效果将租约责任移交 ResourceBarrier，释放调用者引用而不把设备标为可用，见 4.7。重启可丢失 OperationId；首次写准入需重新核对资源，不承诺同 ID 恢复或恰好一次设备执行。
 
+<a id="session-transitions"></a>
 ### 4.6 会话代次、局部加载和合法转换协议（P）
 
 R 的 `SessionRegistry` 是卡应用运行会话的唯一维护者。`runtimeEpoch` 标识一次模块实例，重建必须产生不复用的实例标识；`bindingGeneration` 在 CardRuntimeKey/ApplicationKey 作用域内递增，用于隔离运行数据。T 的 `bindingRevision` 只版本化已接受的账户/路由绑定，引用 R 发出的 SessionRef，不再自行产生一套 bindingGeneration。显示名修改不推进卡会话代次；账户未识别也可建立槽/卡应用会话。键来自已有装配与已核实协议，不用未知 Port=0 或展示标签补齐身份。
@@ -389,6 +397,7 @@ R 的 `SessionRegistry` 是卡应用运行会话的唯一维护者。`runtimeEpo
 
 LoadToken 为 `(SessionRef, LoadScopeId, recordsGeneration, requestRef)`。RequestEntry 记录 EF、依赖父请求、必需/可选类别、读/写、Pending/Completed/Failed/Invalidated；重复结果只消费一次成员资格。新 Records 视图由仍有效的 scope 结果合成，允许不同未受影响 scope 保留各自代次，不要求整个应用所有字段同一个 recordsGeneration。首次/锁定/局部加载的必需集合及输出时点沿用各卡型原实现；改变缺文件时 LOADED 语义须单独裁决，不借新集合机制改变原契约。
 
+<a id="resource-recovery"></a>
 ### 4.7 设备资源隔离、恢复和重新准入（P）
 
 R 内 `ResourceArbiter/ResourceBarrier` 维护真实共享域的独占资格；O 申请/归还使用权，A 只表达资源策略。通道实例和普通/低优先级 EsimFile 不能各建一个互不相知的设备锁。资源键优先依据已核实的 Modem/eUICC 路由；来源不足时只使用已知保守共享域，不推断额外并发能力。
@@ -416,6 +425,7 @@ R 内 `ResourceArbiter/ResourceBarrier` 维护真实共享域的独占资格；O
 
 ## 5. 原功能到目标模块的迁移映射
 
+<a id="feature-mapping"></a>
 ### 5.1 稳定功能清单与主映射表
 
 表中 T/A/O 是业务上下文；R 是卡运行支撑；C/I/H 是实现责任。目录代号展开见 4.4。代码证据跳转到 9.3 的路径、关键符号、行号、版本及摘要。一个类多次出现是刻意按职责拆分；迁移不改变原入口参数与部署。
@@ -514,6 +524,7 @@ R 内 `ResourceArbiter/ResourceBarrier` 维护真实共享域的独占资格；O
 | SIM-047～054 | 两组 EsimFile、channel、eid、esimProfile_、enabledProfileNum/TelProfileUtil | R/euicc 管卡侧缓存/通道；O 管单次步骤；T 仅接受可信 Profile/账户关联 | 普通与低优先级共享设备资源键；保持 TelProfileUtil 现有键和 Profile 数量含义，不将其提升为永久账户目录 |
 | SIM-001、002、055～057 | helper/resultset、Handle、线程/FFRT 队列与 Hook 函数指针 | 组合根按创建方/资源方所有权持有；I 用作用域对象释放 | helper Release/resultset Close、反注册、Hook 执行结束与 SO unload 有明确顺序；不裸 delete Manager 接口 |
 
+<a id="writer-cutover"></a>
 #### 5.2.1 写权切换单元与所有旧写路径的接管
 
 切换单元是下面的 WU 写权，功能编号是业务交付视角。`LegacyMutationBridge` 放在 application 私有集成层，将尚未迁移的 Controller/Monitor 调用接入 Owner，不复制策略、不直接持有可写缓存。G3a 接管 T 时即安装 A 的旧实现适配写入口：A 的规则仍可执行原算法，但角色字段写入只有一个入口；G3c 替换策略和编排，不再次产生新 writer。直接字段访问须在切换提交中收口，不能约定以后再删。
@@ -701,6 +712,7 @@ sequenceDiagram
 | SIM-024 激活 | 普通非 force：RIL→缓存/UpdateSubState Hook→DB→再次缓存/Hook/主卡后续；整体成功才由 Manager 发账户/active 通知 | 机械拆分原样；Hook 调用与公共账户通知分开，静态失败分支见 7.1.1 | Hook 实际下游效果及运行偏序 Q-05/Q-06 |
 | SIM-051 卡侧切换 | enumResult 来自卡；Manager 外层返回 success 并更新偏好参数 | 双层结果与参数副作用保持 | 与 66250 listener/账户可见性的跨仓偏序 Q-03/Q-05 |
 
+<a id="legacy-visibility"></a>
 #### 7.1.1 已核实的读取来源和部分失败轨迹
 
 以下 F 表限定 B1/W1，在有效槽、账户已加载、无其他并发写且走指定分支时描述可观察行为；被测回调/通知中的查询需固定同一前置状态，不能把任意线程全序写成保证。P 目标必须在对应节点复现表中结果，错误仍经原 Core/Client/语言绑定转换。各表的“缓存变化”也不保证外部 DataShare 消费者已经看到相同结果。
@@ -753,6 +765,7 @@ T/A 各有受控写执行域；R 按卡应用/实际共享设备划分执行与�
 
 恢复只利用已有可达观察和存储。连接丢失/重启后先重新建立服务、重新读取卡/路由/账户，分别判断设备效果与投影；未知就明确待核对，不能将旧参数写回当作设备补偿。无日志表时不承诺重启后同 OperationId、可靠受理/Outbox 或恰好一次命令执行。超时预算与自动补偿若超出现有行为需 Q-06。
 
+<a id="so-lifecycle"></a>
 ### 7.4 跨 SO 对象、装配与关闭协议
 
 保留 `ISimManager`/`IEsimManager` 公共布局；它们当前无虚析构。现有由具体类型创建的 shared_ptr 控制块并非因此错误；新工厂必须由 SIM 创建并提供匹配销毁方式，不通过接口裸指针 delete。跨 SO shared_ptr/容器仍要求同编译链/标准库/分配器/Feature 宏，发布按同产品全量重建，不宣称跨版本 ABI 稳定。
@@ -780,6 +793,7 @@ Git revert/恢复旧产物只回退软件。执行前停止受理并核实在途
 
 ## 8. 分阶段实施及验收条件
 
+<a id="migration-stages"></a>
 ### 8.1 实施切片与退出条件
 
 | 阶段 | 输入、任务和输出 | 验收/失败退出条件 | 责任角色与依赖 |
@@ -821,10 +835,12 @@ Git revert/恢复旧产物只回退软件。执行前停止受理并核实在途
 
 ## 9. 附录：文档冲突闭环、证据索引与待决策事项
 
+<a id="document-sources"></a>
 ### 9.1 文档来源清单与适用性
 
 | 来源（均相对于本目录） | 阅读范围/用途 | 版本及采用方式 |
 |---|---|---|
+| [SIM_Architecture_Layering_and_Migration_Design.md](SIM_Architecture_Layering_and_Migration_Design.md) | API/Application/Domain/I/R 分层、部署和旧模块迁移视图；逐节与本文及源码对照 | B3 新增输入，原蓝本未随文件提供可定位的独立版本/批准记录；本轮按 9.8 修正其与本文的差异，作为补充视图，不以较新日期覆盖本文裁决 |
 | [SIM管理对外接口说明_源码核实版.md](SIM管理对外接口说明_源码核实版.md) | 接口分层、CMI 对象委托、SA4010 与 66250 的签名/完成通道差异、证据深度声明 | 233eea88 提交；读取 B1，核查日期 2026-10-22；本次补入来源。声明存在性可交叉参考，未核实的运行时语义不能作为兼容完成证据 |
 | `README.md`、`MultiSIM/01_sim_subsystem_baseline.md`、`02_current_architecture_and_evolution.md`、`03_esim_slot_and_sa_boundary.md` | 当前/历史边界、状态风险、身份与部署候选陈述，全文核查 | 2026-10-15，声明 df8f2f01+dirty；逐事实重证，不以入口“现行”称号代替正确性 |
 | `MultiSIM/04_ddd_target_architecture.md`、`05_detailed_class_and_data_model.md`、`08_design_unification_decisions.md` | 上下文/聚合/三类目标、数据/事件/Owner、全部 DU 争议项 | 2026-10-15；作为候选与选择理由，本文细化功能迁移并修正分类 |
@@ -1272,6 +1288,7 @@ CoreServiceSim 的 70 个定义中，66 个业务方法名可对应下列 SIM/�
 | [usim_file_controller.cpp](../services/sim/src/usim_file_controller.cpp) | [SIM-012](#sim-012)、[SIM-013](#sim-013) | 根 Core 源列表中；R/application；R/records |
 | [voice_mail_constants.cpp](../services/sim/src/voice_mail_constants.cpp) | [SIM-017](#sim-017) | 根 Core 源列表中；R/telephony_records |
 
+<a id="open-decisions"></a>
 ### 9.5 未决事项、静态风险与所需输入
 
 | ID | 未决问题 | 默认处理/本次建议 | 备选及影响 | 所需依据与责任；限制范围 |
@@ -1320,4 +1337,27 @@ CoreServiceSim 的 70 个定义中，66 个业务方法名可对应下列 SIM/�
 | T/A/O/R 新模型、资源屏障、会话门控、G2/G3 | 设计一致性：状态维护者、输入输出、迁移前置与待决项对应 | 未实现、未编译、未运行；本次批准修改文档不等于批准改变产品行为 |
 
 后续每个功能切片应在同一主文档附录登记“入口/分支—实现证据—已核实语义—外部缺口—实际验收结果”。只有覆盖映射的条目保持该标记；静态语义核实不能替代产品测试。90 组代码摘要匹配、表格和图一致是文档检查结果，不能用来证明重构已经完成。
+
+<a id="supplement-review"></a>
+### 9.8 B3 补充分层设计的一致性复审（2026-10-23）
+
+本轮输入为 B3 的补充分层设计及 README，逐节对照本主文档；结论依据是职责、不变量、真实调用及构建，不按日期或文件名选优。B3 的新增文档有利于并排理解分层和部署，但不替代主映射、写权协议和兼容轨迹。原蓝本的独立文件、版本和批准记录未提供，其 P1～P10 等编号保留为来源标签，不升格为已确认需求。
+
+文档关系统一为：本文维护现状证据、目标边界、功能/写权映射、兼容轨迹、阶段和 Q 项；补充设计展开相同规则的分层/部署视图；README 导航。V3、MultiSIM 及 2026-10-15 裁决保留其原基线和推导，不再以“四 Context”等旧摘要覆盖本文；不批量改写其历史正文或执行结果。
+
+| ID | 补充输入的差异/缺口 | 证据与采用结论 | 修正位置及状态 |
+|---|---|---|---|
+| UC-01 | Compatibility 又列作未决的第四 Context；README 仍指定旧文档为最高规范 | 4.1、K05：T/A/O 为业务上下文，R 为生产运行支撑，C 为实现层；业务数量非产品批准项 | 补充 §1～3、README；P 文档口径闭环 |
+| UC-02 | R、OperationCoordinator 和总线放进纯 Domain；图未区分调用与源码依赖 | 4.3～4.5：应用协调依赖纯规则和内层端口，I/R 实现端口；R 未纯领域化，Coordinator 属应用职责 | 补充 §2.2/2.3/3/9.1；运行协作与编译依赖分图 |
+| UC-03 | P3 的全局 Revision、P9“提交前不可见”可被理解为全接口统一原子性 | 4.5/4.6、7.1.1：校验必要作用域版本；T/A 在旧程序节点提交兼容投影，设备确认、存储与通知分步处理 | 补充 §2.1/5/6/11；保留 B-A/B-P 等部分失败轨迹，无新增全局原子保证 |
+| UC-04 | 汇总映射遗漏号码查询回写、号码写卡、映射人工 ABSENT 和 IMS 属性归属 | [E78](#e78)～[E82](#e82)、[E34](#e34) 及 Controller::SaveImsSwitch/QueryImsSwitch：SIM-023.a～c、031.a～c、045.a/b 分别承接 | 补充 §3.5/10/11；F 定向静态核实，兼容验收仍待执行 |
+| UC-05 | G2 合并新增关闭协议；G3 仅说逐功能/字段切换，未涵盖所有旧写入口 | 5.2.1、8.1、[E83](#e83)～[E86](#e86)：G2a/b/c 分离；WU-01～09 切换，遗留激活/重载/查询回写同时委托 | 补充 §9.2/12；只分阶段，不新增 writer 或运行开关 |
+| UC-06 | BindingGeneration/RecordsGeneration 未交代维护者；超时后只要求核对未说明资源接管 | 4.6/4.7：R 维护会话及 LoadScope，T 维护 bindingRevision；ExpectedTransition 限定因果，R ResourceBarrier 接管未知效果 | 补充 §5/11；方案闭环，静止判据仍为 Q-03/Q-06 |
+| UC-07 | “总线不跨 SA”混淆服务身份与地址空间；无请求上报也统一要求 OperationId | [E53](#e53)、[E65](#e65) 及 4.5：SA ID 不证明进程；66250 保持既有服务调用；无请求上报不伪造 OperationId，走带来源观察 | 补充 §2/5/11/13；不改 IPC 或推断设备部署 |
+| UC-08 | 现状图省略反查与文件回写；部署图的直接箭头可能暗示 SIM 反链 Core 具体 RIL 符号 | [E15](#e15)、[E59](#e59)、[E01](#e01) 及 4.4：保留现状耦合；目标运行委托经 HostPorts，实际链接按 Core→SIM→API/utils 核验 | 补充 §4/7/8/9；图例显式区分运行调用、源码依赖和部署 |
+| UC-09 | 主文档引用大量旧行号/区间，功能范围又写 001～060；规范来源跳回旧稿 | 5.1 为 62 主项/8 子项；补充改用本文稳定章节锚点、功能锚点及 E 索引；旧稿引用仅解释历史 | 补充 §1～14、本文章节锚点/9.1、README；链接与结构静态检查 |
+
+本轮验证范围：核对 B3 文档提交范围，复查号码读写、映射状态、激活缓存写、IMS 存取、Core 装配/OnStop、SA 配置、服务 proxy 和厂商加载路径；对 90 组 E 证据重新校验文件摘要及符号行，检查三份文档的本地链接、锚点、表格和代码块，按修改前文件摘要核对保护范围。只说明文档及定向源码检查；Mermaid 未经渲染器视觉验收，未执行 hb、gTest/fuzzer、设备/服务流程或目标 SO 链接。9.6/9.7 仍是首轮审阅记录，不将其中的结果或未提交文件计数改写为本轮执行结果。
+
+没有新增人工决策项：产品身份/拓扑、66250 服务编排、匹配提供方、外部通知和设备静止判据仍分别见 Q-01～Q-06。C 的层次归属和图表依赖方向已由本轮方案一致性裁决，不再作为产品审批缺口挂起。
 
