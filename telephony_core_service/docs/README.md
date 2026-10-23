@@ -11,6 +11,8 @@
 5. [目标架构导读](MultiSIM/04_ddd_target_architecture.md)、[类与数据映射](MultiSIM/05_detailed_class_and_data_model.md)、[评审汇报提纲](MultiSIM/06_refactoring_proposal_slides.md)：使用同一目标模型，不另立竞争方案。
 6. [当前进展](MultiSIM/07_subscription_refactoring_status.md)、[独立 Linux 测试工程](../test/systemtest/README.md)：只依据实际执行记录报告状态。
 
+补充阅读：[SIM 架构分层对比与功能迁移设计](SIM_Architecture_Layering_and_Migration_Design.md)，集中对照重构前后逻辑分层、物理部署和旧功能迁移职责；不替代源码证据或实施状态记录。
+
 设计一致性规则是：**本轮裁决 → 总体设计 → 类设计 → 导读与测试设计**。源码决定“现在是什么”；用户需求与已确认契约决定验收。源码中的现有实现不自动成为永久业务规范，新文档的“已批准”字样也不能替代缺失的批准记录。
 
 ## 统一口径
