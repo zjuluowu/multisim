@@ -192,76 +192,65 @@ A 的一致性范围先由角色不变量确定，再结合真实资源冲突：
 
 #### 5.1.1 图示范围与状态
 
-本节沿用原稿的**纵向分层框、层内组件框及文字职责说明**，便于直接比较当前与目标结构。当前图按固定提交的实际职责归类，目标图为 PROPOSED；横向框不代表当前已形成严格软件层，也不代表独立 SO 或进程。
+本节采用 **UML 组件/包图**表达当前架构、目标分层和源码依赖，采用 **UML 时序图**表达运行示例；使用 PlantUML 记法，保留原图的分层分组、组件、职责说明与关系含义。当前图按固定提交的实际职责归类，目标图为 PROPOSED；横向框不代表当前已形成严格软件层，也不代表独立 SO 或进程。
 
-图中实线箭头仅表达注明的主要运行协作，不表示所有请求逐层穿过全部组件；返回和异步上报不逐一展开。目标 Domain 框与 R/I 框之间不画下行调用箭头：Application 调用纯规则，并经私有 Ports 访问 R/I。源码编译依赖单列 §5.2，运行用例见 §5.3，部署/链接见 §7；目标组件名不表示已经实现。
+§5.1 图中的实线箭头仅表达注明的主要运行协作，不表示所有请求逐层穿过全部组件；返回和异步上报不逐一展开。§5.2 的 UML 虚线依赖箭头从使用方指向被依赖声明，§5.3 的消息/返回箭头按时序解释；PlantUML 中 hidden 连接只控制排版，不表示架构关系。目标 Domain 框与 R/I 框之间不画下行调用箭头：Application 调用纯规则，并经私有 Ports 访问 R/I。源码编译依赖单列 §5.2，运行用例见 §5.3，部署/链接见 §7；目标组件名不表示已经实现。
 
 #### 5.1.2 当前架构：以 Slot 为主要组织维度的服务与控制器协作（FACT）
 
-```text
-┌────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                     外部调用与接口入口                                     │
-│                                                                                            │
-│  NAPI / CJ / ANI 等 Framework → CoreServiceClient / ICoreService → IPC Stub                │
-│  服务分发：CoreService / CoreServiceSim → SimManager / EsimManager                         │
-│  共宿主直接入口：CoreManagerInner → 已注入的 SIM / eSIM 接口                               │
-│  本图主线为 Core 本地能力；66250 高层任务入口在图下方单独列出。                            │
-└────────────────────────────────────────────────────────────────────────────────────────────┘
-                                              │
-                                           入口委托
-                                              ▼
-┌────────────────────────────────────────────────────────────────────────────────────────────┐
-│                         服务与流程组织区域：尚未严格分离应用和领域                         │
-│                                                                                            │
-│  ┌─────────────────────────────────────────┐  ┌─────────────────────────────────────────┐  │
-│  │ SimManager                              │  │ EsimManager（条件装配）                 │  │
-│  │ SIM 查询与操作门面                      │  │ Core 本地 eUICC 卡侧能力                │  │
-│  │ 按 slot 装配、定位卡运行对象            │  │ 普通 / 低优先级 EsimFile                │  │
-│  └─────────────────────────────────────────┘  └─────────────────────────────────────────┘  │
-└────────────────────────────────────────────────────────────────────────────────────────────┘
-                                              │
-                            按用例分支协作，不要求串行穿过所有组件
-                                              ▼
-┌────────────────────────────────────────────────────────────────────────────────────────────┐
-│                          控制器、监控器与卡运行区域：业务职责交织                          │
-│                                                                                            │
-│  ┌─────────────────────────────────────────┐  ┌─────────────────────────────────────────┐  │
-│  │ MultiSimController                      │  │ RadioProtocolController                 │  │
-│  │ 账户 / 绑定 / 激活 / 默认角色           │  │ Radio 三阶段切换 / session              │  │
-│  │ Primary / 参数 / 缓存 / DB              │  │ 设备结果等待与超时处理                  │  │
-│  │                                         │  │                                         │  │
-│  │ MultiSimMonitor / Helper                │  │ State / File / EsimFile 等              │  │
-│  │ 状态监听 / 重载 / 回调                  │  │ 安全 / EF / Records / APDU              │  │
-│  │ 初始化及产品差异                        │  │ 卡短信 / 电话簿 / STK / 配置            │  │
-│  └─────────────────────────────────────────┘  └─────────────────────────────────────────┘  │
-└────────────────────────────────────────────────────────────────────────────────────────────┘
-                                              │
-                          各组件按原路径访问；设备结果经原处理链返回
-                                              ▼
-┌────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                  平台、存储与扩展协作区域                                  │
-│                                                                                            │
-│  TelRilManager / TelRilSim                 SimRdbHelper / DataShare / 系统参数             │
-│  TelephonyExtWrapper / 厂商 Hook          Registry / CES / Hub / 账户回调                  │
-│  平台访问与状态写入仍分散在既有组件中，此框不表示已经形成统一适配层。                      │
-└────────────────────────────────────────────────────────────────────────────────────────────┘
-                                              │
-                                设备请求 / 存储访问 / 既有输出
-                                              ▼
-┌────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                       外部依赖与设备                                       │
-│                                                                                            │
-│  HDI / Modem / SIM / eUICC                数据提供方 / 系统服务 / 厂商实现                 │
-└────────────────────────────────────────────────────────────────────────────────────────────┘
-
-                         另一路既有任务入口：不并入上述 Core 卡侧流程
-
-┌────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                     eSIM 高层任务边界                                      │
-│                                                                                            │
-│  下载 / OSU 等 Framework 入口 → EsimServiceClient → IEsimService / SA 66250                │
-│  服务实现仓外；内部步骤及回调 Core 原语的完整调用链仍需匹配实现验证。                      │
-└────────────────────────────────────────────────────────────────────────────────────────────┘
+```plantuml
+@startuml SIM_Current_Architecture
+!pragma layout smetana
+skinparam componentStyle uml2
+skinparam shadowing false
+skinparam defaultFontName "Noto Sans CJK SC"
+skinparam defaultFontSize 13
+top to bottom direction
+package "外部调用与接口入口" as CurrentEntry {
+  note as CurrentEntryNote
+    NAPI / CJ / ANI 等 Framework → CoreServiceClient / ICoreService → IPC Stub
+    服务分发：CoreService / CoreServiceSim → SimManager / EsimManager
+    共宿主直接入口：CoreManagerInner → 已注入的 SIM / eSIM 接口
+    本图主线为 Core 本地能力；66250 高层任务入口在图下方单独列出。
+  end note
+}
+package "服务与流程组织区域：尚未严格分离应用和领域" as CurrentServices {
+  component "SimManager\nSIM 查询与操作门面\n按 slot 装配、定位卡运行对象" as CurrentSim
+  component "EsimManager（条件装配）\nCore 本地 eUICC 卡侧能力\n普通 / 低优先级 EsimFile" as CurrentEsim
+  CurrentSim -[hidden]right-> CurrentEsim
+}
+package "控制器、监控器与卡运行区域：业务职责交织" as CurrentRuntime {
+  component "MultiSimController\n账户 / 绑定 / 激活 / 默认角色\nPrimary / 参数 / 缓存 / DB\n\nMultiSimMonitor / Helper\n状态监听 / 重载 / 回调\n初始化及产品差异" as CurrentControl
+  component "RadioProtocolController\nRadio 三阶段切换 / session\n设备结果等待与超时处理\n\nState / File / EsimFile 等\n安全 / EF / Records / APDU\n卡短信 / 电话簿 / STK / 配置" as CurrentCard
+  CurrentControl -[hidden]right-> CurrentCard
+}
+package "平台、存储与扩展协作区域" as CurrentPlatform {
+  component "TelRilManager / TelRilSim\nTelephonyExtWrapper / 厂商 Hook" as CurrentRil
+  component "SimRdbHelper / DataShare / 系统参数\nRegistry / CES / Hub / 账户回调" as CurrentStore
+  note as CurrentPlatformNote
+    平台访问与状态写入仍分散在既有组件中，此框不表示已经形成统一适配层。
+  end note
+  CurrentRil -[hidden]right-> CurrentStore
+}
+package "外部依赖与设备" as CurrentExternal {
+  component "HDI / Modem / SIM / eUICC" as CurrentDevice
+  component "数据提供方 / 系统服务 / 厂商实现" as CurrentProviders
+  CurrentDevice -[hidden]right-> CurrentProviders
+}
+package "eSIM 高层任务边界" as CurrentRemote {
+  note as CurrentRemoteNote
+    另一路既有任务入口：不并入上述 Core 卡侧流程
+    下载 / OSU 等 Framework 入口 → EsimServiceClient → IEsimService / SA 66250
+    服务实现仓外；内部步骤及回调 Core 原语的完整调用链仍需匹配实现验证。
+  end note
+}
+CurrentEntry --> CurrentServices : 入口委托
+CurrentServices --> CurrentRuntime : 按用例分支协作，不要求串行穿过所有组件
+CurrentRuntime --> CurrentPlatform : 各组件按原路径访问；设备结果经原处理链返回
+CurrentPlatform --> CurrentExternal : 设备请求 / 存储访问 / 既有输出
+' 隐藏连接仅用于纵向排版，不表示运行调用或源码依赖。
+CurrentExternal -[hidden]down-> CurrentRemote
+@enduml
 ```
 
 Core 初始化 RIL，再条件装配 EsimManager、SimManager 和搜网；SimManager 装配每槽 State/File/Account/SMS/电话簿/STK 及多卡 Controller/Monitor。[F01](#src-01)、[F03](#src-03) 普通与低优先级 EsimFile 针对同 slot 创建，不因此获得两个独立 eUICC。[F12](#src-12)
@@ -270,85 +259,76 @@ Core 初始化 RIL，再条件装配 EsimManager、SimManager 和搜网；SimMan
 
 #### 5.1.3 目标架构：按业务所有权划分上下文，按端口隔离技术依赖（PROPOSED）
 
-```text
-┌────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                      外部调用方与输入                                      │
-│                                                                                            │
-│  既有 SIM / eSIM API；CoreManagerInner 共宿主调用                                          │
-│  近期不新增公开 Subscription API；66250 完整任务状态机仍在原服务边界。                     │
-└────────────────────────────────────────────────────────────────────────────────────────────┘
-                                              │
-                                     原接口与输入协议保持
-                                              ▼
-┌────────────────────────────────────────────────────────────────────────────────────────────┐
-│                             API / Inbound Adapter：兼容边界 C                              │
-│                                                                                            │
-│  IPC Stub / LegacyFacade / 同宿主门面 / 回调与观察适配                                     │
-│  保留参数与权限检查、错误优先级、调用者上下文、旧返回和回调格式。                          │
-│  不拥有第二份业务写权；旧查询的异步回写由相应用例承接。                                    │
-└────────────────────────────────────────────────────────────────────────────────────────────┘
-                                              │
-                              命令 / 查询 / 观察进入对应应用入口
-                                              ▼
-┌────────────────────────────────────────────────────────────────────────────────────────────┐
-│                         Application Layer：用例协调与唯一写入入口                          │
-│                                                                                            │
-│  ┌──────────────────────────┐  ┌──────────────────────────┐  ┌──────────────────────────┐  │
-│  │ T：TopologyService       │  │ A：AssignmentService     │  │ O：OperationCoordinator  │  │
-│  │ 账户 / 绑定接纳          │  │ 角色 / 分配接纳          │  │ 本地多步骤用例           │  │
-│  │ 资料查询及回写           │  │ 计划执行与结果核对       │  │ 短请求仅保留关联         │  │
-│  └──────────────────────────┘  └──────────────────────────┘  └──────────────────────────┘  │
-│                                                                                            │
-│  查询 / 存储 / 设备执行 / Host Ports；CompletionPlan / RuntimeOperationStore               │
-│  调用下方 Domain 的纯规则；经 Ports 调用 R / I，协调各步骤效果与旧可见节点。               │
-│  简单查询无需经过 O；操作内存记录不等于持久日志或跨重启恢复能力。                          │
-└────────────────────────────────────────────────────────────────────────────────────────────┘
-                                              │
-                       调用纯规则，取得合法性判断 / 状态转换 / 执行计划
-                                              ▼
-┌────────────────────────────────────────────────────────────────────────────────────────────┐
-│                             Domain Layer：纯业务规则与状态模型                             │
-│                                                                                            │
-│  ┌──────────────────────────┐  ┌──────────────────────────┐  ┌──────────────────────────┐  │
-│  │ Topology / T             │  │ Radio Resource / A       │  │ Local Operation / O      │  │
-│  │ TopologyAggregate        │  │ AssignmentAggregate      │  │ OperationContext         │  │
-│  │ 账户 / 身份 / 绑定       │  │ 角色 / 期望分配          │  │ 步骤 / 效果 / 终态       │  │
-│  │ 不拥有 EF 与卡状态       │  │ 不拥有设备执行租约       │  │ 不复制远端完整任务       │  │
-│  └──────────────────────────┘  └──────────────────────────┘  └──────────────────────────┘  │
-└────────────────────────────────────────────────────────────────────────────────────────────┘
-
-                  以下是应用层经 Ports 调用的外侧实现；Domain 不直接调用它们
-
-┌────────────────────────────────────────────────────────────────────────────────────────────┐
-│                       生产卡运行支撑 R 与技术适配 I（并行协作责任）                        │
-│                                                                                            │
-│  ┌─────────────────────────────────────────┐  ┌─────────────────────────────────────────┐  │
-│  │ R：CardRuntime                          │  │ I：Infrastructure / Adapters            │  │
-│  │ 复用 State / Security / EF / APDU       │  │ DataShare / 参数 / 存储端口实现         │  │
-│  │ Records / 短信 / 电话簿 / STK           │  │ Registry / CES / 回调输出适配           │  │
-│  │ 运营商配置 / eUICC 卡侧协议             │  │ 厂商能力 / Hook / 既有服务适配          │  │
-│  │ SessionRegistry / LoadSession           │  │ 仅执行 Owner 的字段写计划               │  │
-│  │ ResourceBarrier：真实共享设备域         │  │ 不提供虚构的跨存储原子事务              │  │
-│  └─────────────────────────────────────────┘  └─────────────────────────────────────────┘  │
-└────────────────────────────────────────────────────────────────────────────────────────────┘
-                                              │
-                       R 经 HostPorts 使用共享 RIL；I 访问原存储与服务
-                                              ▼
-┌────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                       外部依赖与设备                                       │
-│                                                                                            │
-│  既有 RIL / HDI / Modem / SIM / eUICC；DataShare 提供方 / 参数 / 系统服务                  │
-│  既有 66250 服务任务边界及厂商实现；不从本图推断设备实际部署。                             │
-└────────────────────────────────────────────────────────────────────────────────────────────┘
-
-                     横切装配职责：连接上述接口与实现，不是额外业务处理层
-
-┌────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                  宿主装配 H：Core 组合根                                   │
-│                                                                                            │
-│  私有工厂 / HostPorts 注入 / 共享 RIL 所有权 / 启停及回调生命周期                          │
-│  具体类型或匹配 deleter 销毁；未排空不得卸载；同进程 SO 不等于故障隔离。                   │
-└────────────────────────────────────────────────────────────────────────────────────────────┘
+```plantuml
+@startuml SIM_Target_Architecture
+!pragma layout smetana
+skinparam componentStyle uml2
+skinparam shadowing false
+skinparam defaultFontName "Noto Sans CJK SC"
+skinparam defaultFontSize 13
+top to bottom direction
+package "外部调用方与输入" as TargetEntry {
+  note as TargetEntryNote
+    既有 SIM / eSIM API；CoreManagerInner 共宿主调用
+    近期不新增公开 Subscription API；66250 完整任务状态机仍在原服务边界。
+  end note
+}
+package "API / Inbound Adapter：兼容边界 C" as Compatibility {
+  component "IPC Stub / LegacyFacade / 同宿主门面 / 回调与观察适配" as Inbound
+  note as CompatibilityNote
+    保留参数与权限检查、错误优先级、调用者上下文、旧返回和回调格式。
+    不拥有第二份业务写权；旧查询的异步回写由相应用例承接。
+  end note
+}
+package "Application Layer：用例协调与唯一写入入口" as Application {
+  component "T：TopologyService\n账户 / 绑定接纳\n资料查询及回写" as TopologyService
+  component "A：AssignmentService\n角色 / 分配接纳\n计划执行与结果核对" as AssignmentService
+  component "O：OperationCoordinator\n本地多步骤用例\n短请求仅保留关联" as OperationCoordinator
+  note as ApplicationNote
+    查询 / 存储 / 设备执行 / Host Ports；CompletionPlan / RuntimeOperationStore
+    调用下方 Domain 的纯规则；经 Ports 调用 R / I，协调各步骤效果与旧可见节点。
+    简单查询无需经过 O；操作内存记录不等于持久日志或跨重启恢复能力。
+  end note
+  TopologyService -[hidden]right-> AssignmentService
+  AssignmentService -[hidden]right-> OperationCoordinator
+}
+package "Domain Layer：纯业务规则与状态模型" as Domain {
+  component "Topology / T\nTopologyAggregate\n账户 / 身份 / 绑定\n不拥有 EF 与卡状态" as Topology
+  component "Radio Resource / A\nAssignmentAggregate\n角色 / 期望分配\n不拥有设备执行租约" as Assignment
+  component "Local Operation / O\nOperationContext\n步骤 / 效果 / 终态\n不复制远端完整任务" as Operation
+  Topology -[hidden]right-> Assignment
+  Assignment -[hidden]right-> Operation
+}
+package "生产卡运行支撑 R 与技术适配 I（并行协作责任）" as Support {
+  component "R：CardRuntime\n复用 State / Security / EF / APDU\nRecords / 短信 / 电话簿 / STK\n运营商配置 / eUICC 卡侧协议\nSessionRegistry / LoadSession\nResourceBarrier：真实共享设备域" as CardRuntime
+  component "I：Infrastructure / Adapters\nDataShare / 参数 / 存储端口实现\nRegistry / CES / 回调输出适配\n厂商能力 / Hook / 既有服务适配\n仅执行 Owner 的字段写计划\n不提供虚构的跨存储原子事务" as Infrastructure
+  note as SupportNote
+    以下是应用层经 Ports 调用的外侧实现；Domain 不直接调用它们
+  end note
+  CardRuntime -[hidden]right-> Infrastructure
+}
+package "外部依赖与设备" as TargetExternal {
+  note as TargetExternalNote
+    既有 RIL / HDI / Modem / SIM / eUICC；DataShare 提供方 / 参数 / 系统服务
+    既有 66250 服务任务边界及厂商实现；不从本图推断设备实际部署。
+  end note
+}
+package "宿主装配 H：Core 组合根" as Host {
+  component "私有工厂 / HostPorts 注入 / 共享 RIL 所有权 / 启停及回调生命周期" as CompositionRoot
+  note as HostNote
+    横切装配职责：连接上述接口与实现，不是额外业务处理层
+    具体类型或匹配 deleter 销毁；未排空不得卸载；同进程 SO 不等于故障隔离。
+  end note
+}
+TargetEntry --> Compatibility : 原接口与输入协议保持
+Compatibility --> Application : 命令 / 查询 / 观察进入对应应用入口
+Application --> Domain : 调用纯规则，取得合法性判断 / 状态转换 / 执行计划
+Application --> Support : 经 Ports 调用 R / I
+Support --> TargetExternal : R 经 HostPorts 使用共享 RIL；I 访问原存储与服务
+' 隐藏连接仅用于纵向排版；Domain 不调用 Support，Host 是横切装配职责。
+Domain -[hidden]down-> Support
+TargetExternal -[hidden]down-> Host
+@enduml
 ```
 
 R 保留 EF/APDU、解析、安全、STK 等生产实现，不为整齐的图强行拆协议；Application 只抽出用例和事实写权。仅有内部规则才进入 Domain。简单查询不必经过 O 或总线。66250 的完整任务模型不画进 Core Domain，任务边界见 §7.2。
@@ -369,18 +349,37 @@ R 保留 EF/APDU、解析、安全、STK 等生产实现，不为整齐的图强
 
 ### 5.2 源码编译依赖（箭头：使用方 → 被依赖接口/模型）
 
-```text
-┌────────────────────────────────────────────────────────────────────────────────────────────┐
-│                          源码编译依赖：箭头从使用方指向被依赖声明                          │
-│                                                                                            │
-│  C 兼容实现 ──────────→ Application 入口 / 查询与出站 Ports ──→ Domain                     │
-│  R 卡运行支撑 ────────→ Application Ports（实现内层接口）                                  │
-│  I 技术适配 ──────────→ Application Ports（实现内层接口）                                  │
-│  H 宿主装配 ──────────→ Application / C / R / I（构造并注入）                              │
-│                                                                                            │
-│  Domain 仅有纯规则与值类型；不反向依赖 R / I / H 或平台库。                                │
-│  运行时应用层调用注入的 R / I 对象，不改变以上源码依赖方向。                               │
-└────────────────────────────────────────────────────────────────────────────────────────────┘
+```plantuml
+@startuml SIM_Compile_Dependencies
+!pragma layout smetana
+skinparam componentStyle uml2
+skinparam shadowing false
+skinparam defaultFontName "Noto Sans CJK SC"
+skinparam defaultFontSize 13
+left to right direction
+title 源码编译依赖：箭头从使用方指向被依赖声明
+component "C 兼容实现" as C
+package "Application 入口 / 查询与出站 Ports" as Application {
+  component "Application 入口" as Entry
+  interface "Application Ports" as Ports
+}
+component "Domain" as D
+component "R 卡运行支撑" as R
+component "I 技术适配" as I
+component "H 宿主装配" as H
+C ..> Application
+Application ..> D
+R ..> Ports : 实现内层接口
+I ..> Ports : 实现内层接口
+H ..> Application : 构造并注入
+H ..> C : 构造并注入
+H ..> R : 构造并注入
+H ..> I : 构造并注入
+note bottom of D
+  Domain 仅有纯规则与值类型；不反向依赖 R / I / H 或平台库。
+  运行时应用层调用注入的 R / I 对象，不改变以上源码依赖方向。
+end note
+@enduml
 ```
 
 R/I/H 实现应用定义的端口，编译依赖向内；运行时 Application 调用注入对象，方向可以相反。领域策略只依赖纯值类型/规则接口，DB/RIL/IPC/FFRT 的端口归 Application，不把技术接口伪装成领域实体。对 R 既有平台调用分切片收口；不声称当前全部代码已满足该依赖图。
@@ -389,24 +388,39 @@ R/I/H 实现应用定义的端口，编译依赖向内；运行时 Application �
 
 典型本地写用例：`C → T/A 取得资格或计划 → O → R/I 执行 → O 接纳结果 → T/A 接纳各自事实 → C 按旧出口完成`。简单资料修改可 `C → T → I`；卡状态只读可由 C 经应用定义的查询端口直接读取 R 注入的视图，无需创建 O。入站设备通知走 `R 接纳观察 → T/A 应用入口`，没有请求就不伪造 OperationId。
 
-```text
-┌────────────────────────────────────────────────────────────────────────────────────────────┐
-│                          运行协作示例：SetShowNumber（PROPOSED）                           │
-│                                                                                            │
-│  C 旧入口 → O 本地用例：保留原完成契约，关联当前卡应用                                     │
-│                │                                                                           │
-│                └─ R 写 MSISDN → O 接纳写卡结果                                             │
-│                                  │                                                         │
-│                                  ├─ 明确失败 → C：按原错误完成                             │
-│                                  ├─ 等待超时 → C：原错误；O / R 核对未知效果               │
-│                                  │                                                         │
-│                                  └─ 成功 → T 账户入口 → I 现有存储                         │
-│                                                                                            │
-│  I 存储结果 → T 缓存接纳结果 / 原错误 → O → C：按原完成契约输出                            │
-│                                                                                            │
-│  卡成功、存储失败：保留卡侧效果，不自动补偿；完整成功保留原账户通知。                      │
-│  CoreServiceSim 的接收返回先于队列任务完成；上述末端不是 IPC 同步返回。                    │
-└────────────────────────────────────────────────────────────────────────────────────────────┘
+```plantuml
+@startuml SIM_SetShowNumber_Sequence
+skinparam shadowing false
+skinparam defaultFontName "Noto Sans CJK SC"
+skinparam defaultFontSize 13
+hide footbox
+title 运行协作示例：SetShowNumber（PROPOSED）
+participant "C 旧入口" as C
+participant "O 本地用例" as O
+participant "R 卡运行支撑" as R
+participant "T 账户入口" as T
+participant "I 现有存储" as I
+C -> O : 保留原完成契约，关联当前卡应用
+O -> R : 写 MSISDN
+R --> O : 写卡结果 / 等待超时
+O -> O : 接纳写卡结果
+alt 明确失败
+  O --> C : 按原错误完成
+else 等待超时
+  O --> C : 原错误
+  note over O, R : 核对未知效果
+else 成功
+  O -> T : 账户入口
+  T -> I : 现有存储
+  I --> T : 存储结果
+  T --> O : 缓存接纳结果 / 原错误
+  O --> C : 按原完成契约输出
+end
+note over C, I
+  卡成功、存储失败：保留卡侧效果，不自动补偿；完整成功保留原账户通知。
+  CoreServiceSim 的接收返回先于队列任务完成；上述末端不是 IPC 同步返回。
+end note
+@enduml
 ```
 
 图描述目标协调，局部旧行为见 [F08](#src-08)。CoreServiceSim 的接收返回发生在队列任务完成之前，不能把图末尾当成 IPC 同步返回；原写卡函数返回 false 时不进存储，但超时不证明设备未写入。晚到结果按 §11/§12 核对，不补发已结束调用的成功；卡成功/DB 失败不自动补偿卡。[F15](#src-15)
@@ -953,6 +967,8 @@ TopologyChanged、SubscriptionDiscovered/Removed、OperationStateChanged、RoleA
 
 2026-10-26 本次历史与关联设计复核：读取四次主文档提交全文及关键差异，重读分层设计 §3.2/3.5/5/6.2/11.2、V3 SAD §9、类设计 §12/13.3 与重构设计 §4.6/4.7，并追踪 RIL 成功/错误交付、RadioProtocol 错误准入及 eUICC 查询通道路径。检查 217 个链接（96 处固定源码、121 处本地导航）、38 个引用文件的路径/行号/符号及换行归一内容、27 张表格、24 章、62 个主功能、10 条规则和 13 个原决策 ID，均通过。全部 4 幅文本图及 1 幅 Mermaid 图与 15fcd7a6 输入的围栏内容逐字一致，文本框列宽和 Mermaid 11.4.1 解析检查通过。1275 个文件的前后摘要确认仅本文变化，另外 1274 个文件保持原始字节；`git diff --check` 通过。未运行交错复现、业务构建/测试、设备或外仓实验，未将静态风险记为已发生故障或已修复缺陷。
 
+2026-10-26 本次 UML 图示转换：以 8c369322 为输入，将第 5 章四幅文本图转换为三幅 UML 组件/包图和一幅 UML 时序图，采用 PlantUML 记法。逐项核对当前/目标图 42/58 项文字、8 条编译依赖和明确失败/等待超时/成功三个时序分支，原组件、职责、关系、说明和失败语义保留；除图示、读图说明及检查/修订记录外，正文保持一致，第 7 章图未改。PlantUML 1.2025.2 语法检查、本地 SVG/PNG 渲染及中文显示检查通过；217 个链接、27 张表格、功能/规则/决策编号与原有源码定位检查通过。1275 个文件的前后摘要确认仅本文变化，其余 1274 个文件保持原始字节；`git diff --check` 通过。渲染工具、字体及预览仅置于 `/tmp`，不作为仓库交付物；未运行业务或设备测试。前轮的图示形式与逐字一致性记录均描述各自历史提交。
+
 ### 20.4 本次两份参考稿的采用与裁决
 
 输入以本次读到的字节为准：v1.16 的 SHA-256 为 `8c6a2a53c36f893b1d04676ca3987a3854f8e4fec8cd4b897d842a2b6f017e00`；v1.17 为 `61fd72597468e3bbf9a49586bdea23bd0cdf41370b77e38d27849bffdc4e02db`。参考稿自述的检查结果不继承为本文本次结果。
@@ -1063,6 +1079,7 @@ TopologyChanged、SubscriptionDiscovered/Removed、OperationStateChanged、RoleA
 | 1.2（分层图表达优化） | 2026-10-26 | 第 5 章恢复原稿的文本分层框、层内组件框与箭头说明；优化当前/目标对照，明确 Application、Domain、R/I 与 H 的关系；编译依赖和运行示例同步采用文本图，保留已核实的设计结论与固定源码基线 |
 | 1.2（三稿对照复核） | 2026-10-26 | 以当前 9501c2b5 的 v1.2 为基础读取 v1.16/v1.17，保留主路径、ID、分层图形式及 6017003e 生产基线；补输入来源与采用取舍；修正角色约束域、冲突写跨 I/O 排序、号码超时/晚到、独立请求去重、重试与厂商执行边界，同步决策和切片验收；保持 draft/pending |
 | 1.2（历史与关联设计复核） | 2026-10-26 | 从 15fcd7a6 追溯四次提交和关联设计，重读实际 RIL 成功/错误交付、RadioProtocol 准入及 eUICC 查询占用；修正重入查询源、查询资源屏障、R 短请求租约与释放条件，补 Refresh 在途写、错误/重复阶段准入和 Domain 数据边界；保留四幅文本图、生产基线和全部原决策 ID，风险不冒充已复现/已修复 |
+| 1.2（UML 图示转换） | 2026-10-26 | 按要求仅转换第 5 章图示形式：当前架构、目标分层及编译依赖采用 UML 组件/包图，SetShowNumber 采用 UML 时序图；保留全部原文字、关系和失败分支，更新读图说明与检查记录；不改变架构设计内容，保持 document_id、生产基线和 draft/pending |
 
 ---
 
