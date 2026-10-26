@@ -28,7 +28,7 @@ supersedes:
 supersession_note: 原对缺失 SIM-IDEAL-001 章节的替代/保留声明未核实，已撤回；不据本文宣称上游批准失效
 last_verified: 2026-10-26
 verification_scope: 固定提交源码/构建/配置定向静态核查及文档自检；非设备或业务测试
-verification_note: 已核对工作区与固定提交；生产差异仅换行，用户测试工程修改保留；31 组源码证据见 §20.2，检查范围见 §20.3
+verification_note: 以当前 v1.2 对照 v1.16/v1.17 参考稿并复核关键源码；保留固定生产基线和用户修改；31 组源码证据见 §20.2，本次检查范围见 §20.3，参考取舍见 §20.4
 ---
 
 # SIM 目标架构设计
@@ -57,6 +57,8 @@ verification_note: 已核对工作区与固定提交；生产差异仅换行，�
 | 测试 / SIM-TEST-001 | [systemtest README](../test/systemtest/README.md)、[初始化闭包](../test/systemtest/docs/initialization_closure.md)、[Oracle](../test/systemtest/docs/oracle_catalog.md)、[执行记录](../test/systemtest/docs/run_record.md) | 各自是设计、缺口或历史执行记录；本次不运行或晋升业务测试结果。测试目录有用户未提交修改，不能把它当固定提交产物 |
 | 历史冲突与规则 | [2026-10-15 裁决](MultiSIM/08_design_unification_decisions.md)、[历史索引](history/pre_unification_20261015/README.md)、[仓库约束](knowledge/expert/constraints.md) | DU 等是历史设计取舍，不自动等于批准；约束中的新增 API/schema 禁止在本次继续遵守 |
 
+本次同时读取 `SIM_Target_Architecture_Design_v1.16.md` 与 `SIM_Target_Architecture_Design_v1.17.md`（下称 v1.16、v1.17 参考稿）。二者的 front matter 均仍为 `document_id: SIM-TGT-001`、`version: "1.2"`、`draft/pending`；文件名不是获批版本号或替代关系。v1.16 指向 6017003e 并声称做过静态复核，本文重新核对采用的结论；v1.17 指向未解析的 00b3faa6，且明示未重读源码，作为历史提案使用。两稿当前均为工作区未跟踪输入，不作为本次提交产物；输入摘要与取舍见 §20.4。
+
 ### 1.3 状态标记
 
 | 标记 | 含义 |
@@ -75,7 +77,8 @@ verification_note: 已核对工作区与固定提交；生产差异仅换行，�
 
 - 分支 `main`；固定提交 `6017003eff50c1bc8c5dfa72336a4bfe42e948b0`；从该提交只读归档核查生产代码、构建和配置。后续仅文档提交不改变本轮生产代码分析基线。
 - 原 `baseline_commit: 00b3faa6b02ac0f1adf77fb47f4a111cd95e665d` 在本地对象库无法解析；无法验证其来源，不断言远端也不存在。原 `last_verified: 2026-09-04` 与“本次未核验”说明已由本次静态核验记录替换。
-- 编辑前目标文件无本地差异。工作区 `git status -uno` 列出 948 项修改；逐文件原始字节与 HEAD 比较另识别 1032 个仅 CRLF/LF 差异文件、21 个实质差异文件（均在 test/systemtest）和 44 个未跟踪文件。Git 状态与原始字节统计口径不同，不相加。生产代码与固定提交在换行归一后相同；所有已有修改保留。
+- 前轮复审的工作区统计为 948 项 Git 修改、1032 个原始字节换行差异、21 个 test/systemtest 实质差异及 44 个未跟踪文件；这是历史检查口径，不作为本次重新测得的计数。
+- 本次三稿对照从 `main` 的 `9501c2b5860265653655c09147b39230a1675062` 开始，v1.2 无本地差异，暂存区为空；相对 6017003e 的已提交变化仅为本文，故继续沿用固定生产基线。重新建立 1275 个现有文件的字节摘要，包含两份参考稿及既有测试/知识文件修改；定向复核所引源码与归档换行归一内容，保留其他文件。
 - 只修改本文。源码证据用固定提交 URL、路径、符号及行号；文档引用用于职责导航，其历史测试基线不回写为本轮提交。
 - 已读适用 AGENTS、仓库边界、专家约束、条件构建、验证说明。核验覆盖装配、公开入口、关键状态写入、设备调用/回调、存储及失败分支；不是全功能动态证明。语句先后只支持该路径局部顺序，不证明跨线程、跨 SA 的全局时序。
 - 无匹配的 66250 服务实现、DataShare provider、厂商实现及设备运行证据；不以公网同名上游替代当前 fork 的契约。缺口和默认边界见 §7、§12、§13、§21。
@@ -163,7 +166,7 @@ verification_note: 已核对工作区与固定提交；生产差异仅换行，�
 | 纯模型 / 一致性边界 | 唯一应用写入口 | 部署建议 | 边界理由 |
 |---|---|---|---|
 | TopologyAggregate（账户、绑定索引及纯身份规则） | TopologyService；原 TopologyManager 名称统一至此 | Core 4010 内部 | 账户属性与位置关联有约束，但 EF 加载和设备等待不锁住整个拓扑 |
-| AssignmentAggregate（每共享资源域的角色/分配规则） | AssignmentService；RadioResourceArbiter 限为纯决策规则 | Core 4010 内部 | 跨槽 Primary 切换需要同域仲裁，无关 Modem 不应被全局队列阻塞 |
+| AssignmentAggregate（按角色约束域与共享资源域划分规则） | AssignmentService；RadioResourceArbiter 限为纯决策规则 | Core 4010 内部 | 跨槽 Primary 切换需要同域仲裁，无关 Modem 不应被全局队列阻塞 |
 | OperationContext / 必要的 OperationAggregate（每次多步骤业务操作） | OperationCoordinator（Application） | Core 4010 的本地用例 | 只对需跨步骤维护效果/恢复的任务建模；不是设备资源锁或全局操作聚合 |
 | 远端 Profile 任务状态（具体模型未知） | 既有 66250 服务的任务主编排者 | 保留既有服务身份，不由本仓指定其内部类 | 本仓仅有接口/客户端，不能宣称远端已经实现 OperationAggregate |
 
@@ -175,7 +178,7 @@ verification_note: 已核对工作区与固定提交；生产差异仅换行，�
 
 近期保留一个 T 应用写入口统一索引，使用**短时内存提交 + 按受影响账户/绑定键预留**：身份关联唯一性或绑定迁移在同一次内存提交中核查旧/新键；显示名修改只检查该账户版本，不让另一槽加载导致无意义冲突。I/O 在锁外执行，返回时复核有关输入。不同账户可以并行准备；触及相同账户或绑定键的变更序列化，不将设备等待占据整个 T 通道。
 
-A 的默认角色选择可能是产品全局规则，按该规则保护最小资源域；资源域未证明独立前保守共享，不从 slot 数或两个对象推断并发能力。O 按 operation 建模，设备冲突交 R 的资源屏障；协议 session、文件加载集合均不扩大 T 事务。
+A 的一致性范围先由角色不变量确定，再结合真实资源冲突：当前默认 Voice/SMS 设置遍历当前账户并清除其他槽的同类角色，是跨槽角色选择，不能因两个 Modem 可独立执行就各保留一个可写“默认 Voice”。[F07](#src-07) 同一角色约束域由 A 统一裁决；独立硬件域只允许无冲突设备步骤并行，不自动拆分角色事实。资源域未证明独立前保守共享，不从 slot 数或两个对象推断并发能力。O 按 operation 建模，设备冲突交 R 的资源屏障；协议 session、文件加载集合均不扩大 T 事务。
 
 这里保证的是本进程内规则和提交准入，不是 DataShare/provider 的原子事务。跨行唯一性、跨存储提交仍受 §13 限制。TopologyAggregate 名称保留为逻辑模型，不要求一张整设备持久快照或一个覆盖所有 I/O 的大锁。详见 TGT-OPEN-007。
 
@@ -392,7 +395,8 @@ R/I/H 实现应用定义的端口，编译依赖向内；运行时 Application �
 │                │                                                                           │
 │                └─ R 写 MSISDN → O 接纳写卡结果                                             │
 │                                  │                                                         │
-│                                  ├─ 失败 → C：按原错误完成                                 │
+│                                  ├─ 明确失败 → C：按原错误完成                             │
+│                                  ├─ 等待超时 → C：原错误；O / R 核对未知效果               │
 │                                  │                                                         │
 │                                  └─ 成功 → T 账户入口 → I 现有存储                         │
 │                                                                                            │
@@ -403,7 +407,7 @@ R/I/H 实现应用定义的端口，编译依赖向内；运行时 Application �
 └────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-图描述目标协调，局部旧行为见 [F08](#src-08)。CoreServiceSim 的接收返回发生在队列任务完成之前，不能把图末尾当成 IPC 同步返回；卡失败不进存储，卡成功/DB 失败不自动补偿卡。[F15](#src-15)
+图描述目标协调，局部旧行为见 [F08](#src-08)。CoreServiceSim 的接收返回发生在队列任务完成之前，不能把图末尾当成 IPC 同步返回；原写卡函数返回 false 时不进存储，但超时不证明设备未写入。晚到结果按 §11/§12 核对，不补发已结束调用的成功；卡成功/DB 失败不自动补偿卡。[F15](#src-15)
 
 ### 5.4 Compatibility 的准确约束
 
@@ -428,7 +432,7 @@ C 无独立业务写权，但可调用有副作用的正式查询用例。Legacy
 | AccountStore / AssignmentStore Ports / Application；I 实现 | 字段级写计划、现有 URI/参数、逐步结果；原 Topology/AssignmentRepository 名称可作为接口别名 | 隔离存储协议；禁止用通用 Save 整行覆盖对方字段，不要求两个独立数据副本 |
 | LegacyFacade / C；CompletionPlan / Application+C | 原参数/调用者上下文→分类目标；原返回/回调/输出轨迹 | 保持旧边界，避免异步后权限变成服务身份或统一延迟通知 |
 | Capability / Host Ports；H 实现、注入 | 已核实容量/路由、RIL、IMS 回退等宿主能力；工厂创建/销毁令牌 | 解开 SIM 对宿主具体符号依赖；能力未知不能默认等于 slot 数 |
-| VendorCapability / Notification / Command Ports；I 适配 | 现有 Hook 能力查询、输出、正式用例输入 | 隔离厂商变化；保留既有 ABI，不新增一套厂商 SDK |
+| VendorCapability / Execution / Notification Ports；I 适配；Command 为应用入站 | 现有 Hook 能力查询、副作用执行、输出及正式用例输入 | 区分入站命令与出站执行；隔离厂商变化，保留既有 ABI，不新增一套厂商 SDK |
 
 `ResolvedTarget` 为 `SlotTarget | CardApplicationTarget | SubscriptionTarget` 类型化联合：空槽可有 SlotTarget；PIN/EF 可在没有 simId 时使用 CardApplicationTarget；离线账户属性使用 SubscriptionTarget。卡侧执行再解析当前有效绑定。不得用任意 optional 字段组合伪造合法目标。
 
@@ -556,16 +560,20 @@ Commit 是**某个 Owner 在其作用域内接纳状态的一次动作**，必�
 
 同一写权内有关候选受控排序，锁外 I/O 返回后再验证目标/版本。若存储已成功但内存接纳因新版本失效，进入核对，不能静默抛弃已发生写入，也不能盲目重复设备步骤。对无关卡不持整聚合通道等待外部调用。
 
+**本仓冲突写的排序必须覆盖 I/O，而不只覆盖内存发布。** 应用在短提交域内为目标/字段或角色命令冲突范围预留资格，离开锁执行旧调用；结果已接纳且原写入已结束后，才准许后继冲突写。若效果或结束状态未知，资格转交核对责任方继续隔离，不能因本次等待结束就发出后继冲突写。默认卡命令涉及其他账户角色位，应按角色域排序。不同 Owner 的不相交字段补丁可并行；重载保存发起时的相关本地版本，过期字段不直接覆盖新值，按有界预算重读。不得让同字段写 W1/W2 同时发出，仅靠拒绝 W1 的迟到内存发布处理数据库已经被 W1 覆盖的问题。[F08](#src-08)、[F21](#src-21)
+
+这里的预留是应用执行资格，不是持锁等待或 provider 事务。DataShare/Hook 同步反向调用 Core 时，查询走旧可见投影；冲突写回调不得同步等待正在等待它的同一通道，应采用该方法契约允许的排队或既有失败出口。找不到兼容处理方式时仅阻塞该切片。
+
 ### 9.3 本次核实的兼容轨迹与目标处理
 
 表中顺序为源码单条路径的局部顺序；通知消费者到达顺序、并发查询实际交错需另做运行采集。失败验收是将来的要求，非本轮测试结果。
 
 | 功能 / 已核实主张与证据 | 正常及部分失败节点 | 目标处理 / 必须验证的差异 |
 |---|---|---|
-| SIM-024 普通激活 [F05](#src-05) | SetActiveSimToRil 成功后，非 force 先 UpdataCacheSetActiveState / UpdateSubState，再 UpdateDBSetActiveResult；DB 失败直接返回，前面缓存不回滚；后续成功路径还可能再次 UpdateSubState。force 分支保留其原有步骤子集 | T 接纳 active 兼容投影与存储结果分别发生；O 不谎称整体未发生。保留分支、返回和原输出节点；不全局去重 |
+| SIM-024 普通激活 [F05](#src-05) | SetActiveSimToRil 成功后，非 force 先 UpdataCacheSetActiveState / UpdateSubState，再 UpdateDBSetActiveResult；DB 失败不回滚前面缓存；后续成功路径还可能再次 UpdateSubState。UpdataCache 内先写当前缓存，再校验全量缓存索引，步骤返回错误也可能已部分改变。force 在设备返回后 UpdateSubState 并返回，不执行该路径的账户缓存/DB 更新 | T 接纳 active 兼容投影与存储结果分别发生；O 不谎称整体未发生。保留分支、返回和原输出节点；不全局去重 |
 | SIM-028 Primary [F06](#src-06) | 普通路径先 SavePrimaryCardInfo 写 last/参数，再设备协议；失败 ResumePrimaryCardInfo 有旧值/格式条件，后接重试；成功广播并联动 Data；另有特殊槽和免重启分支 | A 区分意图、参数投影与观察；O 持唯一重试责任；参数恢复不证明硬件回滚。检查旧值空/非法、设备失败和后续 Data 结果 |
 | SIM-025/026 默认角色 [F07](#src-07) | 先 provider 默认卡命令，再缓存/default*SimId，再广播；广播失败返回 PUBLISH_BROADCAST_FAIL，角色可能已变 | A 不回滚已接受角色以制造原子成功；C 保留原错误；核对查询能见新值且通知失败。相同角色分支是否再发按原路径 |
-| SIM-023.b 号码修改 [F08](#src-08)、[F15](#src-15) | 写 MSISDN 失败不进 DB；卡成功后 DB 失败，卡效果保留；DB 成功后缓存边界检查仍可能失败；Manager 仅整体成功发原账户通知 | R 卡记录、T 资料分别接纳，O 保留部分结果。旧接收成功与后续 parcel 错误分开；不自动改回卡号码 |
+| SIM-023.b 号码修改 [F08](#src-08)、[F15](#src-15) | 写 MSISDN 返回 false 不进 DB；该 false 包含等待超时，不能等同已确认卡未写入。卡成功回包更新 MSISDN 缓存；之后 DB 失败不撤销卡效果，DB 成功后账户缓存检查仍可能失败；Manager 仅整体成功发原账户通知 | R 卡记录、T 资料分别接纳，O 保留部分结果。保留原失败出口；超时内部记 Unknown，晚到有效写卡结果仅作原会话观察/核对，不补走已结束用例的账户写入或成功通知；不自动改回卡号码 |
 | SIM-023.c 查询回写 [F09](#src-09) | 卡缓存非空可立即返回并异步 SetShowNumberToDB；账户为空可从 IMPU 回退并回写；查询不等待 DB | 保留返回/来源。回写固定发起目标及会话；拒绝换卡后陈旧写是显式行为修正，不能混入 G2 |
 | SIM-051 卡侧 Profile [F11](#src-11)、[F13](#src-13) | EsimManager::SwitchToProfile 外层返回成功，enumResult 承载卡侧失败/超时；随后仍写 USER_PREFER_PRIMARY_SLOT | 不把外层 int 成功当 Profile 已切换、拓扑/Radio 就绪；保持旧双结果及参数节点，缺陷修改另审 |
 | SIM-031.c 映射开始 [F18](#src-18) | SimManager 先置映射标志，再 StateManager/Handle 注入人工 ABSENT；后者失败不撤销标志；旧相同状态分支及清理条件另受状态机控制 | T 标志、R 软件原因状态、O 协调、C 输出分别维护；不宣称物理拔卡/路由已完成 |
@@ -583,7 +591,7 @@ Commit 是**某个 Owner 在其作用域内接纳状态的一次动作**，必�
 
 ### 9.5 需要单独批准的行为修正
 
-拒绝陈旧号码回写、对未知设备效果增加隔离、禁止原无证据自动重试、修正错误成功码/未检查通道关闭结果，都可能改变返回、时延、重试或后续可用性。推荐修正有风险的路径，但须记录具体方法的旧/新轨迹、故障原因、错误映射、产品影响及回退条件，完成定向故障/并发差分后才启用（G3b/G3c/G3d）。例如 SetShowNumberToDB 越界 `return false` 出现在 int32 方法中，只能记作缺陷候选，不能在文档中宣称已经修复。[F08](#src-08) 新增持久日志、强一致查询或可靠通知属于 G4 的独立需求。
+拒绝陈旧号码回写、对未知设备或存储效果增加隔离、禁止原无证据自动重试、修正错误成功码/未检查通道关闭结果，都可能改变返回、时延、重试或后续可用性。推荐修正有风险的路径，但须记录具体方法的旧/新轨迹、故障原因、错误映射、产品影响及回退条件，完成定向故障/并发差分后才启用（相关 G3 切片）。例如 SetShowNumberToDB 越界 `return false` 出现在 int32 方法中，只能记作缺陷候选，不能在文档中宣称已经修复。[F08](#src-08) 新增持久日志、强一致查询或可靠通知属于 G4 的独立需求。
 
 ---
 
@@ -632,7 +640,7 @@ Commit 是**某个 Owner 在其作用域内接纳状态的一次动作**，必�
 
 ### 11.3 重复、迟到与取消
 
-- 内部同一请求完成资格最多消费一次，不额外删去旧协议允许的外部通知重复。
+- 内部同一请求完成资格最多消费一次，不额外删去旧协议允许的外部通知重复。两个参数相同的公开调用仍是两个请求；旧接口无幂等键时，不能按目标/参数或时间窗口合并、复用结果。请求回执去重、调用方重试识别、公开通知次数是三份不同约束。
 - 等待状态 `Waiting / Delivered / TimedOut / CancelledWait / CallerDied` 与业务终态、设备效果分别保存。取消等待不会停止硬件，也不等于 IEsimService::CancelSession 的卡/服务协议语义。
 - 调用者超时后，归属有效的设备结果仍可送 O/R 核对；已终结操作不复活，R 持最小恢复记录接纳旧关联证据，不再回调原调用者。
 - 注销 callback/observer 不保证已入队工作消失；weak owner + epoch + 在途计数 + 排空共同保护对象生命周期。关联表到期不能顺便解除资源隔离。
@@ -647,6 +655,8 @@ Commit 是**某个 Owner 在其作用域内接纳状态的一次动作**，必�
 本地多步骤用例采用 `Accepted → Executing → Reconciling? → Succeeded / Failed / Unresolved`。取消、补偿仅在该方法存在实际能力和契约时增加，不能用统一 COMPENSATED 状态暗示可撤销所有设备动作。效果认知与等待状态见 §6 / §11；PIN 等单请求无须完整业务状态图。
 
 成功范围逐接口保持：接收返回、卡业务结果、拓扑重新发现、角色/Radio 协调、网络驻网分别判断。EsimManager 外层成功不能覆盖 enumResult，66250 listener 的完整保证需匹配服务契约；不默认把网络就绪加入成功条件。TGT-OPEN-008 给出当前默认边界。
+
+本地操作终态不等于硬件终态：确认未发出可 Failed；已发出但超时/关联丢失时先记 Unknown 并进入 Reconciling，预算耗尽可 Unresolved，恢复责任转 R。晚到可信证据可以更新 R 的效果认知；不能把已向旧调用者完成的操作改成再次成功，也不自动发下一业务步骤。
 
 ### 12.2 运行期操作记录与跨重启边界
 
@@ -678,6 +688,12 @@ R 按经证实的 Modem/eUICC/通道共享域维护一个资源准入者；普�
 | 逻辑通道；open/close 回调 [F20](#src-20) | 保留真实关闭结果及原请求归属 | 当前 SyncCloseChannel 重试后清本地值，CloseDone 未检查载荷即清零；本地 channel=0 不证明设备关闭。通道未知时不能再开通道来“验证空闲” |
 
 每个迁移用例提交“可达接口→结果含义→因果关联→静止判据→错误映射→预算来源”的验收证据；未具备可靠判据的资源用例保持未切换，旧实现作为独立构建继续使用。不得新增 ResetMemory/擦卡/硬件复位来替代缺失证明。新屏障可能改变旧自动重试和可用性，属于显式 G3 行为差异，不能夹带入 G2；缺口仅阻塞对应切片（§21.2）。
+
+### 12.5 重试与补偿的唯一责任
+
+近期结构切片保留逐方法已有次数、间隔、触发条件、错误及完成节点，不统一改成指数退避。O 接管前必须关闭旧 Controller 的同层业务重试发令分支；R 保留协议明确定义的分片/传输机制，两者需登记实际层级，避免 O 与 R 同时重放同一设备动作。现有 Primary 重试事件有明确剩余次数与延时，但其存在不证明超时后的重发总是安全。[F06](#src-06)
+
+新增重试只在旧步骤已证实终止或可靠失效，并确认该命令允许重复执行时准入；已知部分效果和 Unknown 先按 §12.4 核对。存储、参数、厂商调用也按各自效果判断，不因未发 RIL 就盲重试。反向补偿须有独立业务规则、固定目标和设备依据，不能用通用 COMPENSATED 状态承诺回到原状。抑制旧重试或增加隔离属于 §9.5 的行为变化，须通过相关 G3 切片验收。
 
 ---
 
@@ -711,7 +727,11 @@ SimRdbHelper 的 Insert/Query/Update/Delete 调用 DataShareHelper；UpdateDataB
 
 ### 13.4 故障恢复
 
-存储失败保留各步骤结果，只有确认未发设备动作时才可安全按原规则重试。设备已改变时走 §12，不用旧快照“回滚现实”；持久写已成功但内存未发布时走字段重查。重启按现有参数/DataShare 和可达设备事实重建，不恢复不存在的操作日志。验证至少包含跨 Owner 字段并发、初始化/重载竞争、provider 更新失败、参数部分写和外部写者；未取得 provider 的切片只验本仓计划与兼容，不宣称全局事务通过。
+存储失败保留每条调用的已确认失败、已生效或结果未知。未发设备命令只说明没有本次设备效果，不能证明 DataShare/参数写入未生效或可重复；provider 返回错误、调用中断和通知失败分别处理。仅在原调用语义及效果证据支持重复时重试该存储步骤，不重跑已经完成的写卡步骤。设备已改变时走 §12，不用旧快照“回滚现实”；持久写已成功但内存未发布时走字段重查，读取值相同也不证明本次操作身份。
+
+存储结果未知由 T/A 应用写者保留相应字段/角色冲突资格，经 I 的既有访问路径核对；设备在途由 R 独立接管。只有原存储调用已结束或可靠失效，并完成该方法所需的字段重读/冲突处理，才重新准入相关写；无法确认时保留局部阻塞与诊断，不增加无界轮询、自动重写或虚构 provider 查询。未知效果隔离造成的可用性变化按 §9.5 单列，未完成验收的切片继续保留旧路径。
+
+重启按现有参数/DataShare 和可达设备事实重建，不恢复不存在的操作日志。验证至少包含跨 Owner 字段并发、初始化/重载竞争、provider 更新失败、参数部分写和外部写者；未取得 provider 的切片只验本仓计划与兼容，不宣称全局事务通过。
 
 ---
 
@@ -770,7 +790,7 @@ TopologyChanged、SubscriptionDiscovered/Removed、OperationStateChanged、RoleA
 
 保留既有公开 Framework、ICoreService、ISimManager/IEsimManager、IEsimService、CoreManagerInner 消费侧契约；不新增或重排 IPC，不改 IDL、公开枚举、schema、厂商 ABI、SA 或进程。本轮仅文档设计，不授权生产重构。接口明细继续维护于[接口说明](SIM管理对外接口说明_源码核实版.md)。
 
-逐方法验收签名/二进制兼容、权限及错误优先级、slot capability、敏感字段裁剪、同步接收返回、异步业务结果与 out 参数、查询来源、可见中间态、通知次数/首帧/必要偏序、超时与重试影响。CoreServiceSim::SetShowNumber / UnlockPin 中调用线程的检查与队列任务回包分开，[F15](#src-15)不能把检查移到异步后再用服务身份查询权限。
+逐方法验收签名/二进制兼容、权限及错误优先级、slot capability、敏感字段裁剪、同步接收返回、异步业务结果与 out 参数、查询来源、可见中间态、通知次数/首帧/必要偏序、超时与重试影响。CoreServiceSim::SetShowNumber / UnlockPin 中调用线程的检查与队列任务回包分开，[F15](#src-15)不能把检查移到异步后再用服务身份查询权限。`CoreServiceSim::GetSimState` 同样先返回排队受理结果，再由 parcel callback 携带业务结果及可选状态；不能因名字是 Get 就改成一次同步业务返回。[F15](#src-15)
 
 ### 16.2 旧写命令目标绑定
 
@@ -792,9 +812,11 @@ TopologyChanged、SubscriptionDiscovered/Removed、OperationStateChanged、RoleA
 
 能力区分硬件接入点、可路由 Slot、已装配实例、对外可见数量、每 eUICC 的 Port/可启用 Profile、Radio 并发和调用者权限。eSIM 默认宏关闭但产品可启用；专有槽排除、协议初始化的双槽限制等需逐产品核验。[F02](#src-02)、[F12](#src-12)、[F19](#src-19)、[F29](#src-29) 扩数组不能证明四槽/MEP，当前接口含 portIndex 也不证明完整持久映射和设备支持。
 
-### 17.2 厂商三类责任
+### 17.2 厂商调用与命令入口
 
-将现有 Hook 包装为能力查询、结果通知、正式业务命令三类私有端口。核心策略保留在对应 Owner，厂商不能得到可写聚合引用或独立存储入口。旧 Hook 的返回、默认/缺符号分支、同步重入与调用节点仍须保留；并非所有 Hook 都已是“提交后通知”，不得按分类标签重排。[F06](#src-06)、[F26](#src-26)、[F28](#src-28)
+厂商正式业务请求从应用入口进入；Core 向厂商的调用按真实语义分为能力/策略查询、有副作用执行、兼容通知。入站命令与出站执行不能共用一个含糊的“命令端口”来转办。核心策略保留在对应 Owner，厂商不能得到可写聚合引用或独立存储入口。
+
+`SwapM0M2SimCards` 是转调动态符号并返回结果的执行路径；`SetActiveSimFunc` 转调 void 函数，不能从函数返回推定设备完成。`UpdateSubState` 的同步旧节点也不自动等于纯通知。厂商内部实现未提供，副作用和结束保证仍待确认。[F05](#src-05)、[F26](#src-26)、[F28](#src-28) 有副作用执行由所属应用用例/O 经 I 调用并记录效果，缺证据时沿用旧行为；不得在超时后盲目 fallback、并行重发或卸载库。通知按原步骤锁外调用，旧返回、缺符号分支和重入语义分别保持，不统一推迟到最终提交后。
 
 ### 17.3 动态库与 ABI
 
@@ -814,7 +836,7 @@ TopologyChanged、SubscriptionDiscovered/Removed、OperationStateChanged、RoleA
 | ARCH-RULE-004 | 发起时关联，最终准入与状态转换同域；迟到可作核对证据 | 换卡、Refresh、attempt/epoch、重复与迟到测试 |
 | ARCH-RULE-005 | C 无业务写权；允许保留查询用例的异步回写和存储读取 | 查询来源与后台写者检查 |
 | ARCH-RULE-006 | Domain 纯规则；Coordinator 在 Application；R 单列 | 编译依赖/头文件/平台类型检查 |
-| ARCH-RULE-007 | 厂商能力、输出与命令经私有端口；保留原 ABI | Hook 节点、缺符号、ABI/重入验证 |
+| ARCH-RULE-007 | 厂商查询、执行、输出与入站命令分别经私有边界；保留原 ABI | Hook 节点、副作用/结束证据、缺符号、ABI/重入验证 |
 | ARCH-RULE-008 | 领域锁内无外部 I/O；相关提交有序且无关资源可前进 | 阻塞、饥饿、重入与竞争测试 |
 | ARCH-RULE-009 | 事实只在对应接纳点可见；旧中间可见性保持，可靠通知能力不虚构 | §9 部分失败轨迹、崩溃/输出失败与恢复证据 |
 | ARCH-RULE-010 | 容量、路由、权限和真实共享资源分开；未知能力保守处理 | Feature 矩阵、多拓扑/设备验证 |
@@ -880,16 +902,16 @@ TopologyChanged、SubscriptionDiscovered/Removed、OperationStateChanged、RoleA
 | <a id="src-03"></a>F03 | [services/sim/src/sim_manager.cpp:41](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/sim_manager.cpp#L41)；`bool SimManager::OnInit`<br>[services/sim/src/sim_manager.cpp:53](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/sim_manager.cpp#L53)；`void SimManager::InitMultiSimObject`<br>[services/sim/src/sim_manager.cpp:133](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/sim_manager.cpp#L133)；`void SimManager::InitSingleSimObject` | 按槽装配 State/File/Account/SMS/电话簿/STK；随后 Controller/Monitor；目标工厂尚未实现。 |
 | <a id="src-04"></a>F04 | [services/sim/src/multi_sim_controller.cpp:231](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L231)；`bool MultiSimController::InitData`<br>[services/sim/src/multi_sim_controller.cpp:421](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L421)；`bool MultiSimController::InitIccId`<br>[services/sim/src/multi_sim_controller.cpp:733](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L733)；`bool MultiSimController::GetListFromDataBase`<br>[services/sim/src/multi_sim_controller.cpp:759](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L759)；`bool MultiSimController::GetAllListFromDataBase` | 账户匹配、建行、force 激活与主卡后续混合；缓存重载替换容器，是写权切换入口。 |
 | <a id="src-05"></a>F05 | [services/sim/src/multi_sim_controller.cpp:956](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L956)；`int32_t MultiSimController::UpdataCacheSetActiveState`<br>[services/sim/src/multi_sim_controller.cpp:976](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L976)；`int32_t MultiSimController::SetActiveCommonSim`<br>[services/sim/src/multi_sim_controller.cpp:1041](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L1041)；`int32_t MultiSimController::SetActiveSimSatellite` | 普通激活的缓存/UpdateSubState 先于 DB；force 路径不同；失败不等于无效果。 |
-| <a id="src-06"></a>F06 | [services/sim/src/multi_sim_controller.cpp:1483](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L1483)；`int32_t MultiSimController::SetPrimarySlotId(`<br>[services/sim/src/multi_sim_controller.cpp:1567](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L1567)；`void MultiSimController::ResumePrimaryCardInfo`<br>[services/sim/src/multi_sim_controller.cpp:1701](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L1701)；`void MultiSimController::SaveDefaultCellularDataSlotIdInfo`<br>[services/sim/src/multi_sim_controller.cpp:2071](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L2071)；`int32_t MultiSimController::SetPrimarySlotIdWithoutModemReboot` | 主卡普通路径参数预写/条件恢复/重试/默认 Data 后续；免重启分支先设备后保存。 |
+| <a id="src-06"></a>F06 | [services/sim/src/multi_sim_controller.cpp:1483](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L1483)；`int32_t MultiSimController::SetPrimarySlotId(`<br>[services/sim/src/multi_sim_controller.cpp:1567](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L1567)；`void MultiSimController::ResumePrimaryCardInfo`<br>[services/sim/src/multi_sim_controller.cpp:1701](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L1701)；`void MultiSimController::SaveDefaultCellularDataSlotIdInfo`<br>[services/sim/src/multi_sim_controller.cpp:2071](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L2071)；`int32_t MultiSimController::SetPrimarySlotIdWithoutModemReboot`<br>[services/sim/src/multi_sim_controller.cpp:1535](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L1535)；`void MultiSimController::RetrySetPrimarySlotId` | 主卡普通路径参数预写/条件恢复/重试/默认 Data 后续；免重启分支先设备后保存。 |
 | <a id="src-07"></a>F07 | [services/sim/src/multi_sim_controller.cpp:1280](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L1280)；`int32_t MultiSimController::SetDefaultVoiceSlotId`<br>[services/sim/src/multi_sim_controller.cpp:1339](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L1339)；`int32_t MultiSimController::SetDefaultSmsSlotId` | Voice/SMS 存储和缓存更新后广播可失败；不是全部回滚。 |
-| <a id="src-08"></a>F08 | [services/sim/src/multi_sim_controller.cpp:1757](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L1757)；`int32_t MultiSimController::SetShowNumber(`<br>[services/sim/src/multi_sim_controller.cpp:1774](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L1774)；`int32_t MultiSimController::SetShowNumberToDB`<br>[services/sim/src/sim_file.cpp:150](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/sim_file.cpp#L150)；`bool SimFile::UpdateMsisdnNumber`<br>[services/sim/src/sim_manager.cpp:432](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/sim_manager.cpp#L432)；`int32_t SimManager::SetShowNumber(` | 号码写卡、DB、缓存和成功通知分节点；卡等待/DB 失败与 int32 返回 false 的缺陷候选。 |
+| <a id="src-08"></a>F08 | [services/sim/src/multi_sim_controller.cpp:1757](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L1757)；`int32_t MultiSimController::SetShowNumber(`<br>[services/sim/src/multi_sim_controller.cpp:1774](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L1774)；`int32_t MultiSimController::SetShowNumberToDB`<br>[services/sim/src/sim_file.cpp:150](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/sim_file.cpp#L150)；`bool SimFile::UpdateMsisdnNumber`<br>[services/sim/src/sim_manager.cpp:432](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/sim_manager.cpp#L432)；`int32_t SimManager::SetShowNumber(`<br>[services/sim/src/sim_file.cpp:688](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/sim_file.cpp#L688)；`bool SimFile::ProcessSetMsisdnDone` | 号码写卡、DB、缓存和成功通知分节点；卡等待/DB 失败与 int32 返回 false 的缺陷候选。 |
 | <a id="src-09"></a>F09 | [services/sim/src/multi_sim_controller.cpp:1720](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L1720)；`int32_t MultiSimController::GetShowNumber`<br>[services/sim/src/multi_sim_controller.cpp:1861](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L1861)；`int32_t MultiSimController::GetSimTelephoneNumber`<br>[services/sim/src/multi_sim_controller.cpp:1945](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L1945)；`int32_t MultiSimController::SaveImsSwitch`<br>[services/sim/src/multi_sim_controller.cpp:1959](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/multi_sim_controller.cpp#L1959)；`int32_t MultiSimController::QueryImsSwitch` | GetShowNumber/IMPU 可异步回写；IMS 开关按 ICCID 存取；非全量只读内存查询。 |
 | <a id="src-10"></a>F10 | [frameworks/native/src/esim_service_client.cpp:29](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/frameworks/native/src/esim_service_client.cpp#L29)；`constexpr int32_t TELEPHONY_ESIM_SERVICE_SYS_ABILITY_ID`<br>[frameworks/native/src/esim_service_client.cpp:65](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/frameworks/native/src/esim_service_client.cpp#L65)；`sptr<IEsimService> EsimServiceClient::GetProxy`<br>[frameworks/native/src/esim_service_client.cpp:118](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/frameworks/native/src/esim_service_client.cpp#L118)；`void EsimServiceClient::OnRemoteDied`<br>[interfaces/innerkits/IEsimService.idl:25](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/interfaces/innerkits/IEsimService.idl#L25)；`interface OHOS.Telephony.IEsimService {` | 66250 加载、死亡接收、既有任务 IDL；无通用 OperationId 查询/重放定义，服务实现未提供。 |
 | <a id="src-11"></a>F11 | [services/sim/src/esim_manager.cpp:318](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/esim_manager.cpp#L318)；`int32_t EsimManager::SwitchToProfile`<br>[services/sim/src/esim_manager.cpp:85](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/esim_manager.cpp#L85)；`int32_t EsimManager::GetEuiccProfileInfoList` | Core 本地 Profile 双结果，外层成功与 enumResult 不等同；偏好参数仍写。 |
 | <a id="src-12"></a>F12 | [services/sim/src/esim_manager.cpp:36](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/esim_manager.cpp#L36)；`bool EsimManager::OnInit`<br>[services/sim/src/esim_file.cpp:77](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/esim_file.cpp#L77)；`ResultInnerCode EsimFile::ObtainChannelSuccessExclusive` | 同 slot 的普通/低优先级 EsimFile 实例；对象锁不证明两个独立设备。 |
 | <a id="src-13"></a>F13 | [services/sim/src/esim_file.cpp:2728](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/esim_file.cpp#L2728)；`int32_t EsimFile::SwitchToProfile`<br>[services/sim/src/esim_file.cpp:3030](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/esim_file.cpp#L3030)；`bool EsimFile::ProcessAuthenticateServer(`<br>[services/sim/src/esim_file.cpp:2108](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/esim_file.cpp#L2108)；`bool EsimFile::ProcessLoadBoundProfilePackage(` | 卡侧 Profile 切换/认证/BPP 原语存在；不证明远端端到端任务实现。 |
 | <a id="src-14"></a>F14 | [sa_profile/4010.json:6](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/sa_profile/4010.json#L6)；`"libpath"`<br>[services/etc/init/telephony_trust.json:2](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/etc/init/telephony_trust.json#L2)；`"process"` | 4010 Core SO 与 telephony 配置；trust 列出 66250，不证明实际 PID/装载。 |
-| <a id="src-15"></a>F15 | [services/core/src/core_service_sim.cpp:502](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/core/src/core_service_sim.cpp#L502)；`int32_t CoreServiceSim::SetShowNumber`<br>[services/core/src/core_service_sim.cpp:688](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/core/src/core_service_sim.cpp#L688)；`int32_t CoreServiceSim::UnlockPin(` | 权限/空对象/capability 先检查，捕获 slot 排队，接收返回与业务 callback 分离。 |
+| <a id="src-15"></a>F15 | [services/core/src/core_service_sim.cpp:502](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/core/src/core_service_sim.cpp#L502)；`int32_t CoreServiceSim::SetShowNumber`<br>[services/core/src/core_service_sim.cpp:688](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/core/src/core_service_sim.cpp#L688)；`int32_t CoreServiceSim::UnlockPin(`<br>[services/core/src/core_service_sim.cpp:91](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/core/src/core_service_sim.cpp#L91)；`int32_t CoreServiceSim::GetSimState` | 权限/空对象/capability 先检查，捕获 slot 排队，接收返回与业务 callback 分离。 |
 | <a id="src-16"></a>F16 | [services/sim/src/sim_file.cpp:197](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/sim_file.cpp#L197)；`void SimFile::ProcessIccRefresh`<br>[services/sim/src/sim_file.cpp:226](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/sim_file.cpp#L226)；`void SimFile::ProcessFileLoaded`<br>[services/sim/src/icc_file.cpp:775](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/icc_file.cpp#L775)；`void IccFile::NotifyRegistrySimState` | 局部 Refresh 与完整重载、计数及 LOADED 回写；新增 scope 机制为目标建议。 |
 | <a id="src-17"></a>F17 | [services/tel_ril/src/tel_ril_base.cpp:47](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/tel_ril/src/tel_ril_base.cpp#L47)；`std::shared_ptr<TelRilRequest> TelRilBase::CreateTelRilRequest`<br>[services/tel_ril/src/tel_ril_base.cpp:69](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/tel_ril/src/tel_ril_base.cpp#L69)；`std::shared_ptr<TelRilRequest> TelRilBase::FindTelRilRequest` | serial→requestMap→原事件，匹配后删除；serial 回绕，不是永久业务身份。 |
 | <a id="src-18"></a>F18 | [services/sim/src/sim_manager.cpp:1471](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/sim_manager.cpp#L1471)；`int32_t SimManager::NotifySimSlotsMapping`<br>[services/sim/src/sim_state_manager.cpp:630](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/sim_state_manager.cpp#L630)；`int32_t SimStateManager::NotifySimSlotsMapping`<br>[services/sim/src/sim_state_handle.cpp:1184](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/sim_state_handle.cpp#L1184)；`int32_t SimStateHandle::SetIccCardState` | 映射标志先置，StateManager 注入人工 ABSENT；不证明物理缺卡或映射成功。 |
@@ -902,18 +924,33 @@ TopologyChanged、SubscriptionDiscovered/Removed、OperationStateChanged、RoleA
 | <a id="src-25"></a>F25 | [services/sim/src/sim_sms_controller.cpp:197](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/sim_sms_controller.cpp#L197)；`int32_t SimSmsController::AddSmsToIcc`<br>[services/sim/src/icc_dialling_numbers_manager.cpp:301](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/icc_dialling_numbers_manager.cpp#L301)；`int32_t IccDiallingNumbersManager::QueryIccDiallingNumbers(`<br>[services/sim/src/usim_dialling_numbers_service.cpp:130](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/usim_dialling_numbers_service.cpp#L130)；`void UsimDiallingNumbersService::StartLoadByPbrFiles` | 卡短信读写、电话簿类型/安全/等待及 PBR 多文件生产加载，不是账户聚合。 |
 | <a id="src-26"></a>F26 | [services/sim/src/stk_manager.cpp:63](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/stk_manager.cpp#L63)；`int32_t StkManager::SendTerminalResponseCmd`<br>[services/sim/src/stk_controller.cpp:372](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/stk_controller.cpp#L372)；`void StkController::OnSendRilSessionEnd` | STK 命令含 EXT 特殊分支，SessionEnd 走既有 CES 输出。 |
 | <a id="src-27"></a>F27 | [services/sim/src/card_file_detect_manager.cpp:127](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/card_file_detect_manager.cpp#L127)；`int32_t CardFileDetectManager::SaveCardFileDetectData` | 卡探测存储后尝试刷新全账户缓存，亦是需接管的写/重载入口。 |
-| <a id="src-28"></a>F28 | [services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp:46](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp#L46)；`void TelephonyExtWrapper::InitTelephonyExtWrapper()`<br>[services/sim/src/sim_cache_sync_manager.cpp:45](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/sim_cache_sync_manager.cpp#L45)；`int32_t SimCacheSyncManager::SyncCacheOnUserSwitch` | 厂商库动态加载及函数指针；CacheSync 源存在但根 BUILD/生产装配检索未命中。 |
+| <a id="src-28"></a>F28 | [services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp:46](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp#L46)；`void TelephonyExtWrapper::InitTelephonyExtWrapper()`<br>[services/sim/src/sim_cache_sync_manager.cpp:45](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/sim/src/sim_cache_sync_manager.cpp#L45)；`int32_t SimCacheSyncManager::SyncCacheOnUserSwitch`<br>[services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp:408](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp#L408)；`void TelephonyExtWrapper::SetActiveSimFunc`<br>[services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp:437](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp#L437)；`int32_t TelephonyExtWrapper::SwapM0M2SimCards` | 厂商库动态加载及函数指针；CacheSync 源存在但根 BUILD/生产装配检索未命中。 |
 | <a id="src-29"></a>F29 | [common/capability_mgr/src/multi_sims_capability_manager.cpp:28](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/common/capability_mgr/src/multi_sims_capability_manager.cpp#L28)；`bool MultiSimsCapabilityMgr::IsMultiSimsCapabilitySupported` | 非 SLOT_3_INDEX 直接 true；受限槽检查 native/shell/system app，不能沿用旧文档的反向结论。 |
 | <a id="src-30"></a>F30 | [interfaces/innerkits/include/i_sim_manager.h:29](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/interfaces/innerkits/include/i_sim_manager.h#L29)；`class ISimManager {`<br>[interfaces/innerkits/include/i_esim_manager.h:32](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/interfaces/innerkits/include/i_esim_manager.h#L32)；`class IEsimManager {`<br>[interfaces/innerkits/BUILD.gn:65](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/interfaces/innerkits/BUILD.gn#L65)；`ohos_shared_library("tel_core_service_api")`<br>[frameworks/native/src/core_manager_inner.cpp:40](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/frameworks/native/src/core_manager_inner.cpp#L40)；`void CoreManagerInner::OnInit` | 接口声明无虚析构；CoreManagerInner 编入 API SO；具体类型共享控制块需保持。 |
 | <a id="src-31"></a>F31 | [services/core/src/core_service.cpp:1017](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/core/src/core_service.cpp#L1017)；`int32_t CoreService::FactoryReset`<br>[services/network_search/src/network_search_manager.cpp:1149](https://github.com/zjuluowu/multisim/blob/6017003eff50c1bc8c5dfa72336a4bfe42e948b0/telephony_core_service/services/network_search/src/network_search_manager.cpp#L1149)；`int32_t NetworkSearchManager::FactoryReset` | Core FactoryReset 委托搜网，不能据方法名新增 eUICC 擦除。 |
 
 ### 20.3 本轮检查记录
 
-2026-10-23～2026-10-26 完成定向源码复核与文档自检。实际静态检查结果：195 个链接（84 处固定提交源码定位、111 处本地导航）、36 个所引源码/配置文件的路径/行号/符号与工作树换行归一内容一致；25 张 Markdown 表格、代码围栏、24 个章序、62 个主功能覆盖、10 条 ARCH-RULE、13 个 TGT-OPEN 主记录检查通过。复审提交中的 5 张图曾经 Mermaid 11.4.1 解析通过；该记录针对当时图形版本，未做图形渲染或设备部署验证。人工复核了上下文/写权、编译与运行图义、部分失败、恢复能力、决策状态和门禁之间的一致性。
+前轮复审（3476c44a，2026-10-23～2026-10-26）完成定向源码复核与文档自检。当时静态检查结果：195 个链接（84 处固定提交源码定位、111 处本地导航）、36 个所引源码/配置文件的路径/行号/符号与工作树换行归一内容一致；25 张 Markdown 表格、代码围栏、24 个章序、62 个主功能覆盖、10 条 ARCH-RULE、13 个 TGT-OPEN 主记录检查通过。复审提交中的 5 张图曾经 Mermaid 11.4.1 解析通过；该记录针对当时图形版本，未做图形渲染或设备部署验证。人工复核了上下文/写权、编译与运行图义、部分失败、恢复能力、决策状态和门禁之间的一致性。
 
-编辑前文件摘要对比确认仅本文变化，另外 1272 个已纳入检查的工作区文件保持原始字节；`git diff --check` 通过。核验工具及临时依赖仅置于 `/tmp`，不作为仓库交付物。未运行 hb、业务 gTest、fuzzer、设备/跨 SA、真实 Legacy/Split 或 LSP 验证；历史测试记录不作为本轮运行结果。
+该轮编辑前文件摘要对比确认仅本文变化，另外 1272 个已纳入检查的工作区文件保持原始字节；`git diff --check` 通过。核验工具及临时依赖仅置于 `/tmp`，不作为仓库交付物。未运行 hb、业务 gTest、fuzzer、设备/跨 SA、真实 Legacy/Split 或 LSP 验证；历史测试记录不作为本轮运行结果。
 
-2026-10-26 分层图表达优化：第 5 章 4 幅文本图的框线显示列宽检查通过；保留的第 7 章 1 幅 Mermaid 图重新解析通过。复查上述链接、表格、编号及覆盖关系，并确认本次修改仅涉及第 5 章、检查记录与修订记录；未重新运行业务测试或进行设备验证。
+2026-10-26 分层图表达优化（9501c2b5）：第 5 章 4 幅文本图的框线显示列宽检查通过；保留的第 7 章 1 幅 Mermaid 图重新解析通过。复查上述链接、表格、编号及覆盖关系，并确认该次修改仅涉及第 5 章、检查记录与修订记录；未重新运行业务测试或进行设备验证。
+
+2026-10-26 本次三稿对照复核：读取两份参考稿正文并校验其 SHA-256，定向重读角色、激活、号码等待/回包、异步查询入口、DataShare 和厂商转调路径；补充的源码依据继续固定到 6017003e。实际检查 205 个链接（89 处固定源码、116 处本地导航）、36 个引用文件的路径/行号/符号及换行归一内容、26 张表格、24 章顺序、62 个主功能、10 条规则及 13 个原决策 ID，均通过。第 5 章前三幅文本图与本次输入逐字一致，第四幅保持原框图形式并增加超时分支，4 图框线列宽检查通过；第 7 章图经 Mermaid 11.4.1 再次解析通过。1275 个文件的前后摘要中仅本文变化，另外 1274 个文件（含两稿）保持原始字节；`git diff --check` 通过。本次仅静态与文档检查，未运行业务构建/测试、图形渲染、设备或外仓验证，不新增批准或 PASS 声明。
+
+### 20.4 本次两份参考稿的采用与裁决
+
+输入以本次读到的字节为准：v1.16 的 SHA-256 为 `8c6a2a53c36f893b1d04676ca3987a3854f8e4fec8cd4b897d842a2b6f017e00`；v1.17 为 `61fd72597468e3bbf9a49586bdea23bd0cdf41370b77e38d27849bffdc4e02db`。参考稿自述的检查结果不继承为本文本次结果。
+
+| 参考内容与原主文档问题 | 复核判断及落位 | 决策归并 / 后续验收 |
+|---|---|---|
+| v1.16 §4～13 的本地 O、R 保留、分类目标和旧可见性；v1.17 §4/7/9/13 的全 Operation 归远端、统一持久后发布/恢复 | 前者多数已被 v1.2 吸收；后者与 F05～F13/F21 的当前边界不符，继续作为受条件约束的历史提案，不覆盖 §4/7/9/12/13 | 原 001/004/008/009；无批准记录不改 ACCEPTED |
+| v1.16 §9.3、v1.17 §9.2/14.2 提醒锁外 I/O 仍需有序；原文仅说候选排序，易被实现为只排序内存发布 | F08/F21 无客户端 CAS；§9.2 明确冲突资格覆盖 I/O 与未知结果核对，处理重载过期及反向调用 | 007/009；W1/W2 完成逆序、重载竞争、同步重入负控，不能仅靠拒绝旧快照 |
+| v1.16 §11.2 区分三种去重；v1.17 §11/19 的重复请求要求未限定幂等键 | 保留传输 serial 机制 F17；§11.3 明确同参调用独立，§12.5 区分业务/协议重试；不许推出端到端 exactly-once | 008/011；重复回执、独立同参请求、调用者重试和旧通知分别验收 |
+| 两稿均提示设备效果与等待分开；原 v1.2 号码失败行/图和 §13.4 的重试前提过于简化 | F08 的写卡等待可超时，F21 仅证明转调 provider；§5.3/9.3/12/13.4 区分 Unknown、晚到卡观察和已结束调用，未发 RIL 也不能证明存储可重试 | 008/009/011；丢回包、晚到成功、卡成功而 DB 失败、存储返回不明，设备结论仍需外部证据 |
+| v1.16 §4.3 的角色范围与 §17.2 的副作用执行；原 v1.2 按共享资源域描述 A，厂商仅列查询/通知/命令 | F07 的角色选择跨槽，F28 存在动态执行入口；§4.2/4.3 以角色不变量定域，§17.2 分清厂商入站命令和出站执行 | 003/007；跨槽角色竞争、厂商缺符号/慢调用/效果未知及重入；未知厂商效果不推定已完成 |
+| v1.16 §24 的逐功能开发问题、v1.17 的门禁和测试分工 | §24 补充开发定位顺序；保留现有 §6/19/22 的功能、测试与分阶段职责，不复制完整迁移/用例清单，不恢复全部 OPEN 的总门禁 | 010/013；文档核查只证明表达与追溯，不晋升为业务或设备 PASS |
 
 ---
 
@@ -927,13 +964,13 @@ TopologyChanged、SubscriptionDiscovered/Removed、OperationStateChanged、RoleA
 |---|---|---|---|---|
 | TGT-OPEN-001 跨 SA 传输、结果查询/恢复；易双编排 | F10：66250 加载/死亡接收与任务 IDL；F11～F13：Core 卡侧原语；无通用操作查询 | 保留既有 IPC/listener；本地 O 在 Core，高层任务边界留服务；不添 OperationId/可靠重放承诺，§7/12 | 匹配服务调用链，逐任务核实主编排、重试/补偿、丢回调/重连；有协议增强才做持久交付实验 | OPEN-EXTERNAL；eSIM 服务/API 负责人；只阻塞依赖远端任务终止/持久恢复的新用例，不阻塞 Core 普通功能及机械拆库 |
 | TGT-OPEN-002 ICardChannel 是否包揽 PSIM/eSIM | F03/F08/F12/F16/F25/F26：EF/APDU/安全/电话簿/STK 各有真实协议 | 不建万能通道；保留协议，按用例抽窄执行端口，共享设备域由 R 屏障表达，§6/17 | 每个端口有实际调用者、数据/错误/生命周期；无跨层平台类型泄漏 | CLOSED-RECOMMENDATION；SIM 架构/Runtime 负责人；不再悬置全部接入，具体端口仍随切片评审 |
-| TGT-OPEN-003 厂商端口、ABI/版本 | F28 的 dlopen/dlsym；F06/F26 同步 Hook 与特殊分支 | 私有适配现有 ABI，能力/通知/命令分责；不擅改签名或统一延迟 Hook，§17 | 匹配厂商头/库，符号与类型布局、缺库/符号、重入、在途卸载及 Feature 组合 | OPEN-EXTERNAL；厂商集成/构建负责人；只阻塞相关产品分支与新 ABI，不阻塞不含该 Hook 的切片 |
+| TGT-OPEN-003 厂商端口、ABI/版本 | F28 的 dlopen/dlsym；F06/F26 同步 Hook 与特殊分支 | 私有适配现有 ABI，出站查询/执行/通知与入站命令分责；不擅改签名或统一延迟 Hook，§17 | 匹配厂商头/库，区分查询/副作用执行/通知和入站命令；符号、缺库、重入、执行结束/在途卸载及 Feature 组合 | OPEN-EXTERNAL；厂商集成/构建负责人；只阻塞相关产品分支与新 ABI，不阻塞不含该 Hook 的切片 |
 | TGT-OPEN-004 Assignment 原子存储 | F06/F07/F21/F22：参数、缓存及默认卡 URI 分离；无客户端 CAS | 近期保留旧协议并按字段计划；不承诺统一原子性。长期先证 provider 事务/写者再定方案，§13 | provider 默认卡跨行故障/崩溃；字段并发、参数部分失败、外部写者；重启观察 | OPEN-EXTERNAL；数据提供方/角色负责人；阻塞强原子持久增强，不阻塞保留旧行为的 A 入口整理 |
 | TGT-OPEN-005 Event Sourcing | F21/F22 现有存储路径，F10 无通用重放契约；未发现该目标实现或独立业务需求 | 默认不采用；操作日志和可靠通知按具体需求独立论证，避免无收益的 schema/协议扩张，§12/13/15 | 无新增日志/schema/事件重建依赖；未来有审计/恢复需求时给替代方案与成本证据 | CLOSED-RECOMMENDATION；架构负责人；关闭为当前设计取舍，不是批准。不阻塞任何近期结构切片，可靠通知缺口归 001/009 |
 | TGT-OPEN-006 Subscription 身份生成/恢复 | F04/F22：ICCID 匹配、既有 simId/绑定路径；永久身份批准缺失 | 沿用不透明 simId，强类型不改变政策；不引入第二公共 ID、NULL 迁移或永久稳定承诺，§3/10/16 | 插拔/重启/停用重启用/删除重建的旧行为采集；产品确认身份保留/迁移 | OPEN-EXTERNAL；产品/领域/存储负责人；只阻塞新身份政策与 schema，不阻塞沿用旧 ID 的解耦 |
-| TGT-OPEN-007 Topology 事务范围 | F04/F23：全量缓存重载；F16：局部加载；F21/F22 无全局事务证明 | T 统一入口和短提交，按账户/绑定键预留/复核，A 按共享资源域；O 每操作；不把设备等待锁进设备级大聚合，§4.3/10 | 无关卡可前进、同绑定冲突、跨键绑定迁移唯一性；无全局版本误拒绝 | PROPOSED，推荐明确；SIM 架构负责人；阻塞实际写权迁移的并发设计验收，不阻塞源码依赖收口 |
+| TGT-OPEN-007 Topology 事务范围 | F04/F23：全量缓存重载；F16：局部加载；F21/F22 无全局事务证明 | T 统一入口和短提交，按账户/绑定键预留/复核；A 按角色约束域与真实资源冲突裁决；O 每操作；不把设备等待锁进设备级大聚合，§4.3/9.2/10 | 无关卡可前进、同绑定冲突、跨键绑定迁移与跨槽默认角色唯一性；无全局版本误拒绝 | PROPOSED，推荐明确；SIM 架构负责人；阻塞实际写权迁移的并发设计验收，不阻塞源码依赖收口 |
 | TGT-OPEN-008 成功是否含拓扑/Radio 收敛 | F05～F08/F11/F15：不同返回、业务结果、部分效果与后续动作 | 逐旧方法保持成功范围；新增内部 Unknown 不加公开码；远端 listener 范围待契约，不默认含驻网，§9/12/16 | 正常/部分失败轨迹与返回/out/callback/查询对照；服务与产品确认长期收敛语义 | PROPOSED + OPEN-EXTERNAL；API/产品/eSIM 负责人；只阻塞改变成功保证的接口或远端依赖切片 |
-| TGT-OPEN-009 Commit/可见性/通知 | F05～F09/F11 直接反例；F21 无跨存储事务证据 | 近期按旧节点接纳，严格持久后发布与可靠投递另设前提；通知失败不虚构回滚，§8/9/13/15 | 七类失败轨迹、查询中间态、通知次数/偏序；新可靠投递做真实崩溃窗口实验 | PROPOSED；SIM/API 负责人，可靠投递需 provider/服务；仅阻塞所改方法的行为切换，长期增强不阻塞 G2 |
+| TGT-OPEN-009 Commit/可见性/通知 | F05～F09/F11 直接反例；F21 无跨存储事务证据 | 近期按旧节点接纳，严格持久后发布与可靠投递另设前提；通知失败不虚构回滚，§8/9/13/15 | 七类失败轨迹（含写卡超时与晚到）、查询中间态、同字段 W1/W2 锁外写排序、通知次数/偏序；新可靠投递做真实崩溃窗口实验 | PROPOSED；SIM/API 负责人，可靠投递需 provider/服务；仅阻塞所改方法的行为切换，长期增强不阻塞 G2 |
 | TGT-OPEN-010 Linux 最小生产闭包 | F03 装配；systemtest 原文和工作树差异；F29 当前 capability 与旧 Oracle 不一致 | 复用独立 host 工程，从真实 OnInit+无卡 RIL 输入切片起；先补匹配平台/存储契约，不能以容量 PASS 代替，§19 | 真实链接/生产函数执行审计、合法边界输入、负控、清理和 XML/JSON；未知依赖明确 BLOCKED | PROPOSED；测试/平台适配负责人；事实范围已明确，完整闭包仍未运行，只阻塞对应业务自动化门禁 |
 | TGT-OPEN-011 Slot 写命令绑定时点 | F15：接收只捕获 slot，业务在队列执行；F09 后台任务回写 | G2 保留原解析点；G3 在实际执行接纳/发起处固定目标，前移至 IPC 接收或禁止旧重定向须独立行为评审，§10/11/16 | 接收后排队期间换卡、后台回写迟到、无 simId PIN、非目标不受影响及原错误/时延 | PROPOSED + OPEN-EXTERNAL；API/产品负责人；只阻塞受影响异步方法的增强，非所有查询/拆库 |
 | TGT-OPEN-012 多版本组合查询 | F07/F09/F23：不同来源独立更新，无原子组合证明 | 内部携带版本/来源、有界重读；旧外部输出不加新字段/错误，不宣称原子快照；强组合另审，§8.3/16 | 并发 T/A/R 变化、原查询来源和错误；新接口明确一致性及预算 | PROPOSED；查询/API 负责人；不阻塞旧查询适配，阻塞新增强一致保证 |
@@ -947,7 +984,7 @@ TopologyChanged、SubscriptionDiscovered/Removed、OperationStateChanged、RoleA
 |---|---|---|
 | 单主编排的本地/远端划分 → 001/008 | Core 本地 O，服务高层任务不复制；eSIM 服务负责人 | 匹配服务仓及逐任务时序/补偿；只阻塞该远端任务重构 |
 | 超时后静止、共享设备资源键/恢复预算 → 001/007/008/011 | R 保守共享域，Unknown 不当可用；Runtime/RIL/设备负责人 | 实际 Modem/eUICC 映射、可达查询、结束/失效判据、旧错误映射和已有预算；没有证据不启用该写用例的新屏障/重试政策，其他资源可推进 |
-| provider 直接写者、T/A 整行覆盖、NULL → 004/006/009 | 字段级计划、保持旧 schema/占位；provider 负责人 | 匹配实现、写者清单/权限、事务/条件更新、旧读者及恢复实验；只阻塞强一致/数据迁移，不阻塞保留既有 CRUD |
+| provider 直接写者、T/A 整行覆盖、存储效果未知、NULL → 004/006/009 | 字段级计划，T/A 持冲突资格并经 I 核对；保持旧 schema/占位；provider/字段负责人 | 匹配实现、写者清单/权限、调用结束与错误含义、事务/条件更新、旧读者及恢复实验；只阻塞依赖新隔离/强一致/数据迁移的切片，不阻塞保留既有 CRUD |
 | 新操作日志、Outbox、可靠结果 → 001/005/009 | 内存关联、不承诺同 ID 重启；服务/存储/API 负责人 | 产品需求、协议及持久格式审批、崩溃验证；只阻塞新增恢复承诺 |
 | 合法会话接续/Refresh scope → 007/011 | R 产代次，T 产绑定版本；ExpectedTransition 仅有证据接续 | Runtime 负责人核对卡型依赖集合和因果输入；只阻塞相关 G3b 会话迁移，不阻塞纯规则整理 |
 | 新增关闭协议与 ABI → 003/013 | 具体类型销毁、共享 RIL 归宿主、失败不卸载；构建/宿主负责人 | 工厂/deleter、在途回调、CFI/Feature、实际链接/生命周期实验；常驻机械拆库与动态卸载门禁分开 |
@@ -968,9 +1005,9 @@ TopologyChanged、SubscriptionDiscovered/Removed、OperationStateChanged、RoleA
 | G2a 原 SO 内依赖/所有权收口 | 私有 HostPorts、委托、工厂/deleter 设计；保持原 writer 和原协议 | 消费侧 ABI、初始化/失败清理、共享 RIL 所有权明确；定向差分 | 不要求先迁所有聚合或新增持久日志 |
 | G2b 机械链接拆分 | Core→SIM→API/utils；同进程常驻 SO | 真实 GN/符号/导出/CFI/PAC/LTO/Feature 及安装验证；原返回/通知/加载行为差分 | 不把全部长期恢复/原子存储增强当必备；编译本身不足验收 |
 | G2c 生命周期增强 | 私有 StopAndDrain、重建/卸载/半初始化回收 | 新任务停止、注销、迟到准入、排空、匹配销毁和不可排空时不卸载 | 按产品需要前置；有动态卸载/重建需求的产品不能跳过，常驻拆分不假装已增强 |
-| G3a 账户/字段写权 | WU-01/02/03/05 等按实际状态切换；A 旧策略桥同步提供角色片段 | 所有初始化/重载/后台/恢复/分支 writer 收口，字段互不覆盖，§9 旧可见性 | 严格 provider 原子性未证可保留旧协议；不能声称已获得全局一致性 |
+| G3a 账户/字段写权 | WU-01/02/03/05 等按实际状态切换；A 旧策略桥同步提供角色片段 | 所有初始化/重载/后台/恢复/分支 writer 收口；冲突写资格覆盖锁外 I/O，字段互不覆盖，角色域唯一，§9 旧可见性 | 严格 provider 原子性未证可保留旧协议；不能声称已获得全局一致性 |
 | G3b 会话与加载 | WU-06，runtimeEpoch/局部 LoadScope/ExpectedTransition | 换卡、局部 Refresh、合法新会话与后台迟到；行为差异独立确认 | 无关 eSIM 任务日志不阻塞有完整证据的卡型 |
-| G3c 本地编排与角色 | WU-04/07；唯一执行者，部分失败与资源核对 | 关闭旧重复重试发起；作用域、效果/静止判据、预算和旧错误映射明确 | 无证据资源保留旧构建，其余已闭合用例独立推进 |
+| G3c 本地编排与角色 | WU-04/07；唯一执行者，部分失败与资源核对 | 关闭旧同层重复重试发起；分别验证请求去重与独立同参调用；作用域、效果/静止判据、预算和旧错误映射明确 | 无证据资源保留旧构建，其余已闭合用例独立推进 |
 | G3d 外围/eUICC/订阅 | WU-08/09，普通/低优先级共享资源及旧输出 | 完整相关入口接管、匹配服务/厂商边界、通道静止/销毁及回调验证 | 未装配源码不自动激活，不把外围功能遗漏为“后续再说” |
 | G4 独立新行为 | 新身份/NULL/schema、日志/可靠交付、新 API、四槽/MEP | 明确需求和批准、外仓支持、数据回退、产品设备验证 | 不反向作为所有机械优化的门槛 |
 
@@ -995,6 +1032,7 @@ TopologyChanged、SubscriptionDiscovered/Removed、OperationStateChanged、RoleA
 | 1.2 | 2026-10-23 | 原修订：合并当前与目标逻辑图；当时未重新核验代码，保留原所有权及一致性提案 |
 | 1.2（本轮复审） | 2026-10-26 | 固定 6017003e 基线，核实文档关系与源码；纠正全部 Operation 归 66250、Coordinator 入 Domain、统一持久后可见及查询只读；补全状态写权/功能映射、局部会话与资源恢复、存储能力/跨 SO 边界；逐项收敛 13 个 OPEN 和隐含决策；区分分阶段门禁、外部缺口及本轮静态检查，保持 draft/pending |
 | 1.2（分层图表达优化） | 2026-10-26 | 第 5 章恢复原稿的文本分层框、层内组件框与箭头说明；优化当前/目标对照，明确 Application、Domain、R/I 与 H 的关系；编译依赖和运行示例同步采用文本图，保留已核实的设计结论与固定源码基线 |
+| 1.2（三稿对照复核） | 2026-10-26 | 以当前 9501c2b5 的 v1.2 为基础读取 v1.16/v1.17，保留主路径、ID、分层图形式及 6017003e 生产基线；补输入来源与采用取舍；修正角色约束域、冲突写跨 I/O 排序、号码超时/晚到、独立请求去重、重试与厂商执行边界，同步决策和切片验收；保持 draft/pending |
 
 ---
 
@@ -1003,3 +1041,5 @@ TopologyChanged、SubscriptionDiscovered/Removed、OperationStateChanged、RoleA
 保留身份与位置分离、T/A/O 事实所有权、纯 Domain、应用协调、生产卡协议复用及旧接口兼容。本文将这些原则落到真实写路径、可见节点、作用域关联和有限恢复能力上：目标结构可以演进，部分效果不能被一个成功/提交标签掩盖。
 
 当前图由固定源码支持；目标图、接口和协议为推荐设计，未表示已经实现或批准。缺少 provider、66250、厂商、产品与设备证据的地方均给出默认边界及局部阻塞范围。后续开发沿用既有功能/写权/迁移/测试清单，不再维护另一套业务模型。
+
+评审一个功能时，按 §6 的原功能/WU 定位进入五个问题：真实入口与执行能力是什么；各字段谁唯一接纳；成功、部分失败和超时在哪些节点可见；哪些目标行为需另行批准；用哪个生产切片及外部证据准许切换和回退。由 §9/16 查行为，§10～14 查异步与存储约束，§22 查门禁；详细清单继续引用对应权威文档。
