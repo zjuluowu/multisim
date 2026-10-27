@@ -1,108 +1,87 @@
-# telephony_core_service 领域知识
+# 多 SIM 重构架构设计协作指南
 
-## 项目定位
+## 当前目标与工作边界
 
-本仓库是 OpenHarmony `telephony_core_service` 的华为 fork（hmos_trunk），只含**电话核心服务主 SA（SAID 4010）**。优先按这些目录定位问题：
+本仓库当前的主要工作是：**为面向多 SIM 卡的重构设计软件架构**。主要交付物是可评审、可追溯、能够指导后续实施的设计文档；现阶段暂不开展代码修改。
 
-- `services/core/`：CoreService 主 SA 入口（OnStart 组装四模块）、IPC 分发（core_service_stub.cpp 2122 行、约 172 个接口码）
-- `services/sim/`：SIM 卡服务（状态机、文件读写、账户、eSIM、STK、SIM 短信存储）——本仓最大模块（约 3.4 万行）
-- `services/network_search/`：搜网服务（注册/选网/状态机、信号小区、运营商名、NITZ、EMC 救援）
-- `services/tel_ril/`：RIL 通信层（六业务 Call/Data/Modem/Network/Sim/Sms，HDI V1_5 IRil，TaskSchedule 统一调度）
-- `services/ims_service_interaction/`、`services/satellite_service_interaction/`、`services/telephony_ext_wrapper/`：跨 SA 交互与扩展（后两者条件编译）
-- `frameworks/native/`、`frameworks/js/`（NAPI）、`frameworks/cj/`（Cangjie FFI）、`frameworks/ets/ani/`（Rust ANI，cxx 绑定）
-- `interfaces/innerkits/`：部件内接口头文件；`interfaces/kits/`：对外 API（C API + .d.ts）
-- `utils/`：vcard、codec（ASN.1）、common（事件/权限）、log、preferences
-- `test/`：unittest（15 gtest 工程）、fuzztest（41 fuzzer）、mock、guard
+- 默认开展现状分析、源码取证、领域建模、组件与接口设计、关键流程设计、兼容性分析、迁移方案及验证方案设计。
+- 可以只读检索生产源码、接口、构建配置、测试和外仓材料，以核实设计依据。源码反映当前实现，不能仅凭类名或旧文档推断运行行为。
+- 默认只修改任务涉及的设计文档和仓库协作指引；不修改生产代码、公共接口、构建配置、测试代码、测试依赖或生成产物。发现问题时记录证据、影响和后续建议。
+- 设计接口、伪代码、迁移步骤和测试场景属于设计交付，不表示已经授权实现。后续用户明确要求代码或测试工程工作时，按该任务范围执行，不把本阶段边界当作永久禁令。
+- 用户已要求提交或推送时，完成检查后直接执行；只暂存本次任务文件，保留其他工作区内容。
 
-⚠️ **本仓边界**：通话状态机（telephony_call_manager）、短信（telephony_sms_mms）、数据连接（telephony_cellular_data）、数据存储/联系人（telephony_data_storage）在独立仓。本仓只含其 RIL 信令层与 HISYSEVENT 上报。
+## 文档入口与职责
 
-## 任务到路径映射
+以下路径均相对于 `telephony_core_service/`。先读目标文档的定位、状态和基线，再按任务阅读相关章节，不必每次通读所有历史材料。
 
-执行任何任务前，先根据任务类型定位关键路径：
+| 材料 | 用途与维护职责 |
+|---|---|
+| [目标架构设计 v1.2](docs/SIM_Target_Architecture_Design_v1.2.md) | 当前目标技术架构的主要工作稿。维护上下文、聚合、唯一写权、分层、组件协作、部署、兼容可见性、异步协议和恢复设计；文档关系及冲突处理先看 §1、§20～21。仍为草案，不能据此声称业务批准或实现完成。 |
+| [SIM 架构重构设计](docs/SIM_Architecture_Refactor_Design.md) | 现状证据、SIM-001～062 及子项、WU-01～09 写权单元、迁移阶段和待决事项的主要来源。目标稿引用这些清单，不建立另一套编号。 |
+| [分层对比与功能迁移设计](docs/SIM_Architecture_Layering_and_Migration_Design.md) | 展开现状与目标分层、职责承接、部署和迁移视图；与目标稿及功能清单保持一致。 |
+| [SIM 管理对外接口说明](docs/SIM管理对外接口说明_源码核实版.md) | 查询接口分层、签名与本仓委托路径；接口存在不等于外部服务可运行。 |
+| [文档索引](docs/README.md) | 导航和既有统一口径；其中对“主规范”的称呼与目标稿 §1 有职责差异，按具体内容及来源处理，不能仅按标题判定权威。 |
+| [测试工程说明](test/systemtest/README.md)、[执行记录](test/systemtest/docs/run_record.md) | 查阅已有验证范围、依赖缺口与历史执行结果，为验证方案提供输入；本阶段不自动延伸为测试工程开发。 |
+| [知识索引](docs/knowledge/)、[MultiSIM 材料](docs/MultiSIM/)及 [V3 设计](docs/SIM_Refactored_Software_Architecture_Design_Version3.md) | 背景、源码定位与历史推导；使用前核实是否已被当前设计裁决。 |
 
-| 任务类型 | 先看这里 | 原因 |
-|----------|----------|------|
-| SIM 卡管理（状态/文件/账户/eSIM/PIN） | `services/sim/src/`，入口 sim_manager.cpp | 本仓 SIM 核心 |
-| 搜网/radio 查询（状态/信号/小区/运营商名） | `services/network_search/src/` + core_service.cpp 转发 | 搜网服务在本仓 |
-| RIL 命令/上报（调用/短信/数据信令） | `services/tel_ril/src/tel_ril_{call,sms,data,...}.cpp` | RIL 通信层 |
-| 新增 IPC 接口 | `interfaces/innerkits/include/core_service_ipc_interface_code.h` 起始 | 见 docs/knowledge/routing/new-interface.md 的 18 文件清单 |
-| 客户端/JS/Cangjie/Rust 暴露 | `frameworks/js/`（NAPI）、`frameworks/cj/`、`frameworks/ets/ani/` | 各语言绑定层 |
-| 通话/短信/数据业务逻辑 | ⚠️ 不在本仓，去独立仓 | 本仓仅信令层 |
-| 事件/权限/编解码工具 | `utils/common/`、`utils/codec/`、`utils/vcard/` | 共享工具 |
-| 测试 | `test/unittest/`、`test/fuzztest/` | gtest + fuzzer |
+`SIM_Target_Architecture_Design_v1.16.md`、`v1.17.md` 是保留的参考稿，文件名不表示已批准的新版本，也不自动取代 v1.2。`docs/history/`、旧汇报、旧执行记录保留其原始语境，不回写为当前成果。
 
-## 知识索引
+文档冲突按来源性质处理：已发布或有批准证据的契约约束行为；固定版本源码、构建和配置证明现状；目标稿提出未来技术方案；历史材料解释推导。目标方案不能覆盖已确认契约，旧实现缺陷也不能自动成为永久业务要求。存在冲突时列出具体条款、证据和裁决依据，尚未核实的部分保持待决；不按文件日期、版本名或“已统一”字样推定批准。
 
-稳定背景知识放在 `docs/knowledge/`。改动前按场景读取对应文件：
+## 架构设计的关注点
 
-| 场景 | 先读 |
-|------|------|
-| 判断任务归属本仓还是独立仓 | `docs/knowledge/routing/repo-boundary.md` |
-| 新增/修改 IPC 接口（含 18 文件标准集） | `docs/knowledge/routing/new-interface.md` |
-| RIL 层既有能力盘点（"新增"还是"贯通"） | `docs/knowledge/code_map/ril-capabilities.md` |
-| 涉及权限/敏感信息的新接口 | `docs/knowledge/routing/permissions.md` |
-| 改动 SIM/eSIM/多卡/并发/接口码 | `docs/knowledge/expert/constraints.md` |
-| 历史问题与失败模式（含冲突文件） | `docs/knowledge/expert/historical-issues.md` |
-| 条件编译分支（eSIM/卫星/ext） | `docs/knowledge/code_map/conditional-build.md` |
-| 构建/测试/验证方法 | `docs/knowledge/verify/build-test.md` |
+以下是当前方案的设计方向，须结合目标稿中的具体限制与决策状态使用，不等同于全部已经获批或落地。
 
-## 词汇触发路由
+1. **身份、位置与资源分离。** 区分 Subscription、既有不透明 simId、逻辑 Slot、物理位置、eUICC、Port、Profile、Radio 资源和默认角色。空槽、PIN/PUK 及未识别身份的卡操作不强求 simId；不承诺身份跨删除、重装或设备永久稳定。
+2. **明确业务边界和唯一写权。** T 账户与连接拓扑、A 角色与资源分配、O 本地业务操作是当前建议的三个业务上下文；R 卡运行支撑、C 兼容职责、I 技术适配、H 宿主装配另列。C 不成为第二业务写者，R 的生产协议与解析不机械改名为纯领域模型。
+3. **分层与部署分别说明。** Domain 表达纯规则和值类型；Application 协调用例、依赖内层端口并受控提交；R/I/H 承接运行与平台协作。上下文、聚合、组件、SO、SA 和进程不是一一对应关系；同进程 SO 拆分不等于领域重构完成。
+4. **兼容行为具体到可见步骤。** 保护公开 API/IPC、CoreManagerInner 消费侧、条件 eSIM 入口及既有权限、错误、通知和部分失败轨迹。查询逐项核实缓存、存储访问和回写副作用，不能统一改成纯读或最终成功后才可见。
+5. **异步协议具有明确作用域。** 说明请求关联、会话/代次、准入、重复、迟到、取消与资源释放。取消等待不等于硬件中断；内部事实事件不能直接替代 RIL 上报、Registry、CES 或既有回执，也不能默认提供全局有序或恰好一次语义。
+6. **失败、恢复和迁移可推演。** 区分内存事实、持久化、设备效果和外部通知；标明事务与一致性边界。写权按状态单元及其全部旧入口切换，未迁移用例仍需遵守同一写权；不设计长期双写或重复设备执行来掩盖迁移缺口。
+7. **多卡能力由证据约束。** 配置槽数、可见槽、Profile/Port 数、并发激活数及 Modem 资源分别表达。四槽、MEP、新身份、NULL 迁移和默认角色新策略需要各自的产品及外部契约依据，不能由抽象模型推导为当前能力。
 
-| 术语/缩写 | 含义 | 指向 |
-|-----------|------|------|
-| CoreService / 4010 | 本仓主 SA（电话核心服务） | `services/core/` |
-| SIM / SimManager | SIM 卡管理聚合入口 | `services/sim/src/sim_manager.cpp` |
-| RIL / TelRil / HDI IRil | 无线接口层（与 RIL Adapter 通信，V1_5） | `services/tel_ril/` |
-| NetworkSearch / 搜网 | 网络注册、选网、信号小区 | `services/network_search/` |
-| NAPI | JS 绑定层 | `frameworks/js/{sim,radio,esim,vcard}/` |
-| ANI | Rust 绑定层（ArkUI Native Interop） | `frameworks/ets/ani/` |
-| Cangjie / FFI | 仓颉绑定层 | `frameworks/cj/telephony_{radio,sim}/` |
-| IPC 接口码 | CoreServiceInterfaceCode 枚举 | `interfaces/innerkits/include/core_service_ipc_interface_code.h` |
-| SA / SAID | SystemAbility 及其 ID | `sa_profile/4010.json`、`services/etc/init/telephony_trust.json` |
-| eSIM | 嵌入式 SIM（CORE_SERVICE_SUPPORT_ESIM 条件编译） | `services/sim/src/esim_*` |
-| STK | SIM 应用工具包 | `services/sim/src/stk_*` |
-| vCard | 联系人名片格式（2.1/3.0/4.0） | `utils/vcard/` |
-| hb | OpenHarmony 构建工具 | docs/knowledge/verify/build-test.md |
-| telephony_ext | 扩展封装（OHOS_BUILD_ENABLE_TELEPHONY_EXT） | `services/telephony_ext_wrapper/` |
+当前兼容重构范围不新增公开 API、IPC、SA、进程、存储 schema、厂商 ABI 或运行期双实现切换开关。可以记录长期选项及前提，但不得将其混入近期默认方案。既有“IPC 接口码只允许追加”的规则也不是本阶段追加接口的授权。
 
-## 约束和边界
+## 按设计问题定位材料与源码
 
-详见 `docs/knowledge/expert/constraints.md`，核心禁止事项：
+| 设计问题 | 优先阅读或检索 |
+|---|---|
+| 当前 SIM 对象、状态、文件、账户、安全、eSIM、STK 与短信存储职责 | `services/sim/`、`interfaces/innerkits/`，从 `sim_manager.cpp` 及其实际装配关系追踪 |
+| 业务事实归属、聚合与状态写权 | 目标稿 §3～6、§8～13；重构设计的功能映射和写权清单 |
+| 公开入口、兼容委托及共宿主调用 | 接口说明；`services/core/`、`frameworks/native/`、`frameworks/js/`、`frameworks/cj/`、`frameworks/ets/ani/`、`interfaces/` |
+| 异步执行、RIL 关联、线程和生命周期 | 目标稿 §10～15；`services/tel_ril/`、`utils/common/` 及 SIM 接收路径 |
+| 依赖、装配、SO/SA/进程边界 | 分层与迁移设计；`BUILD.gn`、`services/core/`、`sa_profile/`、`services/etc/` |
+| 搜网、数据、通话、短信和存储的协作边界 | [仓库边界](docs/knowledge/routing/repo-boundary.md)、`services/network_search/`、实际调用端及匹配版本外仓 |
+| eSIM、卫星、厂商差异和权限能力 | [条件构建](docs/knowledge/code_map/conditional-build.md)、[权限路由](docs/knowledge/routing/permissions.md)、`common/capability_mgr/` 及实际编译分支 |
+| 旧行为、风险及验证门槛 | [专家约束](docs/knowledge/expert/constraints.md)、[历史问题](docs/knowledge/expert/historical-issues.md)、测试设计及执行记录 |
+| RIL 既有能力或将来的接口实施影响 | [RIL 能力图](docs/knowledge/code_map/ril-capabilities.md)、[接口同步清单](docs/knowledge/routing/new-interface.md)；仅作影响分析，不自动实施 |
 
-- **禁止** 修改/重排已有 IPC 接口码（core_service_ipc_interface_code.h），只允许追加
-- **禁止** 对已有公共 API（interfaces/kits/）做不兼容变更
-- **禁止** 新增并发代码使用 `std::mutex`——本仓已迁移到 `ffrt::mutex`（sim_state_manager、network_search_state 已改）
-- **禁止** 在 eSIM/卫星/telephony_ext 条件编译分支外使用其类型，反之这些分支默认关闭、改动需额外谨慎
-- **禁止** 删除失败的测试用例来"通过"；解码类函数改动必须跑对应 fuzzer
-- **禁止** 未明确用户请求时提交代码
-- 多卡 slot3 能力仅允许系统应用/原生调用（capability_mgr 管控），新能力查询需过 capability 检查
+本仓是 OpenHarmony `telephony_core_service` 的 fork，包含 CoreService（SAID 4010）、SIM、搜网和 RIL 等代码。完整通话控制、短信业务、数据连接和数据提供方在独立仓；本仓仍有 SIM 短信存储、卡电话簿及相关协作。其他 SA 的共宿主配置不能证明其实现属于本仓；SA 身份也不能单独决定地址空间。
 
-## 构建和验证
+## 设计任务的工作方式
 
-```sh
-# 构建部件（需完整 OHOS 源码树，本仓挂载于 base/telephony/core_service）
-hb build -T //base/telephony/core_service:tel_core_service
+1. **界定本次问题。** 编辑前简要说明任务类别、目标文件、已读相关材料和关键约束。类别以现状核实、领域/组件设计、接口/流程设计、迁移/验证设计、文档整理为主；沿用用户已明确的范围，不为常规文档编辑另设审批。
+2. **固定输入与证据。** 记录实际提交、工作树差异及引用范围。新源码结论给出路径、符号和固定提交，必要时附行号与调用/配置链；外仓使用各自版本。不要批量更新历史基线或将脏工作树当成固定提交产物。
+3. **从问题推导方案。** 描述现状问题、质量目标与约束，再说明职责、接口、所有权、依赖和关键流程。对重要取舍记录理由、备选方案及代价；图表须与正文和现有清单一致，避免只罗列类名或只画理想分层。
+4. **推演关键场景。** 按任务范围覆盖正常及失败路径，尤其换卡/拔卡、Profile 变化、多卡并发、迟到回调、部分失败、资源占用和关闭过程。标出可观察行为、状态提交点及未被证明的外部保证。
+5. **维护状态和追溯关系。** 区分 FACT/LEGACY、PROPOSED、DERIVED、OPEN 与有明确批准证据的 ACCEPTED。目标设计未单独批准时仍为建议；编号或推荐已收敛不代表获批。待决项给出缺口、默认处理、影响切片和关闭条件，不阻塞无关设计。
+6. **在所属文档维护。** 技术结构与协议写入目标稿；功能、写权和迁移清单在原责任文档维护；相关视图同步核对，避免另起平行主稿和重复编号。未经本次任务要求，不重写历史记录或顺带清理其他文件。
 
-# 单测（gtest，聚合 target）
-hb build -T //base/telephony/core_service/test:unittest
-# 或设备上直接执行生成的 gtest 二进制；fuzztest：//base/telephony/core_service/test/fuzztest:fuzztest
-```
+已有知识文件中的概括与实际证据冲突时，应回到具体源码、契约和当前设计裁决核实。例如，不能声称当前同步原语已经全部迁移，也不能把所有查询一概视作无副作用缓存读取。
 
-详细命令、Rust ANI 构建限制与验证流程见 `docs/knowledge/verify/build-test.md`。
+## 文档验证与完成标准
 
-## 编辑前声明
+文档任务以设计质量和静态一致性为完成依据，不以生产编译或设备测试作为默认门槛。
 
-动手修改前，先声明：
-1. **任务类别**：API 变更 / 服务端逻辑 / SIM / 搜网 / RIL / NAPI / 测试 / 其他
-2. **本次已读文档**：docs/knowledge/ 下已读哪些文件
-3. **已知约束**：约束和边界中哪些相关
+- [ ] 回答本次设计问题，范围与用户目标一致；现状、建议、风险、待决及实施状态分开表达。
+- [ ] 新增或改变的事实可追溯到相应版本；外部缺口和推断没有写成已证实能力。
+- [ ] 涉及的概念、职责、接口、写权、时序与故障处理相互一致，相关功能/迁移编号及补充视图已核对。
+- [ ] 修改涉及的本地链接、章节引用、表格、代码围栏及图表语法已检查；图示说明箭头含义及现状/目标属性。
+- [ ] 差异与空白检查完成；只包含本次任务文件，未带入已有代码改动、纯换行变化或本地生成数据。
+- [ ] 说明实际检查及其限度；设计完成、静态核实、主机测试和产品/设备验证分别报告。
 
-## Done 定义
+纯文档任务不要求运行 LSP、`hb build`、GoogleTest 或 fuzzer，不得声称这些检查已通过。架构验证方案可以描述未来测试，但历史容量/设施 PASS、对象编译成功或图表检查均不能证明目标架构已实现、SIM 初始化通过或真实多卡场景完成。
 
-1. [ ] 所有修改的文件 LSP 诊断无新增 error
-2. [ ] 编译成功（hb build 对应 target）
-3. [ ] 代码格式化已执行（仓库无格式化配置，遵循既有风格）
-4. [ ] 相关测试用例通过（test/unittest/ 对应 gtest）
-5. [ ] 未引入公共 API 不兼容变更（接口码只追加、kits 签名不变）
-6. [ ] 未违反约束和边界中列出的禁止事项
-7. [ ] 涉及解码类/字符串解析改动已跑对应 fuzzer
+若后续任务明确进入实现阶段，再按 [构建与验证说明](docs/knowledge/verify/build-test.md)和具体改动范围执行编译、单测及必要的 fuzzer；公共 API/IPC 兼容、条件编译、同步原语等实现约束继续适用。
+
+提交前检查暂存区，仅提交本次任务结果。用户明确要求“提交上库”时，在检查完成后提交并正常推送至当前约定远端分支；不覆盖远端并发变更，不将本地无关修改混入提交。汇报提交号、推送结果及实际验证范围。
