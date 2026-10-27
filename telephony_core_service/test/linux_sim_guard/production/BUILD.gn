@@ -1,0 +1,60 @@
+# Copyright (C) 2026 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/lsg.gni")
+import("//production/sources.gni")
+
+config("production_headers") {
+  include_dirs = []
+  foreach(d, lsg_production_include_dirs) {
+    include_dirs += [ "$lsg_prod/$d" ]
+  }
+}
+
+config("production_defines") {
+  defines = [
+    "LOG_TAG=\"CoreService\"",
+    "LOG_DOMAIN=0xD001F04",
+    "OPENSSL_SUPPRESS_DEPRECATED",
+  ]
+}
+
+# The code under test. Compiled from the unmodified tree at lsg_production_root,
+# without -fno-access-control and without any test-only macro.
+static_library("sim_production") {
+  configs += [
+    ":production_headers",
+    ":production_defines",
+    "//build/config:no_rtti",
+    "//build/config:coverage",
+    "//third_party:platform_headers",
+  ]
+  cflags_cc = [
+    "-w",
+    "-Wno-c++11-narrowing",
+  ]
+  sources = []
+  foreach(s, lsg_sim_sources + lsg_support_sources) {
+    sources += [ "$lsg_prod/$s" ]
+  }
+  public_configs = [
+    ":production_headers",
+    ":production_defines",
+    "//third_party:platform_headers",
+  ]
+  deps = [ "//third_party:platform" ]
+  libs = [
+    "$lsg_deps/sysroot_extra/usr/lib/x86_64-linux-gnu/libcrypto.a",
+    "xml2",
+  ]
+}

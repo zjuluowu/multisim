@@ -1,0 +1,85 @@
+{
+  "scope": "INFRA_NOT_SIM_BUSINESS",
+  "cases": [
+    {
+      "case_id": "INFRA-EVENT-001",
+      "oracle_id": "EVT-TYPE",
+      "level": "INFRA"
+    },
+    {
+      "case_id": "INFRA-EVENT-002",
+      "oracle_id": "EVT-OWNERSHIP",
+      "level": "INFRA"
+    },
+    {
+      "case_id": "INFRA-EVENT-003",
+      "oracle_id": "EVT-LIFETIME",
+      "level": "INFRA"
+    },
+    {
+      "case_id": "INFRA-DATA-001",
+      "oracle_id": "DS-CURSOR",
+      "level": "INFRA"
+    },
+    {
+      "case_id": "INFRA-DATA-002",
+      "oracle_id": "DS-QUERY",
+      "level": "INFRA"
+    },
+    {
+      "case_id": "INFRA-DATA-003",
+      "oracle_id": "DS-VALUES",
+      "level": "INFRA"
+    },
+    {
+      "case_id": "INFRA-CES-001",
+      "oracle_id": "CES-PUBLISH",
+      "level": "INFRA"
+    },
+    {
+      "case_id": "INFRA-CES-002",
+      "oracle_id": "CES-LIFETIME",
+      "level": "INFRA"
+    },
+    {
+      "case_id": "INFRA-RIL-001",
+      "oracle_id": "RIL-TRANSPORT",
+      "level": "INFRA"
+    },
+    {
+      "case_id": "INFRA-EVENT-004",
+      "oracle_id": "EVT-PRODUCTION",
+      "level": "INFRA"
+    },
+    {
+      "case_id": "INFRA-EVENT-005",
+      "oracle_id": "EVT-CANCEL",
+      "level": "INFRA"
+    },
+    {
+      "case_id": "INFRA-FFRT-001",
+      "oracle_id": "FFRT-CANCEL-RUNNING",
+      "level": "INFRA"
+    },
+    {
+      "case_id": "INFRA-FFRT-002",
+      "oracle_id": "FFRT-GENERAL",
+      "level": "INFRA"
+    },
+    {
+      "case_id": "INFRA-PTR-001",
+      "oracle_id": "PTR-OWNERSHIP",
+      "level": "INFRA"
+    },
+    {
+      "case_id": "INFRA-PTR-002",
+      "oracle_id": "PTR-WEAK",
+      "level": "INFRA"
+    },
+    {
+      "case_id": "INFRA-PTR-003",
+      "oracle_id": "PTR-LOCAL-CAST",
+      "level": "INFRA"
+    }
+  ]
+}

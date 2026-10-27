@@ -1,0 +1,80 @@
+# Copyright (C) 2026 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/lsg.gni")
+
+# Genuine upstream interface headers (pinned in deps.lock.json) needed by the
+# SIM production closure. Each entry was resolved by compiling the production
+# sources; none of these directories contains test mocks.
+lsg_platform_include_dirs = [
+  "$lsg_deps/third_party_bounds_checking_function/include",
+  "$lsg_deps/commonlibrary_c_utils/base/include",
+  "$lsg_deps/hiviewdfx_hilog/interfaces/native/innerkits/include",
+  "$lsg_deps/hiviewdfx_hitrace/interfaces/native/innerkits/include",
+  "$lsg_deps/hiviewdfx_hisysevent/interfaces/native/innerkits/hisysevent/include",
+  "$lsg_deps/resourceschedule_ffrt/interfaces/kits",
+  "$lsg_deps/resourceschedule_ffrt/interfaces/inner_api",
+  "$lsg_deps/notification_eventhandler/interfaces/inner_api",
+  "$lsg_deps/notification_eventhandler/frameworks/eventhandler/include",
+  "$lsg_deps/notification_common_event_service/interfaces/inner_api",
+  "$lsg_deps/notification_common_event_service/frameworks/core/include",
+  "$lsg_deps/communication_ipc/interfaces/innerkits/ipc_core/include",
+  "$lsg_deps/systemabilitymgr_samgr/interfaces/innerkits/samgr_proxy/include",
+  "$lsg_deps/security_access_token/interfaces/innerkits/accesstoken/include",
+  "$lsg_deps/security_access_token/interfaces/innerkits/privacy/include",
+  "$lsg_deps/security_huks/interfaces/inner_api/huks_standard/main/include",
+  "$lsg_deps/startup_init/interfaces/innerkits/include/syspara",
+  "$lsg_deps/customization_config_policy/interfaces/inner_api/include",
+  "$lsg_deps/distributeddatamgr_data_share/interfaces/inner_api/common/include",
+  "$lsg_deps/distributeddatamgr_data_share/interfaces/inner_api/common/include/basic",
+  "$lsg_deps/distributeddatamgr_data_share/interfaces/inner_api/consumer/include",
+  "$lsg_deps/distributeddatamgr_data_share/interfaces/inner_api/provider/include",
+  "$lsg_deps/distributeddatamgr_preferences/interfaces/inner_api/include",
+  "$lsg_deps/ability_ability_base/interfaces/inner_api/base/include",
+  "$lsg_deps/ability_ability_base/interfaces/inner_api/log/include",
+  "$lsg_deps/ability_ability_base/interfaces/kits/native/want/include",
+  "$lsg_deps/ability_ability_base/interfaces/kits/native/uri/include",
+  "$lsg_deps/ability_ability_base/interfaces/kits/native/configuration/include",
+  "$lsg_deps/ability_ability_base/interfaces/kits/native/session_info/include",
+  "$lsg_deps/ability_ability_runtime/interfaces/inner_api/dataobs_manager/include",
+  "$lsg_deps/ability_ability_runtime/interfaces/inner_api/ability_manager/include",
+  "$lsg_deps/ability_ability_runtime/interfaces/inner_api/app_manager/include/appmgr",
+  "$lsg_deps/ability_ability_runtime/interfaces/inner_api/deps_wrapper/include",
+  "$lsg_deps/ability_ability_runtime/interfaces/kits/native/ability/native",
+  "$lsg_deps/bundlemanager_bundle_framework/interfaces/inner_api/appexecfwk_base/include",
+  "$lsg_deps/bundlemanager_bundle_framework/interfaces/inner_api/appexecfwk_base/include/clone",
+  "$lsg_deps/bundlemanager_bundle_framework/interfaces/inner_api/appexecfwk_core/include",
+  "$lsg_deps/bundlemanager_bundle_framework/interfaces/inner_api/appexecfwk_core/include/bundlemgr",
+  "$lsg_deps/bundlemanager_bundle_framework/interfaces/inner_api/appexecfwk_core/include/app_control",
+  "$lsg_deps/bundlemanager_bundle_framework/interfaces/inner_api/appexecfwk_core/include/bundle_resource",
+  "$lsg_deps/bundlemanager_bundle_framework/interfaces/inner_api/appexecfwk_core/include/default_app",
+  "$lsg_deps/bundlemanager_bundle_framework/interfaces/inner_api/appexecfwk_core/include/extend_resource",
+  "$lsg_deps/bundlemanager_bundle_framework/interfaces/inner_api/appexecfwk_core/include/overlay",
+  "$lsg_deps/bundlemanager_bundle_framework/interfaces/inner_api/appexecfwk_core/include/quick_fix",
+  "$lsg_deps/bundlemanager_bundle_framework/interfaces/inner_api/appexecfwk_core/include/verify",
+  "$lsg_deps/telephony_telephony_data/interfaces/innerkits/include",
+  "$lsg_deps/telephony_cellular_data/interfaces/innerkits",
+  "$lsg_deps/telephony_cellular_data/services/include/apn_manager",
+  "$lsg_deps/telephony_cellular_data/services/include/common",
+  "$lsg_deps/third_party_cJSON",
+  "$lsg_deps/third_party_json/include",
+  "$lsg_deps/jsoncpp/jsoncpp-1.9.6/include",
+  "$lsg_deps/sysroot_extra/usr/include",
+  "$lsg_deps/sysroot_extra/usr/include/x86_64-linux-gnu",
+  "/usr/include/libxml2",
+
+  # IDL generated interfaces (see deps.lock.json "idl").
+  "$lsg_deps/gen/common_event",
+  "$lsg_deps/gen/cellular_data",
+  "$lsg_deps/gen/bundle_framework",
+]

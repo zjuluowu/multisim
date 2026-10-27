@@ -1,0 +1,62 @@
+{
+  "comment": "Pinned inputs for the Linux SIM guard. Repos are fetched by exact commit; nothing here is vendored into the repository.",
+  "production": {
+    "upstream": "https://github.com/openharmony/telephony_core_service.git",
+    "upstream_commit": "60b603ea5fd7bda9d81808a05a444647b2bc8dd5",
+    "note": "Default production_root is an archive of this upstream commit. The fork working tree can be passed instead with --production-root."
+  },
+  "repos": {
+    "googletest": ["https://github.com/google/googletest.git", "b514bdc898e2951020cbdca1304b75f5950d1f59"],
+    "third_party_bounds_checking_function": ["https://github.com/openharmony/third_party_bounds_checking_function.git", "61baa7a3eb9347efca58397d1d0504faa96d79f0"],
+    "commonlibrary_c_utils": ["https://github.com/openharmony/commonlibrary_c_utils.git", "3bdc11e00e7bf6e577cee300ad51045ca9958efd"],
+    "resourceschedule_ffrt": ["https://github.com/openharmony/resourceschedule_ffrt.git", "1d559e70feda31fa8afd45d564daa242660e4edd"],
+    "notification_eventhandler": ["https://github.com/openharmony/notification_eventhandler.git", "9c2641763fd4c598637d8f68bd908e5912f96583"],
+    "notification_common_event_service": ["https://github.com/openharmony/notification_common_event_service.git", "372695ec9fbe779aea0a42ecdad849bc372b38c7"],
+    "ability_ability_base": ["https://github.com/openharmony/ability_ability_base.git", "7088813d55e1592093557d2b2d5e40a47177b7a0"],
+    "ability_ability_runtime": ["https://github.com/openharmony/ability_ability_runtime.git", "969de904c1f1ebabcfddd553ab589110b5c51811"],
+    "ability_idl_tool": ["https://github.com/openharmony/ability_idl_tool.git", "d45cc0a0cf24986b1c4f07a08dc7d6e3a3ee5c3b"],
+    "bundlemanager_bundle_framework": ["https://github.com/openharmony/bundlemanager_bundle_framework.git", "2fa234a99a17eabd5d5e1f60a2e004f464a27d71"],
+    "communication_ipc": ["https://github.com/openharmony/communication_ipc.git", "bbb92dbb2f52aca54ab268307c9476ac1802f3ff"],
+    "customization_config_policy": ["https://github.com/openharmony/customization_config_policy.git", "a84dd14cca9d51ae37c072221343d92d2c27880a"],
+    "distributeddatamgr_data_share": ["https://github.com/openharmony/distributeddatamgr_data_share.git", "81761d5a2eb78282decd31f4b1e9f6fc1574782b"],
+    "distributeddatamgr_preferences": ["https://github.com/openharmony/distributeddatamgr_preferences.git", "3a8c819af313d83910f0999ad1f8dab86c1a1b5c"],
+    "hiviewdfx_hilog": ["https://github.com/openharmony/hiviewdfx_hilog.git", "393d7e9a690edb76ed27e710b472623daf650dc8"],
+    "hiviewdfx_hisysevent": ["https://github.com/openharmony/hiviewdfx_hisysevent.git", "c1534f0d63d34b17bfd248fe6ddd4d70a26a9552"],
+    "hiviewdfx_hitrace": ["https://github.com/openharmony/hiviewdfx_hitrace.git", "d50538384dfd89c52dbe0ef98def99bead625e99"],
+    "security_access_token": ["https://github.com/openharmony/security_access_token.git", "71bbdc92a72405a63826964951cd46b93e2818a9"],
+    "security_huks": ["https://github.com/openharmony/security_huks.git", "cbc99521ee996ead3e2d3e936e08fe715903c4b3"],
+    "startup_init": ["https://github.com/openharmony/startup_init.git", "7bdec8e97304841fb21dfec5735d759005148ab5"],
+    "systemabilitymgr_samgr": ["https://github.com/openharmony/systemabilitymgr_samgr.git", "d697f4cbf8c1c37d44e69a6d5ff3d506b02a904d"],
+    "telephony_cellular_data": ["https://github.com/openharmony/telephony_cellular_data.git", "be17a60e5cfbdf50c3570baf4ef6680eb70618d0"],
+    "telephony_state_registry": ["https://github.com/openharmony/telephony_state_registry.git", "0d8cdf08c890303c2e075c91f014bb77485e9890"],
+    "telephony_telephony_data": ["https://gitcode.com/openharmony/telephony_telephony_data.git", "74b8597ecbeea4dd39eacb4a9e7fa22f8a9389b4"],
+    "third_party_cJSON": ["https://github.com/openharmony/third_party_cJSON.git", "28dba43de56de279d1b5b74565f4277c89c50f35"],
+    "third_party_json": ["https://github.com/openharmony/third_party_json.git", "899cae79d1accbd475b9737167417eabc82c4b52"],
+    "third_party_jsoncpp": ["https://github.com/openharmony/third_party_jsoncpp.git", "ed8d7b6510a89098bf3b0331487a89263c1c001d"]
+  },
+  "archives": {
+    "jsoncpp": {
+      "from": "third_party_jsoncpp/jsoncpp-1.9.6.tar.gz",
+      "sha256": "f93b6dd7ce796b13d02c108bc9f79812245a82e577581c4c9aabe57075c90ea2",
+      "extract_to": "jsoncpp"
+    }
+  },
+  "debs": {
+    "libssl-dev": {
+      "version": "3.0.13-0ubuntu3.16",
+      "sha256": "2b4734df0475e305ac03abb0a2cc5659651ed37ef02d967a1c4033a154cf714b",
+      "extract_to": "sysroot_extra",
+      "note": "Headers and static libcrypto only; downloaded with apt-get download, no root needed."
+    }
+  },
+  "idl": [
+    {"repo": "notification_common_event_service", "file": "frameworks/core/IEventReceive.idl", "out": "gen/common_event"},
+    {"repo": "notification_common_event_service", "file": "frameworks/core/ICommonEvent.idl", "out": "gen/common_event"},
+    {"repo": "telephony_cellular_data", "file": "frameworks/native/ICellularDataManager.idl", "out": "gen/cellular_data"},
+    {"repo": "bundlemanager_bundle_framework", "file": "interfaces/inner_api/appexecfwk_core/IBundleMgrExt.idl", "out": "gen/bundle_framework"},
+    {"repo": "bundlemanager_bundle_framework", "file": "interfaces/inner_api/appexecfwk_core/IVerifyManager.idl", "out": "gen/bundle_framework"}
+  ],
+  "known_mirror_issues": [
+    "github.com/openharmony/telephony_data_storage is frozen at 2023-04-08 and lacks SimData::IS_ESIM etc.; the maintained repository is gitcode.com/openharmony/telephony_telephony_data."
+  ]
+}

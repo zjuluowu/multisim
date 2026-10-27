@@ -1,0 +1,61 @@
+# Copyright (C) 2026 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/lsg.gni")
+
+config("compiler") {
+  cflags = [
+    "-fPIC",
+    "-g",
+    "-O1",
+    "-fno-omit-frame-pointer",
+    "-pthread",
+  ]
+  cflags_cc = [ "-std=c++17" ]
+  ldflags = [ "-pthread" ]
+  libs = [ "dl" ]
+  if (lsg_coverage) {
+    ldflags += [
+      "-fprofile-instr-generate",
+      "-fcoverage-mapping",
+    ]
+  }
+}
+
+# Toolchain compatibility only: the OHOS libc++/musl headers include more standard
+# headers transitively than glibc/libstdc++ do, and a few musl extensions are used.
+config("host_compat") {
+  include_dirs = [ "//env/compat" ]
+  cflags_cc = [
+    "-include",
+    rebase_path("//env/compat/prelude.h", root_build_dir),
+  ]
+}
+
+config("third_party_warnings") {
+  cflags = [ "-w" ]
+  cflags_cc = [ "-Wno-c++11-narrowing" ]
+}
+
+config("no_rtti") {
+  cflags_cc = [ "-fno-rtti" ]
+}
+
+config("coverage") {
+  if (lsg_coverage) {
+    cflags = [
+      "-fprofile-instr-generate",
+      "-fcoverage-mapping",
+    ]
+  }
+}

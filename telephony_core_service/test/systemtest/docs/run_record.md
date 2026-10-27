@@ -137,3 +137,45 @@ HEAD 2841c6f60635853a929c1755dc08f5543a89eb83，工作区非干净；上述同�
 初始化审计：runner/Ninja退出1、GN退出0；29个初始化生产object编译，最终BLOCKED，executed=false、GoogleTest数量0，无执行XML。缺少ability_manager_client.h、cellular_data_client.h、hisysevent.h；另有fork SimData字段及事件/平台API子集未适配等编译诊断。完整原始诊断与实际命令在initialization_audit.json及ninja-initialization.log。29个object不是29个用例，也不是初始化已运行。原五个场景和C候选仍BLOCKED。
 
 FFRT/TelEventQueue运行适配只有设计，尚未实施。组件测试未覆盖服务入口、SA、IPC、真实权限/capability、Modem、设备服务；没有真实Legacy/Split双版本执行。
+
+## Linux调度与生产事件传输推进（2026-09-30）
+
+工作仓HEAD `df8f2f017f83c70145b20255b4e9042f7a5fd923`，本轮工作树未提交；生产原文件保持未修改。Ubuntu24.04/WSL2 x86_64，Clang18.1.3、gold1.16/binutils2.42、GN1000、Ninja1.11.1、C++17/full-LTO、GoogleTest/GoogleMock固定commit b514bdc898e2951020cbdca1304b75f5950d1f59。真实版本、源码/二进制摘要、实际命令及耗时均记录在result.json。
+
+```sh
+python3 test/systemtest/scripts/run.py --gtest-root /tmp/sim-systemtest-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59 --output /tmp/sim-scheduler-stage
+python3 test/systemtest/scripts/audit_initialization.py --gtest-root /tmp/sim-systemtest-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59 --openssl-root /tmp/sim-systemtest-openssl --output /tmp/sim-scheduler-initialization
+```
+
+正常runner/GN/Ninja退出0（Ninja -j4）；SIM-COMP-001：1 PASS、0 FAIL/SKIP。负控退出1、1预期FAIL，已确认检测有效。设施独立13 PASS、0 FAIL/SKIP；新增INFRA-EVENT-004/005与INFRA-FFRT-001/002各有15项设计。原五个SIM场景及C候选仍BLOCKED、未执行。
+
+真实event_transport_production_host编译未修改utils/common/src/tel_event_handler.cpp和tel_event_queue.cpp，Linux调度/平台base独立target；不重写SIM逻辑。正常LLVM证据：SimManager::GetMaxSimCount=2；事件证据：生产SendEvent=2、SubmitToFFRT=2、PopEvent=1。均只是此次运行参与审计，不是固定业务次数Oracle。GoogleMock是外部事件消费端；未提供SIM状态/账户结果。General同步任务也执行真实TelFFRTUtils包装。
+
+normal.xml、negative.xml、adapter.xml、result.json、两个map及profile均在输出目录。设施在2s内以完成/停止条件收敛，明确禁止清理失败后继续销毁观察者或运行下一例；进程整体看门狗10s。没有固定长sleep判PASS，没有卡身份/平台持久化修改；运行器cleanup成功。
+
+初始化审计：GN退出0，Ninja/runner退出1；36个初始化生产object编译，整体BLOCKED/ executed=false / GoogleTest数量0，没有执行XML。新增缺失头为bundle_mgr_proxy.h和hks_api.h；仍有14个fork数据协议符号及原生指针、参数/配置/JSON/账户接口子集的编译诊断。数量增加不表示SIM初始化执行或账户覆盖；完整源诊断见initialization_audit.json与ninja-initialization.log。
+
+## 2026-10-08：平台编译契约和本地指针载体
+
+实际基线HEAD=df8f2f017f83c70145b20255b4e9042f7a5fd923，main，工作树未提交。生产源码未修改；157份初始生产/文档清单摘要复核一致。环境为Ubuntu24.04 / WSL2 / Linux6.18.33.2 / x86_64，GN1000(03d10f1)、Ninja1.11.1、Clang18.1.3、gold1.16/binutils2.42、LLVM18.1.3、C++17/full-LTO；GoogleTest/GoogleMock固定b514bdc898e2951020cbdca1304b75f5950d1f59。
+
+最终实际命令（依赖位于明确的/tmp离线目录，不在构建时下载）：
+
+```sh
+python3 test/systemtest/scripts/run.py --gtest-root /tmp/sim-systemtest-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59 --output /tmp/sim-closure-oct08/run
+python3 test/systemtest/scripts/audit_initialization.py --gtest-root /tmp/sim-systemtest-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59 --openssl-root /tmp/sim-systemtest-openssl --output /tmp/sim-closure-oct08/audit
+```
+
+正常runner退出0，GN/Ninja与正常测试进程均退出0。B组件SIM-COMP-001：1 PASS、0 FAIL、0 SKIP；通过ISimManager调用真实sim_production_host中的SimManager::GetMaxSimCount，LLVM记录其执行2次，链接图sim_component_test.map。执行次数仅用于证明生产参与，不是业务Oracle。该场景没有调用OnInit或建立无卡状态。
+
+负控：测试进程退出1、1项预期FAIL，expected_failure_verified=true。检查器观察值受控改为-1违反O-C11；没有修改生产代码，不表示生产故障，也不增加业务用例数。INFRA独立进程退出0，16 PASS、0 FAIL/SKIP，其中新增本地指针3项；这些设施不算SIM状态/账户覆盖。真实event_transport_production_host的SendEvent/Submit/Pop任务路径有LLVM执行证据。
+
+机器结果：/tmp/sim-closure-oct08/run/result.json；GoogleTest normal.xml、negative.xml、adapter.xml分别记录正常、负控与设施结果。converged=true、timed_out=false；cleanup.completed=true、temporary_namespace_removed=true、processes_reaped=true。只包含合成测试值、别名和布尔证据，identity_plaintext_emitted=false。未修改平台持久化状态。结果中保留执行当时的源码/工具链/二进制摘要，随后仅同步说明文档与静态状态清单。
+
+初始化审计runner退出1；GN退出0，Ninja -k0 -j4 sim_initialization_link_probe退出1，45个初始化生产object编译成功。missing_headers=[]；43条编译诊断全部是SimData的14个成员缺失，涉及5个生产文件，详见configs/storage_protocol_requirements.json。链接阶段尚未到达。status=BLOCKED、executed=false、gtest_tests=0；没有场景执行XML，不能将已编译object数算作测试数。
+
+补齐头文件与运行验证分开：HUKS、ConfigPolicy、cJSON、参数watcher、string_ex、OS账户使用固定上游原始头，总计21份原始平台头摘要已验证；Bundle/Parcel/死亡通知是来源明确的最小声明。除本地指针载体外，本轮没有实现这些模块的运行提供者。GitHub与Gitee已核对的存储头字节相同，均缺14字段，不猜测协议值。平台声明静态可编译不表示服务语义已验证。
+
+原五条SIM场景和SIM-CHAR-001仍BLOCKED。真实服务入口、SA注册发现、Client/Proxy/Stub IPC、真实权限/capability、Modem/设备行为均未覆盖。后续先取得匹配fork存储协议，再审计真实生产链接及受控运行装配，最终经正式RIL响应建立Absent并查询状态/账户。完整OHOS/hb与设备测试未执行；当前环境没有LSP新增诊断报告。静态Python/JSON解析、GN格式及来源摘要检查不替代这些验证。
+
+首次生产事件完整LTO构建曾超出120s（退出124、未执行）；首次新初始化闭包审计超出180s（退出124、未执行）。本轮将两者构建预算设为300s并限定-j4，最终记录是上面真实结果；业务收敛/进程看门狗未放宽。不宣称hb/LSP/真实设备/IPC验证，未修改生产源码故无需以本轮声称运行生产解码fuzzer。

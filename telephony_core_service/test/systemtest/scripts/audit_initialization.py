@@ -49,7 +49,7 @@ def main():
         with (output / (name + '.log')).open('w') as log:
             process = subprocess.Popen(argv, cwd=output, stdout=log, stderr=log, start_new_session=True)
             try:
-                code = process.wait(timeout=180)
+                code = process.wait(timeout=300)
             except subprocess.TimeoutExpired:
                 os.killpg(process.pid, signal.SIGKILL)
                 process.wait()
@@ -64,6 +64,11 @@ def main():
         lock = json.loads((SYSTEM / 'configs/dependency_lock.json').read_text())
         if digest_tree(gtest) != lock['googletest']['tree_sha256']:
             raise RuntimeError('GoogleTest tree differs from pinned source')
+        for header in lock['platform_headers']:
+            if hashlib.sha256((SYSTEM / header['path']).read_bytes()).hexdigest() != header['sha256']:
+                raise RuntimeError('Platform header differs from pinned source: ' + header['path'])
+        result['external_contract_manifest_digest'] = hashlib.sha256(
+            (SYSTEM / 'configs/upstream_contracts.json').read_bytes()).hexdigest()
         manifest = json.loads((SYSTEM / 'configs/production_sources_candidate.json').read_text())
         names = manifest['unconditional_sim_sources'] if options.target == 'sim_initialization_link_probe' else ['services/sim/src/sim_manager.cpp', 'services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp']
         result['production_sources'] = [

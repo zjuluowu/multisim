@@ -1,5 +1,5 @@
 {
-  "head_sha": "2841c6f60635853a929c1755dc08f5543a89eb83",
+  "head_sha": "df8f2f017f83c70145b20255b4e9042f7a5fd923",
   "level": "B",
   "device_required": false,
   "resolved": [
@@ -49,6 +49,42 @@
       "source": "configs/upstream_contracts.json",
       "status": "INFRA_SELF_CHECKS_PASS",
       "scope": "no subscriber delivery, permission or ordered scheduling"
+    },
+    {
+      "module": "FFRT queue / EventHandler base subset",
+      "source": "docs/ffrt_runtime.md",
+      "status": "BUILD_AND_RUN_VERIFIED",
+      "scope": "single worker per queue; pending cancellation, running cancellation refusal, bounded cleanup; no full FFRT ABI/concurrency equivalence"
+    },
+    {
+      "module": "Production TelEventHandler/TelEventQueue",
+      "source": "BUILD.gn:event_transport_production_host",
+      "status": "PRODUCTION_EXECUTION_VERIFIED",
+      "scope": "INFRA only; 4 new scheduling checks, no SIM state coverage"
+    },
+    {
+      "module": "AbilityManager/CellularData/HiSysEvent compile subset and SA IDs",
+      "source": "docs/platform_compile_subset.md",
+      "status": "DECLARATION_ONLY_COMPILE_AUDITED",
+      "scope": "no provider/runtime implemented; unresolved calls cannot default to success"
+    },
+    {
+      "module": "HUKS/ConfigPolicy/cJSON/parameter watchers/string_ex/os-account headers",
+      "source": "configs/dependency_lock.json",
+      "status": "PINNED_GENUINE_HEADERS_COMPILE_AUDITED",
+      "scope": "21 total original platform headers; these modules have no new runtime provider or arbitrary success implementation"
+    },
+    {
+      "module": "Native pointer local carrier / iface_cast subset",
+      "source": "stubs/include/host_refptr.h",
+      "status": "INFRA_SELF_CHECKS_PASS",
+      "scope": "3 PASS; local shared control block only, not OHOS intrusive ABI or remote Proxy"
+    },
+    {
+      "module": "Bundle / Parcel / death-recipient declarations",
+      "source": "docs/platform_compile_subset.md",
+      "status": "DECLARATION_ONLY_COMPILE_AUDITED",
+      "scope": "minimum source-backed signatures; no real IPC, Bundle service or registration implementation"
     }
   ],
   "upstream_inspected": [
@@ -87,26 +123,21 @@
     }
   ],
   "unresolved": [
-    "matching telephony_data_storage/sim_data.h schema constants",
-    "AppExecFwk Configuration and AppMgr interface",
-    "AbilityManager interface",
-    "HiSysEvent interface and external sink",
-    "CellularData client interface/version",
-    "CommonEvent publisher/subscriber contracts",
-    "DataShare query/result interfaces and controlled empty namespace",
-    "SA/registry external boundary",
-    "ffrt task/queue and actual production TelEventHandler/TelEventQueue runtime"
+    "matching fork telephony_data_storage sim_data.h for 14 protocol symbols",
+    "production link closure after missing storage protocol is resolved",
+    "HUKS/Bundle/ConfigPolicy/JSON/os-account/parameter watcher runtime providers if reached",
+    "State Registry / SA controlled provider and CES subscriber runtime",
+    "actual RIL-driven SIM state/account initialization and bounded teardown",
+    "full FFRT scheduling/dependency model outside supported subset"
   ],
   "latest_initialization_audit": {
-    "output": "/tmp/sim-upstream-initialization-audit/initialization_audit.json",
+    "output": "/tmp/sim-closure-oct08/audit/initialization_audit.json",
+    "head_sha": "df8f2f017f83c70145b20255b4e9042f7a5fd923",
     "status": "BLOCKED",
     "executed": false,
-    "compiled_objects": 29,
-    "missing_headers": [
-      "ability_manager_client.h",
-      "cellular_data_client.h",
-      "hisysevent.h"
-    ],
-    "fork_schema_gap": "14 symbols absent upstream; not guessed"
+    "compiled_objects": 45,
+    "missing_headers": [],
+    "build_exit_code": 1,
+    "fork_schema_gap": "14 symbols absent inspected GitHub and Gitee snapshots; not guessed"
   }
 }

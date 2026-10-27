@@ -1,4 +1,4 @@
-# Suite Matrix v1：计划覆盖，当前无自动化
+# Suite Matrix v1：计划覆盖与实际执行分列
 
 基线为source_manifest。计数是实际/合成卡数量，与配置Slot数量分开；0卡也需至少一个有效配置Slot。产品参数默认1（services/etc/param/telephony.para:14），telephony_types.h:49–56存在3与分布式8常量，:100–151按产品/虚拟Modem参数计算；不据常量宣布支持4张物理卡。slot索引3的capability特殊处理不等同三张卡。
 
@@ -60,6 +60,8 @@ M-CAPACITY：单槽产品参数/未OnInit/只读GetMaxSimCount；SIM-COMP-001；
 | 正式RIL Absent + 状态/账户 | B | BLOCKED | 初始化生产闭包未通过，0执行 |
 | Ready / 双pSIM隔离 / PIN Locked | B | BLOCKED | 同一生产闭包前置缺失，0执行 |
 | 服务公开入口 | B | BLOCKED | capability/能力提供者未核实，0执行 |
-| 事件payload/所有权、RIL正式响应自检 | INFRA | IMPLEMENTED | 4 PASS，单独计数，不算SIM业务 |
+| 事件信封、RIL、DataShare、公共事件设施 | INFRA | AUTOMATED | 9 PASS，单独计数 |
+| 真实生产事件队列、取消、general同步任务与清理 | INFRA | AUTOMATED | 4 PASS，单独计数，不算SIM业务 |
+| 本地指针ownership、weak identity/promote、iface_cast | INFRA | AUTOMATED | 3 PASS，单独计数；不验证OHOS ABI/IPC |
 
 以上B场景设计无需实体设备；缺少外部正式接口/生产初始化适配不能改写成DEVICE_REQUIRED。真正Modem/SIM/eSIM/设备重启仍属A独立验证。

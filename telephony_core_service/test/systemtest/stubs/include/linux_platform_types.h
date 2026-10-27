@@ -17,6 +17,21 @@ public:
 private:
     std::string value_;
 };
+namespace AppExecFwk {
+// Supported external carrier/enum subset; exact origins in platform_compile_subset.md.
+enum class ExtensionAbilityType { SERVICE = 3, UNSPECIFIED = 255 };
+class ElementName {
+public:
+    ElementName(const std::string &device, const std::string &bundle, const std::string &ability,
+        const std::string &module = "") : device_(device), bundle_(bundle), ability_(ability), module_(module) {}
+    std::string GetDeviceID() const { return device_; }
+    std::string GetBundleName() const { return bundle_; }
+    std::string GetAbilityName() const { return ability_; }
+    std::string GetModuleName() const { return module_; }
+private:
+    std::string device_, bundle_, ability_, module_;
+};
+}
 namespace AAFwk {
 class Want {
 public:
@@ -25,6 +40,8 @@ public:
     Want &SetBundle(const std::string &bundle) { bundle_ = bundle; return *this; }
     Want &SetElementName(const std::string &bundle, const std::string &ability)
     { bundle_ = bundle; ability_ = ability; return *this; }
+    Want &SetElement(const AppExecFwk::ElementName &element)
+    { element_ = element; bundle_ = element.GetBundleName(); ability_ = element.GetAbilityName(); return *this; }
     Want &SetParam(const std::string &key, int value) { params_[key] = value; return *this; }
     Want &SetParam(const std::string &key, bool value) { params_[key] = value; return *this; }
     Want &SetParam(const std::string &key, const std::string &value) { params_[key] = value; return *this; }
@@ -39,6 +56,7 @@ private:
         if (const auto *value = std::get_if<T>(&it->second)) return *value;
         return fallback;
     }
+    AppExecFwk::ElementName element_{"", "", ""};
     std::string action_, bundle_, ability_;
     std::map<std::string, std::variant<int, bool, std::string>> params_;
 };
@@ -101,6 +119,16 @@ public:
 };
 class CommonEventSupport {
 public:
+    inline static const std::string COMMON_EVENT_SIM_CARD_DEFAULT_VOICE_SUBSCRIPTION_CHANGED = "usual.event.SIM.DEFAULT_VOICE_SUBSCRIPTION_CHANGED";
+    inline static const std::string COMMON_EVENT_STK_COMMAND = "usual.event.STK_COMMAND";
+    inline static const std::string COMMON_EVENT_STK_SESSION_END = "usual.event.STK_SESSION_END";
+    inline static const std::string COMMON_EVENT_STK_CARD_STATE_CHANGED = "usual.event.STK_CARD_STATE_CHANGED";
+    inline static const std::string COMMON_EVENT_STK_ALPHA_IDENTIFIER = "usual.event.STK_ALPHA_IDENTIFIER";
+    inline static const std::string COMMON_EVENT_OPERATOR_CONFIG_CHANGED = "usual.event.OPERATOR_CONFIG_CHANGED";
+    inline static const std::string COMMON_EVENT_SIM_CARD_DEFAULT_SMS_SUBSCRIPTION_CHANGED = "usual.event.SIM.DEFAULT_SMS_SUBSCRIPTION_CHANGED";
+    inline static const std::string COMMON_EVENT_SIM_CARD_DEFAULT_DATA_SUBSCRIPTION_CHANGED = "usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED";
+    inline static const std::string COMMON_EVENT_SIM_CARD_DEFAULT_MAIN_SUBSCRIPTION_CHANGED = "usual.event.SIM.DEFAULT_MAIN_SUBSCRIPTION_CHANGED";
+    inline static const std::string COMMON_EVENT_SET_PRIMARY_SLOT_STATUS = "usual.event.SET_PRIMARY_SLOT_STATUS";
     inline static const std::string COMMON_EVENT_SIM_STATE_CHANGED = "usual.event.SIM_STATE_CHANGED";
 };
 }
@@ -117,6 +145,8 @@ public:
     { operations_.push_back({"NotEqualTo", field, value}); return this; }
     DataSharePredicates *Contains(const std::string &field, const std::string &value)
     { operations_.push_back({"Contains", field, DataShareValueObject(value)}); return this; }
+    DataSharePredicates *Unlike(const std::string &field, const std::string &value)
+    { operations_.push_back({"Unlike", field, DataShareValueObject(value)}); return this; }
     // Captured boundary requests only; never evaluated as SIM business logic.
     const std::vector<Operation> &Requests() const { return operations_; }
 private:

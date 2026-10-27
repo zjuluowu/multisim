@@ -85,7 +85,7 @@ try:
     code, _ = command(["gn", "gen", str(output), "--root=" + str(SYSTEM), "--args=" + gn_args], "gn-gen")
     if code: raise RuntimeError("GN generation failed")
     result["blocking_stage"] = "product_link"
-    code, _ = command(["ninja", "-C", str(output), "sim_component_test", "platform_adapter_test"], "ninja-build")
+    code, _ = command(["ninja", "-C", str(output), "-j", "4", "sim_component_test", "platform_adapter_test"], "ninja-build", timeout=300)
     result["build_exit_code"] = code
     result["production_target"] = "sim_production_host"
     if code: raise RuntimeError("Host product/test link failed; no GoogleTest executed")
@@ -126,17 +126,51 @@ try:
     if not any(item["count"] > 0 for item in functions): raise RuntimeError("No evidence that production capacity method executed")
     adapter_env = os.environ.copy()
     adapter_env.pop("SIM_HOST_NEGATIVE_CONTROL", None)
-    code, _ = command([str(output / "platform_adapter_test"), "--gtest_output=xml:" + str(output / "adapter.xml")], "event-adapter", timeout=10, environment=adapter_env)
+    adapter_env["LLVM_PROFILE_FILE"] = str(output / "adapter.profraw")
+    code, adapter_log = command([str(output / "platform_adapter_test"), "--gtest_output=xml:" + str(output / "adapter.xml")], "event-adapter", timeout=10, environment=adapter_env)
+    cleanup_failed = "External scheduler cleanup failed" in adapter_log or code == 124
+    result["infrastructure_checks"] = {
+        "level": "INFRA_NOT_SIM_BUSINESS", "executed": True, "exit_code": code,
+        "status": "FAIL" if code else "PASS", "xml": "adapter.xml",
+        "xml_present": (output / "adapter.xml").exists(),
+    }
+    result["infrastructure_cleanup"] = {
+        "completed": False if cleanup_failed else (True if code == 0 else None),
+        "block_following_cases": bool(code), "process_reaped": True,
+    }
+    if not (output / "adapter.xml").exists():
+        raise RuntimeError("Infrastructure process failed without execution XML; exit=" + str(code))
     adapter_root = ET.parse(output / "adapter.xml").getroot()
     adapter_cases = adapter_root.findall(".//testcase")
-    result["infrastructure_checks"] = {
+    result["infrastructure_checks"].update({
         "level": "INFRA_NOT_SIM_BUSINESS", "exit_code": code,
         "tests": len(adapter_cases), "failures": len(adapter_root.findall(".//failure")),
         "skipped": len(adapter_root.findall(".//skipped")), "xml": "adapter.xml",
         "cases": [{"name": item.attrib["name"], "properties": {node.attrib["name"]: node.attrib["value"] for node in item.findall(".//property")}} for item in adapter_cases],
-    }
-    if code or len(adapter_cases) != 9 or adapter_root.findall(".//failure") or adapter_root.findall(".//skipped"):
+    })
+    infrastructure_manifest = json.loads((SYSTEM / "configs/infrastructure_cases.json").read_text())
+    expected_ids = {case["case_id"]: case["oracle_id"] for case in infrastructure_manifest["cases"]}
+    actual_ids = {case["properties"].get("case_id"): case["properties"].get("oracle_id")
+                  for case in result["infrastructure_checks"]["cases"]}
+    if code or len(adapter_cases) != len(expected_ids) or actual_ids != expected_ids or adapter_root.findall(".//failure") or adapter_root.findall(".//skipped"):
         raise RuntimeError("Platform adapter self-check failed; block SIM scenario expansion")
+    code, _ = command(["llvm-profdata-18", "merge", "-sparse", str(output / "adapter.profraw"), "-o", str(output / "adapter.profdata")], "event-coverage-merge")
+    if code: raise RuntimeError("Event production coverage merge failed")
+    code, coverage = command(["llvm-cov-18", "export", str(output / "platform_adapter_test"), "-instr-profile=" + str(output / "adapter.profdata")], "event-coverage-export")
+    if code: raise RuntimeError("Event production coverage export failed")
+    event_functions = [f for section in json.loads(coverage)["data"] for f in section["functions"]
+                       if any(name in f["name"] for name in ["TelEventHandler", "TelEventQueue"])]
+    result["event_transport_execution_audit"] = {
+        "level": "INFRA_NOT_SIM_BUSINESS", "production_target": "event_transport_production_host",
+        "link_map": "platform_adapter_test.map",
+        "coverage_functions": [{"name": f["name"], "executions": f["count"], "filenames": f["filenames"]} for f in event_functions],
+        "sources": [{"path": name, "sha256": hashlib.sha256((CORE / name).read_bytes()).hexdigest()}
+                    for name in ["utils/common/src/tel_event_handler.cpp", "utils/common/src/tel_event_queue.cpp"]],
+        "purpose": "production_transport_participation_not_SIM_state_coverage",
+    }
+    for expected in ["SendEvent", "SubmitToFFRT", "PopEvent"]:
+        if not any(expected in f["name"] and f["count"] > 0 for f in event_functions):
+            raise RuntimeError("Production event method did not execute: " + expected)
     result["blocking_stage"] = None
     result["reason"] = "Controlled component capacity slice ran; all service/SIM-state/account scenarios remain blocked"
 except Exception as error:
@@ -149,7 +183,11 @@ finally:
         if namespace is not None:
             shutil.rmtree(namespace)
             if namespace.exists(): raise RuntimeError("Temporary namespace remains")
-        result["cleanup"] = {"completed": True, "temporary_namespace_removed": namespace is not None, "processes_reaped": True}
+        infra_cleanup = result.get("infrastructure_cleanup", {})
+        result["cleanup"] = {"completed": not infra_cleanup.get("block_following_cases", False),
+                             "temporary_namespace_removed": namespace is not None, "processes_reaped": True}
+        if infra_cleanup.get("block_following_cases"):
+            result["cleanup"]["block_following_cases"] = True
     except Exception as error:
         result["status"] = "FAIL"
         result["reason"] = "Cleanup failed: " + str(error)

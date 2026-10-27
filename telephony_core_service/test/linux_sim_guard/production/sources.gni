@@ -1,0 +1,113 @@
+# Copyright (C) 2026 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Unmodified production sources of telephony_core_service that form the SIM
+# management closure. The SIM list mirrors the unconditional
+# $TELEPHONY_SIM_ROOT entries of the production BUILD.gn (tel_core_service);
+# tools/check_production_sources.py fails if the two lists drift apart.
+lsg_sim_sources = [
+  "services/sim/src/csim_file_controller.cpp",
+  "services/sim/src/esim_manager.cpp",
+  "services/sim/src/icc_dialling_numbers_cache.cpp",
+  "services/sim/src/icc_dialling_numbers_handler.cpp",
+  "services/sim/src/icc_dialling_numbers_manager.cpp",
+  "services/sim/src/icc_file.cpp",
+  "services/sim/src/icc_file_controller.cpp",
+  "services/sim/src/icc_operator_privilege_controller.cpp",
+  "services/sim/src/icc_operator_rule.cpp",
+  "services/sim/src/icc_state.cpp",
+  "services/sim/src/isim_file.cpp",
+  "services/sim/src/isim_file_controller.cpp",
+  "services/sim/src/mcc_pool.cpp",
+  "services/sim/src/multi_sim_controller.cpp",
+  "services/sim/src/multi_sim_monitor.cpp",
+  "services/sim/src/multi_sim_helper.cpp",
+  "services/sim/src/operator_config_cache.cpp",
+  "services/sim/src/operator_config_loader.cpp",
+  "services/sim/src/operator_file_parser.cpp",
+  "services/sim/src/operator_config_hisysevent.cpp",
+  "services/sim/src/operator_matching_rule.cpp",
+  "services/sim/src/pdp_profile_rdb_helper.cpp",
+  "services/sim/src/plmn_file.cpp",
+  "services/sim/src/radio_protocol_controller.cpp",
+  "services/sim/src/ruim_file.cpp",
+  "services/sim/src/ruim_file_controller.cpp",
+  "services/sim/src/sim_account_callback_death_recipient.cpp",
+  "services/sim/src/sim_account_manager.cpp",
+  "services/sim/src/sim_char_decode.cpp",
+  "services/sim/src/sim_file.cpp",
+  "services/sim/src/sim_file_controller.cpp",
+  "services/sim/src/sim_file_init.cpp",
+  "services/sim/src/sim_file_manager.cpp",
+  "services/sim/src/sim_file_parse.cpp",
+  "services/sim/src/sim_manager.cpp",
+  "services/sim/src/sim_number_decode.cpp",
+  "services/sim/src/sim_rdb_helper.cpp",
+  "services/sim/src/sim_sms_controller.cpp",
+  "services/sim/src/sim_sms_manager.cpp",
+  "services/sim/src/sim_state_handle.cpp",
+  "services/sim/src/sim_state_manager.cpp",
+  "services/sim/src/sim_state_tracker.cpp",
+  "services/sim/src/sim_utils.cpp",
+  "services/sim/src/stk_controller.cpp",
+  "services/sim/src/stk_manager.cpp",
+  "services/sim/src/tag_service.cpp",
+  "services/sim/src/telephony_data_helper.cpp",
+  "services/sim/src/usim_dialling_numbers_service.cpp",
+  "services/sim/src/usim_file_controller.cpp",
+  "services/sim/src/voice_mail_constants.cpp",
+  "services/sim/src/card_file_detect_manager.cpp",
+]
+
+# Other unmodified production sources the SIM closure links against.
+lsg_support_sources = [
+  "frameworks/native/src/core_manager_inner.cpp",
+  "frameworks/native/src/network_state.cpp",
+  "frameworks/native/src/operator_config_types.cpp",
+  "frameworks/native/src/telephony_state_registry_client.cpp",
+  "frameworks/native/src/telephony_state_registry_proxy.cpp",
+  "services/core/src/core_service_hisysevent.cpp",
+  "services/ims_service_interaction/src/ims_core_service_callback_stub.cpp",
+  "services/ims_service_interaction/src/ims_core_service_client.cpp",
+  "services/tel_ril/src/observer_handler.cpp",
+  "services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp",
+  "utils/common/src/base64.cpp",
+  "utils/common/src/enum_convert.cpp",
+  "utils/common/src/str_convert.cpp",
+  "utils/common/src/tel_aes_crypto_util.cpp",
+  "utils/common/src/tel_event_handler.cpp",
+  "utils/common/src/tel_event_queue.cpp",
+  "utils/common/src/telephony_common_utils.cpp",
+  "utils/common/src/telephony_config.cpp",
+  "utils/common/src/telephony_ext_utils_wrapper.cpp",
+  "utils/common/src/telephony_permission.cpp",
+  "utils/preferences/src/tel_profile_util.cpp",
+]
+
+lsg_production_include_dirs = [
+  "services/sim/include",
+  "services/tel_ril/include",
+  "services/network_search/include",
+  "services/telephony_ext_wrapper/include",
+  "services/core/include",
+  "services/core/capability_mgr/include",
+  "services/satellite_service_interaction/include",
+  "services/ims_service_interaction/include",
+  "interfaces/innerkits/include",
+  "interfaces/innerkits/ims/include",
+  "interfaces/innerkits/satellite",
+  "utils/common/include",
+  "utils/preferences/include",
+  "utils/log/include",
+  "frameworks/js/napi",
+]

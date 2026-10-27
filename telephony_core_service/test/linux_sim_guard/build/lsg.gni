@@ -1,0 +1,33 @@
+# Copyright (C) 2026 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+declare_args() {
+  # Absolute path of the dependency cache prepared by tools/fetch_deps.py.
+  lsg_deps_root = ""
+
+  # Absolute path of the telephony_core_service tree under test.
+  lsg_production_root = ""
+
+  lsg_cc = "clang-18"
+  lsg_cxx = "clang++-18"
+  lsg_ar = "llvm-ar-18"
+
+  # Source based coverage for production sources (audit only, never an oracle).
+  lsg_coverage = false
+}
+
+assert(lsg_deps_root != "", "set lsg_deps_root (see tools/run.py)")
+assert(lsg_production_root != "", "set lsg_production_root (see tools/run.py)")
+
+lsg_deps = lsg_deps_root
+lsg_prod = lsg_production_root

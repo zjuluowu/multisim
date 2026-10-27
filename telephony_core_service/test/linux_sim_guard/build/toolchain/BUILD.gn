@@ -1,0 +1,57 @@
+# Copyright (C) 2026 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/lsg.gni")
+
+toolchain("clang_x64") {
+  tool("cc") {
+    depfile = "{{output}}.d"
+    command = "$lsg_cc -MMD -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_c}} -c {{source}} -o {{output}}"
+    depsformat = "gcc"
+    description = "CC {{output}}"
+    outputs = [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.o" ]
+  }
+  tool("cxx") {
+    depfile = "{{output}}.d"
+    command = "$lsg_cxx -MMD -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} -c {{source}} -o {{output}}"
+    depsformat = "gcc"
+    description = "CXX {{output}}"
+    outputs = [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.o" ]
+  }
+  tool("alink") {
+    command = "rm -f {{output}} && $lsg_ar rcsD {{output}} {{inputs}}"
+    description = "AR {{target_output_name}}{{output_extension}}"
+    outputs = [ "{{target_out_dir}}/{{target_output_name}}{{output_extension}}" ]
+    default_output_extension = ".a"
+    output_prefix = "lib"
+  }
+  tool("link") {
+    outfile = "{{root_out_dir}}/{{target_output_name}}{{output_extension}}"
+    rspfile = "$outfile.rsp"
+
+    # --no-undefined style checking is the default for executables; there is no
+    # --unresolved-symbols=ignore-* anywhere in this toolchain on purpose.
+    command = "$lsg_cxx {{ldflags}} -o $outfile -Wl,-Map,$outfile.map -Wl,--start-group @$rspfile {{solibs}} -Wl,--end-group {{libs}}"
+    rspfile_content = "{{inputs}}"
+    description = "LINK $outfile"
+    outputs = [ outfile ]
+  }
+  tool("stamp") {
+    command = "touch {{output}}"
+    description = "STAMP {{output}}"
+  }
+  tool("copy") {
+    command = "cp -af {{source}} {{output}}"
+    description = "COPY {{source}} {{output}}"
+  }
+}

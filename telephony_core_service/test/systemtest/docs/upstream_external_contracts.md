@@ -65,3 +65,5 @@ INFERENCE：DataShare/CES请求类型及同步返回契约足以先搭建Linux�
 ResultSet仅接受显式配置的类型，不提供SQLite的字符串/数字强制转换；宽度不匹配拒绝构造。谓词只运载请求，不执行SQL或计算SIM账户。Want不实现Parcelable/Binder。SubscribeInfo权限及订阅方法只声明；发布回调subscriber非空明确返回false。Mock安装为进程作用域，拒绝嵌套；原子指针不保证并发销毁安全，退出scope前必须停止相关工作线程。当前设施同步执行且每例独立scope，不启动持久化服务。
 
 这些Oracle属于固定上游接口/实现的设施一致性证据，不自动成为本fork永久SIM业务契约。DS-CURSOR、DS-VALUES的实现行为用于适配一致性；CES-PUBLISH验证载体及显式失败传播，不证明真实事件系统递送。
+
+最新增量：FFRT队列受控子集与原生产事件传输已实现并运行（仅INFRA，详见ffrt_runtime.md）；SA编号采用真实固定头，新增AbilityManager/CellularData/HiSysEvent编译子集说明见platform_compile_subset.md。13个外部仓库版本快照有据可查，仍不声称匹配当前fork发行版本。原始本文中的“尚未实现”描述为此前调查状态，最新状态以run_record为准。

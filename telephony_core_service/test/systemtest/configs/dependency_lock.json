@@ -97,6 +97,149 @@
       "license": "Apache-2.0",
       "matching_core_version": false,
       "limitation": "Genuine pinned upstream header; unsupported fork fields stay unresolved; no matching platform ABI claim"
+    },
+    {
+      "path": "stubs/include/system_ability_definition.h",
+      "repository": "https://github.com/openharmony/systemabilitymgr_samgr",
+      "branch_observed": "master",
+      "sha": "d697f4cbf8c1c37d44e69a6d5ff3d506b02a904d",
+      "source_path": "interfaces/innerkits/samgr_proxy/include/system_ability_definition.h",
+      "sha256": "d438840102fb0b9a295aa86a302ce103a6e3dc6b4006e62a23d34d097a6cfc01",
+      "license": "Apache-2.0",
+      "matching_core_version": false,
+      "limitation": "Genuine reference SA identifiers only; no SA registration/discovery behavior"
+    },
+    {
+      "path": "stubs/include/hks_api.h",
+      "repository": "https://github.com/openharmony/security_huks",
+      "branch_observed": "master",
+      "sha": "334b31453086b90ebe8ab70cc8d9e90cd6694149",
+      "source_path": "interfaces/inner_api/huks_standard/main/include/hks_api.h",
+      "sha256": "64101f07d09bcf0c25427313d807ed8f68c3a89de5710f30a07a93ecb72a0fbe",
+      "license": "Apache-2.0",
+      "matching_core_version": false,
+      "limitation": "Real fixed header only; no platform runtime or ABI claim. Unsupported functions do not default to success."
+    },
+    {
+      "path": "stubs/include/hks_param.h",
+      "repository": "https://github.com/openharmony/security_huks",
+      "branch_observed": "master",
+      "sha": "334b31453086b90ebe8ab70cc8d9e90cd6694149",
+      "source_path": "interfaces/inner_api/huks_standard/main/include/hks_param.h",
+      "sha256": "440a7b5abc1236b1c30ee54c6d6e33dc6f3fec5779b83e63356294d181af0ed1",
+      "license": "Apache-2.0",
+      "matching_core_version": false,
+      "limitation": "Real fixed header only; no platform runtime or ABI claim. Unsupported functions do not default to success."
+    },
+    {
+      "path": "stubs/include/hks_type.h",
+      "repository": "https://github.com/openharmony/security_huks",
+      "branch_observed": "master",
+      "sha": "334b31453086b90ebe8ab70cc8d9e90cd6694149",
+      "source_path": "interfaces/inner_api/huks_standard/main/include/hks_type.h",
+      "sha256": "2ee59b8810d27586373828159db678b9f20519254f519e7bded758155f270c43",
+      "license": "Apache-2.0",
+      "matching_core_version": false,
+      "limitation": "Real fixed header only; no platform runtime or ABI claim. Unsupported functions do not default to success."
+    },
+    {
+      "path": "stubs/include/hks_type_enum.h",
+      "repository": "https://github.com/openharmony/security_huks",
+      "branch_observed": "master",
+      "sha": "334b31453086b90ebe8ab70cc8d9e90cd6694149",
+      "source_path": "interfaces/inner_api/huks_standard/main/include/hks_type_enum.h",
+      "sha256": "545c38aa20506fa74501ec48ca53092d9c25757f5393f41864adf627ff942f25",
+      "license": "Apache-2.0",
+      "matching_core_version": false,
+      "limitation": "Real fixed header only; no platform runtime or ABI claim. Unsupported functions do not default to success."
+    },
+    {
+      "path": "stubs/include/config_policy_utils.h",
+      "repository": "https://github.com/openharmony/customization_config_policy",
+      "branch_observed": "master",
+      "sha": "9763b8ec4bbd7b28acb1c8d8c0a13afd299998f8",
+      "source_path": "interfaces/inner_api/include/config_policy_utils.h",
+      "sha256": "1e6e53743a3edee84eb30e9b607d73a2fa1e897736baa8a03269b0a8b7db8420",
+      "license": "Apache-2.0",
+      "matching_core_version": false,
+      "limitation": "Real fixed header only; no platform runtime or ABI claim. Unsupported functions do not default to success."
+    },
+    {
+      "path": "stubs/include/cJSON.h",
+      "repository": "https://github.com/openharmony/third_party_cJSON",
+      "branch_observed": "master",
+      "sha": "28dba43de56de279d1b5b74565f4277c89c50f35",
+      "source_path": "cJSON.h",
+      "sha256": "25b0145150d500498e4d209cec69c18c42cf818bffcc54690be3b895a2a16dee",
+      "license": "MIT",
+      "matching_core_version": false,
+      "limitation": "Real fixed header only; no platform runtime or ABI claim. Unsupported functions do not default to success."
+    },
+    {
+      "path": "stubs/include/parameter.h",
+      "repository": "https://github.com/openharmony/startup_init",
+      "branch_observed": "master",
+      "sha": "970d25f5bda91afa7e02fce69d134b716d0b141d",
+      "source_path": "interfaces/innerkits/include/syspara/parameter.h",
+      "sha256": "8e7c48f647ddc38568459feff6fae01c9267476492e41431effb85db6b50c8fa",
+      "license": "Apache-2.0",
+      "matching_core_version": false,
+      "limitation": "Real fixed header only; no platform runtime or ABI claim. Unsupported functions do not default to success."
+    },
+    {
+      "path": "stubs/include/parameters.h",
+      "repository": "https://github.com/openharmony/startup_init",
+      "branch_observed": "master",
+      "sha": "970d25f5bda91afa7e02fce69d134b716d0b141d",
+      "source_path": "interfaces/innerkits/include/syspara/parameters.h",
+      "sha256": "4ab650637a013fccb5fb3caa93b80bbfc9aaac22c98908513a15b049eaa83e67",
+      "license": "Apache-2.0",
+      "matching_core_version": false,
+      "limitation": "Real fixed header only; no platform runtime or ABI claim. Unsupported functions do not default to success."
+    },
+    {
+      "path": "stubs/include/string_ex.h",
+      "repository": "https://github.com/openharmony/commonlibrary_c_utils",
+      "branch_observed": "master",
+      "sha": "3bdc11e00e7bf6e577cee300ad51045ca9958efd",
+      "source_path": "base/include/string_ex.h",
+      "sha256": "60f7760ed68802c2690a45d1a6dc590c38e00d739c7e16c806c9351bf3ffa909",
+      "license": "Apache-2.0",
+      "matching_core_version": false,
+      "limitation": "Real fixed header only; no platform runtime or ABI claim. Unsupported functions do not default to success."
+    },
+    {
+      "path": "stubs/include/os_account_manager_wrapper.h",
+      "repository": "https://github.com/openharmony/ability_ability_runtime",
+      "branch_observed": "master",
+      "sha": "969de904c1f1ebabcfddd553ab589110b5c51811",
+      "source_path": "interfaces/inner_api/deps_wrapper/include/os_account_manager_wrapper.h",
+      "sha256": "18cecba32b2968ec9855504410823c9aadc477d9d6b0e9cf3a79a12fae9a5bcc",
+      "license": "Apache-2.0",
+      "matching_core_version": false,
+      "limitation": "Real fixed header only; no platform runtime or ABI claim. Unsupported functions do not default to success."
+    },
+    {
+      "path": "stubs/include/hks_error_code.h",
+      "repository": "https://github.com/openharmony/security_huks",
+      "branch_observed": "master",
+      "sha": "334b31453086b90ebe8ab70cc8d9e90cd6694149",
+      "source_path": "interfaces/inner_api/huks_standard/main/include/hks_error_code.h",
+      "sha256": "3c7108619d8c0d188be0ebac54ca516f2a263f32651ca39d4435b0475eef71b6",
+      "license": "Apache-2.0",
+      "matching_core_version": false,
+      "limitation": "Real fixed HUKS declaration; no crypto/key runtime linked"
+    },
+    {
+      "path": "stubs/include/hks_tag.h",
+      "repository": "https://github.com/openharmony/security_huks",
+      "branch_observed": "master",
+      "sha": "334b31453086b90ebe8ab70cc8d9e90cd6694149",
+      "source_path": "interfaces/inner_api/huks_standard/main/include/hks_tag.h",
+      "sha256": "caa589c9208c7d621d9da39fbed419aaaa987e2b1c65f8ba105fcadfb62d9eec",
+      "license": "Apache-2.0",
+      "matching_core_version": false,
+      "limitation": "Real fixed HUKS declaration; no crypto/key runtime linked"
     }
   ],
   "openssl_headers": {

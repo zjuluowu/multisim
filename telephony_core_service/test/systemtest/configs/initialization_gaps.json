@@ -1,0 +1,37 @@
+{
+  "head_sha": "df8f2f017f83c70145b20255b4e9042f7a5fd923",
+  "source_evidence": "/tmp/sim-closure-oct08/audit/initialization_audit.json",
+  "executed": false,
+  "status": "BLOCKED",
+  "compiled_objects": 45,
+  "missing_headers": [],
+  "diagnostic_count": 43,
+  "groups": [
+    {
+      "group": "FORK_DATA_PROTOCOL",
+      "diagnostics_sample": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:58:25: error: no member named 'PHY_CARD' in 'OHOS::Telephony::SimData'",
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:59:25: error: no member named 'LSI' in 'OHOS::Telephony::SimData'",
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:62:29: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'",
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:63:29: error: no member named 'IS_ESIM' in 'OHOS::Telephony::SimData'",
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:66:33: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'"
+      ],
+      "required_symbols_manifest": "configs/storage_protocol_requirements.json",
+      "affected_production_files": [
+        "sim/src/card_file_detect_manager.cpp",
+        "sim/src/multi_sim_controller.cpp",
+        "sim/src/multi_sim_helper.cpp",
+        "sim/src/operator_config_loader.cpp",
+        "sim/src/sim_rdb_helper.cpp"
+      ],
+      "next_action": "Obtain matching external protocol source; never guess schema values"
+    }
+  ],
+  "remaining_stage": "Production compile incomplete; linker and initialization runtime not reached",
+  "resolved_compile_groups": [
+    "POINTER_IPC_SUBSET",
+    "PARAMETER_CONFIG_JSON",
+    "KEY_BUNDLE_BOUNDARY"
+  ],
+  "resolved_scope": "Source-backed declarations and local pointer carrier only; no HUKS/Bundle/ConfigPolicy/JSON/os-account service runtime validation"
+}

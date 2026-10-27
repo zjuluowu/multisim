@@ -1,0 +1,313 @@
+{
+  "repository_sha": "df8f2f017f83c70145b20255b4e9042f7a5fd923",
+  "scope": "external compile/protocol dependencies; not database-based test Oracles",
+  "status": "BLOCKED_MATCHING_SOURCE_REQUIRED",
+  "symbols": [
+    {
+      "symbol": "EFUST",
+      "value": "UNKNOWN_NOT_FABRICATED",
+      "references": [
+        {
+          "path": "services/sim/src/card_file_detect_manager.cpp",
+          "line": 77
+        }
+      ],
+      "resolution": "Matching external header or independently reviewed protocol source required"
+    },
+    {
+      "symbol": "EHPLMN",
+      "value": "UNKNOWN_NOT_FABRICATED",
+      "references": [
+        {
+          "path": "services/sim/src/card_file_detect_manager.cpp",
+          "line": 82
+        },
+        {
+          "path": "services/sim/src/sim_rdb_helper.cpp",
+          "line": 423
+        }
+      ],
+      "resolution": "Matching external header or independently reviewed protocol source required"
+    },
+    {
+      "symbol": "GID1",
+      "value": "UNKNOWN_NOT_FABRICATED",
+      "references": [
+        {
+          "path": "services/sim/src/card_file_detect_manager.cpp",
+          "line": 79
+        },
+        {
+          "path": "services/sim/src/sim_rdb_helper.cpp",
+          "line": 417
+        }
+      ],
+      "resolution": "Matching external header or independently reviewed protocol source required"
+    },
+    {
+      "symbol": "GID2",
+      "value": "UNKNOWN_NOT_FABRICATED",
+      "references": [
+        {
+          "path": "services/sim/src/card_file_detect_manager.cpp",
+          "line": 80
+        },
+        {
+          "path": "services/sim/src/sim_rdb_helper.cpp",
+          "line": 419
+        }
+      ],
+      "resolution": "Matching external header or independently reviewed protocol source required"
+    },
+    {
+      "symbol": "IS_ESIM",
+      "value": "UNKNOWN_NOT_FABRICATED",
+      "references": [
+        {
+          "path": "services/sim/src/card_file_detect_manager.cpp",
+          "line": 63
+        },
+        {
+          "path": "services/sim/src/card_file_detect_manager.cpp",
+          "line": 68
+        },
+        {
+          "path": "services/sim/src/multi_sim_controller.cpp",
+          "line": 572
+        },
+        {
+          "path": "services/sim/src/multi_sim_helper.cpp",
+          "line": 156
+        },
+        {
+          "path": "services/sim/src/multi_sim_helper.cpp",
+          "line": 187
+        },
+        {
+          "path": "services/sim/src/sim_cache_sync_manager.cpp",
+          "line": 271
+        },
+        {
+          "path": "services/sim/src/sim_cache_sync_manager.cpp",
+          "line": 386
+        },
+        {
+          "path": "services/sim/src/sim_rdb_helper.cpp",
+          "line": 399
+        },
+        {
+          "path": "services/sim/src/sim_rdb_helper.cpp",
+          "line": 561
+        },
+        {
+          "path": "services/sim/src/sim_rdb_helper.cpp",
+          "line": 575
+        },
+        {
+          "path": "services/sim/src/sim_rdb_helper.cpp",
+          "line": 629
+        }
+      ],
+      "resolution": "Matching external header or independently reviewed protocol source required"
+    },
+    {
+      "symbol": "LSI",
+      "value": "UNKNOWN_NOT_FABRICATED",
+      "references": [
+        {
+          "path": "services/sim/src/card_file_detect_manager.cpp",
+          "line": 59
+        },
+        {
+          "path": "services/sim/src/sim_rdb_helper.cpp",
+          "line": 413
+        }
+      ],
+      "resolution": "Matching external header or independently reviewed protocol source required"
+    },
+    {
+      "symbol": "MCC",
+      "value": "UNKNOWN_NOT_FABRICATED",
+      "references": [
+        {
+          "path": "services/sim/src/operator_config_loader.cpp",
+          "line": 120
+        }
+      ],
+      "resolution": "Matching external header or independently reviewed protocol source required"
+    },
+    {
+      "symbol": "MNC",
+      "value": "UNKNOWN_NOT_FABRICATED",
+      "references": [
+        {
+          "path": "services/sim/src/card_file_detect_manager.cpp",
+          "line": 72
+        },
+        {
+          "path": "services/sim/src/operator_config_loader.cpp",
+          "line": 121
+        },
+        {
+          "path": "services/sim/src/sim_rdb_helper.cpp",
+          "line": 415
+        }
+      ],
+      "resolution": "Matching external header or independently reviewed protocol source required"
+    },
+    {
+      "symbol": "MNC_LEN",
+      "value": "UNKNOWN_NOT_FABRICATED",
+      "references": [
+        {
+          "path": "services/sim/src/card_file_detect_manager.cpp",
+          "line": 72
+        },
+        {
+          "path": "services/sim/src/sim_rdb_helper.cpp",
+          "line": 415
+        }
+      ],
+      "resolution": "Matching external header or independently reviewed protocol source required"
+    },
+    {
+      "symbol": "OPERATOR_NAME",
+      "value": "UNKNOWN_NOT_FABRICATED",
+      "references": [
+        {
+          "path": "services/sim/src/multi_sim_controller.cpp",
+          "line": 549
+        },
+        {
+          "path": "services/sim/src/sim_cache_sync_manager.cpp",
+          "line": 289
+        },
+        {
+          "path": "services/sim/src/sim_cache_sync_manager.cpp",
+          "line": 368
+        },
+        {
+          "path": "services/sim/src/sim_rdb_helper.cpp",
+          "line": 403
+        },
+        {
+          "path": "services/sim/src/sim_rdb_helper.cpp",
+          "line": 655
+        }
+      ],
+      "resolution": "Matching external header or independently reviewed protocol source required"
+    },
+    {
+      "symbol": "OPKEY",
+      "value": "UNKNOWN_NOT_FABRICATED",
+      "references": [
+        {
+          "path": "services/sim/src/operator_config_loader.cpp",
+          "line": 119
+        },
+        {
+          "path": "services/sim/src/sim_rdb_helper.cpp",
+          "line": 85
+        }
+      ],
+      "resolution": "Matching external header or independently reviewed protocol source required"
+    },
+    {
+      "symbol": "PHY_CARD",
+      "value": "UNKNOWN_NOT_FABRICATED",
+      "references": [
+        {
+          "path": "services/sim/src/card_file_detect_manager.cpp",
+          "line": 58
+        },
+        {
+          "path": "services/sim/src/sim_rdb_helper.cpp",
+          "line": 411
+        }
+      ],
+      "resolution": "Matching external header or independently reviewed protocol source required"
+    },
+    {
+      "symbol": "SIM_LABEL_INDEX",
+      "value": "UNKNOWN_NOT_FABRICATED",
+      "references": [
+        {
+          "path": "services/sim/src/card_file_detect_manager.cpp",
+          "line": 62
+        },
+        {
+          "path": "services/sim/src/card_file_detect_manager.cpp",
+          "line": 66
+        },
+        {
+          "path": "services/sim/src/multi_sim_controller.cpp",
+          "line": 490
+        },
+        {
+          "path": "services/sim/src/multi_sim_controller.cpp",
+          "line": 573
+        },
+        {
+          "path": "services/sim/src/multi_sim_controller.cpp",
+          "line": 615
+        },
+        {
+          "path": "services/sim/src/multi_sim_helper.cpp",
+          "line": 157
+        },
+        {
+          "path": "services/sim/src/multi_sim_helper.cpp",
+          "line": 186
+        },
+        {
+          "path": "services/sim/src/sim_cache_sync_manager.cpp",
+          "line": 274
+        },
+        {
+          "path": "services/sim/src/sim_cache_sync_manager.cpp",
+          "line": 365
+        },
+        {
+          "path": "services/sim/src/sim_rdb_helper.cpp",
+          "line": 401
+        },
+        {
+          "path": "services/sim/src/sim_rdb_helper.cpp",
+          "line": 578
+        },
+        {
+          "path": "services/sim/src/sim_rdb_helper.cpp",
+          "line": 602
+        },
+        {
+          "path": "services/sim/src/sim_rdb_helper.cpp",
+          "line": 630
+        },
+        {
+          "path": "services/sim/src/sim_rdb_helper.cpp",
+          "line": 632
+        },
+        {
+          "path": "services/sim/src/sim_rdb_helper.cpp",
+          "line": 678
+        }
+      ],
+      "resolution": "Matching external header or independently reviewed protocol source required"
+    },
+    {
+      "symbol": "SPN",
+      "value": "UNKNOWN_NOT_FABRICATED",
+      "references": [
+        {
+          "path": "services/sim/src/card_file_detect_manager.cpp",
+          "line": 81
+        },
+        {
+          "path": "services/sim/src/sim_rdb_helper.cpp",
+          "line": 421
+        }
+      ],
+      "resolution": "Matching external header or independently reviewed protocol source required"
+    }
+  ]
+}

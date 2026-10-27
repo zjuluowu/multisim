@@ -55,6 +55,29 @@ source_set("external_service_boundaries") {
     "$gtest_root/googlemock/include",
   ]
 }
+
+# Preserve the production event transport; only external scheduler/base APIs are adapted.
+source_set("event_transport_production_host") {
+  sources = [
+    "$production_root/utils/common/src/tel_event_handler.cpp",
+    "$production_root/utils/common/src/tel_event_queue.cpp",
+  ]
+  configs += [
+    ":production_headers",
+    ":production_execution_evidence",
+  ]
+}
+source_set("scheduler_boundaries") {
+  sources = [
+    "stubs/event_handler_runtime.cpp",
+    "stubs/ffrt_runtime.cpp",
+  ]
+  include_dirs = [
+    "stubs",
+    "stubs/include",
+  ]
+}
+
 source_set("component_launcher") {
   sources = [ "support/capacity_probe.cpp" ]
   configs += [ ":production_headers" ]
@@ -172,8 +195,11 @@ executable("sim_initialization_link_probe") {
   sources = [ "support/initialization_link_probe.cpp" ]
   configs += [ ":production_headers" ]
   deps = [
+    ":event_transport_production_host",
+    ":external_service_boundaries",
     ":googlemock",
     ":platform_boundaries",
+    ":scheduler_boundaries",
     ":sim_initialization_production_host",
     ":sim_production_host",
   ]
@@ -184,7 +210,9 @@ executable("sim_initialization_link_probe") {
 executable("platform_adapter_test") {
   sources = [
     "tests/event_adapter_test.cpp",
+    "tests/event_transport_test.cpp",
     "tests/external_services_test.cpp",
+    "tests/native_pointer_test.cpp",
     "tests/ril_adapter_test.cpp",
   ]
   include_dirs = [
@@ -194,8 +222,14 @@ executable("platform_adapter_test") {
   ]
   configs += [ ":production_headers" ]
   deps = [
+    ":event_transport_production_host",
     ":external_service_boundaries",
     ":googlemock",
+    ":scheduler_boundaries",
+  ]
+  ldflags = [
+    "-fprofile-instr-generate",
+    "-Wl,-Map,platform_adapter_test.map",
   ]
 }
 

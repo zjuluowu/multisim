@@ -65,6 +65,36 @@
       "branch_observed": "master",
       "sha": "ad769275f8456e288f9981b4d09f7a76efeafeed",
       "scope": "revision identified; HDI not part of this host runtime"
+    },
+    {
+      "repository": "bundlemanager_bundle_framework",
+      "branch_observed": "master",
+      "sha": "2fa234a99a17eabd5d5e1f60a2e004f464a27d71"
+    },
+    {
+      "repository": "security_huks",
+      "branch_observed": "master",
+      "sha": "334b31453086b90ebe8ab70cc8d9e90cd6694149"
+    },
+    {
+      "repository": "customization_config_policy",
+      "branch_observed": "master",
+      "sha": "9763b8ec4bbd7b28acb1c8d8c0a13afd299998f8"
+    },
+    {
+      "repository": "third_party_cJSON",
+      "branch_observed": "master",
+      "sha": "28dba43de56de279d1b5b74565f4277c89c50f35"
+    },
+    {
+      "repository": "startup_init",
+      "branch_observed": "master",
+      "sha": "970d25f5bda91afa7e02fce69d134b716d0b141d"
+    },
+    {
+      "repository": "commonlibrary_c_utils",
+      "branch_observed": "master",
+      "sha": "3bdc11e00e7bf6e577cee300ad51045ca9958efd"
     }
   ],
   "files": [
@@ -331,6 +361,166 @@
       "sha256": "d38a4ef437ad856795090db909896db16660f8e6e336d2947e777a4ef2284ea7",
       "source_url": "https://github.com/openharmony/telephony_data_storage/blob/843a8be7f8d1dc304870a3999b754a03c6cce57d/sim/include/sim_data.h",
       "license": "Apache-2.0; original source notice retained where vendored"
+    },
+    {
+      "repository": "bundlemanager_bundle_framework",
+      "sha": "2fa234a99a17eabd5d5e1f60a2e004f464a27d71",
+      "path": "interfaces/inner_api/appexecfwk_base/include/extension_ability_info.h",
+      "url": "https://github.com/openharmony/bundlemanager_bundle_framework/blob/2fa234a99a17eabd5d5e1f60a2e004f464a27d71/interfaces/inner_api/appexecfwk_base/include/extension_ability_info.h",
+      "sha256": "1684ef86f19b82b823b1c5ec697ed677beefe2f96cb8a4e9f06612ab535c0971",
+      "license": "Apache-2.0"
+    },
+    {
+      "repository": "systemabilitymgr_samgr",
+      "sha": "d697f4cbf8c1c37d44e69a6d5ff3d506b02a904d",
+      "path": "interfaces/innerkits/samgr_proxy/include/system_ability_definition.h",
+      "url": "https://github.com/openharmony/systemabilitymgr_samgr/blob/d697f4cbf8c1c37d44e69a6d5ff3d506b02a904d/interfaces/innerkits/samgr_proxy/include/system_ability_definition.h",
+      "sha256": "d438840102fb0b9a295aa86a302ce103a6e3dc6b4006e62a23d34d097a6cfc01",
+      "license": "Apache-2.0"
+    },
+    {
+      "repository": "ability_ability_base",
+      "sha": "7088813d55e1592093557d2b2d5e40a47177b7a0",
+      "path": "interfaces/kits/native/want/include/element_name.h",
+      "url": "https://github.com/openharmony/ability_ability_base/blob/7088813d55e1592093557d2b2d5e40a47177b7a0/interfaces/kits/native/want/include/element_name.h",
+      "sha256": "45b089b4dbc34cec984962820466f38746469d6fdf4c96a01bc1589d08f96c84",
+      "license": "Apache-2.0"
+    },
+    {
+      "repository": "security_huks",
+      "sha": "334b31453086b90ebe8ab70cc8d9e90cd6694149",
+      "path": "interfaces/inner_api/huks_standard/main/include/hks_api.h",
+      "url": "https://github.com/openharmony/security_huks/blob/334b31453086b90ebe8ab70cc8d9e90cd6694149/interfaces/inner_api/huks_standard/main/include/hks_api.h",
+      "sha256": "64101f07d09bcf0c25427313d807ed8f68c3a89de5710f30a07a93ecb72a0fbe",
+      "license": "Apache-2.0"
+    },
+    {
+      "repository": "security_huks",
+      "sha": "334b31453086b90ebe8ab70cc8d9e90cd6694149",
+      "path": "interfaces/inner_api/huks_standard/main/include/hks_param.h",
+      "url": "https://github.com/openharmony/security_huks/blob/334b31453086b90ebe8ab70cc8d9e90cd6694149/interfaces/inner_api/huks_standard/main/include/hks_param.h",
+      "sha256": "440a7b5abc1236b1c30ee54c6d6e33dc6f3fec5779b83e63356294d181af0ed1",
+      "license": "Apache-2.0"
+    },
+    {
+      "repository": "security_huks",
+      "sha": "334b31453086b90ebe8ab70cc8d9e90cd6694149",
+      "path": "interfaces/inner_api/huks_standard/main/include/hks_type.h",
+      "url": "https://github.com/openharmony/security_huks/blob/334b31453086b90ebe8ab70cc8d9e90cd6694149/interfaces/inner_api/huks_standard/main/include/hks_type.h",
+      "sha256": "2ee59b8810d27586373828159db678b9f20519254f519e7bded758155f270c43",
+      "license": "Apache-2.0"
+    },
+    {
+      "repository": "security_huks",
+      "sha": "334b31453086b90ebe8ab70cc8d9e90cd6694149",
+      "path": "interfaces/inner_api/huks_standard/main/include/hks_type_enum.h",
+      "url": "https://github.com/openharmony/security_huks/blob/334b31453086b90ebe8ab70cc8d9e90cd6694149/interfaces/inner_api/huks_standard/main/include/hks_type_enum.h",
+      "sha256": "545c38aa20506fa74501ec48ca53092d9c25757f5393f41864adf627ff942f25",
+      "license": "Apache-2.0"
+    },
+    {
+      "repository": "customization_config_policy",
+      "sha": "9763b8ec4bbd7b28acb1c8d8c0a13afd299998f8",
+      "path": "interfaces/inner_api/include/config_policy_utils.h",
+      "url": "https://github.com/openharmony/customization_config_policy/blob/9763b8ec4bbd7b28acb1c8d8c0a13afd299998f8/interfaces/inner_api/include/config_policy_utils.h",
+      "sha256": "1e6e53743a3edee84eb30e9b607d73a2fa1e897736baa8a03269b0a8b7db8420",
+      "license": "Apache-2.0"
+    },
+    {
+      "repository": "third_party_cJSON",
+      "sha": "28dba43de56de279d1b5b74565f4277c89c50f35",
+      "path": "cJSON.h",
+      "url": "https://github.com/openharmony/third_party_cJSON/blob/28dba43de56de279d1b5b74565f4277c89c50f35/cJSON.h",
+      "sha256": "25b0145150d500498e4d209cec69c18c42cf818bffcc54690be3b895a2a16dee",
+      "license": "MIT"
+    },
+    {
+      "repository": "startup_init",
+      "sha": "970d25f5bda91afa7e02fce69d134b716d0b141d",
+      "path": "interfaces/innerkits/include/syspara/parameter.h",
+      "url": "https://github.com/openharmony/startup_init/blob/970d25f5bda91afa7e02fce69d134b716d0b141d/interfaces/innerkits/include/syspara/parameter.h",
+      "sha256": "8e7c48f647ddc38568459feff6fae01c9267476492e41431effb85db6b50c8fa",
+      "license": "Apache-2.0"
+    },
+    {
+      "repository": "startup_init",
+      "sha": "970d25f5bda91afa7e02fce69d134b716d0b141d",
+      "path": "interfaces/innerkits/include/syspara/parameters.h",
+      "url": "https://github.com/openharmony/startup_init/blob/970d25f5bda91afa7e02fce69d134b716d0b141d/interfaces/innerkits/include/syspara/parameters.h",
+      "sha256": "4ab650637a013fccb5fb3caa93b80bbfc9aaac22c98908513a15b049eaa83e67",
+      "license": "Apache-2.0"
+    },
+    {
+      "repository": "commonlibrary_c_utils",
+      "sha": "3bdc11e00e7bf6e577cee300ad51045ca9958efd",
+      "path": "base/include/string_ex.h",
+      "url": "https://github.com/openharmony/commonlibrary_c_utils/blob/3bdc11e00e7bf6e577cee300ad51045ca9958efd/base/include/string_ex.h",
+      "sha256": "60f7760ed68802c2690a45d1a6dc590c38e00d739c7e16c806c9351bf3ffa909",
+      "license": "Apache-2.0"
+    },
+    {
+      "repository": "ability_ability_runtime",
+      "sha": "969de904c1f1ebabcfddd553ab589110b5c51811",
+      "path": "interfaces/inner_api/deps_wrapper/include/os_account_manager_wrapper.h",
+      "url": "https://github.com/openharmony/ability_ability_runtime/blob/969de904c1f1ebabcfddd553ab589110b5c51811/interfaces/inner_api/deps_wrapper/include/os_account_manager_wrapper.h",
+      "sha256": "18cecba32b2968ec9855504410823c9aadc477d9d6b0e9cf3a79a12fae9a5bcc",
+      "license": "Apache-2.0"
+    },
+    {
+      "repository": "security_huks",
+      "sha": "334b31453086b90ebe8ab70cc8d9e90cd6694149",
+      "path": "interfaces/inner_api/huks_standard/main/include/hks_error_code.h",
+      "url": "https://github.com/openharmony/security_huks/blob/334b31453086b90ebe8ab70cc8d9e90cd6694149/interfaces/inner_api/huks_standard/main/include/hks_error_code.h",
+      "sha256": "3c7108619d8c0d188be0ebac54ca516f2a263f32651ca39d4435b0475eef71b6",
+      "license": "Apache-2.0"
+    },
+    {
+      "repository": "security_huks",
+      "sha": "334b31453086b90ebe8ab70cc8d9e90cd6694149",
+      "path": "interfaces/inner_api/huks_standard/main/include/hks_tag.h",
+      "url": "https://github.com/openharmony/security_huks/blob/334b31453086b90ebe8ab70cc8d9e90cd6694149/interfaces/inner_api/huks_standard/main/include/hks_tag.h",
+      "sha256": "caa589c9208c7d621d9da39fbed419aaaa987e2b1c65f8ba105fcadfb62d9eec",
+      "license": "Apache-2.0"
+    },
+    {
+      "repository": "commonlibrary_c_utils",
+      "sha": "3bdc11e00e7bf6e577cee300ad51045ca9958efd",
+      "path": "base/include/refbase.h",
+      "url": "https://github.com/openharmony/commonlibrary_c_utils/blob/3bdc11e00e7bf6e577cee300ad51045ca9958efd/base/include/refbase.h",
+      "sha256": "7bd7bbf5e9ac303574495df6d8852ef2c122bdb2685d1e161f5ef27086dd89ee",
+      "license": "Apache-2.0"
+    },
+    {
+      "repository": "commonlibrary_c_utils",
+      "sha": "3bdc11e00e7bf6e577cee300ad51045ca9958efd",
+      "path": "base/include/parcel.h",
+      "url": "https://github.com/openharmony/commonlibrary_c_utils/blob/3bdc11e00e7bf6e577cee300ad51045ca9958efd/base/include/parcel.h",
+      "sha256": "25d5bca322bfbca84d362b6914856b2b197dea81f3212e9c135356f9c2de2c42",
+      "license": "Apache-2.0"
+    },
+    {
+      "repository": "bundlemanager_bundle_framework",
+      "sha": "2fa234a99a17eabd5d5e1f60a2e004f464a27d71",
+      "path": "interfaces/inner_api/appexecfwk_core/include/bundlemgr/bundle_mgr_interface.h",
+      "url": "https://github.com/openharmony/bundlemanager_bundle_framework/blob/2fa234a99a17eabd5d5e1f60a2e004f464a27d71/interfaces/inner_api/appexecfwk_core/include/bundlemgr/bundle_mgr_interface.h",
+      "sha256": "3a69da5a2d1b37c3399e7031d0336c16aa53030c808f9fdded72a38204d3bca6",
+      "license": "Apache-2.0"
+    },
+    {
+      "repository": "bundlemanager_bundle_framework",
+      "sha": "2fa234a99a17eabd5d5e1f60a2e004f464a27d71",
+      "path": "interfaces/inner_api/appexecfwk_base/include/bundle_info.h",
+      "url": "https://github.com/openharmony/bundlemanager_bundle_framework/blob/2fa234a99a17eabd5d5e1f60a2e004f464a27d71/interfaces/inner_api/appexecfwk_base/include/bundle_info.h",
+      "sha256": "81c8ab40d758f33581ffe04699a74e3ead9c175770369d409914cc31540ef90c",
+      "license": "Apache-2.0"
+    },
+    {
+      "repository": "bundlemanager_bundle_framework",
+      "sha": "2fa234a99a17eabd5d5e1f60a2e004f464a27d71",
+      "path": "interfaces/inner_api/appexecfwk_base/include/bundle_constants.h",
+      "url": "https://github.com/openharmony/bundlemanager_bundle_framework/blob/2fa234a99a17eabd5d5e1f60a2e004f464a27d71/interfaces/inner_api/appexecfwk_base/include/bundle_constants.h",
+      "sha256": "25b92e165d204f54dbce6220024a989756e94c52eb97bed7b8f4581057baaf58",
+      "license": "Apache-2.0"
     }
   ],
   "fork_gaps": {
@@ -350,5 +540,16 @@
       "SIM_LABEL_INDEX",
       "SPN"
     ]
-  }
+  },
+  "additional_observations": [
+    {
+      "repository": "https://gitee.com/openharmony/telephony_data_storage",
+      "branch": "master",
+      "sha": "bb397b28578cbaea30a5d957043d646962a59230",
+      "path": "sim/include/sim_data.h",
+      "sha256": "d38a4ef437ad856795090db909896db16660f8e6e336d2947e777a4ef2284ea7",
+      "result": "Identical to pinned GitHub sim_data.h; 14 fork symbols still absent",
+      "selected_for_build": false
+    }
+  ]
 }

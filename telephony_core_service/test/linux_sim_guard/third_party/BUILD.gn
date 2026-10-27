@@ -1,0 +1,275 @@
+# Copyright (C) 2026 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Genuine upstream platform sources compiled for the Linux host. Only code that
+# is portable to Linux is compiled here; platform services that need a device
+# (samgr, binder IPC, DataShare provider, CommonEvent service, parameters, ...)
+# are replaced at their client API boundary in //env.
+
+import("//build/lsg.gni")
+import("//build/platform.gni")
+import("//third_party/ffrt_sources.gni")
+
+_tp_configs = [
+  "//build/config:third_party_warnings",
+  "//build/config:no_rtti",
+]
+
+config("platform_headers") {
+  include_dirs = lsg_platform_include_dirs
+}
+
+static_library("securec") {
+  configs += _tp_configs
+  include_dirs = [ "$lsg_deps/third_party_bounds_checking_function/include" ]
+  _names = [
+    "fscanf_s",
+    "fwscanf_s",
+    "gets_s",
+    "memcpy_s",
+    "memmove_s",
+    "memset_s",
+    "scanf_s",
+    "securecutil",
+    "secureinput_a",
+    "secureinput_w",
+    "secureprintoutput_a",
+    "secureprintoutput_w",
+    "snprintf_s",
+    "sprintf_s",
+    "sscanf_s",
+    "strcat_s",
+    "strcpy_s",
+    "strncat_s",
+    "strncpy_s",
+    "strtok_s",
+    "swprintf_s",
+    "swscanf_s",
+    "vfscanf_s",
+    "vfwscanf_s",
+    "vscanf_s",
+    "vsnprintf_s",
+    "vsprintf_s",
+    "vsscanf_s",
+    "vswprintf_s",
+    "vswscanf_s",
+    "vwscanf_s",
+    "wcscat_s",
+    "wcscpy_s",
+    "wcsncat_s",
+    "wcsncpy_s",
+    "wcstok_s",
+    "wmemcpy_s",
+    "wmemmove_s",
+    "wscanf_s",
+  ]
+  sources = []
+  foreach(n, _names) {
+    sources += [ "$lsg_deps/third_party_bounds_checking_function/src/$n.c" ]
+  }
+}
+
+static_library("c_utils") {
+  configs += _tp_configs
+  configs += [ ":platform_headers" ]
+  include_dirs = [ "$lsg_deps/commonlibrary_c_utils/base/src" ]
+  _names = [
+    "string_ex",
+    "unicode_ex",
+    "directory_ex",
+    "datetime_ex",
+    "refbase",
+    "parcel",
+    "semaphore_ex",
+    "thread_pool",
+    "file_ex",
+    "mapped_file",
+    "observer",
+    "thread_ex",
+    "io_event_handler",
+    "io_event_reactor",
+    "io_event_epoll",
+    "event_handler",
+    "event_reactor",
+    "event_demultiplexer",
+    "timer",
+    "timer_event_handler",
+    "rwlock",
+    "ashmem",
+  ]
+  sources = []
+  foreach(n, _names) {
+    sources += [ "$lsg_deps/commonlibrary_c_utils/base/src/$n.cpp" ]
+  }
+  deps = [ ":securec" ]
+}
+
+static_library("ffrt") {
+  configs += _tp_configs
+  _r = "$lsg_deps/resourceschedule_ffrt"
+  include_dirs = [
+    "$_r/interfaces/kits",
+    "$_r/interfaces/inner_api",
+    "$_r/include",
+    "$_r/include/sched",
+    "$_r/src",
+    "$_r/src/dfx/trace",
+    "$_r/src/sched",
+    "$lsg_deps/third_party_bounds_checking_function/include",
+  ]
+  defines = [
+    "PR_SET_VMA=0x53564d41",
+    "PR_SET_VMA_ANON_NAME=0",
+    "FFRT_PTHREAD_ENABLE",
+    "FFRT_ENABLE_TRAFFIC_MONITOR",
+    "USE_OHOS_QOS",
+    "FFRT_BBOX_ENABLE",
+    "FFRT_TRACE_RECORD_LEVEL=1",
+    "FFRT_LOG_LEVEL=0",
+    "FFRT_RELEASE",
+  ]
+  sources = []
+  foreach(s, ffrt_sources) {
+    sources += [ "$_r/$s" ]
+  }
+  deps = [ ":securec" ]
+}
+
+static_library("eventhandler") {
+  configs += _tp_configs
+  configs += [ ":platform_headers" ]
+  defines = [ "FFRT_USAGE_ENABLE" ]
+  _r = "$lsg_deps/notification_eventhandler/frameworks/eventhandler/src"
+  sources = [
+    "$_r/async_stack_adapter.cpp",
+    "$_r/deamon_io_waiter.cpp",
+    "$_r/epoll_io_waiter.cpp",
+    "$_r/event_handler.cpp",
+    "$_r/event_queue.cpp",
+    "$_r/event_queue_base.cpp",
+    "$_r/event_queue_ffrt.cpp",
+    "$_r/event_runner.cpp",
+    "$_r/ffrt_descriptor_listener.cpp",
+    "$_r/file_descriptor_listener.cpp",
+    "$_r/frame_report_sched.cpp",
+    "$_r/inner_event.cpp",
+    "$_r/local_handle_adapter.cpp",
+    "$_r/native_implement_eventhandler.cpp",
+    "$_r/none_io_waiter.cpp",
+  ]
+  deps = [
+    ":c_utils",
+    ":ffrt",
+  ]
+}
+
+static_library("cjson") {
+  configs += _tp_configs
+  sources = [ "$lsg_deps/third_party_cJSON/cJSON.c" ]
+}
+
+static_library("jsoncpp") {
+  configs += _tp_configs
+  _r = "$lsg_deps/jsoncpp/jsoncpp-1.9.6"
+  include_dirs = [
+    "$_r/include",
+    "$_r/src/lib_json",
+  ]
+  sources = [
+    "$_r/src/lib_json/json_reader.cpp",
+    "$_r/src/lib_json/json_value.cpp",
+    "$_r/src/lib_json/json_writer.cpp",
+  ]
+}
+
+# Want, ElementName, Uri, Configuration and the AAFwk base wrappers.
+static_library("ability_base") {
+  configs += _tp_configs
+  configs += [ ":platform_headers" ]
+  _k = "$lsg_deps/ability_ability_base/interfaces/kits/native"
+  _b = "$lsg_deps/ability_ability_base/interfaces/inner_api/base/src"
+  sources = [
+    "$_b/base.cpp",
+    "$_b/base_object.cpp",
+    "$_b/bool_wrapper.cpp",
+    "$_b/byte_wrapper.cpp",
+    "$_b/double_wrapper.cpp",
+    "$_b/float_wrapper.cpp",
+    "$_b/int_wrapper.cpp",
+    "$_b/long_wrapper.cpp",
+    "$_b/remote_object_wrapper.cpp",
+    "$_b/short_wrapper.cpp",
+    "$_b/string_wrapper.cpp",
+    "$_b/user_object_wrapper.cpp",
+    "$_b/zchar_wrapper.cpp",
+    "$_k/configuration/src/configuration.cpp",
+    "$_k/uri/src/uri.cpp",
+    "$_k/want/src/array_wrapper.cpp",
+    "$_k/want/src/array_wrapper_json.cpp",
+    "$_k/want/src/element_name.cpp",
+    "$_k/want/src/extra_params.cpp",
+    "$_k/want/src/operation.cpp",
+    "$_k/want/src/operation_builder.cpp",
+    "$_k/want/src/pac_map.cpp",
+    "$_k/want/src/patterns_matcher.cpp",
+    "$_k/want/src/skills.cpp",
+    "$_k/want/src/want.cpp",
+    "$_k/want/src/want_params.cpp",
+    "$_k/want/src/want_params_wrapper.cpp",
+    "$_k/want/src/want_params_wrapper_json.cpp",
+  ]
+  deps = [
+    ":c_utils",
+    ":jsoncpp",
+  ]
+}
+
+# CommonEventData / CommonEventPublishInfo / CommonEventSupport value types.
+# The CommonEventManager service client itself is replaced in //env.
+static_library("common_event_types") {
+  configs += _tp_configs
+  configs += [ ":platform_headers" ]
+  _r = "$lsg_deps/notification_common_event_service/frameworks/native/src"
+  sources = [
+    "$_r/common_event_data.cpp",
+    "$_r/common_event_publish_info.cpp",
+    "$_r/common_event_support.cpp",
+  ]
+  deps = [ ":ability_base" ]
+}
+
+# BrokerRegistration (iface_cast support) from ipc_core; transport is in //env.
+static_library("ipc_broker") {
+  configs += _tp_configs
+  configs += [ ":platform_headers" ]
+  include_dirs = [
+    "$lsg_deps/communication_ipc/ipc/native/src/core/framework/include",
+    "$lsg_deps/communication_ipc/utils/include",
+  ]
+  sources = [ "$lsg_deps/communication_ipc/ipc/native/src/core/framework/source/iremote_broker.cpp" ]
+  deps = [ ":c_utils" ]
+}
+
+group("platform") {
+  public_deps = [
+    ":ability_base",
+    ":c_utils",
+    ":cjson",
+    ":common_event_types",
+    ":eventhandler",
+    ":ffrt",
+    ":ipc_broker",
+    ":jsoncpp",
+    ":securec",
+  ]
+}
