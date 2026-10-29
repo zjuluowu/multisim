@@ -9,18 +9,18 @@
 3. [SIM 管理对外接口说明](SIM管理对外接口说明_源码核实版.md)：接口分层、签名与本仓委托路径；声明存在性不视为外部服务运行保证。
 4. [独立 Linux 测试工程](../test/systemtest/README.md)及[执行记录](../test/systemtest/docs/run_record.md)：以记录的环境、版本、命令和日期解释结果，不从目标架构图推断测试完成。
 
-规则来源为“主文档 → 补充视图 → 阅读索引”。差异处理见主文档[补充设计复审记录 UC-01～09](SIM_Architecture_Refactor_Design.md#supplement-review)。源码决定现在如何实现；用户要求与已确认契约约束目标；提案编号和“已批准”字样不能替代批准证据。
+目标技术裁决由 [SIM 目标架构设计 v1.2](SIM_Target_Architecture_Design_v1.2.md) §4/§6.4 承接；功能/WU 与迁移编号保留在重构设计，分层文档为补充视图，本文为阅读索引。差异处理见主文档[补充设计复审记录 UC-01～09](SIM_Architecture_Refactor_Design.md#supplement-review)。源码决定现在如何实现；用户要求与已确认契约约束目标；提案编号和“已批准”字样不能替代批准证据。
 
 ## 统一口径
 
-- 三个业务上下文：T 账户与连接拓扑、A 角色与资源分配、O 本地业务操作。R 卡运行支撑、C 兼容实现职责、I 技术适配、H 宿主装配另列；Compatibility 不作为第四个业务上下文。
-- T/A/O 分别拥有自己的业务事实；R 维护卡应用会话、Records 和真实设备资源使用。C 不成为第二业务写者。按 [WU-01～09 及全部旧入口](SIM_Architecture_Refactor_Design.md#writer-cutover)切换写权，遗留用例同步委托。
+- 两个业务上下文：T 账户与连接拓扑、A 角色与资源分配；O 为各用例使用的 Application 机制。R 卡运行支撑、C 兼容实现职责、I 技术适配、H 宿主装配另列；Compatibility 不作为第四个业务上下文。
+- T/A 分别拥有自己的业务事实；O 不拥有业务事实或跨模块进行中标志；R 维护卡应用会话、Records 和真实设备资源使用。C 不成为第二业务写者。按 [WU-01～09 及全部旧入口](SIM_Architecture_Refactor_Design.md#writer-cutover)切换写权，遗留用例同步委托。
 - 分类为 SlotTarget、CardApplicationTarget、SubscriptionTarget；空槽、PIN/PUK 和未识别身份的卡操作不强求 simId。simId 保持旧不透明 ID 契约，不承诺跨删除、重装或设备永久稳定。
 - Domain 只含纯规则/值类型；Application 协调用例和受控提交，依赖内层端口；I/R/H 实现端口。R 复用生产协议和解析，尚未纯领域化。
 - 保留公开 Framework/IPC、CoreManagerInner 消费侧及条件 eSIM 入口。SIM 私有 SO 是同进程链接边界，按 G2a 依赖/所有权整理、G2b 链接拆分、G2c 关闭协议分别验收。
 - 卡状态、Records、账户、激活、默认角色、Profile 和网络就绪分别表达。GetShowNumber 等查询保留既有回写/存储访问；[部分失败轨迹](SIM_Architecture_Refactor_Design.md#legacy-visibility)不能被最终快照一致掩盖。
 - 内部领域事件只通知已接受事实，不替换 RadioEvent、Hub、Registry、CES、账户回调或 eSIM 回执，不统一重排旧输出。进程内总线不提供跨进程传输；SA 身份不决定地址空间，66250 保持既有服务契约。
-- 不新增公开 API/IPC/SA/进程、schema、厂商 ABI 或运行期双实现开关。四槽/MEP、NULL 迁移、新身份和恢复政策须满足对应 Q 项；文档修订不授权生产重构。
+- 不新增公开 API/IPC/SA/进程、schema、厂商 ABI 或运行期双实现开关。四槽/MEP、NULL 迁移、新身份和恢复政策须满足对应 Q 项；本轮已授权同步修改未接入骨架，仍不表示生产接入或行为增强已完成。
 
 ## 先前设计与历史资料
 
