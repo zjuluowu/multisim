@@ -10,6 +10,8 @@
 
 本文是同一方案的文字阅读版本。后续架构决策仍应回写目标主文档及既有功能、写权清单，避免形成相互竞争的设计版本。
 
+**2026-10-29 源码骨架补充：** 按主设计 §4.1/§4.2 的明确裁决，T、A 为两个业务上下文；O 是 Application 可复用编排机制，用例由目标事实 Owner 主编排。本文同步关键职责、开发视图及号码/激活/Primary目标流程，原PPTX不在本批修改范围。已实际建立 [`services/multisim/`](../services/multisim/) 的头文件、类、方法与注入关系，未接入生产构建或转移写权。完整源码映射、IDE路线、输入HEAD与局部缺口集中维护在[主设计 §6.4](SIM_Target_Architecture_Design_v1.2.md#641-目录与职责裁决)；历史源码链接仍保留原基线，不据本轮骨架宣称设备验证完成。
+
 ## 阅读目录
 
 - [1. 设计目标与适用范围](#1-设计目标与适用范围)
@@ -131,13 +133,13 @@ flowchart TD
 
 ### 3.1 业务责任与代码分层分别表达
 
-T、A、O 描述业务知识和事实归属；Application、Domain 描述代码职责。一个 T 责任同时可以包含应用服务和纯模型。C、R、I、H 则提供兼容、生产运行、技术适配和装配支撑。
+T、A 描述业务知识和事实归属；O仅提供Application编排机制，非第三业务上下文。Application、Domain 描述代码职责。一个 T 责任同时可以包含应用服务和纯模型。C、R、I、H 则提供兼容、生产运行、技术适配和装配支撑。
 
 | 标识 | 责任范围 | 典型落点 | 必须守住的边界 |
 | --- | --- | --- | --- |
 | T：账户拓扑 | 账户身份、资料、已接受的绑定及相关兼容投影 | TopologyService、TopologyAggregate | 接纳可信观察；不复制 EF 解析和原始卡状态机 |
 | A：角色与资源 | Voice / SMS / Data / Primary，偏好、有效选择和资源计划 | AssignmentService、AssignmentAggregate、AssignmentPolicy | 区分意图、参数投影与设备观察 |
-| O：本地操作 | 本地多步骤用例、等待、尝试、效果认知与终态 | OperationCoordinator、OperationContext | 请求其他 Owner 接纳事实；不直接修改其字段 |
+| O：应用编排机制 | 发起关联、等待、效果认知及有限终态 | RequestContext、RuntimeOperationStore | 无业务事实写权、不决定重试；每类用例由T/A所属应用主编排 |
 | R：卡运行 | 状态、安全、EF、Records、电话簿、卡短信、STK、carrier、eUICC | 复用原生产实现，逐步增加会话、加载与资源准入 | 保留卡型、协议、解析和专用错误；保持真实设备约束 |
 | C：兼容边界 | 旧入口、模型转换、原结果和完成出口 | LegacyFacade、原入口及回调桥 | 保持方法、参数、权限、错误、读源和时序 |
 | I：技术适配 | DataShare、参数、RIL、Hook 和输出等具体协议 | AccountStore / AssignmentStore 的实现及其他 Adapter | 依照所属 Owner 的字段与执行计划访问原提供方 |
@@ -152,43 +154,40 @@ T、A、O 描述业务知识和事实归属；Application、Domain 描述代码�
 ```mermaid
 flowchart TD
     C["C：旧接口兼容与完成出口"]
-    subgraph APP["Application：应用服务与用例协调"]
-        O["O：OperationCoordinator"]
-        T["T：TopologyService"]
-        A["A：AssignmentService"]
+    subgraph APP["Application：事实Owner主编排"]
+        T["T：TopologyService及号码/激活用例"]
+        A["A：AssignmentService及Primary切换用例"]
+        O["O：关联/等待/效果机制，非中央Coordinator"]
     end
-    subgraph DOMAIN["Domain：纯规则与状态"]
-        DO["OperationContext"]
-        DT["TopologyAggregate"]
-        DA["AssignmentAggregate / AssignmentPolicy"]
+    subgraph DOMAIN["Domain：纯规则与业务状态"]
+        DT["AccountRegistry / BindingIndex"]
+        DA["AssignmentAggregate / AssignmentTransition"]
     end
     R["R：完整生产卡运行"]
     I["I：原存储、平台与输出适配"]
-    C --> O
     C --> T
     C --> A
-    O <--> T
-    O <--> A
-    O --> DO
+    T --> O
+    A --> O
     T --> DT
     A --> DA
-    O --> R
-    O --> I
+    T --> R
+    A --> R
     T --> I
     A --> I
 ```
 
-H 在装配时创建并连接真实实现。R 的卡侧事件入口、观察接纳和正式查询可以独立工作，图中的 C / O 不构成所有内部流程的必经路径。
+H 创建并注入真实实现。T/A跨Owner变化只经对方正式应用入口，不持可写聚合。R事件、正式简单查询与内部加载不强制经过O。
 
 ### 3.3 重构前后的分层对照
 
 | 旧实现中交织的职责 | 目标层或模块 | 迁移后的判断标准 |
 | --- | --- | --- |
 | 入口检查、受理返回、业务回调 | C | 外部调用方继续按原契约使用 |
-| 激活、切换、等待、重试、恢复 | Application，主要由 O 组织 | 一个业务步骤只有一个实际执行方，同一层级只有一个重试负责人 |
+| 激活、切换、等待、重试、恢复 | Application，由T激活/号码用例或A切换用例主编排 | 一个业务步骤只有一个实际执行方，同一层级只有一个重试负责人 |
 | 账户、身份、绑定规则与状态 | T 的应用服务和 Domain 模型 | 合法变化经 T 入口接纳，其他模块不持可写引用 |
 | 默认角色、偏好、资源约束 | A 的应用服务和 Domain 模型 | 选择、参数与设备事实分别表达 |
-| 操作步骤和效果规则 | O 的纯状态模型 | 与线程、回调、I/O、运行容器分离 |
+| 请求步骤和效果认知 | Application编排机制 | 不进入Domain；业务重试和进行中事实由T/A负责 |
 | State / File / EF / APDU 等生产逻辑 | R | 原协议继续复用，结果归属和资源保护逐步收口 |
 | DB、参数、Hook、平台输出 | I，由应用经端口调用 | 原协议、所属字段、失败和输出节点明确 |
 | 对象创建、共享 RIL、生命周期 | H | 真实对象身份、销毁和在途回调关系可验证 |
@@ -197,14 +196,14 @@ H 在装配时创建并连接真实实现。R 的卡侧事件入口、观察接�
 
 | DDD元素 | 在本方案中的位置 | 技术含义及约束 |
 | --- | --- | --- |
-| 限界上下文与统一语言 | T、A、O 的业务责任范围 | 对账户、角色、操作等词语及合法变化建立一致解释 |
+| 限界上下文与统一语言 | T、A业务责任范围 | 对账户、角色及合法变化建立一致解释；O不是业务上下文 |
 | 应用服务 | TopologyService、AssignmentService | 准备事实、调用纯规则、使用端口、接纳结果 |
-| 用例协调器 | OperationCoordinator | 组织本地多步骤执行、等待、恢复与完成 |
-| 聚合 | TopologyAggregate、AssignmentAggregate；O 按需建模 | 保护相应局部状态和不变量，不自动形成全设备事务或大锁 |
+| 用例主编排 | T号码/激活用例、A角色/切换用例 | 各自组织步骤、重试、恢复与完成，复用O的关联/等待机制 |
+| 聚合 | T的AccountRegistry/BindingIndex、A的AssignmentAggregate | 保护相应局部状态和不变量，不自动形成全设备事务或大锁 |
 | 实体 | 以既有 simId 识别的账户等 | 属性可以变化，身份语义沿用原规则 |
 | 值对象 | 内部 SimId / SlotId、会话和版本相关纯值 | 表达不同含义，减少误传；不新增公开 ID |
 | 领域服务或策略 | AssignmentPolicy 等纯规则 | 按输入给出裁决或计划，不等待 RIL、不写 DB |
-| O 的纯状态 | OperationContext | 表达步骤、效果认知和终态；不持平台句柄和真实 callback |
+| O 的过程状态 | Application的RequestContext / EffectKnowledge | 非领域状态，不持业务字段或设备资源所有权；真实callback由C管理 |
 | 仓储抽象或存储端口 | Application 声明 AccountStore / AssignmentStore 等 | 当前方案保留原提供方和字段协议，因此采用应用层出站端口 |
 | 仓储或适配实现 | I | 实现原 DataShare / 参数访问，不提供任意整行覆盖和全局事务 |
 | 领域事件 | Owner 接纳后的内部事实表达 | 与原始 RIL 回包、CES 和跨服务消息分别定义 |
@@ -230,7 +229,7 @@ H 在装配时创建并连接真实实现。R 的卡侧事件入口、观察接�
 | Subscription / 账户 | 业务上管理谁？ | T | 沿用既有 simId；不等同 slot、Profile 库存或永久公共身份 |
 | Binding / 当前连接绑定 | 账户当前关联到哪个已核实连接？ | T | 包含相关卡应用、Profile、Port、路由及绑定版本，接纳可信运行观察 |
 | Assignment / 角色分配 | Voice、SMS、Data、Primary 选谁、怎样分配？ | A | 偏好、有效选择、计划和设备观察分开 |
-| Operation / 本地操作 | 一次多步骤用例进行到哪里，哪些效果已发生？ | O | 管理步骤、尝试、等待与终态，不直接修改 T / A / R 字段 |
+| Request / 本地过程 | 一次多步骤用例进行到哪里，哪些效果已发生？ | T/A用例持有，O记录 | Application的步骤、效果、等待与终态；不形成新业务聚合 |
 | eUICC / 物理接入 Endpoint | 实际访问哪个安全元件和共享设备？ | R / H | 资源隔离按真实设备域，不按软件对象数量推断 |
 | Profile / eSIM配置 | eUICC 保存的哪份卡侧配置？ | R | 存在、启用、成为当前账户、Radio 可用分别判断 |
 | Port / 连接端口 | 当前通过哪个设备连接端口访问？ | R | 映射和并发能力依据设备与产品配置 |
@@ -315,9 +314,9 @@ T 接纳账户与当前绑定，执行边界使用这份绑定定位 R 的运行
 | 原模块 | 原功能或写入点 | 目标承接 | 迁移时必须一并处理 |
 | --- | --- | --- | --- |
 | MultiSimController | 账户、身份发现、ICCID、simId / slot 查找、当前及历史缓存 | T 应用服务及纯模型，I 使用原 DataShare | 初始化、建账、重载、排序、探测刷新及全部相关赋值 |
-| MultiSimController | 默认 Voice / SMS / Data、Primary及联动 | A；需要设备步骤时由 O 协调 | 各角色原规则、回退、参数、广播及部分失败 |
-| MultiSimController | 普通激活、协议切换、Modem互换 | O 组织，A 给相关资源计划，R 执行，T / A 接纳事实 | 旧激活、force、特殊槽、等待、重试和未知设备效果 |
-| MultiSimController | 号码写卡后更新账户 | O 组织，R 写卡，T 接纳账户，I 存储，C 完成 | 卡缓存、DB后缓存检查、异步查询回写及通知条件 |
+| MultiSimController | 默认 Voice / SMS / Data、Primary及联动 | A的具体应用用例主编排，R执行 | 各角色原规则、回退、参数、广播及部分失败 |
+| MultiSimController | 普通激活、协议切换、Modem互换 | 普通激活由T主编排；协议切换/Modem互换由A主编排；R执行 | 旧激活、force、特殊槽、等待、重试和未知设备效果 |
+| MultiSimController | 号码写卡后更新账户 | T号码用例主编排，R写卡，T接纳账户，I存储，C完成 | 卡缓存、DB后缓存检查、异步查询回写及通知条件 |
 | SimManager | 旧门面、容量检查、按槽装配和运行对象定位 | C、H / Application、槽配置入口及 R 分别承接 | 真实对象身份、额外槽初始化、条件装配和销毁 |
 | MultiSimMonitor | 平台、Radio、File监听及恢复事件 | I 接入，Application做观察准入，T执行相关核对，C保持输出 | 反注册、初始化重试、用户切换、服务就绪及原可见时点 |
 
@@ -328,7 +327,7 @@ T 接纳账户与当前绑定，执行边界使用这份绑定定位 R 的运行
 | SimStateManager / Handle / IccState | R 卡状态、安全和认证；C输出旧状态投影 | 原过滤、人工状态原因、PIN专用响应与独立就绪条件 |
 | SimFileManager / IccFile / 各卡型File | R 的 application、records、codec 等生产能力 | EF算法、卡型、原serial、合法Refresh及完成时点 |
 | 卡短信、电话簿、STK、carrier配置 | R 对应卡侧子模块 | PIN2、多文件依赖、主动命令及专用事件；外围业务不搬入 |
-| Core EsimManager / EsimFile / Controller | R 本地eUICC / APDU；O 管必要本地步骤 | 条件编译、普通/低优先级对象、Port / slot和原返回语义 |
+| Core EsimManager / EsimFile / Controller | R本地eUICC/APDU；应用短请求关联，不复制远端任务 | 条件编译、普通/低优先级对象、Port / slot和原返回语义 |
 | TelRilManager / TelRilSim | 宿主共享RIL与执行适配；结果按对应Owner准入 | 原构建与共享所有权、requestMap、serial及信令边界 |
 | SimRdbHelper / 参数访问 | I；应用经正式存储端口调用 | 原提供方、字段契约、缺省与中间可见性 |
 | TelephonyExtWrapper / 厂商Hook | I及宿主插件边界 | 原ABI、调用节点、资源和失败核对 |
@@ -347,137 +346,86 @@ T 接纳账户与当前绑定，执行边界使用这份绑定定位 R 的运行
 
 ### 6.1 视图范围与设计状态
 
-开发视图描述源码模块、内部层次、头文件依赖及构建单元。它将前述责任边界落实到开发人员可以定位、修改和检查的代码区域。
+本章区分已创建的源码骨架与尚未实施的生产迁移。目标源码根为 `services/multisim/`，涵盖普通SIM、eSIM及本设计所属相关管理；`services/sim/`继续是现有生产实现。没有移动旧文件，没有新建生产GN target或SIM SO。
 
-**本章是目标开发组织建议。** T / A / O / R / C / I / H 的责任沿用目标主设计；目录、头文件及GN target名称用于说明落地方式，尚未表示这些目录、接口或独立SIM SO已经在生产仓完成实现。本次补充没有改变代码基线和既有外部契约。
+主设计 §4.1/§4.2 对O的明确裁决优先于本文早期“五目录”、`operation/domain`及O代写A参数的示意。T/A按事实Owner主编排，O只作应用机制，C/R/I/H分别承担实现责任，目录数不决定上下文、聚合、SO、SA或进程数。
 
-建议形成五个主要责任目录：`topology/`、`assignment/`、`operation/`、`runtime/`、`integration/`，另按实际需要建立最小纯类型叶子。H的宿主部分保留在Core，SIM内部装配放在私有工厂中。
+### 6.2 实际目标目录与主要元素
 
-这些目录是源码工作单元，不据其数量计算限界上下文、聚合、SO或进程数量。T / A / O内部的应用服务和纯状态分别落在Application与Domain；R保留完整生产运行能力，integration承接兼容和技术实现。
+以下路径以 `services/multisim/` 为根。完整文件映射与阅读路线见[主设计 §6.4](SIM_Target_Architecture_Design_v1.2.md#642-设计元素源码位置原功能来源)。
 
-### 6.2 目标目录与主要元素
-
-以下路径以`telephony_core_service/`为根。已有生产源按切片过渡，目录设计不要求一次性移动全部文件。
-
-| 目标目录 | 架构定位 | 主要内部元素与责任 |
-| --- | --- | --- |
-| `services/sim/topology/` | 账户与绑定模块T | `api/`正式命令、查询和快照；`application/`的TopologyService；`domain/`的账户、绑定和TopologyAggregate；`ports/`的账户存储及必要运行观察契约 |
-| `services/sim/assignment/` | 角色与资源模块A | `api/`角色命令、查询和计划；`application/`的AssignmentService；`domain/`的AssignmentAggregate与AssignmentPolicy；`ports/`的角色存储、参数及相关执行契约 |
-| `services/sim/operation/` | 本地操作模块O | `api/`本地用例入口；`application/`的OperationCoordinator、运行容器、等待与恢复执行；`domain/`的纯OperationContext及按需操作模型；`ports/`所需执行和结果契约 |
-| `services/sim/runtime/` | 生产卡运行子系统R | 按卡状态、安全、卡应用、Records、codec、电话簿、卡短信、STK、carrier、eUICC、会话与资源保护组织现有生产代码 |
-| `services/sim/integration/` | 兼容与技术集成区域 | `compatibility/`承接C的适配；`adapters/`承接I的DataShare、参数、Hook及输出实现；`composition/`实现SIM侧私有组合工厂 |
-| `services/sim/types/` | 按需纯类型叶子 | 多方确需共享的纯标识和值类型；不承载业务服务、可写缓存、平台句柄或万能请求对象 |
-| `services/core/`相关装配代码 | 宿主责任H | Core侧HostPorts实现、共享RIL所有权、SIM创建与匹配销毁、启停和回调生命周期 |
-| 既有`interfaces/`及`frameworks/` | 既有调用契约和消费入口 | 保持公开接口、调用方式与ABI，不新增API库到SIM具体符号的依赖 |
-
-CoreServiceSim等原服务入口可以保留原位置，并通过私有委托连接SIM内的兼容实现。逻辑上的C责任不要求全部搬到同一文件，更不能因搬迁而改变权限上下文、检查顺序或完成节点。
+| 实际目录 | 定位与主要元素 |
+| --- | --- |
+| `topology/{api,application,domain,ports}` | T的TopologyService、SetShowNumberUseCase、ShowNumberQuery、ActivateSimUseCase；AccountRegistry、BindingIndex、ShowNumberPlan及所属窄端口 |
+| `assignment/{api,application,domain,ports}` | A的AssignmentService、AssignmentAggregate/Transition、角色视图、参数/Radio/输出端口 |
+| `application/orchestration` | O的RequestContext、EffectKnowledge、RuntimeOperationStore；无业务入口、领域模型或中央Coordinator |
+| `application/card_access` | PIN/EF/本地Profile短请求及窄执行端口；不强求simId |
+| `runtime/{session,records,resource}` | CardRuntime与生产对象复用契约；会话、加载成员、资源治理位置；成熟State/File/电话簿/STK/eUICC不复制空壳 |
+| `compatibility` | LegacySimFacade、LegacyCompletion、原入口/完成所需端口 |
+| `infrastructure` | 原DataShare、参数、账户通知和回调输出Adapter |
+| `assembly` | SIM侧SimModule构造注入、私有工厂/匹配销毁声明与HostPorts；Core侧实现仍留Core |
+| `model` | 必要纯身份/目标值与H构建的只读SlotCatalog，不放端口或万能Context |
 
 ### 6.3 模块内部的分层
 
-| 目录 | 允许承接的内容 | 边界要求 |
-| --- | --- | --- |
-| `api/` | 跨模块正式入口声明、命令、结果、只读视图 | 不暴露聚合可写引用、私有容器或平台实现细节；此处API是模块私有契约，不新增公共InnerKit |
-| `application/` | 用例执行、调用端口、结果接纳、提交和恢复组织 | 维护所属事实的接纳协议，不复制其他Owner的规则或直接修改其他Owner状态 |
-| `domain/` | 纯实体、值对象、聚合、策略与状态转换 | 不依赖DB、RIL、IPC、FFRT、真实callback或宿主具体实现 |
-| `ports/` | 本模块实际需要的查询、执行、存储和输出契约 | 只隔离真实变化；说明错误、所有权、同步/异步、部分效果和完成点 |
-| 私有实现区域 | 运行容器、内部辅助实现和执行设施 | 不作为其他模块直接include的接口 |
+T/A应用入口使用本模块纯Domain、所需窄端口及必要的对方应用入口。`api`是模块私有的命令/结果/视图，不是新增公开ABI。Domain无RIL、DataShare、IPC、FFRT、真实callback或具体宿主依赖。RequestContext、等待、效果与终态属于Application，纯值形式不改变这一归属。
 
-例如，OperationContext只表达纯步骤与效果规则。真实callback、等待设施、CompletionPlan及RuntimeOperationStore属于Application或兼容支撑；协议关联表与设备资源句柄属于R / I。
-
-R可以包含成熟卡侧状态机与生产业务判断，不按业务模块的目录模板强制纯化。其既有平台依赖按切片整理，原算法、事件与卡型条件继续得到保护。
+R保留卡型协议、解析、软件/物理状态接纳和完整运行职责，不强制套用T/A模板。其 `ProductionSlotBindings` 对应原State/File/电话簿/短信/STK/carrier生产对象；eUICC和Radio协议实例沿原装配借用。
 
 ### 6.4 主要源码编译依赖
 
-**箭头从使用方指向被依赖声明或构造实现，表示源码依赖，不表示业务调用顺序。** api和ports按各Owner分别声明，图中合并展示并不要求建立一个全局接口头文件。
+箭头为使用方→被依赖声明/构造实现；运行调用可经注入对象反向发生。
 
 ```mermaid
 flowchart TD
-    H["H：Core组合根与SIM私有装配工厂"]
-    C["integration/compatibility：旧接口适配"]
-    APP["各模块Application实现：T / A / O应用服务"]
-    R["runtime：生产卡运行实现"]
-    I["integration/adapters：平台适配实现"]
-    P["各模块api与ports：按Owner定义的私有契约"]
-    D["各模块domain：纯规则与状态"]
-    X["既有API与平台契约：RIL、DataShare等"]
-    V["types：最小纯标识与值类型"]
+    H["assembly / Core宿主组合根"]
+    C["compatibility"]
+    APP["T/A Application + 编排机制/短请求"]
+    R["runtime完整生产卡运行"]
+    I["infrastructure"]
+    P["按实际Owner定义的私有api/ports"]
+    D["T/A Domain"]
+    V["model纯值/只读目录"]
     H --> C
     H --> APP
     H --> R
     H --> I
-    C --> P
-    C --> X
+    C --> APP
     APP --> P
     APP --> D
-    R -->|"实现相应端口"| P
-    R --> X
-    I -->|"实现相应端口"| P
-    I --> X
-    P --> V
+    R --> P
+    I --> P
     D --> V
+    P --> V
 ```
 
-Application运行时通过注入对象调用R / I，编译时只需要相应端口契约。H在组合时认识真实实现，并负责匹配的构造与销毁。Core侧组合根与SIM侧私有工厂分别实现各自装配部分，跨SO只连接明确的私有创建、委托和销毁契约。
-
-图中展示主要目标依赖。现有R的生产调用与平台契约逐项收口，不据此声称现有全仓已无循环依赖。
+`SimModule`构造代码展示端口的具体实现与注入；工厂/设备方法只有声明，未接入旧入口，不创建第二套活动对象。
 
 ### 6.5 头文件和跨模块规则
 
-1. 跨模块使用正式`api/`或必要`ports/`声明，不引用对方Application私有头、源文件、内部容器或聚合可写对象。
-2. O通过T / A的正式应用入口获取事实和请求变化，不直接修改其字段。简单查询及R内部加载不强制经过O。
-3. 新用例通过端口使用相应能力，逐步消减对SimRdbHelper、具体File对象和Core全局实现的直接依赖。
-4. Domain既不直接include平台头，也不通过公共头传递引入平台类型、I/O、线程或回调设施。
-5. 不把跨模块命令和快照全部集中到common。各Owner定义自己的契约，纯类型叶子只保存必要共享值。
-6. 字段级写入计划、旧可见节点、错误与完成条件属于契约。技术隔离不能压缩掉部分失败信息。
-7. 新接口不因位于api目录就成为公共ABI。既有DTO、IDL、接口虚表、schema和消费者入口保持原约束。
+1. 使用对方正式应用入口、命令/视图及所需窄端口，不取得可写聚合或内部容器；不为转发同一入口机械再包接口。
+2. T号码/激活、A角色/Primary各自主编排、重试及接纳；O没有业务写权或独立调度中心。
+3. Application不引用R/I/H具体实现；Adapter实现Owner所需端口，H构造注入。Core宿主实现留Core。
+4. Domain保持纯规则和值；字段补丁、原可见节点与部分效果不能被通用Save/Execute或统一成功压平。
+5. 查询按原来源；R内部加载与简单查询不强制经过O。公开DTO、IDL、ABI、schema与Framework入口保持不动。
 
-### 6.6 构建单元建议
+### 6.6 构建边界
 
-可先用GN的`source_set`或`group`表达边界。下表是命名示例，实际数量按真实依赖收敛，不要求每个组件形成一个SO。
-
-| 构建单元示例 | 内容 | 依赖约束 |
-| --- | --- | --- |
-| `sim_value_types` | 必要的共享纯标识和值类型 | 作为技术叶子，保持平台无关 |
-| `sim_topology_domain`、`sim_assignment_domain`、`sim_operation_model` | 各责任的纯模型 | 仅依赖所需纯值与规则，不引入平台或应用执行设施 |
-| 各Owner的私有contracts单元 | 正式api、ports及其最小值契约 | 不依赖对应Application实现或R / I具体实现 |
-| `sim_topology_app`、`sim_assignment_app`、`sim_operation_app` | 应用服务、用例和受控接纳 | 依赖本模块模型、契约及必要协作方的正式契约 |
-| 卡运行、平台适配、兼容及SIM装配单元 | R / I / C的实现及SIM侧工厂 | 实现相应私有端口；平台依赖限制在真实需要的实现侧 |
-| 候选`tel_sim_service`共享库 | 聚合SIM内实际实现 | 沿用原API / utils及批准的平台依赖，不反链Core具体实现 |
-
-构建规则应能检查Domain是否经传递依赖引入平台库、应用单元是否直接依赖R / I具体实现，以及产品Feature组合是否有效。编译通过不替代业务、ABI和生命周期验收。
+本批没有BUILD.gn或生产装配改动。未来可以按依赖组织source_set，但O只形成Application机制单元，不建立`sim_operation_model`领域单元。候选私有SIM SO仍需真实GN、Feature、导出符号、安装、CFI/PAC/LTO及单例唯一定义验证；骨架语法检查不代表这些验收完成。
 
 ### 6.7 最终链接与宿主边界
 
-| 使用方 | 目标链接依赖及约束 |
-| --- | --- |
-| Core SO | 依赖SIM私有SO及既有API / utils，持有共享RIL与宿主资源 |
-| SIM私有SO | 依赖既有API / utils和批准的平台依赖；经HostPorts使用宿主能力，不反链Core具体符号 |
-| 既有API SO | 保持消费侧接口；不新增到SIM具体实现的符号依赖 |
-
-`libtel_sim_service.z.so`仍是候选名称。GN target、导出符号、安装、CFI / PAC / LTO、Feature及真实链接关系在机械拆分阶段验证，沿用原进程与SA身份。
-
-SIM只释放自己的注册与引用，不停止其他业务仍在使用的共享RIL。跨SO创建的对象使用具体类型共享控制块或匹配deleter销毁，不通过修改公开接口虚表解决销毁问题；callback、observer、任务和deleter所在SO活到最后使用结束，未排空不得卸载。
+Core保留共享RIL生命周期、原eSIM/SIM/搜网/CMI发布时点和消费侧门面；SIM只释放自己的注册和引用。HostPorts、callback、observer及deleter所在代码活到最后使用结束，未排空不得卸载。私有工厂提供匹配销毁，不修改ISimManager/IEsimManager公开虚表。
 
 ### 6.8 旧代码的迁入位置
 
-| 原职责 | 目标源码落点 | 本批必须一起处理的路径 |
-| --- | --- | --- |
-| Controller账户、缓存、身份与绑定 | topology及相应存储Adapter | 初始化、建账、重载、探测、用户切换和异步回写 |
-| Controller默认角色与资源规则 | assignment | 各角色差异、参数投影、广播、原联动及部分失败 |
-| 激活、主卡、号码等步骤与重试 | operation | 唯一业务编排者；关闭同层级重复发令和重试 |
-| State / File / RadioProtocol / 本地eUICC | runtime | 保留生产链，逐步接管会话、加载和真实资源保护 |
-| Monitor监听、恢复和输出 | integration及相应Owner入口 | 监听接入、事实接纳与旧完成出口分别交接 |
-| SimManager门面和装配 | 原入口、compatibility及H | 对象身份、额外槽、条件装配、匹配销毁和在途回调 |
-| DB、参数、Hook、Registry、CES | integration/adapters | 按Owner计划执行并保持原协议、失败和输出节点 |
+主设计 §6.4.2 的[源码映射表](SIM_Target_Architecture_Design_v1.2.md#642-设计元素源码位置原功能来源)记录原文件、类/方法、目标文件及复用位置。主要拆分为：Controller账户/绑定/激活/号码→T；角色/Primary/参数/重试→A；卡状态/Records/协议→R；入口/完成→C；存储/平台输出→I；SIM侧装配→assembly，Core宿主保留原位置。
 
-同一个旧类可以分别进入多个目标位置。文件移动、依赖治理、写权迁移和行为增强分别验收，不能用目录已建立替代责任已交接。
+每个WU同时处理初始化、重载、后台回写、失败恢复与其他写入口；不能只迁一个公开setter。State/File/Records/电话簿/STK/eUICC继续复用原实现，本批只建立其承接契约。
 
-### 6.9 开发视图的检查方式
+### 6.9 检查范围与实施缺口
 
-开发任务应能够列出目标目录、正式契约、所有旧写点、保留行为和本批退出证据。修改默认Data策略时检查规则是否集中在A；调整Port映射时检查T / R及必要A约束是否足够；修改存储实现时检查纯账户规则和卡协议是否被无故牵动。
-
-用真实切片验证这些预期。未迁移代码先通过受控委托连接，保持一套活动的设备、DB、参数和Hook执行路径，并按第13章的阶段门禁逐批关闭旁路。
-
+本批只有少量纯规则、目录查询、加载资格与构造关系有实现；其他方法有意仅声明，流程在`.cpp`中明确标伪代码。新固定目标、迟到拒绝、资源屏障、完整关闭是推荐增强，不能作为G2等价行为启用。完整静态检查、未实现项、厂商换路/激活外围等局部缺口见主设计 §6.4.4；不以未编译或外部缺口阻塞其他独立骨架落点。
 
 ## 7. 业务流程一：设置显示号码
 
@@ -516,46 +464,48 @@ sequenceDiagram
 
 ### 7.3 目标架构的职责流转
 
+T号码用例是唯一主编排Owner；O仅提供T私有的请求关联、等待和效果记录。
+
 ```mermaid
 sequenceDiagram
-    participant C as C兼容边界
-    participant O as O本地操作
-    participant T as T账户拓扑
+    participant C as C兼容入口及原完成
+    participant U as T的SetShowNumberUseCase
+    participant T as T的TopologyService
     participant R as R卡运行
-    participant I as I技术适配
-    C->>C: 保持原检查、排队和受理返回
-    C->>O: 在原业务执行点进入本地用例
-    O->>T: 获取相关账户与已核实绑定
-    T-->>O: 目标及相关绑定事实
-    O->>R: 用发起时上下文执行原MSISDN写卡
-    R->>R: 结果归属准入，接纳对应卡效果
-    R-->>O: 卡结果与效果证据
-    alt 原用例仍有效且写卡成功
-        O->>T: 请求更新所属账户资料
-        T->>I: 按字段计划访问原DataShare
-        I-->>T: 原存储结果
-        T->>T: 保留原后续缓存检查与可见节点
-        T-->>O: 账户结果
-    else 卡失败、超时或旧用例已结束
-        O->>O: 原失败出口或效果核对，不补走已终结用例
+    participant I as I账户存储
+    C->>U: 原任务执行点StartAtExecutionPoint
+    U->>R: ReadMsisdnCache取得session和alphaTag
+    U->>T: PrepareNumberTarget取得有关绑定/账户输入
+    U->>U: 纯计划及私有RequestContext
+    U->>R: WriteMsisdn带发起时关联
+    R->>R: 在真实卡缓存写点准入原结果
+    R-->>U: AcceptMsisdnResult与效果证据
+    alt 原等待成功且用例有效
+        U->>T: AcceptNumberAfterCardWrite
+        T->>I: 按字段WriteDisplayNumber
+        I-->>T: 原存储结果及调用结束情况
+        T->>T: 依次接纳当前/历史缓存，保留部分效果
+        T-->>U: NumberAcceptance
+    else 失败或超时
+        U->>U: 原失败出口，Unknown需核对，不继续账户步骤
     end
-    O-->>C: 原业务结果与完成计划
-    C->>C: 按原条件通知并交付原callback
+    U-->>C: ShowNumberCompletion
+    C->>C: 整体成功原账户通知，随后原callback
 ```
 
-图中的会话与请求准入属于目标增强，实施时须与保持旧解析点的结构迁移分批验收。
+会话准入及在执行接纳点固定目标是G3b推荐增强，尚未接入生产。旧入口排队捕获slot，File在执行时定位，账户在写库步骤又取curSimId；G2结构迁移应保留这些解析节点。前移至IPC接收时固定目标另需TGT-OPEN-011评审。没有设备/账户统一事务或全局回滚。
 
 ### 7.4 同一步骤的迁移对照
 
 | 阶段 | 重构前 | 目标职责及相关概念 |
 | --- | --- | --- |
 | 入口 | CoreServiceSim检查、排队；SimManager委托 | C保持调用者上下文、旧slot参数和两个完成时点 |
-| 目标 | Controller按slot定位File，账户更新时取curSimId | T提供Subscription / Binding；O在约定发起点记录已知目标 |
-| 关联 | 原事件、等待和RIL关联分布在生产路径中 | O保存step / attempt，R保存原Session与传输关联 |
+| 目标 | Controller按slot定位File，账户更新时取curSimId | T号码用例在明确执行接纳点固定已知绑定/会话；增强与旧晚解析分批验收 |
+| 关联 | 原事件、等待和RIL关联分布在生产路径中 | T用例复用O记录step/attempt，R保存原Session与传输关联 |
 | 写卡 | File / 电话簿 / EF生产逻辑 | R继续执行；Domain不包含卡协议调用 |
-| 接纳卡结果 | File成功回包更新卡缓存与waitResult | R在同一受控域先准入再更新，O接收本步骤效果 |
+| 接纳卡结果 | File成功回包更新卡缓存与waitResult | R在实际卡缓存写点同域准入，T号码用例接收效果 |
 | 更新账户 | SetShowNumberToDB更新DB和缓存 | T组织所属资料接纳，I使用原DataShare协议 |
-| 业务完成 | SimManager成功时通知，CoreServiceSim回调 | C保护原出口，O不复活已终结用例 |
+| 业务完成 | SimManager成功时通知，CoreServiceSim回调 | C保护原出口，T不复活已终结用例 |
 
 ### 7.5 异常与兼容要求
 
@@ -605,42 +555,45 @@ sequenceDiagram
 
 ### 8.3 目标架构的职责流转
 
-图中展开应用内部协作，外层 C 的原检查、返回和通知契约保持不变。
+T激活用例拥有active投影及激活进行中事实；A管理Primary切换准入、偏好及后续复核。O不是第三主编排者。
 
 ```mermaid
 sequenceDiagram
-    participant O as O本地操作
-    participant T as T账户拓扑
-    participant A as A角色与资源
+    participant U as T的ActivateSimUseCase
+    participant T as T账户接纳
+    participant A as A的AssignmentService
     participant R as R卡运行
-    participant I as I技术适配
-    O->>T: 获取目标与绑定事实
-    T-->>O: 相关账户和运行关联
-    O->>A: 按需取得角色与共享资源约束
-    A-->>O: 纯规则裁决所形成的约束或计划
-    O->>O: 保存本轮步骤，组织原等待
-    O->>R: 执行原激活协议
-    R-->>O: 经归属校验的设备结果
+    participant I as I存储及旧Hook
+    U->>A: 原适用入口的偏好提示接纳
+    U->>T: 接纳激活进行中
+    U->>A: AdmitActivationBeforeDevice保留G2有界等待
+    U->>R: SetOrdinarySimActive带发起关联
+    R-->>U: AcceptDeviceResult
     alt 普通non-force且设备成功
-        O->>T: 接纳原active兼容投影
-        T->>I: 在原节点执行UpdateSubState
-        O->>T: 推进原账户存储步骤
+        U->>T: 当前缓存及全量索引/缓存
+        U->>T: 接纳原进度清零
+        U->>I: 第一次原UpdateSubState的Hook
+        U->>T: 原DB步骤
         T->>I: 按curSimId写IS_ACTIVE
-        I-->>T: 原DB结果
-        T-->>O: 含原后续缓存检查的结果
-        O->>O: 按原成功分支组织后续Hook及切主卡检查
+        I-->>T: DB结果
+        U->>T: 原再次缓存检查和写入
+        U->>I: 第二次原UpdateSubState的Hook
+        U->>A: 主卡复核
+        U->>I: 原SetActiveSimFunc
     end
 ```
+
+完成端口、卫星端口及完整输出计划尚待后续切片。I按T决定的原节点执行Hook，void Hook不代表设备确认；Manager最终账户通知和active Registry仍按原成功条件。force/卫星不能套用以上顺序。
 
 ### 8.4 职责迁移与部分失败
 
 | 阶段 | 原模块职责 | 目标承接 |
 | --- | --- | --- |
 | 入口 | CoreServiceSim / SimManager检查并委托 | C保持原slotId、enable、检查优先级和错误 |
-| 目标、等待 | Controller找目标、维护进度、等待主卡切换 | T提供绑定事实，A给相关资源约束，O组织等待与步骤 |
-| 设备 | RadioProtocolController / RIL执行激活 | R复用协议及现有serial，O保留本轮step / attempt |
-| 设备后投影 | UpdataCacheSetActiveState / UpdateSubState | T接纳兼容投影，I在原位置执行Hook |
-| 存储及完成 | UpdateDBSetActiveResult、后续缓存和Hook、切主卡检查 | T / I处理各自结果，O组织原分支，C保持原出口 |
+| 目标、等待 | Controller找目标、维护进度、等待主卡切换 | T提供绑定并主编排步骤，A提供切换准入，O仅记录等待 |
+| 设备 | RadioProtocolController / RIL执行激活 | R复用协议及原静态串行，T用例保存本轮step/attempt |
+| 设备后投影 | UpdataCacheSetActiveState / UpdateSubState | T接纳兼容投影及进度清零，I在原位置复用Hook技术执行 |
+| 存储及完成 | UpdateDBSetActiveResult、后续缓存和Hook、切主卡检查 | T主编排并接纳，I写库，A后续复核，C保持原出口 |
 
 必须保留以下旧行为：
 
@@ -695,48 +648,45 @@ sequenceDiagram
 
 ### 9.3 目标架构的职责流转
 
-C 保持外层入口与旧分支，图中展开 T / A / O / R / I 的内部协作。
+A的AssignmentService是Primary/Radio切换的唯一主编排者和业务重试授权者；不能由O绕过A写参数。
 
 ```mermaid
 sequenceDiagram
-    participant O as O本地操作
-    participant T as T账户拓扑
-    participant A as A角色与资源
+    participant A as A的AssignmentService
+    participant T as T账户及映射入口
     participant R as R卡运行
-    participant I as I技术适配
-    O->>T: 查询相关账户与绑定事实
-    T-->>O: 已核实的相关事实
-    O->>A: 取得Primary意图及资源约束
-    A-->>O: 角色与资源计划
-    O->>I: 按原节点预写参数与前置输出
-    I-->>O: 原参数及执行结果
-    O->>R: 执行原多阶段Radio协议
-    R->>R: 成功和错误均先核对原轮次与资格
-    R-->>O: 设备结果和效果证据
-    O->>A: 按相关入口接纳设备观察
+    participant I as I参数和原输出
+    A->>T: 查询相关绑定，换路按需进入T映射用例
+    T-->>A: 相关事实
+    A->>A: 纯计划和AssignmentTransition准入
+    A->>I: 原节点预写主卡参数及前置输出
+    I-->>A: 参数结果
+    A->>R: SwitchPrimaryRadio原三阶段协议
+    R->>R: 成功/错误均按发起session阶段成员准入
+    R-->>A: AcceptRadioStep及效果证据
+    A->>A: 接纳本Owner参数/资源观察
     alt 原普通成功路径
-        O->>I: 原主卡广播
-        O->>A: 进入原默认Data联动子用例
-        A->>I: 沿原默认Data提供方和输出契约执行
-        A-->>O: 保留原主卡路径对Data结果的处理
+        A->>I: 原主卡广播
+        A->>A: 原默认Data联动子用例
+        A->>I: 原Data保存及广播节点
     else 原失败路径
-        O->>I: 按原条件恢复参数
-        O->>O: 唯一业务重试或效果核对
+        A->>I: 满足旧条件才恢复参数
+        A->>A: 唯一业务重试或效果核对
     end
 ```
 
-A 的纯策略只形成约束或计划。参数访问、协议执行、等待和重试分别由应用层及 R / I 完成。
+AssignmentTransition属于A的业务状态；RequestContext属于A使用的应用机制；R拥有设备session和真实资源租约。新并发准入/未知效果隔离为G3c行为增强，不是旧路径已有保证。
 
 ### 9.4 职责迁移与异常
 
 | 阶段 | 重构前 | 目标承接 |
 | --- | --- | --- |
 | 入口与分支 | CoreServiceSim / Manager / Controller | C保持原参数、特殊槽、免重启和原返回 |
-| 资格、参数预写 | Controller检查并SavePrimaryCardInfo | T提供事实，A提供规则，O组织先参数后设备，I执行 |
-| 协议切换 | RadioProtocolController多阶段、phase / session | R保留原生产机制；O保存用例步骤与唯一重试 |
+| 资格、参数预写 | Controller检查并SavePrimaryCardInfo | T提供绑定事实，A主编排先参数后设备，I按A计划执行 |
+| 协议切换 | RadioProtocolController多阶段、phase / session | R保留原生产机制；A保存用例步骤及唯一业务重试 |
 | 接纳结果 | Controller接收协议结果并维护进度 | R先做本轮准入，A分别接纳意图、参数投影和设备观察 |
 | 成功联动 | 广播后SetDefaultCellularDataSlotId | 保留Primary到Data原联动，不新增两者的原子成功承诺 |
-| 失败恢复 | 条件恢复参数，然后原重试 | O统一重试，I保留条件恢复，R核对实际设备效果 |
+| 失败恢复 | 条件恢复参数，然后原重试 | A统一授权业务重试，I按原条件恢复参数，R核对设备效果 |
 
 `ResumePrimaryCardInfo` 需要旧主卡参数非空且格式有效。参数恢复不证明设备已经回滚，恢复分支也不能假定在所有旧值组合下都完整执行。
 
@@ -828,7 +778,7 @@ sequenceDiagram
 | --- | --- | --- |
 | 账户身份、资料、已接受绑定 | T | 查询正式快照或请求T应用入口接纳 |
 | 角色偏好、选择、参数投影及相关观察 | A | 提供规则输入或请求A的相应应用入口 |
-| 本地操作步骤、尝试与终态 | O | 回传本步骤结果或效果证据 |
+| 本地过程步骤、尝试与终态 | T/A用例使用O机制 | 回传本步骤结果或效果证据；O不拥有业务进行中标志 |
 | 原始卡状态、文件内容、加载与卡应用会话 | R | 使用正式生产入口、只读观察及结果接纳协议 |
 | 具体外部读写与发布 | I受托执行 | 使用所属Owner的字段计划和原外部契约 |
 | 工厂、共享对象与销毁 | H | 明确所有权、反注册、在途计数与排空 |
@@ -863,7 +813,7 @@ flowchart TD
     OUT["按旧完成计划输出"]
     KIND{"失效结果对应什么操作？"}
     READ["旧读取：不写当前状态和完成集合"]
-    WRITE["设备动作：保留原关联，交O或R核对效果"]
+    WRITE["设备动作：保留原关联，交T/A用例或R核对效果"]
     IN --> ORIG
     ORIG --> G
     G -->|"有效"| COMMIT
@@ -892,7 +842,7 @@ flowchart TD
 
 ### 11.5 真实资源与生命周期
 
-A负责策略，O负责用例，R按真实 Modem / eUICC / 通道共享域保护执行。两个按同一slot创建的不同 EsimFile 对象，可能共用同一个实际eUICC，不能各自独占同一设备。
+T/A分别负责所属事实的用例，A负责分配策略，O提供关联/等待机制，R按真实 Modem / eUICC / 通道共享域保护执行。两个按同一slot创建的不同 EsimFile 对象，可能共用同一个实际eUICC，不能各自独占同一设备。
 
 设备型Get也可能开通道、发APDU、等待并关闭，需要按真实副作用判断冲突。缓存命中沿原查询路径返回；缓存未命中不能随意用旧值替代原设备读取。
 
@@ -955,7 +905,7 @@ flowchart TD
 
 | 边界 | 保留的责任 |
 | --- | --- |
-| Core本地eUICC / APDU | R执行卡侧原语，O组织必要本地步骤与关联 |
+| Core本地eUICC / APDU | R执行卡侧原语，应用短请求关联；涉及绑定/偏好分别交T/A |
 | EsimServiceClient及既有66250契约 | 沿既有服务协作完成下载、OSU等高层任务 |
 | 远端完整实现与进程部署 | 以产品和外仓证据确认，不由本仓类名推断 |
 
@@ -1021,7 +971,7 @@ Records准入与号码更新都可作为讨论候选：
 | 讨论问题 | 需要留下的具体结果 |
 | --- | --- |
 | 今天怎样完成？ | 真实入口、生产调用、目标解析点、字段写点及原输出 |
-| 目标由谁接管？ | T / A / O / R Owner、所属应用入口、I执行协议和C完成出口 |
+| 目标由谁接管？ | T/A/R事实Owner、T/A具体用例、所需O机制、I协议和C完成出口 |
 | 哪些行为保持？ | 返回、callback、错误优先级、读源、中间可见性及部分失败 |
 | 哪些行为有意增强？ | 旧风险证据、新准入或资源规则、允许变化及独立验收 |
 | 如何交接写权？ | 初始化、重载、重试、异步回写及所有旧调用者的委托方案 |
@@ -1067,7 +1017,7 @@ PPTX有21页正文，另有点击演示使用的隐藏状态页。新增开发�
 
 ### 15.2 设计与源码依据
 
-设计依据为PPTX正文及备注引用的 `SIM_Target_Architecture_Design_v1.2` 2026-10-26修订内容，涵盖分层、兼容轨迹、会话与加载、最终准入及分阶段迁移。当前材料中的 `TopologyService`、`OperationCoordinator`、`SessionRegistry`、`LoadSession` 等属于目标职责或候选组件，不表示仓库已经实现。
+设计依据为PPTX正文及备注引用的 `SIM_Target_Architecture_Design_v1.2` 2026-10-26修订内容，涵盖分层、兼容轨迹、会话与加载、最终准入及分阶段迁移。本次按主设计2026-10-29的明确裁决补充源码落点。`TopologyService`、`SessionRegistry`、`LoadSession` 等已有未接入的目标骨架；原 `OperationCoordinator` 集中编排方案不再采用。类和声明存在不表示生产能力已经实现，实际深度见主设计 §6.4。
 
 以下代码链接沿用PPTX备注的固定基线，供开发沿真实分支继续核对：
 
