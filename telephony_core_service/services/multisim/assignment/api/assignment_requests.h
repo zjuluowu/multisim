@@ -23,6 +23,7 @@
 #include <vector>
 #include "application/orchestration/request_context.h"
 #include "assignment/domain/role_selection.h"
+#include "topology/api/account_lifecycle.h"
 
 namespace OHOS::Telephony::MultiSim {
 struct SetRoleCommand { DefaultRole role; std::optional<SubscriptionId> subscription; SlotId legacySlot; };
@@ -36,13 +37,17 @@ struct AssignmentView {
     uint64_t assignmentRevision;
 };
 struct AccountRoleFragment {
-    SubscriptionId subscription;
+    std::optional<SubscriptionId> subscription; // 新行尚无simId。
     uint64_t assignmentRevision;
+    uint64_t rolePlanId; // 发起发现的observationSequence；不跨运行实例复用。
+    bool includeInStorage; // 新行或旧单卡恢复写初始角色；多卡旧卡rebind保留角色。
     bool voice;
     bool sms;
     bool mainCardColumn;
     bool dataCardColumn;
 }; // A 所有，T 建行/重载仅组合只读片段；同名 DB列不替代 lastPrimary/lastData。
+struct RoleReloadTicket { AccountReadView view; uint64_t attempt; uint64_t assignmentRevision; };
+enum class RoleFragmentAcceptance { NoEffect, ReadyForOwnerReload, NeedsReconciliation };
 struct ActivationAdmission { bool mayProceed; bool legacyBoundedWaitExpired; };
 struct PrimaryRecheck { SlotId changedSlot; bool causedByActivation; };
 } // namespace OHOS::Telephony::MultiSim

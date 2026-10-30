@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 // TARGET ARCHITECTURE SKELETON / PROPOSED: 尚未接入生产或构建，未转移写权。
-// Design: docs/SIM_Target_Architecture_Design_v1.2.md §6.3、§8.2、§9.2、§13.2。
+// Design: docs/SIM_Target_Architecture_Design_v1.2.md §4.2～4.3、§6.3、§8～9。
 // 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
 
 #ifndef OHOS_TELEPHONY_MULTISIM_TOPOLOGY_PORTS_ACCOUNT_STORE_H
@@ -23,6 +23,8 @@
 #include <string>
 #include <vector>
 #include "topology/api/topology_requests.h"
+#include "topology/domain/account_registry.h"
+#include "assignment/api/assignment_requests.h"
 
 namespace OHOS::Telephony::MultiSim {
 struct AccountNumberPatch { SubscriptionId subscription; std::u16string number; };
@@ -30,22 +32,37 @@ struct AccountActivePatch { SubscriptionId subscription; bool active; };
 struct AccountNamePatch { SubscriptionId subscription; std::u16string name; };
 struct AccountLabelPatch { SubscriptionId subscription; int32_t legacyLabel; };
 struct AccountImsPreferencePatch { SubscriptionId subscription; int32_t preference; };
-struct AccountStorageRow {
-    SubscriptionId subscription;
-    std::string iccid;
-    std::optional<SlotId> legacyPosition;
-    std::u16string name;
-    std::u16string number;
-    bool active;
-    // 不含 A 的角色片段：建行/重载由 T 调 A 的应用入口组合，不能整行反灌。
-};
 struct AccountLoadResult {
-    int32_t legacyResult;
-    bool complete;
-    std::vector<AccountStorageRow> rows; // 空结果与失败分开，不用空列表伪装成功。
+    AccountReadView view;
+    uint64_t attempt;
+    int32_t legacyResult; // 原 helper 结果，不等同于缓存替换资格。
+    bool legacyReturn; // 旧 GetList/GetAllList 为 result != INVALID_VALUE。
+    bool projectionReplaceable; // 只有原 Query 成功才替换；失败保留原投影。
+    std::vector<AccountStorageRow> rows;
+    std::vector<AccountRoleFragment> roles; // I 同次读取按列拆分，只交 A 接纳。
 };
-// T TopologyService 消费，I AccountStoreAdapter 实现。沿 SimRdbHelper/DataShare，
-// 按 Owner 字段写，无 Save(wholeAccount)，不声称 provider CAS 或跨行事务。
+struct AccountMatchResult {
+    int32_t legacyResult;
+    bool querySucceeded;
+    std::optional<AccountStorageRow> matched;
+    bool matchedIsEsim;
+};
+enum class AccountRowMutation { Insert, Rebind, Unbind };
+struct AccountRowPlan {
+    AccountRowMutation mutation;
+    std::string iccid;
+    std::optional<SubscriptionId> existingIdentity;
+    AccountProjectionData fields;
+    bool isEsim;
+    std::optional<AccountRoleFragment> roles; // Unbind 的旧路径无角色副作用时为空。
+};
+struct AccountRowResult {
+    AccountStoreWriteResult storage;
+    EffectKnowledge effect; // 真实provider证据映射；callFinished本身不证明未产生部分效果。
+    std::optional<SubscriptionId> storedIdentity; // Insert 返回ID或沿原查询解析，不能由T造号。
+    bool identityResolved;
+};
+// T 消费，I 执行原 SimRdbHelper 协议；无整行反灌、CAS 或虚构跨行事务。
 class AccountStore {
 public:
     virtual ~AccountStore() = default;
@@ -54,9 +71,10 @@ public:
     virtual AccountStoreWriteResult WriteDisplayName(const AccountNamePatch &patch) = 0;
     virtual AccountStoreWriteResult WriteLabel(const AccountLabelPatch &patch) = 0;
     virtual AccountStoreWriteResult WriteImsPreference(const AccountImsPreferencePatch &patch) = 0;
-    virtual AccountLoadResult LoadAccounts() = 0;
+    virtual AccountLoadResult LoadAccounts(const AccountReloadTicket &ticket) = 0;
+    virtual AccountMatchResult MatchAccountByIccid(const std::string &iccid) = 0;
+    virtual AccountRowResult ApplyAccountRow(const AccountRowPlan &plan) = 0;
     virtual int32_t QueryImsPreferenceByIccid(const std::string &iccid, int32_t &value) = 0;
 };
 } // namespace OHOS::Telephony::MultiSim
-
 #endif // OHOS_TELEPHONY_MULTISIM_TOPOLOGY_PORTS_ACCOUNT_STORE_H

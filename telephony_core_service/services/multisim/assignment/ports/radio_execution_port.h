@@ -20,9 +20,13 @@
 #define OHOS_TELEPHONY_MULTISIM_ASSIGNMENT_PORTS_RADIO_EXECUTION_PORT_H
 
 #include "application/orchestration/request_context.h"
+#include "assignment/api/primary_execution.h"
 
 namespace OHOS::Telephony::MultiSim {
-struct RadioSwitchRequest { StepRef step; SlotId target; RadioDomainId domain; };
+struct RadioSwitchRequest {
+    StepRef step; SlotId target; RadioDomainId domain;
+    PrimaryMode mode; uint64_t observationRevision;
+};
 struct RadioSwitchResult {
     StepRef step;
     SlotId memberSlot;
@@ -31,10 +35,16 @@ struct RadioSwitchResult {
     EffectKnowledge effect;
     int32_t legacyResult;
 };
+class RadioResultSink {
+public:
+    virtual ~RadioResultSink() = default;
+    virtual void AcceptRadioStep(const RadioSwitchResult &result) = 0;
+};
 // A 使用；R CardRuntime 实现并复用 RadioProtocolController，不在此新造设备协议。
 class RadioExecutionPort {
 public:
     virtual ~RadioExecutionPort() = default;
+    virtual PrimaryExecutionObservation ObservePrimaryExecution(SlotId target) const = 0;
     virtual void SwitchPrimaryRadio(const RadioSwitchRequest &request) = 0;
     virtual void EndLegacySenseSwitch(const RadioDomainId &domain) = 0;
 };

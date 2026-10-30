@@ -42,6 +42,12 @@ struct CardNumberView {
     std::u16string number;
     std::u16string alphaTag;
 };
+class MsisdnResultSink {
+public:
+    virtual ~MsisdnResultSink() = default;
+    virtual void AcceptMsisdnResult(const MsisdnWriteResult &result) = 0;
+    virtual void AcceptLateEvidence(const MsisdnWriteResult &result) = 0;
+};
 // Owner/消费者：T 的号码设置与查询用例；实现：R CardRuntime。
 // 不是通用 ICardChannel。此处只读不额外发 RIL；写调用沿原卡型协议。
 class ShowNumberRuntimePort {

@@ -33,12 +33,6 @@ struct AssignmentTransition {
     uint32_t businessAttempt;
     // A 唯一业务重试与进行中事实；不含 RIL session、资源 fence、callback 或等待设施。
 };
-struct PrimarySwitchPlan {
-    SlotId target;
-    RadioDomainId domain;
-    bool preserveParameterPrewrite;
-    bool followWithDefaultData;
-};
 enum class TransitionAdmission { Admitted, DomainBusy, UnknownResourceDomain };
 // A 纯规则与状态；同一角色约束域保证唯一默认选择，同一 Radio 域至多一个切换。
 // 未证明资源独立前保守共享；目录条目数不决定并发或部署数量。
@@ -47,7 +41,6 @@ public:
     bool AcceptRoleSelection(const RoleSelection &selection, uint64_t expectedAssignmentRevision);
     std::optional<RoleSelection> ReadRoleSelection(DefaultRole role) const;
     TransitionAdmission AdmitTransition(const SlotDescriptor &target);
-    std::optional<PrimarySwitchPlan> PlanPrimarySwitch(const SlotDescriptor &target) const;
     bool AcceptTransitionPhase(const RadioDomainId &domain, TransitionPhase expected, TransitionPhase next);
     bool IsSwitchInProgress(const RadioDomainId &domain) const;
     void AcceptPrimaryParameterProjection(SlotId lastPrimary);

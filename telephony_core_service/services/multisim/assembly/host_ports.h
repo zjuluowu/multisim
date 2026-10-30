@@ -31,6 +31,7 @@ struct SimHostPorts {
     std::shared_ptr<ITelRilManager> sharedRil;
     LegacyIngressPort &legacyIngress;
     CallbackHostPort &callbacks;
+    CompletionHostPort &completions;
     NumberQueryHostPort &numberQuery;
 };
 // sharedRil只保留引用，不在SIM Init/Stop共享RIL；Core端口的代码/对象必须活到SIM排空结束。

@@ -21,7 +21,7 @@
 
 #include "application/orchestration/runtime_operation_store.h"
 #include "topology/application/topology_service.h"
-#include "topology/domain/show_number_plan.h"
+#include "topology/application/show_number_plan.h"
 #include "topology/ports/show_number_runtime_port.h"
 #include "topology/ports/show_number_completion_port.h"
 
@@ -29,16 +29,16 @@ namespace OHOS::Telephony::MultiSim {
 // T 为唯一主编排 Owner；O 只提供 request/effect/wait 容器。
 // 来源：CoreServiceSim/SimManager/MultiSimController::SetShowNumber；
 // SimFileManager::SetSimTelephoneNumber、SimFile::UpdateMsisdnNumber 的协议留 R。
-class SetShowNumberUseCase final {
+class SetShowNumberUseCase final : public MsisdnResultSink {
 public:
     SetShowNumberUseCase(TopologyService &topology, ShowNumberRuntimePort &runtime,
         ShowNumberCompletionPort &completion);
     // C 的原异步任务执行点调用；不在 IPC 接收时提前解析账户。
     // 本入口表达 G3b 固定执行目标与准入增强，尚未授权生产启用。
     RequestId StartAtExecutionPoint(const SetShowNumberCommand &command);
-    void AcceptMsisdnResult(const MsisdnWriteResult &result);
+    void AcceptMsisdnResult(const MsisdnWriteResult &result) override;
     void OnLegacyWaitTimeout(StepRef step); // 原错误出口，设备效果可为 Unknown。
-    void AcceptLateEvidence(const MsisdnWriteResult &result); // 不复活账户写入/原成功完成。
+    void AcceptLateEvidence(const MsisdnWriteResult &result) override; // 不复活账户写入/原成功完成。
 private:
     struct PendingNumber {
         NumberExecutionTarget target;

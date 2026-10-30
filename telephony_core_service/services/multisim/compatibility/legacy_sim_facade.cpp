@@ -21,10 +21,39 @@
 namespace OHOS::Telephony::MultiSim {
 LegacySimFacade::LegacySimFacade(const SlotCatalog &catalog, LegacyIngressPort &ingress,
     CallbackHostPort &callbacks, SetShowNumberUseCase &numbers, ShowNumberQuery &query,
-    ActivateSimUseCase &activation, AssignmentService &assignment, LocalCardRequests &localCards)
+    ActivateSimUseCase &activation, AssignmentService &assignment, LocalCardRequests &localCards,
+    CompletionHostPort &completions)
     : catalog_(catalog), ingress_(ingress), callbacks_(callbacks), numbers_(numbers), query_(query),
-      activation_(activation), assignment_(assignment), localCards_(localCards) {}
-/* 伪代码，命令/查询有意仅声明：
+      activation_(activation), assignment_(assignment), localCards_(localCards), completions_(completions) {}
+
+int32_t LegacySimFacade::RunPrimarySwitchAtExecutionPoint(const SwitchPrimaryCommand &command)
+{
+    auto issued = command;
+    issued.completion = completions_.OpenSynchronousResult(LegacySynchronousMethod::PrimarySwitch);
+    issued.completion.accountNotificationOnWholeSuccess = command.completion.accountNotificationOnWholeSuccess;
+    assignment_.StartPrimarySwitch(issued);
+    return completions_.AwaitOriginalSynchronousResult(issued.completion);
+}
+
+int32_t LegacySimFacade::RunOrdinaryActivationAtExecutionPoint(const ActivateSimCommand &command)
+{
+    auto issued = command;
+    issued.completion = completions_.OpenSynchronousResult(LegacySynchronousMethod::OrdinaryActivation);
+    issued.completion.accountNotificationOnWholeSuccess = command.completion.accountNotificationOnWholeSuccess;
+    activation_.StartOrdinaryActivation(issued);
+    return completions_.AwaitOriginalSynchronousResult(issued.completion);
+}
+EuiccPrimitiveResult LegacySimFacade::SwitchLocalProfileAtExecutionPoint(const SwitchProfileRequest &request)
+{ return localCards_.SwitchLocalProfile(request); }
+
+int32_t LegacySimFacade::SwitchLocalProfileAndAssignAtExecutionPoint(
+    const SwitchProfileRequest &request, int32_t &legacyEnumOut)
+{
+    const auto result = SwitchLocalProfileAtExecutionPoint(request);
+    if (result.cardEnumResult) { legacyEnumOut = *result.cardEnumResult; }
+    return result.outerLegacyResult;
+}
+/* 伪代码，其他命令/查询有意仅声明：
  * SetShowNumber(slot, number, caller, callback)：
  *   ingress_.CheckSetShowNumberEntry，保留 SystemApp -> SET_TELEPHONY_STATE
  *   -> simManager/callback空值 -> 调用者槽能力 的原检查优先级；
@@ -33,8 +62,8 @@ LegacySimFacade::LegacySimFacade(const SlotCatalog &catalog, LegacyIngressPort &
  *   Core 原队列将任务回调 RunQueuedSetShowNumber -> numbers_.StartAtExecutionPoint。
  *   工作线程可能立即执行；不能保证IPC受理reply必早于业务callback。
  * GetShowNumberAtExecutionPoint -> query_.ReadAtLegacyExecutionPoint；
- * RunOrdinaryActivationAtExecutionPoint -> activation_.StartOrdinaryActivation；
- * RunPrimarySwitchAtExecutionPoint -> assignment_.StartPrimarySwitch；
+ * 上述同步桥在原调用线程等真实旧结果；用例Start返回RequestId只作关联。
+ * 应用在每个原返回节点CompleteInt；不把受理当成功，Core/CMI保持各自入口检查。
  * VerifyPin/SwitchLocalProfile -> localCards_ 的对应具名方法，不通过万能Execute。
  *
  * 不在C预写userPreferPrimarySlot：交 A AcceptEntryPrimaryPreference，在原适用入口节点调用。

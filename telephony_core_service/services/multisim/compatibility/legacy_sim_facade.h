@@ -31,16 +31,17 @@ class LegacySimFacade final {
 public:
     LegacySimFacade(const SlotCatalog &catalog, LegacyIngressPort &ingress, CallbackHostPort &callbacks,
         SetShowNumberUseCase &numbers, ShowNumberQuery &query, ActivateSimUseCase &activation,
-        AssignmentService &assignment, LocalCardRequests &localCards);
+        AssignmentService &assignment, LocalCardRequests &localCards, CompletionHostPort &completions);
     int32_t SetShowNumber(int32_t slotId, const std::u16string &number,
         LegacyCallerRef caller, LegacyCallbackRef callback);
     void RunQueuedSetShowNumber(const SetShowNumberCommand &command);
     ShowNumberRead GetShowNumberAtExecutionPoint(int32_t slotId);
-    RequestId RunOrdinaryActivationAtExecutionPoint(const ActivateSimCommand &command);
-    RequestId RunPrimarySwitchAtExecutionPoint(const SwitchPrimaryCommand &command);
+    int32_t RunOrdinaryActivationAtExecutionPoint(const ActivateSimCommand &command);
+    int32_t RunPrimarySwitchAtExecutionPoint(const SwitchPrimaryCommand &command);
     AssignmentView ReadAssignmentForLegacyProjection() const;
     void VerifyPinAtExecutionPoint(const VerifyPinRequest &request);
     EuiccPrimitiveResult SwitchLocalProfileAtExecutionPoint(const SwitchProfileRequest &request);
+    int32_t SwitchLocalProfileAndAssignAtExecutionPoint(const SwitchProfileRequest &request, int32_t &legacyEnumOut);
 private:
     const SlotCatalog &catalog_;
     LegacyIngressPort &ingress_;
@@ -50,6 +51,7 @@ private:
     ActivateSimUseCase &activation_;
     AssignmentService &assignment_;
     LocalCardRequests &localCards_;
+    CompletionHostPort &completions_;
 };
 } // namespace OHOS::Telephony::MultiSim
 

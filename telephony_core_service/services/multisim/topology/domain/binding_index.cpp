@@ -19,7 +19,55 @@
 #include "topology/domain/binding_index.h"
 
 namespace OHOS::Telephony::MultiSim {
-BindingIndex::BindingIndex(const SlotCatalog &catalog) : catalog_(catalog) {}
-// Find/AcceptBinding 等仅声明：迁移时由 TopologyService 在同一次短提交中
-// 核查旧/新绑定键及账户约束；不因目录存在就自动发现卡、建账或发设备命令。
+BindingIndex::BindingIndex(const SlotCatalog &catalog)
+{
+    for (const auto &descriptor : catalog.Slots()) {
+        slots_.emplace(descriptor.slot, SlotRuntimeEntry {descriptor.slot, false, 0, std::nullopt});
+    }
+}
+std::optional<BindingRef> BindingIndex::Find(SlotId slot) const
+{
+    const auto it = slots_.find(slot);
+    return it == slots_.end() ? std::nullopt : it->second.acceptedBinding;
+}
+bool BindingIndex::HasSlot(SlotId slot) const { return slots_.count(slot) != 0; }
+uint64_t BindingIndex::Revision(SlotId slot) const
+{
+    const auto it = slots_.find(slot);
+    return it == slots_.end() ? 0 : it->second.revision;
+}
+bool BindingIndex::StillMatches(const BindingRef &expected) const
+{
+    const auto current = Find(expected.slot);
+    return current && current->subscription == expected.subscription &&
+        current->bindingRevision == expected.bindingRevision;
+}
+bool BindingIndex::AcceptBinding(SlotId slot, SubscriptionId subscription, uint64_t expectedRevision)
+{
+    auto it = slots_.find(slot);
+    if (it == slots_.end() || it->second.revision != expectedRevision) { return false; }
+    // 一个当前账户不能同时绑定两个位置；移动须在同一 T 短提交中先撤销旧位置。
+    for (const auto &[otherSlot, entry] : slots_) {
+        if (!(otherSlot == slot) && entry.acceptedBinding && entry.acceptedBinding->subscription == subscription) {
+            return false;
+        }
+    }
+    auto &entry = it->second;
+    entry.acceptedBinding = BindingRef {subscription, slot, ++entry.revision};
+    return true;
+}
+bool BindingIndex::RemoveBinding(const BindingRef &expected)
+{
+    if (!StillMatches(expected)) { return false; }
+    auto &entry = slots_.at(expected.slot);
+    entry.acceptedBinding.reset();
+    ++entry.revision;
+    return true;
+}
+std::vector<SlotRuntimeEntry> BindingIndex::ReadRuntimeSlots() const
+{
+    std::vector<SlotRuntimeEntry> result;
+    for (const auto &[slot, entry] : slots_) { result.push_back(entry); }
+    return result;
+}
 } // namespace OHOS::Telephony::MultiSim

@@ -22,41 +22,66 @@
 #include <map>
 #include <optional>
 #include <string>
-#include "model/sim_identity.h"
+#include <vector>
+#include "topology/api/account_lifecycle.h"
 
 namespace OHOS::Telephony::MultiSim {
-// WU-01/02/05 的纯状态；Application TopologyService 是唯一可写入口。
-// 当前/历史投影片段属于同一 Owner，分节点可见，不是第二套独立 writer。
+struct AccountProjectionData {
+    std::optional<SlotId> legacyPosition;
+    std::u16string displayName;
+    std::u16string displayNumber;
+    bool active = false;
+    std::optional<int32_t> legacyLabel;
+    std::optional<int32_t> imsPreference;
+};
+struct AccountProjection {
+    AccountProjectionData data;
+    AccountFieldVersions versions;
+};
+// WU-01/02/05：独立 current/all 投影片段，同一个 T Owner。
 struct AccountRecord {
     SubscriptionId subscription;
     std::string iccid;
-    std::u16string displayName;
-    std::optional<int32_t> legacyLabel;
-    std::optional<int32_t> imsPreference;
-    std::optional<std::u16string> currentDisplayNumber;
-    std::optional<std::u16string> historicalDisplayNumber;
-    bool activeProjection;
-    bool activationInProgress;
-    uint64_t version;
+    std::optional<AccountProjection> current;
+    std::optional<AccountProjection> historical;
+};
+struct AccountStorageRow {
+    SubscriptionId subscription;
+    std::string iccid;
+    AccountProjectionData projection;
 };
 enum class AccountAcceptance { Accepted, MissingAccount, ChangedInputs };
-enum class NumberVisibilityNode { CurrentCache, HistoricalCache };
+using NumberVisibilityNode = AccountReadView;
+struct NumberFieldVersions { std::optional<uint64_t> current; std::optional<uint64_t> historical; };
+struct AccountReloadAcceptance {
+    bool acceptedAttempt;
+    size_t acceptedFields;
+    size_t conflictedFields;
+};
 class AccountRegistry final {
 public:
     std::optional<AccountRecord> Read(SubscriptionId subscription) const;
-    AccountAcceptance AcceptNumberVisibility(SubscriptionId subscription, uint64_t expectedVersion,
+    AccountReloadTicket BeginReload(AccountReadView view, uint64_t assignmentRevision);
+    AccountReloadAcceptance AcceptReload(const AccountReloadTicket &ticket,
+        bool projectionReplaceable, const std::vector<AccountStorageRow> &rows);
+    std::optional<NumberFieldVersions> ReadNumberVersions(SubscriptionId subscription) const;
+    bool NumberInputsMatch(SubscriptionId subscription, const NumberFieldVersions &expected) const;
+    AccountAcceptance AcceptNumberVisibility(SubscriptionId subscription, uint64_t expectedNumberVersion,
         NumberVisibilityNode node, const std::u16string &number);
-    AccountAcceptance AcceptActiveProjection(SubscriptionId subscription, uint64_t expectedVersion, bool active);
-    AccountAcceptance SetActivationInProgress(SubscriptionId subscription, bool inProgress);
-    AccountAcceptance AcceptDisplayName(SubscriptionId subscription, uint64_t version, const std::u16string &name);
-    AccountAcceptance AcceptLabel(SubscriptionId subscription, uint64_t version, int32_t legacyLabel);
-    AccountAcceptance AcceptImsPreference(SubscriptionId subscription, uint64_t version, int32_t preference);
-    // InitIccId/InsertEsimData：沿旧匹配政策接纳已分配 simId，不在此产生新公共身份。
-    AccountAcceptance AcceptDiscoveredAccount(const AccountRecord &account);
+    AccountAcceptance AcceptActiveProjection(SubscriptionId subscription, uint64_t expectedVersion,
+        AccountReadView view, bool active);
+    AccountAcceptance AcceptDisplayName(SubscriptionId subscription, uint64_t version,
+        AccountReadView view, const std::u16string &name);
+    AccountAcceptance AcceptLabel(SubscriptionId subscription, uint64_t version, AccountReadView view, int32_t label);
+    AccountAcceptance AcceptImsPreference(SubscriptionId subscription, uint64_t version,
+        AccountReadView view, int32_t preference);
 private:
-    friend class TopologyService; // 真正应用服务在同 namespace；未来写权封装不向 C 暴露容器。
+    AccountProjection *FindProjection(SubscriptionId subscription, AccountReadView view);
     std::map<SubscriptionId, AccountRecord> accounts_;
+    std::map<AccountReadView, uint64_t> issuedAttempts_;
+    std::map<AccountReadView, uint64_t> consumedAttempts_;
+    std::map<AccountReadView, std::map<SubscriptionId, uint64_t>> membershipVersions_;
+    uint64_t mutationClock_ = 0; // 不随删除/重建归零，避免同值版本 ABA。
 };
 } // namespace OHOS::Telephony::MultiSim
-
 #endif // OHOS_TELEPHONY_MULTISIM_TOPOLOGY_DOMAIN_ACCOUNT_REGISTRY_H

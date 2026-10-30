@@ -24,18 +24,18 @@ namespace OHOS::Telephony::MultiSim {
 SimModule::SimModule(SimHostPorts host, std::shared_ptr<const SlotCatalog> catalog, RuntimeEpoch epoch,
     const ExistingSimBindings &existing)
     : host_(std::move(host)), catalog_(std::move(catalog)), accountStore_(existing.accountStore),
-      assignmentStore_(existing.accountStore), output_(existing.monitor, host_.callbacks), completion_(output_),
-      runtime_(*catalog_, epoch, existing.slots, existing.radio, existing.ordinaryEuicc, existing.lowPriorityEuicc),
-      topology_(*catalog_, accountStore_), assignment_(*catalog_, assignmentStore_, runtime_, assignmentOutput_, topology_),
+      assignmentStore_(existing.accountStore), output_(existing.monitor, host_.callbacks), completion_(output_, host_.completions),
+      runtime_(*catalog_, epoch, existing.slots, existing.radio, existing.euicc),
+      topology_(*catalog_, accountStore_, epoch), assignment_(*catalog_, assignmentStore_, runtime_, assignmentOutput_, topology_, completion_),
       numbers_(topology_, runtime_, completion_), numberQuery_(topology_, runtime_, host_.numberQuery),
-      activation_(topology_, assignment_, runtime_, activationHooks_), localCards_(runtime_),
+      activation_(topology_, assignment_, runtime_, activationHooks_, completion_), localCards_(runtime_, assignment_),
       compatibility_(*catalog_, host_.legacyIngress, host_.callbacks, numbers_, numberQuery_, activation_,
-          assignment_, localCards_)
+          assignment_, localCards_, host_.completions)
 {
-    // 未来在发布前 runtime_.BindResultOwners(numbers_, activation_, assignment_)；
-    // 本批不调用、不注册真实事件、不新建State/File/Records/Esim对象。
+    runtime_.BindResultSinks(numbers_, activation_, assignment_, topology_);
+    // 仅绑定本模块窄sink；不注册真实事件、不新建State/File/Records/Esim对象。
 }
-/* CreateSimModule/SimModuleDeleter 仅声明：
+/* AttachExistingSimModule/SimModuleDeleter 仅声明：
  * Core 侧创建SlotCatalog与共享RIL，保留Core原RIL注册 -> eSIM OnInit(可能访问66250)
  * -> SIM OnInit/注入CoreServiceSim -> 搜网/CMI的发布时点；不得调用本构造旁路双装配。
  * 机械拆分时仍沿原对象控制块/deleter；CardFileDetectManager当前先于Controller创建的

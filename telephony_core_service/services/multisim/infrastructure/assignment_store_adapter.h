@@ -28,7 +28,7 @@ public:
     explicit AssignmentStoreAdapter(SimRdbHelper &legacyStore) : legacyStore_(legacyStore) {}
     RoleStoreResult WriteDefaultRole(const SetRoleCommand &command) override;
     PrimaryParameterSnapshot ReadPrimaryParameters() override;
-    AssignmentParameterResult PrewritePrimary(SlotId slot, const std::string &encodedIccid) override;
+    AssignmentParameterResult WritePrimaryParameters(SlotId slot, const std::string &encodedIccid) override;
     AssignmentParameterResult RestorePrimaryIfLegacyValid(const PrimaryParameterSnapshot &old) override;
     AssignmentParameterResult WriteDefaultData(SlotId slot) override;
     AssignmentParameterResult WriteUserPrimaryPreference(bool userSet) override;

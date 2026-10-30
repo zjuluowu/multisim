@@ -20,6 +20,7 @@
 #define OHOS_TELEPHONY_MULTISIM_TOPOLOGY_API_TOPOLOGY_REQUESTS_H
 
 #include <string>
+#include "topology/api/account_lifecycle.h"
 #include "application/orchestration/request_context.h"
 
 namespace OHOS::Telephony::MultiSim {
@@ -48,7 +49,7 @@ struct AccountView {
     std::u16string displayName;
     std::u16string displayNumber;
     bool activeProjection;
-    uint64_t accountVersion;
+    AccountFieldVersions fields; // 所读投影字段版本，不作为号码的统一冲突资格。
 };
 struct AccountStoreWriteResult {
     int32_t legacyResult;
@@ -58,7 +59,8 @@ struct AccountStoreWriteResult {
 struct NumberExecutionTarget {
     BindingRef binding;
     SessionRef session;
-    uint64_t accountVersion;
+    std::optional<uint64_t> currentNumberVersion;
+    std::optional<uint64_t> historicalNumberVersion;
 };
 struct NumberAcceptance {
     int32_t legacyResult;

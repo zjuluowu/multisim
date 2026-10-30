@@ -28,6 +28,7 @@ namespace OHOS::Telephony::MultiSim {
 struct SlotRuntimeEntry {
     SlotId slot;
     bool instanceAssembled;
+    uint64_t revision; // 空位置也保留；绑定、撤销均推进。
     std::optional<BindingRef> acceptedBinding;
 };
 // T 拥有槽运行清单/位置绑定/局部 revision；R 拥有原始在位状态和 SessionRef。
@@ -36,12 +37,13 @@ class BindingIndex final {
 public:
     explicit BindingIndex(const SlotCatalog &catalog);
     std::optional<BindingRef> Find(SlotId slot) const;
+    bool HasSlot(SlotId slot) const;
+    uint64_t Revision(SlotId slot) const;
     bool StillMatches(const BindingRef &expected) const;
     bool AcceptBinding(SlotId slot, SubscriptionId subscription, uint64_t expectedRevision);
     bool RemoveBinding(const BindingRef &expected);
     std::vector<SlotRuntimeEntry> ReadRuntimeSlots() const;
 private:
-    const SlotCatalog &catalog_;
     std::map<SlotId, SlotRuntimeEntry> slots_;
 };
 } // namespace OHOS::Telephony::MultiSim

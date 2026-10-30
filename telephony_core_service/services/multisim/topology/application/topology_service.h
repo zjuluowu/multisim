@@ -25,18 +25,25 @@
 #include "topology/domain/binding_index.h"
 #include "topology/ports/account_store.h"
 #include "assignment/api/assignment_requests.h"
+#include "topology/application/discovery_admission.h"
+#include "topology/application/activation_progress.h"
+#include "topology/ports/card_discovery_sink.h"
 
 namespace OHOS::Telephony::MultiSim {
-struct ReloadAccountInput { SubscriptionId subscription; uint64_t expectedAccountVersion; };
-struct ReloadRequest { uint64_t loadAttempt; std::vector<ReloadAccountInput> affected; };
 struct AccountFieldReservation { uint64_t token; SubscriptionId subscription; }; // 应用执行资格，不是 DB 锁。
 
 // T 唯一事实接纳入口。持有纯模型，不持有 R/I 具体类型、共享 RIL 或 callback。
 // 旧 MultiSimController 分拆：InitIccId/InitShowNumber/ForgetAllData/账户缓存归此；
 // 默认角色/Primary 归 A；设备状态、EF 和协议会话留 R。
-class TopologyService final {
+class AssignmentService;
+struct DiscoveryCompletion {
+    AccountRowResult stored;
+    bool bindingAccepted;
+    bool needsFieldReconciliation; // DB可能已写但资格失效，不能只丢内存发布。
+};
+class TopologyService final : public CardDiscoverySink {
 public:
-    TopologyService(const SlotCatalog &catalog, AccountStore &store);
+    TopologyService(const SlotCatalog &catalog, AccountStore &store, RuntimeEpoch epoch);
     std::optional<BindingRef> FindBinding(SlotId slot) const;
     std::optional<AccountView> ReadAccount(SubscriptionId subscription) const;
     // 简单资料命令直接调用字段端口，不强建多步关联；名称不写卡。
@@ -48,18 +55,28 @@ public:
     NumberAcceptance AcceptNumberAfterCardWrite(const NumberExecutionTarget &target, const std::u16string &number);
     NumberAcceptance AcceptIndependentNumberBackwrite(const NumberExecutionTarget &target,
         const std::u16string &number);
-    void AcceptAccountReload(const ReloadRequest &request); // 版本在发起时保存，不能旧行覆盖新字段。
-    // 发现用例先从 A PrepareAccountRoleFragment 取得只读片段；T 不自行决定角色。
-    void AcceptCardDiscovery(SlotId slot, const std::string &iccid, const AccountRoleFragment &roles);
-    void AcceptCardRemoval(const BindingRef &expected); // 同行解绑/标签/active 按旧条件生成计划。
-    AccountAcceptance AcceptActivationProgress(SubscriptionId subscription, bool inProgress);
-    AccountAcceptance AcceptActivationProjection(SubscriptionId subscription, uint64_t version, bool active);
+    AccountReloadTicket BeginAccountReload(AccountReadView view, uint64_t assignmentRevision);
+    AccountReloadAcceptance AcceptAccountReload(const AccountReloadTicket &ticket, const AccountLoadResult &result);
+    // 发现主编排由T持有；窄A协作显式作为用例参数，无A可写聚合引用。
+    DiscoveryCompletion DiscoverCard(const CardDiscoveryObservation &observation, bool isEsim,
+        AssignmentService &assignment);
+    bool FenceRuntimeSession(const SessionRef &session, uint64_t sequence) override;
+    void ObserveCardDiscovery(const CardDiscoveryObservation &observation) override;
+    void AcceptCardRemoval(const BindingRef &expected, const DiscoveryTicket &ticket);
+    std::optional<ActivationProgressTicket> BeginActivationProgress(RequestId request, SlotId slot,
+        const SessionRef &session);
+    bool ClearActivationProgress(const ActivationProgressTicket &ticket);
+    bool IsActivationInProgress(SlotId slot) const;
+    AccountAcceptance AcceptActivationProjection(SubscriptionId subscription, uint64_t version,
+        AccountReadView view, bool active);
 private:
     AccountFieldReservation ReserveNumberField(const NumberExecutionTarget &target);
     void ReleaseAfterStoreCallFinished(const AccountFieldReservation &reservation,
         const AccountStoreWriteResult &result);
     AccountRegistry accounts_;
     BindingIndex bindings_;
+    DiscoveryAdmission discovery_;
+    ActivationProgress activationProgress_;
     AccountStore &store_;
     // 预留覆盖 I/O 全过程；效果未知时转交核对，不因等待终结释放冲突资格。
     // 无关账户/字段不串行；后续实现 FFRT 短提交域，锁内不得调用 store_。

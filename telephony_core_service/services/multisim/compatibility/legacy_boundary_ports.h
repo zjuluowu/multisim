@@ -38,6 +38,19 @@ public:
     virtual CompletionId RetainCallback(LegacyCallbackRef callback) = 0;
     virtual void TransferOriginalIntResult(CompletionId completion, int32_t legacyResult) = 0;
 };
+// Core/CMI的同步等待与应用接纳执行域分开；不得在完成所需串行域内等待。
+// 实际宿主等待用既有FFRT设施；CompletionCell只表达串行域内一次完成，不内置同步原语。
+enum class LegacySynchronousMethod { PrimarySwitch, OrdinaryActivation };
+class CompletionHostPort {
+public:
+    virtual ~CompletionHostPort() = default;
+    // 创建唯一活跃CompletionId与SynchronousReturn出口，先建立再启动，避免先完成丢失。
+    virtual CompletionPlan OpenSynchronousResult(LegacySynchronousMethod method) = 0;
+    // 保持各旧分支预算/错误：第三卡早返回不等到后续自动Primary完成。
+    virtual int32_t AwaitOriginalSynchronousResult(const CompletionPlan &plan) = 0;
+    // 按plan.kind交原同步cell、callback或内部receipt；一次终结，晚到仅供核对。
+    virtual void DeliverOriginalResult(const CompletionPlan &plan, int32_t legacyResult) = 0;
+};
 // C拥有原完成与通知格式，I适配现有Monitor/平台；没有可写账户或角色缓存。
 class LegacyOutputPort {
 public:

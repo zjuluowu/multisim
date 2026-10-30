@@ -24,6 +24,11 @@
 namespace OHOS::Telephony::MultiSim {
 struct ActivationDeviceRequest { StepRef step; SessionRef session; bool enable; };
 struct ActivationDeviceResult { StepRef step; SessionRef sentSession; EffectKnowledge effect; int32_t legacyResult; };
+class ActivationResultSink {
+public:
+    virtual ~ActivationResultSink() = default;
+    virtual void AcceptDeviceResult(const ActivationDeviceResult &result) = 0;
+};
 // T ActivateSimUseCase 使用；R CardRuntime 实现。旧进程级静态串行域不能按槽拆开。
 class ActivationRuntimePort {
 public:

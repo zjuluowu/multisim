@@ -20,16 +20,19 @@
 #define OHOS_TELEPHONY_MULTISIM_COMPATIBILITY_LEGACY_COMPLETION_H
 
 #include "compatibility/legacy_boundary_ports.h"
+#include "application/orchestration/completion_port.h"
 #include "topology/ports/show_number_completion_port.h"
 
 namespace OHOS::Telephony::MultiSim {
 // T号码完成端口的实现；只解释旧出口，不通过通知再写业务状态。
-class LegacyCompletion final : public ShowNumberCompletionPort {
+class LegacyCompletion final : public ShowNumberCompletionPort, public CompletionPort {
 public:
-    explicit LegacyCompletion(LegacyOutputPort &output) : output_(output) {}
+    LegacyCompletion(LegacyOutputPort &output, CompletionHostPort &host) : output_(output), host_(host) {}
+    void CompleteInt(const CompletionPlan &plan, int32_t legacyResult) override;
     void CompleteShowNumber(const ShowNumberCompletion &completion) override;
 private:
     LegacyOutputPort &output_;
+    CompletionHostPort &host_;
 };
 } // namespace OHOS::Telephony::MultiSim
 

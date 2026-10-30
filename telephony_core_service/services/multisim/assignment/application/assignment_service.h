@@ -24,30 +24,42 @@
 #include "assignment/domain/assignment_aggregate.h"
 #include "assignment/ports/assignment_store.h"
 #include "assignment/ports/radio_execution_port.h"
+#include "application/orchestration/completion_port.h"
+#include "application/card_access/local_card_requests.h"
+#include "assignment/application/account_role_protocol.h"
 
 namespace OHOS::Telephony::MultiSim {
 class TopologyService;
 // A 唯一应用写入口/切换主编排。O 不再代写 A 参数或发起业务重试。
-class AssignmentService final {
+class AssignmentService final : public RadioResultSink, public LocalProfilePreferencePort {
 public:
     AssignmentService(const SlotCatalog &catalog, AssignmentStore &store, RadioExecutionPort &radio,
-        AssignmentOutputPort &output, TopologyService &topology);
+        AssignmentOutputPort &output, TopologyService &topology, CompletionPort &completion);
     int32_t SetDefaultRole(const SetRoleCommand &command);
     RequestId StartPrimarySwitch(const SwitchPrimaryCommand &command);
-    void AcceptRadioStep(const RadioSwitchResult &result);
+    void AcceptRadioStep(const RadioSwitchResult &result) override;
+    void AcceptLocalProfileReturnPreference() override;
     void RetryPrimaryAfterReconciliation(RequestId request); // 唯一业务重试授权者。
     AssignmentView ReadLegacyAssignment() const;
     ActivationAdmission AdmitActivationBeforeDevice(SlotId slot);
     void AcceptEntryPrimaryPreference(bool userSet);
     void RecheckPrimaryAfterAccountChange(const PrimaryRecheck &cause);
-    AccountRoleFragment PrepareAccountRoleFragment(SubscriptionId subscription) const;
+    std::optional<AccountRoleFragment> PrepareAccountRoleFragment(const DiscoveryRoleContext &context) const;
+    bool IsAccountRoleFragmentCurrent(const AccountRoleFragment &fragment) const;
+    RoleFragmentAcceptance AcceptAccountRoleStorage(const AccountRoleFragment &fragment,
+        std::optional<SubscriptionId> assignedIdentity, EffectKnowledge effect);
+    RoleReloadTicket BeginRoleReload(AccountReadView view, uint64_t attempt);
+    bool AcceptRoleReload(const RoleReloadTicket &ticket, const std::vector<AccountRoleFragment> &roles,
+        bool readSucceeded);
 private:
     const SlotCatalog &catalog_;
     AssignmentAggregate assignment_;
+    AccountRoleProtocol accountRoles_; // 与角色写入同域；所有本地角色变更递增其资格版本。
     RuntimeOperationStore operations_;
     AssignmentStore &store_;
     RadioExecutionPort &radio_;
     AssignmentOutputPort &output_;
+    CompletionPort &completion_;
     TopologyService &topology_; // 只调用 T 正式应用入口，不握 T 可写聚合。
 };
 } // namespace OHOS::Telephony::MultiSim

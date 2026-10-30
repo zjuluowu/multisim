@@ -33,9 +33,11 @@ struct StepRef {
 enum class EffectKnowledge { NotSent, Rejected, ConfirmedApplied, ConfirmedNotApplied, Unknown };
 enum class WaitState { Waiting, Delivered, TimedOut, CancelledWait, CallerDied };
 enum class TerminalState { Open, Succeeded, Failed, NeedsReconciliation };
+enum class CompletionKind { SynchronousReturn, AsynchronousCallback, InternalReceipt };
 struct CompletionPlan {
     CompletionId completion;
     bool accountNotificationOnWholeSuccess;
+    CompletionKind kind {CompletionKind::AsynchronousCallback};
 };
 struct RequestContext {
     StepRef step;
