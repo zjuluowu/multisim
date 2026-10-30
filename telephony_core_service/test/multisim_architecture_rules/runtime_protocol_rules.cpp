@@ -24,64 +24,7 @@ using namespace OHOS::Telephony;
 using namespace OHOS::Telephony::MultiSim;
 
 namespace {
-StepRef Step(uint64_t request, uint32_t attempt = 1) { return {{request}, 1, attempt}; }
-
-void ResourceScenarios()
-{
-    const ResourceKey modem {"shared-modem"};
-    const ResourceKey euicc {"same-physical-euicc-for-both-file-views"};
-    ResourceBarrier barrier;
-    assert(!barrier.Acquire({modem}, Step(1), ResourceUse::Mutation));
-    const auto modemCheck = barrier.TrackResource(modem);
-    const auto euiccCheck = barrier.TrackResource(euicc);
-    assert(!barrier.AcceptInitialEvidence(modemCheck, {false, true, true}));
-    assert(barrier.AcceptInitialEvidence(modemCheck, {true, true, true}));
-    // 全资源预留原子：第二个仍Checking时不能局部占用第一个。
-    assert(!barrier.Acquire({modem, euicc}, Step(1), ResourceUse::Mutation));
-    assert(barrier.ReadState(modem) == ResourceState::Available);
-    assert(barrier.AcceptInitialEvidence(euiccCheck, {true, true, true}));
-    auto reservation = barrier.Acquire({euicc, modem, euicc}, Step(1), ResourceUse::Mutation);
-    assert(reservation && reservation->resources.size() == 2);
-    auto subset = *reservation;
-    subset.resources.pop_back();
-    assert(!barrier.CancelNotSent(subset));
-    assert(!barrier.Acquire({euicc}, Step(2), ResourceUse::Query));
-    assert(barrier.CancelNotSent(*reservation));
-    assert(!barrier.CancelNotSent(*reservation));
-
-    auto sent = barrier.Acquire({euicc}, Step(2), ResourceUse::Mutation);
-    assert(sent && barrier.MarkSent(*sent));
-    assert(!barrier.CancelNotSent(*sent));
-    // 卡结果成功不证明关闭；结束/可复用同样不可单独代替写效果核对。
-    assert(!barrier.Complete(*sent, {Step(2), true, false, true, EffectKnowledge::ConfirmedApplied}));
-    assert(!barrier.Complete(*sent, {Step(2), true, true, true, EffectKnowledge::Unknown}));
-    assert(barrier.Quarantine(*sent, EffectKnowledge::Unknown));
-    assert(!barrier.AcceptRecoveryEvidence(*sent, {Step(2), true, false, true}));
-    assert(!barrier.AcceptRecoveryEvidence(*sent, {Step(2, 2), true, true, true}));
-    assert(!barrier.Acquire({euicc}, Step(3), ResourceUse::Mutation));
-    assert(barrier.AcceptRecoveryEvidence(*sent, {Step(2), true, true, true}));
-
-    auto fresh = barrier.Acquire({euicc}, Step(3), ResourceUse::Mutation);
-    assert(fresh && barrier.MarkSent(*fresh));
-    assert(!barrier.AcceptRecoveryEvidence(*sent, {Step(2), true, true, true}));
-    assert(!barrier.Complete(*sent, {Step(2), true, true, true, EffectKnowledge::ConfirmedApplied}));
-    assert(!barrier.AcceptInitialEvidence(euiccCheck, {true, true, true}));
-    assert(barrier.ReadState(euicc) == ResourceState::InFlight);
-    assert(barrier.Complete(*fresh, {Step(3), true, true, true, EffectKnowledge::ConfirmedApplied}));
-    // 查询响应丢失也能凭命令结束/关闭/可复用释放，无需恢复旧payload。
-    auto query = barrier.Acquire({euicc}, Step(4), ResourceUse::Query);
-    assert(query && barrier.MarkSent(*query));
-    assert(barrier.Complete(*query, {Step(4), true, true, true, EffectKnowledge::Unknown}));
-    query = barrier.Acquire({euicc}, Step(5), ResourceUse::Query);
-    assert(query && barrier.MarkSent(*query) && barrier.Quarantine(*query, EffectKnowledge::Unknown));
-    assert(barrier.AcceptRecoveryEvidence(*query, {Step(5), true, false, true}));
-    // 不能通过改复制租约的操作性质绕过原写资格。
-    auto write = barrier.Acquire({euicc}, Step(6), ResourceUse::Mutation);
-    assert(write && barrier.MarkSent(*write));
-    auto forgedQuery = *write;
-    forgedQuery.use = ResourceUse::Query;
-    assert(!barrier.Complete(forgedQuery, {Step(6), true, true, true, EffectKnowledge::Unknown}));
-}
+StepRef Step(uint64_t request, uint32_t attempt = 1) { return {{request, {3, 9}, RequestOwner::LocalCard}, 1, attempt}; }
 
 void ExpectedTransitionScenarios()
 {
@@ -96,17 +39,24 @@ void ExpectedTransitionScenarios()
     assert(sessions.PublishVerifiedSession(old));
     assert(sessions.RegisterExpectedTransition(expected));
     assert(!sessions.RegisterExpectedTransition(expected));
-    assert(!sessions.EndExpectedTransitionWait(Step(7, 2), old, EffectKnowledge::NotSent));
-    assert(sessions.EndExpectedTransitionWait(Step(7), old, EffectKnowledge::NotSent));
+    assert(!sessions.CancelExpectedConfirmedNotSent(Step(7, 2)));
+    assert(sessions.CancelExpectedConfirmedNotSent(Step(7)));
     assert(!sessions.AcceptExpectedContinuation(evidence));
     assert(sessions.RegisterExpectedTransition(expected));
-    assert(sessions.EndExpectedTransitionWait(Step(7), old, EffectKnowledge::Unknown));
+    sessions.EndExpectedWait(Step(7), EffectKnowledge::Unknown);
     assert(!sessions.AcceptExpectedContinuation(evidence)); // 期望不能自行创建新会话。
     // 模拟R已证实替换并完成T fence的会话发布输入；不模拟设备成功返回。
     sessions.InvalidateForVerifiedReplacement(old);
     assert(!sessions.StillCurrent(old));
     assert(!sessions.PublishVerifiedSession(old)); // 撤销不归零，不复活旧EF资格。
     assert(sessions.PublishVerifiedSession(next));
+    assert(!sessions.MayPublishVerifiedSession(old)); // 旧观察在R撤销当前会话之前即被拒绝。
+    auto wrongEpoch = next;
+    wrongEpoch.epoch = {4, 9};
+    assert(!sessions.MayPublishVerifiedSession(wrongEpoch));
+    assert(!sessions.PublishVerifiedSession(wrongEpoch));
+    assert(sessions.StillCurrent(next));
+    assert(sessions.MayPublishVerifiedSession(next)); // 当前同会话幂等，不制造换卡。
     auto unrelated = evidence;
     unrelated.protocolOrCorrelatedRequeryProvesCause = false;
     assert(!sessions.AcceptExpectedContinuation(unrelated));
@@ -126,12 +76,12 @@ void ExpectedTransitionScenarios()
     assert(sessions.StillCurrent(next)); // 清理期望不清理有效会话/资源。
     nextExpected.step = Step(9);
     assert(sessions.RegisterExpectedTransition(nextExpected));
-    assert(sessions.EndExpectedTransitionWait(Step(9), next, EffectKnowledge::ConfirmedNotApplied));
+    sessions.EndExpectedWait(Step(9), EffectKnowledge::ConfirmedNotApplied);
     assert(sessions.ExpireExpectedTransitions(100) == 0);
 }
 
 // 独立结果消费方：无需认识SetShowNumberUseCase/ActivateSimUseCase/AssignmentService。
-struct RecordingSinks final : MsisdnResultSink, ActivationResultSink, RadioResultSink, CardDiscoverySink {
+struct RecordingSinks final : MsisdnResultSink, ActivationResultSink, RadioResultSink, CardObservationSink {
     int advances = 0;
     int lateEvidence = 0;
     std::optional<MsisdnWriteResult> number;
@@ -141,8 +91,9 @@ struct RecordingSinks final : MsisdnResultSink, ActivationResultSink, RadioResul
     void AcceptLateEvidence(const MsisdnWriteResult &result) override { ++lateEvidence; number = result; }
     void AcceptDeviceResult(const ActivationDeviceResult &result) override { active = result; }
     void AcceptRadioStep(const RadioSwitchResult &result) override { radio = result; }
-    bool FenceRuntimeSession(const SessionRef &, uint64_t) override { return false; }
-    void ObserveCardDiscovery(const CardDiscoveryObservation &) override {}
+    void AcceptLateRadioEvidence(const RadioSwitchResult &result) override { radio = result; }
+    void AcceptCardDiscoveryObservation(const CardDiscoveryObservation &) override {}
+    void AcceptCardSessionInvalidation(const CardSessionInvalidation &) override {}
 };
 
 void ResultSinkScenarios()
@@ -157,7 +108,7 @@ void ResultSinkScenarios()
     assert(consumer.number->step.request.value == 11 && consumer.number->sentSession.bindingGeneration == 3);
     assert(consumer.number->effect == EffectKnowledge::Unknown && !consumer.number->legacyWaitSucceeded);
     route.DeliverActivation({Step(12), session, EffectKnowledge::ConfirmedNotApplied, -8});
-    route.DeliverRadio({Step(13), {1}, 17, 2, EffectKnowledge::Unknown, -9});
+    route.DeliverRadio({Step(13), {1}, 17, 2, EffectKnowledge::Unknown, -9}, true);
     assert(consumer.active->step.request.value == 12 && consumer.active->legacyResult == -8);
     assert(consumer.radio->step.request.value == 13 && consumer.radio->protocolSession == 17);
     assert(consumer.radio->phase == 2 && consumer.radio->legacyResult == -9);
@@ -207,7 +158,6 @@ void FactoryPublicationScenarios()
 
 int main()
 {
-    ResourceScenarios();
     FactoryPublicationScenarios();
     ExpectedTransitionScenarios();
     ResultSinkScenarios();

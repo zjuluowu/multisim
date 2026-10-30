@@ -12,22 +12,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// TARGET ARCHITECTURE SKELETON / PROPOSED: 尚未接入生产或构建，未转移写权。
-// Design: docs/SIM_Target_Architecture_Design_v1.2.md §4.1～4.2、§6.1、§11～12。
-// 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
+// TARGET ARCHITECTURE SKELETON / PROPOSED: 无生产调用或设备流程定义。
 
 #include "application/card_access/local_card_requests.h"
+
 namespace OHOS::Telephony::MultiSim {
+LocalCardRequests::LocalCardRequests(LocalCardPort &runtime, ProfilePreferencePort &preferences)
+    : runtime_(runtime), preferences_(preferences) {}
+
 EuiccPrimitiveResult LocalCardRequests::SwitchLocalProfile(const SwitchProfileRequest &request)
 {
-    // R以sentSession/step登记。无可信会话可登记时仍保留旧原语参数与错误，
-    // 不虚构默认Port或因果关系；相关增强切片维持关闭。
-    const auto expected = runtime_.BeginExpectedProfileTransition(request);
+    const auto transition = runtime_.RegisterExpectedProfileTransition(request);
     const auto result = runtime_.SwitchLocalProfile(request);
-    if (result.fileReturned) {
-        preference_.AcceptLocalProfileReturnPreference(); // 原File返回后的节点，与card enum无关。
+    if (result.reachedLegacyPreferenceNode) {
+        preferences_.AcceptLocalProfilePreference(request.context.step, request.target.slot);
     }
-    if (expected) { runtime_.EndProfileRequestWait(*expected, result.profileEffect); }
-    return result.legacy; // 外层int与卡enum不合并，关闭未知也不篡改旧返回。
+    if (transition) { runtime_.EndLocalProfileWait(*transition, result.effect); }
+    return result.legacy;
 }
+/* 原语义的具名续接顺序：
+ * 1. 复用原入口检查与发起时RequestContext；R在原调用点保存legacyPortIndex/force/ICCID。
+ * 2. 本短请求在发出设备步骤前调用RegisterExpectedProfileTransition。
+ *    R以发起时会话、目标ICCID、受影响应用、原预算及因果证据登记ExpectedTransition；
+ *    不能以当前slot/任意READY补造接续。未具备桥的切片不启用新会话门控。
+ * 3. runtime_.SwitchLocalProfile复用原EsimManager/File的通道/APDU/双结果，
+ *    reachedLegacyPreferenceNode才调用preferences_.AcceptLocalProfilePreference(step, slot)。
+ *    非法槽不提示；有效槽File返回后即到该节点，即使cardEnum失败也仍提示。
+ *    由A按原SetParameter节点处理；不把提示写入改成卡成功条件，不反转原双结果。
+ * 4. 结束本地等待时EndLocalProfileWait；Unknown或通道关闭未证实转R保留原关联/租约，
+ *    不因短请求返回而清除恢复责任，不复活旧调用者。返回result.legacy原双结果。
+ * 5. 由带Session/观察序号的R观察到T接受实际绑定；原语成功不是Profile/Radio就绪。
+ *
+ * 高层Download/OSU及同层补偿归66250，本地请求不复制其状态机或超时重跑任务。
+ * DisableProfile按槽标签恢复提示经T桥；无后缀参数按原节点作旧外部输出，R不直写。
+ */
 } // namespace OHOS::Telephony::MultiSim

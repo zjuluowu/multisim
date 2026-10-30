@@ -32,7 +32,7 @@ namespace OHOS::Telephony::MultiSim {
 class SetShowNumberUseCase final : public MsisdnResultSink {
 public:
     SetShowNumberUseCase(TopologyService &topology, ShowNumberRuntimePort &runtime,
-        ShowNumberCompletionPort &completion);
+        ShowNumberCompletionPort &completion, RuntimeEpoch epoch);
     // C 的原异步任务执行点调用；不在 IPC 接收时提前解析账户。
     // 本入口表达 G3b 固定执行目标与准入增强，尚未授权生产启用。
     RequestId StartAtExecutionPoint(const SetShowNumberCommand &command);

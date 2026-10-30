@@ -32,9 +32,10 @@ public:
     AccountStoreWriteResult WriteDisplayName(const AccountNamePatch &patch) override;
     AccountStoreWriteResult WriteLabel(const AccountLabelPatch &patch) override;
     AccountStoreWriteResult WriteImsPreference(const AccountImsPreferencePatch &patch) override;
-    AccountLoadResult LoadAccounts(const AccountReloadTicket &ticket) override;
-    AccountMatchResult MatchAccountByIccid(const std::string &iccid) override;
-    AccountRowResult ApplyAccountRow(const AccountRowPlan &plan) override;
+    AccountLoadResult LoadAccounts(const AccountLoadRequest &request) override;
+    AccountIdentityMatch MatchAccountByIccid(const std::string &iccid) override;
+    AccountDiscoveryStoreResult WriteDiscoveredAccount(const AccountDiscoveryWritePlan &plan) override;
+    AccountStoreWriteResult WriteRemoval(const AccountRemovalPatch &patch) override;
     int32_t QueryImsPreferenceByIccid(const std::string &iccid, int32_t &value) override;
 private:
     SimRdbHelper &legacyStore_;

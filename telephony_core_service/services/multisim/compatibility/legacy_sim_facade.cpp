@@ -17,43 +17,41 @@
 // 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
 
 #include "compatibility/legacy_sim_facade.h"
+#include "compatibility/legacy_profile_result.h"
 
 namespace OHOS::Telephony::MultiSim {
 LegacySimFacade::LegacySimFacade(const SlotCatalog &catalog, LegacyIngressPort &ingress,
     CallbackHostPort &callbacks, SetShowNumberUseCase &numbers, ShowNumberQuery &query,
-    ActivateSimUseCase &activation, AssignmentService &assignment, LocalCardRequests &localCards,
-    CompletionHostPort &completions)
+    ActivateSimUseCase &activation, AssignmentService &assignment, LocalCardRequests &localCards)
     : catalog_(catalog), ingress_(ingress), callbacks_(callbacks), numbers_(numbers), query_(query),
-      activation_(activation), assignment_(assignment), localCards_(localCards), completions_(completions) {}
-
+      activation_(activation), assignment_(assignment), localCards_(localCards) {}
 int32_t LegacySimFacade::RunPrimarySwitchAtExecutionPoint(const SwitchPrimaryCommand &command)
 {
     auto issued = command;
-    issued.completion = completions_.OpenSynchronousResult(LegacySynchronousMethod::PrimarySwitch);
-    issued.completion.accountNotificationOnWholeSuccess = command.completion.accountNotificationOnWholeSuccess;
+    const auto waiter = callbacks_.RetainSynchronousWaiter(LegacySynchronousCall::PrimarySwitch);
+    issued.completion.route = SynchronousCompletionRoute {waiter};
     assignment_.StartPrimarySwitch(issued);
-    return completions_.AwaitOriginalSynchronousResult(issued.completion);
+    return callbacks_.AwaitOriginalIntResult(waiter);
 }
-
 int32_t LegacySimFacade::RunOrdinaryActivationAtExecutionPoint(const ActivateSimCommand &command)
 {
     auto issued = command;
-    issued.completion = completions_.OpenSynchronousResult(LegacySynchronousMethod::OrdinaryActivation);
-    issued.completion.accountNotificationOnWholeSuccess = command.completion.accountNotificationOnWholeSuccess;
+    const auto waiter = callbacks_.RetainSynchronousWaiter(LegacySynchronousCall::SimActivation);
+    issued.completion.route = SynchronousCompletionRoute {waiter};
     activation_.StartOrdinaryActivation(issued);
-    return completions_.AwaitOriginalSynchronousResult(issued.completion);
+    return callbacks_.AwaitOriginalIntResult(waiter);
 }
 EuiccPrimitiveResult LegacySimFacade::SwitchLocalProfileAtExecutionPoint(const SwitchProfileRequest &request)
-{ return localCards_.SwitchLocalProfile(request); }
-
-int32_t LegacySimFacade::SwitchLocalProfileAndAssignAtExecutionPoint(
-    const SwitchProfileRequest &request, int32_t &legacyEnumOut)
+{
+    return localCards_.SwitchLocalProfile(request);
+}
+int32_t LegacySimFacade::SwitchLocalProfileAndAssignAtExecutionPoint(const SwitchProfileRequest &request,
+    int32_t &enumResult)
 {
     const auto result = SwitchLocalProfileAtExecutionPoint(request);
-    if (result.cardEnumResult) { legacyEnumOut = *result.cardEnumResult; }
-    return result.outerLegacyResult;
+    return AssignLocalProfileLegacyResult(result, enumResult);
 }
-/* 伪代码，其他命令/查询有意仅声明：
+/* 伪代码，命令/查询有意仅声明：
  * SetShowNumber(slot, number, caller, callback)：
  *   ingress_.CheckSetShowNumberEntry，保留 SystemApp -> SET_TELEPHONY_STATE
  *   -> simManager/callback空值 -> 调用者槽能力 的原检查优先级；
@@ -62,13 +60,15 @@ int32_t LegacySimFacade::SwitchLocalProfileAndAssignAtExecutionPoint(
  *   Core 原队列将任务回调 RunQueuedSetShowNumber -> numbers_.StartAtExecutionPoint。
  *   工作线程可能立即执行；不能保证IPC受理reply必早于业务callback。
  * GetShowNumberAtExecutionPoint -> query_.ReadAtLegacyExecutionPoint；
- * 上述同步桥在原调用线程等真实旧结果；用例Start返回RequestId只作关联。
- * 应用在每个原返回节点CompleteInt；不把受理当成功，Core/CMI保持各自入口检查。
+ * RunOrdinaryActivation/PrimarySwitch：在宿主保留对应SynchronousWaitRef，构造SynchronousCompletionRoute；
+ * 调用T/A Start后离开其短提交域，callbacks_.AwaitOriginalIntResult按原方法预算取回原int。
+ * 完成可先于Await；第三卡等原早返回节点仍交付原结果，不将同步返回升级为设备全部完成。
+ * 内部子请求使用InternalCompletionRoute和parent，不持跨Owner资格嵌套同步等。
  * VerifyPin/SwitchLocalProfile -> localCards_ 的对应具名方法，不通过万能Execute。
  *
  * 不在C预写userPreferPrimarySlot：交 A AcceptEntryPrimaryPreference，在原适用入口节点调用。
- * 槽种类/可见性读 catalog_；第三卡Voice翻译用 A ReadLegacyAssignment 的资源视图，
- * 不在此另存Radio状态。该视图尚缺完整旧第三卡Radio投影片段，见主设计源码落点缺口。
+ * 槽种类/可见性读静态catalog_；第三卡Voice翻译仍由C按旧规则解释A的动态Radio视图，
+ * 不把当前Modem分配写入目录，也不由A接管调用者权限投影。
  * 所有方法均为私有骨架，未追加 ISimManager/IEsimManager/IDL/ABI。
  */
 } // namespace OHOS::Telephony::MultiSim

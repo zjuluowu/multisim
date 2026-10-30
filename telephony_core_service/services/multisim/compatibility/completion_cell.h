@@ -21,8 +21,8 @@
 #include <optional>
 #include "application/orchestration/request_context.h"
 namespace OHOS::Telephony::MultiSim {
-// C宿主按CompletionId持有一个cell；所有调用由宿主的同一受控域保护。
-// 此类仅是一次完成状态机。真实等待/唤醒由CompletionHostPort使用FFRT实现；
+// C宿主按SynchronousWaitRef/原完成路由持有一个cell；所有调用由宿主的同一受控域保护。
+// 此类仅是一次完成状态机。真实等待/唤醒由CallbackHostPort使用FFRT实现；
 // 应用提交域不得等待，宿主在投递前建立cell，完成先于等待时也不能丢失结果。
 class CompletionCell final {
 public:

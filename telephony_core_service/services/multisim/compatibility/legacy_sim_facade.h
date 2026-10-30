@@ -24,6 +24,7 @@
 #include "topology/application/show_number_query.h"
 #include "topology/application/activate_sim_use_case.h"
 #include "application/card_access/local_card_requests.h"
+#include "assignment/application/assignment_service.h"
 
 namespace OHOS::Telephony::MultiSim {
 // 目标 C 私有桥，未来原 CoreServiceSim/SimManager/CMI 委托至此；不替换它们的公开签名。
@@ -31,7 +32,7 @@ class LegacySimFacade final {
 public:
     LegacySimFacade(const SlotCatalog &catalog, LegacyIngressPort &ingress, CallbackHostPort &callbacks,
         SetShowNumberUseCase &numbers, ShowNumberQuery &query, ActivateSimUseCase &activation,
-        AssignmentService &assignment, LocalCardRequests &localCards, CompletionHostPort &completions);
+        AssignmentService &assignment, LocalCardRequests &localCards);
     int32_t SetShowNumber(int32_t slotId, const std::u16string &number,
         LegacyCallerRef caller, LegacyCallbackRef callback);
     void RunQueuedSetShowNumber(const SetShowNumberCommand &command);
@@ -41,7 +42,7 @@ public:
     AssignmentView ReadAssignmentForLegacyProjection() const;
     void VerifyPinAtExecutionPoint(const VerifyPinRequest &request);
     EuiccPrimitiveResult SwitchLocalProfileAtExecutionPoint(const SwitchProfileRequest &request);
-    int32_t SwitchLocalProfileAndAssignAtExecutionPoint(const SwitchProfileRequest &request, int32_t &legacyEnumOut);
+    int32_t SwitchLocalProfileAndAssignAtExecutionPoint(const SwitchProfileRequest &request, int32_t &enumResult);
 private:
     const SlotCatalog &catalog_;
     LegacyIngressPort &ingress_;
@@ -51,7 +52,6 @@ private:
     ActivateSimUseCase &activation_;
     AssignmentService &assignment_;
     LocalCardRequests &localCards_;
-    CompletionHostPort &completions_;
 };
 } // namespace OHOS::Telephony::MultiSim
 

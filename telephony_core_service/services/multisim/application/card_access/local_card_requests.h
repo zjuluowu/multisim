@@ -22,64 +22,60 @@
 #include <string>
 #include <vector>
 #include "application/orchestration/request_context.h"
+#include "assignment/ports/profile_preference_port.h"
 
 namespace OHOS::Telephony::MultiSim {
 struct VerifyPinRequest { RequestContext context; CardApplicationTarget target; std::string pin; };
 struct ReadEfRequest { RequestContext context; CardApplicationTarget target; int32_t fileId; std::string path; };
-struct VerifiedProfileRoute { int32_t portIndex; std::string routeEvidence; };
+struct VerifiedPortRoute {
+    std::string physicalEuiccDomain;
+    int32_t portIndex;
+    uint64_t routeRevision;
+}; // 仅有经设备/产品证实的映射时提供；不由旧port参数或标签反推。
 struct SwitchProfileRequest {
     RequestContext context;
     CardApplicationTarget target;
     std::string iccid;
-    int32_t legacyPortIndex; // 原实参透传，不能被验证结果或默认0替代。
-    bool forceDisableProfile; // 原File保存该参数；不推断当前APDU已消费force。
-    std::optional<VerifiedProfileRoute> verifiedRoute;
-    uint64_t expectedTransitionDeadline; // 发起者的单调时钟预算，不是设备结束证据。
+    int32_t legacyPortIndex; // 原实参原样透传；是否编码Port沿原产品MEP分支。
+    bool forceDisableProfile; // 保留原契约；现生产保存该值，不据此声称已参与APDU编码。
+    std::optional<VerifiedPortRoute> verifiedRoute; // 未知不填0，也不覆盖legacyPortIndex。
+    uint64_t expectedTransitionDeadline; // 发起者的真实单调预算；不统一秒数或推断设备已结束。
 };
-struct EuiccPrimitiveResult {
-    int32_t outerLegacyResult;
-    std::optional<int32_t> cardEnumResult; // 非法slot/File未调用时不赋值，C保留原out引用。
-};
-struct ExpectedProfileToken { StepRef origin; SessionRef oldSession; };
-struct LocalProfileRuntimeResult {
+struct EuiccPrimitiveResult { int32_t outerLegacyResult; std::optional<int32_t> cardEnumResult; };
+// 非法槽/File未调用时cardEnumResult为空，C保留旧out参数；有效File失败仍有enum。
+struct LocalProfileExecutionResult {
     EuiccPrimitiveResult legacy;
-    bool fileReturned; // 原Manager有效槽/File调用已返回；包括card enum失败。
-    EffectKnowledge profileEffect;
-    bool channelEndConfirmed; // 独立证据，卡成功或本地channel清零不能推出true。
+    bool reachedLegacyPreferenceNode; // 有效槽File调用返回；卡enum失败仍到该节点。
+    EffectKnowledge effect;
+    bool channelUseEnded; // 只是内部观察，完整资源恢复仍由R按命令证据负责。
 };
-class LocalProfilePreferencePort {
-public:
-    virtual ~LocalProfilePreferencePort() = default;
-    virtual void AcceptLocalProfileReturnPreference() = 0;
-};
+struct LocalProfileTransitionRef { StepRef step; SessionRef originalSession; };
 // C 的短应用请求所需，R CardRuntime 实现；不强制 PIN/APDU 创建账户或多步操作聚合。
 class LocalCardPort {
 public:
     virtual ~LocalCardPort() = default;
     virtual void VerifyPin(const VerifyPinRequest &request) = 0;
     virtual void ReadElementaryFile(const ReadEfRequest &request) = 0;
-    // R先按原EsimManager同一slot/File条件校验，非法槽/File缺失不登记期望；
-    // 取得可信sentSession后在设备发送前登记，原语仍返回原错误。
-    virtual std::optional<ExpectedProfileToken> BeginExpectedProfileTransition(
+    // R先保持原Manager的slot/File校验；非法槽不登记，未知路由不新增旧错误。
+    virtual std::optional<LocalProfileTransitionRef> RegisterExpectedProfileTransition(
         const SwitchProfileRequest &request) = 0;
-    virtual LocalProfileRuntimeResult SwitchLocalProfile(const SwitchProfileRequest &request) = 0;
-    // 结束短请求等待；NotSent/ConfirmedNotApplied撤销期望，其余保留至因果观察消费/期限。
-    // 本方法不恢复旧EF资格、不释放未知通道、不重发高层任务。
-    virtual void EndProfileRequestWait(const ExpectedProfileToken &token, EffectKnowledge effect) = 0;
+    virtual LocalProfileExecutionResult SwitchLocalProfile(const SwitchProfileRequest &request) = 0;
+    virtual void EndLocalProfileWait(const LocalProfileTransitionRef &transition, EffectKnowledge effect) = 0;
 };
 class LocalCardRequests final {
 public:
-    LocalCardRequests(LocalCardPort &runtime, LocalProfilePreferencePort &preference)
-        : runtime_(runtime), preference_(preference) {}
+    LocalCardRequests(LocalCardPort &runtime, ProfilePreferencePort &preferences);
     void VerifyPin(const VerifyPinRequest &request);
     void ReadElementaryFile(const ReadEfRequest &request);
     EuiccPrimitiveResult SwitchLocalProfile(const SwitchProfileRequest &request);
 private:
     LocalCardPort &runtime_;
-    LocalProfilePreferencePort &preference_;
+    ProfilePreferencePort &preferences_;
     // 仅短请求关联/完成门控；不持久 PIN、认证数据或完整BPP。
 };
-// SwitchLocalProfile 外层成功 != 卡成功；后续偏好交 A、绑定观察交 T。
+// LocalCardRequests拥有本地短请求的期望登记/等待结束，R负责签发新Session与未知效果保留。
+// G3b桥未闭合的用例保持旧构建；不因缺期望证据新增旧错误或以任意READY作接续。
+// SwitchLocalProfile 外层成功 != 卡成功；偏好在原节点交A，绑定观察交T而非从返回码推断。
 // 下载/OSU仍走既有 EsimServiceClient/66250；不在此复制远端任务状态机。
 } // namespace OHOS::Telephony::MultiSim
 

@@ -13,34 +13,39 @@
  * limitations under the License.
  */
 // TARGET ARCHITECTURE SKELETON / PROPOSED: 尚未接入生产或构建，未转移写权。
-// Design: docs/SIM_Target_Architecture_Design_v1.2.md §4.3、§10.1。
+// Design: docs/SIM_Target_Architecture_Design_v1.2.md §4.2、§8.2、§9.3、§16.2。
 // 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
 
-#ifndef OHOS_TELEPHONY_MULTISIM_ACTIVATION_PROGRESS_H
-#define OHOS_TELEPHONY_MULTISIM_ACTIVATION_PROGRESS_H
+#ifndef OHOS_TELEPHONY_MULTISIM_TOPOLOGY_APPLICATION_ACTIVATION_PROGRESS_H
+#define OHOS_TELEPHONY_MULTISIM_TOPOLOGY_APPLICATION_ACTIVATION_PROGRESS_H
 
 #include <map>
-#include <optional>
-#include "application/orchestration/request_context.h"
+#include "topology/api/topology_requests.h"
+
 namespace OHOS::Telephony::MultiSim {
-struct ActivationProgressTicket {
-    RequestId request;
+struct ActivationTransition {
+    StepRef owner;
     SlotId slot;
     SessionRef sentSession;
-    uint64_t admission; // T在原置位执行节点产生，不由设备回包补造。
+    std::optional<SubscriptionId> subscription;
+    bool legacyProgress;
+    uint64_t admission {0}; // T在原执行接纳点签发，不由R回包补造。
 };
-// T拥有旧slot进度投影，非账户历史字段，非R资源租约。开始/替换只在原置位节点。
+// T拥有的跨模块业务进度；false可在第一次Hook前后出现，不代表R资源空闲。
 class ActivationProgress final {
 public:
-    std::optional<ActivationProgressTicket> Prepare(RequestId request, SlotId slot, const SessionRef &session);
-    bool Begin(const ActivationProgressTicket &ticket);
-    bool Clear(const ActivationProgressTicket &ticket);
-    bool IsInProgress(SlotId slot) const;
+    explicit ActivationProgress(RuntimeEpoch epoch) : epoch_(epoch) {}
+    std::optional<ActivationTransition> Prepare(const ActivationTransition &transition);
+    bool Begin(const ActivationTransition &transition);
+    bool Accept(const StepRef &owner, const SessionRef &session, bool inProgress);
+    bool ReadLegacy(SlotId slot) const;
 private:
-    std::map<SlotId, ActivationProgressTicket> transitions_;
-    std::map<SlotId, ActivationProgressTicket> issued_;
-    std::map<SlotId, uint64_t> lastStarted_; // 清理不删除水位，旧Begin不能复活。
-    uint64_t admissions_ = 0;
+    RuntimeEpoch epoch_;
+    std::map<SlotId, ActivationTransition> transitions_;
+    std::map<SlotId, ActivationTransition> prepared_;
+    std::map<SlotId, uint64_t> lastStarted_;
+    uint64_t nextAdmission_ {0};
 };
 } // namespace OHOS::Telephony::MultiSim
-#endif // OHOS_TELEPHONY_MULTISIM_ACTIVATION_PROGRESS_H
+
+#endif // OHOS_TELEPHONY_MULTISIM_TOPOLOGY_APPLICATION_ACTIVATION_PROGRESS_H

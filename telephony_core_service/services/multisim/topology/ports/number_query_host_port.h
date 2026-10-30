@@ -26,7 +26,8 @@ struct ImpuNumberResult { int32_t legacyResult; std::u16string number; };
 struct NumberBackwrite {
     BindingRef binding;
     SessionRef sourceSession;
-    uint64_t expectedAccountVersion;
+    uint64_t expectedIdentityRevision;
+    NumberFieldRevisions expectedNumberRevisions;
     std::u16string number;
     NumberSource source;
 };

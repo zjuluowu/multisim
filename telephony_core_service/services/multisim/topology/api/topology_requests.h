@@ -20,8 +20,8 @@
 #define OHOS_TELEPHONY_MULTISIM_TOPOLOGY_API_TOPOLOGY_REQUESTS_H
 
 #include <string>
-#include "topology/api/account_lifecycle.h"
 #include "application/orchestration/request_context.h"
+#include "topology/domain/account_registry.h"
 
 namespace OHOS::Telephony::MultiSim {
 struct SetShowNumberCommand {
@@ -33,40 +33,58 @@ enum class NumberSource { CardMsisdnCache, AccountDisplay, ImsImpu, Empty };
 struct ShowNumberRead {
     std::u16string number;
     NumberSource source;
-    int32_t legacyResult; // 保留现有错误值；内部不另造公开错误码。
+    int32_t legacyResult;
 };
 enum class ActivationKind { Ordinary, Force, Satellite, SatelliteForce };
 struct ActivateSimCommand {
     SlotTarget origin;
     bool enable;
     ActivationKind kind;
-    bool fromPublicEntry; // 入口偏好提示仅原指定分支产生，交 A 接纳。
+    bool fromPublicEntry;
     CompletionPlan completion;
 };
-// 与卡 MSISDN 分离的 T 只读资料；不包含 A 可写角色或 R Records。
 struct AccountView {
     SubscriptionId subscription;
+    AccountReadView view;
     std::u16string displayName;
     std::u16string displayNumber;
     bool activeProjection;
-    AccountFieldVersions fields; // 所读投影字段版本，不作为号码的统一冲突资格。
+    uint64_t identityRevision;
+    AccountFieldRevisions fields;
 };
 struct AccountStoreWriteResult {
     int32_t legacyResult;
     bool writeConfirmed;
-    bool callFinished; // 未结束/效果未知不释放本地冲突资格。
+    bool callFinished; // 不确定调用已结束时保留原冲突资格，不盲重写。
 };
+struct NumberFieldRevisions { std::optional<uint64_t> current; std::optional<uint64_t> historical; };
 struct NumberExecutionTarget {
     BindingRef binding;
     SessionRef session;
-    std::optional<uint64_t> currentNumberVersion;
-    std::optional<uint64_t> historicalNumberVersion;
+    uint64_t identityRevision;
+    NumberFieldRevisions numberRevisions; // 改名/IMS/active不应使合法号码结果失效。
 };
 struct NumberAcceptance {
     int32_t legacyResult;
     AccountStoreWriteResult storage;
     bool currentCacheAccepted;
     bool historicalCacheAccepted;
+};
+// 同一R应用观察流按序进入T；R已校验不替代T跨Owner/锁外I/O后的最终接纳。
+struct CardDiscoveryObservation {
+    SessionRef session;
+    uint64_t observationSequence;
+    std::string iccid;
+};
+struct CardSessionInvalidation {
+    SessionRef invalidatedSession;
+    uint64_t observationSequence;
+};
+struct DiscoveryAcceptance {
+    int32_t legacyResult;
+    bool bindingAccepted;
+    std::optional<SubscriptionId> storedSubscription;
+    AccountStoreWriteResult storage;
 };
 } // namespace OHOS::Telephony::MultiSim
 

@@ -13,13 +13,12 @@
  * limitations under the License.
  */
 // TARGET ARCHITECTURE SKELETON / PROPOSED: 尚未接入生产或构建，未转移写权。
-// Design: docs/SIM_Target_Architecture_Design_v1.2.md §4.1～4.2、§6.1、§11～12。
+// Design: docs/SIM_Target_Architecture_Design_v1.2.md §4.2、§6.3、§8.2、§9.3。
 // 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
 
 #ifndef OHOS_TELEPHONY_MULTISIM_ASSIGNMENT_APPLICATION_PRIMARY_SWITCH_PLAN_H
 #define OHOS_TELEPHONY_MULTISIM_ASSIGNMENT_APPLICATION_PRIMARY_SWITCH_PLAN_H
 #include <optional>
-#include <string>
 #include <vector>
 #include "assignment/api/primary_execution.h"
 namespace OHOS::Telephony::MultiSim {
@@ -28,17 +27,19 @@ enum class PrimaryAction {
     SaveOldParameters, WritePrimaryParameters, PublishStarted, SendSwitchType,
     ExecuteThreePhase, ExecuteDedicatedRil, PublishMainCard, SaveDefaultData,
     RestoreValidOldParameters, FinishOrdinary, FinishDedicated, ScheduleLegacyRetry,
-    ResetRetry, RemoveDedicatedTimeout, ClearDedicatedTarget,
-    RequestThirdCardRoute, ReturnOriginalResult
+    ResetRetry, RemoveDedicatedTimeout, ClearDedicatedTarget, RequestThirdCardRoute, ReturnOriginalResult
 };
 struct PrimarySwitchPlan {
-    PrimaryMode mode;
-    uint64_t observationRevision;
+    SlotId target;
+    RadioDomainId domain;
+    PrimarySwitchMode mode;
+    ParameterWritePosition parameterWrite;
+    bool followWithDefaultData;
     std::vector<PrimaryAction> beforeDevice;
     std::vector<PrimaryAction> onDeviceSuccess;
     std::vector<PrimaryAction> onDeviceFailure;
 };
-// 兼容步骤属于Application；Domain只保留角色/资源不变量。
-PrimarySwitchPlan PlanPrimarySwitch(bool userSet, const PrimaryExecutionObservation &observation);
+// 兼容参数/设备/完成偏序属于Application，非Domain纯角色规则。
+std::optional<PrimarySwitchPlan> PlanPrimarySwitch(const PrimaryDecisionFacts &facts);
 } // namespace OHOS::Telephony::MultiSim
 #endif

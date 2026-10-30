@@ -19,10 +19,12 @@
 #include "compatibility/legacy_completion.h"
 
 namespace OHOS::Telephony::MultiSim {
-void LegacyCompletion::CompleteInt(const CompletionPlan &plan, int32_t legacyResult)
+void LegacyCompletion::CompleteLegacyInt(const CompletionPlan &plan, int32_t legacyResult)
 {
-    host_.DeliverOriginalResult(plan, legacyResult);
+    if (legacyResult == 0 && plan.accountNotificationOnWholeSuccess) { output_.NotifyOriginalAccountChanged(); }
+    output_.DeliverOriginalInt(plan.route, legacyResult);
 }
+
 /* CompleteShowNumber 仅声明；伪代码：
  * 只有 completion.legacyResult 为原整体成功且计划要求原Manager通知时，
  * output_.NotifyOriginalAccountChanged()；随后 output_.TransferOriginalShowNumberResult。
@@ -30,5 +32,8 @@ void LegacyCompletion::CompleteInt(const CompletionPlan &plan, int32_t legacyRes
  * CoreServiceSim::SetShowNumber 才 callback->Transfer(ret)。通知投递/消费者到达不保证先后。
  * 卡成功但DB/缓存失败不发成功账户通知；卡晚到不再次进入此原完成出口。
  * 原通知或callback交付失败不反转设备/DB结果，不增加持久outbox或自动重试。
+ * CompleteLegacyInt(plan,result)：仅在该方法原整体成功且计划适用时NotifyOriginalAccountChanged；
+ * 随后output_.DeliverOriginalInt(plan.route,result)，由宿主区分callback、同步waiter及内部reply。
+ * T进度在旧Hook节点清零，不因C完成交付才清零；等待结束与资源静止分别处理。
  */
 } // namespace OHOS::Telephony::MultiSim

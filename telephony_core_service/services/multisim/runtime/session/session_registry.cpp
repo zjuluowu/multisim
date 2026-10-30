@@ -20,7 +20,7 @@ namespace OHOS::Telephony::MultiSim {
 namespace {
 bool SameStep(const StepRef &left, const StepRef &right)
 {
-    return left.request.value == right.request.value && left.step == right.step && left.attempt == right.attempt;
+    return left == right;
 }
 bool SameApplication(const CardApplicationTarget &left, const CardApplicationTarget &right)
 {
@@ -45,7 +45,7 @@ bool SessionRegistry::StillCurrent(const SessionRef &session) const
     return session.epoch == epoch_ && current && SameSession(*current, session);
 }
 
-bool SessionRegistry::PublishVerifiedSession(const SessionRef &session)
+bool SessionRegistry::MayPublishVerifiedSession(const SessionRef &session) const
 {
     if (session.epoch != epoch_ || session.bindingGeneration == 0) {
         return false;
@@ -55,6 +55,13 @@ bool SessionRegistry::PublishVerifiedSession(const SessionRef &session)
     if (generation != generations_.end() && session.bindingGeneration <= generation->second) {
         return StillCurrent(session); // 只允许当前完全相同会话幂等，不复活撤销代次。
     }
+    return true;
+}
+
+bool SessionRegistry::PublishVerifiedSession(const SessionRef &session)
+{
+    if (!MayPublishVerifiedSession(session)) { return false; }
+    const ApplicationKey key {session.application.slot, session.application.applicationKey};
     generations_.insert_or_assign(key, session.bindingGeneration);
     sessions_.insert_or_assign(key, session);
     return true;
@@ -70,6 +77,8 @@ void SessionRegistry::InvalidateForVerifiedReplacement(const SessionRef &oldSess
 bool SessionRegistry::RegisterExpectedTransition(const ExpectedTransition &expected)
 {
     if (!StillCurrent(expected.oldSession) || expected.consumed || expected.monotonicDeadline == 0 ||
+        expected.waitEnded || expected.step.request.epoch != epoch_ ||
+        expected.step.request.owner == RequestOwner::Unspecified || expected.step.request.value == 0 ||
         expected.affected.empty()) {
         return false;
     }
@@ -80,27 +89,34 @@ bool SessionRegistry::RegisterExpectedTransition(const ExpectedTransition &expec
         return false; // 重复登记不得延长预算或重新开启旧用例推进资格。
     }
     auto registered = expected;
-    registered.mayAdvanceRequest = true;
+    registered.waitEnded = false;
     expected_.push_back(registered);
     return true;
 }
 
-bool SessionRegistry::EndExpectedTransitionWait(const StepRef &origin, const SessionRef &oldSession,
-    EffectKnowledge effect)
+bool SessionRegistry::CancelExpectedConfirmedNotSent(const StepRef &origin)
 {
     const auto found = std::find_if(expected_.begin(), expected_.end(), [&](const auto &item) {
-        return SameStep(item.step, origin) && SameSession(item.oldSession, oldSession);
+        return SameStep(item.step, origin);
     });
-    if (found == expected_.end()) {
-        return false;
-    }
+    if (found == expected_.end() || found->effect != EffectKnowledge::NotSent) { return false; }
+    expected_.erase(found);
+    return true;
+}
+
+void SessionRegistry::EndExpectedWait(const StepRef &origin, EffectKnowledge effect)
+{
+    const auto found = std::find_if(expected_.begin(), expected_.end(), [&](const auto &item) {
+        return SameStep(item.step, origin);
+    });
+    if (found == expected_.end()) { return; }
     if (effect == EffectKnowledge::NotSent || effect == EffectKnowledge::Rejected ||
         effect == EffectKnowledge::ConfirmedNotApplied) {
         expected_.erase(found);
     } else {
-        found->mayAdvanceRequest = false; // Unknown/已发生效果仍可有界核对，旧等待不可复活。
+        found->waitEnded = true;
+        found->effect = effect; // 有界核对保留，不恢复旧请求推进/完成资格。
     }
-    return true;
 }
 
 size_t SessionRegistry::ExpireExpectedTransitions(uint64_t monotonicNow)
@@ -127,7 +143,8 @@ std::optional<ExpectedContinuation> SessionRegistry::AcceptExpectedContinuation(
     if (!evidence.protocolOrCorrelatedRequeryProvesCause || evidence.cause != found->allowedCause ||
         !evidence.observedSession || evidence.observedSession->epoch != epoch_ ||
         (found->expectedIdentity && found->expectedIdentity != evidence.verifiedIdentity) ||
-        evidence.observedSession->bindingGeneration <= found->oldSession.bindingGeneration) {
+        (SameApplication(evidence.observedSession->application, found->oldSession.application) &&
+         evidence.observedSession->bindingGeneration <= found->oldSession.bindingGeneration)) {
         return std::nullopt;
     }
     const auto affected = std::find_if(found->affected.begin(), found->affected.end(), [&](const auto &application) {
@@ -136,7 +153,7 @@ std::optional<ExpectedContinuation> SessionRegistry::AcceptExpectedContinuation(
     if (affected == found->affected.end() || !StillCurrent(*evidence.observedSession)) {
         return std::nullopt;
     }
-    ExpectedContinuation accepted {*evidence.observedSession, found->mayAdvanceRequest};
+    ExpectedContinuation accepted {*evidence.observedSession, !found->waitEnded};
     expected_.erase(found); // 一次消费；不会重新接纳旧EF或重复推进请求。
     return accepted;
 }

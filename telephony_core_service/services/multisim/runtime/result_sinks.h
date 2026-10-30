@@ -17,7 +17,7 @@
 
 #include "topology/ports/show_number_runtime_port.h"
 #include "topology/ports/activation_runtime_port.h"
-#include "topology/ports/card_discovery_sink.h"
+#include "topology/ports/card_observation_port.h"
 #include "assignment/ports/radio_execution_port.h"
 
 namespace OHOS::Telephony::MultiSim {
@@ -27,7 +27,7 @@ struct RuntimeResultSinks {
     MsisdnResultSink &numbers;
     ActivationResultSink &activation;
     RadioResultSink &assignment;
-    CardDiscoverySink &discovery;
+    CardObservationSink &observations;
     void DeliverMsisdn(const MsisdnWriteResult &result, bool mayAdvanceRequest) const
     {
         if (mayAdvanceRequest) {
@@ -37,7 +37,11 @@ struct RuntimeResultSinks {
         }
     }
     void DeliverActivation(const ActivationDeviceResult &result) const { activation.AcceptDeviceResult(result); }
-    void DeliverRadio(const RadioSwitchResult &result) const { assignment.AcceptRadioStep(result); }
+    void DeliverRadio(const RadioSwitchResult &result, bool mayAdvanceRequest) const
+    {
+        if (mayAdvanceRequest) { assignment.AcceptRadioStep(result); }
+        else { assignment.AcceptLateRadioEvidence(result); }
+    }
 };
 } // namespace OHOS::Telephony::MultiSim
 #endif // OHOS_TELEPHONY_MULTISIM_RUNTIME_RESULT_SINKS_H

@@ -19,16 +19,19 @@
 #ifndef OHOS_TELEPHONY_MULTISIM_RUNTIME_CARD_RUNTIME_H
 #define OHOS_TELEPHONY_MULTISIM_RUNTIME_CARD_RUNTIME_H
 
+#include <map>
+#include <utility>
+#include <vector>
 #include "application/card_access/local_card_requests.h"
 #include "assignment/ports/radio_execution_port.h"
 #include "topology/ports/activation_runtime_port.h"
+#include "topology/ports/card_observation_port.h"
 #include "topology/ports/show_number_runtime_port.h"
 #include "runtime/session/session_registry.h"
 #include "runtime/result_sinks.h"
 #include "runtime/records/load_session.h"
 #include "runtime/resource/resource_barrier.h"
 #include "model/slot_catalog.h"
-#include "topology/ports/card_discovery_sink.h"
 
 namespace OHOS::Telephony {
 class SimStateManager;
@@ -39,6 +42,7 @@ class StkManager;
 class SimAccountManager;
 class RadioProtocolController;
 class EsimManager;
+class ITelRilManager;
 }
 namespace OHOS::Telephony::MultiSim {
 struct ProductionSlotBindings {
@@ -59,49 +63,49 @@ struct StkTerminalResponse { RequestContext context; SlotTarget target; std::str
 // - IccDiallingNumbers*/UsimDiallingNumbersService 保留PBR/ANR/IAP；SimSms*/Stk*保留卡侧协议；
 // - SimAccountManager、OperatorConfig*/MatchingRule/Privilege 保留配置、APN和权限匹配；
 // - EsimManager/File/Controller 保留通道/APDU/本地Profile/BPP/通知及原双结果；
-// - RadioProtocolController 保留三阶段协议、session及静态设备串行；
+// - RadioProtocolController保留三阶段协议/session；专用Primary RIL沿共享ITelRilManager；
+//   激活旧串行由activeSimMutex_形成，ctx_在cv.wait期间释放，不能误称全程持有ctx_；
 // 新 SessionRegistry/LoadSession/ResourceBarrier 是其作用域治理位置，不另造成熟类空壳。
 // 本批构造仅表达借用关系，工厂未实现，绝不在旧Owner旁创建第二套活动对象/缓存/发令路径。
 class CardRuntime final : public ShowNumberRuntimePort, public ActivationRuntimePort,
     public RadioExecutionPort, public LocalCardPort {
 public:
     CardRuntime(const SlotCatalog &catalog, RuntimeEpoch epoch, std::vector<ProductionSlotBindings> slots,
-        RadioProtocolController &radio, EsimManager *euicc);
+        RadioProtocolController &radio, ITelRilManager &sharedRil, EsimManager *euicc);
     std::optional<CardNumberView> ReadMsisdnCache(SlotTarget target) const override;
     void WriteMsisdn(const MsisdnWriteRequest &request) override;
     void AcceptMsisdnWriteCompletion(const MsisdnWriteResult &result); // 原事件桥结果接纳点。
     void SetOrdinarySimActive(const ActivationDeviceRequest &request) override;
-    PrimaryExecutionObservation ObservePrimaryExecution(SlotId target) const override;
+    PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId target) const override;
     void SwitchPrimaryRadio(const RadioSwitchRequest &request) override;
-    void EndLegacySenseSwitch(const RadioDomainId &domain) override;
+    void EndLegacySenseSwitch(const StepRef &origin, const RadioDomainId &domain) override;
     void VerifyPin(const VerifyPinRequest &request) override;
     void ReadElementaryFile(const ReadEfRequest &request) override;
-    std::optional<ExpectedProfileToken> BeginExpectedProfileTransition(const SwitchProfileRequest &request) override;
-    LocalProfileRuntimeResult SwitchLocalProfile(const SwitchProfileRequest &request) override;
-    void EndProfileRequestWait(const ExpectedProfileToken &token, EffectKnowledge effect) override;
+    std::optional<LocalProfileTransitionRef> RegisterExpectedProfileTransition(
+        const SwitchProfileRequest &request) override;
+    LocalProfileExecutionResult SwitchLocalProfile(const SwitchProfileRequest &request) override;
+    void EndLocalProfileWait(const LocalProfileTransitionRef &transition, EffectKnowledge effect) override;
     void ReadPhonebook(const PhonebookReadRequest &request);
     void SendStkTerminalResponse(const StkTerminalResponse &response);
     void BeginRecordsLoad(CardApplicationTarget target, const std::vector<int32_t> &fileDependencyClosure);
     void OnScopedRefresh(const SessionRef &session, const std::string &scope, const std::vector<int32_t> &files);
+    void PublishAcceptedCardDiscovery(const SessionRef &session, const std::string &iccid);
+    void InvalidateVerifiedCardSession(const SessionRef &oldSession);
     // 由原生产事件桥在发送时关联，不重新发请求；有意义的结果回到对应应用Owner。
     void BindResultSinks(MsisdnResultSink &numbers, ActivationResultSink &activation, RadioResultSink &assignment,
-        CardDiscoverySink &discovery);
-    // 必须在同槽R短序列中先同步fence T，再发布R的新session；不得先投递异步发现。
-    bool FenceTopologyBeforeSessionPublication(const SessionRef &nextSession, uint64_t observationSequence);
-    void PublishCardDiscovery(const CardDiscoveryObservation &observation);
+        CardObservationSink &observations);
 private:
     const SlotCatalog &catalog_;
     std::vector<ProductionSlotBindings> slots_;
     RadioProtocolController &radio_;
-    EsimManager *euicc_; // 一个Manager，内部每槽普通/低优先级File共享经证实eUICC资源域。
-    RuntimeEpoch epoch_;
+    ITelRilManager &sharedRil_; // 同一Core宿主实例；SIM不Init/Stop该共享资源。
+    EsimManager *euicc_; // 原单一Manager内部已拥有普通/低优先级两套EsimFile，不重复创建Manager。
     SessionRegistry sessions_;
     ResourceBarrier resources_;
     std::map<std::string, LoadSession> loads_; // 仅在完整R写权切换后接管，不与旧加载计数并行写。
     std::map<uint64_t, MsisdnWriteRequest> msisdnAssociations_; // 原请求输入元数据，非另一份RIL requestMap。
-    struct FencedObservation { SessionRef session; uint64_t sequence; };
-    std::map<SlotId, FencedObservation> fencedObservations_; // R同槽序列，不随session重置。
-    std::optional<RuntimeResultSinks> resultSinks_; // H模块内借用；真实回调还需weak owner/epoch/排空。
+    std::map<std::pair<int32_t, std::string>, uint64_t> observationSequences_; // 每应用发现/失效共序。
+    std::optional<RuntimeResultSinks> resultSinks_; // H绑定窄出口，真实桥仍需epoch/weak owner/排空。
 };
 } // namespace OHOS::Telephony::MultiSim
 

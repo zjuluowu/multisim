@@ -29,7 +29,11 @@ namespace OHOS::Telephony::MultiSim {
 class RuntimeOperationStore final {
 public:
     enum class ResultAdmission { Accepted, Duplicate, WrongStep, AlreadyTerminal, UnknownRequest };
-    RequestId Begin(ResolvedTarget origin, CompletionPlan completion);
+    RuntimeOperationStore(RuntimeEpoch epoch, RequestOwner owner) : epoch_(epoch), owner_(owner) {}
+    RequestId Begin(ResolvedTarget origin, CompletionPlan completion, std::optional<StepRef> parent = std::nullopt);
+    bool AdvanceStep(StepRef expected, uint32_t nextStep, uint32_t attempt,
+        std::optional<SessionRef> sentSession); // 同域推进，禁止外部直接改Context。
+    bool RecordSent(StepRef expected, const SessionRef &sentSession);
     std::optional<RuntimeOperation> Read(RequestId request) const;
     ResultAdmission AcceptResult(StepRef step, EffectKnowledge evidence);
     void EndWait(RequestId request, WaitState reason);
@@ -37,8 +41,11 @@ public:
     void RetireAfterEvidenceRetention(RequestId request);
 private:
     // 由所属 Owner 的短提交域保护；未来实现使用 FFRT，不持锁跨 I/O。
+    RuntimeEpoch epoch_;
+    RequestOwner owner_;
     std::map<uint64_t, RuntimeOperation> operations_;
-    uint64_t nextId_ {1}; // 只在 H 的实例 epoch 内有效，不承担跨重启恢复。
+    uint64_t nextId_ {1}; // Begin/Read/Accept均核验epoch+owner；无跨重启恢复。
+    // Parent等待不占Owner短提交域；同一冲突集合须在唯一准入处一次登记，不能跨Owner持资格嵌套等。
 };
 } // namespace OHOS::Telephony::MultiSim
 

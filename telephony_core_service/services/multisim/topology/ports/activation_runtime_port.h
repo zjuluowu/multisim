@@ -29,7 +29,8 @@ public:
     virtual ~ActivationResultSink() = default;
     virtual void AcceptDeviceResult(const ActivationDeviceResult &result) = 0;
 };
-// T ActivateSimUseCase 使用；R CardRuntime 实现。旧进程级静态串行域不能按槽拆开。
+// T使用，R实现。保留原activeSimMutex_跨等待串行及PrimaryDone同锁关系；
+// ctx_在cv.wait期间释放，不能将串行错误归因为全程持有ctx_或按槽拆分。
 class ActivationRuntimePort {
 public:
     virtual ~ActivationRuntimePort() = default;

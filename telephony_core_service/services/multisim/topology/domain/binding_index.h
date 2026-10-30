@@ -27,23 +27,24 @@
 namespace OHOS::Telephony::MultiSim {
 struct SlotRuntimeEntry {
     SlotId slot;
-    bool instanceAssembled;
-    uint64_t revision; // 空位置也保留；绑定、撤销均推进。
+    bool instanceAssembled {false};
+    uint64_t bindingRevision {0}; // 空位置也保存；移除后不得归零，防同卡再插ABA。
     std::optional<BindingRef> acceptedBinding;
 };
-// T 拥有槽运行清单/位置绑定/局部 revision；R 拥有原始在位状态和 SessionRef。
-// 近期每位置至多一个当前绑定；Port 感知模型仅 G4 有证据后演进。
+// T 维护已接受绑定/空位置版本；R 维护原始设备会话。目录不证明对象已装配。
+// 一位置一当前绑定沿旧契约；Port映到不同逻辑槽不自动要求新schema。
 class BindingIndex final {
 public:
     explicit BindingIndex(const SlotCatalog &catalog);
     std::optional<BindingRef> Find(SlotId slot) const;
-    bool HasSlot(SlotId slot) const;
-    uint64_t Revision(SlotId slot) const;
+    std::optional<uint64_t> ReadPositionRevision(SlotId slot) const;
     bool StillMatches(const BindingRef &expected) const;
+    bool AcceptAssemblyState(SlotId slot, bool assembled);
     bool AcceptBinding(SlotId slot, SubscriptionId subscription, uint64_t expectedRevision);
     bool RemoveBinding(const BindingRef &expected);
     std::vector<SlotRuntimeEntry> ReadRuntimeSlots() const;
 private:
+    const SlotCatalog &catalog_;
     std::map<SlotId, SlotRuntimeEntry> slots_;
 };
 } // namespace OHOS::Telephony::MultiSim

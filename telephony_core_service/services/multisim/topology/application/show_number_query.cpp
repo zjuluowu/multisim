@@ -27,7 +27,7 @@ ShowNumberQuery::ShowNumberQuery(TopologyService &topology, ShowNumberRuntimePor
  * 卡缓存空 -> FindBinding/GetTargetSimId 原错误 -> 账户号码非空则直接返回；
  * 两者空 -> host_.ReadImpuNumber，非空且不同则 PostIndependentNumberBackwrite；
  * 保留 IMPU 原失败/空值语义与原返回节点，不等回写，不统一读成账户快照。
- * RunIndependentBackwrite：发起时保存 binding/session，执行时复核再调用
+ * RunIndependentBackwrite：发起时保存 binding/session/身份与号码字段版本，执行时复核再调用
  * topology_.AcceptIndependentNumberBackwrite；拒绝后不写当前槽的新账户。
  * 旧闭包仅捕获 slot/number，执行时才 GetTargetSimId；固定回写目标属于 G3b 行为增强。
  * 来源 MultiSimController::GetShowNumber/GetSimTelephoneNumber 的 TelFFRTUtils::Submit。

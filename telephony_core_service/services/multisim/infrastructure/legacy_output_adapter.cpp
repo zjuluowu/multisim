@@ -19,6 +19,10 @@
 #include "infrastructure/legacy_output_adapter.h"
 
 namespace OHOS::Telephony::MultiSim {
+/* DeliverOriginalInt仍仅声明：沿host callbacks_.DeliverOriginalInt(route, legacyResult)
+ * 分别交付原callback、同步等待结果或内部回执；不把RequestId当旧int返回值。
+ * 同步等待由C在原调用线程/预算处理，不占用T/A接纳域；输出失败不回滚卡/DB效果。
+ */
 /* 方法仅声明，计划复用：
  * NotifyOriginalAccountChanged -> MultiSimMonitor::NotifySimAccountChanged；
  * TransferOriginalShowNumberResult -> Core CallbackHostPort 保持原 callback->Transfer(Int32)。

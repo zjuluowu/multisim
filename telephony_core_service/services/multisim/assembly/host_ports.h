@@ -23,7 +23,7 @@
 #include "compatibility/legacy_boundary_ports.h"
 #include "topology/ports/number_query_host_port.h"
 
-namespace OHOS::Telephony { class ITelRilManager; }
+namespace OHOS::Telephony { class ITelRilManager; class ISimManager; class IEsimManager; }
 namespace OHOS::Telephony::MultiSim {
 // H的Core侧实现保留在 services/core/，本文件仅是SIM私有工厂所需契约。
 // Core创建并注册一个共享RIL，原搜网/IMS等消费者继续使用同一实例。
@@ -31,8 +31,14 @@ struct SimHostPorts {
     std::shared_ptr<ITelRilManager> sharedRil;
     LegacyIngressPort &legacyIngress;
     CallbackHostPort &callbacks;
-    CompletionHostPort &completions;
     NumberQueryHostPort &numberQuery;
+};
+// 最终SIM创建工厂按原时点回交既有管理器；Core只发布接口，不取得Controller/store内部对象。
+class SimServicePublicationPort {
+public:
+    virtual ~SimServicePublicationPort() = default;
+    virtual void PublishInitializedEuicc(const std::shared_ptr<IEsimManager> &euicc) = 0;
+    virtual void PublishInitializedSim(const std::shared_ptr<ISimManager> &sim) = 0;
 };
 // sharedRil只保留引用，不在SIM Init/Stop共享RIL；Core端口的代码/对象必须活到SIM排空结束。
 // EXT/HiSysEvent/IMS/卫星单例唯一定义处留Core或原所属库，不在SIM重新编译一份。

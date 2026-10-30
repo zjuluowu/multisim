@@ -13,18 +13,8 @@
  * limitations under the License.
  */
 // TARGET ARCHITECTURE SKELETON / PROPOSED: 尚未接入生产或构建，未转移写权。
-// Design: docs/SIM_Target_Architecture_Design_v1.2.md §4.1～4.2、§6.1、§11～12。
+// Design: docs/SIM_Target_Architecture_Design_v1.2.md §4.2、§6.3、§8.2、§9.3。
 // 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
 
-#ifndef OHOS_TELEPHONY_MULTISIM_APPLICATION_COMPLETION_PORT_H
-#define OHOS_TELEPHONY_MULTISIM_APPLICATION_COMPLETION_PORT_H
-#include "application/orchestration/request_context.h"
-namespace OHOS::Telephony::MultiSim {
-// 用例在原方法返回/回调节点交付；RequestId仅是关联，不能充当旧int结果。
-class CompletionPort {
-public:
-    virtual ~CompletionPort() = default;
-    virtual void CompleteInt(const CompletionPlan &plan, int32_t legacyResult) = 0;
-};
-} // namespace OHOS::Telephony::MultiSim
-#endif
+#include "assignment/domain/assignment_aggregate.h"
+// Application兼容步骤计划已移到assignment/application/primary_switch_plan.cpp。

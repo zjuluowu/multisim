@@ -20,14 +20,24 @@
 #define OHOS_TELEPHONY_MULTISIM_ASSIGNMENT_API_ASSIGNMENT_REQUESTS_H
 
 #include <optional>
+#include <string>
 #include <vector>
 #include "application/orchestration/request_context.h"
 #include "assignment/domain/role_selection.h"
-#include "topology/api/account_lifecycle.h"
 
 namespace OHOS::Telephony::MultiSim {
 struct SetRoleCommand { DefaultRole role; std::optional<SubscriptionId> subscription; SlotId legacySlot; };
-struct SwitchPrimaryCommand { SlotTarget target; bool userSet; CompletionPlan completion; };
+struct SwitchPrimaryCommand {
+    SlotTarget target;
+    bool userSet;
+    CompletionPlan completion;
+    std::optional<StepRef> parent;
+};
+struct RadioAssignmentView {
+    SlotId slot;
+    int32_t modemId;
+    uint64_t observationRevision;
+}; // 当前Radio观察归A接纳，不放只读SlotCatalog。
 struct AssignmentView {
     std::optional<SubscriptionId> defaultVoice;
     std::optional<SubscriptionId> defaultSms;
@@ -35,20 +45,64 @@ struct AssignmentView {
     std::optional<SlotId> lastData;
     bool primarySwitchInProgress;
     uint64_t assignmentRevision;
+    std::vector<RadioAssignmentView> radioAssignments; // C按原规则做第三卡投影。
 };
+struct AccountRolePlanningInput {
+    std::optional<SubscriptionId> existingSubscription;
+    SlotId discoveredSlot;
+    bool useLegacySingleSlotRoles;
+};
+struct AccountRoleReservation { uint64_t token; uint64_t assignmentRevision; };
 struct AccountRoleFragment {
-    std::optional<SubscriptionId> subscription; // 新行尚无simId。
-    uint64_t assignmentRevision;
-    uint64_t rolePlanId; // 发起发现的observationSequence；不跨运行实例复用。
-    bool includeInStorage; // 新行或旧单卡恢复写初始角色；多卡旧卡rebind保留角色。
+    std::optional<SubscriptionId> subscription;
+    AccountRoleReservation reservation;
     bool voice;
     bool sms;
     bool mainCardColumn;
     bool dataCardColumn;
-}; // A 所有，T 建行/重载仅组合只读片段；同名 DB列不替代 lastPrimary/lastData。
-struct RoleReloadTicket { AccountReadView view; uint64_t attempt; uint64_t assignmentRevision; };
-enum class RoleFragmentAcceptance { NoEffect, ReadyForOwnerReload, NeedsReconciliation };
-struct ActivationAdmission { bool mayProceed; bool legacyBoundedWaitExpired; };
+    bool includeInStorage; // 新行和单卡旧卡恢复写角色，多卡旧卡重绑定保留角色。
+}; // 新simId由原Insert返回；A资格覆盖建行I/O，不是只读快照后任意写。
+struct StoredAccountRoleFragment {
+    SubscriptionId subscription;
+    bool voice;
+    bool sms;
+    bool mainCardColumn;
+    bool dataCardColumn;
+}; // 原DB读取载荷；不能以A当前态填回旧DB读取结果。
+struct LegacyActivationWaitResult {
+    bool primaryStillInProgress;
+    bool boundedWaitExpired;
+}; // 仅描述G2原有界等待，超时仍继续；不授予新执行租约。
+struct ActivationConflictRequest { StepRef step; SessionRef sentSession; };
+struct ActivationConflictLease {
+    StepRef owner;
+    SessionRef sentSession;
+    RadioDomainId domain;
+    uint64_t token;
+    bool operator==(const ActivationConflictLease &other) const
+    {
+        return owner == other.owner && sentSession.epoch == other.sentSession.epoch &&
+            sentSession.application.slot == other.sentSession.application.slot &&
+            sentSession.application.applicationKey == other.sentSession.application.applicationKey &&
+            sentSession.bindingGeneration == other.sentSession.bindingGeneration &&
+            domain.key == other.domain.key && token == other.token;
+    }
+}; // A登记的应用冲突资格，不替代R真实设备租约。
+struct ActivationConflictEndEvidence { EffectKnowledge effect; bool deviceStepEnded; };
+inline bool MayReleaseActivationConflict(const ActivationConflictEndEvidence &evidence)
+{
+    return evidence.deviceStepEnded && evidence.effect != EffectKnowledge::Unknown;
+}
+struct InitialRoleFinalizationEvidence {
+    bool callFinished;
+    EffectKnowledge storageEffect;
+    bool projectionsAcceptedOrReconciled;
+};
+inline bool MayFinalizeInitialRoles(const InitialRoleFinalizationEvidence &evidence)
+{
+    return evidence.callFinished && evidence.storageEffect != EffectKnowledge::Unknown &&
+        evidence.projectionsAcceptedOrReconciled;
+}
 struct PrimaryRecheck { SlotId changedSlot; bool causedByActivation; };
 } // namespace OHOS::Telephony::MultiSim
 

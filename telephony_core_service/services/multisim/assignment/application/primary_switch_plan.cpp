@@ -13,33 +13,36 @@
  * limitations under the License.
  */
 // TARGET ARCHITECTURE SKELETON / PROPOSED: 尚未接入生产或构建，未转移写权。
-// Design: docs/SIM_Target_Architecture_Design_v1.2.md §4.1～4.2、§6.1、§11～12。
+// Design: docs/SIM_Target_Architecture_Design_v1.2.md §4.2、§6.3、§8.2、§9.3。
 // 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
 
 #include "assignment/application/primary_switch_plan.h"
 namespace OHOS::Telephony::MultiSim {
-PrimarySwitchPlan PlanPrimarySwitch(bool userSet, const PrimaryExecutionObservation &o)
+std::optional<PrimarySwitchPlan> PlanPrimarySwitch(const PrimaryDecisionFacts &facts)
 {
+    if (!facts.target.radioDomain) { return std::nullopt; }
     using A = PrimaryAction;
-    if (o.thirdCardRequiresRoute) {
-        // 旧NeedSwitchSimCard的int是换路/受理结果，后续Primary有独立完成。
-        return {PrimaryMode::ThirdCardRoute, o.observationRevision,
-            {A::RequestThirdCardRoute}, {A::ReturnOriginalResult}, {A::ReturnOriginalResult}};
+    if (facts.vendorMappingRequired) {
+        return PrimarySwitchPlan {facts.target.slot, *facts.target.radioDomain, PrimarySwitchMode::VendorRouteMapping,
+            ParameterWritePosition::AfterDevice, true, {A::RequestThirdCardRoute},
+            {A::ReturnOriginalResult}, {A::ReturnOriginalResult}};
     }
-    if (userSet && o.dedicatedPrimaryRilSupported) {
-        return {PrimaryMode::WithoutModemReboot, o.observationRevision,
+    if (facts.userSet && facts.dedicatedPrimaryRilSupported) {
+        return PrimarySwitchPlan {facts.target.slot, *facts.target.radioDomain, PrimarySwitchMode::WithoutModemRestart,
+            ParameterWritePosition::AfterDevice, true,
             {A::ValidateDedicatedGuards, A::BeginProgress, A::PublishStarted, A::ExecuteDedicatedRil},
             {A::WritePrimaryParameters, A::PublishMainCard, A::SaveDefaultData, A::FinishDedicated,
                 A::RemoveDedicatedTimeout, A::ClearDedicatedTarget, A::ReturnOriginalResult},
             {A::FinishDedicated, A::ReturnOriginalResult}};
     }
-    if (o.currentModemId && *o.currentModemId == 0) {
-        return {PrimaryMode::AlreadyM0, o.observationRevision,
-            {A::ValidateOrdinaryGuards},
-            {A::WritePrimaryParameters, A::PublishMainCard, A::SaveDefaultData, A::ResetRetry,
-                A::ReturnOriginalResult}, {A::ReturnOriginalResult}};
+    if (facts.alreadyOnPrimaryModem) {
+        return PrimarySwitchPlan {facts.target.slot, *facts.target.radioDomain, PrimarySwitchMode::AlreadyPrimary,
+            ParameterWritePosition::WithoutDevice, true, {A::ValidateOrdinaryGuards},
+            {A::WritePrimaryParameters, A::PublishMainCard, A::SaveDefaultData, A::ResetRetry, A::ReturnOriginalResult},
+            {A::ReturnOriginalResult}};
     }
-    return {PrimaryMode::ThreePhase, o.observationRevision,
+    return PrimarySwitchPlan {facts.target.slot, *facts.target.radioDomain, PrimarySwitchMode::ThreePhaseProtocol,
+        ParameterWritePosition::BeforeDevice, true,
         {A::ValidateOrdinaryGuards, A::BeginProgress, A::BeginSenseSwitch, A::SaveOldParameters,
             A::WritePrimaryParameters, A::PublishStarted, A::SendSwitchType, A::ExecuteThreePhase},
         {A::PublishMainCard, A::SaveDefaultData, A::FinishOrdinary, A::ResetRetry, A::ReturnOriginalResult},

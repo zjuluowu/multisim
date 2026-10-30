@@ -13,88 +13,72 @@
  * limitations under the License.
  */
 // TARGET ARCHITECTURE SKELETON / PROPOSED: 尚未接入生产或构建，未转移写权。
-// Design: docs/SIM_Target_Architecture_Design_v1.2.md §6.3、§9.2～9.5、§16.2。
+// Design: docs/SIM_Target_Architecture_Design_v1.2.md §4.3、§10.1。
 // 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
 
 #include "topology/application/topology_service.h"
 
 namespace OHOS::Telephony::MultiSim {
 TopologyService::TopologyService(const SlotCatalog &catalog, AccountStore &store, RuntimeEpoch epoch)
-    : bindings_(catalog), discovery_(epoch), store_(store) {}
-bool TopologyService::FenceRuntimeSession(const SessionRef &session, uint64_t sequence)
-{
-    return discovery_.Fence(session, sequence);
-}
-AccountReloadTicket TopologyService::BeginAccountReload(AccountReadView view, uint64_t assignmentRevision)
-{
-    return accounts_.BeginReload(view, assignmentRevision);
-}
-AccountReloadAcceptance TopologyService::AcceptAccountReload(const AccountReloadTicket &ticket,
-    const AccountLoadResult &result)
-{
-    if (result.view != ticket.view || result.attempt != ticket.attempt) { return {false, 0, 0}; }
-    return accounts_.AcceptReload(ticket, result.projectionReplaceable, result.rows);
-}
-std::optional<ActivationProgressTicket> TopologyService::BeginActivationProgress(RequestId request, SlotId slot,
-    const SessionRef &session)
-{
-    auto ticket = activationProgress_.Prepare(request, slot, session);
-    if (!ticket || !activationProgress_.Begin(*ticket)) { return std::nullopt; }
-    return ticket;
-}
-bool TopologyService::ClearActivationProgress(const ActivationProgressTicket &ticket)
-{
-    return activationProgress_.Clear(ticket);
-}
-bool TopologyService::IsActivationInProgress(SlotId slot) const { return activationProgress_.IsInProgress(slot); }
+    : bindings_(catalog), observations_(epoch), store_(store), activationProgress_(epoch) {}
 
+void TopologyService::BindRolePlanner(AccountRolePlanningPort &roles)
+{
+    roles_ = &roles; // H仅在发布前绑定一次；它和TopologyService不互相拥有生命周期。
+}
 
-/* 伪代码，AcceptNumberAfterCardWrite / AcceptIndependentNumberBackwrite 尚无定义：
- * 1. 在 T 短提交域复核 target.binding / session / currentNumberVersion / historicalNumberVersion，ReserveNumberField(target)。
- * 2. 锁外 store_.WriteDisplayNumber({target.binding.subscription, number})。
- *    来源 MultiSimController::SetShowNumberToDB -> SimRdbHelper::UpdateDataBySimId。
- * 3. 返回同一提交域复核相关输入，按旧错误依次接纳：
- *    accounts_.AcceptNumberVisibility(..., AccountReadView::Current, number)；
- *    accounts_.AcceptNumberVisibility(..., AccountReadView::Historical, number)。
- *    每一步的可见性独立；DB成功/当前成功/历史失败不得整体回滚或隐藏。
- * 4. 只有调用已结束且结果已接纳才 ReleaseAfterStoreCallFinished；DB已写但目标失效
- *    进入核对，不能只拒绝内存发布就宣称没有效果。未知效果不盲目重写。
- *
- * 这里是固定目标的 G3b 推荐。G2 结构切片须保留旧 SetShowNumberToDB 在此步骤才
- * GetTargetSimId(slot) 的解析时点，并保留 slot 越界返回 false(整数0) 等旧异常轨迹；
- * 这些兼容错误不能从本骨架自造的新枚举推导，修正须独立裁决。
- *
- * 迁移闭包：InitData/InitIccId/InitShowNumber/SetShowName/SaveImsSwitch、
- * GetListFromDataBase/GetAllListFromDataBase、Monitor RefreshData/用户切换/provider重连、
- * ForgetAllData、卡探测、InsertEsimData、force/卫星 active 及查询异步回写全部委托同一入口。
- * 建行/重载的角色字段使用 A 应用提供的片段；T 不持有或重写角色事实。
- *
- * DiscoverCard协议（真实provider及观察桥未接入，非业务成功桩）：
- * T短域 discovery_.Begin(observation, bindings_)固定ticket -> 锁外store_.MatchAccountByIccid。
- * 返回短域复核ticket，保留查询失败/旧卡isEsim不匹配等原错误；新卡matchedSubscription为空。
- * 匹配查询或纯规划失败调用 EndPreparationFailure(ticket,实际callFinished,bindings_)关闭准备，
- * 未结束的查询不释放资格。原Monitor预算重试显式调用RetryAfterKnownNoEffect，
- * 同一仍有效观察/slotrevision发新admission；不强求新R事件，重复观察也不自动发令。
- * 锁外 A.PrepareAccountRoleFragment({slot,iccid,matchedSubscription,sequence})规划角色。
- * 再次短域复核ticket并 A.IsAccountRoleFragmentCurrent；任何失败均不发ApplyAccountRow。
- * 锁外一次原Insert/Rebind：store_.ApplyAccountRow({T字段, A片段仅includeInStorage时})，
- * 新建行按真实配置给初始角色；旧卡多槽rebind不覆盖旧角色，由provider落实身份。
- * 返回后A.AcceptAccountRoleStorage(fragment,storedIdentity,实际EffectKnowledge)处理自己的字段：
- * 角色版本变化只NeedsReconciliation，不能回滚或重写已存片段。
- * T最终短域 CompleteStored(ticket,result.effect,storedIdentity,result.storage.callFinished,bindings_)消费票据并提交绑定。
- * 仅已确认存储、身份已解析且ticket仍有效时发布绑定；已写/未知而资格失效则
- * needsFieldReconciliation，沿原读源分字段核对，不自动重放建行、不把DB效果当成未发生。
- * 只有ConfirmedNotApplied/Rejected/NotSent且调用结束可按原预算显式重试；
- * Unknown/Applied或旧ticket一律不重发，旧失败不能覆盖已重试的新ticket。
- * 新绑定不是current/all缓存最终刷新；后续原各自重载仍独立失败/替换。
- * ObserveCardDiscovery只投递此具名用例，不在R锁内做数据库工作；R会话失效Fence不能排在
- * 旧发现长IO之后等待，必须先撤销T票据后再暴露替换会话。撤销/解绑也先获同序资格，
- * Unbind计划保留原标签/active条件，存后分别核对、按binding revision提交移除。
- *
- * 重载：分别BeginRoleReload/BeginAccountReload -> 一次LoadAccounts(ticket) -> T接纳rows，
- * A.AcceptRoleReload(ticketA,result.roles,result.projectionReplaceable)，不因T冲突抑制A核对。
- * 每个view独立尝试、结果、重试预算；失败保留本view，另一view可继续。
- * G3字段版本保护拒绝旧重载覆盖本地较新字段；G2仍保持原读源、返回、节点与重试。
+std::optional<ActivationTransition> TopologyService::PrepareActivationProgress(const ActivationTransition &transition)
+{ return activationProgress_.Prepare(transition); }
+bool TopologyService::BeginActivationProgress(const ActivationTransition &transition)
+{ return activationProgress_.Begin(transition); }
+bool TopologyService::AcceptActivationProgress(const StepRef &owner, const SessionRef &session, bool inProgress)
+{ return activationProgress_.Accept(owner, session, inProgress); }
+bool TopologyService::ReadLegacyActivationProgress(SlotId slot) const
+{ return activationProgress_.ReadLegacy(slot); }
 
+/* 业务方法仅声明，以下是锁外I/O与最终接纳的协议，不是可调用实现：
+ *
+ * AcceptNumberAfterCardWrite / AcceptIndependentNumberBackwrite：
+ * 1. T短提交域核查binding/session、身份及号码字段版本，ReserveNumberField。
+ *    显示名、IMS、label、active改变不使号码资格失效；同号码冲突资格覆盖整个调用。
+ * 2. 锁外WriteDisplayNumber；返回后复核并依旧节点分别接纳Current/Historical，
+ *    每投影使用自己的numberRevision，当前成功/历史失败保留原部分效果。
+ * 3. 调用已结束且结果已接纳后才释放；已写但目标失效进入核对，不盲重发写卡/写库。
+ *
+ * AcceptCardDiscoveryObservation：
+ * 1. 与AcceptCardSessionInvalidation同一T接纳序列，observations_.AcceptDiscovery。
+ *    observations_.BeginStore固定独立admission/绑定revision；序列/epoch失效停止尚未发出的步骤。
+ *    匹配读取或纯规划失败走EndPreparationFailure；已结束确认未生效时原用例按旧预算
+ *    RetryAfterKnownNoEffect在同一有效观察上取得新admission，不要求新R事件、不因重复观察重发。
+ * 2. 锁外MatchAccountByIccid；返回后复核观察及绑定键。向roles_请求角色片段，输入
+ *    可以只有位置/既有策略，existingSubscription为空不强求插入前未知的新simId。
+ *    父子关联、不嵌套等待；跨Owner冲突集合一次登记，失败不得持一个Owner资格等另一个。
+ * 3. 经roles_->StillOwnsInitialRoleReservation复核A角色预留及T受影响键资格后，
+ *    锁外WriteDiscoveredAccount一次旧Insert/Update。
+ * 4. 返回后observations_.StillCurrent、绑定键和roles_->StillOwnsInitialRoleReservation分别复核。
+ *    provider返回身份/effect/callFinished交observations_.CompleteStored最终接纳绑定或登记核对；
+ *    Unknown/已写或未结束不能重试，旧失败不影响后来票据；
+ *    角色片段经roles_->AcceptDiscoveredRoleProjection交A；不整行回灌或恢复旧快照。
+ *    若已写而观察失效，保存assignedSubscription/部分效果进入核对，不绑定到新卡。
+ *    通过FinalizeInitialRoleReservation(planned,{callFinished,storageEffect,projectionsAcceptedOrReconciled})
+ *    交A核验释放；DB已写但观察失效时先核对，不以callFinished单独释放；T资格遵守相同结束/核对条件。
+ * AcceptCardSessionInvalidation：按同一序列失效观察，再以原BindingRef撤销相关键；
+ *    R合法观察校验不替代本T序列及锁外I/O后的复核，禁止回包时补贴当前会话。
+ *
+ * PrepareAccountReload / AcceptAccountReload：Current与Historical分别发起LoadAccounts，
+ * 保存本次view/attempt、相关身份/各字段版本及A角色投影版本。失败只保留该view旧值并
+ * 沿原预算重试，不阻止另一view成功；同次读取的storedRoles交roles_->AcceptReloadedRoleProjectionSet。
+ * T在发起时accounts_.BeginReload生成独立view/attempt及成员快照；结果按accounts_.AcceptReload
+ * 接纳整次读取与成员移除，再用AcceptReloadProjection按相关版本接纳字段；同值重载不增号码版本，
+ * 旧读取不覆盖新写的号码等字段，也不能删除读取后新增/更新的成员；
+ * 同一行较新名称可以保留，而未冲突号码/active仍可接受。不要从A当前态重造旧DB角色。
+ *
+ * 原执行接纳点先PrepareActivationProgress取得T admission，再BeginActivationProgress；
+ * AcceptActivationProgress按完整epoch/owner/request/step/attempt/session准入，
+ * 在原两次Hook及失败出口更新槽进度；false不释放R资源、不证明设备静止。
+ *
+ * G2仍保留SetShowNumberToDB在该步骤GetTargetSimId(slot)的解析时点及旧错误轨迹；
+ * 固定目标/陈旧拒绝为G3增强。名称、IMS、标签、初始化、current/all重载、Monitor、
+ * provider/用户重连、卡探测、eSIM插入和普通/force/卫星旧写者全部按WU委托，不能双写。
  */
 } // namespace OHOS::Telephony::MultiSim

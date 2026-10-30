@@ -13,59 +13,66 @@
  * limitations under the License.
  */
 // TARGET ARCHITECTURE SKELETON / PROPOSED: 尚未接入生产或构建，未转移写权。
-// Design: docs/SIM_Target_Architecture_Design_v1.2.md §4.4 场景2、§6.3、§9.3、§11.2、§14.2。
+// Design: docs/SIM_Target_Architecture_Design_v1.2.md §4.2、§6.3、§8.2、§9.3。
 // 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
 
 #include "assignment/application/assignment_service.h"
-#include "topology/application/topology_service.h"
 #include "assignment/application/primary_switch_plan.h"
 
 namespace OHOS::Telephony::MultiSim {
 AssignmentService::AssignmentService(const SlotCatalog &catalog, AssignmentStore &store,
-    RadioExecutionPort &radio, AssignmentOutputPort &output, TopologyService &topology, CompletionPort &completion)
-    : catalog_(catalog), store_(store), radio_(radio), output_(output), completion_(completion), topology_(topology) {}
-
-void AssignmentService::AcceptLocalProfileReturnPreference()
+    RadioExecutionPort &radio, AssignmentOutputPort &output, PrimaryTopologyPort &topology,
+    LegacyIntCompletionPort &completion, RuntimeEpoch epoch)
+    : catalog_(catalog), operations_(epoch, RequestOwner::Assignment), store_(store), radio_(radio),
+      output_(output), topology_(topology), completion_(completion) {}
+void AssignmentService::AcceptLocalProfilePreference(const StepRef &, SlotId)
 {
-    store_.WriteUserPrimaryPreference(true); // 与旧SetParameter一致：失败不覆盖原双结果。
+    store_.WriteUserPrimaryPreference(true); // 原File返回后写入；参数失败不覆盖旧双结果。
 }
-std::optional<AccountRoleFragment> AssignmentService::PrepareAccountRoleFragment(
-    const DiscoveryRoleContext &context) const
-{
-    const auto count = catalog_.Capacities().configured;
-    if (!count) { return std::nullopt; } // 缺真实SIM_SLOT_COUNT输入，仅阻塞初始建行计划。
-    return accountRoles_.Prepare(context, *count == 1);
-}
-bool AssignmentService::IsAccountRoleFragmentCurrent(const AccountRoleFragment &fragment) const
-{ return accountRoles_.IsCurrent(fragment); }
-RoleFragmentAcceptance AssignmentService::AcceptAccountRoleStorage(const AccountRoleFragment &fragment,
-    std::optional<SubscriptionId> identity, EffectKnowledge effect)
-{ return accountRoles_.AcceptStorage(fragment, identity, effect); }
-RoleReloadTicket AssignmentService::BeginRoleReload(AccountReadView view, uint64_t attempt)
-{ return accountRoles_.BeginReload(view, attempt); }
-bool AssignmentService::AcceptRoleReload(const RoleReloadTicket &ticket,
-    const std::vector<AccountRoleFragment> &roles, bool readSucceeded)
-{ return accountRoles_.AcceptReload(ticket, roles, readSucceeded); }
-/* 伪代码，StartPrimarySwitch / AcceptRadioStep 等仅声明：
- * SetDefaultRole等所有角色实际可见提交须同时accountRoles_.NoteLocalRoleMutation；
- * 相应角色current/all查询消费accountRoles_投影，不由T回灌整个行。
- * 在原执行解析点 radio_.ObservePrimaryExecution(target) -> PlanPrimarySwitch(userSet, facts)。
- * ThirdCardRoute优先：T映射/厂商执行及原NeedSwitchSimCard早返回，后续Primary独立完成；
- * WithoutModemReboot：设备专用RIL -> 成功后参数/主卡广播/Data -> Done(true)；
- * AlreadyM0：普通校验 -> 参数/主卡广播/Data -> 重试复位，无设备协议和Done；
- * ThreePhase：普通校验 -> 进度/SenseSwitch -> 参数预写 -> 三阶段设备 -> 广播/Data/Done。
- * 具名计划列出每个分支成功/失败偏序；A执行参数，R不代写参数。
- * 每个原返回节点 completion_.CompleteInt(command.completion, legacyResult)，
- * RequestId不作为旧int，设备后续观察不能重复完成；第三卡不等待延后切换。
- * 成功和错误均按发送时step/session/phase/member一次准入，再推进业务步骤；
- * 无效结果只核对设备效果。参数恢复不等于硬件回滚；Unknown资源由R核对。
- * 原失败重试轨迹与新准入/安全重试分开：新准入收紧须G3c按方法验收。
+std::optional<AccountRoleFragment> AssignmentService::PrepareAccountRoleFragment(const AccountRolePlanningInput &input)
+{ return accountRoles_.Prepare(input); }
+bool AssignmentService::AcceptDiscoveredRoleProjection(const AccountRoleFragment &planned, SubscriptionId assigned)
+{ return accountRoles_.AcceptDiscovered(planned, assigned); }
+bool AssignmentService::StillOwnsInitialRoleReservation(const AccountRoleFragment &planned) const
+{ return accountRoles_.StillOwns(planned); }
+bool AssignmentService::FinalizeInitialRoleReservation(const AccountRoleFragment &planned,
+    const InitialRoleFinalizationEvidence &evidence)
+{ return accountRoles_.Finalize(planned, evidence); }
+uint64_t AssignmentService::ReadRoleProjectionRevision(bool historicalView) const
+{ return accountRoles_.Revision(historicalView); }
+bool AssignmentService::AcceptReloadedRoleProjectionSet(const std::vector<StoredAccountRoleFragment> &loaded,
+    uint64_t loadAttempt, uint64_t expectedRevision, bool historicalView)
+{ return accountRoles_.AcceptReloadSet(loaded, loadAttempt, expectedRevision, historicalView); }
+bool AssignmentService::AcceptReloadedRoleProjection(const StoredAccountRoleFragment &loaded,
+    uint64_t, uint64_t expectedRevision, bool historicalView)
+{ return accountRoles_.AcceptSingleProjection(loaded, expectedRevision, historicalView); }
+/* 仅声明方法的流程契约：
+ * StartPrimarySwitch在原执行点读取T窄事实与R动态PrimaryRadioObservation，不从目录推断当前分配。
+ * 同一请求的全局角色/Primary参数域与真实Radio冲突集在唯一准入处一次登记；跨Owner子请求带parent。
+ * 不在A持资格同步等T；第三卡映射返回子请求/原早返回轨迹，后续事件再推进，不经CMI自调用。
+ * PlanPrimarySwitch按原分支优先级选择：第三卡映射 -> 用户专用RIL -> 已M0 -> 普通三阶段。
+ * ThreePhaseProtocol: 进度/SenseSwitch -> 参数/last预写 -> R三阶段 -> 原广播 -> Data -> Done。
+ * WithoutModemRestart: 原开始事件 -> R共享RIL专用SetPrimarySlot -> 成功才保存/联动Data；失败仍Done(true)。
+ * AlreadyPrimary: 原保存/联动Data，不发送设备协议；VendorRouteMapping经T子请求与原厂商端口。
+ * 成功/错误都先按epoch/owner/request/step/attempt、原session/phase/member准入，再修改阶段/计数。
+ * Done与EndLegacySenseSwitch核对原请求资格，旧完成不能清新transition；阶段结束不是设备成功。
+ * completion_.CompleteLegacyInt在各旧返回点交C；同步等待在宿主适配层，不占A提交域。
+ * 失败按旧参数条件恢复；恢复不等于设备回滚；Unknown交R，唯一业务重试由A授权。
+ * G2保留原入口/预算/重试；新准入和隔离是G3c行为增强，不由本骨架宣称已启用。
  *
- * 来源 MultiSimController::SetPrimarySlotId/SavePrimaryCardInfo/ResumePrimaryCardInfo/
- * RetrySetPrimarySlotId/SetDefaultCellularDataSlotId/CheckIfNeedSwitchMainSlotId；
- * RadioProtocolController::SetRadioProtocol/ProcessResponseInfoOfEvent 继续在 R。
- * CoreServiceSim::SetActiveSim/SetPrimarySlotId、EsimManager::SwitchToProfile 的偏好写归 A。
- * 迁移需同时处理 InitMainCardSlotId/建行角色/重载、5处 detached 自调用、超时/重试，
- * 不留旧直接 writer。G2 仍保留旧有界等待；新切换准入为 G3c 行为增强。
+ * WaitForLegacyPrimaryBeforeActivation仅保留G2原有界等待/超时继续，不创建G3资格。
+ * G3 AdmitActivationBeforeDevice以原step+sentSession在assignmentConflicts_和Primary同处核验并登记
+ * 完整冲突集，返回ActivationConflictLease；等待/拒绝需方法级行为验收，不隐含新增生产策略。
+ * ReleaseActivationConflict只对匹配lease且MayReleaseActivationConflict证据成立的登记释放；
+ * Unknown或结束未证时TransferActivationConflictToReconciliation保留同一token/原归属，T进度清零不释放。
+ *
+ * PrepareAccountRoleFragment按发现上下文预留角色域，未知simId保持optional；原Insert返回id后
+ * AcceptDiscoveredRoleProjection将计划绑定该id。T发I/O前及返回后经StillOwnsInitialRoleReservation复核。
+ * FinalizeInitialRoleReservation只在MayFinalizeInitialRoles成立且token/角色域资格匹配时释放；
+ * DB已写但观察失效、Unknown或投影尚未接纳/核对均保留原资格，不能仅凭callFinished解锁。
+ * current/all角色载荷来自原两读源，成功整次读取用AcceptReloadedRoleProjectionSet独立替换；
+ * 失败不调用/不清空，原setter只改current并同步accountRoles_.NoteLocalRoleMutation。
+ * SetDefaultRole等实际提交均更新这个唯一角色资格；不以当前A状态反填DB结果。
+ * 入口/eSIM偏好均在原指定节点交A；迁移关闭旧参数直写、恢复、重试事件及detached CMI自调用。
  */
 } // namespace OHOS::Telephony::MultiSim

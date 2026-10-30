@@ -13,22 +13,21 @@
  * limitations under the License.
  */
 // TARGET ARCHITECTURE SKELETON / PROPOSED: 尚未接入生产或构建，未转移写权。
-// Design: docs/SIM_Target_Architecture_Design_v1.2.md §4.1～4.2、§6.1、§11～12。
+// Design: docs/SIM_Target_Architecture_Design_v1.2.md §4.2、§6.3、§8.2、§9.3。
 // 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
 
 #ifndef OHOS_TELEPHONY_MULTISIM_ASSIGNMENT_API_PRIMARY_EXECUTION_H
 #define OHOS_TELEPHONY_MULTISIM_ASSIGNMENT_API_PRIMARY_EXECUTION_H
-#include <optional>
-#include <string>
-#include "model/sim_identity.h"
+#include "model/slot_catalog.h"
 namespace OHOS::Telephony::MultiSim {
-enum class PrimaryMode { ThreePhase, WithoutModemReboot, AlreadyM0, ThirdCardRoute };
-struct PrimaryExecutionObservation {
-    // R/厂商实际能力与设备观察，不从slot数量推导。第三卡分支优先于免重启。
-    bool thirdCardRequiresRoute;
-    bool dedicatedPrimaryRilSupported; // 必须来自原真实能力输入；未知时R不得以false冒充观察。
-    std::optional<int32_t> currentModemId;
-    uint64_t observationRevision;
-};
+enum class PrimarySwitchMode { ThreePhaseProtocol, WithoutModemRestart, AlreadyPrimary, VendorRouteMapping };
+enum class ParameterWritePosition { BeforeDevice, AfterDevice, WithoutDevice };
+struct PrimaryDecisionFacts {
+    SlotDescriptor target;
+    bool userSet;
+    bool dedicatedPrimaryRilSupported;
+    bool alreadyOnPrimaryModem;
+    bool vendorMappingRequired;
+}; // R真实能力/观察由应用提供；未知不默认false或M0，不从目录数量推断。
 } // namespace OHOS::Telephony::MultiSim
 #endif

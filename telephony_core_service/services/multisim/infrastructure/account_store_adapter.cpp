@@ -25,13 +25,14 @@ namespace OHOS::Telephony::MultiSim {
  * legacyStore_.UpdateDataBySimId(patch.subscription.legacySimId, values)。
  * 保留INVALID_VALUE->原DATABASE_WRITE_FAIL，其余返回的旧解释；不宣称CAS。
  * DB返回后交T接纳缓存，Adapter不改localCacheInfo_/allLocalCacheInfo_。
- * LoadAccounts(ticket) 按 view 分别 QueryAllValidData/QueryAllData，保留 raw result、
- * result != INVALID_VALUE 的旧返回与 result == SUCCESS 的替换资格，独立重试。
- * 同次原整行读取拆出 T rows/A roles，无第二次不一致整行查询。
- * MatchAccountByIccid沿QueryDataByIccId，区分失败/无行/已存在。
- * ApplyAccountRow一次原InsertData/UpdateDataByIccId；插入后沿原ID返回/查询取得simId。
- * 组合T字段和A授权角色片段，不在I决定角色；无provider CAS保证。
- * 原isEsim不匹配拒绝、标签/emptyiccid和active重置Hook输入由T用例保留。
+ * LoadAccounts(request)：Current走原QueryAllValidData，Historical走QueryAllData；
+ * 每次分别返回原请求view/attempt、结果和T字段片段，同时保留同次查询的storedRoles给A。
+ * complete按原Query成功判断；legacyReturn另按result != INVALID_VALUE保留。
+ * 一次失败不替换另一投影，空成功与失败分开；不从A当前状态补造旧DB读取的角色行。
+ * MatchAccountByIccid沿原QueryDataByIccId，区分查询失败与确知无匹配；不分配新身份。
+ * WriteDiscoveredAccount只执行T已准备字段与A已授权角色片段的一次明确原Insert/Update；
+ * 新建时回传原分配simId，A初始角色计划不要求先有该simId。Adapter不自行决定初始角色。
+ * WriteRemoval沿原同次解绑/标签/active补丁，拒绝夹带其他Owner字段；部分效果逐项返回。
  * QueryImsPreferenceByIccid沿原QueryImsSwitch读源与错误。
  * provider重连/初始化/用户切换不可借Adapter整行回灌A角色或覆盖较新T字段。
  */

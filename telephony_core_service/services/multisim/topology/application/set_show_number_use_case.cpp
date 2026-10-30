@@ -20,7 +20,8 @@
 
 namespace OHOS::Telephony::MultiSim {
 SetShowNumberUseCase::SetShowNumberUseCase(TopologyService &topology, ShowNumberRuntimePort &runtime,
-    ShowNumberCompletionPort &completion) : topology_(topology), runtime_(runtime), completion_(completion) {}
+    ShowNumberCompletionPort &completion, RuntimeEpoch epoch)
+    : topology_(topology), runtime_(runtime), completion_(completion), operations_(epoch, RequestOwner::ShowNumber) {}
 
 /* 伪代码 / 尚未定义流程方法，不可调用：
  * StartAtExecutionPoint(command):

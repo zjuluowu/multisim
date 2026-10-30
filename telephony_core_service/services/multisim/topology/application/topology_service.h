@@ -19,67 +19,73 @@
 #ifndef OHOS_TELEPHONY_MULTISIM_TOPOLOGY_APPLICATION_TOPOLOGY_SERVICE_H
 #define OHOS_TELEPHONY_MULTISIM_TOPOLOGY_APPLICATION_TOPOLOGY_SERVICE_H
 
+#include <map>
 #include <optional>
 #include "topology/api/topology_requests.h"
 #include "topology/domain/account_registry.h"
 #include "topology/domain/binding_index.h"
-#include "topology/ports/account_store.h"
-#include "assignment/api/assignment_requests.h"
-#include "topology/application/discovery_admission.h"
+#include "topology/application/discovery_observation_ledger.h"
 #include "topology/application/activation_progress.h"
-#include "topology/ports/card_discovery_sink.h"
+#include "topology/ports/account_store.h"
+#include "topology/ports/account_role_planning_port.h"
+#include "topology/ports/card_observation_port.h"
+#include "assignment/ports/primary_topology_port.h"
 
 namespace OHOS::Telephony::MultiSim {
-struct AccountFieldReservation { uint64_t token; SubscriptionId subscription; }; // 应用执行资格，不是 DB 锁。
-
-// T 唯一事实接纳入口。持有纯模型，不持有 R/I 具体类型、共享 RIL 或 callback。
-// 旧 MultiSimController 分拆：InitIccId/InitShowNumber/ForgetAllData/账户缓存归此；
-// 默认角色/Primary 归 A；设备状态、EF 和协议会话留 R。
-class AssignmentService;
-struct DiscoveryCompletion {
-    AccountRowResult stored;
-    bool bindingAccepted;
-    bool needsFieldReconciliation; // DB可能已写但资格失效，不能只丢内存发布。
+struct ReloadAccountInput {
+    SubscriptionId subscription;
+    uint64_t expectedIdentityRevision;
+    AccountFieldRevisions expectedFields;
 };
-class TopologyService final : public CardDiscoverySink {
+struct ReloadRequest {
+    AccountLoadRequest storeRequest;
+    AccountReloadTicket acceptance; // T生成独立view/attempt及成员快照，实际读源仍由storeRequest指定。
+    uint64_t expectedRoleProjectionRevision;
+    std::vector<ReloadAccountInput> affected;
+};
+struct AccountFieldReservation { uint64_t token; SubscriptionId subscription; }; // 非DB锁。
+// T唯一事实接纳入口；各方法在所属短提交域工作，不持锁跨DB/RIL/其他Owner调用。
+class TopologyService final : public CardObservationSink, public PrimaryTopologyPort {
 public:
     TopologyService(const SlotCatalog &catalog, AccountStore &store, RuntimeEpoch epoch);
+    void BindRolePlanner(AccountRolePlanningPort &roles); // H在A创建后、发布前绑定，未绑定即初始化失败。
     std::optional<BindingRef> FindBinding(SlotId slot) const;
-    std::optional<AccountView> ReadAccount(SubscriptionId subscription) const;
-    // 简单资料命令直接调用字段端口，不强建多步关联；名称不写卡。
+    std::optional<AccountView> ReadAccount(SubscriptionId subscription,
+        AccountReadView view = AccountReadView::Current) const;
     int32_t SetDisplayName(SlotTarget origin, const std::u16string &name);
     int32_t SetSimLabel(SubscriptionId subscription, int32_t legacyLabel);
     int32_t SaveImsPreference(SlotTarget origin, int32_t preference);
-    int32_t QueryImsPreference(SlotTarget origin, int32_t &preference); // 仍按ICCID访问store，不改纯内存。
+    int32_t QueryImsPreference(SlotTarget origin, int32_t &preference);
     std::optional<NumberExecutionTarget> PrepareNumberTarget(SlotTarget origin, const SessionRef &session) const;
     NumberAcceptance AcceptNumberAfterCardWrite(const NumberExecutionTarget &target, const std::u16string &number);
     NumberAcceptance AcceptIndependentNumberBackwrite(const NumberExecutionTarget &target,
         const std::u16string &number);
-    AccountReloadTicket BeginAccountReload(AccountReadView view, uint64_t assignmentRevision);
-    AccountReloadAcceptance AcceptAccountReload(const AccountReloadTicket &ticket, const AccountLoadResult &result);
-    // 发现主编排由T持有；窄A协作显式作为用例参数，无A可写聚合引用。
-    DiscoveryCompletion DiscoverCard(const CardDiscoveryObservation &observation, bool isEsim,
-        AssignmentService &assignment);
-    bool FenceRuntimeSession(const SessionRef &session, uint64_t sequence) override;
-    void ObserveCardDiscovery(const CardDiscoveryObservation &observation) override;
-    void AcceptCardRemoval(const BindingRef &expected, const DiscoveryTicket &ticket);
-    std::optional<ActivationProgressTicket> BeginActivationProgress(RequestId request, SlotId slot,
-        const SessionRef &session);
-    bool ClearActivationProgress(const ActivationProgressTicket &ticket);
-    bool IsActivationInProgress(SlotId slot) const;
-    AccountAcceptance AcceptActivationProjection(SubscriptionId subscription, uint64_t version,
-        AccountReadView view, bool active);
+    ReloadRequest PrepareAccountReload(AccountReadView view, uint64_t loadAttempt);
+    void AcceptAccountReload(const ReloadRequest &request, const AccountLoadResult &loaded);
+    void AcceptCardDiscoveryObservation(const CardDiscoveryObservation &observation) override;
+    void AcceptCardSessionInvalidation(const CardSessionInvalidation &invalidation) override;
+    void AcceptCardRemoval(const BindingRef &expected);
+    std::optional<ActivationTransition> PrepareActivationProgress(const ActivationTransition &transition);
+    bool BeginActivationProgress(const ActivationTransition &transition);
+    bool AcceptActivationProgress(const StepRef &owner, const SessionRef &session, bool inProgress);
+    bool ReadLegacyActivationProgress(SlotId slot) const;
+    AccountAcceptance AcceptActivationProjection(SubscriptionId subscription, AccountReadView view,
+        uint64_t expectedActiveRevision, bool active);
+    std::optional<PrimaryTargetFacts> ReadPrimaryTarget(SlotId slot) const override;
+    RequestId BeginRouteMapping(const StepRef &parent, SlotTarget target) override;
 private:
     AccountFieldReservation ReserveNumberField(const NumberExecutionTarget &target);
     void ReleaseAfterStoreCallFinished(const AccountFieldReservation &reservation,
         const AccountStoreWriteResult &result);
     AccountRegistry accounts_;
     BindingIndex bindings_;
-    DiscoveryAdmission discovery_;
-    ActivationProgress activationProgress_;
+    DiscoveryObservationLedger observations_;
     AccountStore &store_;
-    // 预留覆盖 I/O 全过程；效果未知时转交核对，不因等待终结释放冲突资格。
-    // 无关账户/字段不串行；后续实现 FFRT 短提交域，锁内不得调用 store_。
+    AccountRolePlanningPort *roles_ {nullptr}; // H借用，无强环；只在发布前绑定。
+    ActivationProgress activationProgress_;
+    // 发现：R顺序观察进入observations_；预留旧/新键；Match→A角色预留→一次原Insert/Update。
+    // 返回后复核observations_/绑定键/角色资格，分别接纳；已写但失效进入核对。
+    // 加载：Current/Historical独立尝试/失败/重试，按identity和相关字段版本接纳。
 };
 } // namespace OHOS::Telephony::MultiSim
 

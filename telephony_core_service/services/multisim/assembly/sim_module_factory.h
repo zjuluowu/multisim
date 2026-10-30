@@ -36,9 +36,9 @@ struct ExistingSimBindings {
     MultiSimMonitor &monitor;
     RadioProtocolController &radio;
     std::vector<ProductionSlotBindings> slots;
-    EsimManager *euicc; // 原唯一Manager；内部两File视图，不是两个Manager或两个设备域。
+    EsimManager *euicc; // 一个原Manager内部拥有普通/低优先级两组EsimFile。
 };
-// 同SO迁移附着图；所有引用由Core/原生产对象持有，需逐WU停止旧writer后才能接管。
+// 目标SIM侧装配图；所有引用由Core/原生产对象持有，需逐WU停止旧writer后才能接管。
 // 声明顺序=依赖创建顺序；反序销毁，但反序本身不等于已排空异步回调。
 class SimModule final {
 public:
@@ -71,54 +71,46 @@ private:
 struct SimModuleDeleter { void operator()(SimModule *module) const; };
 using SimModuleHandle = std::unique_ptr<SimModule, SimModuleDeleter>;
 struct SimModuleInitFailure {
-    enum class Stage { ValidateCatalog, BindExistingRuntime, BindHostPorts, RegisterCallbacks };
+    enum class Stage {
+        ValidateCatalog, BindExistingRuntime, BindHostPorts, RegisterCallbacks,
+        CreateLegacyObjects, InitializeEuicc, PublishEuicc, InitializeSim, PublishSim
+    };
     Stage stage;
     int32_t legacyResult;
 };
 using SimModuleCreationResult = std::variant<SimModuleHandle, SimModuleInitFailure>;
-// 迁移附着接缝只接受已有对象，不是独立SO最终创建边界。
-// 只有契约，无工厂/销毁定义，无生产调用者；不会创建第二套活动对象。
+// 同SO迁移附着契约，无工厂/销毁定义、无生产调用者，不创建第二套活动对象。
 // H未来构建并校验SlotCatalog、提供新epoch、沿原初始化发布时点创建模块；
 // 返回失败须报告具体初始化阶段，不能用空句柄伪装成功。
-SimModuleCreationResult AttachExistingSimModule(SimHostPorts host, std::shared_ptr<const SlotCatalog> catalog,
+SimModuleCreationResult AttachSimModuleToExisting(SimHostPorts host, std::shared_ptr<const SlotCatalog> catalog,
     RuntimeEpoch epoch, const ExistingSimBindings &existing);
-// 独立SO最终边界：Core只提供HostPorts/目录/epoch，SIM侧创建并拥有原Manager、
-// Controller/store及运行对象；不再要求Core取得这些内部对象或链接其具体构造符号。
-// 此工厂与附着工厂按迁移阶段择一使用，不能为同一活动写权同时创建两套执行者。
-class OwnedSimModule final {
+// G2b最终创建边界与上述G3迁移附着分开：Core不传store/monitor/radio内部对象。
+// 机械拆分不强制先引入SlotCatalog；startup沿每产品旧容量/Feature与首次取值时点。
+struct LegacySimStartup { int32_t originalSlotCount; bool euiccFeatureEnabled; };
+class OwnedSimServices final {
 public:
-    // 保留原步骤：eSIM OnInit -> Core将返回manager发布CMI -> 确认 -> SIM OnInit。
-    // 实现须创建原具体对象、OnInit，并RecordEsimInitialization；不得提前创建/初始化SIM。
-    EsimManagerInitialization InitializeEsimAtLegacyPoint(int32_t legacySlotCount);
-    bool ConfirmEsimPublished(const std::shared_ptr<IEsimManager> &published)
-    {
-        return publication_.ConfirmEsimPublished(published);
-    }
-    // 实现只在EsimPublished阶段创建/初始化SIM，再RecordSimInitialization；返回原同一控制块。
-    SimManagerInitialization InitializeSimAtLegacyPoint(int32_t legacySlotCount);
-    bool ConfirmSimPublished(const std::shared_ptr<ISimManager> &published)
-    {
-        return publication_.ConfirmSimPublished(published);
-    }
-    // 句柄为原生产具体对象向原接口转换的同一shared_ptr控制块；无虚析构接口不裸delete。
+    const std::shared_ptr<ISimManager> &Sim() const { return sim_; }
+    const std::shared_ptr<IEsimManager> &Euicc() const { return euicc_; }
     const ManagerPublicationSequence &Publication() const { return publication_; }
-    LegacySimFacade &LegacyEntry();
 private:
-    friend struct OwnedSimModuleDeleter;
-    friend struct OwnedSimModuleFactoryAccess;
-    explicit OwnedSimModule(SimHostPorts host, std::shared_ptr<const SlotCatalog> catalog, RuntimeEpoch epoch,
-        bool hasEsim);
-    ~OwnedSimModule(); // 定义留SIM产物，失败清理/匹配具体对象销毁亦由SIM负责。
-    struct ProductionObjects; // 原SimManager、唯一EsimManager、Controller/store及同一RIL引用。
-    std::unique_ptr<ProductionObjects> production_;
+    friend struct OwnedSimServicesFactoryAccess;
+    friend struct OwnedSimServicesDeleter;
+    explicit OwnedSimServices(bool hasEuicc) : publication_(hasEuicc) {}
+    ~OwnedSimServices() = default;
+    std::shared_ptr<ISimManager> sim_; // 生产者以具体类型建立控制块，不delete interface*。
+    std::shared_ptr<IEsimManager> euicc_;
+    // 最终创建侧逐阶段记录原OnInit返回和宿主所发布控制块；不升级旧false返回。
     ManagerPublicationSequence publication_;
 };
-struct OwnedSimModuleDeleter { void operator()(OwnedSimModule *module) const; };
-using OwnedSimModuleHandle = std::unique_ptr<OwnedSimModule, OwnedSimModuleDeleter>;
-using OwnedSimModuleCreationResult = std::variant<OwnedSimModuleHandle, SimModuleInitFailure>;
-OwnedSimModuleCreationResult CreateOwnedSimModule(SimHostPorts host, std::shared_ptr<const SlotCatalog> catalog,
-    RuntimeEpoch epoch);
-// 真实创建/初始化/导出/失败排空实现仍待G2b；上述接口和发布协议不是生产完成证明。
+struct OwnedSimServicesDeleter { void operator()(OwnedSimServices *services) const; };
+using OwnedSimServicesHandle = std::unique_ptr<OwnedSimServices, OwnedSimServicesDeleter>;
+using OwnedSimServicesCreationResult = std::variant<OwnedSimServicesHandle, SimModuleInitFailure>;
+OwnedSimServicesCreationResult CreateOwnedSimServices(SimHostPorts host, const LegacySimStartup &startup,
+    SimServicePublicationPort &publication);
+// SIM工厂按原顺序创建/Init Euicc -> 交Core发布 -> 创建/Init Sim -> 交Core发布；搜网/CMI仍留Core。
+// Stage用于可诊断归因，不把原Core未传播的OnInit false升级为新失败出口；对应行为修正另验。
+// 业务导出为本私有创建入口/匹配销毁；工具链必需导出另列，不承诺绝对仅两个ELF符号。
+// 常驻SO沿旧生命周期；G2c需Core端口、所有共享句柄及回调代码均排空后才允许卸载。
 // 新增排空协议不属于机械拆SO已具备能力：失败不卸载，Core最后才释放共享RIL。
 // 不裸delete ISimManager/IEsimManager，不给现有公共虚表追加析构。
 } // namespace OHOS::Telephony::MultiSim

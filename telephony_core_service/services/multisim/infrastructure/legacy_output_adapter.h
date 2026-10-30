@@ -31,6 +31,7 @@ public:
         : monitor_(monitor), callbacks_(callbacks) {}
     void NotifyOriginalAccountChanged() override;
     void TransferOriginalShowNumberResult(CompletionId completion, int32_t legacyResult) override;
+    void DeliverOriginalInt(const CompletionRoute &route, int32_t legacyResult) override;
 private:
     MultiSimMonitor &monitor_;
     CallbackHostPort &callbacks_;

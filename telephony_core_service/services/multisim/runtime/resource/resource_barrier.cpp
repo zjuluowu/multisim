@@ -12,162 +12,181 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// PROPOSED: 仅资源协议纯逻辑，尚未启用生产准入或转移设备执行权。
+// TARGET ARCHITECTURE SKELETON / PROPOSED: 仅纯状态转移示例，未启用生产设备屏障。
+
 #include "runtime/resource/resource_barrier.h"
 #include <algorithm>
+#include <limits>
 
 namespace OHOS::Telephony::MultiSim {
 namespace {
-bool SameStep(const StepRef &left, const StepRef &right)
+bool EffectAllowsRelease(EffectRequirement requirement, EffectKnowledge effect)
 {
-    return left.request.value == right.request.value && left.step == right.step && left.attempt == right.attempt;
+    // 只读命令结束且资源可复用时，不因查询载荷丢失永久隔离；写命令仍需效果核对。
+    return requirement == EffectRequirement::NoBusinessWrite || effect != EffectKnowledge::Unknown;
 }
-bool SameKeys(const std::vector<ResourceKey> &left, const std::vector<ResourceKey> &right)
+} // namespace
+
+bool ResourceBarrier::RegisterForInitialCheck(const ResourceKey &key)
 {
-    if (left.size() != right.size()) {
+    if (key.verifiedPhysicalDomain.empty()) {
         return false;
     }
-    for (size_t index = 0; index < left.size(); ++index) {
-        if (left[index].verifiedPhysicalDomain != right[index].verifiedPhysicalDomain) {
-            return false;
-        }
-    }
-    return true;
-}
+    return resources_.emplace(key,
+        ResourceRecord {ResourceState::Checking, 0, std::nullopt, EffectKnowledge::Unknown, false}).second;
 }
 
-CheckingTicket ResourceBarrier::TrackResource(const ResourceKey &key)
+bool ResourceBarrier::AcceptInitialRecoveryEvidence(const ResourceKey &key,
+    const InitialRecoveryEvidence &evidence)
 {
-    auto found = resources_.find(key);
-    if (found == resources_.end()) {
-        found = resources_.emplace(key, ResourceRecord {ResourceState::Checking, ++nextFence_, std::nullopt,
-            EffectKnowledge::Unknown}).first;
-    }
-    return {key, found->second.fence};
-}
-
-bool ResourceBarrier::AcceptInitialEvidence(const CheckingTicket &ticket, const InitialResourceEvidence &evidence)
-{
-    auto found = resources_.find(ticket.resource);
-    if (found == resources_.end() || found->second.state != ResourceState::Checking ||
-        found->second.fence != ticket.fence || !evidence.oldCommandEnded || !evidence.routeVerified ||
-        !evidence.resourceReusable) {
+    auto record = resources_.find(key);
+    if (record == resources_.end() || record->second.state != ResourceState::Checking ||
+        evidence.epoch != epoch_ || !evidence.noPriorExecutionCanContinue || !evidence.resourceReusable) {
         return false;
     }
-    found->second.state = ResourceState::Available;
+    record->second.state = ResourceState::Available;
     return true;
 }
 
-std::optional<ResourceLease> ResourceBarrier::Acquire(const std::vector<ResourceKey> &keys, StepRef requester, ResourceUse use)
+std::optional<ResourceLease> ResourceBarrier::Acquire(const std::vector<ResourceKey> &keys, StepRef requester,
+    EffectRequirement requirement)
 {
-    auto ordered = keys;
-    std::sort(ordered.begin(), ordered.end());
-    ordered.erase(std::unique(ordered.begin(), ordered.end(), [](const auto &left, const auto &right) {
-        return left.verifiedPhysicalDomain == right.verifiedPhysicalDomain;
-    }), ordered.end());
-    if (ordered.empty()) {
+    if (keys.empty() || requester.request.value == 0 || requester.request.owner == RequestOwner::Unspecified ||
+        requester.request.epoch != epoch_ || nextFence_ == std::numeric_limits<uint64_t>::max()) {
         return std::nullopt;
     }
-    for (const auto &key : ordered) {
-        const auto found = resources_.find(key);
-        if (found == resources_.end() || found->second.state != ResourceState::Available) {
+    std::vector<ResourceKey> ordered = keys;
+    std::sort(ordered.begin(), ordered.end());
+    for (size_t i = 0; i < ordered.size(); ++i) {
+        if (i > 0 && ordered[i - 1].verifiedPhysicalDomain == ordered[i].verifiedPhysicalDomain) {
             return std::nullopt;
         }
+        auto record = resources_.find(ordered[i]);
+        if (record == resources_.end() || record->second.state != ResourceState::Available) {
+            return std::nullopt; // 一项不合格不预留其他项，不逐把持锁等待。
+        }
     }
-    ResourceLease lease {ordered, requester, ++nextFence_, use};
+    ResourceLease lease {epoch_, ordered, requester, nextFence_++, requirement};
     for (const auto &key : ordered) {
-        resources_.at(key) = {ResourceState::InFlight, lease.fence, lease, EffectKnowledge::NotSent};
+        auto &record = resources_.at(key);
+        record = {ResourceState::InFlight, lease.fence, lease, EffectKnowledge::NotSent, false};
     }
     return lease;
 }
 
-bool ResourceBarrier::Matches(const ResourceLease &lease, ResourceState required) const
+bool ResourceBarrier::MatchesAll(const ResourceLease &lease, ResourceState state) const
 {
-    if (lease.resources.empty()) {
+    if (lease.epoch != epoch_ || lease.resources.empty()) {
         return false;
     }
     for (const auto &key : lease.resources) {
-        const auto found = resources_.find(key);
-        if (found == resources_.end() || found->second.state != required || found->second.fence != lease.fence ||
-            !found->second.lease || found->second.lease->use != lease.use || !SameStep(found->second.lease->holder, lease.holder) ||
-            !SameKeys(found->second.lease->resources, lease.resources)) {
+        auto record = resources_.find(key);
+        if (record == resources_.end() || record->second.state != state || !record->second.lease ||
+            record->second.fence != lease.fence || !(record->second.lease->holder == lease.holder) ||
+            record->second.lease->effectRequirement != lease.effectRequirement ||
+            record->second.lease->resources.size() != lease.resources.size()) {
             return false;
+        }
+        const auto &registeredKeys = record->second.lease->resources;
+        for (size_t i = 0; i < registeredKeys.size(); ++i) {
+            if (registeredKeys[i].verifiedPhysicalDomain != lease.resources[i].verifiedPhysicalDomain) {
+                return false; // 不能用同长度的重复/替换键伪造租约的全资源集合。
+            }
         }
     }
     return true;
 }
 
-void ResourceBarrier::Release(const ResourceLease &lease)
-{
-    const uint64_t releasedFence = ++nextFence_;
-    for (const auto &key : lease.resources) {
-        resources_.at(key) = {ResourceState::Available, releasedFence, std::nullopt, EffectKnowledge::NotSent};
-    }
-}
-
 bool ResourceBarrier::MarkSent(const ResourceLease &lease)
 {
-    if (!Matches(lease, ResourceState::InFlight)) {
+    if (!MatchesAll(lease, ResourceState::InFlight)) {
         return false;
     }
     for (const auto &key : lease.resources) {
+        if (resources_.at(key).sent) {
+            return false;
+        }
+    }
+    for (const auto &key : lease.resources) {
+        resources_.at(key).sent = true;
         resources_.at(key).effect = EffectKnowledge::Unknown;
     }
     return true;
 }
 
-bool ResourceBarrier::CancelNotSent(const ResourceLease &lease)
+void ResourceBarrier::Release(const ResourceLease &lease, EffectKnowledge effect)
 {
-    if (!Matches(lease, ResourceState::InFlight)) {
+    for (const auto &key : lease.resources) {
+        auto &record = resources_.at(key);
+        record.state = ResourceState::Available;
+        record.lease.reset();
+        record.effect = effect;
+        record.sent = false;
+    }
+}
+
+bool ResourceBarrier::CancelConfirmedNotSent(const ResourceLease &lease)
+{
+    if (!MatchesAll(lease, ResourceState::InFlight)) {
         return false;
     }
     for (const auto &key : lease.resources) {
-        if (resources_.at(key).effect != EffectKnowledge::NotSent) {
+        if (resources_.at(key).sent) {
             return false;
         }
     }
-    Release(lease);
+    Release(lease, EffectKnowledge::NotSent);
     return true;
 }
 
 bool ResourceBarrier::Complete(const ResourceLease &lease, const CompletionEvidence &evidence)
 {
-    if (!Matches(lease, ResourceState::InFlight) || !SameStep(lease.holder, evidence.original) ||
-        !evidence.commandEnded || !evidence.requiredChannelClosed || !evidence.resourceReusable ||
-        (lease.use == ResourceUse::Mutation && evidence.effect == EffectKnowledge::Unknown) ||
-        evidence.effect == EffectKnowledge::NotSent) {
+    if (!MatchesAll(lease, ResourceState::InFlight) || !(evidence.original == lease.holder) ||
+        !evidence.commandEnded || !evidence.resourceReusable || evidence.effect == EffectKnowledge::NotSent ||
+        !EffectAllowsRelease(lease.effectRequirement, evidence.effect)) {
         return false;
     }
-    Release(lease);
+    for (const auto &key : lease.resources) {
+        if (!resources_.at(key).sent) {
+            return false;
+        }
+    }
+    Release(lease, evidence.effect);
     return true;
 }
 
 bool ResourceBarrier::Quarantine(const ResourceLease &lease, EffectKnowledge effect)
 {
-    if (!Matches(lease, ResourceState::InFlight)) {
+    if (!MatchesAll(lease, ResourceState::InFlight)) {
         return false;
     }
     for (const auto &key : lease.resources) {
-        resources_.at(key).state = ResourceState::Quarantined;
-        resources_.at(key).effect = effect;
+        auto &record = resources_.at(key);
+        record.state = ResourceState::Quarantined;
+        record.effect = effect;
     }
     return true;
 }
 
 bool ResourceBarrier::AcceptRecoveryEvidence(const ResourceLease &lease, const RecoveryEvidence &evidence)
 {
-    if (!Matches(lease, ResourceState::Quarantined) || !SameStep(lease.holder, evidence.original) ||
-        !evidence.oldCommandEnded || (lease.use == ResourceUse::Mutation && !evidence.currentStateVerified) ||
-        !evidence.resourceReusable) {
+    if (!MatchesAll(lease, ResourceState::Quarantined) || !(evidence.original == lease.holder) ||
+        !evidence.oldCommandEnded || !evidence.currentStateVerified || !evidence.resourceReusable ||
+        !EffectAllowsRelease(lease.effectRequirement, evidence.effect)) {
         return false;
     }
-    Release(lease);
+    for (const auto &key : lease.resources) {
+        if (resources_.at(key).sent && evidence.effect == EffectKnowledge::NotSent) {
+            return false; // 已登记发出，恢复只能用ConfirmedNotApplied等效果，不能改写成未发送。
+        }
+    }
+    Release(lease, evidence.effect);
     return true;
 }
 
-ResourceState ResourceBarrier::ReadState(const ResourceKey &key) const
+std::optional<ResourceState> ResourceBarrier::ReadState(const ResourceKey &key) const
 {
-    const auto found = resources_.find(key);
-    return found == resources_.end() ? ResourceState::Checking : found->second.state;
+    auto record = resources_.find(key);
+    return record == resources_.end() ? std::nullopt : std::optional<ResourceState>(record->second.state);
 }
 } // namespace OHOS::Telephony::MultiSim

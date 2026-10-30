@@ -20,17 +20,16 @@
 #define OHOS_TELEPHONY_MULTISIM_TOPOLOGY_APPLICATION_ACTIVATE_SIM_USE_CASE_H
 
 #include "topology/application/topology_service.h"
-#include "application/orchestration/completion_port.h"
 #include "topology/ports/activation_runtime_port.h"
-#include "assignment/application/assignment_service.h"
+#include "topology/ports/activation_assignment_port.h"
 #include "application/orchestration/runtime_operation_store.h"
 
 namespace OHOS::Telephony::MultiSim {
 // 第二条流程的关键入口：T 拥有 active 及激活进行中；A 仅作切换准入/偏好/后续主卡复核。
 class ActivateSimUseCase final : public ActivationResultSink {
 public:
-    ActivateSimUseCase(TopologyService &topology, AssignmentService &assignment,
-        ActivationRuntimePort &runtime, ActivationHookPort &hooks, CompletionPort &completion);
+    ActivateSimUseCase(TopologyService &topology, ActivationAssignmentPort &assignment,
+        ActivationRuntimePort &runtime, ActivationHookPort &hooks, LegacyIntCompletionPort &completion, RuntimeEpoch epoch);
     RequestId StartOrdinaryActivation(const ActivateSimCommand &command);
     void AcceptDeviceResult(const ActivationDeviceResult &result) override;
     // force/卫星有独立轨迹，仅保留声明，不能套用普通 non-force 的计划。
@@ -38,10 +37,10 @@ public:
     RequestId StartSatelliteActivation(const ActivateSimCommand &command);
 private:
     TopologyService &topology_;
-    AssignmentService &assignment_;
+    ActivationAssignmentPort &assignment_;
     ActivationRuntimePort &runtime_;
     ActivationHookPort &hooks_;
-    CompletionPort &completion_;
+    LegacyIntCompletionPort &completion_;
     RuntimeOperationStore operations_;
 };
 } // namespace OHOS::Telephony::MultiSim

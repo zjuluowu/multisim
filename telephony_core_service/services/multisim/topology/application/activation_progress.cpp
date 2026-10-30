@@ -17,40 +17,69 @@
 // 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
 
 #include "topology/application/activation_progress.h"
+
 namespace OHOS::Telephony::MultiSim {
 namespace {
-bool SameTicket(const ActivationProgressTicket &a, const ActivationProgressTicket &b)
+bool SameActivationSession(const SessionRef &left, const SessionRef &right)
 {
-    return a.admission == b.admission && a.request.value == b.request.value && a.slot == b.slot &&
-        a.sentSession.epoch == b.sentSession.epoch &&
-        a.sentSession.application.slot == b.sentSession.application.slot &&
-        a.sentSession.application.applicationKey == b.sentSession.application.applicationKey &&
-        a.sentSession.bindingGeneration == b.sentSession.bindingGeneration;
+    return left.epoch == right.epoch && left.application.slot == right.application.slot &&
+        left.application.applicationKey == right.application.applicationKey &&
+        left.bindingGeneration == right.bindingGeneration;
 }
-}
-std::optional<ActivationProgressTicket> ActivationProgress::Prepare(RequestId request, SlotId slot,
-    const SessionRef &session)
+} // namespace
+
+std::optional<ActivationTransition> ActivationProgress::Prepare(const ActivationTransition &transition)
 {
-    if (!(slot == session.application.slot)) { return std::nullopt; }
-    ActivationProgressTicket ticket {request, slot, session, ++admissions_};
-    issued_.insert_or_assign(slot, ticket);
-    return ticket;
+    const auto owner = transition.owner.request.owner;
+    if (transition.owner.request.value == 0 ||
+        (owner != RequestOwner::Activation && owner != RequestOwner::LegacyBridge) ||
+        transition.owner.request.epoch != epoch_ || transition.sentSession.epoch != epoch_ ||
+        !(transition.slot == transition.sentSession.application.slot) || !transition.legacyProgress) {
+        return std::nullopt;
+    }
+    auto qualified = transition;
+    qualified.admission = ++nextAdmission_;
+    prepared_.insert_or_assign(qualified.slot, qualified);
+    return qualified;
 }
-bool ActivationProgress::Begin(const ActivationProgressTicket &ticket)
+
+bool ActivationProgress::Begin(const ActivationTransition &transition)
 {
-    const auto issued = issued_.find(ticket.slot);
-    if (issued == issued_.end() || !SameTicket(issued->second, ticket) ||
-        ticket.admission <= lastStarted_[ticket.slot]) { return false; }
-    lastStarted_[ticket.slot] = ticket.admission;
-    transitions_.insert_or_assign(ticket.slot, ticket);
+    const auto prepared = prepared_.find(transition.slot);
+    if (prepared == prepared_.end() || transition.admission <= lastStarted_[transition.slot] ||
+        transition.admission != prepared->second.admission || !(prepared->second.owner == transition.owner) ||
+        !SameActivationSession(prepared->second.sentSession, transition.sentSession) || !transition.legacyProgress) {
+        return false;
+    }
+    auto current = transitions_.find(transition.slot);
+    if (current != transitions_.end() && (current->second.legacyProgress ||
+        current->second.owner == transition.owner)) { return false; }
+    lastStarted_[transition.slot] = transition.admission;
+    transitions_.insert_or_assign(transition.slot, transition);
     return true;
 }
-bool ActivationProgress::Clear(const ActivationProgressTicket &ticket)
+
+bool ActivationProgress::Accept(const StepRef &owner, const SessionRef &session, bool inProgress)
 {
-    const auto found = transitions_.find(ticket.slot);
-    if (found == transitions_.end() || !SameTicket(found->second, ticket)) { return false; }
-    transitions_.erase(found);
+    if (owner.request.epoch != epoch_ || session.epoch != epoch_) {
+        return false;
+    }
+    auto current = transitions_.find(session.application.slot);
+    if (current == transitions_.end() || !(current->second.owner == owner) ||
+        !SameActivationSession(current->second.sentSession, session)) {
+        return false;
+    }
+    // 只有Begin建立进行中事实；旧步骤不得在已清零后将其复活。
+    if (inProgress && !current->second.legacyProgress) {
+        return false;
+    }
+    current->second.legacyProgress = inProgress;
     return true;
 }
-bool ActivationProgress::IsInProgress(SlotId slot) const { return transitions_.count(slot) != 0; }
+
+bool ActivationProgress::ReadLegacy(SlotId slot) const
+{
+    auto current = transitions_.find(slot);
+    return current != transitions_.end() && current->second.legacyProgress;
+}
 } // namespace OHOS::Telephony::MultiSim
