@@ -16,7 +16,7 @@
 // Design: docs/SIM_Target_Architecture_Design_v1.2.md §5.2、§14.2～14.3、§22.1。
 // 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
 
-#include "assembly/sim_module_factory.h"
+#include "assembly/sim_module.h"
 #include <utility>
 
 namespace OHOS::Telephony::MultiSim {

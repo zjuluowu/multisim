@@ -18,7 +18,7 @@
 
 #ifndef OHOS_TELEPHONY_MULTISIM_ASSIGNMENT_API_PRIMARY_EXECUTION_H
 #define OHOS_TELEPHONY_MULTISIM_ASSIGNMENT_API_PRIMARY_EXECUTION_H
-#include "model/slot_catalog.h"
+#include "foundation/slot_catalog.h"
 namespace OHOS::Telephony::MultiSim {
 enum class PrimarySwitchMode { ThreePhaseProtocol, WithoutModemRestart, AlreadyPrimary, VendorRouteMapping };
 enum class ParameterWritePosition { BeforeDevice, AfterDevice, WithoutDevice };

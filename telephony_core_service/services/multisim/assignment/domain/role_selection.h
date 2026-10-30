@@ -20,10 +20,10 @@
 #define OHOS_TELEPHONY_MULTISIM_ASSIGNMENT_DOMAIN_ROLE_SELECTION_H
 
 #include <optional>
-#include "model/sim_identity.h"
+#include "foundation/sim_identity.h"
+#include "assignment/api/assignment_types.h"
 
 namespace OHOS::Telephony::MultiSim {
-enum class DefaultRole { Voice, Sms, Data };
 struct RoleSelection {
     DefaultRole role;
     std::optional<SubscriptionId> preference;

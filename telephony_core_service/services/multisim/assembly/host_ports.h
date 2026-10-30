@@ -20,8 +20,8 @@
 #define OHOS_TELEPHONY_MULTISIM_ASSEMBLY_HOST_PORTS_H
 
 #include <memory>
-#include "compatibility/legacy_boundary_ports.h"
-#include "topology/ports/number_query_host_port.h"
+#include "compatibility/api/legacy_boundary_ports.h"
+#include "topology/api/number_query_host_port.h"
 
 namespace OHOS::Telephony { class ITelRilManager; class ISimManager; class IEsimManager; }
 namespace OHOS::Telephony::MultiSim {

@@ -18,8 +18,8 @@
 #include <iostream>
 #include "topology/domain/account_registry.h"
 #include "topology/domain/binding_index.h"
-#include "topology/application/discovery_observation_ledger.h"
-#include "topology/application/activation_progress.h"
+#include "topology/discovery/discovery_observation_ledger.h"
+#include "topology/activation/activation_progress.h"
 using namespace OHOS::Telephony::MultiSim;
 
 int main()

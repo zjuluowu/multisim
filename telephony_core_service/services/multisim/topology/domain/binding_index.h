@@ -22,7 +22,7 @@
 #include <map>
 #include <optional>
 #include <vector>
-#include "model/slot_catalog.h"
+#include "foundation/slot_catalog.h"
 
 namespace OHOS::Telephony::MultiSim {
 struct SlotRuntimeEntry {

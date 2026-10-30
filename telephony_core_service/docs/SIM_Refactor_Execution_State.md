@@ -29,7 +29,7 @@
 | 内容 | 已核实位置/状态 | 不代表什么 |
 | --- | --- | --- |
 | P1-1～8、P2-1～5评审修正 | main包含`5eed2181628e9e74f618231007d927ebd5cb92cd`；设计、骨架和四套纯规则已提交 | 不等于业务写权或设备风险消除 |
-| 后续目录评审 | main的`9f58c9727c7455d01cae6b739e75db7b294a6358`合入[目录评审](SIM_Multisim_Source_Directory_Review_2026-10-30_Opus.md)；相对5eed只有这份新文档 | D1～D9是待核实提案，不直接删目录/改Owner |
+| 后续目录裁决 | main的`18e724f7`已融合Opus/Gemini意见，主设计§6.6与[详细设计](SIM_Multisim_Source_Architecture_Detailed_Design.md)§3.2形成统一目录基线 | 设计仍draft/pending；本轮源码落地不等于生产迁移或产品验收 |
 | G2a真实只读切片 | 上块`g2a_branch/g2a_commit`远端检查点，尚未合入main；已保存源码、GN、runner和精简证据 | main不具备该生产接入，不因host PASS自动合入 |
 | 完整OnInit | 当前主机审计BLOCKED，未链接/运行；阻塞见§5 | 不等于只读查询也无法推进 |
 | 产品/设备、G2b/c、G3/G4 | 尚未验收/切换 | 不能由骨架/host结果推导完成 |
@@ -55,6 +55,15 @@
 - **G2a工作分支实现**：`CoreServiceSim::GetRealSimCount`→`LegacySimQueryBinding`→`RealSimCountQuery/RealSimCountHostPort`→原`SimManager/EXT`。保留Core原TU先读`SIM_SLOT_COUNT_REAL`、空Manager fallback、原Manager宏/EXT读源、返回及重设清旧附着。Core原OnInit/发布点后附着，同一Manager/RIL控制块，原SO和显式测试源表同步，无新写权/设备执行。
 - **G2a主机闭包**：真实5个生产cpp实际构建、链接及7场景运行；覆盖精确cpp正执行证据。只模拟参数、严格ITelRilManager平台接口和明确厂商ABI；没有SIM业务替身。Manager OnInit/Core Init、卡在位和IPC/SA没有执行/观察。
 - **保存状态**：G2a与入口文档分开提交；原本的临时worktree/patch/JSON仅为本机历史，不是恢复所需输入。可恢复内容为远端commit、跟踪脚本、锁定依赖和归一化精简证据。
+
+### 3.1 目标源码目录落地（2026-10-30，main已保存）
+
+- 输入为干净的`main@18e724f70ab3bfef142674d794ad5dfba04d371d`；实际fetch核对origin main与独立G2a工作分支，恢复工具返回CHECKPOINT_VERIFIED、main_contains_g2a=false。未切换分支或合入G2a；本批源码结果已单独提交并推送。
+- 两篇已提交设计的针对性验收通过；T账户/绑定/资料、A角色/Primary、R会话/真实设备资源、C旧语义及H生命周期边界没有发现阻断本轮迁移的冲突。两篇设计本身未改，历史现状路径由[源码README](../services/multisim/README.md)补充当前导航。
+- 全量核对原73文件（50头/23源）：48文件以git mv改变路径、25保留主落点，其中6文件拆取现有职责；无原文件无去向、无业务实现删除。现为86个C++文件（63头/23源）。纯关联值、Owner纯types、PIN/EF/Profile契约、三个Adapter、装配内部定义及仓内导出各保持单一定义；[逐文件映射](../test/multisim_architecture_rules/source_migration.json)记录原摘要、职责、状态与去向。
+- 原application/model及T/A application/ports撤除；场景与Adapter随Owner。C经具名API函数调用原对象，保留构造签名与类型布局；没有新运行对象/状态或公开契约。LocalCardRequests仍保留原类，实际Profile编排移euicc，PIN/EF仅分契约、业务方法仍未实现；CardRuntime薄化与成熟卡能力迁移尚未完成。
+- 实际运行`python3 telephony_core_service/test/multisim_architecture_rules/run.py --with-gn --migration`（另指定仓外输出目录）：73文件摘要/去向、原类型定义/成员顺序与23个原cpp实现token顺序通过；86头/源独立严格C++17语法及合并头TU通过；四套纯规则实际编译/链接/运行PASS；12项护栏测试通过；156条本地include和24个源集合边界/环检查通过；独立GN gen --check及Ninja全部23个骨架源对象编译通过。新增护栏覆盖宏/续行include、动态GN列表与入口漏挂目标的反例。
+- 所有新增GN源集合为testonly，没有接入根产品BUILD/服务发布、共享库或第二条执行路径；services/sim、Core和公共接口未改，生产写权不变。CleanArchCLI不在环境中，以文本include/Target检查替代；没有运行完整骨架产品链接、hb、Core/Manager真实初始化、provider或设备验证。48条git mv移动与其余修复/新增文件随本批同一提交保存；提交本身不改变上述验证范围。
 
 ## 4. 验证入口与可迁移环境
 
@@ -133,18 +142,15 @@ python3 telephony_core_service/test/systemtest/scripts/audit_initialization.py -
 | 14个SimData符号：EFUST/EHPLMN/GID1/GID2/IS_ESIM/LSI/MCC/MNC/MNC_LEN/OPERATOR_NAME/OPKEY/PHY_CARD/SIM_LABEL_INDEX/SPN | 完整OnInit主机编译及无卡/账户场景，涉及card_file_detect_manager、multi_sim_controller、multi_sim_helper、operator_config_loader、sim_rdb_helper.cpp | 不阻塞独立只读/纯协议；需匹配fork字段/URI/schema/错误协议证据，不猜常量值 |
 | 匹配OHOS树/hb、产品配置及Feature矩阵 | 原SO产品构建/真实Core初始化发布和设备行为 | 不阻塞主机查询；需明确产品/工具链/外仓版本与构建运行结果 |
 | 设备结束/通道静止、厂商/66250及Port/MEP证据 | 依赖它的新隔离/安全重试、G2c/G3/G4切片 | 不作为所有G2a工作的统一前置；逐命令因果/结束与外部契约关闭 |
-| 新目录评审D1～D9未裁决 | 基于该提案的目录/依赖变更 | 可独立取证裁决，不能据评审直接机械搬迁；不阻塞本恢复机制 |
 
 ## 6. 下一批推荐任务
 
-**推荐最小任务：核实目录评审F1/F11/F12并裁决对应文档漂移。**这是不依赖产品环境、当前可执行的工作；本轮已完成远端恢复入口和干净路径复验，不应每轮只重跑同一PASS。
+**推荐最小任务：在独立工作分支将已有G2a GetRealSimCount只读闭包适配到新源码结构。**目录意见已在18e724f7形成统一裁决，本地安全骨架落地见§3.1；不再把历史目录提案当作当前阻塞。
 
-- 目标：确认统计口径、Primary/号码计划的实际Application位置，以及各活动文档目录主张是否真的冲突；逐项给采纳/部分采纳/不采纳/已修复裁决。评审本身不是新规范。
-- 路径：`SIM_Multisim_Source_Directory_Review_2026-10-30_Opus.md`§2.1/§10、`SIM_Multisim_Source_Architecture_Detailed_Design.md`§3/§7/§21、主设计§5.1.5/§6.4/§6.5、重构设计§4.4/SIM-023.a，以及`services/multisim`对应源码。保留功能/WU编号。
-- 前置：先核对远端main和G2a检查点关系，选定统计代码基线。不能把main与工作分支文件数混算；按需要阅读对应章节，不重扫全仓。
-- 修改边界：本批先修成立的文档漂移/引用和可重复统计入口，不据待裁决D1～D8搬目录、删除Application、改Owner/RequestId；不扩大G2a或接管写权。
-- 验收：每条结论给实际相对路径/符号/基线与统计口径，活动文档一致，原报告保留历史并追加裁决；若纯文档无需重跑未受影响的业务，执行链接/围栏/图示/diff检查及受影响工具验证。
-- 退出：F1/F11/F12均有裁决，成立问题在原责任文档实际修正，状态列明D1～D9尚待决部分及下一批；不以修改日期代替证据。
+- 目标：按新Foundation/Owner契约及仓内导出边界适配已有真实只读代码、源表与主机runner；保持原Manager/RIL、宏求值TU、EXT读源与fallback，不接管业务写权或扩展新能力。
+- 前置：本轮源码结构已保存在main（§3.1）；G2a仍在独立远端检查点，先保护工作区，再在隔离worktree整合，不直接覆盖main或改写历史证据摘要。
+- 验收：新目录边界、纯规则、真实只读主机7场景及源覆盖重新执行；生产合入仍须下面的匹配OHOS原SO/初始化发布门禁。不能把结构PASS或历史查询PASS继承为新产品验收。
+- 其后再选择有完整Oracle与读源证据的WU切片；CardRuntime能力收窄、真实事件接纳、资源结束/排空和写权交接分别验收，不在机械搬迁中顺带启用。
 
 **G2a合入main的后续门禁（仍未满足）：**源码/测试与远端干净恢复已有本文件§4证据；需在匹配OHOS产品树核对原SO与三份显式源表、构建`tel_core_service`并采集原初始化发布/只读冒烟与适用Feature结果。路径为工作分支Core query/binding、根BUILD和显式测试源表；不改宏求值TU/EXT读源、公开契约、原Manager/RIL身份或G3政策。有环境则实际执行；无环境保留工作分支和具体未验收项，不能把host PASS当合入批准。合入提交/PR按当次用户授权单独处理。
 

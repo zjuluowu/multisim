@@ -21,53 +21,13 @@
 
 #include <memory>
 #include <variant>
+#include "foundation/slot_catalog.h"
 #include "assembly/host_ports.h"
 #include "assembly/manager_publication.h"
-#include "runtime/card_runtime.h"
-#include "infrastructure/account_store_adapter.h"
-#include "infrastructure/assignment_store_adapter.h"
-#include "infrastructure/legacy_output_adapter.h"
-#include "compatibility/legacy_completion.h"
-#include "compatibility/legacy_sim_facade.h"
-
 namespace OHOS::Telephony::MultiSim {
-struct ExistingSimBindings {
-    SimRdbHelper &accountStore;
-    MultiSimMonitor &monitor;
-    RadioProtocolController &radio;
-    std::vector<ProductionSlotBindings> slots;
-    EsimManager *euicc; // 一个原Manager内部拥有普通/低优先级两组EsimFile。
-};
-// 目标SIM侧装配图；所有引用由Core/原生产对象持有，需逐WU停止旧writer后才能接管。
-// 声明顺序=依赖创建顺序；反序销毁，但反序本身不等于已排空异步回调。
-class SimModule final {
-public:
-    LegacySimFacade &LegacyEntry() { return compatibility_; }
-    enum class DrainResult { Drained, CallbacksStillInFlight, DeviceEffectsUnresolved };
-    DrainResult StopAcceptingAndDrain(); // G2c新增协议，仅声明，机械拆分不默认具备。
-private:
-    friend struct SimModuleFactoryAccess;
-    friend struct SimModuleDeleter;
-    SimModule(SimHostPorts host, std::shared_ptr<const SlotCatalog> catalog, RuntimeEpoch epoch,
-        const ExistingSimBindings &existing);
-    ~SimModule() = default;
-    SimHostPorts host_;
-    std::shared_ptr<const SlotCatalog> catalog_;
-    AccountStoreAdapter accountStore_;
-    AssignmentStoreAdapter assignmentStore_;
-    LegacyOutputAdapter output_;
-    AssignmentOutputAdapter assignmentOutput_;
-    ActivationHookAdapter activationHooks_;
-    LegacyCompletion completion_;
-    CardRuntime runtime_;
-    TopologyService topology_;
-    AssignmentService assignment_;
-    SetShowNumberUseCase numbers_;
-    ShowNumberQuery numberQuery_;
-    ActivateSimUseCase activation_;
-    LocalCardRequests localCards_;
-    LegacySimFacade compatibility_;
-};
+class SimModule;
+struct ExistingSimBindings;
+
 struct SimModuleDeleter { void operator()(SimModule *module) const; };
 using SimModuleHandle = std::unique_ptr<SimModule, SimModuleDeleter>;
 struct SimModuleInitFailure {

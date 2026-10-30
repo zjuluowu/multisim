@@ -22,7 +22,7 @@
 #include <map>
 #include <optional>
 #include <string>
-#include "model/sim_identity.h"
+#include "foundation/sim_identity.h"
 
 namespace OHOS::Telephony::MultiSim {
 struct LoadToken {

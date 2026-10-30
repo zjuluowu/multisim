@@ -19,10 +19,10 @@
 #include <iostream>
 #include <variant>
 #include "assignment/domain/assignment_aggregate.h"
-#include "assignment/application/primary_switch_plan.h"
-#include "assignment/application/account_role_protocol.h"
-#include "compatibility/completion_cell.h"
-#include "compatibility/legacy_profile_result.h"
+#include "assignment/primary/primary_switch_plan.h"
+#include "assignment/account_roles/account_role_protocol.h"
+#include "compatibility/output/completion_cell.h"
+#include "compatibility/output/legacy_profile_result.h"
 using namespace OHOS::Telephony::MultiSim;
 namespace {
 using Action = PrimaryAction;

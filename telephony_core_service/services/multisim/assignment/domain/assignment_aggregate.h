@@ -21,7 +21,7 @@
 
 #include <map>
 #include <optional>
-#include "model/slot_catalog.h"
+#include "foundation/slot_catalog.h"
 #include "assignment/domain/role_selection.h"
 
 namespace OHOS::Telephony::MultiSim {

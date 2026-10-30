@@ -23,7 +23,7 @@
 #include <optional>
 #include <string>
 #include <vector>
-#include "application/orchestration/request_context.h"
+#include "foundation/request_ref.h"
 
 namespace OHOS::Telephony::MultiSim {
 enum class ResourceState { Checking, Available, InFlight, Quarantined };

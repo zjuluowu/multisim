@@ -19,12 +19,11 @@
 #ifndef OHOS_TELEPHONY_MULTISIM_COMPATIBILITY_LEGACY_SIM_FACADE_H
 #define OHOS_TELEPHONY_MULTISIM_COMPATIBILITY_LEGACY_SIM_FACADE_H
 
-#include "compatibility/legacy_boundary_ports.h"
-#include "topology/application/set_show_number_use_case.h"
-#include "topology/application/show_number_query.h"
-#include "topology/application/activate_sim_use_case.h"
-#include "application/card_access/local_card_requests.h"
-#include "assignment/application/assignment_service.h"
+#include "compatibility/api/legacy_boundary_ports.h"
+#include "runtime/api/local_card_requests.h"
+#include "foundation/slot_catalog.h"
+#include "topology/api/legacy_entry.h"
+#include "assignment/api/legacy_entry.h"
 
 namespace OHOS::Telephony::MultiSim {
 // 目标 C 私有桥，未来原 CoreServiceSim/SimManager/CMI 委托至此；不替换它们的公开签名。

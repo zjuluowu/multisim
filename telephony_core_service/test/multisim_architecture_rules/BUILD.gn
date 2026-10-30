@@ -1,0 +1,5 @@
+# Separate host entry selected by gn/.gn; the product BUILD.gn is untouched.
+group("all") {
+  testonly = true
+  deps = [ "//services/multisim:skeleton" ]
+}

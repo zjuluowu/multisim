@@ -1,0 +1,27 @@
+declare_args() {
+  multisim_cxx = "clang++"
+}
+
+config("compiler") {
+  cflags_cc = [
+    "-std=c++17",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+  ]
+}
+
+# Objects only: undefined skeleton methods are deliberately not filled or linked.
+toolchain("host") {
+  tool("cxx") {
+    command = "\"$multisim_cxx\" {{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} -MMD -MF {{output}}.d -c {{source}} -o {{output}}"
+    depfile = "{{output}}.d"
+    depsformat = "gcc"
+    outputs =
+        [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.o" ]
+    description = "CXX {{source}}"
+  }
+  tool("stamp") {
+    command = "touch {{output}}"
+  }
+}

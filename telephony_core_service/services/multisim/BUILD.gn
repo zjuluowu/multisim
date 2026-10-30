@@ -1,0 +1,582 @@
+# Architecture skeleton only. No production target depends on these test-only source sets.
+# Keep literal source/public/dependency lists for check_structure.py.
+config("skeleton_includes") {
+  include_dirs = [ "." ]
+}
+
+source_set("assembly_contracts") {
+  testonly = true
+  visibility = [
+    ":*",
+    "//test/multisim_architecture_rules:*",
+  ]
+  check_includes = true
+  public_configs = [ ":skeleton_includes" ]
+  sources = [
+    "assembly/host_ports.h",
+    "assembly/manager_publication.h",
+    "assembly/sim_module_factory.h",
+  ]
+  public = [
+    "assembly/host_ports.h",
+    "assembly/manager_publication.h",
+    "assembly/sim_module_factory.h",
+  ]
+  public_deps = [
+    ":compatibility_contracts",
+    ":sim_values",
+    ":topology_contracts",
+  ]
+}
+
+source_set("assembly_core") {
+  testonly = true
+  visibility = [
+    ":*",
+    "//test/multisim_architecture_rules:*",
+  ]
+  check_includes = true
+  public_configs = [ ":skeleton_includes" ]
+  sources = [
+    "assembly/sim_module.h",
+    "assembly/sim_module_factory.cpp",
+  ]
+  public = [ "assembly/sim_module.h" ]
+  public_deps = [
+    ":assembly_contracts",
+    ":assignment_adapters",
+    ":assignment_cases",
+    ":compatibility_core",
+    ":runtime_core",
+    ":topology_adapters",
+    ":topology_cases",
+  ]
+}
+
+source_set("assignment_adapters") {
+  testonly = true
+  visibility = [
+    ":*",
+    "//test/multisim_architecture_rules:*",
+  ]
+  check_includes = true
+  public_configs = [ ":skeleton_includes" ]
+  sources = [
+    "assignment/adapters/assignment_output_adapter.h",
+    "assignment/adapters/assignment_store_adapter.h",
+  ]
+  public = [
+    "assignment/adapters/assignment_output_adapter.h",
+    "assignment/adapters/assignment_store_adapter.h",
+  ]
+  public_deps = [ ":assignment_contracts" ]
+}
+
+source_set("assignment_cases") {
+  testonly = true
+  visibility = [
+    ":*",
+    "//test/multisim_architecture_rules:*",
+  ]
+  check_includes = true
+  public_configs = [ ":skeleton_includes" ]
+  sources = [
+    "assignment/assignment_service.cpp",
+    "assignment/assignment_service.h",
+  ]
+  public = [ "assignment/assignment_service.h" ]
+  public_deps = [
+    ":assignment_contracts",
+    ":assignment_domain",
+    ":assignment_protocols",
+    ":request_mechanism",
+    ":topology_contracts",
+  ]
+}
+
+source_set("assignment_contracts") {
+  testonly = true
+  visibility = [
+    ":*",
+    "//test/multisim_architecture_rules:*",
+  ]
+  check_includes = true
+  public_configs = [ ":skeleton_includes" ]
+  sources = [
+    "assignment/api/assignment_requests.h",
+    "assignment/api/assignment_store.h",
+    "assignment/api/legacy_entry.h",
+    "assignment/api/primary_topology_port.h",
+    "assignment/api/profile_preference_port.h",
+    "assignment/api/radio_execution_port.h",
+  ]
+  public = [
+    "assignment/api/assignment_requests.h",
+    "assignment/api/assignment_store.h",
+    "assignment/api/legacy_entry.h",
+    "assignment/api/primary_topology_port.h",
+    "assignment/api/profile_preference_port.h",
+    "assignment/api/radio_execution_port.h",
+  ]
+  public_deps = [
+    ":assignment_types",
+    ":request_protocol",
+    ":sim_values",
+  ]
+}
+
+source_set("assignment_domain") {
+  testonly = true
+  visibility = [
+    ":*",
+    "//test/multisim_architecture_rules:*",
+  ]
+  check_includes = true
+  public_configs = [ ":skeleton_includes" ]
+  sources = [
+    "assignment/domain/assignment_aggregate.cpp",
+    "assignment/domain/assignment_aggregate.h",
+    "assignment/domain/role_selection.h",
+  ]
+  public = [
+    "assignment/domain/assignment_aggregate.h",
+    "assignment/domain/role_selection.h",
+  ]
+  public_deps = [
+    ":assignment_types",
+    ":sim_values",
+  ]
+}
+
+source_set("assignment_protocols") {
+  testonly = true
+  visibility = [
+    ":*",
+    "//test/multisim_architecture_rules:*",
+  ]
+  check_includes = true
+  public_configs = [ ":skeleton_includes" ]
+  sources = [
+    "assignment/account_roles/account_role_protocol.h",
+    "assignment/primary/primary_switch_plan.cpp",
+    "assignment/primary/primary_switch_plan.h",
+  ]
+  public = [
+    "assignment/account_roles/account_role_protocol.h",
+    "assignment/primary/primary_switch_plan.h",
+  ]
+  public_deps = [
+    ":assignment_contracts",
+    ":assignment_types",
+  ]
+}
+
+source_set("assignment_types") {
+  testonly = true
+  visibility = [
+    ":*",
+    "//test/multisim_architecture_rules:*",
+  ]
+  check_includes = true
+  public_configs = [ ":skeleton_includes" ]
+  sources = [
+    "assignment/api/assignment_types.h",
+    "assignment/api/primary_execution.h",
+  ]
+  public = [
+    "assignment/api/assignment_types.h",
+    "assignment/api/primary_execution.h",
+  ]
+  public_deps = [ ":sim_values" ]
+}
+
+source_set("compatibility_contracts") {
+  testonly = true
+  visibility = [
+    ":*",
+    "//test/multisim_architecture_rules:*",
+  ]
+  check_includes = true
+  public_configs = [ ":skeleton_includes" ]
+  sources = [ "compatibility/api/legacy_boundary_ports.h" ]
+  public = [ "compatibility/api/legacy_boundary_ports.h" ]
+  public_deps = [ ":topology_contracts" ]
+}
+
+source_set("compatibility_core") {
+  testonly = true
+  visibility = [
+    ":*",
+    "//test/multisim_architecture_rules:*",
+  ]
+  check_includes = true
+  public_configs = [ ":skeleton_includes" ]
+  sources = [
+    "compatibility/legacy_sim_facade.cpp",
+    "compatibility/legacy_sim_facade.h",
+    "compatibility/output/completion_cell.h",
+    "compatibility/output/legacy_completion.cpp",
+    "compatibility/output/legacy_completion.h",
+    "compatibility/output/legacy_output_adapter.cpp",
+    "compatibility/output/legacy_output_adapter.h",
+    "compatibility/output/legacy_profile_result.h",
+  ]
+  public = [
+    "compatibility/legacy_sim_facade.h",
+    "compatibility/output/completion_cell.h",
+    "compatibility/output/legacy_completion.h",
+    "compatibility/output/legacy_output_adapter.h",
+    "compatibility/output/legacy_profile_result.h",
+  ]
+  public_deps = [
+    ":assignment_contracts",
+    ":compatibility_contracts",
+    ":request_protocol",
+    ":runtime_contracts",
+    ":sim_values",
+    ":topology_contracts",
+  ]
+}
+
+source_set("repository_exports") {
+  testonly = true
+  visibility = [
+    ":*",
+    "//test/multisim_architecture_rules:*",
+  ]
+  check_includes = true
+  public_configs = [ ":skeleton_includes" ]
+  sources = [
+    "include/sim_host_ports.h",
+    "include/sim_module_factory.h",
+  ]
+  public = [
+    "include/sim_host_ports.h",
+    "include/sim_module_factory.h",
+  ]
+  public_deps = [ ":assembly_contracts" ]
+}
+
+source_set("request_mechanism") {
+  testonly = true
+  visibility = [
+    ":*",
+    "//test/multisim_architecture_rules:*",
+  ]
+  check_includes = true
+  public_configs = [ ":skeleton_includes" ]
+  sources = [ "foundation/orchestration/runtime_operation_store.h" ]
+  public = [ "foundation/orchestration/runtime_operation_store.h" ]
+  public_deps = [ ":request_protocol" ]
+}
+
+source_set("request_protocol") {
+  testonly = true
+  visibility = [
+    ":*",
+    "//test/multisim_architecture_rules:*",
+  ]
+  check_includes = true
+  public_configs = [ ":skeleton_includes" ]
+  sources = [ "foundation/orchestration/request_context.h" ]
+  public = [ "foundation/orchestration/request_context.h" ]
+  public_deps = [ ":sim_values" ]
+}
+
+source_set("runtime_cases") {
+  testonly = true
+  visibility = [
+    ":*",
+    "//test/multisim_architecture_rules:*",
+  ]
+  check_includes = true
+  public_configs = [ ":skeleton_includes" ]
+  sources = [ "runtime/euicc/local_card_requests.cpp" ]
+  public = []
+  deps = [ ":runtime_contracts" ]
+}
+
+source_set("runtime_contracts") {
+  testonly = true
+  visibility = [
+    ":*",
+    "//test/multisim_architecture_rules:*",
+  ]
+  check_includes = true
+  public_configs = [ ":skeleton_includes" ]
+  sources = [
+    "runtime/api/local_card_requests.h",
+    "runtime/euicc/profile_requests.h",
+    "runtime/records/ef_requests.h",
+    "runtime/state/pin_requests.h",
+  ]
+  public = [
+    "runtime/api/local_card_requests.h",
+    "runtime/euicc/profile_requests.h",
+    "runtime/records/ef_requests.h",
+    "runtime/state/pin_requests.h",
+  ]
+  public_deps = [
+    ":assignment_contracts",
+    ":request_protocol",
+  ]
+}
+
+source_set("runtime_core") {
+  testonly = true
+  visibility = [
+    ":*",
+    "//test/multisim_architecture_rules:*",
+  ]
+  check_includes = true
+  public_configs = [ ":skeleton_includes" ]
+  sources = [
+    "runtime/card_runtime.cpp",
+    "runtime/card_runtime.h",
+    "runtime/result_sinks.h",
+  ]
+  public = [
+    "runtime/card_runtime.h",
+    "runtime/result_sinks.h",
+  ]
+  public_deps = [
+    ":assignment_contracts",
+    ":runtime_contracts",
+    ":runtime_mechanisms",
+    ":sim_values",
+    ":topology_contracts",
+  ]
+}
+
+source_set("runtime_mechanisms") {
+  testonly = true
+  visibility = [
+    ":*",
+    "//test/multisim_architecture_rules:*",
+  ]
+  check_includes = true
+  public_configs = [ ":skeleton_includes" ]
+  sources = [
+    "runtime/records/load_session.cpp",
+    "runtime/records/load_session.h",
+    "runtime/resource/resource_barrier.cpp",
+    "runtime/resource/resource_barrier.h",
+    "runtime/session/session_registry.cpp",
+    "runtime/session/session_registry.h",
+  ]
+  public = [
+    "runtime/records/load_session.h",
+    "runtime/resource/resource_barrier.h",
+    "runtime/session/session_registry.h",
+  ]
+  public_deps = [ ":sim_values" ]
+}
+
+source_set("sim_values") {
+  testonly = true
+  visibility = [
+    ":*",
+    "//test/multisim_architecture_rules:*",
+  ]
+  check_includes = true
+  public_configs = [ ":skeleton_includes" ]
+  sources = [
+    "foundation/request_ref.h",
+    "foundation/sim_identity.h",
+    "foundation/slot_catalog.cpp",
+    "foundation/slot_catalog.h",
+  ]
+  public = [
+    "foundation/request_ref.h",
+    "foundation/sim_identity.h",
+    "foundation/slot_catalog.h",
+  ]
+}
+
+source_set("topology_adapters") {
+  testonly = true
+  visibility = [
+    ":*",
+    "//test/multisim_architecture_rules:*",
+  ]
+  check_includes = true
+  public_configs = [ ":skeleton_includes" ]
+  sources = [
+    "topology/adapters/account_store_adapter.cpp",
+    "topology/adapters/account_store_adapter.h",
+    "topology/adapters/activation_hook_adapter.h",
+  ]
+  public = [
+    "topology/adapters/account_store_adapter.h",
+    "topology/adapters/activation_hook_adapter.h",
+  ]
+  public_deps = [ ":topology_contracts" ]
+}
+
+source_set("topology_cases") {
+  testonly = true
+  visibility = [
+    ":*",
+    "//test/multisim_architecture_rules:*",
+  ]
+  check_includes = true
+  public_configs = [ ":skeleton_includes" ]
+  sources = [
+    "topology/activation/activate_sim_use_case.cpp",
+    "topology/activation/activate_sim_use_case.h",
+    "topology/profile/set_show_number_use_case.cpp",
+    "topology/profile/set_show_number_use_case.h",
+    "topology/profile/show_number_query.cpp",
+    "topology/profile/show_number_query.h",
+    "topology/topology_service.cpp",
+    "topology/topology_service.h",
+  ]
+  public = [
+    "topology/activation/activate_sim_use_case.h",
+    "topology/profile/set_show_number_use_case.h",
+    "topology/profile/show_number_query.h",
+    "topology/topology_service.h",
+  ]
+  public_deps = [
+    ":assignment_contracts",
+    ":request_mechanism",
+    ":topology_contracts",
+    ":topology_domain",
+    ":topology_protocols",
+  ]
+}
+
+source_set("topology_contracts") {
+  testonly = true
+  visibility = [
+    ":*",
+    "//test/multisim_architecture_rules:*",
+  ]
+  check_includes = true
+  public_configs = [ ":skeleton_includes" ]
+  sources = [
+    "topology/api/account_role_planning_port.h",
+    "topology/api/account_store.h",
+    "topology/api/activation_assignment_port.h",
+    "topology/api/activation_runtime_port.h",
+    "topology/api/card_observation_port.h",
+    "topology/api/legacy_entry.h",
+    "topology/api/number_query_host_port.h",
+    "topology/api/show_number_completion_port.h",
+    "topology/api/show_number_runtime_port.h",
+    "topology/api/topology_requests.h",
+  ]
+  public = [
+    "topology/api/account_role_planning_port.h",
+    "topology/api/account_store.h",
+    "topology/api/activation_assignment_port.h",
+    "topology/api/activation_runtime_port.h",
+    "topology/api/card_observation_port.h",
+    "topology/api/legacy_entry.h",
+    "topology/api/number_query_host_port.h",
+    "topology/api/show_number_completion_port.h",
+    "topology/api/show_number_runtime_port.h",
+    "topology/api/topology_requests.h",
+  ]
+  public_deps = [
+    ":assignment_contracts",
+    ":request_protocol",
+    ":sim_values",
+    ":topology_types",
+  ]
+}
+
+source_set("topology_domain") {
+  testonly = true
+  visibility = [
+    ":*",
+    "//test/multisim_architecture_rules:*",
+  ]
+  check_includes = true
+  public_configs = [ ":skeleton_includes" ]
+  sources = [
+    "topology/domain/account_registry.cpp",
+    "topology/domain/account_registry.h",
+    "topology/domain/binding_index.cpp",
+    "topology/domain/binding_index.h",
+  ]
+  public = [
+    "topology/domain/account_registry.h",
+    "topology/domain/binding_index.h",
+  ]
+  public_deps = [
+    ":sim_values",
+    ":topology_types",
+  ]
+}
+
+source_set("topology_protocols") {
+  testonly = true
+  visibility = [
+    ":*",
+    "//test/multisim_architecture_rules:*",
+  ]
+  check_includes = true
+  public_configs = [ ":skeleton_includes" ]
+  sources = [
+    "topology/activation/activation_progress.cpp",
+    "topology/activation/activation_progress.h",
+    "topology/discovery/discovery_observation_ledger.cpp",
+    "topology/discovery/discovery_observation_ledger.h",
+    "topology/profile/show_number_plan.cpp",
+    "topology/profile/show_number_plan.h",
+  ]
+  public = [
+    "topology/activation/activation_progress.h",
+    "topology/discovery/discovery_observation_ledger.h",
+    "topology/profile/show_number_plan.h",
+  ]
+  public_deps = [
+    ":sim_values",
+    ":topology_contracts",
+    ":topology_domain",
+  ]
+}
+
+source_set("topology_types") {
+  testonly = true
+  visibility = [
+    ":*",
+    "//test/multisim_architecture_rules:*",
+  ]
+  check_includes = true
+  public_configs = [ ":skeleton_includes" ]
+  sources = [ "topology/api/account_types.h" ]
+  public = [ "topology/api/account_types.h" ]
+}
+
+group("skeleton") {
+  testonly = true
+  visibility = [ "//test/multisim_architecture_rules:*" ]
+  deps = [
+    ":assembly_contracts",
+    ":assembly_core",
+    ":assignment_adapters",
+    ":assignment_cases",
+    ":assignment_contracts",
+    ":assignment_domain",
+    ":assignment_protocols",
+    ":assignment_types",
+    ":compatibility_contracts",
+    ":compatibility_core",
+    ":repository_exports",
+    ":request_mechanism",
+    ":request_protocol",
+    ":runtime_cases",
+    ":runtime_contracts",
+    ":runtime_core",
+    ":runtime_mechanisms",
+    ":sim_values",
+    ":topology_adapters",
+    ":topology_cases",
+    ":topology_contracts",
+    ":topology_domain",
+    ":topology_protocols",
+    ":topology_types",
+  ]
+}

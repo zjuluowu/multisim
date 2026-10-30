@@ -1,0 +1,1044 @@
+{
+  "schema_version": 1,
+  "baseline": "18e724f70ab3bfef142674d794ad5dfba04d371d",
+  "source_root": "telephony_core_service/services/multisim",
+  "files": [
+    {
+      "old": "application/card_access/local_card_requests.cpp",
+      "destinations": [
+        "runtime/euicc/local_card_requests.cpp"
+      ],
+      "sha256": "f8bf856f24518fcbc20fa7b7bee56510ce222ce41c57f0488151bc970fc1c7a6",
+      "action": "move",
+      "responsibility": "local_card_requests",
+      "implementation": "构造及SwitchLocalProfile对抽象端口的实际期望/提示/结束委托；PIN/EF仅声明，无真实卡IO",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "runtime_cases"
+      ]
+    },
+    {
+      "old": "application/card_access/local_card_requests.h",
+      "destinations": [
+        "runtime/api/local_card_requests.h",
+        "runtime/state/pin_requests.h",
+        "runtime/records/ef_requests.h",
+        "runtime/euicc/profile_requests.h"
+      ],
+      "sha256": "51ab5f030aa9f44f9e7e0357c97306ffa429832fe1eff22e2a84aabb52f9a003",
+      "action": "split",
+      "responsibility": "VerifyPinRequest、ReadEfRequest、VerifiedPortRoute、SwitchProfileRequest、EuiccPrimitiveResult等",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "runtime_contracts"
+      ]
+    },
+    {
+      "old": "application/orchestration/request_context.h",
+      "destinations": [
+        "foundation/orchestration/request_context.h",
+        "foundation/request_ref.h"
+      ],
+      "sha256": "67b9cfce7a52913eec6eb178bbafa5bb777693012757653398a7dacb6772c9a4",
+      "action": "split",
+      "responsibility": "RequestOwner、RequestId、CompletionId、SynchronousWaitRef、InternalReplyRef等",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "request_protocol",
+        "sim_values"
+      ]
+    },
+    {
+      "old": "application/orchestration/runtime_operation_store.h",
+      "destinations": [
+        "foundation/orchestration/runtime_operation_store.h"
+      ],
+      "sha256": "e1001bb4c18309d2139b42dcaac08aa26213d78d537e8d4a4cd2e933377559c2",
+      "action": "move",
+      "responsibility": "RuntimeOperationStore",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "request_mechanism"
+      ]
+    },
+    {
+      "old": "assembly/host_ports.h",
+      "destinations": [
+        "assembly/host_ports.h"
+      ],
+      "sha256": "36d040d18f8323e3fbecdc0a6b8aed361c726f9e9bb78847d4cdadc916b23710",
+      "action": "retain",
+      "responsibility": "SimHostPorts、SimServicePublicationPort",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "assembly_contracts"
+      ]
+    },
+    {
+      "old": "assembly/manager_publication.h",
+      "destinations": [
+        "assembly/manager_publication.h"
+      ],
+      "sha256": "e32def51474b8ae136276fc26b3a620349f855283cb101c881a3fb53197343d9",
+      "action": "retain",
+      "responsibility": "ManagerPublicationSequence、PublicationStage、初始化/发布记录",
+      "implementation": "有限原对象地址/共享控制块匹配规则，不执行Core原发布",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "assembly_contracts"
+      ]
+    },
+    {
+      "old": "assembly/sim_module_factory.cpp",
+      "destinations": [
+        "assembly/sim_module_factory.cpp"
+      ],
+      "sha256": "93ef455463e5fdd62dda5dc316f5672d3d11db31529fbd2b82094c27d9ac9246",
+      "action": "retain",
+      "responsibility": "sim_module_factory",
+      "implementation": "私有构造表达原单套对象的注入/绑定；工厂、匹配销毁及排空方法未定义，无生产调用。",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "assembly_core"
+      ]
+    },
+    {
+      "old": "assembly/sim_module_factory.h",
+      "destinations": [
+        "assembly/sim_module_factory.h",
+        "assembly/sim_module.h"
+      ],
+      "sha256": "b5dc9272e2422415168a1db912ae5d04aa8d078cc590649fc4d15d5fa02e9689",
+      "action": "split",
+      "responsibility": "ExistingSimBindings、SimModule、SimModuleDeleter、SimModuleInitFailure、LegacySimStartup等",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "assembly_contracts",
+        "assembly_core"
+      ]
+    },
+    {
+      "old": "assignment/api/assignment_requests.h",
+      "destinations": [
+        "assignment/api/assignment_requests.h"
+      ],
+      "sha256": "63dfc7d595630b6800c178bf5e0a10de8944d00e2c70e02f9d6f969e14f0714d",
+      "action": "retain",
+      "responsibility": "SetRoleCommand、SwitchPrimaryCommand、RadioAssignmentView、AssignmentView、AccountRolePlanningInput等",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "assignment_contracts"
+      ]
+    },
+    {
+      "old": "assignment/api/primary_execution.h",
+      "destinations": [
+        "assignment/api/primary_execution.h"
+      ],
+      "sha256": "d943f8986dc02188a1e7def7bd05ca86c57a5c6d1038efd61d99c19e98d70236",
+      "action": "retain",
+      "responsibility": "PrimarySwitchMode、ParameterWritePosition、PrimaryDecisionFacts",
+      "implementation": "模式/输入值契约，无执行或仲裁服务",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "assignment_types"
+      ]
+    },
+    {
+      "old": "assignment/application/account_role_protocol.h",
+      "destinations": [
+        "assignment/account_roles/account_role_protocol.h"
+      ],
+      "sha256": "9c7ee353b8b9a8303ed11a9c2072585adf714e447b66762de5e9bb3ffb7c8df8",
+      "action": "move",
+      "responsibility": "AccountRoleProtocol",
+      "implementation": "有限角色reservation/finalize接纳规则，不接provider写入",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "assignment_protocols"
+      ]
+    },
+    {
+      "old": "assignment/application/assignment_service.cpp",
+      "destinations": [
+        "assignment/assignment_service.cpp"
+      ],
+      "sha256": "afc501d6e334a44fa2f0b16064c11f2c46198c5a69a0a13d0242c4d6cb997c04",
+      "action": "move",
+      "responsibility": "assignment_service",
+      "implementation": "构造、角色资格/重载委托及原节点偏好存储调用已定义；Primary、默认角色及设备业务仍未实现。",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "assignment_cases"
+      ]
+    },
+    {
+      "old": "assignment/application/assignment_service.h",
+      "destinations": [
+        "assignment/assignment_service.h"
+      ],
+      "sha256": "d1fda15ebd650e71bc250699156dc568ee4ff6efbe71ef7c7d1da6d0838cb1f1",
+      "action": "move",
+      "responsibility": "AssignmentService",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "assignment_cases"
+      ]
+    },
+    {
+      "old": "assignment/application/primary_switch_plan.cpp",
+      "destinations": [
+        "assignment/primary/primary_switch_plan.cpp"
+      ],
+      "sha256": "416cf45fb88de12bcf9ed5a5df4924a7e298983d7d30375e11b8b333234e4baa",
+      "action": "move",
+      "responsibility": "PlanPrimarySwitch",
+      "implementation": "有限四模式兼容步骤/参数偏序计划，非Domain或生产切换",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "assignment_protocols"
+      ]
+    },
+    {
+      "old": "assignment/application/primary_switch_plan.h",
+      "destinations": [
+        "assignment/primary/primary_switch_plan.h"
+      ],
+      "sha256": "eb30fd92aaa89217fa347c20812b53b7f705538755360177f2eec96b1312dd3c",
+      "action": "move",
+      "responsibility": "PrimaryAction、PrimarySwitchPlan",
+      "implementation": "Application兼容步骤计划契约，依赖api/primary_execution.h",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "assignment_protocols"
+      ]
+    },
+    {
+      "old": "assignment/domain/assignment_aggregate.cpp",
+      "destinations": [
+        "assignment/domain/assignment_aggregate.cpp"
+      ],
+      "sha256": "ab4a6b3189063a4c3a66830023b79d9cf83b9e87f029638cecc3faad881a4480",
+      "action": "retain",
+      "responsibility": "assignment_aggregate",
+      "implementation": "仅include及领域职责说明；Primary兼容计划位于assignment/primary，聚合方法仍仅声明。",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "assignment_domain"
+      ]
+    },
+    {
+      "old": "assignment/domain/assignment_aggregate.h",
+      "destinations": [
+        "assignment/domain/assignment_aggregate.h"
+      ],
+      "sha256": "dca6ed5995fc1e2543fb8b67fc32f5ab4367c2c09c85ade45b746e7f17c365d4",
+      "action": "retain",
+      "responsibility": "TransitionPhase、AssignmentTransition、TransitionAdmission、AssignmentAggregate",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "assignment_domain"
+      ]
+    },
+    {
+      "old": "assignment/domain/role_selection.h",
+      "destinations": [
+        "assignment/domain/role_selection.h",
+        "assignment/api/assignment_types.h"
+      ],
+      "sha256": "7dc4546e93e6c997166b23ecc30141e7e27b496d99ab021d024658873a9f04f4",
+      "action": "split",
+      "responsibility": "DefaultRole、RoleSelection",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "assignment_domain",
+        "assignment_types"
+      ]
+    },
+    {
+      "old": "assignment/ports/assignment_store.h",
+      "destinations": [
+        "assignment/api/assignment_store.h"
+      ],
+      "sha256": "f0c1cceef07e70336c4055386af92f24efed3003a32733187f2f1d72d2bffd0a",
+      "action": "move",
+      "responsibility": "PrimaryParameterSnapshot、AssignmentParameterResult、RoleStoreResult、AssignmentStore",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "assignment_contracts"
+      ]
+    },
+    {
+      "old": "assignment/ports/primary_topology_port.h",
+      "destinations": [
+        "assignment/api/primary_topology_port.h"
+      ],
+      "sha256": "83e313da96cd4de68651f388292155e741596bbcefd26d0f3003a4e02bc877c4",
+      "action": "move",
+      "responsibility": "PrimaryTargetFacts、PrimaryTopologyPort",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "assignment_contracts"
+      ]
+    },
+    {
+      "old": "assignment/ports/profile_preference_port.h",
+      "destinations": [
+        "assignment/api/profile_preference_port.h"
+      ],
+      "sha256": "14d89e47df5c61b2ed54516d59d325b330774ac39da10d18a150e74751ea0855",
+      "action": "move",
+      "responsibility": "ProfilePreferencePort",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "assignment_contracts"
+      ]
+    },
+    {
+      "old": "assignment/ports/radio_execution_port.h",
+      "destinations": [
+        "assignment/api/radio_execution_port.h"
+      ],
+      "sha256": "2fc84d05298057409a3fd9a1d0701a64f236ee1970383c2dfbf3438c0c436f6d",
+      "action": "move",
+      "responsibility": "PrimaryRadioObservation、RadioSwitchRequest、RadioSwitchResult、RadioResultSink、RadioExecutionPort等",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "assignment_contracts"
+      ]
+    },
+    {
+      "old": "compatibility/completion_cell.h",
+      "destinations": [
+        "compatibility/output/completion_cell.h"
+      ],
+      "sha256": "173913f664c0596947ea261d538ce082c397820ab4e63ab51f85932aa0d55306",
+      "action": "move",
+      "responsibility": "CompletionCell",
+      "implementation": "有限先登记/结果可先到达及一次完成纯规则，不是真实FFRT等待",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "compatibility_core"
+      ]
+    },
+    {
+      "old": "compatibility/legacy_boundary_ports.h",
+      "destinations": [
+        "compatibility/api/legacy_boundary_ports.h"
+      ],
+      "sha256": "06fd1c2b54f1ffd2722b506ecec23c1865f9ced640073fe62ef79ca68ce0bf50",
+      "action": "move",
+      "responsibility": "LegacyCallerRef、LegacyCallbackRef、EntryCheck、LegacySynchronousCall、LegacyIngressPort等",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "compatibility_contracts"
+      ]
+    },
+    {
+      "old": "compatibility/legacy_completion.cpp",
+      "destinations": [
+        "compatibility/output/legacy_completion.cpp"
+      ],
+      "sha256": "1829e33e47629a9d4d2cecd97024eb493ad5b3861770f726f46b2e68bba0bb1d",
+      "action": "move",
+      "responsibility": "legacy_completion",
+      "implementation": "CompleteLegacyInt保留原成功通知与分路交付；CompleteShowNumber仍仅声明。",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "compatibility_core"
+      ]
+    },
+    {
+      "old": "compatibility/legacy_completion.h",
+      "destinations": [
+        "compatibility/output/legacy_completion.h"
+      ],
+      "sha256": "084cdc6afc48a141b070f93e5de6183c6596291d1e7dbd2f847cd1e1396bd353",
+      "action": "move",
+      "responsibility": "LegacyCompletion",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "compatibility_core"
+      ]
+    },
+    {
+      "old": "compatibility/legacy_profile_result.h",
+      "destinations": [
+        "compatibility/output/legacy_profile_result.h"
+      ],
+      "sha256": "7b674ea1e68a518ab5989adefebcae1c9fd96e562b89dcdf22089eab928600ee",
+      "action": "move",
+      "responsibility": "AssignLocalProfileLegacyResult及本地Profile结果桥",
+      "implementation": "有限外层int/可选enum赋值规则，不生成卡结果",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "compatibility_core"
+      ]
+    },
+    {
+      "old": "compatibility/legacy_sim_facade.cpp",
+      "destinations": [
+        "compatibility/legacy_sim_facade.cpp"
+      ],
+      "sha256": "08457b477cae6d1cd213bc2a19608a24bcf8eae1c4ef94599cb38a7b1159db95",
+      "action": "retain",
+      "responsibility": "legacy_sim_facade",
+      "implementation": "原同步激活/Primary宿主等待与Profile双结果委托已定义；其他命令/查询仍仅声明；无生产调用。",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "compatibility_core"
+      ]
+    },
+    {
+      "old": "compatibility/legacy_sim_facade.h",
+      "destinations": [
+        "compatibility/legacy_sim_facade.h"
+      ],
+      "sha256": "cba42b2b21348d3486c72d5129d5253ce7b0f0a92321a8ae5144fe8ba6b44bc1",
+      "action": "retain",
+      "responsibility": "LegacySimFacade",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "compatibility_core"
+      ]
+    },
+    {
+      "old": "infrastructure/account_store_adapter.cpp",
+      "destinations": [
+        "topology/adapters/account_store_adapter.cpp"
+      ],
+      "sha256": "9dedbc6255af43de18af53f65fca1e21fc8dcc8593b0028c0fbeb627acc3b568",
+      "action": "move",
+      "responsibility": "account_store_adapter",
+      "implementation": "仅include及原字段写入/读源协议说明，端口方法未定义。",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_adapters"
+      ]
+    },
+    {
+      "old": "infrastructure/account_store_adapter.h",
+      "destinations": [
+        "topology/adapters/account_store_adapter.h"
+      ],
+      "sha256": "8edb3b2fe780577229161dc33b7c0099468d864169270ed34e63721c5e2c4cfd",
+      "action": "move",
+      "responsibility": "AccountStoreAdapter",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_adapters"
+      ]
+    },
+    {
+      "old": "infrastructure/assignment_store_adapter.h",
+      "destinations": [
+        "assignment/adapters/assignment_store_adapter.h"
+      ],
+      "sha256": "9f51dcec43949a9fd05e0b05d9e82604395f2913fd9a2428adee8927372a5c5e",
+      "action": "move",
+      "responsibility": "AssignmentStoreAdapter",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "assignment_adapters"
+      ]
+    },
+    {
+      "old": "infrastructure/legacy_output_adapter.cpp",
+      "destinations": [
+        "compatibility/output/legacy_output_adapter.cpp"
+      ],
+      "sha256": "eadac90ecd1bd7579bbf46e33bf2e2c38be219be8c15d3251702ee3799e216c5",
+      "action": "move",
+      "responsibility": "legacy_output_adapter",
+      "implementation": "仅include及原完成/通知/Hook节点说明，Adapter方法未定义。",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "compatibility_core"
+      ]
+    },
+    {
+      "old": "infrastructure/legacy_output_adapter.h",
+      "destinations": [
+        "compatibility/output/legacy_output_adapter.h",
+        "assignment/adapters/assignment_output_adapter.h",
+        "topology/adapters/activation_hook_adapter.h"
+      ],
+      "sha256": "62ff114137bc113288e6762c4afd8ca5b4298d2872965bdf2aa5b7a8e84c7474",
+      "action": "split",
+      "responsibility": "LegacyOutputAdapter、AssignmentOutputAdapter、ActivationHookAdapter",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "assignment_adapters",
+        "compatibility_core",
+        "topology_adapters"
+      ]
+    },
+    {
+      "old": "model/sim_identity.h",
+      "destinations": [
+        "foundation/sim_identity.h"
+      ],
+      "sha256": "3615dcc01a2d8181220065da9cfcd0bd6d3e057c73dd5db4e179ed45b20c499d",
+      "action": "move",
+      "responsibility": "SubscriptionId、SlotId、RadioDomainId、SlotTarget、CardApplicationTarget等",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "sim_values"
+      ]
+    },
+    {
+      "old": "model/slot_catalog.cpp",
+      "destinations": [
+        "foundation/slot_catalog.cpp"
+      ],
+      "sha256": "b8f777e41bf134be9d78acab58dd7ebc02523049a00d57c58424708c3fd42e67",
+      "action": "move",
+      "responsibility": "slot_catalog",
+      "implementation": "有限目录构造/查找；不自动发现或装配",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "sim_values"
+      ]
+    },
+    {
+      "old": "model/slot_catalog.h",
+      "destinations": [
+        "foundation/slot_catalog.h"
+      ],
+      "sha256": "321b25ec6f1dbb338aacb5f36b07426b5cf570ce50d9602271f8389852b6f984",
+      "action": "move",
+      "responsibility": "EndpointKind、VisibilityClass、SlotDescriptor、LegacyCapacityMeasures、SlotCatalog",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "sim_values"
+      ]
+    },
+    {
+      "old": "runtime/card_runtime.cpp",
+      "destinations": [
+        "runtime/card_runtime.cpp"
+      ],
+      "sha256": "e41db9041b9d2a99f614aef6aa4b0635a421c92aae3fc1b6e534fd87c41373b9",
+      "action": "retain",
+      "responsibility": "card_runtime",
+      "implementation": "构造、窄sink绑定、共序发现/失效和期望等待结束有有限实现；设备发令及成熟卡协议尚未接入。",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "runtime_core"
+      ]
+    },
+    {
+      "old": "runtime/card_runtime.h",
+      "destinations": [
+        "runtime/card_runtime.h"
+      ],
+      "sha256": "b1cbcf64d9c4f4304f28101fe22591371f108c1a77041f5b5413498bade5acc7",
+      "action": "retain",
+      "responsibility": "SimStateManager、SimFileManager、SimSmsManager、IccDiallingNumbersManager、StkManager等",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "runtime_core"
+      ]
+    },
+    {
+      "old": "runtime/records/load_session.cpp",
+      "destinations": [
+        "runtime/records/load_session.cpp"
+      ],
+      "sha256": "a2114fb6ae502d269258638e2d3e6d6378dbc5c04934d93c10318f99e3fb8a96",
+      "action": "retain",
+      "responsibility": "load_session",
+      "implementation": "有限加载成员登记/一次消费/局部失效；无EF IO或LOADED发布",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "runtime_mechanisms"
+      ]
+    },
+    {
+      "old": "runtime/records/load_session.h",
+      "destinations": [
+        "runtime/records/load_session.h"
+      ],
+      "sha256": "0f5f5eba7b5d99aa2c3ebc46eea39103b63fa688d5ed1ba412d305f0f5cdedb1",
+      "action": "retain",
+      "responsibility": "LoadToken、LoadMemberState、LoadAccess、LoadMember、LoadSession",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "runtime_mechanisms"
+      ]
+    },
+    {
+      "old": "runtime/resource/resource_barrier.cpp",
+      "destinations": [
+        "runtime/resource/resource_barrier.cpp"
+      ],
+      "sha256": "6d607296ada4d7636890776dd4b178e0763c9fe7a4d7b9130e066ea7badf34b9",
+      "action": "retain",
+      "responsibility": "resource_barrier",
+      "implementation": "有限纯资源状态转移；证据输入不证明设备能力",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "runtime_mechanisms"
+      ]
+    },
+    {
+      "old": "runtime/resource/resource_barrier.h",
+      "destinations": [
+        "runtime/resource/resource_barrier.h"
+      ],
+      "sha256": "9551c46cdbc29238f2aa58587698c2e147e660a585ecd4377da2da42bd258168",
+      "action": "retain",
+      "responsibility": "ResourceState、EffectRequirement、ResourceKey、ResourceLease、InitialRecoveryEvidence等",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "runtime_mechanisms"
+      ]
+    },
+    {
+      "old": "runtime/result_sinks.h",
+      "destinations": [
+        "runtime/result_sinks.h"
+      ],
+      "sha256": "eb9fc665b8be16d28b770baea1e6309392bb09c71265af410115af37b222dfb0",
+      "action": "retain",
+      "responsibility": "RuntimeResultSinks",
+      "implementation": "有限窄结果/迟到证据交付，不引用具体用例，不是事件总线",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "runtime_core"
+      ]
+    },
+    {
+      "old": "runtime/session/session_registry.cpp",
+      "destinations": [
+        "runtime/session/session_registry.cpp"
+      ],
+      "sha256": "ecea35efc81c2d777ede56a616ee4af683952d1e35e092fa843fd52ac767c5a6",
+      "action": "retain",
+      "responsibility": "SessionRegistry成员实现",
+      "implementation": "有限Current/水位/期望登记、撤销、等待结束/到期及可信一次接续；无设备I/O",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "runtime_mechanisms"
+      ]
+    },
+    {
+      "old": "runtime/session/session_registry.h",
+      "destinations": [
+        "runtime/session/session_registry.h"
+      ],
+      "sha256": "09d65e548b246713f1f7eaf82ff97ffdfd1a0bd379ad585500b2cbb65315c24d",
+      "action": "retain",
+      "responsibility": "TransitionCause、ExpectedTransition、TransitionEvidence、SessionRegistry",
+      "implementation": "会话/期望/代次水位契约；cpp有有限纯实现，无设备发布闭包",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "runtime_mechanisms"
+      ]
+    },
+    {
+      "old": "topology/api/topology_requests.h",
+      "destinations": [
+        "topology/api/topology_requests.h"
+      ],
+      "sha256": "b62bc2db975e7630f25088b8634c5ce2ba8f7362cf149c038ad444fd166285d1",
+      "action": "retain",
+      "responsibility": "SetShowNumberCommand、NumberSource、ShowNumberRead、ActivationKind、ActivateSimCommand等",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_contracts"
+      ]
+    },
+    {
+      "old": "topology/application/activate_sim_use_case.cpp",
+      "destinations": [
+        "topology/activation/activate_sim_use_case.cpp"
+      ],
+      "sha256": "3f26faab8013d74d4fd3809c687fa653ad8abce8dad853ccad431039952ad128",
+      "action": "move",
+      "responsibility": "activate_sim_use_case",
+      "implementation": "构造/绑定及流程伪代码；业务方法未实现",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_cases"
+      ]
+    },
+    {
+      "old": "topology/application/activate_sim_use_case.h",
+      "destinations": [
+        "topology/activation/activate_sim_use_case.h"
+      ],
+      "sha256": "a20dc9940166d86ae1989d80c40831175cfba30e5c01a7c88c1d2b5e0423a0b2",
+      "action": "move",
+      "responsibility": "ActivateSimUseCase",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_cases"
+      ]
+    },
+    {
+      "old": "topology/application/activation_progress.cpp",
+      "destinations": [
+        "topology/activation/activation_progress.cpp"
+      ],
+      "sha256": "7c81596d983694e4371b47a30c332897720267ce3b25e3b0e3b047773da81318",
+      "action": "move",
+      "responsibility": "activation_progress",
+      "implementation": "有限请求Owner/epoch/session归属和进度规则",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_protocols"
+      ]
+    },
+    {
+      "old": "topology/application/activation_progress.h",
+      "destinations": [
+        "topology/activation/activation_progress.h"
+      ],
+      "sha256": "9ccfb2472454af17248815661010c49f0740a7f47c6f528dc635c36aa0607c80",
+      "action": "move",
+      "responsibility": "ActivationTransition、ActivationProgress",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_protocols"
+      ]
+    },
+    {
+      "old": "topology/application/discovery_observation_ledger.cpp",
+      "destinations": [
+        "topology/discovery/discovery_observation_ledger.cpp"
+      ],
+      "sha256": "ddc08c8017d6dadd6c353cecbeb030b939ef93590ec06bb1e011bd16242a13bc",
+      "action": "move",
+      "responsibility": "discovery_observation_ledger",
+      "implementation": "有限观察序列/失效/最终资格规则",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_protocols"
+      ]
+    },
+    {
+      "old": "topology/application/discovery_observation_ledger.h",
+      "destinations": [
+        "topology/discovery/discovery_observation_ledger.h"
+      ],
+      "sha256": "0cfa24bbd1de5386f89ea528d6b51186e30b700ca1fd3b5f237e214c695822c9",
+      "action": "move",
+      "responsibility": "DiscoveryObservationLedger",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_protocols"
+      ]
+    },
+    {
+      "old": "topology/application/set_show_number_use_case.cpp",
+      "destinations": [
+        "topology/profile/set_show_number_use_case.cpp"
+      ],
+      "sha256": "6d70456f8919228b3d8908e0da5ef484e97d7aad436ab107d1ebd9e6a32256c5",
+      "action": "move",
+      "responsibility": "set_show_number_use_case",
+      "implementation": "构造/绑定及流程伪代码；业务方法未实现",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_cases"
+      ]
+    },
+    {
+      "old": "topology/application/set_show_number_use_case.h",
+      "destinations": [
+        "topology/profile/set_show_number_use_case.h"
+      ],
+      "sha256": "3c0d323fbd9605ad5e90114138b931c0f23eecf4ad54a0f4f10788a2895208a4",
+      "action": "move",
+      "responsibility": "SetShowNumberUseCase",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_cases"
+      ]
+    },
+    {
+      "old": "topology/application/show_number_plan.cpp",
+      "destinations": [
+        "topology/profile/show_number_plan.cpp"
+      ],
+      "sha256": "1117026b1c17a67493f7437d0d8a8094a88738cf2fe9e03b89c3790d6a28610b",
+      "action": "move",
+      "responsibility": "show_number_plan",
+      "implementation": "有限兼容步骤计划；无IO或业务成功返回",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_protocols"
+      ]
+    },
+    {
+      "old": "topology/application/show_number_plan.h",
+      "destinations": [
+        "topology/profile/show_number_plan.h"
+      ],
+      "sha256": "4bc3a7e0f08fa047d645dd04da24ced15b7d5569b84fc8d03987b5104b10ef2f",
+      "action": "move",
+      "responsibility": "NumberUpdateNode、ShowNumberPlan",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_protocols"
+      ]
+    },
+    {
+      "old": "topology/application/show_number_query.cpp",
+      "destinations": [
+        "topology/profile/show_number_query.cpp"
+      ],
+      "sha256": "426d84e694878e01ed24bbbbce5ade52cf45fe5e1d3e1000afa8c711a1986e2e",
+      "action": "move",
+      "responsibility": "show_number_query",
+      "implementation": "构造/绑定及流程伪代码；业务方法未实现",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_cases"
+      ]
+    },
+    {
+      "old": "topology/application/show_number_query.h",
+      "destinations": [
+        "topology/profile/show_number_query.h"
+      ],
+      "sha256": "63b30163ef73b043ba8d2e632ded89aecd4e87491ff1c5ce69ef09366c31f51c",
+      "action": "move",
+      "responsibility": "ShowNumberQuery",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_cases"
+      ]
+    },
+    {
+      "old": "topology/application/topology_service.cpp",
+      "destinations": [
+        "topology/topology_service.cpp"
+      ],
+      "sha256": "77e58bb97142d8db5477da414e1f789015805a38ba6c0aa9e562d5701c28afe7",
+      "action": "move",
+      "responsibility": "topology_service",
+      "implementation": "构造/绑定及流程伪代码；业务方法未实现",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_cases"
+      ]
+    },
+    {
+      "old": "topology/application/topology_service.h",
+      "destinations": [
+        "topology/topology_service.h"
+      ],
+      "sha256": "0cbbd273d45a945c02bd183b0a27bb21a1155f529001307971586d37bf2dfafd",
+      "action": "move",
+      "responsibility": "ReloadAccountInput、ReloadRequest、AccountFieldReservation、TopologyService",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_cases"
+      ]
+    },
+    {
+      "old": "topology/domain/account_registry.cpp",
+      "destinations": [
+        "topology/domain/account_registry.cpp"
+      ],
+      "sha256": "ed39c75f0dade71f19557ed7d9ee95430d20a5ea66c53240a2f43f8f2adb13bd",
+      "action": "retain",
+      "responsibility": "account_registry",
+      "implementation": "有限独立投影/字段版本/重载接纳纯规则",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_domain"
+      ]
+    },
+    {
+      "old": "topology/domain/account_registry.h",
+      "destinations": [
+        "topology/domain/account_registry.h",
+        "topology/api/account_types.h"
+      ],
+      "sha256": "1ea4031b56080bde8cba070f66ac9f25e08085a392857edd266196d078835634",
+      "action": "split",
+      "responsibility": "AccountReadView、AccountFieldRevisions、AccountProjection、AccountRecord、AccountAcceptance等",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_domain",
+        "topology_types"
+      ]
+    },
+    {
+      "old": "topology/domain/binding_index.cpp",
+      "destinations": [
+        "topology/domain/binding_index.cpp"
+      ],
+      "sha256": "7cd12bacdc1e7036871ce377a93789ece8310f587d3e98827c111948355384c8",
+      "action": "retain",
+      "responsibility": "binding_index",
+      "implementation": "有限装配标记/位置版本/绑定唯一性/ABA规则",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_domain"
+      ]
+    },
+    {
+      "old": "topology/domain/binding_index.h",
+      "destinations": [
+        "topology/domain/binding_index.h"
+      ],
+      "sha256": "1fb11b35f68ded58f67b7397819c77d3fec6319a9ca45ea3914464a8ccaa0b43",
+      "action": "retain",
+      "responsibility": "SlotRuntimeEntry、BindingIndex",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_domain"
+      ]
+    },
+    {
+      "old": "topology/ports/account_role_planning_port.h",
+      "destinations": [
+        "topology/api/account_role_planning_port.h"
+      ],
+      "sha256": "6f8641886591fddbc3fa17aad75c0f525b8fc4fa13e657dff3db865be0755f1e",
+      "action": "move",
+      "responsibility": "AccountRolePlanningPort",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_contracts"
+      ]
+    },
+    {
+      "old": "topology/ports/account_store.h",
+      "destinations": [
+        "topology/api/account_store.h"
+      ],
+      "sha256": "a6ea5a4ade6f56aabbd23b66534bbaea99348104c10973abd3b98d0f792f49d8",
+      "action": "move",
+      "responsibility": "AccountNumberPatch、AccountActivePatch、AccountNamePatch、AccountLabelPatch、AccountImsPreferencePatch等",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_contracts"
+      ]
+    },
+    {
+      "old": "topology/ports/activation_assignment_port.h",
+      "destinations": [
+        "topology/api/activation_assignment_port.h"
+      ],
+      "sha256": "17ea942d89d2982531e8dbd6b501c4bf4bc91b2fc838b5611bd9e670761e171d",
+      "action": "move",
+      "responsibility": "ActivationAssignmentPort",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_contracts"
+      ]
+    },
+    {
+      "old": "topology/ports/activation_runtime_port.h",
+      "destinations": [
+        "topology/api/activation_runtime_port.h"
+      ],
+      "sha256": "a9b7eb39ec410f8f5f7ca223e8ca5c924f380982416e4b74bcf1ee1825777d2e",
+      "action": "move",
+      "responsibility": "ActivationDeviceRequest、ActivationDeviceResult、ActivationResultSink、ActivationRuntimePort、ActivationHookPort",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_contracts"
+      ]
+    },
+    {
+      "old": "topology/ports/card_observation_port.h",
+      "destinations": [
+        "topology/api/card_observation_port.h"
+      ],
+      "sha256": "67aa07f372fa093e063f46f33ac3affdd90ae6068c118f4c7c2bff50d03b8d72",
+      "action": "move",
+      "responsibility": "CardObservationSink",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_contracts"
+      ]
+    },
+    {
+      "old": "topology/ports/number_query_host_port.h",
+      "destinations": [
+        "topology/api/number_query_host_port.h"
+      ],
+      "sha256": "b62e749afa67b8e33c31e4b5aa7ed021ca68bfa3550e498d178c5c56f63a9d43",
+      "action": "move",
+      "responsibility": "ImpuNumberResult、NumberBackwrite、NumberQueryHostPort",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_contracts"
+      ]
+    },
+    {
+      "old": "topology/ports/show_number_completion_port.h",
+      "destinations": [
+        "topology/api/show_number_completion_port.h"
+      ],
+      "sha256": "1a96781b82b255b819e509cbde8b889d3ad66fe7798b0a5ee06b8167aa1ddcb0",
+      "action": "move",
+      "responsibility": "ShowNumberCompletion、ShowNumberCompletionPort",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_contracts"
+      ]
+    },
+    {
+      "old": "topology/ports/show_number_runtime_port.h",
+      "destinations": [
+        "topology/api/show_number_runtime_port.h"
+      ],
+      "sha256": "ffed989ff02aa7245ee21c7786851a739c55feedbb07f428cc39e8bb6f778d81",
+      "action": "move",
+      "responsibility": "MsisdnWriteRequest、MsisdnWriteResult、MsisdnResultSink、CardNumberView、ShowNumberRuntimePort",
+      "implementation": "私有类型/端口/状态契约；有限内联构造/访问见源码",
+      "cpp_names_changed": false,
+      "dependency_targets": [
+        "topology_contracts"
+      ]
+    }
+  ]
+}

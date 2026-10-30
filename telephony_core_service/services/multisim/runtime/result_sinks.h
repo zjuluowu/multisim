@@ -15,10 +15,10 @@
 #ifndef OHOS_TELEPHONY_MULTISIM_RUNTIME_RESULT_SINKS_H
 #define OHOS_TELEPHONY_MULTISIM_RUNTIME_RESULT_SINKS_H
 
-#include "topology/ports/show_number_runtime_port.h"
-#include "topology/ports/activation_runtime_port.h"
-#include "topology/ports/card_observation_port.h"
-#include "assignment/ports/radio_execution_port.h"
+#include "topology/api/show_number_runtime_port.h"
+#include "topology/api/activation_runtime_port.h"
+#include "topology/api/card_observation_port.h"
+#include "assignment/api/radio_execution_port.h"
 
 namespace OHOS::Telephony::MultiSim {
 // H同模块内绑定的窄出口集合；不是总线，不持应用聚合，不决定结果接纳资格。

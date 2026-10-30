@@ -23,18 +23,10 @@
 #include <optional>
 #include <string>
 #include <vector>
-#include "model/sim_identity.h"
+#include "foundation/sim_identity.h"
+#include "topology/api/account_types.h"
 
 namespace OHOS::Telephony::MultiSim {
-enum class AccountReadView { Current, Historical };
-struct AccountFieldRevisions {
-    uint64_t name {0};
-    uint64_t number {0};
-    uint64_t active {0};
-    uint64_t label {0};
-    uint64_t imsPreference {0};
-    uint64_t position {0};
-};
 struct AccountProjection {
     std::u16string displayName;
     std::u16string displayNumber;

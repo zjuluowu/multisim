@@ -17,4 +17,4 @@
 // 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
 
 #include "assignment/domain/assignment_aggregate.h"
-// Application兼容步骤计划已移到assignment/application/primary_switch_plan.cpp。
+// Application兼容步骤计划已移到assignment/primary/primary_switch_plan.cpp。

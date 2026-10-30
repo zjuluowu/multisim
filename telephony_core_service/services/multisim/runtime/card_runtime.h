@@ -22,16 +22,16 @@
 #include <map>
 #include <utility>
 #include <vector>
-#include "application/card_access/local_card_requests.h"
-#include "assignment/ports/radio_execution_port.h"
-#include "topology/ports/activation_runtime_port.h"
-#include "topology/ports/card_observation_port.h"
-#include "topology/ports/show_number_runtime_port.h"
+#include "runtime/api/local_card_requests.h"
+#include "assignment/api/radio_execution_port.h"
+#include "topology/api/activation_runtime_port.h"
+#include "topology/api/card_observation_port.h"
+#include "topology/api/show_number_runtime_port.h"
 #include "runtime/session/session_registry.h"
 #include "runtime/result_sinks.h"
 #include "runtime/records/load_session.h"
 #include "runtime/resource/resource_barrier.h"
-#include "model/slot_catalog.h"
+#include "foundation/slot_catalog.h"
 
 namespace OHOS::Telephony {
 class SimStateManager;

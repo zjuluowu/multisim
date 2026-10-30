@@ -20,8 +20,8 @@
 #define OHOS_TELEPHONY_MULTISIM_TOPOLOGY_API_TOPOLOGY_REQUESTS_H
 
 #include <string>
-#include "application/orchestration/request_context.h"
-#include "topology/domain/account_registry.h"
+#include "foundation/orchestration/request_context.h"
+#include "topology/api/account_types.h"
 
 namespace OHOS::Telephony::MultiSim {
 struct SetShowNumberCommand {

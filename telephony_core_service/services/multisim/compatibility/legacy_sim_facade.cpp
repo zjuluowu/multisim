@@ -17,7 +17,7 @@
 // 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
 
 #include "compatibility/legacy_sim_facade.h"
-#include "compatibility/legacy_profile_result.h"
+#include "compatibility/output/legacy_profile_result.h"
 
 namespace OHOS::Telephony::MultiSim {
 LegacySimFacade::LegacySimFacade(const SlotCatalog &catalog, LegacyIngressPort &ingress,
@@ -30,7 +30,7 @@ int32_t LegacySimFacade::RunPrimarySwitchAtExecutionPoint(const SwitchPrimaryCom
     auto issued = command;
     const auto waiter = callbacks_.RetainSynchronousWaiter(LegacySynchronousCall::PrimarySwitch);
     issued.completion.route = SynchronousCompletionRoute {waiter};
-    assignment_.StartPrimarySwitch(issued);
+    StartLegacyPrimarySwitch(assignment_, issued);
     return callbacks_.AwaitOriginalIntResult(waiter);
 }
 int32_t LegacySimFacade::RunOrdinaryActivationAtExecutionPoint(const ActivateSimCommand &command)
@@ -38,7 +38,7 @@ int32_t LegacySimFacade::RunOrdinaryActivationAtExecutionPoint(const ActivateSim
     auto issued = command;
     const auto waiter = callbacks_.RetainSynchronousWaiter(LegacySynchronousCall::SimActivation);
     issued.completion.route = SynchronousCompletionRoute {waiter};
-    activation_.StartOrdinaryActivation(issued);
+    StartLegacyOrdinaryActivation(activation_, issued);
     return callbacks_.AwaitOriginalIntResult(waiter);
 }
 EuiccPrimitiveResult LegacySimFacade::SwitchLocalProfileAtExecutionPoint(const SwitchProfileRequest &request)

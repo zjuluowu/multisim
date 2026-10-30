@@ -22,8 +22,8 @@
 #include <optional>
 #include <string>
 #include <vector>
-#include "application/orchestration/request_context.h"
-#include "assignment/domain/role_selection.h"
+#include "foundation/orchestration/request_context.h"
+#include "assignment/api/assignment_types.h"
 
 namespace OHOS::Telephony::MultiSim {
 struct SetRoleCommand { DefaultRole role; std::optional<SubscriptionId> subscription; SlotId legacySlot; };
