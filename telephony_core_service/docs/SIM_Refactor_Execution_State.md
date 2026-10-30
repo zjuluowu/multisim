@@ -117,6 +117,15 @@ python3 telephony_core_service/test/systemtest/scripts/audit_initialization.py -
 | 完整OnInit | 原评审§11.4与精简证据 | BLOCKED45对象/14字段；未链接运行 |
 | 原SO产品/Feature/IPC/设备 | 无本切片PASS证据 | 需要匹配环境，不能由host/LTO推导 |
 
+### 4.4 本轮远端独立恢复实测（2026-10-30）
+
+- 从上述GitHub远端执行`git clone --single-branch --branch main <已核实remote URL> "$SIM_FRESH_CLONE"`，没有复用旧仓的Git对象；在main运行恢复工具`--remote origin --fetch`，显式取回工作分支。结果`CHECKPOINT_VERIFIED`、`remote_refs_refreshed=true`、`main_contains_g2a=false`；main工作区保持干净，未切换分支。
+- 在该克隆中按§4.2创建独立detached worktree，实际使用的克隆、worktree、依赖和输出路径均含空格；不依赖原`/mnt/e/...`或旧G2a worktree。恢复代码HEAD为`f5b2aa9c2e4f76f667994cc1fa17f2f0c198bce6`，包含固定代码检查点`cc787945...`和入口文档合并；两者生产代码/验证配置无差异。
+- main执行§4.1四套纯协议均PASS；三份入口Markdown的19个相对链接存在，围栏成对，恢复脚本AST通过。恢复工具另以真实临时Git仓验证缺remote/缺证据/错误摘要/源码及header/runner漂移等出口；这些检查不是业务测试。
+- 固定GoogleTest archive经跟踪脚本重新校验/解包至新依赖目录，再从恢复worktree按§4.2构建、链接、运行：`PASS=7/FAIL=0/BLOCKED=0`、`executed=true`、`dirty=false`；七份XML均1测0失败，5个生产cpp摘要与检查点匹配，6条核心函数均有正执行次数。`manager_on_init_executed=false`和`core_init_executed=false`保持明确。
+- 同一干净恢复HEAD按§4.3重新校验/解包OpenSSL，完整初始化审计实际重跑：GN exit0、Ninja exit1、45对象、43诊断、14个SimData字段、无缺头；BLOCKED/executed=false，未链接运行，与§5限定一致。
+- 本地大日志/产物不入库；必要证据是本节固定代码/测试HEAD、上述命令、工作分支精简历史JSON和可重跑入口。后续只有文档更新不重复声明新HEAD的业务PASS；产品/设备范围仍未验证。
+
 ## 5. 局部阻塞
 
 | 缺口 | 实际阻塞范围 | 不阻塞/关闭条件 |
@@ -128,7 +137,7 @@ python3 telephony_core_service/test/systemtest/scripts/audit_initialization.py -
 
 ## 6. 下一批推荐任务
 
-**推荐最小任务：核实目录评审F1/F11/F12并裁决对应文档漂移。**这是不依赖产品环境、当前可执行的工作；本轮建立远端恢复入口；当前任务先完成干净路径复验，后续不应每轮只重跑同一PASS。
+**推荐最小任务：核实目录评审F1/F11/F12并裁决对应文档漂移。**这是不依赖产品环境、当前可执行的工作；本轮已完成远端恢复入口和干净路径复验，不应每轮只重跑同一PASS。
 
 - 目标：确认统计口径、Primary/号码计划的实际Application位置，以及各活动文档目录主张是否真的冲突；逐项给采纳/部分采纳/不采纳/已修复裁决。评审本身不是新规范。
 - 路径：`SIM_Multisim_Source_Directory_Review_2026-10-30.md`§2.1/§10、`SIM_Multisim_Source_Architecture_Detailed_Design.md`§3/§7/§21、主设计§5.1.5/§6.4/§6.5、重构设计§4.4/SIM-023.a，以及`services/multisim`对应源码。保留功能/WU编号。
@@ -137,7 +146,7 @@ python3 telephony_core_service/test/systemtest/scripts/audit_initialization.py -
 - 验收：每条结论给实际相对路径/符号/基线与统计口径，活动文档一致，原报告保留历史并追加裁决；若纯文档无需重跑未受影响的业务，执行链接/围栏/图示/diff检查及受影响工具验证。
 - 退出：F1/F11/F12均有裁决，成立问题在原责任文档实际修正，状态列明D1～D9尚待决部分及下一批；不以修改日期代替证据。
 
-**G2a合入main的后续门禁（仍未满足）：**源码/测试已有本文件§4入口，远端干净恢复需实际复验记录；需在匹配OHOS产品树核对原SO与三份显式源表、构建`tel_core_service`并采集原初始化发布/只读冒烟与适用Feature结果。路径为工作分支Core query/binding、根BUILD和显式测试源表；不改宏求值TU/EXT读源、公开契约、原Manager/RIL身份或G3政策。有环境则实际执行；无环境保留工作分支和具体未验收项，不能把host PASS当合入批准。合入提交/PR按当次用户授权单独处理。
+**G2a合入main的后续门禁（仍未满足）：**源码/测试与远端干净恢复已有本文件§4证据；需在匹配OHOS产品树核对原SO与三份显式源表、构建`tel_core_service`并采集原初始化发布/只读冒烟与适用Feature结果。路径为工作分支Core query/binding、根BUILD和显式测试源表；不改宏求值TU/EXT读源、公开契约、原Manager/RIL身份或G3政策。有环境则实际执行；无环境保留工作分支和具体未验收项，不能把host PASS当合入批准。合入提交/PR按当次用户授权单独处理。
 
 **待外部证据工作：**匹配fork存储字段/URI/schema/错误协议后重跑完整初始化审计，再建立正式RIL ABSENT输入的状态/账户闭包；不猜schema、不补业务成功桩。设备结束/远端服务缺口仅约束其所依赖的切片，不阻塞前述文档裁决。
 
