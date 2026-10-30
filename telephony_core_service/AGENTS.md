@@ -17,7 +17,7 @@
 | [功能/WU/迁移清单](docs/SIM_Architecture_Refactor_Design.md) | 沿用SIM-001～062及子项、WU-01～09与迁移清单，不另建编号 |
 | [对外接口说明](docs/SIM管理对外接口说明_源码核实版.md)、[边界说明](docs/knowledge/routing/repo-boundary.md) | 参数/权限/错误、消费方及外仓责任 |
 | [独立评审与实施记录](docs/SIM_Target_Architecture_Independent_Review_2026-10-29.md) | 历史裁决、修改和验证限制，不是新的目标规范 |
-| [目录评审](docs/SIM_Multisim_Source_Directory_Review_2026-10-30.md) | 待独立核实意见；未裁决提案不能直接当迁移要求 |
+| [目录评审](docs/SIM_Multisim_Source_Directory_Review_2026-10-30_Opus.md) | 待独立核实意见；未裁决提案不能直接当迁移要求 |
 | [构建验证规则](docs/knowledge/verify/build-test.md)、[测试入口](test/systemtest/README.md) | 工具、主机适配、生产构建与运行范围 |
 
 固定版本源码/构建证明现状，已发布或已批准契约约束行为，目标设计提出方案，评审/历史材料提供待核实输入。冲突回到具体证据和主设计裁决，不按日期、标题或版本文件名决定权威。旧实现缺陷不自动成为永久规则，也不在机械重构中悄改。

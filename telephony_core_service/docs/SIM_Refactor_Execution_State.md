@@ -29,7 +29,7 @@
 | 内容 | 已核实位置/状态 | 不代表什么 |
 | --- | --- | --- |
 | P1-1～8、P2-1～5评审修正 | main包含`5eed2181628e9e74f618231007d927ebd5cb92cd`；设计、骨架和四套纯规则已提交 | 不等于业务写权或设备风险消除 |
-| 后续目录评审 | main的`9f58c9727c7455d01cae6b739e75db7b294a6358`合入[目录评审](SIM_Multisim_Source_Directory_Review_2026-10-30.md)；相对5eed只有这份新文档 | D1～D9是待核实提案，不直接删目录/改Owner |
+| 后续目录评审 | main的`9f58c9727c7455d01cae6b739e75db7b294a6358`合入[目录评审](SIM_Multisim_Source_Directory_Review_2026-10-30_Opus.md)；相对5eed只有这份新文档 | D1～D9是待核实提案，不直接删目录/改Owner |
 | G2a真实只读切片 | 上块`g2a_branch/g2a_commit`远端检查点，尚未合入main；已保存源码、GN、runner和精简证据 | main不具备该生产接入，不因host PASS自动合入 |
 | 完整OnInit | 当前主机审计BLOCKED，未链接/运行；阻塞见§5 | 不等于只读查询也无法推进 |
 | 产品/设备、G2b/c、G3/G4 | 尚未验收/切换 | 不能由骨架/host结果推导完成 |
@@ -140,7 +140,7 @@ python3 telephony_core_service/test/systemtest/scripts/audit_initialization.py -
 **推荐最小任务：核实目录评审F1/F11/F12并裁决对应文档漂移。**这是不依赖产品环境、当前可执行的工作；本轮已完成远端恢复入口和干净路径复验，不应每轮只重跑同一PASS。
 
 - 目标：确认统计口径、Primary/号码计划的实际Application位置，以及各活动文档目录主张是否真的冲突；逐项给采纳/部分采纳/不采纳/已修复裁决。评审本身不是新规范。
-- 路径：`SIM_Multisim_Source_Directory_Review_2026-10-30.md`§2.1/§10、`SIM_Multisim_Source_Architecture_Detailed_Design.md`§3/§7/§21、主设计§5.1.5/§6.4/§6.5、重构设计§4.4/SIM-023.a，以及`services/multisim`对应源码。保留功能/WU编号。
+- 路径：`SIM_Multisim_Source_Directory_Review_2026-10-30_Opus.md`§2.1/§10、`SIM_Multisim_Source_Architecture_Detailed_Design.md`§3/§7/§21、主设计§5.1.5/§6.4/§6.5、重构设计§4.4/SIM-023.a，以及`services/multisim`对应源码。保留功能/WU编号。
 - 前置：先核对远端main和G2a检查点关系，选定统计代码基线。不能把main与工作分支文件数混算；按需要阅读对应章节，不重扫全仓。
 - 修改边界：本批先修成立的文档漂移/引用和可重复统计入口，不据待裁决D1～D8搬目录、删除Application、改Owner/RequestId；不扩大G2a或接管写权。
 - 验收：每条结论给实际相对路径/符号/基线与统计口径，活动文档一致，原报告保留历史并追加裁决；若纯文档无需重跑未受影响的业务，执行链接/围栏/图示/diff检查及受影响工具验证。
