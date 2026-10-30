@@ -113,6 +113,8 @@ bool CoreService::Init()
     simManager_ = std::make_shared<SimManager>(telRilManager_);
     simManager_->OnInit(slotCount);
     coreServiceSim_->SetSimManager(simManager_);
+    // Attach the read-only application path to the same published Manager and RIL.
+    coreServiceSim_->AttachReadOnlyQueries(telRilManager_);
     // connect ims_service
     DelayedSingleton<ImsCoreServiceClient>::GetInstance()->Init();
     networkSearchManager_ = std::make_shared<NetworkSearchManager>(telRilManager_, simManager_);

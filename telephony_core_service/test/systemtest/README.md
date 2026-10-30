@@ -65,3 +65,28 @@ python3 test/systemtest/scripts/audit_initialization.py --gtest-root /tmp/sim-sy
 上游外部接口分析见 [upstream_external_contracts.md](docs/upstream_external_contracts.md)，参考仓库的分支、固定SHA、源码路径及摘要见 [upstream_contracts.json](configs/upstream_contracts.json)。新增DataShare游标/Query与公共事件发布边界通过GoogleMock显式配置，未提供服务时失败。运行器验证固定原始平台头摘要，差分要求相同外部契约清单。FFRT队列子集及真实生产TelEventHandler/TelEventQueue已运行，详见docs/ffrt_runtime.md；不等同已运行SIM初始化。
 
 最新依赖处理见 [BLOCKED处理记录](docs/blocked_resolution_oct08.md)：21份原始平台头已固定摘要；初始化目标45个对象编译成功，当前编译错误仅剩14个未匹配存储协议字段。整体初始化编译/链接仍BLOCKED，未运行状态/账户场景。
+
+## G2a 原 Manager 只读附着切片
+
+独立入口（不计入上面的容量或 INFRA PASS 数字）。从仓库根目录执行，先将下列变量设为本机实际路径；依赖和输出均放在源码目录之外：
+
+```sh
+: "${MULTISIM_GTEST_ARCHIVE:?指定dependency_lock.json锁定的GoogleTest归档}"
+: "${MULTISIM_DEPS_DIR:?指定仓库外的依赖目录}"
+: "${MULTISIM_OUTPUT_DIR:?指定仓库外的输出目录}"
+python3 telephony_core_service/test/systemtest/scripts/prepare_dependencies.py \
+  --archive "$MULTISIM_GTEST_ARCHIVE" --destination "$MULTISIM_DEPS_DIR"
+python3 telephony_core_service/test/systemtest/scripts/run_g2a_query.py \
+  --gtest-root "$MULTISIM_DEPS_DIR/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59" \
+  --output "$MULTISIM_OUTPUT_DIR/g2a-query"
+```
+
+归档下载地址、SHA256和源码树摘要均由[依赖锁](configs/dependency_lock.json)给出，准备脚本只离线校验/解包，不隐式下载。已准备依赖时可直接将 `--gtest-root` 指向固定源码树。主机环境限定 Linux amd64、Python 3.12+、Clang/LLVM 18、GN、Ninja、GNU gold、pthread 和 libxml2 开发头；这不承诺其他平台/SDK布局。完整初始化审计另需锁定的 OpenSSL 头，以 `--openssl-root` 传入，不依赖旧电脑目录。libxml2 默认取标准目录；Query 与初始化审计均可用 `--libxml2-include "$SIM_LIBXML2_INCLUDE"` 显式传入，或设置 `SIM_LIBXML2_INCLUDE` 环境变量。该参数只选择头文件根，不改变默认行为或验证范围。
+
+[精简历史证据](configs/g2a_checkpoint_evidence.json)记录源摘要、七个场景、正执行函数及完整初始化局部阻塞，旧 PASS 不能自动归给当前 HEAD。不同克隆路径会改变二进制/覆盖中的路径，复验检查源码及实际执行，不要求历史二进制 SHA 相同。原临时日志、XML和二进制不属于恢复前提。
+
+仍使用 `configs/dependency_lock.json` 中的固定 GoogleTest 归档与 `prepare_dependencies.py`。该 target 编译真实 `CoreServiceSim::GetRealSimCount`、原 `SimManager` 构造与 `GetRealSimCount`、原 `TelephonyExtWrapper`，以及新的 Application 查询和 Core HostPort。原 Manager/共享 RIL 控制块、附着前后返回、空 Manager 原宏回退和 SetSimManager 撤销附着均由实际生产代码验证。RIL 仅为严格平台边界，场景不允许设备调用；可选厂商场景通过真实 `dlopen/dlsym` 加载输出目录中只提供 `GetRealSimCountExt` 的显式测试 ABI 边界，验证原返回值未被查询层改写。
+
+runner 在独立进程验证配置 `1/2/0/负值/畸形字符串` 的原 `atoi` 行为，以及厂商返回覆盖和负返回透传；输出 `g2a-query-result.json`、七份 XML、原源码摘要、链接图和按精确生产文件路径核对的执行覆盖。产物只放在输出目录。失败准备保持 BLOCKED/executed=false，并清除此入口已知的旧 PASS XML，不复用历史成功证据。
+
+本切片只初始化 HostPort/查询附着。此方法原本不依赖 `SimManager::OnInit`，测试未执行 `Manager::OnInit`、`CoreService::Init`、卡状态初始化、IPC/SA/权限或设备业务；LTO 仅闭合所选查询。完整初始化审计仍使用原独立入口，不能由本切片 PASS 推导其完成。

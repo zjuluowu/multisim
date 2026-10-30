@@ -540,3 +540,67 @@ python3 telephony_core_service/test/multisim_architecture_rules/run.py
 整合后四套纯协议检查（topology、resource、assignment、runtime_protocol）实际编译运行通过；全部73个骨架头/源以Clang C++17 `-Wall -Wextra -Werror -fsyntax-only`独立检查通过。两份主文档17幅Mermaid实际解析通过，本地链接及`git diff --check`通过。测试使用真实纯规则与注入的结果载荷，不补生产设备/工厂成功桩。原§9的72单元/三套结果继续保留历史含义，本次以当前文件集合重跑。
 
 阶段一未运行生产链接、Manager初始化、真实RIL/provider/设备或IPC；阶段二必须在远端main包含提交后另建工作区实施，不追加到本阶段提交。原工作区1352个已存在文件的字节检查点用于结束时复核；范围外用户修改不暂存、不清理、不重置。最终提交SHA及远端包含证据在后续阶段记录，不改写历史记录为当时已经推送。
+
+
+## 11. 阶段二：G2a真实只读闭包
+
+### 11.1 已同步main与独立开发基线
+
+阶段一提交为`5eed2181628e9e74f618231007d927ebd5cb92cd`，目标remote为`origin=https://github.com/zjuluowu/multisim.git`。正常推送后，`git ls-remote origin refs/heads/main`实际返回该完整SHA，本地祖先核对也成立。提交共50文件：3份设计/评审文档、41份骨架契约/实现文件、6份纯规则测试文件；原骨架基础已在main，不额外夹带历史分支。第一次在/tmp worktree推送遇凭据助手识别问题，从原仓库目录推送同一SHA成功，没有改写原工作区文件或分支。
+
+仅在上述确认后创建`work/g2a-real-query-20261030`、工作树`/tmp/multisim-g2a`，HEAD固定为该SHA。以下全部阶段二新增内容保持未暂存、未提交、未推送，不追加进阶段一提交。
+
+### 11.2 真实入口、装配和兼容边界
+
+选定`CoreServiceSim::GetRealSimCount`，继续调用原`SimManager::GetRealSimCount`。原Core入口最先求值`SIM_SLOT_COUNT_REAL`，有Manager则委托，无Manager返回该值；Manager内部仍按原宏和EXT取值。查询无本地权限检查、callback/排队、写库或设备命令。新增`RealSimCountQuery/RealSimCountHostPort`只做应用委托；`LegacySimQueryBinding`在Core持有原Manager与共享RIL控制块、验证身份并调用原方法，不创建/Init/Stop第二套对象。
+
+Core原RIL初始化/发布→条件eSIM初始化/发布→SIM初始化/SetSimManager→IMS→搜网/CMI顺序保留，只有SetSimManager后新增只读附着。入口原TU宏求值和Manager原方法不移动；空Manager、未附着及重设Manager均保持原fallback。只增加原SO源码/include，并同步显式编译CoreServiceSim的既有测试源表；原writer、设备执行者、重试者及公开边界不变。
+
+本查询不依赖SimManager OnInit；主机将真实查询与附着初始化作为一个独立切片验证，不把它称为完整SIM初始化或无卡状态机运行。实际验证及当前完整初始化审计记录在下面，未验证条件继续限定范围。
+
+
+### 11.3 已执行的真实只读闭包验证
+
+独立复跑命令（已执行，exit 0）：
+
+```sh
+python3 telephony_core_service/test/systemtest/scripts/run_g2a_query.py \
+  --gtest-root /tmp/sim-g2a-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59 \
+  --output /tmp/multisim-g2a-final-validation
+```
+
+当前结果为`/tmp/multisim-g2a-final-validation/g2a-query-result.json`：PASS、executed=true、7 PASS/0 FAIL/0 BLOCKED。GN/Ninja实际构建并链接`sim_g2a_query_test`，原CoreServiceSim cpp、原SimManager cpp、原EXT cpp及新增query/binding共5个生产cpp均参与；链接图`sim_g2a_query_test.map`和llvm-cov证据保留。覆盖检查同时要求函数正执行次数和预期原cpp路径，确认Core入口/Attach、Application Read、HostPort委托、原Manager查询和原EXT查询实际执行。LTO只闭合这个查询，不声称未调用的业务/平台分支可链接。
+
+7场景分别为配置`1/2/0/-2/invalid`、厂商边界`2→5`及原负返回`2→-31`。验证原atoi/零值重读、原宏fallback、原EXT回值透明传递、空引用拒绝、附着前后结果一致、同地址不同控制块拒绝、原Manager/RIL控制块一致及SetSimManager撤销旧附着。Manager采用真实生产构造，RIL是实际ITelRilManager接口的严格平台Mock且无设备调用；参数服务与经原Wrapper dlopen/dlsym加载的明确厂商ABI测试库只模拟平台边界，没有SIM业务方法替身或成功桩。
+
+测试明确记录`manager_on_init_executed=false`、`core_init_executed=false`、卡在位未观察且本查询不需要。这里通过的是**真实查询链和HostPort附着初始化闭包**，不是完整Core启动、SIM状态初始化或整个G2a产品验收。原Core创建/OnInit/发布顺序的保持有源码差异及同对象发布/附着测试证据，真实Core Init仍未运行。
+
+准备失败负控也已实际执行：复用曾PASS输出并传入缺失依赖，结果为BLOCKED/executed=false/PASS0，旧XML清除。runner在依赖检查前清已知产物并写当前BLOCKED，每场景15秒预算，超时清进程组；不以陈旧XML声称通过。既有RIL Mock只用原generator更新了接口摘要注释（隔离main的LF字节与旧CRLF摘要不同），方法声明和行为未变。原容量/INFRA套件的历史数字未计入本批结果。
+
+另外实际通过：阶段一四套纯协议回归；含新query在内75个骨架头/源严格C++17语法；两份主文档18幅Mermaid解析、本地链接和diff空白检查。原SO与3份显式编译CoreServiceSim的测试源表已同步。公开接口/IDL/schema/SA/进程配置、services/sim及原EXT业务源均未改变，没有重复Manager/RIL实例、第二写者或新准入/隔离/重试。
+
+### 11.4 当前完整初始化阻塞与后续条件
+
+完整OnInit审计已另行真实重跑，固定GoogleTest及锁定OpenSSL头均校验通过：
+
+```sh
+python3 telephony_core_service/test/systemtest/scripts/audit_initialization.py \
+  --gtest-root /tmp/sim-g2a-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59 \
+  --openssl-root /tmp/sim-g2a-openssl-pinned \
+  --output /tmp/multisim-g2a-full-init-current
+```
+
+`initialization_audit.json`实际结果：GN成功、Ninja失败、BLOCKED/executed=false；编译45个初始化生产对象，无缺头，43条诊断涉及14个未匹配SimData字段：EFUST、EHPLMN、GID1、GID2、IS_ESIM、LSI、MCC、MNC、MNC_LEN、OPERATOR_NAME、OPKEY、PHY_CARD、SIM_LABEL_INDEX、SPN。未补造schema/默认成功，尚未链接或运行；编译错误有数量截断，不能推断补齐这些字段后即可初始化。这是本次重新测得的结果，不继承旧历史数字。
+
+该缺口限制完整SIM初始化与无卡状态/账户闭包，不阻塞已执行的原只读查询。完整OHOS产品树和hb入口不具备，未执行原SO产品链接、正式core_service_gtest、Feature矩阵、IPC/SA/权限或设备验证；相应条件仍未满足。下一步先审查本批独立未提交diff，在匹配产品构建环境验证原SO装配与查询；完整OnInit则先取得匹配fork的数据协议/提供方证据，再沿既有审计推进，不扩建另一套平台或业务实现。
+
+原工作区保持原分支/HEAD和已有内容；阶段一隔离工作树干净、已同步main，阶段二工作树仍未暂存/提交/推送。原工作区1352个文件的字节检查点在收尾再次核对，未通过清理、reset、stash或覆盖处理用户修改。
+
+
+### 11.5 检查点持久化后的恢复入口
+
+§11.1～11.4记载的是前次本地工作树交接；其中“尚未提交”和临时绝对路径保留历史语境，不能作为当前远端状态或恢复前提。本次将该只读切片单独整理为 `work/g2a-readonly-checkpoint-20261030` 工作分支检查点，未据保存进展将其合入main或扩大业务范围；最终提交及与main的关系由执行状态记录，避免把本文自身最终SHA写入同一提交。
+
+恢复和复验使用仓库内[独立说明](../test/systemtest/README.md#g2a-原-manager-只读附着切片)、[依赖锁](../test/systemtest/configs/dependency_lock.json)及[精简历史证据](../test/systemtest/configs/g2a_checkpoint_evidence.json)。脚本按自身位置定位源码，依赖、可选OpenSSL根和仓库外输出通过参数传入；从不同本地克隆路径执行，无需任何旧临时目录、patch、XML或二进制。精简证据中的源码相对路径以 `telephony_core_service/` 为基准，可对检查点提交逐文件核对。
+
+精简证据明确标记历史工作树基线 `5eed2181628e9e74f618231007d927ebd5cb92cd` 且当时dirty：查询5个生产cpp及完整初始化审计51个生产源的现存摘要均已核实相符，7份XML与原二进制摘要亦相符；这些证明历史观测有对应输入，不代替新检查点/新环境的复跑。二进制/coverage包含构建路径，迁移后不要求历史二进制摘要相同；仍检查预期生产cpp的正执行。完整OnInit、产品构建及设备限制沿§11.4保留。

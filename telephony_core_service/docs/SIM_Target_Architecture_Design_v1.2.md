@@ -6,13 +6,13 @@ status: draft
 authority: 本轮维护的目标技术架构主文档；不覆盖已发布或已批准业务契约；与既有功能/迁移/测试文档的职责见 §1.2
 baseline_commit: 964dc5693badc08ce4abafd70d22f1dcd47cf727
 baseline_branch: main
-revision: "2026-10-29-review-fixes-integrated-06"
+revision: "2026-10-30-g2a-read-query-07"
 document_input_commit: 964dc5693badc08ce4abafd70d22f1dcd47cf727
 consolidated_branch_input: 2448b42e8976ffb75e2bfcd45b27c86eb1e3965d
 claude_revision_commit: 1afffa4e0e48874b91edbc96430b722a267650eb
 source_evidence_commit: 6017003eff50c1bc8c5dfa72336a4bfe42e948b0
 previous_baseline_unresolved: 00b3faa6b02ac0f1adf77fb47f4a111cd95e665d
-revision_date: 2026-10-29
+revision_date: 2026-10-30
 owner: OPEN
 approval_status: pending
 upstream:
@@ -759,6 +759,26 @@ ResourceBarrier的契约包含初始Checking核对、全资源集合一次Acquir
 
 G2b的业务导出限私有工厂/匹配销毁，工具链必需符号单列；不恢复绝对空导出要求。目录引入不是拆SO强制前提。容量逐调用点差分仍仅针对已识别的推导差异产品，并记录首次取值时点；动态卸载继续单列排空验收。
 
+
+---
+
+## 6.6 原SO内G2a真实只读接入（2026-10-30，工作分支验证切片）
+
+本批以远端main已包含的`5eed2181628e9e74f618231007d927ebd5cb92cd`为输入，选定`CoreServiceSim::GetRealSimCount`。原方法同步返回，无本地权限检查/排队/callback：先在Core原编译单元求值`SIM_SLOT_COUNT_REAL`，有Manager再调用原`SimManager::GetRealSimCount`（原Manager编译单元读取宏并执行原EXT），无Manager返回前述值。两个求值节点及缓存作用域保留，不搬动原方法或统一容量口径。
+
+接入链为`CoreService→CoreServiceSim→LegacySimQueryBinding::Read→RealSimCountQuery::Read→RealSimCountHostPort→原ISimManager::GetRealSimCount→原SimManager/EXT`。Application仅声明只读端口，不含平台类型、不计算容量、不保存第二份缓存。Core宿主adapter持原Manager及共享RIL的原控制块；只读委托不初始化/停止RIL、不发送设备命令、不接管写权或重试。
+
+`CoreService::Init`保留共享RIL、eSIM、SIM、搜网、CMI原创建/初始化/发布语句，仅在原SIM OnInit和SetSimManager之后附着查询。`SetSimManager`清除旧附着；绑定校验地址及控制块，空Manager/无附着保留旧路径和返回。绑定自身固定地址，禁止复制/移动内部引用。仍编入原`tel_core_service`，只新增两个cpp和私有include，相关生产单测显式源表同步；没有新SO、进程、SA、公开API/ABI/IDL/schema。
+
+该查询原实现不依赖Manager OnInit。因此主机可以运行真实Manager构造、CoreServiceSim入口、附着创建/初始化和原查询；这种证据不等于完整Manager OnInit、真实Core Init或无卡状态机已运行。完整初始化缺口单独审计，实际GN/Ninja链接、7场景及原cpp覆盖审计已通过；完整OnInit仍为45个对象编译/14存储字段阻塞，不称整个G2a产品验收通过。具体历史结果与限制见[评审报告§11](SIM_Target_Architecture_Independent_Review_2026-10-29.md#11-阶段二g2a真实只读闭包)。当前可移植入口在[systemtest说明](../test/systemtest/README.md#g2a-原-manager-只读附着切片)，[精简证据](../test/systemtest/configs/g2a_checkpoint_evidence.json)保留历史基线与源码指纹，不将旧工作树PASS视为当前HEAD通过。从仓库根目录、使用已准备的固定依赖执行：
+
+```sh
+python3 telephony_core_service/test/systemtest/scripts/run_g2a_query.py \
+  --gtest-root "${MULTISIM_GTEST_ROOT:?指定固定GoogleTest源码树}" \
+  --output "${MULTISIM_OUTPUT_DIR:?指定仓库外输出目录}/g2a-query"
+```
+
+其他骨架继续不接入生产，新准入/隔离/业务重试均未启用。
 
 ---
 

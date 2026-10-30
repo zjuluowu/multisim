@@ -41,6 +41,8 @@ ohos_unittest("raw_parcel_core_service_test") {
     # tested src
     "$SOURCE_DIR/services/core/src/core_service.cpp",
     "$SOURCE_DIR/services/core/src/core_service_sim.cpp",
+    "$SOURCE_DIR/services/core/src/legacy_sim_query_binding.cpp",
+    "$SOURCE_DIR/services/multisim/application/query/real_sim_count_query.cpp",
     "$SOURCE_DIR/services/core/src/core_service_common_event_hub.cpp",
     "$SOURCE_DIR/common/capability_mgr/src/multi_sims_capability_manager.cpp",
     # deps src
@@ -54,6 +56,7 @@ ohos_unittest("raw_parcel_core_service_test") {
     # first use mock .h files
     "$SOURCE_DIR/test/unittest/raw_parcel_core_service_gtest/mock",
     "$SOURCE_DIR/services/core/include",
+    "$SOURCE_DIR/services/multisim",
     "$SOURCE_DIR/utils/log/include",
     "$SOURCE_DIR/utils/preferences/include",
     "$SOURCE_DIR/services/sim/include",

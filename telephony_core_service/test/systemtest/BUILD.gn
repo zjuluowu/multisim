@@ -17,7 +17,7 @@ config("production_headers") {
           ]) {
     include_dirs += [ "$production_root/$dir" ]
   }
-  include_dirs += [ "/usr/include/libxml2" ]
+  include_dirs += [ libxml2_include_dir ]
   defines = [ "LOG_DOMAIN=0xD001F04" ]
 }
 config("production_execution_evidence") {
@@ -251,6 +251,51 @@ executable("sim_bootstrap_characterization") {
   ]
   ldflags = [
     "-Wl,-Map,sim_bootstrap_characterization.map",
+    "-fprofile-instr-generate",
+  ]
+}
+
+# G2a read-only attachment: actual Core entry, Application query and HostPort implementation.
+# Independent from capacity and full Manager::OnInit audit; no card lifecycle is implied.
+source_set("g2a_readonly_production_host") {
+  sources = [
+    "$production_root/services/core/src/core_service_sim.cpp",
+    "$production_root/services/core/src/legacy_sim_query_binding.cpp",
+    "$production_root/services/multisim/application/query/real_sim_count_query.cpp",
+  ]
+  configs += [
+    ":production_headers",
+    ":production_execution_evidence",
+  ]
+  include_dirs = [ "$production_root/services/multisim" ]
+}
+source_set("g2a_query_launcher") {
+  sources = [ "support/g2a_query_probe.cpp" ]
+  configs += [ ":production_headers" ]
+  include_dirs = [
+    "$production_root/services/multisim",
+    "stubs",
+    "$gtest_root/googletest/include",
+    "$gtest_root/googlemock/include",
+  ]
+}
+executable("sim_g2a_query_test") {
+  sources = [ "tests/g2a_query_test.cpp" ]
+  include_dirs = [
+    "support",
+    "stubs",
+    "$gtest_root/googletest/include",
+    "$gtest_root/googlemock/include",
+  ]
+  deps = [
+    ":g2a_query_launcher",
+    ":g2a_readonly_production_host",
+    ":googlemock",
+    ":platform_boundaries",
+    ":sim_production_host",
+  ]
+  ldflags = [
+    "-Wl,-Map,sim_g2a_query_test.map",
     "-fprofile-instr-generate",
   ]
 }

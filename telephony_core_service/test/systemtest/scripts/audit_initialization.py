@@ -27,6 +27,8 @@ def main():
     parser.add_argument('--gtest-root', required=True)
     parser.add_argument('--output', required=True)
     parser.add_argument('--openssl-root')
+    parser.add_argument('--libxml2-include', default=os.environ.get('SIM_LIBXML2_INCLUDE', '/usr/include/libxml2'),
+                        help='libxml2 headers directory; defaults to SIM_LIBXML2_INCLUDE or the standard Linux location')
     parser.add_argument('--target', choices=['sim_initialization_link_probe', 'sim_bootstrap_characterization'], default='sim_initialization_link_probe')
     options = parser.parse_args()
     output = Path(options.output).resolve()
@@ -80,6 +82,7 @@ def main():
         result['build_clock'] = await_build_timestamps(SYSTEM)
         result['blocking_stage'] = 'gn_generation'
         gn_args = 'production_root=' + json.dumps(str(CORE)) + ' gtest_root=' + json.dumps(str(gtest))
+        gn_args += ' libxml2_include_dir=' + json.dumps(str(Path(options.libxml2_include).resolve()))
         if options.openssl_root:
             crypto_root = Path(options.openssl_root).resolve()
             expected = lock['openssl_headers']

@@ -429,6 +429,30 @@ Core保留共享RIL生命周期、原eSIM/SIM/搜网/CMI发布时点和消费侧
 
 本轮在main并行修正基础上整合账户/发现/激活/Primary/完成/Profile/资源及发布身份的可执行纯协议；真实存储/设备、工厂创建/销毁、平台等待等仍未闭合，流程在`.cpp`中明确标伪代码。新固定目标、迟到拒绝、资源屏障、完整关闭是推荐增强，不能作为G2等价行为启用。完整静态检查、未实现项、厂商换路/激活外围等局部缺口见主设计 §6.4.4；不以未编译或外部缺口阻塞其他独立骨架落点。
 
+### 6.10 本批G2a只读接入
+
+阶段一修正已同步main，阶段二在独立工作树保留未提交diff。已选`CoreServiceSim::GetRealSimCount`作为真实只读入口：
+
+```mermaid
+sequenceDiagram
+    participant E as CoreServiceSim原入口
+    participant H as Core原对象附着HostPort
+    participant Q as RealSimCountQuery
+    participant M as 原SimManager和EXT
+    E->>E: 原TU先求SIM_SLOT_COUNT_REAL
+    alt 原Manager存在且附着匹配
+        E->>H: 同Manager控制块的只读binding
+        H->>Q: Read
+        Q->>H: ReadLegacyRealSimCount
+        H->>M: 原GetRealSimCount
+        M-->>E: 原宏/EXT结果同步返回
+    else 原Manager为空或尚无附着
+        E->>E: 原fallback/直接Manager委托
+    end
+```
+
+Core在原Manager OnInit和发布到CoreServiceSim之后附着，共享同一RIL，不新增Manager、执行者或业务写权。此查询不依赖卡初始化；主机只读闭包的附着初始化与完整SIM/Core初始化分别记录。当前源码、构建、链接、运行和剩余条件统一见[原评审报告§11](SIM_Target_Architecture_Independent_Review_2026-10-29.md#11-阶段二g2a真实只读闭包)，未完成的设备/平台条件不写为通过。
+
 ## 7. 业务流程一：设置显示号码
 
 ### 7.1 范围与业务语义
