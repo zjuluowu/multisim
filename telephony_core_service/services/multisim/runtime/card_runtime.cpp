@@ -25,6 +25,42 @@ CardRuntime::CardRuntime(const SlotCatalog &catalog, RuntimeEpoch epoch, std::ve
     : catalog_(catalog), slots_(std::move(slots)), radio_(radio), sharedRil_(sharedRil), euicc_(euicc),
       sessions_(epoch), resources_(epoch) {}
 
+void CardRuntime::BindResultSinks(MsisdnResultSink &numbers, ActivationResultSink &activation,
+    RadioResultSink &assignment, CardObservationSink &observations)
+{
+    resultSinks_.emplace(RuntimeResultSinks {numbers, activation, assignment, observations});
+}
+
+void CardRuntime::InvalidateVerifiedCardSession(const SessionRef &oldSession)
+{
+    if (!resultSinks_ || !sessions_.StillCurrent(oldSession)) { return; }
+    const auto key = std::make_pair(oldSession.application.slot.legacySlotId, oldSession.application.applicationKey);
+    const auto sequence = ++observationSequences_[key];
+    // 同步短出口先撤销T资格；不得把失效排在旧发现长I/O之后。
+    resultSinks_->observations.AcceptCardSessionInvalidation({oldSession, sequence});
+    sessions_.InvalidateForVerifiedReplacement(oldSession);
+}
+
+void CardRuntime::PublishAcceptedCardDiscovery(const SessionRef &session, const std::string &iccid)
+{
+    if (!resultSinks_ || iccid.empty() || !sessions_.MayPublishVerifiedSession(session)) { return; }
+    const auto old = sessions_.Current(session.application);
+    if (old && (old->epoch != session.epoch || old->bindingGeneration != session.bindingGeneration)) {
+        InvalidateVerifiedCardSession(*old); // 先T失效再暴露新R会话。
+    }
+    if (!sessions_.PublishVerifiedSession(session)) { return; }
+    const auto key = std::make_pair(session.application.slot.legacySlotId, session.application.applicationKey);
+    resultSinks_->observations.AcceptCardDiscoveryObservation({session, ++observationSequences_[key], iccid});
+}
+
+void CardRuntime::EndLocalProfileWait(const LocalProfileTransitionRef &transition, EffectKnowledge effect)
+{
+    // 发起step包含实例和用例Owner；只结束原期望等待，不释放设备或复活旧完成。
+    if (transition.step.request.epoch == transition.originalSession.epoch) {
+        sessions_.EndExpectedWait(transition.step, effect);
+    }
+}
+
 /* 伪代码，WriteMsisdn 等运行方法有意仅声明：
  * WriteMsisdn(request)：用发起时 session 定位原 ProductionSlotBindings.files；
  * 保存 request.step、number、alphaTag 和原 InnerEvent/RIL serial 的关联；
@@ -34,7 +70,7 @@ CardRuntime::CardRuntime(const SlotCatalog &catalog, RuntimeEpoch epoch, std::ve
  * 未来需在该实际写点同域核对发送时上下文再接纳卡缓存，不能外包一层检查就声称安全。
  * 原 bool=false 证据不足 -> Unknown，保留原 FAIL；成功/错误/投递失败均保留关联。
  * 原事件桥 -> AcceptMsisdnWriteCompletion，按 msisdnAssociations_ 核对发起输入；
- * 可信结果通过resultSinks_.numbers的MsisdnResultSink交回发起用例；
+ * 可信结果通过resultSinks_->numbers的MsisdnResultSink交回发起用例；
  * 旧请求迟到交其AcceptLateEvidence。R不认识具体用例类，当前不绑定真实生产结果。
  * 原会话仍有效的迟到成功可更新对应R卡观察，但不触发旧T账户步骤或原callback。
  *
@@ -63,7 +99,7 @@ CardRuntime::CardRuntime(const SlotCatalog &catalog, RuntimeEpoch epoch, std::ve
  * DisableProfile按槽提示经T桥；无后缀键只按原节点作旧外部输出，不作为关闭成功事实。
  *
  * BindResultSinks是私有结果路由契约；未来原事件桥只保留weak Owner + epoch + 在途计数，
- * 不捕获会延长Core生命周期的强环；目前未定义、未注册真实 callback。
+ * 不捕获会延长Core生命周期的强环；私有sink已有实现，尚未注册真实生产callback。
  * ResourceBarrier 启用还缺资源键/可达恢复证据：不默认超时后资源可用，不启用第二套锁域。
  */
 } // namespace OHOS::Telephony::MultiSim

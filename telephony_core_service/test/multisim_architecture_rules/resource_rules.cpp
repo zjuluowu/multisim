@@ -57,15 +57,17 @@ int main()
     assert(!barrier.Acquire({first}, Step(3, epoch)));
     assert(!barrier.AcceptInitialRecoveryEvidence(first, {epoch, true, true}));
     assert(!barrier.AcceptRecoveryEvidence(*write,
-        {Step(2, epoch, RequestOwner::Assignment), EffectKnowledge::ConfirmedApplied, true, true}));
+        {Step(2, epoch, RequestOwner::Assignment), EffectKnowledge::ConfirmedApplied, true, true, true}));
     assert(!barrier.AcceptRecoveryEvidence(*write,
-        {write->holder, EffectKnowledge::ConfirmedApplied, false, true}));
+        {write->holder, EffectKnowledge::ConfirmedApplied, false, true, true}));
     assert(!barrier.AcceptRecoveryEvidence(*write,
-        {write->holder, EffectKnowledge::Unknown, true, true}));
+        {write->holder, EffectKnowledge::Unknown, true, true, true}));
     assert(!barrier.AcceptRecoveryEvidence(*write,
-        {write->holder, EffectKnowledge::NotSent, true, true}));
+        {write->holder, EffectKnowledge::NotSent, true, true, true}));
+    assert(!barrier.AcceptRecoveryEvidence(*write,
+        {write->holder, EffectKnowledge::ConfirmedApplied, true, true, false}));
     assert(barrier.AcceptRecoveryEvidence(*write,
-        {write->holder, EffectKnowledge::ConfirmedApplied, true, true}));
+        {write->holder, EffectKnowledge::ConfirmedApplied, true, true, true}));
     auto next = barrier.Acquire({first}, Step(3, epoch));
     assert(next && next->fence != write->fence);
     assert(!barrier.Complete(*write, {write->holder, EffectKnowledge::ConfirmedApplied, true, true}));
@@ -78,7 +80,7 @@ int main()
     assert(readLost && barrier.MarkSent(*readLost));
     assert(barrier.Quarantine(*readLost, EffectKnowledge::Unknown));
     assert(barrier.AcceptRecoveryEvidence(*readLost,
-        {readLost->holder, EffectKnowledge::Unknown, true, true}));
+        {readLost->holder, EffectKnowledge::Unknown, true, true, true}));
     assert(barrier.RegisterForInitialCheck(second));
     assert(barrier.AcceptInitialRecoveryEvidence(second, {epoch, true, true}));
     assert(!barrier.Acquire({first, first}, Step(5, epoch)));

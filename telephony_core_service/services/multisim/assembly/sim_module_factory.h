@@ -22,6 +22,7 @@
 #include <memory>
 #include <variant>
 #include "assembly/host_ports.h"
+#include "assembly/manager_publication.h"
 #include "runtime/card_runtime.h"
 #include "infrastructure/account_store_adapter.h"
 #include "infrastructure/assignment_store_adapter.h"
@@ -90,13 +91,16 @@ class OwnedSimServices final {
 public:
     const std::shared_ptr<ISimManager> &Sim() const { return sim_; }
     const std::shared_ptr<IEsimManager> &Euicc() const { return euicc_; }
+    const ManagerPublicationSequence &Publication() const { return publication_; }
 private:
     friend struct OwnedSimServicesFactoryAccess;
     friend struct OwnedSimServicesDeleter;
-    OwnedSimServices() = default;
+    explicit OwnedSimServices(bool hasEuicc) : publication_(hasEuicc) {}
     ~OwnedSimServices() = default;
     std::shared_ptr<ISimManager> sim_; // 生产者以具体类型建立控制块，不delete interface*。
     std::shared_ptr<IEsimManager> euicc_;
+    // 最终创建侧逐阶段记录原OnInit返回和宿主所发布控制块；不升级旧false返回。
+    ManagerPublicationSequence publication_;
 };
 struct OwnedSimServicesDeleter { void operator()(OwnedSimServices *services) const; };
 using OwnedSimServicesHandle = std::unique_ptr<OwnedSimServices, OwnedSimServicesDeleter>;

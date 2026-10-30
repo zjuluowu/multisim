@@ -45,7 +45,8 @@ struct AccountLoadRequest { AccountReadView view; uint64_t loadAttempt; };
 struct AccountLoadResult {
     AccountLoadRequest request;
     int32_t legacyResult;
-    bool complete;
+    bool complete; // 原Query成功且结果可用于替换；不等于旧bool返回。
+    bool legacyReturn; // 原GetList/GetAllList均为result != INVALID_VALUE。
     std::vector<AccountStorageRow> rows;
     std::vector<StoredAccountRoleFragment> storedRoles; // 同次旧读取所得，交A接纳，不能用A当前值补造。
 };
@@ -73,6 +74,7 @@ struct AccountDiscoveryStoreResult {
     std::optional<SubscriptionId> assignedSubscription; // 原provider的返回身份，不从slot推导。
     bool writeConfirmed;
     bool callFinished;
+    EffectKnowledge effect; // 错误返回不补造ConfirmedNotApplied。
 };
 struct AccountRemovalPatch {
     SubscriptionId subscription;

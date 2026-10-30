@@ -60,6 +60,7 @@ struct AccountRoleFragment {
     bool sms;
     bool mainCardColumn;
     bool dataCardColumn;
+    bool includeInStorage; // 新行和单卡旧卡恢复写角色，多卡旧卡重绑定保留角色。
 }; // 新simId由原Insert返回；A资格覆盖建行I/O，不是只读快照后任意写。
 struct StoredAccountRoleFragment {
     SubscriptionId subscription;

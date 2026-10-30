@@ -28,6 +28,7 @@
 #include "topology/ports/card_observation_port.h"
 #include "topology/ports/show_number_runtime_port.h"
 #include "runtime/session/session_registry.h"
+#include "runtime/result_sinks.h"
 #include "runtime/records/load_session.h"
 #include "runtime/resource/resource_barrier.h"
 #include "model/slot_catalog.h"
@@ -104,13 +105,7 @@ private:
     std::map<std::string, LoadSession> loads_; // 仅在完整R写权切换后接管，不与旧加载计数并行写。
     std::map<uint64_t, MsisdnWriteRequest> msisdnAssociations_; // 原请求输入元数据，非另一份RIL requestMap。
     std::map<std::pair<int32_t, std::string>, uint64_t> observationSequences_; // 每应用发现/失效共序。
-    struct ResultSinks {
-        MsisdnResultSink *numbers;
-        ActivationResultSink *activation;
-        RadioResultSink *assignment;
-        CardObservationSink *observations;
-    };
-    std::optional<ResultSinks> resultSinks_; // H内借用抽象出口；真实回调仍需weak owner/epoch/排空。
+    std::optional<RuntimeResultSinks> resultSinks_; // H绑定窄出口，真实桥仍需epoch/weak owner/排空。
 };
 } // namespace OHOS::Telephony::MultiSim
 

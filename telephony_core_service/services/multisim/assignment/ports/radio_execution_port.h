@@ -21,7 +21,7 @@
 
 #include <optional>
 #include "application/orchestration/request_context.h"
-#include "assignment/domain/assignment_aggregate.h"
+#include "assignment/api/primary_execution.h"
 
 namespace OHOS::Telephony::MultiSim {
 struct PrimaryRadioObservation {

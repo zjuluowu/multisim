@@ -32,7 +32,7 @@ public:
     virtual ~AssignmentStore() = default;
     virtual RoleStoreResult WriteDefaultRole(const SetRoleCommand &command) = 0;
     virtual PrimaryParameterSnapshot ReadPrimaryParameters() = 0;
-    virtual AssignmentParameterResult PrewritePrimary(SlotId slot, const std::string &encodedIccid) = 0;
+    virtual AssignmentParameterResult WritePrimaryParameters(SlotId slot, const std::string &encodedIccid) = 0;
     virtual AssignmentParameterResult RestorePrimaryIfLegacyValid(const PrimaryParameterSnapshot &old) = 0;
     virtual AssignmentParameterResult WriteDefaultData(SlotId slot) = 0;
     virtual AssignmentParameterResult WriteUserPrimaryPreference(bool userSet) = 0;

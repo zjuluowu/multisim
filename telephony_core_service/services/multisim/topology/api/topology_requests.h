@@ -57,7 +57,7 @@ struct AccountStoreWriteResult {
     bool writeConfirmed;
     bool callFinished; // 不确定调用已结束时保留原冲突资格，不盲重写。
 };
-struct NumberFieldRevisions { uint64_t current; uint64_t historical; };
+struct NumberFieldRevisions { std::optional<uint64_t> current; std::optional<uint64_t> historical; };
 struct NumberExecutionTarget {
     BindingRef binding;
     SessionRef session;

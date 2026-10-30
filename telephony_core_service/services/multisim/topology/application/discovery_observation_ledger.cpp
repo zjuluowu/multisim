@@ -30,7 +30,7 @@ bool SameSession(const SessionRef &left, const SessionRef &right)
 
 bool DiscoveryObservationLedger::AcceptDiscovery(const CardDiscoveryObservation &observation)
 {
-    if (observation.session.epoch != epoch_ || observation.observationSequence == 0) {
+    if (observation.session.epoch != epoch_ || observation.observationSequence == 0 || observation.iccid.empty()) {
         return false;
     }
     Key key {observation.session.application.slot, observation.session.application.applicationKey};
@@ -38,7 +38,7 @@ bool DiscoveryObservationLedger::AcceptDiscovery(const CardDiscoveryObservation 
     if (current != accepted_.end() && observation.observationSequence <= current->second.sequence) {
         return false;
     }
-    accepted_.insert_or_assign(key, Entry {observation.session, observation.observationSequence, true});
+    accepted_.insert_or_assign(key, Entry {observation.session, observation.observationSequence, true, observation.iccid});
     return true;
 }
 
@@ -55,7 +55,7 @@ bool DiscoveryObservationLedger::AcceptInvalidation(const CardSessionInvalidatio
         return false; // 旧会话撤销不清除已接受的新会话。
     }
     accepted_.insert_or_assign(key,
-        Entry {invalidation.invalidatedSession, invalidation.observationSequence, false});
+        Entry {invalidation.invalidatedSession, invalidation.observationSequence, false, {}});
     return true;
 }
 
@@ -64,7 +64,73 @@ bool DiscoveryObservationLedger::StillCurrent(const CardDiscoveryObservation &ob
     Key key {observation.session.application.slot, observation.session.application.applicationKey};
     auto current = accepted_.find(key);
     return current != accepted_.end() && current->second.valid &&
-        current->second.sequence == observation.observationSequence &&
+        current->second.sequence == observation.observationSequence && current->second.iccid == observation.iccid &&
         SameSession(current->second.session, observation.session);
+}
+bool DiscoveryObservationLedger::MatchesStore(const DiscoveryStoreTicket &ticket, const BindingIndex &bindings) const
+{
+    const auto revision = bindings.ReadPositionRevision(ticket.observation.session.application.slot);
+    const Key key {ticket.observation.session.application.slot, ticket.observation.session.application.applicationKey};
+    const auto found = accepted_.find(key);
+    return revision && *revision == ticket.bindingRevision && StillCurrent(ticket.observation) &&
+        found != accepted_.end() && found->second.admission == ticket.admission;
+}
+std::optional<DiscoveryStoreTicket> DiscoveryObservationLedger::BeginStore(
+    const CardDiscoveryObservation &observation, const BindingIndex &bindings)
+{
+    const auto revision = bindings.ReadPositionRevision(observation.session.application.slot);
+    if (!revision || !StillCurrent(observation)) { return std::nullopt; }
+    auto &entry = accepted_.at({observation.session.application.slot, observation.session.application.applicationKey});
+    if (entry.admission != 0) { return std::nullopt; } // 重复观察不自动重放建行。
+    entry.admission = ++nextAdmission_;
+    entry.pending = true;
+    return DiscoveryStoreTicket {observation, entry.admission, *revision};
+}
+bool DiscoveryObservationLedger::EndPreparationFailure(const DiscoveryStoreTicket &ticket, bool callFinished,
+    const BindingIndex &bindings)
+{
+    if (!callFinished || !MatchesStore(ticket, bindings)) { return false; }
+    auto &entry = accepted_.at({ticket.observation.session.application.slot,
+        ticket.observation.session.application.applicationKey});
+    if (!entry.pending) { return false; }
+    entry.pending = false;
+    entry.effect = EffectKnowledge::NotSent; // 仅匹配读取/角色规划失败，尚未发出建行写。
+    entry.callFinished = true;
+    return true;
+}
+std::optional<DiscoveryStoreTicket> DiscoveryObservationLedger::RetryAfterKnownNoEffect(
+    const DiscoveryStoreTicket &ticket, const BindingIndex &bindings)
+{
+    if (!MatchesStore(ticket, bindings)) { return std::nullopt; }
+    auto &entry = accepted_.at({ticket.observation.session.application.slot,
+        ticket.observation.session.application.applicationKey});
+    if (entry.pending || !entry.callFinished || (entry.effect != EffectKnowledge::NotSent &&
+        entry.effect != EffectKnowledge::Rejected && entry.effect != EffectKnowledge::ConfirmedNotApplied)) {
+        return std::nullopt;
+    }
+    entry.admission = ++nextAdmission_;
+    entry.pending = true;
+    entry.effect = EffectKnowledge::NotSent;
+    entry.callFinished = false;
+    return DiscoveryStoreTicket {ticket.observation, entry.admission, ticket.bindingRevision};
+}
+DiscoveryStoreAcceptance DiscoveryObservationLedger::CompleteStored(const DiscoveryStoreTicket &ticket,
+    EffectKnowledge effect, std::optional<SubscriptionId> identity, bool callFinished, BindingIndex &bindings)
+{
+    const Key key {ticket.observation.session.application.slot, ticket.observation.session.application.applicationKey};
+    const auto found = accepted_.find(key);
+    if (found != accepted_.end() && found->second.admission == ticket.admission && !found->second.pending) {
+        return {false, false, true};
+    }
+    const bool mayHaveWritten = effect == EffectKnowledge::Unknown || effect == EffectKnowledge::ConfirmedApplied;
+    if (!MatchesStore(ticket, bindings)) { return {false, mayHaveWritten, false}; }
+    auto &entry = accepted_.at(key);
+    entry.pending = false;
+    entry.effect = effect;
+    entry.callFinished = callFinished;
+    if (effect != EffectKnowledge::ConfirmedApplied || !identity) { return {false, mayHaveWritten, false}; }
+    const bool accepted = bindings.AcceptBinding(ticket.observation.session.application.slot, *identity,
+        ticket.bindingRevision);
+    return {accepted, !accepted, false};
 }
 } // namespace OHOS::Telephony::MultiSim

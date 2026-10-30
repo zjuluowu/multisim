@@ -19,6 +19,12 @@
 #include "compatibility/legacy_completion.h"
 
 namespace OHOS::Telephony::MultiSim {
+void LegacyCompletion::CompleteLegacyInt(const CompletionPlan &plan, int32_t legacyResult)
+{
+    if (legacyResult == 0 && plan.accountNotificationOnWholeSuccess) { output_.NotifyOriginalAccountChanged(); }
+    output_.DeliverOriginalInt(plan.route, legacyResult);
+}
+
 /* CompleteShowNumber 仅声明；伪代码：
  * 只有 completion.legacyResult 为原整体成功且计划要求原Manager通知时，
  * output_.NotifyOriginalAccountChanged()；随后 output_.TransferOriginalShowNumberResult。

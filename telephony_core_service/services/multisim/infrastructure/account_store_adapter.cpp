@@ -27,6 +27,7 @@ namespace OHOS::Telephony::MultiSim {
  * DB返回后交T接纳缓存，Adapter不改localCacheInfo_/allLocalCacheInfo_。
  * LoadAccounts(request)：Current走原QueryAllValidData，Historical走QueryAllData；
  * 每次分别返回原请求view/attempt、结果和T字段片段，同时保留同次查询的storedRoles给A。
+ * complete按原Query成功判断；legacyReturn另按result != INVALID_VALUE保留。
  * 一次失败不替换另一投影，空成功与失败分开；不从A当前状态补造旧DB读取的角色行。
  * MatchAccountByIccid沿原QueryDataByIccId，区分查询失败与确知无匹配；不分配新身份。
  * WriteDiscoveredAccount只执行T已准备字段与A已授权角色片段的一次明确原Insert/Update；

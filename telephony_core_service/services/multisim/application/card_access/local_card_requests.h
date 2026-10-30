@@ -39,8 +39,10 @@ struct SwitchProfileRequest {
     int32_t legacyPortIndex; // 原实参原样透传；是否编码Port沿原产品MEP分支。
     bool forceDisableProfile; // 保留原契约；现生产保存该值，不据此声称已参与APDU编码。
     std::optional<VerifiedPortRoute> verifiedRoute; // 未知不填0，也不覆盖legacyPortIndex。
+    uint64_t expectedTransitionDeadline; // 发起者的真实单调预算；不统一秒数或推断设备已结束。
 };
-struct EuiccPrimitiveResult { int32_t outerLegacyResult; int32_t cardEnumResult; };
+struct EuiccPrimitiveResult { int32_t outerLegacyResult; std::optional<int32_t> cardEnumResult; };
+// 非法槽/File未调用时cardEnumResult为空，C保留旧out参数；有效File失败仍有enum。
 struct LocalProfileExecutionResult {
     EuiccPrimitiveResult legacy;
     bool reachedLegacyPreferenceNode; // 有效槽File调用返回；卡enum失败仍到该节点。
@@ -54,6 +56,7 @@ public:
     virtual ~LocalCardPort() = default;
     virtual void VerifyPin(const VerifyPinRequest &request) = 0;
     virtual void ReadElementaryFile(const ReadEfRequest &request) = 0;
+    // R先保持原Manager的slot/File校验；非法槽不登记，未知路由不新增旧错误。
     virtual std::optional<LocalProfileTransitionRef> RegisterExpectedProfileTransition(
         const SwitchProfileRequest &request) = 0;
     virtual LocalProfileExecutionResult SwitchLocalProfile(const SwitchProfileRequest &request) = 0;

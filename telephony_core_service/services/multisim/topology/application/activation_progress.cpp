@@ -28,20 +28,33 @@ bool SameActivationSession(const SessionRef &left, const SessionRef &right)
 }
 } // namespace
 
-bool ActivationProgress::Begin(const ActivationTransition &transition)
+std::optional<ActivationTransition> ActivationProgress::Prepare(const ActivationTransition &transition)
 {
     const auto owner = transition.owner.request.owner;
     if (transition.owner.request.value == 0 ||
         (owner != RequestOwner::Activation && owner != RequestOwner::LegacyBridge) ||
         transition.owner.request.epoch != epoch_ || transition.sentSession.epoch != epoch_ ||
         !(transition.slot == transition.sentSession.application.slot) || !transition.legacyProgress) {
+        return std::nullopt;
+    }
+    auto qualified = transition;
+    qualified.admission = ++nextAdmission_;
+    prepared_.insert_or_assign(qualified.slot, qualified);
+    return qualified;
+}
+
+bool ActivationProgress::Begin(const ActivationTransition &transition)
+{
+    const auto prepared = prepared_.find(transition.slot);
+    if (prepared == prepared_.end() || transition.admission <= lastStarted_[transition.slot] ||
+        transition.admission != prepared->second.admission || !(prepared->second.owner == transition.owner) ||
+        !SameActivationSession(prepared->second.sentSession, transition.sentSession) || !transition.legacyProgress) {
         return false;
     }
     auto current = transitions_.find(transition.slot);
     if (current != transitions_.end() && (current->second.legacyProgress ||
-        current->second.owner == transition.owner)) {
-        return false;
-    }
+        current->second.owner == transition.owner)) { return false; }
+    lastStarted_[transition.slot] = transition.admission;
     transitions_.insert_or_assign(transition.slot, transition);
     return true;
 }

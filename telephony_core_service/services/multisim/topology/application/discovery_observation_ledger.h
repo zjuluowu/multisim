@@ -22,20 +22,41 @@
 #include <map>
 #include <utility>
 #include "topology/api/topology_requests.h"
+#include "topology/domain/binding_index.h"
 
 namespace OHOS::Telephony::MultiSim {
 // T私有接纳资格，不拥有R设备会话；所有观察和失效在同一T短提交域排序。
+struct DiscoveryStoreTicket { CardDiscoveryObservation observation; uint64_t admission; uint64_t bindingRevision; };
+struct DiscoveryStoreAcceptance { bool bindingAccepted; bool needsFieldReconciliation; bool duplicate; };
 class DiscoveryObservationLedger final {
 public:
     explicit DiscoveryObservationLedger(RuntimeEpoch epoch) : epoch_(epoch) {}
     bool AcceptDiscovery(const CardDiscoveryObservation &observation);
     bool AcceptInvalidation(const CardSessionInvalidation &invalidation);
     bool StillCurrent(const CardDiscoveryObservation &observation) const;
+    std::optional<DiscoveryStoreTicket> BeginStore(const CardDiscoveryObservation &observation,
+        const BindingIndex &bindings);
+    bool EndPreparationFailure(const DiscoveryStoreTicket &ticket, bool callFinished, const BindingIndex &bindings);
+    std::optional<DiscoveryStoreTicket> RetryAfterKnownNoEffect(const DiscoveryStoreTicket &ticket,
+        const BindingIndex &bindings);
+    DiscoveryStoreAcceptance CompleteStored(const DiscoveryStoreTicket &ticket, EffectKnowledge effect,
+        std::optional<SubscriptionId> identity, bool callFinished, BindingIndex &bindings);
 private:
-    struct Entry { SessionRef session; uint64_t sequence; bool valid; };
+    struct Entry {
+        SessionRef session;
+        uint64_t sequence;
+        bool valid;
+        std::string iccid;
+        uint64_t admission {0};
+        bool pending {false};
+        EffectKnowledge effect {EffectKnowledge::NotSent};
+        bool callFinished {false};
+    };
+    bool MatchesStore(const DiscoveryStoreTicket &ticket, const BindingIndex &bindings) const;
     using Key = std::pair<SlotId, std::string>;
     RuntimeEpoch epoch_;
     std::map<Key, Entry> accepted_;
+    uint64_t nextAdmission_ {0};
 };
 } // namespace OHOS::Telephony::MultiSim
 

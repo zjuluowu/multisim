@@ -29,6 +29,9 @@ class AccountRolePlanningPort {
 public:
     virtual ~AccountRolePlanningPort() = default;
     virtual uint64_t ReadRoleProjectionRevision(bool historicalView) const = 0;
+    // 成功的Current/Historical整次读取各自替换，空成功清对应投影；失败不调用。
+    virtual bool AcceptReloadedRoleProjectionSet(const std::vector<StoredAccountRoleFragment> &loaded,
+        uint64_t loadAttempt, uint64_t expectedAssignmentRevision, bool historicalView) = 0;
     virtual bool AcceptReloadedRoleProjection(const StoredAccountRoleFragment &loaded, uint64_t loadAttempt,
         uint64_t expectedAssignmentRevision, bool historicalView) = 0;
     virtual std::optional<AccountRoleFragment> PrepareAccountRoleFragment(const AccountRolePlanningInput &input) = 0;

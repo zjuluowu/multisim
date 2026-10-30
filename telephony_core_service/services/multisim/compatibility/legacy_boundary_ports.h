@@ -41,7 +41,8 @@ public:
     virtual SynchronousWaitRef RetainSynchronousWaiter(LegacySynchronousCall call) = 0;
     virtual int32_t AwaitOriginalIntResult(SynchronousWaitRef waiter) = 0;
     virtual void DeliverOriginalInt(const CompletionRoute &route, int32_t legacyResult) = 0;
-    // Retain在发起前；可在Await前完成。宿主保存各方法原预算/线程，不能阻塞Owner接纳域。
+    // Retain在发起前；可在Await前完成。宿主用原FFRT设施保存各方法原预算/线程，不能阻塞Owner接纳域。
+    // 同一受控域内以CompletionCell一次终结，超时/调用者死亡后的结果只核对，不重复交付。
 };
 // C拥有原完成与通知格式，I适配现有Monitor/平台；没有可写账户或角色缓存。
 class LegacyOutputPort {

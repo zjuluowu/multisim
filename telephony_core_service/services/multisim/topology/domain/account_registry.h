@@ -22,6 +22,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <vector>
 #include "model/sim_identity.h"
 
 namespace OHOS::Telephony::MultiSim {
@@ -32,6 +33,7 @@ struct AccountFieldRevisions {
     uint64_t active {0};
     uint64_t label {0};
     uint64_t imsPreference {0};
+    uint64_t position {0};
 };
 struct AccountProjection {
     std::u16string displayName;
@@ -40,6 +42,7 @@ struct AccountProjection {
     std::optional<int32_t> imsPreference;
     bool active {false};
     AccountFieldRevisions revisions;
+    std::optional<SlotId> legacyPosition; // current/all的旧位置读源可暂不同；不代替已接受Binding。
 };
 // WU-01/02/05 同一 T Owner 的两个兼容投影，不是两个独立业务写者。
 // 原 QueryAllValidData/QueryAllData 分别加载、失败、重试；同字段也可能暂时不同。
@@ -58,10 +61,22 @@ struct AccountReloadAcceptance {
     bool activeAccepted {false};
     bool labelAccepted {false};
     bool imsAccepted {false};
+    bool positionAccepted {false};
 };
+struct AccountReloadInput { uint64_t identityRevision; AccountFieldRevisions fields; };
+struct AccountReloadTicket {
+    AccountReadView view;
+    uint64_t attempt;
+    uint64_t membershipWatermark;
+    std::map<SubscriptionId, AccountReloadInput> expected;
+};
+struct AccountReloadResult { bool acceptedAttempt; size_t acceptedFields; size_t conflictedFields; };
 class AccountRegistry final {
 public:
     std::optional<AccountRecord> Read(SubscriptionId subscription) const;
+    AccountReloadTicket BeginReload(AccountReadView view);
+    AccountReloadResult AcceptReload(const AccountReloadTicket &ticket, bool replaceable,
+        const std::vector<AccountRecord> &loaded);
     std::optional<AccountProjection> ReadProjection(SubscriptionId subscription, AccountReadView view) const;
     AccountAcceptance AcceptNumberVisibility(SubscriptionId subscription, AccountReadView view,
         uint64_t expectedNumberRevision, const std::u16string &number);
@@ -81,6 +96,12 @@ public:
 private:
     std::optional<AccountProjection> &Projection(AccountRecord &record, AccountReadView view);
     std::map<SubscriptionId, AccountRecord> accounts_;
+    std::map<AccountReadView, uint64_t> issuedLoads_;
+    std::map<AccountReadView, uint64_t> consumedLoads_;
+    std::map<AccountReadView, std::map<SubscriptionId, uint64_t>> membershipVersions_;
+    std::map<AccountReadView, std::map<SubscriptionId, AccountFieldRevisions>> retiredFieldRevisions_;
+    // 移除投影只撤销内容；重建时字段版本继续，防旧号码资格在同一绑定上ABA。
+    uint64_t membershipClock_ {0}; // 删除不归零；旧读取不得复活已移除的投影。
 };
 } // namespace OHOS::Telephony::MultiSim
 

@@ -39,6 +39,7 @@ struct ReloadAccountInput {
 };
 struct ReloadRequest {
     AccountLoadRequest storeRequest;
+    AccountReloadTicket acceptance; // T生成独立view/attempt及成员快照，实际读源仍由storeRequest指定。
     uint64_t expectedRoleProjectionRevision;
     std::vector<ReloadAccountInput> affected;
 };
@@ -59,11 +60,12 @@ public:
     NumberAcceptance AcceptNumberAfterCardWrite(const NumberExecutionTarget &target, const std::u16string &number);
     NumberAcceptance AcceptIndependentNumberBackwrite(const NumberExecutionTarget &target,
         const std::u16string &number);
-    ReloadRequest PrepareAccountReload(AccountReadView view, uint64_t loadAttempt) const;
+    ReloadRequest PrepareAccountReload(AccountReadView view, uint64_t loadAttempt);
     void AcceptAccountReload(const ReloadRequest &request, const AccountLoadResult &loaded);
     void AcceptCardDiscoveryObservation(const CardDiscoveryObservation &observation) override;
     void AcceptCardSessionInvalidation(const CardSessionInvalidation &invalidation) override;
     void AcceptCardRemoval(const BindingRef &expected);
+    std::optional<ActivationTransition> PrepareActivationProgress(const ActivationTransition &transition);
     bool BeginActivationProgress(const ActivationTransition &transition);
     bool AcceptActivationProgress(const StepRef &owner, const SessionRef &session, bool inProgress);
     bool ReadLegacyActivationProgress(SlotId slot) const;

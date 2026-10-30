@@ -18,7 +18,10 @@ def main():
                      "topology/application/discovery_observation_ledger.cpp",
                      "topology/application/activation_progress.cpp"],
         "resource": ["runtime/resource/resource_barrier.cpp"],
-        "assignment": ["assignment/domain/assignment_aggregate.cpp"],
+        "assignment": ["assignment/domain/assignment_aggregate.cpp",
+                       "assignment/application/primary_switch_plan.cpp",
+                       "application/card_access/local_card_requests.cpp"],
+        "runtime_protocol": ["runtime/session/session_registry.cpp"],
     }
     with tempfile.TemporaryDirectory(prefix="multisim-architecture-rules-") as output:
         for name, sources in suites.items():

@@ -29,17 +29,22 @@ struct ActivationTransition {
     SessionRef sentSession;
     std::optional<SubscriptionId> subscription;
     bool legacyProgress;
+    uint64_t admission {0}; // T在原执行接纳点签发，不由R回包补造。
 };
 // T拥有的跨模块业务进度；false可在第一次Hook前后出现，不代表R资源空闲。
 class ActivationProgress final {
 public:
     explicit ActivationProgress(RuntimeEpoch epoch) : epoch_(epoch) {}
+    std::optional<ActivationTransition> Prepare(const ActivationTransition &transition);
     bool Begin(const ActivationTransition &transition);
     bool Accept(const StepRef &owner, const SessionRef &session, bool inProgress);
     bool ReadLegacy(SlotId slot) const;
 private:
     RuntimeEpoch epoch_;
     std::map<SlotId, ActivationTransition> transitions_;
+    std::map<SlotId, ActivationTransition> prepared_;
+    std::map<SlotId, uint64_t> lastStarted_;
+    uint64_t nextAdmission_ {0};
 };
 } // namespace OHOS::Telephony::MultiSim
 

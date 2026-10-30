@@ -43,7 +43,9 @@ struct TransitionEvidence {
     uint64_t observedAt;
     std::optional<std::string> verifiedIdentity;
     bool protocolOrCorrelatedRequeryProvesCause;
+    std::optional<SessionRef> observedSession; // R已验证且发布的真实新观察；不按期望合成代次。
 };
+struct ExpectedContinuation { SessionRef session; bool mayAdvanceRequest; };
 // R 独占 bindingGeneration；换卡/应用替换使旧卡写资格失效，资料修改不递增。
 // T/A或具名本地Profile短请求在发设备前登记期望；G3b也须桥接尚未迁入G3c的旧用例。
 // 同槽或任意READY不能独自证明合法新会话；期望不是设备效果事实。
@@ -52,14 +54,26 @@ public:
     explicit SessionRegistry(RuntimeEpoch epoch) : epoch_(epoch) {}
     std::optional<SessionRef> Current(CardApplicationTarget target) const;
     bool StillCurrent(const SessionRef &session) const;
+    bool MayPublishVerifiedSession(const SessionRef &session) const; // 替换前预检，旧观察不得先撤销当前会话。
+    bool PublishVerifiedSession(const SessionRef &session); // 先交T旧会话失效，再正式暴露新会话。
     void InvalidateForVerifiedReplacement(const SessionRef &oldSession);
-    void RegisterExpectedTransition(const ExpectedTransition &expected);
-    std::optional<SessionRef> AcceptExpectedContinuation(const TransitionEvidence &evidence);
+    bool RegisterExpectedTransition(const ExpectedTransition &expected);
+    std::optional<ExpectedContinuation> AcceptExpectedContinuation(const TransitionEvidence &evidence);
+    size_t ExpireExpectedTransitions(uint64_t monotonicNow);
     bool CancelExpectedConfirmedNotSent(const StepRef &origin);
     void EndExpectedWait(const StepRef &origin, EffectKnowledge effect);
 private:
     RuntimeEpoch epoch_;
-    std::map<std::string, SessionRef> sessions_; // 实现须用完整资源/应用键，不能只用slot。
+    struct ApplicationKey {
+        SlotId slot;
+        std::string application;
+        bool operator<(const ApplicationKey &other) const
+        {
+            return slot < other.slot || (!(other.slot < slot) && application < other.application);
+        }
+    };
+    std::map<ApplicationKey, SessionRef> sessions_;
+    std::map<ApplicationKey, uint64_t> generations_; // 撤销也保留代次，不复活旧EF。
     std::vector<ExpectedTransition> expected_;
     // EndExpectedWait只结束本次等待；Unknown继续保留必要原关联交R核对，
     // 不签发新Session、不重放原语、不因调用者已返回释放资源或复活原完成出口。

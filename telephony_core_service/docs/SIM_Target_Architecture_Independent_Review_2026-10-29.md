@@ -459,3 +459,84 @@ struct LocalProfileArguments {
 原审视实际完成了基线/行尾核实、目标类型与成员检查、生产调用链、GN/版本脚本、定向外仓证据和五场景桌面推演。文档输出阶段检查本地引用路径、章节、Markdown 结构、空白及改动范围，并以输出前摘要核对已有跟踪文件未被改变。
 
 本轮未执行生产编译、完整链接、OHOS 构建、业务 GoogleTest、fuzzer、LSP、IPC/ABI 实验、设备测试、真实交错复现或产品联调。主设计记载的历史语法检查与临时规则测试未在本轮重跑，不继承为本轮 PASS；接口示例、目录建议和验收条件均为后续建议，未实施修正。
+
+
+## 9. 本轮裁决与修正记录
+
+> 本节保留main整合前本地2448b42e工作树的实施记录；其中符号、测试路径和72单元结果对应当时工作树。与6697ff7a并行修正的整合采用关系、当前代码与复验见§10，不据本节认定旧符号仍是当前接口。
+
+
+### 9.1 当前输入与实施边界
+
+本轮任务为评估并实施修正。实际输入为本地分支 `docs/publish-local-doc-updates-20261029`、HEAD `2448b42e8976ffb75e2bfcd45b27c86eb1e3965d` 的工作树；不是原评审 HEAD。先检查目录、分支、HEAD、差异和适用 AGENTS.md，未同步远端、切换/恢复/合并分支。AGENTS.md 明确允许后续用户授权的代码工作，本轮按用户授权修改设计及未接入骨架。
+
+原报告 §1～8 保持原文及其历史限制。两份主文档在原职责、协议、映射、分支和图中修订；代码改动限定在 `services/multisim/`，没有改生产 `services/sim/`、Core、公开 API/ABI/IDL/schema、GN、SA 或进程配置，没有转移写权或启用第二执行者。以本轮保存的 1276 个范围外跟踪文件字节摘要复核用户工作区，原有内容保持不变。未暂存、提交或推送。
+
+以下裁决基于当前工作树的声明/实现及定向重读的生产函数：`MultiSimController::InitIccId/UpdateDataByIccId/SimDataBuilder/GetListFromDataBase/GetAllListFromDataBase/UpdateSubState/SetActiveCommonSim/SetPrimarySlotId/SetPrimarySlotIdWithoutModemReboot`、`CoreService::Init`、`EsimManager::OnInit/SwitchToProfile`、`EsimFile::SwitchToProfile`，并核对相关 Core/CMI、接口、Adapter 与构造关系。未将原报告的外仓版本或设备结论晋升为本轮新测结果。
+
+### 9.2 逐项裁决与处理
+
+表中源码路径以 `services/multisim/` 为根。“设计已修、骨架已修、局部通过”均不表示生产风险已消除。两份文档分别指主设计与流程对照。
+
+| 问题编号 | 裁决及依据 | 修改文件与符号 | 已完成验证 | 剩余条件 |
+| --- | --- | --- | --- | --- |
+| P1-1 | **采纳。** 当前端口和模型确实压缩双投影。生产两次Query独立替换、失败与重试，且原bool返回不等于缓存替换成功。 | `topology/api/account_lifecycle.h`；`AccountRegistry::BeginReload/AcceptReload`及字段接纳实现；`AccountStore::LoadAccounts`、Adapter；主设计§8.2.1/§6.4、流程§10.3。 | 真实双投影状态机测试current成功/all失败及反向、独立重试/过期尝试、空成功/失败、current已改而historical失败、旧读不覆盖新字段/删除新成员。 | 设计/骨架/局部验证已修。实际DataShare错误映射、旧稀疏simId可见性和通知需G3a差分，未运行生产重载。 |
+| P1-2 | **部分采纳，采用字段计划与分别接纳。** 新simId前置依赖成立；不把本地预检查当provider CAS，不承诺一次调用具有跨进程原子性。生产单卡旧卡恢复也写四角色MAIN，多卡恢复保留角色。 | `AccountRowPlan/Result`、`MatchAccountByIccid/ApplyAccountRow`；T的`DiscoverCard`协议；A的`AccountRoleProtocol`及角色准备/独立重载入口；主设计§13.2.1、流程§10.3。 | 新行身份为空仍能规划；单卡新建/旧卡恢复、多卡恢复、存前角色变化、存后已写版本失效、current/all角色独立失败、重复/无身份行拒绝。 | 纯角色资格已实现；真实匹配/Insert/Update/Unbind与完整发现编排仍未接provider，未填成功桩。匹配schema、实际返回身份及外部写者只阻塞相应存储接管。 |
+| P1-3 | **采纳。** R加载成员校验不能覆盖T锁外存储窗口，发现入口确实缺资格。空位置也需延续版本。 | `CardDiscoverySink`；R的`FenceTopologyBeforeSessionPublication/PublishCardDiscovery`；`DiscoveryAdmission::Fence/Begin/CompleteStored`；`BindingIndex`；主设计§10.2.1、流程§10.3。 | A发现→B替换→A已写返回，实际`CompleteStored`拒绝绑定并要求核对；Unknown/缺身份/已知无效果/有效结果/重复结果，未知槽、无关槽、rev1→空2→再插3；同观察已知无效果显式重试、旧失败不影响新票据，Unknown不重发。 | 纯接纳及R路由逻辑已实现；生产事件桥须在新会话暴露前fence T，真正提交域/调用结束与字段核对仍待G3b。已写DB不因拒绝内存发布而消失。 |
+| P1-4 | **采纳。** 生产搜网按slot读取，历史账户bool无法表达旧设备请求。 | 从`AccountRecord`移除进度；T应用`ActivationProgress::Prepare/Begin/Clear`按request/slot/sentSession/admission；激活流程改Hook后带资格清理并注入完成端口；主设计§10.2.2、流程§8。 | 旧清理/新请求、错误session及slot、重复清理、clear后旧Begin复活、账户移槽等实质状态测试通过。 | 槽进度与active、设备租约已分离；原搜网桥、force/卫星全部错误出口和Hook时序仍需生产差分。新资格增强未启用。 |
+| P1-5 | **采纳。** 模式缺口仍在；生产第三卡优先、免重启先设备、M0无三阶段，不能统一预写。 | `PrimaryExecutionObservation/PrimaryMode`；`primary_switch_plan.*`；`RadioExecutionPort`；参数端口统一为`WritePrimaryParameters`，同步实现声明/注入；主设计§9.3、流程§9.3/9.4。 | 四模式成功/失败偏序、第三卡优先、非用户设置不走专用分支、controller缺失仍普通预写后失败、恢复/Done/重试/Data分支通过。 | 可执行计划已修；真实RIL/厂商/T换路及方法级旧返回差分未运行。第三卡只完成旧换路/登记节点，不承诺后续Primary收敛。 |
+| P1-6 | **采纳。** 原Primary公开/CMI同步int不能被内部RequestId替代。 | `CompletionPlan::kind`、`CompletionPort`、`CompletionHostPort`、`CompletionCell`；`LegacySimFacade`同步Open→Start→Await桥；T激活/A注入完成出口；主设计§16.1.1、流程§8/9。 | 完成先于等待、等待时交付、超时/死亡/重复/晚到的一次完成规则通过；同步façade及全部构造语法通过。号码仍受理+callback，内部回执独立。 | 纯状态机无新增同步原语；真实Host FFRT等待、原预算/错误、CMI/IPC/通知适配尚未接入，不称生产同步调用已可运行。 |
+| P1-7 | **采纳，限定独立SO切片。** 借用可用于同SO迁移，缺陷是将其视为最终创建边界。 | `AttachExistingSimModule`与`CreateOwnedSimModule/OwnedSimModule`分开；新增`ManagerPublicationSequence`；H构造/sink注入同步；主设计§7.1/§14.2.1、流程§6/§12.2。 | eSIM先发布再SIM、相同地址不同控制块拒绝、同一原控制块多消费者、创建侧deleter最后一次销毁、原OnInit false保留及eSIM关闭分支通过。 | 最终生产工厂/pimpl/deleter仍是明确契约，未创建生产对象。真实失败排空、共享RIL身份、私有导出/NEEDED/Feature/CFI/PAC/LTO待G2b/c，未宣称可安全卸载。 |
+| P1-8 | **采纳参数及协作缺口，限定force影响。** 原force目前只被File保存，不能说本轮修复了设备编码；有效File返回后即写提示，与enum无关。非法槽还保留enum out不赋值。 | `SwitchProfileRequest`保留原port/force与独立verifiedRoute；`LocalCardRequests`真实短编排→A的`LocalProfilePreferencePort`→双结果；C只在optional enum有值时赋原out；R期望生命周期；主设计§7.2.1、流程§12.4。 | 原port/force透传、非法槽无期望/提示且out不变、卡失败仍提示、APDU效果Unknown、卡OK而关闭未知均保留原双结果；期望与后续观察分开，可信旧会话登记、期限清理、结束等待后仅核对、已发布新观察一次接续及旧EF仍无权均通过。 | 不复制66250任务；真实APDU/关闭、期望因果证据及T绑定观察仍待相应生产切片。外层成功不证明Profile/Radio成功，参数失败不覆盖旧返回。 |
+| P2-1 | **采纳。** 整账户版本会因无关字段变化误拒绝。 | `NumberExecutionTarget`改为绑定/session和current/historical号码字段版本；`AccountView`携字段版本；`AccountRegistry`同值重载不递增无关版本；两份文档号码段同步。 | 写卡期间改名、仅名称变化的重载仍保留号码资格；真实号码冲突拒绝、缺投影部分失败及换绑定拒绝通过。 | 实际MSISDN和后台回写接管、同字段I/O预留及旧解析时点仍待G3b差分；未将执行点固定前移至IPC。 |
+| P2-2 | **采纳。** R直接认识三个具体应用用例确实违背端口方向。 | `MsisdnResultSink/ActivationResultSink/RadioResultSink/CardDiscoverySink`，用例实现窄sink，H的`BindResultSinks`；主设计§5.2/§6.4、流程§6。 | 完整头/源语法、传递依赖扫描，以及用独立sink消费观察并拒绝旧观察的测试通过；R无具体应用服务include。 | 结果桥替换资格已表达；真实回包/投递失败、weak owner/epoch/排空仍待接入，不新增总线。 |
+| P2-3 | **采纳。** 正常完成、未发撤销和Checking出口确实缺失。 | `ResourceBarrier`实现`TrackResource/AcceptInitialEvidence/Acquire/MarkSent/CancelNotSent/Complete/Quarantine/AcceptRecoveryEvidence`，租约保存资源集合/request/step/attempt/fence及query/mutation性质；主设计§12.3、流程§11.5。 | 正常释放、NotSent撤销、已发不能撤销、关闭未知隔离、旧/部分/伪造租约证据拒绝、query无旧payload可释放而write须核对、无关域可继续，通过。 | 纯状态机由R已有短域串行保护；没有设备静止证据生产者时不启用对应新屏障，不能用测试布尔证据证明硬件已结束。 |
+| P2-4 | **采纳。** 卡→库→双缓存是兼容用例步骤，纯C++不使其成为Domain规则。 | `show_number_plan.*`从`topology/domain/`移到`topology/application/`，使用方/导航同步；Primary步骤计划同在Application。 | 实际计划偏序场景及全部引用/传递依赖检查通过，无两套计划实现。 | 结构修正完成；未借此改变生产步骤或新建聚合。 |
+| P2-5 | **采纳模型修正；不存在已创建两个Manager的生产事实。** Core只有一个Manager，内部每槽两套File。 | `ExistingSimBindings::euicc`、`CardRuntime::euicc_`、构造注入及最终拥有边界；流程§6/§11.5/§12。 | 定向重读Core/EsimManager装配；单Manager构造一致、普通/低优先级共享资源身份规则及发布身份检查通过。 | 未改变真实eSIM初始化或通知；双File实际共享域、Feature及设备并发仍需产品证据，不能由对象数量推断独立eUICC。 |
+
+### 9.3 验证、发现后的修正与剩余范围
+
+本轮本地工作树当时实际执行以下检查，测试源和入口位于`services/multisim/tests/`；整合后入口迁入既有`test/multisim_architecture_rules/`，当前命令见§10：
+
+```sh
+python3 telephony_core_service/services/multisim/tests/run_host_checks.py
+```
+
+该入口用 Clang C++17、`-Wall -Wextra -Werror` 编译运行账户/发现/激活、Primary/完成/Profile、资源/工厂三套场景，并对全部72个目标头/源（含测试源）逐个执行独立语法检查，最终全部通过。测试直接调用新增纯状态转换与编排逻辑；Profile执行替身仅供注入结果、捕获原参数及观察副作用节点，不替生产能力返回成功。发布身份测试使用隔离对象验证控制块和匹配销毁，不冒充真实Manager初始化；生产工厂不补成功桩。另对拓扑组实际运行GCC及Clang严格构建/测试。
+
+测试与复核发现的问题已继续修正并复验：无变化重载递增号码版本、旧激活Begin复活、清理未核对session.slot、单卡旧卡恢复漏四角色、非法Profile改写原out、Clang无用成员报错，以及资源只读查询无载荷不能正常释放、发现失败重试不应强求新R观察。新增同步设施改为已有宿主短域/FFRT接入契约，骨架没有引入std锁或伪FFRT。
+
+两份设计中的18幅Mermaid图实际解析通过；PlantUML原图未改语法结构，本轮未渲染。代码本地include、Domain传递依赖、R不反依赖具体应用用例、端口声明/实现/构造及文档链接检查通过。指定范围`git diff --check`通过，范围外1276个跟踪文件摘要不变；未混入生产行为修改、已有行尾转换或无关清理。历史评审正文前缀保持字节一致。
+
+**生产验证尚未执行。** 当前环境没有`hb`及完整OHOS产品构建入口；未运行OHOS链接、业务GoogleTest/fuzzer、真实初始化、IPC/ABI实验、设备、厂商、provider或66250联调。局部测试不证明匹配provider事务/外部唯一写者、设备结束/通道静止、Port/MEP/N槽能力。外部缺口沿§3.5限定：只阻塞真正依赖这些能力的存储接管、新资源屏障/安全重试、高层服务或新增产品能力；不阻塞同SO依赖收口和其他纯协议切片。
+
+下一批适合推进G2a：在原SO中以真实HostPorts和原Manager身份连接一个无卡/查询最小闭包，完成实际FFRT同步出口与eSIM/SIM原发布时点核对；保留原writer/执行者/重试者。之后按已闭合协议选择完整WU切片。G3切换前仍需对应旧入口全覆盖、真实写点准入、方法级兼容差分与局部外部证据，不能把本轮骨架表达闭合写成生产风险消除。
+
+
+## 10. 阶段一：main整合与复验（2026-10-30）
+
+本次提交从远端`origin`（`https://github.com/zjuluowu/multisim.git`）的`main@6697ff7a487dcbd45b7eda0b2f6e75f4a671ae69`开始，在隔离worktree整理。main已包含原骨架基础及并行修正，旧本地HEAD为其祖先；未合入额外历史分支，也未整目录覆盖main。原工作区保持原分支/HEAD/已有修改，提交只含本轮协议修正、对应设计与测试；不含G2a生产接入、生产GN或原生产行为变化。
+
+§9保留整合前的本地实施记录，不将其中旧符号复制成第二套模型。当前采用关系如下：
+
+| 原问题 | main已有内容及本轮整合 | 当前代码/验证落点 |
+| --- | --- | --- |
+| P1-1、P2-1 | 保留main双投影/字段模型，补独立view尝试、成员删除接纳、同值字段版本不变和删除重建水位；原bool返回与替换资格分开 | `AccountRegistry::BeginReload/AcceptReload/AcceptReloadProjection`、`AccountLoadResult::legacyReturn`；topology规则含部分失败、旧读、无关名称变化及ABA |
+| P1-2 | 保留窄`AccountRolePlanningPort`，联合新行不预设simId；单卡新建/旧卡恢复四角色MAIN、多卡恢复不代写角色；显式整组角色重载 | `AccountRoleProtocol`、`AccountDiscoveryWritePlan`、`AcceptReloadedRoleProjectionSet`；角色预留/存后核对/独立view测试，不承诺provider CAS |
+| P1-3 | 使用main的`DiscoveryObservationLedger`，补`BeginStore/CompleteStored/EndPreparationFailure/RetryAfterKnownNoEffect`；确认调用结束且未生效才允许同观察显式重试 | 保留原epoch/Owner及持续空槽revision；旧发现、已写/Unknown核对、重复/重试场景。R在任何撤销当前会话前先`MayPublishVerifiedSession`拒绝旧候选 |
+| P1-4 | 保留main完整epoch/Owner/step/session资格，`ActivationProgress::Prepare`签发admission，`Begin`消费并保留最后开始水位 | 旧清理、新请求、clear后旧Begin、账户移槽测试；兼容进度与A冲突登记、R租约仍分别维护 |
+| P1-5、P2-4 | 保留main动态能力/Radio事实与模式，兼容步骤计划统一移Application；参数端口改`WritePrimaryParameters`覆盖前写与后写 | `assignment/application/primary_switch_plan.*`及原号码Application计划；四模式、失败偏序、第三卡优先测试 |
+| P1-6 | 保留main的`CompletionRoute`三类出口及`CallbackHostPort`，补实际同步façade和纯`CompletionCell`一次完成 | 完成先于等待、超时/死亡/重复/晚到；真实FFRT等待依然未接入 |
+| P1-7、P2-5 | 保留main单Manager/sharedRil、`AttachSimModuleToExisting/CreateOwnedSimServices`，补发布顺序/控制块身份纯逻辑 | `ManagerPublicationSequence`；eSIM先发布再SIM、不同控制块拒绝及匹配销毁测试。真实生产工厂仍声明 |
+| P1-8 | 保留原Profile参数及窄A偏好端口，补实际短编排/enum未赋值表达和C出参投影；补期望生命周期 | `LocalCardRequests`、`legacy_profile_result.h`、`SessionRegistry`；非法槽out保持、失败仍提示、Unknown/关闭未知及一次有因果接续 |
+| P2-2、P2-3 | 保留main窄sink与更完整的epoch/Owner/全资源集合屏障；补窄sink实际辅助及恢复资源可复用证据 | `RuntimeResultSinks`、`RecoveryEvidence::resourceReusable`；正常释放、NotSent、query/write、旧租约/错Owner负控 |
+
+当前可复跑入口为：
+
+```sh
+python3 telephony_core_service/test/multisim_architecture_rules/run.py
+```
+
+整合后四套纯协议检查（topology、resource、assignment、runtime_protocol）实际编译运行通过；全部73个骨架头/源以Clang C++17 `-Wall -Wextra -Werror -fsyntax-only`独立检查通过。两份主文档17幅Mermaid实际解析通过，本地链接及`git diff --check`通过。测试使用真实纯规则与注入的结果载荷，不补生产设备/工厂成功桩。原§9的72单元/三套结果继续保留历史含义，本次以当前文件集合重跑。
+
+阶段一未运行生产链接、Manager初始化、真实RIL/provider/设备或IPC；阶段二必须在远端main包含提交后另建工作区实施，不追加到本阶段提交。原工作区1352个已存在文件的字节检查点用于结束时复核；范围外用户修改不暂存、不清理、不重置。最终提交SHA及远端包含证据在后续阶段记录，不改写历史记录为当时已经推送。

@@ -20,7 +20,17 @@ namespace OHOS::Telephony::MultiSim {
 LocalCardRequests::LocalCardRequests(LocalCardPort &runtime, ProfilePreferencePort &preferences)
     : runtime_(runtime), preferences_(preferences) {}
 
-/* SwitchLocalProfile仍仅声明，原语义的具名续接顺序：
+EuiccPrimitiveResult LocalCardRequests::SwitchLocalProfile(const SwitchProfileRequest &request)
+{
+    const auto transition = runtime_.RegisterExpectedProfileTransition(request);
+    const auto result = runtime_.SwitchLocalProfile(request);
+    if (result.reachedLegacyPreferenceNode) {
+        preferences_.AcceptLocalProfilePreference(request.context.step, request.target.slot);
+    }
+    if (transition) { runtime_.EndLocalProfileWait(*transition, result.effect); }
+    return result.legacy;
+}
+/* 原语义的具名续接顺序：
  * 1. 复用原入口检查与发起时RequestContext；R在原调用点保存legacyPortIndex/force/ICCID。
  * 2. 本短请求在发出设备步骤前调用RegisterExpectedProfileTransition。
  *    R以发起时会话、目标ICCID、受影响应用、原预算及因果证据登记ExpectedTransition；

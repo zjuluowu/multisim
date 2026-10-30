@@ -17,6 +17,7 @@
 // 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
 
 #include "compatibility/legacy_sim_facade.h"
+#include "compatibility/legacy_profile_result.h"
 
 namespace OHOS::Telephony::MultiSim {
 LegacySimFacade::LegacySimFacade(const SlotCatalog &catalog, LegacyIngressPort &ingress,
@@ -24,6 +25,32 @@ LegacySimFacade::LegacySimFacade(const SlotCatalog &catalog, LegacyIngressPort &
     ActivateSimUseCase &activation, AssignmentService &assignment, LocalCardRequests &localCards)
     : catalog_(catalog), ingress_(ingress), callbacks_(callbacks), numbers_(numbers), query_(query),
       activation_(activation), assignment_(assignment), localCards_(localCards) {}
+int32_t LegacySimFacade::RunPrimarySwitchAtExecutionPoint(const SwitchPrimaryCommand &command)
+{
+    auto issued = command;
+    const auto waiter = callbacks_.RetainSynchronousWaiter(LegacySynchronousCall::PrimarySwitch);
+    issued.completion.route = SynchronousCompletionRoute {waiter};
+    assignment_.StartPrimarySwitch(issued);
+    return callbacks_.AwaitOriginalIntResult(waiter);
+}
+int32_t LegacySimFacade::RunOrdinaryActivationAtExecutionPoint(const ActivateSimCommand &command)
+{
+    auto issued = command;
+    const auto waiter = callbacks_.RetainSynchronousWaiter(LegacySynchronousCall::SimActivation);
+    issued.completion.route = SynchronousCompletionRoute {waiter};
+    activation_.StartOrdinaryActivation(issued);
+    return callbacks_.AwaitOriginalIntResult(waiter);
+}
+EuiccPrimitiveResult LegacySimFacade::SwitchLocalProfileAtExecutionPoint(const SwitchProfileRequest &request)
+{
+    return localCards_.SwitchLocalProfile(request);
+}
+int32_t LegacySimFacade::SwitchLocalProfileAndAssignAtExecutionPoint(const SwitchProfileRequest &request,
+    int32_t &enumResult)
+{
+    const auto result = SwitchLocalProfileAtExecutionPoint(request);
+    return AssignLocalProfileLegacyResult(result, enumResult);
+}
 /* 伪代码，命令/查询有意仅声明：
  * SetShowNumber(slot, number, caller, callback)：
  *   ingress_.CheckSetShowNumberEntry，保留 SystemApp -> SET_TELEPHONY_STATE

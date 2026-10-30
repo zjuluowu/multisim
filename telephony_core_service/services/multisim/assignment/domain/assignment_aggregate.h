@@ -26,8 +26,6 @@
 
 namespace OHOS::Telephony::MultiSim {
 enum class TransitionPhase { Admitted, ParametersWritten, DevicePending, Reconciling, Completed, Failed };
-enum class PrimarySwitchMode { ThreePhaseProtocol, WithoutModemRestart, AlreadyPrimary, VendorRouteMapping };
-enum class ParameterWritePosition { BeforeDevice, AfterDevice, WithoutDevice };
 struct AssignmentTransition {
     RadioDomainId domain;
     SlotId target;
@@ -35,27 +33,12 @@ struct AssignmentTransition {
     TransitionPhase phase;
     uint32_t businessAttempt;
 };
-struct PrimaryDecisionFacts {
-    SlotDescriptor target;
-    bool userSet;
-    bool dedicatedPrimaryRilSupported;
-    bool alreadyOnPrimaryModem;
-    bool vendorMappingRequired;
-}; // 纯决策输入；动态观察由Application从R取得，不从目录推断。
-struct PrimarySwitchPlan {
-    SlotId target;
-    RadioDomainId domain;
-    PrimarySwitchMode mode;
-    ParameterWritePosition parameterWrite;
-    bool followWithDefaultData;
-};
 enum class TransitionAdmission { Admitted, DomainBusy, UnknownResourceDomain };
 class AssignmentAggregate final {
 public:
     bool AcceptRoleSelection(const RoleSelection &selection, uint64_t expectedAssignmentRevision);
     std::optional<RoleSelection> ReadRoleSelection(DefaultRole role) const;
-    TransitionAdmission AdmitTransition(const PrimaryDecisionFacts &facts, uint64_t transitionToken);
-    std::optional<PrimarySwitchPlan> PlanPrimarySwitch(const PrimaryDecisionFacts &facts) const;
+    TransitionAdmission AdmitTransition(const SlotDescriptor &target, uint64_t transitionToken);
     bool AcceptTransitionPhase(const RadioDomainId &domain, uint64_t transitionToken,
         TransitionPhase expected, TransitionPhase next);
     bool IsSwitchInProgress(const RadioDomainId &domain) const;

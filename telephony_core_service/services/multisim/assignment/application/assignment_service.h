@@ -22,6 +22,7 @@
 #include "application/orchestration/runtime_operation_store.h"
 #include "assignment/api/assignment_requests.h"
 #include "assignment/domain/assignment_aggregate.h"
+#include "assignment/application/account_role_protocol.h"
 #include "assignment/ports/assignment_store.h"
 #include "assignment/ports/radio_execution_port.h"
 #include "assignment/ports/primary_topology_port.h"
@@ -59,6 +60,8 @@ public:
     bool FinalizeInitialRoleReservation(const AccountRoleFragment &planned,
         const InitialRoleFinalizationEvidence &evidence) override;
     uint64_t ReadRoleProjectionRevision(bool historicalView) const override;
+    bool AcceptReloadedRoleProjectionSet(const std::vector<StoredAccountRoleFragment> &loaded, uint64_t loadAttempt,
+        uint64_t expectedAssignmentRevision, bool historicalView) override;
     bool AcceptReloadedRoleProjection(const StoredAccountRoleFragment &loaded, uint64_t loadAttempt,
         uint64_t expectedAssignmentRevision, bool historicalView) override;
 private:
@@ -70,12 +73,7 @@ private:
     AssignmentOutputPort &output_;
     PrimaryTopologyPort &topology_;
     LegacyIntCompletionPort &completion_;
-    struct RoleProjection {
-        std::map<SubscriptionId, StoredAccountRoleFragment> rows;
-        uint64_t revision {0};
-    };
-    RoleProjection currentRoles_;
-    RoleProjection historicalRoles_;
+    AccountRoleProtocol accountRoles_; // 原角色资格/两投影唯一状态，不与另一套角色缓存并存。
     enum class ConflictKind { Primary, Activation };
     struct AssignmentConflictRegistration {
         StepRef owner;
@@ -89,7 +87,6 @@ private:
     // Release/Transfer核验epoch/owner/request/step、domain和token；旧完成不清新登记。
     std::map<uint64_t, AssignmentConflictRegistration> assignmentConflicts_;
     uint64_t nextConflictToken_ {1};
-    std::map<uint64_t, AccountRoleFragment> initialRoleReservations_; // 同一A写资格，非第二业务缓存。
 };
 } // namespace OHOS::Telephony::MultiSim
 

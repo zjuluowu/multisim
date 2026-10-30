@@ -17,25 +17,4 @@
 // 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
 
 #include "assignment/domain/assignment_aggregate.h"
-
-namespace OHOS::Telephony::MultiSim {
-std::optional<PrimarySwitchPlan> AssignmentAggregate::PlanPrimarySwitch(const PrimaryDecisionFacts &facts) const
-{
-    if (!facts.target.radioDomain) {
-        return std::nullopt; // 不回退Modem0；未知资源由Application按该方法既有出口处理。
-    }
-    PrimarySwitchMode mode = PrimarySwitchMode::ThreePhaseProtocol;
-    ParameterWritePosition write = ParameterWritePosition::BeforeDevice;
-    if (facts.vendorMappingRequired) {
-        mode = PrimarySwitchMode::VendorRouteMapping;
-        write = ParameterWritePosition::AfterDevice;
-    } else if (facts.userSet && facts.dedicatedPrimaryRilSupported) {
-        mode = PrimarySwitchMode::WithoutModemRestart;
-        write = ParameterWritePosition::AfterDevice;
-    } else if (facts.alreadyOnPrimaryModem) {
-        mode = PrimarySwitchMode::AlreadyPrimary;
-        write = ParameterWritePosition::WithoutDevice;
-    }
-    return PrimarySwitchPlan {facts.target.slot, *facts.target.radioDomain, mode, write, true};
-}
-} // namespace OHOS::Telephony::MultiSim
+// Application兼容步骤计划已移到assignment/application/primary_switch_plan.cpp。

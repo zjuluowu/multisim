@@ -55,6 +55,7 @@ struct RecoveryEvidence {
     EffectKnowledge effect;
     bool oldCommandEnded;
     bool currentStateVerified;
+    bool resourceReusable; // 包含真实通道结束；事实相符不等于设备已可复用。
 };
 struct ResourceRecord {
     ResourceState state;

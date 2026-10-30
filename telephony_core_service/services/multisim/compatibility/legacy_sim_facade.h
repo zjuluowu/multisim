@@ -42,6 +42,7 @@ public:
     AssignmentView ReadAssignmentForLegacyProjection() const;
     void VerifyPinAtExecutionPoint(const VerifyPinRequest &request);
     EuiccPrimitiveResult SwitchLocalProfileAtExecutionPoint(const SwitchProfileRequest &request);
+    int32_t SwitchLocalProfileAndAssignAtExecutionPoint(const SwitchProfileRequest &request, int32_t &enumResult);
 private:
     const SlotCatalog &catalog_;
     LegacyIngressPort &ingress_;

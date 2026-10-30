@@ -171,7 +171,7 @@ bool ResourceBarrier::Quarantine(const ResourceLease &lease, EffectKnowledge eff
 bool ResourceBarrier::AcceptRecoveryEvidence(const ResourceLease &lease, const RecoveryEvidence &evidence)
 {
     if (!MatchesAll(lease, ResourceState::Quarantined) || !(evidence.original == lease.holder) ||
-        !evidence.oldCommandEnded || !evidence.currentStateVerified ||
+        !evidence.oldCommandEnded || !evidence.currentStateVerified || !evidence.resourceReusable ||
         !EffectAllowsRelease(lease.effectRequirement, evidence.effect)) {
         return false;
     }
