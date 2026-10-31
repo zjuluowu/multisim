@@ -22,7 +22,7 @@
 #include <map>
 #include <utility>
 #include "topology/api/topology_requests.h"
-#include "topology/domain/binding_index.h"
+#include "topology/accounts/binding_index.h"
 
 namespace OHOS::Telephony::MultiSim {
 // T私有接纳资格，不拥有R设备会话；所有观察和失效在同一T短提交域排序。

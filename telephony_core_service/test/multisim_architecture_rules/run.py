@@ -50,8 +50,8 @@ def main():
         check_migration()
     subprocess.run([sys.executable, "-B", str(tests / "test_structure.py")], check=True)
     suites = {
-        "topology": ["foundation/slot_catalog.cpp", "topology/domain/binding_index.cpp",
-                     "topology/domain/account_registry.cpp",
+        "topology": ["foundation/slot_catalog.cpp", "topology/accounts/binding_index.cpp",
+                     "topology/accounts/account_registry.cpp",
                      "topology/discovery/discovery_observation_ledger.cpp",
                      "topology/activation/activation_progress.cpp"],
         "resource": ["runtime/resource/resource_barrier.cpp"],

@@ -16,7 +16,7 @@
 // Design: docs/SIM_Target_Architecture_Design_v1.2.md §9.3 SIM-023.b。
 // 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
 
-#include "topology/profile/show_number_plan.h"
+#include "topology/account_profile/show_number_plan.h"
 
 namespace OHOS::Telephony::MultiSim {
 ShowNumberPlan PlanShowNumberUpdate()

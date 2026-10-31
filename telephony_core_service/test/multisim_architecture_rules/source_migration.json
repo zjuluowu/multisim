@@ -761,7 +761,7 @@
     {
       "old": "topology/application/set_show_number_use_case.cpp",
       "destinations": [
-        "topology/profile/set_show_number_use_case.cpp"
+        "topology/account_profile/set_show_number_use_case.cpp"
       ],
       "sha256": "6d70456f8919228b3d8908e0da5ef484e97d7aad436ab107d1ebd9e6a32256c5",
       "action": "move",
@@ -775,7 +775,7 @@
     {
       "old": "topology/application/set_show_number_use_case.h",
       "destinations": [
-        "topology/profile/set_show_number_use_case.h"
+        "topology/account_profile/set_show_number_use_case.h"
       ],
       "sha256": "3c0d323fbd9605ad5e90114138b931c0f23eecf4ad54a0f4f10788a2895208a4",
       "action": "move",
@@ -789,7 +789,7 @@
     {
       "old": "topology/application/show_number_plan.cpp",
       "destinations": [
-        "topology/profile/show_number_plan.cpp"
+        "topology/account_profile/show_number_plan.cpp"
       ],
       "sha256": "1117026b1c17a67493f7437d0d8a8094a88738cf2fe9e03b89c3790d6a28610b",
       "action": "move",
@@ -803,7 +803,7 @@
     {
       "old": "topology/application/show_number_plan.h",
       "destinations": [
-        "topology/profile/show_number_plan.h"
+        "topology/account_profile/show_number_plan.h"
       ],
       "sha256": "4bc3a7e0f08fa047d645dd04da24ced15b7d5569b84fc8d03987b5104b10ef2f",
       "action": "move",
@@ -817,7 +817,7 @@
     {
       "old": "topology/application/show_number_query.cpp",
       "destinations": [
-        "topology/profile/show_number_query.cpp"
+        "topology/account_profile/show_number_query.cpp"
       ],
       "sha256": "426d84e694878e01ed24bbbbce5ade52cf45fe5e1d3e1000afa8c711a1986e2e",
       "action": "move",
@@ -831,7 +831,7 @@
     {
       "old": "topology/application/show_number_query.h",
       "destinations": [
-        "topology/profile/show_number_query.h"
+        "topology/account_profile/show_number_query.h"
       ],
       "sha256": "63b30163ef73b043ba8d2e632ded89aecd4e87491ff1c5ce69ef09366c31f51c",
       "action": "move",
@@ -873,7 +873,7 @@
     {
       "old": "topology/domain/account_registry.cpp",
       "destinations": [
-        "topology/domain/account_registry.cpp"
+        "topology/accounts/account_registry.cpp"
       ],
       "sha256": "ed39c75f0dade71f19557ed7d9ee95430d20a5ea66c53240a2f43f8f2adb13bd",
       "action": "retain",
@@ -887,7 +887,7 @@
     {
       "old": "topology/domain/account_registry.h",
       "destinations": [
-        "topology/domain/account_registry.h",
+        "topology/accounts/account_registry.h",
         "topology/api/account_types.h"
       ],
       "sha256": "1ea4031b56080bde8cba070f66ac9f25e08085a392857edd266196d078835634",
@@ -903,7 +903,7 @@
     {
       "old": "topology/domain/binding_index.cpp",
       "destinations": [
-        "topology/domain/binding_index.cpp"
+        "topology/accounts/binding_index.cpp"
       ],
       "sha256": "7cd12bacdc1e7036871ce377a93789ece8310f587d3e98827c111948355384c8",
       "action": "retain",
@@ -917,7 +917,7 @@
     {
       "old": "topology/domain/binding_index.h",
       "destinations": [
-        "topology/domain/binding_index.h"
+        "topology/accounts/binding_index.h"
       ],
       "sha256": "1fb11b35f68ded58f67b7397819c77d3fec6319a9ca45ea3914464a8ccaa0b43",
       "action": "retain",
@@ -1040,5 +1040,714 @@
         "topology_contracts"
       ]
     }
-  ]
+  ],
+  "layout_revision": {
+    "baseline": "38c1f2329e5a50349932a19d450c31c403743df1",
+    "files": [
+      {
+        "old": "BUILD.gn",
+        "target": "BUILD.gn",
+        "sha256": "b4011c7a7cfaaae49179bfe7bc8df522f22f8317769721e86c25ac6be51b8944",
+        "action": "retain",
+        "responsibility": "BUILD.gn",
+        "dependency_impact": "构建/导航同步"
+      },
+      {
+        "old": "README.md",
+        "target": "README.md",
+        "sha256": "463a390f49e7c4b932f6a60b1f81c7d5d30f693388bd0beef6a844d14ef14a03",
+        "action": "retain",
+        "responsibility": "README.md",
+        "dependency_impact": "构建/导航同步"
+      },
+      {
+        "old": "assembly/host_ports.h",
+        "target": "assembly/host_ports.h",
+        "sha256": "10c5a8a94d824bf595f7a30b9e72160b8c9d5ea734656116fedb87ce0dd31319",
+        "action": "retain",
+        "responsibility": "assembly / host_ports",
+        "dependency_impact": "assembly_contracts保持原target/依赖"
+      },
+      {
+        "old": "assembly/manager_publication.h",
+        "target": "assembly/manager_publication.h",
+        "sha256": "e32def51474b8ae136276fc26b3a620349f855283cb101c881a3fb53197343d9",
+        "action": "retain",
+        "responsibility": "assembly / manager_publication",
+        "dependency_impact": "assembly_contracts保持原target/依赖"
+      },
+      {
+        "old": "assembly/sim_module.h",
+        "target": "assembly/sim_module.h",
+        "sha256": "bc7be5e3bfe0d51738635cb16bfbb0e544c2b12f5cf9c00d08f8f773c73465e0",
+        "action": "retain",
+        "responsibility": "assembly / sim_module",
+        "dependency_impact": "assembly_core保持原target/依赖"
+      },
+      {
+        "old": "assembly/sim_module_factory.cpp",
+        "target": "assembly/sim_module_factory.cpp",
+        "sha256": "2b11517517fa1e7dfc07bd9d0072d21286fe5076ae078404f03b42909bcec789",
+        "action": "retain",
+        "responsibility": "assembly / sim_module_factory",
+        "dependency_impact": "assembly_core保持原target/依赖"
+      },
+      {
+        "old": "assembly/sim_module_factory.h",
+        "target": "assembly/sim_module_factory.h",
+        "sha256": "9663d848dbf92acfd823dce2bbb4c933fdf9f9e73b355a28c68bf94d1ba85131",
+        "action": "retain",
+        "responsibility": "assembly / sim_module_factory",
+        "dependency_impact": "assembly_contracts保持原target/依赖"
+      },
+      {
+        "old": "assignment/account_roles/account_role_protocol.h",
+        "target": "assignment/account_roles/account_role_protocol.h",
+        "sha256": "a0c6997eac44a795585f5449a88f2941844d1300ca9abc67483911b09809858a",
+        "action": "retain",
+        "responsibility": "assignment / account_role_protocol",
+        "dependency_impact": "assignment_protocols保持原target/依赖"
+      },
+      {
+        "old": "assignment/adapters/assignment_output_adapter.h",
+        "target": "assignment/adapters/assignment_output_adapter.h",
+        "sha256": "edd0f605285e403eccde9c3be4d66e7f84e1d020be1492dc7774c93f485e3887",
+        "action": "retain",
+        "responsibility": "assignment / assignment_output_adapter",
+        "dependency_impact": "assignment_adapters保持原target/依赖"
+      },
+      {
+        "old": "assignment/adapters/assignment_store_adapter.h",
+        "target": "assignment/adapters/assignment_store_adapter.h",
+        "sha256": "e1e70a1ac907738c939c3cb9d87aead3d5cf45224370be72ad580ff6d5b5ed8a",
+        "action": "retain",
+        "responsibility": "assignment / assignment_store_adapter",
+        "dependency_impact": "assignment_adapters保持原target/依赖"
+      },
+      {
+        "old": "assignment/api/assignment_requests.h",
+        "target": "assignment/api/assignment_requests.h",
+        "sha256": "136a2e1674e0caeb09a2f1b09b4956a44f21d3a44dd0ace0905134aa5be755cd",
+        "action": "retain",
+        "responsibility": "assignment / assignment_requests",
+        "dependency_impact": "assignment_contracts保持原target/依赖"
+      },
+      {
+        "old": "assignment/api/assignment_store.h",
+        "target": "assignment/api/assignment_store.h",
+        "sha256": "9fb536b5825ed75683da68f6bc51ea70737fa6cdec62983977c9e9d7f932df8a",
+        "action": "retain",
+        "responsibility": "assignment / assignment_store",
+        "dependency_impact": "assignment_contracts保持原target/依赖"
+      },
+      {
+        "old": "assignment/api/assignment_types.h",
+        "target": "assignment/api/assignment_types.h",
+        "sha256": "f80fa1e31b1bd02250c6ceaf2fa8d95f75abb2f458281f99fcfa1daf114b77d1",
+        "action": "retain",
+        "responsibility": "assignment / assignment_types",
+        "dependency_impact": "assignment_types保持原target/依赖"
+      },
+      {
+        "old": "assignment/api/legacy_entry.h",
+        "target": "assignment/api/legacy_entry.h",
+        "sha256": "f4923bf8731d6d6483452dea514d0907520d77d1c8eca7d27e78f1eec2463089",
+        "action": "retain",
+        "responsibility": "assignment / legacy_entry",
+        "dependency_impact": "assignment_contracts保持原target/依赖"
+      },
+      {
+        "old": "assignment/api/primary_execution.h",
+        "target": "assignment/api/primary_execution.h",
+        "sha256": "9ab2fc857732e89817598556472be29d668c7a53b98dad2af8833c3921e4c18e",
+        "action": "retain",
+        "responsibility": "assignment / primary_execution",
+        "dependency_impact": "assignment_types保持原target/依赖"
+      },
+      {
+        "old": "assignment/api/primary_topology_port.h",
+        "target": "assignment/api/primary_topology_port.h",
+        "sha256": "afc41cf9f79939b013ecc8873cf644097aaa940ce81a1f0d1801d7aa8eab3aeb",
+        "action": "retain",
+        "responsibility": "assignment / primary_topology_port",
+        "dependency_impact": "assignment_contracts保持原target/依赖"
+      },
+      {
+        "old": "assignment/api/profile_preference_port.h",
+        "target": "assignment/api/profile_preference_port.h",
+        "sha256": "84aefa7ae7b62d00fbac6efa2fa7e1acf0e44dcd6c38383add02c90f4efe3869",
+        "action": "retain",
+        "responsibility": "assignment / profile_preference_port",
+        "dependency_impact": "assignment_contracts保持原target/依赖"
+      },
+      {
+        "old": "assignment/api/radio_execution_port.h",
+        "target": "assignment/api/radio_execution_port.h",
+        "sha256": "96cee4a6ead710999dea5f7033709a936e934147e6aed9304b6261daf7738045",
+        "action": "retain",
+        "responsibility": "assignment / radio_execution_port",
+        "dependency_impact": "assignment_contracts保持原target/依赖"
+      },
+      {
+        "old": "assignment/assignment_service.cpp",
+        "target": "assignment/assignment_service.cpp",
+        "sha256": "f3874b28abdc1dbc321fec7c522a4d70bde98e966f2b247a0a964aac45143e64",
+        "action": "retain",
+        "responsibility": "assignment / assignment_service",
+        "dependency_impact": "assignment_cases保持原target/依赖"
+      },
+      {
+        "old": "assignment/assignment_service.h",
+        "target": "assignment/assignment_service.h",
+        "sha256": "9acaf99c008f1d9c19e3578ee571300f1d19a09b24668751150caa7607c0e1bc",
+        "action": "retain",
+        "responsibility": "assignment / assignment_service",
+        "dependency_impact": "assignment_cases保持原target/依赖"
+      },
+      {
+        "old": "assignment/domain/assignment_aggregate.cpp",
+        "target": "assignment/domain/assignment_aggregate.cpp",
+        "sha256": "f3714ab8c2543f1f1178352d18338ed7e59083e72d96e65852c6a988614e7485",
+        "action": "retain",
+        "responsibility": "assignment / assignment_aggregate",
+        "dependency_impact": "assignment_domain保持原target/依赖"
+      },
+      {
+        "old": "assignment/domain/assignment_aggregate.h",
+        "target": "assignment/domain/assignment_aggregate.h",
+        "sha256": "e9ed229ea4ce22bf5b14294f773976537766c099c41857051b63c35bcbaba3c7",
+        "action": "retain",
+        "responsibility": "assignment / assignment_aggregate",
+        "dependency_impact": "assignment_domain保持原target/依赖"
+      },
+      {
+        "old": "assignment/domain/role_selection.h",
+        "target": "assignment/domain/role_selection.h",
+        "sha256": "aaf022a9bb7fadbbb836e12f233035d52bd9e0fe57668dbc6d4c64b63cc9d1ba",
+        "action": "retain",
+        "responsibility": "assignment / role_selection",
+        "dependency_impact": "assignment_domain保持原target/依赖"
+      },
+      {
+        "old": "assignment/primary/primary_switch_plan.cpp",
+        "target": "assignment/primary/primary_switch_plan.cpp",
+        "sha256": "c44a391c2aabb504f24ef021a5edaea3e3efe32e52b10f31b209c282f5d0b621",
+        "action": "retain",
+        "responsibility": "assignment / primary_switch_plan",
+        "dependency_impact": "assignment_protocols保持原target/依赖"
+      },
+      {
+        "old": "assignment/primary/primary_switch_plan.h",
+        "target": "assignment/primary/primary_switch_plan.h",
+        "sha256": "e3a39acdc9851bc9ee253ee65838945d6b347e061b8881573d9eb79c770a4b8d",
+        "action": "retain",
+        "responsibility": "assignment / primary_switch_plan",
+        "dependency_impact": "assignment_protocols保持原target/依赖"
+      },
+      {
+        "old": "compatibility/api/legacy_boundary_ports.h",
+        "target": "compatibility/api/legacy_boundary_ports.h",
+        "sha256": "bd8bd71959fd723ed0c2746602b710bc2a0007e170402df346c3289cbfda4948",
+        "action": "retain",
+        "responsibility": "compatibility / legacy_boundary_ports",
+        "dependency_impact": "compatibility_contracts保持原target/依赖"
+      },
+      {
+        "old": "compatibility/legacy_sim_facade.cpp",
+        "target": "compatibility/legacy_sim_facade.cpp",
+        "sha256": "4747a6bd28ed5568fc04060686ca0a0bb7c340f971e1942647f0b292b9997bd2",
+        "action": "retain",
+        "responsibility": "compatibility / legacy_sim_facade",
+        "dependency_impact": "compatibility_core保持原target/依赖"
+      },
+      {
+        "old": "compatibility/legacy_sim_facade.h",
+        "target": "compatibility/legacy_sim_facade.h",
+        "sha256": "7266641112f398ee6ccda326579befaa6fe7849e8148636f582038efc280a3a6",
+        "action": "retain",
+        "responsibility": "compatibility / legacy_sim_facade",
+        "dependency_impact": "compatibility_core保持原target/依赖"
+      },
+      {
+        "old": "compatibility/output/completion_cell.h",
+        "target": "compatibility/output/completion_cell.h",
+        "sha256": "5632fd78ae9ed9603baa78f9dcc0b91676be8377c14053304b2af03a4e713687",
+        "action": "retain",
+        "responsibility": "compatibility / completion_cell",
+        "dependency_impact": "compatibility_core保持原target/依赖"
+      },
+      {
+        "old": "compatibility/output/legacy_completion.cpp",
+        "target": "compatibility/output/legacy_completion.cpp",
+        "sha256": "39da0195eb63bb8cc9eaf09a7ac339247cb04e7f380c7e5dc2fd3e2da88e2212",
+        "action": "retain",
+        "responsibility": "compatibility / legacy_completion",
+        "dependency_impact": "compatibility_core保持原target/依赖"
+      },
+      {
+        "old": "compatibility/output/legacy_completion.h",
+        "target": "compatibility/output/legacy_completion.h",
+        "sha256": "2643ecda786395dd031fe4e9ed9b9af741ed995cca9204ba4f76c1afe7769a70",
+        "action": "retain",
+        "responsibility": "compatibility / legacy_completion",
+        "dependency_impact": "compatibility_core保持原target/依赖"
+      },
+      {
+        "old": "compatibility/output/legacy_output_adapter.cpp",
+        "target": "compatibility/output/legacy_output_adapter.cpp",
+        "sha256": "97ba55b7921f9ab24106706064ed0ac89b09aca27c2acc5274ba231466f579c0",
+        "action": "retain",
+        "responsibility": "compatibility / legacy_output_adapter",
+        "dependency_impact": "compatibility_core保持原target/依赖"
+      },
+      {
+        "old": "compatibility/output/legacy_output_adapter.h",
+        "target": "compatibility/output/legacy_output_adapter.h",
+        "sha256": "02a6c44e719f09e808febedcbbb7fd2b172e412d43d2fe41ff565ce80e73d157",
+        "action": "retain",
+        "responsibility": "compatibility / legacy_output_adapter",
+        "dependency_impact": "compatibility_core保持原target/依赖"
+      },
+      {
+        "old": "compatibility/output/legacy_profile_result.h",
+        "target": "compatibility/output/legacy_profile_result.h",
+        "sha256": "79bfb329f9eec3f3d6aa1952dc738dcc11e26779681025714b77079f3133cf08",
+        "action": "retain",
+        "responsibility": "compatibility / legacy_profile_result",
+        "dependency_impact": "compatibility_core保持原target/依赖"
+      },
+      {
+        "old": "foundation/orchestration/request_context.h",
+        "target": "foundation/orchestration/request_context.h",
+        "sha256": "f442478cb6c66bed0bb4e1506053f6f6b0ffea6a0a9c14d96a966de8f1a84158",
+        "action": "retain",
+        "responsibility": "foundation / request_context",
+        "dependency_impact": "request_protocol保持原target/依赖"
+      },
+      {
+        "old": "foundation/orchestration/runtime_operation_store.h",
+        "target": "foundation/orchestration/runtime_operation_store.h",
+        "sha256": "cc5a9f39411b327fab76aa25c4e15bce271cfb1a26b2f5982bb48b29d0bc5338",
+        "action": "retain",
+        "responsibility": "foundation / runtime_operation_store",
+        "dependency_impact": "request_mechanism保持原target/依赖"
+      },
+      {
+        "old": "foundation/request_ref.h",
+        "target": "foundation/request_ref.h",
+        "sha256": "2335835e384f61b7811a274bb2f66000c48a1a93475b82e5e8a1978c96386d00",
+        "action": "retain",
+        "responsibility": "foundation / request_ref",
+        "dependency_impact": "sim_values保持原target/依赖"
+      },
+      {
+        "old": "foundation/sim_identity.h",
+        "target": "foundation/sim_identity.h",
+        "sha256": "d0821fe30ee5023303ded0976bf894e352516c2773e4db0645002890c9ac991b",
+        "action": "retain",
+        "responsibility": "foundation / sim_identity",
+        "dependency_impact": "sim_values保持原target/依赖"
+      },
+      {
+        "old": "foundation/slot_catalog.cpp",
+        "target": "foundation/slot_catalog.cpp",
+        "sha256": "410b3545225f0f5b7ef16a3b5f4039bfd928c7a53be1e0e4bc38b66914d93217",
+        "action": "retain",
+        "responsibility": "foundation / slot_catalog",
+        "dependency_impact": "sim_values保持原target/依赖"
+      },
+      {
+        "old": "foundation/slot_catalog.h",
+        "target": "foundation/slot_catalog.h",
+        "sha256": "7b5dcda92adc293548a152bfaaa1546c9f7066c31978cfbc233bb73bc013918c",
+        "action": "retain",
+        "responsibility": "foundation / slot_catalog",
+        "dependency_impact": "sim_values保持原target/依赖"
+      },
+      {
+        "old": "include/sim_host_ports.h",
+        "target": "include/sim_host_ports.h",
+        "sha256": "c2b4bcedba760c23471cdc4c059e4c1b275a4015fe19bc7920de085e018043cb",
+        "action": "retain",
+        "responsibility": "include / sim_host_ports",
+        "dependency_impact": "repository_exports保持原target/依赖"
+      },
+      {
+        "old": "include/sim_module_factory.h",
+        "target": "include/sim_module_factory.h",
+        "sha256": "f61d5ca8ad46f6f37d3d775f547aaf61a432152bebe8c05e70d7a09ab7cc7d85",
+        "action": "retain",
+        "responsibility": "include / sim_module_factory",
+        "dependency_impact": "repository_exports保持原target/依赖"
+      },
+      {
+        "old": "runtime/api/local_card_requests.h",
+        "target": "runtime/api/local_card_requests.h",
+        "sha256": "625e1831b305c08265439cb0596acb7ad39a2bfe98af0c0f1a61f933a7812e53",
+        "action": "retain",
+        "responsibility": "runtime / local_card_requests",
+        "dependency_impact": "runtime_contracts保持原target/依赖"
+      },
+      {
+        "old": "runtime/card_runtime.cpp",
+        "target": "runtime/card_runtime.cpp",
+        "sha256": "e41db9041b9d2a99f614aef6aa4b0635a421c92aae3fc1b6e534fd87c41373b9",
+        "action": "retain",
+        "responsibility": "runtime / card_runtime",
+        "dependency_impact": "runtime_core保持原target/依赖"
+      },
+      {
+        "old": "runtime/card_runtime.h",
+        "target": "runtime/card_runtime.h",
+        "sha256": "ee3986000f88d387f8d2ce92d045c1d24e26a6c1cef045b22cff35ff7b7e8908",
+        "action": "retain",
+        "responsibility": "runtime / card_runtime",
+        "dependency_impact": "runtime_core保持原target/依赖"
+      },
+      {
+        "old": "runtime/euicc/local_card_requests.cpp",
+        "target": "runtime/euicc/local_card_requests.cpp",
+        "sha256": "d0bd4fd921d0ef587770defc99f86e71f71a32e88c5b12d883611e9a4797c5c8",
+        "action": "retain",
+        "responsibility": "runtime / local_card_requests",
+        "dependency_impact": "runtime_cases保持原target/依赖"
+      },
+      {
+        "old": "runtime/euicc/profile_requests.h",
+        "target": "runtime/euicc/profile_requests.h",
+        "sha256": "4e7113c3ffcd803344abd86c820dbc6c931e7d2bd5c58a8e3a9404680910bf32",
+        "action": "retain",
+        "responsibility": "runtime / profile_requests",
+        "dependency_impact": "runtime_contracts保持原target/依赖"
+      },
+      {
+        "old": "runtime/records/ef_requests.h",
+        "target": "runtime/records/ef_requests.h",
+        "sha256": "d6120bd9cf5e8216ffed0259a9fb607da7c8df69555786a61d30eb64cb21f46c",
+        "action": "retain",
+        "responsibility": "runtime / ef_requests",
+        "dependency_impact": "runtime_contracts保持原target/依赖"
+      },
+      {
+        "old": "runtime/records/load_session.cpp",
+        "target": "runtime/records/load_session.cpp",
+        "sha256": "a2114fb6ae502d269258638e2d3e6d6378dbc5c04934d93c10318f99e3fb8a96",
+        "action": "retain",
+        "responsibility": "runtime / load_session",
+        "dependency_impact": "runtime_mechanisms保持原target/依赖"
+      },
+      {
+        "old": "runtime/records/load_session.h",
+        "target": "runtime/records/load_session.h",
+        "sha256": "3c99d1c691f849ceab7a7b7fe87cae2e57f7daf4fda08bfd2fb40839db316f03",
+        "action": "retain",
+        "responsibility": "runtime / load_session",
+        "dependency_impact": "runtime_mechanisms保持原target/依赖"
+      },
+      {
+        "old": "runtime/resource/resource_barrier.cpp",
+        "target": "runtime/resource/resource_barrier.cpp",
+        "sha256": "6d607296ada4d7636890776dd4b178e0763c9fe7a4d7b9130e066ea7badf34b9",
+        "action": "retain",
+        "responsibility": "runtime / resource_barrier",
+        "dependency_impact": "runtime_mechanisms保持原target/依赖"
+      },
+      {
+        "old": "runtime/resource/resource_barrier.h",
+        "target": "runtime/resource/resource_barrier.h",
+        "sha256": "772fed353ef9e4e921911178ef77a703f5ab55917eae54c5eedd2ab38ab3f218",
+        "action": "retain",
+        "responsibility": "runtime / resource_barrier",
+        "dependency_impact": "runtime_mechanisms保持原target/依赖"
+      },
+      {
+        "old": "runtime/result_sinks.h",
+        "target": "runtime/result_sinks.h",
+        "sha256": "b3ac60f2a149546e4a7d941331d7c864f7fdc95391f0be9244a852b19d363585",
+        "action": "retain",
+        "responsibility": "runtime / result_sinks",
+        "dependency_impact": "runtime_core保持原target/依赖"
+      },
+      {
+        "old": "runtime/session/session_registry.cpp",
+        "target": "runtime/session/session_registry.cpp",
+        "sha256": "ecea35efc81c2d777ede56a616ee4af683952d1e35e092fa843fd52ac767c5a6",
+        "action": "retain",
+        "responsibility": "runtime / session_registry",
+        "dependency_impact": "runtime_mechanisms保持原target/依赖"
+      },
+      {
+        "old": "runtime/session/session_registry.h",
+        "target": "runtime/session/session_registry.h",
+        "sha256": "ad89249389dac4040995b38ba2e34c205f2047cc161f27de9a155cc331c6c87f",
+        "action": "retain",
+        "responsibility": "runtime / session_registry",
+        "dependency_impact": "runtime_mechanisms保持原target/依赖"
+      },
+      {
+        "old": "runtime/state/pin_requests.h",
+        "target": "runtime/state/pin_requests.h",
+        "sha256": "bed63b6f90c388c7827c719fac8822d5b0ef848a889b5b9a27fe233d5057183e",
+        "action": "retain",
+        "responsibility": "runtime / pin_requests",
+        "dependency_impact": "runtime_contracts保持原target/依赖"
+      },
+      {
+        "old": "topology/activation/activate_sim_use_case.cpp",
+        "target": "topology/activation/activate_sim_use_case.cpp",
+        "sha256": "47833779db1211437a3c9e659528923dbdb9ec7c0023c70e3c1aed04b81ad063",
+        "action": "retain",
+        "responsibility": "topology / activate_sim_use_case",
+        "dependency_impact": "topology_cases保持原target/依赖"
+      },
+      {
+        "old": "topology/activation/activate_sim_use_case.h",
+        "target": "topology/activation/activate_sim_use_case.h",
+        "sha256": "7028b57b8b8ede729bbfb92fa4b01d125b8c5c32d1d6ec49d2798cec5e1ef1b3",
+        "action": "retain",
+        "responsibility": "topology / activate_sim_use_case",
+        "dependency_impact": "topology_cases保持原target/依赖"
+      },
+      {
+        "old": "topology/activation/activation_progress.cpp",
+        "target": "topology/activation/activation_progress.cpp",
+        "sha256": "d534b85506b75c5927d59ab6067b8368e4f692284d4c698e4c0f60036660834e",
+        "action": "retain",
+        "responsibility": "topology / activation_progress",
+        "dependency_impact": "topology_protocols保持原target/依赖"
+      },
+      {
+        "old": "topology/activation/activation_progress.h",
+        "target": "topology/activation/activation_progress.h",
+        "sha256": "eae6fb8e1a8307b3fc591f2ca118f61944ff90c21a04ab229721cc9a31b60cbd",
+        "action": "retain",
+        "responsibility": "topology / activation_progress",
+        "dependency_impact": "topology_protocols保持原target/依赖"
+      },
+      {
+        "old": "topology/adapters/account_store_adapter.cpp",
+        "target": "topology/adapters/account_store_adapter.cpp",
+        "sha256": "f6c63098f801cf2d9a401fb9632b8f7e681728d6148f84a0195c4ab5db34bc33",
+        "action": "retain",
+        "responsibility": "topology / account_store_adapter",
+        "dependency_impact": "topology_adapters保持原target/依赖"
+      },
+      {
+        "old": "topology/adapters/account_store_adapter.h",
+        "target": "topology/adapters/account_store_adapter.h",
+        "sha256": "fe8eea46a38cd50f8224d6f0dfa0b2ca45b7d8eed964e2c5d2d8d99992a45f82",
+        "action": "retain",
+        "responsibility": "topology / account_store_adapter",
+        "dependency_impact": "topology_adapters保持原target/依赖"
+      },
+      {
+        "old": "topology/adapters/activation_hook_adapter.h",
+        "target": "topology/adapters/activation_hook_adapter.h",
+        "sha256": "bc514f26232b7454acf2d32e64e4cb6edbfe4318b400cf573ee848c1799b63ba",
+        "action": "retain",
+        "responsibility": "topology / activation_hook_adapter",
+        "dependency_impact": "topology_adapters保持原target/依赖"
+      },
+      {
+        "old": "topology/api/account_role_planning_port.h",
+        "target": "topology/api/account_role_planning_port.h",
+        "sha256": "7d19c9f90275b92352174f4c9eb2a7c4914fd121938df312508211c25a8ca461",
+        "action": "retain",
+        "responsibility": "topology / account_role_planning_port",
+        "dependency_impact": "topology_contracts保持原target/依赖"
+      },
+      {
+        "old": "topology/api/account_store.h",
+        "target": "topology/api/account_store.h",
+        "sha256": "6bfbc0866d8d37f3e9726083cff320f6c3c300293462b74fc034ad12ed927f1e",
+        "action": "retain",
+        "responsibility": "topology / account_store",
+        "dependency_impact": "topology_contracts保持原target/依赖"
+      },
+      {
+        "old": "topology/api/account_types.h",
+        "target": "topology/api/account_types.h",
+        "sha256": "49e606d93fb1f51792ed97369a1178cc8e1d1e7c70727b221c730662602d2605",
+        "action": "retain",
+        "responsibility": "topology / account_types",
+        "dependency_impact": "topology_types保持原target/依赖"
+      },
+      {
+        "old": "topology/api/activation_assignment_port.h",
+        "target": "topology/api/activation_assignment_port.h",
+        "sha256": "3f272296225ae5debffec7d4f855cb4467486cc2f588acd11833af39eaa4f524",
+        "action": "retain",
+        "responsibility": "topology / activation_assignment_port",
+        "dependency_impact": "topology_contracts保持原target/依赖"
+      },
+      {
+        "old": "topology/api/activation_runtime_port.h",
+        "target": "topology/api/activation_runtime_port.h",
+        "sha256": "6f7529a38ea386731e32c5c997db89a07c55eaa1214ce73e3446d8f56bd97537",
+        "action": "retain",
+        "responsibility": "topology / activation_runtime_port",
+        "dependency_impact": "topology_contracts保持原target/依赖"
+      },
+      {
+        "old": "topology/api/card_observation_port.h",
+        "target": "topology/api/card_observation_port.h",
+        "sha256": "22d9f65282ef6749a3dd7bdab52573ee5bf6be0d4d0b922c81b117bd4bf22386",
+        "action": "retain",
+        "responsibility": "topology / card_observation_port",
+        "dependency_impact": "topology_contracts保持原target/依赖"
+      },
+      {
+        "old": "topology/api/legacy_entry.h",
+        "target": "topology/api/legacy_entry.h",
+        "sha256": "d9ec7d13902b94df47a90c9a4b1a1eb3f2c434582a90667ee9d966f479691ba7",
+        "action": "retain",
+        "responsibility": "topology / legacy_entry",
+        "dependency_impact": "topology_contracts保持原target/依赖"
+      },
+      {
+        "old": "topology/api/number_query_host_port.h",
+        "target": "topology/api/number_query_host_port.h",
+        "sha256": "d225a77fab3c618b33c56d987be709406c2da9e4e8d028051270a176a7c14a6d",
+        "action": "retain",
+        "responsibility": "topology / number_query_host_port",
+        "dependency_impact": "topology_contracts保持原target/依赖"
+      },
+      {
+        "old": "topology/api/show_number_completion_port.h",
+        "target": "topology/api/show_number_completion_port.h",
+        "sha256": "992e6f659849061fdb895ff79d3511ce9184496ebfdc66f327b6c28886bbb6c0",
+        "action": "retain",
+        "responsibility": "topology / show_number_completion_port",
+        "dependency_impact": "topology_contracts保持原target/依赖"
+      },
+      {
+        "old": "topology/api/show_number_runtime_port.h",
+        "target": "topology/api/show_number_runtime_port.h",
+        "sha256": "140ec6f9bdb70183249ea7b475026d67c97ceb0c8359bffbd0f6547cffb4b756",
+        "action": "retain",
+        "responsibility": "topology / show_number_runtime_port",
+        "dependency_impact": "topology_contracts保持原target/依赖"
+      },
+      {
+        "old": "topology/api/topology_requests.h",
+        "target": "topology/api/topology_requests.h",
+        "sha256": "51c74ce3afe5754603ba5fa9c30c6f3e9afb3d482991d95eade66aae46dcbecc",
+        "action": "retain",
+        "responsibility": "topology / topology_requests",
+        "dependency_impact": "topology_contracts保持原target/依赖"
+      },
+      {
+        "old": "topology/discovery/discovery_observation_ledger.cpp",
+        "target": "topology/discovery/discovery_observation_ledger.cpp",
+        "sha256": "ccf58ae2867c27c63acb5450994236cff082b7e095a7ad07c1c435bb77dc27e5",
+        "action": "retain",
+        "responsibility": "topology / discovery_observation_ledger",
+        "dependency_impact": "topology_protocols保持原target/依赖"
+      },
+      {
+        "old": "topology/discovery/discovery_observation_ledger.h",
+        "target": "topology/discovery/discovery_observation_ledger.h",
+        "sha256": "92dde83bc3f0e8b2be38d1f20ce94785f528ba524bf3e64251e3168d8aa81679",
+        "action": "retain",
+        "responsibility": "topology / discovery_observation_ledger",
+        "dependency_impact": "topology_protocols保持原target/依赖"
+      },
+      {
+        "old": "topology/domain/account_registry.cpp",
+        "target": "topology/accounts/account_registry.cpp",
+        "sha256": "ed39c75f0dade71f19557ed7d9ee95430d20a5ea66c53240a2f43f8f2adb13bd",
+        "action": "move",
+        "responsibility": "账户与绑定纯规则 / account_registry",
+        "dependency_impact": "topology_domain保持原target；仅路径更新"
+      },
+      {
+        "old": "topology/domain/account_registry.h",
+        "target": "topology/accounts/account_registry.h",
+        "sha256": "b723c908f93e08f96a39c87d714adbae3aa6f46ceb833b8b2bb086b4b4e10cd4",
+        "action": "move",
+        "responsibility": "账户与绑定纯规则 / account_registry",
+        "dependency_impact": "topology_domain保持原target；仅路径更新"
+      },
+      {
+        "old": "topology/domain/binding_index.cpp",
+        "target": "topology/accounts/binding_index.cpp",
+        "sha256": "7cd12bacdc1e7036871ce377a93789ece8310f587d3e98827c111948355384c8",
+        "action": "move",
+        "responsibility": "账户与绑定纯规则 / binding_index",
+        "dependency_impact": "topology_domain保持原target；仅路径更新"
+      },
+      {
+        "old": "topology/domain/binding_index.h",
+        "target": "topology/accounts/binding_index.h",
+        "sha256": "9bc1d7c690884525eb05bac98be65d02eb3f114d0994bbdef1704a82e1849e49",
+        "action": "move",
+        "responsibility": "账户与绑定纯规则 / binding_index",
+        "dependency_impact": "topology_domain保持原target；仅路径更新"
+      },
+      {
+        "old": "topology/profile/set_show_number_use_case.cpp",
+        "target": "topology/account_profile/set_show_number_use_case.cpp",
+        "sha256": "ef25823eef77d734171aea1a2c5e44495675ee30efa3a29bc286994ac6ac15a7",
+        "action": "move",
+        "responsibility": "账户资料场景 / set_show_number_use_case",
+        "dependency_impact": "topology_cases保持原target；仅路径更新"
+      },
+      {
+        "old": "topology/profile/set_show_number_use_case.h",
+        "target": "topology/account_profile/set_show_number_use_case.h",
+        "sha256": "04ebf774624b2425fda061300d82f329464e344bc670ff517fcc9df42e833ea3",
+        "action": "move",
+        "responsibility": "账户资料场景 / set_show_number_use_case",
+        "dependency_impact": "topology_cases保持原target；仅路径更新"
+      },
+      {
+        "old": "topology/profile/show_number_plan.cpp",
+        "target": "topology/account_profile/show_number_plan.cpp",
+        "sha256": "0fd03575a65003755c5ac626810bf401de5446d22bf1dfaab3312bd1f7822825",
+        "action": "move",
+        "responsibility": "账户资料场景 / show_number_plan",
+        "dependency_impact": "topology_protocols保持原target；仅路径更新"
+      },
+      {
+        "old": "topology/profile/show_number_plan.h",
+        "target": "topology/account_profile/show_number_plan.h",
+        "sha256": "bfc975d1e60a339f3990a606138297c2ba57709d85a291b6fc60601ef996fdad",
+        "action": "move",
+        "responsibility": "账户资料场景 / show_number_plan",
+        "dependency_impact": "topology_protocols保持原target；仅路径更新"
+      },
+      {
+        "old": "topology/profile/show_number_query.cpp",
+        "target": "topology/account_profile/show_number_query.cpp",
+        "sha256": "8404473a7eb673bd599d15eaf83a52466295dac93de6e59a83e7d3c1a079a7e8",
+        "action": "move",
+        "responsibility": "账户资料场景 / show_number_query",
+        "dependency_impact": "topology_cases保持原target；仅路径更新"
+      },
+      {
+        "old": "topology/profile/show_number_query.h",
+        "target": "topology/account_profile/show_number_query.h",
+        "sha256": "44cc954d2c82349f2da83e47357a165e610291e27dd940fbacd2a9674f51769b",
+        "action": "move",
+        "responsibility": "账户资料场景 / show_number_query",
+        "dependency_impact": "topology_cases保持原target；仅路径更新"
+      },
+      {
+        "old": "topology/topology_service.cpp",
+        "target": "topology/topology_service.cpp",
+        "sha256": "3cc8d6aa1eaa9506c748540610a697a85f2db1fee93d56655ed9482f8c0e2976",
+        "action": "retain",
+        "responsibility": "topology / topology_service",
+        "dependency_impact": "topology_cases保持原target/依赖"
+      },
+      {
+        "old": "topology/topology_service.h",
+        "target": "topology/topology_service.h",
+        "sha256": "78b3f78715f3a405b0b51486670ad7f3e8b1aaa9eadfde9fd0c1f05290c00831",
+        "action": "retain",
+        "responsibility": "topology / topology_service",
+        "dependency_impact": "topology_cases保持原target/依赖"
+      }
+    ]
+  }
 }

@@ -16,8 +16,8 @@
 
 #include <cassert>
 #include <iostream>
-#include "topology/domain/account_registry.h"
-#include "topology/domain/binding_index.h"
+#include "topology/accounts/account_registry.h"
+#include "topology/accounts/binding_index.h"
 #include "topology/discovery/discovery_observation_ledger.h"
 #include "topology/activation/activation_progress.h"
 using namespace OHOS::Telephony::MultiSim;

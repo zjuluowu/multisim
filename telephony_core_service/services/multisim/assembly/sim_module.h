@@ -31,8 +31,8 @@
 #include "topology/adapters/activation_hook_adapter.h"
 #include "topology/topology_service.h"
 #include "assignment/assignment_service.h"
-#include "topology/profile/set_show_number_use_case.h"
-#include "topology/profile/show_number_query.h"
+#include "topology/account_profile/set_show_number_use_case.h"
+#include "topology/account_profile/show_number_query.h"
 #include "topology/activation/activate_sim_use_case.h"
 
 namespace OHOS::Telephony::MultiSim {

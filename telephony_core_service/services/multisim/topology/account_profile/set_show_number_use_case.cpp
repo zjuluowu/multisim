@@ -16,7 +16,7 @@
 // Design: docs/SIM_Target_Architecture_Design_v1.2.md §5.3、§9.3～9.5、§11.1～11.3、§16.2。
 // 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
 
-#include "topology/profile/set_show_number_use_case.h"
+#include "topology/account_profile/set_show_number_use_case.h"
 
 namespace OHOS::Telephony::MultiSim {
 SetShowNumberUseCase::SetShowNumberUseCase(TopologyService &topology, ShowNumberRuntimePort &runtime,

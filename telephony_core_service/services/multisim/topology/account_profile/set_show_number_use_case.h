@@ -21,7 +21,7 @@
 
 #include "foundation/orchestration/runtime_operation_store.h"
 #include "topology/topology_service.h"
-#include "topology/profile/show_number_plan.h"
+#include "topology/account_profile/show_number_plan.h"
 #include "topology/api/show_number_runtime_port.h"
 #include "topology/api/show_number_completion_port.h"
 

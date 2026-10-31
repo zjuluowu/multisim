@@ -50,3 +50,11 @@
 纯规则：`python3 telephony_core_service/test/multisim_architecture_rules/run.py`。G2a查询和完整初始化审计位于工作分支，准确命令/固定依赖见执行状态；`hb build -T //base/telephony/core_service:tel_core_service`只在匹配完整OHOS树使用。公开接口、解码等检查遵循[构建验证规则](docs/knowledge/verify/build-test.md)。纯文档检查不能声称业务测试通过。
 
 先选状态中的推荐最小任务；核对真实入口、前置证据、修改范围、验证和退出条件后执行。用户明确授权的常规修改/检查/提交不要重复征询；授权未覆盖的生产切换不默认执行。只暂存本次精确文件，正常整合远端并复验冲突；推送后核实远端包含提交。不得为保存成果将未验收工作直接合入main。
+
+## multisim业务定位与本轮目录约束
+
+先读[源码导航](services/multisim/README.md)按T1～T6定位；当前布局/未来能力分开见详细设计§3。T账户/绑定纯规则在topology/accounts，资料场景在topology/account_profile；eSIM Profile在runtime/euicc。纯规则仍由topology_domain target约束，不因改名放松依赖。
+
+请求/Step由各用例持有；等待结束不等于设备结束。SessionRegistry和ResourceBarrier保持唯一责任，不随槽复制真实共享资源。Runtime不得代写T账户或A角色；纯规则不依赖O/平台，跨Owner仅经窄api，不包含对方私有用例/聚合/Adapter。
+
+修改路径同步BUILD、测试及source_migration.json；目录切片运行`python3 telephony_core_service/test/multisim_architecture_rules/run.py --with-gn --migration`与`git diff --check`。该命令验证骨架、有限纯规则及文本/target依赖，不代替产品/设备或生产行为差分。当前生产仍在services/sim，G2a检查点与准入按唯一执行状态。

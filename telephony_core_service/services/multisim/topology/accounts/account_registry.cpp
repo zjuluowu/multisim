@@ -16,7 +16,7 @@
 // Design: docs/SIM_Target_Architecture_Design_v1.2.md §4.3、§10.1。
 // 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
 
-#include "topology/domain/account_registry.h"
+#include "topology/accounts/account_registry.h"
 #include <algorithm>
 #include <limits>
 #include <set>

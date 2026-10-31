@@ -43,7 +43,7 @@ def category(name):
     if owner in ("topology", "assignment"):
         if "api" in path.parts:
             return owner + "_contracts"
-        if "domain" in path.parts:
+        if "domain" in path.parts or (owner == "topology" and "accounts" in path.parts):
             return owner + "_domain"
         if "adapters" in path.parts:
             return owner + "_adapters"
@@ -289,6 +289,26 @@ def check_migration():
             if token_sequence(text) != token_sequence(after):
                 raise ValueError("Original implementation token order changed: " + entry["old"])
     print(f"migration: PASS ({len(paths)} original files, type definitions and implementation token order)", flush=True)
+    revision = manifest["layout_revision"]
+    tracked = subprocess.check_output(["git", "ls-tree", "-rz", "--name-only", revision["baseline"], "--", prefix], cwd=repo)
+    inputs = {p.decode()[len(prefix):] for p in tracked.split(b"\0") if p}
+    entries = revision["files"]
+    if inputs != {entry["old"] for entry in entries} or len(inputs) != len(entries):
+        raise ValueError("Layout revision must map every input file exactly once")
+    actual = {p.relative_to(SOURCE).as_posix() for p in SOURCE.rglob("*") if p.is_file()}
+    if actual != {entry["target"] for entry in entries}:
+        raise ValueError("Layout revision destinations differ from actual files")
+    for entry in entries:
+        before = subprocess.check_output(["git", "show", revision["baseline"] + ":" + prefix + entry["old"]], cwd=repo)
+        if hashlib.sha256(before).hexdigest() != entry["sha256"]:
+            raise ValueError("Layout input digest mismatch: " + entry["old"])
+        if Path(entry["old"]).suffix in SUFFIXES:
+            after = (SOURCE / entry["target"]).read_text()
+            # Includes are checked separately; preserve all remaining tokens, including header bodies.
+            if token_sequence(before.decode()) != token_sequence(after):
+                raise ValueError("Layout changed code tokens: " + entry["old"])
+    print(f"layout revision: PASS ({len(entries)} files; C++ tokens unchanged outside directives)", flush=True)
+
 
 
 def main():

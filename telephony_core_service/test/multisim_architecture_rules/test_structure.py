@@ -34,12 +34,12 @@ class BoundaryGuard(unittest.TestCase):
     def test_forbidden_includes(self):
         cases = [
             ("foundation/sim_identity.h", "../topology/topology_service.h"),
-            ("topology/domain/account_registry.h", "../../foundation/orchestration/request_context.h"),
+            ("topology/accounts/account_registry.h", "../../foundation/orchestration/request_context.h"),
             ("topology/topology_service.h", "assignment/assignment_service.h"),
-            ("runtime/card_runtime.h", "topology/profile/set_show_number_use_case.h"),
+            ("runtime/card_runtime.h", "topology/account_profile/set_show_number_use_case.h"),
             ("runtime/card_runtime.h", "compatibility/api/legacy_boundary_ports.h"),
             ("compatibility/legacy_sim_facade.h", "topology/topology_service.h"),
-            ("topology/api/topology_requests.h", "topology/domain/account_registry.h"),
+            ("topology/api/topology_requests.h", "topology/accounts/account_registry.h"),
         ]
         for source, included in cases:
             with self.subTest(source=source, included=included):

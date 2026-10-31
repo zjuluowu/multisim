@@ -424,17 +424,17 @@ source_set("topology_cases") {
   sources = [
     "topology/activation/activate_sim_use_case.cpp",
     "topology/activation/activate_sim_use_case.h",
-    "topology/profile/set_show_number_use_case.cpp",
-    "topology/profile/set_show_number_use_case.h",
-    "topology/profile/show_number_query.cpp",
-    "topology/profile/show_number_query.h",
+    "topology/account_profile/set_show_number_use_case.cpp",
+    "topology/account_profile/set_show_number_use_case.h",
+    "topology/account_profile/show_number_query.cpp",
+    "topology/account_profile/show_number_query.h",
     "topology/topology_service.cpp",
     "topology/topology_service.h",
   ]
   public = [
     "topology/activation/activate_sim_use_case.h",
-    "topology/profile/set_show_number_use_case.h",
-    "topology/profile/show_number_query.h",
+    "topology/account_profile/set_show_number_use_case.h",
+    "topology/account_profile/show_number_query.h",
     "topology/topology_service.h",
   ]
   public_deps = [
@@ -495,14 +495,14 @@ source_set("topology_domain") {
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
   sources = [
-    "topology/domain/account_registry.cpp",
-    "topology/domain/account_registry.h",
-    "topology/domain/binding_index.cpp",
-    "topology/domain/binding_index.h",
+    "topology/accounts/account_registry.cpp",
+    "topology/accounts/account_registry.h",
+    "topology/accounts/binding_index.cpp",
+    "topology/accounts/binding_index.h",
   ]
   public = [
-    "topology/domain/account_registry.h",
-    "topology/domain/binding_index.h",
+    "topology/accounts/account_registry.h",
+    "topology/accounts/binding_index.h",
   ]
   public_deps = [
     ":sim_values",
@@ -523,13 +523,13 @@ source_set("topology_protocols") {
     "topology/activation/activation_progress.h",
     "topology/discovery/discovery_observation_ledger.cpp",
     "topology/discovery/discovery_observation_ledger.h",
-    "topology/profile/show_number_plan.cpp",
-    "topology/profile/show_number_plan.h",
+    "topology/account_profile/show_number_plan.cpp",
+    "topology/account_profile/show_number_plan.h",
   ]
   public = [
     "topology/activation/activation_progress.h",
     "topology/discovery/discovery_observation_ledger.h",
-    "topology/profile/show_number_plan.h",
+    "topology/account_profile/show_number_plan.h",
   ]
   public_deps = [
     ":sim_values",

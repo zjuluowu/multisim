@@ -22,8 +22,8 @@
 #include <map>
 #include <optional>
 #include "topology/api/topology_requests.h"
-#include "topology/domain/account_registry.h"
-#include "topology/domain/binding_index.h"
+#include "topology/accounts/account_registry.h"
+#include "topology/accounts/binding_index.h"
 #include "topology/discovery/discovery_observation_ledger.h"
 #include "topology/activation/activation_progress.h"
 #include "topology/api/account_store.h"
