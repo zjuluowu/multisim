@@ -1,9 +1,9 @@
 # 多 SIM 重构任务入口
 
-本仓库包含 OpenHarmony `telephony_core_service` fork。多 SIM 重构是持续实施任务，包含设计、骨架、测试护栏和经授权的渐进接入。
+本仓库包含 OpenHarmony `telephony_core_service` fork。最终由 `services/multisim/` 完整替代 `services/sim/`，不长期保留两套 SIM 业务实现。工作包括设计、骨架、测试护栏及按授权实施的生产迁移。
 
-- 开始前读取 [部件执行指引](telephony_core_service/AGENTS.md) 和 [唯一执行状态](telephony_core_service/docs/SIM_Refactor_Execution_State.md)。子目录指引细化本入口；技术决策仍由主设计维护。
-- 先核对 Git 根目录、remote、分支、HEAD、工作区、worktree 及远端差异。已有本地改动优先保护，不自动 checkout/reset/clean/stash 或覆盖文件。
-- 当前为 G2a 只读切片后的恢复/准入阶段；main 与工作分支具备的内容不同，以执行状态和实际 Git 可达性核对。历史 PASS 不等于当前 HEAD 通过。
-- 不依赖旧会话、`/tmp`、固定克隆路径或本机结果文件。按执行状态定位远端代码检查点、参数化验证入口和下一批最小任务。
-- 仅提交本次明确归属的文件；不无差别暂存，不强推或绕过保护。提交/推送按用户授权进行，完成后核实远端包含关系并更新执行状态。
+- 开始前读取[部件执行指引](telephony_core_service/AGENTS.md)和[唯一执行状态](telephony_core_service/docs/SIM_Refactor_Execution_State.md)。业务架构与不变量由主设计维护，物理目录及文件映射由源码详细设计维护；本入口不复制进度或技术方案。
+- 先核对 Git 根目录、remote、分支、HEAD、工作区、暂存区、worktree 和远端差异。保护已有修改，不自动 checkout/reset/clean/stash 或覆盖文件。
+- 修订 B+ 六组目录已落地为 testonly 骨架；生产接入、写权切换、SO/生命周期及新能力按各自阶段验收。main 与 G2a 工作分支能力不同，精确提交、证据和下一批任务查执行状态，并以实际 Git 可达性复核。
+- 不依赖旧会话、`/tmp`、固定克隆路径或本机结果恢复工作；验证产物可放仓外，但不能作为唯一交付证据。历史 PASS、目录存在和提交成功均不等于当前生产验收。
+- 每批按用户授权完成实际变更、适用验证和状态同步。仅提交本次明确归属的文件；不无差别暂存、不强推或绕过保护。提交/推送需当次任务授权，推送后核实远端包含关系。

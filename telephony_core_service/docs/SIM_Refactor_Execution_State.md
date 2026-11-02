@@ -1,6 +1,25 @@
 # 多 SIM 重构执行状态
 
-本文件集中维护当前实施位置、证据、局部阻塞和下一批任务；技术决策继续由[目标主设计](SIM_Target_Architecture_Design_v1.2.md)维护，流程由[流程对照](多SIM架构重构_设计说明与业务流程对照.md)维护，历史裁决留在[原评审](SIM_Target_Architecture_Independent_Review_2026-10-29.md)。本次恢复检查日期：2026-10-30。
+本文件集中维护当前实施位置、证据、局部阻塞和下一批任务；技术决策继续由[目标主设计](SIM_Target_Architecture_Design_v1.2.md)维护，流程由[流程对照](多SIM架构重构_设计说明与业务流程对照.md)维护，历史裁决留在[原评审](SIM_Target_Architecture_Independent_Review_2026-10-29.md)。最近恢复/一致性核对：2026-11-02；各历史运行结果仍按其原日期、基线和覆盖范围解释。
+
+## 0. 当前核实摘要（2026-11-02）
+
+本次从干净的main核对源码、两篇权威设计、入口规则及远端，不修改生产代码，也不执行新的生产迁移。
+
+| 项目 | 本次核实状态与证据 | 下一步/限制 |
+| --- | --- | --- |
+| 已保存结构基线 | `main`与`origin/main`均为`90f4992a27808ec99e76b38ad3a2c0b4e2ad34a3`；修订B+落地提交已远端核实 | 本表是核对时快照，不将任何机器工作区当全仓唯一状态 |
+| 当前骨架 | [实际树](SIM_Multisim_Source_Architecture_Detailed_Design.md#source-tree)对应88文件、63头/23cpp、六组目录；24个source_set全testonly；layout_revision输入仍为5404aefe，不是当前HEAD | 结构实施已完成，成熟SIM能力/生产装配及CardRuntime职责拆分未完成 |
+| 实际生产 | [根BUILD](../BUILD.gn)仍使用services/sim；[Core初始化](../services/core/src/core_service.cpp)仍创建原SimManager/eSIM/搜网及共享RIL；目标附着/拥有工厂尚仅声明 | 不因骨架构造/头文件可引用而声称接管生产 |
+| G2a只读实现 | 远端工作分支tip为728ad77e，包含cc787945检查点，恢复工具返回CHECKPOINT_VERIFIED、main_contains_g2a=false | 先在独立工作分支适配修订B+并复验真实7场景，再满足原SO产品准入；本次未重跑业务场景 |
+| 本次检查 | `check_structure.py --migration`实际PASS：86 C++、156 include、24 target、原73文件追溯及88文件token/GN路径等值检查 | 文档/静态一致性结果，不代表本次编译或运行；11-02发布前完整构建/纯规则记录见§3.3 |
+| 目标与授权 | 最终由multisim完整替代sim；修订B+是已选物理实施基线；T/A/O/R边界按主设计 | 两历史ADR保持Proposed，整体设计draft/pending；产品、写权、SO/SA及资源政策按阶段独立验收 |
+
+**本次统一性修正：** 根入口明确最终替代目标；部件AGENTS补齐主设计/详细设计/状态/台账的职责及证据门禁；本文件更新已发布结构基线和§6下一批任务，§7标为历史；功能/WU台账收敛O为机制，业务步骤和重试归对应Owner。未新增第三份设计、迁移清单或问题编号。
+
+**本批保存：** 2026-11-02用户授权提交并正常推送本次4个文档修正至origin/main；提交前检查范围、链接/锚点及Diff，推送后核实远端SHA/tree与工作区。实际提交号由Git查询，不嵌入本文形成自引用；本批不改源码或晋升业务/设备验证结果。
+
+**仍需闭环：** G2a新结构适配/原SO产品准入；完整初始化所缺provider符号契约；T/A全入口写权；成熟卡能力迁入与CardRuntime收窄；真实设备资源域/结束/排空；Feature、产品及设备差分。Carrier Loader/Detect旁路、ARA-M、Records/ADN及Detect初始化风险已归既有WU（§3.3/§5），不是目录整理已解决的问题。
 
 ## 1. 从远端识别当前代码
 
@@ -24,12 +43,12 @@
 }
 ```
 
-上块只固定已存在的代码基线和检查点，不写本文自身最终提交SHA。分支tip可能包含后来合入的入口文档；用Git查询，不循环更新自引用。默认remote曾核实为`origin=https://github.com/zjuluowu/multisim.git`；`upstream`为OpenHarmony原部件仓，并非本任务推送目标。重新克隆后先看实际remote名称/地址，不盲信名称。
+上块是恢复工具所用的最小祖先/检查点，不是当前main HEAD；当前快照见§0。它只固定已存在的代码基线，不写本文自身最终提交SHA。分支tip可能包含后来合入的入口文档；用Git查询，不循环更新自引用。默认remote曾核实为`origin=https://github.com/zjuluowu/multisim.git`；`upstream`为OpenHarmony原部件仓，并非本任务推送目标。重新克隆后先看实际remote名称/地址，不盲信名称。
 
 | 内容 | 已核实位置/状态 | 不代表什么 |
 | --- | --- | --- |
 | P1-1～8、P2-1～5评审修正 | main包含`5eed2181628e9e74f618231007d927ebd5cb92cd`；设计、骨架和四套纯规则已提交 | 不等于业务写权或设备风险消除 |
-| 目录实施基线 | 历史18e724f7目录由本轮用户选定的局部修订B+替代；当前工作区落地见§3.3、主设计§6.6及[详细设计](SIM_Multisim_Source_Architecture_Detailed_Design.md)§3 | 2026-11-02用户授权保存至origin/main；实际提交与远端包含关系以Git核实，整体设计仍draft/pending，目录落地不等于生产验收 |
+| 目录实施基线 | 历史18e724f7目录已由用户选定的局部修订B+替代；90f4992a落地已提交，见§0/§3.3、主设计§6.6及[详细设计](SIM_Multisim_Source_Architecture_Detailed_Design.md)§3 | 2026-11-02已核实origin/main包含结构提交；整体设计仍draft/pending，目录落地不等于生产验收 |
 | G2a真实只读切片 | 上块`g2a_branch/g2a_commit`远端检查点，尚未合入main；已保存源码、GN、runner和精简证据 | main不具备该生产接入，不因host PASS自动合入 |
 | 完整OnInit | 当前主机审计BLOCKED，未链接/运行；阻塞见§5 | 不等于只读查询也无法推进 |
 | 产品/设备、G2b/c、G3/G4 | 尚未验收/切换 | 不能由骨架/host结果推导完成 |
@@ -76,7 +95,7 @@
 - Git保存：用户已明确授权将本批24文件提交并正常推送至origin/main；提交号、远端tip及包含关系通过Git查询，不在同一提交内硬写自引用SHA。不合入G2a、不强推；保留上述产品/设备未验收范围。
 - 下一步仍先在独立工作分支适配G2a真实GetRealSimCount只读闭包并复跑7场景/覆盖，再满足原SO产品准入；后续写能力可选WU-05账户号码完整切片，必须先建立卡→DB→current/historical缓存→通知/callback及查询卡→账户→IMPU读源、失败/超时/迟到差分Oracle，不顺带启用固定目标或新重试政策。
 
-### 3.3 修订 B+ 骨架落地（2026-10-31，2026-11-02授权提交）
+### 3.3 修订 B+ 骨架落地（2026-10-31实施，2026-11-02已提交推送）
 
 - 用户已选择独立ADR的局部修订B+作为本轮物理组织实施基线；两份历史ADR仍为Proposed，不追溯改写。不代表G2a产品接入、写权或新资源政策批准。
 - 输入为干净 `main@5404aefe66decde4e5c5f03a01f355f6bf127e7e`，origin/main差异0/0。恢复工具实际fetch后CHECKPOINT_VERIFIED、main_contains_g2a=false；未切换/合入其他worktree。
@@ -86,7 +105,7 @@
 - 生产切片风险归入既有WU：账户发现/资料写权需同时覆盖CardFileDetectManager及OperatorConfigLoader::InsertOpkeyToSimDb的OPKEY/MCC/MNC/IMSI旁路；同表字段计划由Owner接纳，不能只关闭Controller setter。Records/Phonebook迁入须按card_file_io/adn_io/records_load/phonebook_cases真实DAG细分，不建空target或复制ADN。
 - 资源/生命周期切片须调查普通/低优先级EsimFile及ARA-M权限通道的真实竞争域；channelId/AID清零与调用超时不是结束证据，不顺带启用隔离/重发/释放。Detect在SimManager::OnInit先捕获默认空weak、之后才创建Controller，未见重绑；作为待运行差分的装配风险，不在骨架移动中修复。
 - 下一步仍优先独立工作分支适配G2a真实GetRealSimCount闭包，再满足原SO产品准入；成熟写能力优先WU-05号码切片（card→DB→current/all→通知/回调、IMPU回退与查询回写），前提完整Oracle、持久化契约及真实结果关联齐备。
-- 2026-10-31按用户要求保留Diff；2026-11-02用户进一步明确授权提交并正常推送origin/main。提交前重新运行本节完整骨架验证；提交和推送后核实文件范围、远端SHA/包含关系及工作区。实际提交号由Git查询，不在同一提交内硬写自引用SHA；保存骨架不代表生产迁移完成。
+- 2026-10-31先保留Diff，2026-11-02经用户授权提交并推送origin/main：`90f4992a27808ec99e76b38ad3a2c0b4e2ad34a3`，101文件（86重命名/15更新）。发布前重新运行完整骨架验证（--with-gn --migration）exit0，远端SHA/tree及工作区干净已核实。此为已存在提交，不是本文自引用；发布不代表生产验收。
 
 ## 4. 验证入口与可迁移环境
 
@@ -168,10 +187,10 @@ python3 telephony_core_service/test/systemtest/scripts/audit_initialization.py -
 
 ## 6. 下一批推荐任务
 
-**推荐最小任务：在独立工作分支将已有G2a GetRealSimCount只读闭包适配到新源码结构。**目录意见已在18e724f7形成统一裁决，本地安全骨架落地见§3.1；不再把历史目录提案当作当前阻塞。
+**推荐最小任务：在独立工作分支将已有G2a GetRealSimCount只读闭包适配到新源码结构。**修订B+骨架已在90f4992a落地并保存远端（§0/§3.3），不再重做目录比较或将历史树视为当前入口。
 
-- 目标：按新Foundation/Owner契约及仓内导出边界适配已有真实只读代码、源表与主机runner；保持原Manager/RIL、宏求值TU、EXT读源与fallback，不接管业务写权或扩展新能力。
-- 前置：本轮源码结构已保存在main（§3.1）；G2a仍在独立远端检查点，先保护工作区，再在隔离worktree整合，不直接覆盖main或改写历史证据摘要。
+- 目标：按support纯值/请求协议、account/card_selection契约及integration/lifecycle/exports仓内导出边界适配已有真实只读代码、源表与主机runner；保持原Manager/RIL、宏求值TU、EXT读源与fallback，不接管业务写权或扩展新能力。
+- 前置：修订B+结构已保存在main（§3.3）；G2a仍在独立远端检查点，先保护工作区，再在隔离worktree整合，不直接覆盖main或改写历史证据摘要。
 - 验收：新目录边界、纯规则、真实只读主机7场景及源覆盖重新执行；生产合入仍须下面的匹配OHOS原SO/初始化发布门禁。不能把结构PASS或历史查询PASS继承为新产品验收。
 - 其后再选择有完整Oracle与读源证据的WU切片；CardRuntime能力收窄、真实事件接纳、资源结束/排空和写权交接分别验收，不在机械搬迁中顺带启用。
 
@@ -179,7 +198,9 @@ python3 telephony_core_service/test/systemtest/scripts/audit_initialization.py -
 
 **待外部证据工作：**匹配fork存储字段/URI/schema/错误协议后重跑完整初始化审计，再建立正式RIL ABSENT输入的状态/账户闭包；不猜schema、不补业务成功桩。设备结束/远端服务缺口仅约束其所依赖的切片，不阻塞前述文档裁决。
 
-## 7. 最近交接与更新规则
+## 7. 历史交接与更新规则
+
+以下记录2026-10-30历史整合，不表示当前HEAD或最近验证；当前状态以§0/§3.3为准。
 
 2026-10-30本地整合：原工作区内容先保存为提交`26d81e540243375ea9873e6e7e26b4bbb3eb4028`；以`origin/main@9f72e7ff94a924caafff291444414bf4e7bd0037`为整合基线。针对该旧工作树的P1/P2协议，按[原评审§10](SIM_Target_Architecture_Independent_Review_2026-10-29.md)已有整合裁决保留main现行接口及规则测试；被替代的旧接口和旧测试保留在上述父提交，不重复放入活动源码。未合入G2a工作分支或切换生产写权。
 
