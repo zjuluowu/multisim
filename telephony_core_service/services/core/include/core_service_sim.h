@@ -24,6 +24,9 @@
 namespace OHOS {
 namespace Telephony {
 
+class ITelRilManager;
+class LegacySimQueryBinding;
+
 static const std::string USER_PREFER_PRIMARY_SLOT = "persist.telephony.userPreferPrimarySlot";
 class CoreServiceSim {
 public:
@@ -32,6 +35,7 @@ public:
 
     void SetSimManager(const std::shared_ptr<ISimManager> &simManager);
     const std::shared_ptr<ISimManager> &GetSimManager() const;
+    bool AttachReadOnlyQueries(const std::shared_ptr<ITelRilManager> &sharedRil);
 
     int32_t HasSimCard(int32_t slotId, const sptr<IRawParcelCallback> &callback);
     int32_t GetSimState(int32_t slotId, const sptr<IRawParcelCallback> &callback);
@@ -140,6 +144,7 @@ private:
     virtual void AsyncSimPinExecute(const std::function<void()> task);
 private:
     std::shared_ptr<ISimManager> simManager_;
+    std::shared_ptr<LegacySimQueryBinding> realSimCountBinding_;
     std::shared_ptr<AppExecFwk::EventHandler> simGeneralHandler_;
     std::shared_ptr<AppExecFwk::EventHandler> simPinHandler_;
     ffrt::mutex handlerInitMutex_;

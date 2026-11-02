@@ -1,0 +1,228 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "historical_local_worktree_observation_not_a_current_HEAD_pass",
+  "historical_worktree_base": "5eed2181628e9e74f618231007d927ebd5cb92cd",
+  "historical_worktree_dirty": true,
+  "path_basis": "All source paths are relative to telephony_core_service; commands run from repository root.",
+  "production_sources": [
+    {
+      "path": "services/core/src/core_service_sim.cpp",
+      "sha256": "6bc4f83b79983b319e41572a6c8683808e4cd485d652eb531fc65a154376df34"
+    },
+    {
+      "path": "services/core/src/legacy_sim_query_binding.cpp",
+      "sha256": "fb77d07c06d829d5ed33cbf8138e325f78437cc22cf4d30fcc56d4016173b5fe"
+    },
+    {
+      "path": "services/multisim/application/query/real_sim_count_query.cpp",
+      "sha256": "768d7e6f05b9d08eece8ecdaff4f19bbab4b9884125b1a0e1f2a160295d6911c"
+    },
+    {
+      "path": "services/sim/src/sim_manager.cpp",
+      "sha256": "9231f9b67e92d80178c878412b16d573c8ed604dfa58638e7441dda7f90a3cd5"
+    },
+    {
+      "path": "services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp",
+      "sha256": "b3d5e06f22790da1ee1b3373fe528e045a3452f18e0bec01472a7c7f23fc6b27"
+    }
+  ],
+  "query": {
+    "status": "PASS",
+    "executed": true,
+    "counts": {
+      "PASS": 7,
+      "FAIL": 0,
+      "BLOCKED": 0
+    },
+    "scope": "real_CoreServiceSim_to_original_SimManager_readonly_attachment",
+    "manager_on_init_executed": false,
+    "core_init_executed": false,
+    "card_presence": "not_observed_or_required_for_this_query",
+    "device_runtime": "not_connected",
+    "scenarios": [
+      {
+        "name": "single",
+        "slot_parameter": "1",
+        "vendor_result": null,
+        "status": "PASS",
+        "observed_manager_result": 1
+      },
+      {
+        "name": "dual",
+        "slot_parameter": "2",
+        "vendor_result": null,
+        "status": "PASS",
+        "observed_manager_result": 2
+      },
+      {
+        "name": "zero",
+        "slot_parameter": "0",
+        "vendor_result": null,
+        "status": "PASS",
+        "observed_manager_result": 0
+      },
+      {
+        "name": "negative_atoi",
+        "slot_parameter": "-2",
+        "vendor_result": null,
+        "status": "PASS",
+        "observed_manager_result": -2
+      },
+      {
+        "name": "malformed_atoi",
+        "slot_parameter": "invalid",
+        "vendor_result": null,
+        "status": "PASS",
+        "observed_manager_result": 0
+      },
+      {
+        "name": "vendor_override",
+        "slot_parameter": "2",
+        "vendor_result": "5",
+        "status": "PASS",
+        "observed_manager_result": 5
+      },
+      {
+        "name": "vendor_result_propagation",
+        "slot_parameter": "2",
+        "vendor_result": "-31",
+        "status": "PASS",
+        "observed_manager_result": -31
+      }
+    ],
+    "production_execution": [
+      {
+        "symbol": "_ZN4OHOS9Telephony14CoreServiceSim15GetRealSimCountEv",
+        "observed_executions": 35,
+        "source_files": [
+          "services/core/src/core_service_sim.cpp",
+          "interfaces/innerkits/include/telephony_types.h"
+        ]
+      },
+      {
+        "symbol": "_ZN4OHOS9Telephony14CoreServiceSim21AttachReadOnlyQueriesERKSt10shared_ptrINS0_14ITelRilManagerEE",
+        "observed_executions": 21,
+        "source_files": [
+          "services/core/src/core_service_sim.cpp"
+        ]
+      },
+      {
+        "symbol": "_ZN4OHOS9Telephony21LegacySimQueryBinding22ReadLegacyRealSimCountEv",
+        "observed_executions": 21,
+        "source_files": [
+          "services/core/src/legacy_sim_query_binding.cpp"
+        ]
+      },
+      {
+        "symbol": "_ZN4OHOS9Telephony8MultiSim17RealSimCountQuery4ReadEv",
+        "observed_executions": 21,
+        "source_files": [
+          "services/multisim/application/query/real_sim_count_query.cpp"
+        ]
+      },
+      {
+        "symbol": "_ZN4OHOS9Telephony10SimManager15GetRealSimCountEv",
+        "observed_executions": 35,
+        "source_files": [
+          "services/sim/src/sim_manager.cpp",
+          "interfaces/innerkits/include/telephony_types.h",
+          "services/telephony_ext_wrapper/include/telephony_ext_wrapper.h"
+        ]
+      },
+      {
+        "symbol": "_ZN4OHOS9Telephony19TelephonyExtWrapper18GetRealSimCountExtEi",
+        "observed_executions": 35,
+        "source_files": [
+          "services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp"
+        ]
+      }
+    ],
+    "coverage_replay_rule": "Each required symbol must execute in the expected repository source. Exact historical call counts are not business Oracles.",
+    "historical_binary_sha256": "7be20a09222376adbb51490158a046307124a12a2f844a7cbf70b009e67a8d63",
+    "binary_replay_rule": "Do not require the historical binary hash after relocation or toolchain change; build and coverage embed local paths.",
+    "runner": "test/systemtest/scripts/run_g2a_query.py",
+    "arguments": [
+      "--gtest-root <PREPARED_GTEST_ROOT>",
+      "--output <OUTSIDE_SOURCE_OUTPUT>/g2a-query"
+    ],
+    "limits": [
+      "No CoreService::Init, Manager::OnInit, IPC/SA/permission or device validation",
+      "LTO intentionally closes only the selected production query",
+      "RIL is a strict platform Mock; vendor override is an explicit ABI boundary"
+    ]
+  },
+  "full_initialization": {
+    "status": "BLOCKED",
+    "executed": false,
+    "build_exit_code": 1,
+    "compiled_objects": 45,
+    "missing_headers": [],
+    "diagnostic_count": 43,
+    "missing_sim_data_fields": [
+      "EFUST",
+      "EHPLMN",
+      "GID1",
+      "GID2",
+      "IS_ESIM",
+      "LSI",
+      "MCC",
+      "MNC",
+      "MNC_LEN",
+      "OPERATOR_NAME",
+      "OPKEY",
+      "PHY_CARD",
+      "SIM_LABEL_INDEX",
+      "SPN"
+    ],
+    "affected_sources": [
+      {
+        "path": "services/sim/src/card_file_detect_manager.cpp",
+        "sha256": "2986acdc382f702f0a08ee15d446d68e9a9dec846189a90e322effe762425c41"
+      },
+      {
+        "path": "services/sim/src/multi_sim_controller.cpp",
+        "sha256": "f2e6b1c12ba5fc6b4eb0d0343d672ef90efb4a6b419d8544494ae982c42c2245"
+      },
+      {
+        "path": "services/sim/src/multi_sim_helper.cpp",
+        "sha256": "dfeb08121cf1c87b9941516fb58c03ef4d25d47b65c85dd45052f55635eb78d9"
+      },
+      {
+        "path": "services/sim/src/operator_config_loader.cpp",
+        "sha256": "c60bcac6ed36932444beeee10b21107492f2ea55c18d21d28e06d2167e70a42a"
+      },
+      {
+        "path": "services/sim/src/sim_rdb_helper.cpp",
+        "sha256": "99656cbd23c29e0575de75c9ba439eaca65c2c4f1c72e6b6528efe9496538c23"
+      }
+    ],
+    "runner": "test/systemtest/scripts/audit_initialization.py",
+    "arguments": [
+      "--gtest-root <PREPARED_GTEST_ROOT>",
+      "--openssl-root <PREPARED_PINNED_OPENSSL_HEADERS>",
+      "--output <OUTSIDE_SOURCE_OUTPUT>/full-init"
+    ],
+    "limits": [
+      "No initialization binary was linked or executed.",
+      "Compiler error limits may hide additional failures; resolving these fourteen fields is not proof of complete initialization.",
+      "Missing fork storage protocol must be established from matching evidence; do not invent schema values or success stubs."
+    ]
+  },
+  "dependencies": {
+    "lock": "test/systemtest/configs/dependency_lock.json",
+    "googletest_commit": "b514bdc898e2951020cbdca1304b75f5950d1f59",
+    "observed_toolchain": {
+      "gn": "1000 (03d10f1)",
+      "ninja": "1.11.1",
+      "clang++": "Ubuntu clang version 18.1.3 (1ubuntu1)",
+      "ld.gold": "GNU gold (GNU Binutils for Ubuntu 2.42) 1.16",
+      "llvm-profdata-18": "Ubuntu LLVM version 18.1.3",
+      "llvm-cov-18": "Ubuntu LLVM version 18.1.3"
+    },
+    "replay_environment": "Linux amd64, Python 3.12+, Clang/LLVM 18, GNU gold, GN/Ninja, pthread and libxml2 development headers. Optional full-initialization audit also uses checksum-pinned amd64 OpenSSL headers.",
+    "prepare_gtest": "test/systemtest/scripts/prepare_dependencies.py --archive <PINNED_GTEST_ARCHIVE> --destination <OUTSIDE_SOURCE_DEPENDENCIES>",
+    "prepare_openssl": "test/systemtest/scripts/prepare_openssl.py --archive <PINNED_LIBSSL_DEV_DEB> --destination <NEW_OUTSIDE_SOURCE_DIRECTORY>",
+    "libxml2_include": "Optional --libxml2-include or SIM_LIBXML2_INCLUDE; default /usr/include/libxml2."
+  },
+  "scope_note": "This compact checkpoint preserves observations, not current branch acceptance. Re-run the tracked scripts after checkout; no original temporary directory, log, XML, library or binary is required."
+}

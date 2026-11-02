@@ -550,10 +550,23 @@ source_set("topology_types") {
   public = [ "account/account_types.h" ]
 }
 
+source_set("readonly_query") {
+  testonly = true
+  visibility = [ ":*", "//test/multisim_architecture_rules:*" ]
+  check_includes = true
+  public_configs = [ ":skeleton_includes" ]
+  sources = [
+    "integration/api/real_sim_count_query.cpp",
+    "integration/api/real_sim_count_query.h",
+  ]
+  public = [ "integration/api/real_sim_count_query.h" ]
+}
+
 group("skeleton") {
   testonly = true
   visibility = [ "//test/multisim_architecture_rules:*" ]
   deps = [
+    ":readonly_query",
     ":assembly_contracts",
     ":assembly_core",
     ":assignment_adapters",

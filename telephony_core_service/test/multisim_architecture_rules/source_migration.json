@@ -2812,5 +2812,25 @@
         }
       ]
     }
+  ],
+  "additions": [
+    {
+      "target": "integration/api/real_sim_count_query.h",
+      "source_commit": "cc787945792527eeb94bc20a5e955315d6269e83",
+      "source_path": "application/query/real_sim_count_query.h",
+      "source_sha256": "efb47c4236b50cbb1b4794624e0cd7b8d297a811b8dc7e5802d386f17fd264e0",
+      "logical_owner": "C read projection / H host port",
+      "target_boundary": "readonly_query",
+      "scope": "M1 only; root product and explicit test sources compile the same cpp separately per binary"
+    },
+    {
+      "target": "integration/api/real_sim_count_query.cpp",
+      "source_commit": "cc787945792527eeb94bc20a5e955315d6269e83",
+      "source_path": "application/query/real_sim_count_query.cpp",
+      "source_sha256": "768d7e6f05b9d08eece8ecdaff4f19bbab4b9884125b1a0e1f2a160295d6911c",
+      "logical_owner": "C read projection / H host port",
+      "target_boundary": "readonly_query",
+      "scope": "M1 only; root product and explicit test sources compile the same cpp separately per binary"
+    }
   ]
 }

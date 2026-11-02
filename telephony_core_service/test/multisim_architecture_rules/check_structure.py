@@ -21,7 +21,8 @@ TYPES = {"topology_types", "assignment_types"}
 VALUES = {"sim_values", "request_protocol"}
 
 # Explicit semantic boundaries: physical groups do not define layers.
-SOURCE_GROUPS = {'assembly_contracts': ('integration/lifecycle/host_ports.h',
+SOURCE_GROUPS = {'readonly_query': ('integration/api/real_sim_count_query.cpp', 'integration/api/real_sim_count_query.h'),
+ 'assembly_contracts': ('integration/lifecycle/host_ports.h',
                         'integration/lifecycle/manager_publication.h',
                         'integration/lifecycle/sim_module_factory.h'),
  'assembly_core': ('integration/lifecycle/sim_module.h', 'integration/lifecycle/sim_module_factory.cpp'),
@@ -116,7 +117,7 @@ def category(name):
 def allowed_edge(user, provider):
     if user == provider:
         return True
-    if user == "sim_values":
+    if user in {"sim_values", "readonly_query"}:
         return False
     if user == "request_protocol":
         return provider == "sim_values"
@@ -348,7 +349,8 @@ def check_migration():
     if inputs != {entry["old"] for entry in entries} or len(inputs) != len(entries):
         raise ValueError("Layout revision must map every input file exactly once")
     actual = {p.relative_to(SOURCE).as_posix() for p in SOURCE.rglob("*") if p.is_file()}
-    if actual != {entry["target"] for entry in entries}:
+    additions = manifest.get("additions", [])
+    if actual != {entry["target"] for entry in entries} | {entry["target"] for entry in additions}:
         raise ValueError("Layout revision destinations differ from actual files")
     for entry in entries:
         before = subprocess.check_output(["git", "show", revision["baseline"] + ":" + prefix + entry["old"]], cwd=repo)
@@ -359,12 +361,24 @@ def check_migration():
             # Includes are checked separately; preserve all remaining tokens, including header bodies.
             if token_sequence(before.decode()) != token_sequence(after):
                 raise ValueError("Layout changed code tokens: " + entry["old"])
+    for entry in additions:
+        before = subprocess.check_output(["git", "show", entry["source_commit"] + ":" + prefix + entry["source_path"]], cwd=repo)
+        if hashlib.sha256(before).hexdigest() != entry["source_sha256"]:
+            raise ValueError("G2a historical input digest differs")
+        if token_sequence(before.decode()) != token_sequence((SOURCE / entry["target"]).read_text()):
+            raise ValueError("G2a query semantics differ from historical source")
     # A directory move must preserve sources/public/deps and the complete GN policy.
     before_build = subprocess.check_output([
         "git", "show", revision["baseline"] + ":" + prefix + "BUILD.gn"], cwd=repo).decode()
     for entry in sorted(entries, key=lambda e: -len(e["old"])):
         before_build = before_build.replace(entry["old"], entry["target"])
-    if before_build != (SOURCE / "BUILD.gn").read_text():
+    current_build = (SOURCE / "BUILD.gn").read_text()
+    if additions:
+        query_block = 'source_set("readonly_query") {\n  testonly = true\n  visibility = [ ":*", "//test/multisim_architecture_rules:*" ]\n  check_includes = true\n  public_configs = [ ":skeleton_includes" ]\n  sources = [\n    "integration/api/real_sim_count_query.cpp",\n    "integration/api/real_sim_count_query.h",\n  ]\n  public = [ "integration/api/real_sim_count_query.h" ]\n}\n\n'
+        if current_build.count(query_block) != 1:
+            raise ValueError("G2a query boundary changed")
+        current_build = current_build.replace(query_block, "").replace('    ":readonly_query",\n', "")
+    if before_build != current_build:
         raise ValueError("Layout changed GN policy beyond mapped paths")
     print(f"layout revision: PASS ({len(entries)} files; C++ tokens unchanged outside directives)", flush=True)
 

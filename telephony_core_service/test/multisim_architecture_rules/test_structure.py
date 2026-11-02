@@ -33,6 +33,8 @@ class BoundaryGuard(unittest.TestCase):
 
     def test_forbidden_includes(self):
         cases = [
+            ("integration/api/real_sim_count_query.h", "account/topology_service.h"),
+            ("integration/api/real_sim_count_query.h", "integration/lifecycle/card_runtime.h"),
             ("support/sim_identity.h", "account/topology_service.h"),
             ("account/account_registry.h", "support/request/request_context.h"),
             ("account/topology_service.h", "card_selection/assignment_service.h"),

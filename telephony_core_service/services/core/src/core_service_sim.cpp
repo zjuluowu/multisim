@@ -14,6 +14,7 @@
  */
 
 #include "core_service_sim.h"
+#include "legacy_sim_query_binding.h"
 #include "multi_sims_capability_manager.h"
 #include "telephony_permission.h"
 #include "telephony_errors.h"
@@ -52,7 +53,14 @@ void CoreServiceSim::AsyncSimPinExecute(const std::function<void()> task)
 
 void CoreServiceSim::SetSimManager(const std::shared_ptr<ISimManager> &simManager)
 {
+    realSimCountBinding_.reset();
     simManager_ = simManager;
+}
+
+bool CoreServiceSim::AttachReadOnlyQueries(const std::shared_ptr<ITelRilManager> &sharedRil)
+{
+    realSimCountBinding_ = LegacySimQueryBinding::Create(simManager_, sharedRil);
+    return realSimCountBinding_ != nullptr;
 }
 
 const std::shared_ptr<ISimManager> &CoreServiceSim::GetSimManager() const
@@ -1563,8 +1571,12 @@ int32_t CoreServiceSim::GetSimLabel(int32_t slotId, SimLabel &simLabel, const sp
 
 int32_t CoreServiceSim::GetRealSimCount()
 {
+    // Keep the original evaluation in this translation unit before the Manager read.
     int32_t realSlotCount = SIM_SLOT_COUNT_REAL;
     if (simManager_ != nullptr) {
+        if (realSimCountBinding_ && realSimCountBinding_->MatchesManager(simManager_)) {
+            return realSimCountBinding_->Read();
+        }
         return simManager_->GetRealSimCount();
     }
     return realSlotCount;
