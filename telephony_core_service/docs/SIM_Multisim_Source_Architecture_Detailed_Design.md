@@ -2,16 +2,16 @@
 
 | 项目 | 内容 |
 | --- | --- |
-| 文档版本 | 0.5，局部修订B+目录实施基线（整体设计仍PROPOSED） |
-| 更新日期 | 2026-10-31 |
-| 源码范围 | 当前88文件：86个C++文件（63头/23源）及BUILD.gn、README.md；生产能力来源见§17 |
-| 输入基线 | main@5404aefe66decde4e5c5f03a01f355f6bf127e7e；本轮用户授权局部修订B+目录实施，G2a仍单独核对 |
-| 当前状态 | 骨架已有testonly GN和依赖护栏；本批只调整物理目录/引用/导航，不接入产品或转移业务写权 |
+| 文档版本 | 0.6，修订B+及G2a工作分支只读增量（整体设计仍PROPOSED） |
+| 更新日期 | 2026-11-02 |
+| 源码范围 | 本工作分支90文件：88个C++文件（64头/24源）及BUILD.gn、README.md；main输入为88文件；生产能力来源见§17 |
+| 输入基线 | B+文件移动输入仍为5404aefe；G2a本轮源main为9ab1e976ce71c463281d13abbd9408d60792a4d4，历史代码cc787945792527eeb94bc20a5e955315d6269e83 |
+| 当前状态 | work/g2a-bplus-integration增加真实只读候选及主机验证；骨架25个source_set全testonly，产品候选源表独立接入；未合入main/准入产品，未转移写权 |
 | 权威范围 | 落实主设计的源码组织、功能映射与依赖规则；上位边界由SIM-TGT-001维护，公共契约和功能/WU清单仍由原文维护，未增加批准状态 |
 
 **文件存在、语法可检查和有限纯规则通过，均不等于目标业务已经实现。** 原生产仍位于`services/sim/`。本文保留原21个显式导航锚点，区分当前与稳态目录、刷新方法/构造及实现状态；不据源码目录数量建立新的上下文、SO或进程。
 
-当前逐文件输入摘要、去向和职责以[source_migration.json](../test/multisim_architecture_rules/source_migration.json)的layout_revision为准；原73文件及layout_history中的前轮布局溯源保留。
+当前逐文件输入摘要、去向和职责以[source_migration.json](../test/multisim_architecture_rules/source_migration.json)的layout_revision（88项）及additions（G2a两项）为准；原73文件及layout_history中的前轮布局溯源保留。
 
 ## 目录
 
@@ -77,7 +77,7 @@
 
 ### 3.1 当前工作树：已存在的完整文件清单
 
-以下完整树对应本轮88项输入映射后的实际落点（86个C++文件及BUILD/README）。namespace仍为`OHOS::Telephony::MultiSim`，24个逻辑GN source_set保留原名、依赖和testonly状态；没有进入产品源表。CardRuntime/result_sinks暂放integration/lifecycle，仍是待拆分的R状态绑定骨架；物理在组合根不改变其运行责任。两forwarding导出头放exports，避免与内部工厂同名路径冲突，不创建新接口层。
+以下完整树对应本工作分支90文件（88项B+输入及2项G2a增量）。namespace仍为`OHOS::Telephony::MultiSim`，原24个逻辑GN source_set保持原名、依赖和testonly状态，新增readonly_query testonly叶子。根产品及三份显式Core测试源表在本分支直接列入query/binding候选，不依赖testonly骨架；这不代表main或部署产品已切换。CardRuntime/result_sinks暂放integration/lifecycle，仍是待拆分的R状态绑定骨架；物理在组合根不改变其运行责任。两forwarding导出头放exports，避免与内部工厂同名路径冲突，不创建新接口层。
 
 ```text
 services/multisim/
@@ -160,7 +160,9 @@ services/multisim/
 │   ├── api/
 │   │   ├── legacy_boundary_ports.h
 │   │   ├── legacy_sim_facade.cpp
-│   │   └── legacy_sim_facade.h
+│   │   ├── legacy_sim_facade.h
+│   │   ├── real_sim_count_query.cpp
+│   │   └── real_sim_count_query.h
 │   ├── events/
 │   │   ├── completion_cell.h
 │   │   ├── legacy_completion.cpp
@@ -255,7 +257,7 @@ services/multisim/
 | assembly、include两个导出头 | integration/lifecycle、lifecycle/exports | 同对象/共享RIL/原发布与匹配销毁；repository_exports白名单保留 |
 | foundation纯值/catalog、orchestration | support、support/request | H建只读catalog；O应用机制独立，Domain不依赖机制 |
 
-全部88项的旧路径、输入摘要、新路径和职责以既有[source_migration.json](../test/multisim_architecture_rules/source_migration.json)本轮记录为准；保留前两轮溯源，不另建平行迁移表。无源文件的profile/default_roles/radio等计划目录不创建。
+B+原88项的旧路径、输入摘要、新路径和职责以既有[source_migration.json](../test/multisim_architecture_rules/source_migration.json)的layout_revision为准；G2a两项另在additions追溯历史检查点，不改写该输入；保留前两轮溯源，不另建平行迁移表。无源文件的profile/default_roles/radio等计划目录不创建。
 
 ### 3.4 业务可发现性与本轮裁决
 
@@ -645,7 +647,23 @@ T激活等待、A切换资格和R设备租约是不同约束。跨Owner子请求
 
 接管前停止受影响受理并排空或隔离在途，导入原语义字段状态后一次转移写权，关闭旧独立writer及重复发令。只读影子比较只使用无副作用输入/纯规则，不能双发设备、双写DB/参数或双发Hook/通知。
 
-本批没有新增生产构建目标、SA、进程、schema、厂商ABI或运行期双实现开关。是否拆私有SIM SO是工程部署决策，不由源码目录数量决定。
+本分支G2a没有新增生产构建目标、SA、进程、schema、厂商ABI或运行期双实现开关，只在原产品/Core测试显式源表加入query/binding候选；是否拆私有SIM SO是工程部署决策，不由源码目录数量决定。
+
+#### 17.3.1 G2a GetRealSimCount 当前只读闭包
+
+本次只读增量的代码提交为 `ff1c6ef2ea73d36ab83a7ac2c276036c6f9a6a58`，保留旧查询的参数宏、EXT和Fallback，不利用T账户数或SlotCatalog重算。路径及责任如下：
+
+| 真实文件/接口 | 责任与边界 |
+| --- | --- |
+| core/src/core_service_sim.cpp：GetRealSimCount / AttachReadOnlyQueries | 原Core入口，SIM_SLOT_COUNT_REAL仍先在原TU求值；空Manager回退与原返回保持 |
+| core/include及src/legacy_sim_query_binding.* | H旧对象适配，持原ISimManager/ITelRilManager及其控制块；不创建第二实例；SameObjectAndControlBlock拒绝仅地址相同的伪附着 |
+| multisim/integration/api/real_sim_count_query.* | C旧查询读投影与RealSimCountHostPort；Query只委托ReadLegacyRealSimCount，不依赖T/A/CardRuntime/Session/Resource或平台实现 |
+| sim/src/sim_manager.cpp及telephony_ext_wrapper/src/telephony_ext_wrapper.cpp | 未改动的原生产读源，原宏/atoi、EXT覆盖及返回传播 |
+| core/src/core_service.cpp | 原SimManager与共享RIL在原初始化/发布点后附着；此装配只存在候选工作分支，未获产品准入 |
+
+Query位于integration/api而不是account：本查询读取旧Manager/EXT结果，不是账户事实投影，无独立业务状态。readonly_query target仅作为testonly叶子验证这两个文件；实际产品源表直接编译同一cpp，不能把testonly依赖传入生产或再把实现重复链接。既有逻辑target不合并；检查器禁止该叶子include其他业务实现。
+
+顺序SetSimManager先清旧绑定；空RIL附着失败也清旧绑定；重复附着保持单一引用，替换/清理释放旧对象。七场景主机差分和控制块/替换负例、六函数正执行审计已经本轮重跑，见[执行状态§3.4](SIM_Refactor_Execution_State.md#g2a-bplus-m1)。它们不证明并发热替换或原Core/Manager完整初始化。完整OnInit仍受匹配SimData契约阻塞；产品/Feature/原SO发布及冒烟未验证，不能因此合入main或进入写业务切片。
 
 ### 17.4 长期变化与测试传播
 
@@ -706,6 +724,6 @@ IDE转到定义只会落到已有定义。业务方法未定义是当前状态�
 
 ## 21. 附录：逐文件功能及实现状态
 
-全部当前输入文件的逐文件映射见[source_migration.json](../test/multisim_architecture_rules/source_migration.json)的layout_revision（输入5404aefe，88项，含old/target、SHA256、动作、logical_owner及依赖/测试影响、remaining_work）。§3.1列出全部实际文件，不复制另一份易失效清单。
+全部B+输入文件的逐文件映射见[source_migration.json](../test/multisim_architecture_rules/source_migration.json)的layout_revision（输入5404aefe，88项，含old/target、SHA256、动作、logical_owner及依赖/测试影响、remaining_work）。本分支G2a两个新增文件由同一清单的additions记录，含历史源码路径/提交/摘要和readonly_query逻辑target；两集合合计90文件。§3.1列出全部实际文件，不复制另一份易失效清单。
 
 原73文件的destinations继续指向当前落点，并保留原摘要和拆分来源；layout_history保存上一轮layout_revision，当前记录不可用前轮PASS代替。每个C++输入除预处理指令外的token顺序必须与本轮输入一致；include另由边界检查与GN验证。未实现的方法不补成功桩。

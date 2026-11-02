@@ -1,10 +1,10 @@
 # SIM Linux TDD 防护网
 
-当前状态：**Linux 受控组件最小切片已运行**，仅覆盖 `ISimManager::GetMaxSimCount()` 的只读容量查询。正常 GoogleTest 1 PASS；独立检查器负控1预期FAIL。编译、链接和源级覆盖证据确认执行了未修改的SIM生产方法。
+历史容量切片：**Linux 受控组件最小切片已运行**，该套件仅覆盖 `ISimManager::GetMaxSimCount()` 的只读容量查询。正常 GoogleTest 1 PASS；独立检查器负控1预期FAIL。编译、链接和源级覆盖证据确认执行了未修改的SIM生产方法。
 
 原五条服务入口候选仍全部BLOCKED；没有验证无卡/Ready/账户/PIN/双卡隔离、SA注册/发现、真实Client/Proxy/Stub IPC、服务入口检查、真实权限/capability、Modem或设备。当前不满足原始全部第一阶段标准，也不宣称真实设备系统测试完成。
 
-当前工作仓：`zjuluowu/multisim/main@df8f2f017f83c70145b20255b4e9042f7a5fd923` + 未提交工作树；历史执行各有自己的SHA/摘要，不能回写。本测试实现限定本目录；本轮另刷新docs设计，未重跑SIM测试。
+上述容量历史记录来自 `main@df8f2f017f83c70145b20255b4e9042f7a5fd923` + 当时工作树，不代表当前 HEAD。G2a B+ 本轮实测独立记录如下，容量套件和原五条 BLOCKED 不计入 G2a。
 
 现行目标设计及对Oracle、Phase0和差分的影响见[设计对齐](docs/design_alignment.md)与[架构入口](../../docs/README.md)。
 
@@ -65,3 +65,22 @@ python3 test/systemtest/scripts/audit_initialization.py --gtest-root /tmp/sim-sy
 上游外部接口分析见 [upstream_external_contracts.md](docs/upstream_external_contracts.md)，参考仓库的分支、固定SHA、源码路径及摘要见 [upstream_contracts.json](configs/upstream_contracts.json)。新增DataShare游标/Query与公共事件发布边界通过GoogleMock显式配置，未提供服务时失败。运行器验证固定原始平台头摘要，差分要求相同外部契约清单。FFRT队列子集及真实生产TelEventHandler/TelEventQueue已运行，详见docs/ffrt_runtime.md；不等同已运行SIM初始化。
 
 最新依赖处理见 [BLOCKED处理记录](docs/blocked_resolution_oct08.md)：21份原始平台头已固定摘要；初始化目标45个对象编译成功，当前编译错误仅剩14个未匹配存储协议字段。整体初始化编译/链接仍BLOCKED，未运行状态/账户场景。
+
+<a id="g2a-bplus"></a>
+
+## G2a B+ 真实只读查询（M1）
+
+在 `work/g2a-bplus-integration` 使用当前 B+ 的 `services/multisim/integration/api/real_sim_count_query.*`，不恢复 application/query 目录。原 Core 入口和 SimManager/EXT 是实际生产 cpp，RIL 仅在平台接口以 StrictMock 替代，厂商覆盖值从明确 ABI 注入。冻结七场景 Oracle 不变：1/2/0/-2/invalid → 1/2/0/-2/0；参数2、厂商5/-31 → 5/-31。
+
+从 Git 根准备锁定依赖并运行（变量指向当前机器仓外目录）：
+
+```sh
+python3 -B telephony_core_service/test/systemtest/scripts/prepare_dependencies.py --archive "$SIM_GTEST_ARCHIVE" --destination "$SIM_DEPS_DIR"
+python3 -B telephony_core_service/test/systemtest/scripts/run_g2a_query.py --gtest-root "$SIM_GTEST_ROOT" --output "$SIM_TEST_OUTPUT/query"
+```
+
+`SIM_GTEST_ROOT` 为解包后的 googletest-b514bdc898e2951020cbdca1304b75f5950d1f59；URL、archive/tree SHA 以 [dependency_lock.json](configs/dependency_lock.json) 为准。runner 校验锁定树/平台头、RIL Mock 接口、五份显式源表，编译/链接五个真实生产 cpp，运行七个隔离进程后导出覆盖；六条指定函数必须在对应源文件正执行，不能关闭审计来获得 PASS。原控制块反例、零值重读和清理断言保留，新增失败/重复附着、非空 Manager 替换及 RIL 释放反例。它们证明顺序生命周期，不证明并发热替换。
+
+2026-11-02 在干净代码提交 `ff1c6ef2ea73d36ab83a7ac2c276036c6f9a6a58` 重新构建执行：7 PASS/0 FAIL/0 BLOCKED，六条审计函数正执行。`manager_on_init_executed=false`、`core_init_executed=false`；完整初始化、SO/SA/IPC、Feature 和设备不在该 PASS 范围。新精简证据见 [g2a_bplus_evidence.json](configs/g2a_bplus_evidence.json)，原 [g2a_checkpoint_evidence.json](configs/g2a_checkpoint_evidence.json) 保留原字节、旧代码/路径及历史结果，不能当成本轮证据。
+
+完整初始化审计仍用 `audit_initialization.py` 和锁定 OpenSSL 头包，Query 本身不依赖该包。本轮实际重跑仍 BLOCKED：45对象、43诊断、14个未匹配 SimData 字段、无缺头，未链接/运行；不得猜测字段或 Provider 成功值。未获得匹配 OHOS 产品树/hb/Feature 配置，产品构建、原 SO 初始化发布及只读冒烟均未执行；具体门禁见[唯一执行状态](../../docs/SIM_Refactor_Execution_State.md#g2a-bplus-m1)。
