@@ -16,10 +16,10 @@
 
 #include <cassert>
 #include <iostream>
-#include "topology/accounts/account_registry.h"
-#include "topology/accounts/binding_index.h"
-#include "topology/discovery/discovery_observation_ledger.h"
-#include "topology/activation/activation_progress.h"
+#include "account/account_registry.h"
+#include "account/binding_index.h"
+#include "account/discovery/discovery_observation_ledger.h"
+#include "account/activation/activation_progress.h"
 using namespace OHOS::Telephony::MultiSim;
 
 int main()

@@ -15,10 +15,10 @@
 // 主机协议测试：无生产设备/服务成功桩；opaque句柄只检查控制块及发布顺序，不调用平台方法。
 #include <cassert>
 #include <iostream>
-#include "assembly/manager_publication.h"
-#include "runtime/resource/resource_barrier.h"
-#include "runtime/session/session_registry.h"
-#include "runtime/result_sinks.h"
+#include "integration/lifecycle/manager_publication.h"
+#include "device/resource/resource_barrier.h"
+#include "card/state/session_registry.h"
+#include "integration/lifecycle/result_sinks.h"
 
 using namespace OHOS::Telephony;
 using namespace OHOS::Telephony::MultiSim;

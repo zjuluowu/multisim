@@ -27,3 +27,5 @@ python3 telephony_core_service/test/multisim_architecture_rules/run.py --with-gn
 `--with-gn` 另需 GN/Ninja，会检查所有头/源的独立语法及合并头 TU，并从 gn/.gn 独立入口执行 `gn gen --check` 与 Ninja 全骨架对象构建。可用 `--output <仓库外路径>` 保存产物。没有产品库链接或生产启动；所有骨架 target 均为 testonly，根产品 BUILD.gn 保持原状。
 
 边界扫描覆盖纯值/协议/机制、types/contracts/domain/cases/adapters、跨 Owner 私有 include、GN public/deps 可达性、入口源集合覆盖、include/target 环和关键类型单一定义；无法解析的宏 include 或动态 GN 列表明确失败。test_structure.py 以临时副本实际注入违规依赖等反例，覆盖检查器自身。详细模块图、保留项和覆盖限制见[源码 README](../../services/multisim/README.md)。
+
+修订 B+ 迁移：物理目录改为 account/card_selection/card/device/integration/support，逻辑24个source_set及允许边保持。SOURCE_GROUPS 显式列出各逻辑集合，未知文件失败；不能因同父目录放松分层。source_migration.json 保留73文件原始溯源及layout_history，当前layout_revision覆盖输入HEAD的全部88文件（M路径移动86项、S构建/导航2项），记录Owner、target和测试影响。卡应用会话在card/state，资源在device/resource，catalog在support。

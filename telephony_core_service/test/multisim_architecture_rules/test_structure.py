@@ -33,31 +33,31 @@ class BoundaryGuard(unittest.TestCase):
 
     def test_forbidden_includes(self):
         cases = [
-            ("foundation/sim_identity.h", "../topology/topology_service.h"),
-            ("topology/accounts/account_registry.h", "../../foundation/orchestration/request_context.h"),
-            ("topology/topology_service.h", "assignment/assignment_service.h"),
-            ("runtime/card_runtime.h", "topology/account_profile/set_show_number_use_case.h"),
-            ("runtime/card_runtime.h", "compatibility/api/legacy_boundary_ports.h"),
-            ("compatibility/legacy_sim_facade.h", "topology/topology_service.h"),
-            ("topology/api/topology_requests.h", "topology/accounts/account_registry.h"),
+            ("support/sim_identity.h", "account/topology_service.h"),
+            ("account/account_registry.h", "support/request/request_context.h"),
+            ("account/topology_service.h", "card_selection/assignment_service.h"),
+            ("integration/lifecycle/card_runtime.h", "account/number/set_show_number_use_case.h"),
+            ("integration/lifecycle/card_runtime.h", "integration/api/legacy_boundary_ports.h"),
+            ("integration/api/legacy_sim_facade.h", "account/topology_service.h"),
+            ("account/topology_requests.h", "account/account_registry.h"),
         ]
         for source, included in cases:
             with self.subTest(source=source, included=included):
                 self.mutate(source, lambda s: s + '\n#include "' + included + '"\n', "Forbidden include")
 
     def test_missing_include(self):
-        self.mutate("foundation/sim_identity.h", lambda s: s + '\n#include "missing_header.h"\n',
+        self.mutate("support/sim_identity.h", lambda s: s + '\n#include "missing_header.h"\n',
                     "Missing or out-of-scope")
 
     def test_macro_and_continued_includes(self):
-        self.mutate("foundation/sim_identity.h", lambda s: s +
-                    '\n#define PRIVATE_HEADER "topology/topology_service.h"\n#include PRIVATE_HEADER\n',
+        self.mutate("support/sim_identity.h", lambda s: s +
+                    '\n#define PRIVATE_HEADER "account/topology_service.h"\n#include PRIVATE_HEADER\n',
                     "Unsupported non-literal include")
-        self.mutate("foundation/sim_identity.h", lambda s: s +
-                    '\n#include \\\n "topology/topology_service.h"\n', "Forbidden include")
+        self.mutate("support/sim_identity.h", lambda s: s +
+                    '\n#include \\\n "account/topology_service.h"\n', "Forbidden include")
 
     def test_include_cycle(self):
-        self.mutate("foundation/sim_identity.h", lambda s: s + '\n#include "foundation/request_ref.h"\n',
+        self.mutate("support/sim_identity.h", lambda s: s + '\n#include "support/request_ref.h"\n',
                     "include cycle")
 
     def test_target_cycle(self):
@@ -79,15 +79,15 @@ class BoundaryGuard(unittest.TestCase):
                     "GN skeleton group must cover")
 
     def test_private_header_export(self):
-        self.mutate("BUILD.gn", lambda s: s.replace('  public = [ "foundation/orchestration/request_context.h" ]',
+        self.mutate("BUILD.gn", lambda s: s.replace('  public = [ "support/request/request_context.h" ]',
                     '  public = []'), "Non-public GN header")
 
     def test_duplicate_owner(self):
-        self.mutate("foundation/sim_identity.h", lambda s: s + "\nstruct RequestId { int duplicate; };\n",
+        self.mutate("support/sim_identity.h", lambda s: s + "\nstruct RequestId { int duplicate; };\n",
                     "Expected one definition of RequestId")
 
     def test_unlisted_source(self):
-        path = self.source / "runtime/records/forgotten.h"
+        path = self.source / "card/records/forgotten.h"
         try:
             path.write_text("struct Forgotten {};\n")
             with self.assertRaisesRegex(ValueError, "exactly one GN target"):
@@ -96,10 +96,10 @@ class BoundaryGuard(unittest.TestCase):
             path.unlink()
 
     def test_comment_does_not_add_dependency(self):
-        path = self.source / "foundation/sim_identity.h"
+        path = self.source / "support/sim_identity.h"
         before = path.read_text()
         try:
-            path.write_text(before + '\n/*\n#include "topology/topology_service.h"\n*/\n')
+            path.write_text(before + '\n/*\n#include "account/topology_service.h"\n*/\n')
             self.assertGreater(check(self.source)["files"], 0)
         finally:
             path.write_text(before)

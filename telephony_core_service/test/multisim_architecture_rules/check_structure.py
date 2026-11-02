@@ -16,48 +16,100 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "services/multisim"
 SUFFIXES = {".h", ".hpp", ".cpp", ".cc", ".cxx"}
-PURE_TYPES = {"topology/api/account_types.h", "assignment/api/assignment_types.h",
-              "assignment/api/primary_execution.h"}
-CAPABILITY_CONTRACTS = {"runtime/state/pin_requests.h", "runtime/records/ef_requests.h",
-                        "runtime/euicc/profile_requests.h"}
-PROTOCOLS = {
-    "topology": {"discovery_observation_ledger", "activation_progress", "show_number_plan"},
-    "assignment": {"primary_switch_plan", "account_role_protocol"},
-}
 CONTRACTS = {"topology_contracts", "assignment_contracts", "runtime_contracts"}
 TYPES = {"topology_types", "assignment_types"}
 VALUES = {"sim_values", "request_protocol"}
 
+# Explicit semantic boundaries: physical groups do not define layers.
+SOURCE_GROUPS = {'assembly_contracts': ('integration/lifecycle/host_ports.h',
+                        'integration/lifecycle/manager_publication.h',
+                        'integration/lifecycle/sim_module_factory.h'),
+ 'assembly_core': ('integration/lifecycle/sim_module.h', 'integration/lifecycle/sim_module_factory.cpp'),
+ 'assignment_adapters': ('card_selection/assignment_output_adapter.h',
+                         'card_selection/assignment_store_adapter.h'),
+ 'assignment_cases': ('card_selection/assignment_service.cpp', 'card_selection/assignment_service.h'),
+ 'assignment_contracts': ('card_selection/assignment_requests.h',
+                          'card_selection/assignment_store.h',
+                          'card_selection/legacy_entry.h',
+                          'card_selection/primary/primary_topology_port.h',
+                          'card_selection/profile_preference_port.h',
+                          'card_selection/primary/radio_execution_port.h'),
+ 'assignment_domain': ('card_selection/assignment_aggregate.cpp',
+                       'card_selection/assignment_aggregate.h',
+                       'card_selection/role_selection.h'),
+ 'assignment_protocols': ('card_selection/account_role_protocol.h',
+                          'card_selection/primary/primary_switch_plan.cpp',
+                          'card_selection/primary/primary_switch_plan.h'),
+ 'assignment_types': ('card_selection/assignment_types.h', 'card_selection/primary/primary_execution.h'),
+ 'compatibility_contracts': ('integration/api/legacy_boundary_ports.h',),
+ 'compatibility_core': ('integration/api/legacy_sim_facade.cpp',
+                        'integration/api/legacy_sim_facade.h',
+                        'integration/events/completion_cell.h',
+                        'integration/events/legacy_completion.cpp',
+                        'integration/events/legacy_completion.h',
+                        'integration/events/legacy_output_adapter.cpp',
+                        'integration/events/legacy_output_adapter.h',
+                        'card/esim/legacy_profile_result.h'),
+ 'repository_exports': ('integration/lifecycle/exports/sim_host_ports.h',
+                        'integration/lifecycle/exports/sim_module_factory.h'),
+ 'request_mechanism': ('support/request/runtime_operation_store.h',),
+ 'request_protocol': ('support/request/request_context.h',),
+ 'runtime_cases': ('card/esim/local_card_requests.cpp',),
+ 'runtime_contracts': ('card/esim/local_card_requests.h',
+                       'card/esim/profile_requests.h',
+                       'card/records/ef_requests.h',
+                       'card/security/pin_requests.h'),
+ 'runtime_core': ('integration/lifecycle/card_runtime.cpp',
+                  'integration/lifecycle/card_runtime.h',
+                  'integration/lifecycle/result_sinks.h'),
+ 'runtime_mechanisms': ('card/records/load_session.cpp',
+                        'card/records/load_session.h',
+                        'device/resource/resource_barrier.cpp',
+                        'device/resource/resource_barrier.h',
+                        'card/state/session_registry.cpp',
+                        'card/state/session_registry.h'),
+ 'sim_values': ('support/request_ref.h',
+                'support/sim_identity.h',
+                'support/slot_catalog.cpp',
+                'support/slot_catalog.h'),
+ 'topology_adapters': ('account/account_store_adapter.cpp',
+                       'account/account_store_adapter.h',
+                       'account/activation/activation_hook_adapter.h'),
+ 'topology_cases': ('account/number/set_show_number_use_case.cpp',
+                    'account/number/set_show_number_use_case.h',
+                    'account/number/show_number_query.cpp',
+                    'account/number/show_number_query.h',
+                    'account/activation/activate_sim_use_case.cpp',
+                    'account/activation/activate_sim_use_case.h',
+                    'account/topology_service.cpp',
+                    'account/topology_service.h'),
+ 'topology_contracts': ('account/account_role_planning_port.h',
+                        'account/account_store.h',
+                        'account/activation/activation_assignment_port.h',
+                        'account/activation/activation_runtime_port.h',
+                        'account/discovery/card_observation_port.h',
+                        'account/legacy_entry.h',
+                        'account/number/number_query_host_port.h',
+                        'account/number/show_number_completion_port.h',
+                        'account/number/show_number_runtime_port.h',
+                        'account/topology_requests.h'),
+ 'topology_domain': ('account/account_registry.cpp',
+                     'account/account_registry.h',
+                     'account/binding_index.cpp',
+                     'account/binding_index.h'),
+ 'topology_protocols': ('account/number/show_number_plan.cpp',
+                        'account/number/show_number_plan.h',
+                        'account/activation/activation_progress.cpp',
+                        'account/activation/activation_progress.h',
+                        'account/discovery/discovery_observation_ledger.cpp',
+                        'account/discovery/discovery_observation_ledger.h'),
+ 'topology_types': ('account/account_types.h',)}
+
 
 def category(name):
-    path = Path(name)
-    owner = path.parts[0]
-    if name in PURE_TYPES:
-        return owner + "_types"
-    if name in CAPABILITY_CONTRACTS or name.startswith("runtime/api/"):
-        return "runtime_contracts"
-    if owner == "foundation":
-        if name.endswith("runtime_operation_store.h"):
-            return "request_mechanism"
-        return "request_protocol" if "orchestration" in path.parts else "sim_values"
-    if owner in ("topology", "assignment"):
-        if "api" in path.parts:
-            return owner + "_contracts"
-        if "domain" in path.parts or (owner == "topology" and "accounts" in path.parts):
-            return owner + "_domain"
-        if "adapters" in path.parts:
-            return owner + "_adapters"
-        return owner + ("_protocols" if path.stem in PROTOCOLS[owner] else "_cases")
-    if owner == "runtime":
-        if path.parts[1] in ("session", "resource", "records"):
-            return "runtime_mechanisms"
-        return "runtime_cases" if path.parts[1] == "euicc" else "runtime_core"
-    if owner == "compatibility":
-        return "compatibility_contracts" if "api" in path.parts else "compatibility_core"
-    if owner == "assembly":
-        return "assembly_core" if path.name in ("sim_module.h", "sim_module_factory.cpp") else "assembly_contracts"
-    if owner == "include":
-        return "repository_exports"
+    for target, files in SOURCE_GROUPS.items():
+        if name in files:
+            return target
     raise ValueError("Source outside the implemented target layout: " + name)
 
 
@@ -307,6 +359,13 @@ def check_migration():
             # Includes are checked separately; preserve all remaining tokens, including header bodies.
             if token_sequence(before.decode()) != token_sequence(after):
                 raise ValueError("Layout changed code tokens: " + entry["old"])
+    # A directory move must preserve sources/public/deps and the complete GN policy.
+    before_build = subprocess.check_output([
+        "git", "show", revision["baseline"] + ":" + prefix + "BUILD.gn"], cwd=repo).decode()
+    for entry in sorted(entries, key=lambda e: -len(e["old"])):
+        before_build = before_build.replace(entry["old"], entry["target"])
+    if before_build != (SOURCE / "BUILD.gn").read_text():
+        raise ValueError("Layout changed GN policy beyond mapped paths")
     print(f"layout revision: PASS ({len(entries)} files; C++ tokens unchanged outside directives)", flush=True)
 
 

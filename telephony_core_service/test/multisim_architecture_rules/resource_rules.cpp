@@ -15,7 +15,7 @@
 // Host-only pure rule checks. No production objects, I/O, or device capability proof.
 
 #include <cassert>
-#include "runtime/resource/resource_barrier.h"
+#include "device/resource/resource_barrier.h"
 using namespace OHOS::Telephony::MultiSim;
 static StepRef Step(uint64_t id, RuntimeEpoch epoch, RequestOwner owner = RequestOwner::ShowNumber)
 {

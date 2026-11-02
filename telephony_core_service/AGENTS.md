@@ -17,7 +17,7 @@
 | [功能/WU/迁移清单](docs/SIM_Architecture_Refactor_Design.md) | 沿用SIM-001～062及子项、WU-01～09与迁移清单，不另建编号 |
 | [对外接口说明](docs/SIM管理对外接口说明_源码核实版.md)、[边界说明](docs/knowledge/routing/repo-boundary.md) | 参数/权限/错误、消费方及外仓责任 |
 | [独立评审与实施记录](docs/SIM_Target_Architecture_Independent_Review_2026-10-29.md) | 历史裁决、修改和验证限制，不是新的目标规范 |
-| [目录评审](docs/SIM_Multisim_Source_Directory_Review_2026-10-30_Opus.md) | 待独立核实意见；未裁决提案不能直接当迁移要求 |
+| [独立目录决策](docs/SIM_Multisim_Source_Directory_Architecture_Decision_Independent_2026-10-31.md) | 用户已选修订B+为结构实施基线；历史ADR仍Proposed，运行政策不随目录获批 |
 | [构建验证规则](docs/knowledge/verify/build-test.md)、[测试入口](test/systemtest/README.md) | 工具、主机适配、生产构建与运行范围 |
 
 固定版本源码/构建证明现状，已发布或已批准契约约束行为，目标设计提出方案，评审/历史材料提供待核实输入。冲突回到具体证据和主设计裁决，不按日期、标题或版本文件名决定权威。旧实现缺陷不自动成为永久规则，也不在机械重构中悄改。
@@ -34,7 +34,7 @@
 ## 必须守住的边界
 
 - `services/sim/`是原生产实现；`services/multisim/`是目标区域，是否进入生产以GN/装配及对应阶段为准，目录存在不等于启用。
-- T拥有账户/拓扑，A拥有角色/资源及所属切换；O仅为Application关联/等待/效果机制。业务Owner、代码层、目录和SO/SA/进程是不同维度。
+- T拥有账户/拓扑，A拥有角色/业务分配及所属切换，不拥有真实设备租约；O仅为Application关联/等待/效果机制。业务Owner、代码层、目录和SO/SA/进程是不同维度。
 - 每类事实、设备执行和同层业务重试有唯一责任者；T/A经受控应用入口协作，R复用成熟State/File/Records/电话簿/STK/eUICC协议，不复制空壳、恢复中央协调器或隐藏代写。
 - Domain只放纯规则/状态；编排、I/O、等待、callback、平台类型在对应外层。无足够证据不增上下文、总线、持久日志或平行执行架构。
 - 保护公开API/ABI/IDL/schema、SA和进程边界，以及原解析时点、读源、错误、部分效果、完成和通知节点。新公开接口、身份政策、MEP/新容量等须独立需求/证据。
@@ -53,8 +53,10 @@
 
 ## multisim业务定位与本轮目录约束
 
-先读[源码导航](services/multisim/README.md)按T1～T6定位；当前布局/未来能力分开见详细设计§3。T账户/绑定纯规则在topology/accounts，资料场景在topology/account_profile；eSIM Profile在runtime/euicc。纯规则仍由topology_domain target约束，不因改名放松依赖。
+先读[源码导航](services/multisim/README.md)，当前/未来能力分开见详细设计§3。修订 B+ 六组为本轮实施基线：account(T)、card_selection(A)、card、device、integration、support。纯规则仍由独立逻辑target约束，不按父目录合并。
 
-请求/Step由各用例持有；等待结束不等于设备结束。SessionRegistry和ResourceBarrier保持唯一责任，不随槽复制真实共享资源。Runtime不得代写T账户或A角色；纯规则不依赖O/平台，跨Owner仅经窄api，不包含对方私有用例/聚合/Adapter。
+SessionRegistry 在 card/state 管卡应用有效性；Radio协议session属于device/radio（成熟实现尚未迁入），不建device/session。ResourceBarrier在device/resource保持唯一真实域资格；SlotCatalog在support，由H构建后只读，不拥有动态绑定。Card/Device不是强制调用链，禁止CardManager/DeviceManager或全局O中心。
 
-修改路径同步BUILD、测试及source_migration.json；目录切片运行`python3 telephony_core_service/test/multisim_architecture_rules/run.py --with-gn --migration`与`git diff --check`。该命令验证骨架、有限纯规则及文本/target依赖，不代替产品/设备或生产行为差分。当前生产仍在services/sim，G2a检查点与准入按唯一执行状态。
+请求/Step由各用例持有，等待结束不等于设备结束；本地通道清零不证明可释放租约。R不得代写T账户/A角色；跨Owner仅经窄契约，不含对方私有用例/聚合/适配实现。CardRuntime在integration/lifecycle仅作过渡接缝，本轮不改变其状态或补伪实现。
+
+修改路径同步BUILD、测试和source_migration.json，保留历史映射。目录切片运行 `python3 -B telephony_core_service/test/multisim_architecture_rules/run.py --with-gn --migration --output /tmp/multisim-bplus-check` 与 `git diff --check`。纯规则/骨架对象不代替产品或设备差分；生产仍在services/sim，G2a按执行状态单独准入。

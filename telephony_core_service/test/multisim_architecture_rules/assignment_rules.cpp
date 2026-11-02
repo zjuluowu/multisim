@@ -18,11 +18,11 @@
 #include <cassert>
 #include <iostream>
 #include <variant>
-#include "assignment/domain/assignment_aggregate.h"
-#include "assignment/primary/primary_switch_plan.h"
-#include "assignment/account_roles/account_role_protocol.h"
-#include "compatibility/output/completion_cell.h"
-#include "compatibility/output/legacy_profile_result.h"
+#include "card_selection/assignment_aggregate.h"
+#include "card_selection/primary/primary_switch_plan.h"
+#include "card_selection/account_role_protocol.h"
+#include "integration/events/completion_cell.h"
+#include "card/esim/legacy_profile_result.h"
 using namespace OHOS::Telephony::MultiSim;
 namespace {
 using Action = PrimaryAction;

@@ -50,15 +50,15 @@ def main():
         check_migration()
     subprocess.run([sys.executable, "-B", str(tests / "test_structure.py")], check=True)
     suites = {
-        "topology": ["foundation/slot_catalog.cpp", "topology/accounts/binding_index.cpp",
-                     "topology/accounts/account_registry.cpp",
-                     "topology/discovery/discovery_observation_ledger.cpp",
-                     "topology/activation/activation_progress.cpp"],
-        "resource": ["runtime/resource/resource_barrier.cpp"],
-        "assignment": ["assignment/domain/assignment_aggregate.cpp",
-                       "assignment/primary/primary_switch_plan.cpp",
-                       "runtime/euicc/local_card_requests.cpp"],
-        "runtime_protocol": ["runtime/session/session_registry.cpp"],
+        "topology": ["support/slot_catalog.cpp", "account/binding_index.cpp",
+                     "account/account_registry.cpp",
+                     "account/discovery/discovery_observation_ledger.cpp",
+                     "account/activation/activation_progress.cpp"],
+        "resource": ["device/resource/resource_barrier.cpp"],
+        "assignment": ["card_selection/assignment_aggregate.cpp",
+                       "card_selection/primary/primary_switch_plan.cpp",
+                       "card/esim/local_card_requests.cpp"],
+        "runtime_protocol": ["card/state/session_registry.cpp"],
     }
     with tempfile.TemporaryDirectory(prefix="multisim-architecture-rules-") as temporary:
         output = (args.output or Path(temporary)).resolve()
