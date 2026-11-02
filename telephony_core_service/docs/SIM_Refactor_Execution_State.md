@@ -4,13 +4,13 @@
 
 ## 0. 当前核实摘要（2026-11-02）
 
-本次M1从干净 `main/origin/main@9ab1e976ce71c463281d13abbd9408d60792a4d4` 建立隔离worktree及 `work/g2a-bplus-integration`，只选择性恢复G2a真实只读代码/测试；原main工作区和历史检查点不修改。
+M1实施时从干净 `main/origin/main@9ab1e976ce71c463281d13abbd9408d60792a4d4` 建立隔离worktree及 `work/g2a-bplus-integration`，只选择性恢复G2a真实只读代码/测试；该切片当时未修改main工作区和历史检查点；随后用户明确要求直接推送main，已快进合入并核实远端包含2feaf127（见§3.5）。
 
 | 项目 | 本次核实状态与证据 | 下一步/限制 |
 | --- | --- | --- |
 | B+结构输入 | main含90f4992a结构提交及后续入口文档；本轮源main为上述9ab1e976 | 本表是基线快照；最终HEAD由Git查询，不写自身提交号 |
-| 本工作分支 | 真实代码提交ff1c6ef2ea73d36ab83a7ac2c276036c6f9a6a58；integration/api增加Query/HostPort，Core旧对象桥及显式源表适配 | 只保存独立工作分支，不合并main，不自动批准产品生产启用 |
-| 当前源码集合 | main输入88文件/24个testonly source_set；本分支90文件（64h/24cpp及BUILD/README）/25个testonly source_set，原24边界不变 | 新叶子只验证Query；根产品候选直接列cpp，不依赖testonly骨架，其余业务仍旧实现 |
+| 已合入main的G2a | 真实代码提交ff1c6ef2ea73d36ab83a7ac2c276036c6f9a6a58；integration/api增加Query/HostPort，Core旧对象桥及显式源表适配 | 用户本次明确授权快进合入main；产品准入仍未完成 |
+| 当前源码集合 | 原main输入88文件/24个testonly source_set；当前main90文件（64h/24cpp及BUILD/README）/25个testonly source_set，原24边界不变 | 新叶子只验证Query；根产品候选直接列cpp，不依赖testonly骨架，其余业务仍旧实现 |
 | 历史G2a | origin/work/g2a-readonly-checkpoint-20261030 tip为728ad77ed4c723efbb5cb1baf7b3f10bb9830240，包含cc787945检查点，恢复CHECKPOINT_VERIFIED | 历史JSON/Oracle保留原字节与语义，不将旧PASS晋升本轮结果 |
 | 本轮主机闭环 | **G2a_BPLUS_HOST_VERIFIED**：干净ff1c6ef2重新构建/链接/七场景PASS，六条指定生产函数正执行（§3.4） | Core Init/Manager OnInit均未执行，不证明完整产品生命周期 |
 | 架构与工程门禁 | 本轮88 C++/合并头、四套规则、12项护栏（含新增负例）、157 include/25 target、迁移及GN/Ninja全部对象PASS | 完整初始化实际BLOCKED；匹配产品/hb/Feature、原SO初始化发布/冒烟未执行 |
@@ -48,7 +48,7 @@
 | --- | --- | --- |
 | P1-1～8、P2-1～5评审修正 | main包含`5eed2181628e9e74f618231007d927ebd5cb92cd`；设计、骨架和四套纯规则已提交 | 不等于业务写权或设备风险消除 |
 | 目录实施基线 | 历史18e724f7目录已由用户选定的局部修订B+替代；90f4992a落地已提交，见§0/§3.3、主设计§6.6及[详细设计](SIM_Multisim_Source_Architecture_Detailed_Design.md)§3 | 2026-11-02已核实origin/main包含结构提交；整体设计仍draft/pending，目录落地不等于生产验收 |
-| G2a真实只读切片 | 上块`g2a_branch/g2a_commit`远端检查点，尚未合入main；已保存源码、GN、runner和精简证据 | main不具备该生产接入，不因host PASS自动合入 |
+| G2a真实只读切片 | 上块为旧目录历史检查点；B+适配代码ff1c6ef2及证据2feaf127已按本次授权合入main | 选择性移植不包含旧检查点祖先；源码合入不代表产品准入 |
 | 完整OnInit | 当前主机审计BLOCKED，未链接/运行；阻塞见§5 | 不等于只读查询也无法推进 |
 | 产品/设备、G2b/c、G3/G4 | 尚未验收/切换 | 不能由骨架/host结果推导完成 |
 
@@ -121,6 +121,12 @@
 - 新机器可读证据：[g2a_bplus_evidence.json](../test/systemtest/configs/g2a_bplus_evidence.json)。历史[g2a_checkpoint_evidence.json](../test/systemtest/configs/g2a_checkpoint_evidence.json)保持原字节。大型XML/profile/map/二进制和日志留仓外；最终文档/证据提交通过记录的生产/测试输入摘要与被测代码提交关联，不把文档HEAD当成重新执行业务测试。
 - 本轮只达到**G2a_BPLUS_HOST_VERIFIED**；M2产品准入未完成，M3写业务未开展。已正常推送代码ff1c6ef2至origin/work/g2a-bplus-integration，并以ls-remote核实一致；凭据工具在Linux临时worktree不可识别时，从原仓库路径推送同一显式工作分支，未修改main。原main仍为输入基线且工作区干净；远端保存不等于合入/部署批准。
 
+### 3.5 用户授权保存至main（2026-11-02）
+
+用户在§3.4独立工作分支交付后明确要求“请直接推送到main分支”。重新fetch核实main仍为9ab1e976，工作分支仅领先本轮两个提交，无分叉、无用户未提交/暂存修改；以`git merge --ff-only origin/work/g2a-bplus-integration`快进到`2feaf12777e1dea062ab00711b9910396fd517fd`，再正常非强制推送origin/main。`git ls-remote --heads origin main`已核实远端为该提交，包含真实代码ff1c6ef2及文档/证据2feaf127；未合并整个旧G2a历史分支。本文后续保存状态修正不重写历史JSON、不改生产/测试源码；最终文档提交SHA由Git查询，避免自引用。
+
+源码和根产品显式源表现已在main；§3.4“main未修改/仅工作分支保存”是当时切片记录，已由本节后续授权替代。`G2a_BPLUS_HOST_VERIFIED`仍来自干净ff1c6ef2的实际运行，不把本次推送视为新业务测试。产品、Feature、完整初始化/原SO发布及冒烟门禁仍未完成；没有新增写业务、设备执行者或资源策略，也未执行产品部署。
+
 ## 4. 验证入口与可迁移环境
 
 所有命令从Git仓库根运行。路径变量由当前机器选择，不能复制旧电脑的绝对目录。构建/结果必须在仓库外。`SIM_GTEST_ARCHIVE`是下载文件，`SIM_DEPS_DIR`是依赖解包根，`SIM_GTEST_ROOT`是解包后的固定版本目录，`SIM_TEST_OUTPUT`是结果根。
@@ -137,9 +143,9 @@ python3 telephony_core_service/tools/check_sim_refactor_recovery.py --remote ori
 python3 telephony_core_service/test/multisim_architecture_rules/run.py
 ```
 
-恢复工具默认只查本地remote refs；`--fetch`才更新远端跟踪引用，不切分支/清工作区。输出中`main_contains_g2a=false`是当前预期：只读成果保存在工作分支，不是main生产能力。工具核对可达性、源摘要和历史证据，**不会运行或宣布业务PASS**。
+恢复工具默认只查本地remote refs；`--fetch`才更新远端跟踪引用，不切分支/清工作区。`main_contains_g2a`只判断旧cc787945检查点的祖先关系；本轮选择性移植后即使返回false，也不能据此断言main缺少B+实现。另核对main包含ff1c6ef2/2feaf127以及新证据的源码摘要。工具只核对历史可达性、源摘要和证据，**不会运行或宣布业务PASS**。
 
-### 4.2 G2a代码检查点与B+闭包（需要工作分支）
+### 4.2 G2a历史检查点与B+闭包（B+已在main）
 
 恢复历史实现时，先保护本地修改，再在独立worktree/克隆使用§1远端代码commit；不要把临时路径当必需参数。历史分支可能已有新的入口文档提交，确认它仍包含cc787945检查点。本轮B+是选择性移植，不要求新分支在Git祖先中包含该历史提交；应核对ff1c6ef2及additions源摘要/非预处理token。
 
@@ -203,13 +209,13 @@ python3 telephony_core_service/test/systemtest/scripts/audit_initialization.py -
 
 ## 6. 下一批推荐任务
 
-**推荐最小任务：M2匹配OHOS产品准入验证。**本轮G2a B+真实只读适配、主机七场景及覆盖已完成并保存在独立工作分支（§3.4）；不重复做目录比较、查询重写或将旧host PASS继承为产品结论。
+**推荐最小任务：M2匹配OHOS产品准入验证。**本轮G2a B+真实只读适配、主机七场景及覆盖已完成，现已按用户授权合入main（§3.4/§3.5）；不重复做目录比较、查询重写或将旧host PASS继承为产品结论。
 
 - 环境：提供匹配Manifest/fork/provider版本、产品配置、工具链及Feature组合；核实原tel_core_service/SO显式源表。主机完整OnInit另外先获得14个SimData字段/URI/schema/错误协议的真实契约。
 - 验收：在产品树按原路径挂接候选分支并构建 `hb build -T //base/telephony/core_service:tel_core_service`，记录实际产品/工具链/Feature命令结果；验证原Core/Manager/RIL共享控制块、原初始化发布及GetRealSimCount只读冒烟。每个请求仅一个读执行者；不自动启用第二服务或合入main。
 - 保持：宏求值TU/EXT读源/Fallback、原SO/公开契约及业务Writer不变。并发热替换、G2b/G2c排空和设备结束另验；不启动SetShowNumber或其他M3写业务。
 
-**G2a合入main的后续门禁（仍未满足）：**源码/测试与远端干净恢复已有本文件§4证据；需在匹配OHOS产品树核对原SO与三份显式源表、构建`tel_core_service`并采集原初始化发布/只读冒烟与适用Feature结果。路径为工作分支Core query/binding、根BUILD和显式测试源表；不改宏求值TU/EXT读源、公开契约、原Manager/RIL身份或G3政策。有环境则实际执行；无环境保留工作分支和具体未验收项，不能把host PASS当合入批准。合入提交/PR按当次用户授权单独处理。
+**G2a产品准入的后续门禁（仍未满足，源码已按用户授权合入main）：**源码/测试与远端干净恢复已有本文件§4证据；需在匹配OHOS产品树核对原SO与三份显式源表、构建`tel_core_service`并采集原初始化发布/只读冒烟与适用Feature结果。路径为工作分支Core query/binding、根BUILD和显式测试源表；不改宏求值TU/EXT读源、公开契约、原Manager/RIL身份或G3政策。有环境则实际执行；无环境保留工作分支和具体未验收项，不能把host PASS当合入批准。本次授权只完成源码合入/推送，不据此宣称产品验收或部署完成。
 
 **待外部证据工作：**匹配fork存储字段/URI/schema/错误协议后重跑完整初始化审计，再建立正式RIL ABSENT输入的状态/账户闭包；不猜schema、不补业务成功桩。设备结束/远端服务缺口仅约束其所依赖的切片，不阻塞前述文档裁决。
 

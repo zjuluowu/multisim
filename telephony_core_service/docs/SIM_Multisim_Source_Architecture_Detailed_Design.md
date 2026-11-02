@@ -6,7 +6,7 @@
 | 更新日期 | 2026-11-02 |
 | 源码范围 | 本工作分支90文件：88个C++文件（64头/24源）及BUILD.gn、README.md；main输入为88文件；生产能力来源见§17 |
 | 输入基线 | B+文件移动输入仍为5404aefe；G2a本轮源main为9ab1e976ce71c463281d13abbd9408d60792a4d4，历史代码cc787945792527eeb94bc20a5e955315d6269e83 |
-| 当前状态 | work/g2a-bplus-integration增加真实只读候选及主机验证；骨架25个source_set全testonly，产品候选源表独立接入；未合入main/准入产品，未转移写权 |
+| 当前状态 | G2a代码及主机证据已按用户授权由work/g2a-bplus-integration快进合入main（包含2feaf127）；骨架25个source_set全testonly，产品源表独立接入；产品准入未完成，未转移写权 |
 | 权威范围 | 落实主设计的源码组织、功能映射与依赖规则；上位边界由SIM-TGT-001维护，公共契约和功能/WU清单仍由原文维护，未增加批准状态 |
 
 **文件存在、语法可检查和有限纯规则通过，均不等于目标业务已经实现。** 原生产仍位于`services/sim/`。本文保留原21个显式导航锚点，区分当前与稳态目录、刷新方法/构造及实现状态；不据源码目录数量建立新的上下文、SO或进程。
@@ -77,7 +77,7 @@
 
 ### 3.1 当前工作树：已存在的完整文件清单
 
-以下完整树对应本工作分支90文件（88项B+输入及2项G2a增量）。namespace仍为`OHOS::Telephony::MultiSim`，原24个逻辑GN source_set保持原名、依赖和testonly状态，新增readonly_query testonly叶子。根产品及三份显式Core测试源表在本分支直接列入query/binding候选，不依赖testonly骨架；这不代表main或部署产品已切换。CardRuntime/result_sinks暂放integration/lifecycle，仍是待拆分的R状态绑定骨架；物理在组合根不改变其运行责任。两forwarding导出头放exports，避免与内部工厂同名路径冲突，不创建新接口层。
+以下完整树对应当前main的90文件（88项B+输入及2项G2a增量）。namespace仍为`OHOS::Telephony::MultiSim`，原24个逻辑GN source_set保持原名、依赖和testonly状态，新增readonly_query testonly叶子。根产品及三份显式Core测试源表已在main直接列入query/binding，不依赖testonly骨架；源码合入不代表部署产品已完成准入。CardRuntime/result_sinks暂放integration/lifecycle，仍是待拆分的R状态绑定骨架；物理在组合根不改变其运行责任。两forwarding导出头放exports，避免与内部工厂同名路径冲突，不创建新接口层。
 
 ```text
 services/multisim/
@@ -659,11 +659,11 @@ T激活等待、A切换资格和R设备租约是不同约束。跨Owner子请求
 | core/include及src/legacy_sim_query_binding.* | H旧对象适配，持原ISimManager/ITelRilManager及其控制块；不创建第二实例；SameObjectAndControlBlock拒绝仅地址相同的伪附着 |
 | multisim/integration/api/real_sim_count_query.* | C旧查询读投影与RealSimCountHostPort；Query只委托ReadLegacyRealSimCount，不依赖T/A/CardRuntime/Session/Resource或平台实现 |
 | sim/src/sim_manager.cpp及telephony_ext_wrapper/src/telephony_ext_wrapper.cpp | 未改动的原生产读源，原宏/atoi、EXT覆盖及返回传播 |
-| core/src/core_service.cpp | 原SimManager与共享RIL在原初始化/发布点后附着；此装配只存在候选工作分支，未获产品准入 |
+| core/src/core_service.cpp | 原SimManager与共享RIL在原初始化/发布点后附着；此装配已按用户授权合入main，产品准入仍未完成 |
 
 Query位于integration/api而不是account：本查询读取旧Manager/EXT结果，不是账户事实投影，无独立业务状态。readonly_query target仅作为testonly叶子验证这两个文件；实际产品源表直接编译同一cpp，不能把testonly依赖传入生产或再把实现重复链接。既有逻辑target不合并；检查器禁止该叶子include其他业务实现。
 
-顺序SetSimManager先清旧绑定；空RIL附着失败也清旧绑定；重复附着保持单一引用，替换/清理释放旧对象。七场景主机差分和控制块/替换负例、六函数正执行审计已经本轮重跑，见[执行状态§3.4](SIM_Refactor_Execution_State.md#g2a-bplus-m1)。它们不证明并发热替换或原Core/Manager完整初始化。完整OnInit仍受匹配SimData契约阻塞；产品/Feature/原SO发布及冒烟未验证，不能因此合入main或进入写业务切片。
+顺序SetSimManager先清旧绑定；空RIL附着失败也清旧绑定；重复附着保持单一引用，替换/清理释放旧对象。七场景主机差分和控制块/替换负例、六函数正执行审计已经本轮重跑，见[执行状态§3.4](SIM_Refactor_Execution_State.md#g2a-bplus-m1)。它们不证明并发热替换或原Core/Manager完整初始化。完整OnInit仍受匹配SimData契约阻塞；产品/Feature/原SO发布及冒烟未验证；本次用户授权源码合入main不等于产品准入，也不授权进入写业务切片。
 
 ### 17.4 长期变化与测试传播
 

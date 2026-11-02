@@ -70,7 +70,7 @@ python3 test/systemtest/scripts/audit_initialization.py --gtest-root /tmp/sim-sy
 
 ## G2a B+ 真实只读查询（M1）
 
-在 `work/g2a-bplus-integration` 使用当前 B+ 的 `services/multisim/integration/api/real_sim_count_query.*`，不恢复 application/query 目录。原 Core 入口和 SimManager/EXT 是实际生产 cpp，RIL 仅在平台接口以 StrictMock 替代，厂商覆盖值从明确 ABI 注入。冻结七场景 Oracle 不变：1/2/0/-2/invalid → 1/2/0/-2/0；参数2、厂商5/-31 → 5/-31。
+源自 `work/g2a-bplus-integration`、现已按授权合入 main，使用当前 B+ 的 `services/multisim/integration/api/real_sim_count_query.*`，不恢复 application/query 目录。原 Core 入口和 SimManager/EXT 是实际生产 cpp，RIL 仅在平台接口以 StrictMock 替代，厂商覆盖值从明确 ABI 注入。冻结七场景 Oracle 不变：1/2/0/-2/invalid → 1/2/0/-2/0；参数2、厂商5/-31 → 5/-31。
 
 从 Git 根准备锁定依赖并运行（变量指向当前机器仓外目录）：
 

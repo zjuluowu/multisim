@@ -51,7 +51,7 @@
 
 ## 生产迁移与关键不变量
 
-- `services/sim/`仍是生产实现，`multisim/`当前为testonly骨架；以根GN和Core真实装配判定接入，不以目录或对象声明判定。最终替代前按完整能力/WU退出旧写者、执行者和重试者，无双写/双发令/双重试。
+- 成熟SIM能力仍由原`services/sim/`实现；main已包含G2a只读Query及Core旧对象附着，其他multisim能力仍为testonly骨架，产品验收未完成。以根GN和Core真实装配判定接入，不以目录或对象声明判定。最终替代前按完整能力/WU退出旧写者、执行者和重试者，无双写/双发令/双重试。
 - 完整WU包含初始化、重载、后台、恢复、厂商入口和查询回写；特别覆盖Carrier Loader及CardFileDetectManager独立账户写入口，不只迁公开setter。同一行可合并T/A字段计划，不赋予技术Store跨Owner写权。
 - 请求发起时保存Owner/epoch/request/step/attempt、原Session及传输关联，实际写点同域准入。迟到结果只更新允许的原效果认知，不污染新请求或复活旧完成出口。
 - 调用返回、等待结束、业务效果、通道关闭及真实设备结束分开；本地ChannelId/AID清零不能证明资源可复用。设备结束未证时不得新增释放/安全重试承诺，新的隔离/取消/重试策略须单独批准和差分。
@@ -68,7 +68,7 @@ G0/G1为基线/护栏，G2a为原SO依赖收口，G2b为产物工程边界，G2c
 - 文档：核对源码事实、当前/计划分离、链接/锚点/围栏及 `git diff --check`；不因此声称业务测试通过。
 - 纯规则：`python3 -B telephony_core_service/test/multisim_architecture_rules/run.py`。
 - 目录/契约/骨架：同步BUILD、include、测试及既有 `source_migration.json`，保留历史追溯；运行 `python3 -B telephony_core_service/test/multisim_architecture_rules/run.py --with-gn --migration --output /tmp/multisim-architecture-check`。输出目录可另选仓外路径。
-- 生产接入：运行对应真实切片/Oracle及必要Feature、初始化/消费者差分；匹配OHOS树中构建 `hb build -T //base/telephony/core_service:tel_core_service`。G2a主机脚本位于工作分支，准确命令按状态恢复，不能在main假定存在。
+- 生产接入：运行对应真实切片/Oracle及必要Feature、初始化/消费者差分；匹配OHOS树中构建 `hb build -T //base/telephony/core_service:tel_core_service`。G2a B+主机脚本及证据已合入main，准确命令与被测代码基线查执行状态；历史检查点仍按原路径恢复。
 - 产品、SO/SA、provider和设备结束资格按各自门禁验证；骨架检查只覆盖文本/target、有限纯规则、语法和对象，不证明生产链接、行为、字段写权或硬件静止。
 
 ## 交付与Git
