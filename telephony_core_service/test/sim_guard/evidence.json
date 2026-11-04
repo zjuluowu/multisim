@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "date": "2026-11-04",
-  "source_commit": "507b61152bebd8a0d5707034d44d8206c5f553d0",
+  "source_commit": "2c5364a3dcf9f1487d759b6bedcbf780ba16663e",
   "source_worktree_dirty": false,
   "input_main_commit": "01a86b9f073b20f408d9f8e67da35192aacac439",
   "scope": "Linux real services/sim physical-card state and PIN component; not full Manager/Core/IPC/product/eSIM acceptance",
   "path_variables": {
     "$REPO": "/mnt/e/github/multisim",
     "$ARTIFACTS": "/mnt/e/sim-guard-artifacts",
-    "note": "These actual execution paths are provenance only. Select fresh paths and use README commands when reproducing."
+    "note": "Actual execution path bindings are provenance only; choose fresh paths for README reproduction."
   },
   "production_sources": [
     {
@@ -87,7 +87,7 @@
     }
   ],
   "production_header_digest": "6f7c3997409bc4e203c81b0193afeb2f0a9d38ebd01e1153389f353e6f19d677",
-  "validation_input_manifest_sha256": "073dc5e335f97694b29fc3994ab11d714083989217e73f92d2903f65db66634b",
+  "validation_input_manifest_sha256": "eca9b1b1e83c082bc0e009aab2294c3b50f6a89b3d9cfd0a5d47a4b23d4bb15b",
   "validation_input_count": 91,
   "critical_host_inputs": [
     {
@@ -116,16 +116,17 @@
     }
   ],
   "semantic_baseline": {
-    "version": 1,
+    "version": 2,
     "scope": "Physical SIM public state/type and PIN result contract; full Manager/IPC/accounts/esim not covered",
     "change_policy": "Review scenario/input/oracle/fake semantic changes against independent contract, update version and rationale explicitly; adapter-only migrations must keep these hashes",
     "sha256": {
       "contracts/sim_sut.h": "897b7f7766c20a2bead79825d0b00377793b4b42e07c8b5c2a1f418259e445aa",
-      "fakes/ril_device.h": "73043857789c1f9f85240636fa0f72bef13af2e8d5812d8f24a30b2f39bf0ad2",
+      "fakes/ril_device.h": "9a055ade01080ebbae91d67456b46b427472f77c08f8c2806118c4a92925ae04",
       "scenarios/compatibility.h": "0cc09fcfec1fe53cc00ef99969bed8bf5d0f6611a0db34934cccda4aaacabd7c",
       "oracle/card_oracle.h": "9f752b1101c2754ea09fec11d31bb5f8236872a39398701c90d3a49095c6db02",
-      "runner/contract_test.cpp": "196e00ec0d31540800d519fe9e79c6d718338e334ae7e87f291d9bf9c07fdaaf"
-    }
+      "runner/contract_test.cpp": "35a5c956bb2c9c0a1335b7d2ebfedf7720c6014c85bd45e0d235d77d939828b6"
+    },
+    "change_review": "v2: remove non-contract exact RIL request multiplicity/positional response selection from Driver. Batch by device facts and bound host convergence. Scenario inputs and business Oracle unchanged; v1 retained in 507b6115."
   },
   "googletest_commit": "b514bdc898e2951020cbdca1304b75f5950d1f59",
   "toolchain": {
@@ -218,7 +219,7 @@
           "PASS": 7,
           "FAIL": 0
         },
-        "xml_sha256": "be1dc679b2c13808e9ab6a01a24572ef3926d11e3b837f34f6669823dbd764e3"
+        "xml_sha256": "576bf4f8ea04708fbc370aa2a1ef6c3aceb829c6c6e12de446686e211986fbbe"
       },
       {
         "label": "run-1",
@@ -226,7 +227,7 @@
           "PASS": 7,
           "FAIL": 0
         },
-        "xml_sha256": "55d66e57f11e4f8f98dddb599403c89aa319f191f906cd9b0ec6c03700517d0e"
+        "xml_sha256": "cbb5c4f5496e369ffd9cc9b4c976244350ae42e117031d01377c8f8235e28f94"
       },
       {
         "label": "run-2",
@@ -234,7 +235,7 @@
           "PASS": 7,
           "FAIL": 0
         },
-        "xml_sha256": "c3d3cf5c93660c62b564f5a29dd76991e0d06dd06f28873f1724f95795641a1e"
+        "xml_sha256": "b3a608173b177b1932fbc268aff5876d05b66dc6f6fb5cb77beb418976d76b11"
       },
       {
         "label": "run-3",
@@ -242,7 +243,7 @@
           "PASS": 7,
           "FAIL": 0
         },
-        "xml_sha256": "6bd5be836dda758dbab8c55df7c4da7746ee3d5883b9a9bff062f04fc358dd12"
+        "xml_sha256": "9bdf51147e8b27f276f60998b5ae655d6919ebee3bb39b20efa1ebcb91fe12ac"
       },
       {
         "label": "run-4",
@@ -250,10 +251,10 @@
           "PASS": 7,
           "FAIL": 0
         },
-        "xml_sha256": "a3b97c449aa5b64a0f82ac331738dd8411cc9c5bd1b0a57d4a84425f79d54ed9"
+        "xml_sha256": "1b9b91a19eca052a8b7b1b8bf7932c4b8b606b2c26d458af62f46c21f80cb6b1"
       }
     ],
-    "binary_sha256": "018fd8478833cc67da37edf074d2d76c0b8e50e522baf262272714892fc9a748"
+    "binary_sha256": "5c7c4602d00abe51f289f4080189f4f8d30d0959b0e40addf27feba36dd8ba08"
   },
   "mutation": {
     "status": "DETECTED",
@@ -265,8 +266,8 @@
         "test": "Compatibility/Lifecycle.PublicCardState/LIFE_001",
         "status": "FAIL",
         "failures": [
-          "$REPO/telephony_core_service/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: LOCKED\n  state\n    Which is: READY\nGoogle Test trace:\n$REPO/telephony_core_service/test/sim_guard/runner/contract_test.cpp:45: LIFE_001\n",
-          "$REPO/telephony_core_service/test/sim_guard/oracle/card_oracle.h:31\nValue of: found\n  Actual: false\nExpected: true\nmissing public state notification slot=0 state=4\nGoogle Test trace:\n$REPO/telephony_core_service/test/sim_guard/runner/contract_test.cpp:45: LIFE_001\n"
+          "$REPO/telephony_core_service/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: LOCKED\n  state\n    Which is: READY\nGoogle Test trace:\n$REPO/telephony_core_service/test/sim_guard/runner/contract_test.cpp:55: LIFE_001\n",
+          "$REPO/telephony_core_service/test/sim_guard/oracle/card_oracle.h:31\nValue of: found\n  Actual: false\nExpected: true\nmissing public state notification slot=0 state=4\nGoogle Test trace:\n$REPO/telephony_core_service/test/sim_guard/runner/contract_test.cpp:55: LIFE_001\n"
         ],
         "observations": {
           "observations": "card-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\n",
@@ -306,11 +307,12 @@
         }
       }
     ],
-    "disposition": "Reproducible physical-absence versus old READY response inconsistency. No production fix/skip/xfail or compatibility-baseline change. Generation/acceptance policy remains a separate business decision."
+    "disposition": "Reproducible physical-absence versus old READY response inconsistency. No production fix/skip/xfail or compatibility-baseline change. Generation/acceptance policy remains a separate business decision.",
+    "scheduling_precondition": "This reproducer requires an older READY and newer ABSENT response concurrently in flight. A serializing future SUT may make this scheduling precondition unreachable; that is not itself a compatibility violation. The compatibility suite does not require this topology."
   },
   "execution_entrypoints": [
-    "python3 -B telephony_core_service/test/sim_guard/run_sim_guard.py --sut=legacy --suite=compat --gtest-root=$ARTIFACTS/deps/source/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59 --output=$ARTIFACTS/final-compat --repeat=5 --mutation-check",
-    "python3 -B telephony_core_service/test/sim_guard/run_sim_guard.py --sut=legacy --suite=defect --gtest-root=$ARTIFACTS/deps/source/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59 --output=$ARTIFACTS/final-defect"
+    "python3 -B telephony_core_service/test/sim_guard/run_sim_guard.py --sut=legacy --suite=compat --gtest-root=$ARTIFACTS/deps/source/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59 --output=$ARTIFACTS/v2-compat --repeat=5 --mutation-check",
+    "python3 -B telephony_core_service/test/sim_guard/run_sim_guard.py --sut=legacy --suite=defect --gtest-root=$ARTIFACTS/deps/source/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59 --output=$ARTIFACTS/v2-defect"
   ],
   "actual_build_test_audit_commands": [
     {
@@ -320,92 +322,92 @@
         "--check"
       ],
       "exit_code": 0,
-      "seconds": 0.17143195000244305,
+      "seconds": 0.17145583202363923,
       "log": "ril-interface.log"
     },
     {
       "argv": [
         "gn",
         "gen",
-        "$ARTIFACTS/final-compat/execution-3o8lq3rz/build",
+        "$ARTIFACTS/v2-compat/execution-2f46z9v0/build",
         "--root=$REPO/telephony_core_service/test/systemtest",
         "--args=production_root=\"$REPO/telephony_core_service\" gtest_root=\"$ARTIFACTS/deps/source/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59\""
       ],
       "exit_code": 0,
-      "seconds": 0.22374061698792502,
+      "seconds": 0.22106255195103586,
       "log": "normal-gn.log"
     },
     {
       "argv": [
         "ninja",
         "-C",
-        "$ARTIFACTS/final-compat/execution-3o8lq3rz/build",
+        "$ARTIFACTS/v2-compat/execution-2f46z9v0/build",
         "-j",
         "3",
         "sim_guard_legacy"
       ],
       "exit_code": 0,
-      "seconds": 144.5336757930345,
+      "seconds": 129.90394851297606,
       "log": "normal-build.log"
     },
     {
       "argv": [
-        "$ARTIFACTS/final-compat/execution-3o8lq3rz/build/sim_guard_legacy",
+        "$ARTIFACTS/v2-compat/execution-2f46z9v0/build/sim_guard_legacy",
         "--gtest_filter=*-*DEFECT_*",
         "--gtest_shuffle",
         "--gtest_random_seed=41",
-        "--gtest_output=xml:$ARTIFACTS/final-compat/execution-3o8lq3rz/run-0.xml"
+        "--gtest_output=xml:$ARTIFACTS/v2-compat/execution-2f46z9v0/run-0.xml"
       ],
       "exit_code": 0,
-      "seconds": 0.12411397800315171,
+      "seconds": 0.12886784202419221,
       "log": "run-0.log"
     },
     {
       "argv": [
-        "$ARTIFACTS/final-compat/execution-3o8lq3rz/build/sim_guard_legacy",
+        "$ARTIFACTS/v2-compat/execution-2f46z9v0/build/sim_guard_legacy",
         "--gtest_filter=*-*DEFECT_*",
         "--gtest_shuffle",
         "--gtest_random_seed=41",
-        "--gtest_output=xml:$ARTIFACTS/final-compat/execution-3o8lq3rz/run-1.xml"
+        "--gtest_output=xml:$ARTIFACTS/v2-compat/execution-2f46z9v0/run-1.xml"
       ],
       "exit_code": 0,
-      "seconds": 0.12503342103445902,
+      "seconds": 0.08856978500261903,
       "log": "run-1.log"
     },
     {
       "argv": [
-        "$ARTIFACTS/final-compat/execution-3o8lq3rz/build/sim_guard_legacy",
+        "$ARTIFACTS/v2-compat/execution-2f46z9v0/build/sim_guard_legacy",
         "--gtest_filter=*-*DEFECT_*",
         "--gtest_shuffle",
         "--gtest_random_seed=41",
-        "--gtest_output=xml:$ARTIFACTS/final-compat/execution-3o8lq3rz/run-2.xml"
+        "--gtest_output=xml:$ARTIFACTS/v2-compat/execution-2f46z9v0/run-2.xml"
       ],
       "exit_code": 0,
-      "seconds": 0.12211964896414429,
+      "seconds": 0.12525550602003932,
       "log": "run-2.log"
     },
     {
       "argv": [
-        "$ARTIFACTS/final-compat/execution-3o8lq3rz/build/sim_guard_legacy",
+        "$ARTIFACTS/v2-compat/execution-2f46z9v0/build/sim_guard_legacy",
         "--gtest_filter=*-*DEFECT_*",
         "--gtest_shuffle",
         "--gtest_random_seed=41",
-        "--gtest_output=xml:$ARTIFACTS/final-compat/execution-3o8lq3rz/run-3.xml"
+        "--gtest_output=xml:$ARTIFACTS/v2-compat/execution-2f46z9v0/run-3.xml"
       ],
       "exit_code": 0,
-      "seconds": 0.12251259997719899,
+      "seconds": 0.12621115503134206,
       "log": "run-3.log"
     },
     {
       "argv": [
-        "$ARTIFACTS/final-compat/execution-3o8lq3rz/build/sim_guard_legacy",
+        "$ARTIFACTS/v2-compat/execution-2f46z9v0/build/sim_guard_legacy",
         "--gtest_filter=*-*DEFECT_*",
         "--gtest_shuffle",
         "--gtest_random_seed=41",
-        "--gtest_output=xml:$ARTIFACTS/final-compat/execution-3o8lq3rz/run-4.xml"
+        "--gtest_output=xml:$ARTIFACTS/v2-compat/execution-2f46z9v0/run-4.xml"
       ],
       "exit_code": 0,
-      "seconds": 0.12510781700257212,
+      "seconds": 0.1236299859592691,
       "log": "run-4.log"
     },
     {
@@ -413,76 +415,76 @@
         "llvm-profdata-18",
         "merge",
         "-sparse",
-        "$ARTIFACTS/final-compat/execution-3o8lq3rz/run-0.profraw",
-        "$ARTIFACTS/final-compat/execution-3o8lq3rz/run-1.profraw",
-        "$ARTIFACTS/final-compat/execution-3o8lq3rz/run-2.profraw",
-        "$ARTIFACTS/final-compat/execution-3o8lq3rz/run-3.profraw",
-        "$ARTIFACTS/final-compat/execution-3o8lq3rz/run-4.profraw",
+        "$ARTIFACTS/v2-compat/execution-2f46z9v0/run-0.profraw",
+        "$ARTIFACTS/v2-compat/execution-2f46z9v0/run-1.profraw",
+        "$ARTIFACTS/v2-compat/execution-2f46z9v0/run-2.profraw",
+        "$ARTIFACTS/v2-compat/execution-2f46z9v0/run-3.profraw",
+        "$ARTIFACTS/v2-compat/execution-2f46z9v0/run-4.profraw",
         "-o",
-        "$ARTIFACTS/final-compat/execution-3o8lq3rz/normal.profdata"
+        "$ARTIFACTS/v2-compat/execution-2f46z9v0/normal.profdata"
       ],
       "exit_code": 0,
-      "seconds": 0.17166464996989816,
+      "seconds": 0.170911816006992,
       "log": "merge.log"
     },
     {
       "argv": [
         "llvm-cov-18",
         "export",
-        "$ARTIFACTS/final-compat/execution-3o8lq3rz/build/sim_guard_legacy",
-        "-instr-profile=$ARTIFACTS/final-compat/execution-3o8lq3rz/normal.profdata"
+        "$ARTIFACTS/v2-compat/execution-2f46z9v0/build/sim_guard_legacy",
+        "-instr-profile=$ARTIFACTS/v2-compat/execution-2f46z9v0/normal.profdata"
       ],
       "exit_code": 0,
-      "seconds": 0.5256181980366819,
+      "seconds": 0.4281542499666102,
       "log": "coverage.log"
     },
     {
       "argv": [
         "gn",
         "gen",
-        "$ARTIFACTS/final-compat/execution-3o8lq3rz/mutant-build",
+        "$ARTIFACTS/v2-compat/execution-2f46z9v0/mutant-build",
         "--root=$REPO/telephony_core_service/test/systemtest",
-        "--args=production_root=\"$REPO/telephony_core_service\" gtest_root=\"$ARTIFACTS/deps/source/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59\" sim_guard_state_source=\"$ARTIFACTS/final-compat/execution-3o8lq3rz/sim_state_handle_mutant.cpp\""
+        "--args=production_root=\"$REPO/telephony_core_service\" gtest_root=\"$ARTIFACTS/deps/source/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59\" sim_guard_state_source=\"$ARTIFACTS/v2-compat/execution-2f46z9v0/sim_state_handle_mutant.cpp\""
       ],
       "exit_code": 0,
-      "seconds": 0.22092196298763156,
+      "seconds": 0.2212092539994046,
       "log": "mutant-gn.log"
     },
     {
       "argv": [
         "ninja",
         "-C",
-        "$ARTIFACTS/final-compat/execution-3o8lq3rz/mutant-build",
+        "$ARTIFACTS/v2-compat/execution-2f46z9v0/mutant-build",
         "-j",
         "3",
         "sim_guard_legacy"
       ],
       "exit_code": 0,
-      "seconds": 94.6931719740387,
+      "seconds": 93.24575501901563,
       "log": "mutant-build.log"
     },
     {
       "argv": [
-        "$ARTIFACTS/final-compat/execution-3o8lq3rz/mutant-build/sim_guard_legacy",
+        "$ARTIFACTS/v2-compat/execution-2f46z9v0/mutant-build/sim_guard_legacy",
         "--gtest_filter=*LIFE_001",
         "--gtest_shuffle",
         "--gtest_random_seed=41",
-        "--gtest_output=xml:$ARTIFACTS/final-compat/execution-3o8lq3rz/mutation.xml"
+        "--gtest_output=xml:$ARTIFACTS/v2-compat/execution-2f46z9v0/mutation.xml"
       ],
       "exit_code": 1,
-      "seconds": 0.07372745900647715,
+      "seconds": 0.07305567600997165,
       "log": "mutation.log"
     },
     {
       "argv": [
-        "$ARTIFACTS/final-compat/execution-3o8lq3rz/build/sim_guard_legacy",
+        "$ARTIFACTS/v2-compat/execution-2f46z9v0/build/sim_guard_legacy",
         "--gtest_filter=*-*DEFECT_*",
         "--gtest_shuffle",
         "--gtest_random_seed=41",
-        "--gtest_output=xml:$ARTIFACTS/final-compat/execution-3o8lq3rz/restored.xml"
+        "--gtest_output=xml:$ARTIFACTS/v2-compat/execution-2f46z9v0/restored.xml"
       ],
       "exit_code": 0,
-      "seconds": 0.12362689798464999,
+      "seconds": 0.0727521040244028,
       "log": "restored.log"
     }
   ],
@@ -524,6 +526,19 @@
         "BLOCKED": 1
       },
       "diagnostic": "GoogleTest tree differs from the pinned source"
+    },
+    "source_commit": "507b61152bebd8a0d5707034d44d8206c5f553d0",
+    "batch_device_check": {
+      "status": "PASS",
+      "source_commit": "2c5364a3dcf9f1487d759b6bedcbf780ba16663e",
+      "business_cases_counted": 0,
+      "scope": "multiple pending requests; select by slot; error reply; callback reentry creates later batch without deadlock",
+      "commands": [
+        "clang++ -std=c++17 -pthread -I telephony_core_service/test/sim_guard $ARTIFACTS/fake_batch_check.cpp -o $ARTIFACTS/fake_batch_check",
+        "$ARTIFACTS/fake_batch_check"
+      ],
+      "source_sha256": "eda1c6b84035403262ba30704938e60dc8aab7a47932bd1fe07e23ca1e944b48",
+      "replay_source": "#include \"fakes/ril_device.h\"\n#include <cassert>\nusing namespace SimGuard;\nint main()\n{\n    FakeRil ril;\n    ril.Configure(2);\n    ril.BindNotify([](int) {});\n    ril.Change(0, {State::Ready, CardKind::Usim, \"A\"});\n    ril.Change(1, {});\n    unsigned ready = 0, absent = 0;\n    ril.RequestStatus(0, [&](const DeviceCard &card, bool error) {\n        assert(card.state == State::Ready && !error); ++ready;\n        ril.RequestStatus(0, [&](const DeviceCard &, bool) { ++ready; });\n    });\n    ril.RequestStatus(0, [&](const DeviceCard &, bool) { ++ready; });\n    ril.RequestStatus(1, [&](const DeviceCard &, bool error) { assert(error); ++absent; });\n    assert(ril.RespondMatching([](int slot, const DeviceCard &) { return slot == 0; }) == 2);\n    assert(ready == 2 && absent == 0 && ril.Pending() == 2);\n    assert(ril.RespondMatching([](int slot, const DeviceCard &) { return slot == 1; }, true) == 1);\n    assert(absent == 1 && ril.Pending() == 1);\n    assert(ril.RespondAll() == 1 && ready == 3 && ril.Pending() == 0);\n}\n"
     }
   },
   "unverified": {
@@ -552,7 +567,9 @@
       "IdleWaitDrainsCascadedQueues",
       "IdleWaitDoesNotIgnoreDelayedOrRunningWork",
       "IdleWaitExposesTaskFailure"
-    ]
+    ],
+    "source_commit": "507b61152bebd8a0d5707034d44d8206c5f553d0",
+    "inputs_unchanged_by_followup_adapter_driver_commits": true
   },
   "architecture_checks": {
     "status": "PASS",
@@ -745,5 +762,28 @@
     "log_sha256": "a20593a0bb3e824c43786038e15de1d7781ec84b343641d169a201e469dff68a",
     "compiler_executed": true,
     "executed_field_scope": "SIM business execution: false; the compiler was actually invoked and returned exit 1"
+  },
+  "adapter_inputs": [
+    {
+      "path": "test/sim_guard/adapters/legacy/legacy_sim_adapter.cpp",
+      "sha256": "e5ed536a302a993359403243db01de3ae8ad968d1b3b4d146761157b250ca7fa"
+    },
+    {
+      "path": "test/sim_guard/adapters/legacy/platform_spy.cpp",
+      "sha256": "1a28487dc092b57cfc87d367972ec8020b5252b704b91d46161a31938092c7f5"
+    },
+    {
+      "path": "test/sim_guard/adapters/legacy/platform_spy.h",
+      "sha256": "1ab5487873d21fbe1599ef40005a233ba5c0b29369835bfa218898da87172c99"
+    }
+  ],
+  "asset_review": {
+    "version": 2,
+    "rationale": "Remove exact RIL request multiplicity and positional response selection from common driver; query batches selected by external slot/device facts. No change to business Oracle, scenario data or contract since 507b6115. Formal PIN failure encoded with UNLOCK_OTHER_ERR.",
+    "unchanged_business_assets": [
+      "contracts/sim_sut.h",
+      "scenarios/compatibility.h",
+      "oracle/card_oracle.h"
+    ]
   }
 }
