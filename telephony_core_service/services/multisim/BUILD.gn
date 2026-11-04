@@ -554,7 +554,6 @@ source_set("readonly_query") {
   testonly = true
   visibility = [ ":*", "//test/multisim_architecture_rules:*" ]
   check_includes = true
-  public_configs = [ ":skeleton_includes" ]
   sources = [
     "integration/api/real_sim_count_query.cpp",
     "integration/api/real_sim_count_query.h",

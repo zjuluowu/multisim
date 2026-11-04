@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "integration/api/real_sim_count_query.h"
+#include "real_sim_count_query.h"
 
 namespace OHOS::Telephony::MultiSim {
 int32_t RealSimCountQuery::Read()

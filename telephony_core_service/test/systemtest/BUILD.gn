@@ -267,13 +267,13 @@ source_set("g2a_readonly_production_host") {
     ":production_headers",
     ":production_execution_evidence",
   ]
-  include_dirs = [ "$production_root/services/multisim" ]
+  include_dirs = [ "$production_root/services/multisim/integration/api" ]
 }
 source_set("g2a_query_launcher") {
   sources = [ "support/g2a_query_probe.cpp" ]
   configs += [ ":production_headers" ]
   include_dirs = [
-    "$production_root/services/multisim",
+    "$production_root/services/multisim/integration/api",
     "stubs",
     "$gtest_root/googletest/include",
     "$gtest_root/googlemock/include",

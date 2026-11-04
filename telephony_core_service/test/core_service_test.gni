@@ -209,7 +209,7 @@ core_service_incluedirs = [
   "$TELEPHONY_NETWORK_SEARCH_ROOT/include",
   "$TELEPHONY_EXT_WRAPPER_ROOT/include",
   "$CORE_SERVICE_ROOT/services/core/include",
-  "$CORE_SERVICE_ROOT/services/multisim",
+  "$CORE_SERVICE_ROOT/services/multisim/integration/api",
   "$CORE_SERVICE_ROOT/services/satellite_service_interaction/include",
   "$CORE_SERVICE_ROOT/interfaces/innerkits/include/",
   "$CORE_SERVICE_ROOT/common/capability_mgr/include",

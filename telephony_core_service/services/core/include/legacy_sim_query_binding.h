@@ -17,7 +17,7 @@
 #define OHOS_TELEPHONY_CORE_LEGACY_SIM_QUERY_BINDING_H
 
 #include <memory>
-#include "integration/api/real_sim_count_query.h"
+#include "real_sim_count_query.h"
 
 namespace OHOS::Telephony {
 class ISimManager;

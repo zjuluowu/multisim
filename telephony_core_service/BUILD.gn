@@ -161,7 +161,7 @@ ohos_shared_library("tel_core_service") {
     "$TELEPHONY_NETWORK_SEARCH_ROOT/include",
     "$TELEPHONY_EXT_WRAPPER_ROOT/include",
     "services/core/include",
-    "services/multisim",
+    "services/multisim/integration/api",
     "services/satellite_service_interaction/include",
     "utils/log/include",
     "$TELEPHONY_CAPABILITY_MGR_ROOT/include",

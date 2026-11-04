@@ -41,6 +41,7 @@ TEST(G2aReadOnlyQuery, OriginalManagerAttachment)
     if (expectedConfiguration == 0) { EXPECT_TRUE(seen.zeroConfigurationWasReRead); }
     if (vendor) {
         EXPECT_EQ(seen.vendorInput, expectedConfiguration);
+        EXPECT_EQ(seen.attachedQueryVendorCalls, 1); // one attached request has exactly one legacy executor.
         EXPECT_GT(seen.vendorCalls, 0); // execution evidence, not an exact call-count business oracle.
     }
     RecordProperty("case_id", "SIM-G2A-READ-001");
@@ -54,6 +55,7 @@ TEST(G2aReadOnlyQuery, OriginalManagerAttachment)
     RecordProperty("host_attachment_initialized", "true");
     RecordProperty("original_manager_control_block", "preserved");
     RecordProperty("original_ril_control_block", "preserved");
+    RecordProperty("attached_query_vendor_calls", seen.attachedQueryVendorCalls);
     RecordProperty("vendor_boundary", vendor ? "explicit_test_ABI" : "not_loaded");
 }
 int main(int argc, char **argv)

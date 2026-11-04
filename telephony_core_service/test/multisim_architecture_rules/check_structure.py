@@ -374,7 +374,7 @@ def check_migration():
         before_build = before_build.replace(entry["old"], entry["target"])
     current_build = (SOURCE / "BUILD.gn").read_text()
     if additions:
-        query_block = 'source_set("readonly_query") {\n  testonly = true\n  visibility = [ ":*", "//test/multisim_architecture_rules:*" ]\n  check_includes = true\n  public_configs = [ ":skeleton_includes" ]\n  sources = [\n    "integration/api/real_sim_count_query.cpp",\n    "integration/api/real_sim_count_query.h",\n  ]\n  public = [ "integration/api/real_sim_count_query.h" ]\n}\n\n'
+        query_block = 'source_set("readonly_query") {\n  testonly = true\n  visibility = [ ":*", "//test/multisim_architecture_rules:*" ]\n  check_includes = true\n  sources = [\n    "integration/api/real_sim_count_query.cpp",\n    "integration/api/real_sim_count_query.h",\n  ]\n  public = [ "integration/api/real_sim_count_query.h" ]\n}\n\n'
         if current_build.count(query_block) != 1:
             raise ValueError("G2a query boundary changed")
         current_build = current_build.replace(query_block, "").replace('    ":readonly_query",\n', "")

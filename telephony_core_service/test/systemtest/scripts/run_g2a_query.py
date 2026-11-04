@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
 import signal
 import subprocess
 import time
@@ -49,23 +50,96 @@ VALIDATION_INPUTS = [
     "interfaces/innerkits/include/i_sim_manager.h", "interfaces/innerkits/include/i_tel_ril_manager.h",
     "interfaces/innerkits/include/telephony_types.h", "test/systemtest/configs/dependency_lock.json",
     "test/systemtest/scripts/run_g2a_query.py", "test/systemtest/scripts/build_clock.py",
+    "test/systemtest/scripts/test_g2a_source_tables.py", "services/multisim/BUILD.gn",
     "test/systemtest/stubs/mock_tel_ril_manager.h", "test/systemtest/stubs/g2a_vendor_boundary.cpp",
     "test/systemtest/support/g2a_query_probe.h", "test/systemtest/support/g2a_query_probe.cpp",
     "test/systemtest/tests/g2a_query_test.cpp",
 ]
 
 
-def verify_source_tables():
-    tables = ["BUILD.gn", "test/BUILD.gn", "test/core_service_test.gni",
-              "test/unittest/raw_parcel_core_service_gtest/BUILD.gn", "test/systemtest/BUILD.gn"]
-    for name in tables:
-        text = (CORE / name).read_text()
+def gn_tokens(text):
+    # Literal source-table audit only, not a GN evaluator. Keep strings intact and
+    # discard comments so a commented-out source cannot count as a compiled input.
+    return [token for token in re.findall(r'"(?:\\.|[^"\\])*"|#[^\n]*|\+=|-=|\w+|\S', text)
+            if not token.startswith("#")]
+
+
+def target_body(tokens, target):
+    starts = [i + 5 for i in range(len(tokens) - 4)
+              if tokens[i:i + 5] == [target[0], "(", '"' + target[1] + '"', ")", "{"]]
+    if len(starts) != 1:
+        raise RuntimeError("Missing or duplicate G2a target: " + target[1])
+    start = starts[0]
+    depth = 1
+    for end in range(start, len(tokens)):
+        depth += (tokens[end] == "{") - (tokens[end] == "}")
+        if depth == 0:
+            return tokens[start:end]
+    raise RuntimeError("Unclosed G2a target: " + target[1])
+
+
+def literal_lists(tokens, field):
+    """Read unconditional literal lists; conditional additions cannot supply G2a."""
+    depth = 0
+    values = []
+    for i, token in enumerate(tokens[:-2]):
+        depth += (token == "{") - (token == "}")
+        if depth or token != field or tokens[i + 1] not in {"=", "+=", "-="}:
+            continue
+        if tokens[i + 2] != "[":
+            raise RuntimeError("Non-literal G2a list: " + field)
+        end = tokens.index("]", i + 3)
+        content = tokens[i + 3:end]
+        if any(item != "," and not item.startswith('"') for item in content):
+            raise RuntimeError("Non-literal G2a list entry: " + field)
+        items = [item[1:-1] for item in content if item != ","]
+        if tokens[i + 1] == "=":
+            values = items
+        elif tokens[i + 1] == "+=":
+            values.extend(items)
+        else:
+            values = [value for value in values if value not in items]
+    return values
+
+
+def verify_source_tables(read_text=None):
+    read_text = read_text or (lambda name: (CORE / name).read_text())
+    tables = [
+        ("BUILD.gn", ("ohos_shared_library", "tel_core_service"), "", "sources", "include_dirs"),
+        ("test/BUILD.gn", ("ohos_static_library", "tel_core_service_static"), "$CORE_SERVICE_ROOT/", "sources", "include_dirs"),
+        ("test/core_service_test.gni", None, "$CORE_SERVICE_ROOT/", "tel_core_service_src", "core_service_incluedirs"),
+        ("test/unittest/raw_parcel_core_service_gtest/BUILD.gn", ("ohos_unittest", "raw_parcel_core_service_test"), "$SOURCE_DIR/", "sources", "include_dirs"),
+        ("test/systemtest/BUILD.gn", ("source_set", "g2a_readonly_production_host"), "$production_root/", "sources", "include_dirs"),
+    ]
+    for name, target, prefix, source_field, include_field in tables:
+        tokens = gn_tokens(read_text(name))
+        body = target_body(tokens, target) if target else tokens
+        sources = literal_lists(body, source_field)
+        includes = literal_lists(body, include_field)
         for source in SOURCES[1:3]:
-            if text.count(source) != 1:
-                raise RuntimeError("Missing or duplicate query production source: " + name + ": " + source)
-        if "services/multisim/application/query" in text:
+            if tokens.count('"' + prefix + source + '"') != 1 or sources.count(prefix + source) != 1:
+                raise RuntimeError("Missing, conditional, misplaced or duplicate query source: " + name + ": " + source)
+        # Check every string in this target, including conditional additions.
+        if any("services/multisim/" in token and token.endswith('.cpp"') and
+               token != '"' + prefix + SOURCES[2] + '"' for token in body):
+            raise RuntimeError("Unrelated multisim production source: " + name)
+        if any("services/multisim/application/query" in token for token in tokens):
             raise RuntimeError("Obsolete G2a source path: " + name)
-    return {"tables": tables, "query_and_binding_once_per_table": True,
+        required_include = prefix + "services/multisim/integration/api"
+        if required_include not in includes or prefix + "services/multisim" in includes:
+            raise RuntimeError("Missing narrow G2a include boundary: " + name)
+        if name == "test/systemtest/BUILD.gn":
+            launcher = target_body(tokens, ("source_set", "g2a_query_launcher"))
+            if required_include not in literal_lists(launcher, "include_dirs"):
+                raise RuntimeError("Missing G2a launcher include boundary")
+    leaf = target_body(gn_tokens(read_text("services/multisim/BUILD.gn")), ("source_set", "readonly_query"))
+    if (leaf[:3] != ["testonly", "=", "true"] or
+            literal_lists(leaf, "sources") != ["integration/api/real_sim_count_query.cpp", "integration/api/real_sim_count_query.h"] or
+            literal_lists(leaf, "public") != ["integration/api/real_sim_count_query.h"] or
+            any(field in leaf for field in ["deps", "public_deps", "public_configs"])):
+        raise RuntimeError("G2a leaf must remain isolated and testonly")
+    return {"tables": [row[0] for row in tables], "query_and_binding_once_per_target": True,
+            "narrow_query_include_boundary": True, "isolated_testonly_leaf": True,
             "product_admission": "NOT_PROVEN_BY_SOURCE_TABLE_CHECK"}
 
 
@@ -75,6 +149,12 @@ def digest_tree(root):
         if path.is_file():
             digest.update(str(path.relative_to(root)).encode() + b"\0" + path.read_bytes() + b"\0")
     return digest.hexdigest()
+
+
+def is_method(function, owner, method):
+    # These non-template methods use the Itanium ABI. Lengths and the closing E
+    # prevent Read matching ReadLegacyRealSimCount, or Init matching OnInit.
+    return str(len(owner)) + owner + str(len(method)) + method + "E" in function["name"]
 
 
 def main():
@@ -208,19 +288,25 @@ def main():
         for owner, symbol, source in REQUIRED_EXECUTIONS:
             expected_source = (CORE / source).resolve()
             matches = [function for function in functions
-                       if owner in function["name"] and symbol in function["name"] and
+                       if is_method(function, owner, symbol) and
                        any(Path(filename).resolve() == expected_source for filename in function["filenames"])]
             if not any(function["count"] > 0 for function in matches):
                 raise RuntimeError("No actual production execution evidence: " + owner + "::" + symbol)
             audits.extend({"name": item["name"], "executions": item["count"], "filenames": item["filenames"]}
                           for item in matches)
-        boot = [item for item in functions if ("SimManager" in item["name"] and "OnInit" in item["name"])]
-        if any(item["count"] > 0 for item in boot):
-            raise RuntimeError("Selected query unexpectedly executed SimManager::OnInit")
+        initializers = []
+        for owner, method in [("SimManager", "OnInit"), ("CoreService", "Init")]:
+            boot = [item for item in functions if is_method(item, owner, method)]
+            count = sum(item["count"] for item in boot)
+            initializers.append({"function": owner + "::" + method, "executions": count,
+                                 "present_in_coverage": bool(boot)})
+            if count:
+                raise RuntimeError("Selected query unexpectedly executed " + owner + "::" + method)
         link_map = output / "sim_g2a_query_test.map"
         if not link_map.exists() or not link_map.stat().st_size:
             raise RuntimeError("Missing query product link map")
         result["production_execution_audit"] = {"functions": audits, "link_map": link_map.name,
+                                                 "initializers": initializers,
                                                  "purpose": "actual production participation, not an exact count Oracle",
                                                  "lto_scope": "selected query only; uncalled platform paths eliminated"}
         result["status"] = "PASS"

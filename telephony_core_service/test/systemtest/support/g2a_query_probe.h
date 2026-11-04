@@ -10,6 +10,7 @@ struct G2aQueryObservation {
     int resetCount;
     int vendorInput;
     int vendorCalls;
+    int attachedQueryVendorCalls;
     bool managerConstructorRetainedRil;
     bool nullBindingRejected;
     bool attached;

@@ -63,7 +63,9 @@ G2aQueryObservation ObserveReadOnlyAttachment(bool vendorBoundaryEnabled)
     seen.repeatedAttachStable = core.AttachReadOnlyQueries(sharedRil) &&
         sharedRil.use_count() == attachedReferences;
     const auto readsBefore = SimHostParameterReads();
+    const auto vendorCallsBeforeQuery = vendor ? vendorCalls() : 0;
     seen.attachedCoreCount = core.GetRealSimCount();
+    seen.attachedQueryVendorCalls = vendor ? vendorCalls() - vendorCallsBeforeQuery : 0;
     core.GetRealSimCount();
     seen.zeroConfigurationWasReRead = SimHostParameterReads() > readsBefore;
     binding.reset();
