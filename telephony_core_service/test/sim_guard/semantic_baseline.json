@@ -1,13 +1,19 @@
 {
-  "version": 2,
+  "version": 3,
   "scope": "Physical SIM public state/type and PIN result contract; full Manager/IPC/accounts/esim not covered",
   "change_policy": "Review scenario/input/oracle/fake semantic changes against independent contract, update version and rationale explicitly; adapter-only migrations must keep these hashes",
+  "change_review": "Round2 additive session/security contract and external delivery controls. ContractDriver moved unchanged to shared header. All v2 test bodies and v2 contract/scenario/Oracle/device model are preserved. New case classifications and defects are explicit in round2_catalog.json. No assertion is relaxed to hide a production failure.",
+  "v2_reference": "semantic_baseline_v2.json",
+  "v2_test_body_sha256": "8ed41b9e762b3d5fa99a0c3b40da39097f744f24df1f48ad95ec92371dd4baf7",
   "sha256": {
     "contracts/sim_sut.h": "897b7f7766c20a2bead79825d0b00377793b4b42e07c8b5c2a1f418259e445aa",
     "fakes/ril_device.h": "9a055ade01080ebbae91d67456b46b427472f77c08f8c2806118c4a92925ae04",
     "scenarios/compatibility.h": "0cc09fcfec1fe53cc00ef99969bed8bf5d0f6611a0db34934cccda4aaacabd7c",
     "oracle/card_oracle.h": "9f752b1101c2754ea09fec11d31bb5f8236872a39398701c90d3a49095c6db02",
-    "runner/contract_test.cpp": "35a5c956bb2c9c0a1335b7d2ebfedf7720c6014c85bd45e0d235d77d939828b6"
-  },
-  "change_review": "v2: remove non-contract exact RIL request multiplicity/positional response selection from Driver. Batch by device facts and bound host convergence. Scenario inputs and business Oracle unchanged; v1 retained in 507b6115."
+    "runner/contract_test.cpp": "4b93a870c3e3e31b678e085607c7a15174e2460eb412e27651ce5f38a48c664b",
+    "runner/contract_driver.h": "9276249fb08c9d90fa3f0e72d55280bd2cb61419364b98b05a4f385cecf67496",
+    "contracts/sim_session.h": "19075a3cd587434e8b4661bd53296b85376025e980da6bbb6827f060a3654825",
+    "fakes/ril_fault_controls.h": "5b26e865b69435e23538c02389d886ff6101bc6f2326558679db2d588d2249fa",
+    "runner/lifecycle_extension_test.cpp": "f2507714d82ad155b01bc3bd37cbbea814db6c402fffda18cbc4de997d7486de"
+  }
 }

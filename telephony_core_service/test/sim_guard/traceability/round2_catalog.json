@@ -1,0 +1,224 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "e99caba343e73d6f72d9bbb6969dc90095125e85",
+  "product": "host_dual_psim",
+  "baseline_compatibility": [
+    "ContractDriver.DUAL_001",
+    "ContractDriver.RIL_001_DuplicateAndError",
+    "ContractDriver.PIN_002_CommandFailure",
+    "ContractDriver.PIN_001",
+    "Compatibility/Lifecycle.PublicCardState/LIFE_002",
+    "Compatibility/Lifecycle.PublicCardState/LIFE_001",
+    "Compatibility/Lifecycle.PublicCardState/PUK_001"
+  ],
+  "extension_compatibility": [
+    {
+      "test": "SessionLifecycle.INIT_001_SingleEnumeration",
+      "family": "initialization",
+      "rules": [
+        "STATE-READY"
+      ],
+      "scope": "real state/security component, not complete SimManager OnInit",
+      "sources": [
+        "interfaces/innerkits/include/sim_state_type.h",
+        "interfaces/innerkits/include/i_sim_manager.h"
+      ],
+      "initial_transient_state": "C observation only; no initial/cached restart-state policy assertion"
+    },
+    {
+      "test": "SessionLifecycle.INIT_002_MissingRilThenRecreate",
+      "family": "initialization_failure_recovery",
+      "rules": [
+        "STATE-LOCK"
+      ],
+      "scope": "real state/security component, not complete SimManager OnInit",
+      "sources": [
+        "interfaces/innerkits/include/sim_state_type.h",
+        "interfaces/innerkits/include/i_sim_manager.h"
+      ],
+      "initial_transient_state": "C observation only; no initial/cached restart-state policy assertion"
+    },
+    {
+      "test": "SessionLifecycle.INIT_DUAL_002_ReversedEnumeration",
+      "family": "dual_initialization",
+      "rules": [
+        "STATE-READY",
+        "STATE-LOCK"
+      ],
+      "scope": "real state/security component, not complete SimManager OnInit",
+      "sources": [
+        "interfaces/innerkits/include/sim_state_type.h",
+        "interfaces/innerkits/include/i_sim_manager.h"
+      ],
+      "initial_transient_state": "C observation only; no initial/cached restart-state policy assertion"
+    },
+    {
+      "test": "SessionLifecycle.CALLBACK_002_MalformedThenRecovery",
+      "family": "malformed_callback_recovery",
+      "rules": [
+        "STATE-READY"
+      ],
+      "scope": "real state/security component, not complete SimManager OnInit",
+      "sources": [
+        "interfaces/innerkits/include/sim_state_type.h",
+        "interfaces/innerkits/include/i_sim_manager.h"
+      ],
+      "initial_transient_state": "C observation only; no initial/cached restart-state policy assertion"
+    },
+    {
+      "test": "SessionLifecycle.CALLBACK_003_DroppedThenRecovery",
+      "family": "lost_callback_recovery",
+      "rules": [
+        "STATE-LOCK"
+      ],
+      "scope": "real state/security component, not complete SimManager OnInit",
+      "sources": [
+        "interfaces/innerkits/include/sim_state_type.h",
+        "interfaces/innerkits/include/i_sim_manager.h"
+      ],
+      "initial_transient_state": "C observation only; no initial/cached restart-state policy assertion"
+    },
+    {
+      "test": "SessionLifecycle.PUK_002_WrongThenSuccessfulUnlock",
+      "family": "puk_unlock",
+      "rules": [
+        "PIN-RESULT",
+        "STATE-READY"
+      ],
+      "scope": "real state/security component, not complete SimManager OnInit",
+      "sources": [
+        "interfaces/innerkits/include/sim_state_type.h",
+        "interfaces/innerkits/include/i_sim_manager.h"
+      ],
+      "initial_transient_state": "C observation only; no initial/cached restart-state policy assertion"
+    },
+    {
+      "test": "SessionLifecycle.REFRESH_001_ExplicitStatusQuery",
+      "family": "explicit_refresh",
+      "rules": [
+        "STATE-LOCK"
+      ],
+      "scope": "real state/security component, not complete SimManager OnInit",
+      "sources": [
+        "interfaces/innerkits/include/sim_state_type.h",
+        "interfaces/innerkits/include/i_sim_manager.h"
+      ],
+      "initial_transient_state": "C observation only; no initial/cached restart-state policy assertion"
+    },
+    {
+      "test": "SessionLifecycle.RECREATE_001_DualCardReenumeration",
+      "family": "real_sut_recreation",
+      "rules": [
+        "STATE-READY",
+        "STATE-LOCK"
+      ],
+      "scope": "real state/security component, not complete SimManager OnInit",
+      "sources": [
+        "interfaces/innerkits/include/sim_state_type.h",
+        "interfaces/innerkits/include/i_sim_manager.h"
+      ],
+      "initial_transient_state": "C observation only; no initial/cached restart-state policy assertion"
+    },
+    {
+      "test": "SessionLifecycle.RECREATE_002_ReplacementWhileStopped",
+      "family": "offline_card_replacement",
+      "rules": [
+        "STATE-LOCK"
+      ],
+      "scope": "real state/security component, not complete SimManager OnInit",
+      "sources": [
+        "interfaces/innerkits/include/sim_state_type.h",
+        "interfaces/innerkits/include/i_sim_manager.h"
+      ],
+      "initial_transient_state": "C observation only; no initial/cached restart-state policy assertion"
+    },
+    {
+      "test": "SessionLifecycle.DUAL_002_PinWhileOtherCardRemoved",
+      "family": "dual_asynchronous_operations",
+      "rules": [
+        "PIN-RESULT",
+        "STATE-READY",
+        "STATE-ABSENT"
+      ],
+      "scope": "real state/security component, not complete SimManager OnInit",
+      "sources": [
+        "interfaces/innerkits/include/sim_state_type.h",
+        "interfaces/innerkits/include/i_sim_manager.h"
+      ],
+      "initial_transient_state": "C observation only; no initial/cached restart-state policy assertion"
+    }
+  ],
+  "defects": [
+    {
+      "id": "DEFECT-001",
+      "test": "ContractDriver.DEFECT_001_StaleReadyAfterRemoval",
+      "origin": "v2_retained",
+      "contract": "Removed card must not be resurrected by an older READY result",
+      "scheduling": "older READY and newer ABSENT response both in flight",
+      "source": "SimStateHandle::GetSimCardData",
+      "legacy_status": "SEE_ROUND2_EVIDENCE",
+      "future_real_multisim_expectation": "PASS when semantically equivalent fault scheduling is reachable",
+      "policy_status": "NEEDS_DECISION_ON_FIX; never compatibility baseline of erroneous behavior",
+      "source_level": "D candidate with executable public-state evidence",
+      "execution_evidence": "evidence_round2.json"
+    },
+    {
+      "id": "DEFECT-002",
+      "test": "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+      "origin": "round2_candidate",
+      "contract": "Old card READY must not replace new physical card PIN-locked state/type",
+      "scheduling": "old READY held while absence and replacement responses are delivered",
+      "source": "SimStateHandle::GetSimCardData",
+      "legacy_status": "SEE_ROUND2_EVIDENCE",
+      "future_real_multisim_expectation": "PASS when semantically equivalent fault scheduling is reachable",
+      "policy_status": "NEEDS_DECISION_ON_FIX; never compatibility baseline of erroneous behavior",
+      "source_level": "D candidate with executable public-state evidence",
+      "execution_evidence": "evidence_round2.json"
+    },
+    {
+      "id": "DEFECT-003",
+      "test": "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+      "origin": "round2_candidate",
+      "contract": "Generic RIL failure is not evidence of incorrect PIN; no successful unlock result",
+      "scheduling": "RadioResponseInfo ERR_GENERIC_FAILURE instead of LockStatusResp",
+      "source": "SimStateHandle::GetUnlockResult; SimStateManager::UnlockPin",
+      "legacy_status": "SEE_ROUND2_EVIDENCE",
+      "future_real_multisim_expectation": "PASS when semantically equivalent fault scheduling is reachable",
+      "policy_status": "NEEDS_DECISION_ON_FIX; never compatibility baseline of erroneous behavior",
+      "source_level": "D candidate with executable public-state evidence",
+      "execution_evidence": "evidence_round2.json"
+    },
+    {
+      "id": "DEFECT-004",
+      "test": "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+      "origin": "round2_candidate",
+      "contract": "An old card PIN result must not change the replacement card lock state",
+      "scheduling": "hold PIN completion, remove/reinsert locked card, release old completion",
+      "source": "SimStateManager::UnlockPin",
+      "legacy_status": "SEE_ROUND2_EVIDENCE",
+      "future_real_multisim_expectation": "PASS when semantically equivalent fault scheduling is reachable",
+      "policy_status": "NEEDS_DECISION_ON_FIX; never compatibility baseline of erroneous behavior",
+      "source_level": "D candidate with executable public-state evidence",
+      "execution_evidence": "evidence_round2.json"
+    },
+    {
+      "id": "DEFECT-005",
+      "test": "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+      "origin": "round2_contract_conflict",
+      "contract": "CoreServiceClient declaration promises TELEPHONY_SUCCESS; direct delegates return raw SimState",
+      "scheduling": "valid refresh completion with LOCKED state",
+      "source": "interfaces/innerkits/include/core_service_client.h RefreshSimState comment; services/sim/src/sim_state_manager.cpp RefreshSimState; CoreServiceSim/Stub/Proxy/Client delegates",
+      "legacy_status": "SEE_ROUND2_EVIDENCE",
+      "future_real_multisim_expectation": "PASS after formal return semantics are adjudicated; no silent state/error normalization",
+      "policy_status": "NEEDS_DECISION_ON_PUBLIC_RETURN_CONTRACT",
+      "source_level": "A documented contract versus C observed implementation and historical tests",
+      "execution_evidence": "evidence_round2.json"
+    }
+  ],
+  "not_covered": {
+    "full_manager_initialization": "actual audit required; matched provider symbols unavailable",
+    "subscription_default_roles": "NOT_IMPLEMENTED; no guessed SimData fields or policy",
+    "database_persistence": "NOT_IMPLEMENTED; real state-object recreation covers hardware reenumeration only",
+    "esim": "contract/provider/platform preparation only; no LPA business fabricated"
+  }
+}

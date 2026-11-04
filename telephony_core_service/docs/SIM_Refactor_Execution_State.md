@@ -1,6 +1,6 @@
 # 多 SIM 重构执行状态
 
-本文件集中维护当前实施位置、证据、局部阻塞和下一批任务；技术决策继续由[目标主设计](SIM_Target_Architecture_Design_v1.2.md)维护，流程由[流程对照](多SIM架构重构_设计说明与业务流程对照.md)维护，历史裁决留在[原评审](SIM_Target_Architecture_Independent_Review_2026-10-29.md)。最近恢复/一致性核对：2026-11-04；本次用户授权的跨架构测试防护网实施见[§8](#sim-guard-20261104)。§0～§7保留此前G2a记录，各历史运行结果仍按其原日期、基线和覆盖范围解释。
+本文件集中维护当前实施位置、证据、局部阻塞和下一批任务；技术决策继续由[目标主设计](SIM_Target_Architecture_Design_v1.2.md)维护，流程由[流程对照](多SIM架构重构_设计说明与业务流程对照.md)维护，历史裁决留在[原评审](SIM_Target_Architecture_Independent_Review_2026-10-29.md)。最近恢复/一致性核对：2026-11-04；测试防护网首批见[§8](#sim-guard-20261104)，第二轮当前结果及阻塞见[§9](#sim-guard-round2)。§0～§7保留此前G2a记录，各历史运行结果仍按其原日期、基线和覆盖范围解释。
 
 ## 0. 当前核实摘要（2026-11-02）
 
@@ -276,3 +276,42 @@ eSIM额外取证已实际尝试真实 `esim_file.cpp` 的Clang18语法编译，e
 用户在本地交付后明确要求“将本轮修改提交到远端”。本次从干净工作区核对origin、分支/HEAD、暂存区及既有worktree，恢复工具 `--remote origin --fetch` 返回CHECKPOINT_VERIFIED；远端main仍为 `01a86b9f073b20f408d9f8e67da35192aacac439`，本地仅领先本轮五个提交，远端尚无同名工作分支。正常非强制推送到 `origin/work/sim-guard-contract-20261104` 并建立跟踪，`git ls-remote` 已核实远端为 `e99caba343e73d6f72d9bbb6969dc90095125e85`，包含本轮五个代码/证据提交及最终被测代码2c5364a3。
 
 本次只发布当前工作分支，未合并或推送main。此后仅补充本段发布记录，同步保存到同一远端分支；最终文档tip按Git查询，避免自身SHA自引用。发布没有改变业务源码、共同测试资产或既有结果，本次未重跑业务测试，不将远端保存解释为完整产品/新架构验收。
+
+<a id="sim-guard-round2"></a>
+
+## 9. 测试防护网第二轮：生命周期扩展与缺陷独立统计
+
+用户本轮指定以e99caba3为已报告基线，禁止未经授权推送/合并main。实测起始工作区干净、HEAD为 `01db5ce64fc5fdb8d80c585bf35d4c260c817b86`；e99caba3是其祖先，两者仅发布记录不同。恢复工具fetch及ls-remote确认远端工作分支实际为01db5ce6，main仍为01a86b9f，分支远端差异0/0；没有根据历史报告假定发布状态。新建本地 `work/sim-guard-round2` 开发，未改用户已有worktree或任何生产源码/公共接口/根产品GN。
+
+本轮测试执行时源码为父提交01db5ce6上的工作区修改（当时未提交、未推送、未合并main）；本轮runner如实记录dirty=true及全部相关输入摘要，不把父提交冒充已含新代码的检查点。源/测试/命令/结果证据保存于仓内 [evidence_round2.json](../test/sim_guard/evidence_round2.json)，新增场景和规则映射见 [round2_catalog.json](../test/sim_guard/traceability/round2_catalog.json)。旧evidence.json、原v2业务契约/场景/Oracle/Fake及七条测试代码块保留；仅把原ContractDriver原样提到共享头供新场景复用，v3基线另外强制核对v2原摘要和测试代码块摘要。负控实测：即使重算当前摘要，改动旧断言或Oracle仍被拒。
+
+| 当前实际验证 | 结果 | 覆盖边界 |
+| --- | --- | --- |
+| e99caba3干净隔离源码重新构建 | 原7条×5轮，35 PASS | 新下载并校验固定GTest；不依赖上一轮产物 |
+| 本轮统一runner | 原7条35 PASS + 新10条50 PASS = **兼容集85 PASS/0 FAIL** | 17条各五轮；并不代表全模块覆盖 |
+| 独立缺陷集 | **5条各五轮，25 FAIL** | 保留原迟到READY；新增替换卡旧READY、通用RIL错误分类、旧PIN污染新卡、Refresh返回契约冲突；无Skip/xfail |
+| 突变与恢复 | READY→LOCKED检出，恢复17/17 PASS | 相同原LIFE_001/Oracle；只改仓外生产cpp副本，生产工作树未改 |
+| 单独compat入口 | 17 PASS、退出0 | 五条缺陷仍在defect_inventory，明确NOT_RUN；全报告all因缺陷退出1 |
+| 设施回归 | 19 PASS | 与业务通过数分开；没有重造测试框架 |
+
+新增十条按完整流程覆盖：单/双卡枚举及逆序回包、RIL不可用后真实对象重建、异常载荷/丢包后正常应答恢复、PUK错误及成功、显式刷新、双卡实例销毁重建、停机换卡重枚举、PIN完成与另一槽拔卡交错。11条指定生产函数有正执行覆盖，另精确证明null-RIL初始化和无有效载荷处理分支各执行5次。初始/重建临时状态仅作C级观察，不把未批准缓存/初始化政策变成断言。公开状态/卡型/解锁结果继续用正式类型契约断言。
+
+`Recreate`实际销毁全部旧SimStateManager、确认weak引用失效及worker退出，再创建并初始化新生产对象；双槽重建场景记录4个真实对象创建/销毁。卡设备事实通过Fake RIL保留，停机期间可换卡；这是**硬件重新枚举验证，不是数据库持久化恢复PASS**。
+
+`RefreshSimState`出现来源冲突：CoreServiceClient头注释承诺TELEPHONY_SUCCESS，真实Manager/Handle及Core/Stub/Proxy/Client委托返回状态整数，历史测试也存在非负值口径。原成功码断言完整保留为DEFECT_005红灯并标NEEDS_DECISION；正常刷新场景只断已确认的公开最终状态、原返回值进入证据，不改成“预期2”或由Adapter修正为0。其他缺陷的准入/修复政策也单独裁决，未来真实multisim应在等价故障调度可达时通过相应回归，不能把已知错误固化为兼容要求。
+
+本轮命令入口（Git根，路径自行选择；完整实际argv/退出码在evidence_round2）：
+
+```sh
+python3 -B telephony_core_service/test/sim_guard/run_sim_guard.py --sut=legacy --suite=all --gtest-root "$SIM_GTEST_ROOT" --output "$SIM_GUARD_OUTPUT/all" --repeat=5 --mutation-check
+python3 -B telephony_core_service/test/sim_guard/run_sim_guard.py --sut=legacy --suite=compat --gtest-root "$SIM_GTEST_ROOT" --output "$SIM_GUARD_OUTPUT/compat"
+python3 -B telephony_core_service/test/systemtest/scripts/audit_initialization.py --gtest-root "$SIM_GTEST_ROOT" --openssl-root "$SIM_OPENSSL_ROOT" --output "$SIM_GUARD_OUTPUT/full-init"
+```
+
+**任务C/D尚未闭合**：重新准备锁定OpenSSL头并实际重跑完整初始化审计，仍exit1、BLOCKED/executed=false：45对象、43诊断、无缺头、14个未匹配SimData字段。实际核对当前可用官方Provider `843a8be7f8d1dc304870a3999b754a03c6cce57d` 头及Git内容，不能提供此fork所需扩展字段；未猜字段值或把Fake Store当账户业务。映射、默认Voice/Data、无效账户、角色失效及DB保存/恢复/失败均NOT_IMPLEMENTED，正式Provider字段/URI/schema/错误协议和部分产品策略是当前具体前置。证据和真实调用路径见 [Provider契约记录](../test/sim_guard/traceability/provider_contract_round2.json)。本机无hb/匹配产品树，完整Core/SA/IPC/设备未验证。
+
+**任务E完成本轮契约准备，未运行eSIM业务**：再次用当前host参数编译真实esim_file.cpp，exit1首错仍为system_ability.h缺失。核对IEsimManager实际Profile/APDU及AuthenticateServer/PrepareDownload/LoadBoundProfilePackage协作面，DownloadProfile属于外部SA66250；最小接入还需合法EventRunner、真实codec/源表和匹配portIndex类型。本轮没有补写LPA下载决策或Profile生命周期Fake来制造通过。
+
+下一步待提供匹配fork的Provider仓/commit或产品manifest，再推进完整OnInit、账户/默认角色及持久化恢复；返回契约、默认回选/移除策略和eSIM类型分别裁决。当前生命周期/安全扩展仍通过纯测试契约进入Legacy Adapter；未来绑定真实Multisim时增量实现会话/PUK/Refresh能力和生命周期装配，复用同一数据、Fake语义和Oracle，不修改T/A/O/R内部设计。
+
+后续用户明确授权“将当前修改推送到远端main分支”。发布前核实origin/main仍为01a86b9f，是当前分支的祖先；先前工作分支六个提交及本轮改动均属本次发布范围。仅检查已运行源码/资产摘要、保留v2断言和文档一致性，不把本次Git发布当作重新运行业务或产品验收；实际远端发布记录随后追加。

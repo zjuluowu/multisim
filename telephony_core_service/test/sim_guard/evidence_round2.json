@@ -1,0 +1,1675 @@
+{
+  "schema_version": 1,
+  "round": 2,
+  "reported_baseline_commit": "e99caba343e73d6f72d9bbb6969dc90095125e85",
+  "source_parent_commit": "01db5ce64fc5fdb8d80c585bf35d4c260c817b86",
+  "source_worktree_dirty": true,
+  "source_revision_note": "Round2 implementation is in the working tree on work/sim-guard-round2; source_parent_commit alone does not contain the changes. Exact production/test inputs are identified by the hashes below. No round2 push or main merge.",
+  "scope": "Actual physical-card state/security component and object recreation; full SimManager/Subscription/default-role/database/eSIM acceptance remains blocked/not implemented.",
+  "baseline_recheck": {
+    "status": "PASS",
+    "counts": {
+      "PASS": 35,
+      "FAIL": 0,
+      "BLOCKED": 0
+    },
+    "source_commit": "e99caba343e73d6f72d9bbb6969dc90095125e85",
+    "dirty": false,
+    "isolated_worktree": true,
+    "original_assets_verified": true
+  },
+  "compatibility": {
+    "status": "PASS",
+    "unique_baseline": 7,
+    "unique_added": 10,
+    "repetitions": 5,
+    "suite_counts": {
+      "baseline_v2": {
+        "PASS": 35,
+        "FAIL": 0,
+        "NOT_RUN": 0
+      },
+      "extensions": {
+        "PASS": 50,
+        "FAIL": 0,
+        "NOT_RUN": 0
+      },
+      "compatibility": {
+        "PASS": 85,
+        "FAIL": 0,
+        "NOT_RUN": 0
+      },
+      "defects": {
+        "PASS": 0,
+        "FAIL": 25,
+        "NOT_RUN": 0
+      }
+    },
+    "cases": [
+      {
+        "test": "ContractDriver.PIN_001",
+        "status": "PASS",
+        "failures": [],
+        "observations": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\npin-success-status:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;pin:0;pin:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      {
+        "test": "ContractDriver.DUAL_001",
+        "status": "PASS",
+        "failures": [],
+        "observations": {
+          "real_instances_created": "2",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;slot=1,present=1,state=LOCKED,kind=1;\ncard-event:slot=0,present=1,state=READY,kind=1;slot=1,present=1,state=LOCKED,kind=1;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:1;status:0;status:0;",
+          "real_instances_destroyed": "2"
+        }
+      },
+      {
+        "test": "ContractDriver.RIL_001_DuplicateAndError",
+        "status": "PASS",
+        "failures": [],
+        "observations": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=0,state=ABSENT,kind=0;\nril-error:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;\nduplicate-ready:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      {
+        "test": "ContractDriver.PIN_002_CommandFailure",
+        "status": "PASS",
+        "failures": [],
+        "observations": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\npin-command-failure:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;pin:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      {
+        "test": "SessionLifecycle.RECREATE_002_ReplacementWhileStopped",
+        "status": "PASS",
+        "failures": [],
+        "observations": {
+          "real_instances_created": "2",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nnew-card-after-real-recreation:slot=0,present=1,state=LOCKED,kind=1;\n",
+          "real_instances_destroyed": "2",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "pending_responses": "0",
+          "external_calls": "status:0;"
+        }
+      },
+      {
+        "test": "SessionLifecycle.INIT_001_SingleEnumeration",
+        "status": "PASS",
+        "failures": [],
+        "observations": {
+          "real_instances_created": "1",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "observations": "initialized-without-card-response:slot=0,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      {
+        "test": "SessionLifecycle.INIT_002_MissingRilThenRecreate",
+        "status": "PASS",
+        "failures": [],
+        "observations": {
+          "real_instances_created": "2",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "observations": "ril-unavailable:slot=0,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=1;\n",
+          "real_instances_destroyed": "2",
+          "pending_responses": "0",
+          "external_calls": "status:0;"
+        }
+      },
+      {
+        "test": "SessionLifecycle.RECREATE_001_DualCardReenumeration",
+        "status": "PASS",
+        "failures": [],
+        "observations": {
+          "real_instances_created": "4",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\nnew-real-SUT-before-enumeration:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=0,state=UNKNOWN,kind=0;\nreenumerated-device-facts:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\n",
+          "real_instances_destroyed": "4",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "persistence_scope": "external card facts; no Provider/DB recovery claim",
+          "pending_responses": "0",
+          "external_calls": "status:1;status:0;"
+        }
+      },
+      {
+        "test": "SessionLifecycle.CALLBACK_002_MalformedThenRecovery",
+        "status": "PASS",
+        "failures": [],
+        "observations": {
+          "real_instances_created": "1",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "observations": "malformed-status:slot=0,present=0,state=UNKNOWN,kind=0;\nvalid-status-recovery:slot=0,present=1,state=READY,kind=2;\n",
+          "injected_fault": "wrong typed RIL response payload",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      {
+        "test": "SessionLifecycle.INIT_DUAL_002_ReversedEnumeration",
+        "status": "PASS",
+        "failures": [],
+        "observations": {
+          "real_instances_created": "2",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "observations": "second-slot-response-first:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=1,state=LOCKED,kind=1;\nboth-enumerated:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:1;",
+          "real_instances_destroyed": "2"
+        }
+      },
+      {
+        "test": "SessionLifecycle.DUAL_002_PinWhileOtherCardRemoved",
+        "status": "PASS",
+        "failures": [],
+        "observations": {
+          "real_instances_created": "2",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=1,state=READY,kind=1;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=0,state=ABSENT,kind=0;\nunlock-and-other-removal-completed:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=ABSENT,kind=0;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:1;pin:0;status:1;status:0;",
+          "real_instances_destroyed": "2"
+        }
+      },
+      {
+        "test": "SessionLifecycle.CALLBACK_003_DroppedThenRecovery",
+        "status": "PASS",
+        "failures": [],
+        "observations": {
+          "real_instances_created": "1",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "observations": "status-response-not-delivered:slot=0,present=0,state=UNKNOWN,kind=0;\nnew-status-response:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "injected_fault": "RIL response dropped; no timeout-policy assertion",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      {
+        "test": "SessionLifecycle.PUK_002_WrongThenSuccessfulUnlock",
+        "status": "PASS",
+        "failures": [],
+        "observations": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      {
+        "test": "SessionLifecycle.REFRESH_001_ExplicitStatusQuery",
+        "status": "PASS",
+        "failures": [],
+        "observations": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nexplicit-refresh-completed:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "raw_refresh_return": "2",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      {
+        "test": "Compatibility/Lifecycle.PublicCardState/PUK_001",
+        "status": "PASS",
+        "failures": [],
+        "observations": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      {
+        "test": "Compatibility/Lifecycle.PublicCardState/LIFE_001",
+        "status": "PASS",
+        "failures": [],
+        "observations": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=1,state=READY,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      {
+        "test": "Compatibility/Lifecycle.PublicCardState/LIFE_002",
+        "status": "PASS",
+        "failures": [],
+        "observations": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=1;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      }
+    ]
+  },
+  "defects": {
+    "status": "FAIL",
+    "unique": 5,
+    "counts": {
+      "PASS": 0,
+      "FAIL": 25,
+      "NOT_RUN": 0
+    },
+    "records": [
+      {
+        "id": "DEFECT-001",
+        "test": "ContractDriver.DEFECT_001_StaleReadyAfterRemoval",
+        "origin": "v2_retained",
+        "contract": "Removed card must not be resurrected by an older READY result",
+        "scheduling": "older READY and newer ABSENT response both in flight",
+        "source": "SimStateHandle::GetSimCardData",
+        "legacy_status": "SEE_ROUND2_EVIDENCE",
+        "future_real_multisim_expectation": "PASS when semantically equivalent fault scheduling is reachable",
+        "policy_status": "NEEDS_DECISION_ON_FIX; never compatibility baseline of erroneous behavior",
+        "source_level": "D candidate with executable public-state evidence",
+        "execution_evidence": "evidence_round2.json",
+        "actual_first_run": {
+          "test": "ContractDriver.DEFECT_001_StaleReadyAfterRemoval",
+          "status": "FAIL",
+          "failures": [
+            "$REPO/telephony_core_service/test/sim_guard/oracle/card_oracle.h:22\nExpected equality of these values:\n  actual.present\n    Which is: true\n  state != State::Absent\n    Which is: false\n",
+            "$REPO/telephony_core_service/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: ABSENT\n",
+            "$REPO/telephony_core_service/test/sim_guard/oracle/card_oracle.h:24\nExpected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <00-00 00-00>\n"
+          ],
+          "observations": {
+            "real_instances_created": "1",
+            "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nremoved:slot=0,present=0,state=ABSENT,kind=0;\nstale-ready:slot=0,present=1,state=READY,kind=2;\n",
+            "pending_responses": "0",
+            "external_calls": "status:0;status:0;status:0;",
+            "real_instances_destroyed": "1"
+          }
+        }
+      },
+      {
+        "id": "DEFECT-003",
+        "test": "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+        "origin": "round2_candidate",
+        "contract": "Generic RIL failure is not evidence of incorrect PIN; no successful unlock result",
+        "scheduling": "RadioResponseInfo ERR_GENERIC_FAILURE instead of LockStatusResp",
+        "source": "SimStateHandle::GetUnlockResult; SimStateManager::UnlockPin",
+        "legacy_status": "SEE_ROUND2_EVIDENCE",
+        "future_real_multisim_expectation": "PASS when semantically equivalent fault scheduling is reachable",
+        "policy_status": "NEEDS_DECISION_ON_FIX; never compatibility baseline of erroneous behavior",
+        "source_level": "D candidate with executable public-state evidence",
+        "execution_evidence": "evidence_round2.json",
+        "actual_first_run": {
+          "test": "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+          "status": "FAIL",
+          "failures": [
+            "$REPO/telephony_core_service/test/sim_guard/runner/lifecycle_extension_test.cpp:157\nExpected: (actual.error) != (0), actual: 0 vs 0\n",
+            "$REPO/telephony_core_service/test/sim_guard/runner/lifecycle_extension_test.cpp:157\nExpected equality of these values:\n  actual.result\n    Which is: 4-byte object <01-00 00-00>\n  Unlock::Failure\n    Which is: 4-byte object <02-00 00-00>\n"
+          ],
+          "observations": {
+            "real_instances_created": "1",
+            "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ngeneric-error-without-password-decision:slot=0,present=1,state=LOCKED,kind=2;\n",
+            "observed_error": "0",
+            "observed_unlock_result": "1",
+            "pending_responses": "0",
+            "external_calls": "status:0;",
+            "real_instances_destroyed": "1"
+          }
+        }
+      },
+      {
+        "id": "DEFECT-004",
+        "test": "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+        "origin": "round2_candidate",
+        "contract": "An old card PIN result must not change the replacement card lock state",
+        "scheduling": "hold PIN completion, remove/reinsert locked card, release old completion",
+        "source": "SimStateManager::UnlockPin",
+        "legacy_status": "SEE_ROUND2_EVIDENCE",
+        "future_real_multisim_expectation": "PASS when semantically equivalent fault scheduling is reachable",
+        "policy_status": "NEEDS_DECISION_ON_FIX; never compatibility baseline of erroneous behavior",
+        "source_level": "D candidate with executable public-state evidence",
+        "execution_evidence": "evidence_round2.json",
+        "actual_first_run": {
+          "test": "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+          "status": "FAIL",
+          "failures": [
+            "$REPO/telephony_core_service/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: NOT_READY\n  state\n    Which is: LOCKED\n"
+          ],
+          "observations": {
+            "real_instances_created": "1",
+            "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=1;\nold-pin-result-after-card-replacement:slot=0,present=1,state=NOT_READY,kind=1;\n",
+            "old_request_result": "0",
+            "pending_responses": "0",
+            "external_calls": "status:0;pin:0;status:0;status:0;",
+            "real_instances_destroyed": "1"
+          }
+        }
+      },
+      {
+        "id": "DEFECT-005",
+        "test": "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+        "origin": "round2_contract_conflict",
+        "contract": "CoreServiceClient declaration promises TELEPHONY_SUCCESS; direct delegates return raw SimState",
+        "scheduling": "valid refresh completion with LOCKED state",
+        "source": "interfaces/innerkits/include/core_service_client.h RefreshSimState comment; services/sim/src/sim_state_manager.cpp RefreshSimState; CoreServiceSim/Stub/Proxy/Client delegates",
+        "legacy_status": "SEE_ROUND2_EVIDENCE",
+        "future_real_multisim_expectation": "PASS after formal return semantics are adjudicated; no silent state/error normalization",
+        "policy_status": "NEEDS_DECISION_ON_PUBLIC_RETURN_CONTRACT",
+        "source_level": "A documented contract versus C observed implementation and historical tests",
+        "execution_evidence": "evidence_round2.json",
+        "actual_first_run": {
+          "test": "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+          "status": "FAIL",
+          "failures": [
+            "$REPO/telephony_core_service/test/sim_guard/runner/lifecycle_extension_test.cpp:176\nExpected equality of these values:\n  RefreshToLocked()\n    Which is: 2\n  0\ncore_service_client.h RefreshSimState @return contract\n"
+          ],
+          "observations": {
+            "real_instances_created": "1",
+            "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nexplicit-refresh-completed:slot=0,present=1,state=LOCKED,kind=2;\n",
+            "raw_refresh_return": "2",
+            "pending_responses": "0",
+            "external_calls": "status:0;status:0;status:0;",
+            "real_instances_destroyed": "1"
+          }
+        }
+      },
+      {
+        "id": "DEFECT-002",
+        "test": "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+        "origin": "round2_candidate",
+        "contract": "Old card READY must not replace new physical card PIN-locked state/type",
+        "scheduling": "old READY held while absence and replacement responses are delivered",
+        "source": "SimStateHandle::GetSimCardData",
+        "legacy_status": "SEE_ROUND2_EVIDENCE",
+        "future_real_multisim_expectation": "PASS when semantically equivalent fault scheduling is reachable",
+        "policy_status": "NEEDS_DECISION_ON_FIX; never compatibility baseline of erroneous behavior",
+        "source_level": "D candidate with executable public-state evidence",
+        "execution_evidence": "evidence_round2.json",
+        "actual_first_run": {
+          "test": "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+          "status": "FAIL",
+          "failures": [
+            "$REPO/telephony_core_service/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: LOCKED\n",
+            "$REPO/telephony_core_service/test/sim_guard/oracle/card_oracle.h:24\nExpected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <01-00 00-00>\n"
+          ],
+          "observations": {
+            "real_instances_created": "1",
+            "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nreplacement-card-locked:slot=0,present=1,state=LOCKED,kind=1;\nold-card-ready-response:slot=0,present=1,state=READY,kind=2;\n",
+            "pending_responses": "0",
+            "external_calls": "status:0;status:0;status:0;status:0;",
+            "real_instances_destroyed": "1"
+          }
+        }
+      }
+    ],
+    "fix_status": "No production repair or xfail/skip; Refresh return semantics and admission/fix policy remain explicit decisions."
+  },
+  "production_sources": [
+    {
+      "path": "services/sim/src/sim_state_manager.cpp",
+      "sha256": "99a3194d52aa58af9eb475e08b315821c6eb3a787583f48580ad76cb89d0b44d"
+    },
+    {
+      "path": "services/sim/src/sim_state_handle.cpp",
+      "sha256": "e6856b2acda8a60334e8f61f6d5201fb896106a0a700960f8a36cc26dd1d5e0f"
+    },
+    {
+      "path": "services/sim/src/icc_state.cpp",
+      "sha256": "f44d7f4ba3a3dec16a0edb9ba8b24b6d1bcb66f50fce9d79f936626ba0d9e7cd"
+    },
+    {
+      "path": "services/tel_ril/src/observer_handler.cpp",
+      "sha256": "80d56eca572bf285eb3f54e4f057255a582a7f5bf85e35a17dfbdba0e0e74d63"
+    },
+    {
+      "path": "frameworks/native/src/core_manager_inner.cpp",
+      "sha256": "70da82ac12ca4d7e523f2a92a6ba46acb97d73091c826b0173204b2cc9868180"
+    },
+    {
+      "path": "services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp",
+      "sha256": "b3d5e06f22790da1ee1b3373fe528e045a3452f18e0bec01472a7c7f23fc6b27"
+    },
+    {
+      "path": "utils/common/src/tel_event_handler.cpp",
+      "sha256": "d6dbc69c03c8c4810cea31d9efaac5e0c0767b569edcc9ce25f3c61269665e63"
+    },
+    {
+      "path": "utils/common/src/tel_event_queue.cpp",
+      "sha256": "d536be6a17f2710dda6e145f7c15a482bfa9f053689ab3dc24fae91ef6d3bccf"
+    }
+  ],
+  "production_execution": [
+    {
+      "symbol": "SimStateManager::Init",
+      "source": "services/sim/src/sim_state_manager.cpp",
+      "executions": 150
+    },
+    {
+      "symbol": "SimStateManager::GetSimState",
+      "source": "services/sim/src/sim_state_manager.cpp",
+      "executions": 620
+    },
+    {
+      "symbol": "SimStateManager::HasSimCard",
+      "source": "services/sim/src/sim_state_manager.cpp",
+      "executions": 600
+    },
+    {
+      "symbol": "SimStateManager::UnlockPin",
+      "source": "services/sim/src/sim_state_manager.cpp",
+      "executions": 30
+    },
+    {
+      "symbol": "SimStateHandle::ProcessEvent",
+      "source": "services/sim/src/sim_state_handle.cpp",
+      "executions": 590
+    },
+    {
+      "symbol": "SimStateHandle::GetSimCardData",
+      "source": "services/sim/src/sim_state_handle.cpp",
+      "executions": 280
+    },
+    {
+      "symbol": "SimStateHandle::ProcessIccCardState",
+      "source": "services/sim/src/sim_state_handle.cpp",
+      "executions": 270
+    },
+    {
+      "symbol": "SimStateHandle::SimStateEscape",
+      "source": "services/sim/src/sim_state_handle.cpp",
+      "executions": 255
+    },
+    {
+      "symbol": "SimStateManager::UnlockPuk",
+      "source": "services/sim/src/sim_state_manager.cpp",
+      "executions": 10
+    },
+    {
+      "symbol": "SimStateManager::RefreshSimState",
+      "source": "services/sim/src/sim_state_manager.cpp",
+      "executions": 10
+    },
+    {
+      "symbol": "SimStateHandle::GetUnlockResult",
+      "source": "services/sim/src/sim_state_handle.cpp",
+      "executions": 40
+    }
+  ],
+  "production_fault_branches": [
+    {
+      "source": "services/sim/src/sim_state_manager.cpp",
+      "line": 43,
+      "condition": "if (telRilManager_ == nullptr)",
+      "true_executions": 5
+    },
+    {
+      "source": "services/sim/src/sim_state_handle.cpp",
+      "line": 646,
+      "condition": "if ((param == nullptr) && (response == nullptr))",
+      "true_executions": 5
+    }
+  ],
+  "production_header_digest": "6f7c3997409bc4e203c81b0193afeb2f0a9d38ebd01e1153389f353e6f19d677",
+  "test_input_hashes": [
+    {
+      "path": "test/sim_guard/adapters/legacy/legacy_sim_adapter.cpp",
+      "sha256": "66ca6d63cb4c067b90706d8387744c7882a5683e893c0ffb63015912cf43afae"
+    },
+    {
+      "path": "test/sim_guard/adapters/legacy/platform_spy.cpp",
+      "sha256": "1a28487dc092b57cfc87d367972ec8020b5252b704b91d46161a31938092c7f5"
+    },
+    {
+      "path": "test/sim_guard/adapters/legacy/platform_spy.h",
+      "sha256": "1ab5487873d21fbe1599ef40005a233ba5c0b29369835bfa218898da87172c99"
+    },
+    {
+      "path": "test/sim_guard/contracts/sim_session.h",
+      "sha256": "19075a3cd587434e8b4661bd53296b85376025e980da6bbb6827f060a3654825"
+    },
+    {
+      "path": "test/sim_guard/contracts/sim_sut.h",
+      "sha256": "897b7f7766c20a2bead79825d0b00377793b4b42e07c8b5c2a1f418259e445aa"
+    },
+    {
+      "path": "test/sim_guard/fakes/ril_device.h",
+      "sha256": "9a055ade01080ebbae91d67456b46b427472f77c08f8c2806118c4a92925ae04"
+    },
+    {
+      "path": "test/sim_guard/fakes/ril_fault_controls.h",
+      "sha256": "5b26e865b69435e23538c02389d886ff6101bc6f2326558679db2d588d2249fa"
+    },
+    {
+      "path": "test/sim_guard/oracle/card_oracle.h",
+      "sha256": "9f752b1101c2754ea09fec11d31bb5f8236872a39398701c90d3a49095c6db02"
+    },
+    {
+      "path": "test/sim_guard/run_sim_guard.py",
+      "sha256": "f419becd080d62028ab98640fbde4dd060140986909bd27d2b8b97437e6e59d4"
+    },
+    {
+      "path": "test/sim_guard/runner/contract_driver.h",
+      "sha256": "9276249fb08c9d90fa3f0e72d55280bd2cb61419364b98b05a4f385cecf67496"
+    },
+    {
+      "path": "test/sim_guard/runner/contract_test.cpp",
+      "sha256": "4b93a870c3e3e31b678e085607c7a15174e2460eb412e27651ce5f38a48c664b"
+    },
+    {
+      "path": "test/sim_guard/runner/lifecycle_extension_test.cpp",
+      "sha256": "f2507714d82ad155b01bc3bd37cbbea814db6c402fffda18cbc4de997d7486de"
+    },
+    {
+      "path": "test/sim_guard/scenarios/compatibility.h",
+      "sha256": "0cc09fcfec1fe53cc00ef99969bed8bf5d0f6611a0db34934cccda4aaacabd7c"
+    },
+    {
+      "path": "test/sim_guard/semantic_baseline.json",
+      "sha256": "f62ee4faa10b33c413711cf5d45707ee2160cbd85d28bf040f369c7a1e9e888b"
+    },
+    {
+      "path": "test/sim_guard/semantic_baseline_v2.json",
+      "sha256": "20e298bbfa060019b3decf81d574cfa7b58724a845aad4ed8b854db31fca496a"
+    },
+    {
+      "path": "test/sim_guard/traceability/inventory.json",
+      "sha256": "87bb8f91367d6376cb6c5dc4d98b071e59fe3a8da3ae820d0c0806aa3d0f4f73"
+    },
+    {
+      "path": "test/sim_guard/traceability/round2_catalog.json",
+      "sha256": "b5ec05539a4328e5e55e7dda48162596e7320a3ad4913f89293900280290498e"
+    },
+    {
+      "path": "test/systemtest/BUILD.gn",
+      "sha256": "7a4a39befb067cc7ded52571422ba97e33238d77d1bad8b36bfc0e04eb890072"
+    },
+    {
+      "path": "test/systemtest/gn/BUILDCONFIG.gn",
+      "sha256": "236cbe6d3bd2d3049efbb003dd37d865b23feb1536bbfe4276872ecbd2246ddc"
+    }
+  ],
+  "all_validation_input_digest": "033cbc62d8d949090e20a54635ebccb65ea5b495960011a7297cfaa6503706e6",
+  "semantic_baseline": {
+    "version": 3,
+    "scope": "Physical SIM public state/type and PIN result contract; full Manager/IPC/accounts/esim not covered",
+    "change_policy": "Review scenario/input/oracle/fake semantic changes against independent contract, update version and rationale explicitly; adapter-only migrations must keep these hashes",
+    "change_review": "Round2 additive session/security contract and external delivery controls. ContractDriver moved unchanged to shared header. All v2 test bodies and v2 contract/scenario/Oracle/device model are preserved. New case classifications and defects are explicit in round2_catalog.json. No assertion is relaxed to hide a production failure.",
+    "v2_reference": "semantic_baseline_v2.json",
+    "v2_test_body_sha256": "8ed41b9e762b3d5fa99a0c3b40da39097f744f24df1f48ad95ec92371dd4baf7",
+    "sha256": {
+      "contracts/sim_sut.h": "897b7f7766c20a2bead79825d0b00377793b4b42e07c8b5c2a1f418259e445aa",
+      "fakes/ril_device.h": "9a055ade01080ebbae91d67456b46b427472f77c08f8c2806118c4a92925ae04",
+      "scenarios/compatibility.h": "0cc09fcfec1fe53cc00ef99969bed8bf5d0f6611a0db34934cccda4aaacabd7c",
+      "oracle/card_oracle.h": "9f752b1101c2754ea09fec11d31bb5f8236872a39398701c90d3a49095c6db02",
+      "runner/contract_test.cpp": "4b93a870c3e3e31b678e085607c7a15174e2460eb412e27651ce5f38a48c664b",
+      "runner/contract_driver.h": "9276249fb08c9d90fa3f0e72d55280bd2cb61419364b98b05a4f385cecf67496",
+      "contracts/sim_session.h": "19075a3cd587434e8b4661bd53296b85376025e980da6bbb6827f060a3654825",
+      "fakes/ril_fault_controls.h": "5b26e865b69435e23538c02389d886ff6101bc6f2326558679db2d588d2249fa",
+      "runner/lifecycle_extension_test.cpp": "f2507714d82ad155b01bc3bd37cbbea814db6c402fffda18cbc4de997d7486de"
+    }
+  },
+  "mutation": {
+    "status": "DETECTED",
+    "change": "production READY mapping returns LOCKED",
+    "failure": [
+      {
+        "test": "Compatibility/Lifecycle.PublicCardState/LIFE_001",
+        "status": "FAIL",
+        "failures": [
+          "$REPO/telephony_core_service/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: LOCKED\n  state\n    Which is: READY\nGoogle Test trace:\n$REPO/telephony_core_service/test/sim_guard/runner/contract_test.cpp:16: LIFE_001\n",
+          "$REPO/telephony_core_service/test/sim_guard/oracle/card_oracle.h:31\nValue of: found\n  Actual: false\nExpected: true\nmissing public state notification slot=0 state=4\nGoogle Test trace:\n$REPO/telephony_core_service/test/sim_guard/runner/contract_test.cpp:16: LIFE_001\n"
+        ],
+        "observations": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      }
+    ],
+    "restored_counts": {
+      "PASS": 17,
+      "FAIL": 0
+    },
+    "tracked_production_untouched": true,
+    "mutated_source_copy_sha256": "4d7e62f074d9deea115d68d9a4ab439d352909272a8bfa26ca45207a547540db"
+  },
+  "report_separation": {
+    "compat_only_status": "PASS",
+    "compat_only_counts": {
+      "PASS": 17,
+      "FAIL": 0,
+      "BLOCKED": 0
+    },
+    "compat_only_suite_counts": {
+      "baseline_v2": {
+        "PASS": 7,
+        "FAIL": 0,
+        "NOT_RUN": 0
+      },
+      "extensions": {
+        "PASS": 10,
+        "FAIL": 0,
+        "NOT_RUN": 0
+      },
+      "compatibility": {
+        "PASS": 17,
+        "FAIL": 0,
+        "NOT_RUN": 0
+      },
+      "defects": {
+        "PASS": 0,
+        "FAIL": 0,
+        "NOT_RUN": 5
+      }
+    },
+    "retained_defect_ids": [
+      "DEFECT-001",
+      "DEFECT-002",
+      "DEFECT-003",
+      "DEFECT-004",
+      "DEFECT-005"
+    ],
+    "retained_defects_execution": [
+      "NOT_RUN",
+      "NOT_RUN",
+      "NOT_RUN",
+      "NOT_RUN",
+      "NOT_RUN"
+    ]
+  },
+  "infrastructure": {
+    "status": "PASS",
+    "counts": {
+      "PASS": 19,
+      "FAIL": 0
+    },
+    "business_cases_counted": 0,
+    "xml_sha256": "b0fae87f7e47bc6b9ed072473f0e035f08ba9463e84707eb699ea509edfab37c",
+    "commands": [
+      "ninja -C $ARTIFACTS/build -j 3 platform_adapter_test",
+      "LLVM_PROFILE_FILE=$ARTIFACTS/infra.profraw $ARTIFACTS/build/platform_adapter_test --gtest_output=xml:$ARTIFACTS/infra.xml"
+    ]
+  },
+  "v2_retention_checks": {
+    "status": "PASS",
+    "checks": [
+      "v2 assertion change rejected even after recomputing current asset hash",
+      "v2 Oracle change rejected even after recomputing current asset hash"
+    ],
+    "business_tests_counted": 0
+  },
+  "full_initialization_audit": {
+    "status": "BLOCKED",
+    "executed": false,
+    "build_exit_code": 1,
+    "compiled_objects": 45,
+    "missing_headers": [],
+    "compiler_diagnostics": [
+      "$REPO/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:58:25: error: no member named 'PHY_CARD' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:59:25: error: no member named 'LSI' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:62:29: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:63:29: error: no member named 'IS_ESIM' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:66:33: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:68:29: error: no member named 'IS_ESIM' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:72:29: error: no member named 'MNC_LEN' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:77:24: error: no member named 'EFUST' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:79:24: error: no member named 'GID1' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:80:24: error: no member named 'GID2' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:81:24: error: no member named 'SPN' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:82:24: error: no member named 'EHPLMN' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/multi_sim_controller.cpp:490:29: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/multi_sim_controller.cpp:549:25: error: no member named 'OPERATOR_NAME' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/multi_sim_controller.cpp:572:25: error: no member named 'IS_ESIM' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/multi_sim_controller.cpp:573:25: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/multi_sim_controller.cpp:615:25: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/multi_sim_helper.cpp:156:25: error: no member named 'IS_ESIM' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/multi_sim_helper.cpp:157:25: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/multi_sim_helper.cpp:186:25: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/multi_sim_helper.cpp:187:25: error: no member named 'IS_ESIM' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/operator_config_loader.cpp:119:16: error: no member named 'OPKEY' in 'OHOS::Telephony::SimData'; did you mean simply 'OPKEY'?",
+      "$REPO/telephony_core_service/services/sim/src/operator_config_loader.cpp:120:25: error: no member named 'MCC' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/operator_config_loader.cpp:121:25: error: no member named 'MNC' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:399:37: error: no member named 'IS_ESIM' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:401:37: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:403:37: error: no member named 'OPERATOR_NAME' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:411:37: error: no member named 'PHY_CARD' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:413:37: error: no member named 'LSI' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:415:37: error: no member named 'MNC_LEN' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:417:37: error: no member named 'GID1' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:419:37: error: no member named 'GID2' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:421:37: error: no member named 'SPN' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:423:37: error: no member named 'EHPLMN' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:561:38: error: no member named 'IS_ESIM' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:575:34: error: no member named 'IS_ESIM' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:578:32: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:602:28: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:629:33: error: no member named 'IS_ESIM' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:630:37: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:632:32: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:655:31: error: no member named 'OPERATOR_NAME' in 'OHOS::Telephony::SimData'",
+      "$REPO/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:85:31: error: no member named 'OPKEY' in 'OHOS::Telephony::SimData'"
+    ],
+    "reason": "Production dependency closure does not compile/link for sim_initialization_link_probe; no scenario executed",
+    "commands": [
+      {
+        "argv": [
+          "gn",
+          "gen",
+          "$ARTIFACTS/initialization-audit",
+          "--root=$REPO/telephony_core_service/test/systemtest",
+          "--args=production_root=\"$REPO/telephony_core_service\" gtest_root=\"$ARTIFACTS/deps/source/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59\" libxml2_include_dir=\"/usr/include/libxml2\" openssl_root=\"$ARTIFACTS/deps/openssl\""
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.22216748195933178,
+        "log": "gn-gen.log"
+      },
+      {
+        "argv": [
+          "ninja",
+          "-C",
+          "$ARTIFACTS/initialization-audit",
+          "-k",
+          "0",
+          "-j",
+          "4",
+          "sim_initialization_link_probe"
+        ],
+        "exit_code": 1,
+        "elapsed_seconds": 196.38505106797675,
+        "log": "ninja-initialization.log"
+      }
+    ],
+    "production_sources": [
+      {
+        "path": "services/sim/src/csim_file_controller.cpp",
+        "sha256": "9a5df536c65668d0311eece5c8b4ed33274928c64a0f84ed20854ab6002135e4"
+      },
+      {
+        "path": "services/sim/src/esim_manager.cpp",
+        "sha256": "c13572bf449e181015515e73a1febdc31d524bc22c57a245d3f783598920b7a2"
+      },
+      {
+        "path": "services/sim/src/icc_dialling_numbers_cache.cpp",
+        "sha256": "f150a14d526073d183c0526e05fd17d52c3ee4e7b2da431191517bfa2cbd63ed"
+      },
+      {
+        "path": "services/sim/src/icc_dialling_numbers_handler.cpp",
+        "sha256": "2ac46452530d191f1049155127af5388405c04144ffa72c661dbcf7274758765"
+      },
+      {
+        "path": "services/sim/src/icc_dialling_numbers_manager.cpp",
+        "sha256": "b0244babca504514e94112f7418a24b5b61905f18e3c995e8c264386f4aa6ed7"
+      },
+      {
+        "path": "services/sim/src/icc_file.cpp",
+        "sha256": "1edcaf9f6862f2cd8d08a00b0013437df8ab20ad9e2395de48bb83c8446f5518"
+      },
+      {
+        "path": "services/sim/src/icc_file_controller.cpp",
+        "sha256": "397c7805e3130236c355a0144a868bd8d091ebe7347e6856cb07e995f5fd3471"
+      },
+      {
+        "path": "services/sim/src/icc_operator_privilege_controller.cpp",
+        "sha256": "ca3048bda553b8a71a9d51820282221c4ac6dabc8f21d19d6163fd9143b96708"
+      },
+      {
+        "path": "services/sim/src/icc_operator_rule.cpp",
+        "sha256": "03b27f8ec60614f63d603fa3091ca2d10125fe5881f492f0d3ab387faf2b8ed2"
+      },
+      {
+        "path": "services/sim/src/icc_state.cpp",
+        "sha256": "f44d7f4ba3a3dec16a0edb9ba8b24b6d1bcb66f50fce9d79f936626ba0d9e7cd"
+      },
+      {
+        "path": "services/sim/src/isim_file.cpp",
+        "sha256": "cd6736b9c70517805e8b8810c55ba5a6e9a82b74df7c00f29f7c4c7e3bec7182"
+      },
+      {
+        "path": "services/sim/src/isim_file_controller.cpp",
+        "sha256": "95aa7256dc134971062364beb6feee28241e1a0f07b873b7754b69dc97fea590"
+      },
+      {
+        "path": "services/sim/src/mcc_pool.cpp",
+        "sha256": "e9d2c866df6e36d8a77c63e1d4f04167d9a2e91419bed4cf93b4c3e8d355cb0b"
+      },
+      {
+        "path": "services/sim/src/multi_sim_controller.cpp",
+        "sha256": "e4194d662ddd164a2c527c7793a3b673ecc283c2385a3a56921856aec7e3afbc"
+      },
+      {
+        "path": "services/sim/src/multi_sim_monitor.cpp",
+        "sha256": "e6cfe2c0fcef32a226e70d76988d7c9f1db8e1f0a8fbd9396bd23c2f4cbac8fe"
+      },
+      {
+        "path": "services/sim/src/multi_sim_helper.cpp",
+        "sha256": "dfeb08121cf1c87b9941516fb58c03ef4d25d47b65c85dd45052f55635eb78d9"
+      },
+      {
+        "path": "services/sim/src/operator_config_cache.cpp",
+        "sha256": "6125e33fe2d1a74c0de9cd4183b4c1c22a840790f324935bcd2f0670bcfdcd5a"
+      },
+      {
+        "path": "services/sim/src/operator_config_loader.cpp",
+        "sha256": "c60bcac6ed36932444beeee10b21107492f2ea55c18d21d28e06d2167e70a42a"
+      },
+      {
+        "path": "services/sim/src/operator_file_parser.cpp",
+        "sha256": "661b9c208686cc164dd839d0df1401f96c70d9a03058d2e5d3f4ef0456d7e97b"
+      },
+      {
+        "path": "services/sim/src/operator_config_hisysevent.cpp",
+        "sha256": "1d3a868297ab72cb15a57826539bd8bec8a4938d7350420b32537283617c2fe6"
+      },
+      {
+        "path": "services/sim/src/operator_matching_rule.cpp",
+        "sha256": "65066b9aa8f1b824839398f3e21e04f4a883e5e679ac0df06a4935d9f97b919e"
+      },
+      {
+        "path": "services/sim/src/pdp_profile_rdb_helper.cpp",
+        "sha256": "dffc17c008029ed133639683871ebf57a9e6593284e248113516c121280b6927"
+      },
+      {
+        "path": "services/sim/src/plmn_file.cpp",
+        "sha256": "ce91952f395f202d3ed4212c8495fbf684e1e9aa7bcea0ccde3d1101c7b23c35"
+      },
+      {
+        "path": "services/sim/src/radio_protocol_controller.cpp",
+        "sha256": "7391942fa10b22e4692b1873716d4827be68dbbe85ff63587f243e3096d79102"
+      },
+      {
+        "path": "services/sim/src/ruim_file.cpp",
+        "sha256": "bd055f0028598c8800ab5fabd2f5aa096caa7e1e06cc05da6985e01b0b9c1bc6"
+      },
+      {
+        "path": "services/sim/src/ruim_file_controller.cpp",
+        "sha256": "e56479355d8189162beb8199828fbee46c522188093efb52947a9ca04b10cee9"
+      },
+      {
+        "path": "services/sim/src/sim_account_callback_death_recipient.cpp",
+        "sha256": "480adf72c92a5c68285cbfbcf87a7cf15c161eee3bb8c5fc98d11da82eee09c1"
+      },
+      {
+        "path": "services/sim/src/sim_account_manager.cpp",
+        "sha256": "e76d7e9595830bfb36565ee4bc61d1eb83cb4cacc1e0a349323bf8e78b29f108"
+      },
+      {
+        "path": "services/sim/src/sim_char_decode.cpp",
+        "sha256": "6d1bd0e24a958ccce41b4c05148b231a3292f95b4075a057be0d18a36657da50"
+      },
+      {
+        "path": "services/sim/src/sim_file.cpp",
+        "sha256": "b02ad8d2f64a67393d8bbd6bbf66cf0459a327de0a668f2555b6a059a045d9d7"
+      },
+      {
+        "path": "services/sim/src/sim_file_controller.cpp",
+        "sha256": "bbd724bc8d20eb154f81dfa4389d81519d14b9cc579c954fa349afc9d30b1570"
+      },
+      {
+        "path": "services/sim/src/sim_file_init.cpp",
+        "sha256": "3e331c90149589fbade06a178a3f808d1ed072521d0473e2878e6e47390af345"
+      },
+      {
+        "path": "services/sim/src/sim_file_manager.cpp",
+        "sha256": "12045e75e5299fda095155cb8aa2358f62a43f936df9d55aadbf4d95fb47752a"
+      },
+      {
+        "path": "services/sim/src/sim_file_parse.cpp",
+        "sha256": "9d91141762124f4211d8e5bf234a3acf98dbe47c2f513c9e6ccc7fcb03dfc57b"
+      },
+      {
+        "path": "services/sim/src/sim_manager.cpp",
+        "sha256": "6790ab138f7385282a71a348cb235938de35d54f71800bd124447fa0b03c3d3f"
+      },
+      {
+        "path": "services/sim/src/sim_number_decode.cpp",
+        "sha256": "929240de7614c05edb4a79b751870cfafc4973f2f7505af43aa906d224d7f1b8"
+      },
+      {
+        "path": "services/sim/src/sim_rdb_helper.cpp",
+        "sha256": "99656cbd23c29e0575de75c9ba439eaca65c2c4f1c72e6b6528efe9496538c23"
+      },
+      {
+        "path": "services/sim/src/sim_sms_controller.cpp",
+        "sha256": "044e456c3fd8e5128503a6a9db8f0268fe9c5c5c069e309b34cfba4cf53bd0db"
+      },
+      {
+        "path": "services/sim/src/sim_sms_manager.cpp",
+        "sha256": "4c8d5148cb7585bb5691e12214cfeb13352c9d9b117beed94e57dc10674ef1f3"
+      },
+      {
+        "path": "services/sim/src/sim_state_handle.cpp",
+        "sha256": "e6856b2acda8a60334e8f61f6d5201fb896106a0a700960f8a36cc26dd1d5e0f"
+      },
+      {
+        "path": "services/sim/src/sim_state_manager.cpp",
+        "sha256": "99a3194d52aa58af9eb475e08b315821c6eb3a787583f48580ad76cb89d0b44d"
+      },
+      {
+        "path": "services/sim/src/sim_state_tracker.cpp",
+        "sha256": "0ebadb176c101095d8561c1f7eb55fa108c8757016a4d71e630e8242df44ea4c"
+      },
+      {
+        "path": "services/sim/src/sim_utils.cpp",
+        "sha256": "7940f2dd69a770aaaf96efcad4f7d491cf1bf868521c2bc05b6e55458742e4b8"
+      },
+      {
+        "path": "services/sim/src/stk_controller.cpp",
+        "sha256": "996c434c8f62ba9c77b2819f16cf15abeed2f3d0a41468c84c39cd5db7414be2"
+      },
+      {
+        "path": "services/sim/src/stk_manager.cpp",
+        "sha256": "1cfd69b4581e385f28fd020efe0067a9d5fa77b77d9f6d33d74cdbc1c3990b3f"
+      },
+      {
+        "path": "services/sim/src/tag_service.cpp",
+        "sha256": "9ce64e8f84e6cffe0fd68b801005cf54acddaec2131e45fa2258d97ab32f1595"
+      },
+      {
+        "path": "services/sim/src/telephony_data_helper.cpp",
+        "sha256": "2bd5757223716843e712813d03727d45f4abafec1cb3a42faebe5ad1e79884f8"
+      },
+      {
+        "path": "services/sim/src/usim_dialling_numbers_service.cpp",
+        "sha256": "1e0931644fe084c7109f44203093f19cf6f9515498359a3d2289771986e37bc2"
+      },
+      {
+        "path": "services/sim/src/usim_file_controller.cpp",
+        "sha256": "75e66a9550201da634cb2a78975739caa05b0f50c00530dae247b658b141d76d"
+      },
+      {
+        "path": "services/sim/src/voice_mail_constants.cpp",
+        "sha256": "ed4e43caf5e615fc403bf262417909d004e36e867d182f8ca4fd4b8df305a3d9"
+      },
+      {
+        "path": "services/sim/src/card_file_detect_manager.cpp",
+        "sha256": "2986acdc382f702f0a08ee15d446d68e9a9dec846189a90e322effe762425c41"
+      }
+    ],
+    "openssl_headers": {
+      "package": "libssl-dev",
+      "version": "3.0.13-0ubuntu3.16",
+      "architecture": "amd64",
+      "archive_url": "https://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl-dev_3.0.13-0ubuntu3.16_amd64.deb",
+      "archive_sha256": "2b4734df0475e305ac03abb0a2cc5659651ed37ef02d967a1c4033a154cf714b",
+      "license": "Apache-2.0; package copyright retained",
+      "usage": "Optional initialization compile audit only; crypto runtime not validated"
+    },
+    "toolchain": {
+      "googletest_googlemock": "b514bdc898e2951020cbdca1304b75f5950d1f59",
+      "gn": "1000 (03d10f1)",
+      "ninja": "1.11.1",
+      "clang++": "Ubuntu clang version 18.1.3 (1ubuntu1)",
+      "ld.gold": "GNU gold (GNU Binutils for Ubuntu 2.42) 1.16"
+    },
+    "openssl_header_manifest_source": "test/systemtest/configs/dependency_lock.json#openssl_headers",
+    "openssl_header_manifest_sha256": "7d144b76431bfac7ff2d17702f3a71b0982b804caf86493b8d04a0ba8268d243"
+  },
+  "provider_contract_evidence": "traceability/provider_contract_round2.json",
+  "esim_preparation": {
+    "status": "BLOCKED",
+    "compiler_executed": true,
+    "business_executed": false,
+    "exit_code": 1,
+    "args": [
+      "clang++",
+      "-std=c++17",
+      "-fsyntax-only",
+      "-DLOG_DOMAIN=0xD001F04",
+      "-I../../github/multisim/telephony_core_service/test/systemtest/stubs/include",
+      "-I$REPO/telephony_core_service/services/sim/include",
+      "-I$REPO/telephony_core_service/interfaces/innerkits/include",
+      "-I$REPO/telephony_core_service/interfaces/innerkits/ims/include",
+      "-I$REPO/telephony_core_service/interfaces/innerkits/satellite",
+      "-I$REPO/telephony_core_service/services/tel_ril/include",
+      "-I$REPO/telephony_core_service/services/network_search/include",
+      "-I$REPO/telephony_core_service/services/core/include",
+      "-I$REPO/telephony_core_service/services/telephony_ext_wrapper/include",
+      "-I$REPO/telephony_core_service/utils/common/include",
+      "-I$REPO/telephony_core_service/utils/log/include",
+      "-I$REPO/telephony_core_service/utils/preferences/include",
+      "-I$REPO/telephony_core_service/common/capability_mgr/include",
+      "-I/usr/include/libxml2",
+      "-I$REPO/telephony_core_service/utils/codec/include",
+      "-I$REPO/telephony_core_service/utils/vcard/include",
+      "-include",
+      "$REPO/telephony_core_service/test/systemtest/stubs/include/host_standard_prelude.h",
+      "$REPO/telephony_core_service/services/sim/src/esim_file.cpp"
+    ],
+    "first_diagnostic": "In file included from $REPO/telephony_core_service/services/sim/src/esim_file.cpp:24:\n$REPO/telephony_core_service/services/core/include/core_service.h:26:10: fatal error: 'system_ability.h' file not found\n   26 | #include \"system_ability.h\"\n      |          ^~~~~~~~~~~~~~~~~~\n1 error generated.\n",
+    "source_sha256": "8bae8ddfb4f0f2f2891ede0f14527cd73253056ead6159113ef2cd62b642ec6b",
+    "core_contract": {
+      "path": "interfaces/innerkits/include/i_esim_manager.h",
+      "sha256": "f1abc187c7796fc018ce1d22a91310d5c7aa68ebd680e57311ffef4f394cc6d7",
+      "supported_entrypoints": [
+        "GetEuiccProfileInfoList",
+        "SwitchToProfile",
+        "DeleteProfile",
+        "AuthenticateServer",
+        "PrepareDownload",
+        "LoadBoundProfilePackage"
+      ]
+    },
+    "external_contract": {
+      "path": "interfaces/innerkits/IEsimService.idl",
+      "sha256": "5112b1626ffbc08a751a3c8ec46356fe298067d80f2960a9cf7f7aab875863e5",
+      "orchestration": "DownloadProfile belongs to SA66250; core has protocol cooperation and proxy only"
+    },
+    "minimal_binding": [
+      "link real EsimFile and codec",
+      "provide legal EventRunner delivery and required platform headers",
+      "Fake eUICC logical-channel/APDU transport; public Profile query observer",
+      "resolve formal EsimProfile portIndex type before product feature build"
+    ],
+    "not_claimed": [
+      "Profile download/activation/deletion PASS",
+      "all later compiler/link errors enumerated",
+      "LPA or persistence business emulation"
+    ]
+  },
+  "commands": [
+    {
+      "argv": [
+        "gn",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.011473012971691787,
+      "log": "version-gn.log"
+    },
+    {
+      "argv": [
+        "ninja",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.017411203996744007,
+      "log": "version-ninja.log"
+    },
+    {
+      "argv": [
+        "clang++",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.07273127301596105,
+      "log": "version-clang++.log"
+    },
+    {
+      "argv": [
+        "ld.gold",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.01633426803164184,
+      "log": "version-ld.gold.log"
+    },
+    {
+      "argv": [
+        "llvm-profdata-18",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.0399851729744114,
+      "log": "version-llvm-profdata-18.log"
+    },
+    {
+      "argv": [
+        "llvm-cov-18",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.048877362976782024,
+      "log": "version-llvm-cov-18.log"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "$REPO/telephony_core_service/test/systemtest/scripts/generate_ril_mock.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.37762135203229263,
+      "log": "ril-interface.log"
+    },
+    {
+      "argv": [
+        "gn",
+        "gen",
+        "$ARTIFACTS/final-all/execution-cz7wvbwi/build",
+        "--root=$REPO/telephony_core_service/test/systemtest",
+        "--args=production_root=\"$REPO/telephony_core_service\" gtest_root=\"$ARTIFACTS/deps/source/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59\""
+      ],
+      "exit_code": 0,
+      "seconds": 0.2724085879744962,
+      "log": "normal-gn.log"
+    },
+    {
+      "argv": [
+        "ninja",
+        "-C",
+        "$ARTIFACTS/final-all/execution-cz7wvbwi/build",
+        "-j",
+        "3",
+        "sim_guard_legacy"
+      ],
+      "exit_code": 0,
+      "seconds": 111.48742948099971,
+      "log": "normal-build.log"
+    },
+    {
+      "argv": [
+        "$ARTIFACTS/final-all/execution-cz7wvbwi/build/sim_guard_legacy",
+        "--gtest_filter=*",
+        "--gtest_shuffle",
+        "--gtest_random_seed=41",
+        "--gtest_output=xml:$ARTIFACTS/final-all/execution-cz7wvbwi/run-0.xml"
+      ],
+      "exit_code": 1,
+      "seconds": 0.1736453819903545,
+      "log": "run-0.log"
+    },
+    {
+      "argv": [
+        "$ARTIFACTS/final-all/execution-cz7wvbwi/build/sim_guard_legacy",
+        "--gtest_filter=*",
+        "--gtest_shuffle",
+        "--gtest_random_seed=41",
+        "--gtest_output=xml:$ARTIFACTS/final-all/execution-cz7wvbwi/run-1.xml"
+      ],
+      "exit_code": 1,
+      "seconds": 0.1740145449875854,
+      "log": "run-1.log"
+    },
+    {
+      "argv": [
+        "$ARTIFACTS/final-all/execution-cz7wvbwi/build/sim_guard_legacy",
+        "--gtest_filter=*",
+        "--gtest_shuffle",
+        "--gtest_random_seed=41",
+        "--gtest_output=xml:$ARTIFACTS/final-all/execution-cz7wvbwi/run-2.xml"
+      ],
+      "exit_code": 1,
+      "seconds": 0.12513525696704164,
+      "log": "run-2.log"
+    },
+    {
+      "argv": [
+        "$ARTIFACTS/final-all/execution-cz7wvbwi/build/sim_guard_legacy",
+        "--gtest_filter=*",
+        "--gtest_shuffle",
+        "--gtest_random_seed=41",
+        "--gtest_output=xml:$ARTIFACTS/final-all/execution-cz7wvbwi/run-3.xml"
+      ],
+      "exit_code": 1,
+      "seconds": 0.12297567602945492,
+      "log": "run-3.log"
+    },
+    {
+      "argv": [
+        "$ARTIFACTS/final-all/execution-cz7wvbwi/build/sim_guard_legacy",
+        "--gtest_filter=*",
+        "--gtest_shuffle",
+        "--gtest_random_seed=41",
+        "--gtest_output=xml:$ARTIFACTS/final-all/execution-cz7wvbwi/run-4.xml"
+      ],
+      "exit_code": 1,
+      "seconds": 0.17670998099492863,
+      "log": "run-4.log"
+    },
+    {
+      "argv": [
+        "llvm-profdata-18",
+        "merge",
+        "-sparse",
+        "$ARTIFACTS/final-all/execution-cz7wvbwi/run-0.profraw",
+        "$ARTIFACTS/final-all/execution-cz7wvbwi/run-1.profraw",
+        "$ARTIFACTS/final-all/execution-cz7wvbwi/run-2.profraw",
+        "$ARTIFACTS/final-all/execution-cz7wvbwi/run-3.profraw",
+        "$ARTIFACTS/final-all/execution-cz7wvbwi/run-4.profraw",
+        "-o",
+        "$ARTIFACTS/final-all/execution-cz7wvbwi/normal.profdata"
+      ],
+      "exit_code": 0,
+      "seconds": 0.11979835602687672,
+      "log": "merge.log"
+    },
+    {
+      "argv": [
+        "llvm-cov-18",
+        "export",
+        "$ARTIFACTS/final-all/execution-cz7wvbwi/build/sim_guard_legacy",
+        "-instr-profile=$ARTIFACTS/final-all/execution-cz7wvbwi/normal.profdata"
+      ],
+      "exit_code": 0,
+      "seconds": 0.37344916904112324,
+      "log": "coverage.log"
+    },
+    {
+      "argv": [
+        "gn",
+        "gen",
+        "$ARTIFACTS/final-all/execution-cz7wvbwi/mutant-build",
+        "--root=$REPO/telephony_core_service/test/systemtest",
+        "--args=production_root=\"$REPO/telephony_core_service\" gtest_root=\"$ARTIFACTS/deps/source/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59\" sim_guard_state_source=\"$ARTIFACTS/final-all/execution-cz7wvbwi/sim_state_handle_mutant.cpp\""
+      ],
+      "exit_code": 0,
+      "seconds": 0.17108350299531594,
+      "log": "mutant-gn.log"
+    },
+    {
+      "argv": [
+        "ninja",
+        "-C",
+        "$ARTIFACTS/final-all/execution-cz7wvbwi/mutant-build",
+        "-j",
+        "3",
+        "sim_guard_legacy"
+      ],
+      "exit_code": 0,
+      "seconds": 96.41499448701506,
+      "log": "mutant-build.log"
+    },
+    {
+      "argv": [
+        "$ARTIFACTS/final-all/execution-cz7wvbwi/mutant-build/sim_guard_legacy",
+        "--gtest_filter=*LIFE_001",
+        "--gtest_shuffle",
+        "--gtest_random_seed=41",
+        "--gtest_output=xml:$ARTIFACTS/final-all/execution-cz7wvbwi/mutation.xml"
+      ],
+      "exit_code": 1,
+      "seconds": 0.0744763890397735,
+      "log": "mutation.log"
+    },
+    {
+      "argv": [
+        "$ARTIFACTS/final-all/execution-cz7wvbwi/build/sim_guard_legacy",
+        "--gtest_filter=*-*DEFECT_*",
+        "--gtest_shuffle",
+        "--gtest_random_seed=41",
+        "--gtest_output=xml:$ARTIFACTS/final-all/execution-cz7wvbwi/restored.xml"
+      ],
+      "exit_code": 0,
+      "seconds": 0.12433893501292914,
+      "log": "restored.log"
+    }
+  ],
+  "baseline_commands": [
+    {
+      "argv": [
+        "gn",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.022092168976087123,
+      "log": "version-gn.log"
+    },
+    {
+      "argv": [
+        "ninja",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.01449664297979325,
+      "log": "version-ninja.log"
+    },
+    {
+      "argv": [
+        "clang++",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.1718592420220375,
+      "log": "version-clang++.log"
+    },
+    {
+      "argv": [
+        "ld.gold",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02274649904575199,
+      "log": "version-ld.gold.log"
+    },
+    {
+      "argv": [
+        "llvm-profdata-18",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.03881989303044975,
+      "log": "version-llvm-profdata-18.log"
+    },
+    {
+      "argv": [
+        "llvm-cov-18",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.040079000988043845,
+      "log": "version-llvm-cov-18.log"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "$BASELINE_SOURCE/telephony_core_service/test/systemtest/scripts/generate_ril_mock.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.2711728559806943,
+      "log": "ril-interface.log"
+    },
+    {
+      "argv": [
+        "gn",
+        "gen",
+        "$ARTIFACTS/baseline/execution-twfwzd_z/build",
+        "--root=$BASELINE_SOURCE/telephony_core_service/test/systemtest",
+        "--args=production_root=\"$BASELINE_SOURCE/telephony_core_service\" gtest_root=\"$ARTIFACTS/deps/source/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59\""
+      ],
+      "exit_code": 0,
+      "seconds": 0.16946749994531274,
+      "log": "normal-gn.log"
+    },
+    {
+      "argv": [
+        "ninja",
+        "-C",
+        "$ARTIFACTS/baseline/execution-twfwzd_z/build",
+        "-j",
+        "3",
+        "sim_guard_legacy"
+      ],
+      "exit_code": 0,
+      "seconds": 91.73539294704096,
+      "log": "normal-build.log"
+    },
+    {
+      "argv": [
+        "$ARTIFACTS/baseline/execution-twfwzd_z/build/sim_guard_legacy",
+        "--gtest_filter=*-*DEFECT_*",
+        "--gtest_shuffle",
+        "--gtest_random_seed=41",
+        "--gtest_output=xml:$ARTIFACTS/baseline/execution-twfwzd_z/run-0.xml"
+      ],
+      "exit_code": 0,
+      "seconds": 0.12237628595903516,
+      "log": "run-0.log"
+    },
+    {
+      "argv": [
+        "$ARTIFACTS/baseline/execution-twfwzd_z/build/sim_guard_legacy",
+        "--gtest_filter=*-*DEFECT_*",
+        "--gtest_shuffle",
+        "--gtest_random_seed=41",
+        "--gtest_output=xml:$ARTIFACTS/baseline/execution-twfwzd_z/run-1.xml"
+      ],
+      "exit_code": 0,
+      "seconds": 0.07101660803891718,
+      "log": "run-1.log"
+    },
+    {
+      "argv": [
+        "$ARTIFACTS/baseline/execution-twfwzd_z/build/sim_guard_legacy",
+        "--gtest_filter=*-*DEFECT_*",
+        "--gtest_shuffle",
+        "--gtest_random_seed=41",
+        "--gtest_output=xml:$ARTIFACTS/baseline/execution-twfwzd_z/run-2.xml"
+      ],
+      "exit_code": 0,
+      "seconds": 0.12252662499668077,
+      "log": "run-2.log"
+    },
+    {
+      "argv": [
+        "$ARTIFACTS/baseline/execution-twfwzd_z/build/sim_guard_legacy",
+        "--gtest_filter=*-*DEFECT_*",
+        "--gtest_shuffle",
+        "--gtest_random_seed=41",
+        "--gtest_output=xml:$ARTIFACTS/baseline/execution-twfwzd_z/run-3.xml"
+      ],
+      "exit_code": 0,
+      "seconds": 0.12320507498225197,
+      "log": "run-3.log"
+    },
+    {
+      "argv": [
+        "$ARTIFACTS/baseline/execution-twfwzd_z/build/sim_guard_legacy",
+        "--gtest_filter=*-*DEFECT_*",
+        "--gtest_shuffle",
+        "--gtest_random_seed=41",
+        "--gtest_output=xml:$ARTIFACTS/baseline/execution-twfwzd_z/run-4.xml"
+      ],
+      "exit_code": 0,
+      "seconds": 0.12300537497503683,
+      "log": "run-4.log"
+    },
+    {
+      "argv": [
+        "llvm-profdata-18",
+        "merge",
+        "-sparse",
+        "$ARTIFACTS/baseline/execution-twfwzd_z/run-0.profraw",
+        "$ARTIFACTS/baseline/execution-twfwzd_z/run-1.profraw",
+        "$ARTIFACTS/baseline/execution-twfwzd_z/run-2.profraw",
+        "$ARTIFACTS/baseline/execution-twfwzd_z/run-3.profraw",
+        "$ARTIFACTS/baseline/execution-twfwzd_z/run-4.profraw",
+        "-o",
+        "$ARTIFACTS/baseline/execution-twfwzd_z/normal.profdata"
+      ],
+      "exit_code": 0,
+      "seconds": 0.12003494804957882,
+      "log": "merge.log"
+    },
+    {
+      "argv": [
+        "llvm-cov-18",
+        "export",
+        "$ARTIFACTS/baseline/execution-twfwzd_z/build/sim_guard_legacy",
+        "-instr-profile=$ARTIFACTS/baseline/execution-twfwzd_z/normal.profdata"
+      ],
+      "exit_code": 0,
+      "seconds": 0.4214908819994889,
+      "log": "coverage.log"
+    }
+  ],
+  "compat_only_commands": [
+    {
+      "argv": [
+        "gn",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.010202540026511997,
+      "log": "version-gn.log"
+    },
+    {
+      "argv": [
+        "ninja",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.010478609998244792,
+      "log": "version-ninja.log"
+    },
+    {
+      "argv": [
+        "clang++",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.041013412992469966,
+      "log": "version-clang++.log"
+    },
+    {
+      "argv": [
+        "ld.gold",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.01029055198887363,
+      "log": "version-ld.gold.log"
+    },
+    {
+      "argv": [
+        "llvm-profdata-18",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.021972363989334553,
+      "log": "version-llvm-profdata-18.log"
+    },
+    {
+      "argv": [
+        "llvm-cov-18",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.03810463799163699,
+      "log": "version-llvm-cov-18.log"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "$REPO/telephony_core_service/test/systemtest/scripts/generate_ril_mock.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.2698687660158612,
+      "log": "ril-interface.log"
+    },
+    {
+      "argv": [
+        "gn",
+        "gen",
+        "$ARTIFACTS/compat-only/execution-ixmx15kk/build",
+        "--root=$REPO/telephony_core_service/test/systemtest",
+        "--args=production_root=\"$REPO/telephony_core_service\" gtest_root=\"$ARTIFACTS/deps/source/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59\""
+      ],
+      "exit_code": 0,
+      "seconds": 0.22173567401478067,
+      "log": "normal-gn.log"
+    },
+    {
+      "argv": [
+        "ninja",
+        "-C",
+        "$ARTIFACTS/compat-only/execution-ixmx15kk/build",
+        "-j",
+        "3",
+        "sim_guard_legacy"
+      ],
+      "exit_code": 0,
+      "seconds": 96.3975118349772,
+      "log": "normal-build.log"
+    },
+    {
+      "argv": [
+        "$ARTIFACTS/compat-only/execution-ixmx15kk/build/sim_guard_legacy",
+        "--gtest_filter=*-*DEFECT_*",
+        "--gtest_shuffle",
+        "--gtest_random_seed=41",
+        "--gtest_output=xml:$ARTIFACTS/compat-only/execution-ixmx15kk/run-0.xml"
+      ],
+      "exit_code": 0,
+      "seconds": 0.12391709396615624,
+      "log": "run-0.log"
+    },
+    {
+      "argv": [
+        "llvm-profdata-18",
+        "merge",
+        "-sparse",
+        "$ARTIFACTS/compat-only/execution-ixmx15kk/run-0.profraw",
+        "-o",
+        "$ARTIFACTS/compat-only/execution-ixmx15kk/normal.profdata"
+      ],
+      "exit_code": 0,
+      "seconds": 0.12175287399441004,
+      "log": "merge.log"
+    },
+    {
+      "argv": [
+        "llvm-cov-18",
+        "export",
+        "$ARTIFACTS/compat-only/execution-ixmx15kk/build/sim_guard_legacy",
+        "-instr-profile=$ARTIFACTS/compat-only/execution-ixmx15kk/normal.profdata"
+      ],
+      "exit_code": 0,
+      "seconds": 0.4222929590032436,
+      "log": "coverage.log"
+    }
+  ],
+  "run_xml_sha256": [
+    {
+      "label": "run-0",
+      "sha256": "3cf259cdac51ebe5922053bc720fad66e79121f20eab4092fd0c86d882245f18"
+    },
+    {
+      "label": "run-1",
+      "sha256": "1dd338e5f6900c0a74a658789e50bf26b6fe9e68e3ec899e091f47a64cf38705"
+    },
+    {
+      "label": "run-2",
+      "sha256": "70cfd46f38dabac2ca25a26b12312206987585f84f0b991ff3d57cdfb3fcf2c1"
+    },
+    {
+      "label": "run-3",
+      "sha256": "7baf29cd94f3c4eb999e4dd16e5e96e9651054201e95b07928af26bd46669a98"
+    },
+    {
+      "label": "run-4",
+      "sha256": "1fc6b764befa9c531bdb31aa40f7bc97644d8d21d469ac65bb44acbfc6932850"
+    }
+  ],
+  "actual_entrypoints": [
+    "python3 -B $BASELINE_SOURCE/telephony_core_service/test/sim_guard/run_sim_guard.py --sut=legacy --suite=compat --gtest-root=$ARTIFACTS/deps/source/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59 --output=$ARTIFACTS/baseline --repeat=5",
+    "python3 -B telephony_core_service/test/sim_guard/run_sim_guard.py --sut=legacy --suite=all --gtest-root=$ARTIFACTS/deps/source/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59 --output=$ARTIFACTS/final-all --repeat=5 --mutation-check",
+    "python3 -B telephony_core_service/test/sim_guard/run_sim_guard.py --sut=legacy --suite=compat --gtest-root=$ARTIFACTS/deps/source/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59 --output=$ARTIFACTS/compat-only --repeat=1",
+    "python3 -B telephony_core_service/test/systemtest/scripts/audit_initialization.py --gtest-root=$ARTIFACTS/deps/source/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59 --openssl-root=$ARTIFACTS/deps/openssl --output=$ARTIFACTS/initialization-audit"
+  ],
+  "unverified": {
+    "full_manager_initialization": "actual audit required; matched provider symbols unavailable",
+    "subscription_default_roles": "NOT_IMPLEMENTED; no guessed SimData fields or policy",
+    "database_persistence": "NOT_IMPLEMENTED; real state-object recreation covers hardware reenumeration only",
+    "esim": "contract/provider/platform preparation only; no LPA business fabricated"
+  },
+  "future_adapter": "Reuse both factories/contracts and common sources; implement real PUK/refresh/lifecycle and externally equivalent fault bindings only. All new scenes/Oracle are independent of legacy classes. Do not repair raw Refresh errors or consume stale callbacks in adapter.",
+  "path_variables": {
+    "$REPO": "/mnt/e/github/multisim",
+    "$ARTIFACTS": "/mnt/e/sim-guard-round2-artifacts",
+    "$BASELINE_SOURCE": "/mnt/e/sim-guard-round2-artifacts/baseline-source",
+    "note": "Actual machine provenance; select fresh dependency, worktree and output directories for reproduction. Logs are not the only delivery evidence."
+  },
+  "all_invocation_status": "FAIL",
+  "all_invocation_counts": {
+    "PASS": 85,
+    "FAIL": 25,
+    "BLOCKED": 0
+  },
+  "googletest_commit": "b514bdc898e2951020cbdca1304b75f5950d1f59",
+  "toolchain": {
+    "gn": "1000 (03d10f1)",
+    "ninja": "1.11.1",
+    "clang++": "Ubuntu clang version 18.1.3 (1ubuntu1)",
+    "ld.gold": "GNU gold (GNU Binutils for Ubuntu 2.42) 1.16",
+    "llvm-profdata-18": "Ubuntu LLVM version 18.1.3",
+    "llvm-cov-18": "Ubuntu LLVM version 18.1.3"
+  }
+}

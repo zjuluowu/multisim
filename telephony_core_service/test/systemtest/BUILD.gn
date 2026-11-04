@@ -328,6 +328,7 @@ executable("sim_guard_legacy") {
     "$production_root/test/sim_guard/adapters/legacy/legacy_sim_adapter.cpp",
     "$production_root/test/sim_guard/adapters/legacy/platform_spy.cpp",
     "$production_root/test/sim_guard/runner/contract_test.cpp",
+    "$production_root/test/sim_guard/runner/lifecycle_extension_test.cpp",
   ]
   configs += [ ":production_headers" ]
   include_dirs = [

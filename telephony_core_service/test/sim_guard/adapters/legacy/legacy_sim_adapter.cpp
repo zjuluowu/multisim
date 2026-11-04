@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "contracts/sim_sut.h"
+#include "contracts/sim_session.h"
 #include "fakes/ril_device.h"
+#include "fakes/ril_fault_controls.h"
 #include "platform_spy.h"
 #include "sim_state_manager.h"
 #include "mock_tel_ril_manager.h"
@@ -38,9 +40,10 @@ template<class T> void Deliver(const std::weak_ptr<EventHandler> &owner, uint32_
     if (!handler || !handler->SendEvent(InnerEvent::Get(id, payload)))
         throw std::runtime_error("RIL response receiver unavailable");
 }
-class LegacySimAdapter final : public ISimSutAdapter {
+class LegacySimAdapter final : public ISimSessionAdapter {
 public:
-    explicit LegacySimAdapter(FakeRil &device) : device_(device), ril_(std::make_shared<testing::StrictMock<MockTelRilManager>>())
+    explicit LegacySimAdapter(FakeRil &device, RilFaultControls *faults = nullptr)
+        : device_(device), faults_(faults), ril_(std::make_shared<testing::StrictMock<MockTelRilManager>>())
     {
         EXPECT_CALL(parameters_, Read(testing::StrEq("const.telephony.vsimModemCount"), _, _, _))
             .WillRepeatedly([](const char *, const char *, char *buffer, unsigned size) {
@@ -64,7 +67,13 @@ public:
         EXPECT_CALL(*ril_, GetSimStatus(_, _)).WillRepeatedly([this](int slot, const auto &event) {
             std::weak_ptr<EventHandler> owner = event->GetOwner();
             auto id = event->GetInnerEventId();
-            device_.RequestStatus(slot, [owner, id](const DeviceCard &card, bool error) {
+            const auto fault = faults_ ? faults_->TakeStatusFault() : RilFaultControls::StatusFault::None;
+            device_.RequestStatus(slot, [owner, id, fault](const DeviceCard &card, bool error) {
+                if (fault == RilFaultControls::StatusFault::Drop) return;
+                if (fault == RilFaultControls::StatusFault::Malformed) {
+                    Deliver(owner, id, std::make_shared<std::string>("invalid-status-payload"));
+                    return;
+                }
                 if (error) {
                     auto response = std::make_shared<RadioResponseInfo>();
                     response->error = ErrType::ERR_GENERIC_FAILURE;
@@ -78,10 +87,32 @@ public:
                     Deliver(owner, id, response);
                 }
             });
+            if (faults_) faults_->StatusRequested();
             return TELEPHONY_ERR_SUCCESS;
         });
         EXPECT_CALL(*ril_, UnlockPin(_, _, _)).WillRepeatedly([this](int slot, const std::string &pin, const auto &event) {
+            const auto fault = faults_ ? faults_->TakePinFault() : RilFaultControls::PinFault::None;
+            const std::weak_ptr<EventHandler> owner = event->GetOwner();
+            const auto id = event->GetInnerEventId();
+            if (fault == RilFaultControls::PinFault::GenericTransportError) {
+                auto error = std::make_shared<RadioResponseInfo>();
+                error->error = ErrType::ERR_GENERIC_FAILURE;
+                Deliver(owner, id, error);
+                return TELEPHONY_ERR_SUCCESS;
+            }
             const auto result = device_.Pin(slot, pin);
+            auto response = std::make_shared<LockStatusResp>();
+            response->result = result.result == Unlock::Ok ? UNLOCK_SUCCESS :
+                result.result == Unlock::Incorrect ? UNLOCK_PASSWORD_ERR : UNLOCK_OTHER_ERR;
+            response->remain = result.remaining;
+            auto reply = [owner, id, response] { Deliver(owner, id, response); };
+            if (fault == RilFaultControls::PinFault::Hold) faults_->HoldPin(reply);
+            else reply();
+            return TELEPHONY_ERR_SUCCESS;
+        });
+        EXPECT_CALL(*ril_, UnlockPuk(_, _, _, _)).WillRepeatedly([this](int, const auto &puk, const auto &newPin, const auto &event) {
+            if (!faults_) throw std::logic_error("PUK device response is not configured");
+            auto result = faults_->PukReply(puk, newPin);
             auto response = std::make_shared<LockStatusResp>();
             response->result = result.result == Unlock::Ok ? UNLOCK_SUCCESS :
                 result.result == Unlock::Incorrect ? UNLOCK_PASSWORD_ERR : UNLOCK_OTHER_ERR;
@@ -98,26 +129,49 @@ public:
     }
     void Start(int physicalSlots) override
     {
+        StartWithRil(physicalSlots, true);
+    }
+    void StartWithRil(int physicalSlots, bool available) override
+    {
+        StartComponents(physicalSlots, available, true);
+    }
+    void Recreate(bool available) override
+    {
+        if (!configuredSlots_) throw std::logic_error("No prior session to recreate");
+        Stop();
+        StartComponents(configuredSlots_, available, false);
+    }
+    void StartComponents(int physicalSlots, bool available, bool resetDevice)
+    {
         if (!states_.empty() || physicalSlots < 1 || physicalSlots > 2)
             throw std::invalid_argument("legacy state host supports one or two physical slots");
-        device_.Configure(physicalSlots);
+        configuredSlots_ = physicalSlots;
+        if (resetDevice) device_.Configure(physicalSlots);
         device_.BindNotify([this](int slot) {
             auto handler = std::dynamic_pointer_cast<TelEventHandler>(handlers_.at({slot, RadioEvent::RADIO_SIM_STATE_CHANGE}).lock());
             if (!handler || !handler->SendEvent(RadioEvent::RADIO_SIM_STATE_CHANGE))
                 throw std::runtime_error("RIL event receiver unavailable");
         });
         for (int slot = 0; slot < physicalSlots; ++slot) {
-            auto state = std::make_shared<SimStateManager>(ril_);
+            auto state = std::make_shared<SimStateManager>(available ? ril_ : nullptr);
             states_.push_back(state);
             state->Init(slot);
+            ++createdInstances_;
         }
+        testing::Test::RecordProperty("real_instances_created", static_cast<int>(createdInstances_));
         Settle();
     }
     void Stop() override
     {
         Settle();
         device_.ClearTransport();
+        std::vector<std::weak_ptr<SimStateManager>> retiring(states_.begin(), states_.end());
         states_.clear(); // real destructors unregister RIL handlers
+        for (const auto &instance : retiring) {
+            if (!instance.expired()) throw std::runtime_error("Real state instance not destroyed");
+            ++retiredInstances_;
+        }
+        if (!retiring.empty()) testing::Test::RecordProperty("real_instances_destroyed", static_cast<int>(retiredInstances_));
         if (!handlers_.empty()) throw std::runtime_error("RIL subscriptions leaked");
         if (!SimHost::AwaitSchedulerStopped(std::chrono::seconds(2)))
             throw std::runtime_error("event worker leaked");
@@ -157,8 +211,21 @@ public:
         return {error, response.result == UNLOCK_OK ? Unlock::Ok :
             response.result == UNLOCK_INCORRECT ? Unlock::Incorrect : Unlock::Failure, response.remain};
     }
+    int Refresh(int slot) override { return states_.at(slot)->RefreshSimState(slot); }
+    UnlockResult UnlockPuk(int slot, const std::string &newPin, const std::string &puk) override
+    {
+        LockStatusResponse response{};
+        auto error = states_.at(slot)->UnlockPuk(slot, newPin, puk, response);
+        Settle();
+        return {error, response.result == UNLOCK_OK ? Unlock::Ok :
+            response.result == UNLOCK_INCORRECT ? Unlock::Incorrect : Unlock::Failure, response.remain};
+    }
 private:
     FakeRil &device_;
+    RilFaultControls *faults_ = nullptr;
+    int configuredSlots_ = 0;
+    unsigned createdInstances_ = 0;
+    unsigned retiredInstances_ = 0;
     PlatformSpy spy_;
     ScopedPlatformSpy spyBinding_{spy_};
     testing::StrictMock<SimHost::MockExternalServices> services_;
@@ -171,4 +238,6 @@ private:
 };
 }
 std::unique_ptr<ISimSutAdapter> CreateSimSut(FakeRil &ril) { return std::make_unique<LegacySimAdapter>(ril); }
+std::unique_ptr<ISimSessionAdapter> CreateSimSessionSut(FakeRil &ril, RilFaultControls &faults)
+{ return std::make_unique<LegacySimAdapter>(ril, &faults); }
 }

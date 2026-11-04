@@ -35,8 +35,11 @@ REQUIRED = [
     ("SimStateHandle", "GetSimCardData", PRODUCTION[1]),
     ("SimStateHandle", "ProcessIccCardState", PRODUCTION[1]),
     ("SimStateHandle", "SimStateEscape", PRODUCTION[1]),
+    ("SimStateManager", "UnlockPuk", PRODUCTION[0]),
+    ("SimStateManager", "RefreshSimState", PRODUCTION[0]),
+    ("SimStateHandle", "GetUnlockResult", PRODUCTION[1]),
 ]
-FILTERS = {"compat": "*-*DEFECT_*", "defect": "*DEFECT_*"}
+FILTERS = {"compat": "*-*DEFECT_*", "defect": "*DEFECT_*", "all": "*"}
 
 
 def sha(path):
@@ -48,6 +51,13 @@ def check_semantics():
     for name, expected in baseline["sha256"].items():
         if sha(GUARD / name) != expected:
             raise RuntimeError("Compatibility asset drift requires explicit contract review: " + name)
+    reference = json.loads((GUARD / baseline["v2_reference"]).read_text())
+    for name in ["contracts/sim_sut.h", "fakes/ril_device.h", "scenarios/compatibility.h", "oracle/card_oracle.h"]:
+        if sha(GUARD / name) != reference["sha256"][name]:
+            raise RuntimeError("Frozen v2 business contract changed: " + name)
+    current = (GUARD / "runner/contract_test.cpp").read_text()
+    if hashlib.sha256(current[current.index("class Lifecycle :"):].encode()).hexdigest() != baseline["v2_test_body_sha256"]:
+        raise RuntimeError("Frozen v2 test bodies changed")
     # Independently compilable common code may only include these project headers.
     allowed = set(baseline["sha256"])
     for name in allowed:
@@ -75,7 +85,7 @@ def xml_cases(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--sut", choices=["legacy", "multisim"], default="legacy")
-    parser.add_argument("--suite", choices=["compat", "defect", "target"], default="compat")
+    parser.add_argument("--suite", choices=["compat", "defect", "all", "target"], default="compat")
     parser.add_argument("--product", choices=["host_dual_psim", "nezha_4c3s"], default="host_dual_psim")
     parser.add_argument("--gtest-root")
     parser.add_argument("--output", required=True)
@@ -150,13 +160,19 @@ def main():
         result["source_commit"] = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=CORE, text=True).strip()
         result["dirty"] = bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=CORE, text=True))
         result["semantic_baseline"] = check_semantics()
+        catalog = json.loads((GUARD / "traceability/round2_catalog.json").read_text())
+        baseline_tests = set(catalog["baseline_compatibility"])
+        extension_tests = {v["test"] for v in catalog["extension_compatibility"]}
+        defect_tests = {v["test"] for v in catalog["defects"]}
+        result["defect_inventory"] = [{**v, "this_invocation": "NOT_RUN"} for v in catalog["defects"]]
+        result["known_defects_omitted_from_compatibility_pass_count"] = True
         if args.sut == "multisim":
             raise RuntimeError("Real multisim card-state business has not migrated; adapter binding is BLOCKED, not PASS")
         if args.suite == "target" or args.product != "host_dual_psim":
             raise RuntimeError("Target/nezha business and product policy not yet confirmed or bound to real SUT")
         if not args.gtest_root:
             raise RuntimeError("--gtest-root must identify the pinned verified dependency")
-        if args.mutation_check and args.suite != "compat":
+        if args.mutation_check and args.suite not in ("compat", "all"):
             raise RuntimeError("Mutation check requires the compatibility suite")
         gtest = Path(args.gtest_root).resolve()
         lock = json.loads((SYSTEM / "configs/dependency_lock.json").read_text())
@@ -173,6 +189,7 @@ def main():
                        SYSTEM / "gn/BUILDCONFIG.gn", SYSTEM / "configs/dependency_lock.json",
                        SYSTEM / "scripts/build_clock.py", SYSTEM / "scripts/generate_ril_mock.py",
                        SYSTEM / "scripts/run_g2a_query.py", GUARD / "semantic_baseline.json",
+                       GUARD / "semantic_baseline_v2.json", GUARD / "traceability/round2_catalog.json",
                        SYSTEM / "tests/event_transport_test.cpp", GUARD / "traceability/inventory.json"]
         host_inputs += [p for p in (SYSTEM / "stubs").rglob("*") if p.is_file() and p.suffix in (".h", ".cpp")]
         result["validation_inputs"] += [{"path": str(p.relative_to(CORE)), "sha256": sha(p)} for p in sorted(host_inputs)]
@@ -189,12 +206,13 @@ def main():
         binary = normal / "sim_guard_legacy"
         for repeat in range(args.repeat):
             run = execute(binary, "run-" + str(repeat), FILTERS[args.suite])
-            expected = 7 if args.suite == "compat" else 1
-            if len(run["cases"]) != expected:
-                raise RuntimeError("Unexpected case count: " + str(len(run["cases"])))
+            expected = baseline_tests | extension_tests if args.suite == "compat" else defect_tests
+            if args.suite == "all": expected = baseline_tests | extension_tests | defect_tests
+            if {c["test"] for c in run["cases"]} != expected or len(run["cases"]) != len(expected):
+                raise RuntimeError("Missing/unexpected cases relative to versioned catalog")
             result["runs"].append(run)
             save()
-        if args.suite == "compat":
+        if args.suite in ("compat", "all"):
             profiles = [r["profile"] for r in result["runs"]]
             profdata = session / "normal.profdata"
             command(["llvm-profdata-18", "merge", "-sparse", *profiles, "-o", str(profdata)], "merge")
@@ -211,6 +229,23 @@ def main():
                 audits.append({"symbol": owner + "::" + symbol, "source": source,
                                "executions": sum(f["count"] for f in matches)})
             result["production_execution"] = audits
+            branch_audits = []
+            for owner, symbol, source, anchor in [
+                ("SimStateManager", "Init", PRODUCTION[0], "if (telRilManager_ == nullptr)"),
+                ("SimStateHandle", "GetSimCardData", PRODUCTION[1], "if ((param == nullptr) && (response == nullptr))"),
+            ]:
+                token = str(len(owner)) + owner + str(len(symbol)) + symbol
+                function = next(f for f in functions if token in f["name"] and
+                                any(Path(n).resolve() == (CORE / source).resolve() for n in f["filenames"]))
+                region = function["regions"][0]
+                lines = (CORE / source).read_text().splitlines()
+                line = next(i for i, text in enumerate(lines, 1) if anchor in text and region[0] <= i <= region[2])
+                # For &&, the final condition being true proves the whole guard was reached and true.
+                branch = max((b for b in function["branches"] if b[0] == line), key=lambda b: b[1])
+                if branch[4] <= 0:
+                    raise RuntimeError("Fault did not reach actual production guard: " + anchor)
+                branch_audits.append({"source": source, "line": line, "condition": anchor, "true_executions": branch[4]})
+            result["production_fault_branches"] = branch_audits
         if args.mutation_check:
             source = CORE / PRODUCTION[1]
             text = source.read_text()
@@ -240,6 +275,16 @@ def main():
             raise RuntimeError("Production headers changed during build/execution")
         result["counts"] = {"PASS": sum(c["status"] == "PASS" for c in cases),
                             "FAIL": sum(c["status"] == "FAIL" for c in cases), "BLOCKED": 0}
+        def counts(selected):
+            actual = [c for c in cases if c["test"] in selected]
+            return {"PASS": sum(c["status"] == "PASS" for c in actual),
+                    "FAIL": sum(c["status"] == "FAIL" for c in actual),
+                    "NOT_RUN": len(selected) if not actual else 0}
+        result["suite_counts"] = {"baseline_v2": counts(baseline_tests), "extensions": counts(extension_tests),
+                                  "compatibility": counts(baseline_tests | extension_tests), "defects": counts(defect_tests)}
+        for item in result["defect_inventory"]:
+            observed = [c["status"] for c in cases if c["test"] == item["test"]]
+            if observed: item["this_invocation"] = "FAIL" if "FAIL" in observed else "PASS"
         result["status"] = "FAIL" if result["counts"]["FAIL"] else "PASS"
         result["binary_sha256"] = sha(binary)
     except Exception as error:
