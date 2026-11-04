@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 #include <cstdio>
 #include <cstdlib>
+#include <stdexcept>
 #include "ffrt_runtime.h"
 #include "tel_event_handler.h"
 
@@ -146,4 +147,59 @@ TEST(SchedulerBoundary, ProductionGeneralTaskWaitsAndCleansUp)
     SimHost::StopCallingThreadTasks();
     EXPECT_TRUE(SimHost::AwaitSchedulerStopped(2s)) << "FFRT-GENERAL";
     EXPECT_EQ(SimHost::GetSchedulerEvidence().taskFailures, 0u) << "FFRT-GENERAL";
+}
+
+TEST(SchedulerBoundary, IdleWaitDrainsCascadedQueues)
+{
+    RecordProperty("level", "INFRA");
+    SimHost::ResetSchedulerEvidence();
+    std::atomic<unsigned> completed{0};
+    {
+        ffrt::queue first("cascade-first");
+        ffrt::queue second("cascade-second");
+        first.submit_h([&] {
+            second.submit_h([&] { completed.fetch_add(1); });
+            completed.fetch_add(1);
+        });
+        EXPECT_TRUE(SimHost::AwaitSchedulerIdle(2s));
+        EXPECT_EQ(completed.load(), 2u);
+    }
+    EXPECT_TRUE(SimHost::AwaitSchedulerStopped(2s));
+}
+
+TEST(SchedulerBoundary, IdleWaitDoesNotIgnoreDelayedOrRunningWork)
+{
+    RecordProperty("level", "INFRA");
+    SimHost::ResetSchedulerEvidence();
+    Completion started;
+    Completion release;
+    {
+        ffrt::queue queue("bounded-idle");
+        auto delayed = queue.submit_h([] {}, ffrt::task_attr().delay(60000000));
+        EXPECT_FALSE(SimHost::AwaitSchedulerIdle(5ms));
+        EXPECT_EQ(queue.cancel(delayed), 0);
+        EXPECT_TRUE(SimHost::AwaitSchedulerIdle(2s));
+        queue.submit_h([&] { started.Signal(); release.Await(); });
+        const bool running = started.Await();
+        EXPECT_TRUE(running);
+        if (running) EXPECT_FALSE(SimHost::AwaitSchedulerIdle(5ms));
+        release.Signal();
+        EXPECT_TRUE(SimHost::AwaitSchedulerIdle(2s));
+    }
+    EXPECT_TRUE(SimHost::AwaitSchedulerStopped(2s));
+}
+
+TEST(SchedulerBoundary, IdleWaitExposesTaskFailure)
+{
+    RecordProperty("level", "INFRA");
+    SimHost::ResetSchedulerEvidence();
+    {
+        ffrt::queue queue("failure-visibility");
+        auto task = queue.submit_h([] { throw std::runtime_error("controlled scheduler fault"); });
+        queue.wait(task);
+        EXPECT_FALSE(SimHost::AwaitSchedulerIdle(2s));
+        EXPECT_EQ(SimHost::GetSchedulerEvidence().taskFailures, 1u);
+    }
+    EXPECT_TRUE(SimHost::AwaitSchedulerStopped(2s));
+    SimHost::ResetSchedulerEvidence();
 }

@@ -8,6 +8,17 @@ ffrt::mutex evidenceMutex;
 ffrt::condition_variable evidenceChanged;
 unsigned workers = 0;
 unsigned failures = 0;
+uint64_t schedulerRevision = 0;
+std::vector<std::weak_ptr<ffrt::HostQueue>> queues;
+
+// Queue locks may precede this lock. Never acquire a queue lock while holding
+// evidenceMutex; idle observation snapshots the registry before inspecting it.
+void SchedulerChanged()
+{
+    std::lock_guard<ffrt::mutex> guard(evidenceMutex);
+    ++schedulerRevision;
+    evidenceChanged.notify_all();
+}
 }
 
 namespace ffrt {
@@ -61,12 +72,14 @@ static void Worker(const std::shared_ptr<HostQueue> &state)
         auto expected = HostTaskStatus::PENDING;
         if (!task->status.compare_exchange_strong(expected, HostTaskStatus::RUNNING)) continue;
         state->running = true;
+        SchedulerChanged();
         guard.unlock();
         try {
             task->action();
         } catch (...) {
             std::lock_guard<mutex> evidenceGuard(evidenceMutex);
             ++failures;
+            ++schedulerRevision;
             evidenceChanged.notify_all();
         }
         task->status.store(HostTaskStatus::DONE);
@@ -76,10 +89,12 @@ static void Worker(const std::shared_ptr<HostQueue> &state)
         guard.lock();
         state->running = false;
         state->changed.notify_all();
+        SchedulerChanged();
     }
     guard.unlock();
     std::lock_guard<mutex> evidenceGuard(evidenceMutex);
     --workers;
+    ++schedulerRevision;
     evidenceChanged.notify_all();
 }
 
@@ -88,12 +103,17 @@ queue::queue(const char *) : state_(std::make_shared<HostQueue>())
     {
         std::lock_guard<mutex> guard(evidenceMutex);
         ++workers;
+        queues.emplace_back(state_);
+        ++schedulerRevision;
+        evidenceChanged.notify_all();
     }
     try {
         worker_ = std::thread([state = state_] { Worker(state); });
     } catch (...) {
         std::lock_guard<mutex> guard(evidenceMutex);
         --workers;
+        ++schedulerRevision;
+        evidenceChanged.notify_all();
         throw;
     }
 }
@@ -108,6 +128,7 @@ queue::~queue()
             if (task->status.compare_exchange_strong(expected, HostTaskStatus::CANCELLED)) SignalTask(task);
         }
         state_->changed.notify_all();
+        SchedulerChanged();
     }
     if (worker_.get_id() == std::this_thread::get_id()) {
         // The worker retains state until its loop exits; never join/wait on itself.
@@ -128,6 +149,7 @@ task_handle queue::submit_h(std::function<void()> action, const task_attr &attr)
     if (state_->stopping) throw std::runtime_error("external FFRT queue stopped");
     state_->tasks.push_back(task);
     state_->changed.notify_all();
+    SchedulerChanged();
     return task_handle(task);
 }
 
@@ -139,6 +161,7 @@ int queue::cancel(const task_handle &handle)
     SignalTask(handle.task_);
     std::lock_guard<mutex> guard(state_->lock);
     state_->changed.notify_all();
+    SchedulerChanged();
     return 0;
 }
 
@@ -197,6 +220,44 @@ SchedulerEvidence GetSchedulerEvidence()
 {
     std::lock_guard<ffrt::mutex> guard(evidenceMutex);
     return {workers, failures};
+}
+bool AwaitSchedulerIdle(std::chrono::milliseconds budget)
+{
+    const auto deadline = std::chrono::steady_clock::now() + budget;
+    for (;;) {
+        uint64_t observedRevision;
+        std::vector<std::shared_ptr<ffrt::HostQueue>> snapshot;
+        {
+            std::lock_guard<ffrt::mutex> guard(evidenceMutex);
+            if (failures != 0) return false;
+            observedRevision = schedulerRevision;
+            queues.erase(std::remove_if(queues.begin(), queues.end(), [](const auto &queue) {
+                return queue.expired();
+            }), queues.end());
+            for (const auto &queue : queues) {
+                if (auto state = queue.lock()) snapshot.push_back(std::move(state));
+            }
+        }
+        bool idle = true;
+        for (const auto &state : snapshot) {
+            std::lock_guard<ffrt::mutex> guard(state->lock);
+            if (state->running || std::any_of(state->tasks.begin(), state->tasks.end(), [](const auto &task) {
+                return task->status.load() == ffrt::HostTaskStatus::PENDING;
+            })) {
+                idle = false;
+            }
+        }
+        std::unique_lock<ffrt::mutex> guard(evidenceMutex);
+        if (failures != 0) return false;
+        // A stable revision makes the separate queue observations coherent:
+        // no queue submitted, started or completed work during the scan.
+        if (idle && schedulerRevision == observedRevision) return true;
+        if (std::chrono::steady_clock::now() >= deadline) return false;
+        if (schedulerRevision != observedRevision) continue;
+        if (!evidenceChanged.wait_until(guard, deadline, [&] {
+            return schedulerRevision != observedRevision || failures != 0;
+        })) return false;
+    }
 }
 bool AwaitSchedulerStopped(std::chrono::milliseconds budget)
 {

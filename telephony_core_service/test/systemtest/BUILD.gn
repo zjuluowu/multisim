@@ -299,3 +299,53 @@ executable("sim_g2a_query_test") {
     "-fprofile-instr-generate",
   ]
 }
+
+# Shared contract runner. The adapter binding is the only implementation-specific source list.
+source_set("sim_guard_legacy_production") {
+  sources = [
+    "$production_root/frameworks/native/src/core_manager_inner.cpp",
+    "$production_root/services/sim/src/icc_state.cpp",
+    "$production_root/services/sim/src/sim_state_manager.cpp",
+    "$production_root/services/tel_ril/src/observer_handler.cpp",
+    "$production_root/services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp",
+  ]
+  if (sim_guard_state_source == "") {
+    sources += [ "$production_root/services/sim/src/sim_state_handle.cpp" ]
+  } else {
+    sources += [ sim_guard_state_source ]
+  }
+  configs += [
+    ":production_headers",
+    ":production_execution_evidence",
+  ]
+  cflags_cc = [
+    "-include",
+    rebase_path("stubs/include/host_standard_prelude.h", root_build_dir),
+  ]
+}
+executable("sim_guard_legacy") {
+  sources = [
+    "$production_root/test/sim_guard/adapters/legacy/legacy_sim_adapter.cpp",
+    "$production_root/test/sim_guard/adapters/legacy/platform_spy.cpp",
+    "$production_root/test/sim_guard/runner/contract_test.cpp",
+  ]
+  configs += [ ":production_headers" ]
+  include_dirs = [
+    "$production_root/test/sim_guard",
+    "stubs",
+    "$gtest_root/googletest/include",
+    "$gtest_root/googlemock/include",
+  ]
+  deps = [
+    ":event_transport_production_host",
+    ":external_service_boundaries",
+    ":googlemock",
+    ":platform_boundaries",
+    ":scheduler_boundaries",
+    ":sim_guard_legacy_production",
+  ]
+  ldflags = [
+    "-fprofile-instr-generate",
+    "-Wl,-Map,sim_guard_legacy.map",
+  ]
+}

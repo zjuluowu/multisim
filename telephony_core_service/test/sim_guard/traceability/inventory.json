@@ -1,0 +1,835 @@
+{
+  "schema_version": 1,
+  "asset_version": "sim-guard-compat-v1",
+  "source_commit": "01a86b9f073b20f408d9f8e67da35192aacac439",
+  "source_paths_relative_to": "telephony_core_service",
+  "scope": "Versioned M0 evidence and scenario mapping; authoritative actual results are runner result.json and checked-in evidence.json",
+  "evidence_levels": {
+    "A": "Explicit public interface/type contract; no claim of product policy approval",
+    "B": "Business owner confirmed rule; none newly approved by this index",
+    "C": "Source-observed behavior baseline requiring review when changed",
+    "D": "Static-analysis or report-derived candidate; NEEDS_DECISION before compatibility gate promotion"
+  },
+  "sources": {
+    "design": "docs/test/SIM_测试防护网建设设计说明书_v1.1_融合系统测试用例分析.md",
+    "interface_review": "docs/SIM管理对外接口说明_源码核实版.md",
+    "state_contract": "interfaces/innerkits/include/sim_state_type.h",
+    "ril_contract": "interfaces/innerkits/include/i_tel_ril_manager.h",
+    "current_gaps": "test/systemtest/configs/storage_protocol_requirements.json"
+  },
+  "interfaces": [
+    {
+      "id": "IN-QUERY",
+      "kind": "public_query",
+      "symbols": [
+        "ISimManager::HasSimCard",
+        "ISimManager::GetSimState",
+        "ISimManager::GetCardType"
+      ],
+      "declarations": "interfaces/innerkits/include/i_sim_manager.h",
+      "production_route": [
+        "services/sim/src/sim_manager.cpp:155",
+        "services/sim/src/sim_manager.cpp:176",
+        "services/sim/src/sim_state_manager.cpp",
+        "services/sim/src/sim_state_handle.cpp"
+      ],
+      "input": "slot identity; per-card query",
+      "outputs": [
+        "presence",
+        "public_state",
+        "card_type",
+        "return_code"
+      ],
+      "scenarios": [
+        "LIFE-001",
+        "LOCK-001",
+        "DUAL-001",
+        "RIL-001",
+        "DEFECT-001"
+      ],
+      "limit": "Initial component adapter may bind the real state capability; full manager/Core/IPC lifecycle remains a separate validation scope"
+    },
+    {
+      "id": "IN-PIN",
+      "kind": "public_control",
+      "symbols": [
+        "ISimManager::UnlockPin",
+        "SimStateManager::UnlockPin"
+      ],
+      "declarations": "interfaces/innerkits/include/i_sim_manager.h",
+      "production_route": [
+        "services/sim/src/sim_manager.cpp:215",
+        "services/sim/src/sim_state_manager.cpp:197",
+        "services/sim/src/sim_state_handle.cpp:731"
+      ],
+      "input": "slot and PIN; RIL completion carries result and remaining attempts",
+      "outputs": [
+        "return_code",
+        "unlock_result",
+        "remaining_attempts",
+        "public_state"
+      ],
+      "scenarios": [
+        "LOCK-001"
+      ]
+    },
+    {
+      "id": "IN-RIL",
+      "kind": "external_notification_and_callback",
+      "symbols": [
+        "ITelRilManager::RegisterCoreNotify",
+        "ITelRilManager::GetSimStatus",
+        "ITelRilManager::UnlockPin",
+        "RadioEvent::RADIO_SIM_STATE_CHANGE"
+      ],
+      "declarations": "interfaces/innerkits/include/i_tel_ril_manager.h",
+      "production_route": [
+        "SimStateHandle::ProcessEvent",
+        "SimStateHandle::ObtainIccStatus",
+        "SimStateHandle::GetSimCardData",
+        "SimStateHandle::GetUnlockResult"
+      ],
+      "input": "registered handler notification and owned request-response event",
+      "outputs": [
+        "public_queries",
+        "state_registry_update",
+        "common_event",
+        "core_notification"
+      ],
+      "scenarios": [
+        "LIFE-001",
+        "LOCK-001",
+        "DUAL-001",
+        "RIL-001",
+        "DEFECT-001"
+      ]
+    },
+    {
+      "id": "IN-ACCOUNT",
+      "kind": "public_query_and_control",
+      "symbols": [
+        "ISimManager::GetSimId",
+        "ISimManager::GetSlotId",
+        "ISimManager::GetSimAccountInfo",
+        "ISimManager::GetActiveSimAccountInfoList",
+        "ISimManager::SetDefaultVoiceSlotId",
+        "ISimManager::GetDefaultVoiceSlotId"
+      ],
+      "declarations": "interfaces/innerkits/include/i_sim_manager.h",
+      "production_route": [
+        "services/sim/src/multi_sim_controller.cpp:888",
+        "services/sim/src/multi_sim_controller.cpp:1209",
+        "services/sim/src/multi_sim_controller.cpp:1237",
+        "services/sim/src/multi_sim_controller.cpp:1974"
+      ],
+      "status": "NOT_IMPLEMENTED",
+      "blockers": [
+        "GAP-STORAGE",
+        "DEC-DEFAULT"
+      ]
+    },
+    {
+      "id": "IN-ESIM-CORE",
+      "kind": "inner_api_profile_and_download_protocol",
+      "symbols": [
+        "IEsimManager::GetEuiccProfileInfoList",
+        "IEsimManager::SwitchToProfile",
+        "IEsimManager::DisableProfile",
+        "IEsimManager::DeleteProfile",
+        "IEsimManager::ResetMemory",
+        "IEsimManager::SetProfileNickname",
+        "IEsimManager::AuthenticateServer",
+        "IEsimManager::PrepareDownload",
+        "IEsimManager::LoadBoundProfilePackage"
+      ],
+      "declarations": "interfaces/innerkits/include/i_esim_manager.h",
+      "production_route": [
+        "services/sim/src/esim_manager.cpp",
+        "services/sim/src/esim_file.cpp"
+      ],
+      "status": "NOT_IMPLEMENTED",
+      "blockers": [
+        "GAP-ESIM",
+        "DEC-ESIM"
+      ]
+    },
+    {
+      "id": "IN-ESIM-SERVICE",
+      "kind": "external_sa66250_contract",
+      "symbols": [
+        "IEsimService::DownloadProfile",
+        "EsimServiceClient::DownloadProfile"
+      ],
+      "declarations": "interfaces/innerkits/IEsimService.idl",
+      "production_route": [
+        "frameworks/native/src/esim_service_client.cpp:202"
+      ],
+      "status": "NOT_IMPLEMENTED",
+      "limit": "Full download orchestration is in SA66250; IEsimManager has no DownloadProfile. A Fake cannot replace external orchestration and count it as real SIM business coverage.",
+      "blockers": [
+        "GAP-ESIM"
+      ]
+    },
+    {
+      "id": "IN-IPC-LIFECYCLE",
+      "kind": "ipc_and_host_lifecycle",
+      "symbols": [
+        "CoreServiceSim::HasSimCard",
+        "CoreServiceSim::GetSimState",
+        "CoreServiceSim::UnlockPin",
+        "SimManager::OnInit",
+        "SimStateManager::Init"
+      ],
+      "production_route": [
+        "services/core/src/core_service_sim.cpp:71",
+        "services/core/src/core_service_sim.cpp:99",
+        "services/core/src/core_service_sim.cpp:696",
+        "services/sim/src/sim_manager.cpp",
+        "services/sim/src/sim_state_manager.cpp"
+      ],
+      "status": "COMPONENT_HOST_IMPLEMENTED_FULL_SERVICE_NOT_RUN",
+      "limit": "Component Init does not validate Core Init, SA publication, proxy/stub, permissions, reboot or product lifecycle",
+      "blockers": [
+        "GAP-PRODUCT",
+        "GAP-STORAGE"
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "id": "DEP-RIL",
+      "boundary": "ITelRilManager",
+      "replacement": "stateful Fake with request records and explicit response delivery",
+      "faults": [
+        "error",
+        "duplicate",
+        "hold",
+        "late",
+        "out_of_order",
+        "no_response"
+      ],
+      "required_now": [
+        "GetSimStatus",
+        "UnlockPin",
+        "RegisterCoreNotify",
+        "UnRegisterCoreNotify"
+      ],
+      "meaning": "Device facts and transport completion only; no SIM state machine"
+    },
+    {
+      "id": "DEP-NOTIFY",
+      "boundary": "TelephonyStateRegistryClient::UpdateSimState and CommonEventManager::PublishCommonEvent",
+      "replacement": "Spy at system-service boundary",
+      "production": "services/sim/src/sim_state_handle.cpp:478",
+      "meaning": "Record real SUT publications; no fabricated SUT snapshot"
+    },
+    {
+      "id": "DEP-HOST",
+      "boundary": "SystemAbilityManagerClient and EventHandler/TelEventHandler/FFRT runtime",
+      "replacement": "existing host platform subset and bounded event control",
+      "production": "SimStateHandle::ConnectService; SimStateHandle::Init",
+      "meaning": "Platform hosting only; does not prove real SA discovery or device threading behavior"
+    },
+    {
+      "id": "DEP-CORE",
+      "boundary": "CoreManagerInner sibling-module facade and vendor ABI",
+      "replacement": "Real CoreManagerInner and TelephonyExtWrapper are linked; SIM manager route deliberately unassembled, dynamic vendor library unavailable",
+      "production": "SimStateHandle::HasSimCard; PublishHotZoneInd; HandleSimAbsent",
+      "meaning": "Account/esim sibling integration unobserved; no stub of IsEsim/ResetSimLoadAccount or SIM business"
+    },
+    {
+      "id": "DEP-STORE",
+      "boundary": "DataShare/SimRdbHelper plus TelProfileUtil and parameter service",
+      "replacement": "Fake persistence only after schema/protocol resolution",
+      "status": "NOT_IMPLEMENTED",
+      "blockers": [
+        "GAP-STORAGE"
+      ],
+      "meaning": "No invented SimData field names, URI or success responses"
+    },
+    {
+      "id": "DEP-ESIM",
+      "boundary": "eUICC logical-channel/APDU RIL plus SA66250 client",
+      "replacement": "Fake eUICC/RIL protocol and separately scoped Fake external LPA",
+      "required_later": [
+        "SimOpenLogicalChannel",
+        "SimCloseLogicalChannel",
+        "SimTransmitApduLogicalChannel"
+      ],
+      "status": "NOT_IMPLEMENTED",
+      "blockers": [
+        "GAP-ESIM"
+      ],
+      "meaning": "The core owns real APDU encoding/parsing; external Fake owns device inventory, not core business orchestration"
+    }
+  ],
+  "events": [
+    {
+      "id": "EV-INIT",
+      "source": "host",
+      "entry": "SimStateManager::Init -> SimStateHandle::Init",
+      "observable": "state queries and RIL registration",
+      "scenarios": [
+        "LIFE-001",
+        "LOCK-001",
+        "DUAL-001",
+        "RIL-001",
+        "DEFECT-001"
+      ]
+    },
+    {
+      "id": "EV-STATUS",
+      "source": "RIL unsolicited",
+      "entry": "RADIO_SIM_STATE_CHANGE -> GetSimStatus -> MSG_SIM_GET_ICC_STATUS_DONE -> GetSimCardData",
+      "payload": "SimCardStatusInfo or RadioResponseInfo",
+      "scenarios": [
+        "LIFE-001",
+        "DUAL-001",
+        "RIL-001",
+        "DEFECT-001"
+      ]
+    },
+    {
+      "id": "EV-PIN",
+      "source": "RIL completion",
+      "entry": "MSG_SIM_UNLOCK_PIN_DONE -> GetUnlockResult -> SyncUnlockPinResponse",
+      "payload": "LockStatusResp or RadioResponseInfo",
+      "scenarios": [
+        "LOCK-001"
+      ]
+    },
+    {
+      "id": "EV-RADIO",
+      "source": "RIL unsolicited",
+      "entry": "RADIO_STATE_CHANGED -> ProcessRadioStateUnavailable or ObtainIccStatus",
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "EV-PROFILE",
+      "source": "eUICC APDU and eSIM service",
+      "entry": "EsimFile::ProcessEvent and IEsimManager::PublishEsimProfileChange",
+      "status": "NOT_IMPLEMENTED",
+      "blockers": [
+        "GAP-ESIM"
+      ]
+    },
+    {
+      "id": "EV-RESTART",
+      "source": "host/system",
+      "entry": "full SimManager initialization and persisted-state restore",
+      "status": "NOT_IMPLEMENTED",
+      "blockers": [
+        "GAP-STORAGE",
+        "GAP-PRODUCT"
+      ]
+    }
+  ],
+  "model": {
+    "identity_dimensions": [
+      "slot",
+      "card",
+      "port",
+      "profile",
+      "subscription",
+      "default_voice",
+      "default_data",
+      "primary"
+    ],
+    "observation_rule": "Unconnected dimensions remain unobserved; slotId is not a surrogate subscription/profile/card identity",
+    "public_states": [
+      "unknown",
+      "not_present",
+      "locked",
+      "not_ready",
+      "ready",
+      "loaded"
+    ],
+    "initial_slice": {
+      "product": "host_dual_psim",
+      "physical_slots": 2,
+      "observed": [
+        "slot",
+        "presence",
+        "public_state",
+        "card_type",
+        "unlock_result",
+        "notifications"
+      ],
+      "unobserved": [
+        "subscription",
+        "default_roles",
+        "profile",
+        "port",
+        "network_registration"
+      ]
+    },
+    "nezha_4c3s": {
+      "suite": "target",
+      "status": "NEEDS_DECISION",
+      "source": "design sections 4.1.1 and 4.3.1; secondary test-report model, not a production capability claim",
+      "physical_slots": 2,
+      "shared_tray": true,
+      "profile_positions": 2,
+      "max_active": 3,
+      "counts": [
+        "physical_present_plus_downloaded",
+        "active",
+        "network_registered"
+      ],
+      "constraints": [
+        "Four identities do not imply four active cards",
+        "Network registration is observed independently from activation",
+        "Profile downloaded and Profile active are distinct",
+        "Primary, default voice and default data are distinct roles"
+      ],
+      "limit": "Do not infer capacity or activation limits of other products; no target suite PASS before real business integration"
+    }
+  },
+  "rules": [
+    {
+      "id": "STATE-ABSENT",
+      "level": "A",
+      "source": "sim_state_type.h SimState::SIM_STATE_NOT_PRESENT comment",
+      "meaning": "No inserted card is represented by not_present and absence",
+      "code_evidence": "SimStateHandle::SimStateEscape; SimStateHandle::HasSimCard",
+      "scenarios": [
+        "LIFE-001",
+        "DUAL-001",
+        "RIL-001"
+      ],
+      "approval": "PUBLIC_TYPE_CONTRACT"
+    },
+    {
+      "id": "STATE-LOCK",
+      "level": "A",
+      "source": "sim_state_type.h SimState::SIM_STATE_LOCKED comment",
+      "meaning": "PIN/PUK/network lock is represented by locked",
+      "code_evidence": "SimStateHandle::SimStateEscape",
+      "scenarios": [
+        "LIFE-001",
+        "LOCK-001"
+      ],
+      "approval": "PUBLIC_TYPE_CONTRACT"
+    },
+    {
+      "id": "STATE-READY",
+      "level": "A",
+      "source": "sim_state_type.h SimState::SIM_STATE_READY comment",
+      "meaning": "Ready means the card is in position and working properly",
+      "code_evidence": "SimStateHandle::SimStateEscape",
+      "scenarios": [
+        "LIFE-001",
+        "DUAL-001",
+        "RIL-001"
+      ],
+      "approval": "PUBLIC_TYPE_CONTRACT"
+    },
+    {
+      "id": "PIN-RESULT",
+      "level": "A",
+      "source": "sim_state_type.h UnlockResult comments and LockStatusResponse",
+      "meaning": "Password error maps to UNLOCK_INCORRECT; success maps to UNLOCK_OK; remaining attempts remain externally observable",
+      "code_evidence": "SimStateManager::UnlockPin; SimStateHandle::GetUnlockResult",
+      "scenarios": [
+        "LOCK-001"
+      ],
+      "approval": "PUBLIC_TYPE_CONTRACT"
+    },
+    {
+      "id": "PIN-INTERMEDIATE",
+      "level": "C",
+      "source": "services/sim/src/sim_state_manager.cpp:197",
+      "meaning": "Successful PIN completion changes locked to not_ready before a separate ready status report",
+      "scenarios": [],
+      "approval": "SOURCE_OBSERVED_NOT_BUSINESS_APPROVED",
+      "diagnostic_only": true
+    },
+    {
+      "id": "SLOT-ISOLATION",
+      "level": "D",
+      "source": "design INV-01 and per-slot query/event signatures",
+      "meaning": "A status change for one physical card must not change the unrelated card state",
+      "scenarios": [],
+      "approval": "NEEDS_DECISION_FOR_GENERALIZED_INVARIANT",
+      "diagnostic_only": true
+    },
+    {
+      "id": "RIL-PRESERVE",
+      "level": "C",
+      "source": "SimStateHandle::GetSimCardData and ProcessIccCardState",
+      "meaning": "In the selected generic physical configuration, query errors leave observed state unchanged and repeated identical status keeps the same final state",
+      "scenarios": [],
+      "approval": "SOURCE_OBSERVED_NOT_BUSINESS_APPROVED",
+      "limit": "No universal exact notification-count assertion; VSIM/product branches require separate scenarios",
+      "diagnostic_only": true
+    },
+    {
+      "id": "STALE-REJECT",
+      "level": "D",
+      "source": "design INV-02 and current task defect-regression requirement",
+      "meaning": "An obsolete READY response must not resurrect a card removed since that request",
+      "scenarios": [
+        "DEFECT-001"
+      ],
+      "approval": "NEEDS_DECISION_ON_REQUEST_GENERATION_CONTRACT",
+      "limit": "Defect candidate, never old-behavior compatibility; preserve failure evidence"
+    },
+    {
+      "id": "NEZHA-I-R",
+      "level": "D",
+      "source": "design I1-I8 and R-1 through R-9",
+      "meaning": "Product-specific activation, tray, role, persistence, timing and Profile candidate rules",
+      "scenarios": [],
+      "approval": "REPORT_DERIVED_NEEDS_DECISION"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "LIFE-001",
+      "suite": "compat",
+      "origin": "code_discovered",
+      "family": "HotPlug",
+      "product": "host_dual_psim",
+      "steps": [
+        "absent",
+        "PIN locked",
+        "ready",
+        "remove"
+      ],
+      "inputs": [
+        "IN-RIL"
+      ],
+      "observations": [
+        "IN-QUERY",
+        "DEP-NOTIFY"
+      ],
+      "rules": [
+        "STATE-ABSENT",
+        "STATE-LOCK",
+        "STATE-READY"
+      ],
+      "execution": "SEE_EXECUTION_EVIDENCE",
+      "implementation": "test/sim_guard/runner/contract_test.cpp",
+      "gtest_names": [
+        "Compatibility/Lifecycle.PublicCardState/LIFE_001",
+        "Compatibility/Lifecycle.PublicCardState/LIFE_002",
+        "Compatibility/Lifecycle.PublicCardState/PUK_001"
+      ]
+    },
+    {
+      "id": "LOCK-001",
+      "suite": "compat",
+      "origin": "code_discovered",
+      "family": "PIN_PUK",
+      "product": "host_dual_psim",
+      "steps": [
+        "PIN locked",
+        "wrong PIN response",
+        "successful PIN response",
+        "ready status"
+      ],
+      "inputs": [
+        "IN-PIN",
+        "IN-RIL"
+      ],
+      "observations": [
+        "IN-QUERY",
+        "IN-PIN",
+        "DEP-NOTIFY"
+      ],
+      "rules": [
+        "STATE-LOCK",
+        "PIN-RESULT"
+      ],
+      "execution": "SEE_EXECUTION_EVIDENCE",
+      "implementation": "test/sim_guard/runner/contract_test.cpp",
+      "gtest_names": [
+        "ContractDriver.PIN_001",
+        "ContractDriver.PIN_002_CommandFailure"
+      ],
+      "limit": "No assertion on immediate NOT_READY intermediate state; result enum and later real device readiness are checked"
+    },
+    {
+      "id": "DUAL-001",
+      "suite": "compat",
+      "origin": "code_discovered",
+      "family": "HotPlug",
+      "product": "host_dual_psim",
+      "steps": [
+        "two physical cards",
+        "interleaved per-slot state changes",
+        "remove and restore one card"
+      ],
+      "inputs": [
+        "IN-RIL"
+      ],
+      "observations": [
+        "IN-QUERY",
+        "DEP-NOTIFY"
+      ],
+      "rules": [
+        "STATE-ABSENT",
+        "STATE-READY",
+        "STATE-LOCK"
+      ],
+      "execution": "SEE_EXECUTION_EVIDENCE",
+      "limit": "Each physical slot query is checked against its independently supplied device facts. Generalized account/role isolation (SLOT-ISOLATION) is not asserted.",
+      "implementation": "test/sim_guard/runner/contract_test.cpp",
+      "gtest_names": [
+        "ContractDriver.DUAL_001"
+      ]
+    },
+    {
+      "id": "RIL-001",
+      "suite": "compat",
+      "origin": "code_discovered",
+      "family": "RIL_ERROR",
+      "product": "host_dual_psim",
+      "steps": [
+        "known absence",
+        "status request error (observation only)",
+        "valid READY response",
+        "duplicate READY response",
+        "public readiness query"
+      ],
+      "inputs": [
+        "IN-RIL"
+      ],
+      "observations": [
+        "IN-QUERY",
+        "DEP-NOTIFY"
+      ],
+      "rules": [
+        "STATE-ABSENT",
+        "STATE-READY"
+      ],
+      "execution": "SEE_EXECUTION_EVIDENCE",
+      "implementation": "test/sim_guard/runner/contract_test.cpp",
+      "gtest_names": [
+        "ContractDriver.RIL_001_DuplicateAndError"
+      ],
+      "limit": "Error callback is injected and query trace retained as C observation; no hard assertion on error-state preservation. Public state Oracle applies after valid device replies and duplicate ready reply."
+    },
+    {
+      "id": "DEFECT-001",
+      "suite": "defect",
+      "origin": "static_analysis_candidate",
+      "family": "LATE_CALLBACK",
+      "product": "host_dual_psim",
+      "steps": [
+        "hold a READY response",
+        "deliver newer removal",
+        "deliver held READY response",
+        "query public state"
+      ],
+      "inputs": [
+        "IN-RIL"
+      ],
+      "observations": [
+        "IN-QUERY",
+        "DEP-NOTIFY"
+      ],
+      "rules": [
+        "STALE-REJECT"
+      ],
+      "execution": "SEE_EXECUTION_EVIDENCE",
+      "expected_legacy_status": "SEE_EXECUTION_EVIDENCE",
+      "limit": "Failure must be recorded, not converted into compatibility expectation or hidden with skip",
+      "implementation": "test/sim_guard/runner/contract_test.cpp",
+      "gtest_names": [
+        "ContractDriver.DEFECT_001_StaleReadyAfterRemoval"
+      ]
+    }
+  ],
+  "system_test_families": [
+    {
+      "family": "HotPlug",
+      "report_cases": 78,
+      "implemented_scope": "Physical SIM state lifecycle through real RIL and query bindings",
+      "missing": [
+        "shared-tray device contract",
+        "eSIM preservation",
+        "default/account migration"
+      ],
+      "scenarios": [
+        "LIFE-001",
+        "DUAL-001"
+      ],
+      "execution": "SEE_EXECUTION_EVIDENCE"
+    },
+    {
+      "family": "Reboot",
+      "report_cases": 123,
+      "subgroups": {
+        "same_cards": 67,
+        "changed_cards": 56
+      },
+      "status": "NOT_IMPLEMENTED",
+      "blockers": [
+        "GAP-STORAGE",
+        "GAP-PRODUCT"
+      ]
+    },
+    {
+      "family": "Enable_Disable",
+      "report_cases": 30,
+      "status": "NOT_IMPLEMENTED",
+      "blockers": [
+        "GAP-STORAGE",
+        "DEC-DEFAULT",
+        "DEC-NEZHA"
+      ]
+    },
+    {
+      "family": "Add_eSIM",
+      "report_cases": 90,
+      "status": "NOT_IMPLEMENTED",
+      "blockers": [
+        "GAP-ESIM",
+        "DEC-ESIM",
+        "DEC-NEZHA"
+      ]
+    },
+    {
+      "family": "Delete_eSIM",
+      "report_cases": 9,
+      "status": "NOT_IMPLEMENTED",
+      "blockers": [
+        "GAP-ESIM",
+        "DEC-ESIM"
+      ]
+    },
+    {
+      "family": "Reset_eSIM",
+      "report_cases": 16,
+      "status": "NOT_IMPLEMENTED",
+      "blockers": [
+        "GAP-ESIM",
+        "DEC-RESET"
+      ]
+    },
+    {
+      "family": "Edit_eSIM",
+      "report_cases": 2,
+      "status": "NOT_IMPLEMENTED",
+      "blockers": [
+        "GAP-ESIM",
+        "GAP-STORAGE"
+      ]
+    },
+    {
+      "family": "Factory_Reset_OOBE",
+      "report_cases": 44,
+      "status": "NOT_IMPLEMENTED",
+      "blockers": [
+        "GAP-STORAGE",
+        "GAP-ESIM",
+        "DEC-RESET",
+        "GAP-PRODUCT"
+      ]
+    }
+  ],
+  "report_quality": {
+    "source_kind": "secondary_analysis_only",
+    "original_xlsx_available": false,
+    "raw_case_ids": "NOT_AVAILABLE_NOT_FABRICATED",
+    "unresolved": [
+      "214/348 is about 61.5%, not the reported 54.6%",
+      "214+133 leaves one of 348 cases unclassified",
+      "Primary-card assertions reported as both 202 and 212",
+      "N-to-M card-count matrix may mean present/downloaded rather than active",
+      "No claimed percentage of original 392-case semantic coverage"
+    ]
+  },
+  "gaps": [
+    {
+      "id": "GAP-STORAGE",
+      "status": "BLOCKED",
+      "scope": "full initialization, accounts, default roles, reboot persistence",
+      "evidence": "test/systemtest/configs/storage_protocol_requirements.json",
+      "needed": "Matching provider SimData fields, URI/schema/error protocol; 14 existing unresolved symbols must not be invented"
+    },
+    {
+      "id": "GAP-PRODUCT",
+      "status": "NOT_RUN",
+      "scope": "OHOS product/GN integration, full Core initialization, SA/IPC/permission, actual reboot and device timing",
+      "needed": "Matching complete OHOS tree, hb/product configuration, provider and device environment"
+    },
+    {
+      "id": "GAP-ESIM",
+      "status": "NOT_IMPLEMENTED",
+      "scope": "real eUICC APDU lifecycle and external SA66250 download coordination",
+      "needed": "Compile real EsimFile/EsimManager with CORE_SERVICE_SUPPORT_ESIM, protocol-bound device Fake, explicit external-service contract and scheduler; no Fake business implementation"
+    },
+    {
+      "id": "GAP-MULTISIM",
+      "status": "NOT_IMPLEMENTED",
+      "scope": "second real SUT compatibility execution",
+      "needed": "Real migrated production state/PIN business, adapter factory/build binding; identical scene/input/Oracle/Fake semantics required",
+      "limit": "Skeleton and GetRealSimCount read-only query do not validate state/Profile migration"
+    },
+    {
+      "id": "GAP-TIMEOUT",
+      "status": "NOT_IMPLEMENTED",
+      "scope": "real production timeout and recovery",
+      "needed": "Bounded reproducible production wait execution or approved external clock boundary; watchdog expiration is not a SIM timeout PASS"
+    },
+    {
+      "id": "DEC-DEFAULT",
+      "status": "NEEDS_DECISION",
+      "scope": "design DEC-01/02/03",
+      "needed": "Product-specific role fallback, auto-reselection, unavailable data role meaning"
+    },
+    {
+      "id": "DEC-NEZHA",
+      "status": "NEEDS_DECISION",
+      "scope": "design DEC-04/06/07 plus I1-I8 and R-1 through R-9",
+      "needed": "Capacity/product approval, cancellation partial effects, shared-tray RIL message semantics and physical timing"
+    },
+    {
+      "id": "DEC-ESIM",
+      "status": "NEEDS_DECISION",
+      "scope": "design DEC-05",
+      "needed": "Active Profile deletion/deactivation semantics and failure/error behavior"
+    },
+    {
+      "id": "DEC-RESET",
+      "status": "NEEDS_DECISION",
+      "scope": "design DEC-08",
+      "needed": "Factory reset preserve/erase range for Profile activation, nickname and preference"
+    },
+    {
+      "id": "DEC-ASYNC",
+      "status": "NEEDS_DECISION",
+      "scope": "STALE-REJECT and eSIM fast-response candidate",
+      "evidence": "EsimFile request methods set readiness false after sending; SimStateHandle::GetSimCardData has no visible request-generation check",
+      "needed": "Reproduce real observable violation and review intended generation/fast-response contract; do not hide failures"
+    },
+    {
+      "id": "GAP-QUERY-VALIDATION",
+      "status": "NOT_IMPLEMENTED",
+      "scope": "Formal ISimManager/Core invalid-slot error ordering and public GetSimIccId source",
+      "needed": "Bind complete manager/query path after initialization closure; component host only calls valid initialized slots"
+    },
+    {
+      "id": "GAP-EXTENDED-EXCEPTIONS",
+      "status": "NOT_IMPLEMENTED",
+      "scope": "Real 20s PIN timeout, PUK unlock, concurrent public operations, Radio unavailable and persisted service recovery",
+      "needed": "Add independently sourced expectations and controlled completion/timeout cases; holding a status response is not proof of timeout recovery"
+    },
+    {
+      "id": "GAP-MULTISIM",
+      "status": "BLOCKED",
+      "scope": "Second real implementation of current seven compatibility cases",
+      "needed": "Migrate actual state/PIN business then bind adapters/multisim and separate GN target; no fake replacement or inferred PASS"
+    }
+  ],
+  "execution_evidence": "test/sim_guard/evidence.json (created after actual execution; not required to run tests)",
+  "coverage_scope": {
+    "business_scenarios": 7,
+    "defect_candidates": 1,
+    "strong_oracle": "public card states/types, PIN result and per-transition state notification",
+    "not_a_denominator": "No whole-module or 392-manual-case coverage percentage",
+    "actual_execution": "evidence.json; current invocation result.json is authoritative"
+  }
+}

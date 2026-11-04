@@ -1,6 +1,8 @@
 declare_args() {
   gtest_root = ""
   production_root = ""
+  sim_guard_state_source =
+      ""  # controlled mutation copy; normal runs always leave empty
   openssl_root = ""
   libxml2_include_dir = "/usr/include/libxml2"
 }
