@@ -4,7 +4,7 @@
   "reported_baseline_commit": "e99caba343e73d6f72d9bbb6969dc90095125e85",
   "source_parent_commit": "01db5ce64fc5fdb8d80c585bf35d4c260c817b86",
   "source_worktree_dirty": true,
-  "source_revision_note": "Round2 implementation is in the working tree on work/sim-guard-round2; source_parent_commit alone does not contain the changes. Exact production/test inputs are identified by the hashes below. No round2 push or main merge.",
+  "source_revision_note": "This evidence records the round2 test execution on parent 01db5ce6 plus its then-dirty working tree. The exact tested source hashes were later matched to the saved code commit in publication; no claim of a clean-commit test rerun is made.",
   "scope": "Actual physical-card state/security component and object recreation; full SimManager/Subscription/default-role/database/eSIM acceptance remains blocked/not implemented.",
   "baseline_recheck": {
     "status": "PASS",
@@ -1671,5 +1671,14 @@
     "ld.gold": "GNU gold (GNU Binutils for Ubuntu 2.42) 1.16",
     "llvm-profdata-18": "Ubuntu LLVM version 18.1.3",
     "llvm-cov-18": "Ubuntu LLVM version 18.1.3"
+  },
+  "publication": {
+    "saved_code_commit": "c508bd0390b1c4360beb1d9388c0e84a9e099de0",
+    "remote": "origin",
+    "target": "refs/heads/main",
+    "remote_code_commit_verified": true,
+    "tested_source_hashes_match_saved_code": true,
+    "business_tests_rerun_for_publication": false,
+    "final_documentation_tip": "query Git; no self-referential commit SHA"
   }
 }

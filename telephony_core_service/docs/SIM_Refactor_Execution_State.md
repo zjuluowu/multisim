@@ -314,4 +314,10 @@ python3 -B telephony_core_service/test/systemtest/scripts/audit_initialization.p
 
 下一步待提供匹配fork的Provider仓/commit或产品manifest，再推进完整OnInit、账户/默认角色及持久化恢复；返回契约、默认回选/移除策略和eSIM类型分别裁决。当前生命周期/安全扩展仍通过纯测试契约进入Legacy Adapter；未来绑定真实Multisim时增量实现会话/PUK/Refresh能力和生命周期装配，复用同一数据、Fake语义和Oracle，不修改T/A/O/R内部设计。
 
-后续用户明确授权“将当前修改推送到远端main分支”。发布前核实origin/main仍为01a86b9f，是当前分支的祖先；先前工作分支六个提交及本轮改动均属本次发布范围。仅检查已运行源码/资产摘要、保留v2断言和文档一致性，不把本次Git发布当作重新运行业务或产品验收；实际远端发布记录随后追加。
+后续用户明确授权“将当前修改推送到远端main分支”。发布前核实origin/main仍为01a86b9f，是当前分支的祖先；先前工作分支六个提交及本轮改动均属本次发布范围。仅检查已运行源码/资产摘要、保留v2断言和文档一致性，不把本次Git发布当作重新运行业务或产品验收；实际远端发布记录见§9.1。
+
+### 9.1 用户授权推送远端main
+
+用户在第二轮交付后明确要求“将当前修改推送到远端main分支”。重新核对工作区16项改动全部属于本轮，暂存区无既有内容，已运行源码/资产摘要与当前文件一致；origin/main仍为01a86b9f，且为当前分支祖先。仅将本轮明确文件保存为代码/证据提交 `c508bd0390b1c4360beb1d9388c0e84a9e099de0`，随后以 `git push origin HEAD:refs/heads/main` 正常快进发布。`git ls-remote --heads origin refs/heads/main` 已核实远端为该提交，包含原e99caba3/01db5ce6及本轮全部修改；没有强推、变基、自动合并无关提交或修改其他worktree。
+
+测试证据仍是01db5ce6父提交加当时dirty工作树的实际执行记录；已按保存代码逐项验证测试/生产源码摘要一致，不把提交成功声称为干净代码重跑或产品验收。独立缺陷25 FAIL和Provider/eSIM阻塞完整保留。此后仅补充本段及证据中的发布关联并同步到同一远端main；最终文档tip由Git查询，避免自身SHA自引用。
