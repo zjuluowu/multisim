@@ -1,6 +1,6 @@
 # 多 SIM 重构执行状态
 
-本文件集中维护当前实施位置、证据、局部阻塞和下一批任务；技术决策继续由[目标主设计](SIM_Target_Architecture_Design_v1.2.md)维护，流程由[流程对照](多SIM架构重构_设计说明与业务流程对照.md)维护，历史裁决留在[原评审](SIM_Target_Architecture_Independent_Review_2026-10-29.md)。最近恢复/一致性核对：2026-11-02；各历史运行结果仍按其原日期、基线和覆盖范围解释。
+本文件集中维护当前实施位置、证据、局部阻塞和下一批任务；技术决策继续由[目标主设计](SIM_Target_Architecture_Design_v1.2.md)维护，流程由[流程对照](多SIM架构重构_设计说明与业务流程对照.md)维护，历史裁决留在[原评审](SIM_Target_Architecture_Independent_Review_2026-10-29.md)。最近恢复/一致性核对：2026-11-04；本次用户授权的跨架构测试防护网实施见[§8](#sim-guard-20261104)。§0～§7保留此前G2a记录，各历史运行结果仍按其原日期、基线和覆盖范围解释。
 
 ## 0. 当前核实摘要（2026-11-02）
 
@@ -209,6 +209,8 @@ python3 telephony_core_service/test/systemtest/scripts/audit_initialization.py -
 
 ## 6. 下一批推荐任务
 
+以下为2026-11-02的G2a建议；2026-11-04用户已另行授权先建设真实旧实现测试防护网，当前交付及后续测试切片见§8，不据历史推荐自动进入生产迁移。
+
 **推荐最小任务：M2匹配OHOS产品准入验证。**本轮G2a B+真实只读适配、主机七场景及覆盖已完成，现已按用户授权合入main（§3.4/§3.5）；不重复做目录比较、查询重写或将旧host PASS继承为产品结论。
 
 - 环境：提供匹配Manifest/fork/provider版本、产品配置、工具链及Feature组合；核实原tel_core_service/SO显式源表。主机完整OnInit另外先获得14个SimData字段/URI/schema/错误协议的真实契约。
@@ -232,3 +234,37 @@ python3 telephony_core_service/test/systemtest/scripts/audit_initialization.py -
 本轮已将原本只在临时目录的G2a源码、构建、runner及精简历史证据保存到上块远端代码检查点，并把根/子AGENTS作为统一入口。原/tmp worktree、patch或旧结果消失不影响按远端恢复。当前开发位置应由`git branch --show-current`/`rev-parse HEAD`查询，不能把某电脑当前分支写成全仓唯一状态。
 
 新会话：根AGENTS→部件AGENTS→本文件→Git包含关系→按最小任务读取设计/代码→实际验证→更新本状态。工作结束时只更新受影响结论/证据、代码branch/已有SHA及下一批任务；不复制完整会话，不改写历史报告，不将本文最终SHA硬写回同一提交。若状态与真实远端/代码不符，先纠正状态，再继续授权范围内的最小任务。
+
+<a id="sim-guard-20261104"></a>
+
+## 8. 跨架构测试防护网首批工程（2026-11-04）
+
+用户本次授权实际测试建设及本地提交，未授权推送或合并main。开始于干净 `main/origin/main@01a86b9f073b20f408d9f8e67da35192aacac439`；恢复工具 `--remote origin --fetch` 实际返回 CHECKPOINT_VERIFIED，初始远端差异0/0，已有worktree保留。新建本地分支 `work/sim-guard-contract-20261104`，代码检查点 `507b61152bebd8a0d5707034d44d8206c5f553d0`。未修改任何生产源码、公开接口、生产根GN或既有业务策略。
+
+交付位于 [test/sim_guard](../test/sim_guard/README.md)：最小ISimSutAdapter、Legacy绑定、有状态Fake RIL、公开查询快照、StateRegistry通知Spy、Contract Driver/Oracle、七条Compatibility、一条独立Defect、版本化共同资产摘要、结构化取证/规则/缺口，以及真正可用的GN/命令入口。Fake只维护外设事实、PIN设备应答、请求和回包调度；场景/Oracle不include旧新内部类。只有Adapter接触具体状态实现，真实CMI/EXT未用业务桩替换，CMI的账户路由未装配。
+
+真实链路为 `SimStateManager::Init` → 注册RIL通知 → `RADIO_SIM_STATE_CHANGE` → 真实 `GetSimStatus` 请求 → RIL正式响应事件 → `SimStateHandle::GetSimCardData/ProcessIccCardState` → 真实查询和外服务通知。真实TelEventHandler/TelEventQueue、ObserverHandler及状态/PIN代码均链接运行；新增有界host排空控制，未改生产调度或用私有setter构造状态。这是状态组件切片，不能升格为完整SimManager/Core初始化、公开ISimManager参数校验、账户或产品验收。
+
+| 实际验收 | 结果 | 范围/证据 |
+| --- | --- | --- |
+| 干净代码检查点重建/执行 | **7个兼容用例×5轮，35 PASS/0 FAIL** | LIFE_001/002、PUK_001锁态、PIN_001、PIN_002命令失败、DUAL_001、RIL_001重复及错误注入；每轮同进程运行七例并清理，八条指定生产函数精确源路径正执行 |
+| 真实生产突变检出 | **DETECTED，恢复7/7 PASS** | 仓外生产cpp副本把READY映射破坏为LOCKED，同一LIFE_001及Oracle实际断言失败；随后原始生产二进制重跑通过，工作树生产源始终未改 |
+| DEFECT_001 | **1 FAIL/0 PASS，正常非零退出** | 已READY→保留旧查询→较新拔卡回包使查询ABSENT→旧READY回包使公开存在性/状态恢复true/READY；失败及完整观测保留，不Skip/xfail，不把错误写入兼容预期；具体代次/准入修复政策待裁决 |
+| 平台设施回归 | **19 PASS** | 原16项及新增跨队列排空、延迟/运行中超时、异常可见性三项；独立计数，不加到SIM业务通过数 |
+| 架构设施 | **PASS** | 四套纯规则、结构检查和12项护栏；不作为SIM业务/产品验收 |
+| 防伪通过负控 | **按预期拒绝** | 场景摘要漂移、即使重算摘要的内部include、零例/Skip XML均被拒；缺依赖、multisim、target/nezha入口均BLOCKED、executed=false |
+
+实际命令与结果/源码摘要见仓内 [evidence.json](../test/sim_guard/evidence.json)，包括失败轨迹、突变/恢复、八条执行审计、host输入摘要和eSIM编译诊断。完整XML/profile/coverage/map/日志放在当前机器仓外；恢复不依赖这些路径。参数化重跑命令见 [README](../test/sim_guard/README.md)。核心实际入口为：
+
+```sh
+python3 -B telephony_core_service/test/sim_guard/run_sim_guard.py --sut=legacy --suite=compat --gtest-root "$SIM_GTEST_ROOT" --output "$SIM_GUARD_OUTPUT/compat" --repeat=5 --mutation-check
+python3 -B telephony_core_service/test/sim_guard/run_sim_guard.py --sut=legacy --suite=defect --gtest-root "$SIM_GTEST_ROOT" --output "$SIM_GUARD_OUTPUT/defect"
+```
+
+规则等级严格区分：公开状态/卡型/PIN结果定义作为本切片强Oracle；错误回包后的状态保持仅记录C级观察，未冻结为业务政策。每次通知只检查本步骤新增集合，不要求非契约全序/次数。广义账户隔离、默认回选、nezha I/R和取消回滚均未升级批准。Slot/Card/Port/Profile/Subscription/角色及网络注册分别建模；未接入维度明确未观测，不由slot合成账户身份。
+
+当前只达到P0真实状态/PIN闭环、P1初始兼容子集及P2接入机制准备；**未完成全模块P1、完整eSIM场景族或第二阶段B验收**。本机无hb、祖先无.repo、仓根无build/ohos.gni；OHOS产品/Feature、SA/IPC/权限、设备未运行。完整初始化/账户/默认卡/持久化仍缺匹配Provider协议；本批未重跑历史完整OnInit审计，不把旧45对象/14字段数字当成本次编译结果。Fake Store/LPA尚未接入，不补业务成功桩。
+
+eSIM额外取证已实际尝试真实 `esim_file.cpp` 的Clang18语法编译，exit1首错为 `core_service.h` 所需 `system_ability.h` 缺失；还需要普通EventHandler/EventRunner合法投递及真实codec/源表闭合。诊断性屏蔽两个具体头后，发现仓内 `EsimProfile::portIndex` 为u16string、实现却按int32/ASN.1整数使用的类型冲突；该诊断不是产品构建结果，完整未解析依赖尚未知，不擅改公开类型。完整DownloadProfile属于SA66250，本仓只含协作/代理契约，不能用Fake补写后计为真实SIM下载通过。
+
+下一最小切片：先取得匹配Provider字段/URI/schema/错误协议，推进真实账户/角色和重启恢复；eSIM另核实portIndex正式类型，补平台EventRunner/头及真实APDU/Profile绑定后运行。已复现迟到问题保留红灯并裁决修复政策。未来业务迁入multisim后只替换 [Adapter及GN/执行审计绑定](../test/sim_guard/adapters/multisim/README.md)，共同场景、输入、Oracle和Fake五份摘要保持；没有真实接入时继续BLOCKED。不得从本轮测试建设推定G2a产品、写权迁移或新能力批准。
