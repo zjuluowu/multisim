@@ -1,12 +1,13 @@
 {
-  "version": 1,
+  "version": 2,
   "scope": "Physical SIM public state/type and PIN result contract; full Manager/IPC/accounts/esim not covered",
   "change_policy": "Review scenario/input/oracle/fake semantic changes against independent contract, update version and rationale explicitly; adapter-only migrations must keep these hashes",
   "sha256": {
     "contracts/sim_sut.h": "897b7f7766c20a2bead79825d0b00377793b4b42e07c8b5c2a1f418259e445aa",
-    "fakes/ril_device.h": "73043857789c1f9f85240636fa0f72bef13af2e8d5812d8f24a30b2f39bf0ad2",
+    "fakes/ril_device.h": "9a055ade01080ebbae91d67456b46b427472f77c08f8c2806118c4a92925ae04",
     "scenarios/compatibility.h": "0cc09fcfec1fe53cc00ef99969bed8bf5d0f6611a0db34934cccda4aaacabd7c",
     "oracle/card_oracle.h": "9f752b1101c2754ea09fec11d31bb5f8236872a39398701c90d3a49095c6db02",
-    "runner/contract_test.cpp": "196e00ec0d31540800d519fe9e79c6d718338e334ae7e87f291d9bf9c07fdaaf"
-  }
+    "runner/contract_test.cpp": "35a5c956bb2c9c0a1335b7d2ebfedf7720c6014c85bd45e0d235d77d939828b6"
+  },
+  "change_review": "v2: remove non-contract exact RIL request multiplicity/positional response selection from Driver. Batch by device facts and bound host convergence. Scenario inputs and business Oracle unchanged; v1 retained in 507b6115."
 }

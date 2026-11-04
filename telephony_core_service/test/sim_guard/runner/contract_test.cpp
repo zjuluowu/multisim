@@ -31,9 +31,19 @@ protected:
         ril.Change(slot, card);
         sut->Settle();
         ASSERT_GT(ril.Pending(), 0u) << "SUT did not issue a real RIL status request";
-        ril.Respond();
-        sut->Settle();
+        Complete();
         Observe("card-event");
+    }
+    void Complete()
+    {
+        // Host convergence bound, not a required business request count/order.
+        // Additional legal queries receive the same external device semantics.
+        for (unsigned round = 0; round < 32; ++round) {
+            sut->Settle();
+            if (!ril.Pending()) return;
+            ril.RespondAll();
+        }
+        FAIL() << "status transport failed to converge; pending=" << ril.Pending();
     }
 };
 class Lifecycle : public ContractDriver, public testing::WithParamInterface<Scenario> {};
@@ -69,8 +79,7 @@ TEST_F(ContractDriver, PIN_001)
     EXPECT_EQ(ok.error, 0);
     EXPECT_EQ(ok.result, Unlock::Ok);
     // Card readiness is established by a separate RIL state observation.
-    ril.Notify(0); sut->Settle(); ASSERT_EQ(ril.Pending(), 1u);
-    ril.Respond(); sut->Settle(); Observe("pin-success-status");
+    ril.Notify(0); Complete(); Observe("pin-success-status");
     ExpectCard(sut->Observe().cards.at(0), 0, State::Ready, CardKind::Usim);
 }
 TEST_F(ContractDriver, PIN_002_CommandFailure)
@@ -101,12 +110,12 @@ TEST_F(ContractDriver, RIL_001_DuplicateAndError)
 {
     sut->Start(1);
     Change(0, {});
-    ril.Notify(0); sut->Settle(); ASSERT_EQ(ril.Pending(), 1u);
-    ril.Respond(0, true); sut->Settle(); Observe("ril-error");
+    ril.Notify(0); sut->Settle(); ASSERT_GT(ril.RespondAll(true), 0u);
+    Complete(); Observe("ril-error");
     // Error-state preservation is a C observation, not an approved transition policy.
     // Preserve the query trace; only later valid device facts carry the strong state Oracle.
     Change(0, {State::Ready, CardKind::Usim, "fixture-A"});
-    ril.ReplayLast(); sut->Settle(); Observe("duplicate-ready");
+    ril.ReplayLast(); Complete(); Observe("duplicate-ready");
     ExpectCard(sut->Observe().cards.at(0), 0, State::Ready, CardKind::Usim);
 }
 // Separate suite: preserves failing evidence, never silently skipped/xfail or counted as compatibility PASS.
@@ -114,11 +123,22 @@ TEST_F(ContractDriver, DEFECT_001_StaleReadyAfterRemoval)
 {
     sut->Start(1);
     Change(0, {State::Ready, CardKind::Usim, "fixture-A"});
-    ril.Notify(0); sut->Settle(); ASSERT_EQ(ril.Pending(), 1u); // hold old READY response
-    ril.Change(0, {}); sut->Settle(); ASSERT_EQ(ril.Pending(), 2u);
-    ril.Respond(1); sut->Settle(); Observe("removed");
+    ril.Notify(0); sut->Settle(); ASSERT_GT(ril.Pending(), 0u); // hold old READY responses
+    ril.Change(0, {}); sut->Settle();
+    size_t removals = 0;
+    for (unsigned round = 0; round < 32; ++round) {
+        auto delivered = ril.RespondMatching([](int slot, const DeviceCard &card) {
+            return slot == 0 && card.state == State::Absent;
+        });
+        removals += delivered;
+        sut->Settle();
+        if (!delivered) break;
+    }
+    ASSERT_GT(removals, 0u) << "no actual removal response to inject";
+    Observe("removed");
     ExpectCard(sut->Observe().cards.at(0), 0, State::Absent, CardKind::Unknown);
-    ril.Respond(0); sut->Settle(); Observe("stale-ready");
+    ASSERT_GT(ril.RespondAll(), 0u) << "no held READY response to inject";
+    Complete(); Observe("stale-ready");
     // Physical card remains absent; its old response must not resurrect a ready card.
     ExpectCard(sut->Observe().cards.at(0), 0, State::Absent, CardKind::Unknown);
 }

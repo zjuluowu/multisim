@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "asset_version": "sim-guard-compat-v1",
+  "asset_version": "sim-guard-compat-v2",
   "source_commit": "01a86b9f073b20f408d9f8e67da35192aacac439",
   "source_paths_relative_to": "telephony_core_service",
   "scope": "Versioned M0 evidence and scenario mapping; authoritative actual results are runner result.json and checked-in evidence.json",

@@ -58,6 +58,24 @@ public:
         }
         request.reply(request.atRequest, error);
     }
+    size_t RespondMatching(const std::function<bool(int, const DeviceCard &)> &matches, bool error = false)
+    {
+        std::vector<Request> batch;
+        {
+            std::lock_guard<std::mutex> guard(lock);
+            for (auto it = pending.begin(); it != pending.end();) {
+                if (matches(it->slot, it->atRequest)) { batch.push_back(*it); it = pending.erase(it); }
+                else ++it;
+            }
+            if (!batch.empty()) last = batch.back();
+        }
+        for (const auto &request : batch) request.reply(request.atRequest, error);
+        return batch.size();
+    }
+    size_t RespondAll(bool error = false)
+    {
+        return RespondMatching([](int, const DeviceCard &) { return true; }, error);
+    }
     void ReplayLast()
     {
         Request request;
