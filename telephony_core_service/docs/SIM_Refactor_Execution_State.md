@@ -239,7 +239,7 @@ python3 telephony_core_service/test/systemtest/scripts/audit_initialization.py -
 
 ## 8. 跨架构测试防护网首批工程（2026-11-04）
 
-用户本次授权实际测试建设及本地提交，未授权推送或合并main。开始于干净 `main/origin/main@01a86b9f073b20f408d9f8e67da35192aacac439`；恢复工具 `--remote origin --fetch` 实际返回 CHECKPOINT_VERIFIED，初始远端差异0/0，已有worktree保留。新建本地分支 `work/sim-guard-contract-20261104`，最终代码检查点 `2c5364a3dcf9f1487d759b6bedcbf780ba16663e`。未修改任何生产源码、公开接口、生产根GN或既有业务策略。
+初始工程任务授权实际测试建设及本地提交，当时未授权推送或合并main；后续远端保存授权见本节末。开始于干净 `main/origin/main@01a86b9f073b20f408d9f8e67da35192aacac439`；恢复工具 `--remote origin --fetch` 实际返回 CHECKPOINT_VERIFIED，初始远端差异0/0，已有worktree保留。新建本地分支 `work/sim-guard-contract-20261104`，最终代码检查点 `2c5364a3dcf9f1487d759b6bedcbf780ba16663e`。未修改任何生产源码、公开接口、生产根GN或既有业务策略。
 
 交付位于 [test/sim_guard](../test/sim_guard/README.md)：最小ISimSutAdapter、Legacy绑定、有状态Fake RIL、公开查询快照、StateRegistry通知Spy、Contract Driver/Oracle、七条Compatibility、一条独立Defect、版本化共同资产摘要、结构化取证/规则/缺口，以及真正可用的GN/命令入口。Fake只维护外设事实、PIN设备应答、请求和回包调度；场景/Oracle不include旧新内部类。只有Adapter接触具体状态实现，真实CMI/EXT未用业务桩替换，CMI的账户路由未装配。
 
@@ -270,3 +270,9 @@ eSIM额外取证已实际尝试真实 `esim_file.cpp` 的Clang18语法编译，e
 下一最小切片：先取得匹配Provider字段/URI/schema/错误协议，推进真实账户/角色和重启恢复；eSIM另核实portIndex正式类型，补平台EventRunner/头及真实APDU/Profile绑定后运行。已复现迟到问题保留红灯并裁决修复政策。未来业务迁入multisim后只替换 [Adapter及GN/执行审计绑定](../test/sim_guard/adapters/multisim/README.md)，共同场景、输入、Oracle和Fake按v2基线五份摘要保持；没有真实接入时继续BLOCKED。不得从本轮测试建设推定G2a产品、写权迁移或新能力批准。
 
 本批v2基线评审：移除Driver对精确RIL请求次数/队列下标的假设，按外部槽及设备事实批量交付、有界排空；正式PIN失败使用 `UNLOCK_OTHER_ERR`。统一契约、场景数据和业务Oracle相对507b6115逐文件无差异，版本/原因记入semantic_baseline；上述35 PASS、突变检出及恢复7 PASS已在干净2c5364a3上重新构建运行。独立迟到缺陷复现需要两个在途响应的故障调度，未来实现若串行化导致该前置条件不可达，不视为兼容性违约；七条Compatibility不要求该拓扑。
+
+### 8.1 用户授权保存到远端工作分支
+
+用户在本地交付后明确要求“将本轮修改提交到远端”。本次从干净工作区核对origin、分支/HEAD、暂存区及既有worktree，恢复工具 `--remote origin --fetch` 返回CHECKPOINT_VERIFIED；远端main仍为 `01a86b9f073b20f408d9f8e67da35192aacac439`，本地仅领先本轮五个提交，远端尚无同名工作分支。正常非强制推送到 `origin/work/sim-guard-contract-20261104` 并建立跟踪，`git ls-remote` 已核实远端为 `e99caba343e73d6f72d9bbb6969dc90095125e85`，包含本轮五个代码/证据提交及最终被测代码2c5364a3。
+
+本次只发布当前工作分支，未合并或推送main。此后仅补充本段发布记录，同步保存到同一远端分支；最终文档tip按Git查询，避免自身SHA自引用。发布没有改变业务源码、共同测试资产或既有结果，本次未重跑业务测试，不将远端保存解释为完整产品/新架构验收。
