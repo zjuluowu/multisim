@@ -84,7 +84,7 @@ public:
             const auto result = device_.Pin(slot, pin);
             auto response = std::make_shared<LockStatusResp>();
             response->result = result.result == Unlock::Ok ? UNLOCK_SUCCESS :
-                result.result == Unlock::Incorrect ? UNLOCK_PASSWORD_ERR : -1;
+                result.result == Unlock::Incorrect ? UNLOCK_PASSWORD_ERR : UNLOCK_OTHER_ERR;
             response->remain = result.remaining;
             Deliver(std::weak_ptr<EventHandler>(event->GetOwner()), event->GetInnerEventId(), response);
             return TELEPHONY_ERR_SUCCESS;
