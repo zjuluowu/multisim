@@ -1,6 +1,6 @@
 # SIM 架构文档入口
 
-当前状态整理日期：2026-11-05。此前状态整理只核对Git与已有证据；随后用户授权分支合入main，本批重新运行G2a查询、审计和架构检查，见[合入记录](SIM_Refactor_Execution_State.md#main-integration-20261105)。最新分支、已完成项、失败/待裁决、产品阻塞及下一批任务统一查[唯一执行状态 §0](SIM_Refactor_Execution_State.md#current-status)，不从本文推断已完成产品替代。
+当前状态整理日期：2026-11-05。最新G2a分支及合入说明已发布到main，代码测试点与文档发布点在[合入记录](SIM_Refactor_Execution_State.md#main-integration-20261105)分别列出；本次只核对发布和证据、更新状态文档，没有重新运行业务或产品测试。最新分支、已完成项、失败/待裁决、产品阻塞及下一批任务统一查[唯一执行状态 §0](SIM_Refactor_Execution_State.md#current-status)，不从本文推断已完成产品替代。
 
 修订B+骨架、G2a只读闭环及SIM Guard两轮已保存到main；最新G2a构建/执行护栏强化及状态整理也已按本批授权合入main，并在干净合入代码点重验。当前生产成熟业务仍由services/sim承担。此前2026-10-23一致性复审起点 `801877c95ab8d37c60cb60dc210e796be6b96599` 是历史审阅基线，不是当前HEAD或最新测试基线。
 

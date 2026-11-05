@@ -83,6 +83,8 @@ verification_note: 本轮输入main@5404aefe66decde4e5c5f03a01f355f6bf127e7e，8
 
 ### 1.4 本次可信基线与核验限度
 
+**2026-11-05实施状态说明：** 下文保留2026-10-31结构任务及更早核验的固定基线，其中“本轮不自动提交/推送”“只改设计”等均指对应历史批次。后续B+结构、G2a只读主机闭环、SIM Guard及最新G2a强化已按授权保存至main，当前发布点、测试代码点与未完成门禁见[唯一执行状态 §0](SIM_Refactor_Execution_State.md#current-status)及[合入记录 §11](SIM_Refactor_Execution_State.md#main-integration-20261105)。G2a目前仅为 `G2a_BPLUS_HOST_VERIFIED`，完整产品/初始化、SO关闭及生产写权迁移仍未验收；本文的draft/pending及业务不变量不因此改变。本次只更新状态说明，不新增架构裁决或重记测试结果。
+
 本轮以`main@5404aefe66decde4e5c5f03a01f355f6bf127e7e`为输入，按用户授权实施[独立决策报告](SIM_Multisim_Source_Directory_Architecture_Decision_Independent_2026-10-31.md)的局部修订B+。六组物理目录与本节以下历史记录分开；86个C++文件保持类型、成员、逻辑target和实现语义，成熟SIM仍在原生产路径。本轮不自动提交或推送，实际验证结果见[执行状态](SIM_Refactor_Execution_State.md)。两份历史ADR保持Proposed，不改写其审批状态。
 
 - 历史：2026-10-30目录融合修订的实际输入为本地`main@e295540fe81ca7dd28f248d0b76470497062aa64`，编辑前工作区/暂存区干净，两篇目标文档无已有本地修改。仅修订本文与源码详细设计，不移动源码、修改评审或执行状态；本批提交只含这两篇文档。当时骨架73文件/4984行、50头/23源；原SIM生产目录61头/55源，根GN列入54源，另有未装配缓存源。两份报告的旧数量及下列历史取证不作为本轮统计。

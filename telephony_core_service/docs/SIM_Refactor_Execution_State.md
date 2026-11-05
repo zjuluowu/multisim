@@ -12,12 +12,13 @@
 
 | 已核实引用 | 提交 | 已保存内容与边界 |
 | --- | --- | --- |
-| `origin/main`（本批被测合入代码点） | `d5f0527c576d68fb639146d1a26d668728b7445a` | 已由5e209a76快进，包含最新G2a强化及状态整理、此前B+和SIM Guard两轮；后续仅更新合入说明，最终远端tip通过Git查询 |
-| `origin/work/g2a-bplus-revalidation-20261104` | `097e536a89a668f05b5bfc1fdd70f6bafd4f4cff` | 最新G2a窄include、源表/执行审计和验证证据；此前工作分支查询测试代码为722d0441；本批分支tip d5f0527c已完整合入main |
+| `origin/main`（本次文档更新前核实的发布点） | `2db639bcbc7c95235130b7608d79487106df610a` | 最新G2a强化、此前B+和SIM Guard两轮及六份合入说明均已保存并推送；本次后续仅更新状态文档，最终tip通过Git查询 |
+| main合入后实际查询/架构测试代码点 | `d5f0527c576d68fb639146d1a26d668728b7445a` | 干净代码重新构建执行7场景及审计/架构检查；与发布点2db639bc之间仅有六份文档差异，不能把文档HEAD当新业务运行 |
+| `origin/work/g2a-bplus-revalidation-20261104` | `d5f0527c576d68fb639146d1a26d668728b7445a` | 最新G2a窄include、源表/执行审计和验证证据；此前工作分支查询测试代码为722d0441；本批分支tip d5f0527c已完整合入main |
 | `origin/work/g2a-bplus-integration` | `2feaf12777e1dea062ab00711b9910396fd517fd` | 首次B+ G2a交付，已包含在main；保留该检查点，不与最新强化分支混称 |
 | `origin/work/g2a-readonly-checkpoint-20261030` | `728ad77ed4c723efbb5cb1baf7b3f10bb9830240` | 包含固定历史代码cc787945792527eeb94bc20a5e955315d6269e83，仍保留旧application/query路径，仅用于历史恢复/对照 |
 
-本次用户明确授权将其他分支修改合入main并推送。已在新隔离worktree将本地main由01a86b9f快进至原origin/main 5e209a76，再快进纳入G2a分支5个提交至d5f0527c；远端main已推送并核实d5f0527c。原工作区仍为 `work/sim-guard-round2@5e209a76`，其他既有worktree/分支保持不变。独立分析、首次G2a和SIM Guard分支均已是main祖先；旧目录G2a检查点仅保留历史，其业务内容已按B+选择性迁入，不重复合入旧application/query树。此前文档整理及独立分支发布记录见§10，本批验证与合入范围见§11；源码保存不等于产品准入。
+本次用户明确授权将其他分支修改合入main并推送。已在新隔离worktree将本地main由01a86b9f快进至原origin/main 5e209a76，再快进纳入G2a分支5个提交至d5f0527c；远端main先推送并核实d5f0527c，随后六份合入说明已以2db639bc发布；本次已重新核对远端SHA、树及包含关系。原工作区仍为 `work/sim-guard-round2@5e209a76`，其他既有worktree/分支保持不变。独立分析、首次G2a和SIM Guard分支均已是main祖先；旧目录G2a检查点仅保留历史，其业务内容已按B+选择性迁入，不重复合入旧application/query树。此前文档整理及独立分支发布记录见§10，本批验证与合入范围见§11；源码保存不等于产品准入。
 
 ### 0.2 已完成与已验证范围
 
@@ -409,4 +410,4 @@ python3 -B telephony_core_service/test/systemtest/scripts/run_g2a_query.py --gte
 
 本批结果/日志留在上述新建仓外目录，不覆盖§10历史文件。`query/g2a-query-result.json` SHA256为 `8712314da7d9ef704400e01187f9f6744de0d76d1ddb885bcd644d541eacae82`，真实二进制SHA256为 `0c437ec4a06e4a0f5cbd4dc657e288da73b23795b07cb2698f6398e098638f3c`；当前源/验证摘要与仓内g2a_bplus_revalidation_20261105.json逐项匹配。仓内本节固定被测Git代码点、实际命令、返回结果及生产执行次数，使新目录之外也能追溯覆盖范围；旧证据JSON不改写为本批运行。
 
-验证通过后以 `git -c http.version=HTTP/1.1 push origin refs/heads/main:refs/heads/main` 正常快进发布，ls-remote已核实远端main为d5f0527c；只推送main，不改动或删除其他远端分支。随后仅同步六份文档的已合入口径及本节，另作说明提交并正常推送main；最终说明tip通过Git查询，避免自引用。原工作区仍保持原分支/HEAD和干净状态。本批只完成代码/文档整合与主机重验，产品、Feature、完整生命周期及其他生产迁移门禁不因此变为PASS。
+验证通过后以 `git -c http.version=HTTP/1.1 push origin refs/heads/main:refs/heads/main` 正常快进发布，ls-remote已核实远端main为d5f0527c；只推送main，不改动或删除其他远端分支。其后六份合入说明与本节已保存为 `2db639bcbc7c95235130b7608d79487106df610a` 并正常推送main，已通过ls-remote及fetch核实远端SHA/树，并确认包含整个G2a分支d5f0527c。本次仅补齐发布状态、固定引用与架构入口说明，不改变生产源、GN、测试、Oracle或历史JSON；未重新运行业务/产品测试。当前文档提交由用户明确授权继续推送main，最终tip按Git查询，避免自引用。原工作区仍保持原分支/HEAD和干净状态。本批只完成代码/文档整合与主机重验，产品、Feature、完整生命周期及其他生产迁移门禁不因此变为PASS。
