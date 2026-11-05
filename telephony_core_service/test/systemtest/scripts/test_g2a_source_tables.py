@@ -77,9 +77,13 @@ class G2aSourceTables(unittest.TestCase):
                       'source_set("readonly_query") {\n  public_configs = [ ":skeleton_includes" ]')
 
     def test_exact_execution_method(self):
-        name = {"name": "_ZN4OHOS9Telephony21LegacySimQueryBinding26ReadLegacyRealSimCountEv"}
+        name = {"name": "_ZN4OHOS9Telephony21LegacySimQueryBinding22ReadLegacyRealSimCountEv"}
+        self.assertTrue(is_method(name, "LegacySimQueryBinding", "ReadLegacyRealSimCount"))
         self.assertFalse(is_method(name, "LegacySimQueryBinding", "Read"))
         self.assertTrue(is_method({"name": "_ZN4OHOS9Telephony17RealSimCountQuery4ReadEv"}, "RealSimCountQuery", "Read"))
+        boot = {"name": "_ZN4OHOS9Telephony10SimManager6OnInitEv"}
+        self.assertTrue(is_method(boot, "SimManager", "OnInit"))
+        self.assertFalse(is_method(boot, "SimManager", "Init"))
 
 
 if __name__ == "__main__":
