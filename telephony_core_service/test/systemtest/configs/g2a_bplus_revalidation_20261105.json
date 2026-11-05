@@ -2,6 +2,7 @@
   "schema_version": 1,
   "case_id": "SIM-G2A-READ-001",
   "recorded_date": "2026-11-05",
+  "product_admission": "BLOCKED_NOT_RUN",
   "status": "G2a_BPLUS_HOST_VERIFIED",
   "scope": "real_CoreServiceSim_to_original_SimManager_readonly_attachment",
   "executed": true,
@@ -16,9 +17,10 @@
     "historical_rebuilt_tip": "728ad77ed4c723efbb5cb1baf7b3f10bb9830240",
     "previous_bplus_code": "ff1c6ef2ea73d36ab83a7ac2c276036c6f9a6a58",
     "work_branch": "work/g2a-bplus-revalidation-20261104",
-    "tested_code_commit": "20f92b4821dcaf8c24e78acf9db60b681b55c57c",
+    "first_clean_query_commit": "20f92b4821dcaf8c24e78acf9db60b681b55c57c",
+    "tested_code_commit": "722d044164c534f5898337c5b8eb1ccacb70c286",
     "dirty_at_query_run": false,
-    "remote_verified_code_commit": "20f92b4821dcaf8c24e78acf9db60b681b55c57c",
+    "remote_verified_code_commit": "722d044164c534f5898337c5b8eb1ccacb70c286",
     "evidence_commit": "Resolve containing commit with Git; evidence/navigation only after tested code commit"
   },
   "historical_evidence_preserved": [
@@ -122,7 +124,7 @@
     },
     {
       "path": "test/systemtest/scripts/test_g2a_source_tables.py",
-      "sha256": "182cf97b87554dcc66f26ae70c86e69741bffb194eaaf64dfd91729dfdac695e"
+      "sha256": "8f88715fb6da92f386ec07cc8b27dc1a81e518286402599ba9628d14514ebaf9"
     },
     {
       "path": "services/multisim/BUILD.gn",
@@ -154,9 +156,13 @@
       "path": "/mnt/e/g2a-bplus-m1-artifacts-20261104/history-query/g2a-query-result.json",
       "sha256": "2fe9f116b4a0cf2b0e981b70f23ccc49043b65bd6a1f3f4ec7e0b2d2dd649b9f"
     },
-    "current_runner_result": {
+    "first_clean_runner_result": {
       "path": "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-query-result.json",
       "sha256": "4be797eac227ae2ba2ce097a6cb26248c082f1a46b4c5ed095e33a312aa205dd"
+    },
+    "current_runner_result": {
+      "path": "/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/g2a-query-result.json",
+      "sha256": "697b1691d34395fb10339f958caeeec590d03e9d41fcfc16eb02f2a71663da0c"
     },
     "historical_rebuild_dirty": false,
     "unchanged_from_rebuilt_history": [
@@ -193,7 +199,7 @@
       "status": "PASS",
       "all_shared_xml_properties_equal": true,
       "attached_query_vendor_calls": 0,
-      "xml_sha256": "3ad0d5528c9ea4621c13c43b5fddf4ae91963a68e337d70d434d047295e6342d"
+      "xml_sha256": "52cdfa41311c377c11ded33fc91da407ee156653bf6efe7a21889a8b9d0387f7"
     },
     {
       "name": "dual",
@@ -205,7 +211,7 @@
       "status": "PASS",
       "all_shared_xml_properties_equal": true,
       "attached_query_vendor_calls": 0,
-      "xml_sha256": "410feea9f027e421854650a6e11be8e2aecca8043c56bcf17d770ec6013974a9"
+      "xml_sha256": "336729b3d985fa0df25782ca3b9ce9265d81f821a0ac4634f47a7f5298040a63"
     },
     {
       "name": "zero",
@@ -217,7 +223,7 @@
       "status": "PASS",
       "all_shared_xml_properties_equal": true,
       "attached_query_vendor_calls": 0,
-      "xml_sha256": "487f7362f0256b6a9d441ba580999f4ebb7e5ca37ec442f93eec90ade2ac77bb"
+      "xml_sha256": "1a0061b0bc12832acb55f18e714be3bcf37445893d6b3233088e41f5c5db4da9"
     },
     {
       "name": "negative_atoi",
@@ -229,7 +235,7 @@
       "status": "PASS",
       "all_shared_xml_properties_equal": true,
       "attached_query_vendor_calls": 0,
-      "xml_sha256": "7d49c48703fcafc527e7a00d669fa79f21714649f756eece75d963173668ccd8"
+      "xml_sha256": "efa5fe31c39505facfb6af8f5b42585347e2b5b867813590d0a800bb637e0557"
     },
     {
       "name": "malformed_atoi",
@@ -241,7 +247,7 @@
       "status": "PASS",
       "all_shared_xml_properties_equal": true,
       "attached_query_vendor_calls": 0,
-      "xml_sha256": "1fb05e23ae2e272cbfa856e2483899ac585c7fb54899d8dc11c19c693a2a4231"
+      "xml_sha256": "5fcdb5bdc6fd71d4982f3afe5e60d26f7d336ff23257c1e47c756891d501a4a8"
     },
     {
       "name": "vendor_override",
@@ -253,7 +259,7 @@
       "status": "PASS",
       "all_shared_xml_properties_equal": true,
       "attached_query_vendor_calls": 1,
-      "xml_sha256": "227d83aa50181b9c4aa12d3e657cd8ca33dd0d9702c5290074adc0e961f195fa"
+      "xml_sha256": "18a5ccc6bc01159cf1306a943935de88dba9720ed0f7e4a81d39a5ccfff31e80"
     },
     {
       "name": "vendor_result_propagation",
@@ -265,7 +271,7 @@
       "status": "PASS",
       "all_shared_xml_properties_equal": true,
       "attached_query_vendor_calls": 1,
-      "xml_sha256": "52c654f76f513c84069ca43d764eba780b9ac1d04751965dd7747d85c3d7d11f"
+      "xml_sha256": "e75c85d5f4f2a55392e4b20edca20b9113c5008904c5b6afbe2ad106de276811"
     }
   ],
   "production_execution_audit": {
@@ -329,20 +335,20 @@
       }
     ],
     "link_map": {
-      "path": "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/sim_g2a_query_test.map",
-      "sha256": "c783ab38c38a73b14ca16ef98e558fa2e1bebe7e3edea7b246e3e61944c7793d"
+      "path": "/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/sim_g2a_query_test.map",
+      "sha256": "90e3516ab204dcccdc264bc105721d787cd17b7821c3dc93ff23a3338e965bc4"
     },
     "profile": {
-      "path": "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-query.profdata",
-      "sha256": "3907eba8c58965c7c4df046a7b80a9b9ce02cfe731b1c68317a02fcbd115cd3d"
+      "path": "/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/g2a-query.profdata",
+      "sha256": "e3b63b3f894290776622c3c24c863e30550109484b58d37e00641840cb8ae701"
     },
     "coverage_export": {
-      "path": "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/coverage-export.log",
+      "path": "/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/coverage-export.log",
       "sha256": "832de2d6bcdf413ac93e43acee67db8c5b582fbf74317170979571b7166f4907"
     },
     "binary": {
-      "path": "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/sim_g2a_query_test",
-      "sha256": "52647227b66061420247e079a9e605416ff099265fecc69931df8b78a3809e54"
+      "path": "/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/sim_g2a_query_test",
+      "sha256": "6eca63312d802aa81fcc80b0d535bfa44c275a937383cd79527f5a3fa31df007"
     },
     "purpose": "Positive execution counts prove selected production functions, not an exact aggregate-call business Oracle",
     "lto_scope": "Selected synchronous query only; uncalled platform paths eliminated"
@@ -390,7 +396,7 @@
       "test_methods": 14,
       "log": {
         "path": "/mnt/e/g2a-bplus-m1-artifacts-20261104/source-table-controls.log",
-        "sha256": "a797590dba8366ddf846a3f2d052468507db90b835e779ca7ad22665c3c99d8a"
+        "sha256": "9ad9b96178261723fc3198dfe794f9725a6196df26a5e4fca3b8525c3b344214"
       },
       "limits": "Bounded literal GN target/list audit, not full GN/Feature evaluation"
     }
@@ -427,6 +433,7 @@
       "path": "/mnt/e/g2a-bplus-m1-artifacts-20261104/full-init/ninja-initialization.log",
       "sha256": "d9e1ff7cc7ea8b0fe52a61cc2e683f1ba5efb859b91bb5fac8e886e02e6c3a92"
     },
+    "production_digests_still_match_latest_code": true,
     "resolution": "Requires matching Provider contract/headers; no guessed schema or success responses"
   },
   "product_gates": {
@@ -551,7 +558,7 @@
         "--gtest-root",
         "/mnt/e/g2a-bplus-m1-artifacts-20261104/deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59",
         "--output",
-        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query"
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final"
       ],
       "exit_code": 0
     },
@@ -601,7 +608,7 @@
         "--version"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 0.012531034997664392,
+      "elapsed_seconds": 0.0076212260173633695,
       "log": "version-gn.log"
     },
     {
@@ -610,7 +617,7 @@
         "--version"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 0.007317619980312884,
+      "elapsed_seconds": 0.006037220009602606,
       "log": "version-ninja.log"
     },
     {
@@ -619,7 +626,7 @@
         "--version"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 0.13621557399164885,
+      "elapsed_seconds": 0.023818479967303574,
       "log": "version-clang++.log"
     },
     {
@@ -628,7 +635,7 @@
         "--version"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 0.011278431047685444,
+      "elapsed_seconds": 0.007944526034407318,
       "log": "version-ld.gold.log"
     },
     {
@@ -637,7 +644,7 @@
         "--version"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 0.018838750896975398,
+      "elapsed_seconds": 0.017100156983360648,
       "log": "version-llvm-profdata-18.log"
     },
     {
@@ -646,7 +653,7 @@
         "--version"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 0.03448269504588097,
+      "elapsed_seconds": 0.02087476896122098,
       "log": "version-llvm-cov-18.log"
     },
     {
@@ -656,32 +663,32 @@
         "--check"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 0.15388512099161744,
+      "elapsed_seconds": 0.15606942202430218,
       "log": "ril-interface-check.log"
     },
     {
       "argv": [
         "gn",
         "gen",
-        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final",
         "--root=/mnt/e/g2a-bplus-m1-20261104/telephony_core_service/test/systemtest",
         "--args=production_root=\"/mnt/e/g2a-bplus-m1-20261104/telephony_core_service\" gtest_root=\"/mnt/e/g2a-bplus-m1-artifacts-20261104/deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59\" libxml2_include_dir=\"/usr/include/libxml2\""
       ],
       "exit_code": 0,
-      "elapsed_seconds": 0.12170132994651794,
+      "elapsed_seconds": 0.08432408201042563,
       "log": "gn-gen.log"
     },
     {
       "argv": [
         "ninja",
         "-C",
-        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final",
         "-j",
         "3",
         "sim_g2a_query_test"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 58.374692866927944,
+      "elapsed_seconds": 53.852700989926234,
       "log": "ninja-build.log"
     },
     {
@@ -692,80 +699,80 @@
         "-shared",
         "/mnt/e/g2a-bplus-m1-20261104/telephony_core_service/test/systemtest/stubs/g2a_vendor_boundary.cpp",
         "-o",
-        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/libtelephony_ext_service.z.so"
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/libtelephony_ext_service.z.so"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 0.4872653160709888,
+      "elapsed_seconds": 0.22237534204032272,
       "log": "vendor-abi-boundary-build.log"
     },
     {
       "argv": [
-        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/sim_g2a_query_test",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/sim_g2a_query_test",
         "--gtest_filter=G2aReadOnlyQuery.OriginalManagerAttachment",
-        "--gtest_output=xml:/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-single.xml"
+        "--gtest_output=xml:/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/g2a-single.xml"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 0.08196380303706974,
+      "elapsed_seconds": 0.03066640195902437,
       "log": "run-single.log"
     },
     {
       "argv": [
-        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/sim_g2a_query_test",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/sim_g2a_query_test",
         "--gtest_filter=G2aReadOnlyQuery.OriginalManagerAttachment",
-        "--gtest_output=xml:/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-dual.xml"
+        "--gtest_output=xml:/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/g2a-dual.xml"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 0.08097460004501045,
+      "elapsed_seconds": 0.024988083983771503,
       "log": "run-dual.log"
     },
     {
       "argv": [
-        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/sim_g2a_query_test",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/sim_g2a_query_test",
         "--gtest_filter=G2aReadOnlyQuery.OriginalManagerAttachment",
-        "--gtest_output=xml:/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-zero.xml"
+        "--gtest_output=xml:/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/g2a-zero.xml"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 0.07670178997796029,
+      "elapsed_seconds": 0.026217687991447747,
       "log": "run-zero.log"
     },
     {
       "argv": [
-        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/sim_g2a_query_test",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/sim_g2a_query_test",
         "--gtest_filter=G2aReadOnlyQuery.OriginalManagerAttachment",
-        "--gtest_output=xml:/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-negative_atoi.xml"
+        "--gtest_output=xml:/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/g2a-negative_atoi.xml"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 0.0766027889912948,
+      "elapsed_seconds": 0.027546292054466903,
       "log": "run-negative_atoi.log"
     },
     {
       "argv": [
-        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/sim_g2a_query_test",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/sim_g2a_query_test",
         "--gtest_filter=G2aReadOnlyQuery.OriginalManagerAttachment",
-        "--gtest_output=xml:/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-malformed_atoi.xml"
+        "--gtest_output=xml:/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/g2a-malformed_atoi.xml"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 0.07662368891760707,
+      "elapsed_seconds": 0.02795669308397919,
       "log": "run-malformed_atoi.log"
     },
     {
       "argv": [
-        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/sim_g2a_query_test",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/sim_g2a_query_test",
         "--gtest_filter=G2aReadOnlyQuery.OriginalManagerAttachment",
-        "--gtest_output=xml:/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-vendor_override.xml"
+        "--gtest_output=xml:/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/g2a-vendor_override.xml"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 0.08123740099836141,
+      "elapsed_seconds": 0.031306805089116096,
       "log": "run-vendor_override.log"
     },
     {
       "argv": [
-        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/sim_g2a_query_test",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/sim_g2a_query_test",
         "--gtest_filter=G2aReadOnlyQuery.OriginalManagerAttachment",
-        "--gtest_output=xml:/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-vendor_result_propagation.xml"
+        "--gtest_output=xml:/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/g2a-vendor_result_propagation.xml"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 0.08282820496242493,
+      "elapsed_seconds": 0.031108202994801104,
       "log": "run-vendor_result_propagation.log"
     },
     {
@@ -773,29 +780,29 @@
         "llvm-profdata-18",
         "merge",
         "-sparse",
-        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-single.profraw",
-        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-dual.profraw",
-        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-zero.profraw",
-        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-negative_atoi.profraw",
-        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-malformed_atoi.profraw",
-        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-vendor_override.profraw",
-        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-vendor_result_propagation.profraw",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/g2a-single.profraw",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/g2a-dual.profraw",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/g2a-zero.profraw",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/g2a-negative_atoi.profraw",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/g2a-malformed_atoi.profraw",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/g2a-vendor_override.profraw",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/g2a-vendor_result_propagation.profraw",
         "-o",
-        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-query.profdata"
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/g2a-query.profdata"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 0.13011972198728472,
+      "elapsed_seconds": 0.06536471808794886,
       "log": "coverage-merge.log"
     },
     {
       "argv": [
         "llvm-cov-18",
         "export",
-        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/sim_g2a_query_test",
-        "-instr-profile=/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-query.profdata"
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/sim_g2a_query_test",
+        "-instr-profile=/mnt/e/g2a-bplus-m1-artifacts-20261104/query-final/g2a-query.profdata"
       ],
       "exit_code": 0,
-      "elapsed_seconds": 0.1660311099840328,
+      "elapsed_seconds": 0.09274240909144282,
       "log": "coverage-export.log"
     }
   ],
@@ -806,6 +813,5 @@
     "Lifecycle assertions cover sequential attachment/replacement, not concurrent hot replacement",
     "No writer, selection/activation policy, RIL executor, schema, ABI or production path switch added",
     "Raw binaries/XML/logs/profiles remain outside Git; this record preserves source hashes, commands, return observations and function counts"
-  ],
-  "product_admission": "BLOCKED_NOT_RUN"
+  ]
 }

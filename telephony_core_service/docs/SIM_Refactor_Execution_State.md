@@ -6,6 +6,8 @@
 
 最新M1任务实际输入为 `origin/main@5e209a76152a7e97411c41420ebd8d0e5ec67966`，已包含此前B+ G2a代码及SIM防护网提交。从该基线新建隔离分支 `work/g2a-bplus-revalidation-20261104`；没有覆盖同名历史实施分支或修改原工作区。干净代码提交 `20f92b4821dcaf8c24e78acf9db60b681b55c57c` 与恢复的历史tip分别重新构建，七场景均PASS、返回差分一致，六函数正执行及架构/GN检查PASS；状态为 **G2a_BPLUS_HOST_VERIFIED**。代码已推送同名远端分支并核实SHA；新证据/导航随后保存到同分支，最终tip按Git查询。完整初始化与产品门禁仍BLOCKED，未改变生产执行路径，详见§10。
 
+最终审计测试修正提交 `722d044164c534f5898337c5b8eb1ccacb70c286` 已推送；干净代码在新目录重新构建七场景，仍7 PASS，当前JSON以此为查询执行基线。架构/初始化审计保留20f92b48实际基线，相关生产输入摘要未变；未用文档提交代替代码运行。
+
 以下保留2026-11-02首次适配及其后授权合入的历史快照，不将当时main/运行结果解释为当前HEAD：
 
 M1实施时从干净 `main/origin/main@9ab1e976ce71c463281d13abbd9408d60792a4d4` 建立隔离worktree及 `work/g2a-bplus-integration`，只选择性恢复G2a真实只读代码/测试；该切片当时未修改main工作区和历史检查点；随后用户明确要求直接推送main，已快进合入并核实远端包含2feaf127（见§3.5）。
@@ -339,7 +341,7 @@ python3 -B telephony_core_service/test/systemtest/scripts/audit_initialization.p
 | 本批实际验证 | 结果 | 范围及证据 |
 | --- | --- | --- |
 | 恢复历史tip重新构建/链接 | 7 PASS/0 FAIL/0 BLOCKED，dirty=false | 新下载的锁定GTest，原application/query历史路径仅存在于历史worktree |
-| 干净代码20f92b48查询构建/链接/运行 | **7 PASS/0 FAIL/0 BLOCKED，executed=true** | 1/2/0/-2/invalid → 1/2/0/-2/0，参数2、厂商5/-31 → 5/-31；与历史七组返回及共有XML属性一致 |
+| 干净20f92b48及最终722d0441查询构建/链接/运行 | **各7 PASS/0 FAIL/0 BLOCKED，executed=true** | 1/2/0/-2/invalid → 1/2/0/-2/0，参数2、厂商5/-31 → 5/-31；与历史七组返回及共有XML属性一致 |
 | 六条指定生产函数正执行 | PASS，次数56/49/28/28/56/56 | Core GetRealSimCount、Attach、Binding HostPort实现、Query、Manager、EXT；次数只是参与执行证据 |
 | 初始化隔离 | Manager OnInit=0，Core Init不在覆盖/链接切片 | 两个executed标记均false，不冒充完整启动 |
 | 源表/执行审计测试 | 14项PASS（含五份源表注释子例） | 有限文本审计，不解释完整GN或产品Feature |
@@ -354,10 +356,11 @@ python3 -B telephony_core_service/test/systemtest/scripts/audit_initialization.p
 ```sh
 python3 -B telephony_core_service/test/systemtest/scripts/test_g2a_source_tables.py -v
 python3 -B telephony_core_service/test/systemtest/scripts/run_g2a_query.py --gtest-root "$SIM_GTEST_ROOT" --output "$SIM_TEST_OUTPUT/query"
+python3 -B telephony_core_service/test/systemtest/scripts/run_g2a_query.py --gtest-root "$SIM_GTEST_ROOT" --output "$SIM_TEST_OUTPUT/query-final"
 python3 -B telephony_core_service/test/multisim_architecture_rules/run.py --with-gn --migration --output "$SIM_TEST_OUTPUT/architecture"
 python3 -B telephony_core_service/test/systemtest/scripts/audit_initialization.py --gtest-root "$SIM_GTEST_ROOT" --openssl-root "$SIM_OPENSSL_ROOT" --output "$SIM_TEST_OUTPUT/full-init"
 ```
 
 本机SIM_TEST_OUTPUT即上述仓外输出根；GTest和OpenSSL分别由现有prepare脚本新下载/校验包后解至deps及openssl，完整绝对命令及实际GN/Ninja/覆盖命令在JSON，不把示例变量当执行证据。主机工具链为Clang/LLVM18.1.3、GN1000、Ninja1.11.1、gold2.42。初始化仍缺EFUST/EHPLMN/GID1/GID2/IS_ESIM/LSI/MCC/MNC/MNC_LEN/OPERATOR_NAME/OPKEY/PHY_CARD/SIM_LABEL_INDEX/SPN正式Provider契约，未猜值或增加成功桩。
 
-**保存与下一步：** 代码20f92b48已正常推送并以ls-remote核实 `origin/work/g2a-bplus-revalidation-20261104`，源main仍5e209a76。首次linked worktree推送因Windows凭据工具路径失败，改从原仓库目录显式推送同一工作分支引用；一次TLS中断后使用HTTP/1.1正常推送，没有修改凭据配置或强推。本段及证据另行提交/推送同分支，最终文档tip按Git查询，避免自引用。原工作区分支/HEAD/文件保持不变，不推送或合并main。后续仅推进匹配OHOS manifest/Provider与产品Feature配置下的 `hb build -T //base/telephony/core_service:tel_core_service`、原SO共享对象/初始化发布及只读冒烟；完整OnInit、M2产品准入和G2b/c仍单独验收，本批不进入SetShowNumber或其他M3写业务。
+**保存与下一步：** 代码20f92b48及其证据f5c680ec已正常推送。最终审查修正新增审计测试的方法编码样例长度，并补完整方法及Init/OnInit正反断言；最终代码722d0441也已推送，以ls-remote核实同名远端分支，源main仍5e209a76。按干净722d0441新建query-final重新构建/运行七场景；其后仅同步本段及证据，不改业务Oracle或源码。首次linked worktree推送因Windows凭据工具路径失败，改从原仓库目录显式推送同一工作分支引用；一次TLS中断后使用HTTP/1.1正常推送，没有修改凭据配置或强推。本段及最终证据另行提交/推送同分支，最终文档tip按Git查询，避免自引用。原工作区分支/HEAD/文件保持不变，不推送或合并main。后续仅推进匹配OHOS manifest/Provider与产品Feature配置下的 `hb build -T //base/telephony/core_service:tel_core_service`、原SO共享对象/初始化发布及只读冒烟；完整OnInit、M2产品准入和G2b/c仍单独验收，本批不进入SetShowNumber或其他M3写业务。
