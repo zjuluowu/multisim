@@ -1,8 +1,12 @@
 # 多 SIM 重构执行状态
 
-本文件集中维护当前实施位置、证据、局部阻塞和下一批任务；技术决策继续由[目标主设计](SIM_Target_Architecture_Design_v1.2.md)维护，流程由[流程对照](多SIM架构重构_设计说明与业务流程对照.md)维护，历史裁决留在[原评审](SIM_Target_Architecture_Independent_Review_2026-10-29.md)。最近恢复/一致性核对：2026-11-04；测试防护网首批见[§8](#sim-guard-20261104)，第二轮当前结果及阻塞见[§9](#sim-guard-round2)。§0～§7保留此前G2a记录，各历史运行结果仍按其原日期、基线和覆盖范围解释。
+本文件集中维护当前实施位置、证据、局部阻塞和下一批任务；技术决策继续由[目标主设计](SIM_Target_Architecture_Design_v1.2.md)维护，流程由[流程对照](多SIM架构重构_设计说明与业务流程对照.md)维护，历史裁决留在[原评审](SIM_Target_Architecture_Independent_Review_2026-10-29.md)。最近恢复/一致性核对：2026-11-05；G2a最新复验见[§10](#g2a-revalidation-20261105)，测试防护网首批见[§8](#sim-guard-20261104)，第二轮结果及阻塞见[§9](#sim-guard-round2)。此前G2a记录保留，各历史运行结果仍按其原日期、基线和覆盖范围解释。
 
-## 0. 当前核实摘要（2026-11-02）
+## 0. 当前核实摘要（最近：2026-11-05）
+
+最新M1任务实际输入为 `origin/main@5e209a76152a7e97411c41420ebd8d0e5ec67966`，已包含此前B+ G2a代码及SIM防护网提交。从该基线新建隔离分支 `work/g2a-bplus-revalidation-20261104`；没有覆盖同名历史实施分支或修改原工作区。干净代码提交 `20f92b4821dcaf8c24e78acf9db60b681b55c57c` 与恢复的历史tip分别重新构建，七场景均PASS、返回差分一致，六函数正执行及架构/GN检查PASS；状态为 **G2a_BPLUS_HOST_VERIFIED**。代码已推送同名远端分支并核实SHA；新证据/导航随后保存到同分支，最终tip按Git查询。完整初始化与产品门禁仍BLOCKED，未改变生产执行路径，详见§10。
+
+以下保留2026-11-02首次适配及其后授权合入的历史快照，不将当时main/运行结果解释为当前HEAD：
 
 M1实施时从干净 `main/origin/main@9ab1e976ce71c463281d13abbd9408d60792a4d4` 建立隔离worktree及 `work/g2a-bplus-integration`，只选择性恢复G2a真实只读代码/测试；该切片当时未修改main工作区和历史检查点；随后用户明确要求直接推送main，已快进合入并核实远端包含2feaf127（见§3.5）。
 
@@ -321,3 +325,39 @@ python3 -B telephony_core_service/test/systemtest/scripts/audit_initialization.p
 用户在第二轮交付后明确要求“将当前修改推送到远端main分支”。重新核对工作区16项改动全部属于本轮，暂存区无既有内容，已运行源码/资产摘要与当前文件一致；origin/main仍为01a86b9f，且为当前分支祖先。仅将本轮明确文件保存为代码/证据提交 `c508bd0390b1c4360beb1d9388c0e84a9e099de0`，随后以 `git push origin HEAD:refs/heads/main` 正常快进发布。`git ls-remote --heads origin refs/heads/main` 已核实远端为该提交，包含原e99caba3/01db5ce6及本轮全部修改；没有强推、变基、自动合并无关提交或修改其他worktree。
 
 测试证据仍是01db5ce6父提交加当时dirty工作树的实际执行记录；已按保存代码逐项验证测试/生产源码摘要一致，不把提交成功声称为干净代码重跑或产品验收。独立缺陷25 FAIL和Provider/eSIM阻塞完整保留。此后仅补充本段及证据中的发布关联并同步到同一远端main；最终文档tip由Git查询，避免自身SHA自引用。
+
+<a id="g2a-revalidation-20261105"></a>
+
+## 10. G2a B+ M1恢复复验与构建边界强化
+
+本批于2026-11-04开始、11-05续跑完成。用户要求恢复已有G2a、以最新main隔离实施并保存独立远端工作分支。实际检查main为 `5e209a76152a7e97411c41420ebd8d0e5ec67966`，已包含代码ff1c6ef2及证据2feaf127；没有按旧提示9ab1e976回退或重做已合入的迁移。恢复工具 `--remote origin --fetch` 为CHECKPOINT_VERIFIED；历史远端tip `728ad77ed4c723efbb5cb1baf7b3f10bb9830240` 包含固定检查点 `cc787945792527eeb94bc20a5e955315d6269e83`，在新建detached worktree只读恢复并实际重跑。旧 `work/g2a-bplus-integration` 及其worktree保持原状，新分支为 `work/g2a-bplus-revalidation-20261104`。
+
+**实际增量：** Query仍在 `services/multisim/integration/api/real_sim_count_query.*`，Core旧对象桥仍在 `services/core/*/legacy_sim_query_binding.*`。五份产品/Core/主机显式源表的六处头搜索收窄到integration/api，绑定和Query改为使用该窄头；readonly_query保持testonly且不再导出全骨架include，原24个逻辑target不变。源表审计从字符串计数改为指定target/字面量列表检查，增加14项负控/自身测试，覆盖注释、错target、条件化、重复、覆盖/移除、窄include和无关业务源。执行审计精确匹配方法名编码/源路径，保留六条正执行条件并核对初始化未执行；厂商场景增加单次附着查询只触发一次厂商调用的检查。原返回值、宏、控制块及顺序生命周期断言全部保留。
+
+真实链路为 `CoreServiceSim::GetRealSimCount → LegacySimQueryBinding::Read → RealSimCountQuery::Read → HostPort::ReadLegacyRealSimCount → 原SimManager::GetRealSimCount/EXT`。Core入口/绑定cpp、原Manager/EXT、Feature gni及宏头与恢复历史逐字节一致；Query除include指令外token一致。没有创建新的生产Manager/RIL、Account/T/A状态或设备执行者，没有切换原Core装配和公开API/IPC/ABI、写权或持久化schema。替换对象仅存在于测试fixture，控制块匹配、空/失败/重复附着和清理反例只证明顺序生命周期。
+
+| 本批实际验证 | 结果 | 范围及证据 |
+| --- | --- | --- |
+| 恢复历史tip重新构建/链接 | 7 PASS/0 FAIL/0 BLOCKED，dirty=false | 新下载的锁定GTest，原application/query历史路径仅存在于历史worktree |
+| 干净代码20f92b48查询构建/链接/运行 | **7 PASS/0 FAIL/0 BLOCKED，executed=true** | 1/2/0/-2/invalid → 1/2/0/-2/0，参数2、厂商5/-31 → 5/-31；与历史七组返回及共有XML属性一致 |
+| 六条指定生产函数正执行 | PASS，次数56/49/28/28/56/56 | Core GetRealSimCount、Attach、Binding HostPort实现、Query、Manager、EXT；次数只是参与执行证据 |
+| 初始化隔离 | Manager OnInit=0，Core Init不在覆盖/链接切片 | 两个executed标记均false，不冒充完整启动 |
+| 源表/执行审计测试 | 14项PASS（含五份源表注释子例） | 有限文本审计，不解释完整GN或产品Feature |
+| 架构/迁移/语法/纯规则/GN | PASS | 88独立单元及合并头、157 include/25 testonly源集、12项护栏、73原文件迁移及88项布局、四套规则，GN全骨架对象 |
+| 完整初始化审计 | **BLOCKED/executed=false** | 干净20f92b48重审：45对象、43诊断、无缺头，14个SimData字段不匹配，未链接/运行 |
+| 匹配产品/Feature/SO/SA/设备冒烟 | **BLOCKED/NOT_RUN** | 无hb、匹配manifest及build/ohos.gni；文本源表和主机LTO不证明产品准入 |
+
+本轮独立机器证据为 [g2a_bplus_revalidation_20261105.json](../test/systemtest/configs/g2a_bplus_revalidation_20261105.json)，含代码/main/历史SHA、全部相关源和验证输入摘要、实际命令、七组返回/差分、方法符号及正执行次数、工具链、依赖、产物摘要和门禁。原 `g2a_checkpoint_evidence.json` 和 `g2a_bplus_evidence.json` 均保留原字节。XML、二进制、map/profile和完整日志在新建仓外输出根 `/mnt/e/g2a-bplus-m1-artifacts-20261104`；它们是辅助产物，仓内精简证据足以追溯本批结果，不依赖旧/tmp。
+
+实际验证入口（从新worktree根；历史复验在历史detached worktree用同一参数、不同输出执行）：
+
+```sh
+python3 -B telephony_core_service/test/systemtest/scripts/test_g2a_source_tables.py -v
+python3 -B telephony_core_service/test/systemtest/scripts/run_g2a_query.py --gtest-root "$SIM_GTEST_ROOT" --output "$SIM_TEST_OUTPUT/query"
+python3 -B telephony_core_service/test/multisim_architecture_rules/run.py --with-gn --migration --output "$SIM_TEST_OUTPUT/architecture"
+python3 -B telephony_core_service/test/systemtest/scripts/audit_initialization.py --gtest-root "$SIM_GTEST_ROOT" --openssl-root "$SIM_OPENSSL_ROOT" --output "$SIM_TEST_OUTPUT/full-init"
+```
+
+本机SIM_TEST_OUTPUT即上述仓外输出根；GTest和OpenSSL分别由现有prepare脚本新下载/校验包后解至deps及openssl，完整绝对命令及实际GN/Ninja/覆盖命令在JSON，不把示例变量当执行证据。主机工具链为Clang/LLVM18.1.3、GN1000、Ninja1.11.1、gold2.42。初始化仍缺EFUST/EHPLMN/GID1/GID2/IS_ESIM/LSI/MCC/MNC/MNC_LEN/OPERATOR_NAME/OPKEY/PHY_CARD/SIM_LABEL_INDEX/SPN正式Provider契约，未猜值或增加成功桩。
+
+**保存与下一步：** 代码20f92b48已正常推送并以ls-remote核实 `origin/work/g2a-bplus-revalidation-20261104`，源main仍5e209a76。首次linked worktree推送因Windows凭据工具路径失败，改从原仓库目录显式推送同一工作分支引用；一次TLS中断后使用HTTP/1.1正常推送，没有修改凭据配置或强推。本段及证据另行提交/推送同分支，最终文档tip按Git查询，避免自引用。原工作区分支/HEAD/文件保持不变，不推送或合并main。后续仅推进匹配OHOS manifest/Provider与产品Feature配置下的 `hb build -T //base/telephony/core_service:tel_core_service`、原SO共享对象/初始化发布及只读冒烟；完整OnInit、M2产品准入和G2b/c仍单独验收，本批不进入SetShowNumber或其他M3写业务。

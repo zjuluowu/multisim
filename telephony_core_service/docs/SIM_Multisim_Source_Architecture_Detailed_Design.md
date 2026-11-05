@@ -3,7 +3,7 @@
 | 项目 | 内容 |
 | --- | --- |
 | 文档版本 | 0.6，修订B+及G2a工作分支只读增量（整体设计仍PROPOSED） |
-| 更新日期 | 2026-11-02 |
+| 更新日期 | 2026-11-05（仅补§17.3.1 G2a窄include边界，历史输入保留） |
 | 源码范围 | 本工作分支90文件：88个C++文件（64头/24源）及BUILD.gn、README.md；main输入为88文件；生产能力来源见§17 |
 | 输入基线 | B+文件移动输入仍为5404aefe；G2a本轮源main为9ab1e976ce71c463281d13abbd9408d60792a4d4，历史代码cc787945792527eeb94bc20a5e955315d6269e83 |
 | 当前状态 | G2a代码及主机证据已按用户授权由work/g2a-bplus-integration快进合入main（包含2feaf127）；骨架25个source_set全testonly，产品源表独立接入；产品准入未完成，未转移写权 |
@@ -662,6 +662,8 @@ T激活等待、A切换资格和R设备租约是不同约束。跨Owner子请求
 | core/src/core_service.cpp | 原SimManager与共享RIL在原初始化/发布点后附着；此装配已按用户授权合入main，产品准入仍未完成 |
 
 Query位于integration/api而不是account：本查询读取旧Manager/EXT结果，不是账户事实投影，无独立业务状态。readonly_query target仅作为testonly叶子验证这两个文件；实际产品源表直接编译同一cpp，不能把testonly依赖传入生产或再把实现重复链接。既有逻辑target不合并；检查器禁止该叶子include其他业务实现。
+
+2026-11-05复验收窄该叶子的工程边界：Core产品/显式测试及主机源表只为G2a增加 `services/multisim/integration/api` 头搜索路径，readonly_query不导出整个骨架include配置；路径、同步只读职责及原24个target不变。当前代码/主机差分和产品门禁见[执行状态§10](SIM_Refactor_Execution_State.md#g2a-revalidation-20261105)，不改变上表历史代码来源和产品批准状态。
 
 顺序SetSimManager先清旧绑定；空RIL附着失败也清旧绑定；重复附着保持单一引用，替换/清理释放旧对象。七场景主机差分和控制块/替换负例、六函数正执行审计已经本轮重跑，见[执行状态§3.4](SIM_Refactor_Execution_State.md#g2a-bplus-m1)。它们不证明并发热替换或原Core/Manager完整初始化。完整OnInit仍受匹配SimData契约阻塞；产品/Feature/原SO发布及冒烟未验证；本次用户授权源码合入main不等于产品准入，也不授权进入写业务切片。
 

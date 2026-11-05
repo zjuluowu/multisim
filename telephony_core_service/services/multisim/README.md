@@ -41,3 +41,5 @@ python3 -B telephony_core_service/test/multisim_architecture_rules/run.py --with
 G2a 调用链为 `CoreServiceSim → LegacySimQueryBinding → RealSimCountQuery → RealSimCountHostPort → 原 SimManager/EXT`。Core 宏仍在原翻译单元求值，绑定保存原 Manager/RIL 的 shared_ptr 控制块，不创建第二生产实例；顺序替换/清理会使旧绑定失效，不承诺并发热替换。代码来源为历史检查点，主机新证据见[执行状态 §3.4](../../docs/SIM_Refactor_Execution_State.md#g2a-bplus-m1)。
 
 当前共90文件（64头/24cpp及BUILD/README）。原24个逻辑 source_set 不变，新增无业务依赖的 `readonly_query` testonly 叶子用于骨架验证；根产品及三份 Core 显式测试源表直接列入同一 query/binding 实现，不依赖 testonly 总骨架，也不在同一二进制重复编译。已合入 main 的源表接入仍待产品验证，主机 PASS 不代表原 SO/Feature/初始化发布或产品准入已通过。其余成熟 SIM 能力、目标工厂和写权仍未迁入。
+
+2026-11-05 G2a 复验进一步收窄：上述 Core 显式源表及主机 target 仅增加 `integration/api` 的头搜索路径，`readonly_query` 不再导出全骨架 include 配置，其他24个逻辑 target 不变。Query 仍只是原 Manager/EXT 的同步只读投影；没有 Account/T/A 依赖或额外状态。当前/历史七场景均重新构建通过，新的函数审计、源表负例与产品阻塞见[执行状态 §10](../../docs/SIM_Refactor_Execution_State.md#g2a-revalidation-20261105)，不改写 §3.4 的历史结果。

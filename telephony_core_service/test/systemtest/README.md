@@ -76,6 +76,7 @@ python3 test/systemtest/scripts/audit_initialization.py --gtest-root /tmp/sim-sy
 
 ```sh
 python3 -B telephony_core_service/test/systemtest/scripts/prepare_dependencies.py --archive "$SIM_GTEST_ARCHIVE" --destination "$SIM_DEPS_DIR"
+python3 -B telephony_core_service/test/systemtest/scripts/test_g2a_source_tables.py -v
 python3 -B telephony_core_service/test/systemtest/scripts/run_g2a_query.py --gtest-root "$SIM_GTEST_ROOT" --output "$SIM_TEST_OUTPUT/query"
 ```
 
@@ -84,3 +85,9 @@ python3 -B telephony_core_service/test/systemtest/scripts/run_g2a_query.py --gte
 2026-11-02 在干净代码提交 `ff1c6ef2ea73d36ab83a7ac2c276036c6f9a6a58` 重新构建执行：7 PASS/0 FAIL/0 BLOCKED，六条审计函数正执行。`manager_on_init_executed=false`、`core_init_executed=false`；完整初始化、SO/SA/IPC、Feature 和设备不在该 PASS 范围。新精简证据见 [g2a_bplus_evidence.json](configs/g2a_bplus_evidence.json)，原 [g2a_checkpoint_evidence.json](configs/g2a_checkpoint_evidence.json) 保留原字节、旧代码/路径及历史结果，不能当成本轮证据。
 
 完整初始化审计仍用 `audit_initialization.py` 和锁定 OpenSSL 头包，Query 本身不依赖该包。本轮实际重跑仍 BLOCKED：45对象、43诊断、14个未匹配 SimData 字段、无缺头，未链接/运行；不得猜测字段或 Provider 成功值。未获得匹配 OHOS 产品树/hb/Feature 配置，产品构建、原 SO 初始化发布及只读冒烟均未执行；具体门禁见[唯一执行状态](../../docs/SIM_Refactor_Execution_State.md#g2a-bplus-m1)。
+
+2026-11-05 续跑复验：实际 main 输入为 `5e209a76152a7e97411c41420ebd8d0e5ec67966`，已含上述 B+ 代码；新隔离分支 `work/g2a-bplus-revalidation-20261104` 复用原闭包，仅收窄五份显式源表的 G2a include 到 `services/multisim/integration/api`，移除 Query testonly 叶子对全骨架头路径的导出。Core/Binding/Manager/EXT 的 cpp、宏和 Feature 定义未变。
+
+新增源表审计按实际 target/字面量列表检查，拒绝注释掉、放错 target、条件化、重复、覆盖/移除 Query、缺少窄 include 或混入其他 multisim 业务 cpp，14 项 Python 测试通过。该检查是有限的文本边界审计，不解释完整 GN/Feature，也不代替产品编译。六条生产执行审计按精确方法名编码和源码路径匹配，同时核对 `SimManager::OnInit` 零执行及 `CoreService::Init` 未参与覆盖。厂商两场景额外检查**一次附着查询只调用一次厂商边界**，保留全部已有返回值、对象控制块及生命周期断言，不固定整个 Fixture 的调用总数。
+
+干净代码 `20f92b4821dcaf8c24e78acf9db60b681b55c57c` 新建输出目录重新编译/链接后 7 PASS；恢复的历史 tip `728ad77ed4c723efbb5cb1baf7b3f10bb9830240`（含 cc787945 检查点）也重新构建 7 PASS，七组返回差分一致。当前证据见 [g2a_bplus_revalidation_20261105.json](configs/g2a_bplus_revalidation_20261105.json) 及[执行状态 §10](../../docs/SIM_Refactor_Execution_State.md#g2a-revalidation-20261105)。两个此前证据 JSON 均保留原字节。本轮状态仅为 `G2a_BPLUS_HOST_VERIFIED`；完整初始化及产品门禁仍未闭合，没有切换生产执行路径。

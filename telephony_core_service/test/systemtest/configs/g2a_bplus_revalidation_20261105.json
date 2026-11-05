@@ -1,0 +1,811 @@
+{
+  "schema_version": 1,
+  "case_id": "SIM-G2A-READ-001",
+  "recorded_date": "2026-11-05",
+  "status": "G2a_BPLUS_HOST_VERIFIED",
+  "scope": "real_CoreServiceSim_to_original_SimManager_readonly_attachment",
+  "executed": true,
+  "counts": {
+    "PASS": 7,
+    "FAIL": 0,
+    "BLOCKED": 0
+  },
+  "baseline": {
+    "main": "5e209a76152a7e97411c41420ebd8d0e5ec67966",
+    "historical_fixed_checkpoint": "cc787945792527eeb94bc20a5e955315d6269e83",
+    "historical_rebuilt_tip": "728ad77ed4c723efbb5cb1baf7b3f10bb9830240",
+    "previous_bplus_code": "ff1c6ef2ea73d36ab83a7ac2c276036c6f9a6a58",
+    "work_branch": "work/g2a-bplus-revalidation-20261104",
+    "tested_code_commit": "20f92b4821dcaf8c24e78acf9db60b681b55c57c",
+    "dirty_at_query_run": false,
+    "remote_verified_code_commit": "20f92b4821dcaf8c24e78acf9db60b681b55c57c",
+    "evidence_commit": "Resolve containing commit with Git; evidence/navigation only after tested code commit"
+  },
+  "historical_evidence_preserved": [
+    {
+      "path": "test/systemtest/configs/g2a_checkpoint_evidence.json",
+      "sha256": "1f05c10191b42ae92fa390c61e401e38328eb8fa4f9cbed669e2f64caf59936e",
+      "unchanged_from_commit": "cc787945792527eeb94bc20a5e955315d6269e83"
+    },
+    {
+      "path": "test/systemtest/configs/g2a_bplus_evidence.json",
+      "sha256": "6d715ae5865a774385181a6ef74ed7a870a172dc300420a20374ca64ff77892b",
+      "unchanged_from_commit": "5e209a76152a7e97411c41420ebd8d0e5ec67966"
+    }
+  ],
+  "production_sources": [
+    {
+      "path": "services/core/src/core_service_sim.cpp",
+      "sha256": "6bc4f83b79983b319e41572a6c8683808e4cd485d652eb531fc65a154376df34"
+    },
+    {
+      "path": "services/core/src/legacy_sim_query_binding.cpp",
+      "sha256": "fb77d07c06d829d5ed33cbf8138e325f78437cc22cf4d30fcc56d4016173b5fe"
+    },
+    {
+      "path": "services/multisim/integration/api/real_sim_count_query.cpp",
+      "sha256": "742276719927fe8825eace4b5e9d9f1dbb6bc58d99200adee000aa8f364262ba"
+    },
+    {
+      "path": "services/sim/src/sim_manager.cpp",
+      "sha256": "9231f9b67e92d80178c878412b16d573c8ed604dfa58638e7441dda7f90a3cd5"
+    },
+    {
+      "path": "services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp",
+      "sha256": "b3d5e06f22790da1ee1b3373fe528e045a3452f18e0bec01472a7c7f23fc6b27"
+    }
+  ],
+  "validation_inputs": [
+    {
+      "path": "BUILD.gn",
+      "sha256": "bd967105f9eafad5863aa21d02291174507f8fea6a621b2662c1e025acd349e3"
+    },
+    {
+      "path": "test/BUILD.gn",
+      "sha256": "0d0a2735e87c78fb49100ef3c87151439f51d6c123d537ee5e61d37c578aec3f"
+    },
+    {
+      "path": "test/core_service_test.gni",
+      "sha256": "9c956b5008f36373b7bb724b6a577dea615b9b6544b368626836576caa215bd3"
+    },
+    {
+      "path": "test/unittest/raw_parcel_core_service_gtest/BUILD.gn",
+      "sha256": "4d5f7f9327de74c177cc9188315f9b5507c973c7854448a95cf056a5eee88fb5"
+    },
+    {
+      "path": "test/systemtest/BUILD.gn",
+      "sha256": "1336abcdf7bd4fa5208b97344b0cb71cd35116fe48777733b12a8ccd7bae5bc6"
+    },
+    {
+      "path": "test/systemtest/gn/BUILDCONFIG.gn",
+      "sha256": "236cbe6d3bd2d3049efbb003dd37d865b23feb1536bbfe4276872ecbd2246ddc"
+    },
+    {
+      "path": "test/systemtest/gn/BUILD.gn",
+      "sha256": "6c97c232dbd702aa1f97009bd2c23f4e981abab6f4c6c3a8a5d4c9c796b65719"
+    },
+    {
+      "path": "services/core/include/core_service_sim.h",
+      "sha256": "d79e21476fee96e15230a1728961229f6e7d52a5a29c9c2010dabf92deff64c3"
+    },
+    {
+      "path": "services/core/include/legacy_sim_query_binding.h",
+      "sha256": "fcd27f3b774cb047859a53b4de5fb57debad51c607b4570d8683ba2e418fcb17"
+    },
+    {
+      "path": "services/multisim/integration/api/real_sim_count_query.h",
+      "sha256": "09419b2cd999317df9091cf186207ac8f62cdb06652700614802eb237e09b0c3"
+    },
+    {
+      "path": "interfaces/innerkits/include/i_sim_manager.h",
+      "sha256": "0456f3753dfafdcb55d5bb18002e5a9626513b3340be806150dba6967b944230"
+    },
+    {
+      "path": "interfaces/innerkits/include/i_tel_ril_manager.h",
+      "sha256": "e4d6f790e91abf92981ed61460b4a7fd3d876936f67bd6b60878c028b30c60c6"
+    },
+    {
+      "path": "interfaces/innerkits/include/telephony_types.h",
+      "sha256": "efe4a0a12dc63f962d839b6c7e1f96a141fff4ee10ff8ac8e42f59b05d6c7d04"
+    },
+    {
+      "path": "test/systemtest/configs/dependency_lock.json",
+      "sha256": "fdf71c17dd419ea43f088beaa296cdd05bf90a2a2661acdbd87238e805a70945"
+    },
+    {
+      "path": "test/systemtest/scripts/run_g2a_query.py",
+      "sha256": "bdafdf23244110297cc29ee1ed99026fab568852cb15d66414b04ad45f750076"
+    },
+    {
+      "path": "test/systemtest/scripts/build_clock.py",
+      "sha256": "f00451a20b484158512c52e229188390f6b043918f9936fd0df0643d2e955b9f"
+    },
+    {
+      "path": "test/systemtest/scripts/test_g2a_source_tables.py",
+      "sha256": "182cf97b87554dcc66f26ae70c86e69741bffb194eaaf64dfd91729dfdac695e"
+    },
+    {
+      "path": "services/multisim/BUILD.gn",
+      "sha256": "72dad50cd4b9fca5bcb8dc82e4e5f4455b7a13a615cd8e45fa37aa8855ee04b0"
+    },
+    {
+      "path": "test/systemtest/stubs/mock_tel_ril_manager.h",
+      "sha256": "431801a6ef782075b5793f78881f8819123fc016678484c11144e43a276a468b"
+    },
+    {
+      "path": "test/systemtest/stubs/g2a_vendor_boundary.cpp",
+      "sha256": "9931244e65f13f354e0a64d54bee2c0c708165636af7d2802ad76e3c7756b0e6"
+    },
+    {
+      "path": "test/systemtest/support/g2a_query_probe.h",
+      "sha256": "42cf19c4324102c6e490e6af320157a7f243e044d30a22a410e8090ab2e0dcac"
+    },
+    {
+      "path": "test/systemtest/support/g2a_query_probe.cpp",
+      "sha256": "b368ef839cc2cf066a4a101b0b53427d4d104f4cb383e5909aa0775161f9f709"
+    },
+    {
+      "path": "test/systemtest/tests/g2a_query_test.cpp",
+      "sha256": "61bbe8410625be87a8b9aaf52f6d5c13d717cb874280baca1f71749a3a6f7397"
+    }
+  ],
+  "provenance": {
+    "historical_runner_result": {
+      "path": "/mnt/e/g2a-bplus-m1-artifacts-20261104/history-query/g2a-query-result.json",
+      "sha256": "2fe9f116b4a0cf2b0e981b70f23ccc49043b65bd6a1f3f4ec7e0b2d2dd649b9f"
+    },
+    "current_runner_result": {
+      "path": "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-query-result.json",
+      "sha256": "4be797eac227ae2ba2ce097a6cb26248c082f1a46b4c5ed095e33a312aa205dd"
+    },
+    "historical_rebuild_dirty": false,
+    "unchanged_from_rebuilt_history": [
+      "services/core/src/core_service_sim.cpp",
+      "services/core/src/legacy_sim_query_binding.cpp",
+      "services/sim/src/sim_manager.cpp",
+      "services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp",
+      "telephony_core_service.gni",
+      "interfaces/innerkits/include/telephony_types.h",
+      "test/systemtest/configs/dependency_lock.json"
+    ],
+    "query_tokens_unchanged_except_include_directive": true,
+    "old_application_directory_restored": false,
+    "original_assertions": {
+      "historical": {
+        "assertion_lines": 19,
+        "all_retained": true
+      },
+      "main": {
+        "assertion_lines": 23,
+        "all_retained": true
+      }
+    },
+    "source_and_validation_digests_match_saved_code": true
+  },
+  "scenarios": [
+    {
+      "name": "single",
+      "slot_parameter": "1",
+      "vendor_result": null,
+      "frozen_expected": 1,
+      "historical_actual": 1,
+      "bplus_actual": 1,
+      "status": "PASS",
+      "all_shared_xml_properties_equal": true,
+      "attached_query_vendor_calls": 0,
+      "xml_sha256": "3ad0d5528c9ea4621c13c43b5fddf4ae91963a68e337d70d434d047295e6342d"
+    },
+    {
+      "name": "dual",
+      "slot_parameter": "2",
+      "vendor_result": null,
+      "frozen_expected": 2,
+      "historical_actual": 2,
+      "bplus_actual": 2,
+      "status": "PASS",
+      "all_shared_xml_properties_equal": true,
+      "attached_query_vendor_calls": 0,
+      "xml_sha256": "410feea9f027e421854650a6e11be8e2aecca8043c56bcf17d770ec6013974a9"
+    },
+    {
+      "name": "zero",
+      "slot_parameter": "0",
+      "vendor_result": null,
+      "frozen_expected": 0,
+      "historical_actual": 0,
+      "bplus_actual": 0,
+      "status": "PASS",
+      "all_shared_xml_properties_equal": true,
+      "attached_query_vendor_calls": 0,
+      "xml_sha256": "487f7362f0256b6a9d441ba580999f4ebb7e5ca37ec442f93eec90ade2ac77bb"
+    },
+    {
+      "name": "negative_atoi",
+      "slot_parameter": "-2",
+      "vendor_result": null,
+      "frozen_expected": -2,
+      "historical_actual": -2,
+      "bplus_actual": -2,
+      "status": "PASS",
+      "all_shared_xml_properties_equal": true,
+      "attached_query_vendor_calls": 0,
+      "xml_sha256": "7d49c48703fcafc527e7a00d669fa79f21714649f756eece75d963173668ccd8"
+    },
+    {
+      "name": "malformed_atoi",
+      "slot_parameter": "invalid",
+      "vendor_result": null,
+      "frozen_expected": 0,
+      "historical_actual": 0,
+      "bplus_actual": 0,
+      "status": "PASS",
+      "all_shared_xml_properties_equal": true,
+      "attached_query_vendor_calls": 0,
+      "xml_sha256": "1fb05e23ae2e272cbfa856e2483899ac585c7fb54899d8dc11c19c693a2a4231"
+    },
+    {
+      "name": "vendor_override",
+      "slot_parameter": "2",
+      "vendor_result": "5",
+      "frozen_expected": 5,
+      "historical_actual": 5,
+      "bplus_actual": 5,
+      "status": "PASS",
+      "all_shared_xml_properties_equal": true,
+      "attached_query_vendor_calls": 1,
+      "xml_sha256": "227d83aa50181b9c4aa12d3e657cd8ca33dd0d9702c5290074adc0e961f195fa"
+    },
+    {
+      "name": "vendor_result_propagation",
+      "slot_parameter": "2",
+      "vendor_result": "-31",
+      "frozen_expected": -31,
+      "historical_actual": -31,
+      "bplus_actual": -31,
+      "status": "PASS",
+      "all_shared_xml_properties_equal": true,
+      "attached_query_vendor_calls": 1,
+      "xml_sha256": "52c654f76f513c84069ca43d764eba780b9ac1d04751965dd7747d85c3d7d11f"
+    }
+  ],
+  "production_execution_audit": {
+    "functions": [
+      {
+        "symbol": "_ZN4OHOS9Telephony14CoreServiceSim15GetRealSimCountEv",
+        "executions": 56,
+        "filenames": [
+          "services/core/src/core_service_sim.cpp",
+          "interfaces/innerkits/include/telephony_types.h"
+        ]
+      },
+      {
+        "symbol": "_ZN4OHOS9Telephony14CoreServiceSim21AttachReadOnlyQueriesERKSt10shared_ptrINS0_14ITelRilManagerEE",
+        "executions": 49,
+        "filenames": [
+          "services/core/src/core_service_sim.cpp"
+        ]
+      },
+      {
+        "symbol": "_ZN4OHOS9Telephony21LegacySimQueryBinding22ReadLegacyRealSimCountEv",
+        "executions": 28,
+        "filenames": [
+          "services/core/src/legacy_sim_query_binding.cpp"
+        ]
+      },
+      {
+        "symbol": "_ZN4OHOS9Telephony8MultiSim17RealSimCountQuery4ReadEv",
+        "executions": 28,
+        "filenames": [
+          "services/multisim/integration/api/real_sim_count_query.cpp"
+        ]
+      },
+      {
+        "symbol": "_ZN4OHOS9Telephony10SimManager15GetRealSimCountEv",
+        "executions": 56,
+        "filenames": [
+          "services/sim/src/sim_manager.cpp",
+          "interfaces/innerkits/include/telephony_types.h",
+          "services/telephony_ext_wrapper/include/telephony_ext_wrapper.h"
+        ]
+      },
+      {
+        "symbol": "_ZN4OHOS9Telephony19TelephonyExtWrapper18GetRealSimCountExtEi",
+        "executions": 56,
+        "filenames": [
+          "services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp"
+        ]
+      }
+    ],
+    "initializers": [
+      {
+        "function": "SimManager::OnInit",
+        "executions": 0,
+        "present_in_coverage": true
+      },
+      {
+        "function": "CoreService::Init",
+        "executions": 0,
+        "present_in_coverage": false
+      }
+    ],
+    "link_map": {
+      "path": "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/sim_g2a_query_test.map",
+      "sha256": "c783ab38c38a73b14ca16ef98e558fa2e1bebe7e3edea7b246e3e61944c7793d"
+    },
+    "profile": {
+      "path": "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-query.profdata",
+      "sha256": "3907eba8c58965c7c4df046a7b80a9b9ce02cfe731b1c68317a02fcbd115cd3d"
+    },
+    "coverage_export": {
+      "path": "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/coverage-export.log",
+      "sha256": "832de2d6bcdf413ac93e43acee67db8c5b582fbf74317170979571b7166f4907"
+    },
+    "binary": {
+      "path": "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/sim_g2a_query_test",
+      "sha256": "52647227b66061420247e079a9e605416ff099265fecc69931df8b78a3809e54"
+    },
+    "purpose": "Positive execution counts prove selected production functions, not an exact aggregate-call business Oracle",
+    "lto_scope": "Selected synchronous query only; uncalled platform paths eliminated"
+  },
+  "manager_on_init_executed": false,
+  "core_init_executed": false,
+  "integration_source_tables": {
+    "tables": [
+      "BUILD.gn",
+      "test/BUILD.gn",
+      "test/core_service_test.gni",
+      "test/unittest/raw_parcel_core_service_gtest/BUILD.gn",
+      "test/systemtest/BUILD.gn"
+    ],
+    "query_and_binding_once_per_target": true,
+    "narrow_query_include_boundary": true,
+    "isolated_testonly_leaf": true,
+    "product_admission": "NOT_PROVEN_BY_SOURCE_TABLE_CHECK"
+  },
+  "verification": {
+    "architecture": {
+      "status": "PASS",
+      "exit_code": 0,
+      "code_commit": "20f92b4821dcaf8c24e78acf9db60b681b55c57c",
+      "syntax_units": 88,
+      "combined_header_units": 1,
+      "include_edges": 157,
+      "testonly_source_sets": 25,
+      "guard_tests": 12,
+      "migration_original_files": 73,
+      "rules": [
+        "topology",
+        "resource",
+        "assignment",
+        "runtime_protocol"
+      ],
+      "log": {
+        "path": "/mnt/e/g2a-bplus-m1-artifacts-20261104/architecture.log",
+        "sha256": "93e5af3383c9100c02b29571fb409d90971d2cdc7aac91e7aca3fb9b0de7495a"
+      },
+      "gn_note": "All skeleton objects compiled in this task first run; clean-commit rerun reports no work to do. No product link/startup claim"
+    },
+    "source_table_negative_controls": {
+      "status": "PASS",
+      "test_methods": 14,
+      "log": {
+        "path": "/mnt/e/g2a-bplus-m1-artifacts-20261104/source-table-controls.log",
+        "sha256": "a797590dba8366ddf846a3f2d052468507db90b835e779ca7ad22665c3c99d8a"
+      },
+      "limits": "Bounded literal GN target/list audit, not full GN/Feature evaluation"
+    }
+  },
+  "initialization_gate": {
+    "status": "BLOCKED",
+    "executed": false,
+    "head_sha": "20f92b4821dcaf8c24e78acf9db60b681b55c57c",
+    "compiled_objects": 45,
+    "build_exit_code": 1,
+    "missing_headers": [],
+    "compiler_diagnostics": 43,
+    "unmatched_simdata_fields": [
+      "EFUST",
+      "EHPLMN",
+      "GID1",
+      "GID2",
+      "IS_ESIM",
+      "LSI",
+      "MCC",
+      "MNC",
+      "MNC_LEN",
+      "OPERATOR_NAME",
+      "OPKEY",
+      "PHY_CARD",
+      "SIM_LABEL_INDEX",
+      "SPN"
+    ],
+    "raw_result": {
+      "path": "/mnt/e/g2a-bplus-m1-artifacts-20261104/full-init/initialization_audit.json",
+      "sha256": "e027b4c2ae3b62bc81b42c4fa9e0d8588a8c0b0639e336a539658d19dde17109"
+    },
+    "log": {
+      "path": "/mnt/e/g2a-bplus-m1-artifacts-20261104/full-init/ninja-initialization.log",
+      "sha256": "d9e1ff7cc7ea8b0fe52a61cc2e683f1ba5efb859b91bb5fac8e886e02e6c3a92"
+    },
+    "resolution": "Requires matching Provider contract/headers; no guessed schema or success responses"
+  },
+  "product_gates": {
+    "cwd": "/mnt/e/g2a-bplus-m1-20261104",
+    "hb": null,
+    "repo_manifest": false,
+    "ohos_gni": false,
+    "parents": [
+      {
+        "root": "/mnt/e",
+        "repo_manifest": false,
+        "ohos_gni": false
+      },
+      {
+        "root": "/mnt",
+        "repo_manifest": false,
+        "ohos_gni": false
+      },
+      {
+        "root": "/",
+        "repo_manifest": false,
+        "ohos_gni": false
+      }
+    ],
+    "product_build": "BLOCKED",
+    "reason": "No matching OHOS manifest/product tree or hb in this workspace; host GN is not product GN",
+    "runtime_feature_matrix": "NOT_RUN",
+    "so_sa_publication": "NOT_RUN",
+    "device_readonly_smoke": "NOT_RUN"
+  },
+  "feature_static_review": {
+    "feature_gni_and_macro_header_unchanged_from_history": true,
+    "core_macro_evaluated_in_original_translation_unit": true,
+    "original_manager_fallback_and_ext_return_propagation_unchanged": true,
+    "runtime_product_feature_matrix": "NOT_RUN",
+    "raw_parcel_target_keeps_its_original_mock_defines": true
+  },
+  "environment": {
+    "os": "Linux-6.18.40.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "cpu": "x86_64"
+  },
+  "toolchain": {
+    "gn": "1000 (03d10f1)",
+    "ninja": "1.11.1",
+    "clang++": "Ubuntu clang version 18.1.3 (1ubuntu1)",
+    "ld.gold": "GNU gold (GNU Binutils for Ubuntu 2.42) 1.16",
+    "llvm-profdata-18": "Ubuntu LLVM version 18.1.3",
+    "llvm-cov-18": "Ubuntu LLVM version 18.1.3"
+  },
+  "googletest_commit": "b514bdc898e2951020cbdca1304b75f5950d1f59",
+  "dependencies": {
+    "lock": "test/systemtest/configs/dependency_lock.json",
+    "googletest_archive": {
+      "path": "/mnt/e/g2a-bplus-m1-artifacts-20261104/googletest.tar.gz",
+      "sha256": "9257316d65d6259f6596bc4fa5464092305ab3f3d9dc6d7e5780ab462d8baa64"
+    },
+    "openssl_headers_archive": {
+      "path": "/mnt/e/g2a-bplus-m1-artifacts-20261104/libssl-dev.deb",
+      "sha256": "2b4734df0475e305ac03abb0a2cc5659651ed37ef02d967a1c4033a154cf714b"
+    },
+    "preparation": "Fresh downloads; prepared by checksum-pinned repository scripts, no system package installation"
+  },
+  "actual_commands": [
+    {
+      "cwd": "/mnt/e/github/multisim",
+      "argv": [
+        "python3",
+        "-B",
+        "telephony_core_service/tools/check_sim_refactor_recovery.py",
+        "--remote",
+        "origin",
+        "--fetch"
+      ],
+      "status": "CHECKPOINT_VERIFIED",
+      "runtime_tests": false
+    },
+    {
+      "cwd": "/mnt/e/g2a-bplus-m1-20261104",
+      "argv": [
+        "python3",
+        "-B",
+        "telephony_core_service/test/systemtest/scripts/prepare_dependencies.py",
+        "--archive",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/googletest.tar.gz",
+        "--destination",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/deps"
+      ],
+      "exit_code": 0
+    },
+    {
+      "cwd": "/mnt/e/g2a-bplus-m1-20261104",
+      "argv": [
+        "python3",
+        "-B",
+        "telephony_core_service/test/systemtest/scripts/prepare_openssl.py",
+        "--archive",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/libssl-dev.deb",
+        "--destination",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/openssl"
+      ],
+      "exit_code": 0
+    },
+    {
+      "cwd": "/mnt/e/g2a-bplus-m1-history-20261104",
+      "argv": [
+        "python3",
+        "-B",
+        "telephony_core_service/test/systemtest/scripts/run_g2a_query.py",
+        "--gtest-root",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59",
+        "--output",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/history-query"
+      ],
+      "exit_code": 0
+    },
+    {
+      "cwd": "/mnt/e/g2a-bplus-m1-20261104",
+      "argv": [
+        "python3",
+        "-B",
+        "telephony_core_service/test/systemtest/scripts/run_g2a_query.py",
+        "--gtest-root",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59",
+        "--output",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query"
+      ],
+      "exit_code": 0
+    },
+    {
+      "cwd": "/mnt/e/g2a-bplus-m1-20261104",
+      "argv": [
+        "python3",
+        "-B",
+        "telephony_core_service/test/systemtest/scripts/test_g2a_source_tables.py",
+        "-v"
+      ],
+      "exit_code": 0
+    },
+    {
+      "cwd": "/mnt/e/g2a-bplus-m1-20261104",
+      "argv": [
+        "python3",
+        "-B",
+        "telephony_core_service/test/multisim_architecture_rules/run.py",
+        "--with-gn",
+        "--migration",
+        "--output",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/architecture"
+      ],
+      "exit_code": 0
+    },
+    {
+      "cwd": "/mnt/e/g2a-bplus-m1-20261104",
+      "argv": [
+        "python3",
+        "-B",
+        "telephony_core_service/test/systemtest/scripts/audit_initialization.py",
+        "--gtest-root",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59",
+        "--openssl-root",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/openssl",
+        "--output",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/full-init"
+      ],
+      "exit_code": 1
+    }
+  ],
+  "build_run_coverage_commands": [
+    {
+      "argv": [
+        "gn",
+        "--version"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.012531034997664392,
+      "log": "version-gn.log"
+    },
+    {
+      "argv": [
+        "ninja",
+        "--version"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.007317619980312884,
+      "log": "version-ninja.log"
+    },
+    {
+      "argv": [
+        "clang++",
+        "--version"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.13621557399164885,
+      "log": "version-clang++.log"
+    },
+    {
+      "argv": [
+        "ld.gold",
+        "--version"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.011278431047685444,
+      "log": "version-ld.gold.log"
+    },
+    {
+      "argv": [
+        "llvm-profdata-18",
+        "--version"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.018838750896975398,
+      "log": "version-llvm-profdata-18.log"
+    },
+    {
+      "argv": [
+        "llvm-cov-18",
+        "--version"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.03448269504588097,
+      "log": "version-llvm-cov-18.log"
+    },
+    {
+      "argv": [
+        "python3",
+        "/mnt/e/g2a-bplus-m1-20261104/telephony_core_service/test/systemtest/scripts/generate_ril_mock.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.15388512099161744,
+      "log": "ril-interface-check.log"
+    },
+    {
+      "argv": [
+        "gn",
+        "gen",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query",
+        "--root=/mnt/e/g2a-bplus-m1-20261104/telephony_core_service/test/systemtest",
+        "--args=production_root=\"/mnt/e/g2a-bplus-m1-20261104/telephony_core_service\" gtest_root=\"/mnt/e/g2a-bplus-m1-artifacts-20261104/deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59\" libxml2_include_dir=\"/usr/include/libxml2\""
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.12170132994651794,
+      "log": "gn-gen.log"
+    },
+    {
+      "argv": [
+        "ninja",
+        "-C",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query",
+        "-j",
+        "3",
+        "sim_g2a_query_test"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 58.374692866927944,
+      "log": "ninja-build.log"
+    },
+    {
+      "argv": [
+        "clang++",
+        "-std=c++17",
+        "-fPIC",
+        "-shared",
+        "/mnt/e/g2a-bplus-m1-20261104/telephony_core_service/test/systemtest/stubs/g2a_vendor_boundary.cpp",
+        "-o",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/libtelephony_ext_service.z.so"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.4872653160709888,
+      "log": "vendor-abi-boundary-build.log"
+    },
+    {
+      "argv": [
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/sim_g2a_query_test",
+        "--gtest_filter=G2aReadOnlyQuery.OriginalManagerAttachment",
+        "--gtest_output=xml:/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-single.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.08196380303706974,
+      "log": "run-single.log"
+    },
+    {
+      "argv": [
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/sim_g2a_query_test",
+        "--gtest_filter=G2aReadOnlyQuery.OriginalManagerAttachment",
+        "--gtest_output=xml:/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-dual.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.08097460004501045,
+      "log": "run-dual.log"
+    },
+    {
+      "argv": [
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/sim_g2a_query_test",
+        "--gtest_filter=G2aReadOnlyQuery.OriginalManagerAttachment",
+        "--gtest_output=xml:/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-zero.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.07670178997796029,
+      "log": "run-zero.log"
+    },
+    {
+      "argv": [
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/sim_g2a_query_test",
+        "--gtest_filter=G2aReadOnlyQuery.OriginalManagerAttachment",
+        "--gtest_output=xml:/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-negative_atoi.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0766027889912948,
+      "log": "run-negative_atoi.log"
+    },
+    {
+      "argv": [
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/sim_g2a_query_test",
+        "--gtest_filter=G2aReadOnlyQuery.OriginalManagerAttachment",
+        "--gtest_output=xml:/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-malformed_atoi.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.07662368891760707,
+      "log": "run-malformed_atoi.log"
+    },
+    {
+      "argv": [
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/sim_g2a_query_test",
+        "--gtest_filter=G2aReadOnlyQuery.OriginalManagerAttachment",
+        "--gtest_output=xml:/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-vendor_override.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.08123740099836141,
+      "log": "run-vendor_override.log"
+    },
+    {
+      "argv": [
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/sim_g2a_query_test",
+        "--gtest_filter=G2aReadOnlyQuery.OriginalManagerAttachment",
+        "--gtest_output=xml:/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-vendor_result_propagation.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.08282820496242493,
+      "log": "run-vendor_result_propagation.log"
+    },
+    {
+      "argv": [
+        "llvm-profdata-18",
+        "merge",
+        "-sparse",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-single.profraw",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-dual.profraw",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-zero.profraw",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-negative_atoi.profraw",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-malformed_atoi.profraw",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-vendor_override.profraw",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-vendor_result_propagation.profraw",
+        "-o",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-query.profdata"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.13011972198728472,
+      "log": "coverage-merge.log"
+    },
+    {
+      "argv": [
+        "llvm-cov-18",
+        "export",
+        "/mnt/e/g2a-bplus-m1-artifacts-20261104/query/sim_g2a_query_test",
+        "-instr-profile=/mnt/e/g2a-bplus-m1-artifacts-20261104/query/g2a-query.profdata"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.1660311099840328,
+      "log": "coverage-export.log"
+    }
+  ],
+  "limits": [
+    "No matched OHOS product tree/hb/manifest, SO/SA/IPC/permission/device admission",
+    "SimManager::OnInit is instrumented but not executed; CoreService::Init is not part of this linked slice",
+    "StrictMock RIL and platform headers are boundary substitutes; no real modem is connected",
+    "Lifecycle assertions cover sequential attachment/replacement, not concurrent hot replacement",
+    "No writer, selection/activation policy, RIL executor, schema, ABI or production path switch added",
+    "Raw binaries/XML/logs/profiles remain outside Git; this record preserves source hashes, commands, return observations and function counts"
+  ],
+  "product_admission": "BLOCKED_NOT_RUN"
+}
