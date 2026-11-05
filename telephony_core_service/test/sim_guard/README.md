@@ -2,7 +2,7 @@
 
 本工程链接未经修改的 `services/sim` 卡状态/PIN/PUK实现，由 RIL 正式通知和请求响应驱动，读取真实公开状态能力及 StateRegistry 出站通知。它是 Linux 组件业务测试；不是完整 SimManager 初始化、IPC、设备、账户或 eSIM 验收。v2历史结果见 [evidence.json](evidence.json)，第二轮结果见 [evidence_round2.json](evidence_round2.json)，范围/规则/缺口见 [inventory.json](traceability/inventory.json)及[增量场景清单](traceability/round2_catalog.json)。
 
-2026-11-05整理：首批和第二轮资产已保存到main，当前已执行范围如下。第二轮实际运行基线为01db5ce6加当时dirty工作树，输入摘要已对应保存代码c508bd03；不是在最新文档HEAD上重跑。整体交付、G2a独立分支及剩余门禁统一见[执行状态 §0](../../docs/SIM_Refactor_Execution_State.md#current-status)，本次没有改动代码、Oracle或历史证据。
+2026-11-05整理：首批和第二轮资产已保存到main，当前已执行范围如下。第二轮实际运行基线为01db5ce6加当时dirty工作树，输入摘要已对应保存代码c508bd03；不是在最新文档HEAD上重跑。整体交付、G2a分支合入状态及剩余门禁统一见[执行状态 §0](../../docs/SIM_Refactor_Execution_State.md#current-status)，本批合入没有改动本工程业务代码、Oracle或历史证据，SIM Guard未重跑；本批新增G2a重验见执行状态§11。
 
 | 分类 | 已保存执行结果 | 状态解释 |
 | --- | --- | --- |

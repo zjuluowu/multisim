@@ -1,6 +1,6 @@
 # 多 SIM 源码导航
 
-修订 B+ 六组已由用户选为源码结构实施基线。main 已包含首次 G2a 真实只读查询及旧对象附着；最新窄include、源表/执行审计强化及复验证据在 `work/g2a-bplus-revalidation-20261104`，尚未合入main。精确SHA、已验证范围和未完成门禁统一见[执行状态 §0](../../docs/SIM_Refactor_Execution_State.md#current-status)。其余能力仍为 testonly 骨架，成熟 SIM 读源和业务实现仍由原 `services/sim/` 承担，产品准入未完成。最终由 multisim 完整替代旧实现，不长期双执行。
+修订 B+ 六组已由用户选为源码结构实施基线。main 已包含 G2a 真实只读查询及旧对象附着；`work/g2a-bplus-revalidation-20261104` 的最新窄include、源表/执行审计强化、复验证据及状态整理也已按本批授权合入main，实际重验见[合入记录](../../docs/SIM_Refactor_Execution_State.md#main-integration-20261105)。精确SHA、已验证范围和未完成门禁统一见[执行状态 §0](../../docs/SIM_Refactor_Execution_State.md#current-status)。其余能力仍为 testonly 骨架，成熟 SIM 读源和业务实现仍由原 `services/sim/` 承担，产品准入未完成。最终由 multisim 完整替代旧实现，不长期双执行。
 
 | 目录 | 当前代码与责任 |
 | --- | --- |

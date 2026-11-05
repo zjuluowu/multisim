@@ -6,7 +6,7 @@
 
 上述容量历史记录来自 `main@df8f2f017f83c70145b20255b4e9042f7a5fd923` + 当时工作树，不代表当前 HEAD。G2a B+ 本轮实测独立记录如下，容量套件和原五条 BLOCKED 不计入 G2a。
 
-2026-11-05状态整理：首次B+ G2a代码已在main；最新强化与复验证据保存于独立 `work/g2a-bplus-revalidation-20261104`，尚未合入main。实际测试代码722d0441、交付097e536a及远端关系见[执行状态 §0](../../docs/SIM_Refactor_Execution_State.md#current-status)。本次只整理文档，没有重跑下表测试或改写历史JSON。
+2026-11-05状态整理及随后合入：首次B+ G2a与最新强化/状态整理均已在main；最新分支交付d5f0527c在干净main隔离worktree重新构建，查询7 PASS、14项审计及架构/GN检查PASS，见[合入记录 §11](../../docs/SIM_Refactor_Execution_State.md#main-integration-20261105)。下表SIM Guard与初始化仍按其原证据解释，本次没有重跑它们，也未改写历史JSON。
 
 | 测试资产 | 已保存的实际结果 | 验证边界 |
 | --- | --- | --- |
