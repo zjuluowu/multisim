@@ -2,9 +2,18 @@
 
 历史容量切片：**Linux 受控组件最小切片已运行**，该套件仅覆盖 `ISimManager::GetMaxSimCount()` 的只读容量查询。正常 GoogleTest 1 PASS；独立检查器负控1预期FAIL。编译、链接和源级覆盖证据确认执行了未修改的SIM生产方法。
 
-原五条服务入口候选仍全部BLOCKED；没有验证无卡/Ready/账户/PIN/双卡隔离、SA注册/发现、真实Client/Proxy/Stub IPC、服务入口检查、真实权限/capability、Modem或设备。当前不满足原始全部第一阶段标准，也不宣称真实设备系统测试完成。
+本目录原五条完整服务入口候选仍全部BLOCKED；这些候选没有验证无卡/Ready/账户/PIN/双卡隔离、SA注册/发现、真实Client/Proxy/Stub IPC、服务入口检查、真实权限/capability、Modem或设备。另一个[SIM Guard组件工程](../sim_guard/README.md)已运行卡状态/PIN/PUK/双槽场景，不能将候选入口阻塞误读为全仓没有组件测试，也不能用组件PASS关闭完整服务/设备门禁。
 
 上述容量历史记录来自 `main@df8f2f017f83c70145b20255b4e9042f7a5fd923` + 当时工作树，不代表当前 HEAD。G2a B+ 本轮实测独立记录如下，容量套件和原五条 BLOCKED 不计入 G2a。
+
+2026-11-05状态整理：首次B+ G2a代码已在main；最新强化与复验证据保存于独立 `work/g2a-bplus-revalidation-20261104`，尚未合入main。实际测试代码722d0441、交付097e536a及远端关系见[执行状态 §0](../../docs/SIM_Refactor_Execution_State.md#current-status)。本次只整理文档，没有重跑下表测试或改写历史JSON。
+
+| 测试资产 | 已保存的实际结果 | 验证边界 |
+| --- | --- | --- |
+| 本目录G2a查询 | 干净最终代码7 PASS；恢复历史7 PASS，返回差分一致；14项审计测试PASS | 五个生产cpp、六函数正执行；完整Core/Manager初始化未运行，产品未准入 |
+| SIM Guard兼容/设施 | 17场景×5轮85 PASS；设施19 PASS；突变检出后恢复17 PASS | Legacy卡状态/PIN/PUK组件，非账户或数据库重启恢复 |
+| SIM Guard缺陷/待裁决 | 5条×5轮25 FAIL，独立保留 | 兼容PASS不覆盖这些红灯；Refresh返回契约等仍需裁决 |
+| 完整初始化/服务/产品 | BLOCKED/NOT_RUN | 14个SimData字段及匹配产品/Provider环境仍未闭合 |
 
 现行目标设计及对Oracle、Phase0和差分的影响见[设计对齐](docs/design_alignment.md)与[架构入口](../../docs/README.md)。
 

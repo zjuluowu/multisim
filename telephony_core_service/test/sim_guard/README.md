@@ -2,6 +2,16 @@
 
 本工程链接未经修改的 `services/sim` 卡状态/PIN/PUK实现，由 RIL 正式通知和请求响应驱动，读取真实公开状态能力及 StateRegistry 出站通知。它是 Linux 组件业务测试；不是完整 SimManager 初始化、IPC、设备、账户或 eSIM 验收。v2历史结果见 [evidence.json](evidence.json)，第二轮结果见 [evidence_round2.json](evidence_round2.json)，范围/规则/缺口见 [inventory.json](traceability/inventory.json)及[增量场景清单](traceability/round2_catalog.json)。
 
+2026-11-05整理：首批和第二轮资产已保存到main，当前已执行范围如下。第二轮实际运行基线为01db5ce6加当时dirty工作树，输入摘要已对应保存代码c508bd03；不是在最新文档HEAD上重跑。整体交付、G2a独立分支及剩余门禁统一见[执行状态 §0](../../docs/SIM_Refactor_Execution_State.md#current-status)，本次没有改动代码、Oracle或历史证据。
+
+| 分类 | 已保存执行结果 | 状态解释 |
+| --- | --- | --- |
+| v2原兼容集 | 7条×5轮，35 PASS | 原断言保留，已包含在第二轮总兼容统计内 |
+| 第二轮兼容扩展 | 新增10条×5轮，50 PASS；总计17条、85 PASS/0 FAIL | 卡生命周期、PIN/PUK、双槽交错和组件重建；不计成完整初始化/持久化恢复 |
+| 独立缺陷/待裁决集 | 5条×5轮，25 FAIL | 保留迟到/换卡/PIN/Refresh问题；不能把5条候选都当成已批准规则，修复政策/返回契约单独裁决 |
+| 设施与有效性 | 19项设施PASS；READY→LOCKED突变检出，恢复后17 PASS | 与业务兼容/缺陷分开计数；`--suite=all`因独立缺陷返回非零 |
+| Multisim及目标新能力 | BLOCKED，未运行真实新实现 | Adapter接入准备不代表通过；四卡/三待等按正式产品能力另验 |
+
 从 Git 根运行。GoogleTest 固定来源和摘要沿用 [dependency_lock.json](../systemtest/configs/dependency_lock.json)，准备工具会校验归档及解包树；构建不下载依赖。以下变量由本机选择，产物必须在 Git 仓库外：
 
 ```sh

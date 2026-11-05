@@ -2,29 +2,45 @@
 
 本文件集中维护当前实施位置、证据、局部阻塞和下一批任务；技术决策继续由[目标主设计](SIM_Target_Architecture_Design_v1.2.md)维护，流程由[流程对照](多SIM架构重构_设计说明与业务流程对照.md)维护，历史裁决留在[原评审](SIM_Target_Architecture_Independent_Review_2026-10-29.md)。最近恢复/一致性核对：2026-11-05；G2a最新复验见[§10](#g2a-revalidation-20261105)，测试防护网首批见[§8](#sim-guard-20261104)，第二轮结果及阻塞见[§9](#sim-guard-round2)。此前G2a记录保留，各历史运行结果仍按其原日期、基线和覆盖范围解释。
 
-## 0. 当前核实摘要（最近：2026-11-05）
+<a id="current-status"></a>
 
-最新M1任务实际输入为 `origin/main@5e209a76152a7e97411c41420ebd8d0e5ec67966`，已包含此前B+ G2a代码及SIM防护网提交。从该基线新建隔离分支 `work/g2a-bplus-revalidation-20261104`；没有覆盖同名历史实施分支或修改原工作区。干净代码提交 `20f92b4821dcaf8c24e78acf9db60b681b55c57c` 与恢复的历史tip分别重新构建，七场景均PASS、返回差分一致，六函数正执行及架构/GN检查PASS；状态为 **G2a_BPLUS_HOST_VERIFIED**。代码已推送同名远端分支并核实SHA；新证据/导航随后保存到同分支，最终tip按Git查询。完整初始化与产品门禁仍BLOCKED，未改变生产执行路径，详见§10。
+## 0. 当前核实摘要（2026-11-05整理）
 
-最终审计测试修正提交 `722d044164c534f5898337c5b8eb1ccacb70c286` 已推送；干净代码在新目录重新构建七场景，仍7 PASS，当前JSON以此为查询执行基线。架构/初始化审计保留20f92b48实际基线，相关生产输入摘要未变；未用文档提交代替代码运行。
+**当前结论：B+源码结构已落地；G2a达到 `G2a_BPLUS_HOST_VERIFIED`；真实旧SIM组件兼容集已扩展到17条。完整产品准入、生产写权迁移及新能力均未完成。** 成熟业务仍由 `services/sim/` 承担。下面按交付位置和实际测试基线汇总；§3.1～3.5、§8～10保留各批历史过程，不把旧PASS改写为当前HEAD重跑。
 
-以下保留2026-11-02首次适配及其后授权合入的历史快照，不将当时main/运行结果解释为当前HEAD：
+### 0.1 代码保存与分支关系
 
-M1实施时从干净 `main/origin/main@9ab1e976ce71c463281d13abbd9408d60792a4d4` 建立隔离worktree及 `work/g2a-bplus-integration`，只选择性恢复G2a真实只读代码/测试；该切片当时未修改main工作区和历史检查点；随后用户明确要求直接推送main，已快进合入并核实远端包含2feaf127（见§3.5）。
-
-| 项目 | 本次核实状态与证据 | 下一步/限制 |
+| 已核实引用 | 提交 | 已保存内容与边界 |
 | --- | --- | --- |
-| B+结构输入 | main含90f4992a结构提交及后续入口文档；本轮源main为上述9ab1e976 | 本表是基线快照；最终HEAD由Git查询，不写自身提交号 |
-| 已合入main的G2a | 真实代码提交ff1c6ef2ea73d36ab83a7ac2c276036c6f9a6a58；integration/api增加Query/HostPort，Core旧对象桥及显式源表适配 | 用户本次明确授权快进合入main；产品准入仍未完成 |
-| 当前源码集合 | 原main输入88文件/24个testonly source_set；当前main90文件（64h/24cpp及BUILD/README）/25个testonly source_set，原24边界不变 | 新叶子只验证Query；根产品候选直接列cpp，不依赖testonly骨架，其余业务仍旧实现 |
-| 历史G2a | origin/work/g2a-readonly-checkpoint-20261030 tip为728ad77ed4c723efbb5cb1baf7b3f10bb9830240，包含cc787945检查点，恢复CHECKPOINT_VERIFIED | 历史JSON/Oracle保留原字节与语义，不将旧PASS晋升本轮结果 |
-| 本轮主机闭环 | **G2a_BPLUS_HOST_VERIFIED**：干净ff1c6ef2重新构建/链接/七场景PASS，六条指定生产函数正执行（§3.4） | Core Init/Manager OnInit均未执行，不证明完整产品生命周期 |
-| 架构与工程门禁 | 本轮88 C++/合并头、四套规则、12项护栏（含新增负例）、157 include/25 target、迁移及GN/Ninja全部对象PASS | 完整初始化实际BLOCKED；匹配产品/hb/Feature、原SO初始化发布/冒烟未执行 |
-| 目标与授权 | 最终由multisim完整替代sim；本轮仅GetRealSimCount；修订B+和T/A/O/R不变量保持 | 两历史ADR仍Proposed；没有写权、设备执行、SO/SA、ABI/IDL/schema或资源政策变更 |
+| `origin/main` | `5e209a76152a7e97411c41420ebd8d0e5ec67966` | 含B+骨架90f4992a、首次G2a代码ff1c6ef2/证据2feaf127、SIM Guard首批及第二轮；不含最新G2a强化分支增量 |
+| `origin/work/g2a-bplus-revalidation-20261104` | `097e536a89a668f05b5bfc1fdd70f6bafd4f4cff` | 最新G2a窄include、源表/执行审计和验证证据已提交推送；实际查询测试代码为722d0441；尚未合入main |
+| `origin/work/g2a-bplus-integration` | `2feaf12777e1dea062ab00711b9910396fd517fd` | 首次B+ G2a交付，已包含在main；保留该检查点，不与最新强化分支混称 |
+| `origin/work/g2a-readonly-checkpoint-20261030` | `728ad77ed4c723efbb5cb1baf7b3f10bb9830240` | 包含固定历史代码cc787945792527eeb94bc20a5e955315d6269e83，仍保留旧application/query路径，仅用于历史恢复/对照 |
 
-**实际调用链：** 原Core → LegacySimQueryBinding → integration/api/RealSimCountQuery → RealSimCountHostPort → 原SimManager/EXT。主机只模拟严格平台接口及厂商ABI，不替代查询业务。附着复用原对象与控制块，空/重复附着、替换/清理负例仅证明顺序生命周期，不承诺并发热替换。代码提交ff1c6ef2已正常推送至origin/work/g2a-bplus-integration，git ls-remote核实远端SHA一致；本轮文档/证据另行提交到同一分支，最终tip按Git核实，不在本文写自身SHA。
+本次整理在已有G2a隔离worktree、HEAD=097e536a上进行；原工作区仍为 `work/sim-guard-round2@5e209a76`，本地main引用仍01a86b9f。已重新核对远端四个引用、包含关系及恢复工具（CHECKPOINT_VERIFIED，运行标记false），没有切换原工作区、合并或推送main。本次仅更新文档，未重新运行业务测试；上表记录的是整理前已存在的交付。整理完成后用户明确授权将本批六份文档提交并推送同名G2a工作分支，不包含main合入或推送。本批文档发布后的最新tip通过Git查询，不在同一提交写自身SHA。
 
-**仍需闭环：** G2a原SO产品准入；完整初始化所缺provider符号契约；T/A全入口写权；成熟卡能力迁入与CardRuntime收窄；真实设备资源域/结束/排空；Feature、产品及设备差分。Carrier Loader/Detect旁路、ARA-M、Records/ADN及Detect初始化风险仍归既有WU（§3.3/§5），未混入本次只读切片。
+### 0.2 已完成与已验证范围
+
+| 工作项 | 实际完成状态 | 测试基线、证据及限制 |
+| --- | --- | --- |
+| 修订B+结构/骨架 | 六组目录、T/A/O/R边界及逐文件迁移清单已落地 | 90个文件、88个C++单元、25个testonly源集；四套纯规则、语法、include/GN及迁移检查通过。不是完整业务生产替代；§3.3/§10 |
+| G2a只读闭环 | **G2a_BPLUS_HOST_VERIFIED** | 干净722d0441：7 PASS/0 FAIL/0 BLOCKED；恢复历史tip重新构建7 PASS，七组返回一致。Core→Binding→Query→HostPort→原Manager/EXT；六函数正执行56/49/28/28/56/56；§10及[当前证据](../test/systemtest/configs/g2a_bplus_revalidation_20261105.json) |
+| G2a构建/执行护栏 | 14项审计测试PASS；架构/GN检查PASS | 架构及完整初始化审计实际基线20f92b48；之后只补审计测试样例，相关生产源/GN未变。Core宏/EXT/Fallback、原对象及控制块语义保持；未运行完整Core Init/Manager OnInit |
+| SIM Guard兼容集 | 17条×5轮：**85 PASS/0 FAIL** | 原7条35 PASS＋新增10条50 PASS，覆盖卡状态、PIN/PUK、双槽交错及组件销毁重建。第二轮以01db5ce6＋当时dirty工作树执行，摘要对应已保存代码c508bd03；不宣称干净提交重跑；§9及[evidence_round2.json](../test/sim_guard/evidence_round2.json) |
+| SIM Guard设施及有效性 | 19项设施PASS；READY→LOCKED突变检出，恢复后17 PASS | 设施、突变与业务兼容数量分开统计，不换算全模块覆盖率；§8/§9 |
+| 缺陷回归/待裁决 | **5条×5轮，25 FAIL，保留红灯** | 迟到READY、替换卡旧响应、错误PIN映射、旧PIN回包及Refresh返回契约问题独立记录；含NEEDS_DECISION，不把全部候选说成已批准规则，也不改Oracle消除失败；§9 |
+| 跨架构测试接入准备 | 共同场景/输入、Oracle、Fake和Adapter边界已建立 | 当前SIM Guard真实运行的是Legacy Adapter；Multisim Adapter与target/nezha能力尚未接入，继续BLOCKED，不能由G2a单查询PASS推定通过 |
+
+### 0.3 未完成门禁
+
+| 门禁/能力 | 状态 | 关闭所需条件 |
+| --- | --- | --- |
+| 完整OnInit、Subscription/默认角色、数据库重启恢复 | **BLOCKED/NOT_IMPLEMENTED** | 最新审计45对象、43诊断、14个SimData字段不匹配、无缺头、未链接/运行；需匹配Provider字段/URI/schema/错误协议。组件重新枚举不等于数据库恢复 |
+| 匹配OHOS产品、Feature、原SO/SA初始化发布及设备只读冒烟 | **BLOCKED/NOT_RUN** | 现有证据环境无匹配manifest、产品树及hb；需按产品实际配置编译tel_core_service并验证原共享对象/发布与只读请求 |
+| eSIM Profile/APDU/LPA业务 | **准备/受阻，未完成业务验证** | 已取证真实IEsimManager与SA66250边界；仍需匹配平台头/EventRunner、portIndex契约及真实生产闭包，不补业务成功Fake |
+| G2b产物、G2c关闭/排空、G3写权、G4四卡/MEP等新能力 | **未验收/未实施** | 按既有阶段/WU、产品与正式契约分别推进；没有新增生产Writer、设备执行者或资源政策 |
+
+当前下一步统一见§6。业务架构与写权继续由主设计维护；本汇总不新增架构决策、业务批准或生产切换授权。
 
 ## 1. 从远端识别当前代码
 
@@ -64,8 +80,8 @@ M1实施时从干净 `main/origin/main@9ab1e976ce71c463281d13abbd9408d60792a4d4`
 
 | 阶段 | 目标及前置 | 退出条件/当前状态 |
 | --- | --- | --- |
-| G0/G1测试护栏 | 冻结功能、真实入口/旧轨迹、独立Oracle、平台边界；与结构工作并行 | 部分已具备：纯协议、容量、受限平台设施；完整无卡/账户/PIN尚未闭合。历史测试各有基线 |
-| G2a原SO依赖收口 | 保持原writer/执行者/重试者，真实HostPorts及原对象 | 选定只读查询已运行；匹配产品SO构建、启动/Feature与原对象发布验证未完成 |
+| G0/G1测试护栏 | 冻结功能、真实入口/旧轨迹、独立Oracle、平台边界；与结构工作并行 | 真实Legacy组件17条兼容场景已运行，5条缺陷/待裁决独立保留；完整服务初始化/账户/IPC未闭合。精确基线及统计见§0.2/§9 |
+| G2a原SO依赖收口 | 保持原writer/执行者/重试者，真实HostPorts及原对象 | B+查询已在干净722d0441重建7 PASS；最新强化交付097e536a在独立远端分支。匹配产品SO构建、启动/Feature与原对象发布验证未完成 |
 | G2b SO工程边界 | 相关依赖、创建/销毁、单例与符号闭合；不强制先完成全部G3 | 独立产物NEEDED/导出/安装/CFI/PAC/LTO及冒烟差分。当前未实施；目录重排不算完成 |
 | G2c生命周期 | 仅产品需要重建/卸载时前置，常驻拆分另列限制 | 受理停止、注销、迟到、排空、匹配销毁；未知设备效果独立。当前未验收 |
 | G3a～d写权迁移 | 以既有WU覆盖初始化、重载、后台、恢复及全部旧入口；切片有真实写点/外部证据 | 单Owner、无双写/双发/双重试、兼容差分。当前没有生产写权交接 |
@@ -162,7 +178,7 @@ python3 telephony_core_service/tools/check_sim_refactor_recovery.py --remote ori
 git worktree add --detach "$SIM_RESTORE_DIR" origin/work/g2a-readonly-checkpoint-20261030
 ```
 
-上述命令用于历史检查点。复验本轮B+应先显式fetch `work/g2a-bplus-integration`，在另一新worktree检出该远端分支并核实包含ff1c6ef2，不能把历史路径视为本轮入口。新旧runner均沿用下面锁定依赖及参数化命令；新证据见§3.4。
+上述命令仅恢复旧目录历史检查点。复验最新B+应显式fetch `work/g2a-bplus-revalidation-20261104`，在另一新worktree核对其包含722d0441；当前已保存交付为097e536a，证据见§10。`work/g2a-bplus-integration@2feaf127`仅用于首次B+交付复验（§3.4），不能把其较早源表检查当成最新强化版本。新旧runner沿用下面锁定依赖及参数化命令。
 
 在选定工作区根阅读AGENTS/本状态，再准备依赖。下载URL与archive/tree SHA以`test/systemtest/configs/dependency_lock.json`为准，以下为已锁定GoogleTest：
 
@@ -215,21 +231,18 @@ python3 telephony_core_service/test/systemtest/scripts/audit_initialization.py -
 
 ## 6. 下一批推荐任务
 
-以下为2026-11-02的G2a建议；2026-11-04用户已另行授权先建设真实旧实现测试防护网，当前交付及后续测试切片见§8，不据历史推荐自动进入生产迁移。
+以下是当前剩余门禁及依赖顺序，不自动授权新的生产迁移、合并或发布。G2a首次适配、最新主机复验及SIM Guard两轮建设已经完成，不再把这些列为下一批待实现任务。
 
-**推荐最小任务：M2匹配OHOS产品准入验证。**本轮G2a B+真实只读适配、主机七场景及覆盖已完成，现已按用户授权合入main（§3.4/§3.5）；不重复做目录比较、查询重写或将旧host PASS继承为产品结论。
+1. **优先补齐M2产品准入环境。** 提供匹配OHOS manifest/fork、Provider版本、产品/工具链及Feature配置；在最新G2a交付候选上核对原tel_core_service显式源表，实际执行 `hb build -T //base/telephony/core_service:tel_core_service`，采集原SO/Core/Manager/RIL共享对象、初始化发布及GetRealSimCount只读冒烟证据。无环境时继续BLOCKED，不以host PASS替代。
+2. **补齐Provider契约后扩展服务测试。** 先取得14个SimData字段、URI/schema和错误协议，重跑完整初始化审计；再实施Subscription映射、默认角色、真实SUT重建与数据库保存/恢复/失败场景。已有组件重建及RIL重新枚举不重复包装成持久化恢复。
+3. **独立处置缺陷与待裁决规则。** 保留5条回归红灯及失败事件，分别确认迟到响应/换卡隔离、PIN错误映射与Refresh返回契约；修复需要对应授权及正式规则，不能把旧错误转成兼容预期。
+4. **按真实外部契约推进eSIM。** 先闭合平台EventRunner/头、portIndex和本仓APDU/Profile生产路径，再接SA66250边界；不把外部DownloadProfile编排伪造成本仓能力。产品新增四卡/三待/MEP另行验收。
 
-- 环境：提供匹配Manifest/fork/provider版本、产品配置、工具链及Feature组合；核实原tel_core_service/SO显式源表。主机完整OnInit另外先获得14个SimData字段/URI/schema/错误协议的真实契约。
-- 验收：在产品树按原路径挂接候选分支并构建 `hb build -T //base/telephony/core_service:tel_core_service`，记录实际产品/工具链/Feature命令结果；验证原Core/Manager/RIL共享控制块、原初始化发布及GetRealSimCount只读冒烟。每个请求仅一个读执行者；不自动启用第二服务或合入main。
-- 保持：宏求值TU/EXT读源/Fallback、原SO/公开契约及业务Writer不变。并发热替换、G2b/G2c排空和设备结束另验；不启动SetShowNumber或其他M3写业务。
-
-**G2a产品准入的后续门禁（仍未满足，源码已按用户授权合入main）：**源码/测试与远端干净恢复已有本文件§4证据；需在匹配OHOS产品树核对原SO与三份显式源表、构建`tel_core_service`并采集原初始化发布/只读冒烟与适用Feature结果。路径为工作分支Core query/binding、根BUILD和显式测试源表；不改宏求值TU/EXT读源、公开契约、原Manager/RIL身份或G3政策。有环境则实际执行；无环境保留工作分支和具体未验收项，不能把host PASS当合入批准。本次授权只完成源码合入/推送，不据此宣称产品验收或部署完成。
-
-**待外部证据工作：**匹配fork存储字段/URI/schema/错误协议后重跑完整初始化审计，再建立正式RIL ABSENT输入的状态/账户闭包；不猜schema、不补业务成功桩。设备结束/远端服务缺口仅约束其所依赖的切片，不阻塞前述文档裁决。
+G2a最新强化仍在独立分支，首次B+实现已在main，两者不能混称全部已合入。是否合入/发布按当次明确授权处理。G2b/G2c工程与关闭门禁、SetShowNumber等G3写权迁移均不由上述建议提前启动；保持原宏求值TU、EXT/Fallback、公开契约及唯一生产对象/Writer。
 
 ## 7. 历史交接与更新规则
 
-以下记录2026-10-30历史整合，不表示当前HEAD或最近验证；当前状态以§0/§3.4为准。
+以下记录2026-10-30历史整合，不表示当前HEAD或最近验证；当前状态以§0及对应证据章节§9/§10为准。
 
 2026-10-30本地整合：原工作区内容先保存为提交`26d81e540243375ea9873e6e7e26b4bbb3eb4028`；以`origin/main@9f72e7ff94a924caafff291444414bf4e7bd0037`为整合基线。针对该旧工作树的P1/P2协议，按[原评审§10](SIM_Target_Architecture_Independent_Review_2026-10-29.md)已有整合裁决保留main现行接口及规则测试；被替代的旧接口和旧测试保留在上述父提交，不重复放入活动源码。未合入G2a工作分支或切换生产写权。
 
@@ -363,4 +376,4 @@ python3 -B telephony_core_service/test/systemtest/scripts/audit_initialization.p
 
 本机SIM_TEST_OUTPUT即上述仓外输出根；GTest和OpenSSL分别由现有prepare脚本新下载/校验包后解至deps及openssl，完整绝对命令及实际GN/Ninja/覆盖命令在JSON，不把示例变量当执行证据。主机工具链为Clang/LLVM18.1.3、GN1000、Ninja1.11.1、gold2.42。初始化仍缺EFUST/EHPLMN/GID1/GID2/IS_ESIM/LSI/MCC/MNC/MNC_LEN/OPERATOR_NAME/OPKEY/PHY_CARD/SIM_LABEL_INDEX/SPN正式Provider契约，未猜值或增加成功桩。
 
-**保存与下一步：** 代码20f92b48及其证据f5c680ec已正常推送。最终审查修正新增审计测试的方法编码样例长度，并补完整方法及Init/OnInit正反断言；最终代码722d0441也已推送，以ls-remote核实同名远端分支，源main仍5e209a76。按干净722d0441新建query-final重新构建/运行七场景；其后仅同步本段及证据，不改业务Oracle或源码。首次linked worktree推送因Windows凭据工具路径失败，改从原仓库目录显式推送同一工作分支引用；一次TLS中断后使用HTTP/1.1正常推送，没有修改凭据配置或强推。本段及最终证据另行提交/推送同分支，最终文档tip按Git查询，避免自引用。原工作区分支/HEAD/文件保持不变，不推送或合并main。后续仅推进匹配OHOS manifest/Provider与产品Feature配置下的 `hb build -T //base/telephony/core_service:tel_core_service`、原SO共享对象/初始化发布及只读冒烟；完整OnInit、M2产品准入和G2b/c仍单独验收，本批不进入SetShowNumber或其他M3写业务。
+**保存与下一步：** 代码20f92b48及其证据f5c680ec已正常推送。最终审查修正新增审计测试的方法编码样例长度，并补完整方法及Init/OnInit正反断言；最终代码722d0441也已推送，以ls-remote核实同名远端分支，源main仍5e209a76。按干净722d0441新建query-final重新构建/运行七场景；其后仅同步本段及证据，不改业务Oracle或源码。首次linked worktree推送因Windows凭据工具路径失败，改从原仓库目录显式推送同一工作分支引用；一次TLS中断后使用HTTP/1.1正常推送，没有修改凭据配置或强推。最终证据与状态已保存为 `097e536a89a668f05b5bfc1fdd70f6bafd4f4cff` 并正常推送同分支；本次文档整理重新以ls-remote核实该SHA，fetch后本地/远端树相同且包含722d0441。原工作区分支/HEAD/文件保持不变，不推送或合并main。后续仅推进匹配OHOS manifest/Provider与产品Feature配置下的 `hb build -T //base/telephony/core_service:tel_core_service`、原SO共享对象/初始化发布及只读冒烟；完整OnInit、M2产品准入和G2b/c仍单独验收，本批不进入SetShowNumber或其他M3写业务。

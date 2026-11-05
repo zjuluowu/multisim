@@ -1,6 +1,6 @@
 # 多 SIM 源码导航
 
-修订 B+ 六组已由用户选为本轮源码结构实施基线。main 已按用户授权包含 G2a 真实只读查询及旧对象附着；其余能力仍为 testonly 骨架，成熟 SIM 读源和业务实现仍由原 `services/sim/` 承担，产品准入未完成。最终由 multisim 完整替代旧实现，不长期双执行。
+修订 B+ 六组已由用户选为源码结构实施基线。main 已包含首次 G2a 真实只读查询及旧对象附着；最新窄include、源表/执行审计强化及复验证据在 `work/g2a-bplus-revalidation-20261104`，尚未合入main。精确SHA、已验证范围和未完成门禁统一见[执行状态 §0](../../docs/SIM_Refactor_Execution_State.md#current-status)。其余能力仍为 testonly 骨架，成熟 SIM 读源和业务实现仍由原 `services/sim/` 承担，产品准入未完成。最终由 multisim 完整替代旧实现，不长期双执行。
 
 | 目录 | 当前代码与责任 |
 | --- | --- |
@@ -38,7 +38,7 @@ python3 -B telephony_core_service/test/multisim_architecture_rules/run.py --with
 
 [主设计：业务不变量](../../docs/SIM_Target_Architecture_Design_v1.2.md) · [执行状态：阶段与证据](../../docs/SIM_Refactor_Execution_State.md) · [架构检查](../../test/multisim_architecture_rules/README.md)
 
-G2a 调用链为 `CoreServiceSim → LegacySimQueryBinding → RealSimCountQuery → RealSimCountHostPort → 原 SimManager/EXT`。Core 宏仍在原翻译单元求值，绑定保存原 Manager/RIL 的 shared_ptr 控制块，不创建第二生产实例；顺序替换/清理会使旧绑定失效，不承诺并发热替换。代码来源为历史检查点，主机新证据见[执行状态 §3.4](../../docs/SIM_Refactor_Execution_State.md#g2a-bplus-m1)。
+G2a 调用链为 `CoreServiceSim → LegacySimQueryBinding → RealSimCountQuery → RealSimCountHostPort → 原 SimManager/EXT`。Core 宏仍在原翻译单元求值，绑定保存原 Manager/RIL 的 shared_ptr 控制块，不创建第二生产实例；顺序替换/清理会使旧绑定失效，不承诺并发热替换。首次B+验证见[执行状态 §3.4](../../docs/SIM_Refactor_Execution_State.md#g2a-bplus-m1)，最新干净代码/历史差分及保存状态见[§10](../../docs/SIM_Refactor_Execution_State.md#g2a-revalidation-20261105)。
 
 当前共90文件（64头/24cpp及BUILD/README）。原24个逻辑 source_set 不变，新增无业务依赖的 `readonly_query` testonly 叶子用于骨架验证；根产品及三份 Core 显式测试源表直接列入同一 query/binding 实现，不依赖 testonly 总骨架，也不在同一二进制重复编译。已合入 main 的源表接入仍待产品验证，主机 PASS 不代表原 SO/Feature/初始化发布或产品准入已通过。其余成熟 SIM 能力、目标工厂和写权仍未迁入。
 
