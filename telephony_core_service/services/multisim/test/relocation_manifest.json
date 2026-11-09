@@ -1,0 +1,1549 @@
+{
+  "schema_version": 1,
+  "scope": "relocation_only; legacy production read-only; historical JSON is immutable",
+  "moves": {
+    "test/systemtest": "services/multisim/test/systemtest",
+    "test/linux_sim_guard": "services/multisim/test/linux_sim_guard",
+    "test/multisim_architecture_rules": "services/multisim/test/multisim_architecture_rules",
+    "test/sim_guard": "services/multisim/test/sim_guard",
+    "docs/test/SIM_测试防护网建设设计说明书_v1.0.md": "services/multisim/test/docs/SIM_测试防护网建设设计说明书_v1.0.md",
+    "docs/test/SIM_测试防护网建设设计说明书_v1.1_融合系统测试用例分析.md": "services/multisim/test/docs/SIM_测试防护网建设设计说明书_v1.1_融合系统测试用例分析.md",
+    "tools/check_sim_refactor_recovery.py": "services/multisim/tools/check_sim_refactor_recovery.py",
+    "../telephony_core_service_linux_sim_ddd_test_design.md": "services/multisim/test/docs/telephony_core_service_linux_sim_ddd_test_design.md"
+  },
+  "files": [
+    {
+      "old": "test/systemtest/.gitignore",
+      "new": "services/multisim/test/systemtest/.gitignore",
+      "before_sha256": "288e9f695017bd3f19f6b20f4e54765932b3c06e6e2f28a5b30ea799884468e1",
+      "after_sha256": "288e9f695017bd3f19f6b20f4e54765932b3c06e6e2f28a5b30ea799884468e1",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/.gn",
+      "new": "services/multisim/test/systemtest/.gn",
+      "before_sha256": "7d922ea30fd1363eb1512b44379fc0b8da45d24d171e7176659173f70b71c63c",
+      "after_sha256": "7d922ea30fd1363eb1512b44379fc0b8da45d24d171e7176659173f70b71c63c",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/BUILD.gn",
+      "new": "services/multisim/test/systemtest/BUILD.gn",
+      "before_sha256": "9738bc311caf0b776b1e216a2822dc0170e079fa968dbf69738718001bc0860c",
+      "after_sha256": "af60d6518d1224eecdac66d5b6fdb148035085eac2f9d2fe918d083751616a53",
+      "change": "paths_or_navigation_only"
+    },
+    {
+      "old": "test/systemtest/README.md",
+      "new": "services/multisim/test/systemtest/README.md",
+      "before_sha256": "8e75792391d6c9043f9223a790beb4648e6bca5951bacfcdac959018d2f2d328",
+      "after_sha256": "3417683496f298fb41ac54ff303482c04b9edf812de0275bc4b3edeff659c884",
+      "change": "paths_or_navigation_only"
+    },
+    {
+      "old": "test/systemtest/configs/cases.json",
+      "new": "services/multisim/test/systemtest/configs/cases.json",
+      "before_sha256": "2017cfa8af813cd944f7bc01061ad5282ad797ff518ce0ac5a64cfc6441e6935",
+      "after_sha256": "2017cfa8af813cd944f7bc01061ad5282ad797ff518ce0ac5a64cfc6441e6935",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/configs/dependency_lock.json",
+      "new": "services/multisim/test/systemtest/configs/dependency_lock.json",
+      "before_sha256": "fdf71c17dd419ea43f088beaa296cdd05bf90a2a2661acdbd87238e805a70945",
+      "after_sha256": "fdf71c17dd419ea43f088beaa296cdd05bf90a2a2661acdbd87238e805a70945",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/configs/environment_probe.json",
+      "new": "services/multisim/test/systemtest/configs/environment_probe.json",
+      "before_sha256": "6845bb1f58622781ad3fa96a41f9b58578c2571eae5f340c659809becab47715",
+      "after_sha256": "6845bb1f58622781ad3fa96a41f9b58578c2571eae5f340c659809becab47715",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/configs/g2a_bplus_evidence.json",
+      "new": "services/multisim/test/systemtest/configs/g2a_bplus_evidence.json",
+      "before_sha256": "6d715ae5865a774385181a6ef74ed7a870a172dc300420a20374ca64ff77892b",
+      "after_sha256": "6d715ae5865a774385181a6ef74ed7a870a172dc300420a20374ca64ff77892b",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/configs/g2a_bplus_revalidation_20261105.json",
+      "new": "services/multisim/test/systemtest/configs/g2a_bplus_revalidation_20261105.json",
+      "before_sha256": "91d6770ade3d3f6d03883fe61b381054097dcdbf3607b3ef563b1691647674a3",
+      "after_sha256": "91d6770ade3d3f6d03883fe61b381054097dcdbf3607b3ef563b1691647674a3",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/configs/g2a_checkpoint_evidence.json",
+      "new": "services/multisim/test/systemtest/configs/g2a_checkpoint_evidence.json",
+      "before_sha256": "1f05c10191b42ae92fa390c61e401e38328eb8fa4f9cbed669e2f64caf59936e",
+      "after_sha256": "1f05c10191b42ae92fa390c61e401e38328eb8fa4f9cbed669e2f64caf59936e",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/configs/infrastructure_cases.json",
+      "new": "services/multisim/test/systemtest/configs/infrastructure_cases.json",
+      "before_sha256": "375ea4aa0770f8b44a9f32168876fe898f496005b4dc49f75dc4526b2ffe7313",
+      "after_sha256": "375ea4aa0770f8b44a9f32168876fe898f496005b4dc49f75dc4526b2ffe7313",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/configs/initialization_gaps.json",
+      "new": "services/multisim/test/systemtest/configs/initialization_gaps.json",
+      "before_sha256": "2cf37d70a6e5d37457e58f275d4c7c420a36c5b35715510e31381dfb48ef2ea3",
+      "after_sha256": "2cf37d70a6e5d37457e58f275d4c7c420a36c5b35715510e31381dfb48ef2ea3",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/configs/open_closed_followup_20261109.json",
+      "new": "services/multisim/test/systemtest/configs/open_closed_followup_20261109.json",
+      "before_sha256": "f9007c2a982488b76ee6354719c265f152e6536b5203f92850ce718be5ff5e11",
+      "after_sha256": "f9007c2a982488b76ee6354719c265f152e6536b5203f92850ce718be5ff5e11",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/configs/open_closed_followup_20261109_withdrawn.json",
+      "new": "services/multisim/test/systemtest/configs/open_closed_followup_20261109_withdrawn.json",
+      "before_sha256": "8d1d298084f37ceaa38dafd2d77ca90e61b8e5af13e1ef9cb34b1f29a14cb8a4",
+      "after_sha256": "8d1d298084f37ceaa38dafd2d77ca90e61b8e5af13e1ef9cb34b1f29a14cb8a4",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/configs/oracles.json",
+      "new": "services/multisim/test/systemtest/configs/oracles.json",
+      "before_sha256": "ccb315798e79cbbf7031a613259656e892cab1d7ce56ecd6ddf18eb2949d5cad",
+      "after_sha256": "ccb315798e79cbbf7031a613259656e892cab1d7ce56ecd6ddf18eb2949d5cad",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/configs/platform_inventory.json",
+      "new": "services/multisim/test/systemtest/configs/platform_inventory.json",
+      "before_sha256": "a47db3239b321a2018e28561550caeb7a0323133d26930408c5ccaabcc35610d",
+      "after_sha256": "a47db3239b321a2018e28561550caeb7a0323133d26930408c5ccaabcc35610d",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/configs/platform_resolution.json",
+      "new": "services/multisim/test/systemtest/configs/platform_resolution.json",
+      "before_sha256": "c158a1df9fbef96696f7ed09dea6fab273e60f6a6d4a663afafc3f067e837658",
+      "after_sha256": "c158a1df9fbef96696f7ed09dea6fab273e60f6a6d4a663afafc3f067e837658",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/configs/production_sources_candidate.json",
+      "new": "services/multisim/test/systemtest/configs/production_sources_candidate.json",
+      "before_sha256": "92716d38fb9079cfe431e60177d46218d6f339a6a7e5fe45dfc79d2d74394692",
+      "after_sha256": "92716d38fb9079cfe431e60177d46218d6f339a6a7e5fe45dfc79d2d74394692",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/configs/source_manifest.json",
+      "new": "services/multisim/test/systemtest/configs/source_manifest.json",
+      "before_sha256": "68b98b58c9214affa2e82498f7acbb2c5b01c7f7cd2bb997a33e30bd3bee22e5",
+      "after_sha256": "68b98b58c9214affa2e82498f7acbb2c5b01c7f7cd2bb997a33e30bd3bee22e5",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/configs/storage_protocol_requirements.json",
+      "new": "services/multisim/test/systemtest/configs/storage_protocol_requirements.json",
+      "before_sha256": "728f754731d0548f68f9d82d71c5ef16ead1b6430f1ab5e2b8997aff0ba24fb8",
+      "after_sha256": "728f754731d0548f68f9d82d71c5ef16ead1b6430f1ab5e2b8997aff0ba24fb8",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/configs/upstream_contracts.json",
+      "new": "services/multisim/test/systemtest/configs/upstream_contracts.json",
+      "before_sha256": "c5947631152f08bb493a4d7f09743bb5f983f12a0c768a62e0e072b247427174",
+      "after_sha256": "c5947631152f08bb493a4d7f09743bb5f983f12a0c768a62e0e072b247427174",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/architecture.md",
+      "new": "services/multisim/test/systemtest/docs/architecture.md",
+      "before_sha256": "356fe3120dd656951a28252cf557b8dc901e925af5f8296b88a0d197f4bbd08f",
+      "after_sha256": "356fe3120dd656951a28252cf557b8dc901e925af5f8296b88a0d197f4bbd08f",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/blocked_resolution_oct08.md",
+      "new": "services/multisim/test/systemtest/docs/blocked_resolution_oct08.md",
+      "before_sha256": "6db60fdcd0958199c416d503717d0229d202146e3ac672ac40c611d26b4e76d5",
+      "after_sha256": "6db60fdcd0958199c416d503717d0229d202146e3ac672ac40c611d26b4e76d5",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/boundaries.md",
+      "new": "services/multisim/test/systemtest/docs/boundaries.md",
+      "before_sha256": "188a93395daa816792a7d52a15439151c4e0d2db559f43bbd094a909866bc0f6",
+      "after_sha256": "188a93395daa816792a7d52a15439151c4e0d2db559f43bbd094a909866bc0f6",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/capability_investigation.md",
+      "new": "services/multisim/test/systemtest/docs/capability_investigation.md",
+      "before_sha256": "1bec458e6211b3fd90f93376449227eb41f36b90904419ff35a6e7418cd4347a",
+      "after_sha256": "1bec458e6211b3fd90f93376449227eb41f36b90904419ff35a6e7418cd4347a",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/component_entry.md",
+      "new": "services/multisim/test/systemtest/docs/component_entry.md",
+      "before_sha256": "712da3c6d6dc464879220700ea46a44b8363fedbe53707c2672c06dfb60ed988",
+      "after_sha256": "712da3c6d6dc464879220700ea46a44b8363fedbe53707c2672c06dfb60ed988",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/dependencies.md",
+      "new": "services/multisim/test/systemtest/docs/dependencies.md",
+      "before_sha256": "e1e773aabbad54e7994a2d2c5e23104a85fa5a96bdfd953e7252e45b7febe169",
+      "after_sha256": "cb22d595ad2eaec45d61e8e789ee067b4406e3e529222904a94de3543dc03303",
+      "change": "paths_or_navigation_only"
+    },
+    {
+      "old": "test/systemtest/docs/design_alignment.md",
+      "new": "services/multisim/test/systemtest/docs/design_alignment.md",
+      "before_sha256": "b6d7b9f7f67b18358a470c2aadc78e4e79ad8c3dbc52b48ccb1bff81df809b15",
+      "after_sha256": "3db7f43a7617b2d3d9cf8f63cf1f0cc700a2291dbb8917935e7802d1c2f92348",
+      "change": "paths_or_navigation_only"
+    },
+    {
+      "old": "test/systemtest/docs/event_adapter.md",
+      "new": "services/multisim/test/systemtest/docs/event_adapter.md",
+      "before_sha256": "296d9f72168cec052a86606dda3746b2f8f9afcd2f305dacaa594d03e8cad7e4",
+      "after_sha256": "296d9f72168cec052a86606dda3746b2f8f9afcd2f305dacaa594d03e8cad7e4",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/execution_plan.md",
+      "new": "services/multisim/test/systemtest/docs/execution_plan.md",
+      "before_sha256": "8f646306eccf40e12708061ada731999a41c8509194da8133219809234ebeb16",
+      "after_sha256": "8f646306eccf40e12708061ada731999a41c8509194da8133219809234ebeb16",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/ffrt_runtime.md",
+      "new": "services/multisim/test/systemtest/docs/ffrt_runtime.md",
+      "before_sha256": "881a73b1f9604dd251d25ec2f0ac8a6d686c502b6e654db004df0212f901fcb6",
+      "after_sha256": "881a73b1f9604dd251d25ec2f0ac8a6d686c502b6e654db004df0212f901fcb6",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/initialization_closure.md",
+      "new": "services/multisim/test/systemtest/docs/initialization_closure.md",
+      "before_sha256": "377b742479fa349a5f33ad59a6ce19488ab755ba7f5356e0f21de575add97761",
+      "after_sha256": "377b742479fa349a5f33ad59a6ce19488ab755ba7f5356e0f21de575add97761",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/investigation.md",
+      "new": "services/multisim/test/systemtest/docs/investigation.md",
+      "before_sha256": "a38d64324d73e4e41ee39e8e2b3f473dee1a5a43afa27b1397911c89f1b0894c",
+      "after_sha256": "c81a3978842289addebd94fadc72d54a3863c730c8300f5fb1af9dce3aa80e3d",
+      "change": "paths_or_navigation_only"
+    },
+    {
+      "old": "test/systemtest/docs/linux_gmock_scenarios.md",
+      "new": "services/multisim/test/systemtest/docs/linux_gmock_scenarios.md",
+      "before_sha256": "edb2f64c33821ba56447fccd2be559184c52995f94a60c0fbd8c91b069855353",
+      "after_sha256": "edb2f64c33821ba56447fccd2be559184c52995f94a60c0fbd8c91b069855353",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/oracle_catalog.md",
+      "new": "services/multisim/test/systemtest/docs/oracle_catalog.md",
+      "before_sha256": "38f42fce566e55f960d07181d62247f5ae30e0794c5dc601f4164de100bf76f2",
+      "after_sha256": "38f42fce566e55f960d07181d62247f5ae30e0794c5dc601f4164de100bf76f2",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/platform_compile_subset.md",
+      "new": "services/multisim/test/systemtest/docs/platform_compile_subset.md",
+      "before_sha256": "1f6eafbfb663f8810fa3c99a55e47b430bb2b531a3280628b4a2a5785f6f3569",
+      "after_sha256": "1f6eafbfb663f8810fa3c99a55e47b430bb2b531a3280628b4a2a5785f6f3569",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/ril_mock.md",
+      "new": "services/multisim/test/systemtest/docs/ril_mock.md",
+      "before_sha256": "634c8f4814986a4099bc0561899cd6c78dc75d291578b352e834814f3d8a5321",
+      "after_sha256": "634c8f4814986a4099bc0561899cd6c78dc75d291578b352e834814f3d8a5321",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/run_record.md",
+      "new": "services/multisim/test/systemtest/docs/run_record.md",
+      "before_sha256": "dcfefba17329879f4f82ad2e13e64a1777c48446d62f25b25678f72fe1ce15a4",
+      "after_sha256": "ffd4410ae8e7748cf7da875d316cdc35f827f4417a996d5da5c19128c4971a4c",
+      "change": "paths_or_navigation_only"
+    },
+    {
+      "old": "test/systemtest/docs/suite_matrix.md",
+      "new": "services/multisim/test/systemtest/docs/suite_matrix.md",
+      "before_sha256": "33df9fcf487c51c840266fbf7204368415fcbeba74a733be32ba3c06f52d616d",
+      "after_sha256": "33df9fcf487c51c840266fbf7204368415fcbeba74a733be32ba3c06f52d616d",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/upstream_external_contracts.md",
+      "new": "services/multisim/test/systemtest/docs/upstream_external_contracts.md",
+      "before_sha256": "d8b8c693ac7caab4c81d09528e273aea4e8610c58e6d1d76929a9c3a5319f01e",
+      "after_sha256": "d8b8c693ac7caab4c81d09528e273aea4e8610c58e6d1d76929a9c3a5319f01e",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/gn/BUILD.gn",
+      "new": "services/multisim/test/systemtest/gn/BUILD.gn",
+      "before_sha256": "6c97c232dbd702aa1f97009bd2c23f4e981abab6f4c6c3a8a5d4c9c796b65719",
+      "after_sha256": "6c97c232dbd702aa1f97009bd2c23f4e981abab6f4c6c3a8a5d4c9c796b65719",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/gn/BUILDCONFIG.gn",
+      "new": "services/multisim/test/systemtest/gn/BUILDCONFIG.gn",
+      "before_sha256": "174d7374c460abd1c7b9109bd418ef9874a1d5ec27f6ec896f4ed6dada4818c3",
+      "after_sha256": "174d7374c460abd1c7b9109bd418ef9874a1d5ec27f6ec896f4ed6dada4818c3",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/scripts/audit_initialization.py",
+      "new": "services/multisim/test/systemtest/scripts/audit_initialization.py",
+      "before_sha256": "e0addf3aff976591fdb62f2d268dafc37105a78994303814073011231158de00",
+      "after_sha256": "36ab28439ffcf6cdfc4783669d619c9033b5957e403df9571653d284446d7c91",
+      "change": "paths_or_navigation_only"
+    },
+    {
+      "old": "test/systemtest/scripts/build_clock.py",
+      "new": "services/multisim/test/systemtest/scripts/build_clock.py",
+      "before_sha256": "f00451a20b484158512c52e229188390f6b043918f9936fd0df0643d2e955b9f",
+      "after_sha256": "f00451a20b484158512c52e229188390f6b043918f9936fd0df0643d2e955b9f",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/scripts/compare_results.py",
+      "new": "services/multisim/test/systemtest/scripts/compare_results.py",
+      "before_sha256": "20eced551d1b4d311cb0e7bd59a5db2e3e29d95becf67e554eca9fe679ae65b1",
+      "after_sha256": "20eced551d1b4d311cb0e7bd59a5db2e3e29d95becf67e554eca9fe679ae65b1",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/scripts/generate_ril_mock.py",
+      "new": "services/multisim/test/systemtest/scripts/generate_ril_mock.py",
+      "before_sha256": "874512294a0f15a7de4cf68cd306aeb80fbfdbdefe10abd2831eff409ddaceea",
+      "after_sha256": "95916088e69f8ff5e09ca499a8146be46bd16bfaaeec5a5f0609fef6543495e7",
+      "change": "paths_or_navigation_only"
+    },
+    {
+      "old": "test/systemtest/scripts/prepare_dependencies.py",
+      "new": "services/multisim/test/systemtest/scripts/prepare_dependencies.py",
+      "before_sha256": "27ccacca3cc64f3c75f2c51b5936110c2690429ce607074c636123f656c43770",
+      "after_sha256": "27ccacca3cc64f3c75f2c51b5936110c2690429ce607074c636123f656c43770",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/scripts/prepare_openssl.py",
+      "new": "services/multisim/test/systemtest/scripts/prepare_openssl.py",
+      "before_sha256": "341315c86ec8f1dbdcfb76c882ba6f619bc49d2811e809c997b15187722d8a75",
+      "after_sha256": "341315c86ec8f1dbdcfb76c882ba6f619bc49d2811e809c997b15187722d8a75",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/scripts/run.py",
+      "new": "services/multisim/test/systemtest/scripts/run.py",
+      "before_sha256": "1a53050c2e5c31e8e3c66d50d5005bfcf7980621dedab97e1f1a5d73ba7177a3",
+      "after_sha256": "442cc4cccd2273c5c415dd997b78d2cc81f6baa604c493c955ef36acf7f91fcb",
+      "change": "paths_or_navigation_only"
+    },
+    {
+      "old": "test/systemtest/scripts/run_g2a_query.py",
+      "new": "services/multisim/test/systemtest/scripts/run_g2a_query.py",
+      "before_sha256": "bdafdf23244110297cc29ee1ed99026fab568852cb15d66414b04ad45f750076",
+      "after_sha256": "ec6a30a4ba216bcea486d6c7cfca984106d758ab345f7b451ed2941376a4645f",
+      "change": "paths_or_navigation_only"
+    },
+    {
+      "old": "test/systemtest/scripts/test_g2a_source_tables.py",
+      "new": "services/multisim/test/systemtest/scripts/test_g2a_source_tables.py",
+      "before_sha256": "8f88715fb6da92f386ec07cc8b27dc1a81e518286402599ba9628d14514ebaf9",
+      "after_sha256": "98bc163c9a7ca78ed6d776de5ec5da889f1c1a21295d3b33d2aaf5309c3e88ea",
+      "change": "paths_or_navigation_only"
+    },
+    {
+      "old": "test/systemtest/stubs/event_handler_runtime.cpp",
+      "new": "services/multisim/test/systemtest/stubs/event_handler_runtime.cpp",
+      "before_sha256": "4c963d526c054b93d2a94919b40e27dcd0ee65f9fbfcea86da0b7740ca2fbf86",
+      "after_sha256": "4c963d526c054b93d2a94919b40e27dcd0ee65f9fbfcea86da0b7740ca2fbf86",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/external_services.cpp",
+      "new": "services/multisim/test/systemtest/stubs/external_services.cpp",
+      "before_sha256": "f3d7b4802b91b7a54f51c6670216754634fb9ab29e8634a5cf31e99c62136469",
+      "after_sha256": "f3d7b4802b91b7a54f51c6670216754634fb9ab29e8634a5cf31e99c62136469",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/external_services_mock.h",
+      "new": "services/multisim/test/systemtest/stubs/external_services_mock.h",
+      "before_sha256": "6ed427a65476a34fccb5e183cacb3f236619a8405777255bc70359a48e75f59c",
+      "after_sha256": "6ed427a65476a34fccb5e183cacb3f236619a8405777255bc70359a48e75f59c",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/ffrt_runtime.cpp",
+      "new": "services/multisim/test/systemtest/stubs/ffrt_runtime.cpp",
+      "before_sha256": "47ca6163b88147cfffb1a2fbb0797fe93980da3271e23c734629bef0d5b02f07",
+      "after_sha256": "47ca6163b88147cfffb1a2fbb0797fe93980da3271e23c734629bef0d5b02f07",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/ffrt_runtime.h",
+      "new": "services/multisim/test/systemtest/stubs/ffrt_runtime.h",
+      "before_sha256": "e56da308da2035b69ec7b25b3bdf352eaa3c79c0df2cce62e1b7265d6c99c21e",
+      "after_sha256": "e56da308da2035b69ec7b25b3bdf352eaa3c79c0df2cce62e1b7265d6c99c21e",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/g2a_vendor_boundary.cpp",
+      "new": "services/multisim/test/systemtest/stubs/g2a_vendor_boundary.cpp",
+      "before_sha256": "9931244e65f13f354e0a64d54bee2c0c708165636af7d2802ad76e3c7756b0e6",
+      "after_sha256": "9931244e65f13f354e0a64d54bee2c0c708165636af7d2802ad76e3c7756b0e6",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/mock_tel_ril_manager.h",
+      "new": "services/multisim/test/systemtest/stubs/mock_tel_ril_manager.h",
+      "before_sha256": "431801a6ef782075b5793f78881f8819123fc016678484c11144e43a276a468b",
+      "after_sha256": "431801a6ef782075b5793f78881f8819123fc016678484c11144e43a276a468b",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/parameter_mock.h",
+      "new": "services/multisim/test/systemtest/stubs/parameter_mock.h",
+      "before_sha256": "77ff9e362e1d21288644c29eed57b83c87e4efd9dc91b1a48d57a4bdecab8504",
+      "after_sha256": "77ff9e362e1d21288644c29eed57b83c87e4efd9dc91b1a48d57a4bdecab8504",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/parameter_service.cpp",
+      "new": "services/multisim/test/systemtest/stubs/parameter_service.cpp",
+      "before_sha256": "8e82238e3cdb8ae448beb68c0026cb15282681e4ffc52416f3529cf2d1e704b7",
+      "after_sha256": "8e82238e3cdb8ae448beb68c0026cb15282681e4ffc52416f3529cf2d1e704b7",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/support/bootstrap_probe.cpp",
+      "new": "services/multisim/test/systemtest/support/bootstrap_probe.cpp",
+      "before_sha256": "8382765eded580bab4d05ca2fcaf7d95a117d1f68b19d810f8c3b743030a2cc2",
+      "after_sha256": "8382765eded580bab4d05ca2fcaf7d95a117d1f68b19d810f8c3b743030a2cc2",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/support/bootstrap_probe.h",
+      "new": "services/multisim/test/systemtest/support/bootstrap_probe.h",
+      "before_sha256": "16783feadbf24d90a913f8535719e45ffeaff0c28dfa28e34c439535a0c7dc36",
+      "after_sha256": "16783feadbf24d90a913f8535719e45ffeaff0c28dfa28e34c439535a0c7dc36",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/support/capacity_probe.cpp",
+      "new": "services/multisim/test/systemtest/support/capacity_probe.cpp",
+      "before_sha256": "e77845db20f3f43bc2d7fcc1ae85ca1018294568faf3dd1fe9b2fdef87e2e60f",
+      "after_sha256": "e77845db20f3f43bc2d7fcc1ae85ca1018294568faf3dd1fe9b2fdef87e2e60f",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/support/capacity_probe.h",
+      "new": "services/multisim/test/systemtest/support/capacity_probe.h",
+      "before_sha256": "1de970d1cb579d3e11cabdf9328d0a3a9aa4bf38833aa2148ef3788fd981b677",
+      "after_sha256": "1de970d1cb579d3e11cabdf9328d0a3a9aa4bf38833aa2148ef3788fd981b677",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/support/g2a_query_probe.cpp",
+      "new": "services/multisim/test/systemtest/support/g2a_query_probe.cpp",
+      "before_sha256": "b368ef839cc2cf066a4a101b0b53427d4d104f4cb383e5909aa0775161f9f709",
+      "after_sha256": "b368ef839cc2cf066a4a101b0b53427d4d104f4cb383e5909aa0775161f9f709",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/support/g2a_query_probe.h",
+      "new": "services/multisim/test/systemtest/support/g2a_query_probe.h",
+      "before_sha256": "42cf19c4324102c6e490e6af320157a7f243e044d30a22a410e8090ab2e0dcac",
+      "after_sha256": "42cf19c4324102c6e490e6af320157a7f243e044d30a22a410e8090ab2e0dcac",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/support/initialization_link_probe.cpp",
+      "new": "services/multisim/test/systemtest/support/initialization_link_probe.cpp",
+      "before_sha256": "41f4563d40486958dcb8f671e08e38ddad8a2a96701d6e8a6e69216c31a79e24",
+      "after_sha256": "41f4563d40486958dcb8f671e08e38ddad8a2a96701d6e8a6e69216c31a79e24",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/tests/bootstrap_test.cpp",
+      "new": "services/multisim/test/systemtest/tests/bootstrap_test.cpp",
+      "before_sha256": "1011b7d5afacc6732bc27cfe025464909f380d939428613c75655bd7705a328c",
+      "after_sha256": "1011b7d5afacc6732bc27cfe025464909f380d939428613c75655bd7705a328c",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/tests/capacity_test.cpp",
+      "new": "services/multisim/test/systemtest/tests/capacity_test.cpp",
+      "before_sha256": "e56abb54c5c5504bd994ec653bba9852df14c830def762a5a4372956fee34fc8",
+      "after_sha256": "e56abb54c5c5504bd994ec653bba9852df14c830def762a5a4372956fee34fc8",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/tests/event_adapter_test.cpp",
+      "new": "services/multisim/test/systemtest/tests/event_adapter_test.cpp",
+      "before_sha256": "be6b2e31029cfda79d37210e626e1f46327a7811ad09ce6695a3a8c3c1a710bb",
+      "after_sha256": "be6b2e31029cfda79d37210e626e1f46327a7811ad09ce6695a3a8c3c1a710bb",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/tests/event_transport_test.cpp",
+      "new": "services/multisim/test/systemtest/tests/event_transport_test.cpp",
+      "before_sha256": "ef92fcb5f0ba85550d35d282e20eb64d1fb32a36fa037d0632e13d596809215c",
+      "after_sha256": "ef92fcb5f0ba85550d35d282e20eb64d1fb32a36fa037d0632e13d596809215c",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/tests/external_services_test.cpp",
+      "new": "services/multisim/test/systemtest/tests/external_services_test.cpp",
+      "before_sha256": "fd88c47af3164d5d4db9cb476a4efc52787041dbfaca87f407c179f048b10f73",
+      "after_sha256": "fd88c47af3164d5d4db9cb476a4efc52787041dbfaca87f407c179f048b10f73",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/tests/g2a_query_test.cpp",
+      "new": "services/multisim/test/systemtest/tests/g2a_query_test.cpp",
+      "before_sha256": "61bbe8410625be87a8b9aaf52f6d5c13d717cb874280baca1f71749a3a6f7397",
+      "after_sha256": "61bbe8410625be87a8b9aaf52f6d5c13d717cb874280baca1f71749a3a6f7397",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/tests/native_pointer_test.cpp",
+      "new": "services/multisim/test/systemtest/tests/native_pointer_test.cpp",
+      "before_sha256": "9f6c04944185737ec6c107c9ebb57dc5b013777f216e1ab3c04d553a25c9a2b9",
+      "after_sha256": "9f6c04944185737ec6c107c9ebb57dc5b013777f216e1ab3c04d553a25c9a2b9",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/tests/ril_adapter_test.cpp",
+      "new": "services/multisim/test/systemtest/tests/ril_adapter_test.cpp",
+      "before_sha256": "e0d724c7c7a3b96e5a4d44cea8a7a223005e17a7c55755fbb1cfd17cf7422839",
+      "after_sha256": "e0d724c7c7a3b96e5a4d44cea8a7a223005e17a7c55755fbb1cfd17cf7422839",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/cases/INFRA-EVENT-004.md",
+      "new": "services/multisim/test/systemtest/docs/cases/INFRA-EVENT-004.md",
+      "before_sha256": "9800846000fcd8768ab3bfa663ade93ca6d88bd5d67b01d97d321810ccf8885a",
+      "after_sha256": "9800846000fcd8768ab3bfa663ade93ca6d88bd5d67b01d97d321810ccf8885a",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/cases/INFRA-EVENT-005.md",
+      "new": "services/multisim/test/systemtest/docs/cases/INFRA-EVENT-005.md",
+      "before_sha256": "b4d534df526dc6708eb1937d42370e3591baeecf8ee4e9783a94e7df32af8c6d",
+      "after_sha256": "b4d534df526dc6708eb1937d42370e3591baeecf8ee4e9783a94e7df32af8c6d",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/cases/INFRA-FFRT-001.md",
+      "new": "services/multisim/test/systemtest/docs/cases/INFRA-FFRT-001.md",
+      "before_sha256": "27445ee13b95c64de2af9e44da145265437bccbee9abce75a9509524a7d969aa",
+      "after_sha256": "27445ee13b95c64de2af9e44da145265437bccbee9abce75a9509524a7d969aa",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/cases/INFRA-FFRT-002.md",
+      "new": "services/multisim/test/systemtest/docs/cases/INFRA-FFRT-002.md",
+      "before_sha256": "3f355b70bedbf3ccb7ca3b5a28cf0a243a4cd46d13b77075ef7062c2962fd4b2",
+      "after_sha256": "3f355b70bedbf3ccb7ca3b5a28cf0a243a4cd46d13b77075ef7062c2962fd4b2",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/cases/INFRA-PTR-001.md",
+      "new": "services/multisim/test/systemtest/docs/cases/INFRA-PTR-001.md",
+      "before_sha256": "777f6903a3b7defcc7279986d4c3d1cbd2631cf5d027aa1c6bd77ef00ec34c6d",
+      "after_sha256": "777f6903a3b7defcc7279986d4c3d1cbd2631cf5d027aa1c6bd77ef00ec34c6d",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/cases/INFRA-PTR-002.md",
+      "new": "services/multisim/test/systemtest/docs/cases/INFRA-PTR-002.md",
+      "before_sha256": "264f12d6d8e3cd6a8f3f1f1e528c4d1af425728776e19fa5e8c9d4a6a58f1cac",
+      "after_sha256": "264f12d6d8e3cd6a8f3f1f1e528c4d1af425728776e19fa5e8c9d4a6a58f1cac",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/cases/INFRA-PTR-003.md",
+      "new": "services/multisim/test/systemtest/docs/cases/INFRA-PTR-003.md",
+      "before_sha256": "8fe56c269246de0c74557293bc672c6905f3d398977208577ab5f200ca236971",
+      "after_sha256": "8fe56c269246de0c74557293bc672c6905f3d398977208577ab5f200ca236971",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/cases/README.md",
+      "new": "services/multisim/test/systemtest/docs/cases/README.md",
+      "before_sha256": "2a46c0c857609386e426f055f6f476ca70563c5ecd6b2515b90e5cfbd6e40bd0",
+      "after_sha256": "862ac7d5f2e50a773985b55b046e07a6baa78fbaaf7c741337187e86f30edecb",
+      "change": "paths_or_navigation_only"
+    },
+    {
+      "old": "test/systemtest/docs/cases/SIM-B-001.md",
+      "new": "services/multisim/test/systemtest/docs/cases/SIM-B-001.md",
+      "before_sha256": "4564dd2ff68072aa372b812d08adeea3edaeaacce804036b411268918433b5da",
+      "after_sha256": "4564dd2ff68072aa372b812d08adeea3edaeaacce804036b411268918433b5da",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/cases/SIM-B-002.md",
+      "new": "services/multisim/test/systemtest/docs/cases/SIM-B-002.md",
+      "before_sha256": "81c6a4e6fb91c519401389bdfb79f40e760a5900d51c73006a48d03f649dcffd",
+      "after_sha256": "81c6a4e6fb91c519401389bdfb79f40e760a5900d51c73006a48d03f649dcffd",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/cases/SIM-B-003.md",
+      "new": "services/multisim/test/systemtest/docs/cases/SIM-B-003.md",
+      "before_sha256": "27eb54bdc4e0b456a2c021c1b131316f2530feca93799e507fbca6d950dd0597",
+      "after_sha256": "27eb54bdc4e0b456a2c021c1b131316f2530feca93799e507fbca6d950dd0597",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/cases/SIM-B-004.md",
+      "new": "services/multisim/test/systemtest/docs/cases/SIM-B-004.md",
+      "before_sha256": "66c0adfe5360c7a2160df0a46bda2080a2a1b3cdb746a506927ba1e7c8770096",
+      "after_sha256": "66c0adfe5360c7a2160df0a46bda2080a2a1b3cdb746a506927ba1e7c8770096",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/cases/SIM-B-005.md",
+      "new": "services/multisim/test/systemtest/docs/cases/SIM-B-005.md",
+      "before_sha256": "c526961a82bea60c2a667d671d59d2b4ec78725f25d63e15eeb278f4bd673c3c",
+      "after_sha256": "c526961a82bea60c2a667d671d59d2b4ec78725f25d63e15eeb278f4bd673c3c",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/cases/SIM-CHAR-001.md",
+      "new": "services/multisim/test/systemtest/docs/cases/SIM-CHAR-001.md",
+      "before_sha256": "5ba2374ea2acf8ab5d1ecbd3c641fd5b3e26921bd9db8604dfd00935c269f1fb",
+      "after_sha256": "5ba2374ea2acf8ab5d1ecbd3c641fd5b3e26921bd9db8604dfd00935c269f1fb",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/docs/cases/SIM-COMP-001.md",
+      "new": "services/multisim/test/systemtest/docs/cases/SIM-COMP-001.md",
+      "before_sha256": "168a014fb10e06c0f0897126a6887b2dde6869aa421064bf38146a3d40e5f07b",
+      "after_sha256": "168a014fb10e06c0f0897126a6887b2dde6869aa421064bf38146a3d40e5f07b",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/ability_manager_client.h",
+      "new": "services/multisim/test/systemtest/stubs/include/ability_manager_client.h",
+      "before_sha256": "ad5e08027ec81c9d63bf2f316af4337ee0b9b2403311cc508509158c6b143592",
+      "after_sha256": "ad5e08027ec81c9d63bf2f316af4337ee0b9b2403311cc508509158c6b143592",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/app_mgr_client.h",
+      "new": "services/multisim/test/systemtest/stubs/include/app_mgr_client.h",
+      "before_sha256": "6d701634348e80083d633c92b153f55eb785aaf07ee25c5b9ae4de299d09dab8",
+      "after_sha256": "6d701634348e80083d633c92b153f55eb785aaf07ee25c5b9ae4de299d09dab8",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/bundle_mgr_proxy.h",
+      "new": "services/multisim/test/systemtest/stubs/include/bundle_mgr_proxy.h",
+      "before_sha256": "cb158e29871542f10be66b22fd3f92425b1ceab17767585503facaec6a6258e1",
+      "after_sha256": "cb158e29871542f10be66b22fd3f92425b1ceab17767585503facaec6a6258e1",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/cellular_data_client.h",
+      "new": "services/multisim/test/systemtest/stubs/include/cellular_data_client.h",
+      "before_sha256": "523ede5ef2bc9f3c063410afbb6b46474efd254858a3c9e765c3e335323372c9",
+      "after_sha256": "523ede5ef2bc9f3c063410afbb6b46474efd254858a3c9e765c3e335323372c9",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/cJSON.h",
+      "new": "services/multisim/test/systemtest/stubs/include/cJSON.h",
+      "before_sha256": "25b0145150d500498e4d209cec69c18c42cf818bffcc54690be3b895a2a16dee",
+      "after_sha256": "25b0145150d500498e4d209cec69c18c42cf818bffcc54690be3b895a2a16dee",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/common_event.h",
+      "new": "services/multisim/test/systemtest/stubs/include/common_event.h",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "after_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/common_event_data.h",
+      "new": "services/multisim/test/systemtest/stubs/include/common_event_data.h",
+      "before_sha256": "6d701634348e80083d633c92b153f55eb785aaf07ee25c5b9ae4de299d09dab8",
+      "after_sha256": "6d701634348e80083d633c92b153f55eb785aaf07ee25c5b9ae4de299d09dab8",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/common_event_manager.h",
+      "new": "services/multisim/test/systemtest/stubs/include/common_event_manager.h",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "after_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/common_event_publish_info.h",
+      "new": "services/multisim/test/systemtest/stubs/include/common_event_publish_info.h",
+      "before_sha256": "6d701634348e80083d633c92b153f55eb785aaf07ee25c5b9ae4de299d09dab8",
+      "after_sha256": "6d701634348e80083d633c92b153f55eb785aaf07ee25c5b9ae4de299d09dab8",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/common_event_support.h",
+      "new": "services/multisim/test/systemtest/stubs/include/common_event_support.h",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "after_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/compile_declarations.h",
+      "new": "services/multisim/test/systemtest/stubs/include/compile_declarations.h",
+      "before_sha256": "b9e5d45c86c3020b2a6f7f28ff97cee87d9eafe97ac955d99b8efc2516bf363f",
+      "after_sha256": "b9e5d45c86c3020b2a6f7f28ff97cee87d9eafe97ac955d99b8efc2516bf363f",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/configuration.h",
+      "new": "services/multisim/test/systemtest/stubs/include/configuration.h",
+      "before_sha256": "6d701634348e80083d633c92b153f55eb785aaf07ee25c5b9ae4de299d09dab8",
+      "after_sha256": "6d701634348e80083d633c92b153f55eb785aaf07ee25c5b9ae4de299d09dab8",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/config_policy_utils.h",
+      "new": "services/multisim/test/systemtest/stubs/include/config_policy_utils.h",
+      "before_sha256": "1e6e53743a3edee84eb30e9b607d73a2fa1e897736baa8a03269b0a8b7db8420",
+      "after_sha256": "1e6e53743a3edee84eb30e9b607d73a2fa1e897736baa8a03269b0a8b7db8420",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/datashare_errno.h",
+      "new": "services/multisim/test/systemtest/stubs/include/datashare_errno.h",
+      "before_sha256": "5e4a8e75b043e941ce48c167a04382c95e0b30a30976ffb305fc3e687acf577d",
+      "after_sha256": "5e4a8e75b043e941ce48c167a04382c95e0b30a30976ffb305fc3e687acf577d",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/datashare_helper.h",
+      "new": "services/multisim/test/systemtest/stubs/include/datashare_helper.h",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "after_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/datashare_predicates.h",
+      "new": "services/multisim/test/systemtest/stubs/include/datashare_predicates.h",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "after_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/datashare_result_set.h",
+      "new": "services/multisim/test/systemtest/stubs/include/datashare_result_set.h",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "after_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/datashare_values_bucket.h",
+      "new": "services/multisim/test/systemtest/stubs/include/datashare_values_bucket.h",
+      "before_sha256": "dde5f37c9f9099cad4846b2013c6f97279d79266fabd33bfc0b2bfb9f3f23eab",
+      "after_sha256": "dde5f37c9f9099cad4846b2013c6f97279d79266fabd33bfc0b2bfb9f3f23eab",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/datashare_value_object.h",
+      "new": "services/multisim/test/systemtest/stubs/include/datashare_value_object.h",
+      "before_sha256": "60211b05254d2e5b3b80dd2253c909dd8e806ca07b188aea29cf5bdc9dc6a681",
+      "after_sha256": "60211b05254d2e5b3b80dd2253c909dd8e806ca07b188aea29cf5bdc9dc6a681",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/errors.h",
+      "new": "services/multisim/test/systemtest/stubs/include/errors.h",
+      "before_sha256": "df8da91d96d16d2aaca88cb6d07b4124c07624587ce824cdc3ac7a7f0ce5476e",
+      "after_sha256": "df8da91d96d16d2aaca88cb6d07b4124c07624587ce824cdc3ac7a7f0ce5476e",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/event_handler.h",
+      "new": "services/multisim/test/systemtest/stubs/include/event_handler.h",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "after_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/event_runner.h",
+      "new": "services/multisim/test/systemtest/stubs/include/event_runner.h",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "after_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/extension_ability_info.h",
+      "new": "services/multisim/test/systemtest/stubs/include/extension_ability_info.h",
+      "before_sha256": "00a4b355b08f44d7ea100909dc309e0b0bd4fe46ba0a150b8aa8826c2bd4b75d",
+      "after_sha256": "00a4b355b08f44d7ea100909dc309e0b0bd4fe46ba0a150b8aa8826c2bd4b75d",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/ffrt.h",
+      "new": "services/multisim/test/systemtest/stubs/include/ffrt.h",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "after_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/ffrt_inner.h",
+      "new": "services/multisim/test/systemtest/stubs/include/ffrt_inner.h",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "after_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/global_configuration_key.h",
+      "new": "services/multisim/test/systemtest/stubs/include/global_configuration_key.h",
+      "before_sha256": "bb14fc0d50377f6951d948ceeb72786e094ddfa9ee55d22f93022762d412e747",
+      "after_sha256": "bb14fc0d50377f6951d948ceeb72786e094ddfa9ee55d22f93022762d412e747",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/hisysevent.h",
+      "new": "services/multisim/test/systemtest/stubs/include/hisysevent.h",
+      "before_sha256": "d13f55ae0b9aed4aeedf6aebb735676cb7e30ae0695507b17edaea8944d4d8b5",
+      "after_sha256": "d13f55ae0b9aed4aeedf6aebb735676cb7e30ae0695507b17edaea8944d4d8b5",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/hks_api.h",
+      "new": "services/multisim/test/systemtest/stubs/include/hks_api.h",
+      "before_sha256": "64101f07d09bcf0c25427313d807ed8f68c3a89de5710f30a07a93ecb72a0fbe",
+      "after_sha256": "64101f07d09bcf0c25427313d807ed8f68c3a89de5710f30a07a93ecb72a0fbe",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/hks_error_code.h",
+      "new": "services/multisim/test/systemtest/stubs/include/hks_error_code.h",
+      "before_sha256": "3c7108619d8c0d188be0ebac54ca516f2a263f32651ca39d4435b0475eef71b6",
+      "after_sha256": "3c7108619d8c0d188be0ebac54ca516f2a263f32651ca39d4435b0475eef71b6",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/hks_param.h",
+      "new": "services/multisim/test/systemtest/stubs/include/hks_param.h",
+      "before_sha256": "440a7b5abc1236b1c30ee54c6d6e33dc6f3fec5779b83e63356294d181af0ed1",
+      "after_sha256": "440a7b5abc1236b1c30ee54c6d6e33dc6f3fec5779b83e63356294d181af0ed1",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/hks_tag.h",
+      "new": "services/multisim/test/systemtest/stubs/include/hks_tag.h",
+      "before_sha256": "caa589c9208c7d621d9da39fbed419aaaa987e2b1c65f8ba105fcadfb62d9eec",
+      "after_sha256": "caa589c9208c7d621d9da39fbed419aaaa987e2b1c65f8ba105fcadfb62d9eec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/hks_type.h",
+      "new": "services/multisim/test/systemtest/stubs/include/hks_type.h",
+      "before_sha256": "2ee59b8810d27586373828159db678b9f20519254f519e7bded758155f270c43",
+      "after_sha256": "2ee59b8810d27586373828159db678b9f20519254f519e7bded758155f270c43",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/hks_type_enum.h",
+      "new": "services/multisim/test/systemtest/stubs/include/hks_type_enum.h",
+      "before_sha256": "545c38aa20506fa74501ec48ca53092d9c25757f5393f41864adf627ff942f25",
+      "after_sha256": "545c38aa20506fa74501ec48ca53092d9c25757f5393f41864adf627ff942f25",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/host_refptr.h",
+      "new": "services/multisim/test/systemtest/stubs/include/host_refptr.h",
+      "before_sha256": "20e2e0ff7b5bdaa2d1d17cf85039206ba7d4fdb528f7328f7fd294bace35c348",
+      "after_sha256": "20e2e0ff7b5bdaa2d1d17cf85039206ba7d4fdb528f7328f7fd294bace35c348",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/host_standard_prelude.h",
+      "new": "services/multisim/test/systemtest/stubs/include/host_standard_prelude.h",
+      "before_sha256": "be651a65f784b2c5a615cf1b18e9f2faa33b29a2499fc4281a731045ce2e6c32",
+      "after_sha256": "be651a65f784b2c5a615cf1b18e9f2faa33b29a2499fc4281a731045ce2e6c32",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/if_system_ability_manager.h",
+      "new": "services/multisim/test/systemtest/stubs/include/if_system_ability_manager.h",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "after_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/inner_event.h",
+      "new": "services/multisim/test/systemtest/stubs/include/inner_event.h",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "after_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/iremote_broker.h",
+      "new": "services/multisim/test/systemtest/stubs/include/iremote_broker.h",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "after_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/iremote_object.h",
+      "new": "services/multisim/test/systemtest/stubs/include/iremote_object.h",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "after_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/iremote_proxy.h",
+      "new": "services/multisim/test/systemtest/stubs/include/iremote_proxy.h",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "after_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/iremote_stub.h",
+      "new": "services/multisim/test/systemtest/stubs/include/iremote_stub.h",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "after_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/iservice_registry.h",
+      "new": "services/multisim/test/systemtest/stubs/include/iservice_registry.h",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "after_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/linux_platform_types.h",
+      "new": "services/multisim/test/systemtest/stubs/include/linux_platform_types.h",
+      "before_sha256": "e9a7ba3305350265f379d4f888765045d372346bda19006ae9868234a98f9fca",
+      "after_sha256": "e9a7ba3305350265f379d4f888765045d372346bda19006ae9868234a98f9fca",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/matching_skills.h",
+      "new": "services/multisim/test/systemtest/stubs/include/matching_skills.h",
+      "before_sha256": "6d701634348e80083d633c92b153f55eb785aaf07ee25c5b9ae4de299d09dab8",
+      "after_sha256": "6d701634348e80083d633c92b153f55eb785aaf07ee25c5b9ae4de299d09dab8",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/message_parcel.h",
+      "new": "services/multisim/test/systemtest/stubs/include/message_parcel.h",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "after_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/nocopyable.h",
+      "new": "services/multisim/test/systemtest/stubs/include/nocopyable.h",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "after_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/os_account_manager_wrapper.h",
+      "new": "services/multisim/test/systemtest/stubs/include/os_account_manager_wrapper.h",
+      "before_sha256": "18cecba32b2968ec9855504410823c9aadc477d9d6b0e9cf3a79a12fae9a5bcc",
+      "after_sha256": "18cecba32b2968ec9855504410823c9aadc477d9d6b0e9cf3a79a12fae9a5bcc",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/parameter.h",
+      "new": "services/multisim/test/systemtest/stubs/include/parameter.h",
+      "before_sha256": "8e7c48f647ddc38568459feff6fae01c9267476492e41431effb85db6b50c8fa",
+      "after_sha256": "8e7c48f647ddc38568459feff6fae01c9267476492e41431effb85db6b50c8fa",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/parameters.h",
+      "new": "services/multisim/test/systemtest/stubs/include/parameters.h",
+      "before_sha256": "4ab650637a013fccb5fb3caa93b80bbfc9aaac22c98908513a15b049eaa83e67",
+      "after_sha256": "4ab650637a013fccb5fb3caa93b80bbfc9aaac22c98908513a15b049eaa83e67",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/parcel.h",
+      "new": "services/multisim/test/systemtest/stubs/include/parcel.h",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "after_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/refbase.h",
+      "new": "services/multisim/test/systemtest/stubs/include/refbase.h",
+      "before_sha256": "7c7868b9543a2f36a3608318ceef50ec7643b95d3f4e7b9afc7e5ae0dec29ef0",
+      "after_sha256": "7c7868b9543a2f36a3608318ceef50ec7643b95d3f4e7b9afc7e5ae0dec29ef0",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/result_set.h",
+      "new": "services/multisim/test/systemtest/stubs/include/result_set.h",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "after_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/securec.h",
+      "new": "services/multisim/test/systemtest/stubs/include/securec.h",
+      "before_sha256": "20b4879509191f5e5d37334fa7f881499d8d856e19ed535677a83e08ff152461",
+      "after_sha256": "20b4879509191f5e5d37334fa7f881499d8d856e19ed535677a83e08ff152461",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/securectype.h",
+      "new": "services/multisim/test/systemtest/stubs/include/securectype.h",
+      "before_sha256": "3d41284a39f1add75253f9aaa008c24981b18605a12a2e4c5aa927f859789c66",
+      "after_sha256": "3d41284a39f1add75253f9aaa008c24981b18605a12a2e4c5aa927f859789c66",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/sim_data.h",
+      "new": "services/multisim/test/systemtest/stubs/include/sim_data.h",
+      "before_sha256": "d38a4ef437ad856795090db909896db16660f8e6e336d2947e777a4ef2284ea7",
+      "after_sha256": "d38a4ef437ad856795090db909896db16660f8e6e336d2947e777a4ef2284ea7",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/singleton.h",
+      "new": "services/multisim/test/systemtest/stubs/include/singleton.h",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "after_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/string_ex.h",
+      "new": "services/multisim/test/systemtest/stubs/include/string_ex.h",
+      "before_sha256": "60f7760ed68802c2690a45d1a6dc590c38e00d739c7e16c806c9351bf3ffa909",
+      "after_sha256": "60f7760ed68802c2690a45d1a6dc590c38e00d739c7e16c806c9351bf3ffa909",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/system_ability_definition.h",
+      "new": "services/multisim/test/systemtest/stubs/include/system_ability_definition.h",
+      "before_sha256": "d438840102fb0b9a295aa86a302ce103a6e3dc6b4006e62a23d34d097a6cfc01",
+      "after_sha256": "d438840102fb0b9a295aa86a302ce103a6e3dc6b4006e62a23d34d097a6cfc01",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/system_ability_status_change_stub.h",
+      "new": "services/multisim/test/systemtest/stubs/include/system_ability_status_change_stub.h",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "after_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/uri.h",
+      "new": "services/multisim/test/systemtest/stubs/include/uri.h",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "after_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/want.h",
+      "new": "services/multisim/test/systemtest/stubs/include/want.h",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "after_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/systemtest/stubs/include/hilog/log.h",
+      "new": "services/multisim/test/systemtest/stubs/include/hilog/log.h",
+      "before_sha256": "e191f5f05f83fdeddce8bb541a6ca49203afc8a720bb548fc62f633523d7368d",
+      "after_sha256": "e191f5f05f83fdeddce8bb541a6ca49203afc8a720bb548fc62f633523d7368d",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/linux_sim_guard/.gn",
+      "new": "services/multisim/test/linux_sim_guard/.gn",
+      "before_sha256": "d52de456aa5010137224ec63bf56237623e193b6cdbcd27c44ae67e89f28a19a",
+      "after_sha256": "d52de456aa5010137224ec63bf56237623e193b6cdbcd27c44ae67e89f28a19a",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/linux_sim_guard/BUILD.gn",
+      "new": "services/multisim/test/linux_sim_guard/BUILD.gn",
+      "before_sha256": "5d2f2ca9da20bd39eb61a41d0ad5dadd399c8cfbe0f17ca45a48b0486fb33e60",
+      "after_sha256": "5d2f2ca9da20bd39eb61a41d0ad5dadd399c8cfbe0f17ca45a48b0486fb33e60",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/linux_sim_guard/deps.lock.json",
+      "new": "services/multisim/test/linux_sim_guard/deps.lock.json",
+      "before_sha256": "da8c40a9eb82bb3aaf0d3329be599f933308ddda912a8c8599900442252a7b98",
+      "after_sha256": "da8c40a9eb82bb3aaf0d3329be599f933308ddda912a8c8599900442252a7b98",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/linux_sim_guard/build/BUILDCONFIG.gn",
+      "new": "services/multisim/test/linux_sim_guard/build/BUILDCONFIG.gn",
+      "before_sha256": "9380596baaa76e190905566792ebeb665745e0e9d23af88b9892d4ad49297de5",
+      "after_sha256": "9380596baaa76e190905566792ebeb665745e0e9d23af88b9892d4ad49297de5",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/linux_sim_guard/build/lsg.gni",
+      "new": "services/multisim/test/linux_sim_guard/build/lsg.gni",
+      "before_sha256": "994df6f78b8a2f8d5fedfc859c3a615d1284b4676b8cb864ebb04278c21cc789",
+      "after_sha256": "994df6f78b8a2f8d5fedfc859c3a615d1284b4676b8cb864ebb04278c21cc789",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/linux_sim_guard/build/platform.gni",
+      "new": "services/multisim/test/linux_sim_guard/build/platform.gni",
+      "before_sha256": "496b4b3be926f73fb54a5c1bc7d32d83077982ce8c4e96be5479356ede961162",
+      "after_sha256": "496b4b3be926f73fb54a5c1bc7d32d83077982ce8c4e96be5479356ede961162",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/linux_sim_guard/production/BUILD.gn",
+      "new": "services/multisim/test/linux_sim_guard/production/BUILD.gn",
+      "before_sha256": "d5a9ee426fa3b29a1e101dbe253bed6d37198f0497ce42f32421807e859c630d",
+      "after_sha256": "d5a9ee426fa3b29a1e101dbe253bed6d37198f0497ce42f32421807e859c630d",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/linux_sim_guard/production/sources.gni",
+      "new": "services/multisim/test/linux_sim_guard/production/sources.gni",
+      "before_sha256": "523fd3d62700e1504a60c4b8ea781c22eb675ee16428e3d78dc7411c1090c718",
+      "after_sha256": "523fd3d62700e1504a60c4b8ea781c22eb675ee16428e3d78dc7411c1090c718",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/linux_sim_guard/suites/BUILD.gn",
+      "new": "services/multisim/test/linux_sim_guard/suites/BUILD.gn",
+      "before_sha256": "5a935640ad1b3e920a04f857ae0335fa87dcd71bfd28090e8ddec51db47ee70f",
+      "after_sha256": "5a935640ad1b3e920a04f857ae0335fa87dcd71bfd28090e8ddec51db47ee70f",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/linux_sim_guard/third_party/BUILD.gn",
+      "new": "services/multisim/test/linux_sim_guard/third_party/BUILD.gn",
+      "before_sha256": "79a7cef7ba4af0133645d11c417a2daa56e1a8ea28727ea5185ae98d0828ac6b",
+      "after_sha256": "79a7cef7ba4af0133645d11c417a2daa56e1a8ea28727ea5185ae98d0828ac6b",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/linux_sim_guard/third_party/ffrt_sources.gni",
+      "new": "services/multisim/test/linux_sim_guard/third_party/ffrt_sources.gni",
+      "before_sha256": "9064eee77809697d67bcc0a00c32a26c21252abe9bec72e8f8403b5b0e4350f8",
+      "after_sha256": "9064eee77809697d67bcc0a00c32a26c21252abe9bec72e8f8403b5b0e4350f8",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/linux_sim_guard/tools/fetch_deps.py",
+      "new": "services/multisim/test/linux_sim_guard/tools/fetch_deps.py",
+      "before_sha256": "9dbc801f3b9a8c83c755bd6cec5bd2c629b983bb26a8c738d2ff3ca9f4fbaa3f",
+      "after_sha256": "9dbc801f3b9a8c83c755bd6cec5bd2c629b983bb26a8c738d2ff3ca9f4fbaa3f",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/linux_sim_guard/tools/gen_fake_bases.py",
+      "new": "services/multisim/test/linux_sim_guard/tools/gen_fake_bases.py",
+      "before_sha256": "35c971c1ebc760a3ffd3800307d8792f8355a01b18060271dde15efbd5a00257",
+      "after_sha256": "35c971c1ebc760a3ffd3800307d8792f8355a01b18060271dde15efbd5a00257",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/linux_sim_guard/build/config/BUILD.gn",
+      "new": "services/multisim/test/linux_sim_guard/build/config/BUILD.gn",
+      "before_sha256": "47a48dd2c3d9553f3157de1ca015c9fd2e3f1b4b47dce1e13807fd90fe59953b",
+      "after_sha256": "47a48dd2c3d9553f3157de1ca015c9fd2e3f1b4b47dce1e13807fd90fe59953b",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/linux_sim_guard/build/toolchain/BUILD.gn",
+      "new": "services/multisim/test/linux_sim_guard/build/toolchain/BUILD.gn",
+      "before_sha256": "b466c185624f80c94d19b40b537c9ebf98d519003b2ef119044de183ff5e706c",
+      "after_sha256": "b466c185624f80c94d19b40b537c9ebf98d519003b2ef119044de183ff5e706c",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/linux_sim_guard/env/compat/ohos_libc_compat.h",
+      "new": "services/multisim/test/linux_sim_guard/env/compat/ohos_libc_compat.h",
+      "before_sha256": "94bc27fcc6daf64e649e59a408db60061f2ff8f79e3edf4d25e659f957c8154f",
+      "after_sha256": "94bc27fcc6daf64e649e59a408db60061f2ff8f79e3edf4d25e659f957c8154f",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/linux_sim_guard/env/compat/prelude.h",
+      "new": "services/multisim/test/linux_sim_guard/env/compat/prelude.h",
+      "before_sha256": "82c6a6948efdde7dc2755295a99638eb50f8b2c78fcd64acaa4021620dea70ad",
+      "after_sha256": "82c6a6948efdde7dc2755295a99638eb50f8b2c78fcd64acaa4021620dea70ad",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/linux_sim_guard/env/compat/__mutex_base",
+      "new": "services/multisim/test/linux_sim_guard/env/compat/__mutex_base",
+      "before_sha256": "36d040c76418114900e7242622b9fcd49d7f2d247fcdaa85fdd974a439f558ae",
+      "after_sha256": "36d040c76418114900e7242622b9fcd49d7f2d247fcdaa85fdd974a439f558ae",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/linux_sim_guard/env/gen/unscripted_samgr.h",
+      "new": "services/multisim/test/linux_sim_guard/env/gen/unscripted_samgr.h",
+      "before_sha256": "7b2676f0edfb09e8773f0c80069181131790839f81c509beefdc72daa31f32eb",
+      "after_sha256": "7b2676f0edfb09e8773f0c80069181131790839f81c509beefdc72daa31f32eb",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/linux_sim_guard/env/gen/unscripted_tel_ril_manager.h",
+      "new": "services/multisim/test/linux_sim_guard/env/gen/unscripted_tel_ril_manager.h",
+      "before_sha256": "4c5a1000e3553a8f27d5dcaa8d15838263c67eea08c0ff1f8a98fd3e47931fc6",
+      "after_sha256": "4c5a1000e3553a8f27d5dcaa8d15838263c67eea08c0ff1f8a98fd3e47931fc6",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/linux_sim_guard/env/compat/linux/ashmem.h",
+      "new": "services/multisim/test/linux_sim_guard/env/compat/linux/ashmem.h",
+      "before_sha256": "b38a5f30d937e71f466b598b5c667527aca6fc782b992fb893d0dc76e2797e46",
+      "after_sha256": "b38a5f30d937e71f466b598b5c667527aca6fc782b992fb893d0dc76e2797e46",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/linux_sim_guard/env/include/lsg/unscripted.h",
+      "new": "services/multisim/test/linux_sim_guard/env/include/lsg/unscripted.h",
+      "before_sha256": "cd4b4e4d7a6434ea426895759e7427431dc0bb3d529e6ad2138c766ac6045178",
+      "after_sha256": "cd4b4e4d7a6434ea426895759e7427431dc0bb3d529e6ad2138c766ac6045178",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/linux_sim_guard/third_party/googletest/BUILD.gn",
+      "new": "services/multisim/test/linux_sim_guard/third_party/googletest/BUILD.gn",
+      "before_sha256": "7d80feca5f52c1194dc7b787c71eaf785c7fe27e560d01132446e3922967c782",
+      "after_sha256": "7d80feca5f52c1194dc7b787c71eaf785c7fe27e560d01132446e3922967c782",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/multisim_architecture_rules/assignment_rules.cpp",
+      "new": "services/multisim/test/multisim_architecture_rules/assignment_rules.cpp",
+      "before_sha256": "192f3139d0c3d2fc1f874e64cf949a371c0c5c8563deb4e4c61baf0a377a7c79",
+      "after_sha256": "192f3139d0c3d2fc1f874e64cf949a371c0c5c8563deb4e4c61baf0a377a7c79",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/multisim_architecture_rules/BUILD.gn",
+      "new": "services/multisim/test/multisim_architecture_rules/BUILD.gn",
+      "before_sha256": "d8c5773d516f665a0be6c530431e468985600ccdb7355b8dc146415d176030c0",
+      "after_sha256": "d8c5773d516f665a0be6c530431e468985600ccdb7355b8dc146415d176030c0",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/multisim_architecture_rules/check_open_closed_contracts.py",
+      "new": "services/multisim/test/multisim_architecture_rules/check_open_closed_contracts.py",
+      "before_sha256": "1f0edba560785503a24d4116b889ccf367310cd2e58e78a195ff803996de6790",
+      "after_sha256": "67c0946325cc6f9740c8420846625077493d20d7002b22c3227418b18b2f801d",
+      "change": "paths_or_navigation_only"
+    },
+    {
+      "old": "test/multisim_architecture_rules/check_structure.py",
+      "new": "services/multisim/test/multisim_architecture_rules/check_structure.py",
+      "before_sha256": "0afca02f438c6a2c59ee7de4bc3b8b4e447f41e86250e06c88dc302d318655e1",
+      "after_sha256": "01fe8a4498ee2ced8032a4801e11ae1667c24a60cc58f0b6b6af78b84df94411",
+      "change": "paths_or_navigation_only"
+    },
+    {
+      "old": "test/multisim_architecture_rules/open_closed_contract_rules.cpp",
+      "new": "services/multisim/test/multisim_architecture_rules/open_closed_contract_rules.cpp",
+      "before_sha256": "9ba46f8451043c966df87a59c36dc6a82c521fb6d8cc9f5bc052a20646a8b530",
+      "after_sha256": "9ba46f8451043c966df87a59c36dc6a82c521fb6d8cc9f5bc052a20646a8b530",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/multisim_architecture_rules/README.md",
+      "new": "services/multisim/test/multisim_architecture_rules/README.md",
+      "before_sha256": "620842e6cad1d0ec45fd9f19234aa1b9fc30fc07c440f785337d0e1dbc0c5e93",
+      "after_sha256": "e577bfcf7881f8b950da06de1ef83e4b107f68550909db5326316c8394bd1e85",
+      "change": "paths_or_navigation_only"
+    },
+    {
+      "old": "test/multisim_architecture_rules/resource_rules.cpp",
+      "new": "services/multisim/test/multisim_architecture_rules/resource_rules.cpp",
+      "before_sha256": "45b2b42133dabee9a6143d95fe96a57cbec5408e971f3b09f6da41afbe807f86",
+      "after_sha256": "45b2b42133dabee9a6143d95fe96a57cbec5408e971f3b09f6da41afbe807f86",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/multisim_architecture_rules/run.py",
+      "new": "services/multisim/test/multisim_architecture_rules/run.py",
+      "before_sha256": "30ba1813f412a9556ce68893636c569473533dee7ba7c730070b1ac7459d9a10",
+      "after_sha256": "0b9c6dae739910ae1d0c13e9659d9a2d2cf3f5e6f9c0dd598404a58aae8a9afd",
+      "change": "paths_or_navigation_only"
+    },
+    {
+      "old": "test/multisim_architecture_rules/runtime_protocol_rules.cpp",
+      "new": "services/multisim/test/multisim_architecture_rules/runtime_protocol_rules.cpp",
+      "before_sha256": "3f86e778db6bee02a2784f1f00712306d9f83a19883b896a1b07dcaa40c696ad",
+      "after_sha256": "3f86e778db6bee02a2784f1f00712306d9f83a19883b896a1b07dcaa40c696ad",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/multisim_architecture_rules/source_migration.json",
+      "new": "services/multisim/test/multisim_architecture_rules/source_migration.json",
+      "before_sha256": "185b39841f36c6acfa3f1ead5f1a72e0d872eaf5474cf2ff0a808bfbb2245d01",
+      "after_sha256": "185b39841f36c6acfa3f1ead5f1a72e0d872eaf5474cf2ff0a808bfbb2245d01",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/multisim_architecture_rules/test_structure.py",
+      "new": "services/multisim/test/multisim_architecture_rules/test_structure.py",
+      "before_sha256": "9d83d3b706e956db63eaebb697f7503cebca9d1541bab7864fd21cf333ce8982",
+      "after_sha256": "77d456b82e529623956a150ecaa5d6ab48b888944ea937e9c8b5d2312027bce4",
+      "change": "paths_or_navigation_only"
+    },
+    {
+      "old": "test/multisim_architecture_rules/topology_rules.cpp",
+      "new": "services/multisim/test/multisim_architecture_rules/topology_rules.cpp",
+      "before_sha256": "27f53d8cca8a7db79640c6606bc8598fe0523607c176a9e92f63352fa432c647",
+      "after_sha256": "27f53d8cca8a7db79640c6606bc8598fe0523607c176a9e92f63352fa432c647",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/multisim_architecture_rules/gn/.gn",
+      "new": "services/multisim/test/multisim_architecture_rules/gn/.gn",
+      "before_sha256": "1d8a3910824faaa64643088ecc4d49f064b1eb91591f3a460affef08fbdc758c",
+      "after_sha256": "547b89c27c3362709ed8eaed7ae6a610acf714248bc1d30238b7681817bed7bb",
+      "change": "paths_or_navigation_only"
+    },
+    {
+      "old": "test/multisim_architecture_rules/gn/BUILD.gn",
+      "new": "services/multisim/test/multisim_architecture_rules/gn/BUILD.gn",
+      "before_sha256": "e761a214858a8cfe13b685fd48ed2ae745feaa8bd5f9b7fe033d2f8a9503fdf1",
+      "after_sha256": "e761a214858a8cfe13b685fd48ed2ae745feaa8bd5f9b7fe033d2f8a9503fdf1",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/multisim_architecture_rules/gn/BUILDCONFIG.gn",
+      "new": "services/multisim/test/multisim_architecture_rules/gn/BUILDCONFIG.gn",
+      "before_sha256": "3efb696122b667b7396a2dffe02825735ab1986f7aa19cacd24070aa60ee0db5",
+      "after_sha256": "2027a3892409e174ecce1ef486e180fdb44cb809fb5b72f192891af47edaa2f4",
+      "change": "paths_or_navigation_only"
+    },
+    {
+      "old": "test/sim_guard/.gitignore",
+      "new": "services/multisim/test/sim_guard/.gitignore",
+      "before_sha256": "32dae3052f331ee34d628ef535709b301259a45df7c7522c4d35dcf49873f00b",
+      "after_sha256": "32dae3052f331ee34d628ef535709b301259a45df7c7522c4d35dcf49873f00b",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/sim_guard/evidence.json",
+      "new": "services/multisim/test/sim_guard/evidence.json",
+      "before_sha256": "6e03aa771d15eb238dd8aa43c145dbe94fed7dd814c98556409bad960fafefd1",
+      "after_sha256": "6e03aa771d15eb238dd8aa43c145dbe94fed7dd814c98556409bad960fafefd1",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/sim_guard/evidence_round2.json",
+      "new": "services/multisim/test/sim_guard/evidence_round2.json",
+      "before_sha256": "e6d9b426c5a46f984030dfd7c35522c27f3b3793f96131b57624c8b3fd6061ac",
+      "after_sha256": "e6d9b426c5a46f984030dfd7c35522c27f3b3793f96131b57624c8b3fd6061ac",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/sim_guard/README.md",
+      "new": "services/multisim/test/sim_guard/README.md",
+      "before_sha256": "0ed29da0758f65575c33a7840997b9fbe691b1d86a0b8ecbbf37361c45129b29",
+      "after_sha256": "022533f485aa7297a665e01a4e24219a7f85da6ad9c79111a6bf8765d4fbe7aa",
+      "change": "paths_or_navigation_only"
+    },
+    {
+      "old": "test/sim_guard/run_pin_memory_contract.py",
+      "new": "services/multisim/test/sim_guard/run_pin_memory_contract.py",
+      "before_sha256": "5272670754d0efb188d38d13a9e6e82020df2cc2c70e3edb4f583c9cbc3f99c0",
+      "after_sha256": "fafd075fb40c7d20059cab053f2455ca82f66edf8d16bb79a43b873357e59f50",
+      "change": "paths_or_navigation_only"
+    },
+    {
+      "old": "test/sim_guard/run_sim_guard.py",
+      "new": "services/multisim/test/sim_guard/run_sim_guard.py",
+      "before_sha256": "f419becd080d62028ab98640fbde4dd060140986909bd27d2b8b97437e6e59d4",
+      "after_sha256": "500b76d40e0169908baf78ff1745ec311cba0588f4c8dbc9088cce766acfc9c8",
+      "change": "paths_or_navigation_only"
+    },
+    {
+      "old": "test/sim_guard/semantic_baseline.json",
+      "new": "services/multisim/test/sim_guard/semantic_baseline.json",
+      "before_sha256": "f62ee4faa10b33c413711cf5d45707ee2160cbd85d28bf040f369c7a1e9e888b",
+      "after_sha256": "f62ee4faa10b33c413711cf5d45707ee2160cbd85d28bf040f369c7a1e9e888b",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/sim_guard/semantic_baseline_v2.json",
+      "new": "services/multisim/test/sim_guard/semantic_baseline_v2.json",
+      "before_sha256": "20e298bbfa060019b3decf81d574cfa7b58724a845aad4ed8b854db31fca496a",
+      "after_sha256": "20e298bbfa060019b3decf81d574cfa7b58724a845aad4ed8b854db31fca496a",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/sim_guard/contracts/sim_session.h",
+      "new": "services/multisim/test/sim_guard/contracts/sim_session.h",
+      "before_sha256": "19075a3cd587434e8b4661bd53296b85376025e980da6bbb6827f060a3654825",
+      "after_sha256": "19075a3cd587434e8b4661bd53296b85376025e980da6bbb6827f060a3654825",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/sim_guard/contracts/sim_sut.h",
+      "new": "services/multisim/test/sim_guard/contracts/sim_sut.h",
+      "before_sha256": "897b7f7766c20a2bead79825d0b00377793b4b42e07c8b5c2a1f418259e445aa",
+      "after_sha256": "897b7f7766c20a2bead79825d0b00377793b4b42e07c8b5c2a1f418259e445aa",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/sim_guard/fakes/ril_device.h",
+      "new": "services/multisim/test/sim_guard/fakes/ril_device.h",
+      "before_sha256": "9a055ade01080ebbae91d67456b46b427472f77c08f8c2806118c4a92925ae04",
+      "after_sha256": "9a055ade01080ebbae91d67456b46b427472f77c08f8c2806118c4a92925ae04",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/sim_guard/fakes/ril_fault_controls.h",
+      "new": "services/multisim/test/sim_guard/fakes/ril_fault_controls.h",
+      "before_sha256": "5b26e865b69435e23538c02389d886ff6101bc6f2326558679db2d588d2249fa",
+      "after_sha256": "5b26e865b69435e23538c02389d886ff6101bc6f2326558679db2d588d2249fa",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/sim_guard/oracle/card_oracle.h",
+      "new": "services/multisim/test/sim_guard/oracle/card_oracle.h",
+      "before_sha256": "9f752b1101c2754ea09fec11d31bb5f8236872a39398701c90d3a49095c6db02",
+      "after_sha256": "9f752b1101c2754ea09fec11d31bb5f8236872a39398701c90d3a49095c6db02",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/sim_guard/runner/contract_driver.h",
+      "new": "services/multisim/test/sim_guard/runner/contract_driver.h",
+      "before_sha256": "9276249fb08c9d90fa3f0e72d55280bd2cb61419364b98b05a4f385cecf67496",
+      "after_sha256": "9276249fb08c9d90fa3f0e72d55280bd2cb61419364b98b05a4f385cecf67496",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/sim_guard/runner/contract_test.cpp",
+      "new": "services/multisim/test/sim_guard/runner/contract_test.cpp",
+      "before_sha256": "4b93a870c3e3e31b678e085607c7a15174e2460eb412e27651ce5f38a48c664b",
+      "after_sha256": "4b93a870c3e3e31b678e085607c7a15174e2460eb412e27651ce5f38a48c664b",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/sim_guard/runner/lifecycle_extension_test.cpp",
+      "new": "services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp",
+      "before_sha256": "f2507714d82ad155b01bc3bd37cbbea814db6c402fffda18cbc4de997d7486de",
+      "after_sha256": "f2507714d82ad155b01bc3bd37cbbea814db6c402fffda18cbc4de997d7486de",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/sim_guard/runner/pin_memory_contract_test.cpp",
+      "new": "services/multisim/test/sim_guard/runner/pin_memory_contract_test.cpp",
+      "before_sha256": "3f87397a9d81886706889bd91683268a5f42df5a9c69aa7685ffcb881085c678",
+      "after_sha256": "3f87397a9d81886706889bd91683268a5f42df5a9c69aa7685ffcb881085c678",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/sim_guard/scenarios/compatibility.h",
+      "new": "services/multisim/test/sim_guard/scenarios/compatibility.h",
+      "before_sha256": "0cc09fcfec1fe53cc00ef99969bed8bf5d0f6611a0db34934cccda4aaacabd7c",
+      "after_sha256": "0cc09fcfec1fe53cc00ef99969bed8bf5d0f6611a0db34934cccda4aaacabd7c",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/sim_guard/traceability/inventory.json",
+      "new": "services/multisim/test/sim_guard/traceability/inventory.json",
+      "before_sha256": "87bb8f91367d6376cb6c5dc4d98b071e59fe3a8da3ae820d0c0806aa3d0f4f73",
+      "after_sha256": "87bb8f91367d6376cb6c5dc4d98b071e59fe3a8da3ae820d0c0806aa3d0f4f73",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/sim_guard/traceability/provider_contract_round2.json",
+      "new": "services/multisim/test/sim_guard/traceability/provider_contract_round2.json",
+      "before_sha256": "26ff0b26136c45ccf04a31b751010e982ee3dd0431f2c68a04cd7c6ce30cae3c",
+      "after_sha256": "26ff0b26136c45ccf04a31b751010e982ee3dd0431f2c68a04cd7c6ce30cae3c",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/sim_guard/traceability/round2_catalog.json",
+      "new": "services/multisim/test/sim_guard/traceability/round2_catalog.json",
+      "before_sha256": "b5ec05539a4328e5e55e7dda48162596e7320a3ad4913f89293900280290498e",
+      "after_sha256": "b5ec05539a4328e5e55e7dda48162596e7320a3ad4913f89293900280290498e",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/sim_guard/adapters/legacy/legacy_sim_adapter.cpp",
+      "new": "services/multisim/test/sim_guard/adapters/legacy/legacy_sim_adapter.cpp",
+      "before_sha256": "66ca6d63cb4c067b90706d8387744c7882a5683e893c0ffb63015912cf43afae",
+      "after_sha256": "66ca6d63cb4c067b90706d8387744c7882a5683e893c0ffb63015912cf43afae",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/sim_guard/adapters/legacy/platform_spy.cpp",
+      "new": "services/multisim/test/sim_guard/adapters/legacy/platform_spy.cpp",
+      "before_sha256": "1a28487dc092b57cfc87d367972ec8020b5252b704b91d46161a31938092c7f5",
+      "after_sha256": "1a28487dc092b57cfc87d367972ec8020b5252b704b91d46161a31938092c7f5",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/sim_guard/adapters/legacy/platform_spy.h",
+      "new": "services/multisim/test/sim_guard/adapters/legacy/platform_spy.h",
+      "before_sha256": "1ab5487873d21fbe1599ef40005a233ba5c0b29369835bfa218898da87172c99",
+      "after_sha256": "1ab5487873d21fbe1599ef40005a233ba5c0b29369835bfa218898da87172c99",
+      "change": "unchanged"
+    },
+    {
+      "old": "test/sim_guard/adapters/multisim/README.md",
+      "new": "services/multisim/test/sim_guard/adapters/multisim/README.md",
+      "before_sha256": "57fde46410901c3e50c80167d122deabb5b3b308e861f458007ce9b574e26122",
+      "after_sha256": "926644a4b826e476457b9c29a10d295e55150509f57c9fc6f22055cebe1e3607",
+      "change": "paths_or_navigation_only"
+    },
+    {
+      "old": "docs/test/SIM_测试防护网建设设计说明书_v1.0.md",
+      "new": "services/multisim/test/docs/SIM_测试防护网建设设计说明书_v1.0.md",
+      "before_sha256": "b3ead7d01cc20f2a3a2a2bcb3c4ec6015a1f1a8581d00a7f109aa85bb6ee15a3",
+      "after_sha256": "f680b3482acf3a925e9275baeaec2ccbb518f321920936a715f84a74cf1f8ff4",
+      "change": "paths_or_navigation_only"
+    },
+    {
+      "old": "docs/test/SIM_测试防护网建设设计说明书_v1.1_融合系统测试用例分析.md",
+      "new": "services/multisim/test/docs/SIM_测试防护网建设设计说明书_v1.1_融合系统测试用例分析.md",
+      "before_sha256": "4e38e12a0d6cb3603c3576b2e3ede43714aef7d2af08c9fa5812045212cb75dd",
+      "after_sha256": "8898620e128221c8ce9b29398e93e0f19673e747c0649052482b5d530081a363",
+      "change": "paths_or_navigation_only"
+    },
+    {
+      "old": "tools/check_sim_refactor_recovery.py",
+      "new": "services/multisim/tools/check_sim_refactor_recovery.py",
+      "before_sha256": "61f061b65d14cb2781314b43ba227384b96e9a808974e9ab7ed73d15c65b7606",
+      "after_sha256": "61f061b65d14cb2781314b43ba227384b96e9a808974e9ab7ed73d15c65b7606",
+      "change": "unchanged"
+    },
+    {
+      "old": "../telephony_core_service_linux_sim_ddd_test_design.md",
+      "new": "services/multisim/test/docs/telephony_core_service_linux_sim_ddd_test_design.md",
+      "before_sha256": "75d59695b13ed811e4442bca1d2b2b67eff5a70aab75a35c324a95ddd127a4e8",
+      "after_sha256": "75d59695b13ed811e4442bca1d2b2b67eff5a70aab75a35c324a95ddd127a4e8",
+      "change": "unchanged"
+    }
+  ]
+}

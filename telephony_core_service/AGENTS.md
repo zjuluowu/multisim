@@ -17,14 +17,14 @@
 | [接口契约](docs/SIM管理对外接口说明_源码核实版.md)、[外仓边界](docs/knowledge/routing/repo-boundary.md) | 外部API、权限、错误、消费者与外仓责任 |
 | [源码README](services/multisim/README.md) | 日常任务→路径→Owner→测试导航；不重复完整架构 |
 | [独立目录ADR](docs/SIM_Multisim_Source_Directory_Architecture_Decision_Independent_2026-10-31.md)、[原ADR](docs/SIM_Multisim_Source_Directory_Architecture_Decision_2026-10-31.md)、[历史实施评审](docs/SIM_Target_Architecture_Independent_Review_2026-10-29.md) | 取舍、反证和历史证据；两份ADR仍Proposed，用户已选修订B+仅作为结构实施基线 |
-| [构建规则](docs/knowledge/verify/build-test.md)、[主机测试入口](test/systemtest/README.md)、[骨架验证](test/multisim_architecture_rules/README.md) | 环境、参数、运行范围和验证限制 |
+| [构建规则](docs/knowledge/verify/build-test.md)、[主机测试入口](services/multisim/test/systemtest/README.md)、[骨架验证](services/multisim/test/multisim_architecture_rules/README.md) | 环境、参数、运行范围和验证限制 |
 
 用户当前明确授权决定本批范围；已发布/批准契约约束行为，固定源码/构建证明现状，主设计维护目标语义，详细设计维护物理组织。历史文档中O作为业务Owner、旧目录和旧方法草图不得覆盖主设计当前裁决。冲突以具体证据定位并同步责任文档，不按日期或文件名决定权威，不把旧缺陷默认为永久契约。
 
 ## 恢复与任务选择
 
 1. 读取根/本文件及执行状态；执行 `git status --short`、`git diff --cached --name-status`、`git remote -v`、`git branch -vv`、`git rev-parse HEAD`、`git worktree list`，保护已有工作。
-2. 从仓库根运行 `python3 telephony_core_service/tools/check_sim_refactor_recovery.py --remote origin --fetch`，按实际remote替换名称。核对main与G2a检查点可达性；工具不运行业务测试，不能据此声称PASS。
+2. 从仓库根运行 `python3 telephony_core_service/services/multisim/tools/check_sim_refactor_recovery.py --remote origin --fetch`，按实际remote替换名称。核对main与G2a检查点可达性；工具不运行业务测试，不能据此声称PASS。
 3. 按执行状态定位本批最小任务，读取相关设计章节、源码写点、调用/回调、源表、消费者和Oracle。用 `rg` 定点检索，不默认通读全部历史。
 4. 若需其他基线，用独立worktree/克隆且先保护原工作区；不自动切换/合并历史分支。参数化依赖和输出目录，不依赖旧机器路径。
 5. 按本批范围修改→验证→修复→核实Diff→更新执行状态。实际命令、输入基线、未验证范围和剩余条件必须可追溯；不虚构PASS或补业务成功桩。
@@ -51,6 +51,8 @@
 
 ## 生产迁移与关键不变量
 
+- 当前用户明确要求：旧实现只读，缺陷只记录，不在本任务修复。不得修改 `services/sim/` 或旧 Core/CMI/wrapper/RIL 实现及公共接口，也不得为测试加入 friend、生产探针或改变旧业务路径。文档和新实现/测试优化不得默认为旧代码修复授权；新实现的正确性与旧缺陷兼容分别验收。
+
 - 成熟SIM能力仍由原`services/sim/`实现；main已包含G2a只读Query及Core旧对象附着，其他multisim能力仍为testonly骨架，产品验收未完成。以根GN和Core真实装配判定接入，不以目录或对象声明判定。最终替代前按完整能力/WU退出旧写者、执行者和重试者，无双写/双发令/双重试。
 - 完整WU包含初始化、重载、后台、恢复、厂商入口和查询回写；特别覆盖Carrier Loader及CardFileDetectManager独立账户写入口，不只迁公开setter。同一行可合并T/A字段计划，不赋予技术Store跨Owner写权。
 - 请求发起时保存Owner/epoch/request/step/attempt、原Session及传输关联，实际写点同域准入。迟到结果只更新允许的原效果认知，不污染新请求或复活旧完成出口。
@@ -63,11 +65,13 @@
 
 ## 阶段与验证门禁
 
+重构新增测试工程、独立 GN 配置、脚本、Fake/Oracle、缺陷记录与证据统一放在 `services/multisim/test/`；恢复工具放在 `services/multisim/tools/`。不在原 `test/` 或旧生产目录新增重构测试设施。当前入口见[测试导航](services/multisim/test/README.md)，历史提交及证据内路径保持原值，通过迁移映射追溯。
+
 G0/G1为基线/护栏，G2a为原SO依赖收口，G2b为产物工程边界，G2c为生命周期，G3a～d按完整WU接管，G4为独立新能力。按主设计§22的依赖关系执行，不把全部阶段强制串行；状态/阻塞/下一批仍只查执行状态。
 
 - 文档：核对源码事实、当前/计划分离、链接/锚点/围栏及 `git diff --check`；不因此声称业务测试通过。
-- 纯规则：`python3 -B telephony_core_service/test/multisim_architecture_rules/run.py`。
-- 目录/契约/骨架：同步BUILD、include、测试及既有 `source_migration.json`，保留历史追溯；运行 `python3 -B telephony_core_service/test/multisim_architecture_rules/run.py --with-gn --migration --output /tmp/multisim-architecture-check`。输出目录可另选仓外路径。
+- 纯规则：`python3 -B telephony_core_service/services/multisim/test/multisim_architecture_rules/run.py`。
+- 目录/契约/骨架：同步BUILD、include、测试及既有 `source_migration.json`，保留历史追溯；运行 `python3 -B telephony_core_service/services/multisim/test/multisim_architecture_rules/run.py --with-gn --migration --output /tmp/multisim-architecture-check`。输出目录可另选仓外路径。
 - 生产接入：运行对应真实切片/Oracle及必要Feature、初始化/消费者差分；匹配OHOS树中构建 `hb build -T //base/telephony/core_service:tel_core_service`。G2a B+主机脚本及证据已合入main，准确命令与被测代码基线查执行状态；历史检查点仍按原路径恢复。
 - 产品、SO/SA、provider和设备结束资格按各自门禁验证；骨架检查只覆盖文本/target、有限纯规则、语法和对象，不证明生产链接、行为、字段写权或硬件静止。
 

@@ -496,7 +496,7 @@ struct LocalProfileArguments {
 
 ### 9.3 验证、发现后的修正与剩余范围
 
-本轮本地工作树当时实际执行以下检查，测试源和入口位于`services/multisim/tests/`；整合后入口迁入既有`test/multisim_architecture_rules/`，当前命令见§10：
+本轮本地工作树当时实际执行以下检查，测试源和入口位于`services/multisim/tests/`；整合后入口迁入既有`services/multisim/test/multisim_architecture_rules/`，当前命令见§10：
 
 ```sh
 python3 telephony_core_service/services/multisim/tests/run_host_checks.py
@@ -534,7 +534,7 @@ python3 telephony_core_service/services/multisim/tests/run_host_checks.py
 当前可复跑入口为：
 
 ```sh
-python3 telephony_core_service/test/multisim_architecture_rules/run.py
+python3 telephony_core_service/services/multisim/test/multisim_architecture_rules/run.py
 ```
 
 整合后四套纯协议检查（topology、resource、assignment、runtime_protocol）实际编译运行通过；全部73个骨架头/源以Clang C++17 `-Wall -Wextra -Werror -fsyntax-only`独立检查通过。两份主文档17幅Mermaid实际解析通过，本地链接及`git diff --check`通过。测试使用真实纯规则与注入的结果载荷，不补生产设备/工厂成功桩。原§9的72单元/三套结果继续保留历史含义，本次以当前文件集合重跑。

@@ -57,9 +57,9 @@ hb build -T //base/telephony/core_service/test/fuzztest:fuzztest
 从Core目录执行的当前入口示例（本次文档刷新未执行）：
 
 ```sh
-python3 test/systemtest/scripts/run.py --gtest-root <固定版本GoogleTest源码目录> --output <输出目录>
+python3 services/multisim/test/systemtest/scripts/run.py --gtest-root <固定版本GoogleTest源码目录> --output <输出目录>
 ```
 
-固定依赖、Clang18/gold/C++17、命令及2026-10-08真实结果见[test工程README](../../../test/systemtest/README.md)和[执行记录](../../../test/systemtest/docs/run_record.md)。容量B1 PASS、INFRA16 PASS与原五业务BLOCKED分开。编译45个初始化对象不表示初始化已链接/运行。
+固定依赖、Clang18/gold/C++17、命令及2026-10-08真实结果见[test工程README](../../../services/multisim/test/systemtest/README.md)和[执行记录](../../../services/multisim/test/systemtest/docs/run_record.md)。容量B1 PASS、INFRA16 PASS与原五业务BLOCKED分开。编译45个初始化对象不表示初始化已链接/运行。
 
 文档统一只做来源、链接、代码摘要和一致性静态检查，不宣称hb/gTest/fuzzer已运行。架构Phase0未就绪不妨碍已授权host设施推进，也不授权生产重构。

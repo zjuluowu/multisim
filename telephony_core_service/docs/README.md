@@ -11,7 +11,7 @@
 3. [源码详细设计](SIM_Multisim_Source_Architecture_Detailed_Design.md)及[源码导航](../services/multisim/README.md)：B+实际/稳态目录、文件与GN映射、日常任务入口。
 4. [SIM 架构重构设计](SIM_Architecture_Refactor_Design.md)及[分层/迁移补充视图](SIM_Architecture_Layering_and_Migration_Design.md)：沿用SIM-001～062、WU-01～09、兼容轨迹与Q项，不另立架构裁决或当前实施台账。
 5. [SIM 管理对外接口说明](SIM管理对外接口说明_源码核实版.md)：接口分层、签名与本仓委托路径；声明存在性不视为外部服务运行保证。
-6. [G2a/Linux主机切片](../test/systemtest/README.md)、[SIM跨架构契约防护网](../test/sim_guard/README.md)、[架构规则](../test/multisim_architecture_rules/README.md)：分开阅读对应证据，主机/组件与产品/设备验证不互相替代。
+6. [G2a/Linux主机切片](../services/multisim/test/systemtest/README.md)、[SIM跨架构契约防护网](../services/multisim/test/sim_guard/README.md)、[架构规则](../services/multisim/test/multisim_architecture_rules/README.md)：分开阅读对应证据，主机/组件与产品/设备验证不互相替代。
 
 目标技术裁决由 [SIM 目标架构设计 v1.2](SIM_Target_Architecture_Design_v1.2.md) §4/§6.4 承接；功能/WU 与迁移编号保留在重构设计，分层文档为补充视图，本文为阅读索引。差异处理见主文档[补充设计复审记录 UC-01～09](SIM_Architecture_Refactor_Design.md#supplement-review)。源码决定现在如何实现；用户要求与已确认契约约束目标；提案编号和“已批准”字样不能替代批准证据。
 

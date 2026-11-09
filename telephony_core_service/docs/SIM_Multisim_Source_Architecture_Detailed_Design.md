@@ -11,7 +11,9 @@
 
 **文件存在、语法可检查和有限纯规则通过，均不等于目标业务已经实现。** 原生产仍位于`services/sim/`。本文保留原21个显式导航锚点，区分当前与稳态目录、刷新方法/构造及实现状态；不据源码目录数量建立新的上下文、SO或进程。
 
-当前逐文件输入摘要、去向和职责以[source_migration.json](../test/multisim_architecture_rules/source_migration.json)的layout_revision（88项）及additions（G2a两项）为准；原73文件及layout_history中的前轮布局溯源保留。
+当前逐文件输入摘要、去向和职责以[source_migration.json](../services/multisim/test/multisim_architecture_rules/source_migration.json)的layout_revision（88项）及additions（G2a两项）为准；原73文件及layout_history中的前轮布局溯源保留。
+
+2026-11-09用户明确调整测试物理位置：重构新增的四个测试工程、独立GN、脚本、Fake/Oracle、设计资料与证据统一置于 `services/multisim/test/`，恢复工具置于 `services/multisim/tools/`。下文90文件及完整树指**业务骨架**，不包含这两个辅助目录；业务六组、25个逻辑源集及事实所有权不变。辅助目录与运行入口见[测试导航](../services/multisim/test/README.md)，测试文件移动由[专属映射](../services/multisim/test/relocation_manifest.json)记录，不改写业务源迁移清单或历史证据。独立host构建通过显式入口选择；原产品/测试源表本轮不作修改，业务头不得依赖测试文件。
 
 ## 目录
 
@@ -257,7 +259,7 @@ services/multisim/
 | assembly、include两个导出头 | integration/lifecycle、lifecycle/exports | 同对象/共享RIL/原发布与匹配销毁；repository_exports白名单保留 |
 | foundation纯值/catalog、orchestration | support、support/request | H建只读catalog；O应用机制独立，Domain不依赖机制 |
 
-B+原88项的旧路径、输入摘要、新路径和职责以既有[source_migration.json](../test/multisim_architecture_rules/source_migration.json)的layout_revision为准；G2a两项另在additions追溯历史检查点，不改写该输入；保留前两轮溯源，不另建平行迁移表。无源文件的profile/default_roles/radio等计划目录不创建。
+B+原88项的旧路径、输入摘要、新路径和职责以既有[source_migration.json](../services/multisim/test/multisim_architecture_rules/source_migration.json)的layout_revision为准；G2a两项另在additions追溯历史检查点，不改写该输入；保留前两轮溯源，不另建平行迁移表。无源文件的profile/default_roles/radio等计划目录不创建。
 
 ### 3.4 业务可发现性与本轮裁决
 
@@ -414,6 +416,8 @@ AccountRolePlanningInput允许existingSubscription为空；A先生成带reservat
 
 通用容器有可变运行态但无独立业务事实：每个进程所有者自己构造并在其短提交域使用，H注入epoch及已有Owner命名空间，禁止全局共享表自动发令/重试。现RequestOwner枚举保留完整安全含义，不采用未经定义的“各模块临时登记”；新增具体业务步骤留场景内，确需扩展Owner命名空间时须同时覆盖身份冲突、重建失效、旧回收及R租约反例，不在本次目录修改中默默删除保护。
 
+当前`card/security/pin_requests.h`只有VerifyPinRequest，不代表PUK/PIN2、改PIN、锁/认证及PIN记忆均已实现。PIN记忆随R安全/状态用例，由I保持原Hook ABI；asset及自动恢复不迁入T。真实五类触发（PIN、PUK、改PIN、PIN锁开关、缺卡）及失败/迟到/敏感载荷约束见[主设计§17.2.2](SIM_Target_Architecture_Design_v1.2.md#vendor-pin-memory)。新增凭据测试只用合成值，不将PIN2成功臆定为记忆触发；身份固定/迟到抑制等安全行为变更仍待Owner裁决。
+
 PIN短请求落`card/security`，EF读写短请求落`card/records`，本地Profile用例/期望登记落`card/esim`；各能力入口由各自逻辑contracts target精确导出，不新建统一access路由。`ProfilePreferencePort`作为A入站能力移`card_selection`由A实现，R的Profile用例依赖窄契约，不获取AssignmentService实现；T标签提示也经T入口，不由R直接写。纯PIN/EF无跨Owner效果时不用多加T/A跳转。
 
 RequestId现含`value + epoch + RequestOwner`，StepRef另含step/attempt；共享R资源不能只比较一个局部序号。RuntimeOperationStore按epoch与Owner构造，Begin可携parent，AdvanceStep/RecordSent/AcceptResult声明受控推进，不允许外部改公共Context来绕过资格。
@@ -450,11 +454,17 @@ CardRuntime借同一ITelRilManager，普通Radio三阶段用原控制器，专�
 - `device/radio/`只持三阶段/专用Primary/激活执行、协议session/phase/member，A保留参数/意图及唯一业务重试；`device/resource/`维护真实域lease/fence/结束资格，不持动态账户绑定。Card可直接使用注入的窄硬件能力，不强制CardManager→DeviceManager→RIL；共享RIL由Core拥有。
 - `card/esim/`内单一Manager的普通/低优先级File保留原关联/结果/偏好节点；Profile/Port协议库存属于Card、账户绑定属于T、业务偏好属于A。Profile专属`legacy_profile_result.h`物理就近，但仍属`compatibility_core`、逻辑C双结果投影，不取得Card状态写权。
 
+**文件双向扩展与配置接缝（SIM-OC-007～009）。** 公开`IIccFileExt`虚表/枚举及原头路径保持；R records复用原File/Controller及扩展回调，不建立新的总Adapter。创建扩展前仍先设置RIL/controller、slot、配置并Init；开源weak侧与闭源持有侧分别验对象寿命，弱引用本身不证明闭源或回调库可卸载。缓存命中、未命中/失效、异步原IO回退均关联原对象/请求及Session/LoadSession，不能回包时从当前slot反填代次；未有外部关联依据的增强不启用。
+
+原`OnOpkeyLoad`载荷为`[slotId,opkey,opName]`，调用NotifyObserver后才置`isOnOpkeyLoaded_=true`；carrier消费与账户OPKEY等字段经T接纳分别保留原节点，不统一成“全部提交后通知”。验收用真实旧File/Controller加脚本扩展断言内容、回退次数、原请求归属、配置可见性及卡切换/销毁；实际booster、闭源持有侧、CFI与设备一致性另做L2/L3。上述为成熟迁入协议，当前骨架尚未提供该生产桥。
+
 ### 9.2 通道、资源与独立写入口的迁移围栏
 
 eSIM开关通道之外，[IccOperatorPrivilegeController::OpenChannel](../services/sim/src/icc_operator_privilege_controller.cpp#L297)也使用ARA-M逻辑通道。必须调查普通/低优先级EsimFile与权限通道是否共享物理资源，不预设每槽或每能力独占。卡侧channel Owner持AID/APDU/逻辑句柄与命令关联；Device只接纳可验证的lease/fence/结束/可复用证据。等待超时、Request结束、本地channelId清零、发出Close、Close响应与设备真正结束是不同事件，不能据前者释放或重用。未知结束进入核对/隔离而非伪造成功；具体共享域与厂商结束保证仍属外部缺口。
 
 [CardFileDetectManager](../services/sim/src/card_file_detect_manager.cpp#L98)拥有独立Insert/Update，不只是Records读取。将探测输入、T字段/身份接纳及技术存储拆开，纳入既有WU-01/05，不能只迁公开setter。[SimManager::OnInit](../services/sim/src/sim_manager.cpp#L41)先构造Detect再创建Controller，Detect捕获weak的顺序可能使刷新接缝无效；这是装配差分项，不在本轮路径搬迁中悄悄修复。OperatorConfigLoader、Detect、Monitor重载、eSIM提示和号码查询后台回写全部计入写权闭包。
+
+厂商RIL直连的存在与语义目前来自报告线索。`device/resource`只约束接入同一准入协议的路径；须逐切片列外部执行者、共享域、可达观察、T/A接纳和R结束/恢复证据，才能论证全产品资源安全。不把未知外部动作塞入本地租约当作已被控制，不新增盲目fallback/重试；共同协议及其产品影响待vendor/设备Owner确认。
 
 这些约束属于成熟能力的后续责任迁移；本轮只保持现有骨架对象/字段/方法，不声称已经接管生产写点、证明真实资源安全或实现独立卸载。
 
@@ -485,6 +495,7 @@ C monitor保留原登记、首帧、死亡清理、重连及预算，把账户/�
 | 现有外部消费者/头 | 稳态承接 | 验收限制 |
 | --- | --- | --- |
 | Core的sim_manager.h/esim_manager.h | 私有工厂/宿主头从integration/lifecycle/exports白名单导出；消费接口仍为原ISimManager/IEsimManager | 不能要求Core装配内部Controller；原控制块、发布/销毁和eSIM off/on行为保持 |
+| vendor消费的CoreManagerInner/ISimManager/IEsimManager、IIccFileExt与wrapper | 原公共定义/头路径和动态函数ABI保持；内部分别进入C具名入口、R records/security、T/A用例 | 不重编第二CMI/wrapper/Manager，不改虚表/枚举以传内部token；实际消费集、Feature、缺符号分支和L2 ABI单独核对 |
 | Core/搜网/RIL的sim_constant.h；RIL的sim_data_type.h | 保留既有必要声明的单一定义与精确导出，按语义拆内部常量 | 不复制公共枚举/错误码/ABI；不暴露可写状态或全部Runtime头 |
 | RIL_SIM的sim_utils.h | 可独立解码/字符串辅助target及窄导出，R与RIL共同依赖 | 去除非必要头传递后证明无RIL依赖；不允许RIL→整个Runtime→共享RIL环 |
 | 搜网的mcc_pool.h | card/carrier/matching内表格工具独立target和精确导出头（计划） | 现有FFRT/懒初始化有技术依赖，不称纯值；移到公共utils须额外消费者/链接证据，不在本轮强制 |
@@ -509,6 +520,8 @@ SimModule构造次序为I/C出口→R→T→A→号码/查询/激活/短请求�
 Core仍创建并拥有共享RIL；最终工厂按原eSIM创建/Init/发布、SIM创建/Init/发布时点回交Core，搜网/CMI仍留Core。原OnInit false未传播的地方不因Stage诊断就新增失败出口。
 
 原接口没有虚析构时，由生产具体类型控制块或匹配deleter销毁，不追加公开虚表。业务导出为私有创建/匹配销毁，工具链必要符号另列；不宣称绝对只有两个ELF符号。常驻拆分和StopAcceptingAndDrain增强分开，排空失败不卸载，SIM不Stop共享RIL。
+
+CMI实现仍在既有API库，wrapper仍在原共享定义处；H复用原对象及控制块，保留wrapper加载早于Manager全部就绪的窗口，符号存在不等于可立即访问业务。跨SO验收核对唯一定义、两个消费方获得同一注入对象、匹配销毁及在途回调代码寿命。源报告所述扩展SO兼作SA4011与dlopen库须匹配产品/实际装载确认；不得以同进程或L1探针代替L2产物/装载证明。
 
 <a id="set-number"></a>
 
@@ -553,6 +566,8 @@ ActivationProgress以epoch、请求Owner、step、原session和slot控制开始/
 稳态`card_selection/primary/`内聚兼容计划、步骤/参数恢复及唯一业务重试；default_roles承接Data保存，T具名映射子请求与R radio执行经窄api注入，A专属Adapter处理参数/输出。A读取PrimaryTopologyPort的绑定/ICCID/active和R的PrimaryRadioObservation，按PrimaryDecisionFacts生成模式计划。SlotCatalog只提供静态允许连接，当前Modem观察由R提供并由A接纳。
 
 普通预写、免重启后写、已为M0无完整协议、第三卡映射子请求分别沿原返回节点。参数恢复不证明硬件回滚，Primary广播后Data保存不表示数据连接/驻网完成；旧忽略参数/广播错误的语义不统一改成失败。
+
+`PrimaryTopologyPort::BeginRouteMapping`当前仅声明。后续实现保留A父request/step/attempt及受影响Binding，T子步骤不重复申请父资格、不递归再发Primary；I执行原vendor调用，结果分别交T接纳绑定/active及A接纳分配，R保存路由与结束观察。旧返回、DB结果、部分效果和设备结束须分开交付，不以void Hook或返回目标槽完成父请求。当前`GetResetActiveFlag→UpdateDBActiveByIccId`、`SwapM0M2SimCards→SetTargetPrimarySlotId`和普通激活成功后`SetActiveSimFunc`分别采集失败/通知/重启轨迹；不存在于本基线的方法不据报告补造同名API。窄厂商端口随真实切片补，具体结束/结果协议仍待vendor与Owner确认。
 
 AssignmentTransition带token，结束须匹配原资格；R错误和成功均先核对session/phase/member/step。A唯一授权同层业务重试，Unknown先核对，关闭旧Controller重试和detached CMI自调用后才启用新发令。
 
@@ -710,6 +725,8 @@ IDE转到定义只会落到已有定义。业务方法未定义是当前状态�
 | 工厂/匹配销毁/真实宿主完成 | 构造可读即已可初始化或安全卸载 | 原对象身份、发布时点、失败路径及代码寿命验收 |
 | 匹配provider、外部写者与可重入协议 | 本地Store或锁等于全局CAS/事务 | 匹配fork命令/schema、默认角色及外部写者证据 |
 | 厂商命令结束/通道静止、细分并发域 | bool证据、超时或本地清零证明硬件结束 | 命令级因果、结束/可靠失效、资源可重用及预算 |
+| 文件双向桥与PIN记忆 | VerifyPinRequest/LoadSession存在即覆盖全部安全/booster业务 | 原File关联/回退/Opkey偏序；真实五类Hook、身份/敏感寿命与安全Owner裁决 |
+| 厂商映射父子结果及外部准入 | BeginRouteMapping声明或本仓屏障控制所有vendor旁路 | 原返回/部分效果→T/A接纳→R结束证据；共同协议及产品轨迹 |
 | 66250完整任务、产品Port/MEP能力 | Core复制下载/补偿或目录容量代表设备能力 | 匹配服务/产品/设备证据，只阻塞相关切片 |
 
 本批已修正的接口表达不等于这些生产条件已关闭；保留草案/未接入标记。报告记录继续保留历史输入，不回写为本批设备成果。
@@ -720,12 +737,12 @@ IDE转到定义只会落到已有定义。业务方法未定义是当前状态�
 
 ### 20.1 历史记录与本轮验证
 
-2026-10-30的设计与源码落地记录按原执行状态§3.1保留，不继承为当前工作树PASS。本轮命令为`python3 telephony_core_service/test/multisim_architecture_rules/run.py --with-gn --migration`，结果记录在[唯一执行状态](SIM_Refactor_Execution_State.md)。GN只构建testonly骨架对象，纯规则单独链接运行；不证明完整产品链接、行为等价、并发/设备或provider验证。
+2026-10-30的设计与源码落地记录按原执行状态§3.1保留，不继承为当前工作树PASS。本轮命令为`python3 telephony_core_service/services/multisim/test/multisim_architecture_rules/run.py --with-gn --migration`，结果记录在[唯一执行状态](SIM_Refactor_Execution_State.md)。GN只构建testonly骨架对象，纯规则单独链接运行；不证明完整产品链接、行为等价、并发/设备或provider验证。
 
 <a id="inventory"></a>
 
 ## 21. 附录：逐文件功能及实现状态
 
-全部B+输入文件的逐文件映射见[source_migration.json](../test/multisim_architecture_rules/source_migration.json)的layout_revision（输入5404aefe，88项，含old/target、SHA256、动作、logical_owner及依赖/测试影响、remaining_work）。本分支G2a两个新增文件由同一清单的additions记录，含历史源码路径/提交/摘要和readonly_query逻辑target；两集合合计90文件。§3.1列出全部实际文件，不复制另一份易失效清单。
+全部B+输入文件的逐文件映射见[source_migration.json](../services/multisim/test/multisim_architecture_rules/source_migration.json)的layout_revision（输入5404aefe，88项，含old/target、SHA256、动作、logical_owner及依赖/测试影响、remaining_work）。本分支G2a两个新增文件由同一清单的additions记录，含历史源码路径/提交/摘要和readonly_query逻辑target；两集合合计90文件。§3.1列出全部实际文件，不复制另一份易失效清单。
 
 原73文件的destinations继续指向当前落点，并保留原摘要和拆分来源；layout_history保存上一轮layout_revision，当前记录不可用前轮PASS代替。每个C++输入除预处理指令外的token顺序必须与本轮输入一致；include另由边界检查与GN验证。未实现的方法不补成功桩。

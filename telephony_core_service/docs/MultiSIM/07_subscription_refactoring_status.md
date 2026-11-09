@@ -20,7 +20,7 @@
 
 ## 3. 独立Linux测试实际记录
 
-来源：[run_record](../../test/systemtest/docs/run_record.md)中的2026-10-08记录。本轮没有重跑测试，不把文档更新当新一次执行。
+来源：[run_record](../../services/multisim/test/systemtest/docs/run_record.md)中的2026-10-08记录。本轮没有重跑测试，不把文档更新当新一次执行。
 
 | 分组 | 设计 / 执行 | 覆盖状态 |
 |---|---|---|

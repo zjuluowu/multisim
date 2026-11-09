@@ -30,7 +30,7 @@
 
 复用[SIM-001～062/WU-01～09](SIM_Architecture_Refactor_Design.md)、[流程对照](多SIM架构重构_设计说明与业务流程对照.md)、[执行状态](SIM_Refactor_Execution_State.md)、[接口契约](SIM管理对外接口说明_源码核实版.md)、[Opus](SIM_Multisim_Source_Directory_Review_2026-10-30_Opus.md)/[Gemini](SIM_Multisim_Source_Directory_Review_2026-10-30_Gemini_argon.md)评审。上一轮生产代码分析只保存在会话，未冒称本地存在独立报告；本轮复用定位线索并增量重读影响 A/B+/C 裁决的实际代码，不复制平行功能台账。
 
-本轮已有检查：恢复工具验证检查点可达、main 未含 G2a；`python3 -B telephony_core_service/test/multisim_architecture_rules/check_structure.py` 返回 86 文件、156 include、24 target 的文本边界/环检查 PASS。没有运行 C++ 编译、GN gen/Ninja、单元/系统/设备或产品测试；历史 PASS 不继承。候选路径尚未实现，因此没有对候选构建或性能作 PASS 判断。
+本轮已有检查：恢复工具验证检查点可达、main 未含 G2a；`python3 -B telephony_core_service/services/multisim/test/multisim_architecture_rules/check_structure.py` 返回 86 文件、156 include、24 target 的文本边界/环检查 PASS。没有运行 C++ 编译、GN gen/Ninja、单元/系统/设备或产品测试；历史 PASS 不继承。候选路径尚未实现，因此没有对候选构建或性能作 PASS 判断。
 
 源码引用以输入 HEAD 为准，链接为相对当前报告的 Git 路径及 `#L行号`。未来重组后应按该 HEAD 查询历史证据，而非假设行号永久有效。
 
@@ -225,12 +225,12 @@ SyncCloseChannel 最多两次等待后清本地channelId/AID；[ProcessEsimClose
 | 任务 | 必须阅读的源码/契约范围 | 现有测试入口与后续缺口 |
 | --- | --- | --- |
 | T1 | SimManager装配、Monitor事件、T发现/激活、ActivationRuntime/AssignmentPort、R卡状态/加载 | test/unittest/sim_gtest/{sim_manager,multi_sim_controller}_gtest.cpp；test/unittest/sim_state_handle_gtest；新增真实插拔/force/卫星/Hook差分 |
-| T2 | AssignmentService/聚合、PrimarySwitchPlan、PrimaryTopologyPort、RadioExecutionPort、原参数/广播 | test/unittest/sim_gtest/multi_sim_controller_gtest.cpp；test/multisim_architecture_rules/assignment_rules.cpp、resource_rules.cpp；补四模式、失败恢复/重试及Feature |
+| T2 | AssignmentService/聚合、PrimarySwitchPlan、PrimaryTopologyPort、RadioExecutionPort、原参数/广播 | test/unittest/sim_gtest/multi_sim_controller_gtest.cpp；services/multisim/test/multisim_architecture_rules/assignment_rules.cpp、resource_rules.cpp；补四模式、失败恢复/重试及Feature |
 | T3 | 三个号码文件族、T账户/Store、R MSISDN/Handler、Core IMPU/完成 | test/unittest/sim_gtest/{multi_sim_controller,sim_file}_gtest.cpp；test/unittest/icc_dialling_numbers_handler_gtest；补卡→DB→两缓存→通知/callback及查询回写Oracle |
 | T4 | StateManager等待/恢复、Handle结果、PIN请求契约、R状态/Session资格 | test/unittest/sim_state_handle_gtest；test/unittest/sim_gtest/sim_manager_gtest.cpp；认证fuzzer；补超时/剩余次数/恢复轨迹 |
 | T5 | 对应Manager/Controller/Cache、专属事件及FileController | test/unittest/icc_dialling_numbers_handler_gtest；test/unittest/sim_gtest/{usim_dialling_numbers_service,sim_sms_controller}_gtest.cpp；test/unittest/core_service_gtest/tel_stk_controller_test.cpp；补PBR/重发/缓存失效 |
-| T6 | 普通/低优先级EsimFile、channel/Profile双结果、A偏好/T提示、资源/Session契约 | test/unittest/esim_gtest、test/unittest/esim_parcel_gtest；test/multisim_architecture_rules/{assignment_rules,runtime_protocol_rules}.cpp；补跨实例竞争/关闭失败/迟到/MEP及设备结束证据 |
-| T7 | 容量宏各TU、SlotCatalog、绑定、角色、硬件路由、Core过滤/装配 | test/multisim_architecture_rules/{topology_rules,assignment_rules,resource_rules}.cpp；test/linux_sim_guard容量设施；匹配产品Feature与真实并发矩阵仍缺 |
+| T6 | 普通/低优先级EsimFile、channel/Profile双结果、A偏好/T提示、资源/Session契约 | test/unittest/esim_gtest、test/unittest/esim_parcel_gtest；services/multisim/test/multisim_architecture_rules/{assignment_rules,runtime_protocol_rules}.cpp；补跨实例竞争/关闭失败/迟到/MEP及设备结束证据 |
+| T7 | 容量宏各TU、SlotCatalog、绑定、角色、硬件路由、Core过滤/装配 | services/multisim/test/multisim_architecture_rules/{topology_rules,assignment_rules,resource_rules}.cpp；test/linux_sim_guard容量设施；匹配产品Feature与真实并发矩阵仍缺 |
 | T8 | 指定R能力/协议及RIL消息，错误/完成/取消/超时契约，必要的T/A/C消费点 | test/unittest/tel_ril_gtest/tel_ril_sim_test.cpp；相应能力测试；新旧设备轨迹和产品联调需独立运行 |
 
 第二阶段实际读取5个源码文件及2个入口/状态文件，使用3次functions.exec（其中4次exec_command）；这是得到函数位置后的定点核对，不作方案间检索动作对照。定点核查确认：号码任务必须区分T用例与R Records；PIN请求不强制经过Device；eSIM通道和Device资源不等价，Port/初始化/恢复仍需接口证据。此结论不是所有分支或调用跳数的完备测量。目录深度、搜索动作、逻辑模块阅读范围不可互相代替。

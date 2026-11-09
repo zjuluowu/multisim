@@ -1,5 +1,7 @@
 # SIM 管理对外接口说明——源码核实版
 
+2026-11-09增补：[§10 开闭源迁移契约](#open-closed-migration-contracts)以`a7d3af8b`及本轮工作树为输入，补充SIM-OC的实际消费边界、缺失语义和验收范围。第1～9节保留2026-10-22的核实记录与固定链接；其中“本次仅只读”等措辞只描述该历史批次。新增报告与本仓不一致的方法/符号不自动成为当前接口。
+
 ## 1. 核实范围与结论
 
 ### 1.1 本次工作性质
@@ -526,3 +528,53 @@ https://github.com/zjuluowu/multisim/blob/db876e551a3fac0922f98c7b358392326663cc
 本次代码搜索单次最多返回 10 条，结果可能不完整；接口存在性结论优先依据上述完整文件读取。
 更多搜索结果：
 https://github.com/search?q=repo%3Azjuluowu%2Fmultisim+GetInternalSlotId&type=code
+
+<a id="open-closed-migration-contracts"></a>
+
+## 10. 开闭源迁移契约（2026-11-09）
+
+### 10.1 消费面、归属与验证边界
+
+下表沿用SIM-OC-001～016，关联[综合审视](SIM_Architecture_Cross_Review_OpenClosed_Boundary.md)与原SIM/WU清单，不另建立业务编号。当前可见的是开源声明/实现；vendor消费全集、4011配置与实际导出仍需匹配产品取证。状态和验证结果统一查[执行状态](SIM_Refactor_Execution_State.md)，表内“需验证”不表示已通过。
+
+| SIM-OC | 当前接口/消费者与ABI归属 | Feature、失败/缺失语义及迁移约束 | 验收与责任 |
+| --- | --- | --- | --- |
+| 001 | 4010/Core与原wrapper；4011双用途SO为源报告线索 | 保持原SA/进程；不由目录拆分推定新进程或第二实例 | H；L2匹配profile/ELF/装载，L3重启 |
+| 002 | Core Init早期加载wrapper，之后装配RIL/eSIM/SIM/CMI | EXT宏控制加载；符号存在不等于Manager已就绪；失败/在途停止沿原协议 | H；L1受控就绪/生命周期，L2真实装载 |
+| 003 | TelephonyExtWrapper当前typedef/查找串，开源→vendor | 各符号fallback不同，见§10.2；必需/可选由产品确认，不统一吞错/重试 | I/H；L1声明及受控调用，L2真实消费者 |
+| 004 | RegisterEsimSwitchNotify/UnregisterEsimSwitchNotify查找 | 本仓仅证实查找/判空；不宣称实际ELF缺符号或功能恒失效 | vendor/build；脚本疑点→ELF→dlsym→业务影响分别取证 |
+| 005 | CoreManagerInner实现位于原tel_core_service_api，Core注入原Manager | 单例唯一定义/控制块保持；不能在新SO重编副本 | H；L2不同消费SO取同一实例、匹配释放 |
+| 006 | CMI→ISimManager/IEsimManager对象委托；闭源完整方法集待核 | 现有签名、错误/输出/线程/重入逐方法保持；不将CMI等同全部IPC接口 | C→T/A/R；L1真实公开门面，L2闭源方法消费 |
+| 007 | IIccFileExt公开虚表、FileChangeType；File与扩展双向调用 | 原头和虚表保持；开源weak侧可见，闭源shared侧待验；缓存回退须保留原关联 | R records/I；L1真实File＋外部扩展，L2/3厂版/booster |
+| 008 | SimFileManager配置controller/slot/config、Init后CreateIccFileExt | 缺扩展沿旧原生路径；创建/清理/迟到不能凭weak证明库可卸载 | R/H；L1创建/回退，L2双向对象与库寿命 |
+| 009 | OnOpkeyLoad→RADIO_SIM_OPKEY_LOADED，载荷[slotId,opkey,opName] | 当前Notify调用后置isOnOpkeyLoaded；不擅自要求通知前全部持久状态就绪 | R/carrier，账户字段由T接纳；L1载荷/偏序，L2真实消费 |
+| 010 | RadioEvent、FileChangeType、PinOperationType公共整数值 | 当前值不可重排/插值造成漂移；新增事件需审查路由与消费者 | C/I及Owner出口；L1编译断言，L2载荷/CFI消费 |
+| 011 | CMI→SIM→State/File/Monitor/vendor注册与注销 | 当前ACCOUNT_LOADED注册进入Monitor、注销落RIL，静态不对称记为CR-07；旧实现不修改，不宣称已修复或已验证正确注销 | C/I，WU-09；L1真实路由/Observer，L2在途与闭源订阅 |
+| 012 | InitBip/SendEvent，CMI SendTerminalResponseCmd/SendEnvelopeCmd回注 | BIP/socket/APN私有业务留vendor；错误/超时不作成功，正确slot/请求往返 | R STK/I；L1受控BIP，L2/3真实数据通道 |
+| 013 | CacheAssetPinForUpgrade(slot,iccid,operation,pin) | 五类当前触点见§10.3；PIN2不因此获得记忆语义；asset/自动恢复留vendor | R security/state＋I；L1脱敏Spy，L2/3asset/恢复；安全政策待裁决 |
+| 014 | 当前GetResetActiveFlag、SwapM0M2SimCards、SetActiveSimFunc与重启/热插拔Hook | T接纳active/绑定，A准入/角色/重试，R执行/结束；void返回、DB成功不证明设备稳定 | T/A/R/I；L1当前分支差分，L2/3厂商拓扑/共同资源协议 |
+| 015 | EXT优先的slot/sim映射、LSI标签，INVALID=-1/VSIM=2 | 成功/失败回退分别保持；不假设全域双射；实体第三槽与VSIM、Port观察分开 | H目录/T绑定/A分配/C投影；L1稀疏身份，L2/3真实路由 |
+| 016 | 原API/utils公共target，EXT/VSIM/eSIM源与宏组合 | esim_manager仍在根源表，部分File/Controller才门控；骨架testonly非产品 | 构建/H；L1源表/声明，L2公厂版/导出/CFI/PAC/LTO，L3启动 |
+
+### 10.2 已核实的厂商函数签名与缺符号行为
+
+签名以[真实wrapper头](../services/telephony_ext_wrapper/include/telephony_ext_wrapper.h)为准；调用及fallback以[实现](../services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp)为准。此处只冻结当前已核对的子集，不宣称覆盖未知闭源消费全集。产品必需性尚未确认，不由默认值推导。
+
+| 查找符号/消费 | 当前typedef或接口 | 无符号时的本仓行为 | 不可推定 |
+| --- | --- | --- | --- |
+| GetRealSimCountExt / SimManager | `int32_t (*)(int32_t)` | 返回输入数量 | 其他厂商能力也可这样降级 |
+| GetResetActiveFlag / InitIccId | `bool (*)(int32_t,bool&)` | 返回false，不走该分支的active回写 | 已支持另一基线RetrieveSimActiveState/MEP门控 |
+| SwapM0M2SimCards / NeedSwitchSimCard | `int32_t (*)(int32_t)` | 返回-1，调用方保留原后续错误路径 | 缺符号也返回原slot或可安全补发 |
+| SetActiveSim / 普通激活成功Hook | `void (*)(int32_t,int32_t)` | 不调用 | void返回表示设备结束 |
+| GetSimLabelIndexFromLsiCfg / Helper | `bool (*)(int32_t,int32_t&)` | 返回false，Helper原默认/回退另验 | label是稳定订阅ID或全局双射 |
+| CacheAssetPinForUpgrade / 安全与缺卡节点 | `void (*)(int32_t,const std::string&,PinOperationType,const std::string&)` | 不调用 | 缺符号符合所有产品的PIN记忆策略 |
+| CreateIccFileExt / 文件装配 | `void (*)(int32_t,std::shared_ptr<IIccFileExt>)` | 不创建扩展，保留原文件路径 | 实际booster缓存已被验证 |
+| RegisterEsimSwitchNotify及UnregisterEsimSwitchNotify / SIM事件区间 | `void (*)(int32_t,const std::shared_ptr<EventHandler>&,int32_t)` | 原SIM分支记日志后返回 | 公共门面返回成功证明扩展已注册 |
+
+### 10.3 PIN记忆与敏感载荷
+
+当前五类触点为UnlockPin成功→PIN_ENABLE/pin、UnlockPuk成功→PIN_ALTER/newPin、AlterPin成功→PIN_ALTER/newPin、SetLockState成功且PIN_LOCK→PIN_ENABLE或PIN_DISABLE/password、HandleSimAbsent→SIM_ABSENT/空凭证。ICCID取当前Handle，不由slot合成。FDN_LOCK及PIN2没有因此获得同样记忆契约；失败/超时的原无Hook分支保持。
+
+缺卡RIL响应会先更新Handle ICCID，可能已为空，不能将当前拔卡Hook描述为“必然携旧卡ICCID并完成旧资产清除”。固定原身份、迟到抑制和资产清理策略须安全/产品/vendor单独裁决；本轮只刻画当前成功/失败及载荷关联。测试只用合成凭证并输出比较结果，不记录真实PIN/PUK或敏感明文。
+
+L1声明护栏入口为[check_open_closed_contracts.py](../services/multisim/test/multisim_architecture_rules/check_open_closed_contracts.py)，由架构检查默认执行。它直接编译真实公共头并用五类仓外变异检出数值/类型漂移，不证明虚表槽顺序、真实导出/布局、动态调用/设备效果。当前新增行为测试、剩余未覆盖能力和实际结果见执行状态，不能因新增断言文件存在就标为通过。

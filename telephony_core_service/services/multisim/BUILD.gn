@@ -8,7 +8,7 @@ source_set("assembly_contracts") {
   testonly = true
   visibility = [
     ":*",
-    "//test/multisim_architecture_rules:*",
+    "//services/multisim/test/multisim_architecture_rules:*",
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
@@ -33,7 +33,7 @@ source_set("assembly_core") {
   testonly = true
   visibility = [
     ":*",
-    "//test/multisim_architecture_rules:*",
+    "//services/multisim/test/multisim_architecture_rules:*",
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
@@ -57,7 +57,7 @@ source_set("assignment_adapters") {
   testonly = true
   visibility = [
     ":*",
-    "//test/multisim_architecture_rules:*",
+    "//services/multisim/test/multisim_architecture_rules:*",
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
@@ -76,7 +76,7 @@ source_set("assignment_cases") {
   testonly = true
   visibility = [
     ":*",
-    "//test/multisim_architecture_rules:*",
+    "//services/multisim/test/multisim_architecture_rules:*",
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
@@ -98,7 +98,7 @@ source_set("assignment_contracts") {
   testonly = true
   visibility = [
     ":*",
-    "//test/multisim_architecture_rules:*",
+    "//services/multisim/test/multisim_architecture_rules:*",
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
@@ -129,7 +129,7 @@ source_set("assignment_domain") {
   testonly = true
   visibility = [
     ":*",
-    "//test/multisim_architecture_rules:*",
+    "//services/multisim/test/multisim_architecture_rules:*",
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
@@ -152,7 +152,7 @@ source_set("assignment_protocols") {
   testonly = true
   visibility = [
     ":*",
-    "//test/multisim_architecture_rules:*",
+    "//services/multisim/test/multisim_architecture_rules:*",
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
@@ -175,7 +175,7 @@ source_set("assignment_types") {
   testonly = true
   visibility = [
     ":*",
-    "//test/multisim_architecture_rules:*",
+    "//services/multisim/test/multisim_architecture_rules:*",
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
@@ -194,7 +194,7 @@ source_set("compatibility_contracts") {
   testonly = true
   visibility = [
     ":*",
-    "//test/multisim_architecture_rules:*",
+    "//services/multisim/test/multisim_architecture_rules:*",
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
@@ -207,7 +207,7 @@ source_set("compatibility_core") {
   testonly = true
   visibility = [
     ":*",
-    "//test/multisim_architecture_rules:*",
+    "//services/multisim/test/multisim_architecture_rules:*",
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
@@ -242,7 +242,7 @@ source_set("repository_exports") {
   testonly = true
   visibility = [
     ":*",
-    "//test/multisim_architecture_rules:*",
+    "//services/multisim/test/multisim_architecture_rules:*",
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
@@ -261,7 +261,7 @@ source_set("request_mechanism") {
   testonly = true
   visibility = [
     ":*",
-    "//test/multisim_architecture_rules:*",
+    "//services/multisim/test/multisim_architecture_rules:*",
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
@@ -274,7 +274,7 @@ source_set("request_protocol") {
   testonly = true
   visibility = [
     ":*",
-    "//test/multisim_architecture_rules:*",
+    "//services/multisim/test/multisim_architecture_rules:*",
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
@@ -287,7 +287,7 @@ source_set("runtime_cases") {
   testonly = true
   visibility = [
     ":*",
-    "//test/multisim_architecture_rules:*",
+    "//services/multisim/test/multisim_architecture_rules:*",
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
@@ -300,7 +300,7 @@ source_set("runtime_contracts") {
   testonly = true
   visibility = [
     ":*",
-    "//test/multisim_architecture_rules:*",
+    "//services/multisim/test/multisim_architecture_rules:*",
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
@@ -326,7 +326,7 @@ source_set("runtime_core") {
   testonly = true
   visibility = [
     ":*",
-    "//test/multisim_architecture_rules:*",
+    "//services/multisim/test/multisim_architecture_rules:*",
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
@@ -352,7 +352,7 @@ source_set("runtime_mechanisms") {
   testonly = true
   visibility = [
     ":*",
-    "//test/multisim_architecture_rules:*",
+    "//services/multisim/test/multisim_architecture_rules:*",
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
@@ -376,7 +376,7 @@ source_set("sim_values") {
   testonly = true
   visibility = [
     ":*",
-    "//test/multisim_architecture_rules:*",
+    "//services/multisim/test/multisim_architecture_rules:*",
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
@@ -397,7 +397,7 @@ source_set("topology_adapters") {
   testonly = true
   visibility = [
     ":*",
-    "//test/multisim_architecture_rules:*",
+    "//services/multisim/test/multisim_architecture_rules:*",
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
@@ -417,7 +417,7 @@ source_set("topology_cases") {
   testonly = true
   visibility = [
     ":*",
-    "//test/multisim_architecture_rules:*",
+    "//services/multisim/test/multisim_architecture_rules:*",
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
@@ -450,7 +450,7 @@ source_set("topology_contracts") {
   testonly = true
   visibility = [
     ":*",
-    "//test/multisim_architecture_rules:*",
+    "//services/multisim/test/multisim_architecture_rules:*",
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
@@ -490,7 +490,7 @@ source_set("topology_domain") {
   testonly = true
   visibility = [
     ":*",
-    "//test/multisim_architecture_rules:*",
+    "//services/multisim/test/multisim_architecture_rules:*",
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
@@ -514,7 +514,7 @@ source_set("topology_protocols") {
   testonly = true
   visibility = [
     ":*",
-    "//test/multisim_architecture_rules:*",
+    "//services/multisim/test/multisim_architecture_rules:*",
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
@@ -542,7 +542,7 @@ source_set("topology_types") {
   testonly = true
   visibility = [
     ":*",
-    "//test/multisim_architecture_rules:*",
+    "//services/multisim/test/multisim_architecture_rules:*",
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
@@ -552,7 +552,7 @@ source_set("topology_types") {
 
 source_set("readonly_query") {
   testonly = true
-  visibility = [ ":*", "//test/multisim_architecture_rules:*" ]
+  visibility = [ ":*", "//services/multisim/test/multisim_architecture_rules:*" ]
   check_includes = true
   sources = [
     "integration/api/real_sim_count_query.cpp",
@@ -563,7 +563,7 @@ source_set("readonly_query") {
 
 group("skeleton") {
   testonly = true
-  visibility = [ "//test/multisim_architecture_rules:*" ]
+  visibility = [ "//services/multisim/test/multisim_architecture_rules:*" ]
   deps = [
     ":readonly_query",
     ":assembly_contracts",
