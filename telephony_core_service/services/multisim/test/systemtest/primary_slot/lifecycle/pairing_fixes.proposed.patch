@@ -1,0 +1,52 @@
+--- a/telephony_core_service/services/sim/src/sim_state_handle.cpp
++++ b/telephony_core_service/services/sim/src/sim_state_handle.cpp
+@@ -1115,6 +1115,9 @@
+             TELEPHONY_LOGI("SimStateHandle::RegisterCardTypeChange()");
+             observerHandler_->Remove(RadioEvent::RADIO_CARD_TYPE_CHANGE, handler);
+             break;
++        case RadioEvent::RADIO_SIM_ICCID_LOADED:
++            observerHandler_->Remove(RadioEvent::RADIO_SIM_ICCID_LOADED, handler);
++            break;
+         default:
+             TELEPHONY_LOGI("SimStateHandle UnRegisterCoreNotify do default");
+             break;
+--- a/telephony_core_service/services/sim/include/multi_sim_monitor.h
++++ b/telephony_core_service/services/sim/include/multi_sim_monitor.h
+@@ -46,6 +46,7 @@
+     void AddExtraManagers(std::shared_ptr<Telephony::SimStateManager> simStateManager,
+         std::shared_ptr<Telephony::SimFileManager> simFileManager);
+     void RegisterCoreNotify(int32_t slotId, const std::shared_ptr<AppExecFwk::EventHandler> &handler, int what);
++    void UnRegisterCoreNotify(const std::shared_ptr<AppExecFwk::EventHandler> &handler, int what);
+     int32_t RegisterSimAccountCallback(const int32_t tokenId, const sptr<SimAccountCallback> &callback);
+     int32_t UnregisterSimAccountCallback(const sptr<SimAccountCallback> &callback);
+     void NotifySimAccountChanged();
+--- a/telephony_core_service/services/sim/src/multi_sim_monitor.cpp
++++ b/telephony_core_service/services/sim/src/multi_sim_monitor.cpp
+@@ -395,6 +395,14 @@
+     }
+ }
+ 
++void MultiSimMonitor::UnRegisterCoreNotify(
++    const std::shared_ptr<AppExecFwk::EventHandler> &handler, int what)
++{
++    if (observerHandler_ != nullptr) {
++        observerHandler_->Remove(what, handler);
++    }
++}
++
+ bool MultiSimMonitor::IsValidSlotId(int32_t slotId)
+ {
+     return (slotId >= DEFAULT_SIM_SLOT_ID) && slotId < static_cast<int32_t>(simStateManager_.size());
+--- a/telephony_core_service/services/sim/src/sim_manager.cpp
++++ b/telephony_core_service/services/sim/src/sim_manager.cpp
+@@ -1240,6 +1240,10 @@
+             return;
+         }
+         simStateManager_[slotId]->UnRegisterCoreNotify(observerCallBack, what);
++    } else if (what == RadioEvent::RADIO_SIM_ACCOUNT_LOADED) {
++        if (multiSimMonitor_ != nullptr) {
++            multiSimMonitor_->UnRegisterCoreNotify(observerCallBack, what);
++        }
+     } else if (what >= RadioEvent::RADIO_ESIM_SWITCH_CIRCUIT_BEGIN && what <= RadioEvent::RADIO_ESIM_SWITCH_END) {
+         if (TELEPHONY_EXT_WRAPPER.unregisterEsimSwitchNotify_ == nullptr) {
+             TELEPHONY_LOGE("TELEPHONY_EXT_WRAPPER.unregisterEsimSwitchNotify_ is nullptr!");

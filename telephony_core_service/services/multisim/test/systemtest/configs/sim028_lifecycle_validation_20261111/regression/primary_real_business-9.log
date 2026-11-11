@@ -1,0 +1,119 @@
+Note: Google Test filter = RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RealSimPrimary
+[ RUN      ] RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey0=-1
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey1=-1
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey2=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey0=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey1=-1
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey2=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+DIAGNOSTIC ACCOUNT_NOTIFY
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE input request=BDirectRilFailureKeepsPreviousPrimary slot=1 userSet=true
+TRACE parameter persist.telephony.userPreferPrimarySlot=true
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=0 user=1
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=1 user=1
+LIFE_CHECKPOINT stage=before_cleanup manager=0x55c4be8f7810 ril=0x55c4be8e8240
+LIFE_QUEUE stage=before_cleanup address=94303499008160 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=179998
+LIFE_QUEUE stage=before_cleanup address=94303499030144 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499031520 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499032928 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499036240 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499043440 name=OperatorConfigCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499044944 name=SimStateTracker pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499047088 name=SimSmsController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499048608 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499050080 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499052000 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499053856 name=StkController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499055536 name=host-general pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499058064 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=179999
+LIFE_QUEUE stage=before_cleanup address=94303499059872 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499061232 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499062688 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499066080 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499074160 name=OperatorConfigCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499075680 name=SimStateTracker pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499077824 name=SimSmsController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499079344 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499080544 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499082464 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499084320 name=StkController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499087776 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=179999
+LIFE_QUEUE stage=before_cleanup address=94303499089584 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499090944 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499092400 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499095792 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499103344 name=OperatorConfigCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499104944 name=SimStateTracker pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499107088 name=SimSmsController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499109648 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499111072 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499112992 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499114848 name=StkController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499118416 name=MultiSimController pending=1 running=0 cancelled=0 next_ms=44999
+LIFE_QUEUE stage=before_cleanup address=94303499120208 name=RadioProtocolController pending=1 running=0 cancelled=0 next_ms=9999
+LIFE_QUEUE stage=before_cleanup address=94303499123184 name=MultiSimMonitor pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94303499125600 name=sim028-account-observer pending=0 running=0 cancelled=0 next_ms=-1
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:300: Failure
+Value of: SimHost::AwaitSchedulerStopped(3s)
+  Actual: false
+Expected: true
+REAL_GRAPH_LIFETIME_NOT_DRAINED
+
+LIFE_QUEUE stage=after_cleanup address=94303499008160 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=176995
+LIFE_QUEUE stage=after_cleanup address=94303499030144 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94303499031520 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94303499032928 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94303499036240 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94303499048608 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94303499050080 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94303499052000 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94303499058064 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=176995
+LIFE_QUEUE stage=after_cleanup address=94303499059872 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94303499061232 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94303499062688 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94303499066080 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94303499079344 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94303499080544 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94303499082464 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94303499087776 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=176995
+LIFE_QUEUE stage=after_cleanup address=94303499089584 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94303499090944 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94303499092400 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94303499095792 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94303499109648 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94303499111072 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94303499112992 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94303499118416 name=MultiSimController pending=1 running=0 cancelled=0 next_ms=41996
+LIFE_QUEUE stage=after_cleanup address=94303499120208 name=RadioProtocolController pending=1 running=0 cancelled=0 next_ms=6995
+LIFE_QUEUE stage=after_cleanup address=94303499123184 name=MultiSimMonitor pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94303499125600 name=sim028-account-observer pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_CHECKPOINT stage=after_cleanup manager=0 ril=0x55c4be8e8240
+[  FAILED  ] RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary (3008 ms)
+[----------] 1 test from RealSimPrimary (3010 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3014 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary
+
+ 1 FAILED TEST
+
+../../telephony_core_service/services/multisim/test/systemtest/stubs/mock_tel_ril_manager.h:138: ERROR: this mock object (used in test RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary) should be deleted but never is. Its address is @0x55c4be8e8240.
+ERROR: 1 leaked mock object found at program exit. Expectations on a mock object are verified when the object is destructed. Leaking a mock means that its expectations aren't verified, which is usually a test bug. If you really intend to leak a mock, you can suppress this error using testing::Mock::AllowLeak(mock_object), or you may use a fake or stub instead of a mock.

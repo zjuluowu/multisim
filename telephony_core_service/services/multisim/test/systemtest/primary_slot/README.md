@@ -95,9 +95,9 @@ SIM_HOST_BOOT_SLOT_COUNT=2 lldb -- .host-out/build/sim_primary_slot_real_test \
 # run; bt; frame variable slotId isUserSet
 ```
 
-`SIM_HOST_BOOT_SLOT_COUNT=2`为生产全局构造阶段的显式外部参数输入，必须在进程启动前设置；不重置生产静态缓存。runner和F5已经设置。二进制拒绝通配符多例运行，使用runner逐例隔离。TestMate可通过GTest列表发现7例，GUI单例运行/断点/变量仍需人工检查；扩展直接把通配符传给二进制的“全部运行”应改用上述Task，不宣称GUI整组运行通过。
+`SIM_HOST_BOOT_SLOT_COUNT=2`为生产全局构造阶段的显式外部参数输入，必须在进程启动前设置；不重置生产静态缓存。runner和F5已经设置。二进制拒绝通配符多例运行，使用runner逐例隔离。GTest可列出7条RealSimPrimary及8条生命周期用例；TestMate发现、GUI单例运行/断点/变量仍需人工检查；扩展直接把通配符传给二进制的“全部运行”应改用上述Task，不宣称GUI整组运行通过。
 
-真实残留链为 `SimStateHandle → ObserverHandler(强引用) → MultiSimMonitor → Controller/StateManager → SimStateHandle`，Monitor同时订阅File。真实SimManager析构已执行，Monitor/Controller/StateManager析构未执行，28线程及10个RIL引用可复核。Monitor有公开UnRegisterSimNotify，但Manager未提供可访问的完整停止入口。需要另行授权生产生命周期方案：停止新回调/排空在途工作，再在释放强引用前解除订阅；本轮不修改生产析构，也不通过私有访问清环。
+生命周期后续审计已证明三种独立强引用环：Monitor/State订阅环、State/IccFile订阅环、FileManager/IccFile记录订阅环；另有ICCID及账户事件注销不对称。真实Manager已析构，但清理后31个已观察控制块仍有正强计数，28个Host队列worker在等待，RIL同一控制块计数为10。Host Runner关闭后重建及并发访问问题已单独修复并验证，六个真实整图用例继续保留失败。地址引用图、逐边源码、未应用生产配对补丁和Stop方案见 [生命周期诊断](lifecycle/README.md)；本轮独立证据为 [sim028_lifecycle_validation_20261111.json](../configs/sim028_lifecycle_validation_20261111.json)。生产代码未修改，不能通过测试私有访问清环。
 
 | 边界 | 当前证据与最小条件 |
 | --- | --- |

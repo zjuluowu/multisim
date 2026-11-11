@@ -1,0 +1,16 @@
+[==========] Running 4 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 4 tests from PinMemoryContract
+[ RUN      ] PinMemoryContract.PinSuccessUsesOriginalSlotIdentityAndCredential
+[       OK ] PinMemoryContract.PinSuccessUsesOriginalSlotIdentityAndCredential (6 ms)
+[ RUN      ] PinMemoryContract.PukSuccessUsesNewPinAndPinAlterOperation
+[       OK ] PinMemoryContract.PukSuccessUsesNewPinAndPinAlterOperation (0 ms)
+[ RUN      ] PinMemoryContract.FailedPinDoesNotPublishMemoryHook
+[       OK ] PinMemoryContract.FailedPinDoesNotPublishMemoryHook (0 ms)
+[ RUN      ] PinMemoryContract.RemovalUsesAbsentResponseIdentityWithoutCredential
+[       OK ] PinMemoryContract.RemovalUsesAbsentResponseIdentityWithoutCredential (1 ms)
+[----------] 4 tests from PinMemoryContract (13 ms total)
+
+[----------] Global test environment tear-down
+[==========] 4 tests from 1 test suite ran. (16 ms total)
+[  PASSED  ] 4 tests.

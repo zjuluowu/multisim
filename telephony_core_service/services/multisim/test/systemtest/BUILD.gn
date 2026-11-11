@@ -65,7 +65,7 @@ source_set("primary_real_support") {
   configs += [ ":production_headers", ":production_execution_evidence", ":initialization_standard_headers" ]
 }
 executable("sim_primary_slot_real_test") {
-  sources = [ "primary_slot/real_test.cpp", "primary_slot/real_runtime.cpp", "primary_slot/security_boundary.cpp" ]
+  sources = [ "primary_slot/real_test.cpp", "primary_slot/real_runtime.cpp", "primary_slot/security_boundary.cpp", "primary_slot/lifecycle/lifetime_test.cpp" ]
   include_dirs = [ "primary_slot/runtime_include", "primary_slot/include", "primary_slot/provider/include",
                    "primary_slot", "stubs", "$gtest_root/googletest/include", "$gtest_root/googlemock/include" ]
   configs += [ ":production_headers" ]

@@ -13,6 +13,9 @@
 #include <locale>
 #include <iostream>
 #include "ipc_skeleton.h"
+#include "lifecycle/external_runner.h"
+#include <mutex>
+#include <condition_variable>
 namespace Sim028Host {
 void Diagnostic(const std::string &name) { std::cout << "DIAGNOSTIC " << name << '\n'; }
 }
@@ -50,12 +53,68 @@ namespace AppExecFwk {
 std::shared_ptr<EventRunner> EventRunner::Create(const std::string &, ThreadMode)
 { return std::make_shared<EventRunner>(); }
 namespace {
-std::unique_ptr<ffrt::queue> &RunnerOwner() { static std::unique_ptr<ffrt::queue> q; return q; }
-ffrt::queue &RunnerQueue() {
-    auto &q = RunnerOwner(); if (!q) q = std::make_unique<ffrt::queue>("sim028-platform-runner"); return *q;
+struct RunnerRuntime {
+    std::mutex mutex;
+    std::condition_variable changed;
+    Sim028Host::RunnerState state = Sim028Host::RunnerState::Stopped;
+    std::unique_ptr<ffrt::queue> queue;
+};
+RunnerRuntime &Runtime() { static RunnerRuntime runtime; return runtime; }
+thread_local bool onExternalRunner = false;
+bool SubmitExternal(std::function<void()> task, int64_t delay)
+{
+    auto &runtime = Runtime();
+    std::lock_guard<std::mutex> lock(runtime.mutex);
+    if (runtime.state != Sim028Host::RunnerState::Running) return false;
+    if (!runtime.queue) runtime.queue = std::make_unique<ffrt::queue>("sim028-platform-runner");
+    runtime.queue->submit_h([task = std::move(task)] {
+        struct Guard {
+            Guard() { onExternalRunner = true; }
+            ~Guard() { onExternalRunner = false; }
+        } guard;
+        task();
+    }, ffrt::task_attr().delay(delay * 1000));
+    return true;
 }
 }
-void StopSim028ExternalRunner() { RunnerOwner().reset(); }
+bool StartSim028ExternalRunner()
+{
+    auto &runtime = Runtime();
+    std::lock_guard<std::mutex> lock(runtime.mutex);
+    if (runtime.state == Sim028Host::RunnerState::Stopping) return false;
+    runtime.state = Sim028Host::RunnerState::Running;
+    return true;
+}
+Sim028Host::RunnerState Sim028ExternalRunnerState()
+{
+    auto &runtime = Runtime();
+    std::lock_guard<std::mutex> lock(runtime.mutex);
+    return runtime.state;
+}
+bool StopSim028ExternalRunner()
+{
+    // Synchronous shutdown belongs to the owning/control thread. A callback
+    // cannot join its own worker; fail explicitly without changing the state.
+    if (onExternalRunner) return false;
+    auto &runtime = Runtime();
+    std::unique_ptr<ffrt::queue> retiring;
+    {
+        std::unique_lock<std::mutex> lock(runtime.mutex);
+        runtime.changed.wait(lock, [&] { return runtime.state != Sim028Host::RunnerState::Stopping; });
+        if (runtime.state == Sim028Host::RunnerState::Stopped) return true;
+        runtime.state = Sim028Host::RunnerState::Stopping;
+        retiring = std::move(runtime.queue);
+    }
+    // Cancel queued work and join in-flight work normally. No admission lock
+    // is held while callbacks complete, including callbacks attempting a post.
+    retiring.reset();
+    {
+        std::lock_guard<std::mutex> lock(runtime.mutex);
+        runtime.state = Sim028Host::RunnerState::Stopped;
+    }
+    runtime.changed.notify_all();
+    return true;
+}
 bool EventHandler::SendEvent(InnerEvent::Pointer &event, int64_t delay, EventQueue::Priority priority)
 {
     if (auto tel = std::dynamic_pointer_cast<Telephony::TelEventHandler>(shared_from_this()))
@@ -63,14 +122,11 @@ bool EventHandler::SendEvent(InnerEvent::Pointer &event, int64_t delay, EventQue
     if (!event) return false;
     std::weak_ptr<EventHandler> owner = shared_from_this();
     auto envelope = std::make_shared<InnerEvent::Pointer>(std::move(event));
-    RunnerQueue().submit_h([owner, envelope] { if (auto target = owner.lock()) target->ProcessEvent(*envelope); },
-        ffrt::task_attr().delay(delay * 1000));
-    return true;
+    return SubmitExternal([owner, envelope] { if (auto target = owner.lock()) target->ProcessEvent(*envelope); }, delay);
 }
 bool EventHandler::PostTask(const std::function<void()> &task, const std::string &, int64_t delay)
 {
-    RunnerQueue().submit_h(task, ffrt::task_attr().delay(delay * 1000));
-    return true;
+    return SubmitExternal(task, delay);
 }
 bool Configuration::AddItem(const std::string &, const std::string &) { return false; }
 int32_t AppMgrClient::UpdateConfiguration(const Configuration &) { return -1; }
@@ -144,4 +200,16 @@ UNSUPPORTED_PARCEL(bool, ReadInt64Vector, (std::vector<int64_t> *))
 #undef UNSUPPORTED_PARCEL
 }
 
-namespace Sim028Host { void StopExternalRunner() { OHOS::AppExecFwk::StopSim028ExternalRunner(); } }
+namespace Sim028Host {
+bool StartExternalRunner() { return OHOS::AppExecFwk::StartSim028ExternalRunner(); }
+bool StopExternalRunner() { return OHOS::AppExecFwk::StopSim028ExternalRunner(); }
+RunnerState ExternalRunnerState() { return OHOS::AppExecFwk::Sim028ExternalRunnerState(); }
+}
+
+namespace Sim028Host {
+__attribute__((noinline)) void LifecycleCheckpoint(const char *stage,
+    OHOS::Telephony::SimManager *manager, OHOS::Telephony::ITelRilManager *ril)
+{
+    std::cout << "LIFE_CHECKPOINT stage=" << stage << " manager=" << manager << " ril=" << ril << '\n';
+}
+}

@@ -1,5 +1,7 @@
 #pragma once
 #include "sim_manager.h"
+#include "lifecycle/lifecycle_diagnostics.h"
+#include "lifecycle/external_runner.h"
 #include "core_service_sim.h"
 #include "core_manager_inner.h"
 #include "mock_tel_ril_manager.h"
@@ -83,7 +85,6 @@ public:
         return std::make_shared<DataShare::DataShareResultSet>(columns, rows);
     }
 };
-void StopExternalRunner();
 class AccountObserver final : public TelEventHandler {
 public:
     explicit AccountObserver(std::function<void()> loaded) : TelEventHandler("sim028-account-observer"), loaded_(std::move(loaded)) {}
@@ -136,6 +137,7 @@ public:
     }
     RealScenario(bool directRil = false)
     {
+        EXPECT_TRUE(StartExternalRunner());
         parametersDb["const.vendor.ril.set_primary_slot_support"] = directRil ? "true" : "false";
         EXPECT_CALL(parameters, Read(_, _, _, _)).WillRepeatedly([this](auto key, auto fallback, auto out, auto size) {
             std::lock_guard<std::mutex> lock(mutex);
@@ -177,7 +179,12 @@ public:
         EXPECT_CALL(*ril, RegisterCoreNotify(_, _, _, _)).WillRepeatedly([this](int slot, const auto &owner, int id, int *) {
             std::lock_guard<std::mutex> lock(mutex); notifications[{slot, id}] = owner; return 0;
         });
-        EXPECT_CALL(*ril, UnRegisterCoreNotify(_, _, _)).WillRepeatedly(testing::Return(0));
+        EXPECT_CALL(*ril, UnRegisterCoreNotify(_, _, _)).WillRepeatedly([this](int slot, const auto &owner, int id) {
+            std::lock_guard<std::mutex> lock(mutex);
+            auto it = notifications.find({slot, id});
+            if (it != notifications.end() && it->second.lock() == owner) notifications.erase(it);
+            return 0;
+        });
         EXPECT_CALL(*ril, SetActiveSim(1, _, 1, _)).WillRepeatedly([](int, int, int, const auto &event) {
             auto response = std::make_shared<RadioResponseInfo>(); response->error = ErrType::NONE;
             auto owner = std::dynamic_pointer_cast<TelEventHandler>(event->GetOwner());
@@ -274,8 +281,11 @@ public:
     }
     ~RealScenario()
     {
+        LifecycleCheckpoint("before_cleanup", manager.get(), ril.get());
+        DumpQueues("before_cleanup");
         if (manager && accountObserver)
             manager->UnRegisterCoreNotify(1, accountObserver, RadioEvent::RADIO_SIM_ACCOUNT_LOADED);
+        std::weak_ptr<AccountObserver> retiringObserver = accountObserver;
         accountObserver.reset();
         core.SetSimManager(nullptr);
         CoreManagerInner::GetInstance().OnInit(nullptr, nullptr, nullptr);
@@ -283,13 +293,18 @@ public:
         std::weak_ptr<SimManager> retiring = manager;
         manager.reset();
         SimHost::StopCallingThreadTasks();
-        StopExternalRunner();
+        EXPECT_TRUE(StopExternalRunner());
         const auto deadline = std::chrono::steady_clock::now() + 3s;
         while (!retiring.expired() && std::chrono::steady_clock::now() < deadline) std::this_thread::sleep_for(1ms);
         EXPECT_TRUE(retiring.expired()) << "REAL_MANAGER_LIFETIME_NOT_DRAINED";
         EXPECT_TRUE(SimHost::AwaitSchedulerStopped(3s)) << "REAL_GRAPH_LIFETIME_NOT_DRAINED";
         testing::Test::RecordProperty("workers_after_cleanup", SimHost::GetSchedulerEvidence().workers);
         testing::Test::RecordProperty("ril_references_after_cleanup", static_cast<int>(ril.use_count()));
+        testing::Test::RecordProperty("account_observer_expired", retiringObserver.expired() ? "true" : "false");
+        testing::Test::RecordProperty("object_lifetime", SimHost::GetSchedulerEvidence().workers == 0 &&
+            ril.use_count() == 1 && retiring.expired() && retiringObserver.expired() ? "PASS" : "FAIL");
+        DumpQueues("after_cleanup");
+        LifecycleCheckpoint("after_cleanup", nullptr, ril.get());
         EXPECT_EQ(SimHost::GetSchedulerEvidence().taskFailures, 0u);
         const bool verified = testing::Mock::VerifyAndClearExpectations(ril.get());
         testing::Test::RecordProperty("strict_ril_expectations_verified", verified ? "PASS" : "FAIL");

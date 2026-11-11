@@ -1,0 +1,75 @@
+Note: Google Test filter = RealCardLifetime.PublicDetachReleasesRealStateFileAndRil
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RealCardLifetime
+[ RUN      ] RealCardLifetime.PublicDetachReleasesRealStateFileAndRil
+DIAGNOSTIC SIM_STATE_CHANGE
+CARD_LIFE before_detach state=0x652be9b32940 refs=2 files=0x652be9b331b0 refs=4 records=0x652be9b343e0 refs=7
+CARD_LIFE after_public_detach state_refs=2 files_refs=2 records_refs=4
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:161: Failure
+Value of: state.expired()
+  Actual: false
+Expected: true
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:161: Failure
+Value of: files.expired()
+  Actual: false
+Expected: true
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:162: Failure
+Value of: records.expired()
+  Actual: false
+Expected: true
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:162: Failure
+Value of: controller.expired()
+  Actual: false
+Expected: true
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:163: Failure
+Value of: SimHost::AwaitSchedulerStopped(3s)
+  Actual: false
+Expected: true
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:164: Failure
+Expected equality of these values:
+  environment.ril.use_count()
+    Which is: 4
+  1
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:167: Failure
+Value of: environment.notifications.empty()
+  Actual: false
+Expected: true
+
+LIFE_CHECKPOINT stage=before_cleanup manager=0 ril=0x652be9b232b0
+LIFE_QUEUE stage=before_cleanup address=111239278815552 name=SimStateHandle pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=111239278834992 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=111239278836368 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=111239278837776 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=111239278841088 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:300: Failure
+Value of: SimHost::AwaitSchedulerStopped(3s)
+  Actual: false
+Expected: true
+REAL_GRAPH_LIFETIME_NOT_DRAINED
+
+LIFE_QUEUE stage=after_cleanup address=111239278815552 name=SimStateHandle pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=111239278834992 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=111239278836368 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=111239278837776 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=111239278841088 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_CHECKPOINT stage=after_cleanup manager=0 ril=0x652be9b232b0
+[  FAILED  ] RealCardLifetime.PublicDetachReleasesRealStateFileAndRil (6016 ms)
+[----------] 1 test from RealCardLifetime (6018 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (6022 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] RealCardLifetime.PublicDetachReleasesRealStateFileAndRil
+
+ 1 FAILED TEST
+
+../../telephony_core_service/services/multisim/test/systemtest/stubs/mock_tel_ril_manager.h:138: ERROR: this mock object (used in test RealCardLifetime.PublicDetachReleasesRealStateFileAndRil) should be deleted but never is. Its address is @0x652be9b232b0.
+ERROR: 1 leaked mock object found at program exit. Expectations on a mock object are verified when the object is destructed. Leaking a mock means that its expectations aren't verified, which is usually a test bug. If you really intend to leak a mock, you can suppress this error using testing::Mock::AllowLeak(mock_object), or you may use a fake or stub instead of a mock.

@@ -1,0 +1,1075 @@
+diff --git a/telephony_core_service/docs/SIM_Refactor_Execution_State.md b/telephony_core_service/docs/SIM_Refactor_Execution_State.md
+index e24af81ac..e1305b1a7 100644
+--- a/telephony_core_service/docs/SIM_Refactor_Execution_State.md
++++ b/telephony_core_service/docs/SIM_Refactor_Execution_State.md
+@@ -646,3 +646,31 @@ Provider根因已闭合：生产bundle/GN实际依赖telephony_data，Host此前
+ 实际发布完成：提交 `0ea5ef84e57c80e02090a1596f15cfb75b6d5ea7`（`test(sim): execute real primary-slot host branches and publish progress`），共133项文件变更，已常规推送 `origin/main`。推送后 `git ls-remote origin refs/heads/main`、本地HEAD和origin/main返回相同SHA，包含关系及133项提交白名单核验通过。98份原有修改摘要保持不变，发布后工作树仅保留这些行尾修改，暂存区为空、无未跟踪遗漏文件。两级AGENTS的持续发布规则已随本次成果保存到main，测试FAIL/BLOCKED/MANUAL结论保持§17原值。
+ 
+ 本段为发布后的文档追记，随独立文档提交同步远端，不写自身提交SHA；最终main tip以实际Git远端核验为准。
++
++
++<a id="sim028-lifetime-20261111"></a>
++
++## 18. SIM-028 对象生命周期定位与Host修复（2026-11-11）
++
++输入main为 `b3e2b93ac2a9dc77f0a557b6a2ff22a730354009`。本批按用户最新边界只改测试/诊断/必要进度，不改旧SIM/Core/RIL生产实现；98份既有用户修改按原始SHA256保护。用户在本轮入口明确规定提交/推送需当次任务授权，本批未提交、未推送；不以磁盘AGENTS的历史持续发布条款覆盖该指令。历史§17证据保持原字节。
++
++重新执行原C1后，以只读LLDB命名DWARF字段、构造/析构及真实Observer注册断点证明每槽三类强环：State→Handle→Observer→Monitor→State；State→Handle→Observer→IccFile→State；FileManager→IccFile→Observer→FileManager。三槽共9条具体地址闭环，保留每条强边、基类子对象地址映射及源码依据。Manager确已析构，清理后31个被观察的控制块仍有正强计数：各槽State=4、Handle=1、FileManager=5、IccFile=6、FileController=5，Monitor=12、Controller/RadioController各1等。RIL同一控制块计数10 = fixture根1 + 三槽State/IccFile/FileController各1，实际9条生产持有边对应同一地址；不能解释成十个RIL对象或十处独立泄漏。
++
++28个worker对应每槽8个queue及Controller/RadioController/Monitor/测试AccountObserver各1；现场29个原生线程中28个为等待的Host队列worker，没有RefreshCache分离线程或运行中业务回调。三个StateHandle仍有约180秒匹配SIM定时器，其他队列空也不能退出，因为所有者仍被强环持有。Host FFRT使用每queue一线程，不能外推真实OHOS FFRT线程数。生产注销另确认两处不对称：SimStateHandle缺SIM_ICCID_LOADED注销，SimManager/Monitor缺ACCOUNT_LOADED注销；后者留下测试观察者，是Host额外对象，但不构成其余生产环的唯一原因。
++
++实际修复外部平台Runner的无同步懒创建/关闭后自动复活问题：显式Running→Stopping→Stopped，停止时拒绝新Post/Start，解锁后取消待执行任务并正常join在途任务；回调线程自Stop显式拒绝。测试RIL弱登记现在按owner注销。增加8条同目标测试，7 PASS / 1 FAIL：5条Runner正常/延迟/在途/并发/自join测试、真实缺RIL初始化清理、真实State单独初始化注销释放通过；真实State+File通过公开注销仍释放失败（5个queue、RIL=4），保持红灯和原清理断言。
++
++| 本批实际验证 | 结果 |
++| --- | --- |
++| GN/Ninja Debug增量构建 | PASS；Clang/LLDB18.1.3，GN1000，Ninja1.11.1；实际命令、源码/二进制摘要归档 |
++| 原C1单例及地址追踪 | 业务PASS、严格RIL PASS、生命周期FAIL；GTest exit1，LLDB exit0单独记录；所有权证明PASS不等于GTest通过 |
++| 原7条RealSimPrimary | 1 PASS / 6 FAIL；六条业务/严格RIL均PASS，清理均FAIL，仍为28worker/RIL10 |
++| 原14入口 | 14 PASS；不以PrimaryEntry.*的12条子集代替完整入口统计 |
++| 原Host60条 | 55 PASS / 5 FAIL，原五条独立缺陷及断言完整保留 |
++| 含新增测试完整回归 | 75执行，63 PASS / 12 FAIL，exit1；5旧缺陷+6整图清理+1新隔离子图清理失败，无跳过 |
++| 迁移资产/骨架/接缝 | PASS；219资产、130份C++/JSON原字节、11项显式后续变更；架构规则及既有接缝生成核对通过 |
++| 完整生产Stop在途/重复/迟到回调验收 | BLOCKED；真实Manager没有Stop/Drain入口，Runner验收不替代生产生命周期验收 |
++
++[独立本轮记录](../services/multisim/test/systemtest/configs/sim028_lifecycle_validation_20261111.json)及同名证据目录保存构建/全量日志、逐例XML、控制块与对象地址、9条闭环/9条RIL持有边证明、逐层结果、源码/二进制/输入摘要和本批文件清单。复现和逐边源码说明查 [生命周期诊断](../services/multisim/test/systemtest/primary_slot/lifecycle/README.md)。没有新增生产探针、私有清理、AllowLeak或等待时间延长，没有降低业务断言。
++
++最小后续需单独授权生产生命周期修复：先修复两处注销配对（已交付未应用的4文件建议patch），再由有效共享所有权的组合根显式停止Manager/Monitor/File/State及后台任务，补准入/代次/在途屏障，注销全部缓存订阅后按依赖排空释放；Core在共享RIL停止前协调SIM关闭，SIM不停止宿主共享RIL。RemoveAllEvents不是排空屏障，析构里shared_from_this不是合法替代。保留Running时主卡语义，停止中原B/C1请求仍应按已批准规则完成；停止超时不得释放/宣称SO可卸载。完整停止方案及OpenHarmony常驻服务/重启风险已具体列入诊断说明，未将配对patch单独宣称为完整修复。本轮原C1生命周期目标尚未达成，保持FAIL。
+diff --git a/telephony_core_service/services/multisim/test/relocation_followups.json b/telephony_core_service/services/multisim/test/relocation_followups.json
+index 8d6ad66d2..f643abf1b 100644
+--- a/telephony_core_service/services/multisim/test/relocation_followups.json
++++ b/telephony_core_service/services/multisim/test/relocation_followups.json
+@@ -24,8 +24,8 @@
+     },
+     "services/multisim/test/systemtest/BUILD.gn": {
+       "relocation_sha256": "af60d6518d1224eecdac66d5b6fdb148035085eac2f9d2fe918d083751616a53",
+-      "current_sha256": "86c0c9d585afaeae2d77ae9b377c0aeb3065148a68f0e52777c1ab0382fbd0cb",
+-      "reason": "Retain entry and all legacy targets; pin Provider header for initialization; add real Manager/Controller target and isolated negative-control source input."
++      "current_sha256": "fef82ec33aa716d20c232aac6bff8806a8ebc08e828f92a5425e081583ad28ee",
++      "reason": "Register lifecycle cases in the existing real target; retain every legacy target and assertion."
+     },
+     "services/multisim/test/systemtest/scripts/audit_initialization.py": {
+       "relocation_sha256": "36ab28439ffcf6cdfc4783669d619c9033b5957e403df9571653d284446d7c91",
+@@ -34,8 +34,8 @@
+     },
+     "services/multisim/test/systemtest/stubs/ffrt_runtime.cpp": {
+       "relocation_sha256": "47ca6163b88147cfffb1a2fbb0797fe93980da3271e23c734629bef0d5b02f07",
+-      "current_sha256": "7fb6f532c34f0832a82cfb2ab4dd6547119f7bdeadde748c2e71af6b600f6e92",
+-      "reason": "SIM-028 authorized Host engineering: real initialization audit, external parameter bootstrap or terminal scheduler wait; original business assertions preserved."
++      "current_sha256": "e79482e7caecf08abc2fcdaad2d5183bf5a765543d1252be7a98b92740af2db9",
++      "reason": "Read-only named queue evidence; no scheduling or cleanup semantics changed."
+     },
+     "services/multisim/test/systemtest/stubs/parameter_service.cpp": {
+       "relocation_sha256": "8e82238e3cdb8ae448beb68c0026cb15282681e4ffc52416f3529cf2d1e704b7",
+@@ -51,6 +51,11 @@
+       "relocation_sha256": "3417683496f298fb41ac54ff303482c04b9edf812de0275bc4b3edeff659c884",
+       "current_sha256": "83d1d782576db4ff9925c8cb24a11522a1349912f0f3d5aebe1f7bacd6cbd4e0",
+       "reason": "SIM-028 real Host execution/provenance documentation; original business assertions retained."
++    },
++    "services/multisim/test/systemtest/stubs/ffrt_runtime.h": {
++      "relocation_sha256": "e56da308da2035b69ec7b25b3bdf352eaa3c79c0df2cce62e1b7265d6c99c21e",
++      "current_sha256": "e737313a96054614619f0b8d0e9d66b3099b17bd9057efd0f81a1d2306dc1ea5",
++      "reason": "Read-only queue evidence declarations; retain existing scheduler assertions."
+     }
+   }
+ }
+diff --git a/telephony_core_service/services/multisim/test/systemtest/BUILD.gn b/telephony_core_service/services/multisim/test/systemtest/BUILD.gn
+index 543586674..1e3c099a5 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/BUILD.gn
++++ b/telephony_core_service/services/multisim/test/systemtest/BUILD.gn
+@@ -65,7 +65,7 @@ source_set("primary_real_support") {
+   configs += [ ":production_headers", ":production_execution_evidence", ":initialization_standard_headers" ]
+ }
+ executable("sim_primary_slot_real_test") {
+-  sources = [ "primary_slot/real_test.cpp", "primary_slot/real_runtime.cpp", "primary_slot/security_boundary.cpp" ]
++  sources = [ "primary_slot/real_test.cpp", "primary_slot/real_runtime.cpp", "primary_slot/security_boundary.cpp", "primary_slot/lifecycle/lifetime_test.cpp" ]
+   include_dirs = [ "primary_slot/runtime_include", "primary_slot/include", "primary_slot/provider/include",
+                    "primary_slot", "stubs", "$gtest_root/googletest/include", "$gtest_root/googlemock/include" ]
+   configs += [ ":production_headers" ]
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/README.md b/telephony_core_service/services/multisim/test/systemtest/primary_slot/README.md
+index 3829344f8..8689e0e59 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/primary_slot/README.md
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/README.md
+@@ -95,9 +95,9 @@ SIM_HOST_BOOT_SLOT_COUNT=2 lldb -- .host-out/build/sim_primary_slot_real_test \
+ # run; bt; frame variable slotId isUserSet
+ ```
+ 
+-`SIM_HOST_BOOT_SLOT_COUNT=2`为生产全局构造阶段的显式外部参数输入，必须在进程启动前设置；不重置生产静态缓存。runner和F5已经设置。二进制拒绝通配符多例运行，使用runner逐例隔离。TestMate可通过GTest列表发现7例，GUI单例运行/断点/变量仍需人工检查；扩展直接把通配符传给二进制的“全部运行”应改用上述Task，不宣称GUI整组运行通过。
++`SIM_HOST_BOOT_SLOT_COUNT=2`为生产全局构造阶段的显式外部参数输入，必须在进程启动前设置；不重置生产静态缓存。runner和F5已经设置。二进制拒绝通配符多例运行，使用runner逐例隔离。GTest可列出7条RealSimPrimary及8条生命周期用例；TestMate发现、GUI单例运行/断点/变量仍需人工检查；扩展直接把通配符传给二进制的“全部运行”应改用上述Task，不宣称GUI整组运行通过。
+ 
+-真实残留链为 `SimStateHandle → ObserverHandler(强引用) → MultiSimMonitor → Controller/StateManager → SimStateHandle`，Monitor同时订阅File。真实SimManager析构已执行，Monitor/Controller/StateManager析构未执行，28线程及10个RIL引用可复核。Monitor有公开UnRegisterSimNotify，但Manager未提供可访问的完整停止入口。需要另行授权生产生命周期方案：停止新回调/排空在途工作，再在释放强引用前解除订阅；本轮不修改生产析构，也不通过私有访问清环。
++生命周期后续审计已证明三种独立强引用环：Monitor/State订阅环、State/IccFile订阅环、FileManager/IccFile记录订阅环；另有ICCID及账户事件注销不对称。真实Manager已析构，但清理后31个已观察控制块仍有正强计数，28个Host队列worker在等待，RIL同一控制块计数为10。Host Runner关闭后重建及并发访问问题已单独修复并验证，六个真实整图用例继续保留失败。地址引用图、逐边源码、未应用生产配对补丁和Stop方案见 [生命周期诊断](lifecycle/README.md)；本轮独立证据为 [sim028_lifecycle_validation_20261111.json](../configs/sim028_lifecycle_validation_20261111.json)。生产代码未修改，不能通过测试私有访问清环。
+ 
+ | 边界 | 当前证据与最小条件 |
+ | --- | --- |
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_runtime.cpp b/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_runtime.cpp
+index df2af03cc..7b855c26d 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_runtime.cpp
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_runtime.cpp
+@@ -13,6 +13,9 @@
+ #include <locale>
+ #include <iostream>
+ #include "ipc_skeleton.h"
++#include "lifecycle/external_runner.h"
++#include <mutex>
++#include <condition_variable>
+ namespace Sim028Host {
+ void Diagnostic(const std::string &name) { std::cout << "DIAGNOSTIC " << name << '\n'; }
+ }
+@@ -50,12 +53,68 @@ namespace AppExecFwk {
+ std::shared_ptr<EventRunner> EventRunner::Create(const std::string &, ThreadMode)
+ { return std::make_shared<EventRunner>(); }
+ namespace {
+-std::unique_ptr<ffrt::queue> &RunnerOwner() { static std::unique_ptr<ffrt::queue> q; return q; }
+-ffrt::queue &RunnerQueue() {
+-    auto &q = RunnerOwner(); if (!q) q = std::make_unique<ffrt::queue>("sim028-platform-runner"); return *q;
++struct RunnerRuntime {
++    std::mutex mutex;
++    std::condition_variable changed;
++    Sim028Host::RunnerState state = Sim028Host::RunnerState::Stopped;
++    std::unique_ptr<ffrt::queue> queue;
++};
++RunnerRuntime &Runtime() { static RunnerRuntime runtime; return runtime; }
++thread_local bool onExternalRunner = false;
++bool SubmitExternal(std::function<void()> task, int64_t delay)
++{
++    auto &runtime = Runtime();
++    std::lock_guard<std::mutex> lock(runtime.mutex);
++    if (runtime.state != Sim028Host::RunnerState::Running) return false;
++    if (!runtime.queue) runtime.queue = std::make_unique<ffrt::queue>("sim028-platform-runner");
++    runtime.queue->submit_h([task = std::move(task)] {
++        struct Guard {
++            Guard() { onExternalRunner = true; }
++            ~Guard() { onExternalRunner = false; }
++        } guard;
++        task();
++    }, ffrt::task_attr().delay(delay * 1000));
++    return true;
++}
++}
++bool StartSim028ExternalRunner()
++{
++    auto &runtime = Runtime();
++    std::lock_guard<std::mutex> lock(runtime.mutex);
++    if (runtime.state == Sim028Host::RunnerState::Stopping) return false;
++    runtime.state = Sim028Host::RunnerState::Running;
++    return true;
++}
++Sim028Host::RunnerState Sim028ExternalRunnerState()
++{
++    auto &runtime = Runtime();
++    std::lock_guard<std::mutex> lock(runtime.mutex);
++    return runtime.state;
+ }
++bool StopSim028ExternalRunner()
++{
++    // Synchronous shutdown belongs to the owning/control thread. A callback
++    // cannot join its own worker; fail explicitly without changing the state.
++    if (onExternalRunner) return false;
++    auto &runtime = Runtime();
++    std::unique_ptr<ffrt::queue> retiring;
++    {
++        std::unique_lock<std::mutex> lock(runtime.mutex);
++        runtime.changed.wait(lock, [&] { return runtime.state != Sim028Host::RunnerState::Stopping; });
++        if (runtime.state == Sim028Host::RunnerState::Stopped) return true;
++        runtime.state = Sim028Host::RunnerState::Stopping;
++        retiring = std::move(runtime.queue);
++    }
++    // Cancel queued work and join in-flight work normally. No admission lock
++    // is held while callbacks complete, including callbacks attempting a post.
++    retiring.reset();
++    {
++        std::lock_guard<std::mutex> lock(runtime.mutex);
++        runtime.state = Sim028Host::RunnerState::Stopped;
++    }
++    runtime.changed.notify_all();
++    return true;
+ }
+-void StopSim028ExternalRunner() { RunnerOwner().reset(); }
+ bool EventHandler::SendEvent(InnerEvent::Pointer &event, int64_t delay, EventQueue::Priority priority)
+ {
+     if (auto tel = std::dynamic_pointer_cast<Telephony::TelEventHandler>(shared_from_this()))
+@@ -63,14 +122,11 @@ bool EventHandler::SendEvent(InnerEvent::Pointer &event, int64_t delay, EventQue
+     if (!event) return false;
+     std::weak_ptr<EventHandler> owner = shared_from_this();
+     auto envelope = std::make_shared<InnerEvent::Pointer>(std::move(event));
+-    RunnerQueue().submit_h([owner, envelope] { if (auto target = owner.lock()) target->ProcessEvent(*envelope); },
+-        ffrt::task_attr().delay(delay * 1000));
+-    return true;
++    return SubmitExternal([owner, envelope] { if (auto target = owner.lock()) target->ProcessEvent(*envelope); }, delay);
+ }
+ bool EventHandler::PostTask(const std::function<void()> &task, const std::string &, int64_t delay)
+ {
+-    RunnerQueue().submit_h(task, ffrt::task_attr().delay(delay * 1000));
+-    return true;
++    return SubmitExternal(task, delay);
+ }
+ bool Configuration::AddItem(const std::string &, const std::string &) { return false; }
+ int32_t AppMgrClient::UpdateConfiguration(const Configuration &) { return -1; }
+@@ -144,4 +200,16 @@ UNSUPPORTED_PARCEL(bool, ReadInt64Vector, (std::vector<int64_t> *))
+ #undef UNSUPPORTED_PARCEL
+ }
+ 
+-namespace Sim028Host { void StopExternalRunner() { OHOS::AppExecFwk::StopSim028ExternalRunner(); } }
++namespace Sim028Host {
++bool StartExternalRunner() { return OHOS::AppExecFwk::StartSim028ExternalRunner(); }
++bool StopExternalRunner() { return OHOS::AppExecFwk::StopSim028ExternalRunner(); }
++RunnerState ExternalRunnerState() { return OHOS::AppExecFwk::Sim028ExternalRunnerState(); }
++}
++
++namespace Sim028Host {
++__attribute__((noinline)) void LifecycleCheckpoint(const char *stage,
++    OHOS::Telephony::SimManager *manager, OHOS::Telephony::ITelRilManager *ril)
++{
++    std::cout << "LIFE_CHECKPOINT stage=" << stage << " manager=" << manager << " ril=" << ril << '\n';
++}
++}
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h b/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h
+index 9d44f9c50..9de0e211e 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h
+@@ -1,5 +1,7 @@
+ #pragma once
+ #include "sim_manager.h"
++#include "lifecycle/lifecycle_diagnostics.h"
++#include "lifecycle/external_runner.h"
+ #include "core_service_sim.h"
+ #include "core_manager_inner.h"
+ #include "mock_tel_ril_manager.h"
+@@ -83,7 +85,6 @@ public:
+         return std::make_shared<DataShare::DataShareResultSet>(columns, rows);
+     }
+ };
+-void StopExternalRunner();
+ class AccountObserver final : public TelEventHandler {
+ public:
+     explicit AccountObserver(std::function<void()> loaded) : TelEventHandler("sim028-account-observer"), loaded_(std::move(loaded)) {}
+@@ -136,6 +137,7 @@ public:
+     }
+     RealScenario(bool directRil = false)
+     {
++        EXPECT_TRUE(StartExternalRunner());
+         parametersDb["const.vendor.ril.set_primary_slot_support"] = directRil ? "true" : "false";
+         EXPECT_CALL(parameters, Read(_, _, _, _)).WillRepeatedly([this](auto key, auto fallback, auto out, auto size) {
+             std::lock_guard<std::mutex> lock(mutex);
+@@ -177,7 +179,12 @@ public:
+         EXPECT_CALL(*ril, RegisterCoreNotify(_, _, _, _)).WillRepeatedly([this](int slot, const auto &owner, int id, int *) {
+             std::lock_guard<std::mutex> lock(mutex); notifications[{slot, id}] = owner; return 0;
+         });
+-        EXPECT_CALL(*ril, UnRegisterCoreNotify(_, _, _)).WillRepeatedly(testing::Return(0));
++        EXPECT_CALL(*ril, UnRegisterCoreNotify(_, _, _)).WillRepeatedly([this](int slot, const auto &owner, int id) {
++            std::lock_guard<std::mutex> lock(mutex);
++            auto it = notifications.find({slot, id});
++            if (it != notifications.end() && it->second.lock() == owner) notifications.erase(it);
++            return 0;
++        });
+         EXPECT_CALL(*ril, SetActiveSim(1, _, 1, _)).WillRepeatedly([](int, int, int, const auto &event) {
+             auto response = std::make_shared<RadioResponseInfo>(); response->error = ErrType::NONE;
+             auto owner = std::dynamic_pointer_cast<TelEventHandler>(event->GetOwner());
+@@ -274,8 +281,11 @@ public:
+     }
+     ~RealScenario()
+     {
++        LifecycleCheckpoint("before_cleanup", manager.get(), ril.get());
++        DumpQueues("before_cleanup");
+         if (manager && accountObserver)
+             manager->UnRegisterCoreNotify(1, accountObserver, RadioEvent::RADIO_SIM_ACCOUNT_LOADED);
++        std::weak_ptr<AccountObserver> retiringObserver = accountObserver;
+         accountObserver.reset();
+         core.SetSimManager(nullptr);
+         CoreManagerInner::GetInstance().OnInit(nullptr, nullptr, nullptr);
+@@ -283,13 +293,18 @@ public:
+         std::weak_ptr<SimManager> retiring = manager;
+         manager.reset();
+         SimHost::StopCallingThreadTasks();
+-        StopExternalRunner();
++        EXPECT_TRUE(StopExternalRunner());
+         const auto deadline = std::chrono::steady_clock::now() + 3s;
+         while (!retiring.expired() && std::chrono::steady_clock::now() < deadline) std::this_thread::sleep_for(1ms);
+         EXPECT_TRUE(retiring.expired()) << "REAL_MANAGER_LIFETIME_NOT_DRAINED";
+         EXPECT_TRUE(SimHost::AwaitSchedulerStopped(3s)) << "REAL_GRAPH_LIFETIME_NOT_DRAINED";
+         testing::Test::RecordProperty("workers_after_cleanup", SimHost::GetSchedulerEvidence().workers);
+         testing::Test::RecordProperty("ril_references_after_cleanup", static_cast<int>(ril.use_count()));
++        testing::Test::RecordProperty("account_observer_expired", retiringObserver.expired() ? "true" : "false");
++        testing::Test::RecordProperty("object_lifetime", SimHost::GetSchedulerEvidence().workers == 0 &&
++            ril.use_count() == 1 && retiring.expired() && retiringObserver.expired() ? "PASS" : "FAIL");
++        DumpQueues("after_cleanup");
++        LifecycleCheckpoint("after_cleanup", nullptr, ril.get());
+         EXPECT_EQ(SimHost::GetSchedulerEvidence().taskFailures, 0u);
+         const bool verified = testing::Mock::VerifyAndClearExpectations(ril.get());
+         testing::Test::RecordProperty("strict_ril_expectations_verified", verified ? "PASS" : "FAIL");
+diff --git a/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp b/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp
+index 8c83e6a23..9d6247351 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp
++++ b/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp
+@@ -32,6 +32,7 @@ struct HostTask {
+     std::weak_ptr<HostQueue> owner;
+ };
+ struct HostQueue {
++    std::string name;
+     mutex lock;
+     condition_variable changed;
+     std::vector<std::shared_ptr<HostTask>> tasks;
+@@ -98,8 +99,9 @@ static void Worker(const std::shared_ptr<HostQueue> &state)
+     evidenceChanged.notify_all();
+ }
+ 
+-queue::queue(const char *) : state_(std::make_shared<HostQueue>())
++queue::queue(const char *name) : state_(std::make_shared<HostQueue>())
+ {
++    state_->name = name ? name : "";
+     {
+         std::lock_guard<mutex> guard(evidenceMutex);
+         ++workers;
+@@ -218,6 +220,28 @@ void StopCallingThreadTasks()
+     if (general) general->wait_idle();
+     general.reset();
+ }
++std::vector<QueueEvidence> GetQueueEvidence()
++{
++    std::vector<std::shared_ptr<ffrt::HostQueue>> states;
++    {
++        std::lock_guard<ffrt::mutex> lock(evidenceMutex);
++        for (const auto &weak : queues) if (auto state = weak.lock()) states.push_back(std::move(state));
++    }
++    std::vector<QueueEvidence> result;
++    for (const auto &state : states) {
++        std::lock_guard<ffrt::mutex> lock(state->lock);
++        QueueEvidence row{reinterpret_cast<uintptr_t>(state.get()), state->name, 0, state->running ? 1u : 0u, 0, -1};
++        for (const auto &task : state->tasks) {
++            if (task->status.load() == ffrt::HostTaskStatus::PENDING) {
++                ++row.pending;
++                auto delay = std::chrono::duration_cast<std::chrono::milliseconds>(task->due - std::chrono::steady_clock::now()).count();
++                if (row.nextDelayMs < 0 || delay < row.nextDelayMs) row.nextDelayMs = delay;
++            } else if (task->status.load() == ffrt::HostTaskStatus::CANCELLED) ++row.cancelled;
++        }
++        result.push_back(row);
++    }
++    return result;
++}
+ SchedulerEvidence GetSchedulerEvidence()
+ {
+     std::lock_guard<ffrt::mutex> guard(evidenceMutex);
+diff --git a/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.h b/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.h
+index a5e279148..66a3a3ba3 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.h
++++ b/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.h
+@@ -7,6 +7,14 @@ struct SchedulerEvidence {
+     unsigned taskFailures;
+ };
+ SchedulerEvidence GetSchedulerEvidence();
++struct QueueEvidence {
++    uintptr_t address;
++    std::string name;
++    unsigned pending, running, cancelled;
++    int64_t nextDelayMs;
++};
++// Read-only registry snapshot. Holds queue states transiently, never SIM objects.
++std::vector<QueueEvidence> GetQueueEvidence();
+ // Drain all host queues, including tasks submitted by other tasks. Future delayed
+ // work counts as pending. False means timeout or a recorded task failure.
+ bool AwaitSchedulerIdle(std::chrono::milliseconds budget);
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/README.md b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/README.md
+new file mode 100755
+index 00000000..57603a4c
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/README.md
+@@ -0,0 +1,102 @@
++# SIM-028 生命周期诊断与修复边界
++
++本目录复用 `sim_primary_slot_real_test`，没有替代生产 SimManager。原 C1 的业务、严格 RIL 期望和清理断言均保留。当前六个在卡场景仍因生产订阅对象图未释放而失败；不得将 Host Runner 修复解释为完整生命周期修复。
++
++仓库根执行（先按上一层 README 配置依赖）：
++
++```sh
++./telephony_core_service/services/multisim/test/systemtest/tools/build_host.sh --target sim_primary_slot_real_test
++./telephony_core_service/services/multisim/test/systemtest/tools/run_host_tests.sh selected \
++  --target sim_primary_slot_real_test --filter 'RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected'
++python3 -B telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/run_diagnostics.py \
++  --output /tmp/sim028-lifetime-trace
++./telephony_core_service/services/multisim/test/systemtest/tools/run_host_tests.sh selected \
++  --target sim_primary_slot_real_test --filter 'RunnerLifetime.*:RealCardLifetime.*'
++./telephony_core_service/services/multisim/test/systemtest/tools/run_host_tests.sh all --with-real-primary
++```
++
++诊断命令不自动构建；退出码区分0=测试通过、1=测试失败、2=诊断阻塞。LLDB自身退出0不代替被调试程序结果。`trace_graph.py`仅通过命名DWARF字段/断点读取对象、控制块和观察者列表；不在目标内求值，不增加目标shared_ptr引用，不写内存，不按偏移读取或强制清理私有字段。基类子对象地址另表保存，避免将 `IccFile` 的 `EventHandler*` 错算成另一对象。引用图是停止点快照，构造/析构断点的解析数量也保存；未解析/内联的析构不能仅凭断点零次认定泄漏。
++
++## 根因与源码依据
++
++以下箭头均是实际成员或Observer容器的强所有权。每槽独立存在，Monitor跨槽共享；具体地址及控制块见本轮独立证据中的 `trace/graph.json`。
++
++```mermaid
++flowchart LR
++  Manager[SimManager] --> Monitor[MultiSimMonitor]
++  Monitor --> Controller[MultiSimController]
++  Monitor --> State[SimStateManager]
++  State --> Handle[SimStateHandle]
++  Handle --> Obs[ObserverHandler]
++  Obs --> Monitor
++  Obs --> Records[IccFile]
++  Obs --> Files[SimFileManager]
++  Files --> Records
++  Records --> State
++  Records --> RecObs[Records ObserverHandler]
++  RecObs --> Files
++  State --> RIL
++  Records --> RIL
++  Files --> FileCtrl[IccFileController]
++  FileCtrl --> RIL
++  Monitor --> AccountObs[Test AccountObserver]
++```
++
++| 引用边/退出动作 | 生产源码位置（相对telephony_core_service） |
++| --- | --- |
++| Manager→Monitor/Controller/State/File | `services/sim/include/sim_manager.h` 成员；`sim_manager.cpp::OnInit/InitMultiSimObject/InitSingleSimObject`；析构函数为空 |
++| Monitor→State、Controller；File只是weak | `services/sim/include/multi_sim_monitor.h:154`～156，构造函数复制所有权 |
++| State→Handle；Handle→Observer | `sim_state_manager.cpp::Init`；`sim_state_handle.cpp::Init`；Handle反向State/RIL是weak，不能误画为强环 |
++| Observer→订阅者 | `services/tel_ril/include/observer_handler.h::observerHandlerMap_`，`observer_handler.cpp::RegObserver/Remove`：map/list存shared_ptr |
++| State的Observer→Monitor | `multi_sim_monitor.cpp::RegisterSimNotify(slot)` 注册STATE_CHANGE/LOCKED/READY；File ICCID观察者另强持Monitor |
++| File→Records；Records→State | `sim_file_manager.h::simFile_/iccFileCache_`；`icc_file.h::stateManager_`；`icc_file.cpp::Init` 注册READY/LOCKED/SIMLOCK，形成独立环 |
++| Records→Observer→File | `sim_file_manager.cpp::InitSimFile` 注册自身RADIO_SIM_RECORDS_LOADED，形成File/Records独立环 |
++| State→Observer→File | `sim_file_manager.cpp::Init` 注册CARD_TYPE_CHANGE及SIM_ICCID_LOADED；反注册后者在 `sim_state_handle.cpp::UnRegisterCoreNotify` 缺失 |
++| Monitor→测试AccountObserver | `SimManager::RegisterCoreNotify` 转发ACCOUNT_LOADED，Monitor强存；Manager的UnRegister缺此分支，Monitor也无对应公开注销方法 |
++| RIL残留 | `SimStateManager::telRilManager_`、`IccFile::telRilManager_`、`IccFileController::telRilManager_` 每槽各一个；同一RIL控制块，不能算成十个对象 |
++| 状态退出未到达 | `SimStateManager::~SimStateManager` 才调用Handle::UnInit；State已在环内，析构触发不了注销 |
++| Monitor析构职责不足 | `~MultiSimMonitor` 仅UnSubscribeListeners（CES/SA），不调用UnRegisterSimNotify；自身强订阅归零前析构不可达 |
++| 队列退出 | `utils/common/src/tel_event_queue.cpp::~TelEventQueue`取消/等待；`RemoveAllEvents`只清事件列表，不是禁止新提交或在途排空屏障 |
++
++28个Host worker是本测试FFRT替身为每个queue创建一个线程的实现结果：每槽8个残留queue（StateHandle/FileManager/FileController/DiallingHandler/SimFile/PhonebookManager/Cache/UsimService），加Controller、RadioProtocolController、Monitor、测试AccountObserver各1。真实OHOS FFRT线程池的线程数不能据此推断。停止点队列记录区分pending、running、cancelled；三个StateHandle遗留约180秒的匹配SIM定时器，其他残留queue可为空且仍有worker。无需等待定时器才能证明强环存在。
++
++RIL最终10 = 测试根1 + 三槽 ×（StateManager1 + IccFile1 + FileController1）。Manager析构前为23，析构及Account/SMS/STK等所有者释放后下降；控制块和地址证据用于验证此分解。AccountObserver是测试额外引入的残留对象，原因是调用真实生产注销接口没有对称实现；其余主环即使移除该观察者仍存在。
++
++## 已实施的Host修复及测试范围
++
++外部 `AppExecFwk::EventHandler` Runner改为显式Running→Stopping→Stopped；准入/创建/移动队列同步，停止期间拒绝Post/Start，退出锁后取消待执行工作并正常join在途任务，关闭后不能被迟到Post自动重建。自己的callback线程同步Stop返回false，交由控制线程停止，避免自join。测试RIL弱订阅表现在按owner注销，不再留下已注销的弱登记；它从未强持SIM对象。
++
++五个 `RunnerLifetime` 测试验证正常完成/重复Stop、取消延迟工作并释放capture、在途Stop与回调重投拒绝、并发Stop、自join拒绝。这些只验收Host平台边界。三个 `RealCardLifetime` 直接构造真实State/File对象：缺RIL初始化失败可释放；有效State单独初始化后可注销/释放；State+File仅经现有公开注销仍不能释放，保留失败断言和RIL泄漏检查，不把预期泄漏写成绿色characterization。`OwnedCardGraph`仅负责测试自己构造的对象，未访问或清理SimManager私有对象。
++
++完整SimManager的在途Stop、重复Stop、迟到回调安全仍BLOCKED：生产对象没有Stop契约，不能拿Runner测试替代这些验收。
++
++## 未应用的最小生产修改建议
++
++[注销配对补丁](pairing_fixes.proposed.patch)给出两个已证实缺口的具体差异（4个生产文件），**仅供审查，未应用、未编译验证**：补SIM_ICCID_LOADED注销，补Manager→Monitor的ACCOUNT_LOADED注销。它们是资源生命周期配对修复，不更改主卡分支、持久化、返回码或RIL协议；但**单独应用仍不足以修复完整图**。
++
++完整最小闭包还必须新增显式停止协议，不能把全部动作塞入空析构函数。建议新私有生命周期接口在调用者仍持共享所有权时执行：
++
++```cpp
++// 方案草图，非已实现/可直接编译的生产代码。
++SimManager::Stop(deadline) {
++    // Running -> Stopping；并发重复调用等待同一停止结果。
++    // 禁止新请求/新订阅/重试启动，跟踪RefreshCache等后台任务。
++    // 已接纳B/C1请求仍允许关联应答与原有定时器完成，不改同步返回语义。
++    if (!WaitExistingRequestsAndCallbacks(deadline)) return NotDrained;
++    monitor->StopSubscriptionsAndDrain(deadline); // CES/SA + UnRegisterSimNotify + account observers
++    for (auto &file : files) file->StopSubscriptionsAndDrain(deadline);
++    for (auto &state : states) state->StopSubscriptionsAndDrain(deadline);
++    // 同步停止其他Account/SMS/STK/Phonebook的已登记工作；缓存全部类型去重。
++    // 成功排空后按依赖释放成员，最后释放本模块的RIL引用；Stopped。
++}
++```
++
++具体修改面及必要顺序：
++
++1. Manager新增Stop状态/在途计数和对称装配清理；RefreshCache分离线程纳入任务登记，拒绝停止期间的重新装配。重复Stop返回同一终态；停止超时保留对象，不宣称排空/卸载成功。
++2. Monitor在ProcessEvent和订阅注册路径检查代次/状态；排空后在有效共享所有权内执行现有UnRegisterSimNotify、UnSubscribeListeners及自身观察者清理。析构只作停止完成校验与无须shared_from_this的兜底。
++3. FileManager对所有缓存IccFile（USIM/GSM可能同对象，须去重）调用UnInit，注销自身STATE两项、RIL两项、各IccFile的RECORDS_LOADED；取消/排空File/Controller/Handler事件后释放缓存。不能只清当前simFile_。
++4. State/Handle先关新注册与无关延迟工作，再UnInit注销RIL、清内部Observer，排空事件；析构不再次依赖shared_from_this。需要新增真实TelEventHandler/Queue准入与排空屏障，RemoveAllEvents不够。禁止持Manager/Observer锁等待worker，避免回调反取同锁；worker发起停止应移交控制线程。
++5. CoreService::OnStop在共享RIL DeInit之前协调SIM停止、CMI/CoreSim脱附及其他消费者。SIM仅释放借用的RIL引用，不停止宿主共享RIL。旧epoch回调必须被门控，重新Init不能让旧回调作用于新图。
++
++以上属于资源生命周期修复，但停止中请求的准入错误、超时停止策略及Core驻留服务的重启次序需另行批准和产品验证。当前常驻进程并不自动释放这些环；新增清理不应改变Running时业务，仍可能暴露过去被进程退出掩盖的注销竞态。需匹配OHOS FFRT、CES/SA、RIL/HDI运行时验证，不用Host队列join证明设备已结束。本轮遵守生产只读边界，因此原C1生命周期验收继续FAIL。
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/external_runner.h b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/external_runner.h
+new file mode 100755
+index 00000000..778617cd
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/external_runner.h
+@@ -0,0 +1,8 @@
++#pragma once
++namespace Sim028Host {
++enum class RunnerState { Running, Stopping, Stopped };
++// Explicit host platform boundary lifecycle, not a production SimManager Stop.
++bool StartExternalRunner();
++bool StopExternalRunner(); // false on its own callback thread (self-join forbidden).
++RunnerState ExternalRunnerState();
++}
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifecycle_diagnostics.h b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifecycle_diagnostics.h
+new file mode 100755
+index 00000000..977b455c
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifecycle_diagnostics.h
+@@ -0,0 +1,16 @@
++#pragma once
++#include "sim_manager.h"
++#include "ffrt_runtime.h"
++#include <iostream>
++namespace Sim028Host {
++// Debugger rendezvous only. No production mutation, extra shared ownership, or cleanup.
++void LifecycleCheckpoint(const char *stage, OHOS::Telephony::SimManager *manager,
++    OHOS::Telephony::ITelRilManager *ril);
++inline void DumpQueues(const char *stage)
++{
++    for (const auto &q : SimHost::GetQueueEvidence())
++        std::cout << "LIFE_QUEUE stage=" << stage << " address=" << q.address << " name=" << q.name
++            << " pending=" << q.pending << " running=" << q.running
++            << " cancelled=" << q.cancelled << " next_ms=" << q.nextDelayMs << '\n';
++}
++}
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp
+new file mode 100755
+index 00000000..ded8fe95
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp
+@@ -0,0 +1,171 @@
++#include "real_scenario.h"
++#include "external_runner.h"
++#include <future>
++#include <atomic>
++
++namespace {
++using namespace Sim028Host;
++using namespace std::chrono_literals;
++
++class RunnerLifetime : public testing::Test {
++protected:
++    std::shared_ptr<AppExecFwk::EventHandler> handler = std::make_shared<AppExecFwk::EventHandler>();
++    void SetUp() override { ASSERT_TRUE(StartExternalRunner()); }
++    void TearDown() override
++    {
++        EXPECT_TRUE(StopExternalRunner());
++        handler.reset();
++        EXPECT_TRUE(SimHost::AwaitSchedulerStopped(3s));
++        EXPECT_EQ(SimHost::GetSchedulerEvidence().taskFailures, 0u);
++    }
++};
++TEST_F(RunnerLifetime, NormalCompletionAndRepeatedStop)
++{
++    std::promise<void> completed;
++    ASSERT_TRUE(handler->PostTask([&] { completed.set_value(); }, "complete", 0));
++    ASSERT_EQ(completed.get_future().wait_for(3s), std::future_status::ready);
++    EXPECT_TRUE(StopExternalRunner());
++    EXPECT_TRUE(StopExternalRunner());
++    EXPECT_EQ(ExternalRunnerState(), RunnerState::Stopped);
++    EXPECT_FALSE(handler->PostTask([] { ADD_FAILURE() << "LATE_CALLBACK"; }, "late", 0));
++}
++TEST_F(RunnerLifetime, PendingTaskCancelledAndCapturedOwnerReleased)
++{
++    auto owner = std::make_shared<int>(7);
++    std::weak_ptr<int> retiring = owner;
++    std::atomic<unsigned> calls{0};
++    ASSERT_TRUE(handler->PostTask([owner, &calls] { ++calls; }, "pending", 180000));
++    owner.reset();
++    EXPECT_FALSE(retiring.expired());
++    EXPECT_TRUE(StopExternalRunner());
++    EXPECT_TRUE(retiring.expired());
++    EXPECT_EQ(calls, 0u);
++    EXPECT_FALSE(handler->PostTask([&] { ++calls; }, "late", 0));
++}
++TEST_F(RunnerLifetime, InFlightStopJoinsAndRejectsCallbackRepost)
++{
++    std::promise<void> entered, release;
++    auto gate = release.get_future().share();
++    std::atomic<bool> repostAccepted{true};
++    ASSERT_TRUE(handler->PostTask([&, gate] {
++        entered.set_value(); gate.wait();
++        repostAccepted = handler->PostTask([] { ADD_FAILURE() << "POST_DURING_STOP"; }, "repost", 0);
++    }, "in-flight", 0));
++    // Release the callback even when a check fails: no assertion leaves a worker blocked.
++    auto enteredStatus = entered.get_future().wait_for(3s);
++    EXPECT_EQ(enteredStatus, std::future_status::ready);
++    auto stopping = std::async(std::launch::async, [] { return StopExternalRunner(); });
++    const auto deadline = std::chrono::steady_clock::now() + 3s;
++    while (ExternalRunnerState() != RunnerState::Stopping && std::chrono::steady_clock::now() < deadline)
++        std::this_thread::yield();
++    EXPECT_EQ(ExternalRunnerState(), RunnerState::Stopping);
++    EXPECT_EQ(stopping.wait_for(0s), std::future_status::timeout);
++    EXPECT_FALSE(StartExternalRunner());
++    EXPECT_FALSE(handler->PostTask([] { ADD_FAILURE(); }, "rejected", 0));
++    release.set_value();
++    EXPECT_TRUE(stopping.get());
++    EXPECT_FALSE(repostAccepted);
++}
++TEST_F(RunnerLifetime, ConcurrentStopIsIdempotent)
++{
++    std::promise<void> entered, release;
++    auto gate = release.get_future().share();
++    ASSERT_TRUE(handler->PostTask([&, gate] { entered.set_value(); gate.wait(); }, "in-flight", 0));
++    EXPECT_EQ(entered.get_future().wait_for(3s), std::future_status::ready);
++    auto first = std::async(std::launch::async, [] { return StopExternalRunner(); });
++    auto second = std::async(std::launch::async, [] { return StopExternalRunner(); });
++    release.set_value();
++    EXPECT_TRUE(first.get()); EXPECT_TRUE(second.get());
++    EXPECT_EQ(ExternalRunnerState(), RunnerState::Stopped);
++}
++TEST_F(RunnerLifetime, CallbackCannotSynchronouslyJoinItself)
++{
++    std::promise<bool> result;
++    ASSERT_TRUE(handler->PostTask([&] { result.set_value(StopExternalRunner()); }, "self-stop", 0));
++    auto future = result.get_future();
++    ASSERT_EQ(future.wait_for(3s), std::future_status::ready);
++    EXPECT_FALSE(future.get());
++    EXPECT_EQ(ExternalRunnerState(), RunnerState::Running);
++}
++
++TEST(RealCardLifetime, MissingRilInitializationReleasesState)
++{
++    auto state = std::make_shared<SimStateManager>(nullptr);
++    std::weak_ptr<SimStateManager> retiring = state;
++    state->Init(0); // real initialization exits before allocating its handler
++    state.reset();
++    EXPECT_TRUE(retiring.expired());
++    EXPECT_TRUE(SimHost::AwaitSchedulerStopped(3s));
++}
++
++TEST(RealCardLifetime, InitializedStateUnregistersRilAndReleases)
++{
++    RealScenario environment;
++    auto state = std::make_shared<SimStateManager>(environment.ril);
++    std::weak_ptr<SimStateManager> retiring = state;
++    state->Init(0);
++    state.reset();
++    EXPECT_TRUE(retiring.expired());
++    EXPECT_TRUE(SimHost::AwaitSchedulerStopped(3s));
++    EXPECT_EQ(environment.ril.use_count(), 1);
++    std::lock_guard<std::mutex> lock(environment.mutex);
++    EXPECT_TRUE(environment.notifications.empty());
++}
++
++// Test-owned composition, using only public unregistration APIs while all owners
++// are valid. This is NOT a Stop implementation for the opaque SimManager graph.
++class OwnedCardGraph {
++public:
++    std::shared_ptr<SimStateManager> state;
++    std::shared_ptr<SimFileManager> files;
++    std::shared_ptr<IccFile> records;
++    std::shared_ptr<MockTelRilManager> ril;
++    bool stopped = false;
++    explicit OwnedCardGraph(const std::shared_ptr<MockTelRilManager> &radio) : ril(radio)
++    {
++        state = std::make_shared<SimStateManager>(ril); state->Init(0);
++        files = SimFileManager::CreateInstance(ril, state); files->Init(0);
++        records = files->GetIccFile();
++    }
++    void Stop()
++    {
++        if (stopped) return;
++        stopped = true;
++        std::cout << "CARD_LIFE before_detach state=" << state.get() << " refs=" << state.use_count()
++            << " files=" << files.get() << " refs=" << files.use_count()
++            << " records=" << records.get() << " refs=" << records.use_count() << '\n';
++        if (records) {
++            records->UnInit();
++            records->UnRegisterCoreNotify(files, RadioEvent::RADIO_SIM_RECORDS_LOADED);
++        }
++        state->UnRegisterCoreNotify(files, RadioEvent::RADIO_CARD_TYPE_CHANGE);
++        state->UnRegisterCoreNotify(files, RadioEvent::RADIO_SIM_ICCID_LOADED);
++        ril->UnRegisterCoreNotify(0, files, RadioEvent::RADIO_VOICE_TECH_CHANGED);
++        ril->UnRegisterCoreNotify(0, files, RadioEvent::RADIO_ICC_REFRESH);
++        std::cout << "CARD_LIFE after_public_detach state_refs=" << state.use_count()
++            << " files_refs=" << files.use_count() << " records_refs=" << records.use_count() << '\n';
++        files.reset(); records.reset(); state.reset(); ril.reset();
++    }
++    ~OwnedCardGraph() { Stop(); }
++};
++TEST(RealCardLifetime, PublicDetachReleasesRealStateFileAndRil)
++{
++    RealScenario environment;
++    OwnedCardGraph graph(environment.ril);
++    ASSERT_NE(graph.records, nullptr);
++    std::weak_ptr<SimStateManager> state = graph.state;
++    std::weak_ptr<SimFileManager> files = graph.files;
++    std::weak_ptr<IccFile> records = graph.records;
++    std::weak_ptr<IccFileController> controller = graph.files->GetIccFileController();
++    graph.Stop(); graph.Stop();
++    EXPECT_TRUE(state.expired()); EXPECT_TRUE(files.expired());
++    EXPECT_TRUE(records.expired()); EXPECT_TRUE(controller.expired());
++    EXPECT_TRUE(SimHost::AwaitSchedulerStopped(3s));
++    EXPECT_EQ(environment.ril.use_count(), 1);
++    {
++        std::lock_guard<std::mutex> lock(environment.mutex);
++        EXPECT_TRUE(environment.notifications.empty());
++    }
++    testing::Test::RecordProperty("real_card_lifetime", testing::Test::HasFailure() ? "FAIL" : "PASS");
++}
++} // namespace
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/pairing_fixes.proposed.patch b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/pairing_fixes.proposed.patch
+new file mode 100755
+index 00000000..af35cdce
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/pairing_fixes.proposed.patch
+@@ -0,0 +1,52 @@
++--- a/telephony_core_service/services/sim/src/sim_state_handle.cpp
+++++ b/telephony_core_service/services/sim/src/sim_state_handle.cpp
++@@ -1115,6 +1115,9 @@
++             TELEPHONY_LOGI("SimStateHandle::RegisterCardTypeChange()");
++             observerHandler_->Remove(RadioEvent::RADIO_CARD_TYPE_CHANGE, handler);
++             break;
+++        case RadioEvent::RADIO_SIM_ICCID_LOADED:
+++            observerHandler_->Remove(RadioEvent::RADIO_SIM_ICCID_LOADED, handler);
+++            break;
++         default:
++             TELEPHONY_LOGI("SimStateHandle UnRegisterCoreNotify do default");
++             break;
++--- a/telephony_core_service/services/sim/include/multi_sim_monitor.h
+++++ b/telephony_core_service/services/sim/include/multi_sim_monitor.h
++@@ -46,6 +46,7 @@
++     void AddExtraManagers(std::shared_ptr<Telephony::SimStateManager> simStateManager,
++         std::shared_ptr<Telephony::SimFileManager> simFileManager);
++     void RegisterCoreNotify(int32_t slotId, const std::shared_ptr<AppExecFwk::EventHandler> &handler, int what);
+++    void UnRegisterCoreNotify(const std::shared_ptr<AppExecFwk::EventHandler> &handler, int what);
++     int32_t RegisterSimAccountCallback(const int32_t tokenId, const sptr<SimAccountCallback> &callback);
++     int32_t UnregisterSimAccountCallback(const sptr<SimAccountCallback> &callback);
++     void NotifySimAccountChanged();
++--- a/telephony_core_service/services/sim/src/multi_sim_monitor.cpp
+++++ b/telephony_core_service/services/sim/src/multi_sim_monitor.cpp
++@@ -395,6 +395,14 @@
++     }
++ }
++ 
+++void MultiSimMonitor::UnRegisterCoreNotify(
+++    const std::shared_ptr<AppExecFwk::EventHandler> &handler, int what)
+++{
+++    if (observerHandler_ != nullptr) {
+++        observerHandler_->Remove(what, handler);
+++    }
+++}
+++
++ bool MultiSimMonitor::IsValidSlotId(int32_t slotId)
++ {
++     return (slotId >= DEFAULT_SIM_SLOT_ID) && slotId < static_cast<int32_t>(simStateManager_.size());
++--- a/telephony_core_service/services/sim/src/sim_manager.cpp
+++++ b/telephony_core_service/services/sim/src/sim_manager.cpp
++@@ -1240,6 +1240,10 @@
++             return;
++         }
++         simStateManager_[slotId]->UnRegisterCoreNotify(observerCallBack, what);
+++    } else if (what == RadioEvent::RADIO_SIM_ACCOUNT_LOADED) {
+++        if (multiSimMonitor_ != nullptr) {
+++            multiSimMonitor_->UnRegisterCoreNotify(observerCallBack, what);
+++        }
++     } else if (what >= RadioEvent::RADIO_ESIM_SWITCH_CIRCUIT_BEGIN && what <= RadioEvent::RADIO_ESIM_SWITCH_END) {
++         if (TELEPHONY_EXT_WRAPPER.unregisterEsimSwitchNotify_ == nullptr) {
++             TELEPHONY_LOGE("TELEPHONY_EXT_WRAPPER.unregisterEsimSwitchNotify_ is nullptr!");
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/run_diagnostics.py b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/run_diagnostics.py
+new file mode 100755
+index 00000000..9be04325
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/run_diagnostics.py
+@@ -0,0 +1,62 @@
++#!/usr/bin/env python3
++"""Trace the original failing scenario with read-only LLDB; propagate test failure."""
++import argparse
++import hashlib
++import json
++import os
++import re
++from pathlib import Path
++import subprocess
++import xml.etree.ElementTree as ET
++from summarize_graph import summarize
++
++HERE = Path(__file__).resolve().parent
++REPO = HERE.parents[6]
++CASE = 'RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected'
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--binary', type=Path, default=REPO / '.host-out/build/sim_primary_slot_real_test')
++    parser.add_argument('--output', type=Path, required=True)
++    args = parser.parse_args()
++    binary = args.binary.resolve(strict=True)
++    out = args.output.resolve()
++    out.mkdir(parents=True, exist_ok=True)
++    commands = out / 'trace.lldb'
++    commands.write_text('settings set target.disable-aslr false\ncommand script import "' +
++                        str(HERE / 'trace_graph.py') + '"\nrun\n')
++    argv = ['lldb', '--batch', '--source', str(commands), '--', str(binary),
++            '--gtest_filter=' + CASE, '--gtest_output=xml:' + str(out / 'test.xml')]
++    env = dict(os.environ, SIM_HOST_BOOT_SLOT_COUNT='2', SIM_LIFE_GRAPH=str(out / 'graph.json'),
++               LLVM_PROFILE_FILE=str(out / 'trace-%p.profraw'))
++    with (out / 'trace.log').open('w') as stream:
++        result = subprocess.run(argv, env=env, cwd=out, stdout=stream, stderr=subprocess.STDOUT, timeout=120)
++    exits = re.findall(r'Process \d+ exited with status = (\d+)', (out / 'trace.log').read_text())
++    inferior_exit = int(exits[-1]) if exits else None
++    report = {'command': argv, 'lldb_exit': result.returncode, 'inferior_exit': inferior_exit,
++              'binary_sha256': hashlib.sha256(binary.read_bytes()).hexdigest(),
++              'head': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=REPO, text=True).strip(),
++              'status': 'BLOCKED'}
++    if (out / 'graph.json').exists() and (out / 'test.xml').exists():
++        graph = json.loads((out / 'graph.json').read_text())
++        cases = ET.parse(out / 'test.xml').getroot().findall('.//testcase')
++        failures = sum(bool(c.findall('failure')) for c in cases)
++        snapshots = graph['snapshots']
++        complete = (not graph['errors'] and len(snapshots) >= 3 and
++                    any(any(c['type'].endswith('ITelRilManager') and c['use_count'] == 10
++                            for c in s.get('retained_control_blocks', [])) for s in snapshots))
++        if complete:
++            proof = summarize(graph)
++            (out / 'ownership-proof.json').write_text(json.dumps(proof, indent=2) + '\n')
++            complete = proof['status'] == 'PASS'
++        report.update(executed=len(cases), failed=failures,
++                      diagnostics='PASS' if complete else 'FAIL',
++                      status=('FAIL' if failures or inferior_exit else 'PASS') if complete and result.returncode == 0 and inferior_exit is not None else 'BLOCKED')
++    (out / 'result.json').write_text(json.dumps(report, indent=2) + '\n')
++    print(json.dumps(report, indent=2))
++    return {'PASS': 0, 'FAIL': 1, 'BLOCKED': 2}[report['status']]
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/summarize_graph.py b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/summarize_graph.py
+new file mode 100755
+index 00000000..1acc0016
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/summarize_graph.py
+@@ -0,0 +1,55 @@
++"""Derive address-linked ownership proofs from the read-only LLDB snapshot."""
++from collections import Counter
++
++
++def summarize(report):
++    snapshot = next(s for s in report['snapshots'] if s['stage'] == 'manager_destructor_entry')
++    after = next(s for s in report['snapshots'] if s['stage'] == '"after_cleanup"')
++    aliases = snapshot['base_subobject_aliases']
++    def canonical(address):
++        seen = set()
++        while address in aliases and aliases[address] != address and address not in seen:
++            seen.add(address)
++            address = aliases[address]
++        return address
++    types = {canonical(a): n['type'].rsplit('::', 1)[-1] for a, n in snapshot['nodes'].items()
++             if n['type'] != 'OHOS::AppExecFwk::EventHandler'}
++    edges = []
++    for edge in snapshot['edges']:
++        if edge['ownership'] not in ('shared', 'unique'): continue
++        edges.append(dict(edge, original_from=edge['from'], original_to=edge['to'],
++                          **{'from': canonical(edge['from']), 'to': canonical(edge['to'])}))
++    def cycle(start, sequence):
++        def visit(address, remaining, path):
++            if not remaining: return path if address == start else None
++            for edge in edges:
++                if edge['from'] == address and types.get(edge['to']) == remaining[0]:
++                    found = visit(edge['to'], remaining[1:], path + [edge])
++                    if found: return found
++            return None
++        return visit(start, sequence, [])
++    proofs = []
++    for address, typ in types.items():
++        if typ == 'SimStateManager':
++            for label, sequence in [('monitor_state', ['SimStateHandle', 'ObserverHandler', 'MultiSimMonitor', typ]),
++                                    ('records_state', ['SimStateHandle', 'ObserverHandler', 'IccFile', typ])]:
++                path = cycle(address, sequence)
++                if path: proofs.append({'kind': label, 'root': address, 'edges': path})
++        if typ == 'SimFileManager':
++            path = cycle(address, ['IccFile', 'ObserverHandler', typ])
++            if path: proofs.append({'kind': 'file_records', 'root': address, 'edges': path})
++    retained = {c['address']: c for c in after['retained_control_blocks']}
++    ril = next(c for c in retained.values() if c['type'].endswith('ITelRilManager'))
++    holders = [e for e in edges if e['to'] == ril['address'] and e['from'] in retained and
++               e['ownership'] == 'shared']
++    counts = Counter(p['kind'] for p in proofs)
++    verified = (not report['errors'] and counts == {'monitor_state': 3, 'records_state': 3, 'file_records': 3}
++                and len(holders) == 9 and ril['use_count'] == len(holders) + 1
++                and all(c['use_count'] is not None and c['use_count'] > 0 for c in retained.values()))
++    return {'status': 'PASS' if verified else 'FAIL',
++            'scope': 'ownership proof only; the GTest remains FAIL',
++            'cycles': proofs, 'retained_controls': list(retained.values()),
++            'ril_production_holders': holders, 'ril_fixture_roots': 1,
++            'ril_observed_use_count': ril['use_count'],
++            'native_threads_after_cleanup': len(after['threads']),
++            'queue_worker_stacks': sum(any(f and 'ffrt::Worker(' in f for f in t['frames']) for t in after['threads'])}
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/trace_graph.py b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/trace_graph.py
+new file mode 100755
+index 00000000..cf51d930
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/trace_graph.py
+@@ -0,0 +1,191 @@
++"""Read-only LLDB diagnostics: named DWARF fields, no target expressions or writes.
++
++Private members are inspected only by the debugger; no C++ access-control bypass,
++raw offset interpretation, additional target shared ownership, or forced cleanup.
++"""
++import json
++import os
++import re
++import lldb
++
++REPORT = {'schema_version': 1, 'method': 'read_only_named_DWARF_fields_and_breakpoints',
++          'events': [], 'snapshots': [], 'errors': []}
++WATCHES = {}
++OUT = os.environ.get('SIM_LIFE_GRAPH', '/tmp/sim028-lifetime-graph.json')
++
++def save():
++    with open(OUT, 'w') as stream:
++        json.dump(REPORT, stream, indent=2)
++        stream.write('\n')
++
++def member(value, name, depth=0):
++    raw = value.GetNonSyntheticValue()
++    found = raw.GetChildMemberWithName(name)
++    if found.IsValid():
++        return found
++    if depth < 4:
++        for index in range(raw.GetType().GetNumberOfDirectBaseClasses()):
++            base = raw.GetChildAtIndex(index)
++            result = member(base, name, depth + 1)
++            if result.IsValid():
++                return result
++    return lldb.SBValue()
++
++def pointer(value):
++    value.SetPreferSyntheticValue(True)
++    if value.GetType().IsPointerType():
++        return value
++    p = member(value, '_M_ptr')
++    if p.IsValid():
++        return p
++    # LLDB's libstdc++ unique_ptr synthetic child exposes the typed pointer.
++    for child in value:
++        if child.GetType().IsPointerType():
++            return child
++    return lldb.SBValue()
++
++def count(value):
++    control = member(member(value, '_M_refcount'), '_M_pi')
++    if not control.IsValid() or not control.GetValueAsUnsigned():
++        return None
++    field = member(control.Dereference(), '_M_use_count')
++    return field.GetValueAsSigned() if field.IsValid() else None
++
++def graph(root):
++    nodes, edges, visited, aliases = {}, [], set(), {}
++    def obj(value, address, typename, depth):
++        key = hex(address)
++        if (address, typename) in visited or depth > 30 or len(nodes) >= 300:
++            return
++        visited.add((address, typename))
++        nodes[key] = {'type': typename}
++        fields(value, address, '', depth)
++    def fields(value, owner, path, depth):
++        if depth > 35 or not value.IsValid():
++            return
++        typ = value.GetType().GetCanonicalType().GetName() or ''
++        if value.GetType().IsPointerType() or value.GetType().IsReferenceType():
++            return
++        value.SetPreferSyntheticValue(True)
++        smart = re.match(r'^(?:const )?std::(?:__)?(?:shared_ptr|weak_ptr|unique_ptr)<', typ) is not None
++        if smart:
++            p = pointer(value)
++            address = p.GetValueAsUnsigned() if p.IsValid() else 0
++            if not address:
++                return
++            ownership = 'weak' if 'weak_ptr<' in typ else 'unique' if 'unique_ptr<' in typ else 'shared'
++            dynamic = p.GetDynamicValue(lldb.eDynamicDontRunTarget)
++            if dynamic.IsValid(): p = dynamic
++            address = p.GetValueAsUnsigned()
++            target_type = p.GetType().GetPointeeType().GetCanonicalType().GetName() or ''
++            # Save a typed control-block address in debugger-owned data. No
++            # target shared_ptr copy/increment. Read again only for the proven
++            # retained SCC and its owned objects, never freed/unrelated objects.
++            retained = ['SimStateManager', 'SimStateHandle', 'SimFileManager', 'IccFile',
++                        'IccFileController', 'MultiSimMonitor', 'MultiSimController',
++                        'RadioProtocolController', 'ITelRilManager', 'IccDiallingNumbersHandler',
++                        'IccDiallingNumbersManager', 'IccDiallingNumbersCache', 'UsimDiallingNumbersService']
++            if ownership == 'shared' and target_type.rsplit('::', 1)[-1] in retained:
++                control = member(member(value, '_M_refcount'), '_M_pi')
++                if control.IsValid():
++                    WATCHES[hex(address)] = (target_type, control.GetValueAsUnsigned(), control.GetType().GetPointeeType())
++
++            edges.append({'from': hex(owner), 'to': hex(address), 'member': path,
++                          'ownership': ownership, 'shared_count_at_snapshot': count(value) if ownership != 'unique' else None,
++                          'target_type': target_type})
++            if ownership != 'weak' and ('OHOS::' in target_type) and 'Mock' not in target_type:
++                obj(p.Dereference(), address, target_type, depth + 1)
++            return
++        if value.GetType().IsPointerType() or value.GetType().IsReferenceType():
++            return
++        container = any(token in typ for token in ['std::vector<', 'std::map<', 'std::list<', 'std::__cxx11::list<', 'std::pair<'])
++        if container:
++            for index in range(min(value.GetNumChildren(), 300)):
++                child = value.GetChildAtIndex(index)
++                label = child.GetName() or str(index)
++                if 'std::map<' in typ:
++                    key = member(child, 'first')
++                    if key.IsValid(): label += '{event=' + str(key.GetValueAsSigned()) + '}'
++                fields(child, owner, path + '.' + label, depth + 1)
++            return
++        if 'OHOS::' not in typ or 'Mock' in typ:
++            return
++        raw = value.GetNonSyntheticValue()
++        for child in raw:
++            name = child.GetName() or ''
++            if name.startswith('OHOS::'):
++                address = child.GetLoadAddress()
++                if address != lldb.LLDB_INVALID_ADDRESS:
++                    aliases[hex(address)] = hex(owner)
++            fields(child, owner, path + ('.' if path else '') + name, depth + 1)
++    obj(root.Dereference(), root.GetValueAsUnsigned(), root.GetType().GetPointeeType().GetCanonicalType().GetName(), 0)
++    return {'nodes': nodes, 'edges': edges, 'base_subobject_aliases': aliases}
++
++def event(frame, bp_loc, internal_dict):
++    try:
++        name = frame.GetFunctionName() or ''
++        this = frame.FindVariable('this')
++        row = {'function': name, 'this': hex(this.GetValueAsUnsigned()),
++               'thread_id': frame.GetThread().GetThreadID()}
++        if 'ObserverHandler::RegObserver' in name or 'ObserverHandler::Remove(' in name:
++            handler = frame.FindVariable('handler')
++            if handler.GetType().IsReferenceType(): handler = handler.Dereference()
++            ptr = pointer(handler)
++            row.update({'event_id': frame.FindVariable('what').GetValueAsSigned(),
++                        'handler': hex(ptr.GetValueAsUnsigned()), 'handler_type': ptr.GetDynamicValue(lldb.eDynamicDontRunTarget).GetTypeName()})
++        if 'SimManager::~SimManager(' in name and this.GetValueAsUnsigned():
++            REPORT['snapshots'].append(dict(stage='manager_destructor_entry', manager=row['this'], **graph(this)))
++        REPORT['events'].append(row)
++        save()
++    except Exception as error:
++        REPORT['errors'].append(repr(error)); save()
++    return False
++
++def checkpoint(frame, bp_loc, internal_dict):
++    try:
++        for index in range(min(frame.GetThread().GetNumFrames(), 6)):
++            candidate = frame.GetThread().GetFrameAtIndex(index)
++            if (candidate.GetFunctionName() or '').startswith('Sim028Host::LifecycleCheckpoint('):
++                frame = candidate
++                break
++        manager = frame.FindVariable('manager')
++        stage = frame.FindVariable('stage').GetSummary()
++        snapshot = {'frame': frame.GetFunctionName(), 'arguments': [(v.GetName(), v.GetValue(), v.GetSummary()) for v in frame.GetVariables(True, False, False, True)], 'stage': stage, 'manager': hex(manager.GetValueAsUnsigned()),
++                    'ril': hex(frame.FindVariable('ril').GetValueAsUnsigned())}
++        if manager.GetValueAsUnsigned(): snapshot.update(graph(manager))
++        if stage == '"after_cleanup"':
++            destroyed = {e['this'] for e in REPORT['events'] if '::~' in e['function']}
++            snapshot['retained_control_blocks'] = []
++            for address, (typ, control_address, control_type) in WATCHES.items():
++                if address in destroyed: continue
++                target = frame.GetThread().GetProcess().GetTarget()
++                control = target.CreateValueFromAddress('retained_control', lldb.SBAddress(control_address, target), control_type)
++                field = member(control, '_M_use_count')
++                snapshot['retained_control_blocks'].append({'address': address, 'type': typ,
++                    'control_block': hex(control_address),
++                    'use_count': field.GetValueAsSigned() if field.IsValid() and field.GetError().Success() else None})
++        snapshot['threads'] = [{'id': t.GetThreadID(), 'frames': [t.GetFrameAtIndex(i).GetFunctionName() for i in range(min(t.GetNumFrames(), 16))]} for t in frame.GetThread().GetProcess()]
++        REPORT['snapshots'].append(snapshot)
++        save()
++    except Exception as error:
++        REPORT['errors'].append(repr(error)); save()
++    return False
++
++def __lldb_init_module(debugger, internal_dict):
++    target = debugger.GetSelectedTarget()
++    REPORT['resolved_breakpoints'] = []
++    names = ['SimManager', 'MultiSimMonitor', 'MultiSimController', 'SimStateManager',
++             'SimStateHandle', 'SimFileManager', 'IccFile', 'SimFile', 'IccFileController',
++             'SimSmsManager', 'SimSmsController', 'SimAccountManager', 'StkManager',
++             'StkController', 'RadioProtocolController', 'OperatorConfigCache', 'SimStateTracker']
++    for name in names:
++        bp = target.BreakpointCreateByRegex(r'OHOS::Telephony::' + name + r'::(~?' + name + r')\(')
++        bp.SetScriptCallbackFunction(__name__ + '.event')
++        REPORT['resolved_breakpoints'].append({'pattern': str(bp), 'locations': bp.GetNumLocations()})
++    for name in ['RegObserver', 'Remove', 'RemoveAll']:
++        bp = target.BreakpointCreateByRegex(r'OHOS::Telephony::ObserverHandler::' + name + r'\(')
++        bp.SetScriptCallbackFunction(__name__ + '.event')
++        REPORT['resolved_breakpoints'].append({'pattern': str(bp), 'locations': bp.GetNumLocations()})
++    bp = target.BreakpointCreateByName('Sim028Host::LifecycleCheckpoint')
++    bp.SetScriptCallbackFunction(__name__ + '.checkpoint')
++    save()

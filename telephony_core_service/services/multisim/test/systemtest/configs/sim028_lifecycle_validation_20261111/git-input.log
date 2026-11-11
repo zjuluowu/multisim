@@ -1,0 +1,34 @@
+/mnt/e/github/multisim
+origin	https://github.com/zjuluowu/multisim.git (fetch)
+origin	https://github.com/zjuluowu/multisim.git (push)
+upstream	https://github.com/openharmony/telephony_core_service.git (fetch)
+upstream	https://github.com/openharmony/telephony_core_service.git (push)
++ docs/sim-refactor-recovery-20261030          9f72e7ff9 (/tmp/multisim-recovery-entry) [origin/main: behind 40] docs(sim): record clean remote recovery and relocated validation
+  docs/sim-target-arch-v1.2-independent-review 1afffa4e0 [origin/docs/sim-target-arch-v1.2-independent-review: gone] docs(sim): independent architecture review of target design v1.2
++ docs/sim-target-v1.2-audit-round3            c70894f83 (/tmp/multisim-audit-round3) [origin/docs/sim-target-v1.2-audit-round3: gone] docs(sim): independently audit v1.2 orchestration and migration boundaries
++ integration/sim-review-fixes-20261029        5eed21816 (/tmp/multisim-stage1-sync) [origin/main: behind 44] fix(sim): integrate reviewed architecture contracts with main
+* main                                         b3e2b93ac [origin/main] docs(sim): record verified SIM-028 publication and standing push policy
++ work/g2a-bplus-integration                   2feaf1277 (/tmp/multisim-g2a-bplus-20261102) [origin/work/g2a-bplus-integration] docs(multisim): record verified G2a B+ host closure and admission gates
++ work/g2a-bplus-revalidation-20261104         d5f0527c5 (/mnt/e/g2a-bplus-m1-20261104) [origin/work/g2a-bplus-revalidation-20261104] docs(sim): consolidate verified refactor and test guard status
++ work/g2a-readonly-checkpoint-20261030        728ad77ed (/tmp/multisim-g2a-checkpoint) [origin/main: ahead 3, behind 40] Merge remote-tracking branch 'origin/main' into work/g2a-readonly-checkpoint-20261030
++ work/g2a-real-query-20261030                 5eed21816 (/tmp/multisim-g2a) fix(sim): integrate reviewed architecture contracts with main
+  work/sim-guard-contract-20261104             01db5ce64 [origin/work/sim-guard-contract-20261104] docs(sim): record authorized guard branch publication
+  work/sim-guard-round2                        5e209a761 docs(sim): record authorized main publication of round2 guard
+b3e2b93ac2a9dc77f0a557b6a2ff22a730354009
+/mnt/e/github/multisim                             b3e2b93a [main]
+/mnt/e/g2a-bplus-m1-20261104                       d5f0527c [work/g2a-bplus-revalidation-20261104]
+/mnt/e/g2a-bplus-m1-history-20261104               728ad77e (detached HEAD)
+/mnt/e/multisim-main-integration-20261105          541bb0e8 (detached HEAD)
+/mnt/e/sim-guard-round2-artifacts/baseline-source  e99caba3 (detached HEAD)
+/tmp/multisim-audit-round3                         c70894f8 [docs/sim-target-v1.2-audit-round3]
+/tmp/multisim-g2a                                  5eed2181 [work/g2a-real-query-20261030]
+/tmp/multisim-g2a-bplus-20261102                   2feaf127 [work/g2a-bplus-integration]
+/tmp/multisim-g2a-checkpoint                       728ad77e [work/g2a-readonly-checkpoint-20261030]
+/tmp/multisim-recovery-entry                       9f72e7ff [docs/sim-refactor-recovery-20261030]
+/tmp/multisim-stage1-sync                          5eed2181 [integration/sim-review-fixes-20261029]
++ git rev-parse --show-toplevel
++ git remote -v
++ git branch -vv
++ git rev-parse HEAD
++ git diff --cached --name-status
++ git worktree list

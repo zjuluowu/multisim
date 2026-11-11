@@ -1,0 +1,49 @@
+Note: Google Test filter = *-*DEFECT_*
+[==========] Running 17 tests from 3 test suites.
+[----------] Global test environment set-up.
+[----------] 4 tests from ContractDriver
+[ RUN      ] ContractDriver.PIN_001
+[       OK ] ContractDriver.PIN_001 (8 ms)
+[ RUN      ] ContractDriver.PIN_002_CommandFailure
+[       OK ] ContractDriver.PIN_002_CommandFailure (0 ms)
+[ RUN      ] ContractDriver.DUAL_001
+[       OK ] ContractDriver.DUAL_001 (1 ms)
+[ RUN      ] ContractDriver.RIL_001_DuplicateAndError
+[       OK ] ContractDriver.RIL_001_DuplicateAndError (1 ms)
+[----------] 4 tests from ContractDriver (16 ms total)
+
+[----------] 10 tests from SessionLifecycle
+[ RUN      ] SessionLifecycle.INIT_001_SingleEnumeration
+[       OK ] SessionLifecycle.INIT_001_SingleEnumeration (1 ms)
+[ RUN      ] SessionLifecycle.INIT_002_MissingRilThenRecreate
+[       OK ] SessionLifecycle.INIT_002_MissingRilThenRecreate (0 ms)
+[ RUN      ] SessionLifecycle.INIT_DUAL_002_ReversedEnumeration
+[       OK ] SessionLifecycle.INIT_DUAL_002_ReversedEnumeration (0 ms)
+[ RUN      ] SessionLifecycle.CALLBACK_002_MalformedThenRecovery
+[       OK ] SessionLifecycle.CALLBACK_002_MalformedThenRecovery (0 ms)
+[ RUN      ] SessionLifecycle.CALLBACK_003_DroppedThenRecovery
+[       OK ] SessionLifecycle.CALLBACK_003_DroppedThenRecovery (0 ms)
+[ RUN      ] SessionLifecycle.PUK_002_WrongThenSuccessfulUnlock
+[       OK ] SessionLifecycle.PUK_002_WrongThenSuccessfulUnlock (1 ms)
+[ RUN      ] SessionLifecycle.REFRESH_001_ExplicitStatusQuery
+[       OK ] SessionLifecycle.REFRESH_001_ExplicitStatusQuery (1 ms)
+[ RUN      ] SessionLifecycle.RECREATE_001_DualCardReenumeration
+[       OK ] SessionLifecycle.RECREATE_001_DualCardReenumeration (1 ms)
+[ RUN      ] SessionLifecycle.RECREATE_002_ReplacementWhileStopped
+[       OK ] SessionLifecycle.RECREATE_002_ReplacementWhileStopped (1 ms)
+[ RUN      ] SessionLifecycle.DUAL_002_PinWhileOtherCardRemoved
+[       OK ] SessionLifecycle.DUAL_002_PinWhileOtherCardRemoved (2 ms)
+[----------] 10 tests from SessionLifecycle (24 ms total)
+
+[----------] 3 tests from Compatibility/Lifecycle
+[ RUN      ] Compatibility/Lifecycle.PublicCardState/LIFE_001
+[       OK ] Compatibility/Lifecycle.PublicCardState/LIFE_001 (1 ms)
+[ RUN      ] Compatibility/Lifecycle.PublicCardState/LIFE_002
+[       OK ] Compatibility/Lifecycle.PublicCardState/LIFE_002 (1 ms)
+[ RUN      ] Compatibility/Lifecycle.PublicCardState/PUK_001
+[       OK ] Compatibility/Lifecycle.PublicCardState/PUK_001 (1 ms)
+[----------] 3 tests from Compatibility/Lifecycle (6 ms total)
+
+[----------] Global test environment tear-down
+[==========] 17 tests from 3 test suites ran. (53 ms total)
+[  PASSED  ] 17 tests.

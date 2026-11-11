@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="1" failures="0" disabled="0" errors="0" time="0.013" timestamp="2026-11-11T16:37:50.288" name="AllTests">
+  <testsuite name="RealCardLifetime" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.01" timestamp="2026-11-11T16:37:50.290">
+    <testcase name="InitializedStateUnregistersRilAndReleases" file="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp" line="101" status="run" result="completed" time="0.009" timestamp="2026-11-11T16:37:50.290" classname="RealCardLifetime">
+      <properties>
+        <property name="workers_after_cleanup" value="0"/>
+        <property name="ril_references_after_cleanup" value="1"/>
+        <property name="account_observer_expired" value="true"/>
+        <property name="object_lifetime" value="PASS"/>
+        <property name="strict_ril_expectations_verified" value="PASS"/>
+      </properties>
+    </testcase>
+  </testsuite>
+</testsuites>

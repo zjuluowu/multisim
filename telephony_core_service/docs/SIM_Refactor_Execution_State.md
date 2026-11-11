@@ -646,3 +646,38 @@ Provider根因已闭合：生产bundle/GN实际依赖telephony_data，Host此前
 实际发布完成：提交 `0ea5ef84e57c80e02090a1596f15cfb75b6d5ea7`（`test(sim): execute real primary-slot host branches and publish progress`），共133项文件变更，已常规推送 `origin/main`。推送后 `git ls-remote origin refs/heads/main`、本地HEAD和origin/main返回相同SHA，包含关系及133项提交白名单核验通过。98份原有修改摘要保持不变，发布后工作树仅保留这些行尾修改，暂存区为空、无未跟踪遗漏文件。两级AGENTS的持续发布规则已随本次成果保存到main，测试FAIL/BLOCKED/MANUAL结论保持§17原值。
 
 本段为发布后的文档追记，随独立文档提交同步远端，不写自身提交SHA；最终main tip以实际Git远端核验为准。
+
+
+<a id="sim028-lifetime-20261111"></a>
+
+## 18. SIM-028 对象生命周期定位与Host修复（2026-11-11）
+
+输入main为 `b3e2b93ac2a9dc77f0a557b6a2ff22a730354009`。本批按用户最新边界只改测试/诊断/必要进度，不改旧SIM/Core/RIL生产实现；98份既有用户修改按原始SHA256保护。用户在本轮入口明确规定提交/推送需当次任务授权，本批未提交、未推送；不以磁盘AGENTS的历史持续发布条款覆盖该指令。历史§17证据保持原字节。
+
+重新执行原C1后，以只读LLDB命名DWARF字段、构造/析构及真实Observer注册断点证明每槽三类强环：State→Handle→Observer→Monitor→State；State→Handle→Observer→IccFile→State；FileManager→IccFile→Observer→FileManager。三槽共9条具体地址闭环，保留每条强边、基类子对象地址映射及源码依据。Manager确已析构，清理后31个被观察的控制块仍有正强计数：各槽State=4、Handle=1、FileManager=5、IccFile=6、FileController=5，Monitor=12、Controller/RadioController各1等。RIL同一控制块计数10 = fixture根1 + 三槽State/IccFile/FileController各1，实际9条生产持有边对应同一地址；不能解释成十个RIL对象或十处独立泄漏。
+
+28个worker对应每槽8个queue及Controller/RadioController/Monitor/测试AccountObserver各1；现场29个原生线程中28个为等待的Host队列worker，没有RefreshCache分离线程或运行中业务回调。三个StateHandle仍有约180秒匹配SIM定时器，其他队列空也不能退出，因为所有者仍被强环持有。Host FFRT使用每queue一线程，不能外推真实OHOS FFRT线程数。生产注销另确认两处不对称：SimStateHandle缺SIM_ICCID_LOADED注销，SimManager/Monitor缺ACCOUNT_LOADED注销；后者留下测试观察者，是Host额外对象，但不构成其余生产环的唯一原因。
+
+实际修复外部平台Runner的无同步懒创建/关闭后自动复活问题：显式Running→Stopping→Stopped，停止时拒绝新Post/Start，解锁后取消待执行任务并正常join在途任务；回调线程自Stop显式拒绝。测试RIL弱登记现在按owner注销。增加8条同目标测试，7 PASS / 1 FAIL：5条Runner正常/延迟/在途/并发/自join测试、真实缺RIL初始化清理、真实State单独初始化注销释放通过；真实State+File通过公开注销仍释放失败（5个queue、RIL=4），保持红灯和原清理断言。
+
+| 本批实际验证 | 结果 |
+| --- | --- |
+| GN/Ninja Debug增量构建 | PASS；Clang/LLDB18.1.3，GN1000，Ninja1.11.1；实际命令、源码/二进制摘要归档 |
+| 原C1单例及地址追踪 | 业务PASS、严格RIL PASS、生命周期FAIL；GTest exit1，LLDB exit0单独记录；所有权证明PASS不等于GTest通过 |
+| 原7条RealSimPrimary | 1 PASS / 6 FAIL；六条业务/严格RIL均PASS，清理均FAIL，仍为28worker/RIL10 |
+| 原14入口 | 14 PASS；不以PrimaryEntry.*的12条子集代替完整入口统计 |
+| 原Host60条 | 55 PASS / 5 FAIL，原五条独立缺陷及断言完整保留 |
+| 含新增测试完整回归 | 75执行，63 PASS / 12 FAIL，exit1；5旧缺陷+6整图清理+1新隔离子图清理失败，无跳过 |
+| 迁移资产/骨架/接缝 | PASS；219资产、130份C++/JSON原字节、11项显式后续变更；架构规则及既有接缝生成核对通过 |
+| 完整生产Stop在途/重复/迟到回调验收 | BLOCKED；真实Manager没有Stop/Drain入口，Runner验收不替代生产生命周期验收 |
+
+[独立本轮记录](../services/multisim/test/systemtest/configs/sim028_lifecycle_validation_20261111.json)及同名证据目录保存构建/全量日志、逐例XML、控制块与对象地址、9条闭环/9条RIL持有边证明、逐层结果、源码/二进制/输入摘要和本批文件清单。复现和逐边源码说明查 [生命周期诊断](../services/multisim/test/systemtest/primary_slot/lifecycle/README.md)。没有新增生产探针、私有清理、AllowLeak或等待时间延长，没有降低业务断言。
+
+最小后续需单独授权生产生命周期修复：先修复两处注销配对（已交付未应用的4文件建议patch），再由有效共享所有权的组合根显式停止Manager/Monitor/File/State及后台任务，补准入/代次/在途屏障，注销全部缓存订阅后按依赖排空释放；Core在共享RIL停止前协调SIM关闭，SIM不停止宿主共享RIL。RemoveAllEvents不是排空屏障，析构里shared_from_this不是合法替代。保留Running时主卡语义，停止中原B/C1请求仍应按已批准规则完成；停止超时不得释放/宣称SO可卸载。完整停止方案及OpenHarmony常驻服务/重启风险已具体列入诊断说明，未将配对patch单独宣称为完整修复。本轮原C1生命周期目标尚未达成，保持FAIL。
+
+
+### 18.1 本批成果发布授权与预检
+
+用户在上述验收后明确要求将本地修改提交并推送远端main。本次按80项白名单发布§18生命周期诊断、Host修复、新用例、未应用生产补丁建议及独立证据；不纳入98份原有修改，不应用生产补丁。发布前fetch确认本地main与origin/main同为b3e2b93a，暂存区为空；63份证据摘要、16份代码/说明摘要与98份保护输入逐项核对通过，其他worktree未改变。
+
+本批沿用已完成的75条63 PASS/12 FAIL、原C1业务及严格RIL PASS/生命周期FAIL，不因发布重复宣称测试通过。独立JSON中的published=false、未提交说明、代码/说明摘要及归档diff是发布授权前的真实验收快照，保留原字节；本小节是之后的授权及发布准备增量，因此执行状态文件摘要以Git本次提交为准。发布使用常规提交和origin/main推送，精确提交结果与远端包含关系以Git核验为准。

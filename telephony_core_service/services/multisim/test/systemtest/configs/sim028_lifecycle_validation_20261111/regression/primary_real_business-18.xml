@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="1" failures="0" disabled="0" errors="0" time="0.004" timestamp="2026-11-11T16:37:49.968" name="AllTests">
+  <testsuite name="RealCardLifetime" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.001" timestamp="2026-11-11T16:37:49.970">
+    <testcase name="MissingRilInitializationReleasesState" file="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp" line="91" status="run" result="completed" time="0." timestamp="2026-11-11T16:37:49.970" classname="RealCardLifetime" />
+  </testsuite>
+</testsuites>

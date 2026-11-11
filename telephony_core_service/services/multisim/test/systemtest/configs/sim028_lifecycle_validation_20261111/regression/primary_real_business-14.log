@@ -1,0 +1,11 @@
+Note: Google Test filter = RunnerLifetime.PendingTaskCancelledAndCapturedOwnerReleased
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RunnerLifetime
+[ RUN      ] RunnerLifetime.PendingTaskCancelledAndCapturedOwnerReleased
+[       OK ] RunnerLifetime.PendingTaskCancelledAndCapturedOwnerReleased (0 ms)
+[----------] 1 test from RunnerLifetime (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (4 ms total)
+[  PASSED  ] 1 test.

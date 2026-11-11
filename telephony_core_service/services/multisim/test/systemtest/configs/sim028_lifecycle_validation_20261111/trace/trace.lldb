@@ -1,0 +1,3 @@
+settings set target.disable-aslr false
+command script import "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/trace_graph.py"
+run

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "status": "CHECKPOINT_VERIFIED",
+  "remote_refs_refreshed": true,
+  "current_runtime_test_executed": false,
+  "repository_root": "/mnt/e/github/multisim",
+  "head": "b3e2b93ac2a9dc77f0a557b6a2ff22a730354009",
+  "current_branch": "main",
+  "dirty": true,
+  "worktree_change_count": 98,
+  "remote": "origin",
+  "remote_url": "https://github.com/zjuluowu/multisim.git",
+  "main_head": "b3e2b93ac2a9dc77f0a557b6a2ff22a730354009",
+  "g2a_branch": "work/g2a-readonly-checkpoint-20261030",
+  "g2a_branch_head": "728ad77ed4c723efbb5cb1baf7b3f10bb9830240",
+  "g2a_commit": "cc787945792527eeb94bc20a5e955315d6269e83",
+  "main_contains_g2a": false,
+  "current_checkout_contains_main_baseline": true,
+  "current_checkout_contains_g2a_checkpoint": false,
+  "verified_production_sources": [
+    "telephony_core_service/services/core/src/core_service_sim.cpp",
+    "telephony_core_service/services/core/src/legacy_sim_query_binding.cpp",
+    "telephony_core_service/services/multisim/application/query/real_sim_count_query.cpp",
+    "telephony_core_service/services/sim/src/sim_manager.cpp",
+    "telephony_core_service/services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp"
+  ],
+  "branch_tip_sources_match_checkpoint": true,
+  "branch_tip_evidence_matches_checkpoint": true,
+  "branch_tip_missing_code_paths": [],
+  "changed_code_or_validation_paths": [],
+  "fresh_validation_required": false,
+  "required_code_paths_verified": 6,
+  "evidence_path": "telephony_core_service/test/systemtest/configs/g2a_checkpoint_evidence.json",
+  "notes": [
+    "Git reachability and saved source digests were verified; no current runtime test was executed.",
+    "main_contains_g2a=false is normal while product acceptance keeps the code on its work branch."
+  ]
+}

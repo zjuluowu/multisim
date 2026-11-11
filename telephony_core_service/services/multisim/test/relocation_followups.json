@@ -24,8 +24,8 @@
     },
     "services/multisim/test/systemtest/BUILD.gn": {
       "relocation_sha256": "af60d6518d1224eecdac66d5b6fdb148035085eac2f9d2fe918d083751616a53",
-      "current_sha256": "86c0c9d585afaeae2d77ae9b377c0aeb3065148a68f0e52777c1ab0382fbd0cb",
-      "reason": "Retain entry and all legacy targets; pin Provider header for initialization; add real Manager/Controller target and isolated negative-control source input."
+      "current_sha256": "fef82ec33aa716d20c232aac6bff8806a8ebc08e828f92a5425e081583ad28ee",
+      "reason": "Register lifecycle cases in the existing real target; retain every legacy target and assertion."
     },
     "services/multisim/test/systemtest/scripts/audit_initialization.py": {
       "relocation_sha256": "36ab28439ffcf6cdfc4783669d619c9033b5957e403df9571653d284446d7c91",
@@ -34,8 +34,8 @@
     },
     "services/multisim/test/systemtest/stubs/ffrt_runtime.cpp": {
       "relocation_sha256": "47ca6163b88147cfffb1a2fbb0797fe93980da3271e23c734629bef0d5b02f07",
-      "current_sha256": "7fb6f532c34f0832a82cfb2ab4dd6547119f7bdeadde748c2e71af6b600f6e92",
-      "reason": "SIM-028 authorized Host engineering: real initialization audit, external parameter bootstrap or terminal scheduler wait; original business assertions preserved."
+      "current_sha256": "e79482e7caecf08abc2fcdaad2d5183bf5a765543d1252be7a98b92740af2db9",
+      "reason": "Read-only named queue evidence; no scheduling or cleanup semantics changed."
     },
     "services/multisim/test/systemtest/stubs/parameter_service.cpp": {
       "relocation_sha256": "8e82238e3cdb8ae448beb68c0026cb15282681e4ffc52416f3529cf2d1e704b7",
@@ -51,6 +51,11 @@
       "relocation_sha256": "3417683496f298fb41ac54ff303482c04b9edf812de0275bc4b3edeff659c884",
       "current_sha256": "83d1d782576db4ff9925c8cb24a11522a1349912f0f3d5aebe1f7bacd6cbd4e0",
       "reason": "SIM-028 real Host execution/provenance documentation; original business assertions retained."
+    },
+    "services/multisim/test/systemtest/stubs/ffrt_runtime.h": {
+      "relocation_sha256": "e56da308da2035b69ec7b25b3bdf352eaa3c79c0df2cce62e1b7265d6c99c21e",
+      "current_sha256": "e737313a96054614619f0b8d0e9d66b3099b17bd9057efd0f81a1d2306dc1ea5",
+      "reason": "Read-only queue evidence declarations; retain existing scheduler assertions."
     }
   }
 }

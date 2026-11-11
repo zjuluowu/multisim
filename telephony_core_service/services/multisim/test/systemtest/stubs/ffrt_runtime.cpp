@@ -32,6 +32,7 @@ struct HostTask {
     std::weak_ptr<HostQueue> owner;
 };
 struct HostQueue {
+    std::string name;
     mutex lock;
     condition_variable changed;
     std::vector<std::shared_ptr<HostTask>> tasks;
@@ -98,8 +99,9 @@ static void Worker(const std::shared_ptr<HostQueue> &state)
     evidenceChanged.notify_all();
 }
 
-queue::queue(const char *) : state_(std::make_shared<HostQueue>())
+queue::queue(const char *name) : state_(std::make_shared<HostQueue>())
 {
+    state_->name = name ? name : "";
     {
         std::lock_guard<mutex> guard(evidenceMutex);
         ++workers;
@@ -217,6 +219,28 @@ void StopCallingThreadTasks()
     auto &general = ffrt::GeneralOwner();
     if (general) general->wait_idle();
     general.reset();
+}
+std::vector<QueueEvidence> GetQueueEvidence()
+{
+    std::vector<std::shared_ptr<ffrt::HostQueue>> states;
+    {
+        std::lock_guard<ffrt::mutex> lock(evidenceMutex);
+        for (const auto &weak : queues) if (auto state = weak.lock()) states.push_back(std::move(state));
+    }
+    std::vector<QueueEvidence> result;
+    for (const auto &state : states) {
+        std::lock_guard<ffrt::mutex> lock(state->lock);
+        QueueEvidence row{reinterpret_cast<uintptr_t>(state.get()), state->name, 0, state->running ? 1u : 0u, 0, -1};
+        for (const auto &task : state->tasks) {
+            if (task->status.load() == ffrt::HostTaskStatus::PENDING) {
+                ++row.pending;
+                auto delay = std::chrono::duration_cast<std::chrono::milliseconds>(task->due - std::chrono::steady_clock::now()).count();
+                if (row.nextDelayMs < 0 || delay < row.nextDelayMs) row.nextDelayMs = delay;
+            } else if (task->status.load() == ffrt::HostTaskStatus::CANCELLED) ++row.cancelled;
+        }
+        result.push_back(row);
+    }
+    return result;
 }
 SchedulerEvidence GetSchedulerEvidence()
 {

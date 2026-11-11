@@ -1,0 +1,39 @@
+[==========] Running 14 tests from 2 test suites.
+[----------] Global test environment set-up.
+[----------] 12 tests from PrimaryEntry
+[ RUN      ] PrimaryEntry.NonSystemCallerPrecedesPermissionAndNullManager
+[       OK ] PrimaryEntry.NonSystemCallerPrecedesPermissionAndNullManager (2 ms)
+[ RUN      ] PrimaryEntry.PermissionDenialPrecedesNullManager
+[       OK ] PrimaryEntry.PermissionDenialPrecedesNullManager (0 ms)
+[ RUN      ] PrimaryEntry.NullManagerPrecedesCapabilityRecheck
+[       OK ] PrimaryEntry.NullManagerPrecedesCapabilityRecheck (0 ms)
+[ RUN      ] PrimaryEntry.ChangedExternalSystemAppDecisionRejectsExtendedSlot
+[       OK ] PrimaryEntry.ChangedExternalSystemAppDecisionRejectsExtendedSlot (0 ms)
+[ RUN      ] PrimaryEntry.MissingCardStopsBeforeActiveAndPreference
+[       OK ] PrimaryEntry.MissingCardStopsBeforeActiveAndPreference (0 ms)
+[ RUN      ] PrimaryEntry.InactiveCardStopsBeforePreferenceAndSwitch
+[       OK ] PrimaryEntry.InactiveCardStopsBeforePreferenceAndSwitch (0 ms)
+[ RUN      ] PrimaryEntry.ReadyCardWritesPreferenceBeforeDelegatingExactTarget
+[       OK ] PrimaryEntry.ReadyCardWritesPreferenceBeforeDelegatingExactTarget (0 ms)
+[ RUN      ] PrimaryEntry.ManagerFailureReturnedUnchangedAfterPreferenceWrite
+[       OK ] PrimaryEntry.ManagerFailureReturnedUnchangedAfterPreferenceWrite (0 ms)
+[ RUN      ] PrimaryEntry.FailedPreferenceWriteStillDelegatesCurrentBehavior
+[       OK ] PrimaryEntry.FailedPreferenceWriteStillDelegatesCurrentBehavior (0 ms)
+[ RUN      ] PrimaryEntry.PresenceQueryFailureWithFalseOutputReturnsNoCard
+[       OK ] PrimaryEntry.PresenceQueryFailureWithFalseOutputReturnsNoCard (0 ms)
+[ RUN      ] PrimaryEntry.PresenceQueryFailureWithTrueOutputStillDelegates
+[       OK ] PrimaryEntry.PresenceQueryFailureWithTrueOutputStillDelegates (0 ms)
+[ RUN      ] PrimaryEntry.StableSystemAppPassesExtendedSlotCapability
+[       OK ] PrimaryEntry.StableSystemAppPassesExtendedSlotCapability (0 ms)
+[----------] 12 tests from PrimaryEntry (15 ms total)
+
+[----------] 2 tests from CallerKinds/NativeOrShell
+[ RUN      ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/0
+[       OK ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/0 (0 ms)
+[ RUN      ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/1
+[       OK ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/1 (0 ms)
+[----------] 2 tests from CallerKinds/NativeOrShell (3 ms total)
+
+[----------] Global test environment tear-down
+[==========] 14 tests from 2 test suites ran. (22 ms total)
+[  PASSED  ] 14 tests.
