@@ -641,3 +641,8 @@ Provider根因已闭合：生产bundle/GN实际依赖telephony_data，Host此前
 本次发布范围为§17真实Host测试、Provider契约/运行边界、构建/IDE、说明与独立证据，以及上述AGENTS规则。发布前输入main为d44632a，原98份用户行尾修改及18份历史入口证据按原始摘要保护，原SIM/Core/RIL/公共接口和产品构建不纳入提交。沿用已执行的67例56 PASS/11 FAIL及单场景因果证据，本次发布不改变六个清理失败、五个既有缺陷、完整部件BLOCKED或GUI MANUAL状态；规则/发布操作不重复宣称业务验证通过。提交与推送结果在核实后追记。
 
 发布前再次通过迁移资产核验（219文件、131份C++/JSON原字节一致、10项显式后续变更）及14项源表测试。133项逐文件白名单与暂存区完全一致，索引与工作树文件逐字节一致；代码/配置/文档空白检查通过。全量空白检查仅报告原始编译/LLDB日志及unified patch上下文的空白，保留这些证据原字节及既有摘要，不改写测试结果或补丁内容。
+
+
+实际发布完成：提交 `0ea5ef84e57c80e02090a1596f15cfb75b6d5ea7`（`test(sim): execute real primary-slot host branches and publish progress`），共133项文件变更，已常规推送 `origin/main`。推送后 `git ls-remote origin refs/heads/main`、本地HEAD和origin/main返回相同SHA，包含关系及133项提交白名单核验通过。98份原有修改摘要保持不变，发布后工作树仅保留这些行尾修改，暂存区为空、无未跟踪遗漏文件。两级AGENTS的持续发布规则已随本次成果保存到main，测试FAIL/BLOCKED/MANUAL结论保持§17原值。
+
+本段为发布后的文档追记，随独立文档提交同步远端，不写自身提交SHA；最终main tip以实际Git远端核验为准。
