@@ -604,3 +604,5 @@ python3 -B telephony_core_service/services/multisim/test/multisim_architecture_r
 用户随后要求先将本地修改提交到远端main。本次发布纳入41项主卡入口测试、IDE/构建配置、说明文档与证据，包含用户新增的对比说明；上文“未提交/推送”为当时工程建设记录。发布前实际fetch核实本地/远端main均为02765fa3，暂存区为空，归档摘要与99份用户输入逐项匹配。此前98份tracked变化经原始字节核对仅为LF/CRLF差异，按仓库逐文件提交及旧生产保护规则留在原工作树，不将无关生产行尾改动混入本次发布。新归档日志仅整理制表符及行尾空白、同步摘要，不改变诊断信息或结果；用户对比说明保持原字节及Markdown硬换行格式。
 
 发布不改变14条入口PASS、全量55 PASS/5 FAIL、完整部件调用链BLOCKED及GUI MANUAL。没有生产迁移，不将提交/推送成功解释为整链验收完成；其他worktree保持原状。发布核验结果随后补记。
+
+实际发布核验：工程提交 `f8c892ce966e551ae596bec543b6921a4cbcacc4`（`test(sim): cover primary slot entry and record full-chain blockers`），41项相关文件，已常规推送origin/main；推送后ls-remote与origin/main均为同SHA，包含关系通过。相对输入02765fa3确认原SIM/Core/RIL/EXT、公共接口和原产品/单测入口没有提交差异。工作树仅保留原98份行尾差异，摘要未变，暂存区为空，无遗漏的未跟踪交付文件。本段是发布后的独立文档追记，不写自身SHA；最终main精确tip以远端Git核验为准，入口PASS和整链BLOCKED仍按原运行证据解释。
