@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="14" failures="7" disabled="0" errors="0" time="0." timestamp="2026-11-11T11:44:10.506" name="AllTests">
+  <testsuite name="PrimaryEntry" tests="12" failures="5" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-11T11:44:10.506">
+    <testcase name="NonSystemCallerPrecedesPermissionAndNullManager" file="../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="52" status="run" result="completed" time="0." timestamp="2026-11-11T11:44:10.506" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+      </properties>
+    </testcase>
+    <testcase name="PermissionDenialPrecedesNullManager" file="../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="59" status="run" result="completed" time="0." timestamp="2026-11-11T11:44:10.506" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+      </properties>
+    </testcase>
+    <testcase name="NullManagerPrecedesCapabilityRecheck" file="../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="65" status="run" result="completed" time="0." timestamp="2026-11-11T11:44:10.506" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+      </properties>
+    </testcase>
+    <testcase name="ChangedExternalSystemAppDecisionRejectsExtendedSlot" file="../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="71" status="run" result="completed" time="0." timestamp="2026-11-11T11:44:10.506" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+      </properties>
+    </testcase>
+    <testcase name="MissingCardStopsBeforeActiveAndPreference" file="../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="80" status="run" result="completed" time="0." timestamp="2026-11-11T11:44:10.506" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+      </properties>
+    </testcase>
+    <testcase name="InactiveCardStopsBeforePreferenceAndSwitch" file="../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="86" status="run" result="completed" time="0." timestamp="2026-11-11T11:44:10.506" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+      </properties>
+    </testcase>
+    <testcase name="ReadyCardWritesPreferenceBeforeDelegatingExactTarget" file="../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="94" status="run" result="completed" time="0." timestamp="2026-11-11T11:44:10.506" classname="PrimaryEntry">
+      <failure message="unknown file&#x0A;&#x0A;Unexpected mock function call - returning default value.&#x0A;    Function call: SetPrimarySlotId(1, false)&#x0A;          Returns: 0&#x0A;Google Mock tried the following 1 expectation, but it didn&apos;t match:&#x0A;&#x0A;../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...&#x0A;  Expected arg #1: is equal to true&#x0A;           Actual: false&#x0A;         Expected: to be called once&#x0A;           Actual: never called - unsatisfied and active&#x0A;" type=""><![CDATA[unknown file
+
+Unexpected mock function call - returning default value.
+    Function call: SetPrimarySlotId(1, false)
+          Returns: 0
+Google Mock tried the following 1 expectation, but it didn't match:
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+  Expected arg #1: is equal to true
+           Actual: false
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+]]></failure>
+      <failure message="../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49&#x0A;Actual function call count doesn&apos;t match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...&#x0A;         Expected: to be called once&#x0A;           Actual: never called - unsatisfied and active&#x0A;" type=""><![CDATA[../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49
+Actual function call count doesn't match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+]]></failure>
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+      </properties>
+    </testcase>
+    <testcase name="ManagerFailureReturnedUnchangedAfterPreferenceWrite" file="../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="102" status="run" result="completed" time="0." timestamp="2026-11-11T11:44:10.506" classname="PrimaryEntry">
+      <failure message="unknown file&#x0A;&#x0A;Unexpected mock function call - returning default value.&#x0A;    Function call: SetPrimarySlotId(0, false)&#x0A;          Returns: 0&#x0A;Google Mock tried the following 1 expectation, but it didn&apos;t match:&#x0A;&#x0A;../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...&#x0A;  Expected arg #1: is equal to true&#x0A;           Actual: false&#x0A;         Expected: to be called once&#x0A;           Actual: never called - unsatisfied and active&#x0A;" type=""><![CDATA[unknown file
+
+Unexpected mock function call - returning default value.
+    Function call: SetPrimarySlotId(0, false)
+          Returns: 0
+Google Mock tried the following 1 expectation, but it didn't match:
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+  Expected arg #1: is equal to true
+           Actual: false
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+]]></failure>
+      <failure message="../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:108&#x0A;Expected equality of these values:&#x0A;  core.SetPrimarySlotId(0)&#x0A;    Which is: 0&#x0A;  TELEPHONY_ERR_RIL_CMD_FAIL&#x0A;    Which is: 83886107&#x0A;" type=""><![CDATA[../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:108
+Expected equality of these values:
+  core.SetPrimarySlotId(0)
+    Which is: 0
+  TELEPHONY_ERR_RIL_CMD_FAIL
+    Which is: 83886107
+]]></failure>
+      <failure message="../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49&#x0A;Actual function call count doesn&apos;t match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...&#x0A;         Expected: to be called once&#x0A;           Actual: never called - unsatisfied and active&#x0A;" type=""><![CDATA[../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49
+Actual function call count doesn't match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+]]></failure>
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+      </properties>
+    </testcase>
+    <testcase name="FailedPreferenceWriteStillDelegatesCurrentBehavior" file="../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="110" status="run" result="completed" time="0." timestamp="2026-11-11T11:44:10.507" classname="PrimaryEntry">
+      <failure message="unknown file&#x0A;&#x0A;Unexpected mock function call - returning default value.&#x0A;    Function call: SetPrimarySlotId(1, false)&#x0A;          Returns: 0&#x0A;Google Mock tried the following 1 expectation, but it didn&apos;t match:&#x0A;&#x0A;../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...&#x0A;  Expected arg #1: is equal to true&#x0A;           Actual: false&#x0A;         Expected: to be called once&#x0A;           Actual: never called - unsatisfied and active&#x0A;" type=""><![CDATA[unknown file
+
+Unexpected mock function call - returning default value.
+    Function call: SetPrimarySlotId(1, false)
+          Returns: 0
+Google Mock tried the following 1 expectation, but it didn't match:
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+  Expected arg #1: is equal to true
+           Actual: false
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+]]></failure>
+      <failure message="../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49&#x0A;Actual function call count doesn&apos;t match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...&#x0A;         Expected: to be called once&#x0A;           Actual: never called - unsatisfied and active&#x0A;" type=""><![CDATA[../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49
+Actual function call count doesn't match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+]]></failure>
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+        <property name="oracle" value="legacy_characterization_SetParameter_return_is_ignored"/>
+      </properties>
+    </testcase>
+    <testcase name="PresenceQueryFailureWithFalseOutputReturnsNoCard" file="../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="119" status="run" result="completed" time="0." timestamp="2026-11-11T11:44:10.507" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+        <property name="oracle" value="legacy_characterization_HasSimCard_return_is_ignored"/>
+      </properties>
+    </testcase>
+    <testcase name="PresenceQueryFailureWithTrueOutputStillDelegates" file="../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="126" status="run" result="completed" time="0." timestamp="2026-11-11T11:44:10.507" classname="PrimaryEntry">
+      <failure message="unknown file&#x0A;&#x0A;Unexpected mock function call - returning default value.&#x0A;    Function call: SetPrimarySlotId(1, false)&#x0A;          Returns: 0&#x0A;Google Mock tried the following 1 expectation, but it didn&apos;t match:&#x0A;&#x0A;../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...&#x0A;  Expected arg #1: is equal to true&#x0A;           Actual: false&#x0A;         Expected: to be called once&#x0A;           Actual: never called - unsatisfied and active&#x0A;" type=""><![CDATA[unknown file
+
+Unexpected mock function call - returning default value.
+    Function call: SetPrimarySlotId(1, false)
+          Returns: 0
+Google Mock tried the following 1 expectation, but it didn't match:
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+  Expected arg #1: is equal to true
+           Actual: false
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+]]></failure>
+      <failure message="../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49&#x0A;Actual function call count doesn&apos;t match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...&#x0A;         Expected: to be called once&#x0A;           Actual: never called - unsatisfied and active&#x0A;" type=""><![CDATA[../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49
+Actual function call count doesn't match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+]]></failure>
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+        <property name="oracle" value="legacy_characterization_HasSimCard_return_is_ignored"/>
+      </properties>
+    </testcase>
+    <testcase name="StableSystemAppPassesExtendedSlotCapability" file="../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="135" status="run" result="completed" time="0." timestamp="2026-11-11T11:44:10.507" classname="PrimaryEntry">
+      <failure message="unknown file&#x0A;&#x0A;Unexpected mock function call - returning default value.&#x0A;    Function call: SetPrimarySlotId(3, false)&#x0A;          Returns: 0&#x0A;Google Mock tried the following 1 expectation, but it didn&apos;t match:&#x0A;&#x0A;../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...&#x0A;  Expected arg #1: is equal to true&#x0A;           Actual: false&#x0A;         Expected: to be called once&#x0A;           Actual: never called - unsatisfied and active&#x0A;" type=""><![CDATA[unknown file
+
+Unexpected mock function call - returning default value.
+    Function call: SetPrimarySlotId(3, false)
+          Returns: 0
+Google Mock tried the following 1 expectation, but it didn't match:
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+  Expected arg #1: is equal to true
+           Actual: false
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+]]></failure>
+      <failure message="../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49&#x0A;Actual function call count doesn&apos;t match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...&#x0A;         Expected: to be called once&#x0A;           Actual: never called - unsatisfied and active&#x0A;" type=""><![CDATA[../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49
+Actual function call count doesn't match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+]]></failure>
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+      </properties>
+    </testcase>
+  </testsuite>
+  <testsuite name="CallerKinds/NativeOrShell" tests="2" failures="2" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-11T11:44:10.507">
+    <testcase name="SystemAppAndExtendedCapabilityUseRealTokenRules/0" value_param="1" file="../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="146" status="run" result="completed" time="0." timestamp="2026-11-11T11:44:10.507" classname="CallerKinds/NativeOrShell">
+      <failure message="unknown file&#x0A;&#x0A;Unexpected mock function call - returning default value.&#x0A;    Function call: SetPrimarySlotId(3, false)&#x0A;          Returns: 0&#x0A;Google Mock tried the following 1 expectation, but it didn&apos;t match:&#x0A;&#x0A;../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...&#x0A;  Expected arg #1: is equal to true&#x0A;           Actual: false&#x0A;         Expected: to be called once&#x0A;           Actual: never called - unsatisfied and active&#x0A;" type=""><![CDATA[unknown file
+
+Unexpected mock function call - returning default value.
+    Function call: SetPrimarySlotId(3, false)
+          Returns: 0
+Google Mock tried the following 1 expectation, but it didn't match:
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+  Expected arg #1: is equal to true
+           Actual: false
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+]]></failure>
+      <failure message="../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49&#x0A;Actual function call count doesn&apos;t match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...&#x0A;         Expected: to be called once&#x0A;           Actual: never called - unsatisfied and active&#x0A;" type=""><![CDATA[../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49
+Actual function call count doesn't match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+]]></failure>
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+      </properties>
+    </testcase>
+    <testcase name="SystemAppAndExtendedCapabilityUseRealTokenRules/1" value_param="2" file="../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="146" status="run" result="completed" time="0." timestamp="2026-11-11T11:44:10.507" classname="CallerKinds/NativeOrShell">
+      <failure message="unknown file&#x0A;&#x0A;Unexpected mock function call - returning default value.&#x0A;    Function call: SetPrimarySlotId(3, false)&#x0A;          Returns: 0&#x0A;Google Mock tried the following 1 expectation, but it didn&apos;t match:&#x0A;&#x0A;../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...&#x0A;  Expected arg #1: is equal to true&#x0A;           Actual: false&#x0A;         Expected: to be called once&#x0A;           Actual: never called - unsatisfied and active&#x0A;" type=""><![CDATA[unknown file
+
+Unexpected mock function call - returning default value.
+    Function call: SetPrimarySlotId(3, false)
+          Returns: 0
+Google Mock tried the following 1 expectation, but it didn't match:
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+  Expected arg #1: is equal to true
+           Actual: false
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+]]></failure>
+      <failure message="../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49&#x0A;Actual function call count doesn&apos;t match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...&#x0A;         Expected: to be called once&#x0A;           Actual: never called - unsatisfied and active&#x0A;" type=""><![CDATA[../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49
+Actual function call count doesn't match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+]]></failure>
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+      </properties>
+    </testcase>
+  </testsuite>
+</testsuites>

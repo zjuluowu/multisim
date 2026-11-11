@@ -1,0 +1,5 @@
+In file included from /mnt/e/github/multisim/telephony_core_service/services/core/src/core_service.cpp:16:
+/mnt/e/github/multisim/telephony_core_service/services/core/include/core_service.h:26:10: fatal error: 'system_ability.h' file not found
+   26 | #include "system_ability.h"
+      |          ^~~~~~~~~~~~~~~~~~
+1 error generated.

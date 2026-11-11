@@ -1,0 +1,298 @@
++ /usr/bin/python3 -B /mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/generate_manager_seam.py --check
++ gn gen /tmp/sim-primary-slot-validation-final/build --root=/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest --export-compile-commands --args=production_root="/mnt/e/github/multisim/telephony_core_service" gtest_root="/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59" host_debug=true primary_slot_core_source=""
+Generating compile_commands took 1ms
+Done. Made 22 targets from 3 files in 60ms
++ ninja -C /tmp/sim-primary-slot-validation-final/build -j 4 sim_primary_slot_entry_test
+ninja: Entering directory `/tmp/sim-primary-slot-validation-final/build'
+[1/11] CXX /mnt/e/github/multisim/telephony_core_service/common/capability_mgr/src/multi_sims_capability_manager.cpp
+[2/11] CXX /tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59/googlemock/src/gmock-all.cc
+[3/11] CXX /mnt/e/github/multisim/telephony_core_service/utils/common/src/telephony_permission.cpp
+[4/11] CXX /mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_sim.cpp
+[5/11] touch obj/primary_slot_entry_production.stamp
+[6/11] CXX ../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/security_boundary.cpp
+[7/11] CXX /tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59/googletest/src/gtest-all.cc
+[8/11] ar rcs obj/liblibgoogletest.a obj/ABS_PATH/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59/googletest/src/libgoogletest.gtest-all.o
+[9/11] ar rcs obj/liblibgooglemock.a obj/ABS_PATH/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59/googlemock/src/libgooglemock.gmock-all.o
+[10/11] CXX ../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp
+[11/11] LINK sim_primary_slot_entry_test
++ /tmp/sim-primary-slot-validation-final/build/sim_primary_slot_entry_test --gtest_output=xml:/tmp/sim-primary-slot-validation-final/execution-wh839ljy/normal.xml
+[==========] Running 14 tests from 2 test suites.
+[----------] Global test environment set-up.
+[----------] 12 tests from PrimaryEntry
+[ RUN      ] PrimaryEntry.NonSystemCallerPrecedesPermissionAndNullManager
+[       OK ] PrimaryEntry.NonSystemCallerPrecedesPermissionAndNullManager (0 ms)
+[ RUN      ] PrimaryEntry.PermissionDenialPrecedesNullManager
+[       OK ] PrimaryEntry.PermissionDenialPrecedesNullManager (0 ms)
+[ RUN      ] PrimaryEntry.NullManagerPrecedesCapabilityRecheck
+[       OK ] PrimaryEntry.NullManagerPrecedesCapabilityRecheck (0 ms)
+[ RUN      ] PrimaryEntry.ChangedExternalSystemAppDecisionRejectsExtendedSlot
+[       OK ] PrimaryEntry.ChangedExternalSystemAppDecisionRejectsExtendedSlot (0 ms)
+[ RUN      ] PrimaryEntry.MissingCardStopsBeforeActiveAndPreference
+[       OK ] PrimaryEntry.MissingCardStopsBeforeActiveAndPreference (0 ms)
+[ RUN      ] PrimaryEntry.InactiveCardStopsBeforePreferenceAndSwitch
+[       OK ] PrimaryEntry.InactiveCardStopsBeforePreferenceAndSwitch (0 ms)
+[ RUN      ] PrimaryEntry.ReadyCardWritesPreferenceBeforeDelegatingExactTarget
+[       OK ] PrimaryEntry.ReadyCardWritesPreferenceBeforeDelegatingExactTarget (0 ms)
+[ RUN      ] PrimaryEntry.ManagerFailureReturnedUnchangedAfterPreferenceWrite
+[       OK ] PrimaryEntry.ManagerFailureReturnedUnchangedAfterPreferenceWrite (0 ms)
+[ RUN      ] PrimaryEntry.FailedPreferenceWriteStillDelegatesCurrentBehavior
+[       OK ] PrimaryEntry.FailedPreferenceWriteStillDelegatesCurrentBehavior (0 ms)
+[ RUN      ] PrimaryEntry.PresenceQueryFailureWithFalseOutputReturnsNoCard
+[       OK ] PrimaryEntry.PresenceQueryFailureWithFalseOutputReturnsNoCard (0 ms)
+[ RUN      ] PrimaryEntry.PresenceQueryFailureWithTrueOutputStillDelegates
+[       OK ] PrimaryEntry.PresenceQueryFailureWithTrueOutputStillDelegates (0 ms)
+[ RUN      ] PrimaryEntry.StableSystemAppPassesExtendedSlotCapability
+[       OK ] PrimaryEntry.StableSystemAppPassesExtendedSlotCapability (0 ms)
+[----------] 12 tests from PrimaryEntry (0 ms total)
+
+[----------] 2 tests from CallerKinds/NativeOrShell
+[ RUN      ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/0
+[       OK ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/0 (0 ms)
+[ RUN      ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/1
+[       OK ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/1 (0 ms)
+[----------] 2 tests from CallerKinds/NativeOrShell (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 14 tests from 2 test suites ran. (0 ms total)
+[  PASSED  ] 14 tests.
++ llvm-profdata-18 merge -sparse /tmp/sim-primary-slot-validation-final/execution-wh839ljy/normal.profraw -o /tmp/sim-primary-slot-validation-final/execution-wh839ljy/normal.profdata
++ llvm-cov-18 export (saved to coverage.log)
++ gn gen /tmp/sim-primary-slot-validation-final/build --root=/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest --export-compile-commands --args=production_root="/mnt/e/github/multisim/telephony_core_service" gtest_root="/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59" host_debug=true primary_slot_core_source="/tmp/sim-primary-slot-validation-final/execution-wh839ljy/core_service_sim_mutated.cpp"
+Generating compile_commands took 0ms
+Done. Made 22 targets from 3 files in 25ms
++ ninja -C /tmp/sim-primary-slot-validation-final/build -j 4 sim_primary_slot_entry_test
+ninja: Entering directory `/tmp/sim-primary-slot-validation-final/build'
+[1/3] CXX /tmp/sim-primary-slot-validation-final/execution-wh839ljy/core_service_sim_mutated.cpp
+[2/3] touch obj/primary_slot_entry_production.stamp
+[3/3] LINK sim_primary_slot_entry_test
++ /tmp/sim-primary-slot-validation-final/build/sim_primary_slot_entry_test --gtest_output=xml:/tmp/sim-primary-slot-validation-final/execution-wh839ljy/mutation.xml
+[==========] Running 14 tests from 2 test suites.
+[----------] Global test environment set-up.
+[----------] 12 tests from PrimaryEntry
+[ RUN      ] PrimaryEntry.NonSystemCallerPrecedesPermissionAndNullManager
+[       OK ] PrimaryEntry.NonSystemCallerPrecedesPermissionAndNullManager (0 ms)
+[ RUN      ] PrimaryEntry.PermissionDenialPrecedesNullManager
+[       OK ] PrimaryEntry.PermissionDenialPrecedesNullManager (0 ms)
+[ RUN      ] PrimaryEntry.NullManagerPrecedesCapabilityRecheck
+[       OK ] PrimaryEntry.NullManagerPrecedesCapabilityRecheck (0 ms)
+[ RUN      ] PrimaryEntry.ChangedExternalSystemAppDecisionRejectsExtendedSlot
+[       OK ] PrimaryEntry.ChangedExternalSystemAppDecisionRejectsExtendedSlot (0 ms)
+[ RUN      ] PrimaryEntry.MissingCardStopsBeforeActiveAndPreference
+[       OK ] PrimaryEntry.MissingCardStopsBeforeActiveAndPreference (0 ms)
+[ RUN      ] PrimaryEntry.InactiveCardStopsBeforePreferenceAndSwitch
+[       OK ] PrimaryEntry.InactiveCardStopsBeforePreferenceAndSwitch (0 ms)
+[ RUN      ] PrimaryEntry.ReadyCardWritesPreferenceBeforeDelegatingExactTarget
+unknown file: Failure
+
+Unexpected mock function call - returning default value.
+    Function call: SetPrimarySlotId(1, false)
+          Returns: 0
+Google Mock tried the following 1 expectation, but it didn't match:
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+  Expected arg #1: is equal to true
+           Actual: false
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: Failure
+Actual function call count doesn't match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+[  FAILED  ] PrimaryEntry.ReadyCardWritesPreferenceBeforeDelegatingExactTarget (0 ms)
+[ RUN      ] PrimaryEntry.ManagerFailureReturnedUnchangedAfterPreferenceWrite
+unknown file: Failure
+
+Unexpected mock function call - returning default value.
+    Function call: SetPrimarySlotId(0, false)
+          Returns: 0
+Google Mock tried the following 1 expectation, but it didn't match:
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+  Expected arg #1: is equal to true
+           Actual: false
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:108: Failure
+Expected equality of these values:
+  core.SetPrimarySlotId(0)
+    Which is: 0
+  TELEPHONY_ERR_RIL_CMD_FAIL
+    Which is: 83886107
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: Failure
+Actual function call count doesn't match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+[  FAILED  ] PrimaryEntry.ManagerFailureReturnedUnchangedAfterPreferenceWrite (0 ms)
+[ RUN      ] PrimaryEntry.FailedPreferenceWriteStillDelegatesCurrentBehavior
+unknown file: Failure
+
+Unexpected mock function call - returning default value.
+    Function call: SetPrimarySlotId(1, false)
+          Returns: 0
+Google Mock tried the following 1 expectation, but it didn't match:
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+  Expected arg #1: is equal to true
+           Actual: false
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: Failure
+Actual function call count doesn't match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+[  FAILED  ] PrimaryEntry.FailedPreferenceWriteStillDelegatesCurrentBehavior (0 ms)
+[ RUN      ] PrimaryEntry.PresenceQueryFailureWithFalseOutputReturnsNoCard
+[       OK ] PrimaryEntry.PresenceQueryFailureWithFalseOutputReturnsNoCard (0 ms)
+[ RUN      ] PrimaryEntry.PresenceQueryFailureWithTrueOutputStillDelegates
+unknown file: Failure
+
+Unexpected mock function call - returning default value.
+    Function call: SetPrimarySlotId(1, false)
+          Returns: 0
+Google Mock tried the following 1 expectation, but it didn't match:
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+  Expected arg #1: is equal to true
+           Actual: false
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: Failure
+Actual function call count doesn't match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+[  FAILED  ] PrimaryEntry.PresenceQueryFailureWithTrueOutputStillDelegates (0 ms)
+[ RUN      ] PrimaryEntry.StableSystemAppPassesExtendedSlotCapability
+unknown file: Failure
+
+Unexpected mock function call - returning default value.
+    Function call: SetPrimarySlotId(3, false)
+          Returns: 0
+Google Mock tried the following 1 expectation, but it didn't match:
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+  Expected arg #1: is equal to true
+           Actual: false
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: Failure
+Actual function call count doesn't match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+[  FAILED  ] PrimaryEntry.StableSystemAppPassesExtendedSlotCapability (0 ms)
+[----------] 12 tests from PrimaryEntry (0 ms total)
+
+[----------] 2 tests from CallerKinds/NativeOrShell
+[ RUN      ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/0
+unknown file: Failure
+
+Unexpected mock function call - returning default value.
+    Function call: SetPrimarySlotId(3, false)
+          Returns: 0
+Google Mock tried the following 1 expectation, but it didn't match:
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+  Expected arg #1: is equal to true
+           Actual: false
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: Failure
+Actual function call count doesn't match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+[  FAILED  ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/0, where GetParam() = 1 (0 ms)
+[ RUN      ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/1
+unknown file: Failure
+
+Unexpected mock function call - returning default value.
+    Function call: SetPrimarySlotId(3, false)
+          Returns: 0
+Google Mock tried the following 1 expectation, but it didn't match:
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+  Expected arg #1: is equal to true
+           Actual: false
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: Failure
+Actual function call count doesn't match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+[  FAILED  ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/1, where GetParam() = 2 (0 ms)
+[----------] 2 tests from CallerKinds/NativeOrShell (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 14 tests from 2 test suites ran. (0 ms total)
+[  PASSED  ] 7 tests.
+[  FAILED  ] 7 tests, listed below:
+[  FAILED  ] PrimaryEntry.ReadyCardWritesPreferenceBeforeDelegatingExactTarget
+[  FAILED  ] PrimaryEntry.ManagerFailureReturnedUnchangedAfterPreferenceWrite
+[  FAILED  ] PrimaryEntry.FailedPreferenceWriteStillDelegatesCurrentBehavior
+[  FAILED  ] PrimaryEntry.PresenceQueryFailureWithTrueOutputStillDelegates
+[  FAILED  ] PrimaryEntry.StableSystemAppPassesExtendedSlotCapability
+[  FAILED  ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/0, where GetParam() = 1
+[  FAILED  ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/1, where GetParam() = 2
+
+ 7 FAILED TESTS
++ gn gen /tmp/sim-primary-slot-validation-final/build --root=/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest --export-compile-commands --args=production_root="/mnt/e/github/multisim/telephony_core_service" gtest_root="/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59" host_debug=true primary_slot_core_source=""
+Generating compile_commands took 0ms
+Done. Made 22 targets from 3 files in 28ms
++ ninja -C /tmp/sim-primary-slot-validation-final/build -j 4 sim_primary_slot_entry_test
+ninja: Entering directory `/tmp/sim-primary-slot-validation-final/build'
+[1/1] LINK sim_primary_slot_entry_test
++ /tmp/sim-primary-slot-validation-final/build/sim_primary_slot_entry_test --gtest_output=xml:/tmp/sim-primary-slot-validation-final/execution-wh839ljy/restored.xml
+[==========] Running 14 tests from 2 test suites.
+[----------] Global test environment set-up.
+[----------] 12 tests from PrimaryEntry
+[ RUN      ] PrimaryEntry.NonSystemCallerPrecedesPermissionAndNullManager
+[       OK ] PrimaryEntry.NonSystemCallerPrecedesPermissionAndNullManager (0 ms)
+[ RUN      ] PrimaryEntry.PermissionDenialPrecedesNullManager
+[       OK ] PrimaryEntry.PermissionDenialPrecedesNullManager (0 ms)
+[ RUN      ] PrimaryEntry.NullManagerPrecedesCapabilityRecheck
+[       OK ] PrimaryEntry.NullManagerPrecedesCapabilityRecheck (0 ms)
+[ RUN      ] PrimaryEntry.ChangedExternalSystemAppDecisionRejectsExtendedSlot
+[       OK ] PrimaryEntry.ChangedExternalSystemAppDecisionRejectsExtendedSlot (0 ms)
+[ RUN      ] PrimaryEntry.MissingCardStopsBeforeActiveAndPreference
+[       OK ] PrimaryEntry.MissingCardStopsBeforeActiveAndPreference (0 ms)
+[ RUN      ] PrimaryEntry.InactiveCardStopsBeforePreferenceAndSwitch
+[       OK ] PrimaryEntry.InactiveCardStopsBeforePreferenceAndSwitch (0 ms)
+[ RUN      ] PrimaryEntry.ReadyCardWritesPreferenceBeforeDelegatingExactTarget
+[       OK ] PrimaryEntry.ReadyCardWritesPreferenceBeforeDelegatingExactTarget (0 ms)
+[ RUN      ] PrimaryEntry.ManagerFailureReturnedUnchangedAfterPreferenceWrite
+[       OK ] PrimaryEntry.ManagerFailureReturnedUnchangedAfterPreferenceWrite (0 ms)
+[ RUN      ] PrimaryEntry.FailedPreferenceWriteStillDelegatesCurrentBehavior
+[       OK ] PrimaryEntry.FailedPreferenceWriteStillDelegatesCurrentBehavior (0 ms)
+[ RUN      ] PrimaryEntry.PresenceQueryFailureWithFalseOutputReturnsNoCard
+[       OK ] PrimaryEntry.PresenceQueryFailureWithFalseOutputReturnsNoCard (0 ms)
+[ RUN      ] PrimaryEntry.PresenceQueryFailureWithTrueOutputStillDelegates
+[       OK ] PrimaryEntry.PresenceQueryFailureWithTrueOutputStillDelegates (0 ms)
+[ RUN      ] PrimaryEntry.StableSystemAppPassesExtendedSlotCapability
+[       OK ] PrimaryEntry.StableSystemAppPassesExtendedSlotCapability (0 ms)
+[----------] 12 tests from PrimaryEntry (0 ms total)
+
+[----------] 2 tests from CallerKinds/NativeOrShell
+[ RUN      ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/0
+[       OK ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/0 (0 ms)
+[ RUN      ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/1
+[       OK ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/1 (0 ms)
+[----------] 2 tests from CallerKinds/NativeOrShell (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 14 tests from 2 test suites ran. (0 ms total)
+[  PASSED  ] 14 tests.
+{"status": "BLOCKED", "entry_contract_status": "PASS", "whole_component_chain": "BLOCKED", "counts": {"tests": 14, "PASS": 14, "FAIL": 0}, "error": null}
+Evidence: /tmp/sim-primary-slot-validation-final/execution-wh839ljy

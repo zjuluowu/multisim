@@ -1,0 +1,892 @@
+{
+  "status": "BLOCKED",
+  "entry_contract_status": "PASS",
+  "executed": true,
+  "whole_component_chain": "BLOCKED",
+  "whole_chain_executed": false,
+  "reason": "No real Stub/CoreService/SimManager/Controller/Radio/TelRil closure; entry seam is partial",
+  "source_commit": "02765fa38627fb0ebd13ac80214f2480b9c76992",
+  "sources": {
+    "services/core/src/core_service_sim.cpp": "6bc4f83b79983b319e41572a6c8683808e4cd485d652eb531fc65a154376df34",
+    "utils/common/src/telephony_permission.cpp": "3ead60a37b3e50bad9c2175e2dbf6b130b47e5be0574298f786a36d49ea21611",
+    "common/capability_mgr/src/multi_sims_capability_manager.cpp": "d1453865fd6003b513dc76fcf65b503668c6a7f96b0da193fd396f53957eb2ef"
+  },
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/generate_manager_seam.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "interface.log"
+    },
+    {
+      "argv": [
+        "gn",
+        "gen",
+        "/tmp/sim-primary-slot-validation-final/build",
+        "--root=/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest",
+        "--export-compile-commands",
+        "--args=production_root=\"/mnt/e/github/multisim/telephony_core_service\" gtest_root=\"/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59\" host_debug=true primary_slot_core_source=\"\""
+      ],
+      "exit_code": 0,
+      "log": "normal-gn.log"
+    },
+    {
+      "argv": [
+        "ninja",
+        "-C",
+        "/tmp/sim-primary-slot-validation-final/build",
+        "-j",
+        "4",
+        "sim_primary_slot_entry_test"
+      ],
+      "exit_code": 0,
+      "log": "normal-build.log"
+    },
+    {
+      "argv": [
+        "/tmp/sim-primary-slot-validation-final/build/sim_primary_slot_entry_test",
+        "--gtest_output=xml:/tmp/sim-primary-slot-validation-final/execution-wh839ljy/normal.xml"
+      ],
+      "exit_code": 0,
+      "log": "normal.log"
+    },
+    {
+      "argv": [
+        "llvm-profdata-18",
+        "merge",
+        "-sparse",
+        "/tmp/sim-primary-slot-validation-final/execution-wh839ljy/normal.profraw",
+        "-o",
+        "/tmp/sim-primary-slot-validation-final/execution-wh839ljy/normal.profdata"
+      ],
+      "exit_code": 0,
+      "log": "merge.log"
+    },
+    {
+      "argv": [
+        "llvm-cov-18",
+        "export",
+        "/tmp/sim-primary-slot-validation-final/build/sim_primary_slot_entry_test",
+        "-instr-profile=/tmp/sim-primary-slot-validation-final/execution-wh839ljy/normal.profdata"
+      ],
+      "exit_code": 0,
+      "log": "coverage.log"
+    },
+    {
+      "argv": [
+        "gn",
+        "gen",
+        "/tmp/sim-primary-slot-validation-final/build",
+        "--root=/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest",
+        "--export-compile-commands",
+        "--args=production_root=\"/mnt/e/github/multisim/telephony_core_service\" gtest_root=\"/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59\" host_debug=true primary_slot_core_source=\"/tmp/sim-primary-slot-validation-final/execution-wh839ljy/core_service_sim_mutated.cpp\""
+      ],
+      "exit_code": 0,
+      "log": "mutation-gn.log"
+    },
+    {
+      "argv": [
+        "ninja",
+        "-C",
+        "/tmp/sim-primary-slot-validation-final/build",
+        "-j",
+        "4",
+        "sim_primary_slot_entry_test"
+      ],
+      "exit_code": 0,
+      "log": "mutation-build.log"
+    },
+    {
+      "argv": [
+        "/tmp/sim-primary-slot-validation-final/build/sim_primary_slot_entry_test",
+        "--gtest_output=xml:/tmp/sim-primary-slot-validation-final/execution-wh839ljy/mutation.xml"
+      ],
+      "exit_code": 1,
+      "log": "mutation.log"
+    },
+    {
+      "argv": [
+        "gn",
+        "gen",
+        "/tmp/sim-primary-slot-validation-final/build",
+        "--root=/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest",
+        "--export-compile-commands",
+        "--args=production_root=\"/mnt/e/github/multisim/telephony_core_service\" gtest_root=\"/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59\" host_debug=true primary_slot_core_source=\"\""
+      ],
+      "exit_code": 0,
+      "log": "restore-gn.log"
+    },
+    {
+      "argv": [
+        "ninja",
+        "-C",
+        "/tmp/sim-primary-slot-validation-final/build",
+        "-j",
+        "4",
+        "sim_primary_slot_entry_test"
+      ],
+      "exit_code": 0,
+      "log": "restore-build.log"
+    },
+    {
+      "argv": [
+        "/tmp/sim-primary-slot-validation-final/build/sim_primary_slot_entry_test",
+        "--gtest_output=xml:/tmp/sim-primary-slot-validation-final/execution-wh839ljy/restored.xml"
+      ],
+      "exit_code": 0,
+      "log": "restored.log"
+    }
+  ],
+  "artifacts": "/tmp/sim-primary-slot-validation-final/execution-wh839ljy",
+  "counts": {
+    "tests": 14,
+    "PASS": 14,
+    "FAIL": 0
+  },
+  "boundary": "AccessToken/IPC identity/parameter service external doubles; internal ISimManager seam",
+  "NOT_RUN": [
+    "CoreServiceStub IPC dispatch/reply",
+    "CoreService::SetPrimarySlotId",
+    "SimManager::SetPrimarySlotId",
+    "MultiSimController A/B/C0/C1",
+    "RadioProtocolController",
+    "TelRil/HDI",
+    "new multisim primary switch"
+  ],
+  "dependency_root": "/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59",
+  "validation_inputs": {
+    "services/multisim/test/systemtest/primary_slot/entry_test.cpp": "cd287b9b7f125ea895c5ee1a6233a22a05b2eeb37520d731166a847b670870e6",
+    "services/multisim/test/systemtest/primary_slot/generate_manager_seam.py": "ac8ad13dadbf46754e1ba19234d53ff9bd96afb8d7dd05524fcd073625f163b1",
+    "services/multisim/test/systemtest/primary_slot/include/accesstoken_kit.h": "2fbead19cfd3988c2756894518e82af50656128a6b2e2ee958956fdb2e8d637c",
+    "services/multisim/test/systemtest/primary_slot/include/bundle_mgr_interface.h": "dcb926fd928127c3d52d6bea0d1353ea0f26e4519c95093118ba87e8d15685f7",
+    "services/multisim/test/systemtest/primary_slot/include/ipc_skeleton.h": "c9dd07f13ea982109b25db2df0d5bc8e909e6fa27ac52d71b9ea4f1ed5a76bea",
+    "services/multisim/test/systemtest/primary_slot/include/privacy_kit.h": "522ae277088c3fdc01da39d441263f0707fdf9000597bf2605616767b438a051",
+    "services/multisim/test/systemtest/primary_slot/include/tokenid_kit.h": "37460d97aacf49acc33715c4b66e915e96b2fa3e46295276d33499d2bccc2784",
+    "services/multisim/test/systemtest/primary_slot/security_boundary.cpp": "06caf0a25551d39b9d36b93d574ad1f638a0cefcec7dbd0dcf0bb23a27976b4e",
+    "services/multisim/test/systemtest/primary_slot/security_boundary.h": "8a71b45d8eed45ecb3e694068c2c70f8ea73213911710a6f82e4c2db6ce2e7b2",
+    "services/multisim/test/systemtest/primary_slot/unscripted_sim_manager.h": "993858e9bbcb4ffc21d916a9bd2d85c97efc4c26052aedb2b97e687567d84075",
+    "services/multisim/test/systemtest/BUILD.gn": "7f65a125924ba05abce9a2a81ed258c8eda76f791b610cdd42fb32386185c5ec",
+    "services/multisim/test/systemtest/gn/BUILDCONFIG.gn": "fd2cec996f6effb762e957d41be775680465f16e1b880a566598c0746de4698f",
+    "services/multisim/test/systemtest/scripts/run_primary_slot.py": "ac1bacc08c0493ba5abbb449d912c779589b87854b634a765b99f9c20865b3b9"
+  },
+  "binary_sha256": "0ff467fab0de00e2d0cee94f5b30d9ebff9cc9dcd66d3426b3f8cd8aa1817949",
+  "entry_branches": [
+    [
+      466,
+      9,
+      466,
+      55,
+      1,
+      13,
+      0,
+      0,
+      4
+    ],
+    [
+      470,
+      9,
+      470,
+      79,
+      1,
+      12,
+      0,
+      0,
+      4
+    ],
+    [
+      474,
+      9,
+      474,
+      31,
+      1,
+      11,
+      0,
+      0,
+      4
+    ],
+    [
+      478,
+      9,
+      478,
+      72,
+      1,
+      10,
+      0,
+      0,
+      4
+    ],
+    [
+      484,
+      9,
+      484,
+      16,
+      2,
+      8,
+      0,
+      0,
+      4
+    ],
+    [
+      488,
+      9,
+      488,
+      42,
+      1,
+      7,
+      0,
+      0,
+      4
+    ]
+  ],
+  "entry_code_regions": [
+    [
+      465,
+      1,
+      494,
+      2,
+      14,
+      0,
+      0,
+      0
+    ],
+    [
+      466,
+      9,
+      466,
+      55,
+      14,
+      0,
+      0,
+      0
+    ],
+    [
+      466,
+      56,
+      466,
+      57,
+      1,
+      0,
+      0,
+      3
+    ],
+    [
+      466,
+      57,
+      469,
+      6,
+      1,
+      0,
+      0,
+      0
+    ],
+    [
+      467,
+      9,
+      467,
+      23,
+      1,
+      0,
+      1,
+      1
+    ],
+    [
+      469,
+      6,
+      470,
+      5,
+      13,
+      0,
+      0,
+      3
+    ],
+    [
+      470,
+      5,
+      494,
+      2,
+      13,
+      0,
+      0,
+      0
+    ],
+    [
+      470,
+      9,
+      470,
+      79,
+      13,
+      0,
+      0,
+      0
+    ],
+    [
+      470,
+      80,
+      470,
+      81,
+      1,
+      0,
+      0,
+      3
+    ],
+    [
+      470,
+      81,
+      473,
+      6,
+      1,
+      0,
+      0,
+      0
+    ],
+    [
+      471,
+      9,
+      471,
+      23,
+      1,
+      0,
+      2,
+      1
+    ],
+    [
+      473,
+      6,
+      474,
+      5,
+      12,
+      0,
+      0,
+      3
+    ],
+    [
+      474,
+      5,
+      494,
+      2,
+      12,
+      0,
+      0,
+      0
+    ],
+    [
+      474,
+      9,
+      474,
+      31,
+      12,
+      0,
+      0,
+      0
+    ],
+    [
+      474,
+      32,
+      474,
+      33,
+      1,
+      0,
+      0,
+      3
+    ],
+    [
+      474,
+      33,
+      477,
+      6,
+      1,
+      0,
+      0,
+      0
+    ],
+    [
+      475,
+      9,
+      475,
+      23,
+      1,
+      0,
+      3,
+      1
+    ],
+    [
+      477,
+      6,
+      478,
+      5,
+      11,
+      0,
+      0,
+      3
+    ],
+    [
+      478,
+      5,
+      494,
+      2,
+      11,
+      0,
+      0,
+      0
+    ],
+    [
+      478,
+      9,
+      478,
+      72,
+      11,
+      0,
+      0,
+      0
+    ],
+    [
+      478,
+      73,
+      478,
+      74,
+      1,
+      0,
+      0,
+      3
+    ],
+    [
+      478,
+      74,
+      481,
+      6,
+      1,
+      0,
+      0,
+      0
+    ],
+    [
+      479,
+      9,
+      479,
+      23,
+      1,
+      0,
+      4,
+      1
+    ],
+    [
+      481,
+      6,
+      482,
+      5,
+      10,
+      0,
+      0,
+      3
+    ],
+    [
+      482,
+      5,
+      494,
+      2,
+      10,
+      0,
+      0,
+      0
+    ],
+    [
+      484,
+      9,
+      484,
+      16,
+      10,
+      0,
+      0,
+      0
+    ],
+    [
+      484,
+      17,
+      484,
+      18,
+      2,
+      0,
+      0,
+      3
+    ],
+    [
+      484,
+      18,
+      487,
+      6,
+      2,
+      0,
+      0,
+      0
+    ],
+    [
+      485,
+      9,
+      485,
+      23,
+      2,
+      0,
+      5,
+      1
+    ],
+    [
+      487,
+      6,
+      488,
+      5,
+      8,
+      0,
+      0,
+      3
+    ],
+    [
+      488,
+      5,
+      494,
+      2,
+      8,
+      0,
+      0,
+      0
+    ],
+    [
+      488,
+      9,
+      488,
+      42,
+      8,
+      0,
+      0,
+      0
+    ],
+    [
+      488,
+      43,
+      488,
+      44,
+      1,
+      0,
+      0,
+      3
+    ],
+    [
+      488,
+      44,
+      491,
+      6,
+      1,
+      0,
+      0,
+      0
+    ],
+    [
+      489,
+      9,
+      489,
+      23,
+      1,
+      0,
+      6,
+      1
+    ],
+    [
+      491,
+      6,
+      492,
+      5,
+      7,
+      0,
+      0,
+      3
+    ],
+    [
+      492,
+      5,
+      493,
+      55,
+      7,
+      0,
+      0,
+      0
+    ],
+    [
+      70,
+      5,
+      71,
+      19,
+      1,
+      1,
+      0,
+      0
+    ],
+    [
+      70,
+      55,
+      70,
+      72,
+      1,
+      1,
+      7,
+      1
+    ],
+    [
+      70,
+      5,
+      71,
+      19,
+      1,
+      2,
+      0,
+      0
+    ],
+    [
+      70,
+      55,
+      70,
+      72,
+      1,
+      2,
+      8,
+      1
+    ],
+    [
+      70,
+      5,
+      71,
+      19,
+      1,
+      3,
+      0,
+      0
+    ],
+    [
+      70,
+      55,
+      70,
+      72,
+      1,
+      3,
+      9,
+      1
+    ],
+    [
+      70,
+      5,
+      71,
+      19,
+      1,
+      4,
+      0,
+      0
+    ],
+    [
+      70,
+      55,
+      70,
+      72,
+      1,
+      4,
+      10,
+      1
+    ],
+    [
+      70,
+      5,
+      71,
+      19,
+      2,
+      5,
+      0,
+      0
+    ],
+    [
+      70,
+      55,
+      70,
+      72,
+      2,
+      5,
+      11,
+      1
+    ],
+    [
+      70,
+      5,
+      71,
+      19,
+      1,
+      6,
+      0,
+      0
+    ],
+    [
+      70,
+      55,
+      70,
+      72,
+      1,
+      6,
+      12,
+      1
+    ],
+    [
+      29,
+      27,
+      29,
+      47,
+      1,
+      7,
+      0,
+      0
+    ],
+    [
+      29,
+      27,
+      29,
+      47,
+      1,
+      8,
+      0,
+      0
+    ],
+    [
+      29,
+      27,
+      29,
+      47,
+      1,
+      9,
+      0,
+      0
+    ],
+    [
+      29,
+      27,
+      29,
+      47,
+      1,
+      10,
+      0,
+      0
+    ],
+    [
+      29,
+      27,
+      29,
+      47,
+      2,
+      11,
+      0,
+      0
+    ],
+    [
+      29,
+      27,
+      29,
+      47,
+      1,
+      12,
+      0,
+      0
+    ]
+  ],
+  "production_execution": [
+    {
+      "method": "CoreServiceSim::SetPrimarySlotId",
+      "source": "services/core/src/core_service_sim.cpp",
+      "executions": 14
+    },
+    {
+      "method": "TelephonyPermission::CheckCallerIsSystemApp",
+      "source": "utils/common/src/telephony_permission.cpp",
+      "executions": 14
+    },
+    {
+      "method": "TelephonyPermission::CheckPermission",
+      "source": "utils/common/src/telephony_permission.cpp",
+      "executions": 13
+    },
+    {
+      "method": "MultiSimsCapabilityMgr::IsMultiSimsCapabilitySupported",
+      "source": "common/capability_mgr/src/multi_sims_capability_manager.cpp",
+      "executions": 11
+    }
+  ],
+  "whole_chain_execution_audit": [
+    {
+      "method": "CoreServiceStub::OnRemoteRequest",
+      "source": "services/core/src/core_service_stub.cpp",
+      "executions": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "method": "CoreServiceStub::OnSetPrimarySlotId",
+      "source": "services/core/src/core_service_stub.cpp",
+      "executions": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "method": "CoreService::SetPrimarySlotId",
+      "source": "services/core/src/core_service.cpp",
+      "executions": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "method": "CoreServiceSim::SetPrimarySlotId",
+      "source": "services/core/src/core_service_sim.cpp",
+      "executions": 14,
+      "status": "PASS"
+    },
+    {
+      "method": "SimManager::SetPrimarySlotId",
+      "source": "services/sim/src/sim_manager.cpp",
+      "executions": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "method": "MultiSimController::SetPrimarySlotId",
+      "source": "services/sim/src/multi_sim_controller.cpp",
+      "executions": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "method": "RadioProtocolController::SetRadioProtocol",
+      "source": "services/sim/src/radio_protocol_controller.cpp",
+      "executions": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "method": "TelRilManager::SetRadioProtocol",
+      "source": "services/tel_ril/src/tel_ril_manager.cpp",
+      "executions": 0,
+      "status": "NOT_RUN"
+    },
+    {
+      "method": "TelRilSim::SetRadioProtocol",
+      "source": "services/tel_ril/src/tel_ril_sim.cpp",
+      "executions": 0,
+      "status": "NOT_RUN"
+    }
+  ],
+  "missing_chain_functions": [
+    "CoreServiceStub::OnRemoteRequest",
+    "CoreServiceStub::OnSetPrimarySlotId",
+    "CoreService::SetPrimarySlotId",
+    "SimManager::SetPrimarySlotId",
+    "MultiSimController::SetPrimarySlotId",
+    "RadioProtocolController::SetRadioProtocol",
+    "TelRilManager::SetRadioProtocol",
+    "TelRilSim::SetRadioProtocol"
+  ],
+  "whole_chain_scenario_causality": "NOT_RUN",
+  "mutation": {
+    "detected": true,
+    "assertion_failures": 7,
+    "change": "userSet true -> false in outside-repository source copy"
+  },
+  "restored_binary_sha256": "0ff467fab0de00e2d0cee94f5b30d9ebff9cc9dcd66d3426b3f8cd8aa1817949"
+}

@@ -2,7 +2,9 @@
 
 2026-11-09按用户要求，将重构新增测试工程及其构建、脚本、Stub/Fake、用例、证据和设计资料统一放在 `services/multisim/` 下。旧 `test/` 仅保留原有部件测试；旧生产实现只读。测试读取真实旧源码作为比较基线，负控只修改仓外副本。
 
-Windows VS Code + WSL 的日常构建、筛选测试和调试见 [Host 使用说明](systemtest/HOST.md)。2026-11-11工程增量不改历史迁移摘要；四份既有构建/设施资产的明确修改由 [relocation_followups.json](relocation_followups.json) 单列，迁移检查同时验证当前摘要，仍拒绝未登记漂移。
+Windows VS Code + WSL 的日常构建、筛选测试和调试见 [Host 使用说明](systemtest/HOST.md)。2026-11-11工程增量不改历史迁移摘要；Host首批四份既有构建/设施资产的明确修改由 [relocation_followups.json](relocation_followups.json) 单列，迁移检查同时验证当前摘要，仍拒绝未登记漂移。
+
+`SetPrimarySlotId`新增[真实入口用例与覆盖审计](systemtest/primary_slot/README.md)：14条入口契约单列，使用真实CoreServiceSim/权限/能力源码；ISimManager处是内部测试接缝，完整Stub→RIL部件调用链仍BLOCKED。既有五条缺陷不变，完整范围以唯一执行状态§16及本轮证据为准。
 
 | 目录 | 用途与边界 |
 | --- | --- |

@@ -24,9 +24,9 @@ python3 -B "$SIM_HOST_TOOLS/host.py" clean
 
 `host.py configure/build/all/selected/clean/debug` 为统一入口，支持 `--out`、`--gtest-root`、`--jobs`；`selected/debug` 支持 `--target` 和 `--filter`。默认输出 Git 根 `.host-out`（已忽略），首次 configure 保存本机依赖路径，之后 Tasks 可直接使用。输出目录变更时同步 IDE 配置的 `.host-out` 路径。Clean 仅运行 Ninja 清理已生成目标，保留 GN 配置、依赖和测试证据。
 
-GN 导出 `.host-out/build/compile_commands.json`，Ninja 增量构建四个实际目标。IDE Debug profile 使用 `-g -O1 -fno-omit-frame-pointer`，保留原 LTO/虚函数消除闭包，不忽略未解析符号。未接入平台的不可达方法会被裁剪；这不证明完整 SIM 可链接。LLDB 可能显示优化变量或合并单步位置；历史 runner 默认仍为原 `-O2` profile。
+GN 导出 `.host-out/build/compile_commands.json`，Ninja 增量构建五个实际目标。IDE Debug profile 使用 `-g -O1 -fno-omit-frame-pointer`，保留原 LTO/虚函数消除闭包，不忽略未解析符号。未接入平台的不可达方法会被裁剪；这不证明完整 SIM 可链接。LLDB 可能显示优化变量或合并单步位置；历史 runner 默认仍为原 `-O2` profile。
 
-每次测试写入唯一 `.host-out/runs/run-*/`，保留原生日志、GoogleTest JUnit 兼容 XML、profraw 与 `result.json`，最新完成结果另存 `.host-out/latest.json`。构建/测试失败返回 1，缺依赖等准备阻塞返回 2；零用例和 skipped 不算通过。`error.json` 记录最近一次准备或构建错误，判断本次执行必须结合退出码和本次日志，不能引用旧 latest.json 冒充新结果。完整入口运行五个分类，包括全部五条独立缺陷，红灯保持非零退出。原有生产函数正执行/负控审计仍由 [run_sim_guard.py](../sim_guard/run_sim_guard.py) 提供，IDE 快速入口不替代完整发布门禁。
+每次测试写入唯一 `.host-out/runs/run-*/`，保留原生日志、GoogleTest JUnit 兼容 XML、profraw 与 `result.json`，最新完成结果另存 `.host-out/latest.json`。构建/测试失败返回 1，缺依赖等准备阻塞返回 2；零用例和 skipped 不算通过。`error.json` 记录最近一次准备或构建错误，判断本次执行必须结合退出码和本次日志，不能引用旧 latest.json 冒充新结果。完整入口运行六个分类，包括全部五条独立缺陷，红灯保持非零退出。原有生产函数正执行/负控审计仍由 [run_sim_guard.py](../sim_guard/run_sim_guard.py) 提供，IDE 快速入口不替代完整发布门禁。
 
 ## VS Code
 
@@ -36,7 +36,7 @@ GN 导出 `.host-out/build/compile_commands.json`，Ninja 增量构建四个实�
 
 - `llvm-vs-code-extensions.vscode-clangd`：读取真实编译数据库。
 - `vadimcn.vscode-lldb`：CodeLLDB 启动测试、筛选、断点、变量和调用栈。
-- `matepek.vscode-catch2-test-adapter`：TestMate C++，发现四个明确的测试二进制，包含缺陷红灯。
+- `matepek.vscode-catch2-test-adapter`：TestMate C++，发现五个明确的测试二进制，包含缺陷红灯。
 - `msedge-dev.gnls`：GN/GNI 编辑、跳转支持。
 
 在 Extensions 中选择扩展并点击 **Install in WSL**；本任务没有自动安装扩展。配置依据 [TestMate 配置](https://github.com/matepek/vscode-catch2-test-adapter/blob/master/documents/configuration/test.advancedExecutables.md)、[CodeLLDB 手册](https://github.com/vadimcn/codelldb/blob/master/MANUAL.md)及 [GN 扩展](https://marketplace.visualstudio.com/items?itemName=msedge-dev.gnls)。构建后 TestMate 应发现用例；具体版本兼容性、发现、点击运行/调试均为 MANUAL。Tasks 不依赖测试扩展，可直接运行全部或输入 GTest filter。
@@ -48,3 +48,5 @@ Tasks：Configure Host、Build Host、Run All Tests、Run Selected Test、Clean 
 真实闭包为 `SimStateManager/SimStateHandle/IccState`、`ObserverHandler`、`CoreManagerInner`、`TelephonyExtWrapper`、`TelEventHandler/TelEventQueue`；容量目标另编译真实 `sim_manager.cpp`。FakeRil 提供硬件事实与响应，SIM 生产代码决定公开状态和解锁结果。系统参数、RIL、Registry/CES、SA、有限 FFRT/EventHandler host 运行时是模拟边界。DataShare/Provider 和 LPA 不在闭包，不创建虚假成功结果。
 
 17 条兼容场景覆盖单/双卡、存在性/状态、组件初始化缺 RIL、通知回调、PIN/PUK、异步交错、销毁重建；4 条 PIN 外部 Hook 契约、19 条设施及 1 条容量单列。5 条独立缺陷保留：迟到 READY、替换卡旧 READY、通用 RIL 错误映射、替换卡旧 PIN、Refresh 返回语义冲突（待裁决）。完整 Core/Manager OnInit、账户、默认角色、数据库恢复、eSIM、IPC/设备未覆盖；历史 Provider 缺字段证据保留，本轮没有重跑该闭包，不能记为新 PASS。
+
+2026-11-11 主卡接口增量：新增 `sim_primary_slot_entry_test` 与[覆盖审计入口](primary_slot/README.md)，真实入口契约14条单列，Host全量合计60条（原有46条保留）。ISimManager内部接缝之后的整部件主卡调用链仍BLOCKED；默认审计命令返回2，只有显式 `--entry-only` 才按入口覆盖验收。当前证据见 [primary_slot_validation_20261111.json](configs/primary_slot_validation_20261111.json)。

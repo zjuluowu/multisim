@@ -1,0 +1,219 @@
+{
+  "date": "2026-11-11",
+  "input_head": "02765fa38627fb0ebd13ac80214f2480b9c76992",
+  "input_dirty": true,
+  "user_input_preserved": 99,
+  "input_document": {
+    "path": "docs/SetPrimarySlotId_重构前后实现对比说明.md",
+    "sha256": "19b2f4ee611d8f37c3c5b3d1bbd505a3da3e4e440d1498b51d86ec4313b08a87"
+  },
+  "requested_scope": "whole telephony_core_service component, Stub->CoreService->CoreServiceSim->SimManager->Controller->RadioProtocol/TelRil; external HDI/Provider boundaries",
+  "status": "BLOCKED",
+  "objective_fully_met": false,
+  "entry_contract": {
+    "status": "PASS",
+    "tests": 14,
+    "passed": 14,
+    "failed": 0,
+    "real_sources": {
+      "services/core/src/core_service_sim.cpp": "6bc4f83b79983b319e41572a6c8683808e4cd485d652eb531fc65a154376df34",
+      "utils/common/src/telephony_permission.cpp": "3ead60a37b3e50bad9c2175e2dbf6b130b47e5be0574298f786a36d49ea21611",
+      "common/capability_mgr/src/multi_sims_capability_manager.cpp": "d1453865fd6003b513dc76fcf65b503668c6a7f96b0da193fd396f53957eb2ef"
+    },
+    "production_execution": [
+      {
+        "method": "CoreServiceSim::SetPrimarySlotId",
+        "source": "services/core/src/core_service_sim.cpp",
+        "executions": 14
+      },
+      {
+        "method": "TelephonyPermission::CheckCallerIsSystemApp",
+        "source": "utils/common/src/telephony_permission.cpp",
+        "executions": 14
+      },
+      {
+        "method": "TelephonyPermission::CheckPermission",
+        "source": "utils/common/src/telephony_permission.cpp",
+        "executions": 13
+      },
+      {
+        "method": "MultiSimsCapabilityMgr::IsMultiSimsCapabilitySupported",
+        "source": "common/capability_mgr/src/multi_sims_capability_manager.cpp",
+        "executions": 11
+      }
+    ],
+    "entry_if_guards": 6,
+    "branch_outcomes_covered": 12,
+    "branch_outcomes_total": 12,
+    "code_regions_covered": 31,
+    "code_regions_total": 31,
+    "internal_seam": "StrictMock ISimManager; NOT production SimManager; all unconfigured methods throw",
+    "external_boundaries": "AccessToken token type/verification, TokenIdKit, IPC caller identity, SetParameter",
+    "default_audit_exit": 2,
+    "entry_only_exit": 0
+  },
+  "whole_chain": {
+    "status": "BLOCKED",
+    "missing_execution": [
+      "CoreServiceStub::OnRemoteRequest",
+      "CoreServiceStub::OnSetPrimarySlotId",
+      "CoreService::SetPrimarySlotId",
+      "SimManager::SetPrimarySlotId",
+      "MultiSimController::SetPrimarySlotId",
+      "RadioProtocolController::SetRadioProtocol",
+      "TelRilManager::SetRadioProtocol",
+      "TelRilSim::SetRadioProtocol"
+    ],
+    "branch_modes": {
+      "A_vendor_mapping": "NOT_RUN",
+      "B_direct_RIL": "NOT_RUN",
+      "C0_already_primary": "NOT_RUN",
+      "C1_three_phase": "NOT_RUN"
+    },
+    "cross_thread_IPC_causality": "NOT_RUN",
+    "new_multisim_execution": "NOT_RUN"
+  },
+  "negative_control": {
+    "detected": true,
+    "assertion_failures": 7,
+    "change": "userSet true -> false in outside-repository source copy",
+    "mutated_source_sha256": "afa5c8701e19b3cb45f44b8f5e74e3507aad0d1bddd60bb977a027b46662bf03",
+    "original_restored_tests": 14,
+    "restored_passed": 14,
+    "source_worktree_modified": false
+  },
+  "whole_host": {
+    "tests": 60,
+    "PASS": 55,
+    "FAIL": 5,
+    "exit_code": 1,
+    "existing_defects_unchanged": true,
+    "groups": [
+      {
+        "name": "compatibility",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 17,
+        "passed": 17,
+        "failed": 0,
+        "binary_sha256": "e7689f33c51952598994796f0f11e49e2d9aa6f1dfeab487089189de7a3e0815",
+        "filter": "*-*DEFECT_*",
+        "skipped": 0
+      },
+      {
+        "name": "known_defects",
+        "exit_code": 1,
+        "status": "FAIL",
+        "tests": 5,
+        "passed": 0,
+        "failed": 5,
+        "binary_sha256": "e7689f33c51952598994796f0f11e49e2d9aa6f1dfeab487089189de7a3e0815",
+        "filter": "*DEFECT_*",
+        "skipped": 0
+      },
+      {
+        "name": "pin_memory",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 4,
+        "passed": 4,
+        "failed": 0,
+        "binary_sha256": "4181878919de5f370d989e15c4ed220227b131583b824f6da0e181d065332fc6",
+        "filter": "*",
+        "skipped": 0
+      },
+      {
+        "name": "infrastructure",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 19,
+        "passed": 19,
+        "failed": 0,
+        "binary_sha256": "97f05c74e00a0b6a3fd65e3714729288b4b5f6d484fc466f04d1278936d5f1cf",
+        "filter": "*",
+        "skipped": 0
+      },
+      {
+        "name": "capacity",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 1,
+        "passed": 1,
+        "failed": 0,
+        "binary_sha256": "c743241705e5278ddbdf966dd979dad272e6d5438d07b49f23a8f98c3fae2b43",
+        "filter": "*",
+        "skipped": 0
+      },
+      {
+        "name": "primary_entry_internal_seam",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 14,
+        "passed": 14,
+        "failed": 0,
+        "binary_sha256": "a29edf8eaaca9d68aa6f4869fa0985ac1ead2bb0b39505b07edab3caf3c82377",
+        "filter": "*",
+        "skipped": 0
+      }
+    ]
+  },
+  "blockers": {
+    "initialization": "BLOCKED: matched pinned OpenSSL header package reused without system installation; 45 objects, 43 diagnostics, 14 unmatched SimData fields",
+    "compiled_objects": 45,
+    "missing_headers": [],
+    "provider_fields": [
+      "EFUST",
+      "EHPLMN",
+      "GID1",
+      "GID2",
+      "IS_ESIM",
+      "LSI",
+      "MCC",
+      "MNC",
+      "MNC_LEN",
+      "OPERATOR_NAME",
+      "OPKEY",
+      "PHY_CARD",
+      "SIM_LABEL_INDEX",
+      "SPN"
+    ],
+    "core_host": "CoreService lacks system_ability.h; CoreServiceStub lacks BrokerDelegator/IRemoteProxy constructor/Parcel token/IPCObjectStub Host runtime; compile only, never executed",
+    "legal_assembly": "CoreService private CoreServiceSim is wired in real Init; no private macro, friend, memory-offset injection or in-repo business replacement was used",
+    "product_build": "NOT_RUN: no matching OHOS tree or hb command available"
+  },
+  "commands": {
+    "host_all": "./telephony_core_service/services/multisim/test/systemtest/tools/run_host_tests.sh",
+    "default_audit": "python3 -B telephony_core_service/services/multisim/test/systemtest/scripts/run_primary_slot.py --output /tmp/sim-primary-slot-validation-final --mutation-check",
+    "entry_only": "python3 -B telephony_core_service/services/multisim/test/systemtest/scripts/run_primary_slot.py --output /tmp/sim-primary-slot-validation-final --entry-only",
+    "init_audit": "python3 -B telephony_core_service/services/multisim/test/systemtest/scripts/audit_initialization.py --gtest-root /tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59 --openssl-root /tmp/sim-primary-openssl-headers --output /tmp/sim-primary-initialization-audit",
+    "source_tables": "python3 -B telephony_core_service/services/multisim/test/systemtest/scripts/test_g2a_source_tables.py -v"
+  },
+  "notes": [
+    "No production files modified; user pre-existing tracked modifications and input document preserved byte-for-byte.",
+    "HasSimCard return error and failed preference write tests characterize current behavior, not approved new policies.",
+    "Capability denial uses explicit change of external system-app decision between two checks; no ordinary stable-identity reachability claim.",
+    "Only real CoreServiceSim function has 100% branch/code-region coverage; this is not whole CoreService.cpp, Stub, Controller or component coverage.",
+    "Initial new fixture selected numeric slot 2; corrected input to actual production SLOT_3_INDEX constant 3, without changing assertions.",
+    "No git commit or push in this task."
+  ],
+  "artifacts": "primary_slot_validation_20261111",
+  "artifact_sha256": {
+    "core-syntax-core_service.cpp.log": "0152e07e5217effca1e7a34edebd79436aa6f1aa95f9bb518843761e3a16417c",
+    "core-syntax-core_service_stub.cpp.log": "a69a04bd60ce60ea7b621ea33c206208fadbda5eece0178e1ab8adee364cd62e",
+    "core-syntax-result.json": "6433bcfa0bb9f0b76b8603aedf8db57e32dcf7743333f17beaf28ef3ffa7d3cb",
+    "entry-audit.log": "2112ae124e187a7b4ffff09c303ed38409b12d3a37b0688483e37ae5ee509703",
+    "entry-only-result.json": "786b2a309885202adbe8dd69e9571cf46d4ad027ad6d311db4cab59308994fc0",
+    "host-all-result.json": "c8ef2932d123cea3b044ef07b655d8957db482a037b43dcd63d010c85faed6be",
+    "initialization-audit.json": "303e8f977246a462235344827c4d83fa949f306438df1ae85229c8c2bdf76c32",
+    "initialization-build.log": "a8dcdb2821355cf1e9d02d9d3d33ee960b96c4a11c4dc623e8994f453ed2c0cb",
+    "mutation.log": "800331bec42bf2ff57f9412e6553ed7b56d643f567f9643ac7cd7ab1b5ce1a24",
+    "mutation.xml": "daef8f51b5f782324f2aec997c10df8f643b174b88ad36fc9048f1eb7f6b10aa",
+    "normal.log": "33c6ba07af82598a0a00d784f322fb0d743759d1902e0adc11abf2ce7fc251c5",
+    "normal.xml": "460ad8aa2d3352df6c37b6bb24ad58e8531afd9b82783d74c1ecc3e196daefe3",
+    "protected-inputs.json": "3e863ecc1e737c0280c6479099f7ba25140ee458c0f3bfd685dcfe807c9f54a2",
+    "restored.log": "33c6ba07af82598a0a00d784f322fb0d743759d1902e0adc11abf2ce7fc251c5",
+    "restored.xml": "fe4dfa68a90b594016a285eb0629b8598ca574450977ea6e1a301355797edd14",
+    "result.json": "f899cccc6cb5869ee788523e94cd9adf0239b05fd928b5ba0ccd634abb35f99c",
+    "source-tables.log": "41596c05df569724f91d70d37b60083657285671af2ebbb87750a44301c2a7fe"
+  }
+}

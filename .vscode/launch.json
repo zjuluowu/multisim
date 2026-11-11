@@ -31,7 +31,8 @@
         "sim_guard_legacy",
         "sim_guard_pin_memory",
         "platform_adapter_test",
-        "sim_component_test"
+        "sim_component_test",
+        "sim_primary_slot_entry_test"
       ],
       "default": "sim_guard_legacy"
     }

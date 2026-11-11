@@ -23,7 +23,8 @@ from run_g2a_query import digest_tree
 from build_clock import await_build_timestamps
 from run_sim_guard import check_semantics, PRODUCTION
 
-TARGETS = ['sim_guard_legacy', 'sim_guard_pin_memory', 'platform_adapter_test', 'sim_component_test']
+TARGETS = ['sim_guard_legacy', 'sim_guard_pin_memory', 'platform_adapter_test', 'sim_component_test',
+           'sim_primary_slot_entry_test']
 
 
 class BuildFailed(RuntimeError):
@@ -99,14 +100,17 @@ def run_tests(args, out):
     session = Path(tempfile.mkdtemp(prefix='run-', dir=runs))
     result = {'status': 'BLOCKED', 'head': subprocess.check_output(
         ['git', 'rev-parse', 'HEAD'], cwd=REPO, text=True).strip(), 'groups': [],
-        'scope': 'legacy_card_state_component', 'artifacts': str(session),
+        'scope': 'legacy_card_state_component_and_primary_entry_internal_seam', 'artifacts': str(session),
+        'primary_whole_component_chain': 'BLOCKED',
         'uncovered': ['full_Core_Init', 'SimManager_OnInit', 'account', 'default_roles', 'persistence', 'eSIM', 'IPC', 'device'],
-        'production_sources': {p: hashlib.sha256((CORE / p).read_bytes()).hexdigest() for p in PRODUCTION}}
+        'production_sources': {p: hashlib.sha256((CORE / p).read_bytes()).hexdigest() for p in PRODUCTION + [
+            'services/core/src/core_service_sim.cpp', 'utils/common/src/telephony_permission.cpp',
+            'common/capability_mgr/src/multi_sims_capability_manager.cpp']}}
     write(session / 'result.json', result)
     groups = [('compatibility', TARGETS[0], '*-*DEFECT_*'),
               ('known_defects', TARGETS[0], '*DEFECT_*'),
               ('pin_memory', TARGETS[1], '*'), ('infrastructure', TARGETS[2], '*'),
-              ('capacity', TARGETS[3], '*')]
+              ('capacity', TARGETS[3], '*'), ('primary_entry_internal_seam', TARGETS[4], '*')]
     if args.action == 'selected':
         groups = [('selected', args.target, args.filter)]
     failed = False
@@ -143,7 +147,7 @@ def run_tests(args, out):
                 metadata_valid = len(cases) == len(registered) and sorted(
                     (p.get('case_id', ''), p.get('oracle_id', '')) for p in observed) == sorted(
                     (p['case_id'], p['oracle_id']) for p in registered)
-            expected_count = {'pin_memory': 4, 'capacity': 1}.get(name)
+            expected_count = {'pin_memory': 4, 'capacity': 1, 'primary_entry_internal_seam': 14}.get(name)
             collection_valid = (expected is None or (names == expected and len(cases) == len(expected)))
             collection_valid &= expected_count is None or len(cases) == expected_count
             if cases and not skipped and metadata_valid and collection_valid and code == 0 and group['failed'] == 0:

@@ -11,7 +11,7 @@
   },
   "testMate.cpp.test.advancedExecutables": [
     {
-      "pattern": ".host-out/build/{sim_guard_legacy,sim_guard_pin_memory,platform_adapter_test,sim_component_test}",
+      "pattern": ".host-out/build/{sim_guard_legacy,sim_guard_pin_memory,platform_adapter_test,sim_component_test,sim_primary_slot_entry_test}",
       "cwd": "${workspaceFolder}/.host-out",
       "env": {
         "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/testmate-%p.profraw"

@@ -1,6 +1,6 @@
 # 多 SIM 重构执行状态
 
-本文件集中维护当前实施位置、证据、局部阻塞和下一批任务；技术决策继续由[目标主设计](SIM_Target_Architecture_Design_v1.2.md)维护，流程由[流程对照](多SIM架构重构_设计说明与业务流程对照.md)维护，历史裁决留在[原评审](SIM_Target_Architecture_Independent_Review_2026-10-29.md)。最近恢复/一致性核对：2026-11-11；Windows VS Code + WSL Host工程及本轮实测见[§15](#wsl-host-20261111)；测试工程内聚迁移见[§13](#test-relocation-20261109)，本地开闭源复审增量见[§12](#open-closed-followup-20261109)，历史分支合入main及重验见[§11](#main-integration-20261105)，G2a工作分支复验见[§10](#g2a-revalidation-20261105)，测试防护网首批见[§8](#sim-guard-20261104)，第二轮结果及阻塞见[§9](#sim-guard-round2)。此前G2a记录保留，各历史运行结果仍按其原日期、基线和覆盖范围解释。
+本文件集中维护当前实施位置、证据、局部阻塞和下一批任务；技术决策继续由[目标主设计](SIM_Target_Architecture_Design_v1.2.md)维护，流程由[流程对照](多SIM架构重构_设计说明与业务流程对照.md)维护，历史裁决留在[原评审](SIM_Target_Architecture_Independent_Review_2026-10-29.md)。最近恢复/一致性核对：2026-11-11；SetPrimarySlotId入口及整链阻塞见[§16](#primary-slot-test-20261111)；Windows VS Code + WSL Host工程及本轮实测见[§15](#wsl-host-20261111)；测试工程内聚迁移见[§13](#test-relocation-20261109)，本地开闭源复审增量见[§12](#open-closed-followup-20261109)，历史分支合入main及重验见[§11](#main-integration-20261105)，G2a工作分支复验见[§10](#g2a-revalidation-20261105)，测试防护网首批见[§8](#sim-guard-20261104)，第二轮结果及阻塞见[§9](#sim-guard-round2)。此前G2a记录保留，各历史运行结果仍按其原日期、基线和覆盖范围解释。
 
 <a id="current-status"></a>
 
@@ -572,3 +572,35 @@ python3 -B telephony_core_service/services/multisim/test/multisim_architecture_r
 归档JSON中的文档输入摘要对应工程验收时的内容；本节发布说明是在该次取证之后追加，不回写历史运行摘要。原46例41 PASS/5 FAIL及GUI MANUAL继续有效，不因发布而变为全绿。
 
 实际发布核验：工程提交 `48fb553b8f44f9048cbaf321f2e8a2f11bc6ef49`（`test(sim): add WSL host workflow and VS Code integration`），35项文件变更，已常规推送至 `origin/main`。推送后ls-remote及本地origin/main均为同SHA，包含关系通过，工作区与暂存区为空；相对输入f2acb72f再次核对旧SIM/Core/RIL/EXT、公共接口、原产品和原单测入口均无变化。旧空目录已确认不存在。本段是发布后的文档追记，随独立文档提交保存，不写自身SHA；最终main精确tip以Git远端核验为准，历史测试输入/结果仍按原取证解释。
+
+<a id="primary-slot-test-20261111"></a>
+
+## 16. SetPrimarySlotId入口用例与整部件阻塞（2026-11-11）
+
+用户新增[重构前后对比说明](SetPrimarySlotId_重构前后实现对比说明.md)，要求补充用例，保证调用链在core_service包含的部分完整执行。本批按整个telephony_core_service部件理解：Stub→CoreService→CoreServiceSim→SimManager→MultiSimController→RadioProtocol/TelRil，仓外HDI/Provider另作边界。**当前整条链的要求尚未达成，状态BLOCKED；仅真实入口方法的完整分支覆盖已完成。** 没有把ISimManager测试接缝称为整个部件的外部Mock，也没有将目标multisim骨架当作生产主卡实现。
+
+输入为 `main@02765fa38627fb0ebd13ac80214f2480b9c76992` 加已有98份tracked修改及新增说明文件；差分忽略行尾后原tracked文件无实质代码差异。已记录并逐字节复核99份用户输入摘要，均保持原状；暂存区原为空，11个既有worktree未切换。恢复工具实际fetch核实检查点，远端差异按Git结果解释，不作为业务PASS。本次只新增/修改测试、Host构建、IDE配置和进展说明，未提交/推送，未修改生产代码、公共接口或用户新增说明。
+
+新增 `sim_primary_slot_entry_test` 及 [primary_slot](../services/multisim/test/systemtest/primary_slot/README.md) 场景/外部身份边界，原始CoreServiceSim、TelephonyPermission和MultiSimsCapabilityMgr三份生产cpp直接编译。通过既有公开SetSimManager安装严格的内部ISimManager替身；未使用私有宏、friend、偏移注入、生产探针或拷贝业务逻辑。接缝基类按真实ISimManager的122个纯虚接口声明生成，仅3个方法脚本化，其他调用一律抛错。AccessToken、调用者身份、系统参数为外部Mock，头覆盖仅作用于新目标，原公共平台头未改。新目标接入Host全量、筛选、调试及TestMate配置；GUI仍MANUAL。
+
+| 本轮验证 | 实际结果与范围 |
+| --- | --- |
+| 新入口用例 | **14 PASS / 0 FAIL**；权限/空对象/能力/在卡/激活的错误优先级、偏好写入先于切换、原slotId及userSet=true、下层返回传递 |
+| 真实入口覆盖 | CoreServiceSim::SetPrimarySlotId六个if共12/12分支结果、31/31代码区域正执行；四个指定真实函数按精确源码路径核实正执行。仅该入口方法的100%，不外推整文件/部件 |
+| 异常当前行为 | HasSimCard错误码被忽略、偏好写失败仍转发单列characterization；能力拒绝分支显式模拟两次外部身份判断变化，不声称稳定调用者通常可达 |
+| 生产负控 | 仓外副本将转发userSet=true改false，7条用例失败检出；原生产源码重建后14 PASS。生产工作树未改，负控失败独立计数 |
+| 完整Host回归 | **60 executed / 55 PASS / 5 FAIL**，exit1；原46条及五条缺陷完整保留，新增14条单列primary_entry_internal_seam |
+| 整链审计入口 | 默认exit2/BLOCKED，逐一报告8个未执行链函数；显式 `--entry-only` 才按入口覆盖返回0，整链字段仍BLOCKED，防止假全绿 |
+| 初始化依赖审计 | 显式校验并解包本地锁定OpenSSL头包，未系统安装；45对象编译、43诊断、无缺失头、14个SimData字段不匹配；未链接/运行 |
+| Core/Stub Host审查 | 原始源码compile-only失败，缺system_ability.h及Binder/Parcel运行边界；未替换CoreService或Stub实现，未执行IPC分发/reply |
+| 既有护栏 | 14项G2a源表审计PASS；迁移清单仍原字节，followups明确登记第五份BUILD资产及原GN参数增量，不降低未知漂移检查 |
+
+实际命令、XML、日志、分支计数、源码摘要、内部接缝、负控恢复及99份输入保护证据统一保存在 [primary_slot_validation_20261111.json](../services/multisim/test/systemtest/configs/primary_slot_validation_20261111.json) 和同名证据目录。可重跑 `python3 -B telephony_core_service/services/multisim/test/systemtest/scripts/run_primary_slot.py --output <output> --mutation-check`；它执行真实入口审计，但整部件门禁保持BLOCKED。日常单例运行用Host的 `selected --target sim_primary_slot_entry_test --filter 'PrimaryEntry.*'`；用例筛选不等于覆盖门禁通过。
+
+未执行项：真实CoreServiceStub分发和reply、CoreService转发成功装配、真实SimManager/Controller的A/B/C0/C1、三阶段RadioProtocol/TelRil、Data联动/账户通知/参数回滚/业务重试、新multisim主卡切换。不能由入口替身返回值推定这些链路执行。下一最小条件是匹配fork的Provider字段/URI/schema/错误协议及SA/Binder/HDI Host边界，或匹配OHOS产品树中的真实宿主装配；当前也无hb命令。CoreService的私有CoreServiceSim仅在真实Init路径中装配，完整运行需先关闭这些依赖条件，不为覆盖率越过生产只读和装配约束。
+
+### 16.1 后续发布授权与范围复核（2026-11-11）
+
+用户随后要求先将本地修改提交到远端main。本次发布纳入41项主卡入口测试、IDE/构建配置、说明文档与证据，包含用户新增的对比说明；上文“未提交/推送”为当时工程建设记录。发布前实际fetch核实本地/远端main均为02765fa3，暂存区为空，归档摘要与99份用户输入逐项匹配。此前98份tracked变化经原始字节核对仅为LF/CRLF差异，按仓库逐文件提交及旧生产保护规则留在原工作树，不将无关生产行尾改动混入本次发布。新归档日志仅整理制表符及行尾空白、同步摘要，不改变诊断信息或结果；用户对比说明保持原字节及Markdown硬换行格式。
+
+发布不改变14条入口PASS、全量55 PASS/5 FAIL、完整部件调用链BLOCKED及GUI MANUAL。没有生产迁移，不将提交/推送成功解释为整链验收完成；其他worktree保持原状。发布核验结果随后补记。

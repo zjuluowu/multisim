@@ -27,6 +27,32 @@ config("production_execution_evidence") {
   ]
 }
 
+# Primary-slot entry contract. ISimManager is an explicit internal seam here;
+# this target MUST NOT be reported as full Controller/Radio/RIL execution.
+config("primary_slot_headers") {
+  include_dirs = [ "primary_slot/include", "primary_slot" ]
+}
+source_set("primary_slot_entry_production") {
+  sources = [
+    "$production_root/utils/common/src/telephony_permission.cpp",
+    "$production_root/common/capability_mgr/src/multi_sims_capability_manager.cpp",
+  ]
+  if (primary_slot_core_source == "") {
+    sources += [ "$production_root/services/core/src/core_service_sim.cpp" ]
+  } else {
+    sources += [ primary_slot_core_source ]
+  }
+  configs += [ ":primary_slot_headers", ":production_headers", ":production_execution_evidence" ]
+  include_dirs = [ "$production_root/services/multisim/integration/api" ]
+}
+executable("sim_primary_slot_entry_test") {
+  sources = [ "primary_slot/entry_test.cpp", "primary_slot/security_boundary.cpp" ]
+  configs += [ ":primary_slot_headers", ":production_headers" ]
+  include_dirs = [ "$gtest_root/googletest/include", "$gtest_root/googlemock/include" ]
+  deps = [ ":primary_slot_entry_production", ":googlemock" ]
+  ldflags = [ "-fprofile-instr-generate", "-Wl,-Map,sim_primary_slot_entry_test.map" ]
+}
+
 # Original implementation sources, not copied and not mixed with fixtures/stubs.
 source_set("sim_production_host") {
   sources = [
