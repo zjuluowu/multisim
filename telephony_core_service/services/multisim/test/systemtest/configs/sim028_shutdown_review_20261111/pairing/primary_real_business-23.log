@@ -1,0 +1,19 @@
+Note: Google Test filter = PairingReview.DestroyThenReinitializeCardGraph
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from PairingReview
+[ RUN      ] PairingReview.DestroyThenReinitializeCardGraph
+DIAGNOSTIC SIM_STATE_CHANGE
+CARD_LIFE before_detach state=0x62a7563e1220 refs=2 files=0x62a7563e1ac0 refs=4 records=0x62a7563e2d10 refs=7
+CARD_LIFE after_public_detach state_refs=2 files_refs=1 records_refs=4
+DIAGNOSTIC SIM_STATE_CHANGE
+CARD_LIFE before_detach state=0x62a7563e1220 refs=2 files=0x62a7563e2f40 refs=4 records=0x62a7563e4ee0 refs=7
+CARD_LIFE after_public_detach state_refs=2 files_refs=1 records_refs=4
+LIFE_CHECKPOINT stage=before_cleanup manager=0 ril=0x62a7563d1b50
+LIFE_CHECKPOINT stage=after_cleanup manager=0 ril=0x62a7563d1b50
+[       OK ] PairingReview.DestroyThenReinitializeCardGraph (2 ms)
+[----------] 1 test from PairingReview (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 1 test.

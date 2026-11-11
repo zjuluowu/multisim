@@ -1,0 +1,174 @@
+Note: Google Test filter = PairingReview.DestroyThenReinitializeCardGraph
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from PairingReview
+[ RUN      ] PairingReview.DestroyThenReinitializeCardGraph
+DIAGNOSTIC SIM_STATE_CHANGE
+CARD_LIFE before_detach state=0x62bd7c5d9b80 refs=2 files=0x62bd7c5da420 refs=4 records=0x62bd7c5db670 refs=7
+CARD_LIFE after_public_detach state_refs=2 files_refs=2 records_refs=4
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:51: Failure
+Value of: state.expired()
+  Actual: false
+Expected: true
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:51: Failure
+Value of: records.expired()
+  Actual: false
+Expected: true
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimFileManager pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS UsimFileController pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimFile pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:52: Failure
+Expected equality of these values:
+  environment.ril.use_count()
+    Which is: 4
+  1
+
+DIAGNOSTIC SIM_STATE_CHANGE
+CARD_LIFE before_detach state=0x62bd7c5e09b0 refs=2 files=0x62bd7c5dee40 refs=4 records=0x62bd7c5e1eb0 refs=7
+CARD_LIFE after_public_detach state_refs=2 files_refs=2 records_refs=4
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:51: Failure
+Value of: state.expired()
+  Actual: false
+Expected: true
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:51: Failure
+Value of: records.expired()
+  Actual: false
+Expected: true
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimFileManager pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS UsimFileController pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimFile pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimFileManager pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS UsimFileController pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimFile pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:52: Failure
+Expected equality of these values:
+  environment.ril.use_count()
+    Which is: 7
+  1
+
+LIFE_CHECKPOINT stage=before_cleanup manager=0 ril=0x62bd7c5ca5b0
+LIFE_QUEUE stage=before_cleanup address=108565974834192 name=SimStateHandle pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=108565974853488 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=108565974854864 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=108565974856272 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=108565974859664 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=108565974869856 name=SimStateHandle pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=108565974880464 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=108565974881552 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=108565974883008 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=108565974886352 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321: Failure
+Value of: SimHost::AwaitSchedulerStopped(3s)
+  Actual: false
+Expected: true
+REAL_GRAPH_LIFETIME_NOT_DRAINED
+
+LIFE_QUEUE stage=after_cleanup address=108565974834192 name=SimStateHandle pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=108565974853488 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=108565974854864 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=108565974856272 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=108565974859664 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=108565974869856 name=SimStateHandle pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=108565974880464 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=108565974881552 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=108565974883008 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=108565974886352 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_CHECKPOINT stage=after_cleanup manager=0 ril=0x62bd7c5ca5b0
+[  FAILED  ] PairingReview.DestroyThenReinitializeCardGraph (3025 ms)
+[----------] 1 test from PairingReview (3026 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3031 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] PairingReview.DestroyThenReinitializeCardGraph
+
+ 1 FAILED TEST
+
+../../telephony_core_service/services/multisim/test/systemtest/stubs/mock_tel_ril_manager.h:138: ERROR: this mock object (used in test PairingReview.DestroyThenReinitializeCardGraph) should be deleted but never is. Its address is @0x62bd7c5ca5b0.
+ERROR: 1 leaked mock object found at program exit. Expectations on a mock object are verified when the object is destructed. Leaking a mock means that its expectations aren't verified, which is usually a test bug. If you really intend to leak a mock, you can suppress this error using testing::Mock::AllowLeak(mock_object), or you may use a fake or stub instead of a mock.

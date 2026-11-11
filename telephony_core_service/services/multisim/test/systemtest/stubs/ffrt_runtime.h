@@ -15,6 +15,9 @@ struct QueueEvidence {
 };
 // Read-only registry snapshot. Holds queue states transiently, never SIM objects.
 std::vector<QueueEvidence> GetQueueEvidence();
+// Test-only late-dispatch injection: copies pending external scheduler closures.
+// Does not mutate task status, invoke them, or fabricate a production result.
+std::vector<std::function<void()>> CapturePendingActions(const std::string &queueName);
 // Drain all host queues, including tasks submitted by other tasks. Future delayed
 // work counts as pending. False means timeout or a recorded task failure.
 bool AwaitSchedulerIdle(std::chrono::milliseconds budget);

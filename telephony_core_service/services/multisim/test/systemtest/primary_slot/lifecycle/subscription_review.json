@@ -1,0 +1,417 @@
+{
+  "schema_version": 1,
+  "head": "e21f1ef35a715a197dd3bc76fbaccadea70d17be",
+  "scope": "source-grounded lifecycle review; not dynamic proof that every optional feature is covered",
+  "rows": [
+    {
+      "id": "state-monitor",
+      "owner": "SimStateHandle ObserverHandler",
+      "subscriber": "MultiSimMonitor",
+      "reference": "shared ObserverHandler entry unless stated",
+      "registration": {
+        "path": "services/sim/src/multi_sim_monitor.cpp",
+        "sha256": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba",
+        "needle": "RegisterCoreNotify(shared_from_this(), RadioEvent::RADIO_SIM_STATE_",
+        "lines": [
+          803,
+          804,
+          805
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/multi_sim_monitor.cpp",
+        "sha256": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba",
+        "needle": "UnRegisterCoreNotify(shared_from_this(), RadioEvent::RADIO_SIM_STATE_",
+        "lines": [
+          823,
+          824,
+          825
+        ]
+      },
+      "exit_phase": "after producer quiescence, before releasing Monitor",
+      "verification": "ShutdownContract.B; native listener race",
+      "finding": "pair exists, normal shutdown never reaches it"
+    },
+    {
+      "id": "iccid-monitor",
+      "owner": "IccFile filesFetchedObser",
+      "subscriber": "MultiSimMonitor",
+      "reference": "shared ObserverHandler entry unless stated",
+      "registration": {
+        "path": "services/sim/src/multi_sim_monitor.cpp",
+        "sha256": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba",
+        "needle": "RegisterCoreNotify(shared_from_this(), RadioEvent::RADIO_QUERY_ICCID_DONE)",
+        "lines": [
+          798
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/multi_sim_monitor.cpp",
+        "sha256": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba",
+        "needle": "UnRegisterCoreNotify(shared_from_this(), RadioEvent::RADIO_QUERY_ICCID_DONE)",
+        "lines": [
+          818
+        ]
+      },
+      "exit_phase": "same phase; all logical slots",
+      "verification": "ShutdownContract.B",
+      "finding": "pair exists but not invoked at normal manager release"
+    },
+    {
+      "id": "state-records",
+      "owner": "SimStateHandle ObserverHandler",
+      "subscriber": "IccFile",
+      "reference": "shared ObserverHandler entry unless stated",
+      "registration": {
+        "path": "services/sim/src/icc_file.cpp",
+        "sha256": "1edcaf9f6862f2cd8d08a00b0013437df8ab20ad9e2395de48bb83c8446f5518",
+        "needle": "stateManager_->RegisterCoreNotify(shared_from_this()",
+        "lines": [
+          86,
+          87,
+          88
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/icc_file.cpp",
+        "sha256": "1edcaf9f6862f2cd8d08a00b0013437df8ab20ad9e2395de48bb83c8446f5518",
+        "needle": "stateManager_->UnRegisterCoreNotify(shared_from_this()",
+        "lines": [
+          852,
+          853,
+          854
+        ]
+      },
+      "exit_phase": "while Records shared owner valid, after queued work drain",
+      "verification": "RealCardLifetime.PublicDetachReleasesRealStateFileAndRil",
+      "finding": "READY/LOCKED/SIMLOCK paired by UnInit, destructor dependency wrong"
+    },
+    {
+      "id": "state-file",
+      "owner": "SimStateHandle ObserverHandler",
+      "subscriber": "SimFileManager",
+      "reference": "shared ObserverHandler entry unless stated",
+      "registration": {
+        "path": "services/sim/src/sim_file_manager.cpp",
+        "sha256": "12045e75e5299fda095155cb8aa2358f62a43f936df9d55aadbf4d95fb47752a",
+        "needle": "simStateManager->RegisterCoreNotify(shared_from_this()",
+        "lines": [
+          104,
+          105
+        ]
+      },
+      "unregistration": null,
+      "exit_phase": "all File cached types detached before State release",
+      "verification": "PairingReview.AllThreeSlotsPublicDetach",
+      "finding": "ICCID unregister switch missing; matching case occurs in Register only in original",
+      "proposed_pair": "pairing_fixes.proposed.patch; compiled/executed only in isolated copy"
+    },
+    {
+      "id": "records-file",
+      "owner": "IccFile filesFetchedObser",
+      "subscriber": "SimFileManager",
+      "reference": "shared ObserverHandler entry unless stated",
+      "registration": {
+        "path": "services/sim/src/sim_file_manager.cpp",
+        "sha256": "12045e75e5299fda095155cb8aa2358f62a43f936df9d55aadbf4d95fb47752a",
+        "needle": "simFile_->RegisterCoreNotify(shared_from_this(), RadioEvent::RADIO_SIM_RECORDS_LOADED)",
+        "lines": [
+          132
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/icc_file.cpp",
+        "sha256": "1edcaf9f6862f2cd8d08a00b0013437df8ab20ad9e2395de48bb83c8446f5518",
+        "needle": "UnregisterAllFilesLoaded(handler)",
+        "lines": [
+          551
+        ]
+      },
+      "exit_phase": "all cached IccFile objects, deduplicate USIM/GSM aliases",
+      "verification": "RealCardLifetime.PublicDetachReleasesRealStateFileAndRil",
+      "finding": "public remover exists; no FileManager normal unregistration"
+    },
+    {
+      "id": "state-phonebook",
+      "owner": "SimStateHandle ObserverHandler via FileManager",
+      "subscriber": "IccDiallingNumbersManager",
+      "reference": "shared ObserverHandler entry unless stated",
+      "registration": {
+        "path": "services/sim/src/icc_dialling_numbers_manager.cpp",
+        "sha256": "b0244babca504514e94112f7418a24b5b61905f18e3c995e8c264386f4aa6ed7",
+        "needle": "simFileManager->RegisterCoreNotify(shared_from_this(), RadioEvent::RADIO_SIM_STATE_CHANGE)",
+        "lines": [
+          54
+        ]
+      },
+      "unregistration": null,
+      "exit_phase": "Phonebook.Stop before State; drain Cache/Usim children",
+      "verification": "ShutdownContract.B plus 3 historical address cycles",
+      "finding": "NEW independent strong cycle: no inverse call; empty destructor"
+    },
+    {
+      "id": "account-observer",
+      "owner": "MultiSimMonitor ObserverHandler",
+      "subscriber": "external account observer",
+      "reference": "shared ObserverHandler entry unless stated",
+      "registration": {
+        "path": "services/sim/src/sim_manager.cpp",
+        "sha256": "9231f9b67e92d80178c878412b16d573c8ed604dfa58638e7441dda7f90a3cd5",
+        "needle": "what == RadioEvent::RADIO_SIM_ACCOUNT_LOADED",
+        "lines": [
+          1210
+        ]
+      },
+      "unregistration": null,
+      "exit_phase": "drain Monitor; explicit remove while owner valid",
+      "verification": "ShutdownContract.A/B; account_observer_expired in original 7",
+      "finding": "Manager and Monitor unregistration entry absent; 4-file patch adds pair",
+      "proposed_pair": "pairing_fixes.proposed.patch; compiled/executed only in isolated copy"
+    },
+    {
+      "id": "ril-state",
+      "owner": "RIL external ObserverHandler",
+      "subscriber": "SimStateHandle",
+      "reference": "shared ObserverHandler entry unless stated",
+      "registration": {
+        "path": "services/sim/src/sim_state_handle.cpp",
+        "sha256": "e6856b2acda8a60334e8f61f6d5201fb896106a0a700960f8a36cc26dd1d5e0f",
+        "needle": "telRilManager->RegisterCoreNotify(slotId_",
+        "lines": [
+          140,
+          141
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/sim_state_handle.cpp",
+        "sha256": "e6856b2acda8a60334e8f61f6d5201fb896106a0a700960f8a36cc26dd1d5e0f",
+        "needle": "telRilManager->UnRegisterCoreNotify(slotId_",
+        "lines": [
+          491,
+          492
+        ]
+      },
+      "exit_phase": "after in-flight completions; StateHandle stop",
+      "verification": "RealCardLifetime.InitializedStateUnregistersRilAndReleases",
+      "finding": "UnInit pair, not reached while State cycle retained"
+    },
+    {
+      "id": "ril-file",
+      "owner": "RIL external ObserverHandler",
+      "subscriber": "SimFileManager",
+      "reference": "shared ObserverHandler entry unless stated",
+      "registration": {
+        "path": "services/sim/src/sim_file_manager.cpp",
+        "sha256": "12045e75e5299fda095155cb8aa2358f62a43f936df9d55aadbf4d95fb47752a",
+        "needle": "telRilManager->RegisterCoreNotify(slotId, shared_from_this()",
+        "lines": [
+          106,
+          107
+        ]
+      },
+      "unregistration": null,
+      "exit_phase": "File.Stop before RIL root release",
+      "verification": "weak full multi-owner registration ledger",
+      "finding": "VOICE_TECH_CHANGED/ICC_REFRESH registered; File destructor omits RIL removal"
+    },
+    {
+      "id": "ril-radio",
+      "owner": "RIL external ObserverHandler",
+      "subscriber": "RadioProtocolController",
+      "reference": "shared ObserverHandler entry unless stated",
+      "registration": {
+        "path": "services/sim/src/radio_protocol_controller.cpp",
+        "sha256": "7391942fa10b22e4692b1873716d4827be68dbbe85ff63587f243e3096d79102",
+        "needle": "RegisterCoreNotify(i, shared_from_this()",
+        "lines": [
+          54
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/radio_protocol_controller.cpp",
+        "sha256": "7391942fa10b22e4692b1873716d4827be68dbbe85ff63587f243e3096d79102",
+        "needle": "UnRegisterCoreNotify(i, shared_from_this()",
+        "lines": [
+          444
+        ]
+      },
+      "exit_phase": "after original CHECK/UPDATE/COMPLETE and retry completion",
+      "verification": "ShutdownContract.E/F and original C1",
+      "finding": "paired; count uses captured slotCount, not physical/logical count conflation"
+    },
+    {
+      "id": "stk",
+      "owner": "State/RIL observers",
+      "subscriber": "StkController",
+      "reference": "shared ObserverHandler entry unless stated",
+      "registration": {
+        "path": "services/sim/src/stk_controller.cpp",
+        "sha256": "996c434c8f62ba9c77b2819f16cf15abeed2f3d0a41468c84c39cd5db7414be2",
+        "needle": "RegisterCoreNotify(slotId_, shared_from_this()",
+        "lines": [
+          244,
+          245,
+          246,
+          247,
+          248,
+          249,
+          250
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/stk_controller.cpp",
+        "sha256": "996c434c8f62ba9c77b2819f16cf15abeed2f3d0a41468c84c39cd5db7414be2",
+        "needle": "UnRegisterCoreNotify(slotId_, shared_from_this()",
+        "lines": [
+          266,
+          267,
+          268,
+          269,
+          270,
+          271,
+          272
+        ]
+      },
+      "exit_phase": "explicit Stk.Stop, before child destruction",
+      "verification": "weak full multi-owner ledger",
+      "finding": "seven RIL events plus state paired; current destructor-based call must be moved before shutdown release"
+    },
+    {
+      "id": "tracker",
+      "owner": "IccFile observers",
+      "subscriber": "SimStateTracker",
+      "reference": "shared ObserverHandler entry unless stated",
+      "registration": {
+        "path": "services/sim/src/sim_state_tracker.cpp",
+        "sha256": "0ebadb176c101095d8561c1f7eb55fa108c8757016a4d71e630e8242df44ea4c",
+        "needle": "RegisterCoreNotify(shared_from_this()",
+        "lines": [
+          209,
+          220,
+          231,
+          242
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/sim_state_tracker.cpp",
+        "sha256": "0ebadb176c101095d8561c1f7eb55fa108c8757016a4d71e630e8242df44ea4c",
+        "needle": "UnRegisterCoreNotify(shared_from_this()",
+        "lines": [
+          253,
+          264,
+          275,
+          286
+        ]
+      },
+      "exit_phase": "Account.Stop: all four events before Tracker/Cache release",
+      "verification": "ShutdownContract.B ledger/weak objects",
+      "finding": "four matched pairs; Account destructor currently performs inverse"
+    },
+    {
+      "id": "operator-cache",
+      "owner": "State observer via FileManager",
+      "subscriber": "OperatorConfigCache",
+      "reference": "shared ObserverHandler entry unless stated",
+      "registration": {
+        "path": "services/sim/src/operator_config_cache.cpp",
+        "sha256": "6125e33fe2d1a74c0de9cd4183b4c1c22a840790f324935bcd2f0670bcfdcd5a",
+        "needle": "RegisterCoreNotify(shared_from_this()",
+        "lines": [
+          302
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/operator_config_cache.cpp",
+        "sha256": "6125e33fe2d1a74c0de9cd4183b4c1c22a840790f324935bcd2f0670bcfdcd5a",
+        "needle": "UnRegisterCoreNotify(shared_from_this()",
+        "lines": [
+          339
+        ]
+      },
+      "exit_phase": "Account.Stop; fence weak APN task and prohibit repost",
+      "verification": "ShutdownContract.G; RunnerLifetime tests only external runner",
+      "finding": "paired; deferred APN tasks require callback admission/drain"
+    },
+    {
+      "id": "monitor-watch",
+      "owner": "system parameter service (raw context)",
+      "subscriber": "MultiSimMonitor raw this",
+      "reference": "raw void* context; requires external unregister fence plus active callback lease",
+      "registration": {
+        "path": "services/sim/src/multi_sim_monitor.cpp",
+        "sha256": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba",
+        "needle": "WatchParameter(",
+        "lines": [
+          176,
+          178
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/multi_sim_monitor.cpp",
+        "sha256": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba",
+        "needle": "RemoveParameterWatcher(",
+        "lines": [
+          190,
+          192
+        ]
+      },
+      "exit_phase": "disable new watcher registration; unregister each successful key then fence active callbacks",
+      "verification": "native RemoveParameterWatcher contract needed; Host returns unavailable",
+      "finding": "UnregisterRebootDetectCallback has no call sites; two physical keys only"
+    },
+    {
+      "id": "monitor-ces",
+      "owner": "CMI common event registry (weak callbacks inside subscribers)",
+      "subscriber": "MultiSimMonitor subscribers",
+      "reference": "CMI subscriber registration; subscriber stores weak EventHandler owner",
+      "registration": {
+        "path": "services/sim/src/multi_sim_monitor.cpp",
+        "sha256": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba",
+        "needle": "RegisterCommonEventCallback(",
+        "lines": [
+          496,
+          508
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/multi_sim_monitor.cpp",
+        "sha256": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba",
+        "needle": "UnregisterCommonEventCallback(",
+        "lines": [
+          415,
+          416
+        ]
+      },
+      "exit_phase": "Monitor.Stop before member release",
+      "verification": "native CES callbacks and owner-local task gate",
+      "finding": "paired in UnSubscribeListeners; not an in-flight barrier"
+    },
+    {
+      "id": "monitor-sa",
+      "owner": "SA service registry (weak callback owner inside listener)",
+      "subscriber": "MultiSimMonitor listener",
+      "reference": "external sptr listener; listener stores weak EventHandler owner",
+      "registration": {
+        "path": "services/sim/src/multi_sim_monitor.cpp",
+        "sha256": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba",
+        "needle": "SubscribeSystemAbility(",
+        "lines": [
+          439,
+          440
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/multi_sim_monitor.cpp",
+        "sha256": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba",
+        "needle": "UnSubscribeSystemAbility(",
+        "lines": [
+          423,
+          424
+        ]
+      },
+      "exit_phase": "Monitor.Stop before callback context destruction",
+      "verification": "native SA callbacks; unavailable in Host",
+      "finding": "pair exists; callback can already be queued"
+    }
+  ]
+}

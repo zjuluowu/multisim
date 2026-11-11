@@ -24,8 +24,8 @@
     },
     "services/multisim/test/systemtest/BUILD.gn": {
       "relocation_sha256": "af60d6518d1224eecdac66d5b6fdb148035085eac2f9d2fe918d083751616a53",
-      "current_sha256": "fef82ec33aa716d20c232aac6bff8806a8ebc08e828f92a5425e081583ad28ee",
-      "reason": "Register lifecycle cases in the existing real target; retain every legacy target and assertion."
+      "current_sha256": "32bcb884540cfbcda5760bba005cc6776039f2ec3bfcb8a49b678f29a8a23c23",
+      "reason": "Add shutdown review cases to the existing real GTest target; preserve all existing assertions and test groups."
     },
     "services/multisim/test/systemtest/scripts/audit_initialization.py": {
       "relocation_sha256": "36ab28439ffcf6cdfc4783669d619c9033b5957e403df9571653d284446d7c91",
@@ -34,8 +34,8 @@
     },
     "services/multisim/test/systemtest/stubs/ffrt_runtime.cpp": {
       "relocation_sha256": "47ca6163b88147cfffb1a2fbb0797fe93980da3271e23c734629bef0d5b02f07",
-      "current_sha256": "e79482e7caecf08abc2fcdaad2d5183bf5a765543d1252be7a98b92740af2db9",
-      "reason": "Read-only named queue evidence; no scheduling or cleanup semantics changed."
+      "current_sha256": "0cc090d0344f9d1af84de8c0de908ac70e48cce19df0d2343d0337d2fac13c4a",
+      "reason": "Read-only queue evidence and explicit snapshot of real pending callbacks for late-dispatch testing; no task status or scheduler semantics changed."
     },
     "services/multisim/test/systemtest/stubs/parameter_service.cpp": {
       "relocation_sha256": "8e82238e3cdb8ae448beb68c0026cb15282681e4ffc52416f3529cf2d1e704b7",
@@ -54,8 +54,8 @@
     },
     "services/multisim/test/systemtest/stubs/ffrt_runtime.h": {
       "relocation_sha256": "e56da308da2035b69ec7b25b3bdf352eaa3c79c0df2cce62e1b7265d6c99c21e",
-      "current_sha256": "e737313a96054614619f0b8d0e9d66b3099b17bd9057efd0f81a1d2306dc1ea5",
-      "reason": "Read-only queue evidence declarations; retain existing scheduler assertions."
+      "current_sha256": "1692f5751492604dddd799070d31cd28195725bb337acd0b7b3fe6db372e43d4",
+      "reason": "Declare named pending callback capture; keep original cleanup assertions and owned queue evidence."
     }
   }
 }

@@ -1,0 +1,118 @@
+{
+  "status": "PASS",
+  "input_graph_sha256": "073baf19b34a0785e18521c0fe60a907acacb0e6629742cf0e7b348bc9fda928",
+  "scope": "Historical address graph re-analysis, not a fresh runtime trace",
+  "newly_identified_cycles": [
+    {
+      "root": "0x5647e1e94600",
+      "edges": [
+        {
+          "from": "0x5647e1e94600",
+          "to": "0x5647e1e94860",
+          "member": "simStateHandle_",
+          "ownership": "shared",
+          "shared_count_at_snapshot": 1,
+          "target_type": "OHOS::Telephony::SimStateHandle"
+        },
+        {
+          "from": "0x5647e1e94860",
+          "to": "0x5647e1e918c0",
+          "member": "observerHandler_",
+          "ownership": "unique",
+          "shared_count_at_snapshot": null,
+          "target_type": "OHOS::Telephony::ObserverHandler"
+        },
+        {
+          "from": "0x5647e1e918c0",
+          "to": "0x5647e1e99710",
+          "member": "observerHandlerMap_.[0]{event=515}.second.[1]",
+          "ownership": "shared",
+          "shared_count_at_snapshot": 2,
+          "target_type": "OHOS::AppExecFwk::EventHandler"
+        },
+        {
+          "from": "0x5647e1e99710",
+          "to": "0x5647e1e94600",
+          "member": "simStateManager_",
+          "ownership": "shared",
+          "shared_count_at_snapshot": 10,
+          "target_type": "OHOS::Telephony::SimStateManager"
+        }
+      ]
+    },
+    {
+      "root": "0x5647e1e9b920",
+      "edges": [
+        {
+          "from": "0x5647e1e9b920",
+          "to": "0x5647e1e9bb80",
+          "member": "simStateHandle_",
+          "ownership": "shared",
+          "shared_count_at_snapshot": 1,
+          "target_type": "OHOS::Telephony::SimStateHandle"
+        },
+        {
+          "from": "0x5647e1e9bb80",
+          "to": "0x5647e1e9c270",
+          "member": "observerHandler_",
+          "ownership": "unique",
+          "shared_count_at_snapshot": null,
+          "target_type": "OHOS::Telephony::ObserverHandler"
+        },
+        {
+          "from": "0x5647e1e9c270",
+          "to": "0x5647e1ea0f20",
+          "member": "observerHandlerMap_.[0]{event=515}.second.[1]",
+          "ownership": "shared",
+          "shared_count_at_snapshot": 2,
+          "target_type": "OHOS::AppExecFwk::EventHandler"
+        },
+        {
+          "from": "0x5647e1ea0f20",
+          "to": "0x5647e1e9b920",
+          "member": "simStateManager_",
+          "ownership": "shared",
+          "shared_count_at_snapshot": 10,
+          "target_type": "OHOS::Telephony::SimStateManager"
+        }
+      ]
+    },
+    {
+      "root": "0x5647e1ea2d30",
+      "edges": [
+        {
+          "from": "0x5647e1ea2d30",
+          "to": "0x5647e1ea2f90",
+          "member": "simStateHandle_",
+          "ownership": "shared",
+          "shared_count_at_snapshot": 1,
+          "target_type": "OHOS::Telephony::SimStateHandle"
+        },
+        {
+          "from": "0x5647e1ea2f90",
+          "to": "0x5647e1ea3680",
+          "member": "observerHandler_",
+          "ownership": "unique",
+          "shared_count_at_snapshot": null,
+          "target_type": "OHOS::Telephony::ObserverHandler"
+        },
+        {
+          "from": "0x5647e1ea3680",
+          "to": "0x5647e1ea8580",
+          "member": "observerHandlerMap_.[0]{event=515}.second.[1]",
+          "ownership": "shared",
+          "shared_count_at_snapshot": 2,
+          "target_type": "OHOS::AppExecFwk::EventHandler"
+        },
+        {
+          "from": "0x5647e1ea8580",
+          "to": "0x5647e1ea2d30",
+          "member": "simStateManager_",
+          "ownership": "shared",
+          "shared_count_at_snapshot": 10,
+          "target_type": "OHOS::Telephony::SimStateManager"
+        }
+      ]
+    }
+  ]
+}

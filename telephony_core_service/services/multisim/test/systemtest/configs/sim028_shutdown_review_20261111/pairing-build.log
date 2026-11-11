@@ -1,0 +1,271 @@
+ninja: Entering directory `/tmp/sim028-pairing-review/pairing-review-j_e1xwor/host/build'
+[1/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/utils/common/src/tel_event_handler.cpp
+[2/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/utils/common/src/tel_event_queue.cpp
+[3/114] touch obj/event_transport_production_host.stamp
+[4/114] CXX ../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/support/capacity_probe.cpp
+[5/114] touch obj/component_launcher.stamp
+[6/114] CXX ../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/external_services.cpp
+[7/114] touch obj/external_service_boundaries.stamp
+[8/114] CXX /tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59/googlemock/src/gmock-all.cc
+[9/114] CXX ../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tests/event_adapter_test.cpp
+[10/114] CXX ../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tests/native_pointer_test.cpp
+[11/114] CXX ../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tests/event_transport_test.cpp
+[12/114] CXX /tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59/googletest/src/gtest-all.cc
+[13/114] ar rcs obj/liblibgoogletest.a obj/ABS_PATH/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59/googletest/src/libgoogletest.gtest-all.o
+[14/114] ar rcs obj/liblibgooglemock.a obj/ABS_PATH/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59/googlemock/src/libgooglemock.gmock-all.o
+[15/114] CXX ../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/parameter_service.cpp
+[16/114] touch obj/platform_boundaries.stamp
+[17/114] CXX ../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tests/external_services_test.cpp
+[18/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/frameworks/native/src/core_manager_inner.cpp
+[19/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/core/src/core_service_hisysevent.cpp
+[20/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/frameworks/native/src/operator_config_types.cpp
+[21/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/tel_ril/src/observer_handler.cpp
+[22/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/utils/common/src/str_convert.cpp
+[23/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/common/capability_mgr/src/multi_sims_capability_manager.cpp
+[24/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/utils/common/src/telephony_permission.cpp
+[25/114] CXX ../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/event_handler_runtime.cpp
+[26/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/utils/common/src/telephony_common_utils.cpp
+[27/114] touch obj/primary_real_support.stamp
+[28/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/core/src/core_service_sim.cpp
+[29/114] touch obj/primary_slot_entry_production.stamp
+[30/114] CXX ../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp
+[31/114] touch obj/scheduler_boundaries.stamp
+[32/114] CXX ../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tests/capacity_test.cpp
+[33/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/multisim/test/sim_guard/adapters/legacy/platform_spy.cpp
+[34/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/multisim/test/sim_guard/runner/contract_test.cpp
+[35/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp
+[36/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/icc_state.cpp
+[37/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/frameworks/native/src/core_manager_inner.cpp
+[38/114] CXX ../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tests/ril_adapter_test.cpp
+[39/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/tel_ril/src/observer_handler.cpp
+[40/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp
+[41/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/sim_state_manager.cpp
+[42/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/sim_state_handle.cpp
+[43/114] touch obj/sim_guard_legacy_production.stamp
+[44/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/multisim/test/sim_guard/adapters/legacy/platform_spy.cpp
+[45/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/multisim/test/sim_guard/runner/pin_memory_contract_test.cpp
+[46/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/card_file_detect_manager.cpp
+[47/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/multisim/test/sim_guard/adapters/legacy/legacy_sim_adapter.cpp
+[48/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/csim_file_controller.cpp
+[49/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/esim_manager.cpp
+[50/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/icc_dialling_numbers_cache.cpp
+[51/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/icc_dialling_numbers_handler.cpp
+[52/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/multisim/test/sim_guard/adapters/legacy/legacy_sim_adapter.cpp
+[53/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/icc_dialling_numbers_manager.cpp
+[54/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/icc_file.cpp
+[55/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/icc_file_controller.cpp
+[56/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/icc_operator_privilege_controller.cpp
+[57/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/icc_operator_rule.cpp
+[58/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/icc_state.cpp
+[59/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/isim_file.cpp
+[60/114] LINK platform_adapter_test
+[61/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/isim_file_controller.cpp
+[62/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/mcc_pool.cpp
+[63/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/multi_sim_helper.cpp
+/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/multi_sim_helper.cpp:137:5: warning: 'SHA256_Init' is deprecated [-Wdeprecated-declarations]
+  137 |     SHA256_Init(&sha256);
+      |     ^
+/tmp/sim028-deps/openssl/usr/include/openssl/sha.h:73:1: note: 'SHA256_Init' has been explicitly marked deprecated here
+   73 | OSSL_DEPRECATEDIN_3_0 int SHA256_Init(SHA256_CTX *c);
+      | ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:182:49: note: expanded from macro 'OSSL_DEPRECATEDIN_3_0'
+  182 | #   define OSSL_DEPRECATEDIN_3_0                OSSL_DEPRECATED(3.0)
+      |                                                 ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:62:52: note: expanded from macro 'OSSL_DEPRECATED'
+   62 | #     define OSSL_DEPRECATED(since) __attribute__((deprecated))
+      |                                                    ^
+/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/multi_sim_helper.cpp:138:5: warning: 'SHA256_Update' is deprecated [-Wdeprecated-declarations]
+  138 |     SHA256_Update(&sha256, iccid.c_str(), iccid.size());
+      |     ^
+/tmp/sim028-deps/openssl/usr/include/openssl/sha.h:74:1: note: 'SHA256_Update' has been explicitly marked deprecated here
+   74 | OSSL_DEPRECATEDIN_3_0 int SHA256_Update(SHA256_CTX *c,
+      | ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:182:49: note: expanded from macro 'OSSL_DEPRECATEDIN_3_0'
+  182 | #   define OSSL_DEPRECATEDIN_3_0                OSSL_DEPRECATED(3.0)
+      |                                                 ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:62:52: note: expanded from macro 'OSSL_DEPRECATED'
+   62 | #     define OSSL_DEPRECATED(since) __attribute__((deprecated))
+      |                                                    ^
+/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/multi_sim_helper.cpp:139:5: warning: 'SHA256_Final' is deprecated [-Wdeprecated-declarations]
+  139 |     SHA256_Final(hash, &sha256);
+      |     ^
+/tmp/sim028-deps/openssl/usr/include/openssl/sha.h:76:1: note: 'SHA256_Final' has been explicitly marked deprecated here
+   76 | OSSL_DEPRECATEDIN_3_0 int SHA256_Final(unsigned char *md, SHA256_CTX *c);
+      | ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:182:49: note: expanded from macro 'OSSL_DEPRECATEDIN_3_0'
+  182 | #   define OSSL_DEPRECATEDIN_3_0                OSSL_DEPRECATED(3.0)
+      |                                                 ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:62:52: note: expanded from macro 'OSSL_DEPRECATED'
+   62 | #     define OSSL_DEPRECATED(since) __attribute__((deprecated))
+      |                                                    ^
+3 warnings generated.
+[64/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/multi_sim_monitor.cpp
+[65/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/operator_config_hisysevent.cpp
+[66/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/operator_config_cache.cpp
+/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/operator_config_cache.cpp:283:5: warning: 'SHA256_Init' is deprecated [-Wdeprecated-declarations]
+  283 |     SHA256_Init(&sha256);
+      |     ^
+/tmp/sim028-deps/openssl/usr/include/openssl/sha.h:73:1: note: 'SHA256_Init' has been explicitly marked deprecated here
+   73 | OSSL_DEPRECATEDIN_3_0 int SHA256_Init(SHA256_CTX *c);
+      | ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:182:49: note: expanded from macro 'OSSL_DEPRECATEDIN_3_0'
+  182 | #   define OSSL_DEPRECATEDIN_3_0                OSSL_DEPRECATED(3.0)
+      |                                                 ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:62:52: note: expanded from macro 'OSSL_DEPRECATED'
+   62 | #     define OSSL_DEPRECATED(since) __attribute__((deprecated))
+      |                                                    ^
+/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/operator_config_cache.cpp:284:5: warning: 'SHA256_Update' is deprecated [-Wdeprecated-declarations]
+  284 |     SHA256_Update(&sha256, iccid.c_str(), iccid.size());
+      |     ^
+/tmp/sim028-deps/openssl/usr/include/openssl/sha.h:74:1: note: 'SHA256_Update' has been explicitly marked deprecated here
+   74 | OSSL_DEPRECATEDIN_3_0 int SHA256_Update(SHA256_CTX *c,
+      | ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:182:49: note: expanded from macro 'OSSL_DEPRECATEDIN_3_0'
+  182 | #   define OSSL_DEPRECATEDIN_3_0                OSSL_DEPRECATED(3.0)
+      |                                                 ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:62:52: note: expanded from macro 'OSSL_DEPRECATED'
+   62 | #     define OSSL_DEPRECATED(since) __attribute__((deprecated))
+      |                                                    ^
+/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/operator_config_cache.cpp:285:5: warning: 'SHA256_Final' is deprecated [-Wdeprecated-declarations]
+  285 |     SHA256_Final(hash, &sha256);
+      |     ^
+/tmp/sim028-deps/openssl/usr/include/openssl/sha.h:76:1: note: 'SHA256_Final' has been explicitly marked deprecated here
+   76 | OSSL_DEPRECATEDIN_3_0 int SHA256_Final(unsigned char *md, SHA256_CTX *c);
+      | ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:182:49: note: expanded from macro 'OSSL_DEPRECATEDIN_3_0'
+  182 | #   define OSSL_DEPRECATEDIN_3_0                OSSL_DEPRECATED(3.0)
+      |                                                 ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:62:52: note: expanded from macro 'OSSL_DEPRECATED'
+   62 | #     define OSSL_DEPRECATED(since) __attribute__((deprecated))
+      |                                                    ^
+3 warnings generated.
+[67/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/operator_config_loader.cpp
+[68/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/operator_file_parser.cpp
+[69/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/operator_matching_rule.cpp
+[70/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/pdp_profile_rdb_helper.cpp
+[71/114] LINK sim_guard_legacy
+[72/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/plmn_file.cpp
+[73/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/radio_protocol_controller.cpp
+[74/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/ruim_file_controller.cpp
+[75/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/ruim_file.cpp
+[76/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/sim_char_decode.cpp
+[77/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/sim_account_callback_death_recipient.cpp
+[78/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/sim_account_manager.cpp
+[79/114] LINK sim_guard_pin_memory
+[80/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/sim_file_controller.cpp
+[81/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/sim_file.cpp
+/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/sim_file.cpp:2045:30: warning: variable length arrays in C++ are a Clang extension [-Wvla-cxx-extension]
+ 2045 |     unsigned char numberData[dataLength];
+      |                              ^~~~~~~~~~
+/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/sim_file.cpp:2045:30: note: read of non-const variable 'dataLength' is not allowed in a constant expression
+/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/sim_file.cpp:2044:18: note: declared here
+ 2044 |     unsigned int dataLength = bcdCodes.size();
+      |                  ^
+1 warning generated.
+[82/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/sim_file_init.cpp
+[83/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/sim_number_decode.cpp
+[84/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/sim_file_manager.cpp
+/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/sim_file_manager.cpp:615:5: warning: 'SHA256_Init' is deprecated [-Wdeprecated-declarations]
+  615 |     SHA256_Init(&sha256);
+      |     ^
+/tmp/sim028-deps/openssl/usr/include/openssl/sha.h:73:1: note: 'SHA256_Init' has been explicitly marked deprecated here
+   73 | OSSL_DEPRECATEDIN_3_0 int SHA256_Init(SHA256_CTX *c);
+      | ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:182:49: note: expanded from macro 'OSSL_DEPRECATEDIN_3_0'
+  182 | #   define OSSL_DEPRECATEDIN_3_0                OSSL_DEPRECATED(3.0)
+      |                                                 ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:62:52: note: expanded from macro 'OSSL_DEPRECATED'
+   62 | #     define OSSL_DEPRECATED(since) __attribute__((deprecated))
+      |                                                    ^
+/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/sim_file_manager.cpp:616:5: warning: 'SHA256_Update' is deprecated [-Wdeprecated-declarations]
+  616 |     SHA256_Update(&sha256, imsi.c_str(), imsi.size());
+      |     ^
+/tmp/sim028-deps/openssl/usr/include/openssl/sha.h:74:1: note: 'SHA256_Update' has been explicitly marked deprecated here
+   74 | OSSL_DEPRECATEDIN_3_0 int SHA256_Update(SHA256_CTX *c,
+      | ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:182:49: note: expanded from macro 'OSSL_DEPRECATEDIN_3_0'
+  182 | #   define OSSL_DEPRECATEDIN_3_0                OSSL_DEPRECATED(3.0)
+      |                                                 ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:62:52: note: expanded from macro 'OSSL_DEPRECATED'
+   62 | #     define OSSL_DEPRECATED(since) __attribute__((deprecated))
+      |                                                    ^
+/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/sim_file_manager.cpp:617:5: warning: 'SHA256_Final' is deprecated [-Wdeprecated-declarations]
+  617 |     SHA256_Final(hash, &sha256);
+      |     ^
+/tmp/sim028-deps/openssl/usr/include/openssl/sha.h:76:1: note: 'SHA256_Final' has been explicitly marked deprecated here
+   76 | OSSL_DEPRECATEDIN_3_0 int SHA256_Final(unsigned char *md, SHA256_CTX *c);
+      | ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:182:49: note: expanded from macro 'OSSL_DEPRECATEDIN_3_0'
+  182 | #   define OSSL_DEPRECATEDIN_3_0                OSSL_DEPRECATED(3.0)
+      |                                                 ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:62:52: note: expanded from macro 'OSSL_DEPRECATED'
+   62 | #     define OSSL_DEPRECATED(since) __attribute__((deprecated))
+      |                                                    ^
+3 warnings generated.
+[85/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/sim_rdb_helper.cpp
+[86/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/sim_file_parse.cpp
+[87/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/sim_sms_controller.cpp
+[88/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/sim_sms_manager.cpp
+[89/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/sim_state_manager.cpp
+[90/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/sim_utils.cpp
+[91/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/sim_state_handle.cpp
+[92/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/sim_state_tracker.cpp
+[93/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/stk_manager.cpp
+[94/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/telephony_data_helper.cpp
+[95/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/tag_service.cpp
+[96/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/stk_controller.cpp
+[97/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/usim_file_controller.cpp
+[98/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/voice_mail_constants.cpp
+[99/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/usim_dialling_numbers_service.cpp
+[100/114] CXX ../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/security_boundary.cpp
+[101/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/multi_sim_controller.cpp
+/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/multi_sim_controller.cpp:1687:5: warning: 'SHA256_Init' is deprecated [-Wdeprecated-declarations]
+ 1687 |     SHA256_Init(&sha256);
+      |     ^
+/tmp/sim028-deps/openssl/usr/include/openssl/sha.h:73:1: note: 'SHA256_Init' has been explicitly marked deprecated here
+   73 | OSSL_DEPRECATEDIN_3_0 int SHA256_Init(SHA256_CTX *c);
+      | ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:182:49: note: expanded from macro 'OSSL_DEPRECATEDIN_3_0'
+  182 | #   define OSSL_DEPRECATEDIN_3_0                OSSL_DEPRECATED(3.0)
+      |                                                 ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:62:52: note: expanded from macro 'OSSL_DEPRECATED'
+   62 | #     define OSSL_DEPRECATED(since) __attribute__((deprecated))
+      |                                                    ^
+/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/multi_sim_controller.cpp:1688:5: warning: 'SHA256_Update' is deprecated [-Wdeprecated-declarations]
+ 1688 |     SHA256_Update(&sha256, iccid.c_str(), iccid.size());
+      |     ^
+/tmp/sim028-deps/openssl/usr/include/openssl/sha.h:74:1: note: 'SHA256_Update' has been explicitly marked deprecated here
+   74 | OSSL_DEPRECATEDIN_3_0 int SHA256_Update(SHA256_CTX *c,
+      | ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:182:49: note: expanded from macro 'OSSL_DEPRECATEDIN_3_0'
+  182 | #   define OSSL_DEPRECATEDIN_3_0                OSSL_DEPRECATED(3.0)
+      |                                                 ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:62:52: note: expanded from macro 'OSSL_DEPRECATED'
+   62 | #     define OSSL_DEPRECATED(since) __attribute__((deprecated))
+      |                                                    ^
+/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/multi_sim_controller.cpp:1689:5: warning: 'SHA256_Final' is deprecated [-Wdeprecated-declarations]
+ 1689 |     SHA256_Final(hash, &sha256);
+      |     ^
+/tmp/sim028-deps/openssl/usr/include/openssl/sha.h:76:1: note: 'SHA256_Final' has been explicitly marked deprecated here
+   76 | OSSL_DEPRECATEDIN_3_0 int SHA256_Final(unsigned char *md, SHA256_CTX *c);
+      | ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:182:49: note: expanded from macro 'OSSL_DEPRECATEDIN_3_0'
+  182 | #   define OSSL_DEPRECATEDIN_3_0                OSSL_DEPRECATED(3.0)
+      |                                                 ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:62:52: note: expanded from macro 'OSSL_DEPRECATED'
+   62 | #     define OSSL_DEPRECATED(since) __attribute__((deprecated))
+      |                                                    ^
+3 warnings generated.
+[102/114] touch obj/sim_initialization_production_host.stamp
+[103/114] CXX ../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_runtime.cpp
+[104/114] CXX ../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/security_boundary.cpp
+[105/114] CXX ../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp
+[106/114] LINK sim_primary_slot_entry_test
+[107/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/sim/src/sim_manager.cpp
+[108/114] CXX /tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp
+[109/114] touch obj/sim_production_host.stamp
+[110/114] LINK sim_component_test
+[111/114] CXX ../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp
+[112/114] CXX ../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp
+[113/114] CXX ../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp
+[114/114] LINK sim_primary_slot_real_test

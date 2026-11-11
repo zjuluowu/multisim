@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="1" failures="1" disabled="0" errors="0" time="6.027" timestamp="2026-11-11T20:05:51.436" name="AllTests">
+  <testsuite name="RealCardLifetime" tests="1" failures="1" disabled="0" skipped="0" errors="0" time="6.022" timestamp="2026-11-11T20:05:51.439">
+    <testcase name="PublicDetachReleasesRealStateFileAndRil" file="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp" line="116" status="run" result="completed" time="6.021" timestamp="2026-11-11T20:05:51.440" classname="RealCardLifetime">
+      <failure message="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:126&#x0A;Value of: state.expired()&#x0A;  Actual: false&#x0A;Expected: true&#x0A;" type=""><![CDATA[../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:126
+Value of: state.expired()
+  Actual: false
+Expected: true
+]]></failure>
+      <failure message="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:126&#x0A;Value of: files.expired()&#x0A;  Actual: false&#x0A;Expected: true&#x0A;" type=""><![CDATA[../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:126
+Value of: files.expired()
+  Actual: false
+Expected: true
+]]></failure>
+      <failure message="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:127&#x0A;Value of: records.expired()&#x0A;  Actual: false&#x0A;Expected: true&#x0A;" type=""><![CDATA[../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:127
+Value of: records.expired()
+  Actual: false
+Expected: true
+]]></failure>
+      <failure message="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:127&#x0A;Value of: controller.expired()&#x0A;  Actual: false&#x0A;Expected: true&#x0A;" type=""><![CDATA[../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:127
+Value of: controller.expired()
+  Actual: false
+Expected: true
+]]></failure>
+      <failure message="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:128&#x0A;Value of: SimHost::AwaitSchedulerStopped(3s)&#x0A;  Actual: false&#x0A;Expected: true&#x0A;" type=""><![CDATA[../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:128
+Value of: SimHost::AwaitSchedulerStopped(3s)
+  Actual: false
+Expected: true
+]]></failure>
+      <failure message="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:129&#x0A;Expected equality of these values:&#x0A;  environment.ril.use_count()&#x0A;    Which is: 4&#x0A;  1&#x0A;" type=""><![CDATA[../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:129
+Expected equality of these values:
+  environment.ril.use_count()
+    Which is: 4
+  1
+]]></failure>
+      <failure message="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:132&#x0A;Value of: environment.notifications.empty()&#x0A;  Actual: false&#x0A;Expected: true&#x0A;" type=""><![CDATA[../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:132
+Value of: environment.notifications.empty()
+  Actual: false
+Expected: true
+]]></failure>
+      <failure message="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321&#x0A;Value of: SimHost::AwaitSchedulerStopped(3s)&#x0A;  Actual: false&#x0A;Expected: true&#x0A;REAL_GRAPH_LIFETIME_NOT_DRAINED&#x0A;" type=""><![CDATA[../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321
+Value of: SimHost::AwaitSchedulerStopped(3s)
+  Actual: false
+Expected: true
+REAL_GRAPH_LIFETIME_NOT_DRAINED
+]]></failure>
+      <properties>
+        <property name="real_card_lifetime" value="FAIL"/>
+        <property name="workers_after_cleanup" value="5"/>
+        <property name="ril_references_after_cleanup" value="4"/>
+        <property name="account_observer_expired" value="true"/>
+        <property name="object_lifetime" value="FAIL"/>
+        <property name="strict_ril_expectations_verified" value="PASS"/>
+      </properties>
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="1" failures="0" disabled="0" errors="0" time="0.001" timestamp="2026-11-11T20:07:12.069" name="AllTests">
+  <testsuite name="RealCardLifetime" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.001" timestamp="2026-11-11T20:07:12.069">
+    <testcase name="PublicDetachReleasesRealStateFileAndRil" file="../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp" line="116" status="run" result="completed" time="0.001" timestamp="2026-11-11T20:07:12.069" classname="RealCardLifetime">
+      <properties>
+        <property name="real_card_lifetime" value="PASS"/>
+        <property name="workers_after_cleanup" value="0"/>
+        <property name="ril_references_after_cleanup" value="1"/>
+        <property name="account_observer_expired" value="true"/>
+        <property name="object_lifetime" value="PASS"/>
+        <property name="strict_ril_expectations_verified" value="PASS"/>
+      </properties>
+    </testcase>
+  </testsuite>
+</testsuites>

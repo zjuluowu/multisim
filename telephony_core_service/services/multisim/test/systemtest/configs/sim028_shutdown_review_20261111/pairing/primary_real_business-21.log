@@ -1,0 +1,22 @@
+Note: Google Test filter = PairingReview.AllThreeSlotsPublicDetach
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from PairingReview
+[ RUN      ] PairingReview.AllThreeSlotsPublicDetach
+DIAGNOSTIC SIM_STATE_CHANGE
+DIAGNOSTIC SIM_STATE_CHANGE
+DIAGNOSTIC SIM_STATE_CHANGE
+CARD_LIFE before_detach state=0x6078722a81e0 refs=2 files=0x6078722a8a80 refs=4 records=0x6078722a9d20 refs=7
+CARD_LIFE after_public_detach state_refs=2 files_refs=1 records_refs=4
+CARD_LIFE before_detach state=0x6078722abe00 refs=2 files=0x6078722ac7a0 refs=4 records=0x6078722adb50 refs=7
+CARD_LIFE after_public_detach state_refs=2 files_refs=1 records_refs=4
+CARD_LIFE before_detach state=0x6078722afcb0 refs=2 files=0x6078722b0850 refs=4 records=0x6078722b1af0 refs=7
+CARD_LIFE after_public_detach state_refs=2 files_refs=1 records_refs=4
+LIFE_CHECKPOINT stage=before_cleanup manager=0 ril=0x607872298b10
+LIFE_CHECKPOINT stage=after_cleanup manager=0 ril=0x607872298b10
+[       OK ] PairingReview.AllThreeSlotsPublicDetach (3 ms)
+[----------] 1 test from PairingReview (3 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3 ms total)
+[  PASSED  ] 1 test.

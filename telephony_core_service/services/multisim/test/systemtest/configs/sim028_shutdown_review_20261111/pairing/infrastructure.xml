@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="19" failures="0" disabled="0" errors="0" time="0.013" timestamp="2026-11-11T20:06:02.043" name="AllTests">
+  <testsuite name="EventAdapter" tests="3" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-11T20:06:02.044">
+    <testcase name="SharedTypeSafety" file="../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tests/event_adapter_test.cpp" line="5" status="run" result="completed" time="0." timestamp="2026-11-11T20:06:02.044" classname="EventAdapter">
+      <properties>
+        <property name="case_id" value="INFRA-EVENT-001"/>
+        <property name="level" value="INFRA"/>
+        <property name="oracle_id" value="EVT-TYPE"/>
+      </properties>
+    </testcase>
+    <testcase name="UniqueOwnership" file="../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tests/event_adapter_test.cpp" line="17" status="run" result="completed" time="0." timestamp="2026-11-11T20:06:02.044" classname="EventAdapter">
+      <properties>
+        <property name="case_id" value="INFRA-EVENT-002"/>
+        <property name="level" value="INFRA"/>
+        <property name="oracle_id" value="EVT-OWNERSHIP"/>
+      </properties>
+    </testcase>
+    <testcase name="WeakLifetimeAndMetadata" file="../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tests/event_adapter_test.cpp" line="32" status="run" result="completed" time="0." timestamp="2026-11-11T20:06:02.044" classname="EventAdapter">
+      <properties>
+        <property name="case_id" value="INFRA-EVENT-003"/>
+        <property name="level" value="INFRA"/>
+        <property name="oracle_id" value="EVT-LIFETIME"/>
+      </properties>
+    </testcase>
+  </testsuite>
+  <testsuite name="ProductionEventTransport" tests="2" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-11T20:06:02.044">
+    <testcase name="DeliversFormalEnvelope" file="../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tests/event_transport_test.cpp" line="63" status="run" result="completed" time="0." timestamp="2026-11-11T20:06:02.044" classname="ProductionEventTransport">
+      <properties>
+        <property name="case_id" value="INFRA-EVENT-004"/>
+        <property name="level" value="INFRA"/>
+        <property name="oracle_id" value="EVT-PRODUCTION"/>
+        <property name="converged" value="true"/>
+        <property name="cleanup_completed" value="true"/>
+      </properties>
+    </testcase>
+    <testcase name="CancelsPendingAndReapsWorker" file="../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tests/event_transport_test.cpp" line="88" status="run" result="completed" time="0." timestamp="2026-11-11T20:06:02.044" classname="ProductionEventTransport">
+      <properties>
+        <property name="case_id" value="INFRA-EVENT-005"/>
+        <property name="level" value="INFRA"/>
+        <property name="oracle_id" value="EVT-CANCEL"/>
+        <property name="cleanup_completed" value="true"/>
+      </properties>
+    </testcase>
+  </testsuite>
+  <testsuite name="SchedulerBoundary" tests="5" failures="0" disabled="0" skipped="0" errors="0" time="0.012" timestamp="2026-11-11T20:06:02.044">
+    <testcase name="RunningTaskCannotBeCancelled" file="../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tests/event_transport_test.cpp" line="110" status="run" result="completed" time="0." timestamp="2026-11-11T20:06:02.044" classname="SchedulerBoundary">
+      <properties>
+        <property name="case_id" value="INFRA-FFRT-001"/>
+        <property name="level" value="INFRA"/>
+        <property name="oracle_id" value="FFRT-CANCEL-RUNNING"/>
+      </properties>
+    </testcase>
+    <testcase name="ProductionGeneralTaskWaitsAndCleansUp" file="../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tests/event_transport_test.cpp" line="137" status="run" result="completed" time="0." timestamp="2026-11-11T20:06:02.045" classname="SchedulerBoundary">
+      <properties>
+        <property name="case_id" value="INFRA-FFRT-002"/>
+        <property name="level" value="INFRA"/>
+        <property name="oracle_id" value="FFRT-GENERAL"/>
+      </properties>
+    </testcase>
+    <testcase name="IdleWaitDrainsCascadedQueues" file="../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tests/event_transport_test.cpp" line="152" status="run" result="completed" time="0." timestamp="2026-11-11T20:06:02.045" classname="SchedulerBoundary">
+      <properties>
+        <property name="case_id" value="INFRA-FFRT-003"/>
+        <property name="oracle_id" value="FFRT-IDLE-CASCADE"/>
+        <property name="level" value="INFRA"/>
+      </properties>
+    </testcase>
+    <testcase name="IdleWaitDoesNotIgnoreDelayedOrRunningWork" file="../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tests/event_transport_test.cpp" line="172" status="run" result="completed" time="0.01" timestamp="2026-11-11T20:06:02.046" classname="SchedulerBoundary">
+      <properties>
+        <property name="case_id" value="INFRA-FFRT-004"/>
+        <property name="oracle_id" value="FFRT-IDLE-BOUNDED"/>
+        <property name="level" value="INFRA"/>
+      </properties>
+    </testcase>
+    <testcase name="IdleWaitExposesTaskFailure" file="../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tests/event_transport_test.cpp" line="196" status="run" result="completed" time="0." timestamp="2026-11-11T20:06:02.056" classname="SchedulerBoundary">
+      <properties>
+        <property name="case_id" value="INFRA-FFRT-005"/>
+        <property name="oracle_id" value="FFRT-IDLE-FAILURE"/>
+        <property name="level" value="INFRA"/>
+      </properties>
+    </testcase>
+  </testsuite>
+  <testsuite name="ExternalData" tests="3" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-11T20:06:02.057">
+    <testcase name="EmptyCursorIsNotQueryFailure" file="../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tests/external_services_test.cpp" line="7" status="run" result="completed" time="0." timestamp="2026-11-11T20:06:02.057" classname="ExternalData">
+      <properties>
+        <property name="case_id" value="INFRA-DATA-001"/>
+        <property name="level" value="INFRA"/>
+        <property name="oracle_id" value="DS-CURSOR"/>
+      </properties>
+    </testcase>
+    <testcase name="ExplicitQueryResponses" file="../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tests/external_services_test.cpp" line="24" status="run" result="completed" time="0." timestamp="2026-11-11T20:06:02.057" classname="ExternalData">
+      <properties>
+        <property name="case_id" value="INFRA-DATA-002"/>
+        <property name="level" value="INFRA"/>
+        <property name="oracle_id" value="DS-QUERY"/>
+      </properties>
+    </testcase>
+    <testcase name="OriginalBucketKeepsFirstPut" file="../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tests/external_services_test.cpp" line="62" status="run" result="completed" time="0." timestamp="2026-11-11T20:06:02.057" classname="ExternalData">
+      <properties>
+        <property name="case_id" value="INFRA-DATA-003"/>
+        <property name="level" value="INFRA"/>
+        <property name="oracle_id" value="DS-VALUES"/>
+      </properties>
+    </testcase>
+  </testsuite>
+  <testsuite name="ExternalEvents" tests="2" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-11T20:06:02.057">
+    <testcase name="PublishPreservesEnvelopeAndFailure" file="../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tests/external_services_test.cpp" line="78" status="run" result="completed" time="0." timestamp="2026-11-11T20:06:02.057" classname="ExternalEvents">
+      <properties>
+        <property name="case_id" value="INFRA-CES-001"/>
+        <property name="level" value="INFRA"/>
+        <property name="oracle_id" value="CES-PUBLISH"/>
+      </properties>
+    </testcase>
+    <testcase name="MissingProviderAndScopeCleanup" file="../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tests/external_services_test.cpp" line="102" status="run" result="completed" time="0." timestamp="2026-11-11T20:06:02.057" classname="ExternalEvents">
+      <properties>
+        <property name="case_id" value="INFRA-CES-002"/>
+        <property name="level" value="INFRA"/>
+        <property name="oracle_id" value="CES-LIFETIME"/>
+      </properties>
+    </testcase>
+  </testsuite>
+  <testsuite name="NativePointerSubset" tests="3" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-11T20:06:02.057">
+    <testcase name="SharedOwnership" file="../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tests/native_pointer_test.cpp" line="15" status="run" result="completed" time="0." timestamp="2026-11-11T20:06:02.057" classname="NativePointerSubset">
+      <properties>
+        <property name="case_id" value="INFRA-PTR-001"/>
+        <property name="level" value="INFRA"/>
+        <property name="oracle_id" value="PTR-OWNERSHIP"/>
+      </properties>
+    </testcase>
+    <testcase name="WeakIdentityAndPromotion" file="../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tests/native_pointer_test.cpp" line="32" status="run" result="completed" time="0." timestamp="2026-11-11T20:06:02.057" classname="NativePointerSubset">
+      <properties>
+        <property name="case_id" value="INFRA-PTR-002"/>
+        <property name="level" value="INFRA"/>
+        <property name="oracle_id" value="PTR-WEAK"/>
+      </properties>
+    </testcase>
+    <testcase name="LocalCastRequiresImplementedInterface" file="../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tests/native_pointer_test.cpp" line="51" status="run" result="completed" time="0." timestamp="2026-11-11T20:06:02.057" classname="NativePointerSubset">
+      <properties>
+        <property name="case_id" value="INFRA-PTR-003"/>
+        <property name="level" value="INFRA"/>
+        <property name="oracle_id" value="PTR-LOCAL-CAST"/>
+      </properties>
+    </testcase>
+  </testsuite>
+  <testsuite name="RilAdapter" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-11T20:06:02.057">
+    <testcase name="FormalStatusResponse" file="../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tests/ril_adapter_test.cpp" line="6" status="run" result="completed" time="0." timestamp="2026-11-11T20:06:02.057" classname="RilAdapter">
+      <properties>
+        <property name="case_id" value="INFRA-RIL-001"/>
+        <property name="level" value="INFRA"/>
+        <property name="oracle_id" value="RIL-TRANSPORT"/>
+      </properties>
+    </testcase>
+  </testsuite>
+</testsuites>

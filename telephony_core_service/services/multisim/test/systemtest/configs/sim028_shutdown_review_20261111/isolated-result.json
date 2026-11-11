@@ -1,0 +1,1415 @@
+{
+  "head": "e21f1ef35a715a197dd3bc76fbaccadea70d17be",
+  "status": "FAIL",
+  "source_copy": "/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service",
+  "patch_sha256": "3173380de25fec19ee6ffaf0dad2998033f8489ba38ea1dc1c0703182d224130",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "--ignore-whitespace",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/pairing_fixes.proposed.patch"
+      ],
+      "cwd": "/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source",
+      "exit": 0,
+      "log": "patch-check.log"
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--ignore-whitespace",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/pairing_fixes.proposed.patch"
+      ],
+      "cwd": "/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source",
+      "exit": 0,
+      "log": "patch-apply-isolated.log"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/tools/host.py",
+        "all",
+        "--with-real-primary",
+        "--out",
+        "/tmp/sim028-pairing-review/pairing-review-j_e1xwor/host",
+        "--production-root",
+        "/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service",
+        "--gtest-root",
+        "/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59",
+        "--openssl-root",
+        "/tmp/sim028-deps/openssl",
+        "--runtime-root",
+        "/tmp/sim028-deps/native"
+      ],
+      "cwd": "/mnt/e/github/multisim",
+      "exit": 1,
+      "log": "host-regression.log"
+    }
+  ],
+  "original_tree_modified": false,
+  "cases": [
+    {
+      "name": "ContractDriver.PIN_001",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\npin-success-status:slot=0,present=1,state=READY,kind=2;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;pin:0;pin:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "name": "ContractDriver.PIN_002_CommandFailure",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\npin-command-failure:slot=0,present=1,state=LOCKED,kind=2;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;pin:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "name": "ContractDriver.DUAL_001",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "real_instances_created": "2",
+        "observations": "card-event:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;slot=1,present=1,state=LOCKED,kind=1;\ncard-event:slot=0,present=1,state=READY,kind=1;slot=1,present=1,state=LOCKED,kind=1;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:1;status:0;status:0;",
+        "real_instances_destroyed": "2"
+      }
+    },
+    {
+      "name": "ContractDriver.RIL_001_DuplicateAndError",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=0,state=ABSENT,kind=0;\nril-error:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;\nduplicate-ready:slot=0,present=1,state=READY,kind=2;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "name": "SessionLifecycle.INIT_001_SingleEnumeration",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "real_instances_created": "1",
+        "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+        "observations": "initialized-without-card-response:slot=0,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "name": "SessionLifecycle.INIT_002_MissingRilThenRecreate",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "real_instances_created": "2",
+        "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+        "observations": "ril-unavailable:slot=0,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=1;\n",
+        "real_instances_destroyed": "2",
+        "pending_responses": "0",
+        "external_calls": "status:0;"
+      }
+    },
+    {
+      "name": "SessionLifecycle.INIT_DUAL_002_ReversedEnumeration",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "real_instances_created": "2",
+        "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+        "observations": "second-slot-response-first:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=1,state=LOCKED,kind=1;\nboth-enumerated:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:1;",
+        "real_instances_destroyed": "2"
+      }
+    },
+    {
+      "name": "SessionLifecycle.CALLBACK_002_MalformedThenRecovery",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "real_instances_created": "1",
+        "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+        "observations": "malformed-status:slot=0,present=0,state=UNKNOWN,kind=0;\nvalid-status-recovery:slot=0,present=1,state=READY,kind=2;\n",
+        "injected_fault": "wrong typed RIL response payload",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "name": "SessionLifecycle.CALLBACK_003_DroppedThenRecovery",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "real_instances_created": "1",
+        "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+        "observations": "status-response-not-delivered:slot=0,present=0,state=UNKNOWN,kind=0;\nnew-status-response:slot=0,present=1,state=LOCKED,kind=2;\n",
+        "injected_fault": "RIL response dropped; no timeout-policy assertion",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "name": "SessionLifecycle.PUK_002_WrongThenSuccessfulUnlock",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=1,state=READY,kind=2;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "name": "SessionLifecycle.REFRESH_001_ExplicitStatusQuery",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nexplicit-refresh-completed:slot=0,present=1,state=LOCKED,kind=2;\n",
+        "raw_refresh_return": "2",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "name": "SessionLifecycle.RECREATE_001_DualCardReenumeration",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "real_instances_created": "4",
+        "observations": "card-event:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\nnew-real-SUT-before-enumeration:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=0,state=UNKNOWN,kind=0;\nreenumerated-device-facts:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\n",
+        "real_instances_destroyed": "4",
+        "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+        "persistence_scope": "external card facts; no Provider/DB recovery claim",
+        "pending_responses": "0",
+        "external_calls": "status:1;status:0;"
+      }
+    },
+    {
+      "name": "SessionLifecycle.RECREATE_002_ReplacementWhileStopped",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "real_instances_created": "2",
+        "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nnew-card-after-real-recreation:slot=0,present=1,state=LOCKED,kind=1;\n",
+        "real_instances_destroyed": "2",
+        "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+        "pending_responses": "0",
+        "external_calls": "status:0;"
+      }
+    },
+    {
+      "name": "SessionLifecycle.DUAL_002_PinWhileOtherCardRemoved",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "real_instances_created": "2",
+        "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=1,state=READY,kind=1;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=0,state=ABSENT,kind=0;\nunlock-and-other-removal-completed:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=ABSENT,kind=0;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:1;pin:0;status:1;status:0;",
+        "real_instances_destroyed": "2"
+      }
+    },
+    {
+      "name": "Compatibility/Lifecycle.PublicCardState/LIFE_001",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=1,state=READY,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:0;status:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "name": "Compatibility/Lifecycle.PublicCardState/LIFE_002",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=READY,kind=1;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "name": "Compatibility/Lifecycle.PublicCardState/PUK_001",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "name": "ContractDriver.DEFECT_001_StaleReadyAfterRemoval",
+      "gtest": "FAIL",
+      "status": "FAIL",
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nremoved:slot=0,present=0,state=ABSENT,kind=0;\nstale-ready:slot=0,present=1,state=READY,kind=2;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "name": "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+      "gtest": "FAIL",
+      "status": "FAIL",
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nreplacement-card-locked:slot=0,present=1,state=LOCKED,kind=1;\nold-card-ready-response:slot=0,present=1,state=READY,kind=2;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:0;status:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "name": "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+      "gtest": "FAIL",
+      "status": "FAIL",
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ngeneric-error-without-password-decision:slot=0,present=1,state=LOCKED,kind=2;\n",
+        "observed_error": "0",
+        "observed_unlock_result": "1",
+        "pending_responses": "0",
+        "external_calls": "status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "name": "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+      "gtest": "FAIL",
+      "status": "FAIL",
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=1;\nold-pin-result-after-card-replacement:slot=0,present=1,state=NOT_READY,kind=1;\n",
+        "old_request_result": "0",
+        "pending_responses": "0",
+        "external_calls": "status:0;pin:0;status:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "name": "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+      "gtest": "FAIL",
+      "status": "FAIL",
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nexplicit-refresh-completed:slot=0,present=1,state=LOCKED,kind=2;\n",
+        "raw_refresh_return": "2",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "name": "PinMemoryContract.PinSuccessUsesOriginalSlotIdentityAndCredential",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "real_instances_created": "2",
+        "observations": "card-event:slot=0,present=1,state=READY,kind=1;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=1;slot=1,present=1,state=LOCKED,kind=2;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:1;pin:1;pin:1;",
+        "real_instances_destroyed": "2"
+      }
+    },
+    {
+      "name": "PinMemoryContract.PukSuccessUsesNewPinAndPinAlterOperation",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "name": "PinMemoryContract.FailedPinDoesNotPublishMemoryHook",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;pin:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "name": "PinMemoryContract.RemovalUsesAbsentResponseIdentityWithoutCredential",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "real_instances_created": "2",
+        "observations": "card-event:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=0,state=ABSENT,kind=0;\n",
+        "pending_responses": "0",
+        "external_calls": "status:1;status:1;",
+        "real_instances_destroyed": "2"
+      }
+    },
+    {
+      "name": "EventAdapter.SharedTypeSafety",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "case_id": "INFRA-EVENT-001",
+        "level": "INFRA",
+        "oracle_id": "EVT-TYPE"
+      }
+    },
+    {
+      "name": "EventAdapter.UniqueOwnership",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "case_id": "INFRA-EVENT-002",
+        "level": "INFRA",
+        "oracle_id": "EVT-OWNERSHIP"
+      }
+    },
+    {
+      "name": "EventAdapter.WeakLifetimeAndMetadata",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "case_id": "INFRA-EVENT-003",
+        "level": "INFRA",
+        "oracle_id": "EVT-LIFETIME"
+      }
+    },
+    {
+      "name": "ProductionEventTransport.DeliversFormalEnvelope",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "case_id": "INFRA-EVENT-004",
+        "level": "INFRA",
+        "oracle_id": "EVT-PRODUCTION",
+        "converged": "true",
+        "cleanup_completed": "true"
+      }
+    },
+    {
+      "name": "ProductionEventTransport.CancelsPendingAndReapsWorker",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "case_id": "INFRA-EVENT-005",
+        "level": "INFRA",
+        "oracle_id": "EVT-CANCEL",
+        "cleanup_completed": "true"
+      }
+    },
+    {
+      "name": "SchedulerBoundary.RunningTaskCannotBeCancelled",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "case_id": "INFRA-FFRT-001",
+        "level": "INFRA",
+        "oracle_id": "FFRT-CANCEL-RUNNING"
+      }
+    },
+    {
+      "name": "SchedulerBoundary.ProductionGeneralTaskWaitsAndCleansUp",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "case_id": "INFRA-FFRT-002",
+        "level": "INFRA",
+        "oracle_id": "FFRT-GENERAL"
+      }
+    },
+    {
+      "name": "SchedulerBoundary.IdleWaitDrainsCascadedQueues",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "case_id": "INFRA-FFRT-003",
+        "oracle_id": "FFRT-IDLE-CASCADE",
+        "level": "INFRA"
+      }
+    },
+    {
+      "name": "SchedulerBoundary.IdleWaitDoesNotIgnoreDelayedOrRunningWork",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "case_id": "INFRA-FFRT-004",
+        "oracle_id": "FFRT-IDLE-BOUNDED",
+        "level": "INFRA"
+      }
+    },
+    {
+      "name": "SchedulerBoundary.IdleWaitExposesTaskFailure",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "case_id": "INFRA-FFRT-005",
+        "oracle_id": "FFRT-IDLE-FAILURE",
+        "level": "INFRA"
+      }
+    },
+    {
+      "name": "ExternalData.EmptyCursorIsNotQueryFailure",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "case_id": "INFRA-DATA-001",
+        "level": "INFRA",
+        "oracle_id": "DS-CURSOR"
+      }
+    },
+    {
+      "name": "ExternalData.ExplicitQueryResponses",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "case_id": "INFRA-DATA-002",
+        "level": "INFRA",
+        "oracle_id": "DS-QUERY"
+      }
+    },
+    {
+      "name": "ExternalData.OriginalBucketKeepsFirstPut",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "case_id": "INFRA-DATA-003",
+        "level": "INFRA",
+        "oracle_id": "DS-VALUES"
+      }
+    },
+    {
+      "name": "ExternalEvents.PublishPreservesEnvelopeAndFailure",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "case_id": "INFRA-CES-001",
+        "level": "INFRA",
+        "oracle_id": "CES-PUBLISH"
+      }
+    },
+    {
+      "name": "ExternalEvents.MissingProviderAndScopeCleanup",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "case_id": "INFRA-CES-002",
+        "level": "INFRA",
+        "oracle_id": "CES-LIFETIME"
+      }
+    },
+    {
+      "name": "NativePointerSubset.SharedOwnership",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "case_id": "INFRA-PTR-001",
+        "level": "INFRA",
+        "oracle_id": "PTR-OWNERSHIP"
+      }
+    },
+    {
+      "name": "NativePointerSubset.WeakIdentityAndPromotion",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "case_id": "INFRA-PTR-002",
+        "level": "INFRA",
+        "oracle_id": "PTR-WEAK"
+      }
+    },
+    {
+      "name": "NativePointerSubset.LocalCastRequiresImplementedInterface",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "case_id": "INFRA-PTR-003",
+        "level": "INFRA",
+        "oracle_id": "PTR-LOCAL-CAST"
+      }
+    },
+    {
+      "name": "RilAdapter.FormalStatusResponse",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "case_id": "INFRA-RIL-001",
+        "level": "INFRA",
+        "oracle_id": "RIL-TRANSPORT"
+      }
+    },
+    {
+      "name": "SimComponent.CapacityReadOnly",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "scenario_framework": "GoogleMock v1.15.2",
+        "case_id": "SIM-COMP-001",
+        "level": "B",
+        "oracle_id": "O-C11",
+        "synthetic_only": "true",
+        "converged": "true",
+        "legacy_capacity": "1",
+        "parameter_boundary_observed": "true",
+        "corrupted_evidence": "false"
+      }
+    },
+    {
+      "name": "PrimaryEntry.NonSystemCallerPrecedesPermissionAndNullManager",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+        "whole_core_service_chain": "BLOCKED_not_executed"
+      }
+    },
+    {
+      "name": "PrimaryEntry.PermissionDenialPrecedesNullManager",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+        "whole_core_service_chain": "BLOCKED_not_executed"
+      }
+    },
+    {
+      "name": "PrimaryEntry.NullManagerPrecedesCapabilityRecheck",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+        "whole_core_service_chain": "BLOCKED_not_executed"
+      }
+    },
+    {
+      "name": "PrimaryEntry.ChangedExternalSystemAppDecisionRejectsExtendedSlot",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+        "whole_core_service_chain": "BLOCKED_not_executed"
+      }
+    },
+    {
+      "name": "PrimaryEntry.MissingCardStopsBeforeActiveAndPreference",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+        "whole_core_service_chain": "BLOCKED_not_executed"
+      }
+    },
+    {
+      "name": "PrimaryEntry.InactiveCardStopsBeforePreferenceAndSwitch",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+        "whole_core_service_chain": "BLOCKED_not_executed"
+      }
+    },
+    {
+      "name": "PrimaryEntry.ReadyCardWritesPreferenceBeforeDelegatingExactTarget",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+        "whole_core_service_chain": "BLOCKED_not_executed"
+      }
+    },
+    {
+      "name": "PrimaryEntry.ManagerFailureReturnedUnchangedAfterPreferenceWrite",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+        "whole_core_service_chain": "BLOCKED_not_executed"
+      }
+    },
+    {
+      "name": "PrimaryEntry.FailedPreferenceWriteStillDelegatesCurrentBehavior",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+        "whole_core_service_chain": "BLOCKED_not_executed",
+        "oracle": "legacy_characterization_SetParameter_return_is_ignored"
+      }
+    },
+    {
+      "name": "PrimaryEntry.PresenceQueryFailureWithFalseOutputReturnsNoCard",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+        "whole_core_service_chain": "BLOCKED_not_executed",
+        "oracle": "legacy_characterization_HasSimCard_return_is_ignored"
+      }
+    },
+    {
+      "name": "PrimaryEntry.PresenceQueryFailureWithTrueOutputStillDelegates",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+        "whole_core_service_chain": "BLOCKED_not_executed",
+        "oracle": "legacy_characterization_HasSimCard_return_is_ignored"
+      }
+    },
+    {
+      "name": "PrimaryEntry.StableSystemAppPassesExtendedSlotCapability",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+        "whole_core_service_chain": "BLOCKED_not_executed"
+      }
+    },
+    {
+      "name": "CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/0",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+        "whole_core_service_chain": "BLOCKED_not_executed"
+      }
+    },
+    {
+      "name": "CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/1",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+        "whole_core_service_chain": "BLOCKED_not_executed"
+      }
+    },
+    {
+      "name": "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {}
+    },
+    {
+      "name": "RealSimPrimary.C0CoreToRealManagerAndController",
+      "gtest": "FAIL",
+      "status": "FAIL",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "27",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "true",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    },
+    {
+      "name": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+      "gtest": "FAIL",
+      "status": "FAIL",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "27",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "true",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    },
+    {
+      "name": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+      "gtest": "FAIL",
+      "status": "FAIL",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "27",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "true",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    },
+    {
+      "name": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+      "gtest": "FAIL",
+      "status": "FAIL",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "27",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "true",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    },
+    {
+      "name": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+      "gtest": "FAIL",
+      "status": "FAIL",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "27",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "true",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    },
+    {
+      "name": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+      "gtest": "FAIL",
+      "status": "FAIL",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "27",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "true",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    },
+    {
+      "name": "RunnerLifetime.NormalCompletionAndRepeatedStop",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {}
+    },
+    {
+      "name": "RunnerLifetime.PendingTaskCancelledAndCapturedOwnerReleased",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {}
+    },
+    {
+      "name": "RunnerLifetime.InFlightStopJoinsAndRejectsCallbackRepost",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {}
+    },
+    {
+      "name": "RunnerLifetime.ConcurrentStopIsIdempotent",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {}
+    },
+    {
+      "name": "RunnerLifetime.CallbackCannotSynchronouslyJoinItself",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {}
+    },
+    {
+      "name": "RealCardLifetime.MissingRilInitializationReleasesState",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {}
+    },
+    {
+      "name": "RealCardLifetime.InitializedStateUnregistersRilAndReleases",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "workers_after_cleanup": "0",
+        "ril_references_after_cleanup": "1",
+        "account_observer_expired": "true",
+        "object_lifetime": "PASS",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    },
+    {
+      "name": "RealCardLifetime.PublicDetachReleasesRealStateFileAndRil",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "real_card_lifetime": "PASS",
+        "workers_after_cleanup": "0",
+        "ril_references_after_cleanup": "1",
+        "account_observer_expired": "true",
+        "object_lifetime": "PASS",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    },
+    {
+      "name": "PairingReview.AllThreeSlotsPublicDetach",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "workers_after_cleanup": "0",
+        "ril_references_after_cleanup": "1",
+        "account_observer_expired": "true",
+        "object_lifetime": "PASS",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    },
+    {
+      "name": "PairingReview.PartialInitializationAndRepeatedUnregister",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "workers_after_cleanup": "0",
+        "ril_references_after_cleanup": "1",
+        "account_observer_expired": "true",
+        "object_lifetime": "PASS",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    },
+    {
+      "name": "PairingReview.DestroyThenReinitializeCardGraph",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "workers_after_cleanup": "0",
+        "ril_references_after_cleanup": "1",
+        "account_observer_expired": "true",
+        "object_lifetime": "PASS",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    },
+    {
+      "name": "PairingReview.UnrelatedRuntimeWorkerIsBaseline",
+      "gtest": "PASS",
+      "status": "PASS",
+      "properties": {
+        "workers_after_cleanup": "0",
+        "ril_references_after_cleanup": "1",
+        "account_observer_expired": "true",
+        "object_lifetime": "PASS",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    },
+    {
+      "name": "ShutdownContract.ANormalPrimaryThenStop",
+      "gtest": "FAIL",
+      "status": "BLOCKED",
+      "properties": {
+        "business": "NOT_RUN",
+        "resource_lifetime": "BLOCKED",
+        "async_safety": "BLOCKED"
+      }
+    },
+    {
+      "name": "ShutdownContract.BThreeSlotsThenStop",
+      "gtest": "FAIL",
+      "status": "BLOCKED",
+      "properties": {
+        "business": "NOT_RUN",
+        "resource_lifetime": "BLOCKED",
+        "async_safety": "BLOCKED"
+      }
+    },
+    {
+      "name": "ShutdownContract.CPartialInitializationThenStop",
+      "gtest": "FAIL",
+      "status": "BLOCKED",
+      "properties": {
+        "business": "NOT_RUN",
+        "resource_lifetime": "BLOCKED",
+        "async_safety": "BLOCKED"
+      }
+    },
+    {
+      "name": "ShutdownContract.DRepeatedStop",
+      "gtest": "FAIL",
+      "status": "BLOCKED",
+      "properties": {
+        "business": "NOT_RUN",
+        "resource_lifetime": "BLOCKED",
+        "async_safety": "BLOCKED"
+      }
+    },
+    {
+      "name": "ShutdownContract.EInFlightSuccessCompletesBeforeRelease",
+      "gtest": "FAIL",
+      "status": "BLOCKED",
+      "properties": {
+        "business": "NOT_RUN",
+        "resource_lifetime": "BLOCKED",
+        "async_safety": "BLOCKED"
+      }
+    },
+    {
+      "name": "ShutdownContract.FErrorReplyDuringStoppingKeepsOriginalResult",
+      "gtest": "FAIL",
+      "status": "BLOCKED",
+      "properties": {
+        "business": "NOT_RUN",
+        "resource_lifetime": "BLOCKED",
+        "async_safety": "BLOCKED"
+      }
+    },
+    {
+      "name": "ShutdownContract.GDelayedDispatchAfterStop",
+      "gtest": "FAIL",
+      "status": "BLOCKED",
+      "properties": {
+        "business": "NOT_RUN",
+        "resource_lifetime": "BLOCKED",
+        "async_safety": "BLOCKED"
+      }
+    },
+    {
+      "name": "ShutdownContract.HDestroyAndCreateNewGraph",
+      "gtest": "FAIL",
+      "status": "BLOCKED",
+      "properties": {
+        "business": "NOT_RUN",
+        "resource_lifetime": "BLOCKED",
+        "async_safety": "BLOCKED"
+      }
+    }
+  ],
+  "patched_files": {
+    "telephony_core_service/services/sim/include/multi_sim_monitor.h": {
+      "original": "81aa95a4ef31acc250fac70cdf457bfc2b6803a136008bd662816562575ca15e",
+      "patched": "f1a5bd273988ae39a784ba5d68cc4f6d74fdaac9d6ca92fb03a77a8a0f106618"
+    },
+    "telephony_core_service/services/sim/src/multi_sim_monitor.cpp": {
+      "original": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba",
+      "patched": "733a6e87f8e3e7a35157331d28afb7a1f6084207a1d4a831a1410505f9795779"
+    },
+    "telephony_core_service/services/sim/src/sim_manager.cpp": {
+      "original": "9231f9b67e92d80178c878412b16d573c8ed604dfa58638e7441dda7f90a3cd5",
+      "patched": "dda653a266cdb1e57ffa72c4865f4ae46e236eab44ca64b4c03697bd86cf14ec"
+    },
+    "telephony_core_service/services/sim/src/sim_state_handle.cpp": {
+      "original": "e6856b2acda8a60334e8f61f6d5201fb896106a0a700960f8a36cc26dd1d5e0f",
+      "patched": "b8caaf92980f2a021e4cdcbf82f45b8e39268aadc0831849197e9568ca110075"
+    }
+  },
+  "host_exit": 1,
+  "host_result": {
+    "status": "FAIL",
+    "head": "e21f1ef35a715a197dd3bc76fbaccadea70d17be",
+    "groups": [
+      {
+        "name": "compatibility",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 17,
+        "passed": 17,
+        "failed": 0,
+        "binary_sha256": "b6928146ce0fd4cc85339dc5ec7332a7456891bc98282d49ac8eec27555a09f9",
+        "filter": "*-*DEFECT_*",
+        "skipped": 0
+      },
+      {
+        "name": "known_defects",
+        "exit_code": 1,
+        "status": "FAIL",
+        "tests": 5,
+        "passed": 0,
+        "failed": 5,
+        "binary_sha256": "b6928146ce0fd4cc85339dc5ec7332a7456891bc98282d49ac8eec27555a09f9",
+        "filter": "*DEFECT_*",
+        "skipped": 0
+      },
+      {
+        "name": "pin_memory",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 4,
+        "passed": 4,
+        "failed": 0,
+        "binary_sha256": "e4ede22872da21b6c17cba6f47ff944bfd29ee593b3f224472221bbb4de30055",
+        "filter": "*",
+        "skipped": 0
+      },
+      {
+        "name": "infrastructure",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 19,
+        "passed": 19,
+        "failed": 0,
+        "binary_sha256": "95b097de9e810f1b0f3a49f67cb29c3ac26495d428ddc8780b15affab41b1b02",
+        "filter": "*",
+        "skipped": 0
+      },
+      {
+        "name": "capacity",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 1,
+        "passed": 1,
+        "failed": 0,
+        "binary_sha256": "2514b19fd3243a3585421e1d0d0994542e1ef29b90e3c4197d2676669593f5dd",
+        "filter": "*",
+        "skipped": 0
+      },
+      {
+        "name": "primary_entry_internal_seam",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 14,
+        "passed": 14,
+        "failed": 0,
+        "binary_sha256": "eabfe15abc0c6f206d7783f226ce5ca431882afadc524616be55aab602e2f0de",
+        "filter": "*",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-6",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 1,
+        "passed": 1,
+        "failed": 0,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-7",
+        "exit_code": 1,
+        "status": "FAIL",
+        "tests": 1,
+        "passed": 0,
+        "failed": 1,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "RealSimPrimary.C0CoreToRealManagerAndController",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-8",
+        "exit_code": 1,
+        "status": "FAIL",
+        "tests": 1,
+        "passed": 0,
+        "failed": 1,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-9",
+        "exit_code": 1,
+        "status": "FAIL",
+        "tests": 1,
+        "passed": 0,
+        "failed": 1,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-10",
+        "exit_code": 1,
+        "status": "FAIL",
+        "tests": 1,
+        "passed": 0,
+        "failed": 1,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-11",
+        "exit_code": 1,
+        "status": "FAIL",
+        "tests": 1,
+        "passed": 0,
+        "failed": 1,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-12",
+        "exit_code": 1,
+        "status": "FAIL",
+        "tests": 1,
+        "passed": 0,
+        "failed": 1,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-13",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 1,
+        "passed": 1,
+        "failed": 0,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "RunnerLifetime.NormalCompletionAndRepeatedStop",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-14",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 1,
+        "passed": 1,
+        "failed": 0,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "RunnerLifetime.PendingTaskCancelledAndCapturedOwnerReleased",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-15",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 1,
+        "passed": 1,
+        "failed": 0,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "RunnerLifetime.InFlightStopJoinsAndRejectsCallbackRepost",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-16",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 1,
+        "passed": 1,
+        "failed": 0,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "RunnerLifetime.ConcurrentStopIsIdempotent",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-17",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 1,
+        "passed": 1,
+        "failed": 0,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "RunnerLifetime.CallbackCannotSynchronouslyJoinItself",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-18",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 1,
+        "passed": 1,
+        "failed": 0,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "RealCardLifetime.MissingRilInitializationReleasesState",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-19",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 1,
+        "passed": 1,
+        "failed": 0,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "RealCardLifetime.InitializedStateUnregistersRilAndReleases",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-20",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 1,
+        "passed": 1,
+        "failed": 0,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "RealCardLifetime.PublicDetachReleasesRealStateFileAndRil",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-21",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 1,
+        "passed": 1,
+        "failed": 0,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "PairingReview.AllThreeSlotsPublicDetach",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-22",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 1,
+        "passed": 1,
+        "failed": 0,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "PairingReview.PartialInitializationAndRepeatedUnregister",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-23",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 1,
+        "passed": 1,
+        "failed": 0,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "PairingReview.DestroyThenReinitializeCardGraph",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-24",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 1,
+        "passed": 1,
+        "failed": 0,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "PairingReview.UnrelatedRuntimeWorkerIsBaseline",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-25",
+        "exit_code": 1,
+        "status": "FAIL",
+        "tests": 1,
+        "passed": 0,
+        "failed": 1,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "ShutdownContract.ANormalPrimaryThenStop",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-26",
+        "exit_code": 1,
+        "status": "FAIL",
+        "tests": 1,
+        "passed": 0,
+        "failed": 1,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "ShutdownContract.BThreeSlotsThenStop",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-27",
+        "exit_code": 1,
+        "status": "FAIL",
+        "tests": 1,
+        "passed": 0,
+        "failed": 1,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "ShutdownContract.CPartialInitializationThenStop",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-28",
+        "exit_code": 1,
+        "status": "FAIL",
+        "tests": 1,
+        "passed": 0,
+        "failed": 1,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "ShutdownContract.DRepeatedStop",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-29",
+        "exit_code": 1,
+        "status": "FAIL",
+        "tests": 1,
+        "passed": 0,
+        "failed": 1,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "ShutdownContract.EInFlightSuccessCompletesBeforeRelease",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-30",
+        "exit_code": 1,
+        "status": "FAIL",
+        "tests": 1,
+        "passed": 0,
+        "failed": 1,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "ShutdownContract.FErrorReplyDuringStoppingKeepsOriginalResult",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-31",
+        "exit_code": 1,
+        "status": "FAIL",
+        "tests": 1,
+        "passed": 0,
+        "failed": 1,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "ShutdownContract.GDelayedDispatchAfterStop",
+        "skipped": 0
+      },
+      {
+        "name": "primary_real_business-32",
+        "exit_code": 1,
+        "status": "FAIL",
+        "tests": 1,
+        "passed": 0,
+        "failed": 1,
+        "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+        "filter": "ShutdownContract.HDestroyAndCreateNewGraph",
+        "skipped": 0
+      }
+    ],
+    "scope": "legacy_card_state_component_and_primary_entry_internal_seam",
+    "artifacts": "/tmp/sim028-pairing-review/pairing-review-j_e1xwor/host/runs/run-m0yavy9m",
+    "primary_whole_component_chain": "BLOCKED",
+    "uncovered": [
+      "full_Core_Init",
+      "SimManager_OnInit",
+      "account",
+      "default_roles",
+      "persistence",
+      "eSIM",
+      "IPC",
+      "device"
+    ],
+    "production_root": "/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service",
+    "production_sources": {
+      "services/sim/src/sim_state_manager.cpp": "99a3194d52aa58af9eb475e08b315821c6eb3a787583f48580ad76cb89d0b44d",
+      "services/sim/src/sim_state_handle.cpp": "b8caaf92980f2a021e4cdcbf82f45b8e39268aadc0831849197e9568ca110075",
+      "services/sim/src/icc_state.cpp": "f44d7f4ba3a3dec16a0edb9ba8b24b6d1bcb66f50fce9d79f936626ba0d9e7cd",
+      "services/tel_ril/src/observer_handler.cpp": "80d56eca572bf285eb3f54e4f057255a582a7f5bf85e35a17dfbdba0e0e74d63",
+      "frameworks/native/src/core_manager_inner.cpp": "2bbfe3133a8f57e7774ba554874acf00763531d395a5acdd294d3e0a12e99733",
+      "services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp": "b3d5e06f22790da1ee1b3373fe528e045a3452f18e0bec01472a7c7f23fc6b27",
+      "utils/common/src/tel_event_handler.cpp": "d6dbc69c03c8c4810cea31d9efaac5e0c0767b569edcc9ce25f3c61269665e63",
+      "utils/common/src/tel_event_queue.cpp": "d536be6a17f2710dda6e145f7c15a482bfa9f053689ab3dc24fae91ef6d3bccf",
+      "services/core/src/core_service_sim.cpp": "6bc4f83b79983b319e41572a6c8683808e4cd485d652eb531fc65a154376df34",
+      "utils/common/src/telephony_permission.cpp": "3ead60a37b3e50bad9c2175e2dbf6b130b47e5be0574298f786a36d49ea21611",
+      "common/capability_mgr/src/multi_sims_capability_manager.cpp": "d1453865fd6003b513dc76fcf65b503668c6a7f96b0da193fd396f53957eb2ef"
+    }
+  },
+  "counts": {
+    "tests": 87,
+    "passed": 68,
+    "failed": 19
+  },
+  "unexpected_original_changes": []
+}

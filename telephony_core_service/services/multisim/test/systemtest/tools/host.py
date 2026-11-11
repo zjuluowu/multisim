@@ -94,7 +94,10 @@ def configure(args, out):
         for name, expected in manifest['archives'].items():
             if hashlib.sha256((Path(runtime) / name).read_bytes()).hexdigest() != expected:
                 raise RuntimeError('Native archive drift: ' + name)
-    values = [('gtest_root', str(root)), ('production_root', str(CORE)), ('host_debug', True),
+    production = (args.production_root or CORE).resolve()
+    if not (production / 'services/sim/src/sim_manager.cpp').is_file():
+        raise RuntimeError('Missing production source root: ' + str(production))
+    values = [('gtest_root', str(root)), ('production_root', str(production)), ('host_debug', True),
               ('openssl_root', str(Path(openssl).resolve()) if openssl else ''),
               ('sim028_runtime_root', str(Path(runtime).resolve()) if runtime else '')]
     gnargs = ' '.join(f'{key}={json.dumps(value)}' for key, value in values)
@@ -124,7 +127,8 @@ def run_tests(args, out):
         'scope': 'legacy_card_state_component_and_primary_entry_internal_seam', 'artifacts': str(session),
         'primary_whole_component_chain': 'BLOCKED',
         'uncovered': ['full_Core_Init', 'SimManager_OnInit', 'account', 'default_roles', 'persistence', 'eSIM', 'IPC', 'device'],
-        'production_sources': {p: hashlib.sha256((CORE / p).read_bytes()).hexdigest() for p in PRODUCTION + [
+        'production_root': str((args.production_root or CORE).resolve()),
+        'production_sources': {p: hashlib.sha256(((args.production_root or CORE) / p).read_bytes()).hexdigest() for p in PRODUCTION + [
             'services/core/src/core_service_sim.cpp', 'utils/common/src/telephony_permission.cpp',
             'common/capability_mgr/src/multi_sims_capability_manager.cpp']}}
     write(session / 'result.json', result)
@@ -211,6 +215,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('action', choices=['configure', 'build', 'all', 'selected', 'clean', 'debug'])
     parser.add_argument('--out', type=Path, default=REPO / '.host-out')
+    parser.add_argument('--production-root', type=Path, help='Explicit isolated production copy for patch verification')
     parser.add_argument('--gtest-root')
     parser.add_argument('--openssl-root')
     parser.add_argument('--runtime-root')

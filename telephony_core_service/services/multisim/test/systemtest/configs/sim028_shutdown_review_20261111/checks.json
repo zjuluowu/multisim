@@ -1,0 +1,33 @@
+[
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check",
+      "--",
+      "telephony_core_service/docs/SIM_Refactor_Execution_State.md",
+      "telephony_core_service/services/multisim/test/relocation_followups.json",
+      "telephony_core_service/services/multisim/test/systemtest/BUILD.gn",
+      "telephony_core_service/services/multisim/test/systemtest/primary_slot/README.md",
+      "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/README.md",
+      "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp",
+      "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h",
+      "telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp",
+      "telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.h",
+      "telephony_core_service/services/multisim/test/systemtest/tools/host.py"
+    ],
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "git",
+      "apply",
+      "--check",
+      "--ignore-whitespace",
+      "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/pairing_fixes.proposed.patch"
+    ],
+    "exit": 0,
+    "output": ""
+  }
+]

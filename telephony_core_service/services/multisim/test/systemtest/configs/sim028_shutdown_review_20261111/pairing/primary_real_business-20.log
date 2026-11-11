@@ -1,0 +1,16 @@
+Note: Google Test filter = RealCardLifetime.PublicDetachReleasesRealStateFileAndRil
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RealCardLifetime
+[ RUN      ] RealCardLifetime.PublicDetachReleasesRealStateFileAndRil
+DIAGNOSTIC SIM_STATE_CHANGE
+CARD_LIFE before_detach state=0x65520ecd9350 refs=2 files=0x65520ecd9bf0 refs=4 records=0x65520ecdae40 refs=7
+CARD_LIFE after_public_detach state_refs=2 files_refs=1 records_refs=4
+LIFE_CHECKPOINT stage=before_cleanup manager=0 ril=0x65520ecc9bc0
+LIFE_CHECKPOINT stage=after_cleanup manager=0 ril=0x65520ecc9bc0
+[       OK ] RealCardLifetime.PublicDetachReleasesRealStateFileAndRil (1 ms)
+[----------] 1 test from RealCardLifetime (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.

@@ -1,3 +1,8 @@
+# SIM-028 review: PREPARATORY PAIRING PATCH ONLY; not a complete Shutdown fix.
+# Reviewed against e21f1ef3. Code hunks were compiled/executed in an isolated copy.
+# This does not break all State/Monitor/Records/File/Phonebook cycles or drain tasks.
+# Full replacement recommendation, ordering and approval gates: shutdown_plan.md.
+# No production-tree application is authorized by the review task.
 --- a/telephony_core_service/services/sim/src/sim_state_handle.cpp
 +++ b/telephony_core_service/services/sim/src/sim_state_handle.cpp
 @@ -1115,6 +1115,9 @@

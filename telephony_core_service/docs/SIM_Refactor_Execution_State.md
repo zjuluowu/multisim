@@ -681,3 +681,36 @@ Provider根因已闭合：生产bundle/GN实际依赖telephony_data，Host此前
 用户在上述验收后明确要求将本地修改提交并推送远端main。本次按80项白名单发布§18生命周期诊断、Host修复、新用例、未应用生产补丁建议及独立证据；不纳入98份原有修改，不应用生产补丁。发布前fetch确认本地main与origin/main同为b3e2b93a，暂存区为空；63份证据摘要、16份代码/说明摘要与98份保护输入逐项核对通过，其他worktree未改变。
 
 本批沿用已完成的75条63 PASS/12 FAIL、原C1业务及严格RIL PASS/生命周期FAIL，不因发布重复宣称测试通过。独立JSON中的published=false、未提交说明、代码/说明摘要及归档diff是发布授权前的真实验收快照，保留原字节；本小节是之后的授权及发布准备增量，因此执行状态文件摘要以Git本次提交为准。发布使用常规提交和origin/main推送，精确提交结果与远端包含关系以Git核验为准。
+
+
+<a id="sim028-shutdown-review-20261111"></a>
+
+## 19. SIM-028 生产停止方案审查及隔离补丁验证（2026-11-11）
+
+输入main为 `e21f1ef35a715a197dd3bc76fbaccadea70d17be`，当前远端同基线。按本轮用户默认授权仅分析、修改测试与验证补丁；生产工作区及98份用户输入摘要未变，不应用生产补丁，不提交/推送。旧§18 JSON/日志保持原字节。执行恢复检查、适用AGENTS、当前源码与工具链核对后，仅在新建仓外副本应用原四文件pairing补丁，真实GN/Ninja编译和完整回归；副本相对输入仅四份生产文件变化，验证期间原始1679份tracked输入逐项未变。
+
+完整性审查结论：**四文件补丁仅是可编译、可回归的注销配对准备修复，不批准为完整Shutdown修复。** 新确认Phonebook强持State，State Observer反持Phonebook且没有注销，构成第四类独立环。先重算历史图，再对当前C1做新只读LLDB追踪，均确认三槽A/B/C/D共12条强闭环；原9条为当时已验证子集。还核实File两项RIL退出缺口、Monitor raw-this Watcher反注册函数无调用点、Controller多处detach、Monitor通用raw-this任务、Core仅持ISimManager接口及Observer::RemoveAll锁内销毁风险。完整方案不能只添加几个析构清理调用。
+
+| 实际执行 | 未打生产补丁 | 仅仓外pairing补丁 |
+| --- | --- | --- |
+| 原Host60（含入口14） | 55 PASS / 5已知FAIL | 55 PASS / 同5已知FAIL |
+| 原RealSimPrimary7 | 1 PASS / 6清理FAIL | 1 PASS / 6清理FAIL |
+| 原生命周期8 | 7 PASS / 1 FAIL | 8 PASS / 0 FAIL |
+| 新PairingReview4 | 2 PASS / 2 FAIL | 4 PASS / 0 FAIL |
+| 新ShutdownContract A～H | 8 GTest FAIL，独立标BLOCKED | 8 GTest FAIL，独立标BLOCKED |
+| 原始总口径（未移除BLOCKED失败） | 87执行 / 65 PASS / 22 FAIL，exit1 | 87执行 / 68 PASS / 19 FAIL，exit1 |
+
+六条在卡业务和严格RIL验证两边均PASS；配对补丁使测试AccountObserver真实注销释放，仍有27个残留Host queue worker和RIL=10，不能用生命周期8条全绿宣称真实Manager整图释放。三槽公开注销与销毁重建用例的改善单列；旧五条缺陷无删改、无跳过。现有8条生命周期断言保持，测试OwnedCardGraph提取为共享头以复用三槽，不复制生产业务。
+
+新增A～H测试只在真实SimManager具备Stop/IsStopping/IsStopped时进入生产执行分支；当前接口缺失时明确FAIL/BLOCKED，不提供Fake Stop或GTest跳过。声明式仓外头探针对八条未来分支完整实例化并clang语法验证PASS，但未链接/执行任何Stop实现，运行部分仍NOT_RUN。新增队列所有权基线及无关worker用例通过，避免把共享运行时线程数为0当作通用退出证明；原隔离进程断言未弱化。弱RIL登记ledger按slot/event/所有权控制块记录所有订阅者，修正单弱指针对File/STK同事件的覆盖；它不增加生产强引用。仅真实SimStateHandle待调度closure可用于未来迟到调度验证，不伪造SIM结果。
+
+[正式停止方案](../services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_plan.md)取代旧伪Stop草图，明确三槽/缓存去重、四类环、16组源码配对、Running→Stopping→Stopped、已接纳B/C1及原重试终点、对象私有任务组、队列准入/排空和锁外销毁。Core经同一控制块的私有weak生命周期hook协调，不能对ISimManager直接调用不存在的Stop或停止共享RIL。完整生产文件职责集合、每项GTest映射和Watcher/FFRT/SA/HDI边界均已列出，仍需另行生产授权及native契约/产品验证；不存在已批准可直接合入的完整Stop补丁。
+
+新独立证据 [sim028_shutdown_review_20261111.json](../services/multisim/test/systemtest/configs/sim028_shutdown_review_20261111.json)及同名目录保存两套全量日志/XML、真实编译命令、源码/二进制摘要、四文件隔离差异、当前12环与历史重算的独立来源、声明探针及各层状态。原7条全绿和完整停止安全目标尚未达到；生产Stop在途/重复/迟到/重建验收仍BLOCKED。既有业务行为未在本工作区修改，不把配对副本验证或声明式编译当作生产修复完成。
+
+
+### 19.1 审查成果发布授权与预检
+
+用户在§19验收后明确授权将本地修改提交并推送远端main。本次按186项文件白名单发布停止方案审查、测试改进和两套隔离验证证据；不纳入98份原有修改，不在生产工作区应用补丁。发布前fetch确认本地main与origin/main同为e21f1ef3，暂存区为空；166份证据摘要、19份代码/说明摘要及98份保护输入逐项匹配，迁移资产核验通过，其他worktree未改变。
+
+沿用§19真实执行结果：未补丁87条65 PASS/22 FAIL，隔离配对补丁87条68 PASS/19 FAIL，均包含8条明确BLOCKED的GTest失败；原Host55 PASS/5已知FAIL与完整生产Stop阻塞保持不变。独立JSON、归档diff和其中执行状态摘要是此次发布授权前的验收快照，保留原字节；本小节为后续授权/发布准备增量，当前状态文件以本次Git提交为准。提交与推送不构成生产修复批准，精确SHA及远端包含关系以Git发布核验为准。

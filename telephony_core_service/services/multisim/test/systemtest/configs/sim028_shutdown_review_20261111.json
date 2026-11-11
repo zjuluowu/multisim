@@ -1,0 +1,3113 @@
+{
+  "schema_version": 1,
+  "task": "SIM-028 production shutdown patch review and isolated verification",
+  "head": "e21f1ef35a715a197dd3bc76fbaccadea70d17be",
+  "date": "2026-11-11",
+  "status": "BLOCKED",
+  "authorization": "analysis/test modifications/patch verification only; production main worktree unchanged; no commit/push",
+  "review_verdict": "Pairing patch validated as preparatory fix, REJECTED as complete shutdown repair",
+  "baseline": {
+    "status": "FAIL",
+    "exit": 1,
+    "totals": {
+      "executed": 87,
+      "passed": 65,
+      "gtest_failed": 22,
+      "blocked_subset_of_failed": 8,
+      "skipped": 0
+    },
+    "groups": {
+      "real_sim_primary": {
+        "executed": 7,
+        "passed": 1,
+        "gtest_failed": 6,
+        "blocked": 0
+      },
+      "lifecycle": {
+        "executed": 8,
+        "passed": 7,
+        "gtest_failed": 1,
+        "blocked": 0
+      },
+      "pairing_review": {
+        "executed": 4,
+        "passed": 2,
+        "gtest_failed": 2,
+        "blocked": 0
+      },
+      "shutdown_contract": {
+        "executed": 8,
+        "passed": 0,
+        "gtest_failed": 8,
+        "blocked": 8
+      },
+      "host_legacy": {
+        "executed": 60,
+        "passed": 55,
+        "gtest_failed": 5,
+        "blocked": 0
+      }
+    },
+    "cases": [
+      {
+        "name": "ContractDriver.PIN_001",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/compatibility.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\npin-success-status:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;pin:0;pin:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "ContractDriver.PIN_002_CommandFailure",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/compatibility.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\npin-command-failure:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;pin:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "ContractDriver.DUAL_001",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/compatibility.xml",
+        "properties": {
+          "real_instances_created": "2",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;slot=1,present=1,state=LOCKED,kind=1;\ncard-event:slot=0,present=1,state=READY,kind=1;slot=1,present=1,state=LOCKED,kind=1;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:1;status:0;status:0;",
+          "real_instances_destroyed": "2"
+        },
+        "failures": []
+      },
+      {
+        "name": "ContractDriver.RIL_001_DuplicateAndError",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/compatibility.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=0,state=ABSENT,kind=0;\nril-error:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;\nduplicate-ready:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "SessionLifecycle.INIT_001_SingleEnumeration",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/compatibility.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "observations": "initialized-without-card-response:slot=0,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "SessionLifecycle.INIT_002_MissingRilThenRecreate",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/compatibility.xml",
+        "properties": {
+          "real_instances_created": "2",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "observations": "ril-unavailable:slot=0,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=1;\n",
+          "real_instances_destroyed": "2",
+          "pending_responses": "0",
+          "external_calls": "status:0;"
+        },
+        "failures": []
+      },
+      {
+        "name": "SessionLifecycle.INIT_DUAL_002_ReversedEnumeration",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/compatibility.xml",
+        "properties": {
+          "real_instances_created": "2",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "observations": "second-slot-response-first:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=1,state=LOCKED,kind=1;\nboth-enumerated:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:1;",
+          "real_instances_destroyed": "2"
+        },
+        "failures": []
+      },
+      {
+        "name": "SessionLifecycle.CALLBACK_002_MalformedThenRecovery",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/compatibility.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "observations": "malformed-status:slot=0,present=0,state=UNKNOWN,kind=0;\nvalid-status-recovery:slot=0,present=1,state=READY,kind=2;\n",
+          "injected_fault": "wrong typed RIL response payload",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "SessionLifecycle.CALLBACK_003_DroppedThenRecovery",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/compatibility.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "observations": "status-response-not-delivered:slot=0,present=0,state=UNKNOWN,kind=0;\nnew-status-response:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "injected_fault": "RIL response dropped; no timeout-policy assertion",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "SessionLifecycle.PUK_002_WrongThenSuccessfulUnlock",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/compatibility.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "SessionLifecycle.REFRESH_001_ExplicitStatusQuery",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/compatibility.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nexplicit-refresh-completed:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "raw_refresh_return": "2",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "SessionLifecycle.RECREATE_001_DualCardReenumeration",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/compatibility.xml",
+        "properties": {
+          "real_instances_created": "4",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\nnew-real-SUT-before-enumeration:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=0,state=UNKNOWN,kind=0;\nreenumerated-device-facts:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\n",
+          "real_instances_destroyed": "4",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "persistence_scope": "external card facts; no Provider/DB recovery claim",
+          "pending_responses": "0",
+          "external_calls": "status:1;status:0;"
+        },
+        "failures": []
+      },
+      {
+        "name": "SessionLifecycle.RECREATE_002_ReplacementWhileStopped",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/compatibility.xml",
+        "properties": {
+          "real_instances_created": "2",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nnew-card-after-real-recreation:slot=0,present=1,state=LOCKED,kind=1;\n",
+          "real_instances_destroyed": "2",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "pending_responses": "0",
+          "external_calls": "status:0;"
+        },
+        "failures": []
+      },
+      {
+        "name": "SessionLifecycle.DUAL_002_PinWhileOtherCardRemoved",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/compatibility.xml",
+        "properties": {
+          "real_instances_created": "2",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=1,state=READY,kind=1;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=0,state=ABSENT,kind=0;\nunlock-and-other-removal-completed:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=ABSENT,kind=0;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:1;pin:0;status:1;status:0;",
+          "real_instances_destroyed": "2"
+        },
+        "failures": []
+      },
+      {
+        "name": "Compatibility/Lifecycle.PublicCardState/LIFE_001",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/compatibility.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=1,state=READY,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "Compatibility/Lifecycle.PublicCardState/LIFE_002",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/compatibility.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=1;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "Compatibility/Lifecycle.PublicCardState/PUK_001",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/compatibility.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "ContractDriver.DEFECT_001_StaleReadyAfterRemoval",
+        "gtest": "FAIL",
+        "status": "FAIL",
+        "exit": 1,
+        "xml": "baseline/known_defects.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nremoved:slot=0,present=0,state=ABSENT,kind=0;\nstale-ready:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": [
+          "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:22\nExpected equality of these values:\n  actual.present\n    Which is: true\n  state != State::Absent\n    Which is: false\n",
+          "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: ABSENT\n",
+          "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:24\nExpected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <00-00 00-00>\n"
+        ]
+      },
+      {
+        "name": "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+        "gtest": "FAIL",
+        "status": "FAIL",
+        "exit": 1,
+        "xml": "baseline/known_defects.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nreplacement-card-locked:slot=0,present=1,state=LOCKED,kind=1;\nold-card-ready-response:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": [
+          "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: LOCKED\n",
+          "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:24\nExpected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <01-00 00-00>\n"
+        ]
+      },
+      {
+        "name": "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+        "gtest": "FAIL",
+        "status": "FAIL",
+        "exit": 1,
+        "xml": "baseline/known_defects.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ngeneric-error-without-password-decision:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "observed_error": "0",
+          "observed_unlock_result": "1",
+          "pending_responses": "0",
+          "external_calls": "status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": [
+          "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:157\nExpected: (actual.error) != (0), actual: 0 vs 0\n",
+          "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:157\nExpected equality of these values:\n  actual.result\n    Which is: 4-byte object <01-00 00-00>\n  Unlock::Failure\n    Which is: 4-byte object <02-00 00-00>\n"
+        ]
+      },
+      {
+        "name": "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+        "gtest": "FAIL",
+        "status": "FAIL",
+        "exit": 1,
+        "xml": "baseline/known_defects.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=1;\nold-pin-result-after-card-replacement:slot=0,present=1,state=NOT_READY,kind=1;\n",
+          "old_request_result": "0",
+          "pending_responses": "0",
+          "external_calls": "status:0;pin:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": [
+          "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: NOT_READY\n  state\n    Which is: LOCKED\n"
+        ]
+      },
+      {
+        "name": "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+        "gtest": "FAIL",
+        "status": "FAIL",
+        "exit": 1,
+        "xml": "baseline/known_defects.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nexplicit-refresh-completed:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "raw_refresh_return": "2",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": [
+          "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:176\nExpected equality of these values:\n  RefreshToLocked()\n    Which is: 2\n  0\ncore_service_client.h RefreshSimState @return contract\n"
+        ]
+      },
+      {
+        "name": "PinMemoryContract.PinSuccessUsesOriginalSlotIdentityAndCredential",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/pin_memory.xml",
+        "properties": {
+          "real_instances_created": "2",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=1;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=1;slot=1,present=1,state=LOCKED,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:1;pin:1;pin:1;",
+          "real_instances_destroyed": "2"
+        },
+        "failures": []
+      },
+      {
+        "name": "PinMemoryContract.PukSuccessUsesNewPinAndPinAlterOperation",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/pin_memory.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "PinMemoryContract.FailedPinDoesNotPublishMemoryHook",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/pin_memory.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;pin:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "PinMemoryContract.RemovalUsesAbsentResponseIdentityWithoutCredential",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/pin_memory.xml",
+        "properties": {
+          "real_instances_created": "2",
+          "observations": "card-event:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=0,state=ABSENT,kind=0;\n",
+          "pending_responses": "0",
+          "external_calls": "status:1;status:1;",
+          "real_instances_destroyed": "2"
+        },
+        "failures": []
+      },
+      {
+        "name": "EventAdapter.SharedTypeSafety",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-EVENT-001",
+          "level": "INFRA",
+          "oracle_id": "EVT-TYPE"
+        },
+        "failures": []
+      },
+      {
+        "name": "EventAdapter.UniqueOwnership",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-EVENT-002",
+          "level": "INFRA",
+          "oracle_id": "EVT-OWNERSHIP"
+        },
+        "failures": []
+      },
+      {
+        "name": "EventAdapter.WeakLifetimeAndMetadata",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-EVENT-003",
+          "level": "INFRA",
+          "oracle_id": "EVT-LIFETIME"
+        },
+        "failures": []
+      },
+      {
+        "name": "ProductionEventTransport.DeliversFormalEnvelope",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-EVENT-004",
+          "level": "INFRA",
+          "oracle_id": "EVT-PRODUCTION",
+          "converged": "true",
+          "cleanup_completed": "true"
+        },
+        "failures": []
+      },
+      {
+        "name": "ProductionEventTransport.CancelsPendingAndReapsWorker",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-EVENT-005",
+          "level": "INFRA",
+          "oracle_id": "EVT-CANCEL",
+          "cleanup_completed": "true"
+        },
+        "failures": []
+      },
+      {
+        "name": "SchedulerBoundary.RunningTaskCannotBeCancelled",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-FFRT-001",
+          "level": "INFRA",
+          "oracle_id": "FFRT-CANCEL-RUNNING"
+        },
+        "failures": []
+      },
+      {
+        "name": "SchedulerBoundary.ProductionGeneralTaskWaitsAndCleansUp",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-FFRT-002",
+          "level": "INFRA",
+          "oracle_id": "FFRT-GENERAL"
+        },
+        "failures": []
+      },
+      {
+        "name": "SchedulerBoundary.IdleWaitDrainsCascadedQueues",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-FFRT-003",
+          "oracle_id": "FFRT-IDLE-CASCADE",
+          "level": "INFRA"
+        },
+        "failures": []
+      },
+      {
+        "name": "SchedulerBoundary.IdleWaitDoesNotIgnoreDelayedOrRunningWork",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-FFRT-004",
+          "oracle_id": "FFRT-IDLE-BOUNDED",
+          "level": "INFRA"
+        },
+        "failures": []
+      },
+      {
+        "name": "SchedulerBoundary.IdleWaitExposesTaskFailure",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-FFRT-005",
+          "oracle_id": "FFRT-IDLE-FAILURE",
+          "level": "INFRA"
+        },
+        "failures": []
+      },
+      {
+        "name": "ExternalData.EmptyCursorIsNotQueryFailure",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-DATA-001",
+          "level": "INFRA",
+          "oracle_id": "DS-CURSOR"
+        },
+        "failures": []
+      },
+      {
+        "name": "ExternalData.ExplicitQueryResponses",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-DATA-002",
+          "level": "INFRA",
+          "oracle_id": "DS-QUERY"
+        },
+        "failures": []
+      },
+      {
+        "name": "ExternalData.OriginalBucketKeepsFirstPut",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-DATA-003",
+          "level": "INFRA",
+          "oracle_id": "DS-VALUES"
+        },
+        "failures": []
+      },
+      {
+        "name": "ExternalEvents.PublishPreservesEnvelopeAndFailure",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-CES-001",
+          "level": "INFRA",
+          "oracle_id": "CES-PUBLISH"
+        },
+        "failures": []
+      },
+      {
+        "name": "ExternalEvents.MissingProviderAndScopeCleanup",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-CES-002",
+          "level": "INFRA",
+          "oracle_id": "CES-LIFETIME"
+        },
+        "failures": []
+      },
+      {
+        "name": "NativePointerSubset.SharedOwnership",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-PTR-001",
+          "level": "INFRA",
+          "oracle_id": "PTR-OWNERSHIP"
+        },
+        "failures": []
+      },
+      {
+        "name": "NativePointerSubset.WeakIdentityAndPromotion",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-PTR-002",
+          "level": "INFRA",
+          "oracle_id": "PTR-WEAK"
+        },
+        "failures": []
+      },
+      {
+        "name": "NativePointerSubset.LocalCastRequiresImplementedInterface",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-PTR-003",
+          "level": "INFRA",
+          "oracle_id": "PTR-LOCAL-CAST"
+        },
+        "failures": []
+      },
+      {
+        "name": "RilAdapter.FormalStatusResponse",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-RIL-001",
+          "level": "INFRA",
+          "oracle_id": "RIL-TRANSPORT"
+        },
+        "failures": []
+      },
+      {
+        "name": "SimComponent.CapacityReadOnly",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/capacity.xml",
+        "properties": {
+          "scenario_framework": "GoogleMock v1.15.2",
+          "case_id": "SIM-COMP-001",
+          "level": "B",
+          "oracle_id": "O-C11",
+          "synthetic_only": "true",
+          "converged": "true",
+          "legacy_capacity": "1",
+          "parameter_boundary_observed": "true",
+          "corrupted_evidence": "false"
+        },
+        "failures": []
+      },
+      {
+        "name": "PrimaryEntry.NonSystemCallerPrecedesPermissionAndNullManager",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        },
+        "failures": []
+      },
+      {
+        "name": "PrimaryEntry.PermissionDenialPrecedesNullManager",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        },
+        "failures": []
+      },
+      {
+        "name": "PrimaryEntry.NullManagerPrecedesCapabilityRecheck",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        },
+        "failures": []
+      },
+      {
+        "name": "PrimaryEntry.ChangedExternalSystemAppDecisionRejectsExtendedSlot",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        },
+        "failures": []
+      },
+      {
+        "name": "PrimaryEntry.MissingCardStopsBeforeActiveAndPreference",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        },
+        "failures": []
+      },
+      {
+        "name": "PrimaryEntry.InactiveCardStopsBeforePreferenceAndSwitch",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        },
+        "failures": []
+      },
+      {
+        "name": "PrimaryEntry.ReadyCardWritesPreferenceBeforeDelegatingExactTarget",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        },
+        "failures": []
+      },
+      {
+        "name": "PrimaryEntry.ManagerFailureReturnedUnchangedAfterPreferenceWrite",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        },
+        "failures": []
+      },
+      {
+        "name": "PrimaryEntry.FailedPreferenceWriteStillDelegatesCurrentBehavior",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed",
+          "oracle": "legacy_characterization_SetParameter_return_is_ignored"
+        },
+        "failures": []
+      },
+      {
+        "name": "PrimaryEntry.PresenceQueryFailureWithFalseOutputReturnsNoCard",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed",
+          "oracle": "legacy_characterization_HasSimCard_return_is_ignored"
+        },
+        "failures": []
+      },
+      {
+        "name": "PrimaryEntry.PresenceQueryFailureWithTrueOutputStillDelegates",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed",
+          "oracle": "legacy_characterization_HasSimCard_return_is_ignored"
+        },
+        "failures": []
+      },
+      {
+        "name": "PrimaryEntry.StableSystemAppPassesExtendedSlotCapability",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        },
+        "failures": []
+      },
+      {
+        "name": "CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/0",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        },
+        "failures": []
+      },
+      {
+        "name": "CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/1",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        },
+        "failures": []
+      },
+      {
+        "name": "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/primary_real_business-6.xml",
+        "properties": {},
+        "failures": []
+      },
+      {
+        "name": "RealSimPrimary.C0CoreToRealManagerAndController",
+        "gtest": "FAIL",
+        "status": "FAIL",
+        "exit": 1,
+        "xml": "baseline/primary_real_business-7.xml",
+        "properties": {
+          "business_assertions_before_cleanup": "PASS",
+          "workers_after_cleanup": "28",
+          "ril_references_after_cleanup": "10",
+          "account_observer_expired": "false",
+          "object_lifetime": "FAIL",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "failures": [
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+        ]
+      },
+      {
+        "name": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+        "gtest": "FAIL",
+        "status": "FAIL",
+        "exit": 1,
+        "xml": "baseline/primary_real_business-8.xml",
+        "properties": {
+          "business_assertions_before_cleanup": "PASS",
+          "workers_after_cleanup": "28",
+          "ril_references_after_cleanup": "10",
+          "account_observer_expired": "false",
+          "object_lifetime": "FAIL",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "failures": [
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+        ]
+      },
+      {
+        "name": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+        "gtest": "FAIL",
+        "status": "FAIL",
+        "exit": 1,
+        "xml": "baseline/primary_real_business-9.xml",
+        "properties": {
+          "business_assertions_before_cleanup": "PASS",
+          "workers_after_cleanup": "28",
+          "ril_references_after_cleanup": "10",
+          "account_observer_expired": "false",
+          "object_lifetime": "FAIL",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "failures": [
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+        ]
+      },
+      {
+        "name": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+        "gtest": "FAIL",
+        "status": "FAIL",
+        "exit": 1,
+        "xml": "baseline/primary_real_business-10.xml",
+        "properties": {
+          "business_assertions_before_cleanup": "PASS",
+          "workers_after_cleanup": "28",
+          "ril_references_after_cleanup": "10",
+          "account_observer_expired": "false",
+          "object_lifetime": "FAIL",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "failures": [
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+        ]
+      },
+      {
+        "name": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+        "gtest": "FAIL",
+        "status": "FAIL",
+        "exit": 1,
+        "xml": "baseline/primary_real_business-11.xml",
+        "properties": {
+          "business_assertions_before_cleanup": "PASS",
+          "workers_after_cleanup": "28",
+          "ril_references_after_cleanup": "10",
+          "account_observer_expired": "false",
+          "object_lifetime": "FAIL",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "failures": [
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+        ]
+      },
+      {
+        "name": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+        "gtest": "FAIL",
+        "status": "FAIL",
+        "exit": 1,
+        "xml": "baseline/primary_real_business-12.xml",
+        "properties": {
+          "business_assertions_before_cleanup": "PASS",
+          "workers_after_cleanup": "28",
+          "ril_references_after_cleanup": "10",
+          "account_observer_expired": "false",
+          "object_lifetime": "FAIL",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "failures": [
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+        ]
+      },
+      {
+        "name": "RunnerLifetime.NormalCompletionAndRepeatedStop",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/primary_real_business-13.xml",
+        "properties": {},
+        "failures": []
+      },
+      {
+        "name": "RunnerLifetime.PendingTaskCancelledAndCapturedOwnerReleased",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/primary_real_business-14.xml",
+        "properties": {},
+        "failures": []
+      },
+      {
+        "name": "RunnerLifetime.InFlightStopJoinsAndRejectsCallbackRepost",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/primary_real_business-15.xml",
+        "properties": {},
+        "failures": []
+      },
+      {
+        "name": "RunnerLifetime.ConcurrentStopIsIdempotent",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/primary_real_business-16.xml",
+        "properties": {},
+        "failures": []
+      },
+      {
+        "name": "RunnerLifetime.CallbackCannotSynchronouslyJoinItself",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/primary_real_business-17.xml",
+        "properties": {},
+        "failures": []
+      },
+      {
+        "name": "RealCardLifetime.MissingRilInitializationReleasesState",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/primary_real_business-18.xml",
+        "properties": {},
+        "failures": []
+      },
+      {
+        "name": "RealCardLifetime.InitializedStateUnregistersRilAndReleases",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/primary_real_business-19.xml",
+        "properties": {
+          "workers_after_cleanup": "0",
+          "ril_references_after_cleanup": "1",
+          "account_observer_expired": "true",
+          "object_lifetime": "PASS",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "failures": []
+      },
+      {
+        "name": "RealCardLifetime.PublicDetachReleasesRealStateFileAndRil",
+        "gtest": "FAIL",
+        "status": "FAIL",
+        "exit": 1,
+        "xml": "baseline/primary_real_business-20.xml",
+        "properties": {
+          "real_card_lifetime": "FAIL",
+          "workers_after_cleanup": "5",
+          "ril_references_after_cleanup": "4",
+          "account_observer_expired": "true",
+          "object_lifetime": "FAIL",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "failures": [
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:126\nValue of: state.expired()\n  Actual: false\nExpected: true\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:126\nValue of: files.expired()\n  Actual: false\nExpected: true\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:127\nValue of: records.expired()\n  Actual: false\nExpected: true\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:127\nValue of: controller.expired()\n  Actual: false\nExpected: true\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:128\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:129\nExpected equality of these values:\n  environment.ril.use_count()\n    Which is: 4\n  1\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:132\nValue of: environment.notifications.empty()\n  Actual: false\nExpected: true\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+        ]
+      },
+      {
+        "name": "PairingReview.AllThreeSlotsPublicDetach",
+        "gtest": "FAIL",
+        "status": "FAIL",
+        "exit": 1,
+        "xml": "baseline/primary_real_business-21.xml",
+        "properties": {
+          "workers_after_cleanup": "15",
+          "ril_references_after_cleanup": "10",
+          "account_observer_expired": "true",
+          "object_lifetime": "FAIL",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "failures": [
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:20\nValue of: s.expired()\n  Actual: false\nExpected: true\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:20\nValue of: s.expired()\n  Actual: false\nExpected: true\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:20\nValue of: s.expired()\n  Actual: false\nExpected: true\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFileManager pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS UsimFileController pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFile pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFileManager pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS UsimFileController pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFile pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFileManager pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS UsimFileController pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFile pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:22\nExpected equality of these values:\n  environment.ril.use_count()\n    Which is: 10\n  1\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:24\nValue of: environment.notifications.empty()\n  Actual: false\nExpected: true\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+        ]
+      },
+      {
+        "name": "PairingReview.PartialInitializationAndRepeatedUnregister",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/primary_real_business-22.xml",
+        "properties": {
+          "workers_after_cleanup": "0",
+          "ril_references_after_cleanup": "1",
+          "account_observer_expired": "true",
+          "object_lifetime": "PASS",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "failures": []
+      },
+      {
+        "name": "PairingReview.DestroyThenReinitializeCardGraph",
+        "gtest": "FAIL",
+        "status": "FAIL",
+        "exit": 1,
+        "xml": "baseline/primary_real_business-23.xml",
+        "properties": {
+          "workers_after_cleanup": "10",
+          "ril_references_after_cleanup": "7",
+          "account_observer_expired": "true",
+          "object_lifetime": "FAIL",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "failures": [
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:51\nValue of: state.expired()\n  Actual: false\nExpected: true\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:51\nValue of: records.expired()\n  Actual: false\nExpected: true\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFileManager pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS UsimFileController pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFile pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:52\nExpected equality of these values:\n  environment.ril.use_count()\n    Which is: 4\n  1\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:51\nValue of: state.expired()\n  Actual: false\nExpected: true\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:51\nValue of: records.expired()\n  Actual: false\nExpected: true\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFileManager pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS UsimFileController pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFile pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFileManager pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS UsimFileController pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFile pending=0 running=0\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:52\nExpected equality of these values:\n  environment.ril.use_count()\n    Which is: 7\n  1\n",
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+        ]
+      },
+      {
+        "name": "PairingReview.UnrelatedRuntimeWorkerIsBaseline",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "baseline/primary_real_business-24.xml",
+        "properties": {
+          "workers_after_cleanup": "0",
+          "ril_references_after_cleanup": "1",
+          "account_observer_expired": "true",
+          "object_lifetime": "PASS",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "failures": []
+      },
+      {
+        "name": "ShutdownContract.ANormalPrimaryThenStop",
+        "gtest": "FAIL",
+        "status": "BLOCKED",
+        "exit": 1,
+        "xml": "baseline/primary_real_business-25.xml",
+        "properties": {
+          "business": "NOT_RUN",
+          "resource_lifetime": "BLOCKED",
+          "async_safety": "BLOCKED"
+        },
+        "failures": [
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+        ]
+      },
+      {
+        "name": "ShutdownContract.BThreeSlotsThenStop",
+        "gtest": "FAIL",
+        "status": "BLOCKED",
+        "exit": 1,
+        "xml": "baseline/primary_real_business-26.xml",
+        "properties": {
+          "business": "NOT_RUN",
+          "resource_lifetime": "BLOCKED",
+          "async_safety": "BLOCKED"
+        },
+        "failures": [
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+        ]
+      },
+      {
+        "name": "ShutdownContract.CPartialInitializationThenStop",
+        "gtest": "FAIL",
+        "status": "BLOCKED",
+        "exit": 1,
+        "xml": "baseline/primary_real_business-27.xml",
+        "properties": {
+          "business": "NOT_RUN",
+          "resource_lifetime": "BLOCKED",
+          "async_safety": "BLOCKED"
+        },
+        "failures": [
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+        ]
+      },
+      {
+        "name": "ShutdownContract.DRepeatedStop",
+        "gtest": "FAIL",
+        "status": "BLOCKED",
+        "exit": 1,
+        "xml": "baseline/primary_real_business-28.xml",
+        "properties": {
+          "business": "NOT_RUN",
+          "resource_lifetime": "BLOCKED",
+          "async_safety": "BLOCKED"
+        },
+        "failures": [
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+        ]
+      },
+      {
+        "name": "ShutdownContract.EInFlightSuccessCompletesBeforeRelease",
+        "gtest": "FAIL",
+        "status": "BLOCKED",
+        "exit": 1,
+        "xml": "baseline/primary_real_business-29.xml",
+        "properties": {
+          "business": "NOT_RUN",
+          "resource_lifetime": "BLOCKED",
+          "async_safety": "BLOCKED"
+        },
+        "failures": [
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+        ]
+      },
+      {
+        "name": "ShutdownContract.FErrorReplyDuringStoppingKeepsOriginalResult",
+        "gtest": "FAIL",
+        "status": "BLOCKED",
+        "exit": 1,
+        "xml": "baseline/primary_real_business-30.xml",
+        "properties": {
+          "business": "NOT_RUN",
+          "resource_lifetime": "BLOCKED",
+          "async_safety": "BLOCKED"
+        },
+        "failures": [
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+        ]
+      },
+      {
+        "name": "ShutdownContract.GDelayedDispatchAfterStop",
+        "gtest": "FAIL",
+        "status": "BLOCKED",
+        "exit": 1,
+        "xml": "baseline/primary_real_business-31.xml",
+        "properties": {
+          "business": "NOT_RUN",
+          "resource_lifetime": "BLOCKED",
+          "async_safety": "BLOCKED"
+        },
+        "failures": [
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+        ]
+      },
+      {
+        "name": "ShutdownContract.HDestroyAndCreateNewGraph",
+        "gtest": "FAIL",
+        "status": "BLOCKED",
+        "exit": 1,
+        "xml": "baseline/primary_real_business-32.xml",
+        "properties": {
+          "business": "NOT_RUN",
+          "resource_lifetime": "BLOCKED",
+          "async_safety": "BLOCKED"
+        },
+        "failures": [
+          "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+        ]
+      }
+    ],
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae"
+  },
+  "isolated_pairing": {
+    "status": "FAIL",
+    "exit": 1,
+    "totals": {
+      "executed": 87,
+      "passed": 68,
+      "gtest_failed": 19,
+      "blocked_subset_of_failed": 8,
+      "skipped": 0
+    },
+    "groups": {
+      "real_sim_primary": {
+        "executed": 7,
+        "passed": 1,
+        "gtest_failed": 6,
+        "blocked": 0
+      },
+      "lifecycle": {
+        "executed": 8,
+        "passed": 8,
+        "gtest_failed": 0,
+        "blocked": 0
+      },
+      "pairing_review": {
+        "executed": 4,
+        "passed": 4,
+        "gtest_failed": 0,
+        "blocked": 0
+      },
+      "shutdown_contract": {
+        "executed": 8,
+        "passed": 0,
+        "gtest_failed": 8,
+        "blocked": 8
+      },
+      "host_legacy": {
+        "executed": 60,
+        "passed": 55,
+        "gtest_failed": 5,
+        "blocked": 0
+      }
+    },
+    "cases": [
+      {
+        "name": "ContractDriver.PIN_001",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/compatibility.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\npin-success-status:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;pin:0;pin:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "ContractDriver.PIN_002_CommandFailure",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/compatibility.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\npin-command-failure:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;pin:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "ContractDriver.DUAL_001",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/compatibility.xml",
+        "properties": {
+          "real_instances_created": "2",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;slot=1,present=1,state=LOCKED,kind=1;\ncard-event:slot=0,present=1,state=READY,kind=1;slot=1,present=1,state=LOCKED,kind=1;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:1;status:0;status:0;",
+          "real_instances_destroyed": "2"
+        },
+        "failures": []
+      },
+      {
+        "name": "ContractDriver.RIL_001_DuplicateAndError",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/compatibility.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=0,state=ABSENT,kind=0;\nril-error:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;\nduplicate-ready:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "SessionLifecycle.INIT_001_SingleEnumeration",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/compatibility.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "observations": "initialized-without-card-response:slot=0,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "SessionLifecycle.INIT_002_MissingRilThenRecreate",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/compatibility.xml",
+        "properties": {
+          "real_instances_created": "2",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "observations": "ril-unavailable:slot=0,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=1;\n",
+          "real_instances_destroyed": "2",
+          "pending_responses": "0",
+          "external_calls": "status:0;"
+        },
+        "failures": []
+      },
+      {
+        "name": "SessionLifecycle.INIT_DUAL_002_ReversedEnumeration",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/compatibility.xml",
+        "properties": {
+          "real_instances_created": "2",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "observations": "second-slot-response-first:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=1,state=LOCKED,kind=1;\nboth-enumerated:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:1;",
+          "real_instances_destroyed": "2"
+        },
+        "failures": []
+      },
+      {
+        "name": "SessionLifecycle.CALLBACK_002_MalformedThenRecovery",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/compatibility.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "observations": "malformed-status:slot=0,present=0,state=UNKNOWN,kind=0;\nvalid-status-recovery:slot=0,present=1,state=READY,kind=2;\n",
+          "injected_fault": "wrong typed RIL response payload",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "SessionLifecycle.CALLBACK_003_DroppedThenRecovery",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/compatibility.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "observations": "status-response-not-delivered:slot=0,present=0,state=UNKNOWN,kind=0;\nnew-status-response:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "injected_fault": "RIL response dropped; no timeout-policy assertion",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "SessionLifecycle.PUK_002_WrongThenSuccessfulUnlock",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/compatibility.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "SessionLifecycle.REFRESH_001_ExplicitStatusQuery",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/compatibility.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nexplicit-refresh-completed:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "raw_refresh_return": "2",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "SessionLifecycle.RECREATE_001_DualCardReenumeration",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/compatibility.xml",
+        "properties": {
+          "real_instances_created": "4",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\nnew-real-SUT-before-enumeration:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=0,state=UNKNOWN,kind=0;\nreenumerated-device-facts:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\n",
+          "real_instances_destroyed": "4",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "persistence_scope": "external card facts; no Provider/DB recovery claim",
+          "pending_responses": "0",
+          "external_calls": "status:1;status:0;"
+        },
+        "failures": []
+      },
+      {
+        "name": "SessionLifecycle.RECREATE_002_ReplacementWhileStopped",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/compatibility.xml",
+        "properties": {
+          "real_instances_created": "2",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nnew-card-after-real-recreation:slot=0,present=1,state=LOCKED,kind=1;\n",
+          "real_instances_destroyed": "2",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "pending_responses": "0",
+          "external_calls": "status:0;"
+        },
+        "failures": []
+      },
+      {
+        "name": "SessionLifecycle.DUAL_002_PinWhileOtherCardRemoved",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/compatibility.xml",
+        "properties": {
+          "real_instances_created": "2",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=1,state=READY,kind=1;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=0,state=ABSENT,kind=0;\nunlock-and-other-removal-completed:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=ABSENT,kind=0;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:1;pin:0;status:1;status:0;",
+          "real_instances_destroyed": "2"
+        },
+        "failures": []
+      },
+      {
+        "name": "Compatibility/Lifecycle.PublicCardState/LIFE_001",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/compatibility.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=1,state=READY,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "Compatibility/Lifecycle.PublicCardState/LIFE_002",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/compatibility.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=1;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "Compatibility/Lifecycle.PublicCardState/PUK_001",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/compatibility.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "ContractDriver.DEFECT_001_StaleReadyAfterRemoval",
+        "gtest": "FAIL",
+        "status": "FAIL",
+        "exit": 1,
+        "xml": "pairing/known_defects.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nremoved:slot=0,present=0,state=ABSENT,kind=0;\nstale-ready:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": [
+          "/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:22\nExpected equality of these values:\n  actual.present\n    Which is: true\n  state != State::Absent\n    Which is: false\n",
+          "/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: ABSENT\n",
+          "/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:24\nExpected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <00-00 00-00>\n"
+        ]
+      },
+      {
+        "name": "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+        "gtest": "FAIL",
+        "status": "FAIL",
+        "exit": 1,
+        "xml": "pairing/known_defects.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nreplacement-card-locked:slot=0,present=1,state=LOCKED,kind=1;\nold-card-ready-response:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": [
+          "/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: LOCKED\n",
+          "/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:24\nExpected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <01-00 00-00>\n"
+        ]
+      },
+      {
+        "name": "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+        "gtest": "FAIL",
+        "status": "FAIL",
+        "exit": 1,
+        "xml": "pairing/known_defects.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ngeneric-error-without-password-decision:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "observed_error": "0",
+          "observed_unlock_result": "1",
+          "pending_responses": "0",
+          "external_calls": "status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": [
+          "/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:157\nExpected: (actual.error) != (0), actual: 0 vs 0\n",
+          "/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:157\nExpected equality of these values:\n  actual.result\n    Which is: 4-byte object <01-00 00-00>\n  Unlock::Failure\n    Which is: 4-byte object <02-00 00-00>\n"
+        ]
+      },
+      {
+        "name": "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+        "gtest": "FAIL",
+        "status": "FAIL",
+        "exit": 1,
+        "xml": "pairing/known_defects.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=1;\nold-pin-result-after-card-replacement:slot=0,present=1,state=NOT_READY,kind=1;\n",
+          "old_request_result": "0",
+          "pending_responses": "0",
+          "external_calls": "status:0;pin:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": [
+          "/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: NOT_READY\n  state\n    Which is: LOCKED\n"
+        ]
+      },
+      {
+        "name": "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+        "gtest": "FAIL",
+        "status": "FAIL",
+        "exit": 1,
+        "xml": "pairing/known_defects.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nexplicit-refresh-completed:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "raw_refresh_return": "2",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": [
+          "/tmp/sim028-pairing-review/pairing-review-j_e1xwor/source/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:176\nExpected equality of these values:\n  RefreshToLocked()\n    Which is: 2\n  0\ncore_service_client.h RefreshSimState @return contract\n"
+        ]
+      },
+      {
+        "name": "PinMemoryContract.PinSuccessUsesOriginalSlotIdentityAndCredential",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/pin_memory.xml",
+        "properties": {
+          "real_instances_created": "2",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=1;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=1;slot=1,present=1,state=LOCKED,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:1;pin:1;pin:1;",
+          "real_instances_destroyed": "2"
+        },
+        "failures": []
+      },
+      {
+        "name": "PinMemoryContract.PukSuccessUsesNewPinAndPinAlterOperation",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/pin_memory.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "PinMemoryContract.FailedPinDoesNotPublishMemoryHook",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/pin_memory.xml",
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;pin:0;",
+          "real_instances_destroyed": "1"
+        },
+        "failures": []
+      },
+      {
+        "name": "PinMemoryContract.RemovalUsesAbsentResponseIdentityWithoutCredential",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/pin_memory.xml",
+        "properties": {
+          "real_instances_created": "2",
+          "observations": "card-event:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=0,state=ABSENT,kind=0;\n",
+          "pending_responses": "0",
+          "external_calls": "status:1;status:1;",
+          "real_instances_destroyed": "2"
+        },
+        "failures": []
+      },
+      {
+        "name": "EventAdapter.SharedTypeSafety",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-EVENT-001",
+          "level": "INFRA",
+          "oracle_id": "EVT-TYPE"
+        },
+        "failures": []
+      },
+      {
+        "name": "EventAdapter.UniqueOwnership",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-EVENT-002",
+          "level": "INFRA",
+          "oracle_id": "EVT-OWNERSHIP"
+        },
+        "failures": []
+      },
+      {
+        "name": "EventAdapter.WeakLifetimeAndMetadata",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-EVENT-003",
+          "level": "INFRA",
+          "oracle_id": "EVT-LIFETIME"
+        },
+        "failures": []
+      },
+      {
+        "name": "ProductionEventTransport.DeliversFormalEnvelope",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-EVENT-004",
+          "level": "INFRA",
+          "oracle_id": "EVT-PRODUCTION",
+          "converged": "true",
+          "cleanup_completed": "true"
+        },
+        "failures": []
+      },
+      {
+        "name": "ProductionEventTransport.CancelsPendingAndReapsWorker",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-EVENT-005",
+          "level": "INFRA",
+          "oracle_id": "EVT-CANCEL",
+          "cleanup_completed": "true"
+        },
+        "failures": []
+      },
+      {
+        "name": "SchedulerBoundary.RunningTaskCannotBeCancelled",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-FFRT-001",
+          "level": "INFRA",
+          "oracle_id": "FFRT-CANCEL-RUNNING"
+        },
+        "failures": []
+      },
+      {
+        "name": "SchedulerBoundary.ProductionGeneralTaskWaitsAndCleansUp",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-FFRT-002",
+          "level": "INFRA",
+          "oracle_id": "FFRT-GENERAL"
+        },
+        "failures": []
+      },
+      {
+        "name": "SchedulerBoundary.IdleWaitDrainsCascadedQueues",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-FFRT-003",
+          "oracle_id": "FFRT-IDLE-CASCADE",
+          "level": "INFRA"
+        },
+        "failures": []
+      },
+      {
+        "name": "SchedulerBoundary.IdleWaitDoesNotIgnoreDelayedOrRunningWork",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-FFRT-004",
+          "oracle_id": "FFRT-IDLE-BOUNDED",
+          "level": "INFRA"
+        },
+        "failures": []
+      },
+      {
+        "name": "SchedulerBoundary.IdleWaitExposesTaskFailure",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-FFRT-005",
+          "oracle_id": "FFRT-IDLE-FAILURE",
+          "level": "INFRA"
+        },
+        "failures": []
+      },
+      {
+        "name": "ExternalData.EmptyCursorIsNotQueryFailure",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-DATA-001",
+          "level": "INFRA",
+          "oracle_id": "DS-CURSOR"
+        },
+        "failures": []
+      },
+      {
+        "name": "ExternalData.ExplicitQueryResponses",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-DATA-002",
+          "level": "INFRA",
+          "oracle_id": "DS-QUERY"
+        },
+        "failures": []
+      },
+      {
+        "name": "ExternalData.OriginalBucketKeepsFirstPut",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-DATA-003",
+          "level": "INFRA",
+          "oracle_id": "DS-VALUES"
+        },
+        "failures": []
+      },
+      {
+        "name": "ExternalEvents.PublishPreservesEnvelopeAndFailure",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-CES-001",
+          "level": "INFRA",
+          "oracle_id": "CES-PUBLISH"
+        },
+        "failures": []
+      },
+      {
+        "name": "ExternalEvents.MissingProviderAndScopeCleanup",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-CES-002",
+          "level": "INFRA",
+          "oracle_id": "CES-LIFETIME"
+        },
+        "failures": []
+      },
+      {
+        "name": "NativePointerSubset.SharedOwnership",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-PTR-001",
+          "level": "INFRA",
+          "oracle_id": "PTR-OWNERSHIP"
+        },
+        "failures": []
+      },
+      {
+        "name": "NativePointerSubset.WeakIdentityAndPromotion",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-PTR-002",
+          "level": "INFRA",
+          "oracle_id": "PTR-WEAK"
+        },
+        "failures": []
+      },
+      {
+        "name": "NativePointerSubset.LocalCastRequiresImplementedInterface",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-PTR-003",
+          "level": "INFRA",
+          "oracle_id": "PTR-LOCAL-CAST"
+        },
+        "failures": []
+      },
+      {
+        "name": "RilAdapter.FormalStatusResponse",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/infrastructure.xml",
+        "properties": {
+          "case_id": "INFRA-RIL-001",
+          "level": "INFRA",
+          "oracle_id": "RIL-TRANSPORT"
+        },
+        "failures": []
+      },
+      {
+        "name": "SimComponent.CapacityReadOnly",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/capacity.xml",
+        "properties": {
+          "scenario_framework": "GoogleMock v1.15.2",
+          "case_id": "SIM-COMP-001",
+          "level": "B",
+          "oracle_id": "O-C11",
+          "synthetic_only": "true",
+          "converged": "true",
+          "legacy_capacity": "1",
+          "parameter_boundary_observed": "true",
+          "corrupted_evidence": "false"
+        },
+        "failures": []
+      },
+      {
+        "name": "PrimaryEntry.NonSystemCallerPrecedesPermissionAndNullManager",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        },
+        "failures": []
+      },
+      {
+        "name": "PrimaryEntry.PermissionDenialPrecedesNullManager",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        },
+        "failures": []
+      },
+      {
+        "name": "PrimaryEntry.NullManagerPrecedesCapabilityRecheck",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        },
+        "failures": []
+      },
+      {
+        "name": "PrimaryEntry.ChangedExternalSystemAppDecisionRejectsExtendedSlot",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        },
+        "failures": []
+      },
+      {
+        "name": "PrimaryEntry.MissingCardStopsBeforeActiveAndPreference",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        },
+        "failures": []
+      },
+      {
+        "name": "PrimaryEntry.InactiveCardStopsBeforePreferenceAndSwitch",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        },
+        "failures": []
+      },
+      {
+        "name": "PrimaryEntry.ReadyCardWritesPreferenceBeforeDelegatingExactTarget",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        },
+        "failures": []
+      },
+      {
+        "name": "PrimaryEntry.ManagerFailureReturnedUnchangedAfterPreferenceWrite",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        },
+        "failures": []
+      },
+      {
+        "name": "PrimaryEntry.FailedPreferenceWriteStillDelegatesCurrentBehavior",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed",
+          "oracle": "legacy_characterization_SetParameter_return_is_ignored"
+        },
+        "failures": []
+      },
+      {
+        "name": "PrimaryEntry.PresenceQueryFailureWithFalseOutputReturnsNoCard",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed",
+          "oracle": "legacy_characterization_HasSimCard_return_is_ignored"
+        },
+        "failures": []
+      },
+      {
+        "name": "PrimaryEntry.PresenceQueryFailureWithTrueOutputStillDelegates",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed",
+          "oracle": "legacy_characterization_HasSimCard_return_is_ignored"
+        },
+        "failures": []
+      },
+      {
+        "name": "PrimaryEntry.StableSystemAppPassesExtendedSlotCapability",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        },
+        "failures": []
+      },
+      {
+        "name": "CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/0",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        },
+        "failures": []
+      },
+      {
+        "name": "CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/1",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_entry_internal_seam.xml",
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        },
+        "failures": []
+      },
+      {
+        "name": "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_real_business-6.xml",
+        "properties": {},
+        "failures": []
+      },
+      {
+        "name": "RealSimPrimary.C0CoreToRealManagerAndController",
+        "gtest": "FAIL",
+        "status": "FAIL",
+        "exit": 1,
+        "xml": "pairing/primary_real_business-7.xml",
+        "properties": {
+          "business_assertions_before_cleanup": "PASS",
+          "workers_after_cleanup": "27",
+          "ril_references_after_cleanup": "10",
+          "account_observer_expired": "true",
+          "object_lifetime": "FAIL",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "failures": [
+          "../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+        ]
+      },
+      {
+        "name": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+        "gtest": "FAIL",
+        "status": "FAIL",
+        "exit": 1,
+        "xml": "pairing/primary_real_business-8.xml",
+        "properties": {
+          "business_assertions_before_cleanup": "PASS",
+          "workers_after_cleanup": "27",
+          "ril_references_after_cleanup": "10",
+          "account_observer_expired": "true",
+          "object_lifetime": "FAIL",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "failures": [
+          "../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+        ]
+      },
+      {
+        "name": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+        "gtest": "FAIL",
+        "status": "FAIL",
+        "exit": 1,
+        "xml": "pairing/primary_real_business-9.xml",
+        "properties": {
+          "business_assertions_before_cleanup": "PASS",
+          "workers_after_cleanup": "27",
+          "ril_references_after_cleanup": "10",
+          "account_observer_expired": "true",
+          "object_lifetime": "FAIL",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "failures": [
+          "../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+        ]
+      },
+      {
+        "name": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+        "gtest": "FAIL",
+        "status": "FAIL",
+        "exit": 1,
+        "xml": "pairing/primary_real_business-10.xml",
+        "properties": {
+          "business_assertions_before_cleanup": "PASS",
+          "workers_after_cleanup": "27",
+          "ril_references_after_cleanup": "10",
+          "account_observer_expired": "true",
+          "object_lifetime": "FAIL",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "failures": [
+          "../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+        ]
+      },
+      {
+        "name": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+        "gtest": "FAIL",
+        "status": "FAIL",
+        "exit": 1,
+        "xml": "pairing/primary_real_business-11.xml",
+        "properties": {
+          "business_assertions_before_cleanup": "PASS",
+          "workers_after_cleanup": "27",
+          "ril_references_after_cleanup": "10",
+          "account_observer_expired": "true",
+          "object_lifetime": "FAIL",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "failures": [
+          "../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+        ]
+      },
+      {
+        "name": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+        "gtest": "FAIL",
+        "status": "FAIL",
+        "exit": 1,
+        "xml": "pairing/primary_real_business-12.xml",
+        "properties": {
+          "business_assertions_before_cleanup": "PASS",
+          "workers_after_cleanup": "27",
+          "ril_references_after_cleanup": "10",
+          "account_observer_expired": "true",
+          "object_lifetime": "FAIL",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "failures": [
+          "../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+        ]
+      },
+      {
+        "name": "RunnerLifetime.NormalCompletionAndRepeatedStop",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_real_business-13.xml",
+        "properties": {},
+        "failures": []
+      },
+      {
+        "name": "RunnerLifetime.PendingTaskCancelledAndCapturedOwnerReleased",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_real_business-14.xml",
+        "properties": {},
+        "failures": []
+      },
+      {
+        "name": "RunnerLifetime.InFlightStopJoinsAndRejectsCallbackRepost",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_real_business-15.xml",
+        "properties": {},
+        "failures": []
+      },
+      {
+        "name": "RunnerLifetime.ConcurrentStopIsIdempotent",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_real_business-16.xml",
+        "properties": {},
+        "failures": []
+      },
+      {
+        "name": "RunnerLifetime.CallbackCannotSynchronouslyJoinItself",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_real_business-17.xml",
+        "properties": {},
+        "failures": []
+      },
+      {
+        "name": "RealCardLifetime.MissingRilInitializationReleasesState",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_real_business-18.xml",
+        "properties": {},
+        "failures": []
+      },
+      {
+        "name": "RealCardLifetime.InitializedStateUnregistersRilAndReleases",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_real_business-19.xml",
+        "properties": {
+          "workers_after_cleanup": "0",
+          "ril_references_after_cleanup": "1",
+          "account_observer_expired": "true",
+          "object_lifetime": "PASS",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "failures": []
+      },
+      {
+        "name": "RealCardLifetime.PublicDetachReleasesRealStateFileAndRil",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_real_business-20.xml",
+        "properties": {
+          "real_card_lifetime": "PASS",
+          "workers_after_cleanup": "0",
+          "ril_references_after_cleanup": "1",
+          "account_observer_expired": "true",
+          "object_lifetime": "PASS",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "failures": []
+      },
+      {
+        "name": "PairingReview.AllThreeSlotsPublicDetach",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_real_business-21.xml",
+        "properties": {
+          "workers_after_cleanup": "0",
+          "ril_references_after_cleanup": "1",
+          "account_observer_expired": "true",
+          "object_lifetime": "PASS",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "failures": []
+      },
+      {
+        "name": "PairingReview.PartialInitializationAndRepeatedUnregister",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_real_business-22.xml",
+        "properties": {
+          "workers_after_cleanup": "0",
+          "ril_references_after_cleanup": "1",
+          "account_observer_expired": "true",
+          "object_lifetime": "PASS",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "failures": []
+      },
+      {
+        "name": "PairingReview.DestroyThenReinitializeCardGraph",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_real_business-23.xml",
+        "properties": {
+          "workers_after_cleanup": "0",
+          "ril_references_after_cleanup": "1",
+          "account_observer_expired": "true",
+          "object_lifetime": "PASS",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "failures": []
+      },
+      {
+        "name": "PairingReview.UnrelatedRuntimeWorkerIsBaseline",
+        "gtest": "PASS",
+        "status": "PASS",
+        "exit": 0,
+        "xml": "pairing/primary_real_business-24.xml",
+        "properties": {
+          "workers_after_cleanup": "0",
+          "ril_references_after_cleanup": "1",
+          "account_observer_expired": "true",
+          "object_lifetime": "PASS",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "failures": []
+      },
+      {
+        "name": "ShutdownContract.ANormalPrimaryThenStop",
+        "gtest": "FAIL",
+        "status": "BLOCKED",
+        "exit": 1,
+        "xml": "pairing/primary_real_business-25.xml",
+        "properties": {
+          "business": "NOT_RUN",
+          "resource_lifetime": "BLOCKED",
+          "async_safety": "BLOCKED"
+        },
+        "failures": [
+          "../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+        ]
+      },
+      {
+        "name": "ShutdownContract.BThreeSlotsThenStop",
+        "gtest": "FAIL",
+        "status": "BLOCKED",
+        "exit": 1,
+        "xml": "pairing/primary_real_business-26.xml",
+        "properties": {
+          "business": "NOT_RUN",
+          "resource_lifetime": "BLOCKED",
+          "async_safety": "BLOCKED"
+        },
+        "failures": [
+          "../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+        ]
+      },
+      {
+        "name": "ShutdownContract.CPartialInitializationThenStop",
+        "gtest": "FAIL",
+        "status": "BLOCKED",
+        "exit": 1,
+        "xml": "pairing/primary_real_business-27.xml",
+        "properties": {
+          "business": "NOT_RUN",
+          "resource_lifetime": "BLOCKED",
+          "async_safety": "BLOCKED"
+        },
+        "failures": [
+          "../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+        ]
+      },
+      {
+        "name": "ShutdownContract.DRepeatedStop",
+        "gtest": "FAIL",
+        "status": "BLOCKED",
+        "exit": 1,
+        "xml": "pairing/primary_real_business-28.xml",
+        "properties": {
+          "business": "NOT_RUN",
+          "resource_lifetime": "BLOCKED",
+          "async_safety": "BLOCKED"
+        },
+        "failures": [
+          "../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+        ]
+      },
+      {
+        "name": "ShutdownContract.EInFlightSuccessCompletesBeforeRelease",
+        "gtest": "FAIL",
+        "status": "BLOCKED",
+        "exit": 1,
+        "xml": "pairing/primary_real_business-29.xml",
+        "properties": {
+          "business": "NOT_RUN",
+          "resource_lifetime": "BLOCKED",
+          "async_safety": "BLOCKED"
+        },
+        "failures": [
+          "../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+        ]
+      },
+      {
+        "name": "ShutdownContract.FErrorReplyDuringStoppingKeepsOriginalResult",
+        "gtest": "FAIL",
+        "status": "BLOCKED",
+        "exit": 1,
+        "xml": "pairing/primary_real_business-30.xml",
+        "properties": {
+          "business": "NOT_RUN",
+          "resource_lifetime": "BLOCKED",
+          "async_safety": "BLOCKED"
+        },
+        "failures": [
+          "../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+        ]
+      },
+      {
+        "name": "ShutdownContract.GDelayedDispatchAfterStop",
+        "gtest": "FAIL",
+        "status": "BLOCKED",
+        "exit": 1,
+        "xml": "pairing/primary_real_business-31.xml",
+        "properties": {
+          "business": "NOT_RUN",
+          "resource_lifetime": "BLOCKED",
+          "async_safety": "BLOCKED"
+        },
+        "failures": [
+          "../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+        ]
+      },
+      {
+        "name": "ShutdownContract.HDestroyAndCreateNewGraph",
+        "gtest": "FAIL",
+        "status": "BLOCKED",
+        "exit": 1,
+        "xml": "pairing/primary_real_business-32.xml",
+        "properties": {
+          "business": "NOT_RUN",
+          "resource_lifetime": "BLOCKED",
+          "async_safety": "BLOCKED"
+        },
+        "failures": [
+          "../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+        ]
+      }
+    ],
+    "binary_sha256": "763da59c82de5217afd6b4f2d92715bda6f3325287730a7552bef1f95d1c5f27",
+    "patched_files": {
+      "telephony_core_service/services/sim/include/multi_sim_monitor.h": {
+        "original": "81aa95a4ef31acc250fac70cdf457bfc2b6803a136008bd662816562575ca15e",
+        "patched": "f1a5bd273988ae39a784ba5d68cc4f6d74fdaac9d6ca92fb03a77a8a0f106618"
+      },
+      "telephony_core_service/services/sim/src/multi_sim_monitor.cpp": {
+        "original": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba",
+        "patched": "733a6e87f8e3e7a35157331d28afb7a1f6084207a1d4a831a1410505f9795779"
+      },
+      "telephony_core_service/services/sim/src/sim_manager.cpp": {
+        "original": "9231f9b67e92d80178c878412b16d573c8ed604dfa58638e7441dda7f90a3cd5",
+        "patched": "dda653a266cdb1e57ffa72c4865f4ae46e236eab44ca64b4c03697bd86cf14ec"
+      },
+      "telephony_core_service/services/sim/src/sim_state_handle.cpp": {
+        "original": "e6856b2acda8a60334e8f61f6d5201fb896106a0a700960f8a36cc26dd1d5e0f",
+        "patched": "b8caaf92980f2a021e4cdcbf82f45b8e39268aadc0831849197e9568ca110075"
+      }
+    },
+    "original_inputs_unchanged_during_verification": true,
+    "original_input_count": 1679
+  },
+  "known_defects_unchanged": [
+    "ContractDriver.DEFECT_001_StaleReadyAfterRemoval",
+    "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+    "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+    "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+    "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict"
+  ],
+  "stages": {
+    "current_c1_business": "PASS",
+    "current_c1_strict_ril": "PASS",
+    "current_c1_lifetime": "FAIL",
+    "four_families_address_proof": "PASS",
+    "pairing_patch_build_link": "PASS",
+    "pairing_patch_lifecycle_8": "PASS",
+    "complete_real_manager_shutdown": "BLOCKED",
+    "full_Stop_A_to_H_runtime": "BLOCKED",
+    "future_contract_bodies_declaration_only_compile": "PASS",
+    "future_Stop_implementation_link_or_execution": "NOT_RUN",
+    "native_ffrt_watcher_sa_ril_safety": "BLOCKED"
+  },
+  "new_findings": [
+    "Phonebook/State independent strong cycle, three slots",
+    "File RIL subscriptions lack explicit shutdown inverse",
+    "Monitor raw-context Watcher inverse has no call site",
+    "Controller detached threads and Monitor generic tasks need owner-local tracking",
+    "Observer RemoveAll destroys subscribers under lock",
+    "Core owns ISimManager, so lifecycle requires private typed weak hook instead of public ABI change"
+  ],
+  "confirmed_cycle_count": 12,
+  "confirmed_families": [
+    "monitor_state",
+    "records_state",
+    "file_records",
+    "phonebook_state"
+  ],
+  "graph_provenance": {
+    "historical_reanalysis": "historical-phonebook-cycles.json",
+    "fresh_c1_graph": "trace/graph.json",
+    "fresh_proof": "current-twelve-cycles.json"
+  },
+  "source_subscription_groups": 16,
+  "formal_plan": "primary_slot/lifecycle/shutdown_plan.md",
+  "source_subscription_inventory": "primary_slot/lifecycle/subscription_review.json",
+  "patch_code_hunks_identical_to_compiled_snapshot": true,
+  "current_patch_scope_preamble_is_documentation_only": true,
+  "current_patch_sha256": "c1954c84d17fcf8a49262c13754d28d674031b0d8ebdf1f38b67176ba1bb7204",
+  "validated_patch_sha256": "3173380de25fec19ee6ffaf0dad2998033f8489ba38ea1dc1c0703182d224130",
+  "original_protected_inputs": {
+    "count": 98,
+    "all_unchanged": true
+  },
+  "historical_63_artifacts_unchanged": true,
+  "production_sources": {
+    "baseline": {
+      "utils/common/src/telephony_permission.cpp": "3ead60a37b3e50bad9c2175e2dbf6b130b47e5be0574298f786a36d49ea21611",
+      "common/capability_mgr/src/multi_sims_capability_manager.cpp": "d1453865fd6003b513dc76fcf65b503668c6a7f96b0da193fd396f53957eb2ef",
+      "services/core/src/core_service_sim.cpp": "6bc4f83b79983b319e41572a6c8683808e4cd485d652eb531fc65a154376df34",
+      "frameworks/native/src/core_manager_inner.cpp": "2bbfe3133a8f57e7774ba554874acf00763531d395a5acdd294d3e0a12e99733",
+      "frameworks/native/src/operator_config_types.cpp": "891c77eda302d76d7ceb0aee257e2b02c3e81d120a81c9b36432d869255aeedf",
+      "services/tel_ril/src/observer_handler.cpp": "80d56eca572bf285eb3f54e4f057255a582a7f5bf85e35a17dfbdba0e0e74d63",
+      "services/core/src/core_service_hisysevent.cpp": "34bf546d96830b4e195a80af754fe0901f517f580276ba1bacc2e134691106af",
+      "utils/common/src/telephony_common_utils.cpp": "4d74a30cf4d1e0963c91948f8942eb646e8291792c0d8c9aceaf26b8527d3e3c",
+      "utils/common/src/str_convert.cpp": "20f6f4af091416f04ec8910d2260fb872ce92a379e7f6d867d165ba5a82bf757",
+      "services/sim/src/sim_manager.cpp": "9231f9b67e92d80178c878412b16d573c8ed604dfa58638e7441dda7f90a3cd5",
+      "services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp": "b3d5e06f22790da1ee1b3373fe528e045a3452f18e0bec01472a7c7f23fc6b27",
+      "services/sim/src/card_file_detect_manager.cpp": "2986acdc382f702f0a08ee15d446d68e9a9dec846189a90e322effe762425c41",
+      "services/sim/src/csim_file_controller.cpp": "9a5df536c65668d0311eece5c8b4ed33274928c64a0f84ed20854ab6002135e4",
+      "services/sim/src/esim_manager.cpp": "c13572bf449e181015515e73a1febdc31d524bc22c57a245d3f783598920b7a2",
+      "services/sim/src/icc_dialling_numbers_cache.cpp": "f150a14d526073d183c0526e05fd17d52c3ee4e7b2da431191517bfa2cbd63ed",
+      "services/sim/src/icc_dialling_numbers_handler.cpp": "2ac46452530d191f1049155127af5388405c04144ffa72c661dbcf7274758765",
+      "services/sim/src/icc_dialling_numbers_manager.cpp": "b0244babca504514e94112f7418a24b5b61905f18e3c995e8c264386f4aa6ed7",
+      "services/sim/src/icc_file.cpp": "1edcaf9f6862f2cd8d08a00b0013437df8ab20ad9e2395de48bb83c8446f5518",
+      "services/sim/src/icc_file_controller.cpp": "397c7805e3130236c355a0144a868bd8d091ebe7347e6856cb07e995f5fd3471",
+      "services/sim/src/icc_operator_privilege_controller.cpp": "ca3048bda553b8a71a9d51820282221c4ac6dabc8f21d19d6163fd9143b96708",
+      "services/sim/src/icc_operator_rule.cpp": "03b27f8ec60614f63d603fa3091ca2d10125fe5881f492f0d3ab387faf2b8ed2",
+      "services/sim/src/icc_state.cpp": "f44d7f4ba3a3dec16a0edb9ba8b24b6d1bcb66f50fce9d79f936626ba0d9e7cd",
+      "services/sim/src/isim_file.cpp": "cd6736b9c70517805e8b8810c55ba5a6e9a82b74df7c00f29f7c4c7e3bec7182",
+      "services/sim/src/isim_file_controller.cpp": "95aa7256dc134971062364beb6feee28241e1a0f07b873b7754b69dc97fea590",
+      "services/sim/src/mcc_pool.cpp": "e9d2c866df6e36d8a77c63e1d4f04167d9a2e91419bed4cf93b4c3e8d355cb0b",
+      "services/sim/src/multi_sim_helper.cpp": "dfeb08121cf1c87b9941516fb58c03ef4d25d47b65c85dd45052f55635eb78d9",
+      "services/sim/src/multi_sim_monitor.cpp": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba",
+      "services/sim/src/operator_config_cache.cpp": "6125e33fe2d1a74c0de9cd4183b4c1c22a840790f324935bcd2f0670bcfdcd5a",
+      "services/sim/src/operator_config_hisysevent.cpp": "1d3a868297ab72cb15a57826539bd8bec8a4938d7350420b32537283617c2fe6",
+      "services/sim/src/operator_config_loader.cpp": "c60bcac6ed36932444beeee10b21107492f2ea55c18d21d28e06d2167e70a42a",
+      "services/sim/src/operator_file_parser.cpp": "661b9c208686cc164dd839d0df1401f96c70d9a03058d2e5d3f4ef0456d7e97b",
+      "services/sim/src/operator_matching_rule.cpp": "65066b9aa8f1b824839398f3e21e04f4a883e5e679ac0df06a4935d9f97b919e",
+      "services/sim/src/pdp_profile_rdb_helper.cpp": "dffc17c008029ed133639683871ebf57a9e6593284e248113516c121280b6927",
+      "services/sim/src/plmn_file.cpp": "ce91952f395f202d3ed4212c8495fbf684e1e9aa7bcea0ccde3d1101c7b23c35",
+      "services/sim/src/radio_protocol_controller.cpp": "7391942fa10b22e4692b1873716d4827be68dbbe85ff63587f243e3096d79102",
+      "services/sim/src/ruim_file.cpp": "bd055f0028598c8800ab5fabd2f5aa096caa7e1e06cc05da6985e01b0b9c1bc6",
+      "services/sim/src/ruim_file_controller.cpp": "e56479355d8189162beb8199828fbee46c522188093efb52947a9ca04b10cee9",
+      "services/sim/src/sim_account_callback_death_recipient.cpp": "480adf72c92a5c68285cbfbcf87a7cf15c161eee3bb8c5fc98d11da82eee09c1",
+      "services/sim/src/sim_account_manager.cpp": "e76d7e9595830bfb36565ee4bc61d1eb83cb4cacc1e0a349323bf8e78b29f108",
+      "services/sim/src/sim_char_decode.cpp": "6d1bd0e24a958ccce41b4c05148b231a3292f95b4075a057be0d18a36657da50",
+      "services/sim/src/sim_file.cpp": "b02ad8d2f64a67393d8bbd6bbf66cf0459a327de0a668f2555b6a059a045d9d7",
+      "services/sim/src/sim_file_controller.cpp": "bbd724bc8d20eb154f81dfa4389d81519d14b9cc579c954fa349afc9d30b1570",
+      "services/sim/src/sim_file_init.cpp": "3e331c90149589fbade06a178a3f808d1ed072521d0473e2878e6e47390af345",
+      "services/sim/src/sim_file_manager.cpp": "12045e75e5299fda095155cb8aa2358f62a43f936df9d55aadbf4d95fb47752a",
+      "services/sim/src/sim_file_parse.cpp": "9d91141762124f4211d8e5bf234a3acf98dbe47c2f513c9e6ccc7fcb03dfc57b",
+      "services/sim/src/sim_number_decode.cpp": "929240de7614c05edb4a79b751870cfafc4973f2f7505af43aa906d224d7f1b8",
+      "services/sim/src/sim_rdb_helper.cpp": "99656cbd23c29e0575de75c9ba439eaca65c2c4f1c72e6b6528efe9496538c23",
+      "services/sim/src/sim_sms_controller.cpp": "044e456c3fd8e5128503a6a9db8f0268fe9c5c5c069e309b34cfba4cf53bd0db",
+      "services/sim/src/sim_sms_manager.cpp": "4c8d5148cb7585bb5691e12214cfeb13352c9d9b117beed94e57dc10674ef1f3",
+      "services/sim/src/sim_state_handle.cpp": "e6856b2acda8a60334e8f61f6d5201fb896106a0a700960f8a36cc26dd1d5e0f",
+      "services/sim/src/sim_state_manager.cpp": "99a3194d52aa58af9eb475e08b315821c6eb3a787583f48580ad76cb89d0b44d",
+      "services/sim/src/sim_state_tracker.cpp": "0ebadb176c101095d8561c1f7eb55fa108c8757016a4d71e630e8242df44ea4c",
+      "services/sim/src/sim_utils.cpp": "7940f2dd69a770aaaf96efcad4f7d491cf1bf868521c2bc05b6e55458742e4b8",
+      "services/sim/src/stk_controller.cpp": "996c434c8f62ba9c77b2819f16cf15abeed2f3d0a41468c84c39cd5db7414be2",
+      "services/sim/src/stk_manager.cpp": "1cfd69b4581e385f28fd020efe0067a9d5fa77b77d9f6d33d74cdbc1c3990b3f",
+      "services/sim/src/tag_service.cpp": "9ce64e8f84e6cffe0fd68b801005cf54acddaec2131e45fa2258d97ab32f1595",
+      "services/sim/src/telephony_data_helper.cpp": "2bd5757223716843e712813d03727d45f4abafec1cb3a42faebe5ad1e79884f8",
+      "services/sim/src/usim_dialling_numbers_service.cpp": "1e0931644fe084c7109f44203093f19cf6f9515498359a3d2289771986e37bc2",
+      "services/sim/src/usim_file_controller.cpp": "75e66a9550201da634cb2a78975739caa05b0f50c00530dae247b658b141d76d",
+      "services/sim/src/voice_mail_constants.cpp": "ed4e43caf5e615fc403bf262417909d004e36e867d182f8ca4fd4b8df305a3d9",
+      "services/sim/src/multi_sim_controller.cpp": "e4194d662ddd164a2c527c7793a3b673ecc283c2385a3a56921856aec7e3afbc",
+      "utils/common/src/tel_event_handler.cpp": "d6dbc69c03c8c4810cea31d9efaac5e0c0767b569edcc9ce25f3c61269665e63",
+      "utils/common/src/tel_event_queue.cpp": "d536be6a17f2710dda6e145f7c15a482bfa9f053689ab3dc24fae91ef6d3bccf"
+    },
+    "pairing": {
+      "utils/common/src/telephony_permission.cpp": "3ead60a37b3e50bad9c2175e2dbf6b130b47e5be0574298f786a36d49ea21611",
+      "common/capability_mgr/src/multi_sims_capability_manager.cpp": "d1453865fd6003b513dc76fcf65b503668c6a7f96b0da193fd396f53957eb2ef",
+      "services/core/src/core_service_sim.cpp": "6bc4f83b79983b319e41572a6c8683808e4cd485d652eb531fc65a154376df34",
+      "frameworks/native/src/core_manager_inner.cpp": "2bbfe3133a8f57e7774ba554874acf00763531d395a5acdd294d3e0a12e99733",
+      "frameworks/native/src/operator_config_types.cpp": "891c77eda302d76d7ceb0aee257e2b02c3e81d120a81c9b36432d869255aeedf",
+      "services/tel_ril/src/observer_handler.cpp": "80d56eca572bf285eb3f54e4f057255a582a7f5bf85e35a17dfbdba0e0e74d63",
+      "services/core/src/core_service_hisysevent.cpp": "34bf546d96830b4e195a80af754fe0901f517f580276ba1bacc2e134691106af",
+      "utils/common/src/telephony_common_utils.cpp": "4d74a30cf4d1e0963c91948f8942eb646e8291792c0d8c9aceaf26b8527d3e3c",
+      "utils/common/src/str_convert.cpp": "20f6f4af091416f04ec8910d2260fb872ce92a379e7f6d867d165ba5a82bf757",
+      "services/sim/src/sim_manager.cpp": "dda653a266cdb1e57ffa72c4865f4ae46e236eab44ca64b4c03697bd86cf14ec",
+      "services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp": "b3d5e06f22790da1ee1b3373fe528e045a3452f18e0bec01472a7c7f23fc6b27",
+      "services/sim/src/card_file_detect_manager.cpp": "2986acdc382f702f0a08ee15d446d68e9a9dec846189a90e322effe762425c41",
+      "services/sim/src/csim_file_controller.cpp": "9a5df536c65668d0311eece5c8b4ed33274928c64a0f84ed20854ab6002135e4",
+      "services/sim/src/esim_manager.cpp": "c13572bf449e181015515e73a1febdc31d524bc22c57a245d3f783598920b7a2",
+      "services/sim/src/icc_dialling_numbers_cache.cpp": "f150a14d526073d183c0526e05fd17d52c3ee4e7b2da431191517bfa2cbd63ed",
+      "services/sim/src/icc_dialling_numbers_handler.cpp": "2ac46452530d191f1049155127af5388405c04144ffa72c661dbcf7274758765",
+      "services/sim/src/icc_dialling_numbers_manager.cpp": "b0244babca504514e94112f7418a24b5b61905f18e3c995e8c264386f4aa6ed7",
+      "services/sim/src/icc_file.cpp": "1edcaf9f6862f2cd8d08a00b0013437df8ab20ad9e2395de48bb83c8446f5518",
+      "services/sim/src/icc_file_controller.cpp": "397c7805e3130236c355a0144a868bd8d091ebe7347e6856cb07e995f5fd3471",
+      "services/sim/src/icc_operator_privilege_controller.cpp": "ca3048bda553b8a71a9d51820282221c4ac6dabc8f21d19d6163fd9143b96708",
+      "services/sim/src/icc_operator_rule.cpp": "03b27f8ec60614f63d603fa3091ca2d10125fe5881f492f0d3ab387faf2b8ed2",
+      "services/sim/src/icc_state.cpp": "f44d7f4ba3a3dec16a0edb9ba8b24b6d1bcb66f50fce9d79f936626ba0d9e7cd",
+      "services/sim/src/isim_file.cpp": "cd6736b9c70517805e8b8810c55ba5a6e9a82b74df7c00f29f7c4c7e3bec7182",
+      "services/sim/src/isim_file_controller.cpp": "95aa7256dc134971062364beb6feee28241e1a0f07b873b7754b69dc97fea590",
+      "services/sim/src/mcc_pool.cpp": "e9d2c866df6e36d8a77c63e1d4f04167d9a2e91419bed4cf93b4c3e8d355cb0b",
+      "services/sim/src/multi_sim_helper.cpp": "dfeb08121cf1c87b9941516fb58c03ef4d25d47b65c85dd45052f55635eb78d9",
+      "services/sim/src/multi_sim_monitor.cpp": "733a6e87f8e3e7a35157331d28afb7a1f6084207a1d4a831a1410505f9795779",
+      "services/sim/src/operator_config_cache.cpp": "6125e33fe2d1a74c0de9cd4183b4c1c22a840790f324935bcd2f0670bcfdcd5a",
+      "services/sim/src/operator_config_hisysevent.cpp": "1d3a868297ab72cb15a57826539bd8bec8a4938d7350420b32537283617c2fe6",
+      "services/sim/src/operator_config_loader.cpp": "c60bcac6ed36932444beeee10b21107492f2ea55c18d21d28e06d2167e70a42a",
+      "services/sim/src/operator_file_parser.cpp": "661b9c208686cc164dd839d0df1401f96c70d9a03058d2e5d3f4ef0456d7e97b",
+      "services/sim/src/operator_matching_rule.cpp": "65066b9aa8f1b824839398f3e21e04f4a883e5e679ac0df06a4935d9f97b919e",
+      "services/sim/src/pdp_profile_rdb_helper.cpp": "dffc17c008029ed133639683871ebf57a9e6593284e248113516c121280b6927",
+      "services/sim/src/plmn_file.cpp": "ce91952f395f202d3ed4212c8495fbf684e1e9aa7bcea0ccde3d1101c7b23c35",
+      "services/sim/src/radio_protocol_controller.cpp": "7391942fa10b22e4692b1873716d4827be68dbbe85ff63587f243e3096d79102",
+      "services/sim/src/ruim_file.cpp": "bd055f0028598c8800ab5fabd2f5aa096caa7e1e06cc05da6985e01b0b9c1bc6",
+      "services/sim/src/ruim_file_controller.cpp": "e56479355d8189162beb8199828fbee46c522188093efb52947a9ca04b10cee9",
+      "services/sim/src/sim_account_callback_death_recipient.cpp": "480adf72c92a5c68285cbfbcf87a7cf15c161eee3bb8c5fc98d11da82eee09c1",
+      "services/sim/src/sim_account_manager.cpp": "e76d7e9595830bfb36565ee4bc61d1eb83cb4cacc1e0a349323bf8e78b29f108",
+      "services/sim/src/sim_char_decode.cpp": "6d1bd0e24a958ccce41b4c05148b231a3292f95b4075a057be0d18a36657da50",
+      "services/sim/src/sim_file.cpp": "b02ad8d2f64a67393d8bbd6bbf66cf0459a327de0a668f2555b6a059a045d9d7",
+      "services/sim/src/sim_file_controller.cpp": "bbd724bc8d20eb154f81dfa4389d81519d14b9cc579c954fa349afc9d30b1570",
+      "services/sim/src/sim_file_init.cpp": "3e331c90149589fbade06a178a3f808d1ed072521d0473e2878e6e47390af345",
+      "services/sim/src/sim_file_manager.cpp": "12045e75e5299fda095155cb8aa2358f62a43f936df9d55aadbf4d95fb47752a",
+      "services/sim/src/sim_file_parse.cpp": "9d91141762124f4211d8e5bf234a3acf98dbe47c2f513c9e6ccc7fcb03dfc57b",
+      "services/sim/src/sim_number_decode.cpp": "929240de7614c05edb4a79b751870cfafc4973f2f7505af43aa906d224d7f1b8",
+      "services/sim/src/sim_rdb_helper.cpp": "99656cbd23c29e0575de75c9ba439eaca65c2c4f1c72e6b6528efe9496538c23",
+      "services/sim/src/sim_sms_controller.cpp": "044e456c3fd8e5128503a6a9db8f0268fe9c5c5c069e309b34cfba4cf53bd0db",
+      "services/sim/src/sim_sms_manager.cpp": "4c8d5148cb7585bb5691e12214cfeb13352c9d9b117beed94e57dc10674ef1f3",
+      "services/sim/src/sim_state_handle.cpp": "b8caaf92980f2a021e4cdcbf82f45b8e39268aadc0831849197e9568ca110075",
+      "services/sim/src/sim_state_manager.cpp": "99a3194d52aa58af9eb475e08b315821c6eb3a787583f48580ad76cb89d0b44d",
+      "services/sim/src/sim_state_tracker.cpp": "0ebadb176c101095d8561c1f7eb55fa108c8757016a4d71e630e8242df44ea4c",
+      "services/sim/src/sim_utils.cpp": "7940f2dd69a770aaaf96efcad4f7d491cf1bf868521c2bc05b6e55458742e4b8",
+      "services/sim/src/stk_controller.cpp": "996c434c8f62ba9c77b2819f16cf15abeed2f3d0a41468c84c39cd5db7414be2",
+      "services/sim/src/stk_manager.cpp": "1cfd69b4581e385f28fd020efe0067a9d5fa77b77d9f6d33d74cdbc1c3990b3f",
+      "services/sim/src/tag_service.cpp": "9ce64e8f84e6cffe0fd68b801005cf54acddaec2131e45fa2258d97ab32f1595",
+      "services/sim/src/telephony_data_helper.cpp": "2bd5757223716843e712813d03727d45f4abafec1cb3a42faebe5ad1e79884f8",
+      "services/sim/src/usim_dialling_numbers_service.cpp": "1e0931644fe084c7109f44203093f19cf6f9515498359a3d2289771986e37bc2",
+      "services/sim/src/usim_file_controller.cpp": "75e66a9550201da634cb2a78975739caa05b0f50c00530dae247b658b141d76d",
+      "services/sim/src/voice_mail_constants.cpp": "ed4e43caf5e615fc403bf262417909d004e36e867d182f8ca4fd4b8df305a3d9",
+      "services/sim/src/multi_sim_controller.cpp": "e4194d662ddd164a2c527c7793a3b673ecc283c2385a3a56921856aec7e3afbc",
+      "utils/common/src/tel_event_handler.cpp": "d6dbc69c03c8c4810cea31d9efaac5e0c0767b569edcc9ce25f3c61269665e63",
+      "utils/common/src/tel_event_queue.cpp": "d536be6a17f2710dda6e145f7c15a482bfa9f053689ab3dc24fae91ef6d3bccf"
+    }
+  },
+  "changed_code_and_documents": [
+    {
+      "path": "telephony_core_service/docs/SIM_Refactor_Execution_State.md",
+      "status": "modified",
+      "sha256": "e8c06d21030fc93870265b91a5b3503e5d96736cc44781102ae1e3bc001e0078"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/relocation_followups.json",
+      "status": "modified",
+      "sha256": "6f74caefabe4aaf85342efaf7bc5f691aff08c542c34c4a6fc60b8f432f4af28"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/BUILD.gn",
+      "status": "modified",
+      "sha256": "32bcb884540cfbcda5760bba005cc6776039f2ec3bfcb8a49b678f29a8a23c23"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/README.md",
+      "status": "modified",
+      "sha256": "606bba0c4008b5badf7e4de3c359504aa7e528187ea2aaea18dd388327e68cb1"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/README.md",
+      "status": "modified",
+      "sha256": "232bee6e65739400a0b38978a83bfe4b2e707efdffa4f35cc7af19464da155fb"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/check_stop_contract.py",
+      "status": "added",
+      "sha256": "101e5038bfc2ab1d294844ce45f38376433819d4b2d187ac8eaf7813c272dddb"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp",
+      "status": "modified",
+      "sha256": "0535f2c22561a5e8818c7a9c4aeb7b2b1847bd75cf412873f4891708743aa8d2"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/owned_card_graph.h",
+      "status": "added",
+      "sha256": "b9e669bb08f32a9ea926d202ce591324d4c00fdcebf830109136e2de8e5bf8ef"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/pairing_fixes.proposed.patch",
+      "status": "modified",
+      "sha256": "c1954c84d17fcf8a49262c13754d28d674031b0d8ebdf1f38b67176ba1bb7204"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/review_graph.py",
+      "status": "added",
+      "sha256": "0e6f84df4be186676e868b75cf2ea861bcd4fc68a249e9b7412336e961b4e9b7"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h",
+      "status": "added",
+      "sha256": "58a1cae3151e627486ac2647ef6c8a482b71c7ed1de0139c788a69a802253bbd"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp",
+      "status": "added",
+      "sha256": "62c9a59116b265ebbaa02341acf38b9d09c2a3d3b487d3232ed50611f2c41b9b"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_plan.md",
+      "status": "added",
+      "sha256": "f92978e0337c05c1c07150809f0c3c0e5237591eea5c77e0a0202372330c676f"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/subscription_review.json",
+      "status": "added",
+      "sha256": "4b06953c500992468eade9821adf17a427000cb24a3f0f431b80edcf77c8eb5c"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/validate_patch.py",
+      "status": "added",
+      "sha256": "d917a08a9aa8f6f773067be7d96b757036aa4799b2c443ebdd3214d5d4456607"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h",
+      "status": "modified",
+      "sha256": "8ab39c9744d3fae7b0efd60a789ce8602b181cb0f589ddefe24a2c941021e80a"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp",
+      "status": "modified",
+      "sha256": "0cc090d0344f9d1af84de8c0de908ac70e48cce19df0d2343d0337d2fac13c4a"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.h",
+      "status": "modified",
+      "sha256": "1692f5751492604dddd799070d31cd28195725bb337acd0b7b3fe6db372e43d4"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/tools/host.py",
+      "status": "modified",
+      "sha256": "2c0d4140876901f7867074de419ac195f77da6860d94faf92435cf99a7e5ce01"
+    }
+  ],
+  "limits": [
+    "No production Stop implementation was applied or executed; missing API generates raw GTest FAIL with BLOCKED metadata",
+    "Future Stop test branches compile using declarations only; no empty or fake Stop implementation linked",
+    "Host RIL routing/ledger is weak; native strong subscription ownership, dispatch races and external drain guarantees still require validation",
+    "Only four confirmed cycle families are proven, not an exhaustive feature graph",
+    "Main working tree remains unpatched, so the real seven-case target has not been achieved"
+  ],
+  "artifacts": {
+    "architecture.log": "c428ef5e1cf9894b0a257bd1e629bf572801fa1da74ad4d12063d9e4f3ad2269",
+    "baseline/capacity.log": "dc57461564e2c74242af0110cbc3036f6665336867c23b620b2ea6d603235ca4",
+    "baseline/capacity.xml": "bdd07bad5425834a93f152bcd6d4ede528558c23f53e4691f090ac89c6424e4f",
+    "baseline/compatibility.log": "8de02983a97a78ea87cff8187bdda46cbe0aa0d5e857b3ff306a649fe27f9296",
+    "baseline/compatibility.xml": "b1788803655ee906b679070045e258a34a76370ea65338d0f856516bbf8ec2ac",
+    "baseline/infrastructure.log": "692ae6b4bd6e95052f9a79d9178a75d6d3d11f76c7c4f0b97452459445d49be4",
+    "baseline/infrastructure.xml": "79c3abbfc0a88a7609b863102ddaa95df11e4c0d3410557530ad06949083b7be",
+    "baseline/known_defects.log": "4647f7e3a3e0560dad7426d70312411e0b4037c0e2418cfb71b6f931614ad418",
+    "baseline/known_defects.xml": "d25a1825d6b97af5d0763237cad76b4d9db5c97555eb3922d25ccc1562f3c240",
+    "baseline/pin_memory.log": "65863e993fdeaebab9ec4a9e0385b80c8fcc641544b55b52be5df3c75e2b4682",
+    "baseline/pin_memory.xml": "fdb191f7605fd739867bb577f637a117bc584b18cc555e4e91756cea14268c3a",
+    "baseline/primary_entry_internal_seam.log": "709b1312aeeb3bffc8af934a152a7302cd59ee01dc8982a5b0763586eaa767ba",
+    "baseline/primary_entry_internal_seam.xml": "9a18248df8661fdd771374abbdb8f2b58d4b3ff8e049974ebdd0c88a2fa31336",
+    "baseline/primary_real_business-10.log": "3ac42c7b6d63d1c04b01a41f1d388d360ccb18f7ea081c09d48ec37cf6163313",
+    "baseline/primary_real_business-10.xml": "fa19cbfd4dd7ae5c7e16daede466800fe76bd1a5a6468cb5617410d3ddd6f23d",
+    "baseline/primary_real_business-11.log": "5ade12bc09178316bc2d71548b90e249613159c97960860954d95325b18859d5",
+    "baseline/primary_real_business-11.xml": "db0e8a9089e0089d8aa5ea49722389e54cf537131f7363c54fbe026d1eed0b7a",
+    "baseline/primary_real_business-12.log": "b78ecec5b878f88d26c964f9e59861da25ec4737f9588d3c3edd880ff821968f",
+    "baseline/primary_real_business-12.xml": "2e0fa506b47b467de5e11c58074c6251eee8a9837c9b270a1aaff4501884f2c1",
+    "baseline/primary_real_business-13.log": "d423eb22e1f2833e6fca2f9b158f6dd2b2d884e25030beaa75fd666d43e27052",
+    "baseline/primary_real_business-13.xml": "2bc6b0fd004d214af16790d2b914296639425f7a7d5914134d89299dae8b63b3",
+    "baseline/primary_real_business-14.log": "67aca913d0835f37199fb60f568a3ed90376a0a7a8ba2433534b96458c914d73",
+    "baseline/primary_real_business-14.xml": "cc9990a77d6c52269e7564915752e680c2c0808825fd417f83c19aeaf3fc9120",
+    "baseline/primary_real_business-15.log": "26aeb0f852506a3935f68282a8c5b48b38f4133cfecac79924d2cb0d293c8d38",
+    "baseline/primary_real_business-15.xml": "d4c815795426cbff431c2c0908174f59080b83ac570700d4e444dde51eae293c",
+    "baseline/primary_real_business-16.log": "55b870404e6c23d1ef01489cfd992adc22f179b8bf8749fcbfa5a9ce802cfc2e",
+    "baseline/primary_real_business-16.xml": "ad56e5bd4992c516f3cf83be1bcc2f659d8c0f549eb5b91fd02fc9e7aa62fe1c",
+    "baseline/primary_real_business-17.log": "5e777af5605cbc612ed62ebd06e9c2f41941325087f9483c499dc3a6e4f49bea",
+    "baseline/primary_real_business-17.xml": "77dadc6eda7cb135731955702cd0de7a2c28d1b4bb02285bed45493cc6cb61ae",
+    "baseline/primary_real_business-18.log": "3d86b9e7c238355ccc596b4820dd1b98255f7cdff247a981b462165f4c1ec272",
+    "baseline/primary_real_business-18.xml": "4967247ef4172cb26a39513d645005c93baeb3573af2a54090eb25a122969dee",
+    "baseline/primary_real_business-19.log": "e351d9c0f1d75249f2cd70e0145752faf195ea333995bb1bab5b7365fe054fed",
+    "baseline/primary_real_business-19.xml": "d3368761b9b9c638080af0f00e412e01e2c71de3908755b39b9fa1b3b834deb3",
+    "baseline/primary_real_business-20.log": "1b82397074d2075130e3ae74feaacd4903d9efe07ea654d1603791bff876b138",
+    "baseline/primary_real_business-20.xml": "11a854f086a7c9a0ff3c4ed2075b4a2b62d91b08ee081b13b105d401ad42c224",
+    "baseline/primary_real_business-21.log": "b6623b839b12236eb97c304340dd538534e37b4ca9b9b4b856fa9b1749a14dc2",
+    "baseline/primary_real_business-21.xml": "2de261f397de6712992fdffd83c289f9290bacda17798762a3e82ec8998f50dd",
+    "baseline/primary_real_business-22.log": "3e2a832d548e533495e4bbd38e811fc55ee8b2290f5683dbe92b867ad163f193",
+    "baseline/primary_real_business-22.xml": "091931cab7e7d8bb76c91d2ebb583b0fdfa9f086d1e564dcfb63d871801d1d4b",
+    "baseline/primary_real_business-23.log": "d6726015b762e56930a76009a82c78599281e4233d4d482e40ebc93b1be3a9aa",
+    "baseline/primary_real_business-23.xml": "76c222d1440872712fa8a39f9b056840f4f06562e626363810cae308eab236d1",
+    "baseline/primary_real_business-24.log": "b71141a0dab0dc044f8bf346454096cd7b61c8d56205f3dddd12fe0bcb6266b9",
+    "baseline/primary_real_business-24.xml": "f43bc7cb50d566d9d19eb866a6796d098a27e5dac25a1c322e9881a5faf2be8d",
+    "baseline/primary_real_business-25.log": "39b9820d4bf81ca180daa2cbbff49a10f7b3d302285d4ea9c555a87c1973513c",
+    "baseline/primary_real_business-25.xml": "ce2c2ede44793940ea64a8adcc386a2061af70a7191ccb6466e4fe662ca4c025",
+    "baseline/primary_real_business-26.log": "b00f0d7715c9969579b622d06d9c180276dc9a50c4cd4e54efd236fbc325003b",
+    "baseline/primary_real_business-26.xml": "22202283cc96bd8353b54a92fe1f003ee6cdaf3de4130636e1e01e3b3d5fdce6",
+    "baseline/primary_real_business-27.log": "01017752f0057887c42356efbdff1c29fb1fcc1d7cbae40d32b17c31e6faab52",
+    "baseline/primary_real_business-27.xml": "d39ba61ac986523f7e8fb4fd5dbcdc3c25ea1d39d898267e3c78b7f4257a8fc3",
+    "baseline/primary_real_business-28.log": "30262d1b2932651340fff2a614a7b96cf3f5d863eba57be2edc7454f206607e1",
+    "baseline/primary_real_business-28.xml": "3df9c2e8a97b460862f66be37c522f517bc5b1cdc9bbcdd45d9c9ad41e31e6c1",
+    "baseline/primary_real_business-29.log": "6eefb264d53777e7ad9d5c17f51257651d8ebd06143fa5ef00decfc6e5535e2a",
+    "baseline/primary_real_business-29.xml": "3a32f11ae75424125536ef9643ff6fa4b3e23fdbf1121a4b4811c2eea7ddffe0",
+    "baseline/primary_real_business-30.log": "b8fe96a789a8e003de2efd9b9559e0913d32686e9cc63dc57e15efac69fdf460",
+    "baseline/primary_real_business-30.xml": "fa05df2764eb968a13092d945e35944c2250960c79561109a021c5aebf8a361b",
+    "baseline/primary_real_business-31.log": "3ed24d01d5ce233c36b09714f7193186904b6ca8fa2baa5199c437389a73965c",
+    "baseline/primary_real_business-31.xml": "5eaad0687ea14d413c45af578767d1e3a7defe9d4f8bda703b84ff126e6dd8d2",
+    "baseline/primary_real_business-32.log": "9eadf7d4839d924d932086737d71bf3b6b75aa62fc8c646714098fc97044b37f",
+    "baseline/primary_real_business-32.xml": "ec48c9c03fcd38ffbcd04b3f9a27f0221bd3d2044cfcdc3b113971fcc14fdf09",
+    "baseline/primary_real_business-6.log": "42d729d66bb717f3382f845c995735052ec5713b3a1fb8cc76f8a1dd50c971bc",
+    "baseline/primary_real_business-6.xml": "e6882095c779c8e7992b7eeed6e8f96f8b8c51208c1315e65f268cbba725864d",
+    "baseline/primary_real_business-7.log": "b134a82a57b69b3c05b5ba593bf78b80858382786d4c1dd1221dd7b87393ecf3",
+    "baseline/primary_real_business-7.xml": "a9f78441a90666849d11028772310591f69a046d95a1d34f6a79c769ceceba9a",
+    "baseline/primary_real_business-8.log": "51d805d347428980ad6bee5e3332fc57e39bc5553b17b92a3d1dfa2e276f280f",
+    "baseline/primary_real_business-8.xml": "05166bcd0a71fedfafeac859574255a5674a2879bd79e043870d5f6b999051b7",
+    "baseline/primary_real_business-9.log": "77d256f19f85f04db4b04714f2e4296186cae678727989af962c27fdc780b382",
+    "baseline/primary_real_business-9.xml": "2a43dd2a41d4f55ede588f5bc58190a63807d10fea23174405dfaff3a350e79e",
+    "baseline/result.json": "553fdc0fc561ca37da25a6108d50c6f3af8ef951040ead775f490046fcfa16ab",
+    "baseline-build.log": "ef35ba5b8ac685e67c483e0f3bbf1739b6431e7b784be21992700df6efa50733",
+    "baseline-command.log": "d6b3cd1c254a20f2b66da8b01a78c932d03dd96d2946ea49f49e68321a341324",
+    "baseline-configure.log": "f174295d53afe4d81ac1df13fd2a77da0eff299c88bccf0c7edc6fafc4a78750",
+    "baseline-target-commands.log": "8d98ba2f411639349e28deb02294eaeea752906eee16cdcc57189dde934609f0",
+    "checks.json": "a249b9f5bdbcbe8812ee65539bce6f6b0da238f7e2f8f7f3624e28ac4d659254",
+    "code-diff.patch": "44c0dac5134e70abf999391453a08ff0197f80061f314915f96780e3f20512b0",
+    "current-twelve-cycles.json": "48e36cbc4daf5ec3dee8fd28e132524c1b88c49869a454495484523247a75002",
+    "historical-phonebook-cycles.json": "d97018838dc09c55008da8d645ff2eba0c41d773a65470197a5bd611ed902eaf",
+    "host-dependencies.json": "a0de15da00f3f5e047a3a990e6772c1087835c6a755c96a970d245285e43b168",
+    "isolated-patch-apply-isolated.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "isolated-patch-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "isolated-result.json": "bf5741e95bdbbdca4291bd24369b3700613be3ea801e9b091a7841959cb74bf8",
+    "isolated-reviewed.patch": "3173380de25fec19ee6ffaf0dad2998033f8489ba38ea1dc1c0703182d224130",
+    "isolated-source-inputs.json": "e488aae111b1bb639c3610bafe5d0c0afecc09710c94af5e9d9f627af6392b74",
+    "manager-seam.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "pairing/capacity.log": "0ea167ba7f6bdfee4ce4af95799e5a53858f82b6931fd096cf9f29b7c6e29c26",
+    "pairing/capacity.xml": "c70b0bf418d67c4f640c3b199a2964c5a1e2cd10cd7caadb93378dffc0b643c1",
+    "pairing/compatibility.log": "4a57cb46e198805edf88c282afdc2d133fb9853a1d6a7631160dc001a5b47dbe",
+    "pairing/compatibility.xml": "946e7acdccf6edcee9e0284bb0587bc0a48596a9cb9b60f7cb51ed8583e296bd",
+    "pairing/infrastructure.log": "0121c63f7ec3aed632adb7e1fb61adba766e49519edf212b436aa01dccfbe6a2",
+    "pairing/infrastructure.xml": "fe31202038fb4376d0c70b728da4d4fb007fe1ddeeb58d3e42c2fb0be1bb99c6",
+    "pairing/known_defects.log": "588585f6a08e2a1906dcb566541daff32f885d9b7ef6022fb0c82982a06e7be0",
+    "pairing/known_defects.xml": "b6eb0affc43724329b5fca4e6d1c76b3c21fb06dd9acf7338a40b04bfcf14b8d",
+    "pairing/pin_memory.log": "23b7230e4061a9066309696abf18537ea3f67f89dca1e4339e174968cf8b4155",
+    "pairing/pin_memory.xml": "64cd6e511de56452a4008ff8f26ed3b4c3bbee37a3d8dd0fc001c94de08dbc6e",
+    "pairing/primary_entry_internal_seam.log": "33c6ba07af82598a0a00d784f322fb0d743759d1902e0adc11abf2ce7fc251c5",
+    "pairing/primary_entry_internal_seam.xml": "f46e700ab6db1cfbb411fadf8cd07777204d9a12363cfb67d464a21080f466de",
+    "pairing/primary_real_business-10.log": "9a387bf45aa8e72afc724be06f76268a9dc642d348a8940a4b68bde21bde7565",
+    "pairing/primary_real_business-10.xml": "e0ed8e036a75e0e9ab7c19f5d3a753bcf8038266b200eaf90c3fa13c8468bc58",
+    "pairing/primary_real_business-11.log": "7d60e1559345db7aa89508e0ae7ef95aa62b3e6c1f8cd219c8e0e7edf49a759d",
+    "pairing/primary_real_business-11.xml": "b130f31d8a557fe5b3b0255e0942772e03eb7127eb15acf745d2f44883e7bd4c",
+    "pairing/primary_real_business-12.log": "199a223d5a31d04a6d64d2d3183f754d2b29b10c514c3c649b5e9bf897e349b2",
+    "pairing/primary_real_business-12.xml": "afb8816af4255614106f8afa3cb0deabf5a268cbc6b1bc7f90fb4aa3e242f450",
+    "pairing/primary_real_business-13.log": "591bf2e7da12522d65a640168c0547551b70de7a5924cc0cf47ad77f74c32fd2",
+    "pairing/primary_real_business-13.xml": "45425ba3bf4d64c07f6f7e533a0c58f6038b9fe0690809f66f9b10fbac3d90e7",
+    "pairing/primary_real_business-14.log": "4fcbcbb910dec8dd3a702f9c4d2591e2808d9c00a9dbe4d6d12145ca21233166",
+    "pairing/primary_real_business-14.xml": "619890901244bbfc50180da62b8d712f78eecef90e14eed3f273a6f19a3c4319",
+    "pairing/primary_real_business-15.log": "d3688d5d8345ab8183f5c6464cb3230d6766296459cf935dc962b9f382d33647",
+    "pairing/primary_real_business-15.xml": "8efd7aca4cd02c5d34502940a4f70221b4abd784ac2f022d2b7f9a9703e92bed",
+    "pairing/primary_real_business-16.log": "bbe73df2c9c406ca22a86d3b746d5f0f6e5879a26123b3584a5eb9c75cfde761",
+    "pairing/primary_real_business-16.xml": "34c88506a5f4299b2c025d24e00a97f8de4012fa415ad58b559795779d2c3b6c",
+    "pairing/primary_real_business-17.log": "ac566f8ab6d1806a0d3c23f64045e5e31cc4fe82096f24d00eef0c3078479ab2",
+    "pairing/primary_real_business-17.xml": "b16cc32eaca63601e53a0e7ed9c50123c4b52562a0a356359a001eebbbafdb10",
+    "pairing/primary_real_business-18.log": "2d654a9a655aee83d6908042bfde206cc1ae996a431483aecccd5a8ef07ee754",
+    "pairing/primary_real_business-18.xml": "d0c4be227c82e3ec2f4f7c9586482e0befbb74fa3740f2a78c5fcab1788af26a",
+    "pairing/primary_real_business-19.log": "4a4a39e1817ddf6aee4a2627b5410fa878d1ded8c72c2cbdde94c93b09fd0f35",
+    "pairing/primary_real_business-19.xml": "fbfc6dc2999cba8c03f19a33733a722d82a4dd3bcf85a2b7c15e1a3f559e49e5",
+    "pairing/primary_real_business-20.log": "03862c82556dda9a02040e72bc63c3c35829fd83b67bc1007170bc07490eccc0",
+    "pairing/primary_real_business-20.xml": "628d354c07980596c59c79fded6f612f1b3cdfe8627805f172268a1cd14c5dab",
+    "pairing/primary_real_business-21.log": "68614ded4155c53dec249e05d08e7b98b89f6180c5520ba9c9a41939a65acb9a",
+    "pairing/primary_real_business-21.xml": "f65f7b2f2d5108371db0e68fd178160b235ea281b18852c25cedc43a7ddce053",
+    "pairing/primary_real_business-22.log": "3450c330b72fccf69b8506a6fab5232179a1bbb2b712a5826fc16a27dc1f9c99",
+    "pairing/primary_real_business-22.xml": "8d19809c1e12fbd2475abfd6cbb3a1c6b186b414f1317f2f26ca6ee6734c5726",
+    "pairing/primary_real_business-23.log": "50e4ff721924a8fb65ba5c8676f7fd8ac3922ebc5da7c172fe49c7391e981314",
+    "pairing/primary_real_business-23.xml": "40b43f6ab4a3ee54a2a0479077ec1f900264a7c3bed4ea0c9f5a372bbf8e00ad",
+    "pairing/primary_real_business-24.log": "62f8bb218998ad1894da5ac572dd9f7d3bd5c2a11fe299f4b89914cc3c0aeda8",
+    "pairing/primary_real_business-24.xml": "b4e2793f48e4e397e21e8c471b99807fd735b78d9267dac6402c2aedb19375fe",
+    "pairing/primary_real_business-25.log": "90efacb0c1b6bfb8693471fc20b74f59d75123805697520dfdd8c2bbea9a8e7a",
+    "pairing/primary_real_business-25.xml": "6c051625b9471e3ae70c79c5756c8f99d054e67ba31876d18d230f418dc395cb",
+    "pairing/primary_real_business-26.log": "eb9ddcab9eda01e5a69b2bf11c926eadfa3675cec38803bcce61af2792357118",
+    "pairing/primary_real_business-26.xml": "9744ef474842f07090187d1fa69cf84f54f844c6c77c404242028cf5247f6b1f",
+    "pairing/primary_real_business-27.log": "9fe5aec4715a3897a96fdf9fd3441eb93d9492ba0451f6c2103c0919a63ca2dc",
+    "pairing/primary_real_business-27.xml": "c1f902ea6499abe1d8850230e01a177f9d28a2fb37d659dd3dca7401aad3e413",
+    "pairing/primary_real_business-28.log": "db219ba67be82ee030232ac1b68fb5f086d4351c03e45805830196f347fcaf96",
+    "pairing/primary_real_business-28.xml": "5499630a9b59e80f1c11a953fc1b4f5288ef07ce931d8657329c0d8409d53dcb",
+    "pairing/primary_real_business-29.log": "b71ef299b77be36a6b7eb5048d1f25c8600a1eed6b9bc7039e09f8b89dbe73ad",
+    "pairing/primary_real_business-29.xml": "3e788eaa9826ab32c773a5a14a4451b9a08c4ea748da39f24b684a58cb81fd90",
+    "pairing/primary_real_business-30.log": "78f33146bbc04ce84af827ff3d0f7b695963c9f2d57b24621cb03bfed4433428",
+    "pairing/primary_real_business-30.xml": "ccfac19d66da1e66a89c7720cb4eddeded6de263e1ab15fdb60736748fd92226",
+    "pairing/primary_real_business-31.log": "e500c028d390f62c0cefe9ed0bf687584cf8a629aeaadbc9c862e14308a183d8",
+    "pairing/primary_real_business-31.xml": "71abe2817b0715e177dd18f8672289f96189ff0d2da66323e0fbeb07224fb3b0",
+    "pairing/primary_real_business-32.log": "8466188afcf7838da68bbda26e74812507de575ef1911f4534764365493a8247",
+    "pairing/primary_real_business-32.xml": "23a91146274e49654393ace3747678288129c9f9a480c115205df48c71057d54",
+    "pairing/primary_real_business-6.log": "b1fb92e2aaeeecd0f5b3368117dd6cb38fe84b3d037bdae45b2c15ec6ca632e5",
+    "pairing/primary_real_business-6.xml": "2d95b79a00ab207ece6646b4e76c713ebf6d8c86ba36bac78a01ea6c052876ae",
+    "pairing/primary_real_business-7.log": "28fd8f79b58337cff3246597cdb10bccf320fa635f992ba1cd4a4bccb30e0f3f",
+    "pairing/primary_real_business-7.xml": "62643a5e5e050ca1a660f7bfb1b45d92f68854e6166f0cfb9fa03556f0c4dae8",
+    "pairing/primary_real_business-8.log": "d7d0b9f149c69964497a753c24fdb2acef689c0fe799c1c8591514193f768bd6",
+    "pairing/primary_real_business-8.xml": "2b2a3f773ea0d2845442024ba5749b47f8ff5623aee79056cfc6d3b4fce7a6d5",
+    "pairing/primary_real_business-9.log": "f90f727a81ab52a1eb5a2b91ecf94986f5b4f45caaceec8201317c2f691d65e0",
+    "pairing/primary_real_business-9.xml": "2ca07560174abb59ded0f5c4a6f967029f4f3e7b19a9bb7a9072ddb391179551",
+    "pairing/result.json": "2d5ded1ddbff4529db9a131975d2a24dccb5dfabdac8bcbbb49756d5c62c1be4",
+    "pairing-build.log": "ef48f07462d18eec857b92be7f633f74e8937878fcb82149da6ea5a75f77de46",
+    "pairing-configure.log": "14b3fcb52493c034fdc2fdcb7849949ca26ad36da61a3d415de9775ff3034266",
+    "pairing-target-commands.log": "96fe2250dd8e0252554f188d67038902611764799f713aa9231f69f889461980",
+    "patch-validation-command.log": "3709f47463b042fd6cc6572ff777d1e9b479c2307cc2273afbe11f834955fd4c",
+    "recovery.json": "bb0b35a36b8bd703593089cdfa306b09b865d6edc8d8439fb746d1508e65db0a",
+    "relocation.log": "5c067a2564b9786f47ef3db27716bce1786614a793702bc4fed3853b2a3f5397",
+    "signature-probe/compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "signature-probe/declarations.patch": "1011a273f285a411cc3d1e3cbfb66f0de97615269ce6355f3220583edd39a990",
+    "signature-probe/result.json": "b52ede31cc9491a7a1f0f6e391cc0cc909983f1139f62c159f6f13b5373a4c66",
+    "toolchain.log": "d12c09387000dc8729c49bfb6bf4a9c1f35d0c3e3f8f2b21c9bbe4bdcf53f2c6",
+    "trace/graph.json": "6100e983a691c3fc6688b57ace09c26c4b954037fceedd5c265053d1ac955341",
+    "trace/ownership-proof.json": "e2001184365ca470de1d1b3f409f2042f44c5f61f50998a1227737e8f6f4142f",
+    "trace/result.json": "48e1757437476c61f11210f9ca50e7491d672d6826ff6b104a0c10be123467ef",
+    "trace/test.xml": "d60082428d163faff12b3124abf5bcb5cf51cdf756de106350e28cd89b984e02",
+    "trace/trace.lldb": "2f5e71f3b022895108bb1dc0f390882c0df3e4a22dedd931b2cb32e640a7e0c0",
+    "trace/trace.log": "63454b9e443c27bfe2241a433708bd1b19a580006f76b8984f1c3983e055eeb0"
+  }
+}

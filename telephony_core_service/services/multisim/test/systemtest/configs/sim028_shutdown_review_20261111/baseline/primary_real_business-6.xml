@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="1" failures="0" disabled="0" errors="0" time="0.017" timestamp="2026-11-11T20:04:36.462" name="AllTests">
+  <testsuite name="RealSimPrimary" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.013" timestamp="2026-11-11T20:04:36.465">
+    <testcase name="InitializesRealManagerAndControllerWithoutRil" file="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="14" status="run" result="completed" time="0.011" timestamp="2026-11-11T20:04:36.466" classname="RealSimPrimary" />
+  </testsuite>
+</testsuites>

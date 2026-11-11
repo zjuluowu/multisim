@@ -1,0 +1,2179 @@
++ gn gen /mnt/e/github/multisim/.host-out/build --root=/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest --export-compile-commands --args=gtest_root="/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59" production_root="/mnt/e/github/multisim/telephony_core_service" host_debug=true openssl_root="/tmp/sim028-deps/openssl" sim028_runtime_root="/tmp/sim028-deps/native"
+Generating compile_commands took 8ms
+Done. Made 24 targets from 3 files in 102ms
++ ninja -C /mnt/e/github/multisim/.host-out/build -j 4 sim_guard_legacy sim_guard_pin_memory platform_adapter_test sim_component_test sim_primary_slot_entry_test sim_primary_slot_real_test
+ninja: Entering directory `/mnt/e/github/multisim/.host-out/build'
+[1/10] CXX ../../telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp
+[2/10] touch obj/scheduler_boundaries.stamp
+[3/10] CXX ../../telephony_core_service/services/multisim/test/systemtest/tests/event_transport_test.cpp
+[4/10] CXX /mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/adapters/legacy/legacy_sim_adapter.cpp
+[5/10] CXX /mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/adapters/legacy/legacy_sim_adapter.cpp
+[6/10] CXX ../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp
+[7/10] LINK platform_adapter_test
+[8/10] LINK sim_guard_pin_memory
+[9/10] LINK sim_guard_legacy
+[10/10] LINK sim_primary_slot_real_test
++ /mnt/e/github/multisim/.host-out/build/sim_guard_legacy --gtest_filter=*-*DEFECT_* --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/compatibility.xml
+Note: Google Test filter = *-*DEFECT_*
+[==========] Running 17 tests from 3 test suites.
+[----------] Global test environment set-up.
+[----------] 4 tests from ContractDriver
+[ RUN      ] ContractDriver.PIN_001
+[       OK ] ContractDriver.PIN_001 (8 ms)
+[ RUN      ] ContractDriver.PIN_002_CommandFailure
+[       OK ] ContractDriver.PIN_002_CommandFailure (0 ms)
+[ RUN      ] ContractDriver.DUAL_001
+[       OK ] ContractDriver.DUAL_001 (1 ms)
+[ RUN      ] ContractDriver.RIL_001_DuplicateAndError
+[       OK ] ContractDriver.RIL_001_DuplicateAndError (1 ms)
+[----------] 4 tests from ContractDriver (16 ms total)
+
+[----------] 10 tests from SessionLifecycle
+[ RUN      ] SessionLifecycle.INIT_001_SingleEnumeration
+[       OK ] SessionLifecycle.INIT_001_SingleEnumeration (1 ms)
+[ RUN      ] SessionLifecycle.INIT_002_MissingRilThenRecreate
+[       OK ] SessionLifecycle.INIT_002_MissingRilThenRecreate (0 ms)
+[ RUN      ] SessionLifecycle.INIT_DUAL_002_ReversedEnumeration
+[       OK ] SessionLifecycle.INIT_DUAL_002_ReversedEnumeration (1 ms)
+[ RUN      ] SessionLifecycle.CALLBACK_002_MalformedThenRecovery
+[       OK ] SessionLifecycle.CALLBACK_002_MalformedThenRecovery (0 ms)
+[ RUN      ] SessionLifecycle.CALLBACK_003_DroppedThenRecovery
+[       OK ] SessionLifecycle.CALLBACK_003_DroppedThenRecovery (0 ms)
+[ RUN      ] SessionLifecycle.PUK_002_WrongThenSuccessfulUnlock
+[       OK ] SessionLifecycle.PUK_002_WrongThenSuccessfulUnlock (1 ms)
+[ RUN      ] SessionLifecycle.REFRESH_001_ExplicitStatusQuery
+[       OK ] SessionLifecycle.REFRESH_001_ExplicitStatusQuery (1 ms)
+[ RUN      ] SessionLifecycle.RECREATE_001_DualCardReenumeration
+[       OK ] SessionLifecycle.RECREATE_001_DualCardReenumeration (1 ms)
+[ RUN      ] SessionLifecycle.RECREATE_002_ReplacementWhileStopped
+[       OK ] SessionLifecycle.RECREATE_002_ReplacementWhileStopped (1 ms)
+[ RUN      ] SessionLifecycle.DUAL_002_PinWhileOtherCardRemoved
+[       OK ] SessionLifecycle.DUAL_002_PinWhileOtherCardRemoved (1 ms)
+[----------] 10 tests from SessionLifecycle (21 ms total)
+
+[----------] 3 tests from Compatibility/Lifecycle
+[ RUN      ] Compatibility/Lifecycle.PublicCardState/LIFE_001
+[       OK ] Compatibility/Lifecycle.PublicCardState/LIFE_001 (1 ms)
+[ RUN      ] Compatibility/Lifecycle.PublicCardState/LIFE_002
+[       OK ] Compatibility/Lifecycle.PublicCardState/LIFE_002 (0 ms)
+[ RUN      ] Compatibility/Lifecycle.PublicCardState/PUK_001
+[       OK ] Compatibility/Lifecycle.PublicCardState/PUK_001 (1 ms)
+[----------] 3 tests from Compatibility/Lifecycle (6 ms total)
+
+[----------] Global test environment tear-down
+[==========] 17 tests from 3 test suites ran. (51 ms total)
+[  PASSED  ] 17 tests.
++ /mnt/e/github/multisim/.host-out/build/sim_guard_legacy --gtest_filter=*DEFECT_* --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/known_defects.xml
+Note: Google Test filter = *DEFECT_*
+[==========] Running 5 tests from 2 test suites.
+[----------] Global test environment set-up.
+[----------] 1 test from ContractDriver
+[ RUN      ] ContractDriver.DEFECT_001_StaleReadyAfterRemoval
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:22: Failure
+Expected equality of these values:
+  actual.present
+    Which is: true
+  state != State::Absent
+    Which is: false
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23: Failure
+Expected equality of these values:
+  actual.state
+    Which is: READY
+  state
+    Which is: ABSENT
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:24: Failure
+Expected equality of these values:
+  actual.kind
+    Which is: 4-byte object <02-00 00-00>
+  kind
+    Which is: 4-byte object <00-00 00-00>
+
+[  FAILED  ] ContractDriver.DEFECT_001_StaleReadyAfterRemoval (15 ms)
+[----------] 1 test from ContractDriver (17 ms total)
+
+[----------] 4 tests from SessionLifecycle
+[ RUN      ] SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23: Failure
+Expected equality of these values:
+  actual.state
+    Which is: READY
+  state
+    Which is: LOCKED
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:24: Failure
+Expected equality of these values:
+  actual.kind
+    Which is: 4-byte object <02-00 00-00>
+  kind
+    Which is: 4-byte object <01-00 00-00>
+
+[  FAILED  ] SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard (3 ms)
+[ RUN      ] SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:157: Failure
+Expected: (actual.error) != (0), actual: 0 vs 0
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:157: Failure
+Expected equality of these values:
+  actual.result
+    Which is: 4-byte object <01-00 00-00>
+  Unlock::Failure
+    Which is: 4-byte object <02-00 00-00>
+
+[  FAILED  ] SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword (3 ms)
+[ RUN      ] SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23: Failure
+Expected equality of these values:
+  actual.state
+    Which is: NOT_READY
+  state
+    Which is: LOCKED
+
+[  FAILED  ] SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard (2 ms)
+[ RUN      ] SessionLifecycle.DEFECT_005_RefreshReturnContractConflict
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:176: Failure
+Expected equality of these values:
+  RefreshToLocked()
+    Which is: 2
+  0
+core_service_client.h RefreshSimState @return contract
+
+[  FAILED  ] SessionLifecycle.DEFECT_005_RefreshReturnContractConflict (1 ms)
+[----------] 4 tests from SessionLifecycle (15 ms total)
+
+[----------] Global test environment tear-down
+[==========] 5 tests from 2 test suites ran. (37 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 5 tests, listed below:
+[  FAILED  ] ContractDriver.DEFECT_001_StaleReadyAfterRemoval
+[  FAILED  ] SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard
+[  FAILED  ] SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword
+[  FAILED  ] SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard
+[  FAILED  ] SessionLifecycle.DEFECT_005_RefreshReturnContractConflict
+
+ 5 FAILED TESTS
++ /mnt/e/github/multisim/.host-out/build/sim_guard_pin_memory --gtest_filter=* --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/pin_memory.xml
+[==========] Running 4 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 4 tests from PinMemoryContract
+[ RUN      ] PinMemoryContract.PinSuccessUsesOriginalSlotIdentityAndCredential
+[       OK ] PinMemoryContract.PinSuccessUsesOriginalSlotIdentityAndCredential (7 ms)
+[ RUN      ] PinMemoryContract.PukSuccessUsesNewPinAndPinAlterOperation
+[       OK ] PinMemoryContract.PukSuccessUsesNewPinAndPinAlterOperation (0 ms)
+[ RUN      ] PinMemoryContract.FailedPinDoesNotPublishMemoryHook
+[       OK ] PinMemoryContract.FailedPinDoesNotPublishMemoryHook (0 ms)
+[ RUN      ] PinMemoryContract.RemovalUsesAbsentResponseIdentityWithoutCredential
+[       OK ] PinMemoryContract.RemovalUsesAbsentResponseIdentityWithoutCredential (1 ms)
+[----------] 4 tests from PinMemoryContract (16 ms total)
+
+[----------] Global test environment tear-down
+[==========] 4 tests from 1 test suite ran. (19 ms total)
+[  PASSED  ] 4 tests.
++ /mnt/e/github/multisim/.host-out/build/platform_adapter_test --gtest_filter=* --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/infrastructure.xml
+[==========] Running 19 tests from 7 test suites.
+[----------] Global test environment set-up.
+[----------] 3 tests from EventAdapter
+[ RUN      ] EventAdapter.SharedTypeSafety
+[       OK ] EventAdapter.SharedTypeSafety (0 ms)
+[ RUN      ] EventAdapter.UniqueOwnership
+[       OK ] EventAdapter.UniqueOwnership (0 ms)
+[ RUN      ] EventAdapter.WeakLifetimeAndMetadata
+[       OK ] EventAdapter.WeakLifetimeAndMetadata (0 ms)
+[----------] 3 tests from EventAdapter (3 ms total)
+
+[----------] 2 tests from ProductionEventTransport
+[ RUN      ] ProductionEventTransport.DeliversFormalEnvelope
+[       OK ] ProductionEventTransport.DeliversFormalEnvelope (0 ms)
+[ RUN      ] ProductionEventTransport.CancelsPendingAndReapsWorker
+[       OK ] ProductionEventTransport.CancelsPendingAndReapsWorker (0 ms)
+[----------] 2 tests from ProductionEventTransport (3 ms total)
+
+[----------] 5 tests from SchedulerBoundary
+[ RUN      ] SchedulerBoundary.RunningTaskCannotBeCancelled
+[       OK ] SchedulerBoundary.RunningTaskCannotBeCancelled (0 ms)
+[ RUN      ] SchedulerBoundary.ProductionGeneralTaskWaitsAndCleansUp
+[       OK ] SchedulerBoundary.ProductionGeneralTaskWaitsAndCleansUp (0 ms)
+[ RUN      ] SchedulerBoundary.IdleWaitDrainsCascadedQueues
+[       OK ] SchedulerBoundary.IdleWaitDrainsCascadedQueues (0 ms)
+[ RUN      ] SchedulerBoundary.IdleWaitDoesNotIgnoreDelayedOrRunningWork
+[       OK ] SchedulerBoundary.IdleWaitDoesNotIgnoreDelayedOrRunningWork (10 ms)
+[ RUN      ] SchedulerBoundary.IdleWaitExposesTaskFailure
+[       OK ] SchedulerBoundary.IdleWaitExposesTaskFailure (1 ms)
+[----------] 5 tests from SchedulerBoundary (19 ms total)
+
+[----------] 3 tests from ExternalData
+[ RUN      ] ExternalData.EmptyCursorIsNotQueryFailure
+[       OK ] ExternalData.EmptyCursorIsNotQueryFailure (1 ms)
+[ RUN      ] ExternalData.ExplicitQueryResponses
+[       OK ] ExternalData.ExplicitQueryResponses (1 ms)
+[ RUN      ] ExternalData.OriginalBucketKeepsFirstPut
+[       OK ] ExternalData.OriginalBucketKeepsFirstPut (0 ms)
+[----------] 3 tests from ExternalData (5 ms total)
+
+[----------] 2 tests from ExternalEvents
+[ RUN      ] ExternalEvents.PublishPreservesEnvelopeAndFailure
+[       OK ] ExternalEvents.PublishPreservesEnvelopeAndFailure (0 ms)
+[ RUN      ] ExternalEvents.MissingProviderAndScopeCleanup
+[       OK ] ExternalEvents.MissingProviderAndScopeCleanup (0 ms)
+[----------] 2 tests from ExternalEvents (1 ms total)
+
+[----------] 3 tests from NativePointerSubset
+[ RUN      ] NativePointerSubset.SharedOwnership
+[       OK ] NativePointerSubset.SharedOwnership (0 ms)
+[ RUN      ] NativePointerSubset.WeakIdentityAndPromotion
+[       OK ] NativePointerSubset.WeakIdentityAndPromotion (0 ms)
+[ RUN      ] NativePointerSubset.LocalCastRequiresImplementedInterface
+[       OK ] NativePointerSubset.LocalCastRequiresImplementedInterface (0 ms)
+[----------] 3 tests from NativePointerSubset (2 ms total)
+
+[----------] 1 test from RilAdapter
+[ RUN      ] RilAdapter.FormalStatusResponse
+[       OK ] RilAdapter.FormalStatusResponse (4 ms)
+[----------] 1 test from RilAdapter (5 ms total)
+
+[----------] Global test environment tear-down
+[==========] 19 tests from 7 test suites ran. (51 ms total)
+[  PASSED  ] 19 tests.
++ /mnt/e/github/multisim/.host-out/build/sim_component_test --gtest_filter=* --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/capacity.xml
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from SimComponent
+[ RUN      ] SimComponent.CapacityReadOnly
+[       OK ] SimComponent.CapacityReadOnly (0 ms)
+[----------] 1 test from SimComponent (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (4 ms total)
+[  PASSED  ] 1 test.
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_entry_test --gtest_filter=* --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_entry_internal_seam.xml
+[==========] Running 14 tests from 2 test suites.
+[----------] Global test environment set-up.
+[----------] 12 tests from PrimaryEntry
+[ RUN      ] PrimaryEntry.NonSystemCallerPrecedesPermissionAndNullManager
+[       OK ] PrimaryEntry.NonSystemCallerPrecedesPermissionAndNullManager (2 ms)
+[ RUN      ] PrimaryEntry.PermissionDenialPrecedesNullManager
+[       OK ] PrimaryEntry.PermissionDenialPrecedesNullManager (0 ms)
+[ RUN      ] PrimaryEntry.NullManagerPrecedesCapabilityRecheck
+[       OK ] PrimaryEntry.NullManagerPrecedesCapabilityRecheck (0 ms)
+[ RUN      ] PrimaryEntry.ChangedExternalSystemAppDecisionRejectsExtendedSlot
+[       OK ] PrimaryEntry.ChangedExternalSystemAppDecisionRejectsExtendedSlot (0 ms)
+[ RUN      ] PrimaryEntry.MissingCardStopsBeforeActiveAndPreference
+[       OK ] PrimaryEntry.MissingCardStopsBeforeActiveAndPreference (0 ms)
+[ RUN      ] PrimaryEntry.InactiveCardStopsBeforePreferenceAndSwitch
+[       OK ] PrimaryEntry.InactiveCardStopsBeforePreferenceAndSwitch (0 ms)
+[ RUN      ] PrimaryEntry.ReadyCardWritesPreferenceBeforeDelegatingExactTarget
+[       OK ] PrimaryEntry.ReadyCardWritesPreferenceBeforeDelegatingExactTarget (0 ms)
+[ RUN      ] PrimaryEntry.ManagerFailureReturnedUnchangedAfterPreferenceWrite
+[       OK ] PrimaryEntry.ManagerFailureReturnedUnchangedAfterPreferenceWrite (0 ms)
+[ RUN      ] PrimaryEntry.FailedPreferenceWriteStillDelegatesCurrentBehavior
+[       OK ] PrimaryEntry.FailedPreferenceWriteStillDelegatesCurrentBehavior (0 ms)
+[ RUN      ] PrimaryEntry.PresenceQueryFailureWithFalseOutputReturnsNoCard
+[       OK ] PrimaryEntry.PresenceQueryFailureWithFalseOutputReturnsNoCard (0 ms)
+[ RUN      ] PrimaryEntry.PresenceQueryFailureWithTrueOutputStillDelegates
+[       OK ] PrimaryEntry.PresenceQueryFailureWithTrueOutputStillDelegates (0 ms)
+[ RUN      ] PrimaryEntry.StableSystemAppPassesExtendedSlotCapability
+[       OK ] PrimaryEntry.StableSystemAppPassesExtendedSlotCapability (0 ms)
+[----------] 12 tests from PrimaryEntry (15 ms total)
+
+[----------] 2 tests from CallerKinds/NativeOrShell
+[ RUN      ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/0
+[       OK ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/0 (0 ms)
+[ RUN      ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/1
+[       OK ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/1 (0 ms)
+[----------] 2 tests from CallerKinds/NativeOrShell (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 14 tests from 2 test suites ran. (21 ms total)
+[  PASSED  ] 14 tests.
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=RealSimPrimary.InitializesRealManagerAndControllerWithoutRil --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-6.xml
+Note: Google Test filter = RealSimPrimary.InitializesRealManagerAndControllerWithoutRil
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RealSimPrimary
+[ RUN      ] RealSimPrimary.InitializesRealManagerAndControllerWithoutRil
+[       OK ] RealSimPrimary.InitializesRealManagerAndControllerWithoutRil (11 ms)
+[----------] 1 test from RealSimPrimary (13 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (17 ms total)
+[  PASSED  ] 1 test.
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=RealSimPrimary.C0CoreToRealManagerAndController --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-7.xml
+Note: Google Test filter = RealSimPrimary.C0CoreToRealManagerAndController
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RealSimPrimary
+[ RUN      ] RealSimPrimary.C0CoreToRealManagerAndController
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey0=-1
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey1=-1
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey2=-1
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE parameter telephony.sim.opkey0=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey1=-1
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey2=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+DIAGNOSTIC ACCOUNT_NOTIFY
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE input request=C0CoreToRealManagerAndController slot=1 userSet=true
+TRACE parameter persist.telephony.userPreferPrimarySlot=true
+TRACE parameter persist.telephony.MainSlotId=1
+TRACE parameter persist.telephony.MainCard.Iccid=AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2
+TRACE notify usual.event.SIM.DEFAULT_MAIN_SUBSCRIPTION_CHANGED slot=1 sim=1 done=0 user=0
+TRACE parameter persist.telephony.MainCellularDataSlotId=1
+TRACE notify usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED slot=-1 sim=1 done=0 user=0
+DIAGNOSTIC SET_DEFAULT_CELLULAR_DATA
+DIAGNOSTIC ACCOUNT_NOTIFY
+LIFE_CHECKPOINT stage=before_cleanup manager=0x59991df5ab80 ril=0x59991df4b5b0
+LIFE_QUEUE stage=before_cleanup address=98514167491600 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=179996
+LIFE_QUEUE stage=before_cleanup address=98514167513584 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167514960 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167516368 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167519760 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167527104 name=OperatorConfigCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167528528 name=SimStateTracker pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167530672 name=SimSmsController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167532192 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167533664 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167535584 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167537440 name=StkController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167539920 name=host-general pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167542448 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=179997
+LIFE_QUEUE stage=before_cleanup address=98514167544256 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167545616 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167547072 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167550464 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167558544 name=OperatorConfigCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167560064 name=SimStateTracker pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167562208 name=SimSmsController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167563728 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167564928 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167566848 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167568704 name=StkController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167573200 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=179997
+LIFE_QUEUE stage=before_cleanup address=98514167575008 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167576368 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167577824 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167581216 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167588768 name=OperatorConfigCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167590368 name=SimStateTracker pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167592512 name=SimSmsController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167595072 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167596496 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167598416 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167600272 name=StkController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167604864 name=MultiSimController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167606656 name=RadioProtocolController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167609632 name=MultiSimMonitor pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=98514167612336 name=sim028-account-observer pending=0 running=0 cancelled=0 next_ms=-1
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321: Failure
+Value of: SimHost::AwaitSchedulerStopped(3s)
+  Actual: false
+Expected: true
+REAL_GRAPH_LIFETIME_NOT_DRAINED
+
+LIFE_QUEUE stage=after_cleanup address=98514167491600 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=176990
+LIFE_QUEUE stage=after_cleanup address=98514167513584 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=98514167514960 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=98514167516368 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=98514167519760 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=98514167532192 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=98514167533664 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=98514167535584 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=98514167542448 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=176991
+LIFE_QUEUE stage=after_cleanup address=98514167544256 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=98514167545616 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=98514167547072 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=98514167550464 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=98514167563728 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=98514167564928 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=98514167566848 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=98514167573200 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=176991
+LIFE_QUEUE stage=after_cleanup address=98514167575008 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=98514167576368 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=98514167577824 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=98514167581216 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=98514167595072 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=98514167596496 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=98514167598416 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=98514167604864 name=MultiSimController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=98514167606656 name=RadioProtocolController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=98514167609632 name=MultiSimMonitor pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=98514167612336 name=sim028-account-observer pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_CHECKPOINT stage=after_cleanup manager=0 ril=0x59991df4b5b0
+[  FAILED  ] RealSimPrimary.C0CoreToRealManagerAndController (3030 ms)
+[----------] 1 test from RealSimPrimary (3031 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3035 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] RealSimPrimary.C0CoreToRealManagerAndController
+
+ 1 FAILED TEST
+
+../../telephony_core_service/services/multisim/test/systemtest/stubs/mock_tel_ril_manager.h:138: ERROR: this mock object (used in test RealSimPrimary.C0CoreToRealManagerAndController) should be deleted but never is. Its address is @0x59991df4b5b0.
+ERROR: 1 leaked mock object found at program exit. Expectations on a mock object are verified when the object is destructed. Leaking a mock means that its expectations aren't verified, which is usually a test bug. If you really intend to leak a mock, you can suppress this error using testing::Mock::AllowLeak(mock_object), or you may use a fake or stub instead of a mock.
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=RealSimPrimary.BDirectRilSuccessCommitsAfterReply --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-8.xml
+Note: Google Test filter = RealSimPrimary.BDirectRilSuccessCommitsAfterReply
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RealSimPrimary
+[ RUN      ] RealSimPrimary.BDirectRilSuccessCommitsAfterReply
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey0=-1
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey1=-1
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey2=-1
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE parameter telephony.sim.opkey0=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey1=-1
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey2=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE input request=BDirectRilSuccessCommitsAfterReply slot=1 userSet=true
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE parameter persist.telephony.userPreferPrimarySlot=true
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=0 user=1
+TRACE parameter persist.telephony.MainSlotId=1
+TRACE parameter persist.telephony.MainCard.Iccid=AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2
+TRACE notify usual.event.SIM.DEFAULT_MAIN_SUBSCRIPTION_CHANGED slot=1 sim=1 done=0 user=0
+TRACE parameter persist.telephony.MainCellularDataSlotId=1
+TRACE notify usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED slot=-1 sim=1 done=0 user=0
+DIAGNOSTIC SET_DEFAULT_CELLULAR_DATA
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=1 user=1
+DIAGNOSTIC ACCOUNT_NOTIFY
+LIFE_CHECKPOINT stage=before_cleanup manager=0x5ad73b55cb80 ril=0x5ad73b54d5b0
+LIFE_QUEUE stage=before_cleanup address=99880459930640 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=179946
+LIFE_QUEUE stage=before_cleanup address=99880459952624 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880459954000 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880459955408 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880459958800 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880459966144 name=OperatorConfigCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880459967568 name=SimStateTracker pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880459969712 name=SimSmsController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880459971232 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880459972704 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880459974624 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880459976480 name=StkController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880459978960 name=host-general pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880459981488 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=179947
+LIFE_QUEUE stage=before_cleanup address=99880459983296 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880459984656 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880459986112 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880459989504 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880459997584 name=OperatorConfigCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880459999104 name=SimStateTracker pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880460001248 name=SimSmsController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880460002768 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880460003968 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880460005888 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880460007744 name=StkController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880460012240 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=179948
+LIFE_QUEUE stage=before_cleanup address=99880460014048 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880460015408 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880460016864 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880460020256 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880460027808 name=OperatorConfigCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880460029408 name=SimStateTracker pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880460031552 name=SimSmsController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880460034112 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880460035536 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880460037456 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880460039312 name=StkController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880460043904 name=MultiSimController pending=1 running=0 cancelled=0 next_ms=44949
+LIFE_QUEUE stage=before_cleanup address=99880460045696 name=RadioProtocolController pending=1 running=0 cancelled=0 next_ms=9948
+LIFE_QUEUE stage=before_cleanup address=99880460048672 name=MultiSimMonitor pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99880460051376 name=sim028-account-observer pending=0 running=0 cancelled=0 next_ms=-1
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321: Failure
+Value of: SimHost::AwaitSchedulerStopped(3s)
+  Actual: false
+Expected: true
+REAL_GRAPH_LIFETIME_NOT_DRAINED
+
+LIFE_QUEUE stage=after_cleanup address=99880459930640 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=176940
+LIFE_QUEUE stage=after_cleanup address=99880459952624 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99880459954000 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99880459955408 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99880459958800 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99880459971232 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99880459972704 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99880459974624 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99880459981488 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=176941
+LIFE_QUEUE stage=after_cleanup address=99880459983296 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99880459984656 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99880459986112 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99880459989504 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99880460002768 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99880460003968 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99880460005888 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99880460012240 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=176941
+LIFE_QUEUE stage=after_cleanup address=99880460014048 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99880460015408 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99880460016864 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99880460020256 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99880460034112 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99880460035536 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99880460037456 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99880460043904 name=MultiSimController pending=1 running=0 cancelled=0 next_ms=41943
+LIFE_QUEUE stage=after_cleanup address=99880460045696 name=RadioProtocolController pending=1 running=0 cancelled=0 next_ms=6942
+LIFE_QUEUE stage=after_cleanup address=99880460048672 name=MultiSimMonitor pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99880460051376 name=sim028-account-observer pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_CHECKPOINT stage=after_cleanup manager=0 ril=0x5ad73b54d5b0
+[  FAILED  ] RealSimPrimary.BDirectRilSuccessCommitsAfterReply (3076 ms)
+[----------] 1 test from RealSimPrimary (3078 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3081 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] RealSimPrimary.BDirectRilSuccessCommitsAfterReply
+
+ 1 FAILED TEST
+
+../../telephony_core_service/services/multisim/test/systemtest/stubs/mock_tel_ril_manager.h:138: ERROR: this mock object (used in test RealSimPrimary.BDirectRilSuccessCommitsAfterReply) should be deleted but never is. Its address is @0x5ad73b54d5b0.
+ERROR: 1 leaked mock object found at program exit. Expectations on a mock object are verified when the object is destructed. Leaking a mock means that its expectations aren't verified, which is usually a test bug. If you really intend to leak a mock, you can suppress this error using testing::Mock::AllowLeak(mock_object), or you may use a fake or stub instead of a mock.
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-9.xml
+Note: Google Test filter = RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RealSimPrimary
+[ RUN      ] RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey0=-1
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey1=-1
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey2=-1
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE parameter telephony.sim.opkey0=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey1=-1
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey2=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE input request=BDirectRilFailureKeepsPreviousPrimary slot=1 userSet=true
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE parameter persist.telephony.userPreferPrimarySlot=true
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=0 user=1
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=1 user=1
+LIFE_CHECKPOINT stage=before_cleanup manager=0x5cca49329b80 ril=0x5cca4931a5b0
+LIFE_QUEUE stage=before_cleanup address=102023881186320 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=179996
+LIFE_QUEUE stage=before_cleanup address=102023881208304 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881209680 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881211088 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881214480 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881221824 name=OperatorConfigCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881223248 name=SimStateTracker pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881225392 name=SimSmsController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881226912 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881228384 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881230304 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881232160 name=StkController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881234640 name=host-general pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881237168 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=179998
+LIFE_QUEUE stage=before_cleanup address=102023881238976 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881240336 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881241792 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881245184 name=SimFile pending=0 running=1 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881253264 name=OperatorConfigCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881254784 name=SimStateTracker pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881256928 name=SimSmsController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881258448 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881259648 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881261568 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881263424 name=StkController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881267920 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=179998
+LIFE_QUEUE stage=before_cleanup address=102023881269728 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881271088 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881272544 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881275936 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881283488 name=OperatorConfigCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881285088 name=SimStateTracker pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881287232 name=SimSmsController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881289792 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881291216 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881293136 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881294992 name=StkController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881299584 name=MultiSimController pending=1 running=0 cancelled=0 next_ms=44999
+LIFE_QUEUE stage=before_cleanup address=102023881301376 name=RadioProtocolController pending=1 running=0 cancelled=0 next_ms=9998
+LIFE_QUEUE stage=before_cleanup address=102023881304352 name=MultiSimMonitor pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=102023881307056 name=sim028-account-observer pending=0 running=0 cancelled=0 next_ms=-1
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321: Failure
+Value of: SimHost::AwaitSchedulerStopped(3s)
+  Actual: false
+Expected: true
+REAL_GRAPH_LIFETIME_NOT_DRAINED
+
+LIFE_QUEUE stage=after_cleanup address=102023881186320 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=176992
+LIFE_QUEUE stage=after_cleanup address=102023881208304 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=102023881209680 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=102023881211088 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=102023881214480 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=102023881226912 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=102023881228384 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=102023881230304 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=102023881237168 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=176993
+LIFE_QUEUE stage=after_cleanup address=102023881238976 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=102023881240336 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=102023881241792 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=102023881245184 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=102023881258448 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=102023881259648 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=102023881261568 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=102023881267920 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=176994
+LIFE_QUEUE stage=after_cleanup address=102023881269728 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=102023881271088 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=102023881272544 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=102023881275936 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=102023881289792 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=102023881291216 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=102023881293136 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=102023881299584 name=MultiSimController pending=1 running=0 cancelled=0 next_ms=41995
+LIFE_QUEUE stage=after_cleanup address=102023881301376 name=RadioProtocolController pending=1 running=0 cancelled=0 next_ms=6994
+LIFE_QUEUE stage=after_cleanup address=102023881304352 name=MultiSimMonitor pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=102023881307056 name=sim028-account-observer pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_CHECKPOINT stage=after_cleanup manager=0 ril=0x5cca4931a5b0
+[  FAILED  ] RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary (3027 ms)
+[----------] 1 test from RealSimPrimary (3029 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3033 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary
+
+ 1 FAILED TEST
+
+../../telephony_core_service/services/multisim/test/systemtest/stubs/mock_tel_ril_manager.h:138: ERROR: this mock object (used in test RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary) should be deleted but never is. Its address is @0x5cca4931a5b0.
+ERROR: 1 leaked mock object found at program exit. Expectations on a mock object are verified when the object is destructed. Leaking a mock means that its expectations aren't verified, which is usually a test bug. If you really intend to leak a mock, you can suppress this error using testing::Mock::AllowLeak(mock_object), or you may use a fake or stub instead of a mock.
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-10.xml
+Note: Google Test filter = RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RealSimPrimary
+[ RUN      ] RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey0=-1
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey1=-1
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey2=-1
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE parameter telephony.sim.opkey0=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey1=-1
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey2=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE input request=C1ThreePhasesWithStaleCheckResponseRejected slot=1 userSet=true
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE parameter persist.telephony.userPreferPrimarySlot=true
+TRACE parameter persist.telephony.MainSlotId=1
+TRACE parameter persist.telephony.MainCard.Iccid=AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=0 user=0
+TRACE radio slot=0 session=1 phase=1 modem=0
+TRACE radio slot=1 session=1 phase=1 modem=1
+TRACE radio slot=0 session=1 phase=2 modem=1
+TRACE radio slot=1 session=1 phase=2 modem=0
+TRACE radio slot=0 session=1 phase=4 modem=1
+TRACE radio slot=1 session=1 phase=4 modem=0
+TRACE notify usual.event.SIM.DEFAULT_MAIN_SUBSCRIPTION_CHANGED slot=1 sim=1 done=0 user=0
+TRACE parameter persist.telephony.MainCellularDataSlotId=1
+TRACE notify usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED slot=-1 sim=1 done=0 user=0
+DIAGNOSTIC SET_DEFAULT_CELLULAR_DATA
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=1 user=0
+DIAGNOSTIC ACCOUNT_NOTIFY
+LIFE_CHECKPOINT stage=before_cleanup manager=0x5bf831d87c10 ril=0x5bf831d78600
+LIFE_QUEUE stage=before_cleanup address=101121546271856 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=179943
+LIFE_QUEUE stage=before_cleanup address=101121546293888 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546295264 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546296672 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546300064 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546307408 name=OperatorConfigCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546308832 name=SimStateTracker pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546310976 name=SimSmsController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546312496 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546313968 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546315888 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546317744 name=StkController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546320224 name=host-general pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546322752 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=179944
+LIFE_QUEUE stage=before_cleanup address=101121546324560 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546325920 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546327376 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546330768 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546338848 name=OperatorConfigCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546340368 name=SimStateTracker pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546342512 name=SimSmsController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546344032 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546345232 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546347152 name=UsimDiallingNumbersService pending=0 running=1 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546349008 name=StkController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546353504 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=179944
+LIFE_QUEUE stage=before_cleanup address=101121546355312 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546356672 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546358128 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546361520 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546369072 name=OperatorConfigCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546370672 name=SimStateTracker pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546372816 name=SimSmsController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546375376 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546376800 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546378720 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546380576 name=StkController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546385168 name=MultiSimController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546386960 name=RadioProtocolController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546389936 name=MultiSimMonitor pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=101121546392640 name=sim028-account-observer pending=0 running=0 cancelled=0 next_ms=-1
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321: Failure
+Value of: SimHost::AwaitSchedulerStopped(3s)
+  Actual: false
+Expected: true
+REAL_GRAPH_LIFETIME_NOT_DRAINED
+
+LIFE_QUEUE stage=after_cleanup address=101121546271856 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=176939
+LIFE_QUEUE stage=after_cleanup address=101121546293888 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=101121546295264 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=101121546296672 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=101121546300064 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=101121546312496 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=101121546313968 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=101121546315888 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=101121546322752 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=176940
+LIFE_QUEUE stage=after_cleanup address=101121546324560 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=101121546325920 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=101121546327376 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=101121546330768 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=101121546344032 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=101121546345232 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=101121546347152 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=101121546353504 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=176940
+LIFE_QUEUE stage=after_cleanup address=101121546355312 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=101121546356672 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=101121546358128 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=101121546361520 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=101121546375376 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=101121546376800 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=101121546378720 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=101121546385168 name=MultiSimController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=101121546386960 name=RadioProtocolController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=101121546389936 name=MultiSimMonitor pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=101121546392640 name=sim028-account-observer pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_CHECKPOINT stage=after_cleanup manager=0 ril=0x5bf831d78600
+[  FAILED  ] RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected (3082 ms)
+[----------] 1 test from RealSimPrimary (3083 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3090 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected
+
+ 1 FAILED TEST
+
+../../telephony_core_service/services/multisim/test/systemtest/stubs/mock_tel_ril_manager.h:138: ERROR: this mock object (used in test RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected) should be deleted but never is. Its address is @0x5bf831d78600.
+ERROR: 1 leaked mock object found at program exit. Expectations on a mock object are verified when the object is destructed. Leaking a mock means that its expectations aren't verified, which is usually a test bug. If you really intend to leak a mock, you can suppress this error using testing::Mock::AllowLeak(mock_object), or you may use a fake or stub instead of a mock.
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=RealSimPrimary.BRealTimeoutKeepsPreviousPrimary --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-11.xml
+Note: Google Test filter = RealSimPrimary.BRealTimeoutKeepsPreviousPrimary
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RealSimPrimary
+[ RUN      ] RealSimPrimary.BRealTimeoutKeepsPreviousPrimary
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey0=-1
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey1=-1
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey2=-1
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE parameter telephony.sim.opkey0=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey1=-1
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey2=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE input request=BRealTimeoutKeepsPreviousPrimary slot=1 userSet=true
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE parameter persist.telephony.userPreferPrimarySlot=true
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=0 user=1
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=1 user=1
+LIFE_CHECKPOINT stage=before_cleanup manager=0x5a2a1d740b80 ril=0x5a2a1d7315b0
+LIFE_QUEUE stage=before_cleanup address=99136929254416 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=134997
+LIFE_QUEUE stage=before_cleanup address=99136929276400 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929277776 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929279184 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929282576 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929289920 name=OperatorConfigCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929291344 name=SimStateTracker pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929293488 name=SimSmsController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929295008 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929296480 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929298400 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929300256 name=StkController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929302736 name=host-general pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929305264 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=134998
+LIFE_QUEUE stage=before_cleanup address=99136929307072 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929308432 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929309888 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929313280 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929321360 name=OperatorConfigCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929322880 name=SimStateTracker pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929325024 name=SimSmsController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929326544 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929327744 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929329664 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929331520 name=StkController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929336016 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=134998
+LIFE_QUEUE stage=before_cleanup address=99136929337824 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929339184 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929340640 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929344032 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929351584 name=OperatorConfigCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929353184 name=SimStateTracker pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929355328 name=SimSmsController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929357888 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929359312 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929361232 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929363088 name=StkController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929367680 name=MultiSimController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929369472 name=RadioProtocolController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929372448 name=MultiSimMonitor pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=99136929375152 name=sim028-account-observer pending=0 running=0 cancelled=0 next_ms=-1
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321: Failure
+Value of: SimHost::AwaitSchedulerStopped(3s)
+  Actual: false
+Expected: true
+REAL_GRAPH_LIFETIME_NOT_DRAINED
+
+LIFE_QUEUE stage=after_cleanup address=99136929254416 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=131992
+LIFE_QUEUE stage=after_cleanup address=99136929276400 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99136929277776 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99136929279184 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99136929282576 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99136929295008 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99136929296480 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99136929298400 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99136929305264 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=131993
+LIFE_QUEUE stage=after_cleanup address=99136929307072 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99136929308432 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99136929309888 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99136929313280 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99136929326544 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99136929327744 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99136929329664 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99136929336016 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=131993
+LIFE_QUEUE stage=after_cleanup address=99136929337824 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99136929339184 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99136929340640 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99136929344032 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99136929357888 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99136929359312 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99136929361232 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99136929367680 name=MultiSimController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99136929369472 name=RadioProtocolController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99136929372448 name=MultiSimMonitor pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=99136929375152 name=sim028-account-observer pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_CHECKPOINT stage=after_cleanup manager=0 ril=0x5a2a1d7315b0
+[  FAILED  ] RealSimPrimary.BRealTimeoutKeepsPreviousPrimary (48025 ms)
+[----------] 1 test from RealSimPrimary (48026 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (48031 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] RealSimPrimary.BRealTimeoutKeepsPreviousPrimary
+
+ 1 FAILED TEST
+
+../../telephony_core_service/services/multisim/test/systemtest/stubs/mock_tel_ril_manager.h:138: ERROR: this mock object (used in test RealSimPrimary.BRealTimeoutKeepsPreviousPrimary) should be deleted but never is. Its address is @0x5a2a1d7315b0.
+ERROR: 1 leaked mock object found at program exit. Expectations on a mock object are verified when the object is destructed. Leaking a mock means that its expectations aren't verified, which is usually a test bug. If you really intend to leak a mock, you can suppress this error using testing::Mock::AllowLeak(mock_object), or you may use a fake or stub instead of a mock.
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-12.xml
+Note: Google Test filter = RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RealSimPrimary
+[ RUN      ] RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey0=-1
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey1=-1
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey2=-1
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE parameter telephony.sim.opkey0=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey1=-1
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey2=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE input request=C1CheckFailureRestoresParametersAndExhaustsFiveRetries slot=1 userSet=true
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE parameter persist.telephony.userPreferPrimarySlot=true
+TRACE parameter persist.telephony.MainSlotId=1
+TRACE parameter persist.telephony.MainCard.Iccid=AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=0 user=0
+TRACE radio slot=0 session=1 phase=1 modem=0
+TRACE radio slot=1 session=1 phase=1 modem=1
+TRACE radio slot=0 session=1 phase=4 modem=0
+TRACE radio slot=1 session=1 phase=4 modem=1
+TRACE parameter persist.telephony.MainSlotId=0
+TRACE parameter persist.telephony.MainCard.Iccid=previous-parameter-value
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=1 user=0
+TRACE parameter persist.telephony.MainSlotId=1
+TRACE parameter persist.telephony.MainCard.Iccid=AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=0 user=0
+TRACE radio slot=0 session=2 phase=1 modem=0
+TRACE radio slot=1 session=2 phase=1 modem=1
+TRACE radio slot=0 session=2 phase=4 modem=0
+TRACE radio slot=1 session=2 phase=4 modem=1
+TRACE parameter persist.telephony.MainSlotId=0
+TRACE parameter persist.telephony.MainCard.Iccid=previous-parameter-value
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=1 user=0
+TRACE parameter persist.telephony.MainSlotId=1
+TRACE parameter persist.telephony.MainCard.Iccid=AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=0 user=0
+TRACE radio slot=0 session=3 phase=1 modem=0
+TRACE radio slot=1 session=3 phase=1 modem=1
+TRACE radio slot=0 session=3 phase=4 modem=0
+TRACE radio slot=1 session=3 phase=4 modem=1
+TRACE parameter persist.telephony.MainSlotId=0
+TRACE parameter persist.telephony.MainCard.Iccid=previous-parameter-value
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=1 user=0
+TRACE parameter persist.telephony.MainSlotId=1
+TRACE parameter persist.telephony.MainCard.Iccid=AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=0 user=0
+TRACE radio slot=0 session=4 phase=1 modem=0
+TRACE radio slot=1 session=4 phase=1 modem=1
+TRACE radio slot=0 session=4 phase=4 modem=0
+TRACE radio slot=1 session=4 phase=4 modem=1
+TRACE parameter persist.telephony.MainSlotId=0
+TRACE parameter persist.telephony.MainCard.Iccid=previous-parameter-value
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=1 user=0
+TRACE parameter persist.telephony.MainSlotId=1
+TRACE parameter persist.telephony.MainCard.Iccid=AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=0 user=0
+TRACE radio slot=0 session=5 phase=1 modem=0
+TRACE radio slot=1 session=5 phase=1 modem=1
+TRACE radio slot=0 session=5 phase=4 modem=0
+TRACE radio slot=1 session=5 phase=4 modem=1
+TRACE parameter persist.telephony.MainSlotId=0
+TRACE parameter persist.telephony.MainCard.Iccid=previous-parameter-value
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=1 user=0
+TRACE parameter persist.telephony.MainSlotId=1
+TRACE parameter persist.telephony.MainCard.Iccid=AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=0 user=0
+TRACE radio slot=0 session=6 phase=1 modem=0
+TRACE radio slot=1 session=6 phase=1 modem=1
+TRACE radio slot=0 session=6 phase=4 modem=0
+TRACE radio slot=1 session=6 phase=4 modem=1
+TRACE parameter persist.telephony.MainSlotId=0
+TRACE parameter persist.telephony.MainCard.Iccid=previous-parameter-value
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=1 user=0
+LIFE_CHECKPOINT stage=before_cleanup manager=0x5f1f2e566c30 ril=0x5f1f2e557620
+LIFE_QUEUE stage=before_cleanup address=104587526024336 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=174979
+LIFE_QUEUE stage=before_cleanup address=104587526046368 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526047744 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526049152 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526052544 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526059888 name=OperatorConfigCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526061312 name=SimStateTracker pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526063456 name=SimSmsController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526064976 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526066448 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526068368 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526070224 name=StkController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526072704 name=host-general pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526075232 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=174981
+LIFE_QUEUE stage=before_cleanup address=104587526077040 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526078400 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526079856 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526083248 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526091328 name=OperatorConfigCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526092848 name=SimStateTracker pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526094992 name=SimSmsController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526096512 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526097712 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526099632 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526101488 name=StkController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526105984 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=174981
+LIFE_QUEUE stage=before_cleanup address=104587526107792 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526109152 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526110608 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526114000 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526121552 name=OperatorConfigCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526123152 name=SimStateTracker pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526125296 name=SimSmsController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526127856 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526129280 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526131200 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526133056 name=StkController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526137648 name=MultiSimController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526139440 name=RadioProtocolController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526142416 name=MultiSimMonitor pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=104587526145120 name=sim028-account-observer pending=0 running=0 cancelled=0 next_ms=-1
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321: Failure
+Value of: SimHost::AwaitSchedulerStopped(3s)
+  Actual: false
+Expected: true
+REAL_GRAPH_LIFETIME_NOT_DRAINED
+
+LIFE_QUEUE stage=after_cleanup address=104587526024336 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=171975
+LIFE_QUEUE stage=after_cleanup address=104587526046368 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=104587526047744 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=104587526049152 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=104587526052544 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=104587526064976 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=104587526066448 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=104587526068368 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=104587526075232 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=171976
+LIFE_QUEUE stage=after_cleanup address=104587526077040 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=104587526078400 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=104587526079856 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=104587526083248 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=104587526096512 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=104587526097712 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=104587526099632 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=104587526105984 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=171977
+LIFE_QUEUE stage=after_cleanup address=104587526107792 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=104587526109152 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=104587526110608 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=104587526114000 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=104587526127856 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=104587526129280 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=104587526131200 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=104587526137648 name=MultiSimController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=104587526139440 name=RadioProtocolController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=104587526142416 name=MultiSimMonitor pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=104587526145120 name=sim028-account-observer pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_CHECKPOINT stage=after_cleanup manager=0 ril=0x5f1f2e557620
+[  FAILED  ] RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries (8043 ms)
+[----------] 1 test from RealSimPrimary (8045 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (8049 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries
+
+ 1 FAILED TEST
+
+../../telephony_core_service/services/multisim/test/systemtest/stubs/mock_tel_ril_manager.h:138: ERROR: this mock object (used in test RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries) should be deleted but never is. Its address is @0x5f1f2e557620.
+ERROR: 1 leaked mock object found at program exit. Expectations on a mock object are verified when the object is destructed. Leaking a mock means that its expectations aren't verified, which is usually a test bug. If you really intend to leak a mock, you can suppress this error using testing::Mock::AllowLeak(mock_object), or you may use a fake or stub instead of a mock.
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=RunnerLifetime.NormalCompletionAndRepeatedStop --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-13.xml
+Note: Google Test filter = RunnerLifetime.NormalCompletionAndRepeatedStop
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RunnerLifetime
+[ RUN      ] RunnerLifetime.NormalCompletionAndRepeatedStop
+[       OK ] RunnerLifetime.NormalCompletionAndRepeatedStop (1 ms)
+[----------] 1 test from RunnerLifetime (3 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (7 ms total)
+[  PASSED  ] 1 test.
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=RunnerLifetime.PendingTaskCancelledAndCapturedOwnerReleased --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-14.xml
+Note: Google Test filter = RunnerLifetime.PendingTaskCancelledAndCapturedOwnerReleased
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RunnerLifetime
+[ RUN      ] RunnerLifetime.PendingTaskCancelledAndCapturedOwnerReleased
+[       OK ] RunnerLifetime.PendingTaskCancelledAndCapturedOwnerReleased (1 ms)
+[----------] 1 test from RunnerLifetime (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (7 ms total)
+[  PASSED  ] 1 test.
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=RunnerLifetime.InFlightStopJoinsAndRejectsCallbackRepost --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-15.xml
+Note: Google Test filter = RunnerLifetime.InFlightStopJoinsAndRejectsCallbackRepost
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RunnerLifetime
+[ RUN      ] RunnerLifetime.InFlightStopJoinsAndRejectsCallbackRepost
+[       OK ] RunnerLifetime.InFlightStopJoinsAndRejectsCallbackRepost (2 ms)
+[----------] 1 test from RunnerLifetime (3 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (7 ms total)
+[  PASSED  ] 1 test.
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=RunnerLifetime.ConcurrentStopIsIdempotent --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-16.xml
+Note: Google Test filter = RunnerLifetime.ConcurrentStopIsIdempotent
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RunnerLifetime
+[ RUN      ] RunnerLifetime.ConcurrentStopIsIdempotent
+[       OK ] RunnerLifetime.ConcurrentStopIsIdempotent (1 ms)
+[----------] 1 test from RunnerLifetime (3 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (7 ms total)
+[  PASSED  ] 1 test.
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=RunnerLifetime.CallbackCannotSynchronouslyJoinItself --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-17.xml
+Note: Google Test filter = RunnerLifetime.CallbackCannotSynchronouslyJoinItself
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RunnerLifetime
+[ RUN      ] RunnerLifetime.CallbackCannotSynchronouslyJoinItself
+[       OK ] RunnerLifetime.CallbackCannotSynchronouslyJoinItself (1 ms)
+[----------] 1 test from RunnerLifetime (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (6 ms total)
+[  PASSED  ] 1 test.
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=RealCardLifetime.MissingRilInitializationReleasesState --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-18.xml
+Note: Google Test filter = RealCardLifetime.MissingRilInitializationReleasesState
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RealCardLifetime
+[ RUN      ] RealCardLifetime.MissingRilInitializationReleasesState
+[       OK ] RealCardLifetime.MissingRilInitializationReleasesState (0 ms)
+[----------] 1 test from RealCardLifetime (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (5 ms total)
+[  PASSED  ] 1 test.
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=RealCardLifetime.InitializedStateUnregistersRilAndReleases --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-19.xml
+Note: Google Test filter = RealCardLifetime.InitializedStateUnregistersRilAndReleases
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RealCardLifetime
+[ RUN      ] RealCardLifetime.InitializedStateUnregistersRilAndReleases
+DIAGNOSTIC SIM_STATE_CHANGE
+LIFE_CHECKPOINT stage=before_cleanup manager=0 ril=0x5a9cc4f58630
+LIFE_CHECKPOINT stage=after_cleanup manager=0 ril=0x5a9cc4f58630
+[       OK ] RealCardLifetime.InitializedStateUnregistersRilAndReleases (13 ms)
+[----------] 1 test from RealCardLifetime (15 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (19 ms total)
+[  PASSED  ] 1 test.
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=RealCardLifetime.PublicDetachReleasesRealStateFileAndRil --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-20.xml
+Note: Google Test filter = RealCardLifetime.PublicDetachReleasesRealStateFileAndRil
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RealCardLifetime
+[ RUN      ] RealCardLifetime.PublicDetachReleasesRealStateFileAndRil
+DIAGNOSTIC SIM_STATE_CHANGE
+CARD_LIFE before_detach state=0x60304a325cb0 refs=2 files=0x60304a326550 refs=4 records=0x60304a3277a0 refs=7
+CARD_LIFE after_public_detach state_refs=2 files_refs=2 records_refs=4
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:126: Failure
+Value of: state.expired()
+  Actual: false
+Expected: true
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:126: Failure
+Value of: files.expired()
+  Actual: false
+Expected: true
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:127: Failure
+Value of: records.expired()
+  Actual: false
+Expected: true
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:127: Failure
+Value of: controller.expired()
+  Actual: false
+Expected: true
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:128: Failure
+Value of: SimHost::AwaitSchedulerStopped(3s)
+  Actual: false
+Expected: true
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:129: Failure
+Expected equality of these values:
+  environment.ril.use_count()
+    Which is: 4
+  1
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:132: Failure
+Value of: environment.notifications.empty()
+  Actual: false
+Expected: true
+
+LIFE_CHECKPOINT stage=before_cleanup manager=0 ril=0x60304a316620
+LIFE_QUEUE stage=before_cleanup address=105760519494832 name=SimStateHandle pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=105760519514272 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=105760519515648 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=105760519517056 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=105760519520448 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321: Failure
+Value of: SimHost::AwaitSchedulerStopped(3s)
+  Actual: false
+Expected: true
+REAL_GRAPH_LIFETIME_NOT_DRAINED
+
+LIFE_QUEUE stage=after_cleanup address=105760519494832 name=SimStateHandle pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=105760519514272 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=105760519515648 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=105760519517056 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=105760519520448 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_CHECKPOINT stage=after_cleanup manager=0 ril=0x60304a316620
+[  FAILED  ] RealCardLifetime.PublicDetachReleasesRealStateFileAndRil (6021 ms)
+[----------] 1 test from RealCardLifetime (6022 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (6027 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] RealCardLifetime.PublicDetachReleasesRealStateFileAndRil
+
+ 1 FAILED TEST
+
+../../telephony_core_service/services/multisim/test/systemtest/stubs/mock_tel_ril_manager.h:138: ERROR: this mock object (used in test RealCardLifetime.PublicDetachReleasesRealStateFileAndRil) should be deleted but never is. Its address is @0x60304a316620.
+ERROR: 1 leaked mock object found at program exit. Expectations on a mock object are verified when the object is destructed. Leaking a mock means that its expectations aren't verified, which is usually a test bug. If you really intend to leak a mock, you can suppress this error using testing::Mock::AllowLeak(mock_object), or you may use a fake or stub instead of a mock.
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=PairingReview.AllThreeSlotsPublicDetach --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-21.xml
+Note: Google Test filter = PairingReview.AllThreeSlotsPublicDetach
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from PairingReview
+[ RUN      ] PairingReview.AllThreeSlotsPublicDetach
+DIAGNOSTIC SIM_STATE_CHANGE
+DIAGNOSTIC SIM_STATE_CHANGE
+DIAGNOSTIC SIM_STATE_CHANGE
+CARD_LIFE before_detach state=0x563b99f58b40 refs=2 files=0x563b99f593e0 refs=4 records=0x563b99f5a680 refs=7
+CARD_LIFE after_public_detach state_refs=2 files_refs=2 records_refs=4
+CARD_LIFE before_detach state=0x563b99f5c780 refs=2 files=0x563b99f5d230 refs=4 records=0x563b99f5e5e0 refs=7
+CARD_LIFE after_public_detach state_refs=2 files_refs=2 records_refs=4
+CARD_LIFE before_detach state=0x563b99f60740 refs=2 files=0x563b99f612e0 refs=4 records=0x563b99f62580 refs=7
+CARD_LIFE after_public_detach state_refs=2 files_refs=2 records_refs=4
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:20: Failure
+Value of: s.expired()
+  Actual: false
+Expected: true
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:20: Failure
+Value of: s.expired()
+  Actual: false
+Expected: true
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:20: Failure
+Value of: s.expired()
+  Actual: false
+Expected: true
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimFileManager pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS UsimFileController pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimFile pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimFileManager pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS UsimFileController pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimFile pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimFileManager pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS UsimFileController pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimFile pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:22: Failure
+Expected equality of these values:
+  environment.ril.use_count()
+    Which is: 10
+  1
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:24: Failure
+Value of: environment.notifications.empty()
+  Actual: false
+Expected: true
+
+LIFE_CHECKPOINT stage=before_cleanup manager=0 ril=0x563b99f49570
+LIFE_QUEUE stage=before_cleanup address=94813986048976 name=SimStateHandle pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94813986068272 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94813986069648 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94813986071136 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94813986074528 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94813986082192 name=SimStateHandle pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94813986084272 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94813986085632 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94813986087088 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94813986090752 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94813986098560 name=SimStateHandle pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94813986100832 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94813986102192 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94813986103648 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=94813986107040 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321: Failure
+Value of: SimHost::AwaitSchedulerStopped(3s)
+  Actual: false
+Expected: true
+REAL_GRAPH_LIFETIME_NOT_DRAINED
+
+LIFE_QUEUE stage=after_cleanup address=94813986048976 name=SimStateHandle pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94813986068272 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94813986069648 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94813986071136 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94813986074528 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94813986082192 name=SimStateHandle pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94813986084272 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94813986085632 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94813986087088 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94813986090752 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94813986098560 name=SimStateHandle pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94813986100832 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94813986102192 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94813986103648 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=94813986107040 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_CHECKPOINT stage=after_cleanup manager=0 ril=0x563b99f49570
+[  FAILED  ] PairingReview.AllThreeSlotsPublicDetach (3024 ms)
+[----------] 1 test from PairingReview (3025 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3029 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] PairingReview.AllThreeSlotsPublicDetach
+
+ 1 FAILED TEST
+
+../../telephony_core_service/services/multisim/test/systemtest/stubs/mock_tel_ril_manager.h:138: ERROR: this mock object (used in test PairingReview.AllThreeSlotsPublicDetach) should be deleted but never is. Its address is @0x563b99f49570.
+ERROR: 1 leaked mock object found at program exit. Expectations on a mock object are verified when the object is destructed. Leaking a mock means that its expectations aren't verified, which is usually a test bug. If you really intend to leak a mock, you can suppress this error using testing::Mock::AllowLeak(mock_object), or you may use a fake or stub instead of a mock.
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=PairingReview.PartialInitializationAndRepeatedUnregister --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-22.xml
+Note: Google Test filter = PairingReview.PartialInitializationAndRepeatedUnregister
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from PairingReview
+[ RUN      ] PairingReview.PartialInitializationAndRepeatedUnregister
+DIAGNOSTIC SIM_STATE_CHANGE
+LIFE_CHECKPOINT stage=before_cleanup manager=0 ril=0x5cb4f8d2f600
+LIFE_CHECKPOINT stage=after_cleanup manager=0 ril=0x5cb4f8d2f600
+[       OK ] PairingReview.PartialInitializationAndRepeatedUnregister (11 ms)
+[----------] 1 test from PairingReview (12 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (16 ms total)
+[  PASSED  ] 1 test.
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=PairingReview.DestroyThenReinitializeCardGraph --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-23.xml
+Note: Google Test filter = PairingReview.DestroyThenReinitializeCardGraph
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from PairingReview
+[ RUN      ] PairingReview.DestroyThenReinitializeCardGraph
+DIAGNOSTIC SIM_STATE_CHANGE
+CARD_LIFE before_detach state=0x62bd7c5d9b80 refs=2 files=0x62bd7c5da420 refs=4 records=0x62bd7c5db670 refs=7
+CARD_LIFE after_public_detach state_refs=2 files_refs=2 records_refs=4
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:51: Failure
+Value of: state.expired()
+  Actual: false
+Expected: true
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:51: Failure
+Value of: records.expired()
+  Actual: false
+Expected: true
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimFileManager pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS UsimFileController pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimFile pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:52: Failure
+Expected equality of these values:
+  environment.ril.use_count()
+    Which is: 4
+  1
+
+DIAGNOSTIC SIM_STATE_CHANGE
+CARD_LIFE before_detach state=0x62bd7c5e09b0 refs=2 files=0x62bd7c5dee40 refs=4 records=0x62bd7c5e1eb0 refs=7
+CARD_LIFE after_public_detach state_refs=2 files_refs=2 records_refs=4
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:51: Failure
+Value of: state.expired()
+  Actual: false
+Expected: true
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:51: Failure
+Value of: records.expired()
+  Actual: false
+Expected: true
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimFileManager pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS UsimFileController pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimFile pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimFileManager pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS UsimFileController pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:21: Failure
+Value of: addresses.count(q.address)
+  Actual: false
+Expected: true
+OWNED_QUEUE_REMAINS SimFile pending=0 running=0
+
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:52: Failure
+Expected equality of these values:
+  environment.ril.use_count()
+    Which is: 7
+  1
+
+LIFE_CHECKPOINT stage=before_cleanup manager=0 ril=0x62bd7c5ca5b0
+LIFE_QUEUE stage=before_cleanup address=108565974834192 name=SimStateHandle pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=108565974853488 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=108565974854864 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=108565974856272 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=108565974859664 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=108565974869856 name=SimStateHandle pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=108565974880464 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=108565974881552 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=108565974883008 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=108565974886352 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321: Failure
+Value of: SimHost::AwaitSchedulerStopped(3s)
+  Actual: false
+Expected: true
+REAL_GRAPH_LIFETIME_NOT_DRAINED
+
+LIFE_QUEUE stage=after_cleanup address=108565974834192 name=SimStateHandle pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=108565974853488 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=108565974854864 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=108565974856272 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=108565974859664 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=108565974869856 name=SimStateHandle pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=108565974880464 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=108565974881552 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=108565974883008 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=after_cleanup address=108565974886352 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_CHECKPOINT stage=after_cleanup manager=0 ril=0x62bd7c5ca5b0
+[  FAILED  ] PairingReview.DestroyThenReinitializeCardGraph (3025 ms)
+[----------] 1 test from PairingReview (3026 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3031 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] PairingReview.DestroyThenReinitializeCardGraph
+
+ 1 FAILED TEST
+
+../../telephony_core_service/services/multisim/test/systemtest/stubs/mock_tel_ril_manager.h:138: ERROR: this mock object (used in test PairingReview.DestroyThenReinitializeCardGraph) should be deleted but never is. Its address is @0x62bd7c5ca5b0.
+ERROR: 1 leaked mock object found at program exit. Expectations on a mock object are verified when the object is destructed. Leaking a mock means that its expectations aren't verified, which is usually a test bug. If you really intend to leak a mock, you can suppress this error using testing::Mock::AllowLeak(mock_object), or you may use a fake or stub instead of a mock.
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=PairingReview.UnrelatedRuntimeWorkerIsBaseline --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-24.xml
+Note: Google Test filter = PairingReview.UnrelatedRuntimeWorkerIsBaseline
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from PairingReview
+[ RUN      ] PairingReview.UnrelatedRuntimeWorkerIsBaseline
+DIAGNOSTIC SIM_STATE_CHANGE
+LIFE_CHECKPOINT stage=before_cleanup manager=0 ril=0x6383e1d235b0
+LIFE_CHECKPOINT stage=after_cleanup manager=0 ril=0x6383e1d235b0
+[       OK ] PairingReview.UnrelatedRuntimeWorkerIsBaseline (7 ms)
+[----------] 1 test from PairingReview (7 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (9 ms total)
+[  PASSED  ] 1 test.
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=ShutdownContract.ANormalPrimaryThenStop --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-25.xml
+Note: Google Test filter = ShutdownContract.ANormalPrimaryThenStop
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from ShutdownContract
+[ RUN      ] ShutdownContract.ANormalPrimaryThenStop
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:34: Failure
+Failed
+BLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted
+
+[  FAILED  ] ShutdownContract.ANormalPrimaryThenStop (0 ms)
+[----------] 1 test from ShutdownContract (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] ShutdownContract.ANormalPrimaryThenStop
+
+ 1 FAILED TEST
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=ShutdownContract.BThreeSlotsThenStop --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-26.xml
+Note: Google Test filter = ShutdownContract.BThreeSlotsThenStop
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from ShutdownContract
+[ RUN      ] ShutdownContract.BThreeSlotsThenStop
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:34: Failure
+Failed
+BLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted
+
+[  FAILED  ] ShutdownContract.BThreeSlotsThenStop (0 ms)
+[----------] 1 test from ShutdownContract (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] ShutdownContract.BThreeSlotsThenStop
+
+ 1 FAILED TEST
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=ShutdownContract.CPartialInitializationThenStop --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-27.xml
+Note: Google Test filter = ShutdownContract.CPartialInitializationThenStop
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from ShutdownContract
+[ RUN      ] ShutdownContract.CPartialInitializationThenStop
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:34: Failure
+Failed
+BLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted
+
+[  FAILED  ] ShutdownContract.CPartialInitializationThenStop (0 ms)
+[----------] 1 test from ShutdownContract (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] ShutdownContract.CPartialInitializationThenStop
+
+ 1 FAILED TEST
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=ShutdownContract.DRepeatedStop --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-28.xml
+Note: Google Test filter = ShutdownContract.DRepeatedStop
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from ShutdownContract
+[ RUN      ] ShutdownContract.DRepeatedStop
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:34: Failure
+Failed
+BLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted
+
+[  FAILED  ] ShutdownContract.DRepeatedStop (0 ms)
+[----------] 1 test from ShutdownContract (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] ShutdownContract.DRepeatedStop
+
+ 1 FAILED TEST
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=ShutdownContract.EInFlightSuccessCompletesBeforeRelease --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-29.xml
+Note: Google Test filter = ShutdownContract.EInFlightSuccessCompletesBeforeRelease
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from ShutdownContract
+[ RUN      ] ShutdownContract.EInFlightSuccessCompletesBeforeRelease
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:34: Failure
+Failed
+BLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted
+
+[  FAILED  ] ShutdownContract.EInFlightSuccessCompletesBeforeRelease (0 ms)
+[----------] 1 test from ShutdownContract (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] ShutdownContract.EInFlightSuccessCompletesBeforeRelease
+
+ 1 FAILED TEST
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=ShutdownContract.FErrorReplyDuringStoppingKeepsOriginalResult --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-30.xml
+Note: Google Test filter = ShutdownContract.FErrorReplyDuringStoppingKeepsOriginalResult
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from ShutdownContract
+[ RUN      ] ShutdownContract.FErrorReplyDuringStoppingKeepsOriginalResult
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:34: Failure
+Failed
+BLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted
+
+[  FAILED  ] ShutdownContract.FErrorReplyDuringStoppingKeepsOriginalResult (0 ms)
+[----------] 1 test from ShutdownContract (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (4 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] ShutdownContract.FErrorReplyDuringStoppingKeepsOriginalResult
+
+ 1 FAILED TEST
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=ShutdownContract.GDelayedDispatchAfterStop --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-31.xml
+Note: Google Test filter = ShutdownContract.GDelayedDispatchAfterStop
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from ShutdownContract
+[ RUN      ] ShutdownContract.GDelayedDispatchAfterStop
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:34: Failure
+Failed
+BLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted
+
+[  FAILED  ] ShutdownContract.GDelayedDispatchAfterStop (0 ms)
+[----------] 1 test from ShutdownContract (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] ShutdownContract.GDelayedDispatchAfterStop
+
+ 1 FAILED TEST
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=ShutdownContract.HDestroyAndCreateNewGraph --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-y_0a0449/primary_real_business-32.xml
+Note: Google Test filter = ShutdownContract.HDestroyAndCreateNewGraph
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from ShutdownContract
+[ RUN      ] ShutdownContract.HDestroyAndCreateNewGraph
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:34: Failure
+Failed
+BLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted
+
+[  FAILED  ] ShutdownContract.HDestroyAndCreateNewGraph (0 ms)
+[----------] 1 test from ShutdownContract (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] ShutdownContract.HDestroyAndCreateNewGraph
+
+ 1 FAILED TEST
+[
+  {
+    "name": "compatibility",
+    "exit_code": 0,
+    "status": "PASS",
+    "tests": 17,
+    "passed": 17,
+    "failed": 0,
+    "binary_sha256": "b45def701ac9d5f1ed2b687c9d81eeaa4cd1547fc2c76a2c60e69041ad06057b",
+    "filter": "*-*DEFECT_*",
+    "skipped": 0
+  },
+  {
+    "name": "known_defects",
+    "exit_code": 1,
+    "status": "FAIL",
+    "tests": 5,
+    "passed": 0,
+    "failed": 5,
+    "binary_sha256": "b45def701ac9d5f1ed2b687c9d81eeaa4cd1547fc2c76a2c60e69041ad06057b",
+    "filter": "*DEFECT_*",
+    "skipped": 0
+  },
+  {
+    "name": "pin_memory",
+    "exit_code": 0,
+    "status": "PASS",
+    "tests": 4,
+    "passed": 4,
+    "failed": 0,
+    "binary_sha256": "0d92f6ddda5c57b4c7d547f791106792556a15a9f478be9e49074710e7a057b9",
+    "filter": "*",
+    "skipped": 0
+  },
+  {
+    "name": "infrastructure",
+    "exit_code": 0,
+    "status": "PASS",
+    "tests": 19,
+    "passed": 19,
+    "failed": 0,
+    "binary_sha256": "c96a84cc57570412525aaebf4ba94ebe371c15e6641e567184addb0167ea8ef4",
+    "filter": "*",
+    "skipped": 0
+  },
+  {
+    "name": "capacity",
+    "exit_code": 0,
+    "status": "PASS",
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "binary_sha256": "7c0bb3719e174e2fe15f7ab99f1572de30c2d30c1b8a5166d6c16d2646765ffe",
+    "filter": "*",
+    "skipped": 0
+  },
+  {
+    "name": "primary_entry_internal_seam",
+    "exit_code": 0,
+    "status": "PASS",
+    "tests": 14,
+    "passed": 14,
+    "failed": 0,
+    "binary_sha256": "a16c2632a9b639470fac26f7639a2ae905064b81f6a32bda5237f6df86441752",
+    "filter": "*",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-6",
+    "exit_code": 0,
+    "status": "PASS",
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-7",
+    "exit_code": 1,
+    "status": "FAIL",
+    "tests": 1,
+    "passed": 0,
+    "failed": 1,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "RealSimPrimary.C0CoreToRealManagerAndController",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-8",
+    "exit_code": 1,
+    "status": "FAIL",
+    "tests": 1,
+    "passed": 0,
+    "failed": 1,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-9",
+    "exit_code": 1,
+    "status": "FAIL",
+    "tests": 1,
+    "passed": 0,
+    "failed": 1,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-10",
+    "exit_code": 1,
+    "status": "FAIL",
+    "tests": 1,
+    "passed": 0,
+    "failed": 1,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-11",
+    "exit_code": 1,
+    "status": "FAIL",
+    "tests": 1,
+    "passed": 0,
+    "failed": 1,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-12",
+    "exit_code": 1,
+    "status": "FAIL",
+    "tests": 1,
+    "passed": 0,
+    "failed": 1,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-13",
+    "exit_code": 0,
+    "status": "PASS",
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "RunnerLifetime.NormalCompletionAndRepeatedStop",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-14",
+    "exit_code": 0,
+    "status": "PASS",
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "RunnerLifetime.PendingTaskCancelledAndCapturedOwnerReleased",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-15",
+    "exit_code": 0,
+    "status": "PASS",
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "RunnerLifetime.InFlightStopJoinsAndRejectsCallbackRepost",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-16",
+    "exit_code": 0,
+    "status": "PASS",
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "RunnerLifetime.ConcurrentStopIsIdempotent",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-17",
+    "exit_code": 0,
+    "status": "PASS",
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "RunnerLifetime.CallbackCannotSynchronouslyJoinItself",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-18",
+    "exit_code": 0,
+    "status": "PASS",
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "RealCardLifetime.MissingRilInitializationReleasesState",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-19",
+    "exit_code": 0,
+    "status": "PASS",
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "RealCardLifetime.InitializedStateUnregistersRilAndReleases",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-20",
+    "exit_code": 1,
+    "status": "FAIL",
+    "tests": 1,
+    "passed": 0,
+    "failed": 1,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "RealCardLifetime.PublicDetachReleasesRealStateFileAndRil",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-21",
+    "exit_code": 1,
+    "status": "FAIL",
+    "tests": 1,
+    "passed": 0,
+    "failed": 1,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "PairingReview.AllThreeSlotsPublicDetach",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-22",
+    "exit_code": 0,
+    "status": "PASS",
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "PairingReview.PartialInitializationAndRepeatedUnregister",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-23",
+    "exit_code": 1,
+    "status": "FAIL",
+    "tests": 1,
+    "passed": 0,
+    "failed": 1,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "PairingReview.DestroyThenReinitializeCardGraph",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-24",
+    "exit_code": 0,
+    "status": "PASS",
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "PairingReview.UnrelatedRuntimeWorkerIsBaseline",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-25",
+    "exit_code": 1,
+    "status": "FAIL",
+    "tests": 1,
+    "passed": 0,
+    "failed": 1,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "ShutdownContract.ANormalPrimaryThenStop",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-26",
+    "exit_code": 1,
+    "status": "FAIL",
+    "tests": 1,
+    "passed": 0,
+    "failed": 1,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "ShutdownContract.BThreeSlotsThenStop",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-27",
+    "exit_code": 1,
+    "status": "FAIL",
+    "tests": 1,
+    "passed": 0,
+    "failed": 1,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "ShutdownContract.CPartialInitializationThenStop",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-28",
+    "exit_code": 1,
+    "status": "FAIL",
+    "tests": 1,
+    "passed": 0,
+    "failed": 1,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "ShutdownContract.DRepeatedStop",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-29",
+    "exit_code": 1,
+    "status": "FAIL",
+    "tests": 1,
+    "passed": 0,
+    "failed": 1,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "ShutdownContract.EInFlightSuccessCompletesBeforeRelease",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-30",
+    "exit_code": 1,
+    "status": "FAIL",
+    "tests": 1,
+    "passed": 0,
+    "failed": 1,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "ShutdownContract.FErrorReplyDuringStoppingKeepsOriginalResult",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-31",
+    "exit_code": 1,
+    "status": "FAIL",
+    "tests": 1,
+    "passed": 0,
+    "failed": 1,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "ShutdownContract.GDelayedDispatchAfterStop",
+    "skipped": 0
+  },
+  {
+    "name": "primary_real_business-32",
+    "exit_code": 1,
+    "status": "FAIL",
+    "tests": 1,
+    "passed": 0,
+    "failed": 1,
+    "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+    "filter": "ShutdownContract.HDestroyAndCreateNewGraph",
+    "skipped": 0
+  }
+]
+Evidence: /mnt/e/github/multisim/.host-out/runs/run-y_0a0449

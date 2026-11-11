@@ -1,0 +1,1452 @@
+diff --git a/telephony_core_service/docs/SIM_Refactor_Execution_State.md b/telephony_core_service/docs/SIM_Refactor_Execution_State.md
+index 9f72a27df..dcc02f86d 100644
+--- a/telephony_core_service/docs/SIM_Refactor_Execution_State.md
++++ b/telephony_core_service/docs/SIM_Refactor_Execution_State.md
+@@ -681,3 +681,29 @@ Provider根因已闭合：生产bundle/GN实际依赖telephony_data，Host此前
+ 用户在上述验收后明确要求将本地修改提交并推送远端main。本次按80项白名单发布§18生命周期诊断、Host修复、新用例、未应用生产补丁建议及独立证据；不纳入98份原有修改，不应用生产补丁。发布前fetch确认本地main与origin/main同为b3e2b93a，暂存区为空；63份证据摘要、16份代码/说明摘要与98份保护输入逐项核对通过，其他worktree未改变。
+ 
+ 本批沿用已完成的75条63 PASS/12 FAIL、原C1业务及严格RIL PASS/生命周期FAIL，不因发布重复宣称测试通过。独立JSON中的published=false、未提交说明、代码/说明摘要及归档diff是发布授权前的真实验收快照，保留原字节；本小节是之后的授权及发布准备增量，因此执行状态文件摘要以Git本次提交为准。发布使用常规提交和origin/main推送，精确提交结果与远端包含关系以Git核验为准。
++
++
++<a id="sim028-shutdown-review-20261111"></a>
++
++## 19. SIM-028 生产停止方案审查及隔离补丁验证（2026-11-11）
++
++输入main为 `e21f1ef35a715a197dd3bc76fbaccadea70d17be`，当前远端同基线。按本轮用户默认授权仅分析、修改测试与验证补丁；生产工作区及98份用户输入摘要未变，不应用生产补丁，不提交/推送。旧§18 JSON/日志保持原字节。执行恢复检查、适用AGENTS、当前源码与工具链核对后，仅在新建仓外副本应用原四文件pairing补丁，真实GN/Ninja编译和完整回归；副本相对输入仅四份生产文件变化，验证期间原始1679份tracked输入逐项未变。
++
++完整性审查结论：**四文件补丁仅是可编译、可回归的注销配对准备修复，不批准为完整Shutdown修复。** 新确认Phonebook强持State，State Observer反持Phonebook且没有注销，构成第四类独立环。先重算历史图，再对当前C1做新只读LLDB追踪，均确认三槽A/B/C/D共12条强闭环；原9条为当时已验证子集。还核实File两项RIL退出缺口、Monitor raw-this Watcher反注册函数无调用点、Controller多处detach、Monitor通用raw-this任务、Core仅持ISimManager接口及Observer::RemoveAll锁内销毁风险。完整方案不能只添加几个析构清理调用。
++
++| 实际执行 | 未打生产补丁 | 仅仓外pairing补丁 |
++| --- | --- | --- |
++| 原Host60（含入口14） | 55 PASS / 5已知FAIL | 55 PASS / 同5已知FAIL |
++| 原RealSimPrimary7 | 1 PASS / 6清理FAIL | 1 PASS / 6清理FAIL |
++| 原生命周期8 | 7 PASS / 1 FAIL | 8 PASS / 0 FAIL |
++| 新PairingReview4 | 2 PASS / 2 FAIL | 4 PASS / 0 FAIL |
++| 新ShutdownContract A～H | 8 GTest FAIL，独立标BLOCKED | 8 GTest FAIL，独立标BLOCKED |
++| 原始总口径（未移除BLOCKED失败） | 87执行 / 65 PASS / 22 FAIL，exit1 | 87执行 / 68 PASS / 19 FAIL，exit1 |
++
++六条在卡业务和严格RIL验证两边均PASS；配对补丁使测试AccountObserver真实注销释放，仍有27个残留Host queue worker和RIL=10，不能用生命周期8条全绿宣称真实Manager整图释放。三槽公开注销与销毁重建用例的改善单列；旧五条缺陷无删改、无跳过。现有8条生命周期断言保持，测试OwnedCardGraph提取为共享头以复用三槽，不复制生产业务。
++
++新增A～H测试只在真实SimManager具备Stop/IsStopping/IsStopped时进入生产执行分支；当前接口缺失时明确FAIL/BLOCKED，不提供Fake Stop或GTest跳过。声明式仓外头探针对八条未来分支完整实例化并clang语法验证PASS，但未链接/执行任何Stop实现，运行部分仍NOT_RUN。新增队列所有权基线及无关worker用例通过，避免把共享运行时线程数为0当作通用退出证明；原隔离进程断言未弱化。弱RIL登记ledger按slot/event/所有权控制块记录所有订阅者，修正单弱指针对File/STK同事件的覆盖；它不增加生产强引用。仅真实SimStateHandle待调度closure可用于未来迟到调度验证，不伪造SIM结果。
++
++[正式停止方案](../services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_plan.md)取代旧伪Stop草图，明确三槽/缓存去重、四类环、16组源码配对、Running→Stopping→Stopped、已接纳B/C1及原重试终点、对象私有任务组、队列准入/排空和锁外销毁。Core经同一控制块的私有weak生命周期hook协调，不能对ISimManager直接调用不存在的Stop或停止共享RIL。完整生产文件职责集合、每项GTest映射和Watcher/FFRT/SA/HDI边界均已列出，仍需另行生产授权及native契约/产品验证；不存在已批准可直接合入的完整Stop补丁。
++
++新独立证据 [sim028_shutdown_review_20261111.json](../services/multisim/test/systemtest/configs/sim028_shutdown_review_20261111.json)及同名目录保存两套全量日志/XML、真实编译命令、源码/二进制摘要、四文件隔离差异、当前12环与历史重算的独立来源、声明探针及各层状态。原7条全绿和完整停止安全目标尚未达到；生产Stop在途/重复/迟到/重建验收仍BLOCKED。既有业务行为未在本工作区修改，不把配对副本验证或声明式编译当作生产修复完成。
+diff --git a/telephony_core_service/services/multisim/test/relocation_followups.json b/telephony_core_service/services/multisim/test/relocation_followups.json
+index f643abf1b..67a3cdd41 100644
+--- a/telephony_core_service/services/multisim/test/relocation_followups.json
++++ b/telephony_core_service/services/multisim/test/relocation_followups.json
+@@ -24,8 +24,8 @@
+     },
+     "services/multisim/test/systemtest/BUILD.gn": {
+       "relocation_sha256": "af60d6518d1224eecdac66d5b6fdb148035085eac2f9d2fe918d083751616a53",
+-      "current_sha256": "fef82ec33aa716d20c232aac6bff8806a8ebc08e828f92a5425e081583ad28ee",
+-      "reason": "Register lifecycle cases in the existing real target; retain every legacy target and assertion."
++      "current_sha256": "32bcb884540cfbcda5760bba005cc6776039f2ec3bfcb8a49b678f29a8a23c23",
++      "reason": "Add shutdown review cases to the existing real GTest target; preserve all existing assertions and test groups."
+     },
+     "services/multisim/test/systemtest/scripts/audit_initialization.py": {
+       "relocation_sha256": "36ab28439ffcf6cdfc4783669d619c9033b5957e403df9571653d284446d7c91",
+@@ -34,8 +34,8 @@
+     },
+     "services/multisim/test/systemtest/stubs/ffrt_runtime.cpp": {
+       "relocation_sha256": "47ca6163b88147cfffb1a2fbb0797fe93980da3271e23c734629bef0d5b02f07",
+-      "current_sha256": "e79482e7caecf08abc2fcdaad2d5183bf5a765543d1252be7a98b92740af2db9",
+-      "reason": "Read-only named queue evidence; no scheduling or cleanup semantics changed."
++      "current_sha256": "0cc090d0344f9d1af84de8c0de908ac70e48cce19df0d2343d0337d2fac13c4a",
++      "reason": "Read-only queue evidence and explicit snapshot of real pending callbacks for late-dispatch testing; no task status or scheduler semantics changed."
+     },
+     "services/multisim/test/systemtest/stubs/parameter_service.cpp": {
+       "relocation_sha256": "8e82238e3cdb8ae448beb68c0026cb15282681e4ffc52416f3529cf2d1e704b7",
+@@ -54,8 +54,8 @@
+     },
+     "services/multisim/test/systemtest/stubs/ffrt_runtime.h": {
+       "relocation_sha256": "e56da308da2035b69ec7b25b3bdf352eaa3c79c0df2cce62e1b7265d6c99c21e",
+-      "current_sha256": "e737313a96054614619f0b8d0e9d66b3099b17bd9057efd0f81a1d2306dc1ea5",
+-      "reason": "Read-only queue evidence declarations; retain existing scheduler assertions."
++      "current_sha256": "1692f5751492604dddd799070d31cd28195725bb337acd0b7b3fe6db372e43d4",
++      "reason": "Declare named pending callback capture; keep original cleanup assertions and owned queue evidence."
+     }
+   }
+ }
+diff --git a/telephony_core_service/services/multisim/test/systemtest/BUILD.gn b/telephony_core_service/services/multisim/test/systemtest/BUILD.gn
+index 1e3c099a5..43fd75327 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/BUILD.gn
++++ b/telephony_core_service/services/multisim/test/systemtest/BUILD.gn
+@@ -65,7 +65,7 @@ source_set("primary_real_support") {
+   configs += [ ":production_headers", ":production_execution_evidence", ":initialization_standard_headers" ]
+ }
+ executable("sim_primary_slot_real_test") {
+-  sources = [ "primary_slot/real_test.cpp", "primary_slot/real_runtime.cpp", "primary_slot/security_boundary.cpp", "primary_slot/lifecycle/lifetime_test.cpp" ]
++  sources = [ "primary_slot/real_test.cpp", "primary_slot/real_runtime.cpp", "primary_slot/security_boundary.cpp", "primary_slot/lifecycle/lifetime_test.cpp", "primary_slot/lifecycle/shutdown_contract_test.cpp" ]
+   include_dirs = [ "primary_slot/runtime_include", "primary_slot/include", "primary_slot/provider/include",
+                    "primary_slot", "stubs", "$gtest_root/googletest/include", "$gtest_root/googlemock/include" ]
+   configs += [ ":production_headers" ]
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/README.md b/telephony_core_service/services/multisim/test/systemtest/primary_slot/README.md
+index 8689e0e59..d39421451 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/primary_slot/README.md
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/README.md
+@@ -110,3 +110,8 @@ SIM_HOST_BOOT_SLOT_COUNT=2 lldb -- .host-out/build/sim_primary_slot_real_test \
+ 在匹配OHOS完整树中挂载为 `base/telephony/core_service`，按仓内构建规则配置产品后运行 `hb build -T //base/telephony/core_service:tel_core_service` 和 `hb build -T //base/telephony/core_service/test:unittest`，在对应设备运行生成的CoreService/SIM/TelRil套件并核查真实SA、权限、reply、serial/HDI。当前Host套件不是OHOS产品测试目标，不能直接用hb宣称运行了这7条。完整产品树、生成HDI头及设备是继续原生集成的必要输入。
+ 
+ C1的UPDATE/COMPLETE异常、C1超时、任意重复/乱序组合、在途销毁重建和跨重启的持久化恢复本轮NOT_RUN。既有五条独立业务缺陷继续单列；六个新增清理失败共享同一个残留对象图原因，未将其归入原五条缺陷或从统计中移除。
++
++
++## 生命周期生产修复审查
++
++后续审查与隔离补丁验证见 [正式停止方案](lifecycle/shutdown_plan.md) 和 [本轮独立记录](../configs/sim028_shutdown_review_20261111.json)。已新增确认Phonebook/State强环；原三类9条是子集，当前C1地址图确认四类共12条。四文件配对补丁仅在仓外副本验证，使原生命周期8条全部通过，真实主卡7条仍1 PASS/6 FAIL；完整生产Stop仍未实现。现有目标另含PairingReview四条及ShutdownContract A～H八条，缺真实Stop API时八条失败并单列BLOCKED，不把声明式编译探针当运行通过。主工作区生产实现未改，所有历史证据保留。
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/README.md b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/README.md
+index 57603a4cd..0e1f67efe 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/README.md
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/README.md
+@@ -53,6 +53,7 @@ flowchart LR
+ | Records→Observer→File | `sim_file_manager.cpp::InitSimFile` 注册自身RADIO_SIM_RECORDS_LOADED，形成File/Records独立环 |
+ | State→Observer→File | `sim_file_manager.cpp::Init` 注册CARD_TYPE_CHANGE及SIM_ICCID_LOADED；反注册后者在 `sim_state_handle.cpp::UnRegisterCoreNotify` 缺失 |
+ | Monitor→测试AccountObserver | `SimManager::RegisterCoreNotify` 转发ACCOUNT_LOADED，Monitor强存；Manager的UnRegister缺此分支，Monitor也无对应公开注销方法 |
++| State→Observer→Phonebook→State | `icc_dialling_numbers_manager.cpp::Init`注册状态变化，头文件强持State且析构为空；后续审查新增第四类强环，见正式方案 |
+ | RIL残留 | `SimStateManager::telRilManager_`、`IccFile::telRilManager_`、`IccFileController::telRilManager_` 每槽各一个；同一RIL控制块，不能算成十个对象 |
+ | 状态退出未到达 | `SimStateManager::~SimStateManager` 才调用Handle::UnInit；State已在环内，析构触发不了注销 |
+ | Monitor析构职责不足 | `~MultiSimMonitor` 仅UnSubscribeListeners（CES/SA），不调用UnRegisterSimNotify；自身强订阅归零前析构不可达 |
+@@ -70,33 +71,25 @@ RIL最终10 = 测试根1 + 三槽 ×（StateManager1 + IccFile1 + FileController
+ 
+ 完整SimManager的在途Stop、重复Stop、迟到回调安全仍BLOCKED：生产对象没有Stop契约，不能拿Runner测试替代这些验收。
+ 
+-## 未应用的最小生产修改建议
+-
+-[注销配对补丁](pairing_fixes.proposed.patch)给出两个已证实缺口的具体差异（4个生产文件），**仅供审查，未应用、未编译验证**：补SIM_ICCID_LOADED注销，补Manager→Monitor的ACCOUNT_LOADED注销。它们是资源生命周期配对修复，不更改主卡分支、持久化、返回码或RIL协议；但**单独应用仍不足以修复完整图**。
+-
+-完整最小闭包还必须新增显式停止协议，不能把全部动作塞入空析构函数。建议新私有生命周期接口在调用者仍持共享所有权时执行：
+-
+-```cpp
+-// 方案草图，非已实现/可直接编译的生产代码。
+-SimManager::Stop(deadline) {
+-    // Running -> Stopping；并发重复调用等待同一停止结果。
+-    // 禁止新请求/新订阅/重试启动，跟踪RefreshCache等后台任务。
+-    // 已接纳B/C1请求仍允许关联应答与原有定时器完成，不改同步返回语义。
+-    if (!WaitExistingRequestsAndCallbacks(deadline)) return NotDrained;
+-    monitor->StopSubscriptionsAndDrain(deadline); // CES/SA + UnRegisterSimNotify + account observers
+-    for (auto &file : files) file->StopSubscriptionsAndDrain(deadline);
+-    for (auto &state : states) state->StopSubscriptionsAndDrain(deadline);
+-    // 同步停止其他Account/SMS/STK/Phonebook的已登记工作；缓存全部类型去重。
+-    // 成功排空后按依赖释放成员，最后释放本模块的RIL引用；Stopped。
+-}
+-```
++## 生产补丁审查结论与正式方案
++
++配对补丁已在仓外源码副本完成真实GN/Ninja编译和全量Host回归，主工作区未应用。原生命周期组由7 PASS/1 FAIL变为8 PASS/0 FAIL，三槽和销毁重建公开注销测试也通过；真实Manager七例仍1 PASS/6 FAIL，原Host仍55 PASS/5已知FAIL。因此它**不是完整Shutdown修复**，不以局部全绿批准整图释放。
++
++后续审查从历史图与新C1调试记录确认第四类Phonebook/State强环，三槽共确认12条A/B/C/D闭环；最初9条是已验证子集。原JSON/日志保持历史原字节，新独立记录见 [sim028_shutdown_review_20261111.json](../../configs/sim028_shutdown_review_20261111.json)。
+ 
+-具体修改面及必要顺序：
++[正式停止方案与补丁完整性审查](shutdown_plan.md)替代旧版几行伪Stop草图，明确源码最小职责集合、四类强环、16组订阅、有效共享所有权阶段、在途B/C1及重试的原语义、Core共享RIL/接口类型边界和不能跳过的native验证。生产代码修改仍需另行授权。
+ 
+-1. Manager新增Stop状态/在途计数和对称装配清理；RefreshCache分离线程纳入任务登记，拒绝停止期间的重新装配。重复Stop返回同一终态；停止超时保留对象，不宣称排空/卸载成功。
+-2. Monitor在ProcessEvent和订阅注册路径检查代次/状态；排空后在有效共享所有权内执行现有UnRegisterSimNotify、UnSubscribeListeners及自身观察者清理。析构只作停止完成校验与无须shared_from_this的兜底。
+-3. FileManager对所有缓存IccFile（USIM/GSM可能同对象，须去重）调用UnInit，注销自身STATE两项、RIL两项、各IccFile的RECORDS_LOADED；取消/排空File/Controller/Handler事件后释放缓存。不能只清当前simFile_。
+-4. State/Handle先关新注册与无关延迟工作，再UnInit注销RIL、清内部Observer，排空事件；析构不再次依赖shared_from_this。需要新增真实TelEventHandler/Queue准入与排空屏障，RemoveAllEvents不够。禁止持Manager/Observer锁等待worker，避免回调反取同锁；worker发起停止应移交控制线程。
+-5. CoreService::OnStop在共享RIL DeInit之前协调SIM停止、CMI/CoreSim脱附及其他消费者。SIM仅释放借用的RIL引用，不停止宿主共享RIL。旧epoch回调必须被门控，重新Init不能让旧回调作用于新图。
++可复现配对补丁验证：
++
++```sh
++python3 -B telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/validate_patch.py \
++  --output /tmp/sim028-pairing-review
++# 读取当前.host-out/host.json依赖路径；可用--config指定。
++# 源码仅复制到新建仓外目录，补丁只应用该副本；全套失败正确返回1。
++python3 -B telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/check_stop_contract.py \
++  --compile-commands .host-out/build/compile_commands.json \
++  --header telephony_core_service/services/sim/include/sim_manager.h \
++  --output /tmp/sim028-stop-signature
++```
+ 
+-以上属于资源生命周期修复，但停止中请求的准入错误、超时停止策略及Core驻留服务的重启次序需另行批准和产品验证。当前常驻进程并不自动释放这些环；新增清理不应改变Running时业务，仍可能暴露过去被进程退出掩盖的注销竞态。需匹配OHOS FFRT、CES/SA、RIL/HDI运行时验证，不用Host队列join证明设备已结束。本轮遵守生产只读边界，因此原C1生命周期验收继续FAIL。
++第二条仅用声明式隔离头实例化未来Stop测试分支，未链接或运行任何Stop实现，不能代替生命周期PASS。八条ShutdownContract在真实API缺失时执行失败并标BLOCKED；保留GTest原非零退出码，原7/8/60组独立计数。新增PairingReview四例覆盖三槽、部分工厂失败/重复注销、销毁重建和无关worker基线。正式Stop未来分支的运行仍NOT_RUN。
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp
+index ded8fe956..687b6f623 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp
+@@ -1,5 +1,6 @@
+ #include "real_scenario.h"
+ #include "external_runner.h"
++#include "owned_card_graph.h"
+ #include <future>
+ #include <atomic>
+ 
+@@ -112,42 +113,6 @@ TEST(RealCardLifetime, InitializedStateUnregistersRilAndReleases)
+     EXPECT_TRUE(environment.notifications.empty());
+ }
+ 
+-// Test-owned composition, using only public unregistration APIs while all owners
+-// are valid. This is NOT a Stop implementation for the opaque SimManager graph.
+-class OwnedCardGraph {
+-public:
+-    std::shared_ptr<SimStateManager> state;
+-    std::shared_ptr<SimFileManager> files;
+-    std::shared_ptr<IccFile> records;
+-    std::shared_ptr<MockTelRilManager> ril;
+-    bool stopped = false;
+-    explicit OwnedCardGraph(const std::shared_ptr<MockTelRilManager> &radio) : ril(radio)
+-    {
+-        state = std::make_shared<SimStateManager>(ril); state->Init(0);
+-        files = SimFileManager::CreateInstance(ril, state); files->Init(0);
+-        records = files->GetIccFile();
+-    }
+-    void Stop()
+-    {
+-        if (stopped) return;
+-        stopped = true;
+-        std::cout << "CARD_LIFE before_detach state=" << state.get() << " refs=" << state.use_count()
+-            << " files=" << files.get() << " refs=" << files.use_count()
+-            << " records=" << records.get() << " refs=" << records.use_count() << '\n';
+-        if (records) {
+-            records->UnInit();
+-            records->UnRegisterCoreNotify(files, RadioEvent::RADIO_SIM_RECORDS_LOADED);
+-        }
+-        state->UnRegisterCoreNotify(files, RadioEvent::RADIO_CARD_TYPE_CHANGE);
+-        state->UnRegisterCoreNotify(files, RadioEvent::RADIO_SIM_ICCID_LOADED);
+-        ril->UnRegisterCoreNotify(0, files, RadioEvent::RADIO_VOICE_TECH_CHANGED);
+-        ril->UnRegisterCoreNotify(0, files, RadioEvent::RADIO_ICC_REFRESH);
+-        std::cout << "CARD_LIFE after_public_detach state_refs=" << state.use_count()
+-            << " files_refs=" << files.use_count() << " records_refs=" << records.use_count() << '\n';
+-        files.reset(); records.reset(); state.reset(); ril.reset();
+-    }
+-    ~OwnedCardGraph() { Stop(); }
+-};
+ TEST(RealCardLifetime, PublicDetachReleasesRealStateFileAndRil)
+ {
+     RealScenario environment;
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/pairing_fixes.proposed.patch b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/pairing_fixes.proposed.patch
+index af35cdce0..b72a03e34 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/pairing_fixes.proposed.patch
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/pairing_fixes.proposed.patch
+@@ -1,3 +1,8 @@
++# SIM-028 review: PREPARATORY PAIRING PATCH ONLY; not a complete Shutdown fix.
++# Reviewed against e21f1ef3. Code hunks were compiled/executed in an isolated copy.
++# This does not break all State/Monitor/Records/File/Phonebook cycles or drain tasks.
++# Full replacement recommendation, ordering and approval gates: shutdown_plan.md.
++# No production-tree application is authorized by the review task.
+ --- a/telephony_core_service/services/sim/src/sim_state_handle.cpp
+ +++ b/telephony_core_service/services/sim/src/sim_state_handle.cpp
+ @@ -1115,6 +1115,9 @@
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h b/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h
+index 9de0e211e..11abb50b4 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h
+@@ -121,6 +121,12 @@ public:
+     unsigned updates = 0;
+     bool autoStatus = false;
+     std::map<std::pair<int, int>, std::weak_ptr<AppExecFwk::EventHandler>> notifications;
++    struct Registration {
++        int slot, event;
++        std::weak_ptr<AppExecFwk::EventHandler> owner;
++        bool active;
++    };
++    std::vector<Registration> registrationLedger; // weak only; full multi-owner pairing ledger
+     template<class T> static void Reply(const Pending &request, std::shared_ptr<T> response)
+     {
+         auto owner = std::dynamic_pointer_cast<TelEventHandler>(request.owner.lock());
+@@ -177,12 +183,27 @@ public:
+             ++updates; changed.notify_all(); return 0; // verified Provider RdbStore::Update status, not row count
+         });
+         EXPECT_CALL(*ril, RegisterCoreNotify(_, _, _, _)).WillRepeatedly([this](int slot, const auto &owner, int id, int *) {
+-            std::lock_guard<std::mutex> lock(mutex); notifications[{slot, id}] = owner; return 0;
++            std::lock_guard<std::mutex> lock(mutex);
++            bool existing = false;
++            std::weak_ptr<AppExecFwk::EventHandler> weak = owner;
++            for (const auto &r : registrationLedger)
++                existing |= r.active && r.slot == slot && r.event == id &&
++                    !r.owner.owner_before(weak) && !weak.owner_before(r.owner);
++            if (!existing) registrationLedger.push_back({slot, id, weak, true});
++            notifications[{slot, id}] = owner; return 0;
+         });
+         EXPECT_CALL(*ril, UnRegisterCoreNotify(_, _, _)).WillRepeatedly([this](int slot, const auto &owner, int id) {
+             std::lock_guard<std::mutex> lock(mutex);
++            std::weak_ptr<AppExecFwk::EventHandler> weak = owner;
++            for (auto &r : registrationLedger)
++                if (r.active && r.slot == slot && r.event == id &&
++                    !r.owner.owner_before(weak) && !weak.owner_before(r.owner)) r.active = false;
+             auto it = notifications.find({slot, id});
+-            if (it != notifications.end() && it->second.lock() == owner) notifications.erase(it);
++            if (it != notifications.end() && it->second.lock() == owner) {
++                notifications.erase(it);
++                for (const auto &r : registrationLedger)
++                    if (r.active && r.slot == slot && r.event == id) notifications[{slot, id}] = r.owner;
++            }
+             return 0;
+         });
+         EXPECT_CALL(*ril, SetActiveSim(1, _, 1, _)).WillRepeatedly([](int, int, int, const auto &event) {
+diff --git a/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp b/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp
+index 9d6247351..c34d0b453 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp
++++ b/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp
+@@ -242,6 +242,22 @@ std::vector<QueueEvidence> GetQueueEvidence()
+     }
+     return result;
+ }
++std::vector<std::function<void()>> CapturePendingActions(const std::string &queueName)
++{
++    std::vector<std::shared_ptr<ffrt::HostQueue>> states;
++    {
++        std::lock_guard<ffrt::mutex> lock(evidenceMutex);
++        for (const auto &weak : queues) if (auto state = weak.lock()) states.push_back(std::move(state));
++    }
++    std::vector<std::function<void()>> actions;
++    for (const auto &state : states) {
++        std::lock_guard<ffrt::mutex> lock(state->lock);
++        if (state->name != queueName) continue;
++        for (const auto &task : state->tasks)
++            if (task->status.load() == ffrt::HostTaskStatus::PENDING) actions.push_back(task->action);
++    }
++    return actions;
++}
+ SchedulerEvidence GetSchedulerEvidence()
+ {
+     std::lock_guard<ffrt::mutex> guard(evidenceMutex);
+diff --git a/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.h b/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.h
+index 66a3a3ba3..904441b38 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.h
++++ b/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.h
+@@ -15,6 +15,9 @@ struct QueueEvidence {
+ };
+ // Read-only registry snapshot. Holds queue states transiently, never SIM objects.
+ std::vector<QueueEvidence> GetQueueEvidence();
++// Test-only late-dispatch injection: copies pending external scheduler closures.
++// Does not mutate task status, invoke them, or fabricate a production result.
++std::vector<std::function<void()>> CapturePendingActions(const std::string &queueName);
+ // Drain all host queues, including tasks submitted by other tasks. Future delayed
+ // work counts as pending. False means timeout or a recorded task failure.
+ bool AwaitSchedulerIdle(std::chrono::milliseconds budget);
+diff --git a/telephony_core_service/services/multisim/test/systemtest/tools/host.py b/telephony_core_service/services/multisim/test/systemtest/tools/host.py
+index 1c669bfcd..8baf90fe1 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/tools/host.py
++++ b/telephony_core_service/services/multisim/test/systemtest/tools/host.py
+@@ -94,7 +94,10 @@ def configure(args, out):
+         for name, expected in manifest['archives'].items():
+             if hashlib.sha256((Path(runtime) / name).read_bytes()).hexdigest() != expected:
+                 raise RuntimeError('Native archive drift: ' + name)
+-    values = [('gtest_root', str(root)), ('production_root', str(CORE)), ('host_debug', True),
++    production = (args.production_root or CORE).resolve()
++    if not (production / 'services/sim/src/sim_manager.cpp').is_file():
++        raise RuntimeError('Missing production source root: ' + str(production))
++    values = [('gtest_root', str(root)), ('production_root', str(production)), ('host_debug', True),
+               ('openssl_root', str(Path(openssl).resolve()) if openssl else ''),
+               ('sim028_runtime_root', str(Path(runtime).resolve()) if runtime else '')]
+     gnargs = ' '.join(f'{key}={json.dumps(value)}' for key, value in values)
+@@ -124,7 +127,8 @@ def run_tests(args, out):
+         'scope': 'legacy_card_state_component_and_primary_entry_internal_seam', 'artifacts': str(session),
+         'primary_whole_component_chain': 'BLOCKED',
+         'uncovered': ['full_Core_Init', 'SimManager_OnInit', 'account', 'default_roles', 'persistence', 'eSIM', 'IPC', 'device'],
+-        'production_sources': {p: hashlib.sha256((CORE / p).read_bytes()).hexdigest() for p in PRODUCTION + [
++        'production_root': str((args.production_root or CORE).resolve()),
++        'production_sources': {p: hashlib.sha256(((args.production_root or CORE) / p).read_bytes()).hexdigest() for p in PRODUCTION + [
+             'services/core/src/core_service_sim.cpp', 'utils/common/src/telephony_permission.cpp',
+             'common/capability_mgr/src/multi_sims_capability_manager.cpp']}}
+     write(session / 'result.json', result)
+@@ -211,6 +215,7 @@ def main():
+     parser = argparse.ArgumentParser(description=__doc__)
+     parser.add_argument('action', choices=['configure', 'build', 'all', 'selected', 'clean', 'debug'])
+     parser.add_argument('--out', type=Path, default=REPO / '.host-out')
++    parser.add_argument('--production-root', type=Path, help='Explicit isolated production copy for patch verification')
+     parser.add_argument('--gtest-root')
+     parser.add_argument('--openssl-root')
+     parser.add_argument('--runtime-root')
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/check_stop_contract.py b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/check_stop_contract.py
+new file mode 100755
+index 00000000..7b1007b3
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/check_stop_contract.py
+@@ -0,0 +1,56 @@
++#!/usr/bin/env python3
++"""Compile future GTest Stop branches with a declaration-only isolated header; never link/run fake Stop."""
++import argparse
++import hashlib
++import json
++from pathlib import Path
++import shlex
++import subprocess
++import tempfile
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--compile-commands', type=Path, required=True)
++    parser.add_argument('--header', type=Path, required=True)
++    parser.add_argument('--output', type=Path, required=True)
++    args = parser.parse_args()
++    repo = Path(__file__).resolve().parents[7]
++    output = args.output.resolve()
++    if output.is_relative_to(repo) or output in repo.parents:
++        parser.error('Use an outside-repository output directory')
++    output.mkdir(parents=True, exist_ok=True)
++    session = Path(tempfile.mkdtemp(prefix='signature-', dir=output))
++    include = session / 'include'; include.mkdir()
++    header = args.header.resolve(strict=True)
++    before = header.read_bytes()
++    source = before.decode()
++    position = source.index('public:', source.index('class SimManager')) + len('public:')
++    methods = '\n    // Declaration-only verification overlay, no implementation.\n    bool Stop();\n    bool IsStopping() const;\n    bool IsStopped() const;\n'
++    overlay = include / 'sim_manager.h'
++    overlay.write_text(source[:position] + methods + source[position:])
++    entry = next(e for e in json.loads(args.compile_commands.read_text())
++                 if e['file'].endswith('/shutdown_contract_test.cpp'))
++    original = entry.get('arguments') or shlex.split(entry['command'])
++    filtered = []; index = 0
++    while index < len(original):
++        if original[index] in ['-o', '-MF']: index += 2; continue
++        if original[index] in ['-c', '-MMD']: index += 1; continue
++        filtered.append(original[index]); index += 1
++    argv = [filtered[0], '-I' + str(include), '-fsyntax-only'] + filtered[1:]
++    with (session / 'compile.log').open('w') as stream:
++        compiled = subprocess.run(argv, cwd=entry['directory'], stdout=stream, stderr=subprocess.STDOUT)
++    unchanged = header.read_bytes() == before
++    report = {'scope': 'declaration-only compile: all future Stop test branches instantiate; no Stop linked or executed',
++              'command': argv, 'directory': entry['directory'], 'exit': compiled.returncode,
++              'status': 'PASS' if compiled.returncode == 0 and unchanged else 'FAIL',
++              'header': str(header), 'original_header_sha256': hashlib.sha256(before).hexdigest(),
++              'overlay_sha256': hashlib.sha256(overlay.read_bytes()).hexdigest(), 'original_unchanged': unchanged}
++    (session / 'result.json').write_text(json.dumps(report, indent=2) + '\n')
++    (output / 'latest.json').write_text(json.dumps(dict(report, artifacts=str(session)), indent=2) + '\n')
++    print(json.dumps(dict(report, artifacts=str(session)), indent=2))
++    return int(report['status'] != 'PASS')
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/owned_card_graph.h b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/owned_card_graph.h
+new file mode 100755
+index 00000000..b97e2b7a
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/owned_card_graph.h
+@@ -0,0 +1,41 @@
++#pragma once
++#include "real_scenario.h"
++namespace Sim028Host {
++// Test-owned composition, using only public unregistration APIs while all owners
++// are valid. This is NOT a Stop implementation for the opaque SimManager graph.
++class OwnedCardGraph {
++public:
++    std::shared_ptr<SimStateManager> state;
++    std::shared_ptr<SimFileManager> files;
++    std::shared_ptr<IccFile> records;
++    std::shared_ptr<MockTelRilManager> ril;
++    bool stopped = false;
++    int slot = 0;
++    explicit OwnedCardGraph(const std::shared_ptr<MockTelRilManager> &radio, int slotId = 0) : ril(radio), slot(slotId)
++    {
++        state = std::make_shared<SimStateManager>(ril); state->Init(slot);
++        files = SimFileManager::CreateInstance(ril, state); files->Init(slot);
++        records = files->GetIccFile();
++    }
++    void Stop()
++    {
++        if (stopped) return;
++        stopped = true;
++        std::cout << "CARD_LIFE before_detach state=" << state.get() << " refs=" << state.use_count()
++            << " files=" << files.get() << " refs=" << files.use_count()
++            << " records=" << records.get() << " refs=" << records.use_count() << '\n';
++        if (records) {
++            records->UnInit();
++            records->UnRegisterCoreNotify(files, RadioEvent::RADIO_SIM_RECORDS_LOADED);
++        }
++        state->UnRegisterCoreNotify(files, RadioEvent::RADIO_CARD_TYPE_CHANGE);
++        state->UnRegisterCoreNotify(files, RadioEvent::RADIO_SIM_ICCID_LOADED);
++        ril->UnRegisterCoreNotify(slot, files, RadioEvent::RADIO_VOICE_TECH_CHANGED);
++        ril->UnRegisterCoreNotify(slot, files, RadioEvent::RADIO_ICC_REFRESH);
++        std::cout << "CARD_LIFE after_public_detach state_refs=" << state.use_count()
++            << " files_refs=" << files.use_count() << " records_refs=" << records.use_count() << '\n';
++        files.reset(); records.reset(); state.reset(); ril.reset();
++    }
++    ~OwnedCardGraph() { Stop(); }
++};
++}
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/review_graph.py b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/review_graph.py
+new file mode 100755
+index 00000000..738e4103
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/review_graph.py
+@@ -0,0 +1,52 @@
++#!/usr/bin/env python3
++"""Recheck the four confirmed cycle families in a recorded read-only LLDB graph."""
++import argparse
++import hashlib
++import json
++from pathlib import Path
++from summarize_graph import summarize
++
++
++def review(graph):
++    base = summarize(graph)
++    snapshot = next(s for s in graph['snapshots'] if s['stage'] == 'manager_destructor_entry')
++    aliases = snapshot['base_subobject_aliases']
++    def canonical(address):
++        seen = set()
++        while address in aliases and aliases[address] != address and address not in seen:
++            seen.add(address); address = aliases[address]
++        return address
++    types = {canonical(a): n['type'] for a, n in snapshot['nodes'].items()
++             if n['type'] != 'OHOS::AppExecFwk::EventHandler'}
++    edges = [dict(e, **{'from': canonical(e['from']), 'to': canonical(e['to'])})
++             for e in snapshot['edges'] if e['ownership'] in ['shared', 'unique']]
++    phonebook = []
++    for root, typ in types.items():
++        if not typ.endswith('::SimStateManager'): continue
++        paths = [(root, [])]
++        for target in ['SimStateHandle', 'ObserverHandler', 'IccDiallingNumbersManager', 'SimStateManager']:
++            paths = [(e['to'], path + [e]) for owner, path in paths for e in edges
++                     if e['from'] == owner and types.get(e['to'], '').endswith('::' + target)]
++        for end, path in paths:
++            if end == root: phonebook.append({'kind': 'phonebook_state', 'root': root, 'edges': path})
++    return {'status': 'PASS' if base['status'] == 'PASS' and len(phonebook) == 3 else 'FAIL',
++            'scope': 'four confirmed families only, not an exhaustive proof of every feature graph',
++            'original_three_families': base['cycles'], 'phonebook_state': phonebook,
++            'confirmed_cycle_count': len(base['cycles']) + len(phonebook),
++            'retained_controls': base['retained_controls'], 'ril_production_holders': base['ril_production_holders']}
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--graph', type=Path, required=True)
++    parser.add_argument('--output', type=Path, required=True)
++    args = parser.parse_args()
++    result = review(json.loads(args.graph.read_text()))
++    result['graph_sha256'] = hashlib.sha256(args.graph.read_bytes()).hexdigest()
++    args.output.write_text(json.dumps(result, indent=2) + '\n')
++    print(result['status'], 'confirmed cycles:', result['confirmed_cycle_count'])
++    return int(result['status'] != 'PASS')
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h
+new file mode 100755
+index 00000000..037137c8
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h
+@@ -0,0 +1,61 @@
++#pragma once
++#include "real_scenario.h"
++#include <type_traits>
++#include <set>
++namespace Sim028Host {
++// Future production lifecycle API, never a fake implementation. Missing methods
++// are an explicit failing/BLOCKED contract, not a skipped or passing test.
++template<class T, class = void> struct HasShutdown : std::false_type {};
++template<class T> struct HasShutdown<T, std::void_t<
++    decltype(std::declval<T &>().Stop()), decltype(std::declval<const T &>().IsStopping()),
++    decltype(std::declval<const T &>().IsStopped())>> : std::bool_constant<
++        std::is_same_v<decltype(std::declval<T &>().Stop()), bool>> {};
++struct QueueBaseline {
++    std::set<uintptr_t> addresses;
++    unsigned failures;
++    QueueBaseline() : failures(SimHost::GetSchedulerEvidence().taskFailures)
++    { for (const auto &q : SimHost::GetQueueEvidence()) addresses.insert(q.address); }
++    void ExpectNoOwnedWork() const
++    {
++        for (const auto &q : SimHost::GetQueueEvidence())
++            EXPECT_TRUE(addresses.count(q.address)) << "OWNED_QUEUE_REMAINS " << q.name
++                << " pending=" << q.pending << " running=" << q.running;
++        EXPECT_EQ(SimHost::GetSchedulerEvidence().taskFailures, failures);
++    }
++};
++template<class Body> void ShutdownContract(Body body)
++{
++    if constexpr (HasShutdown<OHOS::Telephony::SimManager>::value) {
++        body(std::true_type{});
++    } else {
++        testing::Test::RecordProperty("business", "NOT_RUN");
++        testing::Test::RecordProperty("resource_lifetime", "BLOCKED");
++        testing::Test::RecordProperty("async_safety", "BLOCKED");
++        ADD_FAILURE() << "BLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), "
++            "IsStopping() const and IsStopped() const; no mock shutdown substituted";
++    }
++}
++template<class Manager> void VerifyStopped(RealScenario &s, const Manager &manager, const QueueBaseline &baseline)
++{
++    EXPECT_TRUE(manager->IsStopped());
++    EXPECT_EQ(s.ril.use_count(), 1) << "PRODUCTION_RIL_REFERENCES_BEFORE_ROOT_RELEASE";
++    {
++        std::lock_guard<std::mutex> lock(s.mutex);
++        EXPECT_TRUE(s.notifications.empty()) << "RIL_SUBSCRIPTIONS_BEFORE_ROOT_RELEASE";
++        for (const auto &r : s.registrationLedger) {
++            EXPECT_FALSE(r.active) << "UNPAIRED_RIL_EVENT slot=" << r.slot << " event=" << r.event;
++            EXPECT_TRUE(r.owner.expired()) << "RIL_OBSERVER_ALIVE slot=" << r.slot << " event=" << r.event;
++        }
++    }
++    if (s.accountObserver) EXPECT_EQ(s.accountObserver.use_count(), 1);
++    baseline.ExpectNoOwnedWork();
++    EXPECT_FALSE(manager->IsSetPrimarySlotIdInProgress());
++    auto observer = std::make_shared<AccountObserver>([] { ADD_FAILURE() << "CALLBACK_AFTER_STOP"; });
++    std::weak_ptr<AccountObserver> weak = observer;
++    manager->RegisterCoreNotify(1, observer, RadioEvent::RADIO_SIM_ACCOUNT_LOADED);
++    observer.reset();
++    EXPECT_TRUE(weak.expired()) << "REGISTRATION_AFTER_STOP";
++    testing::Test::RecordProperty("resource_lifetime", testing::Test::HasFailure() ? "FAIL" : "PASS");
++    testing::Test::RecordProperty("async_safety", testing::Test::HasFailure() ? "FAIL" : "PASS");
++}
++}
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp
+new file mode 100755
+index 00000000..ec4ac569
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp
+@@ -0,0 +1,194 @@
++#include "shutdown_contract.h"
++#include "owned_card_graph.h"
++#include <future>
++#include <optional>
++namespace {
++using namespace Sim028Host;
++using namespace std::chrono_literals;
++
++TEST(PairingReview, AllThreeSlotsPublicDetach)
++{
++    RealScenario environment;
++    QueueBaseline baseline;
++    std::vector<std::unique_ptr<OwnedCardGraph>> graphs;
++    std::vector<std::weak_ptr<SimStateManager>> states;
++    for (int slot = 0; slot < 3; ++slot) {
++        graphs.push_back(std::make_unique<OwnedCardGraph>(environment.ril, slot));
++        states.push_back(graphs.back()->state);
++    }
++    for (auto &g : graphs) { g->Stop(); g->Stop(); }
++    for (const auto &s : states) EXPECT_TRUE(s.expired());
++    baseline.ExpectNoOwnedWork();
++    EXPECT_EQ(environment.ril.use_count(), 1);
++    std::lock_guard<std::mutex> lock(environment.mutex);
++    EXPECT_TRUE(environment.notifications.empty());
++}
++TEST(PairingReview, PartialInitializationAndRepeatedUnregister)
++{
++    RealScenario environment;
++    QueueBaseline baseline;
++    auto state = std::make_shared<SimStateManager>(environment.ril); state->Init(0);
++    auto missing = SimFileManager::CreateInstance({}, state);
++    EXPECT_EQ(missing, nullptr); // real factory rejects absent RIL before File allocation
++    auto observer = std::make_shared<AccountObserver>([] {});
++    std::weak_ptr<AccountObserver> retiring = observer;
++    state->RegisterCoreNotify(observer, RadioEvent::RADIO_CARD_TYPE_CHANGE);
++    state->UnRegisterCoreNotify(observer, RadioEvent::RADIO_CARD_TYPE_CHANGE);
++    state->UnRegisterCoreNotify(observer, RadioEvent::RADIO_CARD_TYPE_CHANGE);
++    observer.reset(); EXPECT_TRUE(retiring.expired());
++    std::weak_ptr<SimStateManager> weak = state; state.reset(); EXPECT_TRUE(weak.expired());
++    baseline.ExpectNoOwnedWork();
++    EXPECT_EQ(environment.ril.use_count(), 1);
++}
++TEST(PairingReview, DestroyThenReinitializeCardGraph)
++{
++    RealScenario environment;
++    QueueBaseline baseline;
++    for (int generation = 0; generation < 2; ++generation) {
++        OwnedCardGraph g(environment.ril);
++        std::weak_ptr<SimStateManager> state = g.state;
++        std::weak_ptr<IccFile> records = g.records;
++        g.Stop(); EXPECT_TRUE(state.expired()); EXPECT_TRUE(records.expired());
++        baseline.ExpectNoOwnedWork(); EXPECT_EQ(environment.ril.use_count(), 1);
++    }
++}
++TEST(PairingReview, UnrelatedRuntimeWorkerIsBaseline)
++{
++    RealScenario environment;
++    auto unrelated = std::make_unique<ffrt::queue>("unrelated-runtime-worker");
++    QueueBaseline baseline;
++    EXPECT_GT(SimHost::GetSchedulerEvidence().workers, 0u);
++    auto state = std::make_shared<SimStateManager>(environment.ril); state->Init(0);
++    state.reset(); baseline.ExpectNoOwnedWork();
++    EXPECT_GT(SimHost::GetSchedulerEvidence().workers, 0u); // independent worker is allowed
++    unrelated.reset(); // preserve the existing fixture's isolated-process cleanup assertions
++}
++
++template<class M = SimManager, class F> void WithRealGraph(F body, bool locked = true)
++{
++    if constexpr (HasShutdown<M>::value) {
++        RealScenario s(true);
++        QueueBaseline baseline;
++        if (locked) ASSERT_TRUE(s.StartLockedCard());
++        else {
++            s.manager = std::make_shared<M>(nullptr);
++            ASSERT_TRUE(s.manager->OnInit(3));
++        }
++        auto manager = std::static_pointer_cast<M>(s.manager);
++        body(s, manager, baseline);
++    } else {
++        ShutdownContract([](auto) {});
++    }
++}
++TEST(ShutdownContract, ANormalPrimaryThenStop)
++{
++    WithRealGraph([](auto &s, auto &manager, const auto &baseline) {
++        s.ClearObservations(); s.Permit();
++        EXPECT_CALL(*s.ril, SetPrimarySlot(1, testing::_)).WillOnce([](int slot, const auto &event) {
++            auto reply = std::make_shared<RadioResponseInfo>(); reply->error = ErrType::NONE;
++            RealScenario::Reply({slot, event->GetOwner(), event->GetInnerEventId()}, reply); return 0;
++        });
++        EXPECT_EQ(s.core.SetPrimarySlotId(1), TELEPHONY_ERR_SUCCESS);
++        testing::Test::RecordProperty("business", testing::Test::HasFailure() ? "FAIL" : "PASS");
++        EXPECT_TRUE(manager->Stop()); VerifyStopped(s, manager, baseline);
++    });
++}
++TEST(ShutdownContract, BThreeSlotsThenStop)
++{
++    WithRealGraph([](auto &s, auto &manager, const auto &baseline) {
++        EXPECT_EQ(manager->GetMaxSimCount(), 2); // physical capacity; assembly has three logical objects
++        {
++            std::lock_guard<std::mutex> lock(s.mutex);
++            std::set<int> slots;
++            for (const auto &r : s.registrationLedger)
++                if (r.active && r.event == RadioEvent::RADIO_SIM_STATE_CHANGE) slots.insert(r.slot);
++            EXPECT_EQ(slots, (std::set<int>{0, 1, 2}));
++        }
++        testing::Test::RecordProperty("business", "PASS");
++        EXPECT_TRUE(manager->Stop()); VerifyStopped(s, manager, baseline);
++    });
++}
++TEST(ShutdownContract, CPartialInitializationThenStop)
++{
++    WithRealGraph([](auto &s, auto &manager, const auto &baseline) {
++        testing::Test::RecordProperty("business", "NOT_RUN");
++        EXPECT_TRUE(manager->Stop()); VerifyStopped(s, manager, baseline);
++    }, false);
++}
++TEST(ShutdownContract, DRepeatedStop)
++{
++    WithRealGraph([](auto &s, auto &manager, const auto &baseline) {
++        auto first = std::async(std::launch::async, [&] { return manager->Stop(); });
++        auto second = std::async(std::launch::async, [&] { return manager->Stop(); });
++        EXPECT_TRUE(first.get()); EXPECT_TRUE(second.get()); EXPECT_TRUE(manager->Stop());
++        testing::Test::RecordProperty("business", "NOT_RUN"); VerifyStopped(s, manager, baseline);
++    });
++}
++template<class S, class M> void StopWithReply(S &s, M &manager, const QueueBaseline &baseline, bool error)
++{
++    std::optional<RealScenario::Pending> request;
++    s.ClearObservations(); s.Permit();
++    EXPECT_CALL(*s.ril, SetPrimarySlot(1, testing::_)).WillOnce([&](int slot, const auto &event) {
++        std::lock_guard<std::mutex> lock(s.mutex);
++        request = RealScenario::Pending{slot, event->GetOwner(), event->GetInnerEventId()};
++        s.changed.notify_all(); return 0;
++    });
++    auto caller = std::async(std::launch::async, [&] { return s.core.SetPrimarySlotId(1); });
++    {
++        std::unique_lock<std::mutex> lock(s.mutex);
++        EXPECT_TRUE(s.changed.wait_for(lock, 3s, [&] { return request.has_value(); }));
++    }
++    auto stop = std::async(std::launch::async, [&] { return manager->Stop(); });
++    auto deadline = std::chrono::steady_clock::now() + 3s;
++    while (!manager->IsStopping() && !manager->IsStopped() && std::chrono::steady_clock::now() < deadline)
++        std::this_thread::yield();
++    EXPECT_TRUE(manager->IsStopping());
++    EXPECT_EQ(stop.wait_for(0s), std::future_status::timeout);
++    if (request) {
++        auto response = std::make_shared<RadioResponseInfo>();
++        response->error = error ? ErrType::ERR_GENERIC_FAILURE : ErrType::NONE;
++        RealScenario::Reply(*request, response);
++    }
++    EXPECT_EQ(caller.get(), error ? TELEPHONY_ERR_LOCAL_PTR_NULL : TELEPHONY_ERR_SUCCESS);
++    testing::Test::RecordProperty("business", testing::Test::HasFailure() ? "FAIL" : "PASS");
++    EXPECT_TRUE(stop.get()); VerifyStopped(s, manager, baseline);
++}
++TEST(ShutdownContract, EInFlightSuccessCompletesBeforeRelease)
++{ WithRealGraph([](auto &s, auto &manager, const auto &baseline) { StopWithReply(s, manager, baseline, false); }); }
++TEST(ShutdownContract, FErrorReplyDuringStoppingKeepsOriginalResult)
++{ WithRealGraph([](auto &s, auto &manager, const auto &baseline) { StopWithReply(s, manager, baseline, true); }); }
++TEST(ShutdownContract, GDelayedDispatchAfterStop)
++{
++    WithRealGraph([](auto &s, auto &manager, const auto &baseline) {
++        // Snapshot the real pending FFRT callbacks, not fabricated SIM results.
++        auto delayed = SimHost::CapturePendingActions("SimStateHandle");
++        EXPECT_FALSE(delayed.empty());
++        EXPECT_TRUE(manager->Stop()); VerifyStopped(s, manager, baseline);
++        unsigned writes;
++        { std::lock_guard<std::mutex> lock(s.mutex); writes = s.writes.size(); }
++        for (auto &action : delayed) action(); // committed-before-cancel late-dispatch race
++        { std::lock_guard<std::mutex> lock(s.mutex); EXPECT_EQ(s.writes.size(), writes); }
++        baseline.ExpectNoOwnedWork();
++        testing::Test::RecordProperty("business", "NOT_RUN");
++    });
++}
++TEST(ShutdownContract, HDestroyAndCreateNewGraph)
++{
++    WithRealGraph([](auto &s, auto &manager, const auto &baseline) {
++        EXPECT_TRUE(manager->Stop()); VerifyStopped(s, manager, baseline);
++        std::weak_ptr<SimManager> old = manager;
++        s.core.SetSimManager(nullptr); CoreManagerInner::GetInstance().OnInit(nullptr, nullptr, nullptr);
++        s.manager.reset(); manager.reset(); EXPECT_TRUE(old.expired());
++        // A new instance is supported; re-OnInit of a stopped instance is a separate contract.
++        {
++            std::lock_guard<std::mutex> lock(s.mutex);
++            s.accountLoaded = false; s.autoStatus = false; s.statusRequests.clear(); s.updates = 0;
++        }
++        s.accountObserver.reset();
++        ASSERT_TRUE(s.StartLockedCard());
++        auto replacement = std::static_pointer_cast<typename std::decay_t<decltype(manager)>::element_type>(s.manager);
++        EXPECT_TRUE(replacement->Stop()); VerifyStopped(s, replacement, baseline);
++        testing::Test::RecordProperty("business", "NOT_RUN");
++    });
++}
++} // namespace
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_plan.md b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_plan.md
+new file mode 100755
+index 00000000..b542b770
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_plan.md
+@@ -0,0 +1,134 @@
++# SIM-028 生产停止方案审查（e21f1ef3）
++
++结论：**四文件配对补丁仅是准备性修复，不批准作为完整Shutdown补丁。** 本轮仅在仓外源码副本应用并验证它，主工作区生产代码不变。原7条RealSimPrimary、8条生命周期和60条Host分别计数；新增的配对审查和A～H契约单列，不缩减失败统计。运行结果、命令、XML及输入摘要查本轮独立审查JSON。
++
++## 1. 配对补丁逐项结论
++
++| 问题 | 审查结论 |
++| --- | --- |
++| 三类既知强环是否全部解除 | 否。补丁没有调用UnRegisterSimNotify、IccFile::UnInit、Records→File反注册，也没有停止/排空入口 |
++| 是否覆盖三槽 | 新ICCID分支本身无槽数限制；Account观察表按事件/handler聚合，不是每槽独立表。补丁未遍历三个已装配对象，不能据此说三槽关闭 |
++| 注册注销是否完整 | 否。新增发现Phonebook状态订阅、File的两个RIL订阅、Monitor参数Watcher等退出缺口，见§2及subscription_review.json |
++| SIM_ICCID_LOADED | 补进SimStateHandle注销switch，匹配同一Observer和handler，保留其他case与业务事件 |
++| ACCOUNT_LOADED | 新增Manager→Monitor→Observer::Remove，移除同一handler。当前表未按slot隔离，不能擅自引入新的分槽语义；原Register在检查slot前登记的问题另列，不顺手修改 |
++| 重复注销 | Observer::Remove在自身锁内对缺失项无操作，nullptr直接返回；配对操作可重复。不等于Stop整体幂等或无竞争 |
++| 初始化未完成 | 新Monitor指针判空；ICCID沿用Observer判空。仅验证这些局部null路径，原Manager的空vector/部分装配仍须由Stop快照和空值检查处理 |
++| 延迟/在途工作 | 完全未处理。Unregister不能撤回已入队回调，也不能停止尚未执行的raw-this任务 |
++| 业务行为 | Running时SetPrimarySlotId、参数/RIL/session/返回不变。只有请求显式注销时的订阅释放行为修正；未知slot/重复callback行为按原契约解释 |
++| 析构依赖 | 补丁提供可用注销入口，但没有在有效共享所有权时调用完整退出，原析构依赖仍在 |
++
++## 2. 所有权与注销清单
++
++[subscription_review.json](subscription_review.json)登记16组订阅，每组含固定源码摘要、注册/注销位置、持有者、订阅者、引用类型、退出阶段及验证方式。它是当前源码审查清单，不声称覆盖未启用的全部厂商/卫星/eSIM feature。
++
++除了既知A/B/C，还从原地址图和当前声明确认第四类独立强环，每槽一条：
++
++```mermaid
++flowchart LR
++  State --> Handle --> Observer
++  Observer --> Monitor --> State
++  Observer --> Records[IccFile] --> State
++  Observer --> Files[SimFileManager] --> Records
++  Records --> RecObserver[FilesFetched Observer] --> Files
++  Observer --> Phone[IccDiallingNumbersManager] --> State
++```
++
++Phonebook的注册位于 `icc_dialling_numbers_manager.cpp::Init`，经FileManager转发到State；`icc_dialling_numbers_manager.h::simStateManager_`为shared_ptr，析构为空且没有UnRegister调用。本轮先重新分析历史地址图，再对当前C1执行新的只读LLDB追踪，两份均得到三条Phonebook闭环；各自输入摘要和运行来源分别保存，不将历史图重算冒充新执行。仅解除原9条A/B/C仍不能证明State可释放。
++
++另须退出的边界：
++
++- FileManager::Init的VOICE_TECH_CHANGED、ICC_REFRESH；后者与STK共用同一RIL事件，Host必须记录多订阅者，不能只用一个弱指针覆盖。新弱引用ledger按slot/event/所有权控制块配对，不增加生产对象强引用。
++- Phonebook的Cache及UsimService拥有自己的事件队列，不能只清Phonebook根。
++- Tracker四组文件观察、OperatorConfigCache的State观察及APN延迟PostTask：配对存在但当前放在Account析构，须移到有效所有权的显式停止中。IccFile的RegisterParamsListener/UnRegisterParamsListener在此版本都是空函数，不能虚构它们已提供Watcher安全保证。
++- Monitor的两个参数key以raw this作context；UnregisterRebootDetectCallback存在但无调用点。单个Watch成功/另一个失败也须逐项记账并撤销成功项；RemoveParameterWatcher是否等待在途callback，当前fork未提供契约证明。
++- CES/SA订阅内部回调weak owner不保证回调尚未lock；UnSubscribeListeners只移除外部登记，不是排空屏障。
++- RadioProtocolController按实际slotCount_注销RADIO_SIM_RADIO_PROTOCOL_NOTIFY；不能把两个设备协议参与成员和三个SIM对象槽混为一数。
++
++## 3. 正式停止协议
++
++对象状态为 `Running → Stopping → Stopped`。Stop成功只表示本SIM对象图已排空/释放；不表示Modem被取消或共享RIL可DeInit。
++
++控制契约提议为 `bool SimManager::Stop()`、只读`IsStopping()/IsStopped()`；具体deadline参数/宿主预算需在生产授权时确定。bool false必须表示NotDrained、调用上下文不合法或外部屏障失败，保留Stopping及所有可能仍被访问的资源，不能返回成功后继续清理。契约测试缺该API时显式FAIL/BLOCKED，不提供测试Fake Stop。新接口保持非虚内部生命周期接口，不修改ISimManager公共虚表。
++
++1. **关闭外部准入**：H撤销/冻结新业务入口、初始化、扩展槽及新订阅；现有调用获得的lease继续有效。Core/CMI/本地消费者也必须覆盖。Manager公共读方法在清vector前同样要排空；只保护SetPrimarySlotId不够。嵌套调用使用同一请求lease，不能把已接纳调用中的内部查询误拒为新请求。
++2. **关闭新后台启动**：注册/重试/加载生产者关闭新任务准入。给Manager的OnInit任务、RefreshCache分离线程、Monitor::CheckOpcNeedUpdata和Controller所有detach/TelFFRTUtils任务建立对象私有任务组，入队/启动前登记，结束及创建失败都精确退账。不能用ffrt::wait（仅当前调用线程）代替整个对象图排空。
++3. **保留在途业务完成通路**：B专用命令与C1 CHECK/UPDATE/COMPLETE的原应答、错误、原超时仍可交付。不能先取消45秒B超时或Radio应答监听再等调用结束。C1原始返回之后的五次重试仍属于已接纳业务；Stop不能借关闭新后台任务之名丢弃它们。业务lease须覆盖重试序列终点，不能只看一次函数返回或瞬时isSetPrimarySlotIdInProgress_。
++4. **关闭非业务监听**：暂停Monitor重新登记，按成功登记token注销CES/SA、Watcher，屏障等待已进入callback的lease释放。Watcher若无安全注销/排空协议，返回NotDrained，不能假定Remove函数返回即安全释放raw context。
++5. **排空对象队列**：业务终点后关闭TelEventHandler新Send/Submit，取消可取消的匹配SIM/加载延迟工作，等待已经执行的回调结束。队列状态、generation及活动计数必须由同一同步域保护；FFRT cancel/wait在域锁外执行。已经取出的回调在执行前再次准入；重入Stop应拒绝/转交控制线程，不自join。
++6. **解除全部订阅**：保留各shared owner，用Monitor.UnRegisterSimNotify断A；对所有缓存Records去重UnInit断B，取消Records→File断C；Phonebook注销状态断D；File注销State两项和RIL两项；Tracker/Cache/STK/Radio逐项反注册。期间不能允许新的注册回填列表。Observer::RemoveAll当前在锁内clear shared_ptr；正式实现应先在锁内swap出待释放容器，再在锁外释放，避免最后一个外部订阅者析构反向注销/等待导致死锁。
++7. **按所有权释放**：清Account/SMS/STK、Phonebook/Cache/Usim、File/Controller/Records、Monitor/Controller/Radio、State/Handle及其他缓存。依赖交叉处只在排空后释放，最后清SIM持有的RIL引用，转换Stopped并唤醒其他Stop调用者。重复Stop共享同一完成结果，不再次shared_from_this注销。
++8. **宿主完成退出**：在其他消费者DeInit完成后，Core才能停止共享RIL/EXT；SIM不停止它。停止失败时Core不能继续DeInit RIL或卸载模块。新实例用新generation，旧回调不能在新图中获得lease。
++
++```mermaid
++sequenceDiagram
++  participant H as Core/H
++  participant M as SimManager
++  participant B as Controller/Radio
++  participant Q as owned queues/tasks
++  participant L as listeners
++  H->>H: close admission / freeze consumers
++  H->>M: Stop (control thread)
++  M->>M: Running to Stopping
++  M->>B: keep accepted session/retry completions
++  B-->>M: original result and terminal effects
++  M->>L: unregister successful tokens + callback fence
++  M->>Q: close submit / cancel delayed / drain active
++  Q-->>M: owned task leases = 0
++  M->>M: detach all four cycle families, release graph
++  M-->>H: Stopped or NotDrained (retain resources)
++  H->>H: only after all consumers safe: shared RIL DeInit
++```
++
++`RemoveAllEvents()`不关闭准入，也不停止已弹出的任务；`ClearCurrentTask(true)`和队列析构不是公开的完整停止协议。不得从析构反调shared_from_this，亦不得在Manager/Observer/Queue锁内等待反向访问该锁的任务。
++
++## 4. 最小生产修改集合（尚未应用）
++
++这是一组不能省略的职责/文件集合，**不是承诺四文件补丁就能覆盖的产品最小行数**。完整native变体仍可能扩展。没有授权时只交付建议与隔离验证。
++
++| 文件组（services/sim/下均需h/cpp，另说明者除外） | 必要变化 |
++| --- | --- |
++| 新增私有sim_lifecycle.h（如复用无法满足才新增） | 对象私有任务组/lease及状态契约；不建立全局生命周期总线，先登记再启动、异常及取消都退账 |
++| sim_manager | 生命周期状态、入站/后台lease、三槽快照、Stop编排；覆盖OnInit/InitTelExtraModule/Register和全部访问成员的公开入口 |
++| multi_sim_monitor | 禁止重注册；显式CES/SA/Watcher退出、事件/通用任务排空、Account反注册、SimNotify断环 |
++| sim_state_manager、sim_state_handle | 正常共享所有权内UnInit；ICCID配对、Observer清理、延迟匹配任务排空；析构只作无shared_from_this兜底 |
++| sim_file_manager、icc_file | 所有cached Records/Controller去重；文件、State、RIL登记解除；队列排空后清缓存，不只清当前simFile_ |
++| multi_sim_controller、radio_protocol_controller | 新请求准入、分离线程/重试序列登记、关联应答继续可达、会话终点后取消非业务定时器/注销RIL |
++| icc_dialling_numbers_manager、icc_dialling_numbers_cache | Phonebook缺失的State反注册、Cache/Usim队列停止、当前同步查询/等待者完成后释放 |
++| sim_account_manager、operator_config_cache | 将Tracker四组及Cache配对移至显式Stop；APN回调gate/禁止重投；不改正常加载结果 |
++| sim_sms_manager、stk_manager | 停止/排空私有Controller；STK在有效共享所有权内使用现有UnRegisterEvents；不依赖析构触发 |
++| utils/common的tel_event_handler、tel_event_queue（h/cpp） | 可复用CloseAdmission/Drain；同步活动计数、取消、取出后再准入、禁止self wait；不改Running队列优先级/顺序 |
++| services/tel_ril/src/observer_handler.cpp | Stop清Observer时使用锁内摘除、锁外销毁，避免未知订阅者的析构在Observer锁内执行；保持原公开接口 |
++| services/core的core_service.h/cpp | 私有生命周期hook、H准入/消费者次序，Stop失败不继续RIL DeInit |
++
++Core的`simManager_`实际是shared_ptr<ISimManager>。**不能直接写simManager_->Stop()，也不能依赖dynamic_cast（LTO/平台配置不保证RTTI）或扩公共虚表。** 推荐在原Init构造位置用局部shared_ptr<SimManager>创建原对象，再赋给原接口成员；私有stop hook仅捕获该对象的weak_ptr，保持同一控制块、原CMI/Esim/搜网装配顺序及单例。Core/H准入是否可复用既有统一门控，须核查所有本地和IPC消费者后确定；不能假装OnStop设置state_就已阻止在途调用。
++
++直接可实施的准备性差异仍为[pairing_fixes.proposed.patch](pairing_fixes.proposed.patch)，本轮完成隔离编译/执行验证。**完整Stop补丁尚不能给出“可安全直接合入”的批准**：native Watcher屏障、后台任务归属、全入口准入及Core消费者退出仍缺实现/产品证据。上述文件职责、16组反注册和A～H门禁取代旧README的几行伪Stop草图；不再通过叠加析构清理冒充正式修复。
++
++## 5. GTest门禁与独立结果
++
++`shutdown_contract_test.cpp`在原目标增加下列场景，业务/资源/异步分别记录。没有真实生产Stop API时，八条均FAIL并标BLOCKED，不skip、不用Mock返回成功。未来接口签名变更须同步契约探测，**当前未实例化的Stop分支是NOT_RUN，不能称为编译/运行验证过的生产停止实现**。
++
++| 场景 | 测试及关键断言 |
++| --- | --- |
++| A 正常主卡后停止 | ANormalPrimaryThenStop：真实Core→Manager→Controller专用B成功；Stop后RIL仅外部根、配对完整、无owned queue |
++| B 三槽 | BThreeSlotsThenStop：physical capacity=2且RIL实际登记槽集合{0,1,2}；逐owner弱引用失效 |
++| C 部分失败 | CPartialInitializationThenStop：真实null-RIL部分初始化，保持原OnInit返回语义；空/已创建节点均可停止 |
++| D 重复 | DRepeatedStop：两并发Stop及一次重复Stop同一成功结果，无重注册 |
++| E 在途成功 | EInFlightSuccessCompletesBeforeRelease：请求已捕获，Stop进入Stopping而未返回；原owner成功应答后原返回SUCCESS再完成释放 |
++| F 在途异常 | FErrorReplyDuringStoppingKeepsOriginalResult：原RIL错误仍返回既有错误码，不提前提交状态 |
++| G 迟到定时调度 | GDelayedDispatchAfterStop：仅捕获真实SimStateHandle待调度FFRT closure；停止后尝试晚调度，参数不再写、队列不复活；不是等待180秒墙钟、不是设备集成 |
++| H 重建 | HDestroyAndCreateNewGraph：旧实例Stop且所有外部根撤销后weak失效，重置场景观测代次再创建新实例；不承诺Stopped实例可再次OnInit |
++
++四条PairingReview直接执行当前真实State/File公开API，覆盖三槽、部分工厂失败/重复注销、销毁重建、无关runtime worker存在。它们与原8条生命周期分开统计。新QueueBaseline检查新增队列/未完成任务和异常计数；不要求共享线程池总线程数归零。原隔离进程的旧清理断言保留，防止弱化历史失败。
++
++Stop成功的验证在释放测试RIL及Manager根之前执行：全部RIL ledger inactive、owner weak expired、RIL use_count仅测试根1、无本图queue/任务、account观察者只剩测试根。Ledger以slot/event/weak控制块比较，允许相同RIL事件的File与STK同时登记。内部Observer的源码配对和完整地址弱引用仍须在完整候选Stop运行时复核，不能用外部RIL ledger替代全部内部对象证明。
++
++## 6. 生产风险及明确未验证项
++
++- 保留Running时所有权限、错误顺序、slotId/userSet、参数提交/恢复、通知偏序、B命令和C1协议/session/重试。C1 UPDATE/COMPLETE异常、超时和厂商A分支仍需补差分，不能由现有7例推定。
++- 拆除循环不会自动消除raw-this UAF；native FFRT取消/等待、参数Watcher、CES/SA注销的在途保证需匹配OHOS源码与产品运行验证。当前Host Watch/Subscribe返回不可用，不能证明注册成功分支。
++- Host RIL路由/ledger使用weak引用；真实TelRil ObserverHandler强持订阅者。逐项inactive证明调用了反注册，但不能代替外部强持有和已出队应答的native行为验证；完整候选Stop批准前需补强持有边界模式或匹配OHOS RIL运行证据。
++- 共享RIL还有搜网/eSIM消费者；Core停止顺序必须单独验收。IPC/SA/Binder、TelRil/HDI实链仍BLOCKED。
++- Host Runner的thread_local标记只适用于它的独占std::thread；不得直接当作native FFRT/fiber的逻辑任务身份。生产self-wait检测按任务lease而非OS线程数判定。
++- 线程计数是Host队列替身实现细节；应验证对象组未完成工作归零及所有权释放，不能推断真实FFRT池是否退出。
++- 停止超时保留资源并报告NotDrained，不能AllowLeak、吞返回、私有清环或销毁仍被回调访问的对象。重复停止期间的租约/代次分配必须通过并发验证后才可批准。
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/subscription_review.json b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/subscription_review.json
+new file mode 100755
+index 00000000..ac65ca9f
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/subscription_review.json
+@@ -0,0 +1,417 @@
++{
++  "schema_version": 1,
++  "head": "e21f1ef35a715a197dd3bc76fbaccadea70d17be",
++  "scope": "source-grounded lifecycle review; not dynamic proof that every optional feature is covered",
++  "rows": [
++    {
++      "id": "state-monitor",
++      "owner": "SimStateHandle ObserverHandler",
++      "subscriber": "MultiSimMonitor",
++      "reference": "shared ObserverHandler entry unless stated",
++      "registration": {
++        "path": "services/sim/src/multi_sim_monitor.cpp",
++        "sha256": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba",
++        "needle": "RegisterCoreNotify(shared_from_this(), RadioEvent::RADIO_SIM_STATE_",
++        "lines": [
++          803,
++          804,
++          805
++        ]
++      },
++      "unregistration": {
++        "path": "services/sim/src/multi_sim_monitor.cpp",
++        "sha256": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba",
++        "needle": "UnRegisterCoreNotify(shared_from_this(), RadioEvent::RADIO_SIM_STATE_",
++        "lines": [
++          823,
++          824,
++          825
++        ]
++      },
++      "exit_phase": "after producer quiescence, before releasing Monitor",
++      "verification": "ShutdownContract.B; native listener race",
++      "finding": "pair exists, normal shutdown never reaches it"
++    },
++    {
++      "id": "iccid-monitor",
++      "owner": "IccFile filesFetchedObser",
++      "subscriber": "MultiSimMonitor",
++      "reference": "shared ObserverHandler entry unless stated",
++      "registration": {
++        "path": "services/sim/src/multi_sim_monitor.cpp",
++        "sha256": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba",
++        "needle": "RegisterCoreNotify(shared_from_this(), RadioEvent::RADIO_QUERY_ICCID_DONE)",
++        "lines": [
++          798
++        ]
++      },
++      "unregistration": {
++        "path": "services/sim/src/multi_sim_monitor.cpp",
++        "sha256": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba",
++        "needle": "UnRegisterCoreNotify(shared_from_this(), RadioEvent::RADIO_QUERY_ICCID_DONE)",
++        "lines": [
++          818
++        ]
++      },
++      "exit_phase": "same phase; all logical slots",
++      "verification": "ShutdownContract.B",
++      "finding": "pair exists but not invoked at normal manager release"
++    },
++    {
++      "id": "state-records",
++      "owner": "SimStateHandle ObserverHandler",
++      "subscriber": "IccFile",
++      "reference": "shared ObserverHandler entry unless stated",
++      "registration": {
++        "path": "services/sim/src/icc_file.cpp",
++        "sha256": "1edcaf9f6862f2cd8d08a00b0013437df8ab20ad9e2395de48bb83c8446f5518",
++        "needle": "stateManager_->RegisterCoreNotify(shared_from_this()",
++        "lines": [
++          86,
++          87,
++          88
++        ]
++      },
++      "unregistration": {
++        "path": "services/sim/src/icc_file.cpp",
++        "sha256": "1edcaf9f6862f2cd8d08a00b0013437df8ab20ad9e2395de48bb83c8446f5518",
++        "needle": "stateManager_->UnRegisterCoreNotify(shared_from_this()",
++        "lines": [
++          852,
++          853,
++          854
++        ]
++      },
++      "exit_phase": "while Records shared owner valid, after queued work drain",
++      "verification": "RealCardLifetime.PublicDetachReleasesRealStateFileAndRil",
++      "finding": "READY/LOCKED/SIMLOCK paired by UnInit, destructor dependency wrong"
++    },
++    {
++      "id": "state-file",
++      "owner": "SimStateHandle ObserverHandler",
++      "subscriber": "SimFileManager",
++      "reference": "shared ObserverHandler entry unless stated",
++      "registration": {
++        "path": "services/sim/src/sim_file_manager.cpp",
++        "sha256": "12045e75e5299fda095155cb8aa2358f62a43f936df9d55aadbf4d95fb47752a",
++        "needle": "simStateManager->RegisterCoreNotify(shared_from_this()",
++        "lines": [
++          104,
++          105
++        ]
++      },
++      "unregistration": null,
++      "exit_phase": "all File cached types detached before State release",
++      "verification": "PairingReview.AllThreeSlotsPublicDetach",
++      "finding": "ICCID unregister switch missing; matching case occurs in Register only in original",
++      "proposed_pair": "pairing_fixes.proposed.patch; compiled/executed only in isolated copy"
++    },
++    {
++      "id": "records-file",
++      "owner": "IccFile filesFetchedObser",
++      "subscriber": "SimFileManager",
++      "reference": "shared ObserverHandler entry unless stated",
++      "registration": {
++        "path": "services/sim/src/sim_file_manager.cpp",
++        "sha256": "12045e75e5299fda095155cb8aa2358f62a43f936df9d55aadbf4d95fb47752a",
++        "needle": "simFile_->RegisterCoreNotify(shared_from_this(), RadioEvent::RADIO_SIM_RECORDS_LOADED)",
++        "lines": [
++          132
++        ]
++      },
++      "unregistration": {
++        "path": "services/sim/src/icc_file.cpp",
++        "sha256": "1edcaf9f6862f2cd8d08a00b0013437df8ab20ad9e2395de48bb83c8446f5518",
++        "needle": "UnregisterAllFilesLoaded(handler)",
++        "lines": [
++          551
++        ]
++      },
++      "exit_phase": "all cached IccFile objects, deduplicate USIM/GSM aliases",
++      "verification": "RealCardLifetime.PublicDetachReleasesRealStateFileAndRil",
++      "finding": "public remover exists; no FileManager normal unregistration"
++    },
++    {
++      "id": "state-phonebook",
++      "owner": "SimStateHandle ObserverHandler via FileManager",
++      "subscriber": "IccDiallingNumbersManager",
++      "reference": "shared ObserverHandler entry unless stated",
++      "registration": {
++        "path": "services/sim/src/icc_dialling_numbers_manager.cpp",
++        "sha256": "b0244babca504514e94112f7418a24b5b61905f18e3c995e8c264386f4aa6ed7",
++        "needle": "simFileManager->RegisterCoreNotify(shared_from_this(), RadioEvent::RADIO_SIM_STATE_CHANGE)",
++        "lines": [
++          54
++        ]
++      },
++      "unregistration": null,
++      "exit_phase": "Phonebook.Stop before State; drain Cache/Usim children",
++      "verification": "ShutdownContract.B plus 3 historical address cycles",
++      "finding": "NEW independent strong cycle: no inverse call; empty destructor"
++    },
++    {
++      "id": "account-observer",
++      "owner": "MultiSimMonitor ObserverHandler",
++      "subscriber": "external account observer",
++      "reference": "shared ObserverHandler entry unless stated",
++      "registration": {
++        "path": "services/sim/src/sim_manager.cpp",
++        "sha256": "9231f9b67e92d80178c878412b16d573c8ed604dfa58638e7441dda7f90a3cd5",
++        "needle": "what == RadioEvent::RADIO_SIM_ACCOUNT_LOADED",
++        "lines": [
++          1210
++        ]
++      },
++      "unregistration": null,
++      "exit_phase": "drain Monitor; explicit remove while owner valid",
++      "verification": "ShutdownContract.A/B; account_observer_expired in original 7",
++      "finding": "Manager and Monitor unregistration entry absent; 4-file patch adds pair",
++      "proposed_pair": "pairing_fixes.proposed.patch; compiled/executed only in isolated copy"
++    },
++    {
++      "id": "ril-state",
++      "owner": "RIL external ObserverHandler",
++      "subscriber": "SimStateHandle",
++      "reference": "shared ObserverHandler entry unless stated",
++      "registration": {
++        "path": "services/sim/src/sim_state_handle.cpp",
++        "sha256": "e6856b2acda8a60334e8f61f6d5201fb896106a0a700960f8a36cc26dd1d5e0f",
++        "needle": "telRilManager->RegisterCoreNotify(slotId_",
++        "lines": [
++          140,
++          141
++        ]
++      },
++      "unregistration": {
++        "path": "services/sim/src/sim_state_handle.cpp",
++        "sha256": "e6856b2acda8a60334e8f61f6d5201fb896106a0a700960f8a36cc26dd1d5e0f",
++        "needle": "telRilManager->UnRegisterCoreNotify(slotId_",
++        "lines": [
++          491,
++          492
++        ]
++      },
++      "exit_phase": "after in-flight completions; StateHandle stop",
++      "verification": "RealCardLifetime.InitializedStateUnregistersRilAndReleases",
++      "finding": "UnInit pair, not reached while State cycle retained"
++    },
++    {
++      "id": "ril-file",
++      "owner": "RIL external ObserverHandler",
++      "subscriber": "SimFileManager",
++      "reference": "shared ObserverHandler entry unless stated",
++      "registration": {
++        "path": "services/sim/src/sim_file_manager.cpp",
++        "sha256": "12045e75e5299fda095155cb8aa2358f62a43f936df9d55aadbf4d95fb47752a",
++        "needle": "telRilManager->RegisterCoreNotify(slotId, shared_from_this()",
++        "lines": [
++          106,
++          107
++        ]
++      },
++      "unregistration": null,
++      "exit_phase": "File.Stop before RIL root release",
++      "verification": "weak full multi-owner registration ledger",
++      "finding": "VOICE_TECH_CHANGED/ICC_REFRESH registered; File destructor omits RIL removal"
++    },
++    {
++      "id": "ril-radio",
++      "owner": "RIL external ObserverHandler",
++      "subscriber": "RadioProtocolController",
++      "reference": "shared ObserverHandler entry unless stated",
++      "registration": {
++        "path": "services/sim/src/radio_protocol_controller.cpp",
++        "sha256": "7391942fa10b22e4692b1873716d4827be68dbbe85ff63587f243e3096d79102",
++        "needle": "RegisterCoreNotify(i, shared_from_this()",
++        "lines": [
++          54
++        ]
++      },
++      "unregistration": {
++        "path": "services/sim/src/radio_protocol_controller.cpp",
++        "sha256": "7391942fa10b22e4692b1873716d4827be68dbbe85ff63587f243e3096d79102",
++        "needle": "UnRegisterCoreNotify(i, shared_from_this()",
++        "lines": [
++          444
++        ]
++      },
++      "exit_phase": "after original CHECK/UPDATE/COMPLETE and retry completion",
++      "verification": "ShutdownContract.E/F and original C1",
++      "finding": "paired; count uses captured slotCount, not physical/logical count conflation"
++    },
++    {
++      "id": "stk",
++      "owner": "State/RIL observers",
++      "subscriber": "StkController",
++      "reference": "shared ObserverHandler entry unless stated",
++      "registration": {
++        "path": "services/sim/src/stk_controller.cpp",
++        "sha256": "996c434c8f62ba9c77b2819f16cf15abeed2f3d0a41468c84c39cd5db7414be2",
++        "needle": "RegisterCoreNotify(slotId_, shared_from_this()",
++        "lines": [
++          244,
++          245,
++          246,
++          247,
++          248,
++          249,
++          250
++        ]
++      },
++      "unregistration": {
++        "path": "services/sim/src/stk_controller.cpp",
++        "sha256": "996c434c8f62ba9c77b2819f16cf15abeed2f3d0a41468c84c39cd5db7414be2",
++        "needle": "UnRegisterCoreNotify(slotId_, shared_from_this()",
++        "lines": [
++          266,
++          267,
++          268,
++          269,
++          270,
++          271,
++          272
++        ]
++      },
++      "exit_phase": "explicit Stk.Stop, before child destruction",
++      "verification": "weak full multi-owner ledger",
++      "finding": "seven RIL events plus state paired; current destructor-based call must be moved before shutdown release"
++    },
++    {
++      "id": "tracker",
++      "owner": "IccFile observers",
++      "subscriber": "SimStateTracker",
++      "reference": "shared ObserverHandler entry unless stated",
++      "registration": {
++        "path": "services/sim/src/sim_state_tracker.cpp",
++        "sha256": "0ebadb176c101095d8561c1f7eb55fa108c8757016a4d71e630e8242df44ea4c",
++        "needle": "RegisterCoreNotify(shared_from_this()",
++        "lines": [
++          209,
++          220,
++          231,
++          242
++        ]
++      },
++      "unregistration": {
++        "path": "services/sim/src/sim_state_tracker.cpp",
++        "sha256": "0ebadb176c101095d8561c1f7eb55fa108c8757016a4d71e630e8242df44ea4c",
++        "needle": "UnRegisterCoreNotify(shared_from_this()",
++        "lines": [
++          253,
++          264,
++          275,
++          286
++        ]
++      },
++      "exit_phase": "Account.Stop: all four events before Tracker/Cache release",
++      "verification": "ShutdownContract.B ledger/weak objects",
++      "finding": "four matched pairs; Account destructor currently performs inverse"
++    },
++    {
++      "id": "operator-cache",
++      "owner": "State observer via FileManager",
++      "subscriber": "OperatorConfigCache",
++      "reference": "shared ObserverHandler entry unless stated",
++      "registration": {
++        "path": "services/sim/src/operator_config_cache.cpp",
++        "sha256": "6125e33fe2d1a74c0de9cd4183b4c1c22a840790f324935bcd2f0670bcfdcd5a",
++        "needle": "RegisterCoreNotify(shared_from_this()",
++        "lines": [
++          302
++        ]
++      },
++      "unregistration": {
++        "path": "services/sim/src/operator_config_cache.cpp",
++        "sha256": "6125e33fe2d1a74c0de9cd4183b4c1c22a840790f324935bcd2f0670bcfdcd5a",
++        "needle": "UnRegisterCoreNotify(shared_from_this()",
++        "lines": [
++          339
++        ]
++      },
++      "exit_phase": "Account.Stop; fence weak APN task and prohibit repost",
++      "verification": "ShutdownContract.G; RunnerLifetime tests only external runner",
++      "finding": "paired; deferred APN tasks require callback admission/drain"
++    },
++    {
++      "id": "monitor-watch",
++      "owner": "system parameter service (raw context)",
++      "subscriber": "MultiSimMonitor raw this",
++      "reference": "raw void* context; requires external unregister fence plus active callback lease",
++      "registration": {
++        "path": "services/sim/src/multi_sim_monitor.cpp",
++        "sha256": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba",
++        "needle": "WatchParameter(",
++        "lines": [
++          176,
++          178
++        ]
++      },
++      "unregistration": {
++        "path": "services/sim/src/multi_sim_monitor.cpp",
++        "sha256": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba",
++        "needle": "RemoveParameterWatcher(",
++        "lines": [
++          190,
++          192
++        ]
++      },
++      "exit_phase": "disable new watcher registration; unregister each successful key then fence active callbacks",
++      "verification": "native RemoveParameterWatcher contract needed; Host returns unavailable",
++      "finding": "UnregisterRebootDetectCallback has no call sites; two physical keys only"
++    },
++    {
++      "id": "monitor-ces",
++      "owner": "CMI common event registry (weak callbacks inside subscribers)",
++      "subscriber": "MultiSimMonitor subscribers",
++      "reference": "CMI subscriber registration; subscriber stores weak EventHandler owner",
++      "registration": {
++        "path": "services/sim/src/multi_sim_monitor.cpp",
++        "sha256": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba",
++        "needle": "RegisterCommonEventCallback(",
++        "lines": [
++          496,
++          508
++        ]
++      },
++      "unregistration": {
++        "path": "services/sim/src/multi_sim_monitor.cpp",
++        "sha256": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba",
++        "needle": "UnregisterCommonEventCallback(",
++        "lines": [
++          415,
++          416
++        ]
++      },
++      "exit_phase": "Monitor.Stop before member release",
++      "verification": "native CES callbacks and owner-local task gate",
++      "finding": "paired in UnSubscribeListeners; not an in-flight barrier"
++    },
++    {
++      "id": "monitor-sa",
++      "owner": "SA service registry (weak callback owner inside listener)",
++      "subscriber": "MultiSimMonitor listener",
++      "reference": "external sptr listener; listener stores weak EventHandler owner",
++      "registration": {
++        "path": "services/sim/src/multi_sim_monitor.cpp",
++        "sha256": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba",
++        "needle": "SubscribeSystemAbility(",
++        "lines": [
++          439,
++          440
++        ]
++      },
++      "unregistration": {
++        "path": "services/sim/src/multi_sim_monitor.cpp",
++        "sha256": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba",
++        "needle": "UnSubscribeSystemAbility(",
++        "lines": [
++          423,
++          424
++        ]
++      },
++      "exit_phase": "Monitor.Stop before callback context destruction",
++      "verification": "native SA callbacks; unavailable in Host",
++      "finding": "pair exists; callback can already be queued"
++    }
++  ]
++}
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/validate_patch.py b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/validate_patch.py
+new file mode 100755
+index 00000000..de8940d3
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/validate_patch.py
+@@ -0,0 +1,98 @@
++#!/usr/bin/env python3
++"""Apply a reviewed patch ONLY to a fresh outside-repository source copy, then reuse Host regression."""
++import argparse
++import hashlib
++import json
++import os
++from pathlib import Path
++import shutil
++import subprocess
++import sys
++import tempfile
++import xml.etree.ElementTree as ET
++
++HERE = Path(__file__).resolve().parent
++SYSTEM = HERE.parents[1]
++CORE = SYSTEM.parents[3]
++REPO = CORE.parent
++sys.path.insert(0, str(SYSTEM / 'tools'))
++from host import command, write
++
++
++def sha(path):
++    return hashlib.sha256(path.read_bytes()).hexdigest()
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--output', type=Path, required=True)
++    parser.add_argument('--patch', type=Path, default=HERE / 'pairing_fixes.proposed.patch')
++    parser.add_argument('--config', type=Path, default=REPO / '.host-out/host.json')
++    args = parser.parse_args()
++    output = args.output.resolve()
++    if output.is_relative_to(REPO) or output in REPO.parents:
++        parser.error('Verification output must be outside the repository')
++    output.mkdir(parents=True, exist_ok=True)
++    session = Path(tempfile.mkdtemp(prefix='pairing-review-', dir=output))
++    source = session / 'source'
++    source.mkdir()
++    copied = source / CORE.name
++    patch = args.patch.resolve(strict=True)
++    paths = subprocess.check_output(['git', 'ls-files', '-z', '--', CORE.name], cwd=REPO).decode().rstrip('\0').split('\0')
++    original = {}
++    for name in paths:
++        src = REPO / name
++        if not src.is_file(): raise RuntimeError('Tracked input missing: ' + name)
++        original[name] = sha(src)
++        dst = source / name
++        dst.parent.mkdir(parents=True, exist_ok=True)
++        shutil.copy2(src, dst)
++    write(session / 'source-inputs.json', original)
++    shutil.copyfile(patch, session / 'reviewed.patch')
++    commands = []
++    result = {'head': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=REPO, text=True).strip(),
++              'status': 'BLOCKED', 'source_copy': str(copied), 'patch_sha256': sha(patch),
++              'commands': commands, 'original_tree_modified': False, 'cases': []}
++    def run(argv, label, cwd):
++        code = command(argv, session / (label + '.log'), cwd)
++        commands.append({'argv': list(map(str, argv)), 'cwd': str(cwd), 'exit': code, 'log': label + '.log'})
++        write(session / 'result.json', result)
++        return code
++    if run(['git', 'apply', '--check', '--ignore-whitespace', patch], 'patch-check', source): return 2
++    if run(['git', 'apply', '--ignore-whitespace', patch], 'patch-apply-isolated', source): return 2
++    changed = [p for p, h in original.items() if sha(source / p) != h]
++    result['patched_files'] = {p: {'original': original[p], 'patched': sha(source / p)} for p in changed}
++    config = json.loads(args.config.read_text())
++    argv = [sys.executable, '-B', SYSTEM / 'tools/host.py', 'all', '--with-real-primary',
++            '--out', session / 'host', '--production-root', copied,
++            '--gtest-root', config['gtest_root'], '--openssl-root', config['openssl_root'],
++            '--runtime-root', config['sim028_runtime_root']]
++    code = run(argv, 'host-regression', REPO)
++    result['host_exit'] = code
++    latest = session / 'host/latest.json'
++    if latest.exists():
++        host = json.loads(latest.read_text())
++        result['host_result'] = host
++        artifacts = Path(host['artifacts'])
++        for group in host['groups']:
++            for c in ET.parse(artifacts / (group['name'] + '.xml')).getroot().findall('.//testcase'):
++                properties = {p.get('name'): p.get('value') for p in c.findall('./properties/property')}
++                result['cases'].append({'name': c.get('classname') + '.' + c.get('name'),
++                    'gtest': 'FAIL' if c.find('failure') is not None else 'PASS',
++                    'status': 'BLOCKED' if properties.get('resource_lifetime') == 'BLOCKED' else
++                        ('FAIL' if c.find('failure') is not None else 'PASS'), 'properties': properties})
++        result['counts'] = {k: sum(g[k] for g in host['groups']) for k in ['tests', 'passed', 'failed']}
++        result['status'] = host['status']
++    changed_originals = [p for p, h in original.items() if sha(REPO / p) != h]
++    result['original_tree_modified'] = bool(changed_originals)
++    result['unexpected_original_changes'] = changed_originals
++    write(session / 'result.json', result)
++    write(output / 'latest.json', result)
++    print(json.dumps({'status': result['status'], 'counts': result.get('counts'), 'artifacts': str(session),
++                      'original_tree_modified': result['original_tree_modified']}, indent=2))
++    if changed_originals: return 2
++    return int(result['status'] != 'PASS')
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())

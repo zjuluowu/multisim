@@ -1,0 +1,11 @@
+ninja: Entering directory `/mnt/e/github/multisim/.host-out/build'
+[1/10] CXX ../../telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp
+[2/10] touch obj/scheduler_boundaries.stamp
+[3/10] CXX ../../telephony_core_service/services/multisim/test/systemtest/tests/event_transport_test.cpp
+[4/10] CXX /mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/adapters/legacy/legacy_sim_adapter.cpp
+[5/10] CXX /mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/adapters/legacy/legacy_sim_adapter.cpp
+[6/10] CXX ../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp
+[7/10] LINK platform_adapter_test
+[8/10] LINK sim_guard_pin_memory
+[9/10] LINK sim_guard_legacy
+[10/10] LINK sim_primary_slot_real_test

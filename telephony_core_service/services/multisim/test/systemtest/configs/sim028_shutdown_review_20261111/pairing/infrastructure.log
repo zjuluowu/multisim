@@ -1,0 +1,64 @@
+[==========] Running 19 tests from 7 test suites.
+[----------] Global test environment set-up.
+[----------] 3 tests from EventAdapter
+[ RUN      ] EventAdapter.SharedTypeSafety
+[       OK ] EventAdapter.SharedTypeSafety (0 ms)
+[ RUN      ] EventAdapter.UniqueOwnership
+[       OK ] EventAdapter.UniqueOwnership (0 ms)
+[ RUN      ] EventAdapter.WeakLifetimeAndMetadata
+[       OK ] EventAdapter.WeakLifetimeAndMetadata (0 ms)
+[----------] 3 tests from EventAdapter (0 ms total)
+
+[----------] 2 tests from ProductionEventTransport
+[ RUN      ] ProductionEventTransport.DeliversFormalEnvelope
+[       OK ] ProductionEventTransport.DeliversFormalEnvelope (0 ms)
+[ RUN      ] ProductionEventTransport.CancelsPendingAndReapsWorker
+[       OK ] ProductionEventTransport.CancelsPendingAndReapsWorker (0 ms)
+[----------] 2 tests from ProductionEventTransport (0 ms total)
+
+[----------] 5 tests from SchedulerBoundary
+[ RUN      ] SchedulerBoundary.RunningTaskCannotBeCancelled
+[       OK ] SchedulerBoundary.RunningTaskCannotBeCancelled (0 ms)
+[ RUN      ] SchedulerBoundary.ProductionGeneralTaskWaitsAndCleansUp
+[       OK ] SchedulerBoundary.ProductionGeneralTaskWaitsAndCleansUp (0 ms)
+[ RUN      ] SchedulerBoundary.IdleWaitDrainsCascadedQueues
+[       OK ] SchedulerBoundary.IdleWaitDrainsCascadedQueues (0 ms)
+[ RUN      ] SchedulerBoundary.IdleWaitDoesNotIgnoreDelayedOrRunningWork
+[       OK ] SchedulerBoundary.IdleWaitDoesNotIgnoreDelayedOrRunningWork (10 ms)
+[ RUN      ] SchedulerBoundary.IdleWaitExposesTaskFailure
+[       OK ] SchedulerBoundary.IdleWaitExposesTaskFailure (0 ms)
+[----------] 5 tests from SchedulerBoundary (12 ms total)
+
+[----------] 3 tests from ExternalData
+[ RUN      ] ExternalData.EmptyCursorIsNotQueryFailure
+[       OK ] ExternalData.EmptyCursorIsNotQueryFailure (0 ms)
+[ RUN      ] ExternalData.ExplicitQueryResponses
+[       OK ] ExternalData.ExplicitQueryResponses (0 ms)
+[ RUN      ] ExternalData.OriginalBucketKeepsFirstPut
+[       OK ] ExternalData.OriginalBucketKeepsFirstPut (0 ms)
+[----------] 3 tests from ExternalData (0 ms total)
+
+[----------] 2 tests from ExternalEvents
+[ RUN      ] ExternalEvents.PublishPreservesEnvelopeAndFailure
+[       OK ] ExternalEvents.PublishPreservesEnvelopeAndFailure (0 ms)
+[ RUN      ] ExternalEvents.MissingProviderAndScopeCleanup
+[       OK ] ExternalEvents.MissingProviderAndScopeCleanup (0 ms)
+[----------] 2 tests from ExternalEvents (0 ms total)
+
+[----------] 3 tests from NativePointerSubset
+[ RUN      ] NativePointerSubset.SharedOwnership
+[       OK ] NativePointerSubset.SharedOwnership (0 ms)
+[ RUN      ] NativePointerSubset.WeakIdentityAndPromotion
+[       OK ] NativePointerSubset.WeakIdentityAndPromotion (0 ms)
+[ RUN      ] NativePointerSubset.LocalCastRequiresImplementedInterface
+[       OK ] NativePointerSubset.LocalCastRequiresImplementedInterface (0 ms)
+[----------] 3 tests from NativePointerSubset (0 ms total)
+
+[----------] 1 test from RilAdapter
+[ RUN      ] RilAdapter.FormalStatusResponse
+[       OK ] RilAdapter.FormalStatusResponse (0 ms)
+[----------] 1 test from RilAdapter (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 19 tests from 7 test suites ran. (13 ms total)
+[  PASSED  ] 19 tests.

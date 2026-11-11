@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="1" failures="0" disabled="0" errors="0" time="0.007" timestamp="2026-11-11T20:05:48.962" name="AllTests">
+  <testsuite name="RunnerLifetime" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.003" timestamp="2026-11-11T20:05:48.966">
+    <testcase name="InFlightStopJoinsAndRejectsCallbackRepost" file="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp" line="46" status="run" result="completed" time="0.002" timestamp="2026-11-11T20:05:48.966" classname="RunnerLifetime" />
+  </testsuite>
+</testsuites>

@@ -1,0 +1,20 @@
+{
+  "command": [
+    "lldb",
+    "--batch",
+    "--source",
+    "/tmp/sim028-review-current-trace/trace.lldb",
+    "--",
+    "/mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test",
+    "--gtest_filter=RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+    "--gtest_output=xml:/tmp/sim028-review-current-trace/test.xml"
+  ],
+  "lldb_exit": 0,
+  "inferior_exit": 1,
+  "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+  "head": "e21f1ef35a715a197dd3bc76fbaccadea70d17be",
+  "status": "FAIL",
+  "executed": 1,
+  "failed": 1,
+  "diagnostics": "PASS"
+}

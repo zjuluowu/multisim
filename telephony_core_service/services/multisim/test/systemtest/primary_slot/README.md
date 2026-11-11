@@ -110,3 +110,8 @@ SIM_HOST_BOOT_SLOT_COUNT=2 lldb -- .host-out/build/sim_primary_slot_real_test \
 在匹配OHOS完整树中挂载为 `base/telephony/core_service`，按仓内构建规则配置产品后运行 `hb build -T //base/telephony/core_service:tel_core_service` 和 `hb build -T //base/telephony/core_service/test:unittest`，在对应设备运行生成的CoreService/SIM/TelRil套件并核查真实SA、权限、reply、serial/HDI。当前Host套件不是OHOS产品测试目标，不能直接用hb宣称运行了这7条。完整产品树、生成HDI头及设备是继续原生集成的必要输入。
 
 C1的UPDATE/COMPLETE异常、C1超时、任意重复/乱序组合、在途销毁重建和跨重启的持久化恢复本轮NOT_RUN。既有五条独立业务缺陷继续单列；六个新增清理失败共享同一个残留对象图原因，未将其归入原五条缺陷或从统计中移除。
+
+
+## 生命周期生产修复审查
+
+后续审查与隔离补丁验证见 [正式停止方案](lifecycle/shutdown_plan.md) 和 [本轮独立记录](../configs/sim028_shutdown_review_20261111.json)。已新增确认Phonebook/State强环；原三类9条是子集，当前C1地址图确认四类共12条。四文件配对补丁仅在仓外副本验证，使原生命周期8条全部通过，真实主卡7条仍1 PASS/6 FAIL；完整生产Stop仍未实现。现有目标另含PairingReview四条及ShutdownContract A～H八条，缺真实Stop API时八条失败并单列BLOCKED，不把声明式编译探针当运行通过。主工作区生产实现未改，所有历史证据保留。

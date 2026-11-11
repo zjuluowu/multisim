@@ -53,6 +53,7 @@ flowchart LR
 | Records→Observer→File | `sim_file_manager.cpp::InitSimFile` 注册自身RADIO_SIM_RECORDS_LOADED，形成File/Records独立环 |
 | State→Observer→File | `sim_file_manager.cpp::Init` 注册CARD_TYPE_CHANGE及SIM_ICCID_LOADED；反注册后者在 `sim_state_handle.cpp::UnRegisterCoreNotify` 缺失 |
 | Monitor→测试AccountObserver | `SimManager::RegisterCoreNotify` 转发ACCOUNT_LOADED，Monitor强存；Manager的UnRegister缺此分支，Monitor也无对应公开注销方法 |
+| State→Observer→Phonebook→State | `icc_dialling_numbers_manager.cpp::Init`注册状态变化，头文件强持State且析构为空；后续审查新增第四类强环，见正式方案 |
 | RIL残留 | `SimStateManager::telRilManager_`、`IccFile::telRilManager_`、`IccFileController::telRilManager_` 每槽各一个；同一RIL控制块，不能算成十个对象 |
 | 状态退出未到达 | `SimStateManager::~SimStateManager` 才调用Handle::UnInit；State已在环内，析构触发不了注销 |
 | Monitor析构职责不足 | `~MultiSimMonitor` 仅UnSubscribeListeners（CES/SA），不调用UnRegisterSimNotify；自身强订阅归零前析构不可达 |
@@ -70,33 +71,25 @@ RIL最终10 = 测试根1 + 三槽 ×（StateManager1 + IccFile1 + FileController
 
 完整SimManager的在途Stop、重复Stop、迟到回调安全仍BLOCKED：生产对象没有Stop契约，不能拿Runner测试替代这些验收。
 
-## 未应用的最小生产修改建议
+## 生产补丁审查结论与正式方案
 
-[注销配对补丁](pairing_fixes.proposed.patch)给出两个已证实缺口的具体差异（4个生产文件），**仅供审查，未应用、未编译验证**：补SIM_ICCID_LOADED注销，补Manager→Monitor的ACCOUNT_LOADED注销。它们是资源生命周期配对修复，不更改主卡分支、持久化、返回码或RIL协议；但**单独应用仍不足以修复完整图**。
+配对补丁已在仓外源码副本完成真实GN/Ninja编译和全量Host回归，主工作区未应用。原生命周期组由7 PASS/1 FAIL变为8 PASS/0 FAIL，三槽和销毁重建公开注销测试也通过；真实Manager七例仍1 PASS/6 FAIL，原Host仍55 PASS/5已知FAIL。因此它**不是完整Shutdown修复**，不以局部全绿批准整图释放。
 
-完整最小闭包还必须新增显式停止协议，不能把全部动作塞入空析构函数。建议新私有生命周期接口在调用者仍持共享所有权时执行：
+后续审查从历史图与新C1调试记录确认第四类Phonebook/State强环，三槽共确认12条A/B/C/D闭环；最初9条是已验证子集。原JSON/日志保持历史原字节，新独立记录见 [sim028_shutdown_review_20261111.json](../../configs/sim028_shutdown_review_20261111.json)。
 
-```cpp
-// 方案草图，非已实现/可直接编译的生产代码。
-SimManager::Stop(deadline) {
-    // Running -> Stopping；并发重复调用等待同一停止结果。
-    // 禁止新请求/新订阅/重试启动，跟踪RefreshCache等后台任务。
-    // 已接纳B/C1请求仍允许关联应答与原有定时器完成，不改同步返回语义。
-    if (!WaitExistingRequestsAndCallbacks(deadline)) return NotDrained;
-    monitor->StopSubscriptionsAndDrain(deadline); // CES/SA + UnRegisterSimNotify + account observers
-    for (auto &file : files) file->StopSubscriptionsAndDrain(deadline);
-    for (auto &state : states) state->StopSubscriptionsAndDrain(deadline);
-    // 同步停止其他Account/SMS/STK/Phonebook的已登记工作；缓存全部类型去重。
-    // 成功排空后按依赖释放成员，最后释放本模块的RIL引用；Stopped。
-}
+[正式停止方案与补丁完整性审查](shutdown_plan.md)替代旧版几行伪Stop草图，明确源码最小职责集合、四类强环、16组订阅、有效共享所有权阶段、在途B/C1及重试的原语义、Core共享RIL/接口类型边界和不能跳过的native验证。生产代码修改仍需另行授权。
+
+可复现配对补丁验证：
+
+```sh
+python3 -B telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/validate_patch.py \
+  --output /tmp/sim028-pairing-review
+# 读取当前.host-out/host.json依赖路径；可用--config指定。
+# 源码仅复制到新建仓外目录，补丁只应用该副本；全套失败正确返回1。
+python3 -B telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/check_stop_contract.py \
+  --compile-commands .host-out/build/compile_commands.json \
+  --header telephony_core_service/services/sim/include/sim_manager.h \
+  --output /tmp/sim028-stop-signature
 ```
 
-具体修改面及必要顺序：
-
-1. Manager新增Stop状态/在途计数和对称装配清理；RefreshCache分离线程纳入任务登记，拒绝停止期间的重新装配。重复Stop返回同一终态；停止超时保留对象，不宣称排空/卸载成功。
-2. Monitor在ProcessEvent和订阅注册路径检查代次/状态；排空后在有效共享所有权内执行现有UnRegisterSimNotify、UnSubscribeListeners及自身观察者清理。析构只作停止完成校验与无须shared_from_this的兜底。
-3. FileManager对所有缓存IccFile（USIM/GSM可能同对象，须去重）调用UnInit，注销自身STATE两项、RIL两项、各IccFile的RECORDS_LOADED；取消/排空File/Controller/Handler事件后释放缓存。不能只清当前simFile_。
-4. State/Handle先关新注册与无关延迟工作，再UnInit注销RIL、清内部Observer，排空事件；析构不再次依赖shared_from_this。需要新增真实TelEventHandler/Queue准入与排空屏障，RemoveAllEvents不够。禁止持Manager/Observer锁等待worker，避免回调反取同锁；worker发起停止应移交控制线程。
-5. CoreService::OnStop在共享RIL DeInit之前协调SIM停止、CMI/CoreSim脱附及其他消费者。SIM仅释放借用的RIL引用，不停止宿主共享RIL。旧epoch回调必须被门控，重新Init不能让旧回调作用于新图。
-
-以上属于资源生命周期修复，但停止中请求的准入错误、超时停止策略及Core驻留服务的重启次序需另行批准和产品验证。当前常驻进程并不自动释放这些环；新增清理不应改变Running时业务，仍可能暴露过去被进程退出掩盖的注销竞态。需匹配OHOS FFRT、CES/SA、RIL/HDI运行时验证，不用Host队列join证明设备已结束。本轮遵守生产只读边界，因此原C1生命周期验收继续FAIL。
+第二条仅用声明式隔离头实例化未来Stop测试分支，未链接或运行任何Stop实现，不能代替生命周期PASS。八条ShutdownContract在真实API缺失时执行失败并标BLOCKED；保留GTest原非零退出码，原7/8/60组独立计数。新增PairingReview四例覆盖三槽、部分工厂失败/重复注销、销毁重建和无关worker基线。正式Stop未来分支的运行仍NOT_RUN。

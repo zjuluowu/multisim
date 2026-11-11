@@ -121,6 +121,12 @@ public:
     unsigned updates = 0;
     bool autoStatus = false;
     std::map<std::pair<int, int>, std::weak_ptr<AppExecFwk::EventHandler>> notifications;
+    struct Registration {
+        int slot, event;
+        std::weak_ptr<AppExecFwk::EventHandler> owner;
+        bool active;
+    };
+    std::vector<Registration> registrationLedger; // weak only; full multi-owner pairing ledger
     template<class T> static void Reply(const Pending &request, std::shared_ptr<T> response)
     {
         auto owner = std::dynamic_pointer_cast<TelEventHandler>(request.owner.lock());
@@ -177,12 +183,27 @@ public:
             ++updates; changed.notify_all(); return 0; // verified Provider RdbStore::Update status, not row count
         });
         EXPECT_CALL(*ril, RegisterCoreNotify(_, _, _, _)).WillRepeatedly([this](int slot, const auto &owner, int id, int *) {
-            std::lock_guard<std::mutex> lock(mutex); notifications[{slot, id}] = owner; return 0;
+            std::lock_guard<std::mutex> lock(mutex);
+            bool existing = false;
+            std::weak_ptr<AppExecFwk::EventHandler> weak = owner;
+            for (const auto &r : registrationLedger)
+                existing |= r.active && r.slot == slot && r.event == id &&
+                    !r.owner.owner_before(weak) && !weak.owner_before(r.owner);
+            if (!existing) registrationLedger.push_back({slot, id, weak, true});
+            notifications[{slot, id}] = owner; return 0;
         });
         EXPECT_CALL(*ril, UnRegisterCoreNotify(_, _, _)).WillRepeatedly([this](int slot, const auto &owner, int id) {
             std::lock_guard<std::mutex> lock(mutex);
+            std::weak_ptr<AppExecFwk::EventHandler> weak = owner;
+            for (auto &r : registrationLedger)
+                if (r.active && r.slot == slot && r.event == id &&
+                    !r.owner.owner_before(weak) && !weak.owner_before(r.owner)) r.active = false;
             auto it = notifications.find({slot, id});
-            if (it != notifications.end() && it->second.lock() == owner) notifications.erase(it);
+            if (it != notifications.end() && it->second.lock() == owner) {
+                notifications.erase(it);
+                for (const auto &r : registrationLedger)
+                    if (r.active && r.slot == slot && r.event == id) notifications[{slot, id}] = r.owner;
+            }
             return 0;
         });
         EXPECT_CALL(*ril, SetActiveSim(1, _, 1, _)).WillRepeatedly([](int, int, int, const auto &event) {

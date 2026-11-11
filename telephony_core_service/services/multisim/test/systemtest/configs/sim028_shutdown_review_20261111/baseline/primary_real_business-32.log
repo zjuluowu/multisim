@@ -1,0 +1,19 @@
+Note: Google Test filter = ShutdownContract.HDestroyAndCreateNewGraph
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from ShutdownContract
+[ RUN      ] ShutdownContract.HDestroyAndCreateNewGraph
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:34: Failure
+Failed
+BLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted
+
+[  FAILED  ] ShutdownContract.HDestroyAndCreateNewGraph (0 ms)
+[----------] 1 test from ShutdownContract (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] ShutdownContract.HDestroyAndCreateNewGraph
+
+ 1 FAILED TEST

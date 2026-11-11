@@ -242,6 +242,22 @@ std::vector<QueueEvidence> GetQueueEvidence()
     }
     return result;
 }
+std::vector<std::function<void()>> CapturePendingActions(const std::string &queueName)
+{
+    std::vector<std::shared_ptr<ffrt::HostQueue>> states;
+    {
+        std::lock_guard<ffrt::mutex> lock(evidenceMutex);
+        for (const auto &weak : queues) if (auto state = weak.lock()) states.push_back(std::move(state));
+    }
+    std::vector<std::function<void()>> actions;
+    for (const auto &state : states) {
+        std::lock_guard<ffrt::mutex> lock(state->lock);
+        if (state->name != queueName) continue;
+        for (const auto &task : state->tasks)
+            if (task->status.load() == ffrt::HostTaskStatus::PENDING) actions.push_back(task->action);
+    }
+    return actions;
+}
 SchedulerEvidence GetSchedulerEvidence()
 {
     std::lock_guard<ffrt::mutex> guard(evidenceMutex);
