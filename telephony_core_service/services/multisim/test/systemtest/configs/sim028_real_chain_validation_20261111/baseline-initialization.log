@@ -1,0 +1,373 @@
+ninja: Entering directory `/tmp/sim028-baseline-init'
+[1/70] CXX /mnt/e/github/multisim/telephony_core_service/utils/common/src/tel_event_handler.cpp
+[2/70] CXX /tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59/googlemock/src/gmock-all.cc
+[3/70] CXX /mnt/e/github/multisim/telephony_core_service/utils/common/src/tel_event_queue.cpp
+[4/70] touch obj/event_transport_production_host.stamp
+[5/70] CXX ../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/external_services.cpp
+[6/70] touch obj/external_service_boundaries.stamp
+[7/70] CXX ../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/event_handler_runtime.cpp
+[8/70] CXX ../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/parameter_service.cpp
+[9/70] touch obj/platform_boundaries.stamp
+[10/70] CXX ../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp
+[11/70] touch obj/scheduler_boundaries.stamp
+[12/70] CXX ../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/support/initialization_link_probe.cpp
+[13/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/card_file_detect_manager.cpp
+FAILED: obj/ABS_PATH/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_initialization_production_host.card_file_detect_manager.o 
+clang++ -DLOG_DOMAIN=0xD001F04 -I../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/include -I/mnt/e/github/multisim/telephony_core_service/services/sim/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/ims/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/satellite -I/mnt/e/github/multisim/telephony_core_service/services/tel_ril/include -I/mnt/e/github/multisim/telephony_core_service/services/network_search/include -I/mnt/e/github/multisim/telephony_core_service/services/core/include -I/mnt/e/github/multisim/telephony_core_service/services/telephony_ext_wrapper/include -I/mnt/e/github/multisim/telephony_core_service/utils/common/include -I/mnt/e/github/multisim/telephony_core_service/utils/log/include -I/mnt/e/github/multisim/telephony_core_service/utils/preferences/include -I/mnt/e/github/multisim/telephony_core_service/common/capability_mgr/include -I/usr/include/libxml2 -I/tmp/sim028-deps/openssl/usr/include -I/tmp/sim028-deps/openssl/usr/include/x86_64-linux-gnu  -std=c++17 -flto=full -fwhole-program-vtables -fvirtual-function-elimination -fvisibility=hidden -ffunction-sections -fdata-sections -O2 -fprofile-instr-generate -fcoverage-mapping -include ../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/include/host_standard_prelude.h -MMD -MF obj/ABS_PATH/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_initialization_production_host.card_file_detect_manager.o.d -c /mnt/e/github/multisim/telephony_core_service/services/sim/src/card_file_detect_manager.cpp -o obj/ABS_PATH/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_initialization_production_host.card_file_detect_manager.o
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:58:25: error: no member named 'PHY_CARD' in 'OHOS::Telephony::SimData'
+   58 |     values.Put(SimData::PHY_CARD, DataShare::DataShareValueObject(data.phyCard));
+      |                ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:59:25: error: no member named 'LSI' in 'OHOS::Telephony::SimData'
+   59 |     values.Put(SimData::LSI, DataShare::DataShareValueObject(data.lsi));
+      |                ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:62:29: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'
+   62 |         values.Put(SimData::SIM_LABEL_INDEX, DataShare::DataShareValueObject(data.phyCard + 1));
+      |                    ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:63:29: error: no member named 'IS_ESIM' in 'OHOS::Telephony::SimData'
+   63 |         values.Put(SimData::IS_ESIM, DataShare::DataShareValueObject(0));
+      |                    ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:66:33: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'
+   66 |             values.Put(SimData::SIM_LABEL_INDEX, DataShare::DataShareValueObject(-1));
+      |                        ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:68:29: error: no member named 'IS_ESIM' in 'OHOS::Telephony::SimData'
+   68 |         values.Put(SimData::IS_ESIM, DataShare::DataShareValueObject(1));
+      |                    ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:72:29: error: no member named 'MNC_LEN' in 'OHOS::Telephony::SimData'
+   72 |         values.Put(SimData::MNC_LEN, DataShare::DataShareValueObject(data.mncLen));
+      |                    ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:77:24: error: no member named 'EFUST' in 'OHOS::Telephony::SimData'
+   77 |     PutString(SimData::EFUST, data.efust);
+      |               ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:79:24: error: no member named 'GID1' in 'OHOS::Telephony::SimData'
+   79 |     PutString(SimData::GID1, data.gid1);
+      |               ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:80:24: error: no member named 'GID2' in 'OHOS::Telephony::SimData'
+   80 |     PutString(SimData::GID2, data.gid2);
+      |               ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:81:24: error: no member named 'SPN' in 'OHOS::Telephony::SimData'
+   81 |     PutString(SimData::SPN, data.spn);
+      |               ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/card_file_detect_manager.cpp:82:24: error: no member named 'EHPLMN' in 'OHOS::Telephony::SimData'
+   82 |     PutString(SimData::EHPLMN, data.ehplmn);
+      |               ~~~~~~~~~^
+12 errors generated.
+[14/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/csim_file_controller.cpp
+[15/70] CXX /tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59/googletest/src/gtest-all.cc
+[16/70] ar rcs obj/liblibgoogletest.a obj/ABS_PATH/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59/googletest/src/libgoogletest.gtest-all.o
+[17/70] ar rcs obj/liblibgooglemock.a obj/ABS_PATH/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59/googlemock/src/libgooglemock.gmock-all.o
+[18/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/esim_manager.cpp
+[19/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/icc_dialling_numbers_manager.cpp
+[20/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/icc_dialling_numbers_cache.cpp
+[21/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/icc_dialling_numbers_handler.cpp
+[22/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/icc_operator_rule.cpp
+[23/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/icc_file.cpp
+[24/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/icc_operator_privilege_controller.cpp
+[25/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/icc_state.cpp
+[26/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/icc_file_controller.cpp
+[27/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/isim_file_controller.cpp
+[28/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/isim_file.cpp
+[29/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/mcc_pool.cpp
+[30/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp
+FAILED: obj/ABS_PATH/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_initialization_production_host.multi_sim_controller.o 
+clang++ -DLOG_DOMAIN=0xD001F04 -I../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/include -I/mnt/e/github/multisim/telephony_core_service/services/sim/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/ims/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/satellite -I/mnt/e/github/multisim/telephony_core_service/services/tel_ril/include -I/mnt/e/github/multisim/telephony_core_service/services/network_search/include -I/mnt/e/github/multisim/telephony_core_service/services/core/include -I/mnt/e/github/multisim/telephony_core_service/services/telephony_ext_wrapper/include -I/mnt/e/github/multisim/telephony_core_service/utils/common/include -I/mnt/e/github/multisim/telephony_core_service/utils/log/include -I/mnt/e/github/multisim/telephony_core_service/utils/preferences/include -I/mnt/e/github/multisim/telephony_core_service/common/capability_mgr/include -I/usr/include/libxml2 -I/tmp/sim028-deps/openssl/usr/include -I/tmp/sim028-deps/openssl/usr/include/x86_64-linux-gnu  -std=c++17 -flto=full -fwhole-program-vtables -fvirtual-function-elimination -fvisibility=hidden -ffunction-sections -fdata-sections -O2 -fprofile-instr-generate -fcoverage-mapping -include ../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/include/host_standard_prelude.h -MMD -MF obj/ABS_PATH/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_initialization_production_host.multi_sim_controller.o.d -c /mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp -o obj/ABS_PATH/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_initialization_production_host.multi_sim_controller.o
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp:490:29: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'
+  490 |         values.Put(SimData::SIM_LABEL_INDEX, labelIndexObj);
+      |                    ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp:549:25: error: no member named 'OPERATOR_NAME' in 'OHOS::Telephony::SimData'
+  549 |     values.Put(SimData::OPERATOR_NAME, operatorNameObj);
+      |                ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp:572:25: error: no member named 'IS_ESIM' in 'OHOS::Telephony::SimData'
+  572 |     values.Put(SimData::IS_ESIM, isEsimObj);
+      |                ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp:573:25: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'
+  573 |     values.Put(SimData::SIM_LABEL_INDEX, simLabelIndexObj);
+      |                ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp:615:25: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'
+  615 |     values.Put(SimData::SIM_LABEL_INDEX, indexObj);
+      |                ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp:1687:5: warning: 'SHA256_Init' is deprecated [-Wdeprecated-declarations]
+ 1687 |     SHA256_Init(&sha256);
+      |     ^
+/tmp/sim028-deps/openssl/usr/include/openssl/sha.h:73:1: note: 'SHA256_Init' has been explicitly marked deprecated here
+   73 | OSSL_DEPRECATEDIN_3_0 int SHA256_Init(SHA256_CTX *c);
+      | ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:182:49: note: expanded from macro 'OSSL_DEPRECATEDIN_3_0'
+  182 | #   define OSSL_DEPRECATEDIN_3_0                OSSL_DEPRECATED(3.0)
+      |                                                 ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:62:52: note: expanded from macro 'OSSL_DEPRECATED'
+   62 | #     define OSSL_DEPRECATED(since) __attribute__((deprecated))
+      |                                                    ^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp:1688:5: warning: 'SHA256_Update' is deprecated [-Wdeprecated-declarations]
+ 1688 |     SHA256_Update(&sha256, iccid.c_str(), iccid.size());
+      |     ^
+/tmp/sim028-deps/openssl/usr/include/openssl/sha.h:74:1: note: 'SHA256_Update' has been explicitly marked deprecated here
+   74 | OSSL_DEPRECATEDIN_3_0 int SHA256_Update(SHA256_CTX *c,
+      | ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:182:49: note: expanded from macro 'OSSL_DEPRECATEDIN_3_0'
+  182 | #   define OSSL_DEPRECATEDIN_3_0                OSSL_DEPRECATED(3.0)
+      |                                                 ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:62:52: note: expanded from macro 'OSSL_DEPRECATED'
+   62 | #     define OSSL_DEPRECATED(since) __attribute__((deprecated))
+      |                                                    ^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp:1689:5: warning: 'SHA256_Final' is deprecated [-Wdeprecated-declarations]
+ 1689 |     SHA256_Final(hash, &sha256);
+      |     ^
+/tmp/sim028-deps/openssl/usr/include/openssl/sha.h:76:1: note: 'SHA256_Final' has been explicitly marked deprecated here
+   76 | OSSL_DEPRECATEDIN_3_0 int SHA256_Final(unsigned char *md, SHA256_CTX *c);
+      | ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:182:49: note: expanded from macro 'OSSL_DEPRECATEDIN_3_0'
+  182 | #   define OSSL_DEPRECATEDIN_3_0                OSSL_DEPRECATED(3.0)
+      |                                                 ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:62:52: note: expanded from macro 'OSSL_DEPRECATED'
+   62 | #     define OSSL_DEPRECATED(since) __attribute__((deprecated))
+      |                                                    ^
+3 warnings and 5 errors generated.
+[31/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_helper.cpp
+FAILED: obj/ABS_PATH/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_initialization_production_host.multi_sim_helper.o 
+clang++ -DLOG_DOMAIN=0xD001F04 -I../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/include -I/mnt/e/github/multisim/telephony_core_service/services/sim/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/ims/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/satellite -I/mnt/e/github/multisim/telephony_core_service/services/tel_ril/include -I/mnt/e/github/multisim/telephony_core_service/services/network_search/include -I/mnt/e/github/multisim/telephony_core_service/services/core/include -I/mnt/e/github/multisim/telephony_core_service/services/telephony_ext_wrapper/include -I/mnt/e/github/multisim/telephony_core_service/utils/common/include -I/mnt/e/github/multisim/telephony_core_service/utils/log/include -I/mnt/e/github/multisim/telephony_core_service/utils/preferences/include -I/mnt/e/github/multisim/telephony_core_service/common/capability_mgr/include -I/usr/include/libxml2 -I/tmp/sim028-deps/openssl/usr/include -I/tmp/sim028-deps/openssl/usr/include/x86_64-linux-gnu  -std=c++17 -flto=full -fwhole-program-vtables -fvirtual-function-elimination -fvisibility=hidden -ffunction-sections -fdata-sections -O2 -fprofile-instr-generate -fcoverage-mapping -include ../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/include/host_standard_prelude.h -MMD -MF obj/ABS_PATH/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_initialization_production_host.multi_sim_helper.o.d -c /mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_helper.cpp -o obj/ABS_PATH/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_initialization_production_host.multi_sim_helper.o
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_helper.cpp:137:5: warning: 'SHA256_Init' is deprecated [-Wdeprecated-declarations]
+  137 |     SHA256_Init(&sha256);
+      |     ^
+/tmp/sim028-deps/openssl/usr/include/openssl/sha.h:73:1: note: 'SHA256_Init' has been explicitly marked deprecated here
+   73 | OSSL_DEPRECATEDIN_3_0 int SHA256_Init(SHA256_CTX *c);
+      | ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:182:49: note: expanded from macro 'OSSL_DEPRECATEDIN_3_0'
+  182 | #   define OSSL_DEPRECATEDIN_3_0                OSSL_DEPRECATED(3.0)
+      |                                                 ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:62:52: note: expanded from macro 'OSSL_DEPRECATED'
+   62 | #     define OSSL_DEPRECATED(since) __attribute__((deprecated))
+      |                                                    ^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_helper.cpp:138:5: warning: 'SHA256_Update' is deprecated [-Wdeprecated-declarations]
+  138 |     SHA256_Update(&sha256, iccid.c_str(), iccid.size());
+      |     ^
+/tmp/sim028-deps/openssl/usr/include/openssl/sha.h:74:1: note: 'SHA256_Update' has been explicitly marked deprecated here
+   74 | OSSL_DEPRECATEDIN_3_0 int SHA256_Update(SHA256_CTX *c,
+      | ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:182:49: note: expanded from macro 'OSSL_DEPRECATEDIN_3_0'
+  182 | #   define OSSL_DEPRECATEDIN_3_0                OSSL_DEPRECATED(3.0)
+      |                                                 ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:62:52: note: expanded from macro 'OSSL_DEPRECATED'
+   62 | #     define OSSL_DEPRECATED(since) __attribute__((deprecated))
+      |                                                    ^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_helper.cpp:139:5: warning: 'SHA256_Final' is deprecated [-Wdeprecated-declarations]
+  139 |     SHA256_Final(hash, &sha256);
+      |     ^
+/tmp/sim028-deps/openssl/usr/include/openssl/sha.h:76:1: note: 'SHA256_Final' has been explicitly marked deprecated here
+   76 | OSSL_DEPRECATEDIN_3_0 int SHA256_Final(unsigned char *md, SHA256_CTX *c);
+      | ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:182:49: note: expanded from macro 'OSSL_DEPRECATEDIN_3_0'
+  182 | #   define OSSL_DEPRECATEDIN_3_0                OSSL_DEPRECATED(3.0)
+      |                                                 ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:62:52: note: expanded from macro 'OSSL_DEPRECATED'
+   62 | #     define OSSL_DEPRECATED(since) __attribute__((deprecated))
+      |                                                    ^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_helper.cpp:156:25: error: no member named 'IS_ESIM' in 'OHOS::Telephony::SimData'
+  156 |     values.Put(SimData::IS_ESIM, isEsimObj);
+      |                ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_helper.cpp:157:25: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'
+  157 |     values.Put(SimData::SIM_LABEL_INDEX, simLabelIndexObj);
+      |                ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_helper.cpp:186:25: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'
+  186 |     values.Put(SimData::SIM_LABEL_INDEX, simLabelIndexObj);
+      |                ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_helper.cpp:187:25: error: no member named 'IS_ESIM' in 'OHOS::Telephony::SimData'
+  187 |     values.Put(SimData::IS_ESIM, isEsimObj);
+      |                ~~~~~~~~~^
+3 warnings and 4 errors generated.
+[32/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/operator_config_hisysevent.cpp
+[33/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_monitor.cpp
+[34/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/operator_config_cache.cpp
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/operator_config_cache.cpp:283:5: warning: 'SHA256_Init' is deprecated [-Wdeprecated-declarations]
+  283 |     SHA256_Init(&sha256);
+      |     ^
+/tmp/sim028-deps/openssl/usr/include/openssl/sha.h:73:1: note: 'SHA256_Init' has been explicitly marked deprecated here
+   73 | OSSL_DEPRECATEDIN_3_0 int SHA256_Init(SHA256_CTX *c);
+      | ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:182:49: note: expanded from macro 'OSSL_DEPRECATEDIN_3_0'
+  182 | #   define OSSL_DEPRECATEDIN_3_0                OSSL_DEPRECATED(3.0)
+      |                                                 ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:62:52: note: expanded from macro 'OSSL_DEPRECATED'
+   62 | #     define OSSL_DEPRECATED(since) __attribute__((deprecated))
+      |                                                    ^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/operator_config_cache.cpp:284:5: warning: 'SHA256_Update' is deprecated [-Wdeprecated-declarations]
+  284 |     SHA256_Update(&sha256, iccid.c_str(), iccid.size());
+      |     ^
+/tmp/sim028-deps/openssl/usr/include/openssl/sha.h:74:1: note: 'SHA256_Update' has been explicitly marked deprecated here
+   74 | OSSL_DEPRECATEDIN_3_0 int SHA256_Update(SHA256_CTX *c,
+      | ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:182:49: note: expanded from macro 'OSSL_DEPRECATEDIN_3_0'
+  182 | #   define OSSL_DEPRECATEDIN_3_0                OSSL_DEPRECATED(3.0)
+      |                                                 ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:62:52: note: expanded from macro 'OSSL_DEPRECATED'
+   62 | #     define OSSL_DEPRECATED(since) __attribute__((deprecated))
+      |                                                    ^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/operator_config_cache.cpp:285:5: warning: 'SHA256_Final' is deprecated [-Wdeprecated-declarations]
+  285 |     SHA256_Final(hash, &sha256);
+      |     ^
+/tmp/sim028-deps/openssl/usr/include/openssl/sha.h:76:1: note: 'SHA256_Final' has been explicitly marked deprecated here
+   76 | OSSL_DEPRECATEDIN_3_0 int SHA256_Final(unsigned char *md, SHA256_CTX *c);
+      | ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:182:49: note: expanded from macro 'OSSL_DEPRECATEDIN_3_0'
+  182 | #   define OSSL_DEPRECATEDIN_3_0                OSSL_DEPRECATED(3.0)
+      |                                                 ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:62:52: note: expanded from macro 'OSSL_DEPRECATED'
+   62 | #     define OSSL_DEPRECATED(since) __attribute__((deprecated))
+      |                                                    ^
+3 warnings generated.
+[35/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/operator_config_loader.cpp
+FAILED: obj/ABS_PATH/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_initialization_production_host.operator_config_loader.o 
+clang++ -DLOG_DOMAIN=0xD001F04 -I../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/include -I/mnt/e/github/multisim/telephony_core_service/services/sim/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/ims/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/satellite -I/mnt/e/github/multisim/telephony_core_service/services/tel_ril/include -I/mnt/e/github/multisim/telephony_core_service/services/network_search/include -I/mnt/e/github/multisim/telephony_core_service/services/core/include -I/mnt/e/github/multisim/telephony_core_service/services/telephony_ext_wrapper/include -I/mnt/e/github/multisim/telephony_core_service/utils/common/include -I/mnt/e/github/multisim/telephony_core_service/utils/log/include -I/mnt/e/github/multisim/telephony_core_service/utils/preferences/include -I/mnt/e/github/multisim/telephony_core_service/common/capability_mgr/include -I/usr/include/libxml2 -I/tmp/sim028-deps/openssl/usr/include -I/tmp/sim028-deps/openssl/usr/include/x86_64-linux-gnu  -std=c++17 -flto=full -fwhole-program-vtables -fvirtual-function-elimination -fvisibility=hidden -ffunction-sections -fdata-sections -O2 -fprofile-instr-generate -fcoverage-mapping -include ../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/include/host_standard_prelude.h -MMD -MF obj/ABS_PATH/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_initialization_production_host.operator_config_loader.o.d -c /mnt/e/github/multisim/telephony_core_service/services/sim/src/operator_config_loader.cpp -o obj/ABS_PATH/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_initialization_production_host.operator_config_loader.o
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/operator_config_loader.cpp:119:16: error: no member named 'OPKEY' in 'OHOS::Telephony::SimData'; did you mean simply 'OPKEY'?
+  119 |     values.Put(SimData::OPKEY, opkeyObj);
+      |                ^~~~~~~~~~~~~~
+      |                OPKEY
+/mnt/e/github/multisim/telephony_core_service/services/sim/include/operator_matching_rule.h:33:26: note: 'OPKEY' declared here
+   33 | static const std::string OPKEY = "operator_key";
+      |                          ^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/operator_config_loader.cpp:120:25: error: no member named 'MCC' in 'OHOS::Telephony::SimData'
+  120 |     values.Put(SimData::MCC, mccObj);
+      |                ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/operator_config_loader.cpp:121:25: error: no member named 'MNC' in 'OHOS::Telephony::SimData'
+  121 |     values.Put(SimData::MNC, mncObj);
+      |                ~~~~~~~~~^
+3 errors generated.
+[36/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/operator_file_parser.cpp
+[37/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/pdp_profile_rdb_helper.cpp
+[38/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/plmn_file.cpp
+[39/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/operator_matching_rule.cpp
+[40/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/radio_protocol_controller.cpp
+[41/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/ruim_file_controller.cpp
+[42/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/ruim_file.cpp
+[43/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_account_callback_death_recipient.cpp
+[44/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_char_decode.cpp
+[45/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_account_manager.cpp
+[46/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_file_controller.cpp
+[47/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_file_init.cpp
+[48/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_file.cpp
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_file.cpp:2045:30: warning: variable length arrays in C++ are a Clang extension [-Wvla-cxx-extension]
+ 2045 |     unsigned char numberData[dataLength];
+      |                              ^~~~~~~~~~
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_file.cpp:2045:30: note: read of non-const variable 'dataLength' is not allowed in a constant expression
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_file.cpp:2044:18: note: declared here
+ 2044 |     unsigned int dataLength = bcdCodes.size();
+      |                  ^
+1 warning generated.
+[49/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_file_manager.cpp
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_file_manager.cpp:615:5: warning: 'SHA256_Init' is deprecated [-Wdeprecated-declarations]
+  615 |     SHA256_Init(&sha256);
+      |     ^
+/tmp/sim028-deps/openssl/usr/include/openssl/sha.h:73:1: note: 'SHA256_Init' has been explicitly marked deprecated here
+   73 | OSSL_DEPRECATEDIN_3_0 int SHA256_Init(SHA256_CTX *c);
+      | ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:182:49: note: expanded from macro 'OSSL_DEPRECATEDIN_3_0'
+  182 | #   define OSSL_DEPRECATEDIN_3_0                OSSL_DEPRECATED(3.0)
+      |                                                 ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:62:52: note: expanded from macro 'OSSL_DEPRECATED'
+   62 | #     define OSSL_DEPRECATED(since) __attribute__((deprecated))
+      |                                                    ^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_file_manager.cpp:616:5: warning: 'SHA256_Update' is deprecated [-Wdeprecated-declarations]
+  616 |     SHA256_Update(&sha256, imsi.c_str(), imsi.size());
+      |     ^
+/tmp/sim028-deps/openssl/usr/include/openssl/sha.h:74:1: note: 'SHA256_Update' has been explicitly marked deprecated here
+   74 | OSSL_DEPRECATEDIN_3_0 int SHA256_Update(SHA256_CTX *c,
+      | ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:182:49: note: expanded from macro 'OSSL_DEPRECATEDIN_3_0'
+  182 | #   define OSSL_DEPRECATEDIN_3_0                OSSL_DEPRECATED(3.0)
+      |                                                 ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:62:52: note: expanded from macro 'OSSL_DEPRECATED'
+   62 | #     define OSSL_DEPRECATED(since) __attribute__((deprecated))
+      |                                                    ^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_file_manager.cpp:617:5: warning: 'SHA256_Final' is deprecated [-Wdeprecated-declarations]
+  617 |     SHA256_Final(hash, &sha256);
+      |     ^
+/tmp/sim028-deps/openssl/usr/include/openssl/sha.h:76:1: note: 'SHA256_Final' has been explicitly marked deprecated here
+   76 | OSSL_DEPRECATEDIN_3_0 int SHA256_Final(unsigned char *md, SHA256_CTX *c);
+      | ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:182:49: note: expanded from macro 'OSSL_DEPRECATEDIN_3_0'
+  182 | #   define OSSL_DEPRECATEDIN_3_0                OSSL_DEPRECATED(3.0)
+      |                                                 ^
+/tmp/sim028-deps/openssl/usr/include/openssl/macros.h:62:52: note: expanded from macro 'OSSL_DEPRECATED'
+   62 | #     define OSSL_DEPRECATED(since) __attribute__((deprecated))
+      |                                                    ^
+3 warnings generated.
+[50/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_number_decode.cpp
+[51/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp
+FAILED: obj/ABS_PATH/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_initialization_production_host.sim_rdb_helper.o 
+clang++ -DLOG_DOMAIN=0xD001F04 -I../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/include -I/mnt/e/github/multisim/telephony_core_service/services/sim/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/ims/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/satellite -I/mnt/e/github/multisim/telephony_core_service/services/tel_ril/include -I/mnt/e/github/multisim/telephony_core_service/services/network_search/include -I/mnt/e/github/multisim/telephony_core_service/services/core/include -I/mnt/e/github/multisim/telephony_core_service/services/telephony_ext_wrapper/include -I/mnt/e/github/multisim/telephony_core_service/utils/common/include -I/mnt/e/github/multisim/telephony_core_service/utils/log/include -I/mnt/e/github/multisim/telephony_core_service/utils/preferences/include -I/mnt/e/github/multisim/telephony_core_service/common/capability_mgr/include -I/usr/include/libxml2 -I/tmp/sim028-deps/openssl/usr/include -I/tmp/sim028-deps/openssl/usr/include/x86_64-linux-gnu  -std=c++17 -flto=full -fwhole-program-vtables -fvirtual-function-elimination -fvisibility=hidden -ffunction-sections -fdata-sections -O2 -fprofile-instr-generate -fcoverage-mapping -include ../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/include/host_standard_prelude.h -MMD -MF obj/ABS_PATH/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_initialization_production_host.sim_rdb_helper.o.d -c /mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp -o obj/ABS_PATH/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_initialization_production_host.sim_rdb_helper.o
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:85:31: error: no member named 'OPKEY' in 'OHOS::Telephony::SimData'
+   85 |     valuesBucket.Put(SimData::OPKEY, valueObj);
+      |                      ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:399:37: error: no member named 'IS_ESIM' in 'OHOS::Telephony::SimData'
+  399 |     result->GetColumnIndex(SimData::IS_ESIM, index);
+      |                            ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:401:37: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'
+  401 |     result->GetColumnIndex(SimData::SIM_LABEL_INDEX, index);
+      |                            ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:403:37: error: no member named 'OPERATOR_NAME' in 'OHOS::Telephony::SimData'
+  403 |     result->GetColumnIndex(SimData::OPERATOR_NAME, index);
+      |                            ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:411:37: error: no member named 'PHY_CARD' in 'OHOS::Telephony::SimData'
+  411 |     result->GetColumnIndex(SimData::PHY_CARD, index);
+      |                            ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:413:37: error: no member named 'LSI' in 'OHOS::Telephony::SimData'
+  413 |     result->GetColumnIndex(SimData::LSI, index);
+      |                            ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:415:37: error: no member named 'MNC_LEN' in 'OHOS::Telephony::SimData'
+  415 |     result->GetColumnIndex(SimData::MNC_LEN, index);
+      |                            ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:417:37: error: no member named 'GID1' in 'OHOS::Telephony::SimData'
+  417 |     result->GetColumnIndex(SimData::GID1, index);
+      |                            ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:419:37: error: no member named 'GID2' in 'OHOS::Telephony::SimData'
+  419 |     result->GetColumnIndex(SimData::GID2, index);
+      |                            ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:421:37: error: no member named 'SPN' in 'OHOS::Telephony::SimData'
+  421 |     result->GetColumnIndex(SimData::SPN, index);
+      |                            ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:423:37: error: no member named 'EHPLMN' in 'OHOS::Telephony::SimData'
+  423 |     result->GetColumnIndex(SimData::EHPLMN, index);
+      |                            ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:561:38: error: no member named 'IS_ESIM' in 'OHOS::Telephony::SimData'
+  561 |         predicates1.EqualTo(SimData::IS_ESIM, std::to_string(0));
+      |                             ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:575:34: error: no member named 'IS_ESIM' in 'OHOS::Telephony::SimData'
+  575 |     predicates2.EqualTo(SimData::IS_ESIM, std::to_string(0));
+      |                         ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:578:32: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'
+  578 |     simLabelValue.Put(SimData::SIM_LABEL_INDEX, valueObj);
+      |                       ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:602:28: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'
+  602 |         value.Put(SimData::SIM_LABEL_INDEX, valueIndex);
+      |                   ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:629:33: error: no member named 'IS_ESIM' in 'OHOS::Telephony::SimData'
+  629 |     predicates.EqualTo(SimData::IS_ESIM, std::to_string(isEsim));
+      |                        ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:630:37: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'
+  630 |     predicates.GreaterThan(SimData::SIM_LABEL_INDEX, 0);
+      |                            ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:632:32: error: no member named 'SIM_LABEL_INDEX' in 'OHOS::Telephony::SimData'
+  632 |     simLabelValue.Put(SimData::SIM_LABEL_INDEX, valueObj);
+      |                       ~~~~~~~~~^
+/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp:655:31: error: no member named 'OPERATOR_NAME' in 'OHOS::Telephony::SimData'
+  655 |     valuesBucket.Put(SimData::OPERATOR_NAME, valueObj);
+      |                      ~~~~~~~~~^
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+[52/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_file_parse.cpp
+[53/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_sms_controller.cpp
+[54/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_sms_manager.cpp
+[55/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_state_handle.cpp
+[56/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_state_manager.cpp
+[57/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_utils.cpp
+[58/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_state_tracker.cpp
+[59/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/stk_manager.cpp
+[60/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/tag_service.cpp
+[61/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/stk_controller.cpp
+[62/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/telephony_data_helper.cpp
+[63/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/usim_file_controller.cpp
+[64/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/voice_mail_constants.cpp
+[65/70] CXX /mnt/e/github/multisim/telephony_core_service/services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp
+[66/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/usim_dialling_numbers_service.cpp
+[67/70] CXX /mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_manager.cpp
+[68/70] touch obj/sim_production_host.stamp
+ninja: build stopped: cannot make progress due to previous errors.

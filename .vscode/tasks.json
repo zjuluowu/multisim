@@ -88,6 +88,41 @@
       "problemMatcher": [
         "$gcc"
       ]
+    },
+    {
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "label": "Build Real SIM Host",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/systemtest/tools/host.py",
+        "build",
+        "--target",
+        "sim_primary_slot_real_test"
+      ]
+    },
+    {
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "label": "Run All Tests + Real SIM",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/systemtest/tools/host.py",
+        "all",
+        "--with-real-primary"
+      ]
     }
   ],
   "inputs": [
@@ -106,7 +141,8 @@
         "sim_guard_pin_memory",
         "platform_adapter_test",
         "sim_component_test",
-        "sim_primary_slot_entry_test"
+        "sim_primary_slot_entry_test",
+        "sim_primary_slot_real_test"
       ],
       "default": "sim_guard_legacy"
     }

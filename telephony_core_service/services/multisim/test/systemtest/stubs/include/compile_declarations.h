@@ -95,6 +95,10 @@ class Parcelable { public: virtual ~Parcelable() = default; virtual bool Marshal
 class Parcel {
 public:
     bool WriteInt32(int32_t); bool ReadInt32(int32_t&); int32_t ReadInt32();
+    bool WriteInt64(int64_t); int64_t ReadInt64();
+    bool WriteStringVector(const std::vector<std::string>&); bool ReadStringVector(std::vector<std::string>*);
+    bool WriteInt32Vector(const std::vector<int32_t>&); bool ReadInt32Vector(std::vector<int32_t>*);
+    bool WriteInt64Vector(const std::vector<int64_t>&); bool ReadInt64Vector(std::vector<int64_t>*);
     bool WriteBool(bool); bool ReadBool(bool&); bool ReadBool();
     bool WriteCString(const char *);
     bool WriteString(const std::string&); std::string ReadString(); bool ReadString(std::string&);

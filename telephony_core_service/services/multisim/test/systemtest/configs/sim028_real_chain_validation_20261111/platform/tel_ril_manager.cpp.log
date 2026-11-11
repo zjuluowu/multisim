@@ -1,0 +1,5 @@
+In file included from /mnt/e/github/multisim/telephony_core_service/services/tel_ril/src/tel_ril_manager.cpp:16:
+/mnt/e/github/multisim/telephony_core_service/services/tel_ril/include/tel_ril_manager.h:20:10: fatal error: 'v1_5/iril.h' file not found
+   20 | #include <v1_5/iril.h>
+      |          ^~~~~~~~~~~~~
+1 error generated.

@@ -1,0 +1,8 @@
+RealSimPrimary.
+  InitializesRealManagerAndControllerWithoutRil
+  C0CoreToRealManagerAndController
+  BDirectRilSuccessCommitsAfterReply
+  BDirectRilFailureKeepsPreviousPrimary
+  C1ThreePhasesWithStaleCheckResponseRejected
+  BRealTimeoutKeepsPreviousPrimary
+  C1CheckFailureRestoresParametersAndExhaustsFiveRetries

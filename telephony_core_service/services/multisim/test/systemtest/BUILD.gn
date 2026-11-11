@@ -52,6 +52,32 @@ executable("sim_primary_slot_entry_test") {
   deps = [ ":primary_slot_entry_production", ":googlemock" ]
   ldflags = [ "-fprofile-instr-generate", "-Wl,-Map,sim_primary_slot_entry_test.map" ]
 }
+source_set("primary_real_support") {
+  sources = [
+    "$production_root/frameworks/native/src/core_manager_inner.cpp",
+    "$production_root/frameworks/native/src/operator_config_types.cpp",
+    "$production_root/services/tel_ril/src/observer_handler.cpp",
+    "$production_root/services/core/src/core_service_hisysevent.cpp",
+    "$production_root/utils/common/src/telephony_common_utils.cpp",
+    "$production_root/utils/common/src/str_convert.cpp",
+  ]
+  include_dirs = [ "primary_slot/runtime_include", "primary_slot/include" ]
+  configs += [ ":production_headers", ":production_execution_evidence", ":initialization_standard_headers" ]
+}
+executable("sim_primary_slot_real_test") {
+  sources = [ "primary_slot/real_test.cpp", "primary_slot/real_runtime.cpp", "primary_slot/security_boundary.cpp" ]
+  include_dirs = [ "primary_slot/runtime_include", "primary_slot/include", "primary_slot/provider/include",
+                   "primary_slot", "stubs", "$gtest_root/googletest/include", "$gtest_root/googlemock/include" ]
+  configs += [ ":production_headers" ]
+  deps = [ ":primary_slot_entry_production", ":primary_real_support", ":sim_production_host",
+           ":sim_initialization_production_host", ":event_transport_production_host", ":scheduler_boundaries",
+           ":platform_boundaries", ":external_service_boundaries", ":googlemock" ]
+  ldflags = [ "-fprofile-instr-generate", "-Wl,-Map,sim_primary_slot_real_test.map" ]
+  if (sim028_runtime_root != "") {
+    libs = [ "$sim028_runtime_root/libsim028_strings.a", "$sim028_runtime_root/libsim028_securec.a",
+             "$sim028_runtime_root/libsim028_cjson.a", "/lib/x86_64-linux-gnu/libcrypto.so.3" ]
+  }
+}
 
 # Original implementation sources, not copied and not mixed with fixtures/stubs.
 source_set("sim_production_host") {
@@ -159,6 +185,9 @@ config("initialization_standard_headers") {
 
 # Optional initialization closure audit. Not part of the runnable capacity suite.
 source_set("sim_initialization_production_host") {
+  # Exact public header from telephony_telephony_data, pinned in provider/contract.json.
+  # Target-local precedence preserves the old header and historical guard dependencies.
+  include_dirs = [ "primary_slot/provider/include" ]
   sources = [
     "$production_root/services/sim/src/card_file_detect_manager.cpp",
     "$production_root/services/sim/src/csim_file_controller.cpp",
@@ -174,7 +203,6 @@ source_set("sim_initialization_production_host") {
     "$production_root/services/sim/src/isim_file.cpp",
     "$production_root/services/sim/src/isim_file_controller.cpp",
     "$production_root/services/sim/src/mcc_pool.cpp",
-    "$production_root/services/sim/src/multi_sim_controller.cpp",
     "$production_root/services/sim/src/multi_sim_helper.cpp",
     "$production_root/services/sim/src/multi_sim_monitor.cpp",
     "$production_root/services/sim/src/operator_config_cache.cpp",
@@ -216,6 +244,12 @@ source_set("sim_initialization_production_host") {
     ":production_execution_evidence",
     ":initialization_standard_headers",
   ]
+  if (primary_slot_controller_source == "") {
+    sources += [ "$production_root/services/sim/src/multi_sim_controller.cpp" ]
+  } else {
+    sources += [ primary_slot_controller_source ]
+  }
+
 }
 executable("sim_initialization_link_probe") {
   sources = [ "support/initialization_link_probe.cpp" ]

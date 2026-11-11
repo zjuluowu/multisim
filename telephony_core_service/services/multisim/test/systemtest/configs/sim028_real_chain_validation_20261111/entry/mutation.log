@@ -1,0 +1,182 @@
+[==========] Running 14 tests from 2 test suites.
+[----------] Global test environment set-up.
+[----------] 12 tests from PrimaryEntry
+[ RUN      ] PrimaryEntry.NonSystemCallerPrecedesPermissionAndNullManager
+[       OK ] PrimaryEntry.NonSystemCallerPrecedesPermissionAndNullManager (0 ms)
+[ RUN      ] PrimaryEntry.PermissionDenialPrecedesNullManager
+[       OK ] PrimaryEntry.PermissionDenialPrecedesNullManager (0 ms)
+[ RUN      ] PrimaryEntry.NullManagerPrecedesCapabilityRecheck
+[       OK ] PrimaryEntry.NullManagerPrecedesCapabilityRecheck (0 ms)
+[ RUN      ] PrimaryEntry.ChangedExternalSystemAppDecisionRejectsExtendedSlot
+[       OK ] PrimaryEntry.ChangedExternalSystemAppDecisionRejectsExtendedSlot (0 ms)
+[ RUN      ] PrimaryEntry.MissingCardStopsBeforeActiveAndPreference
+[       OK ] PrimaryEntry.MissingCardStopsBeforeActiveAndPreference (0 ms)
+[ RUN      ] PrimaryEntry.InactiveCardStopsBeforePreferenceAndSwitch
+[       OK ] PrimaryEntry.InactiveCardStopsBeforePreferenceAndSwitch (0 ms)
+[ RUN      ] PrimaryEntry.ReadyCardWritesPreferenceBeforeDelegatingExactTarget
+unknown file: Failure
+
+Unexpected mock function call - returning default value.
+    Function call: SetPrimarySlotId(1, false)
+          Returns: 0
+Google Mock tried the following 1 expectation, but it didn't match:
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+  Expected arg #1: is equal to true
+           Actual: false
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: Failure
+Actual function call count doesn't match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+[  FAILED  ] PrimaryEntry.ReadyCardWritesPreferenceBeforeDelegatingExactTarget (0 ms)
+[ RUN      ] PrimaryEntry.ManagerFailureReturnedUnchangedAfterPreferenceWrite
+unknown file: Failure
+
+Unexpected mock function call - returning default value.
+    Function call: SetPrimarySlotId(0, false)
+          Returns: 0
+Google Mock tried the following 1 expectation, but it didn't match:
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+  Expected arg #1: is equal to true
+           Actual: false
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:108: Failure
+Expected equality of these values:
+  core.SetPrimarySlotId(0)
+    Which is: 0
+  TELEPHONY_ERR_RIL_CMD_FAIL
+    Which is: 83886107
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: Failure
+Actual function call count doesn't match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+[  FAILED  ] PrimaryEntry.ManagerFailureReturnedUnchangedAfterPreferenceWrite (0 ms)
+[ RUN      ] PrimaryEntry.FailedPreferenceWriteStillDelegatesCurrentBehavior
+unknown file: Failure
+
+Unexpected mock function call - returning default value.
+    Function call: SetPrimarySlotId(1, false)
+          Returns: 0
+Google Mock tried the following 1 expectation, but it didn't match:
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+  Expected arg #1: is equal to true
+           Actual: false
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: Failure
+Actual function call count doesn't match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+[  FAILED  ] PrimaryEntry.FailedPreferenceWriteStillDelegatesCurrentBehavior (0 ms)
+[ RUN      ] PrimaryEntry.PresenceQueryFailureWithFalseOutputReturnsNoCard
+[       OK ] PrimaryEntry.PresenceQueryFailureWithFalseOutputReturnsNoCard (0 ms)
+[ RUN      ] PrimaryEntry.PresenceQueryFailureWithTrueOutputStillDelegates
+unknown file: Failure
+
+Unexpected mock function call - returning default value.
+    Function call: SetPrimarySlotId(1, false)
+          Returns: 0
+Google Mock tried the following 1 expectation, but it didn't match:
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+  Expected arg #1: is equal to true
+           Actual: false
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: Failure
+Actual function call count doesn't match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+[  FAILED  ] PrimaryEntry.PresenceQueryFailureWithTrueOutputStillDelegates (0 ms)
+[ RUN      ] PrimaryEntry.StableSystemAppPassesExtendedSlotCapability
+unknown file: Failure
+
+Unexpected mock function call - returning default value.
+    Function call: SetPrimarySlotId(3, false)
+          Returns: 0
+Google Mock tried the following 1 expectation, but it didn't match:
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+  Expected arg #1: is equal to true
+           Actual: false
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: Failure
+Actual function call count doesn't match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+[  FAILED  ] PrimaryEntry.StableSystemAppPassesExtendedSlotCapability (0 ms)
+[----------] 12 tests from PrimaryEntry (1 ms total)
+
+[----------] 2 tests from CallerKinds/NativeOrShell
+[ RUN      ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/0
+unknown file: Failure
+
+Unexpected mock function call - returning default value.
+    Function call: SetPrimarySlotId(3, false)
+          Returns: 0
+Google Mock tried the following 1 expectation, but it didn't match:
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+  Expected arg #1: is equal to true
+           Actual: false
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: Failure
+Actual function call count doesn't match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+[  FAILED  ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/0, where GetParam() = 1 (0 ms)
+[ RUN      ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/1
+unknown file: Failure
+
+Unexpected mock function call - returning default value.
+    Function call: SetPrimarySlotId(3, false)
+          Returns: 0
+Google Mock tried the following 1 expectation, but it didn't match:
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+  Expected arg #1: is equal to true
+           Actual: false
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp:49: Failure
+Actual function call count doesn't match EXPECT_CALL(*manager, SetPrimarySlotId(slot, true))...
+         Expected: to be called once
+           Actual: never called - unsatisfied and active
+
+[  FAILED  ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/1, where GetParam() = 2 (0 ms)
+[----------] 2 tests from CallerKinds/NativeOrShell (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 14 tests from 2 test suites ran. (1 ms total)
+[  PASSED  ] 7 tests.
+[  FAILED  ] 7 tests, listed below:
+[  FAILED  ] PrimaryEntry.ReadyCardWritesPreferenceBeforeDelegatingExactTarget
+[  FAILED  ] PrimaryEntry.ManagerFailureReturnedUnchangedAfterPreferenceWrite
+[  FAILED  ] PrimaryEntry.FailedPreferenceWriteStillDelegatesCurrentBehavior
+[  FAILED  ] PrimaryEntry.PresenceQueryFailureWithTrueOutputStillDelegates
+[  FAILED  ] PrimaryEntry.StableSystemAppPassesExtendedSlotCapability
+[  FAILED  ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/0, where GetParam() = 1
+[  FAILED  ] CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/1, where GetParam() = 2
+
+ 7 FAILED TESTS

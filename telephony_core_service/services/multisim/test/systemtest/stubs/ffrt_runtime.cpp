@@ -171,7 +171,9 @@ void queue::wait(const task_handle &handle)
     {
         std::lock_guard<mutex> guard(state_->lock);
         if (state_->workerId == std::this_thread::get_id()) {
-            if (handle.task_->status.load() == HostTaskStatus::RUNNING) return;
+            const auto status = handle.task_->status.load();
+            if (status == HostTaskStatus::RUNNING || status == HostTaskStatus::DONE ||
+                status == HostTaskStatus::CANCELLED) return;
             throw std::logic_error("worker cannot wait on pending task in its own queue");
         }
     }

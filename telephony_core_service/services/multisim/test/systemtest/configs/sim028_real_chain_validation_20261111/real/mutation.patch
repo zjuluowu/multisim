@@ -1,0 +1,11 @@
+--- original/multi_sim_controller.cpp
++++ mutant/multi_sim_controller.cpp
+@@ -1546,7 +1546,7 @@
+ void MultiSimController::SavePrimaryCardInfo(int32_t slotId)
+ {
+     lastPrimarySlotId_ = slotId;
+-    SetParameter(PRIMARY_SLOTID_KEY.c_str(), std::to_string(slotId).c_str());
++    SetParameter(PRIMARY_SLOTID_KEY.c_str(), std::to_string(slotId + 1).c_str());
+     if (slotId < 0 || slotId >= static_cast<int32_t>(simFileManager_.size())) {
+         TELEPHONY_LOGE("SavePrimaryCardInfo slotId out of range %{public}d", slotId);
+         return;

@@ -3,6 +3,7 @@
 #include <atomic>
 #include <cerrno>
 #include <cstring>
+#include <cstdlib>
 #include <stdexcept>
 namespace {
 std::atomic<unsigned int> reads{0};
@@ -33,7 +34,16 @@ extern "C" unsigned int SimHostParameterReads() { return reads.load(); }
 extern "C" int GetParameter(const char *key, const char *fallback, char *value, unsigned int length)
 {
     if (key == nullptr || fallback == nullptr || value == nullptr || length == 0) return -EINVAL;
-    if (active == nullptr) return -ENODEV;
+    if (active == nullptr) {
+        // Explicit process bootstrap input: production global constructors read this
+        // before a scenario can install its strict mock. Never infer SIM state.
+        const char *slots = std::getenv("SIM_HOST_BOOT_SLOT_COUNT");
+        if (slots && std::strcmp(key, "const.telephony.slotCount") == 0) {
+            if (std::strcmp(slots, "1") != 0 && std::strcmp(slots, "2") != 0) return -EINVAL;
+            return SimHost::CopyParameterValue(slots, value, length);
+        }
+        return -ENODEV;
+    }
     reads.fetch_add(1);
     return active->Read(key, fallback, value, length);
 }

@@ -25,6 +25,7 @@ from run_sim_guard import check_semantics, PRODUCTION
 
 TARGETS = ['sim_guard_legacy', 'sim_guard_pin_memory', 'platform_adapter_test', 'sim_component_test',
            'sim_primary_slot_entry_test']
+REAL_TARGET = 'sim_primary_slot_real_test'
 
 
 class BuildFailed(RuntimeError):
@@ -76,18 +77,38 @@ def configure(args, out):
     previous = json.loads(saved.read_text()) if saved.exists() else {}
     root = dependencies(args.gtest_root or os.environ.get('SIM_GTEST_ROOT') or previous.get('gtest_root'))
     await_build_timestamps(SYSTEM)
-    gnargs = ' '.join(f'{key}={json.dumps(value)}' for key, value in
-                      [('gtest_root', str(root)), ('production_root', str(CORE)), ('host_debug', True)])
+    openssl = args.openssl_root or previous.get('openssl_root', '')
+    runtime = args.runtime_root or previous.get('sim028_runtime_root', '')
+    if args.target == REAL_TARGET or args.with_real_primary:
+        if not openssl or not (Path(openssl) / 'usr/include/openssl/ssl.h').is_file():
+            raise RuntimeError('Real SIM target needs --openssl-root from prepare_openssl.py; see primary_slot/README.md')
+        lock = json.loads((SYSTEM / 'configs/dependency_lock.json').read_text())['openssl_headers']
+        if json.loads((Path(openssl) / 'sim_dependency.json').read_text()) != lock:
+            raise RuntimeError('OpenSSL metadata differs from pinned package')
+        for name, digest in lock.get('header_sha256', {}).items():
+            if hashlib.sha256((Path(openssl) / name).read_bytes()).hexdigest() != digest:
+                raise RuntimeError('OpenSSL header drift: ' + name)
+        if not runtime or not (Path(runtime) / 'runtime_dependencies.json').is_file():
+            raise RuntimeError('Real SIM target needs --runtime-root from primary_slot/prepare_runtime.py')
+        manifest = json.loads((Path(runtime) / 'runtime_dependencies.json').read_text())
+        for name, expected in manifest['archives'].items():
+            if hashlib.sha256((Path(runtime) / name).read_bytes()).hexdigest() != expected:
+                raise RuntimeError('Native archive drift: ' + name)
+    values = [('gtest_root', str(root)), ('production_root', str(CORE)), ('host_debug', True),
+              ('openssl_root', str(Path(openssl).resolve()) if openssl else ''),
+              ('sim028_runtime_root', str(Path(runtime).resolve()) if runtime else '')]
+    gnargs = ' '.join(f'{key}={json.dumps(value)}' for key, value in values)
     code = command(['gn', 'gen', out / 'build', '--root=' + str(SYSTEM),
                     '--export-compile-commands', '--args=' + gnargs], out / 'configure.log', REPO)
     if code:
         raise BuildFailed('GN failed; see configure.log')
-    write(saved, {'gtest_root': str(root), 'production_root': str(CORE), 'host_debug': True})
+    write(saved, dict(values))
 
 
 def build(args, out):
     configure(args, out)
-    code = command(['ninja', '-C', out / 'build', '-j', args.jobs, *TARGETS], out / 'build.log', REPO)
+    targets = TARGETS + ([REAL_TARGET] if args.target == REAL_TARGET or args.with_real_primary else [])
+    code = command(['ninja', '-C', out / 'build', '-j', args.jobs, *targets], out / 'build.log', REPO)
     if code:
         raise BuildFailed('Ninja failed; see build.log')
 
@@ -111,8 +132,29 @@ def run_tests(args, out):
               ('known_defects', TARGETS[0], '*DEFECT_*'),
               ('pin_memory', TARGETS[1], '*'), ('infrastructure', TARGETS[2], '*'),
               ('capacity', TARGETS[3], '*'), ('primary_entry_internal_seam', TARGETS[4], '*')]
+    if args.with_real_primary:
+        groups.append(('primary_real_business', REAL_TARGET, '*'))
     if args.action == 'selected':
         groups = [('selected', args.target, args.filter)]
+    # Each full-manager case owns a process: residual production subscription cycles
+    # remain reported as failures, without contaminating later scenarios/mocks.
+    expanded = []
+    for name, target, test_filter in groups:
+        if target != REAL_TARGET:
+            expanded.append((name, target, test_filter))
+            continue
+        env = dict(os.environ, SIM_HOST_BOOT_SLOT_COUNT='2',
+                   LLVM_PROFILE_FILE=str(session / 'discovery-%p.profraw'))
+        listing = subprocess.check_output([out / 'build' / target, '--gtest_list_tests',
+            '--gtest_filter=' + test_filter], env=env, text=True, cwd=session)
+        suite = ''
+        for line in listing.splitlines():
+            line = line.split('#')[0].rstrip()
+            if line and not line.startswith(' '): suite = line
+            elif line.strip(): expanded.append((name + '-' + str(len(expanded)), target, suite + line.strip()))
+        if not any(item[1] == REAL_TARGET for item in expanded):
+            raise RuntimeError('Real SIM filter selected zero cases')
+    groups = expanded
     failed = False
     catalog = json.loads((GUARD / 'traceability/round2_catalog.json').read_text())
     for name, target, test_filter in groups:
@@ -122,6 +164,8 @@ def run_tests(args, out):
         for key in list(env):
             if key.startswith('SIM_') and key != 'SIM_GTEST_ROOT':
                 del env[key]
+        if target == REAL_TARGET:
+            env['SIM_HOST_BOOT_SLOT_COUNT'] = '2'
         code = command([out / 'build' / target, '--gtest_filter=' + test_filter,
                         '--gtest_output=xml:' + str(xml)], session / (name + '.log'), session, env, 90)
         group = {'name': name, 'exit_code': code, 'status': 'FAIL', 'tests': 0, 'passed': 0, 'failed': 0,
@@ -168,8 +212,11 @@ def main():
     parser.add_argument('action', choices=['configure', 'build', 'all', 'selected', 'clean', 'debug'])
     parser.add_argument('--out', type=Path, default=REPO / '.host-out')
     parser.add_argument('--gtest-root')
+    parser.add_argument('--openssl-root')
+    parser.add_argument('--runtime-root')
+    parser.add_argument('--with-real-primary', action='store_true')
     parser.add_argument('--jobs', default='4')
-    parser.add_argument('--target', choices=TARGETS, default=TARGETS[0])
+    parser.add_argument('--target', choices=TARGETS + [REAL_TARGET], default=TARGETS[0])
     parser.add_argument('--filter', default='*')
     args = parser.parse_args()
     out = args.out.resolve()
@@ -179,6 +226,10 @@ def main():
     # Tasks, F5 and terminal commands can overlap; never run two Ninjas on one output.
     lock_stream = (out / 'host.lock').open('w')
     fcntl.flock(lock_stream, fcntl.LOCK_EX)
+    build_dir = out / "build"
+    build_dir.mkdir(exist_ok=True)
+    build_lock = (build_dir / ".sim-build.lock").open("w")
+    fcntl.flock(build_lock, fcntl.LOCK_EX)
     try:
         if args.action == 'configure':
             configure(args, out)
@@ -186,6 +237,8 @@ def main():
             build(args, out)
         elif args.action == 'debug':
             build(args, out)
+            if args.target == REAL_TARGET:
+                os.environ['SIM_HOST_BOOT_SLOT_COUNT'] = '2'
             return subprocess.call(['lldb', '--', str(out / 'build' / args.target),
                                     '--gtest_filter=' + args.filter], cwd=out)
         elif args.action == 'clean':

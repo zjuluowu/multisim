@@ -1,0 +1,1 @@
+{"status": "PASS", "executed": false, "build_exit_code": 0, "compiled_objects": 50, "missing_headers": [], "reason": "Link audit only; run run_primary_real.py separately for runtime evidence"}

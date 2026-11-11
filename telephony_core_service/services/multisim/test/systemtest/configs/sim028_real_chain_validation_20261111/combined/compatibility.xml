@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="17" failures="0" disabled="0" errors="0" time="0.065" timestamp="2026-11-11T14:55:44.163" name="AllTests">
+  <testsuite name="ContractDriver" tests="4" failures="0" disabled="0" skipped="0" errors="0" time="0.02" timestamp="2026-11-11T14:55:44.166">
+    <testcase name="PIN_001" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/contract_test.cpp" line="30" status="run" result="completed" time="0.01" timestamp="2026-11-11T14:55:44.167" classname="ContractDriver">
+      <properties>
+        <property name="real_instances_created" value="1"/>
+        <property name="observations" value="card-event:slot=0,present=1,state=LOCKED,kind=2;&#x0A;pin-success-status:slot=0,present=1,state=READY,kind=2;&#x0A;"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:0;pin:0;pin:0;status:0;"/>
+        <property name="real_instances_destroyed" value="1"/>
+      </properties>
+    </testcase>
+    <testcase name="PIN_002_CommandFailure" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/contract_test.cpp" line="46" status="run" result="completed" time="0.001" timestamp="2026-11-11T14:55:44.179" classname="ContractDriver">
+      <properties>
+        <property name="real_instances_created" value="1"/>
+        <property name="observations" value="card-event:slot=0,present=1,state=LOCKED,kind=2;&#x0A;pin-command-failure:slot=0,present=1,state=LOCKED,kind=2;&#x0A;"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:0;pin:0;"/>
+        <property name="real_instances_destroyed" value="1"/>
+      </properties>
+    </testcase>
+    <testcase name="DUAL_001" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/contract_test.cpp" line="57" status="run" result="completed" time="0.002" timestamp="2026-11-11T14:55:44.181" classname="ContractDriver">
+      <properties>
+        <property name="real_instances_created" value="2"/>
+        <property name="observations" value="card-event:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;&#x0A;card-event:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;&#x0A;card-event:slot=0,present=0,state=ABSENT,kind=0;slot=1,present=1,state=LOCKED,kind=1;&#x0A;card-event:slot=0,present=1,state=READY,kind=1;slot=1,present=1,state=LOCKED,kind=1;&#x0A;"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:0;status:1;status:0;status:0;"/>
+        <property name="real_instances_destroyed" value="2"/>
+      </properties>
+    </testcase>
+    <testcase name="RIL_001_DuplicateAndError" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/contract_test.cpp" line="70" status="run" result="completed" time="0.001" timestamp="2026-11-11T14:55:44.185" classname="ContractDriver">
+      <properties>
+        <property name="real_instances_created" value="1"/>
+        <property name="observations" value="card-event:slot=0,present=0,state=ABSENT,kind=0;&#x0A;ril-error:slot=0,present=0,state=ABSENT,kind=0;&#x0A;card-event:slot=0,present=1,state=READY,kind=2;&#x0A;duplicate-ready:slot=0,present=1,state=READY,kind=2;&#x0A;"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:0;status:0;status:0;"/>
+        <property name="real_instances_destroyed" value="1"/>
+      </properties>
+    </testcase>
+  </testsuite>
+  <testsuite name="SessionLifecycle" tests="10" failures="0" disabled="0" skipped="0" errors="0" time="0.03" timestamp="2026-11-11T14:55:44.188">
+    <testcase name="INIT_001_SingleEnumeration" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="42" status="run" result="completed" time="0.001" timestamp="2026-11-11T14:55:44.189" classname="SessionLifecycle">
+      <properties>
+        <property name="real_instances_created" value="1"/>
+        <property name="pending_state_policy" value="C observation only; no initial/restart state policy frozen"/>
+        <property name="observations" value="initialized-without-card-response:slot=0,present=0,state=UNKNOWN,kind=0;&#x0A;card-event:slot=0,present=1,state=READY,kind=2;&#x0A;"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:0;"/>
+        <property name="real_instances_destroyed" value="1"/>
+      </properties>
+    </testcase>
+    <testcase name="INIT_002_MissingRilThenRecreate" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="48" status="run" result="completed" time="0." timestamp="2026-11-11T14:55:44.192" classname="SessionLifecycle">
+      <properties>
+        <property name="real_instances_created" value="2"/>
+        <property name="pending_state_policy" value="C observation only; no initial/restart state policy frozen"/>
+        <property name="observations" value="ril-unavailable:slot=0,present=0,state=UNKNOWN,kind=0;&#x0A;card-event:slot=0,present=1,state=LOCKED,kind=1;&#x0A;"/>
+        <property name="real_instances_destroyed" value="2"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:0;"/>
+      </properties>
+    </testcase>
+    <testcase name="INIT_DUAL_002_ReversedEnumeration" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="55" status="run" result="completed" time="0.001" timestamp="2026-11-11T14:55:44.193" classname="SessionLifecycle">
+      <properties>
+        <property name="real_instances_created" value="2"/>
+        <property name="pending_state_policy" value="C observation only; no initial/restart state policy frozen"/>
+        <property name="observations" value="second-slot-response-first:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=1,state=LOCKED,kind=1;&#x0A;both-enumerated:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;&#x0A;"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:0;status:1;"/>
+        <property name="real_instances_destroyed" value="2"/>
+      </properties>
+    </testcase>
+    <testcase name="CALLBACK_002_MalformedThenRecovery" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="66" status="run" result="completed" time="0.001" timestamp="2026-11-11T14:55:44.196" classname="SessionLifecycle">
+      <properties>
+        <property name="real_instances_created" value="1"/>
+        <property name="pending_state_policy" value="C observation only; no initial/restart state policy frozen"/>
+        <property name="observations" value="malformed-status:slot=0,present=0,state=UNKNOWN,kind=0;&#x0A;valid-status-recovery:slot=0,present=1,state=READY,kind=2;&#x0A;"/>
+        <property name="injected_fault" value="wrong typed RIL response payload"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:0;status:0;"/>
+        <property name="real_instances_destroyed" value="1"/>
+      </properties>
+    </testcase>
+    <testcase name="CALLBACK_003_DroppedThenRecovery" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="75" status="run" result="completed" time="0.001" timestamp="2026-11-11T14:55:44.199" classname="SessionLifecycle">
+      <properties>
+        <property name="real_instances_created" value="1"/>
+        <property name="pending_state_policy" value="C observation only; no initial/restart state policy frozen"/>
+        <property name="observations" value="status-response-not-delivered:slot=0,present=0,state=UNKNOWN,kind=0;&#x0A;new-status-response:slot=0,present=1,state=LOCKED,kind=2;&#x0A;"/>
+        <property name="injected_fault" value="RIL response dropped; no timeout-policy assertion"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:0;status:0;"/>
+        <property name="real_instances_destroyed" value="1"/>
+      </properties>
+    </testcase>
+    <testcase name="PUK_002_WrongThenSuccessfulUnlock" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="84" status="run" result="completed" time="0.002" timestamp="2026-11-11T14:55:44.202" classname="SessionLifecycle">
+      <properties>
+        <property name="real_instances_created" value="1"/>
+        <property name="observations" value="card-event:slot=0,present=1,state=LOCKED,kind=2;&#x0A;card-event:slot=0,present=1,state=READY,kind=2;&#x0A;"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:0;status:0;"/>
+        <property name="real_instances_destroyed" value="1"/>
+      </properties>
+    </testcase>
+    <testcase name="REFRESH_001_ExplicitStatusQuery" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="95" status="run" result="completed" time="0.001" timestamp="2026-11-11T14:55:44.205" classname="SessionLifecycle">
+      <properties>
+        <property name="real_instances_created" value="1"/>
+        <property name="observations" value="card-event:slot=0,present=1,state=READY,kind=2;&#x0A;explicit-refresh-completed:slot=0,present=1,state=LOCKED,kind=2;&#x0A;"/>
+        <property name="raw_refresh_return" value="2"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:0;status:0;status:0;"/>
+        <property name="real_instances_destroyed" value="1"/>
+      </properties>
+    </testcase>
+    <testcase name="RECREATE_001_DualCardReenumeration" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="100" status="run" result="completed" time="0.002" timestamp="2026-11-11T14:55:44.208" classname="SessionLifecycle">
+      <properties>
+        <property name="real_instances_created" value="4"/>
+        <property name="observations" value="card-event:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;&#x0A;card-event:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;&#x0A;new-real-SUT-before-enumeration:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=0,state=UNKNOWN,kind=0;&#x0A;reenumerated-device-facts:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;&#x0A;"/>
+        <property name="real_instances_destroyed" value="4"/>
+        <property name="pending_state_policy" value="C observation only; no initial/restart state policy frozen"/>
+        <property name="persistence_scope" value="external card facts; no Provider/DB recovery claim"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:1;status:0;"/>
+      </properties>
+    </testcase>
+    <testcase name="RECREATE_002_ReplacementWhileStopped" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="112" status="run" result="completed" time="0.001" timestamp="2026-11-11T14:55:44.212" classname="SessionLifecycle">
+      <properties>
+        <property name="real_instances_created" value="2"/>
+        <property name="observations" value="card-event:slot=0,present=1,state=READY,kind=2;&#x0A;new-card-after-real-recreation:slot=0,present=1,state=LOCKED,kind=1;&#x0A;"/>
+        <property name="real_instances_destroyed" value="2"/>
+        <property name="pending_state_policy" value="C observation only; no initial/restart state policy frozen"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:0;"/>
+      </properties>
+    </testcase>
+    <testcase name="DUAL_002_PinWhileOtherCardRemoved" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="122" status="run" result="completed" time="0.002" timestamp="2026-11-11T14:55:44.215" classname="SessionLifecycle">
+      <properties>
+        <property name="real_instances_created" value="2"/>
+        <property name="observations" value="card-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;&#x0A;card-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=1,state=READY,kind=1;&#x0A;card-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=0,state=ABSENT,kind=0;&#x0A;unlock-and-other-removal-completed:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=ABSENT,kind=0;&#x0A;"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:0;status:1;pin:0;status:1;status:0;"/>
+        <property name="real_instances_destroyed" value="2"/>
+      </properties>
+    </testcase>
+  </testsuite>
+  <testsuite name="Compatibility/Lifecycle" tests="3" failures="0" disabled="0" skipped="0" errors="0" time="0.008" timestamp="2026-11-11T14:55:44.220">
+    <testcase name="PublicCardState/LIFE_001" value_param="40-byte object &lt;64-F7 85-D2 29-60 00-00 01-00 00-00 00-00 00-00 D0-FC 76-FF 29-60 00-00 90-FD 76-FF 29-60 00-00 90-FD 76-FF 29-60 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/contract_test.cpp" line="11" status="run" result="completed" time="0.001" timestamp="2026-11-11T14:55:44.221" classname="Compatibility/Lifecycle">
+      <properties>
+        <property name="real_instances_created" value="1"/>
+        <property name="observations" value="card-event:slot=0,present=0,state=ABSENT,kind=0;&#x0A;card-event:slot=0,present=1,state=LOCKED,kind=2;&#x0A;card-event:slot=0,present=1,state=READY,kind=2;&#x0A;card-event:slot=0,present=0,state=ABSENT,kind=0;&#x0A;"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:0;status:0;status:0;status:0;"/>
+        <property name="real_instances_destroyed" value="1"/>
+      </properties>
+    </testcase>
+    <testcase name="PublicCardState/LIFE_002" value_param="40-byte object &lt;77-F7 85-D2 29-60 00-00 01-00 00-00 00-00 00-00 A0-FE 76-FF 29-60 00-00 30-FF 76-FF 29-60 00-00 30-FF 76-FF 29-60 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/contract_test.cpp" line="11" status="run" result="completed" time="0.001" timestamp="2026-11-11T14:55:44.224" classname="Compatibility/Lifecycle">
+      <properties>
+        <property name="real_instances_created" value="1"/>
+        <property name="observations" value="card-event:slot=0,present=1,state=READY,kind=1;&#x0A;card-event:slot=0,present=0,state=ABSENT,kind=0;&#x0A;card-event:slot=0,present=1,state=READY,kind=2;&#x0A;"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:0;status:0;status:0;"/>
+        <property name="real_instances_destroyed" value="1"/>
+      </properties>
+    </testcase>
+    <testcase name="PublicCardState/PUK_001" value_param="40-byte object &lt;94-F7 85-D2 29-60 00-00 01-00 00-00 00-00 00-00 90-0A 77-FF 29-60 00-00 F0-0A 77-FF 29-60 00-00 F0-0A 77-FF 29-60 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/contract_test.cpp" line="11" status="run" result="completed" time="0.001" timestamp="2026-11-11T14:55:44.226" classname="Compatibility/Lifecycle">
+      <properties>
+        <property name="real_instances_created" value="1"/>
+        <property name="observations" value="card-event:slot=0,present=1,state=LOCKED,kind=2;&#x0A;card-event:slot=0,present=0,state=ABSENT,kind=0;&#x0A;"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:0;status:0;"/>
+        <property name="real_instances_destroyed" value="1"/>
+      </properties>
+    </testcase>
+  </testsuite>
+</testsuites>

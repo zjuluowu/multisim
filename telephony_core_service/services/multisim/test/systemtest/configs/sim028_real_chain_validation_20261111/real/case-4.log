@@ -1,0 +1,61 @@
+Note: Google Test filter = RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RealSimPrimary
+[ RUN      ] RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey0=-1
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey1=-1
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey2=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey0=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey1=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE parameter telephony.sim.opkey2=-1
+TRACE input request=C1ThreePhasesWithStaleCheckResponseRejected slot=1 userSet=true
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE parameter persist.telephony.userPreferPrimarySlot=true
+TRACE parameter persist.telephony.MainSlotId=1
+TRACE parameter persist.telephony.MainCard.Iccid=AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=0 user=0
+TRACE radio slot=0 session=1 phase=1 modem=0
+TRACE radio slot=1 session=1 phase=1 modem=1
+TRACE radio slot=0 session=1 phase=2 modem=1
+TRACE radio slot=1 session=1 phase=2 modem=0
+TRACE radio slot=0 session=1 phase=4 modem=1
+TRACE radio slot=1 session=1 phase=4 modem=0
+TRACE notify usual.event.SIM.DEFAULT_MAIN_SUBSCRIPTION_CHANGED slot=1 sim=1 done=0 user=0
+TRACE parameter persist.telephony.MainCellularDataSlotId=1
+TRACE notify usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED slot=-1 sim=1 done=0 user=0
+DIAGNOSTIC SET_DEFAULT_CELLULAR_DATA
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=1 user=0
+DIAGNOSTIC ACCOUNT_NOTIFY
+../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:290: Failure
+Value of: SimHost::AwaitSchedulerStopped(3s)
+  Actual: false
+Expected: true
+REAL_GRAPH_LIFETIME_NOT_DRAINED
+
+[  FAILED  ] RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected (3060 ms)
+[----------] 1 test from RealSimPrimary (3060 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3060 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected
+
+ 1 FAILED TEST
+
+../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/mock_tel_ril_manager.h:138: ERROR: this mock object (used in test RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected) should be deleted but never is. Its address is @0x6026d8f53850.
+ERROR: 1 leaked mock object found at program exit. Expectations on a mock object are verified when the object is destructed. Leaking a mock means that its expectations aren't verified, which is usually a test bug. If you really intend to leak a mock, you can suppress this error using testing::Mock::AllowLeak(mock_object), or you may use a fake or stub instead of a mock.

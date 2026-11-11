@@ -14,6 +14,21 @@
         "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/debug-%p.profraw"
       },
       "preLaunchTask": "Build Host"
+    },
+    {
+      "name": "SIM-028: real C0 (WSL, known lifetime failure)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/.host-out/build/sim_primary_slot_real_test",
+      "args": [
+        "--gtest_filter=RealSimPrimary.C0CoreToRealManagerAndController"
+      ],
+      "cwd": "${workspaceFolder}/.host-out",
+      "env": {
+        "SIM_HOST_BOOT_SLOT_COUNT": "2",
+        "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/real-debug-%p.profraw"
+      },
+      "preLaunchTask": "Build Real SIM Host"
     }
   ],
   "inputs": [

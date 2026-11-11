@@ -1,6 +1,8 @@
 declare_args() {
   host_debug = false  # IDE host builds keep DWARF; legacy runners retain their profile.
   primary_slot_core_source = ""  # Optional negative-control copy outside the source tree.
+  primary_slot_controller_source = ""  # Outside-source negative control only.
+  sim028_runtime_root = ""  # Explicit prepared native C dependencies, no implicit downloads.
   gtest_root = ""
   production_root = ""
   sim_guard_state_source =

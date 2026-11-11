@@ -1,0 +1,111 @@
+In file included from /mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_stub.cpp:21:
+/mnt/e/github/multisim/telephony_core_service/services/core/include/raw_parcel_callback_proxy.h:27:12: error: no template named 'BrokerDelegator'
+   27 |     static BrokerDelegator<RawParcelCallbackProxy> delegator_;
+      |            ^
+/mnt/e/github/multisim/telephony_core_service/services/core/include/raw_parcel_callback_proxy.h:24:11: error: no matching constructor for initialization of 'IRemoteProxy<IRawParcelCallback>'
+   24 |         : IRemoteProxy<IRawParcelCallback>(impl) {}
+      |           ^                                ~~~~
+../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/include/compile_declarations.h:120:25: note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'const sptr<IRemoteObject>' to 'const IRemoteProxy<IRawParcelCallback>' for 1st argument
+  120 | template<class T> class IRemoteProxy : public T {};
+      |                         ^~~~~~~~~~~~
+../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/include/compile_declarations.h:120:25: note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'const sptr<IRemoteObject>' to 'IRemoteProxy<IRawParcelCallback>' for 1st argument
+  120 | template<class T> class IRemoteProxy : public T {};
+      |                         ^~~~~~~~~~~~
+../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/include/compile_declarations.h:120:25: note: candidate constructor (the implicit default constructor) not viable: requires 0 arguments, but 1 was provided
+/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_stub.cpp:319:44: error: no member named 'ReadInterfaceToken' in 'OHOS::MessageParcel'
+  319 |     std::u16string remoteDescripter = data.ReadInterfaceToken();
+      |                                       ~~~~ ^
+/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_stub.cpp:334:12: error: use of undeclared identifier 'IPCObjectStub'
+  334 |     return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
+      |            ^
+/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_stub.cpp:383:12: error: use of undeclared identifier 'NO_ERROR'; did you mean 'LOG_ERROR'?
+  383 |     return NO_ERROR;
+      |            ^~~~~~~~
+      |            LOG_ERROR
+../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/include/hilog/log.h:3:49: note: 'LOG_ERROR' declared here
+    3 | enum { LOG_CORE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
+      |                                                 ^
+/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_stub.cpp:399:12: error: use of undeclared identifier 'NO_ERROR'; did you mean 'LOG_ERROR'?
+  399 |     return NO_ERROR;
+      |            ^~~~~~~~
+      |            LOG_ERROR
+../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/include/hilog/log.h:3:49: note: 'LOG_ERROR' declared here
+    3 | enum { LOG_CORE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
+      |                                                 ^
+/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_stub.cpp:407:12: error: use of undeclared identifier 'NO_ERROR'; did you mean 'LOG_ERROR'?
+  407 |     return NO_ERROR;
+      |            ^~~~~~~~
+      |            LOG_ERROR
+../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/include/hilog/log.h:3:49: note: 'LOG_ERROR' declared here
+    3 | enum { LOG_CORE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
+      |                                                 ^
+/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_stub.cpp:415:12: error: use of undeclared identifier 'NO_ERROR'; did you mean 'LOG_ERROR'?
+  415 |     return NO_ERROR;
+      |            ^~~~~~~~
+      |            LOG_ERROR
+../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/include/hilog/log.h:3:49: note: 'LOG_ERROR' declared here
+    3 | enum { LOG_CORE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
+      |                                                 ^
+/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_stub.cpp:431:12: error: use of undeclared identifier 'NO_ERROR'; did you mean 'LOG_ERROR'?
+  431 |     return NO_ERROR;
+      |            ^~~~~~~~
+      |            LOG_ERROR
+../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/include/hilog/log.h:3:49: note: 'LOG_ERROR' declared here
+    3 | enum { LOG_CORE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
+      |                                                 ^
+/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_stub.cpp:449:12: error: use of undeclared identifier 'NO_ERROR'; did you mean 'LOG_ERROR'?
+  449 |     return NO_ERROR;
+      |            ^~~~~~~~
+      |            LOG_ERROR
+../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/include/hilog/log.h:3:49: note: 'LOG_ERROR' declared here
+    3 | enum { LOG_CORE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
+      |                                                 ^
+/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_stub.cpp:468:12: error: use of undeclared identifier 'NO_ERROR'; did you mean 'LOG_ERROR'?
+  468 |     return NO_ERROR;
+      |            ^~~~~~~~
+      |            LOG_ERROR
+../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/include/hilog/log.h:3:49: note: 'LOG_ERROR' declared here
+    3 | enum { LOG_CORE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
+      |                                                 ^
+/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_stub.cpp:475:47: error: no member named 'ReadRemoteObject' in 'OHOS::MessageParcel'
+  475 |     sptr<IRemoteObject> remoteCallback = data.ReadRemoteObject();
+      |                                          ~~~~ ^
+/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_stub.cpp:491:12: error: use of undeclared identifier 'NO_ERROR'; did you mean 'LOG_ERROR'?
+  491 |     return NO_ERROR;
+      |            ^~~~~~~~
+      |            LOG_ERROR
+../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/include/hilog/log.h:3:49: note: 'LOG_ERROR' declared here
+    3 | enum { LOG_CORE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
+      |                                                 ^
+/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_stub.cpp:498:47: error: no member named 'ReadRemoteObject' in 'OHOS::MessageParcel'
+  498 |     sptr<IRemoteObject> remoteCallback = data.ReadRemoteObject();
+      |                                          ~~~~ ^
+/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_stub.cpp:513:12: error: use of undeclared identifier 'NO_ERROR'; did you mean 'LOG_ERROR'?
+  513 |     return NO_ERROR;
+      |            ^~~~~~~~
+      |            LOG_ERROR
+../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/include/hilog/log.h:3:49: note: 'LOG_ERROR' declared here
+    3 | enum { LOG_CORE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
+      |                                                 ^
+/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_stub.cpp:529:12: error: use of undeclared identifier 'NO_ERROR'; did you mean 'LOG_ERROR'?
+  529 |     return NO_ERROR;
+      |            ^~~~~~~~
+      |            LOG_ERROR
+../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/include/hilog/log.h:3:49: note: 'LOG_ERROR' declared here
+    3 | enum { LOG_CORE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
+      |                                                 ^
+/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_stub.cpp:535:57: error: no member named 'ReadRemoteObject' in 'OHOS::MessageParcel'
+  535 |     auto callback = iface_cast<IRawParcelCallback>(data.ReadRemoteObject());
+      |                                                    ~~~~ ^
+/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_stub.cpp:541:12: error: use of undeclared identifier 'NO_ERROR'; did you mean 'LOG_ERROR'?
+  541 |     return NO_ERROR;
+      |            ^~~~~~~~
+      |            LOG_ERROR
+../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/stubs/include/hilog/log.h:3:49: note: 'LOG_ERROR' declared here
+    3 | enum { LOG_CORE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
+      |                                                 ^
+/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_stub.cpp:547:57: error: no member named 'ReadRemoteObject' in 'OHOS::MessageParcel'
+  547 |     auto callback = iface_cast<IRawParcelCallback>(data.ReadRemoteObject());
+      |                                                    ~~~~ ^
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.

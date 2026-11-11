@@ -1,0 +1,17 @@
+ .vscode/launch.json                                |  15 +++
+ .vscode/settings.json                              |   8 ++
+ .vscode/tasks.json                                 |  38 ++++++-
+ .../docs/SIM_Refactor_Execution_State.md           |  26 +++++
+ .../multisim/test/relocation_followups.json        |  33 +++++-
+ .../services/multisim/test/systemtest/BUILD.gn     |  36 +++++-
+ .../services/multisim/test/systemtest/HOST.md      |   6 +
+ .../services/multisim/test/systemtest/README.md    |   2 +
+ .../multisim/test/systemtest/gn/BUILDCONFIG.gn     |   2 +
+ .../test/systemtest/primary_slot/README.md         | 123 ++++++++++++++++-----
+ .../systemtest/primary_slot/include/ipc_skeleton.h |   2 +
+ .../systemtest/scripts/audit_initialization.py     |  34 +++++-
+ .../test/systemtest/stubs/ffrt_runtime.cpp         |   4 +-
+ .../stubs/include/compile_declarations.h           |   4 +
+ .../test/systemtest/stubs/parameter_service.cpp    |  12 +-
+ .../multisim/test/systemtest/tools/host.py         |  63 ++++++++++-
+ 16 files changed, 360 insertions(+), 48 deletions(-)

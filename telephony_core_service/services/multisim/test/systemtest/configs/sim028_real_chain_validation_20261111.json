@@ -1,0 +1,1444 @@
+{
+  "schema_version": 1,
+  "task": "SIM-028 real Host execution, independent of historical entry baseline",
+  "head": "d44632a68946c888481a27120ae8ac77454a44d6",
+  "branch": "main",
+  "status": "FAIL",
+  "acceptance": "PARTIAL: real business execution achieved; lifecycle FAIL and full component BLOCKED",
+  "layers": {
+    "entry_contract": "PASS",
+    "real_sim_manager": "PASS",
+    "real_multi_sim_controller": "PASS",
+    "branch_A": "BLOCKED",
+    "branch_B": "FAIL",
+    "branch_C0": "FAIL",
+    "branch_C1": "FAIL",
+    "real_core_service": "BLOCKED",
+    "stub_dispatch": "BLOCKED",
+    "host_ipc_boundary": "BLOCKED",
+    "real_ohos_ipc": "BLOCKED",
+    "ril_hdi_boundary": "BLOCKED",
+    "whole_component_chain": "BLOCKED"
+  },
+  "counts": {
+    "tests": 67,
+    "passed": 56,
+    "failed": 11,
+    "skipped": 0,
+    "original_known_defects": 5,
+    "new_lifecycle_affected_cases": 6
+  },
+  "real_target": {
+    "counts": {
+      "tests": 7,
+      "passed": 1,
+      "failed": 6
+    },
+    "binary_sha256": "71db8a0f47b2b2891f7cbd54c782094717c1e5009eff26ca55ea25f5f8c17e96",
+    "cases": [
+      {
+        "name": "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+        "status": "PASS",
+        "business_status": "NOT_RUN",
+        "properties": {},
+        "exit_code": 0
+      },
+      {
+        "name": "RealSimPrimary.C0CoreToRealManagerAndController",
+        "status": "FAIL",
+        "business_status": "PASS",
+        "properties": {
+          "business_assertions_before_cleanup": "PASS",
+          "workers_after_cleanup": "28",
+          "ril_references_after_cleanup": "10",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "exit_code": 1
+      },
+      {
+        "name": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+        "status": "FAIL",
+        "business_status": "PASS",
+        "properties": {
+          "business_assertions_before_cleanup": "PASS",
+          "workers_after_cleanup": "28",
+          "ril_references_after_cleanup": "10",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "exit_code": 1
+      },
+      {
+        "name": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+        "status": "FAIL",
+        "business_status": "PASS",
+        "properties": {
+          "business_assertions_before_cleanup": "PASS",
+          "workers_after_cleanup": "28",
+          "ril_references_after_cleanup": "10",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "exit_code": 1
+      },
+      {
+        "name": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+        "status": "FAIL",
+        "business_status": "PASS",
+        "properties": {
+          "business_assertions_before_cleanup": "PASS",
+          "workers_after_cleanup": "28",
+          "ril_references_after_cleanup": "10",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "exit_code": 1
+      },
+      {
+        "name": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+        "status": "FAIL",
+        "business_status": "PASS",
+        "properties": {
+          "business_assertions_before_cleanup": "PASS",
+          "workers_after_cleanup": "28",
+          "ril_references_after_cleanup": "10",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "exit_code": 1
+      },
+      {
+        "name": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+        "status": "FAIL",
+        "business_status": "PASS",
+        "properties": {
+          "business_assertions_before_cleanup": "PASS",
+          "workers_after_cleanup": "28",
+          "ril_references_after_cleanup": "10",
+          "strict_ril_expectations_verified": "PASS"
+        },
+        "exit_code": 1
+      }
+    ]
+  },
+  "business_scenario_causality": {
+    "status": "PASS",
+    "scope": "one request through CoreServiceSim/real Manager/Controller and its actual branch endpoint; lifetime failures remain FAIL",
+    "whole_component_chain": "BLOCKED",
+    "request_identifier": "TRACE input request is the test scenario name; the legacy synchronous API has no production requestId. Correlation uses the original event/owner and C1 session; real RIL serial is not exercised."
+  },
+  "entry_regression": {
+    "counts": {
+      "tests": 14,
+      "PASS": 14,
+      "FAIL": 0
+    },
+    "scope": "real CoreServiceSim + internal StrictMock ISimManager",
+    "branches": [
+      [
+        466,
+        9,
+        466,
+        55,
+        1,
+        13,
+        0,
+        0,
+        4
+      ],
+      [
+        470,
+        9,
+        470,
+        79,
+        1,
+        12,
+        0,
+        0,
+        4
+      ],
+      [
+        474,
+        9,
+        474,
+        31,
+        1,
+        11,
+        0,
+        0,
+        4
+      ],
+      [
+        478,
+        9,
+        478,
+        72,
+        1,
+        10,
+        0,
+        0,
+        4
+      ],
+      [
+        484,
+        9,
+        484,
+        16,
+        2,
+        8,
+        0,
+        0,
+        4
+      ],
+      [
+        488,
+        9,
+        488,
+        42,
+        1,
+        7,
+        0,
+        0,
+        4
+      ]
+    ],
+    "regions": [
+      [
+        465,
+        1,
+        494,
+        2,
+        14,
+        0,
+        0,
+        0
+      ],
+      [
+        466,
+        9,
+        466,
+        55,
+        14,
+        0,
+        0,
+        0
+      ],
+      [
+        466,
+        56,
+        466,
+        57,
+        1,
+        0,
+        0,
+        3
+      ],
+      [
+        466,
+        57,
+        469,
+        6,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        467,
+        9,
+        467,
+        23,
+        1,
+        0,
+        1,
+        1
+      ],
+      [
+        469,
+        6,
+        470,
+        5,
+        13,
+        0,
+        0,
+        3
+      ],
+      [
+        470,
+        5,
+        494,
+        2,
+        13,
+        0,
+        0,
+        0
+      ],
+      [
+        470,
+        9,
+        470,
+        79,
+        13,
+        0,
+        0,
+        0
+      ],
+      [
+        470,
+        80,
+        470,
+        81,
+        1,
+        0,
+        0,
+        3
+      ],
+      [
+        470,
+        81,
+        473,
+        6,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        471,
+        9,
+        471,
+        23,
+        1,
+        0,
+        2,
+        1
+      ],
+      [
+        473,
+        6,
+        474,
+        5,
+        12,
+        0,
+        0,
+        3
+      ],
+      [
+        474,
+        5,
+        494,
+        2,
+        12,
+        0,
+        0,
+        0
+      ],
+      [
+        474,
+        9,
+        474,
+        31,
+        12,
+        0,
+        0,
+        0
+      ],
+      [
+        474,
+        32,
+        474,
+        33,
+        1,
+        0,
+        0,
+        3
+      ],
+      [
+        474,
+        33,
+        477,
+        6,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        475,
+        9,
+        475,
+        23,
+        1,
+        0,
+        3,
+        1
+      ],
+      [
+        477,
+        6,
+        478,
+        5,
+        11,
+        0,
+        0,
+        3
+      ],
+      [
+        478,
+        5,
+        494,
+        2,
+        11,
+        0,
+        0,
+        0
+      ],
+      [
+        478,
+        9,
+        478,
+        72,
+        11,
+        0,
+        0,
+        0
+      ],
+      [
+        478,
+        73,
+        478,
+        74,
+        1,
+        0,
+        0,
+        3
+      ],
+      [
+        478,
+        74,
+        481,
+        6,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        479,
+        9,
+        479,
+        23,
+        1,
+        0,
+        4,
+        1
+      ],
+      [
+        481,
+        6,
+        482,
+        5,
+        10,
+        0,
+        0,
+        3
+      ],
+      [
+        482,
+        5,
+        494,
+        2,
+        10,
+        0,
+        0,
+        0
+      ],
+      [
+        484,
+        9,
+        484,
+        16,
+        10,
+        0,
+        0,
+        0
+      ],
+      [
+        484,
+        17,
+        484,
+        18,
+        2,
+        0,
+        0,
+        3
+      ],
+      [
+        484,
+        18,
+        487,
+        6,
+        2,
+        0,
+        0,
+        0
+      ],
+      [
+        485,
+        9,
+        485,
+        23,
+        2,
+        0,
+        5,
+        1
+      ],
+      [
+        487,
+        6,
+        488,
+        5,
+        8,
+        0,
+        0,
+        3
+      ],
+      [
+        488,
+        5,
+        494,
+        2,
+        8,
+        0,
+        0,
+        0
+      ],
+      [
+        488,
+        9,
+        488,
+        42,
+        8,
+        0,
+        0,
+        0
+      ],
+      [
+        488,
+        43,
+        488,
+        44,
+        1,
+        0,
+        0,
+        3
+      ],
+      [
+        488,
+        44,
+        491,
+        6,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        489,
+        9,
+        489,
+        23,
+        1,
+        0,
+        6,
+        1
+      ],
+      [
+        491,
+        6,
+        492,
+        5,
+        7,
+        0,
+        0,
+        3
+      ],
+      [
+        492,
+        5,
+        493,
+        55,
+        7,
+        0,
+        0,
+        0
+      ],
+      [
+        70,
+        5,
+        71,
+        19,
+        1,
+        1,
+        0,
+        0
+      ],
+      [
+        70,
+        55,
+        70,
+        72,
+        1,
+        1,
+        7,
+        1
+      ],
+      [
+        70,
+        5,
+        71,
+        19,
+        1,
+        2,
+        0,
+        0
+      ],
+      [
+        70,
+        55,
+        70,
+        72,
+        1,
+        2,
+        8,
+        1
+      ],
+      [
+        70,
+        5,
+        71,
+        19,
+        1,
+        3,
+        0,
+        0
+      ],
+      [
+        70,
+        55,
+        70,
+        72,
+        1,
+        3,
+        9,
+        1
+      ],
+      [
+        70,
+        5,
+        71,
+        19,
+        1,
+        4,
+        0,
+        0
+      ],
+      [
+        70,
+        55,
+        70,
+        72,
+        1,
+        4,
+        10,
+        1
+      ],
+      [
+        70,
+        5,
+        71,
+        19,
+        2,
+        5,
+        0,
+        0
+      ],
+      [
+        70,
+        55,
+        70,
+        72,
+        2,
+        5,
+        11,
+        1
+      ],
+      [
+        70,
+        5,
+        71,
+        19,
+        1,
+        6,
+        0,
+        0
+      ],
+      [
+        70,
+        55,
+        70,
+        72,
+        1,
+        6,
+        12,
+        1
+      ],
+      [
+        29,
+        27,
+        29,
+        47,
+        1,
+        7,
+        0,
+        0
+      ],
+      [
+        29,
+        27,
+        29,
+        47,
+        1,
+        8,
+        0,
+        0
+      ],
+      [
+        29,
+        27,
+        29,
+        47,
+        1,
+        9,
+        0,
+        0
+      ],
+      [
+        29,
+        27,
+        29,
+        47,
+        1,
+        10,
+        0,
+        0
+      ],
+      [
+        29,
+        27,
+        29,
+        47,
+        2,
+        11,
+        0,
+        0
+      ],
+      [
+        29,
+        27,
+        29,
+        47,
+        1,
+        12,
+        0,
+        0
+      ]
+    ],
+    "mutation": {
+      "detected": true,
+      "assertion_failures": 7,
+      "change": "userSet true -> false in outside-repository source copy"
+    }
+  },
+  "mutations": {
+    "userSet": {
+      "detected": true,
+      "assertion_failures": 7,
+      "change": "userSet true -> false in outside-repository source copy"
+    },
+    "real_controller": {
+      "status": "PASS",
+      "build_dir": "/tmp/sim028-mutant-p1qyqpj6",
+      "change": "primary slot parameter slotId -> slotId+1",
+      "production_source_sha256": "e4194d662ddd164a2c527c7793a3b673ecc283c2385a3a56921856aec7e3afbc",
+      "build_exit_code": 0,
+      "detected": true,
+      "exit_code": 1,
+      "failures": [
+        "../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp:71\nExpected equality of these values:\n  scenario.parametersDb[\"persist.telephony.MainSlotId\"]\n    Which is: \"2\"\n  \"1\"\nPRIMARY_COMMIT_TARGET\n",
+        "../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:290\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "binary_sha256": "b8158796719dd475d38b61f03178eb845d7d07581bd037566834682ce81f7a4b",
+      "production_unchanged": true,
+      "original_binary_unchanged": true
+    }
+  },
+  "provider": {
+    "status": "PASS",
+    "compiled_objects": 50,
+    "missing_headers": [],
+    "contract": "primary_slot/provider/contract.json",
+    "historical_baseline": {
+      "objects": 45,
+      "diagnostics": 43,
+      "missing_fields": 14
+    },
+    "intermediate_link": "50 objects compiled; 74 unique unresolved symbols; addressed by real utility sources/native libraries and explicit runtime boundaries",
+    "matching_OHOS_product_release": "NOT_VERIFIED"
+  },
+  "production_sources": {
+    "common/capability_mgr/src/multi_sims_capability_manager.cpp": "d1453865fd6003b513dc76fcf65b503668c6a7f96b0da193fd396f53957eb2ef",
+    "frameworks/native/src/core_manager_inner.cpp": "2bbfe3133a8f57e7774ba554874acf00763531d395a5acdd294d3e0a12e99733",
+    "frameworks/native/src/operator_config_types.cpp": "891c77eda302d76d7ceb0aee257e2b02c3e81d120a81c9b36432d869255aeedf",
+    "services/core/src/core_service_hisysevent.cpp": "34bf546d96830b4e195a80af754fe0901f517f580276ba1bacc2e134691106af",
+    "services/core/src/core_service_sim.cpp": "6bc4f83b79983b319e41572a6c8683808e4cd485d652eb531fc65a154376df34",
+    "services/sim/src/card_file_detect_manager.cpp": "2986acdc382f702f0a08ee15d446d68e9a9dec846189a90e322effe762425c41",
+    "services/sim/src/csim_file_controller.cpp": "9a5df536c65668d0311eece5c8b4ed33274928c64a0f84ed20854ab6002135e4",
+    "services/sim/src/esim_manager.cpp": "c13572bf449e181015515e73a1febdc31d524bc22c57a245d3f783598920b7a2",
+    "services/sim/src/icc_dialling_numbers_cache.cpp": "f150a14d526073d183c0526e05fd17d52c3ee4e7b2da431191517bfa2cbd63ed",
+    "services/sim/src/icc_dialling_numbers_handler.cpp": "2ac46452530d191f1049155127af5388405c04144ffa72c661dbcf7274758765",
+    "services/sim/src/icc_dialling_numbers_manager.cpp": "b0244babca504514e94112f7418a24b5b61905f18e3c995e8c264386f4aa6ed7",
+    "services/sim/src/icc_file.cpp": "1edcaf9f6862f2cd8d08a00b0013437df8ab20ad9e2395de48bb83c8446f5518",
+    "services/sim/src/icc_file_controller.cpp": "397c7805e3130236c355a0144a868bd8d091ebe7347e6856cb07e995f5fd3471",
+    "services/sim/src/icc_operator_privilege_controller.cpp": "ca3048bda553b8a71a9d51820282221c4ac6dabc8f21d19d6163fd9143b96708",
+    "services/sim/src/icc_operator_rule.cpp": "03b27f8ec60614f63d603fa3091ca2d10125fe5881f492f0d3ab387faf2b8ed2",
+    "services/sim/src/icc_state.cpp": "f44d7f4ba3a3dec16a0edb9ba8b24b6d1bcb66f50fce9d79f936626ba0d9e7cd",
+    "services/sim/src/isim_file.cpp": "cd6736b9c70517805e8b8810c55ba5a6e9a82b74df7c00f29f7c4c7e3bec7182",
+    "services/sim/src/isim_file_controller.cpp": "95aa7256dc134971062364beb6feee28241e1a0f07b873b7754b69dc97fea590",
+    "services/sim/src/mcc_pool.cpp": "e9d2c866df6e36d8a77c63e1d4f04167d9a2e91419bed4cf93b4c3e8d355cb0b",
+    "services/sim/src/multi_sim_controller.cpp": "e4194d662ddd164a2c527c7793a3b673ecc283c2385a3a56921856aec7e3afbc",
+    "services/sim/src/multi_sim_helper.cpp": "dfeb08121cf1c87b9941516fb58c03ef4d25d47b65c85dd45052f55635eb78d9",
+    "services/sim/src/multi_sim_monitor.cpp": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba",
+    "services/sim/src/operator_config_cache.cpp": "6125e33fe2d1a74c0de9cd4183b4c1c22a840790f324935bcd2f0670bcfdcd5a",
+    "services/sim/src/operator_config_hisysevent.cpp": "1d3a868297ab72cb15a57826539bd8bec8a4938d7350420b32537283617c2fe6",
+    "services/sim/src/operator_config_loader.cpp": "c60bcac6ed36932444beeee10b21107492f2ea55c18d21d28e06d2167e70a42a",
+    "services/sim/src/operator_file_parser.cpp": "661b9c208686cc164dd839d0df1401f96c70d9a03058d2e5d3f4ef0456d7e97b",
+    "services/sim/src/operator_matching_rule.cpp": "65066b9aa8f1b824839398f3e21e04f4a883e5e679ac0df06a4935d9f97b919e",
+    "services/sim/src/pdp_profile_rdb_helper.cpp": "dffc17c008029ed133639683871ebf57a9e6593284e248113516c121280b6927",
+    "services/sim/src/plmn_file.cpp": "ce91952f395f202d3ed4212c8495fbf684e1e9aa7bcea0ccde3d1101c7b23c35",
+    "services/sim/src/radio_protocol_controller.cpp": "7391942fa10b22e4692b1873716d4827be68dbbe85ff63587f243e3096d79102",
+    "services/sim/src/ruim_file.cpp": "bd055f0028598c8800ab5fabd2f5aa096caa7e1e06cc05da6985e01b0b9c1bc6",
+    "services/sim/src/ruim_file_controller.cpp": "e56479355d8189162beb8199828fbee46c522188093efb52947a9ca04b10cee9",
+    "services/sim/src/sim_account_callback_death_recipient.cpp": "480adf72c92a5c68285cbfbcf87a7cf15c161eee3bb8c5fc98d11da82eee09c1",
+    "services/sim/src/sim_account_manager.cpp": "e76d7e9595830bfb36565ee4bc61d1eb83cb4cacc1e0a349323bf8e78b29f108",
+    "services/sim/src/sim_char_decode.cpp": "6d1bd0e24a958ccce41b4c05148b231a3292f95b4075a057be0d18a36657da50",
+    "services/sim/src/sim_file.cpp": "b02ad8d2f64a67393d8bbd6bbf66cf0459a327de0a668f2555b6a059a045d9d7",
+    "services/sim/src/sim_file_controller.cpp": "bbd724bc8d20eb154f81dfa4389d81519d14b9cc579c954fa349afc9d30b1570",
+    "services/sim/src/sim_file_init.cpp": "3e331c90149589fbade06a178a3f808d1ed072521d0473e2878e6e47390af345",
+    "services/sim/src/sim_file_manager.cpp": "12045e75e5299fda095155cb8aa2358f62a43f936df9d55aadbf4d95fb47752a",
+    "services/sim/src/sim_file_parse.cpp": "9d91141762124f4211d8e5bf234a3acf98dbe47c2f513c9e6ccc7fcb03dfc57b",
+    "services/sim/src/sim_manager.cpp": "9231f9b67e92d80178c878412b16d573c8ed604dfa58638e7441dda7f90a3cd5",
+    "services/sim/src/sim_number_decode.cpp": "929240de7614c05edb4a79b751870cfafc4973f2f7505af43aa906d224d7f1b8",
+    "services/sim/src/sim_rdb_helper.cpp": "99656cbd23c29e0575de75c9ba439eaca65c2c4f1c72e6b6528efe9496538c23",
+    "services/sim/src/sim_sms_controller.cpp": "044e456c3fd8e5128503a6a9db8f0268fe9c5c5c069e309b34cfba4cf53bd0db",
+    "services/sim/src/sim_sms_manager.cpp": "4c8d5148cb7585bb5691e12214cfeb13352c9d9b117beed94e57dc10674ef1f3",
+    "services/sim/src/sim_state_handle.cpp": "e6856b2acda8a60334e8f61f6d5201fb896106a0a700960f8a36cc26dd1d5e0f",
+    "services/sim/src/sim_state_manager.cpp": "99a3194d52aa58af9eb475e08b315821c6eb3a787583f48580ad76cb89d0b44d",
+    "services/sim/src/sim_state_tracker.cpp": "0ebadb176c101095d8561c1f7eb55fa108c8757016a4d71e630e8242df44ea4c",
+    "services/sim/src/sim_utils.cpp": "7940f2dd69a770aaaf96efcad4f7d491cf1bf868521c2bc05b6e55458742e4b8",
+    "services/sim/src/stk_controller.cpp": "996c434c8f62ba9c77b2819f16cf15abeed2f3d0a41468c84c39cd5db7414be2",
+    "services/sim/src/stk_manager.cpp": "1cfd69b4581e385f28fd020efe0067a9d5fa77b77d9f6d33d74cdbc1c3990b3f",
+    "services/sim/src/tag_service.cpp": "9ce64e8f84e6cffe0fd68b801005cf54acddaec2131e45fa2258d97ab32f1595",
+    "services/sim/src/telephony_data_helper.cpp": "2bd5757223716843e712813d03727d45f4abafec1cb3a42faebe5ad1e79884f8",
+    "services/sim/src/usim_dialling_numbers_service.cpp": "1e0931644fe084c7109f44203093f19cf6f9515498359a3d2289771986e37bc2",
+    "services/sim/src/usim_file_controller.cpp": "75e66a9550201da634cb2a78975739caa05b0f50c00530dae247b658b141d76d",
+    "services/sim/src/voice_mail_constants.cpp": "ed4e43caf5e615fc403bf262417909d004e36e867d182f8ca4fd4b8df305a3d9",
+    "services/tel_ril/src/observer_handler.cpp": "80d56eca572bf285eb3f54e4f057255a582a7f5bf85e35a17dfbdba0e0e74d63",
+    "services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp": "b3d5e06f22790da1ee1b3373fe528e045a3452f18e0bec01472a7c7f23fc6b27",
+    "utils/common/src/str_convert.cpp": "20f6f4af091416f04ec8910d2260fb872ce92a379e7f6d867d165ba5a82bf757",
+    "utils/common/src/tel_event_handler.cpp": "d6dbc69c03c8c4810cea31d9efaac5e0c0767b569edcc9ce25f3c61269665e63",
+    "utils/common/src/tel_event_queue.cpp": "d536be6a17f2710dda6e145f7c15a482bfa9f053689ab3dc24fae91ef6d3bccf",
+    "utils/common/src/telephony_common_utils.cpp": "4d74a30cf4d1e0963c91948f8942eb646e8291792c0d8c9aceaf26b8527d3e3c",
+    "utils/common/src/telephony_permission.cpp": "3ead60a37b3e50bad9c2175e2dbf6b130b47e5be0574298f786a36d49ea21611"
+  },
+  "production_source_count": 63,
+  "commands": [
+    {
+      "argv": [
+        "gn",
+        "gen",
+        "/tmp/sim028-provider-fixed-init",
+        "--root=/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest",
+        "--export-compile-commands",
+        "--args=production_root=\"/mnt/e/github/multisim/telephony_core_service\" gtest_root=\"/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59\" openssl_root=\"/tmp/sim028-deps/openssl\" sim028_runtime_root=\"/tmp/sim028-deps/native\""
+      ],
+      "exit_code": 0,
+      "log": "configure.log"
+    },
+    {
+      "argv": [
+        "ninja",
+        "-C",
+        "/tmp/sim028-provider-fixed-init",
+        "-j4",
+        "sim_primary_slot_real_test"
+      ],
+      "exit_code": 0,
+      "log": "build.log"
+    },
+    {
+      "argv": [
+        "/tmp/sim028-provider-fixed-init/sim_primary_slot_real_test",
+        "--gtest_list_tests",
+        "--gtest_filter=RealSimPrimary.*"
+      ],
+      "exit_code": 0,
+      "log": "list.log"
+    },
+    {
+      "argv": [
+        "/tmp/sim028-provider-fixed-init/sim_primary_slot_real_test",
+        "--gtest_filter=RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+        "--gtest_output=xml:/tmp/sim028-final-real-confirmed/execution-n_r_xe8b/case-0.xml"
+      ],
+      "exit_code": 0,
+      "log": "case-0.log"
+    },
+    {
+      "argv": [
+        "llvm-profdata-18",
+        "merge",
+        "-sparse",
+        "/tmp/sim028-final-real-confirmed/execution-n_r_xe8b/case-0.profraw",
+        "-o",
+        "/tmp/sim028-final-real-confirmed/execution-n_r_xe8b/case-0.profdata"
+      ],
+      "exit_code": 0,
+      "log": "case-0-merge.log"
+    },
+    {
+      "argv": [
+        "/tmp/sim028-provider-fixed-init/sim_primary_slot_real_test",
+        "--gtest_filter=RealSimPrimary.C0CoreToRealManagerAndController",
+        "--gtest_output=xml:/tmp/sim028-final-real-confirmed/execution-n_r_xe8b/case-1.xml"
+      ],
+      "exit_code": 1,
+      "log": "case-1.log"
+    },
+    {
+      "argv": [
+        "llvm-profdata-18",
+        "merge",
+        "-sparse",
+        "/tmp/sim028-final-real-confirmed/execution-n_r_xe8b/case-1.profraw",
+        "-o",
+        "/tmp/sim028-final-real-confirmed/execution-n_r_xe8b/case-1.profdata"
+      ],
+      "exit_code": 0,
+      "log": "case-1-merge.log"
+    },
+    {
+      "argv": [
+        "/tmp/sim028-provider-fixed-init/sim_primary_slot_real_test",
+        "--gtest_filter=RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+        "--gtest_output=xml:/tmp/sim028-final-real-confirmed/execution-n_r_xe8b/case-2.xml"
+      ],
+      "exit_code": 1,
+      "log": "case-2.log"
+    },
+    {
+      "argv": [
+        "llvm-profdata-18",
+        "merge",
+        "-sparse",
+        "/tmp/sim028-final-real-confirmed/execution-n_r_xe8b/case-2.profraw",
+        "-o",
+        "/tmp/sim028-final-real-confirmed/execution-n_r_xe8b/case-2.profdata"
+      ],
+      "exit_code": 0,
+      "log": "case-2-merge.log"
+    },
+    {
+      "argv": [
+        "/tmp/sim028-provider-fixed-init/sim_primary_slot_real_test",
+        "--gtest_filter=RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+        "--gtest_output=xml:/tmp/sim028-final-real-confirmed/execution-n_r_xe8b/case-3.xml"
+      ],
+      "exit_code": 1,
+      "log": "case-3.log"
+    },
+    {
+      "argv": [
+        "llvm-profdata-18",
+        "merge",
+        "-sparse",
+        "/tmp/sim028-final-real-confirmed/execution-n_r_xe8b/case-3.profraw",
+        "-o",
+        "/tmp/sim028-final-real-confirmed/execution-n_r_xe8b/case-3.profdata"
+      ],
+      "exit_code": 0,
+      "log": "case-3-merge.log"
+    },
+    {
+      "argv": [
+        "/tmp/sim028-provider-fixed-init/sim_primary_slot_real_test",
+        "--gtest_filter=RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+        "--gtest_output=xml:/tmp/sim028-final-real-confirmed/execution-n_r_xe8b/case-4.xml"
+      ],
+      "exit_code": 1,
+      "log": "case-4.log"
+    },
+    {
+      "argv": [
+        "llvm-profdata-18",
+        "merge",
+        "-sparse",
+        "/tmp/sim028-final-real-confirmed/execution-n_r_xe8b/case-4.profraw",
+        "-o",
+        "/tmp/sim028-final-real-confirmed/execution-n_r_xe8b/case-4.profdata"
+      ],
+      "exit_code": 0,
+      "log": "case-4-merge.log"
+    },
+    {
+      "argv": [
+        "/tmp/sim028-provider-fixed-init/sim_primary_slot_real_test",
+        "--gtest_filter=RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+        "--gtest_output=xml:/tmp/sim028-final-real-confirmed/execution-n_r_xe8b/case-5.xml"
+      ],
+      "exit_code": 1,
+      "log": "case-5.log"
+    },
+    {
+      "argv": [
+        "llvm-profdata-18",
+        "merge",
+        "-sparse",
+        "/tmp/sim028-final-real-confirmed/execution-n_r_xe8b/case-5.profraw",
+        "-o",
+        "/tmp/sim028-final-real-confirmed/execution-n_r_xe8b/case-5.profdata"
+      ],
+      "exit_code": 0,
+      "log": "case-5-merge.log"
+    },
+    {
+      "argv": [
+        "/tmp/sim028-provider-fixed-init/sim_primary_slot_real_test",
+        "--gtest_filter=RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+        "--gtest_output=xml:/tmp/sim028-final-real-confirmed/execution-n_r_xe8b/case-6.xml"
+      ],
+      "exit_code": 1,
+      "log": "case-6.log"
+    },
+    {
+      "argv": [
+        "llvm-profdata-18",
+        "merge",
+        "-sparse",
+        "/tmp/sim028-final-real-confirmed/execution-n_r_xe8b/case-6.profraw",
+        "-o",
+        "/tmp/sim028-final-real-confirmed/execution-n_r_xe8b/case-6.profdata"
+      ],
+      "exit_code": 0,
+      "log": "case-6-merge.log"
+    },
+    {
+      "argv": [
+        "gn",
+        "gen",
+        "/tmp/sim028-mutant-p1qyqpj6",
+        "--root=/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest",
+        "--export-compile-commands",
+        "--args=production_root=\"/mnt/e/github/multisim/telephony_core_service\" gtest_root=\"/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59\" openssl_root=\"/tmp/sim028-deps/openssl\" sim028_runtime_root=\"/tmp/sim028-deps/native\" primary_slot_controller_source=\"/tmp/sim028-final-real-confirmed/execution-n_r_xe8b/mutation/multi_sim_controller.cpp\""
+      ],
+      "exit_code": 0,
+      "log": "mutation-configure.log"
+    },
+    {
+      "argv": [
+        "ninja",
+        "-C",
+        "/tmp/sim028-mutant-p1qyqpj6",
+        "-j4",
+        "sim_primary_slot_real_test"
+      ],
+      "exit_code": 0,
+      "log": "mutation-build.log"
+    },
+    {
+      "argv": [
+        "/tmp/sim028-mutant-p1qyqpj6/sim_primary_slot_real_test",
+        "--gtest_filter=RealSimPrimary.C0CoreToRealManagerAndController",
+        "--gtest_output=xml:/tmp/sim028-final-real-confirmed/execution-n_r_xe8b/mutation.xml"
+      ],
+      "exit_code": 1,
+      "log": "mutation-run.log"
+    }
+  ],
+  "host_combined_commands": [
+    [
+      "python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/systemtest/tools/host.py",
+      "all",
+      "--with-real-primary"
+    ]
+  ],
+  "boundary": {
+    "mocked": [
+      "ITelRilManager requests/response transport (not TelRilManager/TelRilSim)",
+      "DataShare external row I/O, parameters, caller identity/AccessToken",
+      "FFRT scheduler/EventRunner subset, CommonEvent publish transport",
+      "StateRegistry/HiSysEvent sinks; Ability/AppMgr unavailable responses; SA Creator token only"
+    ],
+    "real": [
+      "CoreServiceSim permission/capability/entry",
+      "SimManager public construction, OnInit and business methods",
+      "MultiSimController, Monitor, StateManager/Handle, File, RdbHelper, RadioProtocolController",
+      "TelEventHandler/TelEventQueue and 63 production source closure",
+      "securec/cJSON/c_utils/OpenSSL algorithms"
+    ],
+    "not_executed": [
+      "CoreService::Init/SetPrimarySlotId and CoreServiceStub dispatch/reply",
+      "actual OHOS Binder/SA/permissions runtime and Provider persistence/upgrade",
+      "actual TelRilManager/TelRilSim/HDI serial/device; vendor A mapping",
+      "C1 UPDATE/COMPLETE abnormal replies and C1 timeout; arbitrary reorder/duplicate combinations",
+      "in-flight destruction/recreation; durable restart recovery; eSIM"
+    ],
+    "notifications": "Strict assertions for primary/Data/phase CES and actual account-loaded callback. Registry sink may also observe background notifications; no per-request Registry/SA attribution."
+  },
+  "blockers": {
+    "lifecycle": {
+      "status": "FAIL",
+      "evidence": "All six full-manager cases: strict business assertions PASS; one cleanup failure; 28 workers and 10 RIL references remain. Real Manager destructor count1, Monitor/Controller/StateManager destructor counts0.",
+      "cause": "Real ObserverHandler strong subscriptions retain MultiSimMonitor, which retains Controller/State. Manager has no public complete stop API.",
+      "minimum_next_step": "Separately authorize production lifetime closure: stop new callbacks, drain in-flight work, call real UnRegisterSimNotify before releasing graph; do not break private references from tests."
+    },
+    "platform": {
+      "status": "BLOCKED",
+      "missing": [
+        "system_ability.h",
+        "BrokerDelegator/IRemoteProxy lifecycle",
+        "MessageParcel/IPCObjectStub/Binder/SA runtime",
+        "v1_5/iril.h and matching HDI runtime"
+      ],
+      "native_next_step": "Matching full OHOS product tree mounted at base/telephony/core_service; hb build -T //base/telephony/core_service:tel_core_service; hb build -T //base/telephony/core_service/test:unittest; device-side SA/Stub/RIL integration validation."
+    }
+  },
+  "ide": {
+    "tasks": "PASS command-line configure/build/all/selected paths exercised; clean task retained",
+    "compile_database": "PASS .host-out/build/compile_commands.json",
+    "lldb": "PASS production breakpoint, correlated stack and slotId=1/isUserSet=true; inferior still exits1 from lifecycle failure",
+    "debug_binary_sha256": "a2bdc3644c48fff8834cad48ea0211e22f64ee3c7c574ad9046baf23374731ac",
+    "gui": "MANUAL",
+    "test_discovery": "PASS CLI discovery7; GUI TestMate single-case MANUAL; use Task for isolated all-case runs"
+  },
+  "protection": {
+    "preexisting_files": 98,
+    "raw_hashes_unchanged": true,
+    "staging_empty": true,
+    "production_modified": false,
+    "commit_or_push": false,
+    "historical_primary_validation_unchanged": true,
+    "historical_evidence_files_byte_identical": 18
+  },
+  "evidence_directory": "configs/sim028_real_chain_validation_20261111",
+  "reproduce": "primary_slot/README.md",
+  "code_files": [
+    {
+      "path": ".vscode/launch.json",
+      "kind": "modified",
+      "sha256": "15fea984ca77cf5abbe24c8c0b71d086608cdfa356041067d4b6ccf26e0a5bf4"
+    },
+    {
+      "path": ".vscode/settings.json",
+      "kind": "modified",
+      "sha256": "f72ee0114eb8571513011033fc31cfbd008bfd52217b6839710dfbc78c146e65"
+    },
+    {
+      "path": ".vscode/tasks.json",
+      "kind": "modified",
+      "sha256": "5a1960f2da1337e11534384aebadc0cb8c859f8dcb753fe51ea92704c56799e8"
+    },
+    {
+      "path": "telephony_core_service/docs/SIM_Refactor_Execution_State.md",
+      "kind": "modified",
+      "sha256": "be7ed05f74409704b186d1b0b7761a3d81e3306a747a05ae7a6b365911bc8a33"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/relocation_followups.json",
+      "kind": "modified",
+      "sha256": "d5b2e164e1f2157b5c081bd2437bd92af0144785abc7c07df2835cb4b14f8a83"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/BUILD.gn",
+      "kind": "modified",
+      "sha256": "86c0c9d585afaeae2d77ae9b377c0aeb3065148a68f0e52777c1ab0382fbd0cb"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/HOST.md",
+      "kind": "modified",
+      "sha256": "e774c6a518aa167ea4a5e02cdd51bcb14de854c0fd7520986fd9fcca5d27b13e"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/README.md",
+      "kind": "modified",
+      "sha256": "83d1d782576db4ff9925c8cb24a11522a1349912f0f3d5aebe1f7bacd6cbd4e0"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/gn/BUILDCONFIG.gn",
+      "kind": "modified",
+      "sha256": "aa02031dbfba265b6c5b1b1571f65cbfcad88b061375a7cb25b0663f2658c30b"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/README.md",
+      "kind": "modified",
+      "sha256": "b8054e7647be6f8654c14612ecfd00c6b35f34548e7f6f6a02549191a9c41986"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/include/ipc_skeleton.h",
+      "kind": "modified",
+      "sha256": "e78680e621df3616761796f8e996535760ca0884d403ab11d1209394c127285d"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/prepare_runtime.py",
+      "kind": "new",
+      "sha256": "b29196f167f7b2e7b9303ce616baa2b49ef56ab0022a0d2c05d305b443fae1e8"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/provider/LICENSE",
+      "kind": "new",
+      "sha256": "0cec06e0e55fbc3dc5cee4fca9b607f66cb8f4e4dbcf3b3c013594dd156732e9"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/provider/contract.json",
+      "kind": "new",
+      "sha256": "d98e92f1f15263b9931f8a98100f57c17585d11a51b1672286579d4456024cae"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/provider/include/data_storage_errors.h",
+      "kind": "new",
+      "sha256": "e20bbd0347175f95f8e6d81bf36356cd3f27d5f3f68cea86df3aeacc7956da9b"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/provider/include/sim_data.h",
+      "kind": "new",
+      "sha256": "f5e1bdb2d0225d76d8117baa01784ce8b28bd8df68812ac0f8607eda07fd62c7"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_runtime.cpp",
+      "kind": "new",
+      "sha256": "45960f0ac2df789a2d5d6027ed5418327029a59d8c10abd397f62d704ecd0027"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h",
+      "kind": "new",
+      "sha256": "dd326bd4dd72f15a0d7f7d953a2d2fcd91326b044466d6e9084b3b339a26e1e3"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp",
+      "kind": "new",
+      "sha256": "898257efed63b0d4d4c264f97adeb7bd9c52db4a178b85cb153a9b1c93d1cf15"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/runtime_include/hisysevent.h",
+      "kind": "new",
+      "sha256": "a1a85f0e9709ab7ee277068ffb2c981099c8169a780b01823133011249c47ef7"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/scripts/audit_initialization.py",
+      "kind": "modified",
+      "sha256": "dfa79fab2db67e910080b824cc99fc4dbf1ea4c17fe27a58ba1bda4066829cb6"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/scripts/run_primary_real.py",
+      "kind": "new",
+      "sha256": "aa17154161ba0b8f14d4eedc618742747583610a6c4518efcbf4939cd199fb42"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp",
+      "kind": "modified",
+      "sha256": "7fb6f532c34f0832a82cfb2ab4dd6547119f7bdeadde748c2e71af6b600f6e92"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/stubs/include/compile_declarations.h",
+      "kind": "modified",
+      "sha256": "8446ceec1e24fbb6a65a79cb1132246db28195108d9c3b1051f5bb4a6193aa25"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/stubs/parameter_service.cpp",
+      "kind": "modified",
+      "sha256": "7c9ec5810a76a3175ccccd578392cf06fac5b55d76c2beb3233795104eea56c4"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/tools/host.py",
+      "kind": "modified",
+      "sha256": "f54297a20e7b1fbb2c69d50d6de75958e6b1d059033859341e4c62254151dbc9"
+    }
+  ],
+  "git_diff_stat": " .vscode/launch.json                                |  15 +++\n .vscode/settings.json                              |   8 ++\n .vscode/tasks.json                                 |  38 ++++++-\n .../docs/SIM_Refactor_Execution_State.md           |  26 +++++\n .../multisim/test/relocation_followups.json        |  33 +++++-\n .../services/multisim/test/systemtest/BUILD.gn     |  36 +++++-\n .../services/multisim/test/systemtest/HOST.md      |   6 +\n .../services/multisim/test/systemtest/README.md    |   2 +\n .../multisim/test/systemtest/gn/BUILDCONFIG.gn     |   2 +\n .../test/systemtest/primary_slot/README.md         | 123 ++++++++++++++++-----\n .../systemtest/primary_slot/include/ipc_skeleton.h |   2 +\n .../systemtest/scripts/audit_initialization.py     |  34 +++++-\n .../test/systemtest/stubs/ffrt_runtime.cpp         |   4 +-\n .../stubs/include/compile_declarations.h           |   4 +\n .../test/systemtest/stubs/parameter_service.cpp    |  12 +-\n .../multisim/test/systemtest/tools/host.py         |  63 ++++++++++-\n 16 files changed, 360 insertions(+), 48 deletions(-)\n",
+  "source_inputs": {
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp": "cd287b9b7f125ea895c5ee1a6233a22a05b2eeb37520d731166a847b670870e6",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/generate_manager_seam.py": "ac8ad13dadbf46754e1ba19234d53ff9bd96afb8d7dd05524fcd073625f163b1",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/prepare_runtime.py": "b29196f167f7b2e7b9303ce616baa2b49ef56ab0022a0d2c05d305b443fae1e8",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_runtime.cpp": "45960f0ac2df789a2d5d6027ed5418327029a59d8c10abd397f62d704ecd0027",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h": "dd326bd4dd72f15a0d7f7d953a2d2fcd91326b044466d6e9084b3b339a26e1e3",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp": "898257efed63b0d4d4c264f97adeb7bd9c52db4a178b85cb153a9b1c93d1cf15",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/security_boundary.cpp": "06caf0a25551d39b9d36b93d574ad1f638a0cefcec7dbd0dcf0bb23a27976b4e",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/security_boundary.h": "8a71b45d8eed45ecb3e694068c2c70f8ea73213911710a6f82e4c2db6ce2e7b2",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/unscripted_sim_manager.h": "993858e9bbcb4ffc21d916a9bd2d85c97efc4c26052aedb2b97e687567d84075",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/include/accesstoken_kit.h": "2fbead19cfd3988c2756894518e82af50656128a6b2e2ee958956fdb2e8d637c",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/include/bundle_mgr_interface.h": "dcb926fd928127c3d52d6bea0d1353ea0f26e4519c95093118ba87e8d15685f7",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/include/ipc_skeleton.h": "e78680e621df3616761796f8e996535760ca0884d403ab11d1209394c127285d",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/include/privacy_kit.h": "522ae277088c3fdc01da39d441263f0707fdf9000597bf2605616767b438a051",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/include/tokenid_kit.h": "37460d97aacf49acc33715c4b66e915e96b2fa3e46295276d33499d2bccc2784",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/runtime_include/hisysevent.h": "a1a85f0e9709ab7ee277068ffb2c981099c8169a780b01823133011249c47ef7",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/provider/include/data_storage_errors.h": "e20bbd0347175f95f8e6d81bf36356cd3f27d5f3f68cea86df3aeacc7956da9b",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/provider/include/sim_data.h": "f5e1bdb2d0225d76d8117baa01784ce8b28bd8df68812ac0f8607eda07fd62c7",
+    "telephony_core_service/services/multisim/test/systemtest/gn/BUILD.gn": "a18276952521388584be002f899e61d4b380ab3cc6e62f77c2316cdc5dd6c3c4",
+    "telephony_core_service/services/multisim/test/systemtest/gn/BUILDCONFIG.gn": "aa02031dbfba265b6c5b1b1571f65cbfcad88b061375a7cb25b0663f2658c30b",
+    "telephony_core_service/services/multisim/test/systemtest/BUILD.gn": "86c0c9d585afaeae2d77ae9b377c0aeb3065148a68f0e52777c1ab0382fbd0cb"
+  },
+  "evidence_files": {
+    "configs/sim028_real_chain_validation_20261111/baseline-initialization.json": "22201c424d42e957e2c115b46903584d1ef387bf9427864242551b123fc1a2a9",
+    "configs/sim028_real_chain_validation_20261111/baseline-initialization.log": "7fe700671de219c76590d8982ba2daf2bdff17f6d58377128ea946385d4fc345",
+    "configs/sim028_real_chain_validation_20261111/changes.diff": "713977d02d91595629691a4260d2dad705a8e7c3a467d0b4011ab4b9e8b0fa2f",
+    "configs/sim028_real_chain_validation_20261111/code-files.json": "93657185edd07b02c115d637e507fafbf1822e93d97cdcf25569253e1884f154",
+    "configs/sim028_real_chain_validation_20261111/combined-command.log": "c8866144433bfcee385237180dae56ca64cf151c8a585f7e1045ded83f5a4f61",
+    "configs/sim028_real_chain_validation_20261111/diff-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "configs/sim028_real_chain_validation_20261111/diff-stat.txt": "88457be297c8ae0755a41894e60817d481c21bc5e43fd3b74e40031487069f25",
+    "configs/sim028_real_chain_validation_20261111/environment.json": "94c7cdad1f1b065bf457fc3d73419560895ee96818f414fcecd4f75436da0250",
+    "configs/sim028_real_chain_validation_20261111/file-list.txt": "bc5646d70e0b0d30460c7cd22d88a825e7c6dece2c19693271d56c01e49d29fa",
+    "configs/sim028_real_chain_validation_20261111/function-execution.json": "ac5a3e7f14851146efe03cfd0c9f688367ab53f4e7be8088d0ef3fbe7aaefee5",
+    "configs/sim028_real_chain_validation_20261111/git-recovery-final.json": "cea2ee2192e23a09ff25f363fa8f51ed8c24bf7b0f453db1639cffba9e36fe9f",
+    "configs/sim028_real_chain_validation_20261111/git-recovery-initial.json": "c1ef8f907d72974c0c8b0455d8267888d8e9160149733ce39a95326a6232f5dc",
+    "configs/sim028_real_chain_validation_20261111/historical-integrity.json": "755c82af58a65fd89ea69e0c38ac4e6130a37017f4a1dadd89d27d1d30ced680",
+    "configs/sim028_real_chain_validation_20261111/intermediate-unresolved-symbols.txt": "ccb3a0a57865c2821016006f68e7b8bcba541c197de7d8c64d24bc106c70b8d9",
+    "configs/sim028_real_chain_validation_20261111/link-audit-command.log": "966e0f110a1a0ebf53be145e68cd89d8dad21081d794108c27c9a7b003405714",
+    "configs/sim028_real_chain_validation_20261111/link-audit.json": "627bcebc63b617a5b1840f628ab17065bda1ad38e7ac36bf5fcb5e5575dfe884",
+    "configs/sim028_real_chain_validation_20261111/link-audit.log": "594228a3b88dc6ba139fd9d9e1a1f7e47f95d582a451845f0b439251a67e4e71",
+    "configs/sim028_real_chain_validation_20261111/lldb-debug.log": "cefc6499ef88092bcc7bef5891828368f08d25620311726ea673362f147458ca",
+    "configs/sim028_real_chain_validation_20261111/lldb.commands": "729ad325703ad65e117b3a85e5f24c04da5d74071969b96b947eecb6afcc9365",
+    "configs/sim028_real_chain_validation_20261111/manager-seam-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "configs/sim028_real_chain_validation_20261111/native-dependencies.json": "30ebf3766a8e28ef5a4bed52447caa5f255d9725c7bd9a3c465ebf187a6eaf27",
+    "configs/sim028_real_chain_validation_20261111/platform-audit.json": "298f5834d03c0c6da858604ffd843a247d33ee9d6253df620ac1a54f4a862888",
+    "configs/sim028_real_chain_validation_20261111/protected-inputs.json": "b56f15f990f2b64267d0c294ba24bc79022f1f6c7fa6d2c72ea16be5724fb8d0",
+    "configs/sim028_real_chain_validation_20261111/relocation-check.log": "743cc1dcfe3d8a9de0b36fe1b45b5109e77a3c1220608083e26599ceb840de38",
+    "configs/sim028_real_chain_validation_20261111/selected-task.log": "4379f90a895a2d02f12c4b68680a31444edc714cee53d4f8d17c8033d7ae251b",
+    "configs/sim028_real_chain_validation_20261111/source-tables.log": "7a2d26498b27ffc59fa31f797a8cae6e3107e48f78a9f041db6ad2594b44cb08",
+    "configs/sim028_real_chain_validation_20261111/combined/capacity.log": "84d1e2453302eaeef67ab0c04fc211ef7e8994715a0370ee6c78d97dd3c61785",
+    "configs/sim028_real_chain_validation_20261111/combined/capacity.xml": "e57ae754f7feef40cd1f1753160189762588868a4c29e08894faf4c3cd0498e2",
+    "configs/sim028_real_chain_validation_20261111/combined/compatibility.log": "742f936ae720e95785b7e494534fb6663342ea9f52f988912bdac351ffa4b873",
+    "configs/sim028_real_chain_validation_20261111/combined/compatibility.xml": "f73506c07dd06bcc4b247498421f51dfbfc7e779de1aa22978cb3c50c604ccc0",
+    "configs/sim028_real_chain_validation_20261111/combined/infrastructure.log": "556dc884428886cd8b58f9a040c5d350aea7c5359892374a2eb1465774eaa3fd",
+    "configs/sim028_real_chain_validation_20261111/combined/infrastructure.xml": "f913705df8a8415ce7a3e018f95ef3485259592342e500fdb54ab7d5fe67e5bd",
+    "configs/sim028_real_chain_validation_20261111/combined/known_defects.log": "de82b2075d13aa18821d910605493cebdad610b1e83a98330db602581f0fc52a",
+    "configs/sim028_real_chain_validation_20261111/combined/known_defects.xml": "ddbd80a1081d887f89a25434fe17ecd0040a0de7a536ec007274897caf154378",
+    "configs/sim028_real_chain_validation_20261111/combined/pin_memory.log": "7a6e9054e5fbe76baa317b7f2f11acce2cc9427db6ae1f1486da2149dde383d9",
+    "configs/sim028_real_chain_validation_20261111/combined/pin_memory.xml": "525c704bee654437aec5fff19dd3de7355d474caec710b721de85b66d459208f",
+    "configs/sim028_real_chain_validation_20261111/combined/primary_entry_internal_seam.log": "bff825f87512d9cd4b2471b279b4148a4ed7b13f1a6a917666398cc0d313d907",
+    "configs/sim028_real_chain_validation_20261111/combined/primary_entry_internal_seam.xml": "533a46c67363d108ea599b82e583368ba813f4df41d3624a776304b2d6010ad2",
+    "configs/sim028_real_chain_validation_20261111/combined/primary_real_business-10.log": "a5e3d84da475366d0da26d5ae534ffacc5f303d0dead39c1a00b1b2a6c8bd1b7",
+    "configs/sim028_real_chain_validation_20261111/combined/primary_real_business-10.xml": "837b02056dd2154c4818b70390c31aaf8ae5d444af7137b2eee5790ed0d7c959",
+    "configs/sim028_real_chain_validation_20261111/combined/primary_real_business-11.log": "6ce648bffe59db3b0907fdf13f7515c888e2c4d1880e02e46757f9e2923328bf",
+    "configs/sim028_real_chain_validation_20261111/combined/primary_real_business-11.xml": "4dc111003f48a6a95982930e82983bb43781b10933a5beeeeea51e0419b1feb0",
+    "configs/sim028_real_chain_validation_20261111/combined/primary_real_business-12.log": "762990c50f07d6e5052ccc1b2222840b44e42e25315f8634909569e3dfdd2330",
+    "configs/sim028_real_chain_validation_20261111/combined/primary_real_business-12.xml": "5e3bf435792a3700e6a1307bb5a62247ab686b1ec7d443ca1a7d38cdace076de",
+    "configs/sim028_real_chain_validation_20261111/combined/primary_real_business-6.log": "2822a06442ebb9056f4886004a079d17e3e85a36a9a684cd9bc8c9dcb1dbe279",
+    "configs/sim028_real_chain_validation_20261111/combined/primary_real_business-6.xml": "2524ee71881721fb4d4a280e95f1528fe76f3f57b62df5c5d469e2181e8c2a34",
+    "configs/sim028_real_chain_validation_20261111/combined/primary_real_business-7.log": "4bee3b59f6b7d32cdfd7f75d3b9309e614faf5a16028857f59f9c32c90d930e9",
+    "configs/sim028_real_chain_validation_20261111/combined/primary_real_business-7.xml": "3a6c103a13c4fab7094c03c78bbc5db9c27fce9de1a2b5132fe1d48b19b71286",
+    "configs/sim028_real_chain_validation_20261111/combined/primary_real_business-8.log": "677da0d8ff2fe3228e90fb0a67a4f9385d8483492a680d4225039f2ccab2ff4c",
+    "configs/sim028_real_chain_validation_20261111/combined/primary_real_business-8.xml": "a363039e36c9f236286784f351c08975bf020afd9a4545ca35e0710c52b76889",
+    "configs/sim028_real_chain_validation_20261111/combined/primary_real_business-9.log": "d871b9f3a25d778a3bab71bd92f0073cd2b1fb599192d8ff9d257a305b4792ea",
+    "configs/sim028_real_chain_validation_20261111/combined/primary_real_business-9.xml": "3fb35fbdd16011f656168f611d532102364b6083df6fa02110cb3bc89bdcfbf9",
+    "configs/sim028_real_chain_validation_20261111/combined/result.json": "ed0aae9fbac3ebe3cc06c5faa4eb7b23c2d6f4e95e94e01bea7601b74efdacd5",
+    "configs/sim028_real_chain_validation_20261111/entry/coverage.log": "eea924cb95bade36afaa1ea9c6fe01b2357efbeea356b0b3783578b557862c1e",
+    "configs/sim028_real_chain_validation_20261111/entry/interface.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "configs/sim028_real_chain_validation_20261111/entry/merge.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "configs/sim028_real_chain_validation_20261111/entry/mutation-build.log": "0db2e646c0e4f1b2875df98ab90dfbe003c50fa2c696ef33e789204b7961222a",
+    "configs/sim028_real_chain_validation_20261111/entry/mutation-gn.log": "9e6976eddca2bcd5f3b97be513524cc828dda9b7e0896f4973fdb6c20244156e",
+    "configs/sim028_real_chain_validation_20261111/entry/mutation.log": "c1fe3c2ddc6a9104664a6cd8be521762923cc3f8632a0197feec491ca4c0ab13",
+    "configs/sim028_real_chain_validation_20261111/entry/mutation.xml": "fd88ccd145b9b5bd9f61115194b59d276505900391eb5b3825d01a4db1fef5ae",
+    "configs/sim028_real_chain_validation_20261111/entry/normal-build.log": "fe45bdcc7a07ccfd8bb52d07a4eadea8e6fc5d5d4939988ae1cbd6a47a80f484",
+    "configs/sim028_real_chain_validation_20261111/entry/normal-gn.log": "228dc4a053feb65970076afcfbb5929c08b19ddc3c8278ac2dc6122096119aed",
+    "configs/sim028_real_chain_validation_20261111/entry/normal.log": "33c6ba07af82598a0a00d784f322fb0d743759d1902e0adc11abf2ce7fc251c5",
+    "configs/sim028_real_chain_validation_20261111/entry/normal.xml": "805b2e6a31edade8e0b27afe41fbc4f5c03785429fa8b7b54093d6f11c5d6316",
+    "configs/sim028_real_chain_validation_20261111/entry/restore-build.log": "9eb6b851f4abc470eae23c67deacee7f035f49ca6c8eea542517b1070d183e2e",
+    "configs/sim028_real_chain_validation_20261111/entry/restore-gn.log": "bb7ee6c9bcded884570359cc1633c3e7f2be35a1a70e70ad31ead03f4ca705c8",
+    "configs/sim028_real_chain_validation_20261111/entry/restored.log": "712bcc8af95254534eb4becc7020736f14b6bb1d80b9a0398d17185f6f60479f",
+    "configs/sim028_real_chain_validation_20261111/entry/restored.xml": "b85f8b1848f5ab558ceeb9c0135afdf670c045e7aae4e8bc3dfc0b9824e4e690",
+    "configs/sim028_real_chain_validation_20261111/entry/result.json": "cb181b78591412aedd80ae9f15fe0a218f2326c8404b18d85087fea39ba14b97",
+    "configs/sim028_real_chain_validation_20261111/platform/core_service.cpp.log": "0152e07e5217effca1e7a34edebd79436aa6f1aa95f9bb518843761e3a16417c",
+    "configs/sim028_real_chain_validation_20261111/platform/core_service_stub.cpp.log": "d47193c88a1913bb8653775625647aa0bfa45859d071adf88e5bed6c639d3026",
+    "configs/sim028_real_chain_validation_20261111/platform/tel_ril_manager.cpp.log": "a25386f70d4487a100470a472a21abfe757fc6f4362771cff31ca7197a1fff28",
+    "configs/sim028_real_chain_validation_20261111/platform/tel_ril_sim.cpp.log": "516f698fab8904028c769902d068fb8bf44523e5b388f359f808cd84192715d6",
+    "configs/sim028_real_chain_validation_20261111/real/build.log": "98140a93caba44cbfd3dd6b7ddac69f91a0a138f519ce06a953e1f8b1b40ed0f",
+    "configs/sim028_real_chain_validation_20261111/real/case-0-merge.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "configs/sim028_real_chain_validation_20261111/real/case-0.log": "b1fb92e2aaeeecd0f5b3368117dd6cb38fe84b3d037bdae45b2c15ec6ca632e5",
+    "configs/sim028_real_chain_validation_20261111/real/case-0.xml": "29261a8dab94a71ce2e6c2f13585fac8549ee7e6245067f9f94f0bae4a5352be",
+    "configs/sim028_real_chain_validation_20261111/real/case-1-merge.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "configs/sim028_real_chain_validation_20261111/real/case-1.log": "4e44409adaeee9340022288fd001406545d805cc8c64fa6038a5d11078529a86",
+    "configs/sim028_real_chain_validation_20261111/real/case-1.xml": "b6d0dc158a1ca70a1742eaf2cb363acbc47c1115e8d4b420900eae0aad0e85bc",
+    "configs/sim028_real_chain_validation_20261111/real/case-2-merge.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "configs/sim028_real_chain_validation_20261111/real/case-2.log": "020534cae788e143f234cb37373b91ab40e2ece07292019be9af345d4609539c",
+    "configs/sim028_real_chain_validation_20261111/real/case-2.xml": "29826783f0f5ff1b83945efb62a1e0d3b03b4fb293eff282c9e9a21f2ff9b616",
+    "configs/sim028_real_chain_validation_20261111/real/case-3-merge.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "configs/sim028_real_chain_validation_20261111/real/case-3.log": "6f4d08c238293bfafc0c674889fd3a370a7989b2af590f4e99b30992ccccdf3f",
+    "configs/sim028_real_chain_validation_20261111/real/case-3.xml": "c1645e046711d31b0018ab60fd0bea7e68fc8450fec0b482f955604663004814",
+    "configs/sim028_real_chain_validation_20261111/real/case-4-merge.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "configs/sim028_real_chain_validation_20261111/real/case-4.log": "6f7bdaa65b663589873da8e12473b4d3a88197e5ba462171104b00735cbb2760",
+    "configs/sim028_real_chain_validation_20261111/real/case-4.xml": "85ddf9692fc4ee252133e8fce6dca45d4c475385509399a7328d4c819f611fa6",
+    "configs/sim028_real_chain_validation_20261111/real/case-5-merge.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "configs/sim028_real_chain_validation_20261111/real/case-5.log": "6a28a0afa5ce8f10926421062c3fff8d78e436b235107394dc3ae14efca5f98d",
+    "configs/sim028_real_chain_validation_20261111/real/case-5.xml": "df872203a843d8241724d172c6d9798bd397bc595e9517466ef16d48bf6730ac",
+    "configs/sim028_real_chain_validation_20261111/real/case-6-merge.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "configs/sim028_real_chain_validation_20261111/real/case-6.log": "e1b8a7c8f8b43b8e4b31e04351c2e6721cac386eb6df4cc5a5821e9080539087",
+    "configs/sim028_real_chain_validation_20261111/real/case-6.xml": "2be2c098e48acf39912252778db16d1ad41ff5710976c2ec558cdd47c79d2f3c",
+    "configs/sim028_real_chain_validation_20261111/real/configure.log": "98150356894cbc1a7b40a386cb3af085493e997ceb3bd555c7f6017f4b6e5655",
+    "configs/sim028_real_chain_validation_20261111/real/list.log": "ac3ca768a8a3edf7f358713872871d19593c6bc3f41c9224d956c16cf1bdf21b",
+    "configs/sim028_real_chain_validation_20261111/real/mutation-build.log": "fa4dde1683623f7422c8111479c5a70aa689c76fe4b13c911ef9e1489288f9b7",
+    "configs/sim028_real_chain_validation_20261111/real/mutation-configure.log": "aa6719a12c3f17475adcd548827c666878b65b1d962f5314d947113ccc7fd87b",
+    "configs/sim028_real_chain_validation_20261111/real/mutation-run.log": "81d2676ab89f34fdea2c3a5e7ce4e98ff85b45d778959059457e6c06786c97f4",
+    "configs/sim028_real_chain_validation_20261111/real/mutation.patch": "65b634149937d3edb8619ba08b7286a31cc546f211bb40c993186178843bd1b3",
+    "configs/sim028_real_chain_validation_20261111/real/mutation.xml": "791bdd1ae6996174dc0e0849241a6f89b5ca3f195d54df541e4d39a86ae05a06",
+    "configs/sim028_real_chain_validation_20261111/real/result.json": "4840aca42319ae17ff771416cc31b798280598af38de8ca67ce5a4eae591c533",
+    "configs/sim028_real_chain_validation_20261111/real/target-commands.log": "b92ebf59279b829a4e1605ad7daabd87b5c76887a59b7531c95c454c1f09a985"
+  },
+  "change_counts": {
+    "code_config_document_files": 26,
+    "modified_tracked_files": 16,
+    "new_code_config_document_files": 10,
+    "evidence_files": 104
+  },
+  "platform_dependency_classification": {
+    "system_ability.h": {
+      "compile": "A declaration missing",
+      "runtime": "B lifecycle and D real SA host unavailable"
+    },
+    "BrokerDelegator": {
+      "compile": "A template declaration missing",
+      "runtime": "B static registration construction not emulated"
+    },
+    "IRemoteProxy": {
+      "compile": "B remote-object constructor contract absent",
+      "runtime": "C proxy transport and D actual OHOS IPC not provided"
+    },
+    "MessageParcel": {
+      "compile": "A method declarations incomplete for Stub",
+      "runtime": "C token/input/reply serialization not implemented; reached methods throw"
+    },
+    "IPCObjectStub": {
+      "compile": "A/B stub class and construction requirements",
+      "runtime": "C dispatch/reply host behavior absent; D real Binder/SA unavailable"
+    },
+    "v1_5/iril.h": {
+      "compile": "A generated HDI interface missing",
+      "runtime": "B/C manager/client assembly and D device HDI not provided"
+    }
+  },
+  "git_recovery": {
+    "status": "CHECKPOINT_VERIFIED",
+    "remote_refs_refreshed": true,
+    "main_ahead": 0,
+    "main_behind": 0,
+    "runtime_test_executed_by_recovery_tool": false,
+    "initial_fetch": "Sandbox helper failed; approved external read-only fetch then verified main and checkpoint. No branch/checkout/source change."
+  }
+}

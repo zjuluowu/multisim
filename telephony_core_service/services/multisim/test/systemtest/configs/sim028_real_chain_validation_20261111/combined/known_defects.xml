@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="5" failures="5" disabled="0" errors="0" time="0.037" timestamp="2026-11-11T14:55:44.479" name="AllTests">
+  <testsuite name="ContractDriver" tests="1" failures="1" disabled="0" skipped="0" errors="0" time="0.014" timestamp="2026-11-11T14:55:44.482">
+    <testcase name="DEFECT_001_StaleReadyAfterRemoval" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/contract_test.cpp" line="83" status="run" result="completed" time="0.012" timestamp="2026-11-11T14:55:44.483" classname="ContractDriver">
+      <failure message="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:22&#x0A;Expected equality of these values:&#x0A;  actual.present&#x0A;    Which is: true&#x0A;  state != State::Absent&#x0A;    Which is: false&#x0A;" type=""><![CDATA[/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:22
+Expected equality of these values:
+  actual.present
+    Which is: true
+  state != State::Absent
+    Which is: false
+]]></failure>
+      <failure message="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23&#x0A;Expected equality of these values:&#x0A;  actual.state&#x0A;    Which is: READY&#x0A;  state&#x0A;    Which is: ABSENT&#x0A;" type=""><![CDATA[/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23
+Expected equality of these values:
+  actual.state
+    Which is: READY
+  state
+    Which is: ABSENT
+]]></failure>
+      <failure message="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:24&#x0A;Expected equality of these values:&#x0A;  actual.kind&#x0A;    Which is: 4-byte object &lt;02-00 00-00&gt;&#x0A;  kind&#x0A;    Which is: 4-byte object &lt;00-00 00-00&gt;&#x0A;" type=""><![CDATA[/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:24
+Expected equality of these values:
+  actual.kind
+    Which is: 4-byte object <02-00 00-00>
+  kind
+    Which is: 4-byte object <00-00 00-00>
+]]></failure>
+      <properties>
+        <property name="real_instances_created" value="1"/>
+        <property name="observations" value="card-event:slot=0,present=1,state=READY,kind=2;&#x0A;removed:slot=0,present=0,state=ABSENT,kind=0;&#x0A;stale-ready:slot=0,present=1,state=READY,kind=2;&#x0A;"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:0;status:0;status:0;"/>
+        <property name="real_instances_destroyed" value="1"/>
+      </properties>
+    </testcase>
+  </testsuite>
+  <testsuite name="SessionLifecycle" tests="4" failures="4" disabled="0" skipped="0" errors="0" time="0.017" timestamp="2026-11-11T14:55:44.498">
+    <testcase name="DEFECT_002_ReadyReplyFromReplacedCard" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="136" status="run" result="completed" time="0.003" timestamp="2026-11-11T14:55:44.499" classname="SessionLifecycle">
+      <failure message="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23&#x0A;Expected equality of these values:&#x0A;  actual.state&#x0A;    Which is: READY&#x0A;  state&#x0A;    Which is: LOCKED&#x0A;" type=""><![CDATA[/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23
+Expected equality of these values:
+  actual.state
+    Which is: READY
+  state
+    Which is: LOCKED
+]]></failure>
+      <failure message="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:24&#x0A;Expected equality of these values:&#x0A;  actual.kind&#x0A;    Which is: 4-byte object &lt;02-00 00-00&gt;&#x0A;  kind&#x0A;    Which is: 4-byte object &lt;01-00 00-00&gt;&#x0A;" type=""><![CDATA[/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:24
+Expected equality of these values:
+  actual.kind
+    Which is: 4-byte object <02-00 00-00>
+  kind
+    Which is: 4-byte object <01-00 00-00>
+]]></failure>
+      <properties>
+        <property name="real_instances_created" value="1"/>
+        <property name="observations" value="card-event:slot=0,present=1,state=READY,kind=2;&#x0A;replacement-card-locked:slot=0,present=1,state=LOCKED,kind=1;&#x0A;old-card-ready-response:slot=0,present=1,state=READY,kind=2;&#x0A;"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:0;status:0;status:0;status:0;"/>
+        <property name="real_instances_destroyed" value="1"/>
+      </properties>
+    </testcase>
+    <testcase name="DEFECT_003_GenericRilErrorIsNotWrongPassword" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="150" status="run" result="completed" time="0.003" timestamp="2026-11-11T14:55:44.504" classname="SessionLifecycle">
+      <failure message="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:157&#x0A;Expected: (actual.error) != (0), actual: 0 vs 0&#x0A;" type=""><![CDATA[/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:157
+Expected: (actual.error) != (0), actual: 0 vs 0
+]]></failure>
+      <failure message="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:157&#x0A;Expected equality of these values:&#x0A;  actual.result&#x0A;    Which is: 4-byte object &lt;01-00 00-00&gt;&#x0A;  Unlock::Failure&#x0A;    Which is: 4-byte object &lt;02-00 00-00&gt;&#x0A;" type=""><![CDATA[/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:157
+Expected equality of these values:
+  actual.result
+    Which is: 4-byte object <01-00 00-00>
+  Unlock::Failure
+    Which is: 4-byte object <02-00 00-00>
+]]></failure>
+      <properties>
+        <property name="real_instances_created" value="1"/>
+        <property name="observations" value="card-event:slot=0,present=1,state=LOCKED,kind=2;&#x0A;generic-error-without-password-decision:slot=0,present=1,state=LOCKED,kind=2;&#x0A;"/>
+        <property name="observed_error" value="0"/>
+        <property name="observed_unlock_result" value="1"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:0;"/>
+        <property name="real_instances_destroyed" value="1"/>
+      </properties>
+    </testcase>
+    <testcase name="DEFECT_004_PinReplyFromReplacedCard" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="160" status="run" result="completed" time="0.002" timestamp="2026-11-11T14:55:44.508" classname="SessionLifecycle">
+      <failure message="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23&#x0A;Expected equality of these values:&#x0A;  actual.state&#x0A;    Which is: NOT_READY&#x0A;  state&#x0A;    Which is: LOCKED&#x0A;" type=""><![CDATA[/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23
+Expected equality of these values:
+  actual.state
+    Which is: NOT_READY
+  state
+    Which is: LOCKED
+]]></failure>
+      <properties>
+        <property name="real_instances_created" value="1"/>
+        <property name="observations" value="card-event:slot=0,present=1,state=LOCKED,kind=2;&#x0A;card-event:slot=0,present=0,state=ABSENT,kind=0;&#x0A;card-event:slot=0,present=1,state=LOCKED,kind=1;&#x0A;old-pin-result-after-card-replacement:slot=0,present=1,state=NOT_READY,kind=1;&#x0A;"/>
+        <property name="old_request_result" value="0"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:0;pin:0;status:0;status:0;"/>
+        <property name="real_instances_destroyed" value="1"/>
+      </properties>
+    </testcase>
+    <testcase name="DEFECT_005_RefreshReturnContractConflict" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="172" status="run" result="completed" time="0.002" timestamp="2026-11-11T14:55:44.512" classname="SessionLifecycle">
+      <failure message="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:176&#x0A;Expected equality of these values:&#x0A;  RefreshToLocked()&#x0A;    Which is: 2&#x0A;  0&#x0A;core_service_client.h RefreshSimState @return contract&#x0A;" type=""><![CDATA[/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:176
+Expected equality of these values:
+  RefreshToLocked()
+    Which is: 2
+  0
+core_service_client.h RefreshSimState @return contract
+]]></failure>
+      <properties>
+        <property name="real_instances_created" value="1"/>
+        <property name="observations" value="card-event:slot=0,present=1,state=READY,kind=2;&#x0A;explicit-refresh-completed:slot=0,present=1,state=LOCKED,kind=2;&#x0A;"/>
+        <property name="raw_refresh_return" value="2"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:0;status:0;status:0;"/>
+        <property name="real_instances_destroyed" value="1"/>
+      </properties>
+    </testcase>
+  </testsuite>
+</testsuites>

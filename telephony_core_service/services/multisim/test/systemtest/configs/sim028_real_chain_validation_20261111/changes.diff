@@ -1,0 +1,2842 @@
+diff --git a/.vscode/launch.json b/.vscode/launch.json
+index 591a68c0..dc619ce5 100644
+--- a/.vscode/launch.json
++++ b/.vscode/launch.json
+@@ -14,6 +14,21 @@
+         "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/debug-%p.profraw"
+       },
+       "preLaunchTask": "Build Host"
++    },
++    {
++      "name": "SIM-028: real C0 (WSL, known lifetime failure)",
++      "type": "lldb",
++      "request": "launch",
++      "program": "${workspaceFolder}/.host-out/build/sim_primary_slot_real_test",
++      "args": [
++        "--gtest_filter=RealSimPrimary.C0CoreToRealManagerAndController"
++      ],
++      "cwd": "${workspaceFolder}/.host-out",
++      "env": {
++        "SIM_HOST_BOOT_SLOT_COUNT": "2",
++        "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/real-debug-%p.profraw"
++      },
++      "preLaunchTask": "Build Real SIM Host"
+     }
+   ],
+   "inputs": [
+diff --git a/.vscode/settings.json b/.vscode/settings.json
+index 7db067f5..8e23a1fd 100644
+--- a/.vscode/settings.json
++++ b/.vscode/settings.json
+@@ -16,6 +16,14 @@
+       "env": {
+         "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/testmate-%p.profraw"
+       }
++    },
++    {
++      "pattern": ".host-out/build/sim_primary_slot_real_test",
++      "cwd": "${workspaceFolder}/.host-out",
++      "env": {
++        "SIM_HOST_BOOT_SLOT_COUNT": "2",
++        "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/real-testmate-%p.profraw"
++      }
+     }
+   ]
+ }
+diff --git a/.vscode/tasks.json b/.vscode/tasks.json
+index c2ac9a72..d69206ce 100644
+--- a/.vscode/tasks.json
++++ b/.vscode/tasks.json
+@@ -88,6 +88,41 @@
+       "problemMatcher": [
+         "$gcc"
+       ]
++    },
++    {
++      "type": "process",
++      "command": "/usr/bin/python3",
++      "options": {
++        "cwd": "${workspaceFolder}"
++      },
++      "problemMatcher": [
++        "$gcc"
++      ],
++      "label": "Build Real SIM Host",
++      "args": [
++        "-B",
++        "${workspaceFolder}/telephony_core_service/services/multisim/test/systemtest/tools/host.py",
++        "build",
++        "--target",
++        "sim_primary_slot_real_test"
++      ]
++    },
++    {
++      "type": "process",
++      "command": "/usr/bin/python3",
++      "options": {
++        "cwd": "${workspaceFolder}"
++      },
++      "problemMatcher": [
++        "$gcc"
++      ],
++      "label": "Run All Tests + Real SIM",
++      "args": [
++        "-B",
++        "${workspaceFolder}/telephony_core_service/services/multisim/test/systemtest/tools/host.py",
++        "all",
++        "--with-real-primary"
++      ]
+     }
+   ],
+   "inputs": [
+@@ -106,7 +141,8 @@
+         "sim_guard_pin_memory",
+         "platform_adapter_test",
+         "sim_component_test",
+-        "sim_primary_slot_entry_test"
++        "sim_primary_slot_entry_test",
++        "sim_primary_slot_real_test"
+       ],
+       "default": "sim_guard_legacy"
+     }
+diff --git a/telephony_core_service/docs/SIM_Refactor_Execution_State.md b/telephony_core_service/docs/SIM_Refactor_Execution_State.md
+index d3908df5..ae06fb2f 100644
+--- a/telephony_core_service/docs/SIM_Refactor_Execution_State.md
++++ b/telephony_core_service/docs/SIM_Refactor_Execution_State.md
+@@ -606,3 +606,29 @@ python3 -B telephony_core_service/services/multisim/test/multisim_architecture_r
+ 发布不改变14条入口PASS、全量55 PASS/5 FAIL、完整部件调用链BLOCKED及GUI MANUAL。没有生产迁移，不将提交/推送成功解释为整链验收完成；其他worktree保持原状。发布核验结果随后补记。
+ 
+ 实际发布核验：工程提交 `f8c892ce966e551ae596bec543b6921a4cbcacc4`（`test(sim): cover primary slot entry and record full-chain blockers`），41项相关文件，已常规推送origin/main；推送后ls-remote与origin/main均为同SHA，包含关系通过。相对输入02765fa3确认原SIM/Core/RIL/EXT、公共接口和原产品/单测入口没有提交差异。工作树仅保留原98份行尾差异，摘要未变，暂存区为空，无遗漏的未跟踪交付文件。本段是发布后的独立文档追记，不写自身SHA；最终main精确tip以远端Git核验为准，入口PASS和整链BLOCKED仍按原运行证据解释。
++
++<a id="sim028-real-host-20261111"></a>
++
++## 17. SIM-028 真实 Manager / Controller Host 执行（2026-11-11）
++
++本批从 `main@d44632a68946c888481a27120ae8ac77454a44d6` 继续，按用户授权只改测试、Host边界、构建、IDE与必要进度；未提交、推送或迁移生产实现。起始98份用户行尾修改逐字节保留，暂存区为空，其他worktree未切换。旧 `primary_slot_validation_20261111.json`及证据目录保持原字节，作为历史入口基线。
++
++Provider根因已闭合：生产bundle/GN实际依赖telephony_data，Host此前固定的是telephony_data_storage老头。显式核实本地官方 `telephony_telephony_data@74b8597` 的公开头、14字段消费者、SQL/迁移列、URI及错误返回，再对初始化目标单独使用原样公开头；旧头与依赖锁未改。新 `provider/contract.json`记录版本/摘要和逐字段证据，不猜字段值。真实securec、cJSON、c_utils字符串/Unicode库由固定干净源码仓外编译；OpenSSL头按原锁离线解包，链接Linux现有libcrypto.so.3，未安装或升级系统包。初始化审计从45对象/43诊断推进到50对象全部编译，新增真实目标完成链接并实际运行。
++
++新增 `sim_primary_slot_real_test` 通过现有公开构造/OnInit/SetSimManager/CMI接口装配，逻辑槽数量与真实CoreService::Init一致（双物理槽、三个对象槽）；真实RIL状态应答及真实Provider I/O契约驱动状态/ICCID/账户加载，不私写缓存或替代业务。生产CoreServiceSim→SimManager→MultiSimController真正参与；C1进一步执行RadioProtocolController，两个成员的CHECK/UPDATE/COMPLETE、资源映射、session、原event/owner和返回关联均可核实。C0先经真实协议查询确认槽1=M0；B只发专用SetPrimarySlot，C1只发SetRadioProtocol。验证参数/ICCID SHA256、Data参数及主卡→Data/阶段CES通知、B失败及实际45秒超时、C1过期session、CHECK失败回滚和五次真实重试。没有真实RIL serial/HDI执行，账户Registry仅为Host通知sink，不对后台通知逐请求归因。
++
++| 实际验收 | 结果 |
++| --- | --- |
++| 原14入口/覆盖/负控 | 14 PASS；12/12分支侧、31/31区域；userSet变异检出7条失败，原版恢复通过 |
++| 旧完整Host基线 | 60执行，55 PASS / 5 FAIL，原独立缺陷完整保留 |
++| 新真实场景 | 7执行，1 PASS / 6 FAIL；六例业务断言及严格RIL期望验证通过，均在清理阶段失败，未改成PASS |
++| 最新Debug全量 | 67执行，56 PASS / 11 FAIL，exit1；五条旧缺陷及六条新清理失败分别保存，无跳过 |
++| 新真实业务变异 | 仓外Controller保存slotId→slotId+1；额外PRIMARY_COMMIT_TARGET断言检出，与已有清理失败区分；原生产源码/原二进制摘要不变 |
++| 调试/IDE | 原GN/Ninja增量工程及compile_commands保留；真实目标接入Tasks/逐例运行；LLDB断点命中生产Controller，栈含CoreServiceSim/SimManager，变量slotId=1、isUserSet=true；GUI仍MANUAL |
++| Core/Stub/TelRil | 原源码compile-only重跑仍缺system_ability.h、BrokerDelegator/Proxy/Parcel及v1_5/iril.h；真实SA/Binder/HDI和完整部件链BLOCKED，A厂商映射未运行 |
++
++新的最小生产阻塞是**真实订阅对象图未释放**：SimManager析构已经执行，Monitor/Controller/StateManager析构为0；每个在卡场景退出仍有28个Host线程及10个RIL引用。ObserverHandler强持Monitor，Monitor再强持Controller/State，另订阅File；Manager无可访问的完整停止入口。测试保留REAL_GRAPH_LIFETIME_NOT_DRAINED和GMock泄漏红灯，逐例独立进程，未用AllowLeak、私有注入或强制清空生产对象。最小后续建议是经另行生产修改授权，定义停止新回调/排空在途工作并调用真实UnRegisterSimNotify的生命周期闭包，而非仅在测试中破环。
++
++本轮达到**单请求真实业务切片的因果验证**，包括无需设备切换的C0终点、B原请求应答/超时、C1协议终点；完整CoreService/Stub/IPC/HDI部件整链仍BLOCKED，当前总体验收未通过。C1 UPDATE/COMPLETE异常及C1超时、任意乱序/重复、在途销毁重建、真实持久化恢复/eSIM仍NOT_RUN。后续产品集成需要匹配OHOS完整树、生成HDI接口、SA/IPC运行时及设备，不扩建成功平台假桩。
++
++本轮可复现命令及边界见 [primary_slot/README.md](../services/multisim/test/systemtest/primary_slot/README.md)，所有分层状态、源码/二进制/依赖摘要、命令、XML、关键日志、负控和文件清单集中在 [sim028_real_chain_validation_20261111.json](../services/multisim/test/systemtest/configs/sim028_real_chain_validation_20261111.json)及同名证据目录。仓外目录仅为可再生成产物，不作为唯一交付依据。
+diff --git a/telephony_core_service/services/multisim/test/relocation_followups.json b/telephony_core_service/services/multisim/test/relocation_followups.json
+index c093a603..8d6ad66d 100644
+--- a/telephony_core_service/services/multisim/test/relocation_followups.json
++++ b/telephony_core_service/services/multisim/test/relocation_followups.json
+@@ -14,8 +14,8 @@
+     },
+     "services/multisim/test/systemtest/gn/BUILDCONFIG.gn": {
+       "relocation_sha256": "174d7374c460abd1c7b9109bd418ef9874a1d5ec27f6ec896f4ed6dada4818c3",
+-      "current_sha256": "fd2cec996f6effb762e957d41be775680465f16e1b880a566598c0746de4698f",
+-      "reason": "Retain IDE Debug/testonly defaults; add outside-source primary negative-control input."
++      "current_sha256": "aa02031dbfba265b6c5b1b1571f65cbfcad88b061375a7cb25b0663f2658c30b",
++      "reason": "Retain previous defaults; explicit native-runtime and outside-source Controller negative-control parameters."
+     },
+     "services/multisim/test/systemtest/tests/event_transport_test.cpp": {
+       "relocation_sha256": "ef92fcb5f0ba85550d35d282e20eb64d1fb32a36fa037d0632e13d596809215c",
+@@ -24,8 +24,33 @@
+     },
+     "services/multisim/test/systemtest/BUILD.gn": {
+       "relocation_sha256": "af60d6518d1224eecdac66d5b6fdb148035085eac2f9d2fe918d083751616a53",
+-      "current_sha256": "7f65a125924ba05abce9a2a81ed258c8eda76f791b610cdd42fb32386185c5ec",
+-      "reason": "Add isolated real CoreServiceSim primary entry target; existing production targets retained."
++      "current_sha256": "86c0c9d585afaeae2d77ae9b377c0aeb3065148a68f0e52777c1ab0382fbd0cb",
++      "reason": "Retain entry and all legacy targets; pin Provider header for initialization; add real Manager/Controller target and isolated negative-control source input."
++    },
++    "services/multisim/test/systemtest/scripts/audit_initialization.py": {
++      "relocation_sha256": "36ab28439ffcf6cdfc4783669d619c9033b5957e403df9571653d284446d7c91",
++      "current_sha256": "dfa79fab2db67e910080b824cc99fc4dbf1ea4c17fe27a58ba1bda4066829cb6",
++      "reason": "SIM-028 authorized Host engineering: real initialization audit, external parameter bootstrap or terminal scheduler wait; original business assertions preserved."
++    },
++    "services/multisim/test/systemtest/stubs/ffrt_runtime.cpp": {
++      "relocation_sha256": "47ca6163b88147cfffb1a2fbb0797fe93980da3271e23c734629bef0d5b02f07",
++      "current_sha256": "7fb6f532c34f0832a82cfb2ab4dd6547119f7bdeadde748c2e71af6b600f6e92",
++      "reason": "SIM-028 authorized Host engineering: real initialization audit, external parameter bootstrap or terminal scheduler wait; original business assertions preserved."
++    },
++    "services/multisim/test/systemtest/stubs/parameter_service.cpp": {
++      "relocation_sha256": "8e82238e3cdb8ae448beb68c0026cb15282681e4ffc52416f3529cf2d1e704b7",
++      "current_sha256": "7c9ec5810a76a3175ccccd578392cf06fac5b55d76c2beb3233795104eea56c4",
++      "reason": "SIM-028 authorized Host engineering: real initialization audit, external parameter bootstrap or terminal scheduler wait; original business assertions preserved."
++    },
++    "services/multisim/test/systemtest/stubs/include/compile_declarations.h": {
++      "relocation_sha256": "b9e5d45c86c3020b2a6f7f28ff97cee87d9eafe97ac955d99b8efc2516bf363f",
++      "current_sha256": "8446ceec1e24fbb6a65a79cb1132246db28195108d9c3b1051f5bb4a6193aa25",
++      "reason": "SIM-028 authorized Host engineering: real initialization audit, external parameter bootstrap or terminal scheduler wait; original business assertions preserved."
++    },
++    "services/multisim/test/systemtest/README.md": {
++      "relocation_sha256": "3417683496f298fb41ac54ff303482c04b9edf812de0275bc4b3edeff659c884",
++      "current_sha256": "83d1d782576db4ff9925c8cb24a11522a1349912f0f3d5aebe1f7bacd6cbd4e0",
++      "reason": "SIM-028 real Host execution/provenance documentation; original business assertions retained."
+     }
+   }
+ }
+diff --git a/telephony_core_service/services/multisim/test/systemtest/BUILD.gn b/telephony_core_service/services/multisim/test/systemtest/BUILD.gn
+index cb4f24d6..54358667 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/BUILD.gn
++++ b/telephony_core_service/services/multisim/test/systemtest/BUILD.gn
+@@ -52,6 +52,32 @@ executable("sim_primary_slot_entry_test") {
+   deps = [ ":primary_slot_entry_production", ":googlemock" ]
+   ldflags = [ "-fprofile-instr-generate", "-Wl,-Map,sim_primary_slot_entry_test.map" ]
+ }
++source_set("primary_real_support") {
++  sources = [
++    "$production_root/frameworks/native/src/core_manager_inner.cpp",
++    "$production_root/frameworks/native/src/operator_config_types.cpp",
++    "$production_root/services/tel_ril/src/observer_handler.cpp",
++    "$production_root/services/core/src/core_service_hisysevent.cpp",
++    "$production_root/utils/common/src/telephony_common_utils.cpp",
++    "$production_root/utils/common/src/str_convert.cpp",
++  ]
++  include_dirs = [ "primary_slot/runtime_include", "primary_slot/include" ]
++  configs += [ ":production_headers", ":production_execution_evidence", ":initialization_standard_headers" ]
++}
++executable("sim_primary_slot_real_test") {
++  sources = [ "primary_slot/real_test.cpp", "primary_slot/real_runtime.cpp", "primary_slot/security_boundary.cpp" ]
++  include_dirs = [ "primary_slot/runtime_include", "primary_slot/include", "primary_slot/provider/include",
++                   "primary_slot", "stubs", "$gtest_root/googletest/include", "$gtest_root/googlemock/include" ]
++  configs += [ ":production_headers" ]
++  deps = [ ":primary_slot_entry_production", ":primary_real_support", ":sim_production_host",
++           ":sim_initialization_production_host", ":event_transport_production_host", ":scheduler_boundaries",
++           ":platform_boundaries", ":external_service_boundaries", ":googlemock" ]
++  ldflags = [ "-fprofile-instr-generate", "-Wl,-Map,sim_primary_slot_real_test.map" ]
++  if (sim028_runtime_root != "") {
++    libs = [ "$sim028_runtime_root/libsim028_strings.a", "$sim028_runtime_root/libsim028_securec.a",
++             "$sim028_runtime_root/libsim028_cjson.a", "/lib/x86_64-linux-gnu/libcrypto.so.3" ]
++  }
++}
+ 
+ # Original implementation sources, not copied and not mixed with fixtures/stubs.
+ source_set("sim_production_host") {
+@@ -159,6 +185,9 @@ config("initialization_standard_headers") {
+ 
+ # Optional initialization closure audit. Not part of the runnable capacity suite.
+ source_set("sim_initialization_production_host") {
++  # Exact public header from telephony_telephony_data, pinned in provider/contract.json.
++  # Target-local precedence preserves the old header and historical guard dependencies.
++  include_dirs = [ "primary_slot/provider/include" ]
+   sources = [
+     "$production_root/services/sim/src/card_file_detect_manager.cpp",
+     "$production_root/services/sim/src/csim_file_controller.cpp",
+@@ -174,7 +203,6 @@ source_set("sim_initialization_production_host") {
+     "$production_root/services/sim/src/isim_file.cpp",
+     "$production_root/services/sim/src/isim_file_controller.cpp",
+     "$production_root/services/sim/src/mcc_pool.cpp",
+-    "$production_root/services/sim/src/multi_sim_controller.cpp",
+     "$production_root/services/sim/src/multi_sim_helper.cpp",
+     "$production_root/services/sim/src/multi_sim_monitor.cpp",
+     "$production_root/services/sim/src/operator_config_cache.cpp",
+@@ -216,6 +244,12 @@ source_set("sim_initialization_production_host") {
+     ":production_execution_evidence",
+     ":initialization_standard_headers",
+   ]
++  if (primary_slot_controller_source == "") {
++    sources += [ "$production_root/services/sim/src/multi_sim_controller.cpp" ]
++  } else {
++    sources += [ primary_slot_controller_source ]
++  }
++
+ }
+ executable("sim_initialization_link_probe") {
+   sources = [ "support/initialization_link_probe.cpp" ]
+diff --git a/telephony_core_service/services/multisim/test/systemtest/HOST.md b/telephony_core_service/services/multisim/test/systemtest/HOST.md
+index 26ffb99b..94a65e26 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/HOST.md
++++ b/telephony_core_service/services/multisim/test/systemtest/HOST.md
+@@ -50,3 +50,9 @@ Tasks：Configure Host、Build Host、Run All Tests、Run Selected Test、Clean
+ 17 条兼容场景覆盖单/双卡、存在性/状态、组件初始化缺 RIL、通知回调、PIN/PUK、异步交错、销毁重建；4 条 PIN 外部 Hook 契约、19 条设施及 1 条容量单列。5 条独立缺陷保留：迟到 READY、替换卡旧 READY、通用 RIL 错误映射、替换卡旧 PIN、Refresh 返回语义冲突（待裁决）。完整 Core/Manager OnInit、账户、默认角色、数据库恢复、eSIM、IPC/设备未覆盖；历史 Provider 缺字段证据保留，本轮没有重跑该闭包，不能记为新 PASS。
+ 
+ 2026-11-11 主卡接口增量：新增 `sim_primary_slot_entry_test` 与[覆盖审计入口](primary_slot/README.md)，真实入口契约14条单列，Host全量合计60条（原有46条保留）。ISimManager内部接缝之后的整部件主卡调用链仍BLOCKED；默认审计命令返回2，只有显式 `--entry-only` 才按入口覆盖验收。当前证据见 [primary_slot_validation_20261111.json](configs/primary_slot_validation_20261111.json)。
++
++## SIM-028 真实 Manager 场景
++
++真实业务目标、固定依赖及剩余生命周期红灯见 [primary_slot/README.md](primary_slot/README.md)。准备并配置依赖后，使用 `tools/run_host_tests.sh selected --target sim_primary_slot_real_test --filter 'RealSimPrimary.*'`，或 `tools/run_host_tests.sh all --with-real-primary`；后者包含原60例和新增7例，均逐项保留结果。真实目标逐例独立进程，B超时用例会等待实际45秒，失败退出码不会被吞掉。原入口14例仍使用StrictMock ISimManager，当前真实目标已经使用生产SimManager/Controller；完整CoreService/Stub/HDI仍BLOCKED。
++
++F5新增 `SIM-028: real C0 (WSL, known lifetime failure)`，CLI支持GTest精确筛选和LLDB。TestMate列表发现可在CLI核实，VS Code GUI仍MANUAL；真实目标整组运行使用Task，以保证进程隔离。编辑/断点使用Debug构建和 `.host-out/build/compile_commands.json`，不使用Windows编译程序。
+diff --git a/telephony_core_service/services/multisim/test/systemtest/README.md b/telephony_core_service/services/multisim/test/systemtest/README.md
+index e5b087d0..7e4114ca 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/README.md
++++ b/telephony_core_service/services/multisim/test/systemtest/README.md
+@@ -104,3 +104,5 @@ python3 -B telephony_core_service/services/multisim/test/systemtest/scripts/run_
+ 干净代码 `20f92b4821dcaf8c24e78acf9db60b681b55c57c` 新建输出目录重新编译/链接后 7 PASS；恢复的历史 tip `728ad77ed4c723efbb5cb1baf7b3f10bb9830240`（含 cc787945 检查点）也重新构建 7 PASS，七组返回差分一致。当前证据见 [g2a_bplus_revalidation_20261105.json](configs/g2a_bplus_revalidation_20261105.json) 及[执行状态 §10](../../../../docs/SIM_Refactor_Execution_State.md#g2a-revalidation-20261105)。两个此前证据 JSON 均保留原字节。本轮状态仅为 `G2a_BPLUS_HOST_VERIFIED`；完整初始化及产品门禁仍未闭合，没有切换生产执行路径。
+ 
+ 最终审查修正审计测试中的方法编码样例，并补全 `ReadLegacyRealSimCount/Read`、`OnInit/Init` 正反检查；业务代码和冻结Oracle未变。最终干净代码 `722d044164c534f5898337c5b8eb1ccacb70c286` 在新输出目录 `query-final` 再次完整构建/链接和执行，仍7 PASS；JSON当前查询基线及摘要对应此提交，另保留首次20f92b48运行的关联。架构与完整初始化记录仍使用实际20f92b48基线，其相关生产源/GN没有变化。
++
++2026-11-11 SIM-028后续：真实SimManager/Controller及C0、B、C1运行入口与独立证据见 [primary_slot/README.md](primary_slot/README.md)。Provider字段阻塞已解除，真实目标完成链接；六个在卡场景保留清理阶段失败。旧初始化探针的历史BLOCKED不能代替该新目标的当前结果，新的业务执行也不代表CoreService/Stub/HDI或产品验收通过。
+diff --git a/telephony_core_service/services/multisim/test/systemtest/gn/BUILDCONFIG.gn b/telephony_core_service/services/multisim/test/systemtest/gn/BUILDCONFIG.gn
+index 227c8c54..5d073661 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/gn/BUILDCONFIG.gn
++++ b/telephony_core_service/services/multisim/test/systemtest/gn/BUILDCONFIG.gn
+@@ -1,6 +1,8 @@
+ declare_args() {
+   host_debug = false  # IDE host builds keep DWARF; legacy runners retain their profile.
+   primary_slot_core_source = ""  # Optional negative-control copy outside the source tree.
++  primary_slot_controller_source = ""  # Outside-source negative control only.
++  sim028_runtime_root = ""  # Explicit prepared native C dependencies, no implicit downloads.
+   gtest_root = ""
+   production_root = ""
+   sim_guard_state_source =
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/README.md b/telephony_core_service/services/multisim/test/systemtest/primary_slot/README.md
+index a72ea9f6..3829344f 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/primary_slot/README.md
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/README.md
+@@ -1,47 +1,112 @@
+-# SetPrimarySlotId：入口覆盖与整链阻塞
++# SetPrimarySlotId Host 验证（SIM-028）
+ 
+-本增量对应 SIM-028。输入说明是仓内 `docs/SetPrimarySlotId_重构前后实现对比说明.md`；按整个 telephony_core_service 部件理解用户要求，包括 Stub/CoreService/CoreServiceSim、SimManager/Controller、RadioProtocol/TelRil。**当前尚不能保证这条整链完整执行。** 没有修改生产实现或通过私有访问绕过装配。
++目前有两个互补目标，复用同一 GN/GTest 工程：
+ 
+-已经可执行的是 `sim_primary_slot_entry_test`：编译原始 `core_service_sim.cpp`、`telephony_permission.cpp` 和 `multi_sims_capability_manager.cpp`。14条用例通过 `CoreServiceSim::SetSimManager` 这一现有公开装配接口接入明确的内部 ISimManager 测试接缝。后者不是真实 SimManager，不能把该套件称作整个部件端到端测试。外部 AccessToken/IPC身份/系统参数由严格Mock提供；SIM入口、权限策略及槽能力策略均执行真实生产函数。
++- `sim_primary_slot_entry_test`：14 条入口契约，执行真实 CoreServiceSim/Permission/Capability，ISimManager 为 StrictMock。不能推定真实 Manager/设备链通过。
++- `sim_primary_slot_real_test`：7 条真实对象场景，公开构造 SimManager，按照 `CoreService::Init` 的 `SIM_SLOT_COUNT_MD + 1` 装配三个逻辑槽对象，对应两个物理槽。通过公开 CoreServiceSim::SetSimManager、CoreManagerInner::OnInit 连接同一真实 Manager/RIL。不使用私有注入或复制业务实现。
+ 
+-## 运行
++真实目标当前 **1 PASS / 6 FAIL**。六条在卡场景的业务断言及严格 RIL 期望验证通过，退出时同一真实订阅对象图残留，28 个 Host 工作线程未结束、RIL 引用数为10，清理断言失败。保持这些红灯和 GMock 泄漏诊断，不使用 AllowLeak、不忽略退出码。每个场景必须独立进程，runner 完整发现全部用例后逐例执行，防止残留回调进入下一场景。
+ 
+-从Git根执行；固定GTest依赖沿用 [HOST.md](../HOST.md)，不自动下载或安装：
++| 真实场景 | 已实际验证的业务终点 | 整例结果 |
++| --- | --- | --- |
++| 初始化，无 RIL/Provider | 真实 OnInit；Manager→Controller 返回 NO_SIM_CARD；对象和线程可销毁 | PASS |
++| C0，无需切换 | 由真实 GetRadioProtocol 查询应答确认槽1为M0；无 SetPrimarySlot/SetRadioProtocol；主卡参数、ICCID SHA256、Data 参数及主卡→Data广播 | FAIL，清理 |
++| B，直接命令成功 | 精确槽1；原请求 owner/event 关联异步应答；应答前不保存；成功后提交及通知；无三阶段命令 | FAIL，清理 |
++| B，设备失败 | 真实失败应答返回 LOCAL_PTR_NULL；保留旧主卡；无成功广播；setDone 只表示阶段结束 | FAIL，清理 |
++| B，超时 | 等待生产45秒定时事件；返回失败、保留旧主卡、结束进行中状态 | FAIL，清理 |
++| C1，成功/过期应答 | CHECK/UPDATE/COMPLETE各两成员；槽、modem、technology、session及原event关联；过期session不推进；UPDATE通知后COMPLETE；最终提交及Data联动 | FAIL，清理 |
++| C1，CHECK失败 | 无UPDATE；失败COMPLETE使用旧资源；恢复旧槽/ICCID参数；五次真实重试，六个独立session、24条协议请求；失败不发成功广播 | FAIL，清理 |
++
++精确结果、源码/二进制摘要、命令、XML及变异证据见 [本轮验收记录](../configs/sim028_real_chain_validation_20261111.json)。历史 [20261111入口记录](../configs/primary_slot_validation_20261111.json) 保持原字节；其中45对象/14字段阻塞是当时事实。
++
++## 依赖与 Provider 契约
++
++根 `bundle.json` 和生产 GN 实际依赖 `telephony_data:tel_telephony_data`；旧 Host 锁定的是 `telephony_data_storage` 老头。现在对初始化目标单独优先包含真实 `telephony_telephony_data@74b8597` 的公开头，保留旧锁和旧头。14字段的消费者函数、声明、SQL列/迁移默认值、URI及错误协议逐项见 [provider/contract.json](provider/contract.json)，公开头与许可证原样保存。50个 SIM 初始化对象已经编译通过，新目标实际链接并运行。
++
++Host Provider 仅提供外部关系行读写，严格匹配真实 URI/谓词/列，按照 Provider 的 Update **状态码**协议返回；不代替 SIM 初始化、选卡或状态机。模拟一条已保存的激活账户，由真实 ICCID 通知/Monitor/RdbHelper 重新绑定并建立缓存。PIN锁定卡状态来自原 RIL 请求的应答；EF_ICCID/LI/PBR读取明确返回设备错误，STK也返回错误，不伪造文件内容。未运行完整 Records、真实RDB持久化/升级、Provider权限或eSIM。
++
++需要固定版本 GTest、OpenSSL头及三个真实工具库源码；不安装系统包，不自动下载。准备流程：
+ 
+ ```sh
+-# 快速执行（自动增量构建）；也可通过 VS Code Run Selected Test 选择新目标。
+-./telephony_core_service/services/multisim/test/systemtest/tools/run_host_tests.sh selected \
+-  --target sim_primary_slot_entry_test --filter 'PrimaryEntry.*'
++# 从Git根执行。变量均指定你实际拥有的依赖路径。
++SIM_TEST=telephony_core_service/services/multisim/test/systemtest
++SIM_SOURCE_CACHE=/path/to/explicit-source-cache
++SIM_NATIVE=/tmp/sim028-native
++SIM_SSL=/tmp/sim028-openssl
++SIM_GTEST=/path/to/pinned-googletest
+ 
+-# 覆盖审计：要求入口六个if的两侧和全部代码区域执行、四个真实函数正执行。
+-# 默认整链验收仍返回2/BLOCKED，entry_contract_status另列PASS。
+-python3 -B telephony_core_service/services/multisim/test/systemtest/scripts/run_primary_slot.py \
+-  --output /tmp/sim-primary-audit --mutation-check
++python3 -B "$SIM_TEST/scripts/prepare_openssl.py" \
++  --archive /path/to/libssl-dev_3.0.13-0ubuntu3.16_amd64.deb --destination "$SIM_SSL"
++python3 -B "$SIM_TEST/primary_slot/prepare_runtime.py" \
++  --source-cache "$SIM_SOURCE_CACHE" --output "$SIM_NATIVE"
++
++# Debug构建，参数保存到.host-out/host.json；clangd读取真实编译数据库。
++python3 -B "$SIM_TEST/tools/host.py" build --target sim_primary_slot_real_test \
++  --gtest-root "$SIM_GTEST" --openssl-root "$SIM_SSL" --runtime-root "$SIM_NATIVE"
++
++# 日常运行：自动增量构建、逐例独立进程、XML/日志及非零失败码。
++"$SIM_TEST/tools/run_host_tests.sh" selected --target sim_primary_slot_real_test \
++  --filter 'RealSimPrimary.*'
++"$SIM_TEST/tools/run_host_tests.sh" all --with-real-primary
++
++# 覆盖/因果证据及仓外Controller变异；当前整例有生命周期FAIL，退出1。
++python3 -B "$SIM_TEST/scripts/run_primary_real.py" \
++  --output /tmp/sim028-real-audit --build-dir /tmp/sim028-real-build \
++  --gtest-root "$SIM_GTEST" --openssl-root "$SIM_SSL" --runtime-root "$SIM_NATIVE" \
++  --mutation-check
++
++# 编译/链接审计，不执行测试，不替代上面的运行验收。
++python3 -B "$SIM_TEST/scripts/audit_initialization.py" \
++  --target sim_primary_slot_real_test --output /tmp/sim028-link-build \
++  --gtest-root "$SIM_GTEST" --openssl-root "$SIM_SSL" --runtime-root "$SIM_NATIVE"
++```
++
++源码缓存内须有以下干净Git仓库，脚本拒绝错误版本、暂存或未暂存的修改，仅编译跟踪的源码；可从其官方仓库获取对应提交。依赖路径/编译命令/归档SHA写入 `runtime_dependencies.json`：
+ 
+-# 明确只验收入口接缝时使用；全套14例和覆盖检查通过才返回0。
++| 缓存目录 | 固定提交 |
++| --- | --- |
++| third_party_bounds_checking_function | 61baa7a3eb9347efca58397d1d0504faa96d79f0 |
++| third_party_cJSON | 28dba43de56de279d1b5b74565f4277c89c50f35 |
++| commonlibrary_c_utils | 3bdc11e00e7bf6e577cee300ad51045ca9958efd |
++
++编译使用真实 securec/cJSON/string_ex/unicode_ex，OpenSSL链接当前Linux `libcrypto.so.3`。C++17、Clang18、libstdc++。没有禁用访问检查或忽略链接错误；未实现的Parcel序列化一旦进入就抛错。完整编译数据库包含可选目标，精确链接闭包以审计 `target-commands.log`、link map和函数执行记录为准。
++
++## 入口回归与变异
++
++```sh
++./telephony_core_service/services/multisim/test/systemtest/tools/run_host_tests.sh selected \
++  --target sim_primary_slot_entry_test --filter 'PrimaryEntry.*'
+ python3 -B telephony_core_service/services/multisim/test/systemtest/scripts/run_primary_slot.py \
+-  --output /tmp/sim-primary-audit --entry-only
++  --output /tmp/sim-primary-entry --entry-only --mutation-check
+ ```
+ 
+-每次在output下建立独立execution目录，保存XML、日志、覆盖和result.json；每个输出目录持独占锁。`--mutation-check`只在仓外生产源码副本将实际转发的 `isUserSet=true` 改为false，必须触发断言失败，随后重建原生产源码并重新通过。入口审计PASS不改变whole_component_chain=BLOCKED。完整仓内调用链的缺失执行函数逐一登记；聚合函数计数也不等于单一场景的跨线程/IPC因果证明。
++上面的筛选是12条 PrimaryEntry；独立入口审计运行全部14条。入口覆盖六个if的12侧、31个代码区域；原userSet true→false变异由7条断言检出。新Controller变异只在仓外副本将保存目标变成slotId+1，由 `PRIMARY_COMMIT_TARGET` 新失败检出；判定比较业务断言，不能把已有清理失败的非零码当作变异检出。原源码及原二进制摘要保持不变。
+ 
+-## 用例和断言
++入口套件保留系统应用/权限/对象/能力/在卡/激活的错误优先级、原slot及userSet、返回码和偏好写入顺序，包含原HasSimCard返回码未使用、偏好写失败仍转发的characterization；不将当前缺陷批准为未来规则。生成的内部接缝仍可用 `generate_manager_seam.py --check` 审查。
+ 
+-| 范围 | 覆盖内容 |
+-| --- | --- |
+-| 错误顺序 | 非系统应用先于权限；权限先于空Manager；空Manager先于扩展槽能力；能力失败先于SIM访问 |
+-| 业务守卫 | 无卡不查激活、不写偏好；未激活不写偏好、不发切换；严格Mock拒绝多余调用 |
+-| 正常转发 | 先在卡、再激活、再写USER_PREFER_PRIMARY_SLOT=true、最后精确slotId和userSet=true；下层返回原样交付 |
+-| 调用身份 | HAP系统应用、native、shell执行真实身份策略；扩展槽使用源码常量SLOT_3_INDEX，而非推测数字 |
+-| 当前行为刻画 | HasSimCard返回码被忽略、SetParameter失败仍转发；明确标characterization，不批准这些行为为未来业务规则 |
+-| 能力拒绝分支 | 外部SystemApp判断在入口与能力复查之间由true变false，显式模拟策略服务变化/异常；稳定同一调用者通常无法走到该拒绝分支，不能说它是普通产品场景 |
++## 调试和未解除的边界
++
++VS Code在Remote-WSL打开Git根。先执行一次上述依赖配置，然后用 `Build Real SIM Host`、`Run Selected Test` 或 `Run All Tests + Real SIM`；F5选择 `SIM-028: real C0 (WSL, known lifetime failure)`。CLI：
++
++```sh
++SIM_HOST_BOOT_SLOT_COUNT=2 lldb -- .host-out/build/sim_primary_slot_real_test \
++  --gtest_filter=RealSimPrimary.C0CoreToRealManagerAndController
++# LLDB: breakpoint set -f multi_sim_controller.cpp -l 1485
++# run; bt; frame variable slotId isUserSet
++```
+ 
+-`unscripted_sim_manager.h`按真实ISimManager自动生成；除三个脚本化方法外，所有接口调用均抛错，没有SIM业务实现。`generate_manager_seam.py --check`拒绝接口漂移。`primary_slot/include`中的头是外部API声明子集，实际运行仅涉及token查询/验证和SetParameter；Bundle/Privacy相关未覆盖API没有成功实现。头路径仅对新目标生效，不修改原测试使用的平台头。它们不证明OHOS ABI或真实身份服务正确性。
++`SIM_HOST_BOOT_SLOT_COUNT=2`为生产全局构造阶段的显式外部参数输入，必须在进程启动前设置；不重置生产静态缓存。runner和F5已经设置。二进制拒绝通配符多例运行，使用runner逐例隔离。TestMate可通过GTest列表发现7例，GUI单例运行/断点/变量仍需人工检查；扩展直接把通配符传给二进制的“全部运行”应改用上述Task，不宣称GUI整组运行通过。
+ 
+-## 整链为什么仍阻塞
++真实残留链为 `SimStateHandle → ObserverHandler(强引用) → MultiSimMonitor → Controller/StateManager → SimStateHandle`，Monitor同时订阅File。真实SimManager析构已执行，Monitor/Controller/StateManager析构未执行，28线程及10个RIL引用可复核。Monitor有公开UnRegisterSimNotify，但Manager未提供可访问的完整停止入口。需要另行授权生产生命周期方案：停止新回调/排空在途工作，再在释放强引用前解除订阅；本轮不修改生产析构，也不通过私有访问清环。
+ 
+-实际重跑初始化编译审计，显式复用并校验本地锁定OpenSSL开发包，未安装系统包。45个SIM对象编译成功、没有缺失头文件，但有43条诊断：Provider的14个SimData字段不匹配（PHY_CARD/LSI/SIM_LABEL_INDEX/IS_ESIM/MNC_LEN/OPERATOR_NAME/MCC/MNC/GID1/GID2/SPN/OPKEY/EHPLMN/EFUST）。该闭包未链接、未运行，不猜测字段或Provider成功值。
++| 边界 | 当前证据与最小条件 |
++| --- | --- |
++| A厂商映射 | 未运行；真实swapM0M2SimCards厂商函数/库及四槽配置未提供，不能把wrapper缺省-1说成映射验证 |
++| CoreService/Stub | compile-only重跑仍缺system_ability.h、BrokerDelegator/Proxy构造及Parcel/IPCObjectStub运行契约；真实CoreService::Init没有执行 |
++| Host IPC | 仅Creator身份令牌；SA订阅明确返回不可用、其他SA不存在、Parcel不支持；不是IPC分发模拟 |
++| TelRilManager/TelRilSim/HDI | compile-only重跑缺v1_5/iril.h；RIL接口请求/应答由严格Mock隔离，session是业务协议session，未生成或验证真实RIL serial |
++| OHOS IPC/产品 | 独立fork无匹配完整产品树、samgr/Binder/HDI；本WSL无/dev/binder、/dev/hwbinder；未做产品/设备集成验收 |
+ 
+-CoreService/Stub原始源码另作Host编译审查，现有边界还缺system_ability.h、BrokerDelegator、IRemoteProxy构造、MessageParcel接口令牌及IPCObjectStub等。进一步执行CoreService::Init还会触及真实RIL、账户Provider、CommonEventHub和搜网装配。CoreService的CoreServiceSim成员私有，合法成功装配发生在Init；不能靠重写CoreService、替换仓内业务对象或私有指针注入宣称整链覆盖。
++在匹配OHOS完整树中挂载为 `base/telephony/core_service`，按仓内构建规则配置产品后运行 `hb build -T //base/telephony/core_service:tel_core_service` 和 `hb build -T //base/telephony/core_service/test:unittest`，在对应设备运行生成的CoreService/SIM/TelRil套件并核查真实SA、权限、reply、serial/HDI。当前Host套件不是OHOS产品测试目标，不能直接用hb宣称运行了这7条。完整产品树、生成HDI头及设备是继续原生集成的必要输入。
+ 
+-最小后续条件是提供匹配本fork的Provider字段/URI/schema/错误协议及可验证的SA/Binder/HDI Host运行边界，或在匹配OHOS产品树中运行真实装配。A/B/C0/C1分支、三阶段协议、参数保存/恢复、Data联动、重试、账户通知及新multisim执行链均未由本套件运行。当前结果和实际阻塞日志见 [primary_slot_validation_20261111.json](../configs/primary_slot_validation_20261111.json)；既有五条SIM Guard缺陷保持独立红灯。
++C1的UPDATE/COMPLETE异常、C1超时、任意重复/乱序组合、在途销毁重建和跨重启的持久化恢复本轮NOT_RUN。既有五条独立业务缺陷继续单列；六个新增清理失败共享同一个残留对象图原因，未将其归入原五条缺陷或从统计中移除。
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/include/ipc_skeleton.h b/telephony_core_service/services/multisim/test/systemtest/primary_slot/include/ipc_skeleton.h
+index 71f51e95..675a7fdd 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/primary_slot/include/ipc_skeleton.h
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/include/ipc_skeleton.h
+@@ -6,6 +6,8 @@ class IPCSkeleton {
+ public:
+     static uint32_t GetCallingTokenID();
+     static uint64_t GetCallingFullTokenID();
++    static int32_t GetCallingUid();
++    static int32_t GetCallingPid();
+     static std::string ResetCallingIdentity();
+     static bool SetCallingIdentity(std::string &identity, bool flag = false);
+ };
+diff --git a/telephony_core_service/services/multisim/test/systemtest/scripts/audit_initialization.py b/telephony_core_service/services/multisim/test/systemtest/scripts/audit_initialization.py
+index a18a08f4..caac4829 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/scripts/audit_initialization.py
++++ b/telephony_core_service/services/multisim/test/systemtest/scripts/audit_initialization.py
+@@ -3,6 +3,7 @@
+ from build_clock import await_build_timestamps
+ import argparse
+ import hashlib
++import fcntl
+ import json
+ import os
+ from pathlib import Path
+@@ -27,14 +28,17 @@ def main():
+     parser.add_argument('--gtest-root', required=True)
+     parser.add_argument('--output', required=True)
+     parser.add_argument('--openssl-root')
++    parser.add_argument('--runtime-root')
+     parser.add_argument('--libxml2-include', default=os.environ.get('SIM_LIBXML2_INCLUDE', '/usr/include/libxml2'),
+                         help='libxml2 headers directory; defaults to SIM_LIBXML2_INCLUDE or the standard Linux location')
+-    parser.add_argument('--target', choices=['sim_initialization_link_probe', 'sim_bootstrap_characterization'], default='sim_initialization_link_probe')
++    parser.add_argument('--target', choices=['sim_initialization_link_probe', 'sim_bootstrap_characterization', 'sim_primary_slot_real_test'], default='sim_initialization_link_probe')
+     options = parser.parse_args()
+     output = Path(options.output).resolve()
+     if output == SYSTEM or SYSTEM in output.parents:
+         parser.error('Output must be outside systemtest')
+     output.mkdir(parents=True, exist_ok=True)
++    lock_stream = (output / ".sim-build.lock").open("w")
++    fcntl.flock(lock_stream, fcntl.LOCK_EX)
+     result = {
+         'schema_version': 1, 'purpose': 'initialization_dependency_audit_not_test_execution',
+         'status': 'BLOCKED', 'executed': False, 'gtest_tests': 0,
+@@ -64,6 +68,13 @@ def main():
+         result['harness_digest'] = digest_tree(SYSTEM)
+         gtest = Path(options.gtest_root).resolve()
+         lock = json.loads((SYSTEM / 'configs/dependency_lock.json').read_text())
++        provider = SYSTEM / 'primary_slot/provider'
++        provider_contract = json.loads((provider / 'contract.json').read_text())
++        for entry in provider_contract['source_files']:
++            candidate = provider / 'include' / Path(entry['path']).name
++            if entry['path'].endswith('.h') and entry['path'].startswith(('interfaces/', 'common/include/')) and (not candidate.exists() or hashlib.sha256(candidate.read_bytes()).hexdigest() != entry['sha256']):
++                raise RuntimeError('Pinned Provider header differs: ' + entry['path'])
++        result['provider_contract'] = provider_contract
+         if digest_tree(gtest) != lock['googletest']['tree_sha256']:
+             raise RuntimeError('GoogleTest tree differs from pinned source')
+         for header in lock['platform_headers']:
+@@ -72,7 +83,7 @@ def main():
+         result['external_contract_manifest_digest'] = hashlib.sha256(
+             (SYSTEM / 'configs/upstream_contracts.json').read_bytes()).hexdigest()
+         manifest = json.loads((SYSTEM / 'configs/production_sources_candidate.json').read_text())
+-        names = manifest['unconditional_sim_sources'] if options.target == 'sim_initialization_link_probe' else ['services/sim/src/sim_manager.cpp', 'services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp']
++        names = manifest['unconditional_sim_sources'] if options.target != 'sim_bootstrap_characterization' else ['services/sim/src/sim_manager.cpp', 'services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp']
+         result['production_sources'] = [
+             {'path': name, 'sha256': hashlib.sha256((CORE / name).read_bytes()).hexdigest()}
+             for name in names]
+@@ -93,6 +104,16 @@ def main():
+                     raise RuntimeError('OpenSSL header differs from prepared fixed package')
+             result['openssl_headers'] = expected
+             gn_args += ' openssl_root=' + json.dumps(str(crypto_root))
++        if options.target == 'sim_primary_slot_real_test':
++            if not options.runtime_root:
++                raise RuntimeError('Explicit --runtime-root is required for real SIM link audit')
++            native = Path(options.runtime_root).resolve()
++            native_contract = json.loads((native / 'runtime_dependencies.json').read_text())
++            for name, digest in native_contract['archives'].items():
++                if hashlib.sha256((native / name).read_bytes()).hexdigest() != digest:
++                    raise RuntimeError('Native archive drift: ' + name)
++            result['native_dependencies'] = native_contract
++            gn_args += ' sim028_runtime_root=' + json.dumps(str(native))
+         code = run(['gn', 'gen', str(output), '--root=' + str(SYSTEM), '--args=' + gn_args], 'gn-gen')
+         if code:
+             raise RuntimeError('Initialization probe GN generation failed')
+@@ -105,14 +126,15 @@ def main():
+         result['compiled_objects'] = len(list((output / 'obj').rglob('sim_initialization_production_host.*.o')))
+         if code:
+             raise RuntimeError('Production dependency closure does not compile/link for ' + options.target + '; no scenario executed')
+-        result['status'] = 'LINK_AUDIT_COMPLETE_RUNTIME_BLOCKED'
+-        result['blocking_stage'] = 'controlled_runtime_not_implemented'
+-        result['reason'] = 'Link only; RIL/platform assembly and scenario execution are still required'
++        result['status'] = 'PASS'
++        result['blocking_stage'] = None
++        result['runtime_status'] = 'NOT_RUN'
++        result['reason'] = 'Link audit only; run run_primary_real.py separately for runtime evidence'
+     except Exception as error:
+         result['reason'] = str(error)
+     (output / 'initialization_audit.json').write_text(json.dumps(result, indent=2) + '\n')
+     print(json.dumps({key: result.get(key) for key in ['status', 'executed', 'build_exit_code', 'compiled_objects', 'missing_headers', 'reason']}))
+-    return 0 if result['status'] == 'LINK_AUDIT_COMPLETE_RUNTIME_BLOCKED' else 1
++    return 0 if result['status'] == 'PASS' else 1
+ 
+ if __name__ == '__main__':
+     raise SystemExit(main())
+diff --git a/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp b/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp
+index 89ddb40b..8c83e6a2 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp
++++ b/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp
+@@ -171,7 +171,9 @@ void queue::wait(const task_handle &handle)
+     {
+         std::lock_guard<mutex> guard(state_->lock);
+         if (state_->workerId == std::this_thread::get_id()) {
+-            if (handle.task_->status.load() == HostTaskStatus::RUNNING) return;
++            const auto status = handle.task_->status.load();
++            if (status == HostTaskStatus::RUNNING || status == HostTaskStatus::DONE ||
++                status == HostTaskStatus::CANCELLED) return;
+             throw std::logic_error("worker cannot wait on pending task in its own queue");
+         }
+     }
+diff --git a/telephony_core_service/services/multisim/test/systemtest/stubs/include/compile_declarations.h b/telephony_core_service/services/multisim/test/systemtest/stubs/include/compile_declarations.h
+index e6673c4d..1804fc0f 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/stubs/include/compile_declarations.h
++++ b/telephony_core_service/services/multisim/test/systemtest/stubs/include/compile_declarations.h
+@@ -95,6 +95,10 @@ class Parcelable { public: virtual ~Parcelable() = default; virtual bool Marshal
+ class Parcel {
+ public:
+     bool WriteInt32(int32_t); bool ReadInt32(int32_t&); int32_t ReadInt32();
++    bool WriteInt64(int64_t); int64_t ReadInt64();
++    bool WriteStringVector(const std::vector<std::string>&); bool ReadStringVector(std::vector<std::string>*);
++    bool WriteInt32Vector(const std::vector<int32_t>&); bool ReadInt32Vector(std::vector<int32_t>*);
++    bool WriteInt64Vector(const std::vector<int64_t>&); bool ReadInt64Vector(std::vector<int64_t>*);
+     bool WriteBool(bool); bool ReadBool(bool&); bool ReadBool();
+     bool WriteCString(const char *);
+     bool WriteString(const std::string&); std::string ReadString(); bool ReadString(std::string&);
+diff --git a/telephony_core_service/services/multisim/test/systemtest/stubs/parameter_service.cpp b/telephony_core_service/services/multisim/test/systemtest/stubs/parameter_service.cpp
+index 05f2b1d8..c3056af2 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/stubs/parameter_service.cpp
++++ b/telephony_core_service/services/multisim/test/systemtest/stubs/parameter_service.cpp
+@@ -3,6 +3,7 @@
+ #include <atomic>
+ #include <cerrno>
+ #include <cstring>
++#include <cstdlib>
+ #include <stdexcept>
+ namespace {
+ std::atomic<unsigned int> reads{0};
+@@ -33,7 +34,16 @@ extern "C" unsigned int SimHostParameterReads() { return reads.load(); }
+ extern "C" int GetParameter(const char *key, const char *fallback, char *value, unsigned int length)
+ {
+     if (key == nullptr || fallback == nullptr || value == nullptr || length == 0) return -EINVAL;
+-    if (active == nullptr) return -ENODEV;
++    if (active == nullptr) {
++        // Explicit process bootstrap input: production global constructors read this
++        // before a scenario can install its strict mock. Never infer SIM state.
++        const char *slots = std::getenv("SIM_HOST_BOOT_SLOT_COUNT");
++        if (slots && std::strcmp(key, "const.telephony.slotCount") == 0) {
++            if (std::strcmp(slots, "1") != 0 && std::strcmp(slots, "2") != 0) return -EINVAL;
++            return SimHost::CopyParameterValue(slots, value, length);
++        }
++        return -ENODEV;
++    }
+     reads.fetch_add(1);
+     return active->Read(key, fallback, value, length);
+ }
+diff --git a/telephony_core_service/services/multisim/test/systemtest/tools/host.py b/telephony_core_service/services/multisim/test/systemtest/tools/host.py
+index 9505e200..1c669bfc 100644
+--- a/telephony_core_service/services/multisim/test/systemtest/tools/host.py
++++ b/telephony_core_service/services/multisim/test/systemtest/tools/host.py
+@@ -25,6 +25,7 @@ from run_sim_guard import check_semantics, PRODUCTION
+ 
+ TARGETS = ['sim_guard_legacy', 'sim_guard_pin_memory', 'platform_adapter_test', 'sim_component_test',
+            'sim_primary_slot_entry_test']
++REAL_TARGET = 'sim_primary_slot_real_test'
+ 
+ 
+ class BuildFailed(RuntimeError):
+@@ -76,18 +77,38 @@ def configure(args, out):
+     previous = json.loads(saved.read_text()) if saved.exists() else {}
+     root = dependencies(args.gtest_root or os.environ.get('SIM_GTEST_ROOT') or previous.get('gtest_root'))
+     await_build_timestamps(SYSTEM)
+-    gnargs = ' '.join(f'{key}={json.dumps(value)}' for key, value in
+-                      [('gtest_root', str(root)), ('production_root', str(CORE)), ('host_debug', True)])
++    openssl = args.openssl_root or previous.get('openssl_root', '')
++    runtime = args.runtime_root or previous.get('sim028_runtime_root', '')
++    if args.target == REAL_TARGET or args.with_real_primary:
++        if not openssl or not (Path(openssl) / 'usr/include/openssl/ssl.h').is_file():
++            raise RuntimeError('Real SIM target needs --openssl-root from prepare_openssl.py; see primary_slot/README.md')
++        lock = json.loads((SYSTEM / 'configs/dependency_lock.json').read_text())['openssl_headers']
++        if json.loads((Path(openssl) / 'sim_dependency.json').read_text()) != lock:
++            raise RuntimeError('OpenSSL metadata differs from pinned package')
++        for name, digest in lock.get('header_sha256', {}).items():
++            if hashlib.sha256((Path(openssl) / name).read_bytes()).hexdigest() != digest:
++                raise RuntimeError('OpenSSL header drift: ' + name)
++        if not runtime or not (Path(runtime) / 'runtime_dependencies.json').is_file():
++            raise RuntimeError('Real SIM target needs --runtime-root from primary_slot/prepare_runtime.py')
++        manifest = json.loads((Path(runtime) / 'runtime_dependencies.json').read_text())
++        for name, expected in manifest['archives'].items():
++            if hashlib.sha256((Path(runtime) / name).read_bytes()).hexdigest() != expected:
++                raise RuntimeError('Native archive drift: ' + name)
++    values = [('gtest_root', str(root)), ('production_root', str(CORE)), ('host_debug', True),
++              ('openssl_root', str(Path(openssl).resolve()) if openssl else ''),
++              ('sim028_runtime_root', str(Path(runtime).resolve()) if runtime else '')]
++    gnargs = ' '.join(f'{key}={json.dumps(value)}' for key, value in values)
+     code = command(['gn', 'gen', out / 'build', '--root=' + str(SYSTEM),
+                     '--export-compile-commands', '--args=' + gnargs], out / 'configure.log', REPO)
+     if code:
+         raise BuildFailed('GN failed; see configure.log')
+-    write(saved, {'gtest_root': str(root), 'production_root': str(CORE), 'host_debug': True})
++    write(saved, dict(values))
+ 
+ 
+ def build(args, out):
+     configure(args, out)
+-    code = command(['ninja', '-C', out / 'build', '-j', args.jobs, *TARGETS], out / 'build.log', REPO)
++    targets = TARGETS + ([REAL_TARGET] if args.target == REAL_TARGET or args.with_real_primary else [])
++    code = command(['ninja', '-C', out / 'build', '-j', args.jobs, *targets], out / 'build.log', REPO)
+     if code:
+         raise BuildFailed('Ninja failed; see build.log')
+ 
+@@ -111,8 +132,29 @@ def run_tests(args, out):
+               ('known_defects', TARGETS[0], '*DEFECT_*'),
+               ('pin_memory', TARGETS[1], '*'), ('infrastructure', TARGETS[2], '*'),
+               ('capacity', TARGETS[3], '*'), ('primary_entry_internal_seam', TARGETS[4], '*')]
++    if args.with_real_primary:
++        groups.append(('primary_real_business', REAL_TARGET, '*'))
+     if args.action == 'selected':
+         groups = [('selected', args.target, args.filter)]
++    # Each full-manager case owns a process: residual production subscription cycles
++    # remain reported as failures, without contaminating later scenarios/mocks.
++    expanded = []
++    for name, target, test_filter in groups:
++        if target != REAL_TARGET:
++            expanded.append((name, target, test_filter))
++            continue
++        env = dict(os.environ, SIM_HOST_BOOT_SLOT_COUNT='2',
++                   LLVM_PROFILE_FILE=str(session / 'discovery-%p.profraw'))
++        listing = subprocess.check_output([out / 'build' / target, '--gtest_list_tests',
++            '--gtest_filter=' + test_filter], env=env, text=True, cwd=session)
++        suite = ''
++        for line in listing.splitlines():
++            line = line.split('#')[0].rstrip()
++            if line and not line.startswith(' '): suite = line
++            elif line.strip(): expanded.append((name + '-' + str(len(expanded)), target, suite + line.strip()))
++        if not any(item[1] == REAL_TARGET for item in expanded):
++            raise RuntimeError('Real SIM filter selected zero cases')
++    groups = expanded
+     failed = False
+     catalog = json.loads((GUARD / 'traceability/round2_catalog.json').read_text())
+     for name, target, test_filter in groups:
+@@ -122,6 +164,8 @@ def run_tests(args, out):
+         for key in list(env):
+             if key.startswith('SIM_') and key != 'SIM_GTEST_ROOT':
+                 del env[key]
++        if target == REAL_TARGET:
++            env['SIM_HOST_BOOT_SLOT_COUNT'] = '2'
+         code = command([out / 'build' / target, '--gtest_filter=' + test_filter,
+                         '--gtest_output=xml:' + str(xml)], session / (name + '.log'), session, env, 90)
+         group = {'name': name, 'exit_code': code, 'status': 'FAIL', 'tests': 0, 'passed': 0, 'failed': 0,
+@@ -168,8 +212,11 @@ def main():
+     parser.add_argument('action', choices=['configure', 'build', 'all', 'selected', 'clean', 'debug'])
+     parser.add_argument('--out', type=Path, default=REPO / '.host-out')
+     parser.add_argument('--gtest-root')
++    parser.add_argument('--openssl-root')
++    parser.add_argument('--runtime-root')
++    parser.add_argument('--with-real-primary', action='store_true')
+     parser.add_argument('--jobs', default='4')
+-    parser.add_argument('--target', choices=TARGETS, default=TARGETS[0])
++    parser.add_argument('--target', choices=TARGETS + [REAL_TARGET], default=TARGETS[0])
+     parser.add_argument('--filter', default='*')
+     args = parser.parse_args()
+     out = args.out.resolve()
+@@ -179,6 +226,10 @@ def main():
+     # Tasks, F5 and terminal commands can overlap; never run two Ninjas on one output.
+     lock_stream = (out / 'host.lock').open('w')
+     fcntl.flock(lock_stream, fcntl.LOCK_EX)
++    build_dir = out / "build"
++    build_dir.mkdir(exist_ok=True)
++    build_lock = (build_dir / ".sim-build.lock").open("w")
++    fcntl.flock(build_lock, fcntl.LOCK_EX)
+     try:
+         if args.action == 'configure':
+             configure(args, out)
+@@ -186,6 +237,8 @@ def main():
+             build(args, out)
+         elif args.action == 'debug':
+             build(args, out)
++            if args.target == REAL_TARGET:
++                os.environ['SIM_HOST_BOOT_SLOT_COUNT'] = '2'
+             return subprocess.call(['lldb', '--', str(out / 'build' / args.target),
+                                     '--gtest_filter=' + args.filter], cwd=out)
+         elif args.action == 'clean':
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/prepare_runtime.py b/telephony_core_service/services/multisim/test/systemtest/primary_slot/prepare_runtime.py
+new file mode 100755
+index 00000000..c80f9479
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/prepare_runtime.py
+@@ -0,0 +1,57 @@
++#!/usr/bin/env python3
++"""Build real C runtime dependencies from explicit local source, without installation."""
++import argparse
++import hashlib
++import json
++from pathlib import Path
++import subprocess
++
++parser = argparse.ArgumentParser(description=__doc__)
++parser.add_argument('--source-cache', type=Path, required=True)
++parser.add_argument('--output', type=Path, required=True)
++args = parser.parse_args()
++out = args.output.resolve()
++out.mkdir(parents=True, exist_ok=True)
++roots = {name: args.source_cache.resolve() / name for name in [
++    'third_party_bounds_checking_function', 'third_party_cJSON', 'commonlibrary_c_utils']}
++record = {'sources': {}, 'commands': [], 'inputs': {}}
++expected = {
++    'third_party_bounds_checking_function': '61baa7a3eb9347efca58397d1d0504faa96d79f0',
++    'third_party_cJSON': '28dba43de56de279d1b5b74565f4277c89c50f35',
++    'commonlibrary_c_utils': '3bdc11e00e7bf6e577cee300ad51045ca9958efd',
++}
++for name, root in roots.items():
++    head = subprocess.check_output(['git', '-C', str(root), 'rev-parse', 'HEAD'], text=True).strip()
++    if subprocess.check_output(['git', '-C', str(root), 'status', '--porcelain', '--untracked-files=no'], text=True).strip():
++        raise SystemExit('Dependency has tracked modifications: ' + name)
++    if head != expected[name]:
++        raise SystemExit('Dependency revision mismatch: ' + name)
++    remote = subprocess.check_output(['git', '-C', str(root), 'remote', 'get-url', 'origin'], text=True).strip()
++    record['sources'][name] = {'head': head, 'root': str(root), 'repository': remote}
++
++def run(argv):
++    for arg in argv:
++        if isinstance(arg, Path) and arg.suffix in ('.c', '.cpp'):
++            record['inputs'][str(arg)] = hashlib.sha256(arg.read_bytes()).hexdigest()
++    subprocess.run(list(map(str, argv)), check=True)
++    record['commands'].append(list(map(str, argv)))
++
++secure = roots['third_party_bounds_checking_function']
++objects = []
++for name in subprocess.check_output(['git', '-C', str(secure), 'ls-files', 'src/*.c'], text=True).splitlines():
++    p = secure / name
++    obj = out / (p.stem + '.o')
++    run(['clang', '-O2', '-fPIC', '-I' + str(secure / 'include'), '-c', p, '-o', obj])
++    objects.append(obj)
++run(['ar', 'rcs', out / 'libsim028_securec.a', *objects])
++cjson = roots['third_party_cJSON']
++run(['clang', '-O2', '-fPIC', '-I' + str(cjson), '-c', cjson / 'cJSON.c', '-o', out / 'cJSON.o'])
++run(['ar', 'rcs', out / 'libsim028_cjson.a', out / 'cJSON.o'])
++cutils = roots['commonlibrary_c_utils']
++run(['clang++', '-std=c++17', '-O2', '-fPIC', '-I' + str(cutils / 'base/include'),
++     '-I' + str(secure / 'include'), '-c', cutils / 'base/src/string_ex.cpp', '-o', out / 'string_ex.o'])
++run(['clang++', '-std=c++17', '-O2', '-fPIC', '-include', 'cstdint', '-I' + str(cutils / 'base/include'), '-c', cutils / 'base/src/unicode_ex.cpp', '-o', out / 'unicode_ex.o'])
++run(['ar', 'rcs', out / 'libsim028_strings.a', out / 'string_ex.o', out / 'unicode_ex.o'])
++record['archives'] = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in out.glob('*.a')}
++(out / 'runtime_dependencies.json').write_text(json.dumps(record, indent=2) + '\n')
++print(out / 'runtime_dependencies.json')
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/provider/LICENSE b/telephony_core_service/services/multisim/test/systemtest/primary_slot/provider/LICENSE
+new file mode 100755
+index 00000000..4947287f
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/provider/LICENSE
+@@ -0,0 +1,177 @@
++
++                                 Apache License
++                           Version 2.0, January 2004
++                        http://www.apache.org/licenses/
++
++   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
++
++   1. Definitions.
++
++      "License" shall mean the terms and conditions for use, reproduction,
++      and distribution as defined by Sections 1 through 9 of this document.
++
++      "Licensor" shall mean the copyright owner or entity authorized by
++      the copyright owner that is granting the License.
++
++      "Legal Entity" shall mean the union of the acting entity and all
++      other entities that control, are controlled by, or are under common
++      control with that entity. For the purposes of this definition,
++      "control" means (i) the power, direct or indirect, to cause the
++      direction or management of such entity, whether by contract or
++      otherwise, or (ii) ownership of fifty percent (50%) or more of the
++      outstanding shares, or (iii) beneficial ownership of such entity.
++
++      "You" (or "Your") shall mean an individual or Legal Entity
++      exercising permissions granted by this License.
++
++      "Source" form shall mean the preferred form for making modifications,
++      including but not limited to software source code, documentation
++      source, and configuration files.
++
++      "Object" form shall mean any form resulting from mechanical
++      transformation or translation of a Source form, including but
++      not limited to compiled object code, generated documentation,
++      and conversions to other media types.
++
++      "Work" shall mean the work of authorship, whether in Source or
++      Object form, made available under the License, as indicated by a
++      copyright notice that is included in or attached to the work
++      (an example is provided in the Appendix below).
++
++      "Derivative Works" shall mean any work, whether in Source or Object
++      form, that is based on (or derived from) the Work and for which the
++      editorial revisions, annotations, elaborations, or other modifications
++      represent, as a whole, an original work of authorship. For the purposes
++      of this License, Derivative Works shall not include works that remain
++      separable from, or merely link (or bind by name) to the interfaces of,
++      the Work and Derivative Works thereof.
++
++      "Contribution" shall mean any work of authorship, including
++      the original version of the Work and any modifications or additions
++      to that Work or Derivative Works thereof, that is intentionally
++      submitted to Licensor for inclusion in the Work by the copyright owner
++      or by an individual or Legal Entity authorized to submit on behalf of
++      the copyright owner. For the purposes of this definition, "submitted"
++      means any form of electronic, verbal, or written communication sent
++      to the Licensor or its representatives, including but not limited to
++      communication on electronic mailing lists, source code control systems,
++      and issue tracking systems that are managed by, or on behalf of, the
++      Licensor for the purpose of discussing and improving the Work, but
++      excluding communication that is conspicuously marked or otherwise
++      designated in writing by the copyright owner as "Not a Contribution."
++
++      "Contributor" shall mean Licensor and any individual or Legal Entity
++      on behalf of whom a Contribution has been received by Licensor and
++      subsequently incorporated within the Work.
++
++   2. Grant of Copyright License. Subject to the terms and conditions of
++      this License, each Contributor hereby grants to You a perpetual,
++      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
++      copyright license to reproduce, prepare Derivative Works of,
++      publicly display, publicly perform, sublicense, and distribute the
++      Work and such Derivative Works in Source or Object form.
++
++   3. Grant of Patent License. Subject to the terms and conditions of
++      this License, each Contributor hereby grants to You a perpetual,
++      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
++      (except as stated in this section) patent license to make, have made,
++      use, offer to sell, sell, import, and otherwise transfer the Work,
++      where such license applies only to those patent claims licensable
++      by such Contributor that are necessarily infringed by their
++      Contribution(s) alone or by combination of their Contribution(s)
++      with the Work to which such Contribution(s) was submitted. If You
++      institute patent litigation against any entity (including a
++      cross-claim or counterclaim in a lawsuit) alleging that the Work
++      or a Contribution incorporated within the Work constitutes direct
++      or contributory patent infringement, then any patent licenses
++      granted to You under this License for that Work shall terminate
++      as of the date such litigation is filed.
++
++   4. Redistribution. You may reproduce and distribute copies of the
++      Work or Derivative Works thereof in any medium, with or without
++      modifications, and in Source or Object form, provided that You
++      meet the following conditions:
++
++      (a) You must give any other recipients of the Work or
++          Derivative Works a copy of this License; and
++
++      (b) You must cause any modified files to carry prominent notices
++          stating that You changed the files; and
++
++      (c) You must retain, in the Source form of any Derivative Works
++          that You distribute, all copyright, patent, trademark, and
++          attribution notices from the Source form of the Work,
++          excluding those notices that do not pertain to any part of
++          the Derivative Works; and
++
++      (d) If the Work includes a "NOTICE" text file as part of its
++          distribution, then any Derivative Works that You distribute must
++          include a readable copy of the attribution notices contained
++          within such NOTICE file, excluding those notices that do not
++          pertain to any part of the Derivative Works, in at least one
++          of the following places: within a NOTICE text file distributed
++          as part of the Derivative Works; within the Source form or
++          documentation, if provided along with the Derivative Works; or,
++          within a display generated by the Derivative Works, if and
++          wherever such third-party notices normally appear. The contents
++          of the NOTICE file are for informational purposes only and
++          do not modify the License. You may add Your own attribution
++          notices within Derivative Works that You distribute, alongside
++          or as an addendum to the NOTICE text from the Work, provided
++          that such additional attribution notices cannot be construed
++          as modifying the License.
++
++      You may add Your own copyright statement to Your modifications and
++      may provide additional or different license terms and conditions
++      for use, reproduction, or distribution of Your modifications, or
++      for any such Derivative Works as a whole, provided Your use,
++      reproduction, and distribution of the Work otherwise complies with
++      the conditions stated in this License.
++
++   5. Submission of Contributions. Unless You explicitly state otherwise,
++      any Contribution intentionally submitted for inclusion in the Work
++      by You to the Licensor shall be under the terms and conditions of
++      this License, without any additional terms or conditions.
++      Notwithstanding the above, nothing herein shall supersede or modify
++      the terms of any separate license agreement you may have executed
++      with Licensor regarding such Contributions.
++
++   6. Trademarks. This License does not grant permission to use the trade
++      names, trademarks, service marks, or product names of the Licensor,
++      except as required for reasonable and customary use in describing the
++      origin of the Work and reproducing the content of the NOTICE file.
++
++   7. Disclaimer of Warranty. Unless required by applicable law or
++      agreed to in writing, Licensor provides the Work (and each
++      Contributor provides its Contributions) on an "AS IS" BASIS,
++      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
++      implied, including, without limitation, any warranties or conditions
++      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
++      PARTICULAR PURPOSE. You are solely responsible for determining the
++      appropriateness of using or redistributing the Work and assume any
++      risks associated with Your exercise of permissions under this License.
++
++   8. Limitation of Liability. In no event and under no legal theory,
++      whether in tort (including negligence), contract, or otherwise,
++      unless required by applicable law (such as deliberate and grossly
++      negligent acts) or agreed to in writing, shall any Contributor be
++      liable to You for damages, including any direct, indirect, special,
++      incidental, or consequential damages of any character arising as a
++      result of this License or out of the use or inability to use the
++      Work (including but not limited to damages for loss of goodwill,
++      work stoppage, computer failure or malfunction, or any and all
++      other commercial damages or losses), even if such Contributor
++      has been advised of the possibility of such damages.
++
++   9. Accepting Warranty or Additional Liability. While redistributing
++      the Work or Derivative Works thereof, You may choose to offer,
++      and charge a fee for, acceptance of support, warranty, indemnity,
++      or other liability obligations and/or rights consistent with this
++      License. However, in accepting such obligations, You may act only
++      on Your own behalf and on Your sole responsibility, not on behalf
++      of any other Contributor, and only if You agree to indemnify,
++      defend, and hold each Contributor harmless for any liability
++      incurred by, or claims asserted against, such Contributor by reason
++      of your accepting any such warranty or additional liability.
++
++   END OF TERMS AND CONDITIONS
+\ No newline at end of file
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/provider/contract.json b/telephony_core_service/services/multisim/test/systemtest/primary_slot/provider/contract.json
+new file mode 100755
+index 00000000..5db3c714
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/provider/contract.json
+@@ -0,0 +1,640 @@
++{
++  "repository": "https://gitcode.com/openharmony/telephony_telephony_data.git",
++  "commit": "74b8597ecbeea4dd39eacb4a9e7fa22f8a9389b4",
++  "source_files": [
++    {
++      "path": "interfaces/innerkits/include/sim_data.h",
++      "sha256": "f5e1bdb2d0225d76d8117baa01784ce8b28bd8df68812ac0f8607eda07fd62c7"
++    },
++    {
++      "path": "common/include/data_storage_errors.h",
++      "sha256": "e20bbd0347175f95f8e6d81bf36356cd3f27d5f3f68cea86df3aeacc7956da9b"
++    },
++    {
++      "path": "sim/src/rdb_sim_helper.cpp",
++      "sha256": "e87b2b6c21d1b3f08b9b9e40550c2f3699609fe4dde04cd818901670bc8b2623"
++    },
++    {
++      "path": "sim/src/rdb_sim_callback.cpp",
++      "sha256": "93733e3b9cefc6ca51d16d1082bf19236a5df8f4967161f60a4f14f116dc36c2"
++    },
++    {
++      "path": "sim/src/sim_ability.cpp",
++      "sha256": "4c776fe5c802422b51edcc47b2fa09ba442dd08bc81251d4975fcc1e6a90bfc9"
++    },
++    {
++      "path": "sim/include/sim_ability.h",
++      "sha256": "ca61f6f762133cef4074d7810d145fc7b90054e516160e2941783c2fd452a7f1"
++    },
++    {
++      "path": "LICENSE",
++      "sha256": "0cec06e0e55fbc3dc5cee4fca9b607f66cb8f4e4dbcf3b3c013594dd156732e9"
++    },
++    {
++      "path": "common/src/rdb_base_helper.cpp",
++      "sha256": "c1882463a5c7268ee1465df72db1873180b44514b77daea2818b5682f89b76e1"
++    },
++    {
++      "path": "BUILD.gn",
++      "sha256": "b0c7f999e72c9442b72527778a375dfe4ee7932bb1a59e5449db032b0a4bf0ed"
++    },
++    {
++      "path": "bundle.json",
++      "sha256": "e7d37f45b92bd38da6d9d9c4761d10f8294d995f3062e7c0298b8a152f572f3f"
++    }
++  ],
++  "old_host_header": "stubs/include/sim_data.h",
++  "root_cause": "Host pinned an older telephony_data_storage sim/include/sim_data.h; current official component uses interfaces/innerkits/include/sim_data.h. All 14 declarations and SQL columns are present.",
++  "fields": [
++    {
++      "symbol": "PHY_CARD",
++      "column": "phy_card",
++      "schema_evidence": [
++        {
++          "line": 75,
++          "text": "createTableStr.append(SimData::PHY_CARD).append(\" INTEGER DEFAULT 0, \");"
++        }
++      ],
++      "consumer_uses": [
++        {
++          "source": "services/sim/src/card_file_detect_manager.cpp",
++          "function": "CardFileDetectManager::BuildDataShareValues",
++          "line": 58,
++          "text": "values.Put(SimData::PHY_CARD, DataShare::DataShareValueObject(data.phyCard));"
++        },
++        {
++          "source": "services/sim/src/sim_rdb_helper.cpp",
++          "function": "SimRdbHelper::SaveDataToBeanEx",
++          "line": 411,
++          "text": "result->GetColumnIndex(SimData::PHY_CARD, index);"
++        }
++      ],
++      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::PHY_CARD",
++      "migration_evidence": [
++        {
++          "line": 69,
++          "text": "std::string(SimData::PHY_CARD) + \" INTEGER DEFAULT \" + \"0;\");"
++        }
++      ]
++    },
++    {
++      "symbol": "LSI",
++      "column": "lsi",
++      "schema_evidence": [
++        {
++          "line": 76,
++          "text": "createTableStr.append(SimData::LSI).append(\" INTEGER DEFAULT 1, \");"
++        }
++      ],
++      "consumer_uses": [
++        {
++          "source": "services/sim/src/card_file_detect_manager.cpp",
++          "function": "CardFileDetectManager::BuildDataShareValues",
++          "line": 59,
++          "text": "values.Put(SimData::LSI, DataShare::DataShareValueObject(data.lsi));"
++        },
++        {
++          "source": "services/sim/src/sim_rdb_helper.cpp",
++          "function": "SimRdbHelper::SaveDataToBeanEx",
++          "line": 413,
++          "text": "result->GetColumnIndex(SimData::LSI, index);"
++        }
++      ],
++      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::LSI",
++      "migration_evidence": [
++        {
++          "line": 71,
++          "text": "std::string(SimData::LSI) + \" INTEGER DEFAULT \" + \"-1;\");"
++        }
++      ]
++    },
++    {
++      "symbol": "SIM_LABEL_INDEX",
++      "column": "sim_label_index",
++      "schema_evidence": [
++        {
++          "line": 73,
++          "text": "createTableStr.append(SimData::SIM_LABEL_INDEX).append(\" INTEGER DEFAULT 1, \");"
++        }
++      ],
++      "consumer_uses": [
++        {
++          "source": "services/sim/src/card_file_detect_manager.cpp",
++          "function": "CardFileDetectManager::BuildDataShareValues",
++          "line": 62,
++          "text": "values.Put(SimData::SIM_LABEL_INDEX, DataShare::DataShareValueObject(data.phyCard + 1));"
++        },
++        {
++          "source": "services/sim/src/card_file_detect_manager.cpp",
++          "function": "CardFileDetectManager::BuildDataShareValues",
++          "line": 66,
++          "text": "values.Put(SimData::SIM_LABEL_INDEX, DataShare::DataShareValueObject(-1));"
++        },
++        {
++          "source": "services/sim/src/multi_sim_controller.cpp",
++          "function": "MultiSimController::UpdateDataByIccId",
++          "line": 490,
++          "text": "values.Put(SimData::SIM_LABEL_INDEX, labelIndexObj);"
++        },
++        {
++          "source": "services/sim/src/multi_sim_controller.cpp",
++          "function": "MultiSimController::SimDataBuilder",
++          "line": 573,
++          "text": "values.Put(SimData::SIM_LABEL_INDEX, simLabelIndexObj);"
++        },
++        {
++          "source": "services/sim/src/multi_sim_controller.cpp",
++          "function": "MultiSimController::SetSimLabelIndexByIccId",
++          "line": 615,
++          "text": "values.Put(SimData::SIM_LABEL_INDEX, indexObj);"
++        },
++        {
++          "source": "services/sim/src/multi_sim_helper.cpp",
++          "function": "MultiSimHelper::SimDataBuilder",
++          "line": 157,
++          "text": "values.Put(SimData::SIM_LABEL_INDEX, simLabelIndexObj);"
++        },
++        {
++          "source": "services/sim/src/multi_sim_helper.cpp",
++          "function": "MultiSimHelper::BuildSimPresentValues",
++          "line": 186,
++          "text": "values.Put(SimData::SIM_LABEL_INDEX, simLabelIndexObj);"
++        },
++        {
++          "source": "services/sim/src/sim_cache_sync_manager.cpp",
++          "function": "SimCacheSyncManager::BuildDataShareValues",
++          "line": 274,
++          "text": "values.Put(SimData::SIM_LABEL_INDEX, simLabelIndexObj);"
++        },
++        {
++          "source": "services/sim/src/sim_cache_sync_manager.cpp",
++          "function": "SimCacheSyncManager::BuildPartialDataShareValues",
++          "line": 365,
++          "text": "values.Put(SimData::SIM_LABEL_INDEX, labelObj);"
++        },
++        {
++          "source": "services/sim/src/sim_rdb_helper.cpp",
++          "function": "SimRdbHelper::SaveDataToBean",
++          "line": 401,
++          "text": "result->GetColumnIndex(SimData::SIM_LABEL_INDEX, index);"
++        },
++        {
++          "source": "services/sim/src/sim_rdb_helper.cpp",
++          "function": "SimRdbHelper::ForgetAllData",
++          "line": 578,
++          "text": "simLabelValue.Put(SimData::SIM_LABEL_INDEX, valueObj);"
++        },
++        {
++          "source": "services/sim/src/sim_rdb_helper.cpp",
++          "function": "SimRdbHelper::ForgetAllData",
++          "line": 602,
++          "text": "value.Put(SimData::SIM_LABEL_INDEX, valueIndex);"
++        },
++        {
++          "source": "services/sim/src/sim_rdb_helper.cpp",
++          "function": "SimRdbHelper::ClearSimLabel",
++          "line": 630,
++          "text": "predicates.GreaterThan(SimData::SIM_LABEL_INDEX, 0);"
++        },
++        {
++          "source": "services/sim/src/sim_rdb_helper.cpp",
++          "function": "SimRdbHelper::ClearSimLabel",
++          "line": 632,
++          "text": "simLabelValue.Put(SimData::SIM_LABEL_INDEX, valueObj);"
++        },
++        {
++          "source": "services/sim/src/sim_rdb_helper.cpp",
++          "function": "SimRdbHelper::UpdateSimPresent",
++          "line": 678,
++          "text": "values.Put(SimData::SIM_LABEL_INDEX, indexObj);"
++        }
++      ],
++      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::SIM_LABEL_INDEX",
++      "migration_evidence": [
++        {
++          "line": 50,
++          "text": "std::string(SimData::SIM_LABEL_INDEX) + \" INTEGER DEFAULT \" + \"1;\");"
++        }
++      ]
++    },
++    {
++      "symbol": "IS_ESIM",
++      "column": "is_esim",
++      "schema_evidence": [
++        {
++          "line": 72,
++          "text": "createTableStr.append(SimData::IS_ESIM).append(\" INTEGER DEFAULT 0, \");"
++        }
++      ],
++      "consumer_uses": [
++        {
++          "source": "services/sim/src/card_file_detect_manager.cpp",
++          "function": "CardFileDetectManager::BuildDataShareValues",
++          "line": 63,
++          "text": "values.Put(SimData::IS_ESIM, DataShare::DataShareValueObject(0));"
++        },
++        {
++          "source": "services/sim/src/card_file_detect_manager.cpp",
++          "function": "CardFileDetectManager::BuildDataShareValues",
++          "line": 68,
++          "text": "values.Put(SimData::IS_ESIM, DataShare::DataShareValueObject(1));"
++        },
++        {
++          "source": "services/sim/src/multi_sim_controller.cpp",
++          "function": "MultiSimController::SimDataBuilder",
++          "line": 572,
++          "text": "values.Put(SimData::IS_ESIM, isEsimObj);"
++        },
++        {
++          "source": "services/sim/src/multi_sim_helper.cpp",
++          "function": "MultiSimHelper::SimDataBuilder",
++          "line": 156,
++          "text": "values.Put(SimData::IS_ESIM, isEsimObj);"
++        },
++        {
++          "source": "services/sim/src/multi_sim_helper.cpp",
++          "function": "MultiSimHelper::BuildSimPresentValues",
++          "line": 187,
++          "text": "values.Put(SimData::IS_ESIM, isEsimObj);"
++        },
++        {
++          "source": "services/sim/src/sim_cache_sync_manager.cpp",
++          "function": "SimCacheSyncManager::BuildDataShareValues",
++          "line": 271,
++          "text": "values.Put(SimData::IS_ESIM, isEsimObj);"
++        },
++        {
++          "source": "services/sim/src/sim_cache_sync_manager.cpp",
++          "function": "SimCacheSyncManager::BuildPartialDataShareValues",
++          "line": 386,
++          "text": "values.Put(SimData::IS_ESIM, esimObj);"
++        },
++        {
++          "source": "services/sim/src/sim_rdb_helper.cpp",
++          "function": "SimRdbHelper::SaveDataToBean",
++          "line": 399,
++          "text": "result->GetColumnIndex(SimData::IS_ESIM, index);"
++        },
++        {
++          "source": "services/sim/src/sim_rdb_helper.cpp",
++          "function": "SimRdbHelper::ForgetAllData",
++          "line": 561,
++          "text": "predicates1.EqualTo(SimData::IS_ESIM, std::to_string(0));"
++        },
++        {
++          "source": "services/sim/src/sim_rdb_helper.cpp",
++          "function": "SimRdbHelper::ForgetAllData",
++          "line": 575,
++          "text": "predicates2.EqualTo(SimData::IS_ESIM, std::to_string(0));"
++        },
++        {
++          "source": "services/sim/src/sim_rdb_helper.cpp",
++          "function": "SimRdbHelper::ClearSimLabel",
++          "line": 629,
++          "text": "predicates.EqualTo(SimData::IS_ESIM, std::to_string(isEsim));"
++        }
++      ],
++      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::IS_ESIM",
++      "migration_evidence": [
++        {
++          "line": 48,
++          "text": "std::string(SimData::IS_ESIM) + \" INTEGER DEFAULT \" + \"0;\");"
++        }
++      ]
++    },
++    {
++      "symbol": "MNC_LEN",
++      "column": "mnc_len",
++      "schema_evidence": [
++        {
++          "line": 77,
++          "text": "createTableStr.append(SimData::MNC_LEN).append(\" INTEGER DEFAULT 1, \");"
++        }
++      ],
++      "consumer_uses": [
++        {
++          "source": "services/sim/src/card_file_detect_manager.cpp",
++          "function": "CardFileDetectManager::BuildDataShareValues",
++          "line": 72,
++          "text": "values.Put(SimData::MNC_LEN, DataShare::DataShareValueObject(data.mncLen));"
++        },
++        {
++          "source": "services/sim/src/sim_rdb_helper.cpp",
++          "function": "SimRdbHelper::SaveDataToBeanEx",
++          "line": 415,
++          "text": "result->GetColumnIndex(SimData::MNC_LEN, index);"
++        }
++      ],
++      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::MNC_LEN",
++      "migration_evidence": [
++        {
++          "line": 73,
++          "text": "std::string(SimData::MNC_LEN) + \" INTEGER DEFAULT \" + \"-1;\");"
++        }
++      ]
++    },
++    {
++      "symbol": "OPERATOR_NAME",
++      "column": "operator_name",
++      "schema_evidence": [
++        {
++          "line": 74,
++          "text": "createTableStr.append(SimData::OPERATOR_NAME).append(\" TEXT DEFAULT '', \");"
++        }
++      ],
++      "consumer_uses": [
++        {
++          "source": "services/sim/src/multi_sim_controller.cpp",
++          "function": "MultiSimController::InsertEsimData",
++          "line": 549,
++          "text": "values.Put(SimData::OPERATOR_NAME, operatorNameObj);"
++        },
++        {
++          "source": "services/sim/src/sim_cache_sync_manager.cpp",
++          "function": "SimCacheSyncManager::BuildDataShareValues",
++          "line": 289,
++          "text": "values.Put(SimData::OPERATOR_NAME, operatorNameObj);"
++        },
++        {
++          "source": "services/sim/src/sim_cache_sync_manager.cpp",
++          "function": "SimCacheSyncManager::BuildPartialDataShareValues",
++          "line": 368,
++          "text": "values.Put(SimData::OPERATOR_NAME, opNameObj);"
++        },
++        {
++          "source": "services/sim/src/sim_rdb_helper.cpp",
++          "function": "SimRdbHelper::SaveDataToBean",
++          "line": 403,
++          "text": "result->GetColumnIndex(SimData::OPERATOR_NAME, index);"
++        },
++        {
++          "source": "services/sim/src/sim_rdb_helper.cpp",
++          "function": "SimRdbHelper::UpdateEsimOpName",
++          "line": 655,
++          "text": "valuesBucket.Put(SimData::OPERATOR_NAME, valueObj);"
++        }
++      ],
++      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::OPERATOR_NAME",
++      "migration_evidence": [
++        {
++          "line": 52,
++          "text": "std::string(SimData::OPERATOR_NAME) + \" TEXT DEFAULT \" + \" '' ;\");"
++        }
++      ]
++    },
++    {
++      "symbol": "MCC",
++      "column": "mcc",
++      "schema_evidence": [
++        {
++          "line": 70,
++          "text": "createTableStr.append(SimData::MCC).append(\" TEXT DEFAULT '', \");"
++        }
++      ],
++      "consumer_uses": [
++        {
++          "source": "services/sim/src/operator_config_loader.cpp",
++          "function": "OperatorConfigLoader::InsertOpkeyToSimDb",
++          "line": 120,
++          "text": "values.Put(SimData::MCC, mccObj);"
++        }
++      ],
++      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::MCC",
++      "migration_evidence": [
++        {
++          "line": 41,
++          "text": "std::string(SimData::MCC) + \" TEXT DEFAULT \" + \" '' ;\");"
++        }
++      ]
++    },
++    {
++      "symbol": "MNC",
++      "column": "mnc",
++      "schema_evidence": [
++        {
++          "line": 71,
++          "text": "createTableStr.append(SimData::MNC).append(\" TEXT DEFAULT '', \");"
++        }
++      ],
++      "consumer_uses": [
++        {
++          "source": "services/sim/src/operator_config_loader.cpp",
++          "function": "OperatorConfigLoader::InsertOpkeyToSimDb",
++          "line": 121,
++          "text": "values.Put(SimData::MNC, mncObj);"
++        }
++      ],
++      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::MNC",
++      "migration_evidence": [
++        {
++          "line": 43,
++          "text": "std::string(SimData::MNC) + \" TEXT DEFAULT \" + \" '' ;\");"
++        }
++      ]
++    },
++    {
++      "symbol": "GID1",
++      "column": "gid1",
++      "schema_evidence": [
++        {
++          "line": 79,
++          "text": "createTableStr.append(SimData::GID1).append(\" TEXT DEFAULT '', \");"
++        }
++      ],
++      "consumer_uses": [
++        {
++          "source": "services/sim/src/card_file_detect_manager.cpp",
++          "function": "CardFileDetectManager::BuildDataShareValues",
++          "line": 79,
++          "text": "PutString(SimData::GID1, data.gid1);"
++        },
++        {
++          "source": "services/sim/src/sim_rdb_helper.cpp",
++          "function": "SimRdbHelper::SaveDataToBeanEx",
++          "line": 417,
++          "text": "result->GetColumnIndex(SimData::GID1, index);"
++        }
++      ],
++      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::GID1",
++      "migration_evidence": [
++        {
++          "line": 77,
++          "text": "std::string(SimData::GID1) + \" TEXT DEFAULT \" + \" '' ;\");"
++        }
++      ]
++    },
++    {
++      "symbol": "GID2",
++      "column": "gid2",
++      "schema_evidence": [
++        {
++          "line": 80,
++          "text": "createTableStr.append(SimData::GID2).append(\" TEXT DEFAULT '', \");"
++        }
++      ],
++      "consumer_uses": [
++        {
++          "source": "services/sim/src/card_file_detect_manager.cpp",
++          "function": "CardFileDetectManager::BuildDataShareValues",
++          "line": 80,
++          "text": "PutString(SimData::GID2, data.gid2);"
++        },
++        {
++          "source": "services/sim/src/sim_rdb_helper.cpp",
++          "function": "SimRdbHelper::SaveDataToBeanEx",
++          "line": 419,
++          "text": "result->GetColumnIndex(SimData::GID2, index);"
++        }
++      ],
++      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::GID2",
++      "migration_evidence": [
++        {
++          "line": 79,
++          "text": "std::string(SimData::GID2) + \" TEXT DEFAULT \" + \" '' ;\");"
++        }
++      ]
++    },
++    {
++      "symbol": "SPN",
++      "column": "spn",
++      "schema_evidence": [
++        {
++          "line": 81,
++          "text": "createTableStr.append(SimData::SPN).append(\" TEXT DEFAULT '', \");"
++        }
++      ],
++      "consumer_uses": [
++        {
++          "source": "services/sim/src/card_file_detect_manager.cpp",
++          "function": "CardFileDetectManager::BuildDataShareValues",
++          "line": 81,
++          "text": "PutString(SimData::SPN, data.spn);"
++        },
++        {
++          "source": "services/sim/src/sim_rdb_helper.cpp",
++          "function": "SimRdbHelper::SaveDataToBeanEx",
++          "line": 421,
++          "text": "result->GetColumnIndex(SimData::SPN, index);"
++        }
++      ],
++      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::SPN",
++      "migration_evidence": [
++        {
++          "line": 81,
++          "text": "std::string(SimData::SPN) + \" TEXT DEFAULT \" + \" '' ;\");"
++        }
++      ]
++    },
++    {
++      "symbol": "OPKEY",
++      "column": "opkey",
++      "schema_evidence": [
++        {
++          "line": 69,
++          "text": "createTableStr.append(SimData::OPKEY).append(\" TEXT DEFAULT '', \");"
++        }
++      ],
++      "consumer_uses": [
++        {
++          "source": "services/sim/src/operator_config_loader.cpp",
++          "function": "OperatorConfigLoader::InsertOpkeyToSimDb",
++          "line": 119,
++          "text": "values.Put(SimData::OPKEY, opkeyObj);"
++        },
++        {
++          "source": "services/sim/src/sim_rdb_helper.cpp",
++          "function": "SimRdbHelper::UpdateOpKeyInfo",
++          "line": 85,
++          "text": "valuesBucket.Put(SimData::OPKEY, valueObj);"
++        }
++      ],
++      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::OPKEY",
++      "migration_evidence": [
++        {
++          "line": 39,
++          "text": "std::string(SimData::OPKEY) + \" TEXT DEFAULT \" + \" '' ;\");"
++        }
++      ]
++    },
++    {
++      "symbol": "EHPLMN",
++      "column": "ehplmn",
++      "schema_evidence": [
++        {
++          "line": 82,
++          "text": "createTableStr.append(SimData::EHPLMN).append(\" TEXT DEFAULT '', \");"
++        }
++      ],
++      "consumer_uses": [
++        {
++          "source": "services/sim/src/card_file_detect_manager.cpp",
++          "function": "CardFileDetectManager::BuildDataShareValues",
++          "line": 82,
++          "text": "PutString(SimData::EHPLMN, data.ehplmn);"
++        },
++        {
++          "source": "services/sim/src/sim_rdb_helper.cpp",
++          "function": "SimRdbHelper::SaveDataToBeanEx",
++          "line": 423,
++          "text": "result->GetColumnIndex(SimData::EHPLMN, index);"
++        }
++      ],
++      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::EHPLMN",
++      "migration_evidence": [
++        {
++          "line": 83,
++          "text": "std::string(SimData::EHPLMN) + \" TEXT DEFAULT \" + \" '' ;\");"
++        }
++      ]
++    },
++    {
++      "symbol": "EFUST",
++      "column": "efust",
++      "schema_evidence": [
++        {
++          "line": 78,
++          "text": "createTableStr.append(SimData::EFUST).append(\" TEXT DEFAULT '', \");"
++        }
++      ],
++      "consumer_uses": [
++        {
++          "source": "services/sim/src/card_file_detect_manager.cpp",
++          "function": "CardFileDetectManager::BuildDataShareValues",
++          "line": 77,
++          "text": "PutString(SimData::EFUST, data.efust);"
++        }
++      ],
++      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::EFUST",
++      "migration_evidence": [
++        {
++          "line": 75,
++          "text": "std::string(SimData::EFUST) + \" TEXT DEFAULT \" + \" '' ;\");"
++        }
++      ]
++    }
++  ],
++  "uri": {
++    "base": "datashare:///com.ohos.simability",
++    "query_path": "/sim/sim_info",
++    "normalization": "SimAbility::ParseUriType replaces :/// with :// then maps path",
++    "evidence": "sim/src/sim_ability.cpp:43-45,321-338"
++  },
++  "io_semantics": {
++    "Insert": "row id or DATA_STORAGE_ERROR (-1); permission error -3",
++    "Query": "result set or nullptr; not an empty result by default",
++    "Update": "SimAbility::Update returns helper_.Update result, not changedRows; RdbBaseHelper::Update delegates NativeRdb::RdbStore::Update status. Fixture explicitly returns OPERATION_OK=0 only after applying requested column updates.",
++    "database": "sim_info columns verified; Host does not claim durable Provider transactions or permissions"
++  },
++  "schema_excerpt": "void RdbSimHelper::CreateSimInfoTableStr(std::string &createTableStr)\n{\n    createTableStr.append(\"CREATE TABLE IF NOT EXISTS \").append(TABLE_SIM_INFO);\n    createTableStr.append(\"(\").append(SimData::SIM_ID).append(\" INTEGER PRIMARY KEY AUTOINCREMENT, \");\n    createTableStr.append(SimData::ICC_ID).append(\" TEXT NOT NULL, \");\n    createTableStr.append(SimData::CARD_ID).append(\" TEXT NOT NULL, \");\n    createTableStr.append(SimData::SLOT_INDEX).append(\" INTEGER DEFAULT -1, \");\n    createTableStr.append(SimData::SHOW_NAME).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::PHONE_NUMBER).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::COUNTRY_CODE).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::IMSI).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::IS_MAIN_CARD).append(\" INTEGER DEFAULT 0, \");\n    createTableStr.append(SimData::IS_VOICE_CARD).append(\" INTEGER DEFAULT 0, \");\n    createTableStr.append(SimData::IS_MESSAGE_CARD).append(\" INTEGER DEFAULT 0, \");\n    createTableStr.append(SimData::IS_CELLULAR_DATA_CARD).append(\" INTEGER DEFAULT 0, \");\n    createTableStr.append(SimData::IS_ACTIVE).append(\" INTEGER DEFAULT 1, \");\n    createTableStr.append(SimData::CARD_TYPE).append(\" INTEGER , \");\n    createTableStr.append(SimData::IMS_SWITCH).append(\" INTEGER DEFAULT -1, \");\n    createTableStr.append(SimData::LANGUAGE).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::OPKEY).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::MCC).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::MNC).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::IS_ESIM).append(\" INTEGER DEFAULT 0, \");\n    createTableStr.append(SimData::SIM_LABEL_INDEX).append(\" INTEGER DEFAULT 1, \");\n    createTableStr.append(SimData::OPERATOR_NAME).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::PHY_CARD).append(\" INTEGER DEFAULT 0, \");\n    createTableStr.append(SimData::LSI).append(\" INTEGER DEFAULT 1, \");\n    createTableStr.append(SimData::MNC_LEN).append(\" INTEGER DEFAULT 1, \");\n    createTableStr.append(SimData::EFUST).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::GID1).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::GID2).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::SPN).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::EHPLMN).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(\"UNIQUE (\");\n    createTableStr.append(SimData::ICC_ID).append(\", \");\n    createTableStr.append(SimData::CARD_ID).append(\"))\");\n}",
++  "schema_caution": "CreateSimInfoTableStr defaults and ALTER migration defaults differ (notably LSI). Host fixtures specify each scenario explicitly; no schema upgrade/durability is simulated.",
++  "uri_evidence": {
++    "provider": "sim/src/sim_ability.cpp:43-45 maps /sim/sim_info and /sim/sim_info/set_card; ParseUriType normalizes datashare:///",
++    "consumer": "services/sim/include/sim_rdb_info.h SIM_RDB_SELECTION; services/sim/include/telephony_data_helper.h SIM_URI"
++  },
++  "fork_dependency_evidence": [
++    "bundle.json:77 requires telephony_data",
++    "BUILD.gn:256 external_deps telephony_data:tel_telephony_data",
++    "Provider BUILD.gn exports interfaces/innerkits/include"
++  ],
++  "matching_product_release": "NOT_VERIFIED: public telephony_data component contract and all current consumer symbols/schema verified; no OHOS product manifest/ABI integration claim"
++}
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/provider/include/data_storage_errors.h b/telephony_core_service/services/multisim/test/systemtest/primary_slot/provider/include/data_storage_errors.h
+new file mode 100755
+index 00000000..54b5c4b5
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/provider/include/data_storage_errors.h
+@@ -0,0 +1,56 @@
++/*
++ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++#ifndef STATE_REGISTRY_ERRORS_H
++#define STATE_REGISTRY_ERRORS_H
++
++#include <errors.h>
++
++namespace OHOS {
++namespace Telephony {
++constexpr int64_t TELEPHONY_DATA_STORAGE = 0x10;
++// error codes
++constexpr int OPERATION_ERROR = -1;
++constexpr int OPERATION_OK = 0;
++constexpr int RDB_OBJECT_EMPTY = -2;
++constexpr int PARAMETER_EMPTY = -3;
++
++// Error code for telephony data storage
++constexpr ErrCode CORE_DATA_STORAGE_ERR_OFFSET = ErrCodeOffset(SUBSYS_TELEPONY, TELEPHONY_DATA_STORAGE);
++const int VERSION_NO_CHANGE = -2;
++const int DATA_STORAGE_ERROR = -1;
++const int DATA_STORAGE_ERR_PERMISSION_ERR = -3;
++const int FILE_HASH_NO_CHANGE = -4;
++const int DATA_STORAGE_SUCCESS = 0;
++enum class LoadProFileErrorType {
++    OPEN_FILE_ERROR = CORE_DATA_STORAGE_ERR_OFFSET,
++    CLOSE_FILE_ERROR,
++    LOAD_FILE_ERROR,
++    FILE_PARSER_ERROR,
++    ITEM_SIZE_IS_NULL,
++    SAVE_APN_VERSION_FAIL,
++    TEL_PROFILE_UTIL_IS_NULL,
++    PDP_PROFILE_VERSION_IS_NULL,
++    PDP_PROFILE_VERSION_IS_OLD,
++    OPERATOR_IS_NULL,
++    RESET_APN_FAIL,
++    PREFER_APN_FAIL,
++    DELETE_THIRTY_DATA_FAIL,
++    SET_CARD_FAIL,
++    REALPATH_FAIL
++};
++} // namespace Telephony
++} // namespace OHOS
++#endif // STATE_REGISTRY_ERRORS_H
+\ No newline at end of file
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/provider/include/sim_data.h b/telephony_core_service/services/multisim/test/systemtest/primary_slot/provider/include/sim_data.h
+new file mode 100755
+index 00000000..a95269ee
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/provider/include/sim_data.h
+@@ -0,0 +1,149 @@
++/*
++ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++#ifndef DATA_STORAGE_SIM_DATA_H
++#define DATA_STORAGE_SIM_DATA_H
++
++namespace OHOS {
++namespace Telephony {
++class SimData {
++public:
++    /**
++     * @brief SIM Id of the SIM card
++     */
++    static constexpr const char *SIM_ID = "sim_id";
++    /**
++     * @brief ICCID of the SIM card
++     */
++    static constexpr const char *ICC_ID = "icc_id";
++    /**
++     * @brief ICCID of the SIM or eid of eSIM
++     */
++    static constexpr const char *CARD_ID = "card_id";
++    /**
++     * @brief Card slot index number
++     */
++    static constexpr const char *SLOT_INDEX = "slot_index";
++    /**
++     * @brief Show name of the SIM card
++     */
++    static constexpr const char *SHOW_NAME = "show_name";
++    /**
++     * @brief Phone number of the SIM card
++     */
++    static constexpr const char *PHONE_NUMBER = "phone_number";
++    /**
++     * @brief Country code of the SIM card
++     */
++    static constexpr const char *COUNTRY_CODE = "country_code";
++    /**
++     * @brief Language of the SIM card
++     */
++    static constexpr const char *LANGUAGE = "language";
++    /**
++     * @brief International mobile subscriber ID
++     */
++    static constexpr const char *IMSI = "imsi";
++    /**
++     * @brief The type of the SIM card
++     */
++    static constexpr const char *CARD_TYPE = "card_type";
++    /**
++     * @brief Wwitch of ims
++     */
++    static constexpr const char *IMS_SWITCH = "ims_switch";
++    /**
++     * @brief Active or not
++     */
++    static constexpr const char *IS_ACTIVE = "is_active";
++    /**
++     * @brief Main card or not
++     */
++    static constexpr const char *IS_MAIN_CARD = "is_main_card";
++    /**
++     * @brief Voice card or not
++     */
++    static constexpr const char *IS_VOICE_CARD = "is_voice_card";
++    /**
++     * @brief Message card or not
++     */
++    static constexpr const char *IS_MESSAGE_CARD = "is_message_card";
++    /**
++     * @brief Cellular data card or not
++     */
++    static constexpr const char *IS_CELLULAR_DATA_CARD = "is_cellular_data_card";
++    /**
++     * @brief The opkey of sim
++     */
++    static constexpr const char *OPKEY = "opkey";
++    /**
++     * @brief The mcc of sim
++     */
++    static constexpr const char *MCC = "mcc";
++    /**
++     * @brief The mnc of sim
++     */
++    static constexpr const char *MNC = "mnc";
++    /**
++     * @brief Is sim or not
++     */
++    static constexpr const char *IS_ESIM = "is_esim";
++    /**
++     * @brief The index of sim label
++     */
++    static constexpr const char *SIM_LABEL_INDEX = "sim_label_index";
++    /**
++     * @brief The operator name of esim
++     */
++    static constexpr const char *OPERATOR_NAME = "operator_name";
++    /**
++     * @brief Physical card index
++     */
++    static constexpr const char *PHY_CARD = "phy_card";
++    /**
++     * @brief Logical slot index
++     */
++    static constexpr const char *LSI = "lsi";
++    /**
++     * @brief MNC length of the SIM card
++     */
++    static constexpr const char *MNC_LEN = "mnc_len";
++    /**
++     * @brief Efuse the SIM card
++     */
++    static constexpr const char *EFUST = "efust";
++    /**
++     * @brief Group identifier level 1 of the SIM card
++     */
++    static constexpr const char *GID1 = "gid1";
++    /**
++     * @brief Group identifier level 2 of the SIM card
++     */
++    static constexpr const char *GID2 = "gid2";
++    /**
++     * @brief Service provider name of the SIM card
++     */
++    static constexpr const char *SPN = "spn";
++    /**
++     * @brief Equivalent home PLMN of the SIM card
++     */
++    static constexpr const char *EHPLMN = "ehplmn";
++};
++
++constexpr const char *TABLE_SIM_INFO = "sim_info";
++constexpr const char *SIM_URI = "datashare:///com.ohos.simability";
++} // namespace Telephony
++} // namespace OHOS
++#endif // DATA_STORAGE_SIM_DATA_H
+\ No newline at end of file
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_runtime.cpp b/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_runtime.cpp
+new file mode 100755
+index 00000000..df2af03c
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_runtime.cpp
+@@ -0,0 +1,147 @@
++// Linux external runtime bridges. SIM/CoreManager/Controller implementations are production sources.
++#include "sim_manager.h"
++#include "pdp_profile_rdb_helper.h"
++#include "telephony_data_helper.h"
++#include "tel_event_handler.h"
++#include "telephony_state_registry_client.h"
++#include "parameter.h"
++#include "parameters.h"
++#include "config_policy_utils.h"
++#include "ability_manager_client.h"
++#include <stdexcept>
++#include <codecvt>
++#include <locale>
++#include <iostream>
++#include "ipc_skeleton.h"
++namespace Sim028Host {
++void Diagnostic(const std::string &name) { std::cout << "DIAGNOSTIC " << name << '\n'; }
++}
++namespace OHOS {
++// Original classes explicitly friend the platform singleton; normal constructors/destructors run.
++template<> std::shared_ptr<Telephony::TelephonyDataHelper> DelayedSingleton<Telephony::TelephonyDataHelper>::GetInstance()
++{
++    static auto instance = std::shared_ptr<Telephony::TelephonyDataHelper>(new Telephony::TelephonyDataHelper,
++        [](auto *p) { delete p; });
++    return instance;
++}
++template<> std::shared_ptr<Telephony::PdpProfileRdbHelper> DelayedSingleton<Telephony::PdpProfileRdbHelper>::GetInstance()
++{
++    static auto instance = std::shared_ptr<Telephony::PdpProfileRdbHelper>(new Telephony::PdpProfileRdbHelper,
++        [](auto *p) { delete p; });
++    return instance;
++}
++int32_t IPCSkeleton::GetCallingUid() { return 1001; }
++int32_t IPCSkeleton::GetCallingPid() { return 101; }
++SystemAbilityManagerClient &SystemAbilityManagerClient::GetInstance()
++{ static SystemAbilityManagerClient instance; return instance; }
++sptr<ISystemAbilityManager> SystemAbilityManagerClient::GetSystemAbilityManager()
++{ static auto instance = sptr<ISystemAbilityManager>(new ISystemAbilityManager); return instance; }
++sptr<IRemoteObject> ISystemAbilityManager::GetSystemAbility(int32_t id)
++{
++    if (id != TELEPHONY_CORE_SERVICE_SYS_ABILITY_ID) return nullptr;
++    static auto token = sptr<IRemoteObject>(new IRemoteObject);
++    return token; // Creator identity token only: no SA/Binder dispatch.
++}
++int32_t ISystemAbilityManager::SubscribeSystemAbility(int32_t, const sptr<ISystemAbilityStatusChange> &)
++{ return -1; }
++int32_t ISystemAbilityManager::UnSubscribeSystemAbility(int32_t, const sptr<ISystemAbilityStatusChange> &)
++{ return -1; }
++namespace AppExecFwk {
++std::shared_ptr<EventRunner> EventRunner::Create(const std::string &, ThreadMode)
++{ return std::make_shared<EventRunner>(); }
++namespace {
++std::unique_ptr<ffrt::queue> &RunnerOwner() { static std::unique_ptr<ffrt::queue> q; return q; }
++ffrt::queue &RunnerQueue() {
++    auto &q = RunnerOwner(); if (!q) q = std::make_unique<ffrt::queue>("sim028-platform-runner"); return *q;
++}
++}
++void StopSim028ExternalRunner() { RunnerOwner().reset(); }
++bool EventHandler::SendEvent(InnerEvent::Pointer &event, int64_t delay, EventQueue::Priority priority)
++{
++    if (auto tel = std::dynamic_pointer_cast<Telephony::TelEventHandler>(shared_from_this()))
++        return tel->SendEvent(event, delay, priority);
++    if (!event) return false;
++    std::weak_ptr<EventHandler> owner = shared_from_this();
++    auto envelope = std::make_shared<InnerEvent::Pointer>(std::move(event));
++    RunnerQueue().submit_h([owner, envelope] { if (auto target = owner.lock()) target->ProcessEvent(*envelope); },
++        ffrt::task_attr().delay(delay * 1000));
++    return true;
++}
++bool EventHandler::PostTask(const std::function<void()> &task, const std::string &, int64_t delay)
++{
++    RunnerQueue().submit_h(task, ffrt::task_attr().delay(delay * 1000));
++    return true;
++}
++bool Configuration::AddItem(const std::string &, const std::string &) { return false; }
++int32_t AppMgrClient::UpdateConfiguration(const Configuration &) { return -1; }
++}
++namespace Telephony {
++TelephonyStateRegistryClient::TelephonyStateRegistryClient() = default;
++TelephonyStateRegistryClient::~TelephonyStateRegistryClient() = default;
++int32_t TelephonyStateRegistryClient::UpdateSimState(int32_t, CardType, SimState, LockReason)
++{ return -1; }
++int32_t TelephonyStateRegistryClient::UpdateIccAccount() { Sim028Host::Diagnostic("ACCOUNT_NOTIFY"); return 0; }
++int32_t TelephonyStateRegistryClient::UpdateCfuIndicator(int32_t, bool) { return -1; }
++int32_t TelephonyStateRegistryClient::UpdateVoiceMailMsgIndicator(int32_t, bool) { return -1; }
++}
++namespace system {
++std::string GetParameter(const std::string &key, const std::string &fallback)
++{
++    char value[256] = {};
++    int result = ::GetParameter(key.c_str(), fallback.c_str(), value, sizeof(value));
++    return result < 0 ? fallback : std::string(value);
++}
++bool GetBoolParameter(const std::string &key, bool fallback)
++{
++    auto value = GetParameter(key, fallback ? "true" : "false");
++    return value == "true" || value == "1" || value == "yes" || value == "on" || value == "y";
++}
++bool SetParameter(const std::string &key, const std::string &value)
++{ return ::SetParameter(key.c_str(), value.c_str()) == 0; }
++template<> int GetIntParameter<int>(const std::string &key, int fallback, int minimum, int maximum)
++{
++    int value;
++    if (!StrToInt(GetParameter(key, ""), value) || value < minimum || value > maximum) return fallback;
++    return value;
++}
++}
++namespace AAFwk {
++std::shared_ptr<AbilityManagerClient> AbilityManagerClient::GetInstance()
++{ static auto instance = std::make_shared<AbilityManagerClient>(); return instance; }
++int32_t AbilityManagerClient::StartExtensionAbility(const Want &, sptr<IRemoteObject>, int,
++    AppExecFwk::ExtensionAbilityType) { return -1; }
++}
++}
++extern "C" int32_t GetIntParameter(const char *key, int32_t fallback)
++{ return OHOS::system::GetIntParameter<int>(key, fallback); }
++extern "C" int WatchParameter(const char *, ParameterChgPtr, void *) { return -1; }
++extern "C" int RemoveParameterWatcher(const char *, ParameterChgPtr, void *) { return -1; }
++extern "C" CfgFiles *GetCfgFilesEx(const char *, int, const char *) { return nullptr; }
++extern "C" void FreeCfgFiles(CfgFiles *) {}
++// Serialization is not reached by this business slice. Fail explicitly if it is.
++namespace OHOS {
++#define UNSUPPORTED_PARCEL(ret, method, args) ret Parcel::method args { throw std::logic_error("Host Parcel: " #method " unsupported"); }
++UNSUPPORTED_PARCEL(bool, WriteInt32, (int32_t))
++UNSUPPORTED_PARCEL(bool, ReadInt32, (int32_t &))
++UNSUPPORTED_PARCEL(int32_t, ReadInt32, ())
++UNSUPPORTED_PARCEL(bool, WriteInt64, (int64_t))
++UNSUPPORTED_PARCEL(int64_t, ReadInt64, ())
++UNSUPPORTED_PARCEL(bool, WriteBool, (bool))
++UNSUPPORTED_PARCEL(bool, ReadBool, (bool &))
++UNSUPPORTED_PARCEL(bool, ReadBool, ())
++UNSUPPORTED_PARCEL(bool, WriteString, (const std::string &))
++UNSUPPORTED_PARCEL(std::string, ReadString, ())
++UNSUPPORTED_PARCEL(bool, ReadString, (std::string &))
++UNSUPPORTED_PARCEL(bool, WriteString16, (const std::u16string &))
++UNSUPPORTED_PARCEL(std::u16string, ReadString16, ())
++UNSUPPORTED_PARCEL(bool, ReadString16, (std::u16string &))
++UNSUPPORTED_PARCEL(bool, WriteStringVector, (const std::vector<std::string> &))
++UNSUPPORTED_PARCEL(bool, ReadStringVector, (std::vector<std::string> *))
++UNSUPPORTED_PARCEL(bool, WriteInt32Vector, (const std::vector<int32_t> &))
++UNSUPPORTED_PARCEL(bool, ReadInt32Vector, (std::vector<int32_t> *))
++UNSUPPORTED_PARCEL(bool, WriteInt64Vector, (const std::vector<int64_t> &))
++UNSUPPORTED_PARCEL(bool, ReadInt64Vector, (std::vector<int64_t> *))
++#undef UNSUPPORTED_PARCEL
++}
++
++namespace Sim028Host { void StopExternalRunner() { OHOS::AppExecFwk::StopSim028ExternalRunner(); } }
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h b/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h
+new file mode 100755
+index 00000000..9d44f9c5
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h
+@@ -0,0 +1,299 @@
++#pragma once
++#include "sim_manager.h"
++#include "core_service_sim.h"
++#include "core_manager_inner.h"
++#include "mock_tel_ril_manager.h"
++#include "external_services_mock.h"
++#include "parameter_mock.h"
++#include "security_boundary.h"
++#include "ffrt_runtime.h"
++#include "radio_event.h"
++#include "tel_ril_sim_parcel.h"
++#include "sim_data.h"
++#include "sim_data_type.h"
++#include "sim_constant.h"
++#include "multi_sim_controller.h"
++#include "radio_protocol_controller.h"
++#include "telephony_permission.h"
++#include <mutex>
++#include <condition_variable>
++#include <thread>
++#include <map>
++#include <regex>
++namespace Sim028Host {
++using namespace OHOS;
++using namespace OHOS::Telephony;
++using namespace std::chrono_literals;
++using testing::_;
++using Value = DataShare::DataShareValueObject::Type;
++// External relational row storage only: no SIM state transitions, selection, or business decisions.
++class ProviderRow {
++public:
++    std::map<std::string, Value> cells;
++    ProviderRow()
++    {
++        for (const auto &column : {SimData::SIM_ID, SimData::SLOT_INDEX, SimData::IMS_SWITCH,
++            SimData::CARD_TYPE, SimData::IS_MAIN_CARD, SimData::IS_VOICE_CARD, SimData::IS_MESSAGE_CARD,
++            SimData::IS_CELLULAR_DATA_CARD, SimData::IS_ACTIVE, SimData::IS_ESIM, SimData::SIM_LABEL_INDEX,
++            SimData::PHY_CARD, SimData::LSI, SimData::MNC_LEN}) cells[column] = int64_t(0);
++        for (const auto &column : {SimData::ICC_ID, SimData::CARD_ID, SimData::SHOW_NAME,
++            SimData::PHONE_NUMBER, SimData::COUNTRY_CODE, SimData::LANGUAGE, SimData::IMSI,
++            SimData::OPERATOR_NAME, SimData::GID1, SimData::GID2, SimData::SPN, SimData::EHPLMN})
++            cells[column] = std::string();
++        cells[SimData::SIM_ID] = int64_t(1);
++        cells[SimData::SLOT_INDEX] = int64_t(-1); // known account, not yet bound after restart
++        cells[SimData::IS_ACTIVE] = int64_t(1); // persisted user activation
++        cells[SimData::ICC_ID] = std::string("8900000000000000001");
++    }
++    static std::string Text(const Value &value)
++    {
++        if (const auto *p = std::get_if<std::string>(&value)) return *p;
++        if (const auto *p = std::get_if<int64_t>(&value)) return std::to_string(*p);
++        throw std::logic_error("Provider fixture supports string/integer cells only");
++    }
++    bool Matches(const DataShare::DataSharePredicates &predicate) const
++    {
++        for (const auto &op : predicate.Requests()) {
++            auto it = cells.find(op.field);
++            if (it == cells.end()) throw std::logic_error("Unsupported Provider column: " + op.field);
++            auto left = Text(it->second), right = Text(op.value.value);
++            if (op.kind == "EqualTo") { if (left != right) return false; }
++            else if (op.kind == "NotEqualTo") { if (left == right) return false; }
++            else if (op.kind == "GreaterThan") { if (std::stoll(left) <= std::stoll(right)) return false; }
++            else if (op.kind == "Unlike") {
++                std::string pattern;
++                for (char c : right) {
++                    if (c == '%') pattern += ".*";
++                    else if (c == '_') pattern += ".";
++                    else if (std::isalnum(static_cast<unsigned char>(c))) pattern += c;
++                    else throw std::logic_error("Unsupported SQL LIKE fixture character");
++                }
++                if (std::regex_match(left, std::regex(pattern))) return false;
++            } else throw std::logic_error("Unsupported Provider predicate: " + op.kind);
++        }
++        return true;
++    }
++    auto Query(const DataShare::DataSharePredicates &predicate)
++    {
++        std::vector<std::string> columns;
++        DataShare::DataShareResultSet::Row row;
++        for (const auto &[key, value] : cells) { columns.push_back(key); row.push_back(value); }
++        std::vector<DataShare::DataShareResultSet::Row> rows;
++        if (Matches(predicate)) rows.push_back(row);
++        return std::make_shared<DataShare::DataShareResultSet>(columns, rows);
++    }
++};
++void StopExternalRunner();
++class AccountObserver final : public TelEventHandler {
++public:
++    explicit AccountObserver(std::function<void()> loaded) : TelEventHandler("sim028-account-observer"), loaded_(std::move(loaded)) {}
++    void ProcessEvent(const AppExecFwk::InnerEvent::Pointer &event) override
++    { if (event && event->GetInnerEventId() == RadioEvent::RADIO_SIM_ACCOUNT_LOADED) loaded_(); }
++private:
++    std::function<void()> loaded_;
++};
++class RealScenario {
++public:
++    testing::StrictMock<SimHost::MockParameterService> parameters;
++    SimHost::ScopedParameterService parameterScope{parameters};
++    testing::StrictMock<PrimarySlotHost::ExternalIdentity> identity;
++    PrimarySlotHost::IdentityScope security{identity};
++    testing::StrictMock<SimHost::MockExternalServices> services;
++    SimHost::ScopedExternalServices external{services};
++    std::shared_ptr<testing::StrictMock<SimHost::MockDataShareHelper>> provider =
++        std::make_shared<testing::StrictMock<SimHost::MockDataShareHelper>>();
++    std::shared_ptr<testing::StrictMock<MockTelRilManager>> ril =
++        std::make_shared<testing::StrictMock<MockTelRilManager>>();
++    std::shared_ptr<SimManager> manager;
++    CoreServiceSim core;
++    std::shared_ptr<AccountObserver> accountObserver;
++    bool accountLoaded = false;
++    std::mutex mutex;
++    std::condition_variable changed;
++    ProviderRow row;
++    std::map<std::string, std::string> parametersDb{{"const.telephony.slotCount", "2"}};
++    std::vector<std::pair<std::string, std::string>> writes;
++    std::vector<std::string> events;
++    std::vector<AAFwk::Want> broadcasts;
++    struct Pending { int slot; std::weak_ptr<AppExecFwk::EventHandler> owner; uint32_t id; };
++    std::vector<Pending> statusRequests;
++    unsigned updates = 0;
++    bool autoStatus = false;
++    std::map<std::pair<int, int>, std::weak_ptr<AppExecFwk::EventHandler>> notifications;
++    template<class T> static void Reply(const Pending &request, std::shared_ptr<T> response)
++    {
++        auto owner = std::dynamic_pointer_cast<TelEventHandler>(request.owner.lock());
++        if (!owner || !owner->SendEvent(AppExecFwk::InnerEvent::Get(request.id, response)))
++            throw std::runtime_error("Real RIL response owner unavailable");
++    }
++    static auto CardStatus(int slot)
++    {
++        auto response = std::make_shared<SimCardStatusInfo>();
++        response->index = slot; response->simType = ICC_USIM_TYPE;
++        response->simState = slot == 1 ? ICC_CONTENT_PIN : ICC_CARD_ABSENT;
++        response->iccid = slot == 1 ? "8900000000000000001" : "";
++        return response;
++    }
++    RealScenario(bool directRil = false)
++    {
++        parametersDb["const.vendor.ril.set_primary_slot_support"] = directRil ? "true" : "false";
++        EXPECT_CALL(parameters, Read(_, _, _, _)).WillRepeatedly([this](auto key, auto fallback, auto out, auto size) {
++            std::lock_guard<std::mutex> lock(mutex);
++            auto it = parametersDb.find(key);
++            return SimHost::CopyParameterValue(it == parametersDb.end() ? fallback : it->second.c_str(), out, size);
++        });
++        EXPECT_CALL(identity, WriteParameter(_, _)).WillRepeatedly([this](auto key, auto value) {
++            std::lock_guard<std::mutex> lock(mutex);
++            writes.emplace_back(key, value); parametersDb[key] = value;
++            std::cout << "TRACE parameter " << key << "=" << value << "\n"; changed.notify_all(); return 0;
++        });
++        EXPECT_CALL(services, Publish(_, _)).WillRepeatedly([this](const auto &event, const auto &) {
++            std::lock_guard<std::mutex> lock(mutex);
++            events.push_back(event.GetWant().GetAction()); broadcasts.push_back(event.GetWant());
++            std::cout << "TRACE notify " << event.GetWant().GetAction()
++                << " slot=" << event.GetWant().GetIntParam("slotId", -1)
++                << " sim=" << event.GetWant().GetIntParam("simId", -1)
++                << " done=" << event.GetWant().GetBoolParam("setDone", false)
++                << " user=" << event.GetWant().GetBoolParam("isUserSet", false) << "\n";
++            changed.notify_all(); return true;
++        });
++        EXPECT_CALL(services, CreateDataShare(_, _, _, _, _)).WillRepeatedly([this](const auto &token,
++            const auto &uri, const auto &ext, int, bool) -> std::shared_ptr<DataShare::DataShareHelper> {
++            EXPECT_NE(token, nullptr);
++            if (uri != "datashare:///com.ohos.simability") return nullptr; // other providers explicitly absent
++            EXPECT_TRUE(ext.empty()); return provider;
++        });
++        EXPECT_CALL(*provider, Release()).WillRepeatedly(testing::Return(true));
++        EXPECT_CALL(*provider, Query(_, _, _, _)).WillRepeatedly([this](auto &uri, const auto &predicate, auto &, auto *) {
++            EXPECT_EQ(uri.ToString(), "datashare:///com.ohos.simability/sim/sim_info");
++            std::lock_guard<std::mutex> lock(mutex); return row.Query(predicate);
++        });
++        EXPECT_CALL(*provider, Update(_, _, _)).WillRepeatedly([this](auto &uri, const auto &predicate, const auto &bucket) {
++            EXPECT_EQ(uri.ToString(), "datashare:///com.ohos.simability/sim/sim_info");
++            std::lock_guard<std::mutex> lock(mutex);
++            if (row.Matches(predicate)) for (const auto &[key, value] : bucket.valuesMap) row.cells[key] = value;
++            ++updates; changed.notify_all(); return 0; // verified Provider RdbStore::Update status, not row count
++        });
++        EXPECT_CALL(*ril, RegisterCoreNotify(_, _, _, _)).WillRepeatedly([this](int slot, const auto &owner, int id, int *) {
++            std::lock_guard<std::mutex> lock(mutex); notifications[{slot, id}] = owner; return 0;
++        });
++        EXPECT_CALL(*ril, UnRegisterCoreNotify(_, _, _)).WillRepeatedly(testing::Return(0));
++        EXPECT_CALL(*ril, SetActiveSim(1, _, 1, _)).WillRepeatedly([](int, int, int, const auto &event) {
++            auto response = std::make_shared<RadioResponseInfo>(); response->error = ErrType::NONE;
++            auto owner = std::dynamic_pointer_cast<TelEventHandler>(event->GetOwner());
++            EXPECT_TRUE(owner && owner->SendEvent(AppExecFwk::InnerEvent::Get(event->GetInnerEventId(), response)));
++            return 0;
++        });
++        // The locked-card EF read is explicitly unavailable. Match the actual
++        // TelRilSim::ErrorIccIoResponse transport shape, retaining the original holder.
++        EXPECT_CALL(*ril, GetSimIO(1, _, _)).WillRepeatedly([](int slot, const auto &info, const auto &event) {
++            EXPECT_THAT(info.fileId, testing::AnyOf(ELEMENTARY_FILE_ICCID, ELEMENTARY_FILE_LI, ELEMENTARY_FILE_PBR));
++            EXPECT_EQ(info.command, 0xc0);
++            auto request = event->template GetUniqueObject<IccToRilMsg>();
++            if (!request) throw std::logic_error("Missing real IccToRilMsg holder");
++            auto response = std::make_shared<IccFromRilMsg>(request->controlHolder);
++            auto error = std::make_shared<RadioResponseInfo>(); error->error = ErrType::ERR_GENERIC_FAILURE;
++            response->fileData.exception = error;
++            Reply(Pending{slot, event->GetOwner(), event->GetInnerEventId()}, response);
++            return 0; // request accepted; actual device reply is failure, never a fake EF value
++        });
++        EXPECT_CALL(*ril, SimStkIsReady(1, _)).WillRepeatedly([](int slot, const auto &event) {
++            auto response = std::make_shared<RadioResponseInfo>(); response->error = ErrType::ERR_GENERIC_FAILURE;
++            Reply(Pending{slot, event->GetOwner(), event->GetInnerEventId()}, response); return 0;
++        });
++        EXPECT_CALL(*ril, GetSimStatus(_, _)).WillRepeatedly([this](int slot, const auto &event) {
++            Pending request{slot, event->GetOwner(), event->GetInnerEventId()};
++            bool respond;
++            {
++                std::lock_guard<std::mutex> lock(mutex);
++                respond = autoStatus;
++                if (!respond) statusRequests.push_back(request);
++                changed.notify_all();
++            }
++            if (respond) Reply(request, CardStatus(slot));
++            return 0;
++        });
++    }
++    bool StartLockedCard()
++    {
++        manager = std::make_shared<SimManager>(ril);
++        CoreManagerInner::GetInstance().OnInit(nullptr, manager, ril);
++        core.SetSimManager(manager);
++        // Same logical slot-vector sizing as real CoreService::Init, including the extra slot.
++        if (!manager->OnInit(SIM_SLOT_COUNT_MD + 1)) return false;
++        accountObserver = std::make_shared<AccountObserver>([this] {
++            std::lock_guard<std::mutex> lock(mutex); accountLoaded = true; changed.notify_all();
++        });
++        manager->RegisterCoreNotify(1, accountObserver, RadioEvent::RADIO_SIM_ACCOUNT_LOADED);
++        std::vector<Pending> pending;
++        {
++            std::unique_lock<std::mutex> lock(mutex);
++            if (!changed.wait_for(lock, 3s, [&] { return updates >= 2; })) return false;
++            autoStatus = true;
++            pending.swap(statusRequests);
++        }
++        for (const auto &request : pending) Reply(request, CardStatus(request.slot));
++        { std::lock_guard<std::mutex> lock(mutex); autoStatus = true; }
++        ffrt::wait(); // real RefreshSimState callers have received their correlated replies
++        std::unique_lock<std::mutex> lock(mutex);
++        return changed.wait_for(lock, 5s, [&] { return accountLoaded; });
++    }
++    void ClearObservations()
++    { std::lock_guard<std::mutex> lock(mutex); writes.clear(); events.clear(); broadcasts.clear(); }
++    // Caller holds mutex. setDone denotes completion, including failure, not success.
++    void ExpectNotifications(bool success, int attempts, bool userSet)
++    {
++        std::vector<std::string> mainAndData;
++        std::vector<bool> done;
++        for (const auto &want : broadcasts) {
++            const auto action = want.GetAction();
++            if (action == EventFwk::CommonEventSupport::COMMON_EVENT_SIM_CARD_DEFAULT_MAIN_SUBSCRIPTION_CHANGED) {
++                EXPECT_EQ(want.GetIntParam("slotId", -1), 1);
++                EXPECT_EQ(want.GetIntParam("simId", -1), 1); mainAndData.push_back("primary");
++            } else if (action == EventFwk::CommonEventSupport::COMMON_EVENT_SIM_CARD_DEFAULT_DATA_SUBSCRIPTION_CHANGED) {
++                EXPECT_EQ(want.GetIntParam("simId", -1), 1); mainAndData.push_back("data");
++            } else if (action == EventFwk::CommonEventSupport::COMMON_EVENT_SET_PRIMARY_SLOT_STATUS) {
++                done.push_back(want.GetBoolParam("setDone", true));
++                EXPECT_EQ(want.GetBoolParam("isUserSet", !userSet), userSet);
++            }
++        }
++        if (success) EXPECT_THAT(mainAndData, testing::ElementsAre("primary", "data"));
++        else EXPECT_TRUE(mainAndData.empty()) << "NO_SUCCESS_NOTIFICATION_ON_FAILURE";
++        ASSERT_EQ(done.size(), static_cast<unsigned>(attempts * 2));
++        for (int attempt = 0; attempt < attempts; ++attempt) {
++            EXPECT_FALSE(done[attempt * 2]); EXPECT_TRUE(done[attempt * 2 + 1]);
++        }
++    }
++    void Permit()
++    {
++        std::cout << "TRACE input request=" << testing::UnitTest::GetInstance()->current_test_info()->name()
++            << " slot=1 userSet=true\n";
++        using namespace OHOS::Security::AccessToken;
++        EXPECT_CALL(identity, TokenType(101)).Times(2).WillRepeatedly(testing::Return(TOKEN_NATIVE));
++        EXPECT_CALL(identity, Verify(101, Permission::SET_TELEPHONY_STATE)).WillOnce(testing::Return(PERMISSION_GRANTED));
++    }
++    ~RealScenario()
++    {
++        if (manager && accountObserver)
++            manager->UnRegisterCoreNotify(1, accountObserver, RadioEvent::RADIO_SIM_ACCOUNT_LOADED);
++        accountObserver.reset();
++        core.SetSimManager(nullptr);
++        CoreManagerInner::GetInstance().OnInit(nullptr, nullptr, nullptr);
++        ffrt::wait();
++        std::weak_ptr<SimManager> retiring = manager;
++        manager.reset();
++        SimHost::StopCallingThreadTasks();
++        StopExternalRunner();
++        const auto deadline = std::chrono::steady_clock::now() + 3s;
++        while (!retiring.expired() && std::chrono::steady_clock::now() < deadline) std::this_thread::sleep_for(1ms);
++        EXPECT_TRUE(retiring.expired()) << "REAL_MANAGER_LIFETIME_NOT_DRAINED";
++        EXPECT_TRUE(SimHost::AwaitSchedulerStopped(3s)) << "REAL_GRAPH_LIFETIME_NOT_DRAINED";
++        testing::Test::RecordProperty("workers_after_cleanup", SimHost::GetSchedulerEvidence().workers);
++        testing::Test::RecordProperty("ril_references_after_cleanup", static_cast<int>(ril.use_count()));
++        EXPECT_EQ(SimHost::GetSchedulerEvidence().taskFailures, 0u);
++        const bool verified = testing::Mock::VerifyAndClearExpectations(ril.get());
++        testing::Test::RecordProperty("strict_ril_expectations_verified", verified ? "PASS" : "FAIL");
++        EXPECT_TRUE(verified) << "STRICT_RIL_EXPECTATIONS";
++    }
++};
++}
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp b/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp
+new file mode 100755
+index 00000000..54d7e768
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp
+@@ -0,0 +1,301 @@
++#include <gmock/gmock.h>
++#include "sim_manager.h"
++#include "core_service_sim.h"
++#include "parameter_mock.h"
++#include "security_boundary.h"
++#include "external_services_mock.h"
++#include "ffrt_runtime.h"
++#include "real_scenario.h"
++#include <future>
++#include <optional>
++namespace {
++using namespace OHOS::Telephony;
++using namespace std::chrono_literals;
++TEST(RealSimPrimary, InitializesRealManagerAndControllerWithoutRil)
++{
++    testing::StrictMock<SimHost::MockParameterService> parameters;
++    EXPECT_CALL(parameters, Read(testing::_, testing::_, testing::_, testing::_))
++        .WillRepeatedly([](const char *key, const char *fallback, char *out, unsigned size) {
++            return SimHost::CopyParameterValue(std::string(key) == "const.telephony.slotCount" ? "2" : fallback, out, size);
++        });
++    SimHost::ScopedParameterService installed(parameters);
++    testing::StrictMock<PrimarySlotHost::ExternalIdentity> identity;
++    PrimarySlotHost::IdentityScope security(identity);
++    testing::StrictMock<SimHost::MockExternalServices> services;
++    EXPECT_CALL(services, Publish(testing::_, testing::_)).WillRepeatedly(testing::Return(true));
++    EXPECT_CALL(services, CreateDataShare(testing::_, testing::_, testing::_, testing::_, testing::_))
++        .WillRepeatedly(testing::Return(nullptr)); // explicit unavailable Provider; never fabricated success.
++    SimHost::ScopedExternalServices external(services);
++    auto manager = std::make_shared<SimManager>(nullptr);
++    ASSERT_TRUE(manager->OnInit(SIM_SLOT_COUNT_MD + 1));
++    EXPECT_EQ(manager->GetMaxSimCount(), 2);
++    EXPECT_EQ(manager->SetPrimarySlotId(1, true), TELEPHONY_ERR_NO_SIM_CARD);
++    EXPECT_FALSE(manager->IsSetPrimarySlotIdInProgress());
++    SimHost::StopCallingThreadTasks();
++    manager.reset();
++    EXPECT_TRUE(SimHost::AwaitSchedulerStopped(3s));
++}
++TEST(RealSimPrimary, C0CoreToRealManagerAndController)
++{
++    Sim028Host::RealScenario scenario;
++    ASSERT_TRUE(scenario.StartLockedCard());
++    bool present = false;
++    EXPECT_EQ(scenario.manager->HasSimCard(1, present), TELEPHONY_ERR_SUCCESS);
++    ASSERT_TRUE(present);
++    ASSERT_TRUE(scenario.manager->IsSimActive(1));
++    // C0 is backed by an actual device-query reply, rather than assuming the
++    // controller's initial modemId value represents the current mapping.
++    EXPECT_CALL(*scenario.ril, GetRadioProtocol(testing::_, testing::_)).Times(2)
++        .WillRepeatedly([](int slot, const auto &event) {
++            auto reported = std::make_shared<RadioProtocol>();
++            reported->slotId = slot; reported->modemId = 1 - slot;
++            reported->technology = slot == 1 ? 0x11 : 0x22;
++            Sim028Host::RealScenario::Reply({slot, event->GetOwner(), event->GetInnerEventId()}, reported);
++            return 0;
++        });
++    scenario.manager->GetRadioProtocol(0); scenario.manager->GetRadioProtocol(1);
++    const auto mappingDeadline = std::chrono::steady_clock::now() + 3s;
++    while ((scenario.manager->GetRadioProtocolSlotIdByModemId(0) != 1 ||
++        scenario.manager->GetRadioProtocolTech(1) != 0x11 || scenario.manager->GetRadioProtocolTech(0) != 0x22) &&
++        std::chrono::steady_clock::now() < mappingDeadline) std::this_thread::sleep_for(1ms);
++    ASSERT_EQ(scenario.manager->GetRadioProtocolSlotIdByModemId(0), 1);
++    ASSERT_EQ(scenario.manager->GetRadioProtocolTech(1), 0x11);
++    ASSERT_EQ(scenario.manager->GetRadioProtocolTech(0), 0x22);
++    scenario.ClearObservations();
++    scenario.Permit();
++    EXPECT_CALL(*scenario.ril, SetPrimarySlot(testing::_, testing::_)).Times(0);
++    EXPECT_CALL(*scenario.ril, SetRadioProtocol(testing::_, testing::_, testing::_)).Times(0);
++    EXPECT_EQ(scenario.core.SetPrimarySlotId(1), TELEPHONY_ERR_SUCCESS);
++    EXPECT_FALSE(scenario.manager->IsSetPrimarySlotIdInProgress());
++    std::lock_guard<std::mutex> lock(scenario.mutex);
++    EXPECT_EQ(scenario.parametersDb["persist.telephony.MainSlotId"], "1") << "PRIMARY_COMMIT_TARGET";
++    EXPECT_EQ(scenario.parametersDb["persist.telephony.MainCellularDataSlotId"], "1");
++    EXPECT_EQ(scenario.parametersDb["persist.telephony.MainCard.Iccid"], "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2");
++    scenario.ExpectNotifications(true, 0, false);
++    testing::Test::RecordProperty("business_assertions_before_cleanup", testing::Test::HasFailure() ? "FAIL" : "PASS");
++}
++TEST(RealSimPrimary, BDirectRilSuccessCommitsAfterReply)
++{
++    Sim028Host::RealScenario s(true);
++    ASSERT_TRUE(s.StartLockedCard());
++    s.ClearObservations(); s.Permit();
++    using Pending = Sim028Host::RealScenario::Pending;
++    std::optional<Pending> request;
++    EXPECT_CALL(*s.ril, SetPrimarySlot(1, testing::_)).Times(1).WillOnce([&](int slot, const auto &event) {
++        EXPECT_TRUE(std::dynamic_pointer_cast<MultiSimController>(event->GetOwner()));
++        std::lock_guard<std::mutex> lock(s.mutex);
++        request = Pending{slot, event->GetOwner(), event->GetInnerEventId()}; s.changed.notify_all(); return 0;
++    });
++    EXPECT_CALL(*s.ril, SetRadioProtocol(testing::_, testing::_, testing::_)).Times(0);
++    auto caller = std::async(std::launch::async, [&] { return s.core.SetPrimarySlotId(1); });
++    {
++        std::unique_lock<std::mutex> lock(s.mutex);
++        ASSERT_TRUE(s.changed.wait_for(lock, 3s, [&] { return request.has_value(); }));
++        EXPECT_NE(s.parametersDb["persist.telephony.MainSlotId"], "1") << "NO_EARLY_COMMIT";
++    }
++    EXPECT_EQ(caller.wait_for(50ms), std::future_status::timeout);
++    EXPECT_TRUE(s.manager->IsSetPrimarySlotIdInProgress());
++    auto reply = std::make_shared<RadioResponseInfo>(); reply->error = ErrType::NONE;
++    Sim028Host::RealScenario::Reply(*request, reply);
++    ASSERT_EQ(caller.wait_for(3s), std::future_status::ready);
++    EXPECT_EQ(caller.get(), TELEPHONY_ERR_SUCCESS);
++    EXPECT_FALSE(s.manager->IsSetPrimarySlotIdInProgress());
++    std::lock_guard<std::mutex> lock(s.mutex);
++    EXPECT_EQ(s.parametersDb["persist.telephony.MainSlotId"], "1") << "PRIMARY_COMMIT_TARGET";
++    EXPECT_EQ(s.parametersDb["persist.telephony.MainCellularDataSlotId"], "1");
++    s.ExpectNotifications(true, 1, true);
++    testing::Test::RecordProperty("business_assertions_before_cleanup", testing::Test::HasFailure() ? "FAIL" : "PASS");
++}
++TEST(RealSimPrimary, BDirectRilFailureKeepsPreviousPrimary)
++{
++    Sim028Host::RealScenario s(true);
++    ASSERT_TRUE(s.StartLockedCard()); s.ClearObservations(); s.Permit();
++    { std::lock_guard<std::mutex> lock(s.mutex); s.parametersDb["persist.telephony.MainSlotId"] = "0"; }
++    EXPECT_CALL(*s.ril, SetPrimarySlot(1, testing::_)).Times(1).WillOnce([](int slot, const auto &event) {
++        auto reply = std::make_shared<RadioResponseInfo>(); reply->error = ErrType::ERR_GENERIC_FAILURE;
++        Sim028Host::RealScenario::Reply({slot, event->GetOwner(), event->GetInnerEventId()}, reply); return 0;
++    });
++    EXPECT_CALL(*s.ril, SetRadioProtocol(testing::_, testing::_, testing::_)).Times(0);
++    EXPECT_EQ(s.core.SetPrimarySlotId(1), TELEPHONY_ERR_LOCAL_PTR_NULL);
++    EXPECT_FALSE(s.manager->IsSetPrimarySlotIdInProgress());
++    std::lock_guard<std::mutex> lock(s.mutex);
++    EXPECT_EQ(s.parametersDb["persist.telephony.MainSlotId"], "0") << "FAILURE_PRESERVES_PRIMARY";
++    EXPECT_NE(s.parametersDb["persist.telephony.MainCellularDataSlotId"], "1");
++    s.ExpectNotifications(false, 1, true);
++    testing::Test::RecordProperty("business_assertions_before_cleanup", testing::Test::HasFailure() ? "FAIL" : "PASS");
++}
++TEST(RealSimPrimary, C1ThreePhasesWithStaleCheckResponseRejected)
++{
++    using namespace Sim028Host;
++    RealScenario s;
++    ASSERT_TRUE(s.StartLockedCard()); s.ClearObservations(); s.Permit();
++    EXPECT_CALL(*s.ril, SetPrimarySlot(testing::_, testing::_)).Times(0);
++    EXPECT_CALL(*s.ril, GetRadioProtocol(testing::_, testing::_)).Times(2).WillRepeatedly([](int slot, const auto &event) {
++        auto response = std::make_shared<RadioProtocol>();
++        response->slotId = slot; response->modemId = slot; response->technology = slot == 0 ? 0x11 : 0x22;
++        RealScenario::Reply({slot, event->GetOwner(), event->GetInnerEventId()}, response); return 0;
++    });
++    s.manager->GetRadioProtocol(0); s.manager->GetRadioProtocol(1);
++    const auto deadline = std::chrono::steady_clock::now() + 3s;
++    while (s.manager->GetRadioProtocolSlotIdByModemId(1) != 1 && std::chrono::steady_clock::now() < deadline)
++        std::this_thread::sleep_for(1ms);
++    ASSERT_EQ(s.manager->GetRadioProtocolSlotIdByModemId(1), 1);
++    struct ProtocolRequest { RealScenario::Pending transport; RadioProtocol protocol; };
++    std::vector<ProtocolRequest> requests;
++    EXPECT_CALL(*s.ril, SetRadioProtocol(testing::_, testing::_, testing::_)).Times(6)
++        .WillRepeatedly([&](int slot, RadioProtocol protocol, const auto &event) {
++            std::cout << "TRACE radio slot=" << slot << " session=" << protocol.sessionId
++                << " phase=" << static_cast<int>(protocol.phase) << " modem=" << protocol.modemId << "\n";
++            EXPECT_EQ(protocol.slotId, slot);
++            EXPECT_TRUE(std::dynamic_pointer_cast<RadioProtocolController>(event->GetOwner()));
++            std::lock_guard<std::mutex> lock(s.mutex);
++            requests.push_back({{slot, event->GetOwner(), event->GetInnerEventId()}, protocol});
++            s.changed.notify_all(); return 0;
++        });
++    auto caller = std::async(std::launch::async, [&] { return s.core.SetPrimarySlotId(1); });
++    int session = -1;
++    for (unsigned stage = 0; stage < 3; ++stage) {
++        std::vector<ProtocolRequest> pair;
++        {
++            std::unique_lock<std::mutex> lock(s.mutex);
++            ASSERT_TRUE(s.changed.wait_for(lock, 3s, [&] { return requests.size() >= 2 * (stage + 1); }));
++            pair.assign(requests.begin() + stage * 2, requests.begin() + stage * 2 + 2);
++        }
++        EXPECT_EQ(caller.wait_for(10ms), std::future_status::timeout);
++        for (const auto &request : pair) {
++            auto reply = std::make_shared<RadioProtocol>(request.protocol);
++            if (session == -1) session = reply->sessionId;
++            EXPECT_EQ(reply->sessionId, session);
++            EXPECT_EQ(static_cast<int>(reply->phase), stage == 0 ? 1 : stage == 1 ? 2 : 4);
++            EXPECT_EQ(reply->modemId, stage == 0 ? request.transport.slot : 1 - request.transport.slot);
++            EXPECT_EQ(reply->technology, stage == 0 ? (request.transport.slot == 0 ? 0x11 : 0x22) :
++                (request.transport.slot == 0 ? 0x22 : 0x11));
++            if (stage == 0 && request.transport.slot == 0) {
++                auto stale = std::make_shared<RadioProtocol>(*reply); stale->sessionId += 99;
++                RealScenario::Reply(request.transport, stale);
++                EXPECT_EQ(caller.wait_for(20ms), std::future_status::timeout);
++                std::lock_guard<std::mutex> lock(s.mutex); EXPECT_EQ(requests.size(), 2u);
++            }
++            RealScenario::Reply(request.transport, reply);
++            if (stage == 1) {
++                reply = std::make_shared<RadioProtocol>(*reply);
++                reply->phase = RadioProtocolPhase::RADIO_PROTOCOL_PHASE_NOTIFY;
++                reply->status = RadioProtocolStatus::RADIO_PROTOCOL_STATUS_SUCCESS;
++                std::weak_ptr<AppExecFwk::EventHandler> owner;
++                { std::lock_guard<std::mutex> lock(s.mutex); owner = s.notifications.at({request.transport.slot, RADIO_SIM_RADIO_PROTOCOL_NOTIFY}); }
++                RealScenario::Reply({request.transport.slot, owner, RADIO_SIM_RADIO_PROTOCOL_NOTIFY}, reply);
++            }
++        }
++    }
++    ASSERT_EQ(caller.wait_for(3s), std::future_status::ready);
++    EXPECT_EQ(caller.get(), TELEPHONY_ERR_SUCCESS);
++    EXPECT_EQ(s.manager->GetRadioProtocolSlotIdByModemId(0), 1);
++    EXPECT_FALSE(s.manager->IsSetPrimarySlotIdInProgress());
++    std::lock_guard<std::mutex> lock(s.mutex);
++    EXPECT_EQ(s.parametersDb["persist.telephony.MainSlotId"], "1") << "PRIMARY_COMMIT_TARGET";
++    EXPECT_EQ(s.parametersDb["persist.telephony.MainCellularDataSlotId"], "1");
++    s.ExpectNotifications(true, 1, false);
++    testing::Test::RecordProperty("business_assertions_before_cleanup", testing::Test::HasFailure() ? "FAIL" : "PASS");
++}
++TEST(RealSimPrimary, BRealTimeoutKeepsPreviousPrimary)
++{
++    Sim028Host::RealScenario s(true);
++    ASSERT_TRUE(s.StartLockedCard()); s.ClearObservations(); s.Permit();
++    { std::lock_guard<std::mutex> lock(s.mutex); s.parametersDb["persist.telephony.MainSlotId"] = "0"; }
++    EXPECT_CALL(*s.ril, SetPrimarySlot(1, testing::_)).Times(1).WillOnce([](int, const auto &) {
++        return 0; // device accepted the request but supplies no reply; real 45-second timer must end it
++    });
++    EXPECT_CALL(*s.ril, SetRadioProtocol(testing::_, testing::_, testing::_)).Times(0);
++    const auto start = std::chrono::steady_clock::now();
++    EXPECT_EQ(s.core.SetPrimarySlotId(1), TELEPHONY_ERR_LOCAL_PTR_NULL);
++    EXPECT_GE(std::chrono::steady_clock::now() - start, 44s);
++    EXPECT_FALSE(s.manager->IsSetPrimarySlotIdInProgress());
++    std::lock_guard<std::mutex> lock(s.mutex);
++    EXPECT_EQ(s.parametersDb["persist.telephony.MainSlotId"], "0") << "TIMEOUT_PRESERVES_PRIMARY";
++    EXPECT_NE(s.parametersDb["persist.telephony.MainCellularDataSlotId"], "1");
++    s.ExpectNotifications(false, 1, true);
++    testing::Test::RecordProperty("business_assertions_before_cleanup", testing::Test::HasFailure() ? "FAIL" : "PASS");
++}
++TEST(RealSimPrimary, C1CheckFailureRestoresParametersAndExhaustsFiveRetries)
++{
++    using namespace Sim028Host;
++    RealScenario s;
++    ASSERT_TRUE(s.StartLockedCard()); s.ClearObservations(); s.Permit();
++    { std::lock_guard<std::mutex> lock(s.mutex);
++      s.parametersDb["persist.telephony.MainSlotId"] = "0";
++      s.parametersDb["persist.telephony.MainCard.Iccid"] = "previous-parameter-value"; }
++    EXPECT_CALL(*s.ril, SetPrimarySlot(testing::_, testing::_)).Times(0);
++    EXPECT_CALL(*s.ril, GetRadioProtocol(testing::_, testing::_)).Times(2).WillRepeatedly([](int slot, const auto &event) {
++        auto response = std::make_shared<RadioProtocol>(); response->slotId = slot;
++        response->modemId = slot; response->technology = slot == 0 ? 0x11 : 0x22;
++        RealScenario::Reply({slot, event->GetOwner(), event->GetInnerEventId()}, response); return 0;
++    });
++    s.manager->GetRadioProtocol(0); s.manager->GetRadioProtocol(1);
++    const auto deadline = std::chrono::steady_clock::now() + 3s;
++    while (s.manager->GetRadioProtocolSlotIdByModemId(1) != 1 && std::chrono::steady_clock::now() < deadline)
++        std::this_thread::sleep_for(1ms);
++    ASSERT_EQ(s.manager->GetRadioProtocolSlotIdByModemId(1), 1);
++    std::map<int, std::vector<std::pair<int, RadioProtocolPhase>>> phases;
++    unsigned requests = 0;
++    EXPECT_CALL(*s.ril, SetRadioProtocol(testing::_, testing::_, testing::_)).Times(24)
++        .WillRepeatedly([&](int slot, RadioProtocol protocol, const auto &event) {
++            std::cout << "TRACE radio slot=" << slot << " session=" << protocol.sessionId
++                << " phase=" << static_cast<int>(protocol.phase) << " modem=" << protocol.modemId << "\n";
++            EXPECT_EQ(protocol.slotId, slot); EXPECT_EQ(protocol.modemId, slot);
++            EXPECT_THAT(protocol.phase, testing::AnyOf(RadioProtocolPhase::RADIO_PROTOCOL_PHASE_CHECK,
++                RadioProtocolPhase::RADIO_PROTOCOL_PHASE_COMPLETE)); // no UPDATE after failed CHECK
++            {
++                std::lock_guard<std::mutex> lock(s.mutex);
++                phases[protocol.sessionId].emplace_back(slot, protocol.phase); ++requests; s.changed.notify_all();
++            }
++            if (protocol.phase == RadioProtocolPhase::RADIO_PROTOCOL_PHASE_CHECK) {
++                auto response = std::make_shared<RadioResponseInfo>(); response->error = ErrType::ERR_GENERIC_FAILURE;
++                RealScenario::Reply({slot, event->GetOwner(), event->GetInnerEventId()}, response);
++            } else {
++                EXPECT_EQ(protocol.status, RadioProtocolStatus::RADIO_PROTOCOL_STATUS_FAIL);
++                RealScenario::Reply({slot, event->GetOwner(), event->GetInnerEventId()}, std::make_shared<RadioProtocol>(protocol));
++            }
++            return 0;
++        });
++    EXPECT_EQ(s.core.SetPrimarySlotId(1), TELEPHONY_ERR_LOCAL_PTR_NULL);
++    {
++        std::lock_guard<std::mutex> lock(s.mutex);
++        EXPECT_EQ(s.parametersDb["persist.telephony.MainSlotId"], "0") << "ROLLBACK_SLOT";
++        EXPECT_EQ(s.parametersDb["persist.telephony.MainCard.Iccid"], "previous-parameter-value") << "ROLLBACK_ICCID";
++        EXPECT_NE(s.parametersDb["persist.telephony.MainCellularDataSlotId"], "1");
++    }
++    {
++        std::unique_lock<std::mutex> lock(s.mutex);
++        ASSERT_TRUE(s.changed.wait_for(lock, 12s, [&] { return requests == 24; }));
++        EXPECT_EQ(phases.size(), 6u); // original plus the five retries, each with a fresh session
++        for (const auto &[session, sequence] : phases) {
++            EXPECT_THAT(sequence, testing::ElementsAre(std::make_pair(0, RadioProtocolPhase::RADIO_PROTOCOL_PHASE_CHECK),
++                std::make_pair(1, RadioProtocolPhase::RADIO_PROTOCOL_PHASE_CHECK),
++                std::make_pair(0, RadioProtocolPhase::RADIO_PROTOCOL_PHASE_COMPLETE),
++                std::make_pair(1, RadioProtocolPhase::RADIO_PROTOCOL_PHASE_COMPLETE)));
++        }
++    }
++    const auto done = std::chrono::steady_clock::now() + 3s;
++    while (s.manager->IsSetPrimarySlotIdInProgress() && std::chrono::steady_clock::now() < done)
++        std::this_thread::sleep_for(1ms);
++    EXPECT_FALSE(s.manager->IsSetPrimarySlotIdInProgress());
++    std::lock_guard<std::mutex> lock(s.mutex);
++    EXPECT_EQ(s.parametersDb["persist.telephony.MainSlotId"], "0") << "ROLLBACK_SLOT";
++    EXPECT_EQ(s.parametersDb["persist.telephony.MainCard.Iccid"], "previous-parameter-value") << "ROLLBACK_ICCID";
++    s.ExpectNotifications(false, 6, false);
++    testing::Test::RecordProperty("business_assertions_before_cleanup", testing::Test::HasFailure() ? "FAIL" : "PASS");
++}
++}
++int main(int argc, char **argv)
++{
++    testing::InitGoogleMock(&argc, argv);
++    // Full initialization currently retains production subscription cycles.
++    // Never reuse those live callbacks with another scenario's mock lifetime.
++    const auto filter = testing::GTEST_FLAG(filter);
++    if (!testing::GTEST_FLAG(list_tests) && (filter.find('*') != std::string::npos ||
++        filter.find(':') != std::string::npos || filter.find('?') != std::string::npos)) {
++        std::cerr << "Use run_primary_real.py or host.py: each real scenario requires its own process.\n";
++        return 2;
++    }
++    return RUN_ALL_TESTS();
++}
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/runtime_include/hisysevent.h b/telephony_core_service/services/multisim/test/systemtest/primary_slot/runtime_include/hisysevent.h
+new file mode 100755
+index 00000000..1785ca45
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/runtime_include/hisysevent.h
+@@ -0,0 +1,12 @@
++// Host diagnostic sink; records event names, never decides SIM business results.
++#pragma once
++#include "../../stubs/include/hisysevent.h"
++namespace Sim028Host { void Diagnostic(const std::string &name); }
++namespace OHOS::HiviewDFX {
++template<class... Types> int HiSysEvent::Write(const char *, int64_t, const std::string &,
++    const std::string &name, EventType, Types...)
++{
++    Sim028Host::Diagnostic(name);
++    return 0;
++}
++}
+diff --git a/telephony_core_service/services/multisim/test/systemtest/scripts/run_primary_real.py b/telephony_core_service/services/multisim/test/systemtest/scripts/run_primary_real.py
+new file mode 100755
+index 00000000..8be6475e
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/scripts/run_primary_real.py
+@@ -0,0 +1,213 @@
++#!/usr/bin/env python3
++"""Run the existing GN real-SIM target, one scenario per process, with auditable evidence."""
++import argparse
++import hashlib
++import fcntl
++import json
++import os
++import shutil
++import shlex
++import difflib
++from pathlib import Path
++import subprocess
++import sys
++import tempfile
++import xml.etree.ElementTree as ET
++SYSTEM = Path(__file__).resolve().parents[1]
++CORE = SYSTEM.parents[3]
++REPO = CORE.parent
++sys.path.insert(0, str(SYSTEM / 'tools'))
++from host import command, dependencies, write
++from build_clock import await_build_timestamps
++
++
++def sha(path):
++    return hashlib.sha256(path.read_bytes()).hexdigest()
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--output', type=Path, required=True)
++    parser.add_argument('--build-dir', type=Path)
++    parser.add_argument('--gtest-root', type=Path, required=True)
++    parser.add_argument('--openssl-root', type=Path, required=True)
++    parser.add_argument('--runtime-root', type=Path, required=True)
++    parser.add_argument('--filter', default='RealSimPrimary.*')
++    parser.add_argument('--mutation-check', action='store_true')
++    args = parser.parse_args()
++    output = args.output.resolve()
++    if output == REPO or output in REPO.parents or output == SYSTEM or SYSTEM in output.parents:
++        parser.error('Use a dedicated output directory outside test sources')
++    output.mkdir(parents=True, exist_ok=True)
++    session = Path(tempfile.mkdtemp(prefix='execution-', dir=output))
++    build = args.build_dir.resolve() if args.build_dir else session / 'build'
++    if build == REPO or build in REPO.parents or build == SYSTEM or SYSTEM in build.parents:
++        parser.error('Build directory must be dedicated and outside test sources')
++    build.mkdir(parents=True, exist_ok=True)
++    lock_stream = (build / '.sim-build.lock').open('w')
++    fcntl.flock(lock_stream, fcntl.LOCK_EX)
++    root = dependencies(args.gtest_root)
++    native = json.loads((args.runtime_root / 'runtime_dependencies.json').read_text())
++    for name, digest in native['archives'].items():
++        if sha(args.runtime_root / name) != digest:
++            raise RuntimeError('Native dependency drift: ' + name)
++    values = {'production_root': str(CORE), 'gtest_root': str(root),
++              'openssl_root': str(args.openssl_root.resolve()),
++              'sim028_runtime_root': str(args.runtime_root.resolve())}
++    await_build_timestamps(SYSTEM)
++    gnargs = ' '.join(k + '=' + json.dumps(v) for k, v in values.items())
++    commands = []
++    def run(argv, name, env=None):
++        code = command(argv, session / (name + '.log'), REPO, env)
++        commands.append({'argv': list(map(str, argv)), 'exit_code': code, 'log': name + '.log'})
++        return code
++    result = {'head': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=REPO, text=True).strip(),
++              'status': 'BLOCKED', 'artifacts': str(session), 'commands': commands,
++              'worktree': subprocess.check_output(['git', 'status', '--short'], cwd=REPO, text=True),
++              'cases': [], 'native_dependencies': native,
++              'provider_contract': json.loads((SYSTEM / 'primary_slot/provider/contract.json').read_text()),
++              'layers': {k: 'NOT_RUN' for k in ['entry_contract', 'real_sim_manager',
++                  'real_multi_sim_controller', 'branch_A', 'branch_B', 'branch_C0', 'branch_C1',
++                  'real_core_service', 'stub_dispatch', 'host_ipc_boundary', 'real_ohos_ipc',
++                  'ril_hdi_boundary', 'whole_component_chain']}}
++    for key in ['real_core_service', 'stub_dispatch', 'host_ipc_boundary', 'real_ohos_ipc',
++                'ril_hdi_boundary', 'whole_component_chain']:
++        result['layers'][key] = 'BLOCKED'
++    write(session / 'result.json', result)
++    if run(['gn', 'gen', build, '--root=' + str(SYSTEM), '--export-compile-commands',
++            '--args=' + gnargs], 'configure') or run(['ninja', '-C', build, '-j4', 'sim_primary_slot_real_test'], 'build'):
++        write(session / 'result.json', result)
++        return 2
++    binary = build / 'sim_primary_slot_real_test'
++    result['binary_sha256'] = sha(binary)
++    target_commands = subprocess.check_output(['ninja', '-C', str(build), '-t', 'commands',
++                                               'sim_primary_slot_real_test'], text=True)
++    (session / 'target-commands.log').write_text(target_commands)
++    source_paths = set()
++    for line in target_commands.splitlines():
++        argv = shlex.split(line)
++        if '-c' in argv:
++            source_paths.add((build / argv[argv.index('-c') + 1]).resolve())
++    result['production_sources'] = {str(path.relative_to(CORE)): sha(path) for path in sorted(source_paths)
++        if str(path).startswith(str(CORE) + '/') and '/services/multisim/test/' not in str(path)}
++    env = dict(os.environ, SIM_HOST_BOOT_SLOT_COUNT='2', LLVM_PROFILE_FILE=str(session / 'discovery-%p.profraw'))
++    run([binary, '--gtest_list_tests', '--gtest_filter=' + args.filter], 'list', env)
++    names, suite = [], ''
++    for line in (session / 'list.log').read_text().splitlines():
++        line = line.split('#')[0].rstrip()
++        if line and not line.startswith(' '):
++            suite = line
++        elif line.strip():
++            names.append(suite + line.strip())
++    for index, name in enumerate(names):
++        label = 'case-' + str(index)
++        xml = session / (label + '.xml')
++        profile = session / (label + '.profraw')
++        env['LLVM_PROFILE_FILE'] = str(profile)
++        code = run([binary, '--gtest_filter=' + name, '--gtest_output=xml:' + str(xml)], label, env)
++        case = {'name': name, 'status': 'FAIL', 'exit_code': code, 'xml': xml.name, 'executed_functions': []}
++        if xml.exists():
++            cases = ET.parse(xml).getroot().findall('.//testcase')
++            case['tests'] = len(cases)
++            case['failed'] = sum(c.find('failure') is not None for c in cases)
++            case['properties'] = {p.get('name'): p.get('value') for p in cases[0].findall('./properties/property')} if len(cases) == 1 else {}
++            case['failures'] = [f.text for c in cases for f in c.findall('failure')]
++            if len(cases) == 1 and code == 0 and case['failed'] == 0 and cases[0].find('skipped') is None:
++                case['status'] = 'PASS'
++        if profile.exists():
++            profdata = session / (label + '.profdata')
++            if run(['llvm-profdata-18', 'merge', '-sparse', profile, '-o', profdata], label + '-merge') == 0:
++                coverage = session / (label + '-coverage.json')
++                with coverage.open('w') as stream:
++                    subprocess.run(['llvm-cov-18', 'export', binary, '-instr-profile=' + str(profdata)], stdout=stream, check=True)
++                functions = json.loads(coverage.read_text())['data'][0]['functions']
++                for function in functions:
++                    if function['count'] and any('services/sim/src/' in f or 'services/core/src/core_service_sim.cpp' in f for f in function['filenames']):
++                        case['executed_functions'].append({'name': function['name'], 'count': function['count'], 'files': function['filenames']})
++        props = case.get('properties', {})
++        cleanup_only = bool(case.get('failures')) and all('REAL_GRAPH_LIFETIME_NOT_DRAINED' in f or
++            'REAL_MANAGER_LIFETIME_NOT_DRAINED' in f for f in case.get('failures', []))
++        case['business_status'] = ('PASS' if props.get('business_assertions_before_cleanup') == 'PASS'
++            and props.get('strict_ril_expectations_verified') == 'PASS'
++            and (case['status'] == 'PASS' or cleanup_only) else 'NOT_RUN')
++        result['cases'].append(case)
++        write(session / 'result.json', result)
++    result['status'] = 'PASS' if names and all(c['status'] == 'PASS' for c in result['cases']) else 'FAIL'
++    result['counts'] = {'tests': len(names), 'passed': sum(c['status'] == 'PASS' for c in result['cases']),
++                        'failed': sum(c['status'] != 'PASS' for c in result['cases'])}
++    for case in result['cases']:
++        if case['status'] != 'PASS':
++            for branch in ['B', 'C0', 'C1']:
++                if ('.' + branch) in case['name']:
++                    result['layers']['branch_' + branch] = 'FAIL'
++            continue
++        functions = '\n'.join(f['name'] for f in case['executed_functions'])
++        for key, method in [('real_sim_manager', 'SimManager16SetPrimarySlotId'),
++                            ('real_multi_sim_controller', 'MultiSimController16SetPrimarySlotId')]:
++            if method in functions:
++                result['layers'][key] = 'PASS'
++        for branch in ['B', 'C0', 'C1']:
++            if ('.' + branch) in case['name']:
++                result['layers']['branch_' + branch] = 'PASS'
++    result['lifecycle'] = {'status': 'FAIL' if any('REAL_GRAPH_LIFETIME_NOT_DRAINED' in '\n'.join(c.get('failures', [])) for c in result['cases']) else 'NOT_RUN'}
++    result['business_scenario_causality'] = {
++        'status': 'PASS' if any(c.get('business_status') == 'PASS' and
++            all(method in '\n'.join(f['name'] for f in c['executed_functions']) for method in
++                ['CoreServiceSim16SetPrimarySlotId', 'SimManager16SetPrimarySlotId',
++                 'MultiSimController16SetPrimarySlotId']) for c in result['cases']) else 'FAIL',
++        'scope': 'one request through CoreServiceSim/real Manager/Controller and its actual branch endpoint; lifetime failures remain FAIL',
++        'whole_component_chain': 'BLOCKED'}
++    result['limits'] = ['Production full-manager subscription graph remains live after manager destruction; no leak suppression', 'CoreServiceSim uses the public real SimManager attachment; CoreService/Stub not assembled',
++        'RIL interface, DataShare I/O, parameters, notification transport and runtime services are Host boundaries',
++        'No OHOS Binder/SA runtime or real RIL/HDI/device integration; no persistence durability claim']
++    if args.mutation_check:
++        source = CORE / 'services/sim/src/multi_sim_controller.cpp'
++        original = source.read_bytes()
++        old = b'SetParameter(PRIMARY_SLOTID_KEY.c_str(), std::to_string(slotId).c_str());'
++        new = b'SetParameter(PRIMARY_SLOTID_KEY.c_str(), std::to_string(slotId + 1).c_str());'
++        if original.count(old) != 1:
++            raise RuntimeError('Mutation source pattern drift')
++        mutant_source = session / 'mutation/multi_sim_controller.cpp'
++        mutant_source.parent.mkdir()
++        mutant_source.write_bytes(original.replace(old, new, 1))
++        (session / 'mutation/change.patch').write_text(''.join(difflib.unified_diff(
++            original.decode().splitlines(True), mutant_source.read_bytes().decode().splitlines(True),
++            fromfile='original/multi_sim_controller.cpp', tofile='mutant/multi_sim_controller.cpp')))
++        # Sibling output permits immutable original object reuse; GN/Ninja rebuild
++        # the altered source and link a separate binary. Original output never changes.
++        mutant_build = Path(tempfile.mkdtemp(prefix='sim028-mutant-', dir=build.parent))
++        shutil.copytree(build, mutant_build, dirs_exist_ok=True)
++        mutant_args = gnargs + ' primary_slot_controller_source=' + json.dumps(str(mutant_source))
++        configured = run(['gn', 'gen', mutant_build, '--root=' + str(SYSTEM),
++                          '--export-compile-commands', '--args=' + mutant_args], 'mutation-configure')
++        compiled = run(['ninja', '-C', mutant_build, '-j4', 'sim_primary_slot_real_test'], 'mutation-build') if configured == 0 else 2
++        mutant_xml = session / 'mutation.xml'
++        mutation = {'status': 'BLOCKED', 'build_dir': str(mutant_build), 'change': 'primary slot parameter slotId -> slotId+1',
++                    'production_source_sha256': hashlib.sha256(original).hexdigest(), 'build_exit_code': compiled}
++        baseline = next((c for c in result['cases'] if c['name'] == 'RealSimPrimary.C0CoreToRealManagerAndController'), None)
++        if compiled == 0:
++            env['LLVM_PROFILE_FILE'] = str(session / 'mutation.profraw')
++            code = run([mutant_build / 'sim_primary_slot_real_test',
++                        '--gtest_filter=RealSimPrimary.C0CoreToRealManagerAndController',
++                        '--gtest_output=xml:' + str(mutant_xml)], 'mutation-run', env)
++            cases = ET.parse(mutant_xml).getroot().findall('.//testcase') if mutant_xml.exists() else []
++            failures = [f.text for c in cases for f in c.findall('failure')]
++            detected = (baseline is not None and baseline.get('properties', {}).get('business_assertions_before_cleanup') == 'PASS'
++                        and len(cases) == 1 and code != 0 and any('PRIMARY_COMMIT_TARGET' in f for f in failures)
++                        and not any('PRIMARY_COMMIT_TARGET' in f for f in baseline.get('failures', [])))
++            mutation.update({'status': 'PASS' if detected else 'FAIL', 'detected': detected, 'exit_code': code,
++                             'failures': failures, 'binary_sha256': sha(mutant_build / 'sim_primary_slot_real_test')})
++        mutation['production_unchanged'] = source.read_bytes() == original
++        mutation['original_binary_unchanged'] = sha(binary) == result['binary_sha256']
++        if not mutation['production_unchanged'] or not mutation['original_binary_unchanged']:
++            raise RuntimeError('Original input changed during negative control')
++        result['mutation'] = mutation
++    if result.get('mutation', {}).get('status') in ['FAIL', 'BLOCKED']:
++        result['status'] = 'FAIL'
++    write(session / 'result.json', result)
++    write(output / 'latest.json', result)
++    print(json.dumps({'status': result['status'], 'counts': result['counts'], 'layers': result['layers'], 'artifacts': str(session)}, indent=2))
++    return int(result['status'] != 'PASS')
++
++if __name__ == '__main__':
++    raise SystemExit(main())

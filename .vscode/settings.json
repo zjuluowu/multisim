@@ -16,6 +16,14 @@
       "env": {
         "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/testmate-%p.profraw"
       }
+    },
+    {
+      "pattern": ".host-out/build/sim_primary_slot_real_test",
+      "cwd": "${workspaceFolder}/.host-out",
+      "env": {
+        "SIM_HOST_BOOT_SLOT_COUNT": "2",
+        "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/real-testmate-%p.profraw"
+      }
     }
   ]
 }

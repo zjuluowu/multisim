@@ -1,0 +1,74 @@
++ gn gen /mnt/e/github/multisim/.host-out/build --root=/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest --export-compile-commands --args=gtest_root="/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59" production_root="/mnt/e/github/multisim/telephony_core_service" host_debug=true openssl_root="/tmp/sim028-deps/openssl" sim028_runtime_root="/tmp/sim028-deps/native"
+Generating compile_commands took 5ms
+Done. Made 24 targets from 3 files in 66ms
++ ninja -C /mnt/e/github/multisim/.host-out/build -j 4 sim_guard_legacy sim_guard_pin_memory platform_adapter_test sim_component_test sim_primary_slot_entry_test sim_primary_slot_real_test
+ninja: Entering directory `/mnt/e/github/multisim/.host-out/build'
+ninja: no work to do.
++ /mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test --gtest_filter=RealSimPrimary.C0CoreToRealManagerAndController --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-zanrbszu/selected-0.xml
+Note: Google Test filter = RealSimPrimary.C0CoreToRealManagerAndController
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RealSimPrimary
+[ RUN      ] RealSimPrimary.C0CoreToRealManagerAndController
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey0=-1
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey1=-1
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey2=-1
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey0=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey1=-1
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey2=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+DIAGNOSTIC ACCOUNT_NOTIFY
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE input request=C0CoreToRealManagerAndController slot=1 userSet=true
+TRACE parameter persist.telephony.userPreferPrimarySlot=true
+TRACE parameter persist.telephony.MainSlotId=1
+TRACE parameter persist.telephony.MainCard.Iccid=AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2
+TRACE notify usual.event.SIM.DEFAULT_MAIN_SUBSCRIPTION_CHANGED slot=1 sim=1 done=0 user=0
+TRACE parameter persist.telephony.MainCellularDataSlotId=1
+TRACE notify usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED slot=-1 sim=1 done=0 user=0
+DIAGNOSTIC SET_DEFAULT_CELLULAR_DATA
+DIAGNOSTIC ACCOUNT_NOTIFY
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:290: Failure
+Value of: SimHost::AwaitSchedulerStopped(3s)
+  Actual: false
+Expected: true
+REAL_GRAPH_LIFETIME_NOT_DRAINED
+
+[  FAILED  ] RealSimPrimary.C0CoreToRealManagerAndController (3022 ms)
+[----------] 1 test from RealSimPrimary (3024 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3029 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] RealSimPrimary.C0CoreToRealManagerAndController
+
+ 1 FAILED TEST
+
+../../telephony_core_service/services/multisim/test/systemtest/stubs/mock_tel_ril_manager.h:138: ERROR: this mock object (used in test RealSimPrimary.C0CoreToRealManagerAndController) should be deleted but never is. Its address is @0x6024e357b6e0.
+ERROR: 1 leaked mock object found at program exit. Expectations on a mock object are verified when the object is destructed. Leaking a mock means that its expectations aren't verified, which is usually a test bug. If you really intend to leak a mock, you can suppress this error using testing::Mock::AllowLeak(mock_object), or you may use a fake or stub instead of a mock.
+[
+  {
+    "name": "selected-0",
+    "exit_code": 1,
+    "status": "FAIL",
+    "tests": 1,
+    "passed": 0,
+    "failed": 1,
+    "binary_sha256": "a2bdc3644c48fff8834cad48ea0211e22f64ee3c7c574ad9046baf23374731ac",
+    "filter": "RealSimPrimary.C0CoreToRealManagerAndController",
+    "skipped": 0
+  }
+]
+Evidence: /mnt/e/github/multisim/.host-out/runs/run-zanrbszu

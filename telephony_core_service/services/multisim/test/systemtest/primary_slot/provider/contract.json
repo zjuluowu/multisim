@@ -1,0 +1,640 @@
+{
+  "repository": "https://gitcode.com/openharmony/telephony_telephony_data.git",
+  "commit": "74b8597ecbeea4dd39eacb4a9e7fa22f8a9389b4",
+  "source_files": [
+    {
+      "path": "interfaces/innerkits/include/sim_data.h",
+      "sha256": "f5e1bdb2d0225d76d8117baa01784ce8b28bd8df68812ac0f8607eda07fd62c7"
+    },
+    {
+      "path": "common/include/data_storage_errors.h",
+      "sha256": "e20bbd0347175f95f8e6d81bf36356cd3f27d5f3f68cea86df3aeacc7956da9b"
+    },
+    {
+      "path": "sim/src/rdb_sim_helper.cpp",
+      "sha256": "e87b2b6c21d1b3f08b9b9e40550c2f3699609fe4dde04cd818901670bc8b2623"
+    },
+    {
+      "path": "sim/src/rdb_sim_callback.cpp",
+      "sha256": "93733e3b9cefc6ca51d16d1082bf19236a5df8f4967161f60a4f14f116dc36c2"
+    },
+    {
+      "path": "sim/src/sim_ability.cpp",
+      "sha256": "4c776fe5c802422b51edcc47b2fa09ba442dd08bc81251d4975fcc1e6a90bfc9"
+    },
+    {
+      "path": "sim/include/sim_ability.h",
+      "sha256": "ca61f6f762133cef4074d7810d145fc7b90054e516160e2941783c2fd452a7f1"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "0cec06e0e55fbc3dc5cee4fca9b607f66cb8f4e4dbcf3b3c013594dd156732e9"
+    },
+    {
+      "path": "common/src/rdb_base_helper.cpp",
+      "sha256": "c1882463a5c7268ee1465df72db1873180b44514b77daea2818b5682f89b76e1"
+    },
+    {
+      "path": "BUILD.gn",
+      "sha256": "b0c7f999e72c9442b72527778a375dfe4ee7932bb1a59e5449db032b0a4bf0ed"
+    },
+    {
+      "path": "bundle.json",
+      "sha256": "e7d37f45b92bd38da6d9d9c4761d10f8294d995f3062e7c0298b8a152f572f3f"
+    }
+  ],
+  "old_host_header": "stubs/include/sim_data.h",
+  "root_cause": "Host pinned an older telephony_data_storage sim/include/sim_data.h; current official component uses interfaces/innerkits/include/sim_data.h. All 14 declarations and SQL columns are present.",
+  "fields": [
+    {
+      "symbol": "PHY_CARD",
+      "column": "phy_card",
+      "schema_evidence": [
+        {
+          "line": 75,
+          "text": "createTableStr.append(SimData::PHY_CARD).append(\" INTEGER DEFAULT 0, \");"
+        }
+      ],
+      "consumer_uses": [
+        {
+          "source": "services/sim/src/card_file_detect_manager.cpp",
+          "function": "CardFileDetectManager::BuildDataShareValues",
+          "line": 58,
+          "text": "values.Put(SimData::PHY_CARD, DataShare::DataShareValueObject(data.phyCard));"
+        },
+        {
+          "source": "services/sim/src/sim_rdb_helper.cpp",
+          "function": "SimRdbHelper::SaveDataToBeanEx",
+          "line": 411,
+          "text": "result->GetColumnIndex(SimData::PHY_CARD, index);"
+        }
+      ],
+      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::PHY_CARD",
+      "migration_evidence": [
+        {
+          "line": 69,
+          "text": "std::string(SimData::PHY_CARD) + \" INTEGER DEFAULT \" + \"0;\");"
+        }
+      ]
+    },
+    {
+      "symbol": "LSI",
+      "column": "lsi",
+      "schema_evidence": [
+        {
+          "line": 76,
+          "text": "createTableStr.append(SimData::LSI).append(\" INTEGER DEFAULT 1, \");"
+        }
+      ],
+      "consumer_uses": [
+        {
+          "source": "services/sim/src/card_file_detect_manager.cpp",
+          "function": "CardFileDetectManager::BuildDataShareValues",
+          "line": 59,
+          "text": "values.Put(SimData::LSI, DataShare::DataShareValueObject(data.lsi));"
+        },
+        {
+          "source": "services/sim/src/sim_rdb_helper.cpp",
+          "function": "SimRdbHelper::SaveDataToBeanEx",
+          "line": 413,
+          "text": "result->GetColumnIndex(SimData::LSI, index);"
+        }
+      ],
+      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::LSI",
+      "migration_evidence": [
+        {
+          "line": 71,
+          "text": "std::string(SimData::LSI) + \" INTEGER DEFAULT \" + \"-1;\");"
+        }
+      ]
+    },
+    {
+      "symbol": "SIM_LABEL_INDEX",
+      "column": "sim_label_index",
+      "schema_evidence": [
+        {
+          "line": 73,
+          "text": "createTableStr.append(SimData::SIM_LABEL_INDEX).append(\" INTEGER DEFAULT 1, \");"
+        }
+      ],
+      "consumer_uses": [
+        {
+          "source": "services/sim/src/card_file_detect_manager.cpp",
+          "function": "CardFileDetectManager::BuildDataShareValues",
+          "line": 62,
+          "text": "values.Put(SimData::SIM_LABEL_INDEX, DataShare::DataShareValueObject(data.phyCard + 1));"
+        },
+        {
+          "source": "services/sim/src/card_file_detect_manager.cpp",
+          "function": "CardFileDetectManager::BuildDataShareValues",
+          "line": 66,
+          "text": "values.Put(SimData::SIM_LABEL_INDEX, DataShare::DataShareValueObject(-1));"
+        },
+        {
+          "source": "services/sim/src/multi_sim_controller.cpp",
+          "function": "MultiSimController::UpdateDataByIccId",
+          "line": 490,
+          "text": "values.Put(SimData::SIM_LABEL_INDEX, labelIndexObj);"
+        },
+        {
+          "source": "services/sim/src/multi_sim_controller.cpp",
+          "function": "MultiSimController::SimDataBuilder",
+          "line": 573,
+          "text": "values.Put(SimData::SIM_LABEL_INDEX, simLabelIndexObj);"
+        },
+        {
+          "source": "services/sim/src/multi_sim_controller.cpp",
+          "function": "MultiSimController::SetSimLabelIndexByIccId",
+          "line": 615,
+          "text": "values.Put(SimData::SIM_LABEL_INDEX, indexObj);"
+        },
+        {
+          "source": "services/sim/src/multi_sim_helper.cpp",
+          "function": "MultiSimHelper::SimDataBuilder",
+          "line": 157,
+          "text": "values.Put(SimData::SIM_LABEL_INDEX, simLabelIndexObj);"
+        },
+        {
+          "source": "services/sim/src/multi_sim_helper.cpp",
+          "function": "MultiSimHelper::BuildSimPresentValues",
+          "line": 186,
+          "text": "values.Put(SimData::SIM_LABEL_INDEX, simLabelIndexObj);"
+        },
+        {
+          "source": "services/sim/src/sim_cache_sync_manager.cpp",
+          "function": "SimCacheSyncManager::BuildDataShareValues",
+          "line": 274,
+          "text": "values.Put(SimData::SIM_LABEL_INDEX, simLabelIndexObj);"
+        },
+        {
+          "source": "services/sim/src/sim_cache_sync_manager.cpp",
+          "function": "SimCacheSyncManager::BuildPartialDataShareValues",
+          "line": 365,
+          "text": "values.Put(SimData::SIM_LABEL_INDEX, labelObj);"
+        },
+        {
+          "source": "services/sim/src/sim_rdb_helper.cpp",
+          "function": "SimRdbHelper::SaveDataToBean",
+          "line": 401,
+          "text": "result->GetColumnIndex(SimData::SIM_LABEL_INDEX, index);"
+        },
+        {
+          "source": "services/sim/src/sim_rdb_helper.cpp",
+          "function": "SimRdbHelper::ForgetAllData",
+          "line": 578,
+          "text": "simLabelValue.Put(SimData::SIM_LABEL_INDEX, valueObj);"
+        },
+        {
+          "source": "services/sim/src/sim_rdb_helper.cpp",
+          "function": "SimRdbHelper::ForgetAllData",
+          "line": 602,
+          "text": "value.Put(SimData::SIM_LABEL_INDEX, valueIndex);"
+        },
+        {
+          "source": "services/sim/src/sim_rdb_helper.cpp",
+          "function": "SimRdbHelper::ClearSimLabel",
+          "line": 630,
+          "text": "predicates.GreaterThan(SimData::SIM_LABEL_INDEX, 0);"
+        },
+        {
+          "source": "services/sim/src/sim_rdb_helper.cpp",
+          "function": "SimRdbHelper::ClearSimLabel",
+          "line": 632,
+          "text": "simLabelValue.Put(SimData::SIM_LABEL_INDEX, valueObj);"
+        },
+        {
+          "source": "services/sim/src/sim_rdb_helper.cpp",
+          "function": "SimRdbHelper::UpdateSimPresent",
+          "line": 678,
+          "text": "values.Put(SimData::SIM_LABEL_INDEX, indexObj);"
+        }
+      ],
+      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::SIM_LABEL_INDEX",
+      "migration_evidence": [
+        {
+          "line": 50,
+          "text": "std::string(SimData::SIM_LABEL_INDEX) + \" INTEGER DEFAULT \" + \"1;\");"
+        }
+      ]
+    },
+    {
+      "symbol": "IS_ESIM",
+      "column": "is_esim",
+      "schema_evidence": [
+        {
+          "line": 72,
+          "text": "createTableStr.append(SimData::IS_ESIM).append(\" INTEGER DEFAULT 0, \");"
+        }
+      ],
+      "consumer_uses": [
+        {
+          "source": "services/sim/src/card_file_detect_manager.cpp",
+          "function": "CardFileDetectManager::BuildDataShareValues",
+          "line": 63,
+          "text": "values.Put(SimData::IS_ESIM, DataShare::DataShareValueObject(0));"
+        },
+        {
+          "source": "services/sim/src/card_file_detect_manager.cpp",
+          "function": "CardFileDetectManager::BuildDataShareValues",
+          "line": 68,
+          "text": "values.Put(SimData::IS_ESIM, DataShare::DataShareValueObject(1));"
+        },
+        {
+          "source": "services/sim/src/multi_sim_controller.cpp",
+          "function": "MultiSimController::SimDataBuilder",
+          "line": 572,
+          "text": "values.Put(SimData::IS_ESIM, isEsimObj);"
+        },
+        {
+          "source": "services/sim/src/multi_sim_helper.cpp",
+          "function": "MultiSimHelper::SimDataBuilder",
+          "line": 156,
+          "text": "values.Put(SimData::IS_ESIM, isEsimObj);"
+        },
+        {
+          "source": "services/sim/src/multi_sim_helper.cpp",
+          "function": "MultiSimHelper::BuildSimPresentValues",
+          "line": 187,
+          "text": "values.Put(SimData::IS_ESIM, isEsimObj);"
+        },
+        {
+          "source": "services/sim/src/sim_cache_sync_manager.cpp",
+          "function": "SimCacheSyncManager::BuildDataShareValues",
+          "line": 271,
+          "text": "values.Put(SimData::IS_ESIM, isEsimObj);"
+        },
+        {
+          "source": "services/sim/src/sim_cache_sync_manager.cpp",
+          "function": "SimCacheSyncManager::BuildPartialDataShareValues",
+          "line": 386,
+          "text": "values.Put(SimData::IS_ESIM, esimObj);"
+        },
+        {
+          "source": "services/sim/src/sim_rdb_helper.cpp",
+          "function": "SimRdbHelper::SaveDataToBean",
+          "line": 399,
+          "text": "result->GetColumnIndex(SimData::IS_ESIM, index);"
+        },
+        {
+          "source": "services/sim/src/sim_rdb_helper.cpp",
+          "function": "SimRdbHelper::ForgetAllData",
+          "line": 561,
+          "text": "predicates1.EqualTo(SimData::IS_ESIM, std::to_string(0));"
+        },
+        {
+          "source": "services/sim/src/sim_rdb_helper.cpp",
+          "function": "SimRdbHelper::ForgetAllData",
+          "line": 575,
+          "text": "predicates2.EqualTo(SimData::IS_ESIM, std::to_string(0));"
+        },
+        {
+          "source": "services/sim/src/sim_rdb_helper.cpp",
+          "function": "SimRdbHelper::ClearSimLabel",
+          "line": 629,
+          "text": "predicates.EqualTo(SimData::IS_ESIM, std::to_string(isEsim));"
+        }
+      ],
+      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::IS_ESIM",
+      "migration_evidence": [
+        {
+          "line": 48,
+          "text": "std::string(SimData::IS_ESIM) + \" INTEGER DEFAULT \" + \"0;\");"
+        }
+      ]
+    },
+    {
+      "symbol": "MNC_LEN",
+      "column": "mnc_len",
+      "schema_evidence": [
+        {
+          "line": 77,
+          "text": "createTableStr.append(SimData::MNC_LEN).append(\" INTEGER DEFAULT 1, \");"
+        }
+      ],
+      "consumer_uses": [
+        {
+          "source": "services/sim/src/card_file_detect_manager.cpp",
+          "function": "CardFileDetectManager::BuildDataShareValues",
+          "line": 72,
+          "text": "values.Put(SimData::MNC_LEN, DataShare::DataShareValueObject(data.mncLen));"
+        },
+        {
+          "source": "services/sim/src/sim_rdb_helper.cpp",
+          "function": "SimRdbHelper::SaveDataToBeanEx",
+          "line": 415,
+          "text": "result->GetColumnIndex(SimData::MNC_LEN, index);"
+        }
+      ],
+      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::MNC_LEN",
+      "migration_evidence": [
+        {
+          "line": 73,
+          "text": "std::string(SimData::MNC_LEN) + \" INTEGER DEFAULT \" + \"-1;\");"
+        }
+      ]
+    },
+    {
+      "symbol": "OPERATOR_NAME",
+      "column": "operator_name",
+      "schema_evidence": [
+        {
+          "line": 74,
+          "text": "createTableStr.append(SimData::OPERATOR_NAME).append(\" TEXT DEFAULT '', \");"
+        }
+      ],
+      "consumer_uses": [
+        {
+          "source": "services/sim/src/multi_sim_controller.cpp",
+          "function": "MultiSimController::InsertEsimData",
+          "line": 549,
+          "text": "values.Put(SimData::OPERATOR_NAME, operatorNameObj);"
+        },
+        {
+          "source": "services/sim/src/sim_cache_sync_manager.cpp",
+          "function": "SimCacheSyncManager::BuildDataShareValues",
+          "line": 289,
+          "text": "values.Put(SimData::OPERATOR_NAME, operatorNameObj);"
+        },
+        {
+          "source": "services/sim/src/sim_cache_sync_manager.cpp",
+          "function": "SimCacheSyncManager::BuildPartialDataShareValues",
+          "line": 368,
+          "text": "values.Put(SimData::OPERATOR_NAME, opNameObj);"
+        },
+        {
+          "source": "services/sim/src/sim_rdb_helper.cpp",
+          "function": "SimRdbHelper::SaveDataToBean",
+          "line": 403,
+          "text": "result->GetColumnIndex(SimData::OPERATOR_NAME, index);"
+        },
+        {
+          "source": "services/sim/src/sim_rdb_helper.cpp",
+          "function": "SimRdbHelper::UpdateEsimOpName",
+          "line": 655,
+          "text": "valuesBucket.Put(SimData::OPERATOR_NAME, valueObj);"
+        }
+      ],
+      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::OPERATOR_NAME",
+      "migration_evidence": [
+        {
+          "line": 52,
+          "text": "std::string(SimData::OPERATOR_NAME) + \" TEXT DEFAULT \" + \" '' ;\");"
+        }
+      ]
+    },
+    {
+      "symbol": "MCC",
+      "column": "mcc",
+      "schema_evidence": [
+        {
+          "line": 70,
+          "text": "createTableStr.append(SimData::MCC).append(\" TEXT DEFAULT '', \");"
+        }
+      ],
+      "consumer_uses": [
+        {
+          "source": "services/sim/src/operator_config_loader.cpp",
+          "function": "OperatorConfigLoader::InsertOpkeyToSimDb",
+          "line": 120,
+          "text": "values.Put(SimData::MCC, mccObj);"
+        }
+      ],
+      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::MCC",
+      "migration_evidence": [
+        {
+          "line": 41,
+          "text": "std::string(SimData::MCC) + \" TEXT DEFAULT \" + \" '' ;\");"
+        }
+      ]
+    },
+    {
+      "symbol": "MNC",
+      "column": "mnc",
+      "schema_evidence": [
+        {
+          "line": 71,
+          "text": "createTableStr.append(SimData::MNC).append(\" TEXT DEFAULT '', \");"
+        }
+      ],
+      "consumer_uses": [
+        {
+          "source": "services/sim/src/operator_config_loader.cpp",
+          "function": "OperatorConfigLoader::InsertOpkeyToSimDb",
+          "line": 121,
+          "text": "values.Put(SimData::MNC, mncObj);"
+        }
+      ],
+      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::MNC",
+      "migration_evidence": [
+        {
+          "line": 43,
+          "text": "std::string(SimData::MNC) + \" TEXT DEFAULT \" + \" '' ;\");"
+        }
+      ]
+    },
+    {
+      "symbol": "GID1",
+      "column": "gid1",
+      "schema_evidence": [
+        {
+          "line": 79,
+          "text": "createTableStr.append(SimData::GID1).append(\" TEXT DEFAULT '', \");"
+        }
+      ],
+      "consumer_uses": [
+        {
+          "source": "services/sim/src/card_file_detect_manager.cpp",
+          "function": "CardFileDetectManager::BuildDataShareValues",
+          "line": 79,
+          "text": "PutString(SimData::GID1, data.gid1);"
+        },
+        {
+          "source": "services/sim/src/sim_rdb_helper.cpp",
+          "function": "SimRdbHelper::SaveDataToBeanEx",
+          "line": 417,
+          "text": "result->GetColumnIndex(SimData::GID1, index);"
+        }
+      ],
+      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::GID1",
+      "migration_evidence": [
+        {
+          "line": 77,
+          "text": "std::string(SimData::GID1) + \" TEXT DEFAULT \" + \" '' ;\");"
+        }
+      ]
+    },
+    {
+      "symbol": "GID2",
+      "column": "gid2",
+      "schema_evidence": [
+        {
+          "line": 80,
+          "text": "createTableStr.append(SimData::GID2).append(\" TEXT DEFAULT '', \");"
+        }
+      ],
+      "consumer_uses": [
+        {
+          "source": "services/sim/src/card_file_detect_manager.cpp",
+          "function": "CardFileDetectManager::BuildDataShareValues",
+          "line": 80,
+          "text": "PutString(SimData::GID2, data.gid2);"
+        },
+        {
+          "source": "services/sim/src/sim_rdb_helper.cpp",
+          "function": "SimRdbHelper::SaveDataToBeanEx",
+          "line": 419,
+          "text": "result->GetColumnIndex(SimData::GID2, index);"
+        }
+      ],
+      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::GID2",
+      "migration_evidence": [
+        {
+          "line": 79,
+          "text": "std::string(SimData::GID2) + \" TEXT DEFAULT \" + \" '' ;\");"
+        }
+      ]
+    },
+    {
+      "symbol": "SPN",
+      "column": "spn",
+      "schema_evidence": [
+        {
+          "line": 81,
+          "text": "createTableStr.append(SimData::SPN).append(\" TEXT DEFAULT '', \");"
+        }
+      ],
+      "consumer_uses": [
+        {
+          "source": "services/sim/src/card_file_detect_manager.cpp",
+          "function": "CardFileDetectManager::BuildDataShareValues",
+          "line": 81,
+          "text": "PutString(SimData::SPN, data.spn);"
+        },
+        {
+          "source": "services/sim/src/sim_rdb_helper.cpp",
+          "function": "SimRdbHelper::SaveDataToBeanEx",
+          "line": 421,
+          "text": "result->GetColumnIndex(SimData::SPN, index);"
+        }
+      ],
+      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::SPN",
+      "migration_evidence": [
+        {
+          "line": 81,
+          "text": "std::string(SimData::SPN) + \" TEXT DEFAULT \" + \" '' ;\");"
+        }
+      ]
+    },
+    {
+      "symbol": "OPKEY",
+      "column": "opkey",
+      "schema_evidence": [
+        {
+          "line": 69,
+          "text": "createTableStr.append(SimData::OPKEY).append(\" TEXT DEFAULT '', \");"
+        }
+      ],
+      "consumer_uses": [
+        {
+          "source": "services/sim/src/operator_config_loader.cpp",
+          "function": "OperatorConfigLoader::InsertOpkeyToSimDb",
+          "line": 119,
+          "text": "values.Put(SimData::OPKEY, opkeyObj);"
+        },
+        {
+          "source": "services/sim/src/sim_rdb_helper.cpp",
+          "function": "SimRdbHelper::UpdateOpKeyInfo",
+          "line": 85,
+          "text": "valuesBucket.Put(SimData::OPKEY, valueObj);"
+        }
+      ],
+      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::OPKEY",
+      "migration_evidence": [
+        {
+          "line": 39,
+          "text": "std::string(SimData::OPKEY) + \" TEXT DEFAULT \" + \" '' ;\");"
+        }
+      ]
+    },
+    {
+      "symbol": "EHPLMN",
+      "column": "ehplmn",
+      "schema_evidence": [
+        {
+          "line": 82,
+          "text": "createTableStr.append(SimData::EHPLMN).append(\" TEXT DEFAULT '', \");"
+        }
+      ],
+      "consumer_uses": [
+        {
+          "source": "services/sim/src/card_file_detect_manager.cpp",
+          "function": "CardFileDetectManager::BuildDataShareValues",
+          "line": 82,
+          "text": "PutString(SimData::EHPLMN, data.ehplmn);"
+        },
+        {
+          "source": "services/sim/src/sim_rdb_helper.cpp",
+          "function": "SimRdbHelper::SaveDataToBeanEx",
+          "line": 423,
+          "text": "result->GetColumnIndex(SimData::EHPLMN, index);"
+        }
+      ],
+      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::EHPLMN",
+      "migration_evidence": [
+        {
+          "line": 83,
+          "text": "std::string(SimData::EHPLMN) + \" TEXT DEFAULT \" + \" '' ;\");"
+        }
+      ]
+    },
+    {
+      "symbol": "EFUST",
+      "column": "efust",
+      "schema_evidence": [
+        {
+          "line": 78,
+          "text": "createTableStr.append(SimData::EFUST).append(\" TEXT DEFAULT '', \");"
+        }
+      ],
+      "consumer_uses": [
+        {
+          "source": "services/sim/src/card_file_detect_manager.cpp",
+          "function": "CardFileDetectManager::BuildDataShareValues",
+          "line": 77,
+          "text": "PutString(SimData::EFUST, data.efust);"
+        }
+      ],
+      "declaration": "interfaces/innerkits/include/sim_data.h: SimData::EFUST",
+      "migration_evidence": [
+        {
+          "line": 75,
+          "text": "std::string(SimData::EFUST) + \" TEXT DEFAULT \" + \" '' ;\");"
+        }
+      ]
+    }
+  ],
+  "uri": {
+    "base": "datashare:///com.ohos.simability",
+    "query_path": "/sim/sim_info",
+    "normalization": "SimAbility::ParseUriType replaces :/// with :// then maps path",
+    "evidence": "sim/src/sim_ability.cpp:43-45,321-338"
+  },
+  "io_semantics": {
+    "Insert": "row id or DATA_STORAGE_ERROR (-1); permission error -3",
+    "Query": "result set or nullptr; not an empty result by default",
+    "Update": "SimAbility::Update returns helper_.Update result, not changedRows; RdbBaseHelper::Update delegates NativeRdb::RdbStore::Update status. Fixture explicitly returns OPERATION_OK=0 only after applying requested column updates.",
+    "database": "sim_info columns verified; Host does not claim durable Provider transactions or permissions"
+  },
+  "schema_excerpt": "void RdbSimHelper::CreateSimInfoTableStr(std::string &createTableStr)\n{\n    createTableStr.append(\"CREATE TABLE IF NOT EXISTS \").append(TABLE_SIM_INFO);\n    createTableStr.append(\"(\").append(SimData::SIM_ID).append(\" INTEGER PRIMARY KEY AUTOINCREMENT, \");\n    createTableStr.append(SimData::ICC_ID).append(\" TEXT NOT NULL, \");\n    createTableStr.append(SimData::CARD_ID).append(\" TEXT NOT NULL, \");\n    createTableStr.append(SimData::SLOT_INDEX).append(\" INTEGER DEFAULT -1, \");\n    createTableStr.append(SimData::SHOW_NAME).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::PHONE_NUMBER).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::COUNTRY_CODE).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::IMSI).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::IS_MAIN_CARD).append(\" INTEGER DEFAULT 0, \");\n    createTableStr.append(SimData::IS_VOICE_CARD).append(\" INTEGER DEFAULT 0, \");\n    createTableStr.append(SimData::IS_MESSAGE_CARD).append(\" INTEGER DEFAULT 0, \");\n    createTableStr.append(SimData::IS_CELLULAR_DATA_CARD).append(\" INTEGER DEFAULT 0, \");\n    createTableStr.append(SimData::IS_ACTIVE).append(\" INTEGER DEFAULT 1, \");\n    createTableStr.append(SimData::CARD_TYPE).append(\" INTEGER , \");\n    createTableStr.append(SimData::IMS_SWITCH).append(\" INTEGER DEFAULT -1, \");\n    createTableStr.append(SimData::LANGUAGE).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::OPKEY).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::MCC).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::MNC).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::IS_ESIM).append(\" INTEGER DEFAULT 0, \");\n    createTableStr.append(SimData::SIM_LABEL_INDEX).append(\" INTEGER DEFAULT 1, \");\n    createTableStr.append(SimData::OPERATOR_NAME).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::PHY_CARD).append(\" INTEGER DEFAULT 0, \");\n    createTableStr.append(SimData::LSI).append(\" INTEGER DEFAULT 1, \");\n    createTableStr.append(SimData::MNC_LEN).append(\" INTEGER DEFAULT 1, \");\n    createTableStr.append(SimData::EFUST).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::GID1).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::GID2).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::SPN).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(SimData::EHPLMN).append(\" TEXT DEFAULT '', \");\n    createTableStr.append(\"UNIQUE (\");\n    createTableStr.append(SimData::ICC_ID).append(\", \");\n    createTableStr.append(SimData::CARD_ID).append(\"))\");\n}",
+  "schema_caution": "CreateSimInfoTableStr defaults and ALTER migration defaults differ (notably LSI). Host fixtures specify each scenario explicitly; no schema upgrade/durability is simulated.",
+  "uri_evidence": {
+    "provider": "sim/src/sim_ability.cpp:43-45 maps /sim/sim_info and /sim/sim_info/set_card; ParseUriType normalizes datashare:///",
+    "consumer": "services/sim/include/sim_rdb_info.h SIM_RDB_SELECTION; services/sim/include/telephony_data_helper.h SIM_URI"
+  },
+  "fork_dependency_evidence": [
+    "bundle.json:77 requires telephony_data",
+    "BUILD.gn:256 external_deps telephony_data:tel_telephony_data",
+    "Provider BUILD.gn exports interfaces/innerkits/include"
+  ],
+  "matching_product_release": "NOT_VERIFIED: public telephony_data component contract and all current consumer symbols/schema verified; no OHOS product manifest/ABI integration claim"
+}

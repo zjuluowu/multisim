@@ -50,3 +50,9 @@ Tasks：Configure Host、Build Host、Run All Tests、Run Selected Test、Clean 
 17 条兼容场景覆盖单/双卡、存在性/状态、组件初始化缺 RIL、通知回调、PIN/PUK、异步交错、销毁重建；4 条 PIN 外部 Hook 契约、19 条设施及 1 条容量单列。5 条独立缺陷保留：迟到 READY、替换卡旧 READY、通用 RIL 错误映射、替换卡旧 PIN、Refresh 返回语义冲突（待裁决）。完整 Core/Manager OnInit、账户、默认角色、数据库恢复、eSIM、IPC/设备未覆盖；历史 Provider 缺字段证据保留，本轮没有重跑该闭包，不能记为新 PASS。
 
 2026-11-11 主卡接口增量：新增 `sim_primary_slot_entry_test` 与[覆盖审计入口](primary_slot/README.md)，真实入口契约14条单列，Host全量合计60条（原有46条保留）。ISimManager内部接缝之后的整部件主卡调用链仍BLOCKED；默认审计命令返回2，只有显式 `--entry-only` 才按入口覆盖验收。当前证据见 [primary_slot_validation_20261111.json](configs/primary_slot_validation_20261111.json)。
+
+## SIM-028 真实 Manager 场景
+
+真实业务目标、固定依赖及剩余生命周期红灯见 [primary_slot/README.md](primary_slot/README.md)。准备并配置依赖后，使用 `tools/run_host_tests.sh selected --target sim_primary_slot_real_test --filter 'RealSimPrimary.*'`，或 `tools/run_host_tests.sh all --with-real-primary`；后者包含原60例和新增7例，均逐项保留结果。真实目标逐例独立进程，B超时用例会等待实际45秒，失败退出码不会被吞掉。原入口14例仍使用StrictMock ISimManager，当前真实目标已经使用生产SimManager/Controller；完整CoreService/Stub/HDI仍BLOCKED。
+
+F5新增 `SIM-028: real C0 (WSL, known lifetime failure)`，CLI支持GTest精确筛选和LLDB。TestMate列表发现可在CLI核实，VS Code GUI仍MANUAL；真实目标整组运行使用Task，以保证进程隔离。编辑/断点使用Debug构建和 `.host-out/build/compile_commands.json`，不使用Windows编译程序。

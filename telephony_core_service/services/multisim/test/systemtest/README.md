@@ -104,3 +104,5 @@ python3 -B telephony_core_service/services/multisim/test/systemtest/scripts/run_
 干净代码 `20f92b4821dcaf8c24e78acf9db60b681b55c57c` 新建输出目录重新编译/链接后 7 PASS；恢复的历史 tip `728ad77ed4c723efbb5cb1baf7b3f10bb9830240`（含 cc787945 检查点）也重新构建 7 PASS，七组返回差分一致。当前证据见 [g2a_bplus_revalidation_20261105.json](configs/g2a_bplus_revalidation_20261105.json) 及[执行状态 §10](../../../../docs/SIM_Refactor_Execution_State.md#g2a-revalidation-20261105)。两个此前证据 JSON 均保留原字节。本轮状态仅为 `G2a_BPLUS_HOST_VERIFIED`；完整初始化及产品门禁仍未闭合，没有切换生产执行路径。
 
 最终审查修正审计测试中的方法编码样例，并补全 `ReadLegacyRealSimCount/Read`、`OnInit/Init` 正反检查；业务代码和冻结Oracle未变。最终干净代码 `722d044164c534f5898337c5b8eb1ccacb70c286` 在新输出目录 `query-final` 再次完整构建/链接和执行，仍7 PASS；JSON当前查询基线及摘要对应此提交，另保留首次20f92b48运行的关联。架构与完整初始化记录仍使用实际20f92b48基线，其相关生产源/GN没有变化。
+
+2026-11-11 SIM-028后续：真实SimManager/Controller及C0、B、C1运行入口与独立证据见 [primary_slot/README.md](primary_slot/README.md)。Provider字段阻塞已解除，真实目标完成链接；六个在卡场景保留清理阶段失败。旧初始化探针的历史BLOCKED不能代替该新目标的当前结果，新的业务执行也不代表CoreService/Stub/HDI或产品验收通过。

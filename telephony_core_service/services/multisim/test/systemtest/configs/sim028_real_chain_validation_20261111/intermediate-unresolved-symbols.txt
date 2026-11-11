@@ -1,0 +1,74 @@
+FreeCfgFiles
+GetCfgFilesEx
+GetIntParameter
+OHOS::AAFwk::AbilityManagerClient::GetInstance()
+OHOS::AAFwk::AbilityManagerClient::StartExtensionAbility(OHOS::AAFwk::Want const&, OHOS::sptr<OHOS::IRemoteObject>, int, OHOS::AppExecFwk::ExtensionAbilityType)
+OHOS::AppExecFwk::AppMgrClient::UpdateConfiguration(OHOS::AppExecFwk::Configuration const&)
+OHOS::AppExecFwk::Configuration::AddItem(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+OHOS::AppExecFwk::EventHandler::PostTask(std::function<void ()> const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, long)
+OHOS::AppExecFwk::EventHandler::SendEvent(std::unique_ptr<OHOS::AppExecFwk::InnerEvent, void (*)(OHOS::AppExecFwk::InnerEvent*)>&, long, OHOS::AppExecFwk::EventQueue::Priority)
+OHOS::AppExecFwk::EventRunner::Create(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, OHOS::AppExecFwk::ThreadMode)
+OHOS::DelayedSingleton<OHOS::Telephony::PdpProfileRdbHelper>::GetInstance()
+OHOS::DelayedSingleton<OHOS::Telephony::TelephonyDataHelper>::GetInstance()
+OHOS::ISystemAbilityManager::GetSystemAbility(int)
+OHOS::ISystemAbilityManager::SubscribeSystemAbility(int, OHOS::sptr<OHOS::ISystemAbilityStatusChange> const&)
+OHOS::ISystemAbilityManager::UnSubscribeSystemAbility(int, OHOS::sptr<OHOS::ISystemAbilityStatusChange> const&)
+OHOS::Str16ToStr8(std::__cxx11::basic_string<char16_t, std::char_traits<char16_t>, std::allocator<char16_t> > const&)
+OHOS::Str8ToStr16(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+OHOS::StrToInt(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int&)
+OHOS::SystemAbilityManagerClient::GetInstance()
+OHOS::SystemAbilityManagerClient::GetSystemAbilityManager()
+OHOS::Telephony::CoreManagerInner::GetInstance()
+OHOS::Telephony::CoreManagerInner::GetOperatorConfigs(int, OHOS::Telephony::OperatorConfig&)
+OHOS::Telephony::CoreManagerInner::GetPhoneType(int)
+OHOS::Telephony::CoreManagerInner::GetSimState(int, OHOS::Telephony::SimState&)
+OHOS::Telephony::CoreManagerInner::HasSimCard(int, bool&)
+OHOS::Telephony::CoreManagerInner::IsDataShareError()
+OHOS::Telephony::CoreManagerInner::IsEsim(int)
+OHOS::Telephony::CoreManagerInner::IsModemInitDone(int)
+OHOS::Telephony::CoreManagerInner::IsSatelliteEnabled()
+OHOS::Telephony::CoreManagerInner::ResetDataShareError()
+OHOS::Telephony::CoreManagerInner::ResetSimLoadAccount(int)
+OHOS::Telephony::CoreManagerInner::SetPrimarySlotId(int, bool)
+OHOS::Telephony::CoreManagerInner::UnregisterCommonEventCallback(std::shared_ptr<OHOS::Telephony::CoreServiceCommonEventCallback> const&)
+OHOS::Telephony::CoreServiceHiSysEvent::WriteDefaultDataSlotIdBehaviorEvent(int)
+OHOS::Telephony::CoreServiceHiSysEvent::WriteMatchSimStatisticEvent(int, OHOS::Telephony::MatchSimInfo const&)
+OHOS::Telephony::CoreServiceHiSysEvent::WriteSetActiveSimFaultEvent(int, OHOS::Telephony::SimCardErrorCode, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+OHOS::Telephony::CoreServiceHiSysEvent::WriteSimStateBehaviorEvent(int, int)
+OHOS::Telephony::IsValidDecValue(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+OHOS::Telephony::IsValidHexValue(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+OHOS::Telephony::ObserverHandler::NotifyObserver(int)
+OHOS::Telephony::ObserverHandler::ObserverHandler()
+OHOS::Telephony::ObserverHandler::RegObserver(int, std::shared_ptr<OHOS::AppExecFwk::EventHandler>)
+OHOS::Telephony::ObserverHandler::Remove(int, std::shared_ptr<OHOS::AppExecFwk::EventHandler>)
+OHOS::Telephony::TelephonyStateRegistryClient::TelephonyStateRegistryClient()
+OHOS::Telephony::TelephonyStateRegistryClient::UpdateCfuIndicator(int, bool)
+OHOS::Telephony::TelephonyStateRegistryClient::UpdateIccAccount()
+OHOS::Telephony::TelephonyStateRegistryClient::UpdateSimState(int, OHOS::Telephony::CardType, OHOS::Telephony::SimState, OHOS::Telephony::LockReason)
+OHOS::Telephony::TelephonyStateRegistryClient::UpdateVoiceMailMsgIndicator(int, bool)
+OHOS::Telephony::TelephonyStateRegistryClient::~TelephonyStateRegistryClient()
+OHOS::Telephony::ToUtf8(std::__cxx11::basic_string<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t> >)
+OHOS::system::GetBoolParameter(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, bool)
+OHOS::system::GetParameter(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+OHOS::system::SetParameter(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+RemoveParameterWatcher
+SHA256_Final
+SHA256_Init
+SHA256_Update
+SetParameter
+WatchParameter
+cJSON_AddItemToObject
+cJSON_CreateObject
+cJSON_Delete
+cJSON_GetArraySize
+cJSON_GetNumberValue
+cJSON_Parse
+cJSON_Print
+cJSON_PrintUnformatted
+cJSON_free
+int OHOS::system::GetIntParameter<int>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int, int, int)
+memset_s
+snprintf_s
+strcat_s
+strncpy_s
+vtable for OHOS::Telephony::OperatorConfig

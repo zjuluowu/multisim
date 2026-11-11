@@ -1,0 +1,7 @@
+settings set target.disable-aslr false
+breakpoint set --file multi_sim_controller.cpp --line 1485
+run
+thread backtrace
+frame variable slotId isUserSet
+breakpoint disable 1
+continue

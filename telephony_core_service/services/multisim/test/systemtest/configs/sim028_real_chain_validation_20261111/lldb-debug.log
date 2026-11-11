@@ -1,0 +1,101 @@
+(lldb) target create ".host-out/build/sim_primary_slot_real_test"
+Current executable set to '/mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test' (x86_64).
+(lldb) settings set -- target.run-args  "--gtest_filter=RealSimPrimary.C0CoreToRealManagerAndController"
+(lldb) command source -s 0 '/tmp/sim028-real-debug.commands'
+Executing commands in '/tmp/sim028-real-debug.commands'.
+(lldb) settings set target.disable-aslr false
+(lldb) breakpoint set --file multi_sim_controller.cpp --line 1485
+Breakpoint 1: where = sim_primary_slot_real_test`OHOS::Telephony::SimManager::SetPrimarySlotId(int, bool) + 133 [inlined] OHOS::Telephony::MultiSimController::SetPrimarySlotId(int, bool) + 14 at multi_sim_controller.cpp:1486:16, address = 0x000000000017e395
+(lldb) run
+[0;33mNote: Google Test filter = RealSimPrimary.C0CoreToRealManagerAndController
+[m[0;32m[==========] [mRunning 1 test from 1 test suite.
+[0;32m[----------] [mGlobal test environment set-up.
+[0;32m[----------] [m1 test from RealSimPrimary
+[0;32m[ RUN      ] [mRealSimPrimary.C0CoreToRealManagerAndController
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey0=-1
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey1=-1
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey2=-1
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE parameter telephony.sim.opkey0=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey1=-1
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey2=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+DIAGNOSTIC ACCOUNT_NOTIFY
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE input request=C0CoreToRealManagerAndController slot=1 userSet=true
+TRACE parameter persist.telephony.userPreferPrimarySlot=true
+Process 48 launched: '/mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test' (x86_64)
+Process 48 stopped
+* thread #1, name = 'sim_primary_slo', stop reason = breakpoint 1.1
+    frame #0: 0x000063aea5ca1395 sim_primary_slot_real_test`OHOS::Telephony::SimManager::SetPrimarySlotId(int, bool) [inlined] OHOS::Telephony::MultiSimController::SetPrimarySlotId(this=0x000063aedbe36360, slotId=1, isUserSet=true) at multi_sim_controller.cpp:1486:16
+   1483	int32_t MultiSimController::SetPrimarySlotId(int32_t slotId, bool isUserSet)
+   1484	{
+   1485	    TELEPHONY_LOGI("set primary slotId:%{public}d, isUserSet:%{public}d", slotId, isUserSet);
+-> 1486	    if (slotId == SIM_SLOT_3) {
+    	               ^
+   1487	        return NeedSwitchSimCard(SIM_SLOT_3);
+   1488	    }
+   1489	    if (isUserSet && isRilSetPrimarySlotSupport_) {
+(lldb) thread backtrace
+* thread #1, name = 'sim_primary_slo', stop reason = breakpoint 1.1
+  * frame #0: 0x000063aea5ca1395 sim_primary_slot_real_test`OHOS::Telephony::SimManager::SetPrimarySlotId(int, bool) [inlined] OHOS::Telephony::MultiSimController::SetPrimarySlotId(this=0x000063aedbe36360, slotId=1, isUserSet=true) at multi_sim_controller.cpp:1486:16
+    frame #1: 0x000063aea5ca1387 sim_primary_slot_real_test`OHOS::Telephony::SimManager::SetPrimarySlotId(this=0x000063aedbe1ff60, slotId=1, isUserSet=true) at sim_manager.cpp:425:40
+    frame #2: 0x000063aea5c956a2 sim_primary_slot_real_test`OHOS::Telephony::CoreServiceSim::SetPrimarySlotId(this=0x00007fff3c7de1e0, slotId=1) at core_service_sim.cpp:493:25
+    frame #3: 0x000063aea5c8b7dd sim_primary_slot_real_test`(anonymous namespace)::RealSimPrimary_C0CoreToRealManagerAndController_Test::TestBody(this=<unavailable>) at real_test.cpp:68:5
+    frame #4: 0x000063aea5dca025 sim_primary_slot_real_test`void testing::internal::HandleExceptionsInMethodIfSupported<testing::Test, void>(testing::Test*, void (testing::Test::*)(), char const*) [inlined] void testing::internal::HandleSehExceptionsInMethodIfSupported<testing::Test, void>(object=0x000063aedbe0fb20, method=0x00000000000000000000000000000021, location="the test body") at gtest.cc:2638:10
+    frame #5: 0x000063aea5dca016 sim_primary_slot_real_test`void testing::internal::HandleExceptionsInMethodIfSupported<testing::Test, void>(object=0x000063aedbe0fb20, method=0x00000000000000000000000000000021, location="the test body") at gtest.cc:2674:14
+    frame #6: 0x000063aea5dd8f5e sim_primary_slot_real_test`testing::internal::UnitTestImpl::RunAllTests() [inlined] testing::Test::Run(this=0x000063aedbe0fb20) at gtest.cc:2713:5
+    frame #7: 0x000063aea5dd8db3 sim_primary_slot_real_test`testing::internal::UnitTestImpl::RunAllTests() [inlined] testing::TestInfo::Run(this=0x000063aedbe036b0) at gtest.cc:2859:11
+    frame #8: 0x000063aea5dd8c54 sim_primary_slot_real_test`testing::internal::UnitTestImpl::RunAllTests() [inlined] testing::TestSuite::Run(this=0x000063aedbe03310) at gtest.cc:3037:30
+    frame #9: 0x000063aea5dd8879 sim_primary_slot_real_test`testing::internal::UnitTestImpl::RunAllTests(this=0x000063aedbe02f40) at gtest.cc:5967:44
+    frame #10: 0x000063aea5c8f712 sim_primary_slot_real_test`main [inlined] bool testing::internal::HandleSehExceptionsInMethodIfSupported<testing::internal::UnitTestImpl, bool>(object=0x000063aedbe02f40, method=0x00000000000000000000000000000000, location=<unavailable>) at gtest.cc:2638:10
+    frame #11: 0x000063aea5c8f70a sim_primary_slot_real_test`main [inlined] bool testing::internal::HandleExceptionsInMethodIfSupported<testing::internal::UnitTestImpl, bool>(object=0x000063aedbe02f40, method=0x00000000000000000000000000000000, location=<unavailable>) at gtest.cc:2674:14
+    frame #12: 0x000063aea5c8f6eb sim_primary_slot_real_test`main [inlined] testing::UnitTest::Run(this=<unavailable>) at gtest.cc:5546:10
+    frame #13: 0x000063aea5c8f622 sim_primary_slot_real_test`main [inlined] RUN_ALL_TESTS() at gtest.h:2334:73
+    frame #14: 0x000063aea5c8f622 sim_primary_slot_real_test`main(argc=<unavailable>, argv=0x00007fff3c7dea88) at real_test.cpp:300:12
+    frame #15: 0x00007d857ca2a1ca libc.so.6`__libc_start_call_main(main=(sim_primary_slot_real_test`main at real_test.cpp:290), argc=2, argv=0x00007fff3c7dea88) at libc_start_call_main.h:58:16
+    frame #16: 0x00007d857ca2a28b libc.so.6`__libc_start_main_impl(main=(sim_primary_slot_real_test`main at real_test.cpp:290), argc=2, argv=0x00007fff3c7dea88, init=<unavailable>, fini=<unavailable>, rtld_fini=<unavailable>, stack_end=0x00007fff3c7dea78) at libc-start.c:360:3
+(lldb) frame variable slotId isUserSet
+(int32_t) slotId = 1
+(bool) isUserSet = true
+(lldb) breakpoint disable 1
+1 breakpoints disabled.
+(lldb) continue
+TRACE parameter persist.telephony.MainSlotId=1
+TRACE parameter persist.telephony.MainCard.Iccid=AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2
+TRACE notify usual.event.SIM.DEFAULT_MAIN_SUBSCRIPTION_CHANGED slot=1 sim=1 done=0 user=0
+TRACE parameter persist.telephony.MainCellularDataSlotId=1
+TRACE notify usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED slot=-1 sim=1 done=0 user=0
+DIAGNOSTIC SET_DEFAULT_CELLULAR_DATA
+DIAGNOSTIC ACCOUNT_NOTIFY
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:290: Failure
+Value of: SimHost::AwaitSchedulerStopped(3s)
+  Actual: false
+Expected: true
+REAL_GRAPH_LIFETIME_NOT_DRAINED
+
+[0;31m[  FAILED  ] [mRealSimPrimary.C0CoreToRealManagerAndController (3231 ms)
+[0;32m[----------] [m1 test from RealSimPrimary (3231 ms total)
+
+[0;32m[----------] [mGlobal test environment tear-down
+[0;32m[==========] [m1 test from 1 test suite ran. (3232 ms total)
+[0;32m[  PASSED  ] [m0 tests.
+[0;31m[  FAILED  ] [m1 test, listed below:
+[0;31m[  FAILED  ] [mRealSimPrimary.C0CoreToRealManagerAndController
+
+ 1 FAILED TEST
+
+../../telephony_core_service/services/multisim/test/systemtest/stubs/mock_tel_ril_manager.h:138: ERROR: this mock object (used in test RealSimPrimary.C0CoreToRealManagerAndController) should be deleted but never is. Its address is @0x63aedbe10990.
+ERROR: 1 leaked mock object found at program exit. Expectations on a mock object are verified when the object is destructed. Leaking a mock means that its expectations aren't verified, which is usually a test bug. If you really intend to leak a mock, you can suppress this error using testing::Mock::AllowLeak(mock_object), or you may use a fake or stub instead of a mock.
+Process 48 resuming
+Process 48 exited with status = 1 (0x00000001)

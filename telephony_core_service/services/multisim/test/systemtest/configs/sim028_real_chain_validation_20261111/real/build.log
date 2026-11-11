@@ -1,0 +1,4 @@
+ninja: Entering directory `/tmp/sim028-provider-fixed-init'
+[0/1] Regenerating ninja files
+[1/2] CXX ../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp
+[2/2] LINK sim_primary_slot_real_test

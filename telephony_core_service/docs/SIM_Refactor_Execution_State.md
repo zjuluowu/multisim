@@ -606,3 +606,38 @@ python3 -B telephony_core_service/services/multisim/test/multisim_architecture_r
 发布不改变14条入口PASS、全量55 PASS/5 FAIL、完整部件调用链BLOCKED及GUI MANUAL。没有生产迁移，不将提交/推送成功解释为整链验收完成；其他worktree保持原状。发布核验结果随后补记。
 
 实际发布核验：工程提交 `f8c892ce966e551ae596bec543b6921a4cbcacc4`（`test(sim): cover primary slot entry and record full-chain blockers`），41项相关文件，已常规推送origin/main；推送后ls-remote与origin/main均为同SHA，包含关系通过。相对输入02765fa3确认原SIM/Core/RIL/EXT、公共接口和原产品/单测入口没有提交差异。工作树仅保留原98份行尾差异，摘要未变，暂存区为空，无遗漏的未跟踪交付文件。本段是发布后的独立文档追记，不写自身SHA；最终main精确tip以远端Git核验为准，入口PASS和整链BLOCKED仍按原运行证据解释。
+
+<a id="sim028-real-host-20261111"></a>
+
+## 17. SIM-028 真实 Manager / Controller Host 执行（2026-11-11）
+
+本批从 `main@d44632a68946c888481a27120ae8ac77454a44d6` 继续，按用户授权只改测试、Host边界、构建、IDE与必要进度；未提交、推送或迁移生产实现。起始98份用户行尾修改逐字节保留，暂存区为空，其他worktree未切换。旧 `primary_slot_validation_20261111.json`及证据目录保持原字节，作为历史入口基线。
+
+Provider根因已闭合：生产bundle/GN实际依赖telephony_data，Host此前固定的是telephony_data_storage老头。显式核实本地官方 `telephony_telephony_data@74b8597` 的公开头、14字段消费者、SQL/迁移列、URI及错误返回，再对初始化目标单独使用原样公开头；旧头与依赖锁未改。新 `provider/contract.json`记录版本/摘要和逐字段证据，不猜字段值。真实securec、cJSON、c_utils字符串/Unicode库由固定干净源码仓外编译；OpenSSL头按原锁离线解包，链接Linux现有libcrypto.so.3，未安装或升级系统包。初始化审计从45对象/43诊断推进到50对象全部编译，新增真实目标完成链接并实际运行。
+
+新增 `sim_primary_slot_real_test` 通过现有公开构造/OnInit/SetSimManager/CMI接口装配，逻辑槽数量与真实CoreService::Init一致（双物理槽、三个对象槽）；真实RIL状态应答及真实Provider I/O契约驱动状态/ICCID/账户加载，不私写缓存或替代业务。生产CoreServiceSim→SimManager→MultiSimController真正参与；C1进一步执行RadioProtocolController，两个成员的CHECK/UPDATE/COMPLETE、资源映射、session、原event/owner和返回关联均可核实。C0先经真实协议查询确认槽1=M0；B只发专用SetPrimarySlot，C1只发SetRadioProtocol。验证参数/ICCID SHA256、Data参数及主卡→Data/阶段CES通知、B失败及实际45秒超时、C1过期session、CHECK失败回滚和五次真实重试。没有真实RIL serial/HDI执行，账户Registry仅为Host通知sink，不对后台通知逐请求归因。
+
+| 实际验收 | 结果 |
+| --- | --- |
+| 原14入口/覆盖/负控 | 14 PASS；12/12分支侧、31/31区域；userSet变异检出7条失败，原版恢复通过 |
+| 旧完整Host基线 | 60执行，55 PASS / 5 FAIL，原独立缺陷完整保留 |
+| 新真实场景 | 7执行，1 PASS / 6 FAIL；六例业务断言及严格RIL期望验证通过，均在清理阶段失败，未改成PASS |
+| 最新Debug全量 | 67执行，56 PASS / 11 FAIL，exit1；五条旧缺陷及六条新清理失败分别保存，无跳过 |
+| 新真实业务变异 | 仓外Controller保存slotId→slotId+1；额外PRIMARY_COMMIT_TARGET断言检出，与已有清理失败区分；原生产源码/原二进制摘要不变 |
+| 调试/IDE | 原GN/Ninja增量工程及compile_commands保留；真实目标接入Tasks/逐例运行；LLDB断点命中生产Controller，栈含CoreServiceSim/SimManager，变量slotId=1、isUserSet=true；GUI仍MANUAL |
+| Core/Stub/TelRil | 原源码compile-only重跑仍缺system_ability.h、BrokerDelegator/Proxy/Parcel及v1_5/iril.h；真实SA/Binder/HDI和完整部件链BLOCKED，A厂商映射未运行 |
+
+新的最小生产阻塞是**真实订阅对象图未释放**：SimManager析构已经执行，Monitor/Controller/StateManager析构为0；每个在卡场景退出仍有28个Host线程及10个RIL引用。ObserverHandler强持Monitor，Monitor再强持Controller/State，另订阅File；Manager无可访问的完整停止入口。测试保留REAL_GRAPH_LIFETIME_NOT_DRAINED和GMock泄漏红灯，逐例独立进程，未用AllowLeak、私有注入或强制清空生产对象。最小后续建议是经另行生产修改授权，定义停止新回调/排空在途工作并调用真实UnRegisterSimNotify的生命周期闭包，而非仅在测试中破环。
+
+本轮达到**单请求真实业务切片的因果验证**，包括无需设备切换的C0终点、B原请求应答/超时、C1协议终点；完整CoreService/Stub/IPC/HDI部件整链仍BLOCKED，当前总体验收未通过。C1 UPDATE/COMPLETE异常及C1超时、任意乱序/重复、在途销毁重建、真实持久化恢复/eSIM仍NOT_RUN。后续产品集成需要匹配OHOS完整树、生成HDI接口、SA/IPC运行时及设备，不扩建成功平台假桩。
+
+本轮可复现命令及边界见 [primary_slot/README.md](../services/multisim/test/systemtest/primary_slot/README.md)，所有分层状态、源码/二进制/依赖摘要、命令、XML、关键日志、负控和文件清单集中在 [sim028_real_chain_validation_20261111.json](../services/multisim/test/systemtest/configs/sim028_real_chain_validation_20261111.json)及同名证据目录。仓外目录仅为可再生成产物，不作为唯一交付依据。
+
+
+### 17.1 阶段发布及持续授权（2026-11-11）
+
+用户本次明确授权将SIM-028本地成果提交并推送远端main，并要求此后每完成可复核的阶段进展及时提交/推送。根和部件AGENTS已同步持续发布规则：先验证、同步状态、白名单暂存，再常规推送origin/main并核实远端；保留已知失败/阻塞，不扩大生产修改/迁移范围，后续用户明确限制发布时优先遵从。
+
+本次发布范围为§17真实Host测试、Provider契约/运行边界、构建/IDE、说明与独立证据，以及上述AGENTS规则。发布前输入main为d44632a，原98份用户行尾修改及18份历史入口证据按原始摘要保护，原SIM/Core/RIL/公共接口和产品构建不纳入提交。沿用已执行的67例56 PASS/11 FAIL及单场景因果证据，本次发布不改变六个清理失败、五个既有缺陷、完整部件BLOCKED或GUI MANUAL状态；规则/发布操作不重复宣称业务验证通过。提交与推送结果在核实后追记。
+
+发布前再次通过迁移资产核验（219文件、131份C++/JSON原字节一致、10项显式后续变更）及14项源表测试。133项逐文件白名单与暂存区完全一致，索引与工作树文件逐字节一致；代码/配置/文档空白检查通过。全量空白检查仅报告原始编译/LLDB日志及unified patch上下文的空白，保留这些证据原字节及既有摘要，不改写测试结果或补丁内容。
