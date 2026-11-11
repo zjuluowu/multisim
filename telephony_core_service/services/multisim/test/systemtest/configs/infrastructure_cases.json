@@ -80,6 +80,21 @@
       "case_id": "INFRA-PTR-003",
       "oracle_id": "PTR-LOCAL-CAST",
       "level": "INFRA"
+    },
+    {
+      "case_id": "INFRA-FFRT-003",
+      "oracle_id": "FFRT-IDLE-CASCADE",
+      "level": "INFRA"
+    },
+    {
+      "case_id": "INFRA-FFRT-004",
+      "oracle_id": "FFRT-IDLE-BOUNDED",
+      "level": "INFRA"
+    },
+    {
+      "case_id": "INFRA-FFRT-005",
+      "oracle_id": "FFRT-IDLE-FAILURE",
+      "level": "INFRA"
     }
   ]
 }

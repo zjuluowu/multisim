@@ -1,0 +1,194 @@
+I[10:35:08.082] Ubuntu clangd version 18.1.3 (1ubuntu1)
+I[10:35:08.082] Features: linux+grpc
+I[10:35:08.082] PID: 3
+I[10:35:08.083] Working directory: /mnt/e/github/multisim
+I[10:35:08.083] argv[0]: clangd
+I[10:35:08.083] argv[1]: --check=telephony_core_service/services/sim/src/sim_state_handle.cpp
+I[10:35:08.083] argv[2]: --compile-commands-dir=.host-out/build
+I[10:35:08.095] Entering check mode (no LSP server)
+I[10:35:08.095] Testing on source file /mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_state_handle.cpp
+I[10:35:08.113] Loading compilation database...
+I[10:35:08.121] Loaded compilation database from /mnt/e/github/multisim/.host-out/build/compile_commands.json
+I[10:35:08.122] Compile command from CDB is: [/mnt/e/github/multisim/.host-out/build] /usr/lib/llvm-18/bin/clang++ --driver-mode=g++ -DLOG_DOMAIN=0xD001F04 -I../../telephony_core_service/services/multisim/test/systemtest/stubs/include -I/mnt/e/github/multisim/telephony_core_service/services/sim/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/ims/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/satellite -I/mnt/e/github/multisim/telephony_core_service/services/tel_ril/include -I/mnt/e/github/multisim/telephony_core_service/services/network_search/include -I/mnt/e/github/multisim/telephony_core_service/services/core/include -I/mnt/e/github/multisim/telephony_core_service/services/telephony_ext_wrapper/include -I/mnt/e/github/multisim/telephony_core_service/utils/common/include -I/mnt/e/github/multisim/telephony_core_service/utils/log/include -I/mnt/e/github/multisim/telephony_core_service/utils/preferences/include -I/mnt/e/github/multisim/telephony_core_service/common/capability_mgr/include -I/usr/include/libxml2 -include ../../telephony_core_service/services/multisim/test/systemtest/stubs/include/host_standard_prelude.h -std=c++17 -flto=full -fwhole-program-vtables -fvirtual-function-elimination -fvisibility=hidden -ffunction-sections -fdata-sections -O1 -g -fno-omit-frame-pointer -fprofile-instr-generate -fcoverage-mapping -MMD -MF obj/ABS_PATH/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_guard_legacy_production.sim_state_handle.o.d -c -o obj/ABS_PATH/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_guard_legacy_production.sim_state_handle.o -resource-dir=/usr/lib/llvm-18/lib/clang/18 -- /mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_state_handle.cpp
+I[10:35:08.130] Parsing command...
+I[10:35:08.134] internal (cc1) args are: -cc1 -triple x86_64-pc-linux-gnu -fsyntax-only -flto=full -flto-unit -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name sim_state_handle.cpp -mrelocation-model pic -pic-level 2 -pic-is-pie -mframe-pointer=all -fmath-errno -ffp-contract=on -fno-rounding-math -mconstructor-aliases -funwind-tables=2 -target-cpu x86-64 -tune-cpu generic -debug-info-kind=constructor -dwarf-version=5 -debugger-tuning=gdb -fdebug-compilation-dir=/mnt/e/github/multisim/.host-out/build -ffunction-sections -fdata-sections -fprofile-instrument=clang -fcoverage-mapping -fcoverage-compilation-dir=/mnt/e/github/multisim/.host-out/build -resource-dir /usr/lib/llvm-18/lib/clang/18 -dependency-file obj/ABS_PATH/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_guard_legacy_production.sim_state_handle.o.d -MT obj/ABS_PATH/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_guard_legacy_production.sim_state_handle.o -include ../../telephony_core_service/services/multisim/test/systemtest/stubs/include/host_standard_prelude.h -D LOG_DOMAIN=0xD001F04 -I ../../telephony_core_service/services/multisim/test/systemtest/stubs/include -I /mnt/e/github/multisim/telephony_core_service/services/sim/include -I /mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/include -I /mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/ims/include -I /mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/satellite -I /mnt/e/github/multisim/telephony_core_service/services/tel_ril/include -I /mnt/e/github/multisim/telephony_core_service/services/network_search/include -I /mnt/e/github/multisim/telephony_core_service/services/core/include -I /mnt/e/github/multisim/telephony_core_service/services/telephony_ext_wrapper/include -I /mnt/e/github/multisim/telephony_core_service/utils/common/include -I /mnt/e/github/multisim/telephony_core_service/utils/log/include -I /mnt/e/github/multisim/telephony_core_service/utils/preferences/include -I /mnt/e/github/multisim/telephony_core_service/common/capability_mgr/include -I /usr/include/libxml2 -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13 -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/x86_64-linux-gnu/c++/13 -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/backward -internal-isystem /usr/lib/llvm-18/lib/clang/18/include -internal-isystem /usr/local/include -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/13/../../../../x86_64-linux-gnu/include -internal-externc-isystem /usr/include/x86_64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -O1 -std=c++17 -fdeprecated-macro -ferror-limit 19 -fvisibility=hidden -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -fcxx-exceptions -fexceptions -no-round-trip-args -fvirtual-function-elimination -fwhole-program-vtables -fsplit-lto-unit -faddrsig -D__GCC_HAVE_DWARF2_CFI_ASM=1 -x c++ /mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_state_handle.cpp
+I[10:35:08.174] Building preamble...
+I[10:35:17.178] Built preamble of size 12766628 for file /mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_state_handle.cpp version null in 9.00 seconds
+I[10:35:17.178] Indexing headers...
+I[10:35:17.603] Building AST...
+I[10:35:18.117] Indexing AST...
+I[10:35:18.210] Building inlay hints
+I[10:35:18.211] Building semantic highlighting
+I[10:35:18.217] Testing features at each token (may be slow in large files)
+I[10:35:19.860] Found definition heuristically using nearby identifier IsSatelliteSupported
+I[10:35:19.860] Found definition heuristically using nearby identifier IsSatelliteSupported
+I[10:35:19.860] Found definition heuristically using nearby identifier int32_t
+I[10:35:19.861] Found definition heuristically using nearby identifier int32_t
+I[10:35:19.861] Found definition heuristically in index for SatelliteValue
+I[10:35:19.862] Found definition heuristically in index for SatelliteValue
+I[10:35:19.862] Found definition heuristically in index for SATELLITE_SUPPORTED
+I[10:35:19.863] Found definition heuristically in index for SATELLITE_SUPPORTED
+I[10:35:19.863] Found definition heuristically in index for std
+I[10:35:19.864] Found definition heuristically in index for std
+I[10:35:19.864] Found definition heuristically using nearby identifier shared_ptr
+I[10:35:19.864] Found definition heuristically using nearby identifier shared_ptr
+I[10:35:19.866] Found definition heuristically in index for DelayedSingleton
+I[10:35:19.866] Found definition heuristically in index for DelayedSingleton
+I[10:35:19.876] Found definition heuristically using nearby identifier GetInstance
+I[10:35:19.876] Found definition heuristically using nearby identifier GetInstance
+I[10:35:19.878] Found definition heuristically using nearby identifier slotId_
+I[10:35:19.878] Found definition heuristically using nearby identifier slotId_
+I[10:35:19.879] Found definition heuristically in index for std
+I[10:35:19.879] Found definition heuristically in index for std
+I[10:35:19.880] Found definition heuristically in index for static_pointer_cast
+I[10:35:19.880] Found definition heuristically in index for static_pointer_cast
+I[10:35:19.881] Found definition heuristically using nearby identifier TelEventHandler
+I[10:35:19.881] Found definition heuristically using nearby identifier TelEventHandler
+I[10:35:19.881] Found definition heuristically using nearby identifier shared_from_this
+I[10:35:19.881] Found definition heuristically using nearby identifier shared_from_this
+I[10:35:23.580] Found definition heuristically using nearby identifier GetInstance
+I[10:35:23.580] Found definition heuristically using nearby identifier GetInstance
+I[10:35:23.584] Found definition heuristically using nearby identifier slotId
+I[10:35:23.584] Found definition heuristically using nearby identifier slotId
+I[10:35:24.076] Found definition heuristically using nearby identifier IsSatelliteSupported
+I[10:35:24.076] Found definition heuristically using nearby identifier IsSatelliteSupported
+I[10:35:24.077] Found definition heuristically using nearby identifier int32_t
+I[10:35:24.077] Found definition heuristically using nearby identifier int32_t
+I[10:35:24.079] Found definition heuristically in index for SatelliteValue
+I[10:35:24.081] Found definition heuristically in index for SatelliteValue
+I[10:35:24.082] Found definition heuristically in index for SATELLITE_SUPPORTED
+I[10:35:24.083] Found definition heuristically in index for SATELLITE_SUPPORTED
+I[10:35:24.085] Found definition heuristically in index for satelliteCallback_
+I[10:35:24.088] Found definition heuristically in index for std
+I[10:35:24.089] Found definition heuristically in index for std
+I[10:35:24.089] Found definition heuristically using nearby identifier shared_ptr
+I[10:35:24.089] Found definition heuristically using nearby identifier shared_ptr
+I[10:35:24.094] Found definition heuristically in index for DelayedSingleton
+I[10:35:24.095] Found definition heuristically in index for DelayedSingleton
+I[10:35:24.098] Found definition heuristically using nearby identifier GetInstance
+I[10:35:24.098] Found definition heuristically using nearby identifier GetInstance
+I[10:35:24.102] Found definition heuristically using nearby identifier UnRegisterCoreNotify
+I[10:35:24.102] Found definition heuristically using nearby identifier UnRegisterCoreNotify
+I[10:35:24.103] Found definition heuristically using nearby identifier slotId_
+I[10:35:24.103] Found definition heuristically using nearby identifier slotId_
+I[10:35:24.103] Found definition heuristically using nearby identifier RadioEvent
+I[10:35:24.103] Found definition heuristically using nearby identifier RadioEvent
+I[10:35:24.104] Found definition heuristically using nearby identifier RADIO_SIM_STATE_CHANGE
+I[10:35:24.104] Found definition heuristically using nearby identifier RADIO_SIM_STATE_CHANGE
+I[10:35:24.110] Found definition heuristically using nearby identifier SimStateHandle
+I[10:35:24.110] Found definition heuristically using nearby identifier SimStateHandle
+I[10:35:24.116] Found definition heuristically in index for satelliteCallback_
+I[10:35:24.117] Found definition heuristically in index for std
+I[10:35:24.119] Found definition heuristically in index for std
+I[10:35:24.119] Found definition heuristically using nearby identifier make_unique
+I[10:35:24.120] Found definition heuristically using nearby identifier make_unique
+I[10:35:24.121] Found definition heuristically in index for SatelliteCoreCallback
+I[10:35:24.123] Found definition heuristically in index for SatelliteCoreCallback
+I[10:35:24.124] Found definition heuristically in index for std
+I[10:35:24.125] Found definition heuristically in index for std
+I[10:35:24.127] Found definition heuristically in index for static_pointer_cast
+I[10:35:24.129] Found definition heuristically in index for static_pointer_cast
+I[10:35:24.130] Found definition heuristically using nearby identifier TelEventHandler
+I[10:35:24.130] Found definition heuristically using nearby identifier TelEventHandler
+I[10:35:24.131] Found definition heuristically using nearby identifier shared_from_this
+I[10:35:24.131] Found definition heuristically using nearby identifier shared_from_this
+I[10:35:24.133] Found definition heuristically in index for release
+I[10:35:24.134] Found definition heuristically in index for release
+I[10:35:24.135] Found definition heuristically in index for std
+I[10:35:24.136] Found definition heuristically in index for std
+I[10:35:24.137] Found definition heuristically using nearby identifier shared_ptr
+I[10:35:24.137] Found definition heuristically using nearby identifier shared_ptr
+I[10:35:24.142] Found definition heuristically in index for DelayedSingleton
+I[10:35:24.144] Found definition heuristically in index for DelayedSingleton
+I[10:35:24.148] Found definition heuristically using nearby identifier GetInstance
+I[10:35:24.148] Found definition heuristically using nearby identifier GetInstance
+I[10:35:24.152] Found definition heuristically using nearby identifier RegisterCoreNotify
+I[10:35:24.152] Found definition heuristically using nearby identifier RegisterCoreNotify
+I[10:35:24.152] Found definition heuristically using nearby identifier slotId_
+I[10:35:24.152] Found definition heuristically using nearby identifier slotId_
+I[10:35:24.152] Found definition heuristically using nearby identifier RadioEvent
+I[10:35:24.153] Found definition heuristically using nearby identifier RadioEvent
+I[10:35:24.153] Found definition heuristically using nearby identifier RADIO_SIM_STATE_CHANGE
+I[10:35:24.153] Found definition heuristically using nearby identifier RADIO_SIM_STATE_CHANGE
+I[10:35:24.155] Found definition heuristically in index for satelliteCallback_
+I[10:35:24.156] Found definition heuristically in index for satelliteCallback_
+I[10:35:24.156] Found definition heuristically using nearby identifier SimStateHandle
+I[10:35:24.157] Found definition heuristically using nearby identifier SimStateHandle
+I[10:35:24.161] Found definition heuristically using nearby identifier IsSatelliteSupported
+I[10:35:24.162] Found definition heuristically using nearby identifier IsSatelliteSupported
+I[10:35:24.163] Found definition heuristically using nearby identifier int32_t
+I[10:35:24.163] Found definition heuristically using nearby identifier int32_t
+I[10:35:24.164] Found definition heuristically in index for SatelliteValue
+I[10:35:24.165] Found definition heuristically in index for SatelliteValue
+I[10:35:24.166] Found definition heuristically in index for SATELLITE_SUPPORTED
+I[10:35:24.168] Found definition heuristically in index for SATELLITE_SUPPORTED
+I[10:35:24.169] Found definition heuristically in index for satelliteCallback_
+E[10:35:25.254]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:28.088]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:28.111]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:28.136]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:28.142]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:28.426]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:28.526]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:28.632]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:28.739]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:28.771]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:28.858]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:28.875]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:28.896]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:28.917]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:28.932]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:28.954]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:29.044]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:29.292]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:29.313]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:29.335]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:29.349]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:29.370]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:29.390]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:29.410]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:29.430]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:29.448]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:29.463]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:29.479]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:29.683]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:29.801]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:29.907]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:29.955]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:30.002]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:30.124]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:30.131]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:30.256]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:30.300]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:30.347]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:30.398]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:30.450]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+E[10:35:30.457]     tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.
+I[10:35:31.685] Found definition heuristically using nearby identifier slotId_
+I[10:35:31.685] Found definition heuristically using nearby identifier MAX_INNER_SLOT_NUM
+I[10:35:31.686] Found definition heuristically using nearby identifier IsSupportedEsim
+I[10:35:31.687] Found definition heuristically using nearby identifier IsSupportedEsim
+I[10:35:31.691] Found definition heuristically in index for std
+I[10:35:31.693] Found definition heuristically in index for std
+I[10:35:31.693] Found definition heuristically using nearby identifier string
+I[10:35:31.699] Found definition heuristically using nearby identifier slotId_
+I[10:35:31.699] Found definition heuristically using nearby identifier SIM_SLOT_0
+I[10:35:31.701] Found definition heuristically in index for GSM_SIM_ATR
+I[10:35:31.707] Found definition heuristically in index for GSM_SIM_ATR
+I[10:35:31.709] Found definition heuristically in index for std
+I[10:35:31.711] Found definition heuristically in index for std
+I[10:35:31.716] Found definition heuristically using nearby identifier slotId_
+I[10:35:31.716] Found definition heuristically using nearby identifier slotId_
+I[10:35:31.722] Found definition heuristically using nearby identifier CARD_ATR_LEN
+I[10:35:31.724] Found definition heuristically using nearby identifier GetParameter
+I[10:35:31.724] Found definition heuristically using nearby identifier GetParameter
+I[10:35:31.733] Found definition heuristically in index for c_str
+I[10:35:31.736] Found definition heuristically in index for c_str
+I[10:35:31.745] Found definition heuristically using nearby identifier CARD_ATR_LEN
+I[10:35:31.746] Found definition heuristically using nearby identifier CARD_ATR_LEN
+I[10:35:31.749] Found definition heuristically in index for std
+I[10:35:31.752] Found definition heuristically in index for std
+I[10:35:31.752] Found definition heuristically using nearby identifier string
+I[10:35:31.808] Found definition heuristically using nearby identifier slotId_
+I[10:35:31.809] Found definition heuristically using nearby identifier slotId_
+I[10:35:31.841] All checks completed, 41 errors

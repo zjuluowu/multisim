@@ -1,0 +1,19 @@
+test_broad_include (__main__.G2aSourceTables.test_broad_include) ... ok
+test_commented_source_in_each_table (__main__.G2aSourceTables.test_commented_source_in_each_table) ... ok
+test_conditional_query (__main__.G2aSourceTables.test_conditional_query) ... ok
+test_current_tables (__main__.G2aSourceTables.test_current_tables) ... ok
+test_duplicate_source (__main__.G2aSourceTables.test_duplicate_source) ... ok
+test_exact_execution_method (__main__.G2aSourceTables.test_exact_execution_method) ... ok
+test_launcher_missing_include (__main__.G2aSourceTables.test_launcher_missing_include) ... ok
+test_leaf_cannot_become_production (__main__.G2aSourceTables.test_leaf_cannot_become_production) ... ok
+test_leaf_cannot_import_whole_skeleton (__main__.G2aSourceTables.test_leaf_cannot_import_whole_skeleton) ... ok
+test_missing_include (__main__.G2aSourceTables.test_missing_include) ... ok
+test_source_in_wrong_target (__main__.G2aSourceTables.test_source_in_wrong_target) ... ok
+test_source_list_overwritten (__main__.G2aSourceTables.test_source_list_overwritten) ... ok
+test_source_removed_after_addition (__main__.G2aSourceTables.test_source_removed_after_addition) ... ok
+test_unrelated_production_source (__main__.G2aSourceTables.test_unrelated_production_source) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.362s
+
+OK

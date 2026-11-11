@@ -1,7 +1,6 @@
 config("host") {
   cflags_cc = [
     "-std=c++17",
-    "-O2",
     "-flto=full",
     "-fwhole-program-vtables",
     "-fvirtual-function-elimination",
@@ -9,6 +8,11 @@ config("host") {
     "-ffunction-sections",
     "-fdata-sections",
   ]
+  if (host_debug) {
+    cflags_cc += [ "-O1", "-g", "-fno-omit-frame-pointer" ]
+  } else {
+    cflags_cc += [ "-O2" ]
+  }
   ldflags = [
     "-flto=full",
     "-fuse-ld=gold",

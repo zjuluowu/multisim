@@ -1,0 +1,69 @@
+(lldb) target create ".host-out/build/sim_guard_legacy"
+Current executable set to '/mnt/e/github/multisim/.host-out/build/sim_guard_legacy' (x86_64).
+(lldb) settings set -- target.run-args  "--gtest_filter=SessionLifecycle.INIT_001_SingleEnumeration"
+(lldb) breakpoint set -n OHOS::Telephony::SimStateManager::GetSimState
+Breakpoint 1: where = sim_guard_legacy`OHOS::Telephony::SimStateManager::GetSimState() + 7 at sim_state_manager.cpp:91:1, address = 0x00000000000ffc77
+(lldb) run
+Note: Google Test filter = SessionLifecycle.INIT_001_SingleEnumeration
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from SessionLifecycle
+[ RUN      ] SessionLifecycle.INIT_001_SingleEnumeration
+Process 48 launched: '/mnt/e/github/multisim/.host-out/build/sim_guard_legacy' (x86_64)
+Process 48 stopped
+* thread #1, name = 'sim_guard_legac', stop reason = breakpoint 1.1
+    frame #0: 0x0000555555653c77 sim_guard_legacy`OHOS::Telephony::SimStateManager::GetSimState(this=0x0000555555745100) at sim_state_manager.cpp:91:1
+   88   }
+   89
+   90   SimState SimStateManager::GetSimState()
+-> 91   {
+        ^
+   92       SimState ret = SimState::SIM_STATE_UNKNOWN;
+   93       if (simStateHandle_ != nullptr) {
+   94           std::unique_lock<ffrt::mutex> lck(mtx_);
+(lldb) next
+Process 48 stopped
+* thread #1, name = 'sim_guard_legac', stop reason = step over
+    frame #0: 0x0000555555653c7e sim_guard_legacy`OHOS::Telephony::SimStateManager::GetSimState(this=0x0000555555745100) at sim_state_manager.cpp:93:25
+   90   SimState SimStateManager::GetSimState()
+   91   {
+   92       SimState ret = SimState::SIM_STATE_UNKNOWN;
+-> 93       if (simStateHandle_ != nullptr) {
+                                ^
+   94           std::unique_lock<ffrt::mutex> lck(mtx_);
+   95           ret = simStateHandle_->GetSimState();
+   96       }
+(lldb) frame variable
+(OHOS::Telephony::SimStateManager *) this = 0x0000555555745100
+(OHOS::Telephony::SimState) ret = SIM_STATE_UNKNOWN
+(lldb) bt
+* thread #1, name = 'sim_guard_legac', stop reason = step over
+  * frame #0: 0x0000555555653c7e sim_guard_legacy`OHOS::Telephony::SimStateManager::GetSimState(this=0x0000555555745100) at sim_state_manager.cpp:93:25
+    frame #1: 0x000055555563113d sim_guard_legacy`SimGuard::(anonymous namespace)::LegacySimAdapter::Observe(this=0x00005555557374b0) at legacy_sim_adapter.cpp:195:56
+    frame #2: 0x00005555556463e6 sim_guard_legacy`SimGuard::SessionLifecycle::ObservePending(this=<unavailable>, slots=1) at lifecycle_extension_test.cpp:15:28
+    frame #3: 0x000055555564948c sim_guard_legacy`SimGuard::SessionLifecycle_INIT_001_SingleEnumeration_Test::TestBody(this=0x00005555557371e0) at lifecycle_extension_test.cpp:44:20
+    frame #4: 0x0000555555675bc5 sim_guard_legacy`void testing::internal::HandleExceptionsInMethodIfSupported<testing::Test, void>(testing::Test*, void (testing::Test::*)(), char const*) [inlined] void testing::internal::HandleSehExceptionsInMethodIfSupported<testing::Test, void>(object=0x00005555557371e0, method=0x00000000000000000000000000000021, location="the test body") at gtest.cc:2638:10
+    frame #5: 0x0000555555675bb6 sim_guard_legacy`void testing::internal::HandleExceptionsInMethodIfSupported<testing::Test, void>(object=0x00005555557371e0, method=0x00000000000000000000000000000021, location="the test body") at gtest.cc:2674:14
+    frame #6: 0x0000555555684a1e sim_guard_legacy`testing::internal::UnitTestImpl::RunAllTests() [inlined] testing::Test::Run(this=0x00005555557371e0) at gtest.cc:2713:5
+    frame #7: 0x0000555555684873 sim_guard_legacy`testing::internal::UnitTestImpl::RunAllTests() [inlined] testing::TestInfo::Run(this=0x00005555557318c0) at gtest.cc:2859:11
+    frame #8: 0x0000555555684714 sim_guard_legacy`testing::internal::UnitTestImpl::RunAllTests() [inlined] testing::TestSuite::Run(this=0x0000555555731a10) at gtest.cc:3037:30
+    frame #9: 0x0000555555684339 sim_guard_legacy`testing::internal::UnitTestImpl::RunAllTests(this=0x0000555555730520) at gtest.cc:5967:44
+    frame #10: 0x0000555555640cb7 sim_guard_legacy`main [inlined] bool testing::internal::HandleSehExceptionsInMethodIfSupported<testing::internal::UnitTestImpl, bool>(object=0x0000555555730520, method=0x00000000000000000000000000000000, location=<unavailable>) at gtest.cc:2638:10
+    frame #11: 0x0000555555640caf sim_guard_legacy`main [inlined] bool testing::internal::HandleExceptionsInMethodIfSupported<testing::internal::UnitTestImpl, bool>(object=0x0000555555730520, method=0x00000000000000000000000000000000, location=<unavailable>) at gtest.cc:2674:14
+    frame #12: 0x0000555555640c90 sim_guard_legacy`main [inlined] testing::UnitTest::Run(this=<unavailable>) at gtest.cc:5546:10
+    frame #13: 0x0000555555640bb9 sim_guard_legacy`main [inlined] RUN_ALL_TESTS() at gtest.h:2334:73
+    frame #14: 0x0000555555640baa sim_guard_legacy`main(argc=<unavailable>, argv=0x00007fffffffd5f8) at contract_test.cpp:110:12
+    frame #15: 0x00007ffff782a1ca libc.so.6`__libc_start_call_main(main=(sim_guard_legacy`main at contract_test.cpp:108), argc=2, argv=0x00007fffffffd5f8) at libc_start_call_main.h:58:16
+    frame #16: 0x00007ffff782a28b libc.so.6`__libc_start_main_impl(main=(sim_guard_legacy`main at contract_test.cpp:108), argc=2, argv=0x00007fffffffd5f8, init=<unavailable>, fini=<unavailable>, rtld_fini=<unavailable>, stack_end=0x00007fffffffd5e8) at libc-start.c:360:3
+    frame #17: 0x00005555555745d5 sim_guard_legacy`_start + 37
+(lldb) breakpoint disable 1
+1 breakpoints disabled.
+(lldb) continue
+[       OK ] SessionLifecycle.INIT_001_SingleEnumeration (211 ms)
+[----------] 1 test from SessionLifecycle (211 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (212 ms total)
+[  PASSED  ] 1 test.
+Process 48 resuming
+Process 48 exited with status = 0 (0x00000000)

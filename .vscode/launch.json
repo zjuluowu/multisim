@@ -1,0 +1,39 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "SIM Host: selected GTest (WSL)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/.host-out/build/${input:hostTarget}",
+      "args": [
+        "--gtest_filter=${input:gtestFilter}"
+      ],
+      "cwd": "${workspaceFolder}/.host-out",
+      "env": {
+        "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/debug-%p.profraw"
+      },
+      "preLaunchTask": "Build Host"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "gtestFilter",
+      "type": "promptString",
+      "description": "GoogleTest filter (suite.test, supports * and -)",
+      "default": "*LIFE_001*"
+    },
+    {
+      "id": "hostTarget",
+      "type": "pickString",
+      "description": "Host executable",
+      "options": [
+        "sim_guard_legacy",
+        "sim_guard_pin_memory",
+        "platform_adapter_test",
+        "sim_component_test"
+      ],
+      "default": "sim_guard_legacy"
+    }
+  ]
+}

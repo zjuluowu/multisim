@@ -1,0 +1,32 @@
++ gn gen /mnt/e/github/multisim/.host-out/build --root=/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest --export-compile-commands --args=gtest_root="/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59" production_root="/mnt/e/github/multisim/telephony_core_service" host_debug=true
+Generating compile_commands took 8ms
+Done. Made 20 targets from 3 files in 159ms
++ ninja -C /mnt/e/github/multisim/.host-out/build -j 4 sim_guard_legacy sim_guard_pin_memory platform_adapter_test sim_component_test
+ninja: Entering directory `/mnt/e/github/multisim/.host-out/build'
+ninja: no work to do.
++ /mnt/e/github/multisim/.host-out/build/sim_guard_legacy --gtest_filter=SessionLifecycle.INIT_001_SingleEnumeration --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-s8t0kw8r/selected.xml
+Note: Google Test filter = SessionLifecycle.INIT_001_SingleEnumeration
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from SessionLifecycle
+[ RUN      ] SessionLifecycle.INIT_001_SingleEnumeration
+[       OK ] SessionLifecycle.INIT_001_SingleEnumeration (11 ms)
+[----------] 1 test from SessionLifecycle (12 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (16 ms total)
+[  PASSED  ] 1 test.
+[
+  {
+    "name": "selected",
+    "exit_code": 0,
+    "status": "PASS",
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "binary_sha256": "e7689f33c51952598994796f0f11e49e2d9aa6f1dfeab487089189de7a3e0815",
+    "filter": "SessionLifecycle.INIT_001_SingleEnumeration",
+    "skipped": 0
+  }
+]
+Evidence: /mnt/e/github/multisim/.host-out/runs/run-s8t0kw8r

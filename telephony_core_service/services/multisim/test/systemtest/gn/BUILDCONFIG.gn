@@ -1,4 +1,5 @@
 declare_args() {
+  host_debug = false  # IDE host builds keep DWARF; legacy runners retain their profile.
   gtest_root = ""
   production_root = ""
   sim_guard_state_source =
@@ -13,11 +14,14 @@ assert(production_root != "",
        "Pass the current unmodified Core repository directory")
 set_default_toolchain("//gn:linux")
 set_defaults("source_set") {
+  testonly = true
   configs = [ "//gn:host" ]
 }
 set_defaults("static_library") {
+  testonly = true
   configs = [ "//gn:host" ]
 }
 set_defaults("executable") {
+  testonly = true
   configs = [ "//gn:host" ]
 }

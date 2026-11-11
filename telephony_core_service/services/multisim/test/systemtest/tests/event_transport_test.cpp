@@ -151,6 +151,8 @@ TEST(SchedulerBoundary, ProductionGeneralTaskWaitsAndCleansUp)
 
 TEST(SchedulerBoundary, IdleWaitDrainsCascadedQueues)
 {
+    RecordProperty("case_id", "INFRA-FFRT-003");
+    RecordProperty("oracle_id", "FFRT-IDLE-CASCADE");
     RecordProperty("level", "INFRA");
     SimHost::ResetSchedulerEvidence();
     std::atomic<unsigned> completed{0};
@@ -169,6 +171,8 @@ TEST(SchedulerBoundary, IdleWaitDrainsCascadedQueues)
 
 TEST(SchedulerBoundary, IdleWaitDoesNotIgnoreDelayedOrRunningWork)
 {
+    RecordProperty("case_id", "INFRA-FFRT-004");
+    RecordProperty("oracle_id", "FFRT-IDLE-BOUNDED");
     RecordProperty("level", "INFRA");
     SimHost::ResetSchedulerEvidence();
     Completion started;
@@ -191,6 +195,8 @@ TEST(SchedulerBoundary, IdleWaitDoesNotIgnoreDelayedOrRunningWork)
 
 TEST(SchedulerBoundary, IdleWaitExposesTaskFailure)
 {
+    RecordProperty("case_id", "INFRA-FFRT-005");
+    RecordProperty("oracle_id", "FFRT-IDLE-FAILURE");
     RecordProperty("level", "INFRA");
     SimHost::ResetSchedulerEvidence();
     {

@@ -1,0 +1,113 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Configure Host",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/systemtest/tools/host.py",
+        "configure"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "Build Host",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/systemtest/tools/host.py",
+        "build"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Run All Tests",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/systemtest/tools/host.py",
+        "all"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "Run Selected Test",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/systemtest/tools/host.py",
+        "selected",
+        "--target",
+        "${input:hostTarget}",
+        "--filter",
+        "${input:gtestFilter}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "Clean Host",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/systemtest/tools/host.py",
+        "clean"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "id": "gtestFilter",
+      "type": "promptString",
+      "description": "GoogleTest filter (suite.test, supports * and -)",
+      "default": "*LIFE_001*"
+    },
+    {
+      "id": "hostTarget",
+      "type": "pickString",
+      "description": "Host executable",
+      "options": [
+        "sim_guard_legacy",
+        "sim_guard_pin_memory",
+        "platform_adapter_test",
+        "sim_component_test"
+      ],
+      "default": "sim_guard_legacy"
+    }
+  ]
+}

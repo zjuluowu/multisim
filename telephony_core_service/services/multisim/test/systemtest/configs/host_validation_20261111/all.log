@@ -1,0 +1,297 @@
++ gn gen /mnt/e/github/multisim/.host-out/build --root=/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest --export-compile-commands --args=gtest_root="/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59" production_root="/mnt/e/github/multisim/telephony_core_service" host_debug=true
+Generating compile_commands took 5ms
+Done. Made 20 targets from 3 files in 95ms
++ ninja -C /mnt/e/github/multisim/.host-out/build -j 4 sim_guard_legacy sim_guard_pin_memory platform_adapter_test sim_component_test
+ninja: Entering directory `/mnt/e/github/multisim/.host-out/build'
+ninja: no work to do.
++ /mnt/e/github/multisim/.host-out/build/sim_guard_legacy --gtest_filter=*-*DEFECT_* --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-bjdlzxba/compatibility.xml
+Note: Google Test filter = *-*DEFECT_*
+[==========] Running 17 tests from 3 test suites.
+[----------] Global test environment set-up.
+[----------] 4 tests from ContractDriver
+[ RUN      ] ContractDriver.PIN_001
+[       OK ] ContractDriver.PIN_001 (6 ms)
+[ RUN      ] ContractDriver.PIN_002_CommandFailure
+[       OK ] ContractDriver.PIN_002_CommandFailure (0 ms)
+[ RUN      ] ContractDriver.DUAL_001
+[       OK ] ContractDriver.DUAL_001 (1 ms)
+[ RUN      ] ContractDriver.RIL_001_DuplicateAndError
+[       OK ] ContractDriver.RIL_001_DuplicateAndError (0 ms)
+[----------] 4 tests from ContractDriver (12 ms total)
+
+[----------] 10 tests from SessionLifecycle
+[ RUN      ] SessionLifecycle.INIT_001_SingleEnumeration
+[       OK ] SessionLifecycle.INIT_001_SingleEnumeration (1 ms)
+[ RUN      ] SessionLifecycle.INIT_002_MissingRilThenRecreate
+[       OK ] SessionLifecycle.INIT_002_MissingRilThenRecreate (0 ms)
+[ RUN      ] SessionLifecycle.INIT_DUAL_002_ReversedEnumeration
+[       OK ] SessionLifecycle.INIT_DUAL_002_ReversedEnumeration (0 ms)
+[ RUN      ] SessionLifecycle.CALLBACK_002_MalformedThenRecovery
+[       OK ] SessionLifecycle.CALLBACK_002_MalformedThenRecovery (0 ms)
+[ RUN      ] SessionLifecycle.CALLBACK_003_DroppedThenRecovery
+[       OK ] SessionLifecycle.CALLBACK_003_DroppedThenRecovery (0 ms)
+[ RUN      ] SessionLifecycle.PUK_002_WrongThenSuccessfulUnlock
+[       OK ] SessionLifecycle.PUK_002_WrongThenSuccessfulUnlock (0 ms)
+[ RUN      ] SessionLifecycle.REFRESH_001_ExplicitStatusQuery
+[       OK ] SessionLifecycle.REFRESH_001_ExplicitStatusQuery (0 ms)
+[ RUN      ] SessionLifecycle.RECREATE_001_DualCardReenumeration
+[       OK ] SessionLifecycle.RECREATE_001_DualCardReenumeration (0 ms)
+[ RUN      ] SessionLifecycle.RECREATE_002_ReplacementWhileStopped
+[       OK ] SessionLifecycle.RECREATE_002_ReplacementWhileStopped (1 ms)
+[ RUN      ] SessionLifecycle.DUAL_002_PinWhileOtherCardRemoved
+[       OK ] SessionLifecycle.DUAL_002_PinWhileOtherCardRemoved (1 ms)
+[----------] 10 tests from SessionLifecycle (28 ms total)
+
+[----------] 3 tests from Compatibility/Lifecycle
+[ RUN      ] Compatibility/Lifecycle.PublicCardState/LIFE_001
+[       OK ] Compatibility/Lifecycle.PublicCardState/LIFE_001 (0 ms)
+[ RUN      ] Compatibility/Lifecycle.PublicCardState/LIFE_002
+[       OK ] Compatibility/Lifecycle.PublicCardState/LIFE_002 (0 ms)
+[ RUN      ] Compatibility/Lifecycle.PublicCardState/PUK_001
+[       OK ] Compatibility/Lifecycle.PublicCardState/PUK_001 (0 ms)
+[----------] 3 tests from Compatibility/Lifecycle (3 ms total)
+
+[----------] Global test environment tear-down
+[==========] 17 tests from 3 test suites ran. (49 ms total)
+[  PASSED  ] 17 tests.
++ /mnt/e/github/multisim/.host-out/build/sim_guard_legacy --gtest_filter=*DEFECT_* --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-bjdlzxba/known_defects.xml
+Note: Google Test filter = *DEFECT_*
+[==========] Running 5 tests from 2 test suites.
+[----------] Global test environment set-up.
+[----------] 1 test from ContractDriver
+[ RUN      ] ContractDriver.DEFECT_001_StaleReadyAfterRemoval
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:22: Failure
+Expected equality of these values:
+  actual.present
+    Which is: true
+  state != State::Absent
+    Which is: false
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23: Failure
+Expected equality of these values:
+  actual.state
+    Which is: READY
+  state
+    Which is: ABSENT
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:24: Failure
+Expected equality of these values:
+  actual.kind
+    Which is: 4-byte object <02-00 00-00>
+  kind
+    Which is: 4-byte object <00-00 00-00>
+
+[  FAILED  ] ContractDriver.DEFECT_001_StaleReadyAfterRemoval (8 ms)
+[----------] 1 test from ContractDriver (9 ms total)
+
+[----------] 4 tests from SessionLifecycle
+[ RUN      ] SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23: Failure
+Expected equality of these values:
+  actual.state
+    Which is: READY
+  state
+    Which is: LOCKED
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:24: Failure
+Expected equality of these values:
+  actual.kind
+    Which is: 4-byte object <02-00 00-00>
+  kind
+    Which is: 4-byte object <01-00 00-00>
+
+[  FAILED  ] SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard (1 ms)
+[ RUN      ] SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:157: Failure
+Expected: (actual.error) != (0), actual: 0 vs 0
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:157: Failure
+Expected equality of these values:
+  actual.result
+    Which is: 4-byte object <01-00 00-00>
+  Unlock::Failure
+    Which is: 4-byte object <02-00 00-00>
+
+[  FAILED  ] SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword (1 ms)
+[ RUN      ] SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23: Failure
+Expected equality of these values:
+  actual.state
+    Which is: NOT_READY
+  state
+    Which is: LOCKED
+
+[  FAILED  ] SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard (1 ms)
+[ RUN      ] SessionLifecycle.DEFECT_005_RefreshReturnContractConflict
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:176: Failure
+Expected equality of these values:
+  RefreshToLocked()
+    Which is: 2
+  0
+core_service_client.h RefreshSimState @return contract
+
+[  FAILED  ] SessionLifecycle.DEFECT_005_RefreshReturnContractConflict (1 ms)
+[----------] 4 tests from SessionLifecycle (9 ms total)
+
+[----------] Global test environment tear-down
+[==========] 5 tests from 2 test suites ran. (23 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 5 tests, listed below:
+[  FAILED  ] ContractDriver.DEFECT_001_StaleReadyAfterRemoval
+[  FAILED  ] SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard
+[  FAILED  ] SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword
+[  FAILED  ] SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard
+[  FAILED  ] SessionLifecycle.DEFECT_005_RefreshReturnContractConflict
+
+ 5 FAILED TESTS
++ /mnt/e/github/multisim/.host-out/build/sim_guard_pin_memory --gtest_filter=* --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-bjdlzxba/pin_memory.xml
+[==========] Running 4 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 4 tests from PinMemoryContract
+[ RUN      ] PinMemoryContract.PinSuccessUsesOriginalSlotIdentityAndCredential
+[       OK ] PinMemoryContract.PinSuccessUsesOriginalSlotIdentityAndCredential (9 ms)
+[ RUN      ] PinMemoryContract.PukSuccessUsesNewPinAndPinAlterOperation
+[       OK ] PinMemoryContract.PukSuccessUsesNewPinAndPinAlterOperation (0 ms)
+[ RUN      ] PinMemoryContract.FailedPinDoesNotPublishMemoryHook
+[       OK ] PinMemoryContract.FailedPinDoesNotPublishMemoryHook (0 ms)
+[ RUN      ] PinMemoryContract.RemovalUsesAbsentResponseIdentityWithoutCredential
+[       OK ] PinMemoryContract.RemovalUsesAbsentResponseIdentityWithoutCredential (0 ms)
+[----------] 4 tests from PinMemoryContract (14 ms total)
+
+[----------] Global test environment tear-down
+[==========] 4 tests from 1 test suite ran. (17 ms total)
+[  PASSED  ] 4 tests.
++ /mnt/e/github/multisim/.host-out/build/platform_adapter_test --gtest_filter=* --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-bjdlzxba/infrastructure.xml
+[==========] Running 19 tests from 7 test suites.
+[----------] Global test environment set-up.
+[----------] 3 tests from EventAdapter
+[ RUN      ] EventAdapter.SharedTypeSafety
+[       OK ] EventAdapter.SharedTypeSafety (0 ms)
+[ RUN      ] EventAdapter.UniqueOwnership
+[       OK ] EventAdapter.UniqueOwnership (0 ms)
+[ RUN      ] EventAdapter.WeakLifetimeAndMetadata
+[       OK ] EventAdapter.WeakLifetimeAndMetadata (0 ms)
+[----------] 3 tests from EventAdapter (3 ms total)
+
+[----------] 2 tests from ProductionEventTransport
+[ RUN      ] ProductionEventTransport.DeliversFormalEnvelope
+[       OK ] ProductionEventTransport.DeliversFormalEnvelope (0 ms)
+[ RUN      ] ProductionEventTransport.CancelsPendingAndReapsWorker
+[       OK ] ProductionEventTransport.CancelsPendingAndReapsWorker (0 ms)
+[----------] 2 tests from ProductionEventTransport (2 ms total)
+
+[----------] 5 tests from SchedulerBoundary
+[ RUN      ] SchedulerBoundary.RunningTaskCannotBeCancelled
+[       OK ] SchedulerBoundary.RunningTaskCannotBeCancelled (0 ms)
+[ RUN      ] SchedulerBoundary.ProductionGeneralTaskWaitsAndCleansUp
+[       OK ] SchedulerBoundary.ProductionGeneralTaskWaitsAndCleansUp (0 ms)
+[ RUN      ] SchedulerBoundary.IdleWaitDrainsCascadedQueues
+[       OK ] SchedulerBoundary.IdleWaitDrainsCascadedQueues (0 ms)
+[ RUN      ] SchedulerBoundary.IdleWaitDoesNotIgnoreDelayedOrRunningWork
+[       OK ] SchedulerBoundary.IdleWaitDoesNotIgnoreDelayedOrRunningWork (10 ms)
+[ RUN      ] SchedulerBoundary.IdleWaitExposesTaskFailure
+[       OK ] SchedulerBoundary.IdleWaitExposesTaskFailure (1 ms)
+[----------] 5 tests from SchedulerBoundary (17 ms total)
+
+[----------] 3 tests from ExternalData
+[ RUN      ] ExternalData.EmptyCursorIsNotQueryFailure
+[       OK ] ExternalData.EmptyCursorIsNotQueryFailure (0 ms)
+[ RUN      ] ExternalData.ExplicitQueryResponses
+[       OK ] ExternalData.ExplicitQueryResponses (1 ms)
+[ RUN      ] ExternalData.OriginalBucketKeepsFirstPut
+[       OK ] ExternalData.OriginalBucketKeepsFirstPut (0 ms)
+[----------] 3 tests from ExternalData (4 ms total)
+
+[----------] 2 tests from ExternalEvents
+[ RUN      ] ExternalEvents.PublishPreservesEnvelopeAndFailure
+[       OK ] ExternalEvents.PublishPreservesEnvelopeAndFailure (0 ms)
+[ RUN      ] ExternalEvents.MissingProviderAndScopeCleanup
+[       OK ] ExternalEvents.MissingProviderAndScopeCleanup (0 ms)
+[----------] 2 tests from ExternalEvents (2 ms total)
+
+[----------] 3 tests from NativePointerSubset
+[ RUN      ] NativePointerSubset.SharedOwnership
+[       OK ] NativePointerSubset.SharedOwnership (0 ms)
+[ RUN      ] NativePointerSubset.WeakIdentityAndPromotion
+[       OK ] NativePointerSubset.WeakIdentityAndPromotion (0 ms)
+[ RUN      ] NativePointerSubset.LocalCastRequiresImplementedInterface
+[       OK ] NativePointerSubset.LocalCastRequiresImplementedInterface (0 ms)
+[----------] 3 tests from NativePointerSubset (2 ms total)
+
+[----------] 1 test from RilAdapter
+[ RUN      ] RilAdapter.FormalStatusResponse
+[       OK ] RilAdapter.FormalStatusResponse (5 ms)
+[----------] 1 test from RilAdapter (5 ms total)
+
+[----------] Global test environment tear-down
+[==========] 19 tests from 7 test suites ran. (46 ms total)
+[  PASSED  ] 19 tests.
++ /mnt/e/github/multisim/.host-out/build/sim_component_test --gtest_filter=* --gtest_output=xml:/mnt/e/github/multisim/.host-out/runs/run-bjdlzxba/capacity.xml
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from SimComponent
+[ RUN      ] SimComponent.CapacityReadOnly
+[       OK ] SimComponent.CapacityReadOnly (0 ms)
+[----------] 1 test from SimComponent (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3 ms total)
+[  PASSED  ] 1 test.
+[
+  {
+    "name": "compatibility",
+    "exit_code": 0,
+    "status": "PASS",
+    "tests": 17,
+    "passed": 17,
+    "failed": 0,
+    "binary_sha256": "e7689f33c51952598994796f0f11e49e2d9aa6f1dfeab487089189de7a3e0815",
+    "filter": "*-*DEFECT_*",
+    "skipped": 0
+  },
+  {
+    "name": "known_defects",
+    "exit_code": 1,
+    "status": "FAIL",
+    "tests": 5,
+    "passed": 0,
+    "failed": 5,
+    "binary_sha256": "e7689f33c51952598994796f0f11e49e2d9aa6f1dfeab487089189de7a3e0815",
+    "filter": "*DEFECT_*",
+    "skipped": 0
+  },
+  {
+    "name": "pin_memory",
+    "exit_code": 0,
+    "status": "PASS",
+    "tests": 4,
+    "passed": 4,
+    "failed": 0,
+    "binary_sha256": "4181878919de5f370d989e15c4ed220227b131583b824f6da0e181d065332fc6",
+    "filter": "*",
+    "skipped": 0
+  },
+  {
+    "name": "infrastructure",
+    "exit_code": 0,
+    "status": "PASS",
+    "tests": 19,
+    "passed": 19,
+    "failed": 0,
+    "binary_sha256": "97f05c74e00a0b6a3fd65e3714729288b4b5f6d484fc466f04d1278936d5f1cf",
+    "filter": "*",
+    "skipped": 0
+  },
+  {
+    "name": "capacity",
+    "exit_code": 0,
+    "status": "PASS",
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "binary_sha256": "c743241705e5278ddbdf966dd979dad272e6d5438d07b49f23a8f98c3fae2b43",
+    "filter": "*",
+    "skipped": 0
+  }
+]
+Evidence: /mnt/e/github/multisim/.host-out/runs/run-bjdlzxba

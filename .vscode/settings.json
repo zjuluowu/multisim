@@ -1,0 +1,21 @@
+{
+  "clangd.path": "/usr/bin/clangd",
+  "clangd.arguments": [
+    "--compile-commands-dir=${workspaceFolder}/.host-out/build",
+    "--background-index"
+  ],
+  "C_Cpp.intelliSenseEngine": "disabled",
+  "files.associations": {
+    "*.gn": "gn",
+    "*.gni": "gn"
+  },
+  "testMate.cpp.test.advancedExecutables": [
+    {
+      "pattern": ".host-out/build/{sim_guard_legacy,sim_guard_pin_memory,platform_adapter_test,sim_component_test}",
+      "cwd": "${workspaceFolder}/.host-out",
+      "env": {
+        "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/testmate-%p.profraw"
+      }
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # 多 SIM 重构执行状态
 
-本文件集中维护当前实施位置、证据、局部阻塞和下一批任务；技术决策继续由[目标主设计](SIM_Target_Architecture_Design_v1.2.md)维护，流程由[流程对照](多SIM架构重构_设计说明与业务流程对照.md)维护，历史裁决留在[原评审](SIM_Target_Architecture_Independent_Review_2026-10-29.md)。最近恢复/一致性核对：2026-11-09；测试工程内聚迁移见[§13](#test-relocation-20261109)，本地开闭源复审增量见[§12](#open-closed-followup-20261109)，历史分支合入main及重验见[§11](#main-integration-20261105)，G2a工作分支复验见[§10](#g2a-revalidation-20261105)，测试防护网首批见[§8](#sim-guard-20261104)，第二轮结果及阻塞见[§9](#sim-guard-round2)。此前G2a记录保留，各历史运行结果仍按其原日期、基线和覆盖范围解释。
+本文件集中维护当前实施位置、证据、局部阻塞和下一批任务；技术决策继续由[目标主设计](SIM_Target_Architecture_Design_v1.2.md)维护，流程由[流程对照](多SIM架构重构_设计说明与业务流程对照.md)维护，历史裁决留在[原评审](SIM_Target_Architecture_Independent_Review_2026-10-29.md)。最近恢复/一致性核对：2026-11-11；Windows VS Code + WSL Host工程及本轮实测见[§15](#wsl-host-20261111)；测试工程内聚迁移见[§13](#test-relocation-20261109)，本地开闭源复审增量见[§12](#open-closed-followup-20261109)，历史分支合入main及重验见[§11](#main-integration-20261105)，G2a工作分支复验见[§10](#g2a-revalidation-20261105)，测试防护网首批见[§8](#sim-guard-20261104)，第二轮结果及阻塞见[§9](#sim-guard-round2)。此前G2a记录保留，各历史运行结果仍按其原日期、基线和覆盖范围解释。
 
 <a id="current-status"></a>
 
@@ -533,3 +533,40 @@ python3 -B telephony_core_service/services/multisim/test/multisim_architecture_r
 实际发布完成：提交 `3c6c6d9010a6f7f0f3bc0ec8c949afb91e36d644`（`refactor(sim): consolidate test tooling and preserve boundary review evidence`），共246项文件变更，已常规推送至 `origin/main`。推送后 `git ls-remote origin refs/heads/main` 与本地 `origin/main` 均返回同SHA，且包含关系检查通过；工作区与暂存区均为空。对该提交与输入a7d3af8b的差分再次确认：旧生产实现、公共接口、原根BUILD、原test/BUILD及原单测源表未改变。
 
 本段为上述发布的文档追记，随独立文档提交保存，不写自身提交SHA；当前main精确tip以Git远端查询为准。§12/§13的“未提交/未授权发布”是当时执行记录，现已由本次用户授权及本节发布核验更新；历史运行JSON保持原字节及原日期，不将本次发布等同于新业务运行或产品准入。
+
+<a id="wsl-host-20261111"></a>
+
+## 15. Windows VS Code + WSL Host 工程（2026-11-11）
+
+本批用户授权测试工程、Host适配、构建和IDE配置，禁止生产修改及提交/推送。输入为干净 `main@f2acb72fa83d203cea9422a83da0d2dcac19a2c2`；origin/main经fetch和ls-remote核实同SHA，暂存区为空，既有11个worktree未切换。恢复工具返回CHECKPOINT_VERIFIED，仅说明历史Git可恢复，不是本轮业务PASS。旧实现、公共接口、原产品与原单测构建均无Diff。
+
+复用 `services/multisim/test/systemtest` 独立GN根和相邻SIM Guard，新增 `systemtest/tools/host.py`、构建/测试/调试shell入口及根 `.vscode` 四份配置；没有另建业务测试体系或使用实验linux_sim_guard。使用说明见 [HOST.md](../services/multisim/test/systemtest/HOST.md)，实际命令、源码/二进制摘要、A～H验收及机器可读结果见 [host_validation_20261111.json](../services/multisim/test/systemtest/configs/host_validation_20261111.json)，同名证据目录保存本轮XML、日志和原审计runner完整结果，不依赖临时目录恢复结论。
+
+环境为WSL2 Ubuntu 24.04.4 x86_64，内核6.18.40.1-microsoft-standard-WSL2；源码仍在E盘drvfs/9p。Clang/clang++/clangd/LLDB 18.1.3、GN 1000 (03d10f1)、Ninja 1.11.1、Python3.12.3、Git2.43.0；C++17、Linux libstdc++/glibc2.39。已装GoogleTest源码摘要不匹配，显式下载原锁定v1.15.2归档并校验源码树，在仓外编译GTest/GMock；未安装/升级系统包或修改系统配置。IDE profile为 `-g -O1 -fno-omit-frame-pointer` 并保留原LTO裁剪；历史runner默认O2不变，不将Host ABI等同OHOS。
+
+| 本轮实测项 | 状态与结果 | 真实性/限制 |
+| --- | --- | --- |
+| GN/Ninja构建、增量、清理 | PASS；四个Host ELF；增量no work；独立输出实际清理2个生成文件 | 原独立GN增加testonly默认和可选Debug；未忽略链接错误；完整不可达平台方法仍由原LTO闭包裁剪 |
+| SIM兼容场景 | 17 PASS / 0 FAIL | 真实StateManager/Handle/IccState；单/双卡、PIN/PUK、卡状态回调、交错和组件销毁重建；不是完整Manager OnInit |
+| 独立缺陷/待裁决 | 0 PASS / 5 FAIL | 原迟到/替换卡READY、RIL错误映射、旧PIN和Refresh返回冲突均保留；all退出1 |
+| PIN外部Hook契约 | 4 PASS | 外部函数指针Spy；不是vendor资产或设备自动解锁验收 |
+| 设施/容量 | 19 PASS / 1 PASS，分别统计 | 补三条既有SchedulerBoundary的case_id/oracle_id及清单，所有断言未变；不计SIM业务覆盖率 |
+| 全量唯一GTest统计 | **46 executed / 41 PASS / 5 FAIL / 0 skipped** | 上述分类合计；独立重跑和调试不重复累计 |
+| 原SIM Guard O2审计runner | 17 PASS / 5 FAIL，11个生产函数正执行 | 独立重建，保留原冻结场景/Fake/Oracle及故障分支检查；本轮mutation NOT_RUN |
+| 编译数据库/clangd | PASS，实际读取CDB、解析/导航自检0错误 | 使用 `--tweaks=`；默认全功能检查另有41个ExtractFunction重构操作自检错误，FAIL日志保留；不是源码编译诊断 |
+| IDE配置及对应CLI | PASS，五项Tasks、筛选用例1 PASS、JSON/启动引用检查 | 首次用显式gtest-root配置；Tasks/F5共用输出锁，避免并发Ninja |
+| 命令行LLDB | PASS，真实GetSimState源码断点、next、变量、栈、continue及进程exit0 | O1/LTO可能有优化变量；debug_host.sh启动/退出实测通过 |
+| 防假绿检查 | PASS：零匹配拒绝并返回1；非锁定系统GTest拒绝并返回2 | 不把GoogleTest零用例exit0算通过；构建失败FAIL、准备缺依赖BLOCKED |
+| 原资产保护/迁移护栏 | PASS，219项；134份C++/JSON仍原字节，4份明确后续修改 | 原relocation_manifest与历史证据不改；独立followups摘要/原因登记本轮GN及设施元数据，未登记漂移仍拒绝；14项源表审计PASS |
+| Remote-WSL GUI、扩展发现/F5/跳转 | **MANUAL** | 自动化环境无可确认VS Code Server/扩展清单，Windows code CLI报告vsock错误；已配置clangd/CodeLLDB/TestMate/GN扩展建议，未自动安装 |
+| 完整初始化、账户/默认角色、Provider恢复、eSIM、IPC/产品/设备 | **NOT_RUN**，历史依赖阻塞未关闭 | 原Provider14字段及LPA/SA边界不猜测；没有创建会生成业务成功结果的Fake |
+
+生产接入共8份真实卡状态/事件/宿主源码，加容量目标的原 `sim_manager.cpp`；详细路径在证据source表。RIL设备事实、参数、Registry/CommonEvent、SA不可用查找、有限FFRT/EventHandler运行时及指针/Parcel头为模拟边界；CoreManagerInner未装配SIM账户路由，未接入DataShare/LPA。Fake不决定公开SIM状态。三条设施登记的C++差分仅新增六行RecordProperty，剥离后与HEAD完全一致；原16条JSON登记保持原顺序和内容。
+
+工程自动验收A～H达到本轮可执行范围；**全量业务结果仍FAIL，不宣称全绿或完成产品验收**。IDE GUI与扩展状态须人工验收，完整初始化/账户/持久化/eSIM等能力继续受原边界阻塞。本批没有生产迁移、git commit、push或PR。下一最小工作为在Windows VS Code连接WSL后安装/确认推荐扩展，人工验收测试发现、跳转与F5；Provider闭包及新架构业务接入仍按既有阶段门禁另行处理。
+
+### 15.1 后续发布授权与复核（2026-11-11）
+
+用户随后明确要求删除旧空目录并将当前修改提交、推送至远端main；上文“未授权提交/推送”仅描述工程建设阶段。已确认 `telephony_core_service/tools/` 无任何文件，使用仅删除空目录的操作移除；Git不跟踪空目录，因此没有伪造文件删除Diff。发布前恢复工具实际fetch通过，本地main和origin/main仍为输入f2acb72f。35项工程/IDE/文档/证据变更与交付清单完全一致，暂存区原为空，迁移检查和diff检查通过；归档产物与工程输入摘要逐项匹配。发布整理另补三个shell入口的Git可执行位，并规范归档LLDB日志的制表符/行尾空白、同步该日志摘要；不改变日志信息、测试结果、Oracle、生产源码或既有worktree。
+
+归档JSON中的文档输入摘要对应工程验收时的内容；本节发布说明是在该次取证之后追加，不回写历史运行摘要。原46例41 PASS/5 FAIL及GUI MANUAL继续有效，不因发布而变为全绿。

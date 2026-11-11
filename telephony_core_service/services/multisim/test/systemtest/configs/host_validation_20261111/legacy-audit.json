@@ -1,0 +1,1075 @@
+{
+  "schema_version": 1,
+  "status": "FAIL",
+  "executed": true,
+  "sut": "legacy",
+  "suite": "all",
+  "product": "host_dual_psim",
+  "counts": {
+    "PASS": 17,
+    "FAIL": 5,
+    "BLOCKED": 0
+  },
+  "runs": [
+    {
+      "label": "run-0",
+      "exit_code": 1,
+      "xml": "run-0.xml",
+      "profile": "/tmp/sim-host-legacy-audit-20261111/execution-m9k_8ik5/run-0.profraw",
+      "cases": [
+        {
+          "test": "ContractDriver.PIN_001",
+          "status": "PASS",
+          "failures": [],
+          "observations": {
+            "real_instances_created": "1",
+            "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\npin-success-status:slot=0,present=1,state=READY,kind=2;\n",
+            "pending_responses": "0",
+            "external_calls": "status:0;pin:0;pin:0;status:0;",
+            "real_instances_destroyed": "1"
+          }
+        },
+        {
+          "test": "ContractDriver.DUAL_001",
+          "status": "PASS",
+          "failures": [],
+          "observations": {
+            "real_instances_created": "2",
+            "observations": "card-event:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;slot=1,present=1,state=LOCKED,kind=1;\ncard-event:slot=0,present=1,state=READY,kind=1;slot=1,present=1,state=LOCKED,kind=1;\n",
+            "pending_responses": "0",
+            "external_calls": "status:0;status:1;status:0;status:0;",
+            "real_instances_destroyed": "2"
+          }
+        },
+        {
+          "test": "ContractDriver.RIL_001_DuplicateAndError",
+          "status": "PASS",
+          "failures": [],
+          "observations": {
+            "real_instances_created": "1",
+            "observations": "card-event:slot=0,present=0,state=ABSENT,kind=0;\nril-error:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;\nduplicate-ready:slot=0,present=1,state=READY,kind=2;\n",
+            "pending_responses": "0",
+            "external_calls": "status:0;status:0;status:0;",
+            "real_instances_destroyed": "1"
+          }
+        },
+        {
+          "test": "ContractDriver.PIN_002_CommandFailure",
+          "status": "PASS",
+          "failures": [],
+          "observations": {
+            "real_instances_created": "1",
+            "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\npin-command-failure:slot=0,present=1,state=LOCKED,kind=2;\n",
+            "pending_responses": "0",
+            "external_calls": "status:0;pin:0;",
+            "real_instances_destroyed": "1"
+          }
+        },
+        {
+          "test": "ContractDriver.DEFECT_001_StaleReadyAfterRemoval",
+          "status": "FAIL",
+          "failures": [
+            "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:22\nExpected equality of these values:\n  actual.present\n    Which is: true\n  state != State::Absent\n    Which is: false\n",
+            "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: ABSENT\n",
+            "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:24\nExpected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <00-00 00-00>\n"
+          ],
+          "observations": {
+            "real_instances_created": "1",
+            "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nremoved:slot=0,present=0,state=ABSENT,kind=0;\nstale-ready:slot=0,present=1,state=READY,kind=2;\n",
+            "pending_responses": "0",
+            "external_calls": "status:0;status:0;status:0;",
+            "real_instances_destroyed": "1"
+          }
+        },
+        {
+          "test": "SessionLifecycle.RECREATE_002_ReplacementWhileStopped",
+          "status": "PASS",
+          "failures": [],
+          "observations": {
+            "real_instances_created": "2",
+            "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nnew-card-after-real-recreation:slot=0,present=1,state=LOCKED,kind=1;\n",
+            "real_instances_destroyed": "2",
+            "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+            "pending_responses": "0",
+            "external_calls": "status:0;"
+          }
+        },
+        {
+          "test": "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+          "status": "FAIL",
+          "failures": [
+            "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:157\nExpected: (actual.error) != (0), actual: 0 vs 0\n",
+            "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:157\nExpected equality of these values:\n  actual.result\n    Which is: 4-byte object <01-00 00-00>\n  Unlock::Failure\n    Which is: 4-byte object <02-00 00-00>\n"
+          ],
+          "observations": {
+            "real_instances_created": "1",
+            "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ngeneric-error-without-password-decision:slot=0,present=1,state=LOCKED,kind=2;\n",
+            "observed_error": "0",
+            "observed_unlock_result": "1",
+            "pending_responses": "0",
+            "external_calls": "status:0;",
+            "real_instances_destroyed": "1"
+          }
+        },
+        {
+          "test": "SessionLifecycle.INIT_001_SingleEnumeration",
+          "status": "PASS",
+          "failures": [],
+          "observations": {
+            "real_instances_created": "1",
+            "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+            "observations": "initialized-without-card-response:slot=0,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;\n",
+            "pending_responses": "0",
+            "external_calls": "status:0;",
+            "real_instances_destroyed": "1"
+          }
+        },
+        {
+          "test": "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+          "status": "FAIL",
+          "failures": [
+            "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: NOT_READY\n  state\n    Which is: LOCKED\n"
+          ],
+          "observations": {
+            "real_instances_created": "1",
+            "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=1;\nold-pin-result-after-card-replacement:slot=0,present=1,state=NOT_READY,kind=1;\n",
+            "old_request_result": "0",
+            "pending_responses": "0",
+            "external_calls": "status:0;pin:0;status:0;status:0;",
+            "real_instances_destroyed": "1"
+          }
+        },
+        {
+          "test": "SessionLifecycle.INIT_002_MissingRilThenRecreate",
+          "status": "PASS",
+          "failures": [],
+          "observations": {
+            "real_instances_created": "2",
+            "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+            "observations": "ril-unavailable:slot=0,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=1;\n",
+            "real_instances_destroyed": "2",
+            "pending_responses": "0",
+            "external_calls": "status:0;"
+          }
+        },
+        {
+          "test": "SessionLifecycle.RECREATE_001_DualCardReenumeration",
+          "status": "PASS",
+          "failures": [],
+          "observations": {
+            "real_instances_created": "4",
+            "observations": "card-event:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\nnew-real-SUT-before-enumeration:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=0,state=UNKNOWN,kind=0;\nreenumerated-device-facts:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\n",
+            "real_instances_destroyed": "4",
+            "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+            "persistence_scope": "external card facts; no Provider/DB recovery claim",
+            "pending_responses": "0",
+            "external_calls": "status:0;status:1;"
+          }
+        },
+        {
+          "test": "SessionLifecycle.CALLBACK_002_MalformedThenRecovery",
+          "status": "PASS",
+          "failures": [],
+          "observations": {
+            "real_instances_created": "1",
+            "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+            "observations": "malformed-status:slot=0,present=0,state=UNKNOWN,kind=0;\nvalid-status-recovery:slot=0,present=1,state=READY,kind=2;\n",
+            "injected_fault": "wrong typed RIL response payload",
+            "pending_responses": "0",
+            "external_calls": "status:0;status:0;",
+            "real_instances_destroyed": "1"
+          }
+        },
+        {
+          "test": "SessionLifecycle.INIT_DUAL_002_ReversedEnumeration",
+          "status": "PASS",
+          "failures": [],
+          "observations": {
+            "real_instances_created": "2",
+            "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+            "observations": "second-slot-response-first:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=1,state=LOCKED,kind=1;\nboth-enumerated:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\n",
+            "pending_responses": "0",
+            "external_calls": "status:0;status:1;",
+            "real_instances_destroyed": "2"
+          }
+        },
+        {
+          "test": "SessionLifecycle.DUAL_002_PinWhileOtherCardRemoved",
+          "status": "PASS",
+          "failures": [],
+          "observations": {
+            "real_instances_created": "2",
+            "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=1,state=READY,kind=1;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=0,state=ABSENT,kind=0;\nunlock-and-other-removal-completed:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=ABSENT,kind=0;\n",
+            "pending_responses": "0",
+            "external_calls": "status:0;status:1;pin:0;status:1;status:0;",
+            "real_instances_destroyed": "2"
+          }
+        },
+        {
+          "test": "SessionLifecycle.CALLBACK_003_DroppedThenRecovery",
+          "status": "PASS",
+          "failures": [],
+          "observations": {
+            "real_instances_created": "1",
+            "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+            "observations": "status-response-not-delivered:slot=0,present=0,state=UNKNOWN,kind=0;\nnew-status-response:slot=0,present=1,state=LOCKED,kind=2;\n",
+            "injected_fault": "RIL response dropped; no timeout-policy assertion",
+            "pending_responses": "0",
+            "external_calls": "status:0;status:0;",
+            "real_instances_destroyed": "1"
+          }
+        },
+        {
+          "test": "SessionLifecycle.PUK_002_WrongThenSuccessfulUnlock",
+          "status": "PASS",
+          "failures": [],
+          "observations": {
+            "real_instances_created": "1",
+            "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=1,state=READY,kind=2;\n",
+            "pending_responses": "0",
+            "external_calls": "status:0;status:0;",
+            "real_instances_destroyed": "1"
+          }
+        },
+        {
+          "test": "SessionLifecycle.REFRESH_001_ExplicitStatusQuery",
+          "status": "PASS",
+          "failures": [],
+          "observations": {
+            "real_instances_created": "1",
+            "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nexplicit-refresh-completed:slot=0,present=1,state=LOCKED,kind=2;\n",
+            "raw_refresh_return": "2",
+            "pending_responses": "0",
+            "external_calls": "status:0;status:0;status:0;",
+            "real_instances_destroyed": "1"
+          }
+        },
+        {
+          "test": "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+          "status": "FAIL",
+          "failures": [
+            "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:176\nExpected equality of these values:\n  RefreshToLocked()\n    Which is: 2\n  0\ncore_service_client.h RefreshSimState @return contract\n"
+          ],
+          "observations": {
+            "real_instances_created": "1",
+            "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nexplicit-refresh-completed:slot=0,present=1,state=LOCKED,kind=2;\n",
+            "raw_refresh_return": "2",
+            "pending_responses": "0",
+            "external_calls": "status:0;status:0;status:0;",
+            "real_instances_destroyed": "1"
+          }
+        },
+        {
+          "test": "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+          "status": "FAIL",
+          "failures": [
+            "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: LOCKED\n",
+            "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:24\nExpected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <01-00 00-00>\n"
+          ],
+          "observations": {
+            "real_instances_created": "1",
+            "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nreplacement-card-locked:slot=0,present=1,state=LOCKED,kind=1;\nold-card-ready-response:slot=0,present=1,state=READY,kind=2;\n",
+            "pending_responses": "0",
+            "external_calls": "status:0;status:0;status:0;status:0;",
+            "real_instances_destroyed": "1"
+          }
+        },
+        {
+          "test": "Compatibility/Lifecycle.PublicCardState/PUK_001",
+          "status": "PASS",
+          "failures": [],
+          "observations": {
+            "real_instances_created": "1",
+            "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\n",
+            "pending_responses": "0",
+            "external_calls": "status:0;status:0;",
+            "real_instances_destroyed": "1"
+          }
+        },
+        {
+          "test": "Compatibility/Lifecycle.PublicCardState/LIFE_001",
+          "status": "PASS",
+          "failures": [],
+          "observations": {
+            "real_instances_created": "1",
+            "observations": "card-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=1,state=READY,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\n",
+            "pending_responses": "0",
+            "external_calls": "status:0;status:0;status:0;status:0;",
+            "real_instances_destroyed": "1"
+          }
+        },
+        {
+          "test": "Compatibility/Lifecycle.PublicCardState/LIFE_002",
+          "status": "PASS",
+          "failures": [],
+          "observations": {
+            "real_instances_created": "1",
+            "observations": "card-event:slot=0,present=1,state=READY,kind=1;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;\n",
+            "pending_responses": "0",
+            "external_calls": "status:0;status:0;status:0;",
+            "real_instances_destroyed": "1"
+          }
+        }
+      ]
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "gn",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.001930509926751256,
+      "log": "version-gn.log"
+    },
+    {
+      "argv": [
+        "ninja",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.004102122969925404,
+      "log": "version-ninja.log"
+    },
+    {
+      "argv": [
+        "clang++",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.03291387693025172,
+      "log": "version-clang++.log"
+    },
+    {
+      "argv": [
+        "ld.gold",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.004163522040471435,
+      "log": "version-ld.gold.log"
+    },
+    {
+      "argv": [
+        "llvm-profdata-18",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.03323237900622189,
+      "log": "version-llvm-profdata-18.log"
+    },
+    {
+      "argv": [
+        "llvm-cov-18",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.0336383810499683,
+      "log": "version-llvm-cov-18.log"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/scripts/generate_ril_mock.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.36522346700076014,
+      "log": "ril-interface.log"
+    },
+    {
+      "argv": [
+        "gn",
+        "gen",
+        "/tmp/sim-host-legacy-audit-20261111/execution-m9k_8ik5/build",
+        "--root=/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest",
+        "--args=production_root=\"/mnt/e/github/multisim/telephony_core_service\" gtest_root=\"/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59\""
+      ],
+      "exit_code": 0,
+      "seconds": 0.1148853189079091,
+      "log": "normal-gn.log"
+    },
+    {
+      "argv": [
+        "ninja",
+        "-C",
+        "/tmp/sim-host-legacy-audit-20261111/execution-m9k_8ik5/build",
+        "-j",
+        "3",
+        "sim_guard_legacy"
+      ],
+      "exit_code": 0,
+      "seconds": 109.80275114101823,
+      "log": "normal-build.log"
+    },
+    {
+      "argv": [
+        "/tmp/sim-host-legacy-audit-20261111/execution-m9k_8ik5/build/sim_guard_legacy",
+        "--gtest_filter=*",
+        "--gtest_shuffle",
+        "--gtest_random_seed=41",
+        "--gtest_output=xml:/tmp/sim-host-legacy-audit-20261111/execution-m9k_8ik5/run-0.xml"
+      ],
+      "exit_code": 1,
+      "seconds": 0.06451476493384689,
+      "log": "run-0.log"
+    },
+    {
+      "argv": [
+        "llvm-profdata-18",
+        "merge",
+        "-sparse",
+        "/tmp/sim-host-legacy-audit-20261111/execution-m9k_8ik5/run-0.profraw",
+        "-o",
+        "/tmp/sim-host-legacy-audit-20261111/execution-m9k_8ik5/normal.profdata"
+      ],
+      "exit_code": 0,
+      "seconds": 0.03245208295993507,
+      "log": "merge.log"
+    },
+    {
+      "argv": [
+        "llvm-cov-18",
+        "export",
+        "/tmp/sim-host-legacy-audit-20261111/execution-m9k_8ik5/build/sim_guard_legacy",
+        "-instr-profile=/tmp/sim-host-legacy-audit-20261111/execution-m9k_8ik5/normal.profdata"
+      ],
+      "exit_code": 0,
+      "seconds": 0.11466334899887443,
+      "log": "coverage.log"
+    }
+  ],
+  "artifacts": "/tmp/sim-host-legacy-audit-20261111/execution-m9k_8ik5",
+  "scope": "real_SIM_card_state_component_with_RIL_boundary",
+  "full_manager_on_init": "NOT_RUN",
+  "IPC_SA_device": "NOT_RUN",
+  "account_default_roles_persistence_esim": "NOT_RUN",
+  "source_commit": "f2acb72fa83d203cea9422a83da0d2dcac19a2c2",
+  "dirty": true,
+  "semantic_baseline": {
+    "version": 3,
+    "scope": "Physical SIM public state/type and PIN result contract; full Manager/IPC/accounts/esim not covered",
+    "change_policy": "Review scenario/input/oracle/fake semantic changes against independent contract, update version and rationale explicitly; adapter-only migrations must keep these hashes",
+    "change_review": "Round2 additive session/security contract and external delivery controls. ContractDriver moved unchanged to shared header. All v2 test bodies and v2 contract/scenario/Oracle/device model are preserved. New case classifications and defects are explicit in round2_catalog.json. No assertion is relaxed to hide a production failure.",
+    "v2_reference": "semantic_baseline_v2.json",
+    "v2_test_body_sha256": "8ed41b9e762b3d5fa99a0c3b40da39097f744f24df1f48ad95ec92371dd4baf7",
+    "sha256": {
+      "contracts/sim_sut.h": "897b7f7766c20a2bead79825d0b00377793b4b42e07c8b5c2a1f418259e445aa",
+      "fakes/ril_device.h": "9a055ade01080ebbae91d67456b46b427472f77c08f8c2806118c4a92925ae04",
+      "scenarios/compatibility.h": "0cc09fcfec1fe53cc00ef99969bed8bf5d0f6611a0db34934cccda4aaacabd7c",
+      "oracle/card_oracle.h": "9f752b1101c2754ea09fec11d31bb5f8236872a39398701c90d3a49095c6db02",
+      "runner/contract_test.cpp": "4b93a870c3e3e31b678e085607c7a15174e2460eb412e27651ce5f38a48c664b",
+      "runner/contract_driver.h": "9276249fb08c9d90fa3f0e72d55280bd2cb61419364b98b05a4f385cecf67496",
+      "contracts/sim_session.h": "19075a3cd587434e8b4661bd53296b85376025e980da6bbb6827f060a3654825",
+      "fakes/ril_fault_controls.h": "5b26e865b69435e23538c02389d886ff6101bc6f2326558679db2d588d2249fa",
+      "runner/lifecycle_extension_test.cpp": "f2507714d82ad155b01bc3bd37cbbea814db6c402fffda18cbc4de997d7486de"
+    }
+  },
+  "defect_inventory": [
+    {
+      "id": "DEFECT-001",
+      "test": "ContractDriver.DEFECT_001_StaleReadyAfterRemoval",
+      "origin": "v2_retained",
+      "contract": "Removed card must not be resurrected by an older READY result",
+      "scheduling": "older READY and newer ABSENT response both in flight",
+      "source": "SimStateHandle::GetSimCardData",
+      "legacy_status": "SEE_ROUND2_EVIDENCE",
+      "future_real_multisim_expectation": "PASS when semantically equivalent fault scheduling is reachable",
+      "policy_status": "NEEDS_DECISION_ON_FIX; never compatibility baseline of erroneous behavior",
+      "source_level": "D candidate with executable public-state evidence",
+      "execution_evidence": "evidence_round2.json",
+      "this_invocation": "FAIL"
+    },
+    {
+      "id": "DEFECT-002",
+      "test": "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+      "origin": "round2_candidate",
+      "contract": "Old card READY must not replace new physical card PIN-locked state/type",
+      "scheduling": "old READY held while absence and replacement responses are delivered",
+      "source": "SimStateHandle::GetSimCardData",
+      "legacy_status": "SEE_ROUND2_EVIDENCE",
+      "future_real_multisim_expectation": "PASS when semantically equivalent fault scheduling is reachable",
+      "policy_status": "NEEDS_DECISION_ON_FIX; never compatibility baseline of erroneous behavior",
+      "source_level": "D candidate with executable public-state evidence",
+      "execution_evidence": "evidence_round2.json",
+      "this_invocation": "FAIL"
+    },
+    {
+      "id": "DEFECT-003",
+      "test": "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+      "origin": "round2_candidate",
+      "contract": "Generic RIL failure is not evidence of incorrect PIN; no successful unlock result",
+      "scheduling": "RadioResponseInfo ERR_GENERIC_FAILURE instead of LockStatusResp",
+      "source": "SimStateHandle::GetUnlockResult; SimStateManager::UnlockPin",
+      "legacy_status": "SEE_ROUND2_EVIDENCE",
+      "future_real_multisim_expectation": "PASS when semantically equivalent fault scheduling is reachable",
+      "policy_status": "NEEDS_DECISION_ON_FIX; never compatibility baseline of erroneous behavior",
+      "source_level": "D candidate with executable public-state evidence",
+      "execution_evidence": "evidence_round2.json",
+      "this_invocation": "FAIL"
+    },
+    {
+      "id": "DEFECT-004",
+      "test": "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+      "origin": "round2_candidate",
+      "contract": "An old card PIN result must not change the replacement card lock state",
+      "scheduling": "hold PIN completion, remove/reinsert locked card, release old completion",
+      "source": "SimStateManager::UnlockPin",
+      "legacy_status": "SEE_ROUND2_EVIDENCE",
+      "future_real_multisim_expectation": "PASS when semantically equivalent fault scheduling is reachable",
+      "policy_status": "NEEDS_DECISION_ON_FIX; never compatibility baseline of erroneous behavior",
+      "source_level": "D candidate with executable public-state evidence",
+      "execution_evidence": "evidence_round2.json",
+      "this_invocation": "FAIL"
+    },
+    {
+      "id": "DEFECT-005",
+      "test": "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+      "origin": "round2_contract_conflict",
+      "contract": "CoreServiceClient declaration promises TELEPHONY_SUCCESS; direct delegates return raw SimState",
+      "scheduling": "valid refresh completion with LOCKED state",
+      "source": "interfaces/innerkits/include/core_service_client.h RefreshSimState comment; services/sim/src/sim_state_manager.cpp RefreshSimState; CoreServiceSim/Stub/Proxy/Client delegates",
+      "legacy_status": "SEE_ROUND2_EVIDENCE",
+      "future_real_multisim_expectation": "PASS after formal return semantics are adjudicated; no silent state/error normalization",
+      "policy_status": "NEEDS_DECISION_ON_PUBLIC_RETURN_CONTRACT",
+      "source_level": "A documented contract versus C observed implementation and historical tests",
+      "execution_evidence": "evidence_round2.json",
+      "this_invocation": "FAIL"
+    }
+  ],
+  "known_defects_omitted_from_compatibility_pass_count": true,
+  "dependency_commit": "b514bdc898e2951020cbdca1304b75f5950d1f59",
+  "production_sources": [
+    {
+      "path": "services/sim/src/sim_state_manager.cpp",
+      "sha256": "99a3194d52aa58af9eb475e08b315821c6eb3a787583f48580ad76cb89d0b44d"
+    },
+    {
+      "path": "services/sim/src/sim_state_handle.cpp",
+      "sha256": "e6856b2acda8a60334e8f61f6d5201fb896106a0a700960f8a36cc26dd1d5e0f"
+    },
+    {
+      "path": "services/sim/src/icc_state.cpp",
+      "sha256": "f44d7f4ba3a3dec16a0edb9ba8b24b6d1bcb66f50fce9d79f936626ba0d9e7cd"
+    },
+    {
+      "path": "services/tel_ril/src/observer_handler.cpp",
+      "sha256": "80d56eca572bf285eb3f54e4f057255a582a7f5bf85e35a17dfbdba0e0e74d63"
+    },
+    {
+      "path": "frameworks/native/src/core_manager_inner.cpp",
+      "sha256": "2bbfe3133a8f57e7774ba554874acf00763531d395a5acdd294d3e0a12e99733"
+    },
+    {
+      "path": "services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp",
+      "sha256": "b3d5e06f22790da1ee1b3373fe528e045a3452f18e0bec01472a7c7f23fc6b27"
+    },
+    {
+      "path": "utils/common/src/tel_event_handler.cpp",
+      "sha256": "d6dbc69c03c8c4810cea31d9efaac5e0c0767b569edcc9ce25f3c61269665e63"
+    },
+    {
+      "path": "utils/common/src/tel_event_queue.cpp",
+      "sha256": "d536be6a17f2710dda6e145f7c15a482bfa9f053689ab3dc24fae91ef6d3bccf"
+    }
+  ],
+  "validation_inputs": [
+    {
+      "path": "services/multisim/test/sim_guard/adapters/legacy/legacy_sim_adapter.cpp",
+      "sha256": "66ca6d63cb4c067b90706d8387744c7882a5683e893c0ffb63015912cf43afae"
+    },
+    {
+      "path": "services/multisim/test/sim_guard/adapters/legacy/platform_spy.cpp",
+      "sha256": "1a28487dc092b57cfc87d367972ec8020b5252b704b91d46161a31938092c7f5"
+    },
+    {
+      "path": "services/multisim/test/sim_guard/adapters/legacy/platform_spy.h",
+      "sha256": "1ab5487873d21fbe1599ef40005a233ba5c0b29369835bfa218898da87172c99"
+    },
+    {
+      "path": "services/multisim/test/sim_guard/contracts/sim_session.h",
+      "sha256": "19075a3cd587434e8b4661bd53296b85376025e980da6bbb6827f060a3654825"
+    },
+    {
+      "path": "services/multisim/test/sim_guard/contracts/sim_sut.h",
+      "sha256": "897b7f7766c20a2bead79825d0b00377793b4b42e07c8b5c2a1f418259e445aa"
+    },
+    {
+      "path": "services/multisim/test/sim_guard/fakes/ril_device.h",
+      "sha256": "9a055ade01080ebbae91d67456b46b427472f77c08f8c2806118c4a92925ae04"
+    },
+    {
+      "path": "services/multisim/test/sim_guard/fakes/ril_fault_controls.h",
+      "sha256": "5b26e865b69435e23538c02389d886ff6101bc6f2326558679db2d588d2249fa"
+    },
+    {
+      "path": "services/multisim/test/sim_guard/oracle/card_oracle.h",
+      "sha256": "9f752b1101c2754ea09fec11d31bb5f8236872a39398701c90d3a49095c6db02"
+    },
+    {
+      "path": "services/multisim/test/sim_guard/run_pin_memory_contract.py",
+      "sha256": "fafd075fb40c7d20059cab053f2455ca82f66edf8d16bb79a43b873357e59f50"
+    },
+    {
+      "path": "services/multisim/test/sim_guard/run_sim_guard.py",
+      "sha256": "500b76d40e0169908baf78ff1745ec311cba0588f4c8dbc9088cce766acfc9c8"
+    },
+    {
+      "path": "services/multisim/test/sim_guard/runner/contract_driver.h",
+      "sha256": "9276249fb08c9d90fa3f0e72d55280bd2cb61419364b98b05a4f385cecf67496"
+    },
+    {
+      "path": "services/multisim/test/sim_guard/runner/contract_test.cpp",
+      "sha256": "4b93a870c3e3e31b678e085607c7a15174e2460eb412e27651ce5f38a48c664b"
+    },
+    {
+      "path": "services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp",
+      "sha256": "f2507714d82ad155b01bc3bd37cbbea814db6c402fffda18cbc4de997d7486de"
+    },
+    {
+      "path": "services/multisim/test/sim_guard/runner/pin_memory_contract_test.cpp",
+      "sha256": "3f87397a9d81886706889bd91683268a5f42df5a9c69aa7685ffcb881085c678"
+    },
+    {
+      "path": "services/multisim/test/sim_guard/scenarios/compatibility.h",
+      "sha256": "0cc09fcfec1fe53cc00ef99969bed8bf5d0f6611a0db34934cccda4aaacabd7c"
+    },
+    {
+      "path": "services/multisim/test/sim_guard/semantic_baseline.json",
+      "sha256": "f62ee4faa10b33c413711cf5d45707ee2160cbd85d28bf040f369c7a1e9e888b"
+    },
+    {
+      "path": "services/multisim/test/sim_guard/semantic_baseline_v2.json",
+      "sha256": "20e298bbfa060019b3decf81d574cfa7b58724a845aad4ed8b854db31fca496a"
+    },
+    {
+      "path": "services/multisim/test/sim_guard/traceability/inventory.json",
+      "sha256": "87bb8f91367d6376cb6c5dc4d98b071e59fe3a8da3ae820d0c0806aa3d0f4f73"
+    },
+    {
+      "path": "services/multisim/test/sim_guard/traceability/round2_catalog.json",
+      "sha256": "b5ec05539a4328e5e55e7dda48162596e7320a3ad4913f89293900280290498e"
+    },
+    {
+      "path": "services/multisim/test/systemtest/.gn",
+      "sha256": "7d922ea30fd1363eb1512b44379fc0b8da45d24d171e7176659173f70b71c63c"
+    },
+    {
+      "path": "services/multisim/test/systemtest/BUILD.gn",
+      "sha256": "af60d6518d1224eecdac66d5b6fdb148035085eac2f9d2fe918d083751616a53"
+    },
+    {
+      "path": "services/multisim/test/systemtest/configs/dependency_lock.json",
+      "sha256": "fdf71c17dd419ea43f088beaa296cdd05bf90a2a2661acdbd87238e805a70945"
+    },
+    {
+      "path": "services/multisim/test/systemtest/gn/BUILD.gn",
+      "sha256": "a18276952521388584be002f899e61d4b380ab3cc6e62f77c2316cdc5dd6c3c4"
+    },
+    {
+      "path": "services/multisim/test/systemtest/gn/BUILDCONFIG.gn",
+      "sha256": "c48fb96ab9ab64c78aba34f13e6d6be463420efd9e87eabfb63e18aa40f1060e"
+    },
+    {
+      "path": "services/multisim/test/systemtest/scripts/build_clock.py",
+      "sha256": "f00451a20b484158512c52e229188390f6b043918f9936fd0df0643d2e955b9f"
+    },
+    {
+      "path": "services/multisim/test/systemtest/scripts/generate_ril_mock.py",
+      "sha256": "95916088e69f8ff5e09ca499a8146be46bd16bfaaeec5a5f0609fef6543495e7"
+    },
+    {
+      "path": "services/multisim/test/systemtest/scripts/run_g2a_query.py",
+      "sha256": "ec6a30a4ba216bcea486d6c7cfca984106d758ab345f7b451ed2941376a4645f"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/event_handler_runtime.cpp",
+      "sha256": "4c963d526c054b93d2a94919b40e27dcd0ee65f9fbfcea86da0b7740ca2fbf86"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/external_services.cpp",
+      "sha256": "f3d7b4802b91b7a54f51c6670216754634fb9ab29e8634a5cf31e99c62136469"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/external_services_mock.h",
+      "sha256": "6ed427a65476a34fccb5e183cacb3f236619a8405777255bc70359a48e75f59c"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/ffrt_runtime.cpp",
+      "sha256": "47ca6163b88147cfffb1a2fbb0797fe93980da3271e23c734629bef0d5b02f07"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/ffrt_runtime.h",
+      "sha256": "e56da308da2035b69ec7b25b3bdf352eaa3c79c0df2cce62e1b7265d6c99c21e"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/g2a_vendor_boundary.cpp",
+      "sha256": "9931244e65f13f354e0a64d54bee2c0c708165636af7d2802ad76e3c7756b0e6"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/ability_manager_client.h",
+      "sha256": "ad5e08027ec81c9d63bf2f316af4337ee0b9b2403311cc508509158c6b143592"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/app_mgr_client.h",
+      "sha256": "6d701634348e80083d633c92b153f55eb785aaf07ee25c5b9ae4de299d09dab8"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/bundle_mgr_proxy.h",
+      "sha256": "cb158e29871542f10be66b22fd3f92425b1ceab17767585503facaec6a6258e1"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/cJSON.h",
+      "sha256": "25b0145150d500498e4d209cec69c18c42cf818bffcc54690be3b895a2a16dee"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/cellular_data_client.h",
+      "sha256": "523ede5ef2bc9f3c063410afbb6b46474efd254858a3c9e765c3e335323372c9"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/common_event.h",
+      "sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/common_event_data.h",
+      "sha256": "6d701634348e80083d633c92b153f55eb785aaf07ee25c5b9ae4de299d09dab8"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/common_event_manager.h",
+      "sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/common_event_publish_info.h",
+      "sha256": "6d701634348e80083d633c92b153f55eb785aaf07ee25c5b9ae4de299d09dab8"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/common_event_support.h",
+      "sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/compile_declarations.h",
+      "sha256": "b9e5d45c86c3020b2a6f7f28ff97cee87d9eafe97ac955d99b8efc2516bf363f"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/config_policy_utils.h",
+      "sha256": "1e6e53743a3edee84eb30e9b607d73a2fa1e897736baa8a03269b0a8b7db8420"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/configuration.h",
+      "sha256": "6d701634348e80083d633c92b153f55eb785aaf07ee25c5b9ae4de299d09dab8"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/datashare_errno.h",
+      "sha256": "5e4a8e75b043e941ce48c167a04382c95e0b30a30976ffb305fc3e687acf577d"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/datashare_helper.h",
+      "sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/datashare_predicates.h",
+      "sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/datashare_result_set.h",
+      "sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/datashare_value_object.h",
+      "sha256": "60211b05254d2e5b3b80dd2253c909dd8e806ca07b188aea29cf5bdc9dc6a681"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/datashare_values_bucket.h",
+      "sha256": "dde5f37c9f9099cad4846b2013c6f97279d79266fabd33bfc0b2bfb9f3f23eab"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/errors.h",
+      "sha256": "df8da91d96d16d2aaca88cb6d07b4124c07624587ce824cdc3ac7a7f0ce5476e"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/event_handler.h",
+      "sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/event_runner.h",
+      "sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/extension_ability_info.h",
+      "sha256": "00a4b355b08f44d7ea100909dc309e0b0bd4fe46ba0a150b8aa8826c2bd4b75d"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/ffrt.h",
+      "sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/ffrt_inner.h",
+      "sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/global_configuration_key.h",
+      "sha256": "bb14fc0d50377f6951d948ceeb72786e094ddfa9ee55d22f93022762d412e747"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/hilog/log.h",
+      "sha256": "e191f5f05f83fdeddce8bb541a6ca49203afc8a720bb548fc62f633523d7368d"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/hisysevent.h",
+      "sha256": "d13f55ae0b9aed4aeedf6aebb735676cb7e30ae0695507b17edaea8944d4d8b5"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/hks_api.h",
+      "sha256": "64101f07d09bcf0c25427313d807ed8f68c3a89de5710f30a07a93ecb72a0fbe"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/hks_error_code.h",
+      "sha256": "3c7108619d8c0d188be0ebac54ca516f2a263f32651ca39d4435b0475eef71b6"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/hks_param.h",
+      "sha256": "440a7b5abc1236b1c30ee54c6d6e33dc6f3fec5779b83e63356294d181af0ed1"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/hks_tag.h",
+      "sha256": "caa589c9208c7d621d9da39fbed419aaaa987e2b1c65f8ba105fcadfb62d9eec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/hks_type.h",
+      "sha256": "2ee59b8810d27586373828159db678b9f20519254f519e7bded758155f270c43"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/hks_type_enum.h",
+      "sha256": "545c38aa20506fa74501ec48ca53092d9c25757f5393f41864adf627ff942f25"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/host_refptr.h",
+      "sha256": "20e2e0ff7b5bdaa2d1d17cf85039206ba7d4fdb528f7328f7fd294bace35c348"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/host_standard_prelude.h",
+      "sha256": "be651a65f784b2c5a615cf1b18e9f2faa33b29a2499fc4281a731045ce2e6c32"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/if_system_ability_manager.h",
+      "sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/inner_event.h",
+      "sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/iremote_broker.h",
+      "sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/iremote_object.h",
+      "sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/iremote_proxy.h",
+      "sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/iremote_stub.h",
+      "sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/iservice_registry.h",
+      "sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/linux_platform_types.h",
+      "sha256": "e9a7ba3305350265f379d4f888765045d372346bda19006ae9868234a98f9fca"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/matching_skills.h",
+      "sha256": "6d701634348e80083d633c92b153f55eb785aaf07ee25c5b9ae4de299d09dab8"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/message_parcel.h",
+      "sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/nocopyable.h",
+      "sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/os_account_manager_wrapper.h",
+      "sha256": "18cecba32b2968ec9855504410823c9aadc477d9d6b0e9cf3a79a12fae9a5bcc"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/parameter.h",
+      "sha256": "8e7c48f647ddc38568459feff6fae01c9267476492e41431effb85db6b50c8fa"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/parameters.h",
+      "sha256": "4ab650637a013fccb5fb3caa93b80bbfc9aaac22c98908513a15b049eaa83e67"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/parcel.h",
+      "sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/refbase.h",
+      "sha256": "7c7868b9543a2f36a3608318ceef50ec7643b95d3f4e7b9afc7e5ae0dec29ef0"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/result_set.h",
+      "sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/securec.h",
+      "sha256": "20b4879509191f5e5d37334fa7f881499d8d856e19ed535677a83e08ff152461"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/securectype.h",
+      "sha256": "3d41284a39f1add75253f9aaa008c24981b18605a12a2e4c5aa927f859789c66"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/sim_data.h",
+      "sha256": "d38a4ef437ad856795090db909896db16660f8e6e336d2947e777a4ef2284ea7"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/singleton.h",
+      "sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/string_ex.h",
+      "sha256": "60f7760ed68802c2690a45d1a6dc590c38e00d739c7e16c806c9351bf3ffa909"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/system_ability_definition.h",
+      "sha256": "d438840102fb0b9a295aa86a302ce103a6e3dc6b4006e62a23d34d097a6cfc01"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/system_ability_status_change_stub.h",
+      "sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/uri.h",
+      "sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/include/want.h",
+      "sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/mock_tel_ril_manager.h",
+      "sha256": "431801a6ef782075b5793f78881f8819123fc016678484c11144e43a276a468b"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/parameter_mock.h",
+      "sha256": "77ff9e362e1d21288644c29eed57b83c87e4efd9dc91b1a48d57a4bdecab8504"
+    },
+    {
+      "path": "services/multisim/test/systemtest/stubs/parameter_service.cpp",
+      "sha256": "8e82238e3cdb8ae448beb68c0026cb15282681e4ffc52416f3529cf2d1e704b7"
+    },
+    {
+      "path": "services/multisim/test/systemtest/tests/event_transport_test.cpp",
+      "sha256": "a41f34e45c5b23db60a49cede0a129baaa6c34353cbda427c0351dc6f867d6cb"
+    }
+  ],
+  "production_header_digest": "435156ebe5fbe6b06ad1d13bf002939c9d96c99ebd306007b05b14cf671e4e50",
+  "build_clock": {
+    "initial_future_skew_seconds": 0,
+    "wait_seconds": 0.054165791952982545,
+    "converged": true
+  },
+  "production_execution": [
+    {
+      "symbol": "SimStateManager::Init",
+      "source": "services/sim/src/sim_state_manager.cpp",
+      "executions": 30
+    },
+    {
+      "symbol": "SimStateManager::GetSimState",
+      "source": "services/sim/src/sim_state_manager.cpp",
+      "executions": 124
+    },
+    {
+      "symbol": "SimStateManager::HasSimCard",
+      "source": "services/sim/src/sim_state_manager.cpp",
+      "executions": 120
+    },
+    {
+      "symbol": "SimStateManager::UnlockPin",
+      "source": "services/sim/src/sim_state_manager.cpp",
+      "executions": 6
+    },
+    {
+      "symbol": "SimStateHandle::ProcessEvent",
+      "source": "services/sim/src/sim_state_handle.cpp",
+      "executions": 118
+    },
+    {
+      "symbol": "SimStateHandle::GetSimCardData",
+      "source": "services/sim/src/sim_state_handle.cpp",
+      "executions": 56
+    },
+    {
+      "symbol": "SimStateHandle::ProcessIccCardState",
+      "source": "services/sim/src/sim_state_handle.cpp",
+      "executions": 54
+    },
+    {
+      "symbol": "SimStateHandle::SimStateEscape",
+      "source": "services/sim/src/sim_state_handle.cpp",
+      "executions": 51
+    },
+    {
+      "symbol": "SimStateManager::UnlockPuk",
+      "source": "services/sim/src/sim_state_manager.cpp",
+      "executions": 2
+    },
+    {
+      "symbol": "SimStateManager::RefreshSimState",
+      "source": "services/sim/src/sim_state_manager.cpp",
+      "executions": 2
+    },
+    {
+      "symbol": "SimStateHandle::GetUnlockResult",
+      "source": "services/sim/src/sim_state_handle.cpp",
+      "executions": 8
+    }
+  ],
+  "production_fault_branches": [
+    {
+      "source": "services/sim/src/sim_state_manager.cpp",
+      "line": 43,
+      "condition": "if (telRilManager_ == nullptr)",
+      "true_executions": 1
+    },
+    {
+      "source": "services/sim/src/sim_state_handle.cpp",
+      "line": 646,
+      "condition": "if ((param == nullptr) && (response == nullptr))",
+      "true_executions": 1
+    }
+  ],
+  "suite_counts": {
+    "baseline_v2": {
+      "PASS": 7,
+      "FAIL": 0,
+      "NOT_RUN": 0
+    },
+    "extensions": {
+      "PASS": 10,
+      "FAIL": 0,
+      "NOT_RUN": 0
+    },
+    "compatibility": {
+      "PASS": 17,
+      "FAIL": 0,
+      "NOT_RUN": 0
+    },
+    "defects": {
+      "PASS": 0,
+      "FAIL": 5,
+      "NOT_RUN": 0
+    }
+  },
+  "binary_sha256": "324d9f2dc56bb552ee970bb80fda63a96cbbbc30d5a5e1693a370b0473b8f62d"
+}

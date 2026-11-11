@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-11",
+  "authorization": "WSL Host test engineering task; no production or business assertion changes",
+  "files": {
+    "services/multisim/test/systemtest/configs/infrastructure_cases.json": {
+      "relocation_sha256": "375ea4aa0770f8b44a9f32168876fe898f496005b4dc49f75dc4526b2ffe7313",
+      "current_sha256": "5857aad086eaa5fb7e9e1614c7049a06cfffea6e94bd90a6be56cff44c43cca6",
+      "reason": "Register three existing scheduler cases; append IDs only, keep all assertions."
+    },
+    "services/multisim/test/systemtest/gn/BUILD.gn": {
+      "relocation_sha256": "6c97c232dbd702aa1f97009bd2c23f4e981abab6f4c6c3a8a5d4c9c796b65719",
+      "current_sha256": "a18276952521388584be002f899e61d4b380ab3cc6e62f77c2316cdc5dd6c3c4",
+      "reason": "Optional IDE Debug symbols and O1; original default O2 retained."
+    },
+    "services/multisim/test/systemtest/gn/BUILDCONFIG.gn": {
+      "relocation_sha256": "174d7374c460abd1c7b9109bd418ef9874a1d5ec27f6ec896f4ed6dada4818c3",
+      "current_sha256": "c48fb96ab9ab64c78aba34f13e6d6be463420efd9e87eabfb63e18aa40f1060e",
+      "reason": "Declare host_debug and mark standalone Host targets testonly."
+    },
+    "services/multisim/test/systemtest/tests/event_transport_test.cpp": {
+      "relocation_sha256": "ef92fcb5f0ba85550d35d282e20eb64d1fb32a36fa037d0632e13d596809215c",
+      "current_sha256": "a41f34e45c5b23db60a49cede0a129baaa6c34353cbda427c0351dc6f867d6cb",
+      "reason": "Add case_id/oracle_id metadata to three existing tests; assertions unchanged."
+    }
+  }
+}

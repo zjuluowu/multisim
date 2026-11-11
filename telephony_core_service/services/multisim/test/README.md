@@ -2,6 +2,8 @@
 
 2026-11-09按用户要求，将重构新增测试工程及其构建、脚本、Stub/Fake、用例、证据和设计资料统一放在 `services/multisim/` 下。旧 `test/` 仅保留原有部件测试；旧生产实现只读。测试读取真实旧源码作为比较基线，负控只修改仓外副本。
 
+Windows VS Code + WSL 的日常构建、筛选测试和调试见 [Host 使用说明](systemtest/HOST.md)。2026-11-11工程增量不改历史迁移摘要；四份既有构建/设施资产的明确修改由 [relocation_followups.json](relocation_followups.json) 单列，迁移检查同时验证当前摘要，仍拒绝未登记漂移。
+
 | 目录 | 用途与边界 |
 | --- | --- |
 | [systemtest](systemtest/README.md) | 独立主机 GN 根、平台 Stub、容量/初始化切片、G2a 查询及历史结果。不是产品或设备验收。 |
