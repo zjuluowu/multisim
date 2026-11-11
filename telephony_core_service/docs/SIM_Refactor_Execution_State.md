@@ -570,3 +570,5 @@ python3 -B telephony_core_service/services/multisim/test/multisim_architecture_r
 用户随后明确要求删除旧空目录并将当前修改提交、推送至远端main；上文“未授权提交/推送”仅描述工程建设阶段。已确认 `telephony_core_service/tools/` 无任何文件，使用仅删除空目录的操作移除；Git不跟踪空目录，因此没有伪造文件删除Diff。发布前恢复工具实际fetch通过，本地main和origin/main仍为输入f2acb72f。35项工程/IDE/文档/证据变更与交付清单完全一致，暂存区原为空，迁移检查和diff检查通过；归档产物与工程输入摘要逐项匹配。发布整理另补三个shell入口的Git可执行位，并规范归档LLDB日志的制表符/行尾空白、同步该日志摘要；不改变日志信息、测试结果、Oracle、生产源码或既有worktree。
 
 归档JSON中的文档输入摘要对应工程验收时的内容；本节发布说明是在该次取证之后追加，不回写历史运行摘要。原46例41 PASS/5 FAIL及GUI MANUAL继续有效，不因发布而变为全绿。
+
+实际发布核验：工程提交 `48fb553b8f44f9048cbaf321f2e8a2f11bc6ef49`（`test(sim): add WSL host workflow and VS Code integration`），35项文件变更，已常规推送至 `origin/main`。推送后ls-remote及本地origin/main均为同SHA，包含关系通过，工作区与暂存区为空；相对输入f2acb72f再次核对旧SIM/Core/RIL/EXT、公共接口、原产品和原单测入口均无变化。旧空目录已确认不存在。本段是发布后的文档追记，随独立文档提交保存，不写自身SHA；最终main精确tip以Git远端核验为准，历史测试输入/结果仍按原取证解释。
