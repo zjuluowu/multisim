@@ -1,0 +1,2441 @@
+{
+  "schema_version": 1,
+  "baseline": "b283ad2f633686f4d829c5b005e08680f86695a7",
+  "source_root": "telephony_core_service/services/multisim",
+  "files": [
+    {
+      "old": "BUILD.gn",
+      "target": "BUILD.gn",
+      "owner": "工程文档",
+      "gn_target": "documentation/build",
+      "responsibility": "构建入口或开发导航/设计副本",
+      "symbols": [],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "9360b707b7e2e97339ea88b3a03180b889ac74d8c82f650de4fb379fe0be0195",
+      "lines": 594,
+      "includes": [],
+      "implemented_methods": []
+    },
+    {
+      "old": "README.md",
+      "target": "README.md",
+      "owner": "工程文档",
+      "gn_target": "documentation/build",
+      "responsibility": "构建入口或开发导航/设计副本",
+      "symbols": [],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "fcf58b142176d786b77e303fae29081a7126921adf4edf70b273892250ece83a",
+      "lines": 49,
+      "includes": [],
+      "implemented_methods": []
+    },
+    {
+      "old": "SIM 重构代码目录结构设计方案.md",
+      "target": "SIM 重构代码目录结构设计方案.md",
+      "owner": "工程文档",
+      "gn_target": "documentation/build",
+      "responsibility": "构建入口或开发导航/设计副本",
+      "symbols": [],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "28864a01afe3ccff3a6b08eadbd3188fbe3414bb8d92477900402a30ee124562",
+      "lines": 673,
+      "includes": [],
+      "implemented_methods": []
+    },
+    {
+      "old": "account/account_registry.cpp",
+      "target": "account/account_registry.cpp",
+      "owner": "Account",
+      "gn_target": "topology_domain",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：AccountRegistry::AcceptActiveProjection, AccountRegistry::AcceptDiscoveredAccount, AccountRegistry::AcceptDisplayName, AccountRegistry::AcceptImsPreference, AccountRegistry::AcceptLabel",
+      "symbols": [],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "4e39ee7996a9bc41b17f9ee5df061137572e7ad51c8e748f1fbcbeac351d8af8",
+      "lines": 329,
+      "includes": [
+        "account/account_registry.h"
+      ],
+      "implemented_methods": [
+        "AccountRegistry::AcceptActiveProjection",
+        "AccountRegistry::AcceptDiscoveredAccount",
+        "AccountRegistry::AcceptDisplayName",
+        "AccountRegistry::AcceptImsPreference",
+        "AccountRegistry::AcceptLabel",
+        "AccountRegistry::AcceptNumberVisibility",
+        "AccountRegistry::AcceptReload",
+        "AccountRegistry::AcceptReloadProjection",
+        "AccountRegistry::BeginReload",
+        "AccountRegistry::Projection",
+        "AccountRegistry::Read",
+        "AccountRegistry::ReadProjection"
+      ]
+    },
+    {
+      "old": "account/account_registry.h",
+      "target": "account/account_registry.h",
+      "owner": "Account",
+      "gn_target": "topology_domain",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：AccountProjection, AccountRecord, AccountAcceptance, AccountReloadAcceptance, AccountReloadInput",
+      "symbols": [
+        "AccountProjection",
+        "AccountRecord",
+        "AccountAcceptance",
+        "AccountReloadAcceptance",
+        "AccountReloadInput",
+        "AccountReloadTicket",
+        "AccountReloadResult",
+        "AccountRegistry"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "958a45bc882bc19dc1397ef72ce264ce0bdb04976b37aa22f58670d56b4b34e4",
+      "lines": 100,
+      "includes": [
+        "infrastructure/sim_identity.h",
+        "account/account_types.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "account/account_role_planning_port.h",
+      "target": "account/account_role_planning_port.h",
+      "owner": "Account",
+      "gn_target": "topology_contracts",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：AccountRolePlanningPort",
+      "symbols": [
+        "AccountRolePlanningPort"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "68bb7bcf931108e5fda0cbfdfc2c2514c6e3d23dd822d4e620298311f621d31a",
+      "lines": 46,
+      "includes": [
+        "role_assignment/assignment_requests.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "account/account_store.h",
+      "target": "account/account_store.h",
+      "owner": "Account",
+      "gn_target": "topology_contracts",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：AccountNumberPatch, AccountActivePatch, AccountNamePatch, AccountLabelPatch, AccountImsPreferencePatch",
+      "symbols": [
+        "AccountNumberPatch",
+        "AccountActivePatch",
+        "AccountNamePatch",
+        "AccountLabelPatch",
+        "AccountImsPreferencePatch",
+        "AccountStorageRow",
+        "AccountLoadRequest",
+        "AccountLoadResult",
+        "AccountIdentityMatch",
+        "AccountDiscoveryFields",
+        "AccountDiscoveryWritePlan",
+        "AccountDiscoveryStoreResult",
+        "AccountRemovalPatch",
+        "AccountStore"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "64e6c3a74087512a06a12873fa19cf19355a71a5f822bcff02948b365119c625",
+      "lines": 101,
+      "includes": [
+        "account/topology_requests.h",
+        "role_assignment/assignment_requests.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "account/account_store_adapter.cpp",
+      "target": "account/account_store_adapter.cpp",
+      "owner": "Account",
+      "gn_target": "topology_adapters",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配",
+      "symbols": [],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "7569e9ccc6bb3955280379dfbd99ef3c3d1d58dca2b956bbe57d2a492bb2c118",
+      "lines": 39,
+      "includes": [
+        "account/account_store_adapter.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "account/account_store_adapter.h",
+      "target": "account/account_store_adapter.h",
+      "owner": "Account",
+      "gn_target": "topology_adapters",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：SimRdbHelper, AccountStoreAdapter",
+      "symbols": [
+        "SimRdbHelper",
+        "AccountStoreAdapter"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "ceb26147bab4083ae4ac448a5376a851c5738299e7d31447bbe28caa6b9c4e99",
+      "lines": 45,
+      "includes": [
+        "account/account_store.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "account/account_types.h",
+      "target": "account/account_types.h",
+      "owner": "Account",
+      "gn_target": "topology_types",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：AccountReadView, AccountFieldRevisions",
+      "symbols": [
+        "AccountReadView",
+        "AccountFieldRevisions"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "46e74724d198d0812aa566fc69bb273a43e82eab96a7bf40c5815c1196fd84d8",
+      "lines": 36,
+      "includes": [],
+      "implemented_methods": []
+    },
+    {
+      "old": "account/activation/activate_sim_use_case.cpp",
+      "target": "account/activation/activate_sim_use_case.cpp",
+      "owner": "Account",
+      "gn_target": "topology_cases",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：ActivateSimUseCase::ActivateSimUseCase",
+      "symbols": [],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "5bb3c017e04151c6660660087970bd6db6c14e63ae87cda251e7196cd7cb3af1",
+      "lines": 55,
+      "includes": [
+        "account/activation/activate_sim_use_case.h",
+        "account/legacy_entry.h"
+      ],
+      "implemented_methods": [
+        "ActivateSimUseCase::ActivateSimUseCase"
+      ]
+    },
+    {
+      "old": "account/activation/activate_sim_use_case.h",
+      "target": "account/activation/activate_sim_use_case.h",
+      "owner": "Account",
+      "gn_target": "topology_cases",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：ActivateSimUseCase",
+      "symbols": [
+        "ActivateSimUseCase"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "2c5bd7bcd5b7b0870a17dbe4cad775069dd2cdaa87541ddfb9552f43bd30bd63",
+      "lines": 48,
+      "includes": [
+        "account/topology_service.h",
+        "account/activation/activation_runtime_port.h",
+        "account/activation/activation_assignment_port.h",
+        "infrastructure/request/runtime_operation_store.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "account/activation/activation_assignment_port.h",
+      "target": "account/activation/activation_assignment_port.h",
+      "owner": "Account",
+      "gn_target": "topology_contracts",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：ActivationAssignmentPort",
+      "symbols": [
+        "ActivationAssignmentPort"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "b3183b103e071846ad41f063faf8c230ec4564c9c03698888868df695927d349",
+      "lines": 42,
+      "includes": [
+        "role_assignment/assignment_requests.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "account/activation/activation_hook_adapter.h",
+      "target": "account/activation/activation_hook_adapter.h",
+      "owner": "Account",
+      "gn_target": "topology_adapters",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：ActivationHookAdapter",
+      "symbols": [
+        "ActivationHookAdapter"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "c1114adf10b0ac66bdcab3d33bc0bb2ea3fc348e111cae2afa9c72531e9d37d0",
+      "lines": 35,
+      "includes": [
+        "account/activation/activation_runtime_port.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "account/activation/activation_progress.cpp",
+      "target": "account/activation/activation_progress.cpp",
+      "owner": "Account",
+      "gn_target": "topology_protocols",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：ActivationProgress::Accept, ActivationProgress::Begin, ActivationProgress::Prepare, ActivationProgress::ReadLegacy",
+      "symbols": [],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "1d09e9b6020b86166720b51d974cc2650b5991e883c75d56f75e361618940b1a",
+      "lines": 85,
+      "includes": [
+        "account/activation/activation_progress.h"
+      ],
+      "implemented_methods": [
+        "ActivationProgress::Accept",
+        "ActivationProgress::Begin",
+        "ActivationProgress::Prepare",
+        "ActivationProgress::ReadLegacy"
+      ]
+    },
+    {
+      "old": "account/activation/activation_progress.h",
+      "target": "account/activation/activation_progress.h",
+      "owner": "Account",
+      "gn_target": "topology_protocols",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：ActivationTransition, ActivationProgress",
+      "symbols": [
+        "ActivationTransition",
+        "ActivationProgress"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "a7b5c5c6d954f01466c79a7fe95460c286b977cfe3fdc7d7bfdcb0c2708b9801",
+      "lines": 51,
+      "includes": [
+        "account/topology_requests.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "account/activation/activation_runtime_port.h",
+      "target": "account/activation/activation_runtime_port.h",
+      "owner": "Account",
+      "gn_target": "topology_contracts",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：ActivationDeviceRequest, ActivationDeviceResult, ActivationResultSink, ActivationRuntimePort, ActivationHookPort",
+      "symbols": [
+        "ActivationDeviceRequest",
+        "ActivationDeviceResult",
+        "ActivationResultSink",
+        "ActivationRuntimePort",
+        "ActivationHookPort"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "09f42dd119f1d2fc20bc5bcf486db9e1394fccc50e1d6a65931be73aa2ea9b9f",
+      "lines": 49,
+      "includes": [
+        "infrastructure/request/request_ref.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "account/binding_index.cpp",
+      "target": "account/binding_index.cpp",
+      "owner": "Account",
+      "gn_target": "topology_domain",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：BindingIndex::AcceptAssemblyState, BindingIndex::AcceptBinding, BindingIndex::BindingIndex, BindingIndex::Find, BindingIndex::ReadPositionRevision",
+      "symbols": [],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "24aa699579d098f9227ceea5e0d3579127981729a45b785733be58894d140a68",
+      "lines": 106,
+      "includes": [
+        "account/binding_index.h"
+      ],
+      "implemented_methods": [
+        "BindingIndex::AcceptAssemblyState",
+        "BindingIndex::AcceptBinding",
+        "BindingIndex::BindingIndex",
+        "BindingIndex::Find",
+        "BindingIndex::ReadPositionRevision",
+        "BindingIndex::ReadRuntimeSlots",
+        "BindingIndex::RemoveBinding",
+        "BindingIndex::StillMatches"
+      ]
+    },
+    {
+      "old": "account/binding_index.h",
+      "target": "account/binding_index.h",
+      "owner": "Account",
+      "gn_target": "topology_domain",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：SlotRuntimeEntry, BindingIndex",
+      "symbols": [
+        "SlotRuntimeEntry",
+        "BindingIndex"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "e07cb418810048a382166caa80e36fd177e28864c57beaa85661b70b9c22f86f",
+      "lines": 52,
+      "includes": [
+        "infrastructure/assembly/slot_catalog.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "account/discovery/card_observation_port.h",
+      "target": "account/discovery/card_observation_port.h",
+      "owner": "Account",
+      "gn_target": "topology_contracts",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：CardObservationSink",
+      "symbols": [
+        "CardObservationSink"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "6c44289ff881640e805e4b76296c9f7796a717cfaab54be04061ed8459fe7664",
+      "lines": 34,
+      "includes": [
+        "account/topology_requests.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "account/discovery/discovery_observation_ledger.cpp",
+      "target": "account/discovery/discovery_observation_ledger.cpp",
+      "owner": "Account",
+      "gn_target": "topology_protocols",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：DiscoveryObservationLedger::AcceptDiscovery, DiscoveryObservationLedger::AcceptInvalidation, DiscoveryObservationLedger::BeginStore, DiscoveryObservationLedger::CompleteStored, DiscoveryObservationLedger::EndPreparationFailure",
+      "symbols": [],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "5f99c10df721b71c38594b8aed7d3b34db911a1b445c6fe3fd578aaca9350235",
+      "lines": 136,
+      "includes": [
+        "account/discovery/discovery_observation_ledger.h"
+      ],
+      "implemented_methods": [
+        "DiscoveryObservationLedger::AcceptDiscovery",
+        "DiscoveryObservationLedger::AcceptInvalidation",
+        "DiscoveryObservationLedger::BeginStore",
+        "DiscoveryObservationLedger::CompleteStored",
+        "DiscoveryObservationLedger::EndPreparationFailure",
+        "DiscoveryObservationLedger::MatchesStore",
+        "DiscoveryObservationLedger::RetryAfterKnownNoEffect",
+        "DiscoveryObservationLedger::StillCurrent"
+      ]
+    },
+    {
+      "old": "account/discovery/discovery_observation_ledger.h",
+      "target": "account/discovery/discovery_observation_ledger.h",
+      "owner": "Account",
+      "gn_target": "topology_protocols",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：DiscoveryStoreTicket, DiscoveryStoreAcceptance, DiscoveryObservationLedger, Entry",
+      "symbols": [
+        "DiscoveryStoreTicket",
+        "DiscoveryStoreAcceptance",
+        "DiscoveryObservationLedger",
+        "Entry"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "a5af1fa27366950c0c09fd573e9b4a8097d2451e168b35ea52123d3fbfa0e7e2",
+      "lines": 63,
+      "includes": [
+        "account/topology_requests.h",
+        "account/binding_index.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "account/legacy_entry.h",
+      "target": "account/legacy_entry.h",
+      "owner": "Account",
+      "gn_target": "topology_contracts",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：SetShowNumberUseCase, ShowNumberQuery, ActivateSimUseCase",
+      "symbols": [
+        "SetShowNumberUseCase",
+        "ShowNumberQuery",
+        "ActivateSimUseCase"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "89328f403b4ef160a97d39c6a2d869754ceeeb66f5e7ee7312270c899b15d767",
+      "lines": 33,
+      "includes": [
+        "account/topology_requests.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "account/number/number_query_host_port.h",
+      "target": "account/number/number_query_host_port.h",
+      "owner": "Account",
+      "gn_target": "topology_contracts",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：ImpuNumberResult, NumberBackwrite, NumberQueryHostPort",
+      "symbols": [
+        "ImpuNumberResult",
+        "NumberBackwrite",
+        "NumberQueryHostPort"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "da5180dbaf3151cd9eac209056ed553c3cbcd9b4e664d749fa8d06df217c6f97",
+      "lines": 44,
+      "includes": [
+        "account/topology_requests.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "account/number/set_show_number_use_case.cpp",
+      "target": "account/number/set_show_number_use_case.cpp",
+      "owner": "Account",
+      "gn_target": "topology_cases",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：SetShowNumberUseCase::SetShowNumberUseCase",
+      "symbols": [],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "6c6ed9a99659c6d02b6004fff9dfd39a4a9ff71bfdc5748b857d4450578b6ffc",
+      "lines": 52,
+      "includes": [
+        "account/number/set_show_number_use_case.h"
+      ],
+      "implemented_methods": [
+        "SetShowNumberUseCase::SetShowNumberUseCase"
+      ]
+    },
+    {
+      "old": "account/number/set_show_number_use_case.h",
+      "target": "account/number/set_show_number_use_case.h",
+      "owner": "Account",
+      "gn_target": "topology_cases",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：SetShowNumberUseCase, PendingNumber",
+      "symbols": [
+        "SetShowNumberUseCase",
+        "PendingNumber"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "a36bf0f88ae5ff0af423bca87e80c64c5aaba5e30668a47f992c7d97805f1ad0",
+      "lines": 59,
+      "includes": [
+        "infrastructure/request/runtime_operation_store.h",
+        "account/topology_service.h",
+        "account/number/show_number_plan.h",
+        "account/number/show_number_runtime_port.h",
+        "account/number/show_number_completion_port.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "account/number/show_number_completion_port.h",
+      "target": "account/number/show_number_completion_port.h",
+      "owner": "Account",
+      "gn_target": "topology_contracts",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：ShowNumberCompletion, ShowNumberCompletionPort",
+      "symbols": [
+        "ShowNumberCompletion",
+        "ShowNumberCompletionPort"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "388d6625c88933cbb2453e6445a546939caf63f55f49afc741b6874f445d88fe",
+      "lines": 40,
+      "includes": [
+        "account/topology_requests.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "account/number/show_number_plan.cpp",
+      "target": "account/number/show_number_plan.cpp",
+      "owner": "Account",
+      "gn_target": "topology_protocols",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配",
+      "symbols": [],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "2f482485f6443a0fb896f24b938142093e22113191625424533cedfcb5ef0f7e",
+      "lines": 27,
+      "includes": [
+        "account/number/show_number_plan.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "account/number/show_number_plan.h",
+      "target": "account/number/show_number_plan.h",
+      "owner": "Account",
+      "gn_target": "topology_protocols",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：NumberUpdateNode, ShowNumberPlan",
+      "symbols": [
+        "NumberUpdateNode",
+        "ShowNumberPlan"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "07c5d9fa7b36bafb8a6aa00835180f9f061183d519c6c2466b6a59cdbcf7c314",
+      "lines": 36,
+      "includes": [
+        "infrastructure/sim_identity.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "account/number/show_number_query.cpp",
+      "target": "account/number/show_number_query.cpp",
+      "owner": "Account",
+      "gn_target": "topology_cases",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：ShowNumberQuery::ShowNumberQuery",
+      "symbols": [],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "5ef4ba3c30c3c892e57b6be1be68af212550ddc19455807c460c20135cabb98f",
+      "lines": 35,
+      "includes": [
+        "account/number/show_number_query.h"
+      ],
+      "implemented_methods": [
+        "ShowNumberQuery::ShowNumberQuery"
+      ]
+    },
+    {
+      "old": "account/number/show_number_query.h",
+      "target": "account/number/show_number_query.h",
+      "owner": "Account",
+      "gn_target": "topology_cases",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：ShowNumberQuery",
+      "symbols": [
+        "ShowNumberQuery"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "dfa0c0e5263926aca56f1dd15d81d504f336ceab7220ef09a159f7033a6881f2",
+      "lines": 40,
+      "includes": [
+        "account/topology_service.h",
+        "account/number/show_number_runtime_port.h",
+        "account/number/number_query_host_port.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "account/number/show_number_runtime_port.h",
+      "target": "account/number/show_number_runtime_port.h",
+      "owner": "Account",
+      "gn_target": "topology_contracts",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：MsisdnWriteRequest, MsisdnWriteResult, MsisdnResultSink, CardNumberView, ShowNumberRuntimePort",
+      "symbols": [
+        "MsisdnWriteRequest",
+        "MsisdnWriteResult",
+        "MsisdnResultSink",
+        "CardNumberView",
+        "ShowNumberRuntimePort"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "6f636087b1fcd78077ddc781dded4d122fc62cbe5be4275a6ba74bdc618ab338",
+      "lines": 62,
+      "includes": [
+        "infrastructure/request/request_ref.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "account/topology_requests.h",
+      "target": "account/topology_requests.h",
+      "owner": "Account",
+      "gn_target": "topology_contracts",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：SetShowNumberCommand, NumberSource, ShowNumberRead, ActivationKind, ActivateSimCommand",
+      "symbols": [
+        "SetShowNumberCommand",
+        "NumberSource",
+        "ShowNumberRead",
+        "ActivationKind",
+        "ActivateSimCommand",
+        "AccountView",
+        "AccountStoreWriteResult",
+        "NumberFieldRevisions",
+        "NumberExecutionTarget",
+        "NumberAcceptance",
+        "CardDiscoveryObservation",
+        "CardSessionInvalidation",
+        "DiscoveryAcceptance"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "65437d11bfa2d17eff2e710fac271649e04db35fdbb3b8e2172153ae7645924b",
+      "lines": 91,
+      "includes": [
+        "infrastructure/request/request_context.h",
+        "account/account_types.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "account/topology_service.cpp",
+      "target": "account/topology_service.cpp",
+      "owner": "Account",
+      "gn_target": "topology_cases",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：TopologyService::AcceptActivationProgress, TopologyService::BeginActivationProgress, TopologyService::BindRolePlanner, TopologyService::PrepareActivationProgress, TopologyService::ReadLegacyActivationProgress",
+      "symbols": [],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "520b73b5e33675ced581f6fa7e5d70e76f436e6c21653dfb34cfcd01d2f6a1b0",
+      "lines": 84,
+      "includes": [
+        "account/topology_service.h"
+      ],
+      "implemented_methods": [
+        "TopologyService::AcceptActivationProgress",
+        "TopologyService::BeginActivationProgress",
+        "TopologyService::BindRolePlanner",
+        "TopologyService::PrepareActivationProgress",
+        "TopologyService::ReadLegacyActivationProgress",
+        "TopologyService::TopologyService"
+      ]
+    },
+    {
+      "old": "account/topology_service.h",
+      "target": "account/topology_service.h",
+      "owner": "Account",
+      "gn_target": "topology_cases",
+      "responsibility": "账户身份/绑定/资料及激活；窄端口与专属存储适配；实际声明/实现：ReloadAccountInput, ReloadRequest, AccountFieldReservation, TopologyService",
+      "symbols": [
+        "ReloadAccountInput",
+        "ReloadRequest",
+        "AccountFieldReservation",
+        "TopologyService"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "a414e6bad65391b68a0f5673894da2a75e46a4260de770c2576d70ef27c0fe17",
+      "lines": 92,
+      "includes": [
+        "account/topology_requests.h",
+        "account/account_registry.h",
+        "account/binding_index.h",
+        "account/discovery/discovery_observation_ledger.h",
+        "account/activation/activation_progress.h",
+        "account/account_store.h",
+        "account/account_role_planning_port.h",
+        "account/discovery/card_observation_port.h",
+        "role_assignment/primary/primary_topology_port.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "card/esim/legacy_profile_result.h",
+      "target": "card/esim/legacy_profile_result.h",
+      "owner": "Card",
+      "gn_target": "compatibility_core",
+      "responsibility": "卡侧操作、应用会话/代次及Records加载",
+      "symbols": [],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "a901c23d7a016b0c06b85d379ebc94febf3dd1f6944faac725d0b41c394850e9",
+      "lines": 28,
+      "includes": [
+        "card/esim/local_card_requests.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "card/esim/local_card_requests.cpp",
+      "target": "card/esim/local_card_requests.cpp",
+      "owner": "Card",
+      "gn_target": "runtime_cases",
+      "responsibility": "卡侧操作、应用会话/代次及Records加载；实际声明/实现：LocalCardRequests::LocalCardRequests, LocalCardRequests::SwitchLocalProfile",
+      "symbols": [],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "a17d8ae37bb82b926c322705bfae3101a7c997f74ad2b3a514e9b132e82c58ff",
+      "lines": 49,
+      "includes": [
+        "card/esim/local_card_requests.h"
+      ],
+      "implemented_methods": [
+        "LocalCardRequests::LocalCardRequests",
+        "LocalCardRequests::SwitchLocalProfile"
+      ]
+    },
+    {
+      "old": "card/esim/local_card_requests.h",
+      "target": "card/esim/local_card_requests.h",
+      "owner": "Card",
+      "gn_target": "runtime_contracts",
+      "responsibility": "卡侧操作、应用会话/代次及Records加载；实际声明/实现：LocalCardPort, LocalCardRequests",
+      "symbols": [
+        "LocalCardPort",
+        "LocalCardRequests"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "bd2fc342352f2578b3077460b57149eb6df5e9e4c12a37a0d9656bc2abdbd6d4",
+      "lines": 57,
+      "includes": [
+        "card/security/pin_requests.h",
+        "card/records/ef_requests.h",
+        "card/esim/profile_requests.h",
+        "role_assignment/profile_preference_port.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "card/esim/profile_requests.h",
+      "target": "card/esim/profile_requests.h",
+      "owner": "Card",
+      "gn_target": "runtime_contracts",
+      "responsibility": "卡侧操作、应用会话/代次及Records加载；实际声明/实现：VerifiedPortRoute, SwitchProfileRequest, EuiccPrimitiveResult, LocalProfileExecutionResult, LocalProfileTransitionRef",
+      "symbols": [
+        "VerifiedPortRoute",
+        "SwitchProfileRequest",
+        "EuiccPrimitiveResult",
+        "LocalProfileExecutionResult",
+        "LocalProfileTransitionRef"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "c513f1322edc2160eedbeba8f56cca9e1e2ae879fe9020d25048f78fbcddf482",
+      "lines": 51,
+      "includes": [
+        "infrastructure/request/request_context.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "card/records/ef_requests.h",
+      "target": "card/records/ef_requests.h",
+      "owner": "Card",
+      "gn_target": "runtime_contracts",
+      "responsibility": "卡侧操作、应用会话/代次及Records加载；实际声明/实现：ReadEfRequest",
+      "symbols": [
+        "ReadEfRequest"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "c4e119e2ce03cda90f8ce8e564885575a1af09a012a453246898055fc82d67e1",
+      "lines": 29,
+      "includes": [
+        "infrastructure/request/request_context.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "card/records/load_session.cpp",
+      "target": "card/records/load_session.cpp",
+      "owner": "Card",
+      "gn_target": "runtime_mechanisms",
+      "responsibility": "卡侧操作、应用会话/代次及Records加载；实际声明/实现：LoadSession::AddMember, LoadSession::InvalidateAffectedReadMembers, LoadSession::LoadSession, LoadSession::TryConsumeRead",
+      "symbols": [],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "8e0cf20930680758943b81fcad02b0a638f63a33007c815c1d13961acf116fa0",
+      "lines": 62,
+      "includes": [
+        "card/records/load_session.h"
+      ],
+      "implemented_methods": [
+        "LoadSession::AddMember",
+        "LoadSession::InvalidateAffectedReadMembers",
+        "LoadSession::LoadSession",
+        "LoadSession::TryConsumeRead"
+      ]
+    },
+    {
+      "old": "card/records/load_session.h",
+      "target": "card/records/load_session.h",
+      "owner": "Card",
+      "gn_target": "runtime_mechanisms",
+      "responsibility": "卡侧操作、应用会话/代次及Records加载；实际声明/实现：LoadToken, LoadMemberState, LoadAccess, LoadMember, LoadSession",
+      "symbols": [
+        "LoadToken",
+        "LoadMemberState",
+        "LoadAccess",
+        "LoadMember",
+        "LoadSession"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "eb9fb8c2d5fd381ddfd35ba7d04d0a8462ffdcf44024a52f50526e410a26e90a",
+      "lines": 61,
+      "includes": [
+        "infrastructure/sim_identity.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "card/security/pin_requests.h",
+      "target": "card/security/pin_requests.h",
+      "owner": "Card",
+      "gn_target": "runtime_contracts",
+      "responsibility": "卡侧操作、应用会话/代次及Records加载；实际声明/实现：VerifyPinRequest",
+      "symbols": [
+        "VerifyPinRequest"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "91dbd9bb4deaf52a04d283f005a3a2ece3c5d277cdd0df96fcf02ac04f644815",
+      "lines": 29,
+      "includes": [
+        "infrastructure/request/request_context.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "card/state/session_registry.cpp",
+      "target": "card/state/session_registry.cpp",
+      "owner": "Card",
+      "gn_target": "runtime_mechanisms",
+      "responsibility": "卡侧操作、应用会话/代次及Records加载；实际声明/实现：SessionRegistry::AcceptExpectedContinuation, SessionRegistry::CancelExpectedConfirmedNotSent, SessionRegistry::Current, SessionRegistry::EndExpectedWait, SessionRegistry::ExpireExpectedTransitions",
+      "symbols": [],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "93646583813efc3614eeb10a6b9e3ac4c06b3691616513e3e5c010262cb0e464",
+      "lines": 160,
+      "includes": [
+        "card/state/session_registry.h"
+      ],
+      "implemented_methods": [
+        "SessionRegistry::AcceptExpectedContinuation",
+        "SessionRegistry::CancelExpectedConfirmedNotSent",
+        "SessionRegistry::Current",
+        "SessionRegistry::EndExpectedWait",
+        "SessionRegistry::ExpireExpectedTransitions",
+        "SessionRegistry::InvalidateForVerifiedReplacement",
+        "SessionRegistry::MayPublishVerifiedSession",
+        "SessionRegistry::PublishVerifiedSession",
+        "SessionRegistry::RegisterExpectedTransition",
+        "SessionRegistry::StillCurrent"
+      ]
+    },
+    {
+      "old": "card/state/session_registry.h",
+      "target": "card/state/session_registry.h",
+      "owner": "Card",
+      "gn_target": "runtime_mechanisms",
+      "responsibility": "卡侧操作、应用会话/代次及Records加载；实际声明/实现：TransitionCause, ExpectedTransition, TransitionEvidence, ExpectedContinuation, SessionRegistry",
+      "symbols": [
+        "TransitionCause",
+        "ExpectedTransition",
+        "TransitionEvidence",
+        "ExpectedContinuation",
+        "SessionRegistry",
+        "ApplicationKey"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "4576f50d8c3c89ddd682aac93d28e658ddc12c95edd4cba25377356e7c52481c",
+      "lines": 83,
+      "includes": [
+        "infrastructure/request/request_ref.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "card_selection/account_role_protocol.h",
+      "target": "role_assignment/account_role_protocol.h",
+      "owner": "Role Assignment",
+      "gn_target": "assignment_protocols",
+      "responsibility": "角色意图、分配聚合、主卡计划及专属端口/适配；实际声明/实现：AccountRoleProtocol, ReservedPlan, RoleProjection",
+      "symbols": [
+        "AccountRoleProtocol",
+        "ReservedPlan",
+        "RoleProjection"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "beabedc25f1d1684611672fc279eb2f0bada2692dfcfdfb06109d3f868fe1519",
+      "lines": 110,
+      "includes": [
+        "role_assignment/assignment_requests.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "card_selection/assignment_aggregate.cpp",
+      "target": "role_assignment/assignment_aggregate.cpp",
+      "owner": "Role Assignment",
+      "gn_target": "assignment_domain",
+      "responsibility": "角色意图、分配聚合、主卡计划及专属端口/适配",
+      "symbols": [],
+      "action": "move",
+      "risk": "低",
+      "sha256": "113986e39a33b67ce02436381e90d3748c732b2c715c0a730d9109dbfe939e05",
+      "lines": 20,
+      "includes": [
+        "role_assignment/assignment_aggregate.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "card_selection/assignment_aggregate.h",
+      "target": "role_assignment/assignment_aggregate.h",
+      "owner": "Role Assignment",
+      "gn_target": "assignment_domain",
+      "responsibility": "角色意图、分配聚合、主卡计划及专属端口/适配；实际声明/实现：TransitionPhase, AssignmentTransition, TransitionAdmission, AssignmentAggregate",
+      "symbols": [
+        "TransitionPhase",
+        "AssignmentTransition",
+        "TransitionAdmission",
+        "AssignmentAggregate"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "b248cf6700450d0227d1a13cd42d405553283230e7b351babaadb955e6de1c90",
+      "lines": 57,
+      "includes": [
+        "infrastructure/assembly/slot_catalog.h",
+        "role_assignment/role_selection.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "card_selection/assignment_output_adapter.h",
+      "target": "role_assignment/assignment_output_adapter.h",
+      "owner": "Role Assignment",
+      "gn_target": "assignment_adapters",
+      "responsibility": "角色意图、分配聚合、主卡计划及专属端口/适配；实际声明/实现：AssignmentOutputAdapter",
+      "symbols": [
+        "AssignmentOutputAdapter"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "1cc15e3e7848446509c349d90f7539c99d8d507aaaf0e56682137b7c0293e871",
+      "lines": 37,
+      "includes": [
+        "role_assignment/primary/radio_execution_port.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "card_selection/assignment_requests.h",
+      "target": "role_assignment/assignment_requests.h",
+      "owner": "Role Assignment",
+      "gn_target": "assignment_contracts",
+      "responsibility": "角色意图、分配聚合、主卡计划及专属端口/适配；实际声明/实现：SetRoleCommand, SwitchPrimaryCommand, RadioAssignmentView, AssignmentView, AccountRolePlanningInput",
+      "symbols": [
+        "SetRoleCommand",
+        "SwitchPrimaryCommand",
+        "RadioAssignmentView",
+        "AssignmentView",
+        "AccountRolePlanningInput",
+        "AccountRoleReservation",
+        "AccountRoleFragment",
+        "StoredAccountRoleFragment",
+        "LegacyActivationWaitResult",
+        "ActivationConflictRequest",
+        "ActivationConflictLease",
+        "ActivationConflictEndEvidence",
+        "InitialRoleFinalizationEvidence",
+        "PrimaryRecheck"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "f88f730f2bc3bfe474d7ab2c83530f6391685c8eaccfdd9b6a8bd44feb589d64",
+      "lines": 109,
+      "includes": [
+        "infrastructure/request/request_context.h",
+        "role_assignment/assignment_types.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "card_selection/assignment_service.cpp",
+      "target": "role_assignment/assignment_service.cpp",
+      "owner": "Role Assignment",
+      "gn_target": "assignment_cases",
+      "responsibility": "角色意图、分配聚合、主卡计划及专属端口/适配；实际声明/实现：AssignmentService::AcceptDiscoveredRoleProjection, AssignmentService::AcceptLocalProfilePreference, AssignmentService::AcceptReloadedRoleProjection, AssignmentService::AcceptReloadedRoleProjectionSet, AssignmentService::AssignmentService",
+      "symbols": [],
+      "action": "move",
+      "risk": "低",
+      "sha256": "06f5e17b58956a8035d74d1ceee3b12ce2b9206a06861de664c830ff1512e3b7",
+      "lines": 83,
+      "includes": [
+        "role_assignment/assignment_service.h",
+        "role_assignment/primary/primary_switch_plan.h",
+        "role_assignment/legacy_entry.h"
+      ],
+      "implemented_methods": [
+        "AssignmentService::AcceptDiscoveredRoleProjection",
+        "AssignmentService::AcceptLocalProfilePreference",
+        "AssignmentService::AcceptReloadedRoleProjection",
+        "AssignmentService::AcceptReloadedRoleProjectionSet",
+        "AssignmentService::AssignmentService",
+        "AssignmentService::FinalizeInitialRoleReservation",
+        "AssignmentService::PrepareAccountRoleFragment",
+        "AssignmentService::ReadRoleProjectionRevision",
+        "AssignmentService::StillOwnsInitialRoleReservation"
+      ]
+    },
+    {
+      "old": "card_selection/assignment_service.h",
+      "target": "role_assignment/assignment_service.h",
+      "owner": "Role Assignment",
+      "gn_target": "assignment_cases",
+      "responsibility": "角色意图、分配聚合、主卡计划及专属端口/适配；实际声明/实现：AssignmentService, ConflictKind, AssignmentConflictRegistration",
+      "symbols": [
+        "AssignmentService",
+        "ConflictKind",
+        "AssignmentConflictRegistration"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "23f7b69bbf2a4fe11bbf31bc104341067b10ab56567e2b32312a5887c1e1318d",
+      "lines": 93,
+      "includes": [
+        "infrastructure/request/runtime_operation_store.h",
+        "role_assignment/assignment_requests.h",
+        "role_assignment/assignment_aggregate.h",
+        "role_assignment/account_role_protocol.h",
+        "role_assignment/assignment_store.h",
+        "role_assignment/primary/radio_execution_port.h",
+        "role_assignment/primary/primary_topology_port.h",
+        "role_assignment/profile_preference_port.h",
+        "account/account_role_planning_port.h",
+        "account/activation/activation_assignment_port.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "card_selection/assignment_store.h",
+      "target": "role_assignment/assignment_store.h",
+      "owner": "Role Assignment",
+      "gn_target": "assignment_contracts",
+      "responsibility": "角色意图、分配聚合、主卡计划及专属端口/适配；实际声明/实现：PrimaryParameterSnapshot, AssignmentParameterResult, RoleStoreResult, AssignmentStore",
+      "symbols": [
+        "PrimaryParameterSnapshot",
+        "AssignmentParameterResult",
+        "RoleStoreResult",
+        "AssignmentStore"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "7a5bfbd53b4c8c66b5611443c89c7ee911ad9bc7594780e403e174a99b0356ec",
+      "lines": 42,
+      "includes": [
+        "role_assignment/assignment_requests.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "card_selection/assignment_store_adapter.h",
+      "target": "role_assignment/assignment_store_adapter.h",
+      "owner": "Role Assignment",
+      "gn_target": "assignment_adapters",
+      "responsibility": "角色意图、分配聚合、主卡计划及专属端口/适配；实际声明/实现：SimRdbHelper, AssignmentStoreAdapter",
+      "symbols": [
+        "SimRdbHelper",
+        "AssignmentStoreAdapter"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "b982f7822823e0798a7f96900b24be6540e64d286383339cdf2674765b7208e8",
+      "lines": 42,
+      "includes": [
+        "role_assignment/assignment_store.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "card_selection/assignment_types.h",
+      "target": "role_assignment/assignment_types.h",
+      "owner": "Role Assignment",
+      "gn_target": "assignment_types",
+      "responsibility": "角色意图、分配聚合、主卡计划及专属端口/适配；实际声明/实现：DefaultRole",
+      "symbols": [
+        "DefaultRole"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "3ecccb888728a6213d2bc99abb0fb05d5e625d4f7be5cab12b351389e7d01985",
+      "lines": 27,
+      "includes": [],
+      "implemented_methods": []
+    },
+    {
+      "old": "card_selection/legacy_entry.h",
+      "target": "role_assignment/legacy_entry.h",
+      "owner": "Role Assignment",
+      "gn_target": "assignment_contracts",
+      "responsibility": "角色意图、分配聚合、主卡计划及专属端口/适配；实际声明/实现：AssignmentService",
+      "symbols": [
+        "AssignmentService"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "576c601e3fd6a641249f7cb0a1bc67470f3aec238e5a26422d777e5d0613cbd4",
+      "lines": 30,
+      "includes": [
+        "role_assignment/assignment_requests.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "card_selection/primary/primary_execution.h",
+      "target": "role_assignment/primary/primary_execution.h",
+      "owner": "Role Assignment",
+      "gn_target": "assignment_types",
+      "responsibility": "角色意图、分配聚合、主卡计划及专属端口/适配；实际声明/实现：PrimarySwitchMode, ParameterWritePosition, PrimaryDecisionFacts",
+      "symbols": [
+        "PrimarySwitchMode",
+        "ParameterWritePosition",
+        "PrimaryDecisionFacts"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "705f641e72b883890d5388d5db1a85c13b5815ede17b5e0758721b9bd9d12c60",
+      "lines": 33,
+      "includes": [
+        "infrastructure/assembly/slot_catalog.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "card_selection/primary/primary_switch_plan.cpp",
+      "target": "role_assignment/primary/primary_switch_plan.cpp",
+      "owner": "Role Assignment",
+      "gn_target": "assignment_protocols",
+      "responsibility": "角色意图、分配聚合、主卡计划及专属端口/适配",
+      "symbols": [],
+      "action": "move",
+      "risk": "低",
+      "sha256": "c229d5f8839ef222c73a01b7a90e023cba126d3a22f543e3b54203cd37d56187",
+      "lines": 51,
+      "includes": [
+        "role_assignment/primary/primary_switch_plan.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "card_selection/primary/primary_switch_plan.h",
+      "target": "role_assignment/primary/primary_switch_plan.h",
+      "owner": "Role Assignment",
+      "gn_target": "assignment_protocols",
+      "responsibility": "角色意图、分配聚合、主卡计划及专属端口/适配；实际声明/实现：PrimaryAction, PrimarySwitchPlan",
+      "symbols": [
+        "PrimaryAction",
+        "PrimarySwitchPlan"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "5466303aa10d4dda870c20bcc3e48a869c49dc00f63cb631bc8d71339b999d8d",
+      "lines": 45,
+      "includes": [
+        "role_assignment/primary/primary_execution.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "card_selection/primary/primary_topology_port.h",
+      "target": "role_assignment/primary/primary_topology_port.h",
+      "owner": "Role Assignment",
+      "gn_target": "assignment_contracts",
+      "responsibility": "角色意图、分配聚合、主卡计划及专属端口/适配；实际声明/实现：PrimaryTargetFacts, PrimaryTopologyPort",
+      "symbols": [
+        "PrimaryTargetFacts",
+        "PrimaryTopologyPort"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "01738aa9c8c53aabd666e7fb7b36e17d29cf78f9265cb2e97e44262076b677f5",
+      "lines": 37,
+      "includes": [
+        "infrastructure/request/request_ref.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "card_selection/primary/radio_execution_port.h",
+      "target": "role_assignment/primary/radio_execution_port.h",
+      "owner": "Role Assignment",
+      "gn_target": "assignment_contracts",
+      "responsibility": "角色意图、分配聚合、主卡计划及专属端口/适配；实际声明/实现：PrimaryRadioObservation, RadioSwitchRequest, RadioSwitchResult, RadioResultSink, RadioExecutionPort",
+      "symbols": [
+        "PrimaryRadioObservation",
+        "RadioSwitchRequest",
+        "RadioSwitchResult",
+        "RadioResultSink",
+        "RadioExecutionPort",
+        "AssignmentOutputPort"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "5b611b09852f8503924078c5906c01762671104b4551cc579b1b1a77d4845ad4",
+      "lines": 72,
+      "includes": [
+        "infrastructure/request/request_ref.h",
+        "role_assignment/primary/primary_execution.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "card_selection/profile_preference_port.h",
+      "target": "role_assignment/profile_preference_port.h",
+      "owner": "Role Assignment",
+      "gn_target": "assignment_contracts",
+      "responsibility": "角色意图、分配聚合、主卡计划及专属端口/适配；实际声明/实现：ProfilePreferencePort",
+      "symbols": [
+        "ProfilePreferencePort"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "1cba4e440179a9eefd96855251e7ab0ace46039b5ad2314f5c5c0516cc76d619",
+      "lines": 33,
+      "includes": [
+        "infrastructure/request/request_ref.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "card_selection/role_selection.h",
+      "target": "role_assignment/role_selection.h",
+      "owner": "Role Assignment",
+      "gn_target": "assignment_domain",
+      "responsibility": "角色意图、分配聚合、主卡计划及专属端口/适配；实际声明/实现：RoleSelection",
+      "symbols": [
+        "RoleSelection"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "9b815cd9d0b6879e4b3300da228a588881daec76673018255513e368f423d2a5",
+      "lines": 36,
+      "includes": [
+        "infrastructure/sim_identity.h",
+        "role_assignment/assignment_types.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "device/resource/resource_barrier.cpp",
+      "target": "device/resource/resource_barrier.cpp",
+      "owner": "Device",
+      "gn_target": "runtime_mechanisms",
+      "responsibility": "资源屏障、资格及恢复证据；实际声明/实现：ResourceBarrier::AcceptInitialRecoveryEvidence, ResourceBarrier::AcceptRecoveryEvidence, ResourceBarrier::Acquire, ResourceBarrier::CancelConfirmedNotSent, ResourceBarrier::Complete",
+      "symbols": [],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "a4f30c59b010ed17d943c9c9c741e7134307b022cce5e10f3765b3ee056db0d7",
+      "lines": 192,
+      "includes": [
+        "device/resource/resource_barrier.h"
+      ],
+      "implemented_methods": [
+        "ResourceBarrier::AcceptInitialRecoveryEvidence",
+        "ResourceBarrier::AcceptRecoveryEvidence",
+        "ResourceBarrier::Acquire",
+        "ResourceBarrier::CancelConfirmedNotSent",
+        "ResourceBarrier::Complete",
+        "ResourceBarrier::MarkSent",
+        "ResourceBarrier::MatchesAll",
+        "ResourceBarrier::Quarantine",
+        "ResourceBarrier::ReadState",
+        "ResourceBarrier::RegisterForInitialCheck",
+        "ResourceBarrier::Release"
+      ]
+    },
+    {
+      "old": "device/resource/resource_barrier.h",
+      "target": "device/resource/resource_barrier.h",
+      "owner": "Device",
+      "gn_target": "runtime_mechanisms",
+      "responsibility": "资源屏障、资格及恢复证据；实际声明/实现：ResourceState, EffectRequirement, ResourceKey, ResourceLease, InitialRecoveryEvidence",
+      "symbols": [
+        "ResourceState",
+        "EffectRequirement",
+        "ResourceKey",
+        "ResourceLease",
+        "InitialRecoveryEvidence",
+        "CompletionEvidence",
+        "RecoveryEvidence",
+        "ResourceRecord",
+        "ResourceBarrier"
+      ],
+      "action": "retain",
+      "risk": "低",
+      "sha256": "12761029d30653cc484b64d70a5376f9a559c917641acfc2c16b395b8dccc7f8",
+      "lines": 93,
+      "includes": [
+        "infrastructure/request/request_ref.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "integration/api/legacy_boundary_ports.h",
+      "target": "infrastructure/compatibility/api/legacy_boundary_ports.h",
+      "owner": "Infrastructure",
+      "gn_target": "compatibility_contracts",
+      "responsibility": "技术机制/兼容交付/宿主装配；不写业务事实；实际声明/实现：LegacyCallerRef, LegacyCallbackRef, EntryCheck, LegacySynchronousCall, LegacyIngressPort",
+      "symbols": [
+        "LegacyCallerRef",
+        "LegacyCallbackRef",
+        "EntryCheck",
+        "LegacySynchronousCall",
+        "LegacyIngressPort",
+        "CallbackHostPort",
+        "LegacyOutputPort"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "219fb39c5a5c49774ae76c4b316ea5624d8c1793a6f5797ddc38f47291e35aa6",
+      "lines": 57,
+      "includes": [
+        "account/topology_requests.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "integration/api/legacy_sim_facade.cpp",
+      "target": "infrastructure/compatibility/api/legacy_sim_facade.cpp",
+      "owner": "Infrastructure",
+      "gn_target": "compatibility_core",
+      "responsibility": "技术机制/兼容交付/宿主装配；不写业务事实；实际声明/实现：LegacySimFacade::LegacySimFacade, LegacySimFacade::RunOrdinaryActivationAtExecutionPoint, LegacySimFacade::RunPrimarySwitchAtExecutionPoint, LegacySimFacade::SwitchLocalProfileAndAssignAtExecutionPoint, LegacySimFacade::SwitchLocalProfileAtExecutionPoint",
+      "symbols": [],
+      "action": "move",
+      "risk": "低",
+      "sha256": "bd168b7dcc40c27daf97bc2e83120f9017ff3d3fe944afdd09d2adde7938ea31",
+      "lines": 74,
+      "includes": [
+        "infrastructure/compatibility/api/legacy_sim_facade.h",
+        "card/esim/legacy_profile_result.h"
+      ],
+      "implemented_methods": [
+        "LegacySimFacade::LegacySimFacade",
+        "LegacySimFacade::RunOrdinaryActivationAtExecutionPoint",
+        "LegacySimFacade::RunPrimarySwitchAtExecutionPoint",
+        "LegacySimFacade::SwitchLocalProfileAndAssignAtExecutionPoint",
+        "LegacySimFacade::SwitchLocalProfileAtExecutionPoint"
+      ]
+    },
+    {
+      "old": "integration/api/legacy_sim_facade.h",
+      "target": "infrastructure/compatibility/api/legacy_sim_facade.h",
+      "owner": "Infrastructure",
+      "gn_target": "compatibility_core",
+      "responsibility": "技术机制/兼容交付/宿主装配；不写业务事实；实际声明/实现：LegacySimFacade",
+      "symbols": [
+        "LegacySimFacade"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "828be4012f225105daea8fd6deeae14c905896ab8ef7bbee73754aa8f4331a4e",
+      "lines": 57,
+      "includes": [
+        "infrastructure/compatibility/api/legacy_boundary_ports.h",
+        "card/esim/local_card_requests.h",
+        "infrastructure/assembly/slot_catalog.h",
+        "account/legacy_entry.h",
+        "role_assignment/legacy_entry.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "integration/api/real_sim_count_query.cpp",
+      "target": "infrastructure/compatibility/api/real_sim_count_query.cpp",
+      "owner": "Infrastructure",
+      "gn_target": "readonly_query",
+      "responsibility": "技术机制/兼容交付/宿主装配；不写业务事实；实际声明/实现：RealSimCountQuery::Read",
+      "symbols": [],
+      "action": "move",
+      "risk": "低",
+      "sha256": "742276719927fe8825eace4b5e9d9f1dbb6bc58d99200adee000aa8f364262ba",
+      "lines": 23,
+      "includes": [
+        "real_sim_count_query.h"
+      ],
+      "implemented_methods": [
+        "RealSimCountQuery::Read"
+      ]
+    },
+    {
+      "old": "integration/api/real_sim_count_query.h",
+      "target": "infrastructure/compatibility/api/real_sim_count_query.h",
+      "owner": "Infrastructure",
+      "gn_target": "readonly_query",
+      "responsibility": "技术机制/兼容交付/宿主装配；不写业务事实；实际声明/实现：RealSimCountHostPort, RealSimCountQuery",
+      "symbols": [
+        "RealSimCountHostPort",
+        "RealSimCountQuery"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "09419b2cd999317df9091cf186207ac8f62cdb06652700614802eb237e09b0c3",
+      "lines": 40,
+      "includes": [],
+      "implemented_methods": []
+    },
+    {
+      "old": "integration/events/completion_cell.h",
+      "target": "infrastructure/compatibility/events/completion_cell.h",
+      "owner": "Infrastructure",
+      "gn_target": "compatibility_core",
+      "responsibility": "技术机制/兼容交付/宿主装配；不写业务事实；实际声明/实现：CompletionCell",
+      "symbols": [
+        "CompletionCell"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "f06df710d097f2693c279bcca27a7a5f9a0285ce8c45ed0d8f66d65ff7898a1c",
+      "lines": 51,
+      "includes": [
+        "infrastructure/request/request_context.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "integration/events/legacy_completion.cpp",
+      "target": "infrastructure/compatibility/events/legacy_completion.cpp",
+      "owner": "Infrastructure",
+      "gn_target": "compatibility_core",
+      "responsibility": "技术机制/兼容交付/宿主装配；不写业务事实；实际声明/实现：LegacyCompletion::CompleteLegacyInt",
+      "symbols": [],
+      "action": "move",
+      "risk": "低",
+      "sha256": "ad793a7e91780d18880e79376f204db3bf8dadd6df2b09cbbfd2ca91775a98b8",
+      "lines": 39,
+      "includes": [
+        "infrastructure/compatibility/events/legacy_completion.h"
+      ],
+      "implemented_methods": [
+        "LegacyCompletion::CompleteLegacyInt"
+      ]
+    },
+    {
+      "old": "integration/events/legacy_completion.h",
+      "target": "infrastructure/compatibility/events/legacy_completion.h",
+      "owner": "Infrastructure",
+      "gn_target": "compatibility_core",
+      "responsibility": "技术机制/兼容交付/宿主装配；不写业务事实；实际声明/实现：LegacyCompletion",
+      "symbols": [
+        "LegacyCompletion"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "08b8b860226528d414801b193ff5d369d0040e7073f8d396029be8e1e2770629",
+      "lines": 37,
+      "includes": [
+        "infrastructure/compatibility/api/legacy_boundary_ports.h",
+        "account/number/show_number_completion_port.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "integration/events/legacy_output_adapter.cpp",
+      "target": "infrastructure/compatibility/events/legacy_output_adapter.cpp",
+      "owner": "Infrastructure",
+      "gn_target": "compatibility_core",
+      "responsibility": "技术机制/兼容交付/宿主装配；不写业务事实",
+      "symbols": [],
+      "action": "move",
+      "risk": "低",
+      "sha256": "8a56ad5a67c695670cef8faf034c31f099de07e10f35cec6cafc66e9f0671334",
+      "lines": 32,
+      "includes": [
+        "infrastructure/compatibility/events/legacy_output_adapter.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "integration/events/legacy_output_adapter.h",
+      "target": "infrastructure/compatibility/events/legacy_output_adapter.h",
+      "owner": "Infrastructure",
+      "gn_target": "compatibility_core",
+      "responsibility": "技术机制/兼容交付/宿主装配；不写业务事实；实际声明/实现：MultiSimMonitor, LegacyOutputAdapter",
+      "symbols": [
+        "MultiSimMonitor",
+        "LegacyOutputAdapter"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "d9dbe9fde181f27925229bd21e6e9ba6c12cdd4ce76832f29beb15d1e9194140",
+      "lines": 39,
+      "includes": [
+        "infrastructure/compatibility/api/legacy_boundary_ports.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "integration/lifecycle/card_runtime.cpp",
+      "target": "card/runtime/card_runtime.cpp",
+      "owner": "Card（临时容纳；Device职责待拆）",
+      "gn_target": "runtime_core",
+      "responsibility": "持有卡Session/Load/MSISDN关联及Device ResourceBarrier/Radio引用的过渡骨架；本批仅改路径，不重新分配写权；实际声明/实现：CardRuntime::BindResultSinks, CardRuntime::CardRuntime, CardRuntime::EndLocalProfileWait, CardRuntime::InvalidateVerifiedCardSession, CardRuntime::PublishAcceptedCardDiscovery",
+      "symbols": [],
+      "action": "move",
+      "risk": "高（仅迁址，拆分待裁决）",
+      "sha256": "a9c6e29a2e2d6b533c8acdd04f58e80b6c11de349dc4504390f2127e030eec65",
+      "lines": 105,
+      "includes": [
+        "card/runtime/card_runtime.h"
+      ],
+      "implemented_methods": [
+        "CardRuntime::BindResultSinks",
+        "CardRuntime::CardRuntime",
+        "CardRuntime::EndLocalProfileWait",
+        "CardRuntime::InvalidateVerifiedCardSession",
+        "CardRuntime::PublishAcceptedCardDiscovery"
+      ]
+    },
+    {
+      "old": "integration/lifecycle/card_runtime.h",
+      "target": "card/runtime/card_runtime.h",
+      "owner": "Card（临时容纳；Device职责待拆）",
+      "gn_target": "runtime_core",
+      "responsibility": "持有卡Session/Load/MSISDN关联及Device ResourceBarrier/Radio引用的过渡骨架；本批仅改路径，不重新分配写权；实际声明/实现：SimStateManager, SimFileManager, SimSmsManager, IccDiallingNumbersManager, StkManager",
+      "symbols": [
+        "SimStateManager",
+        "SimFileManager",
+        "SimSmsManager",
+        "IccDiallingNumbersManager",
+        "StkManager",
+        "SimAccountManager",
+        "RadioProtocolController",
+        "EsimManager",
+        "ITelRilManager",
+        "ProductionSlotBindings",
+        "PhonebookReadRequest",
+        "StkTerminalResponse",
+        "CardRuntime"
+      ],
+      "action": "move",
+      "risk": "高（仅迁址，拆分待裁决）",
+      "sha256": "0c1d2d6ff57da7ee77660311daa361b4637fe1f692f5bae52d90d9c5daa93947",
+      "lines": 112,
+      "includes": [
+        "card/esim/local_card_requests.h",
+        "role_assignment/primary/radio_execution_port.h",
+        "account/activation/activation_runtime_port.h",
+        "account/discovery/card_observation_port.h",
+        "account/number/show_number_runtime_port.h",
+        "card/state/session_registry.h",
+        "card/runtime/result_sinks.h",
+        "card/records/load_session.h",
+        "device/resource/resource_barrier.h",
+        "infrastructure/assembly/slot_catalog.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "integration/lifecycle/exports/sim_host_ports.h",
+      "target": "infrastructure/assembly/exports/sim_host_ports.h",
+      "owner": "Infrastructure",
+      "gn_target": "repository_exports",
+      "responsibility": "技术机制/兼容交付/宿主装配；不写业务事实",
+      "symbols": [],
+      "action": "move",
+      "risk": "低",
+      "sha256": "3cbc33b4691a84e1dfa90d28048a69d2396c95ac8469eb11c5080fed8b949b1b",
+      "lines": 21,
+      "includes": [
+        "infrastructure/assembly/host_ports.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "integration/lifecycle/exports/sim_module_factory.h",
+      "target": "infrastructure/assembly/exports/sim_module_factory.h",
+      "owner": "Infrastructure",
+      "gn_target": "repository_exports",
+      "responsibility": "技术机制/兼容交付/宿主装配；不写业务事实",
+      "symbols": [],
+      "action": "move",
+      "risk": "低",
+      "sha256": "cf092d0bf6c9a8d29c548622f7cd033eacddf472ca980b44934506f096ef103c",
+      "lines": 21,
+      "includes": [
+        "infrastructure/assembly/sim_module_factory.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "integration/lifecycle/host_ports.h",
+      "target": "infrastructure/assembly/host_ports.h",
+      "owner": "Infrastructure",
+      "gn_target": "assembly_contracts",
+      "responsibility": "技术机制/兼容交付/宿主装配；不写业务事实；实际声明/实现：ITelRilManager, ISimManager, IEsimManager, SimHostPorts, SimServicePublicationPort",
+      "symbols": [
+        "ITelRilManager",
+        "ISimManager",
+        "IEsimManager",
+        "SimHostPorts",
+        "SimServicePublicationPort"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "1111fa53583eb4d5a9dd326c1a437d05dc21698224697cfa996ab406ae99328e",
+      "lines": 48,
+      "includes": [
+        "infrastructure/compatibility/api/legacy_boundary_ports.h",
+        "account/number/number_query_host_port.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "integration/lifecycle/manager_publication.h",
+      "target": "infrastructure/assembly/manager_publication.h",
+      "owner": "Infrastructure",
+      "gn_target": "assembly_contracts",
+      "responsibility": "技术机制/兼容交付/宿主装配；不写业务事实；实际声明/实现：ISimManager, IEsimManager, EsimManagerInitialization, SimManagerInitialization, PublicationStage",
+      "symbols": [
+        "ISimManager",
+        "IEsimManager",
+        "EsimManagerInitialization",
+        "SimManagerInitialization",
+        "PublicationStage",
+        "ManagerPublicationSequence",
+        "Manager"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "e32def51474b8ae136276fc26b3a620349f855283cb101c881a3fb53197343d9",
+      "lines": 82,
+      "includes": [],
+      "implemented_methods": []
+    },
+    {
+      "old": "integration/lifecycle/result_sinks.h",
+      "target": "card/runtime/result_sinks.h",
+      "owner": "Card",
+      "gn_target": "runtime_core",
+      "responsibility": "向原发起Owner交付执行结果/迟到证据的窄引用集合；非Legacy对外交付；实际声明/实现：RuntimeResultSinks",
+      "symbols": [
+        "RuntimeResultSinks"
+      ],
+      "action": "move",
+      "risk": "中",
+      "sha256": "2747e6835cfe2bfd1782edbbfa328d9994ad30ecca597c9d149015cc01a6afcb",
+      "lines": 47,
+      "includes": [
+        "account/number/show_number_runtime_port.h",
+        "account/activation/activation_runtime_port.h",
+        "account/discovery/card_observation_port.h",
+        "role_assignment/primary/radio_execution_port.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "integration/lifecycle/sim_module.h",
+      "target": "infrastructure/assembly/sim_module.h",
+      "owner": "Infrastructure",
+      "gn_target": "assembly_core",
+      "responsibility": "技术机制/兼容交付/宿主装配；不写业务事实；实际声明/实现：ExistingSimBindings, SimModule, DrainResult, SimModuleFactoryAccess, SimModuleDeleter",
+      "symbols": [
+        "ExistingSimBindings",
+        "SimModule",
+        "DrainResult",
+        "SimModuleFactoryAccess",
+        "SimModuleDeleter"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "909d5335bcfbdeb1e0c66940db8a811d53fbf7912fc3532d19f415ad177bca11",
+      "lines": 78,
+      "includes": [
+        "infrastructure/assembly/sim_module_factory.h",
+        "card/runtime/card_runtime.h",
+        "account/account_store_adapter.h",
+        "role_assignment/assignment_store_adapter.h",
+        "infrastructure/compatibility/events/legacy_output_adapter.h",
+        "infrastructure/compatibility/events/legacy_completion.h",
+        "infrastructure/compatibility/api/legacy_sim_facade.h",
+        "role_assignment/assignment_output_adapter.h",
+        "account/activation/activation_hook_adapter.h",
+        "account/topology_service.h",
+        "role_assignment/assignment_service.h",
+        "account/number/set_show_number_use_case.h",
+        "account/number/show_number_query.h",
+        "account/activation/activate_sim_use_case.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "integration/lifecycle/sim_module_factory.cpp",
+      "target": "infrastructure/assembly/sim_module_factory.cpp",
+      "owner": "Infrastructure",
+      "gn_target": "assembly_core",
+      "responsibility": "技术机制/兼容交付/宿主装配；不写业务事实；实际声明/实现：SimModule::SimModule",
+      "symbols": [],
+      "action": "move",
+      "risk": "低",
+      "sha256": "83f0e400abcea19b5db6cc44601b702f79bdd5f3cd666c190b4a67e76e115f03",
+      "lines": 53,
+      "includes": [
+        "infrastructure/assembly/sim_module.h"
+      ],
+      "implemented_methods": [
+        "SimModule::SimModule"
+      ]
+    },
+    {
+      "old": "integration/lifecycle/sim_module_factory.h",
+      "target": "infrastructure/assembly/sim_module_factory.h",
+      "owner": "Infrastructure",
+      "gn_target": "assembly_contracts",
+      "responsibility": "技术机制/兼容交付/宿主装配；不写业务事实；实际声明/实现：SimModule, ExistingSimBindings, SimModuleDeleter, SimModuleInitFailure, Stage",
+      "symbols": [
+        "SimModule",
+        "ExistingSimBindings",
+        "SimModuleDeleter",
+        "SimModuleInitFailure",
+        "Stage",
+        "LegacySimStartup",
+        "OwnedSimServices",
+        "OwnedSimServicesFactoryAccess",
+        "OwnedSimServicesDeleter",
+        "OwnedSimServicesDeleter"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "687604dffc95e5a6543bcbe1c3be4febd21e75f83df606206b010f66be393a70",
+      "lines": 78,
+      "includes": [
+        "infrastructure/assembly/slot_catalog.h",
+        "infrastructure/assembly/host_ports.h",
+        "infrastructure/assembly/manager_publication.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "support/request/request_context.h",
+      "target": "infrastructure/request/request_context.h",
+      "owner": "Infrastructure",
+      "gn_target": "request_protocol",
+      "responsibility": "用例私有请求身份、步骤、完成状态机制；无业务流程和重试决策；实际声明/实现：CompletionId, SynchronousWaitRef, InternalReplyRef, CallbackCompletionRoute, SynchronousCompletionRoute",
+      "symbols": [
+        "CompletionId",
+        "SynchronousWaitRef",
+        "InternalReplyRef",
+        "CallbackCompletionRoute",
+        "SynchronousCompletionRoute",
+        "InternalCompletionRoute",
+        "WaitState",
+        "TerminalState",
+        "CompletionPlan",
+        "RequestContext",
+        "RuntimeOperation",
+        "LegacyIntCompletionPort"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "6558e259615f96d8cef7c769a3c98fb95b3321e5ecfd15f5fc3bef217f2c9210",
+      "lines": 63,
+      "includes": [
+        "infrastructure/request/request_ref.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "support/request/runtime_operation_store.h",
+      "target": "infrastructure/request/runtime_operation_store.h",
+      "owner": "Infrastructure",
+      "gn_target": "request_mechanism",
+      "responsibility": "用例私有请求身份、步骤、完成状态机制；无业务流程和重试决策；实际声明/实现：RuntimeOperationStore, ResultAdmission",
+      "symbols": [
+        "RuntimeOperationStore",
+        "ResultAdmission"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "61eb11e84606948d63c1ab4750b7c28fa3c3bcfab786e5929568b4bfbb0089fa",
+      "lines": 52,
+      "includes": [
+        "infrastructure/request/request_context.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "support/request_ref.h",
+      "target": "infrastructure/request/request_ref.h",
+      "owner": "Infrastructure",
+      "gn_target": "sim_values",
+      "responsibility": "用例私有请求身份、步骤、完成状态机制；无业务流程和重试决策；实际声明/实现：RequestOwner, RequestId, StepRef, EffectKnowledge",
+      "symbols": [
+        "RequestOwner",
+        "RequestId",
+        "StepRef",
+        "EffectKnowledge"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "bec5a7510325fb8f253d1be3cad3cffe24c53157bb37651e48949fb724547495",
+      "lines": 52,
+      "includes": [
+        "infrastructure/sim_identity.h"
+      ],
+      "implemented_methods": []
+    },
+    {
+      "old": "support/sim_identity.h",
+      "target": "infrastructure/sim_identity.h",
+      "owner": "Infrastructure",
+      "gn_target": "sim_values",
+      "responsibility": "技术机制/兼容交付/宿主装配；不写业务事实；实际声明/实现：SubscriptionId, SlotId, RadioDomainId, SlotTarget, CardApplicationTarget",
+      "symbols": [
+        "SubscriptionId",
+        "SlotId",
+        "RadioDomainId",
+        "SlotTarget",
+        "CardApplicationTarget",
+        "SubscriptionTarget",
+        "SessionRef",
+        "BindingRef"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "0c68a20434613d88817de9638617a49b7470f6ed8645c34c990edbb88999fe65",
+      "lines": 65,
+      "includes": [],
+      "implemented_methods": []
+    },
+    {
+      "old": "support/slot_catalog.cpp",
+      "target": "infrastructure/assembly/slot_catalog.cpp",
+      "owner": "Infrastructure",
+      "gn_target": "sim_values",
+      "responsibility": "宿主构建的只读静态槽描述；无动态绑定事实；实际声明/实现：SlotCatalog::Find, SlotCatalog::SlotCatalog",
+      "symbols": [],
+      "action": "move",
+      "risk": "低",
+      "sha256": "8356a321a430789b7c03d63d0e35d13a51ffba09293d7befbf14eb15b8980413",
+      "lines": 35,
+      "includes": [
+        "infrastructure/assembly/slot_catalog.h"
+      ],
+      "implemented_methods": [
+        "SlotCatalog::Find",
+        "SlotCatalog::SlotCatalog"
+      ]
+    },
+    {
+      "old": "support/slot_catalog.h",
+      "target": "infrastructure/assembly/slot_catalog.h",
+      "owner": "Infrastructure",
+      "gn_target": "sim_values",
+      "responsibility": "宿主构建的只读静态槽描述；无动态绑定事实；实际声明/实现：EndpointKind, VisibilityClass, SlotDescriptor, LegacyCapacityMeasures, SlotCatalog",
+      "symbols": [
+        "EndpointKind",
+        "VisibilityClass",
+        "SlotDescriptor",
+        "LegacyCapacityMeasures",
+        "SlotCatalog"
+      ],
+      "action": "move",
+      "risk": "低",
+      "sha256": "a8ba74bbc8b42ac44ffda38badc88fecba927a22b5d21b56f5bf5968d9f95cf5",
+      "lines": 59,
+      "includes": [
+        "infrastructure/sim_identity.h"
+      ],
+      "implemented_methods": []
+    }
+  ],
+  "before_targets": {
+    "assembly_contracts": {
+      "sources": [
+        "integration/lifecycle/host_ports.h",
+        "integration/lifecycle/manager_publication.h",
+        "integration/lifecycle/sim_module_factory.h"
+      ],
+      "public": [
+        "integration/lifecycle/host_ports.h",
+        "integration/lifecycle/manager_publication.h",
+        "integration/lifecycle/sim_module_factory.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":compatibility_contracts",
+        ":sim_values",
+        ":topology_contracts"
+      ]
+    },
+    "assembly_core": {
+      "sources": [
+        "integration/lifecycle/sim_module.h",
+        "integration/lifecycle/sim_module_factory.cpp"
+      ],
+      "public": [
+        "integration/lifecycle/sim_module.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":assembly_contracts",
+        ":assignment_adapters",
+        ":assignment_cases",
+        ":compatibility_core",
+        ":runtime_core",
+        ":topology_adapters",
+        ":topology_cases"
+      ]
+    },
+    "assignment_adapters": {
+      "sources": [
+        "card_selection/assignment_output_adapter.h",
+        "card_selection/assignment_store_adapter.h"
+      ],
+      "public": [
+        "card_selection/assignment_output_adapter.h",
+        "card_selection/assignment_store_adapter.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":assignment_contracts"
+      ]
+    },
+    "assignment_cases": {
+      "sources": [
+        "card_selection/assignment_service.cpp",
+        "card_selection/assignment_service.h"
+      ],
+      "public": [
+        "card_selection/assignment_service.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":assignment_contracts",
+        ":assignment_domain",
+        ":assignment_protocols",
+        ":request_mechanism",
+        ":topology_contracts"
+      ]
+    },
+    "assignment_contracts": {
+      "sources": [
+        "card_selection/assignment_requests.h",
+        "card_selection/assignment_store.h",
+        "card_selection/legacy_entry.h",
+        "card_selection/primary/primary_topology_port.h",
+        "card_selection/profile_preference_port.h",
+        "card_selection/primary/radio_execution_port.h"
+      ],
+      "public": [
+        "card_selection/assignment_requests.h",
+        "card_selection/assignment_store.h",
+        "card_selection/legacy_entry.h",
+        "card_selection/primary/primary_topology_port.h",
+        "card_selection/profile_preference_port.h",
+        "card_selection/primary/radio_execution_port.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":assignment_types",
+        ":request_protocol",
+        ":sim_values"
+      ]
+    },
+    "assignment_domain": {
+      "sources": [
+        "card_selection/assignment_aggregate.cpp",
+        "card_selection/assignment_aggregate.h",
+        "card_selection/role_selection.h"
+      ],
+      "public": [
+        "card_selection/assignment_aggregate.h",
+        "card_selection/role_selection.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":assignment_types",
+        ":sim_values"
+      ]
+    },
+    "assignment_protocols": {
+      "sources": [
+        "card_selection/account_role_protocol.h",
+        "card_selection/primary/primary_switch_plan.cpp",
+        "card_selection/primary/primary_switch_plan.h"
+      ],
+      "public": [
+        "card_selection/account_role_protocol.h",
+        "card_selection/primary/primary_switch_plan.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":assignment_contracts",
+        ":assignment_types"
+      ]
+    },
+    "assignment_types": {
+      "sources": [
+        "card_selection/assignment_types.h",
+        "card_selection/primary/primary_execution.h"
+      ],
+      "public": [
+        "card_selection/assignment_types.h",
+        "card_selection/primary/primary_execution.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":sim_values"
+      ]
+    },
+    "compatibility_contracts": {
+      "sources": [
+        "integration/api/legacy_boundary_ports.h"
+      ],
+      "public": [
+        "integration/api/legacy_boundary_ports.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":topology_contracts"
+      ]
+    },
+    "compatibility_core": {
+      "sources": [
+        "integration/api/legacy_sim_facade.cpp",
+        "integration/api/legacy_sim_facade.h",
+        "integration/events/completion_cell.h",
+        "integration/events/legacy_completion.cpp",
+        "integration/events/legacy_completion.h",
+        "integration/events/legacy_output_adapter.cpp",
+        "integration/events/legacy_output_adapter.h",
+        "card/esim/legacy_profile_result.h"
+      ],
+      "public": [
+        "integration/api/legacy_sim_facade.h",
+        "integration/events/completion_cell.h",
+        "integration/events/legacy_completion.h",
+        "integration/events/legacy_output_adapter.h",
+        "card/esim/legacy_profile_result.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":assignment_contracts",
+        ":compatibility_contracts",
+        ":request_protocol",
+        ":runtime_contracts",
+        ":sim_values",
+        ":topology_contracts"
+      ]
+    },
+    "repository_exports": {
+      "sources": [
+        "integration/lifecycle/exports/sim_host_ports.h",
+        "integration/lifecycle/exports/sim_module_factory.h"
+      ],
+      "public": [
+        "integration/lifecycle/exports/sim_host_ports.h",
+        "integration/lifecycle/exports/sim_module_factory.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":assembly_contracts"
+      ]
+    },
+    "request_mechanism": {
+      "sources": [
+        "support/request/runtime_operation_store.h"
+      ],
+      "public": [
+        "support/request/runtime_operation_store.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":request_protocol"
+      ]
+    },
+    "request_protocol": {
+      "sources": [
+        "support/request/request_context.h"
+      ],
+      "public": [
+        "support/request/request_context.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":sim_values"
+      ]
+    },
+    "runtime_cases": {
+      "sources": [
+        "card/esim/local_card_requests.cpp"
+      ],
+      "public": [],
+      "deps": [
+        ":runtime_contracts"
+      ],
+      "public_deps": []
+    },
+    "runtime_contracts": {
+      "sources": [
+        "card/esim/local_card_requests.h",
+        "card/esim/profile_requests.h",
+        "card/records/ef_requests.h",
+        "card/security/pin_requests.h"
+      ],
+      "public": [
+        "card/esim/local_card_requests.h",
+        "card/esim/profile_requests.h",
+        "card/records/ef_requests.h",
+        "card/security/pin_requests.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":assignment_contracts",
+        ":request_protocol"
+      ]
+    },
+    "runtime_core": {
+      "sources": [
+        "integration/lifecycle/card_runtime.cpp",
+        "integration/lifecycle/card_runtime.h",
+        "integration/lifecycle/result_sinks.h"
+      ],
+      "public": [
+        "integration/lifecycle/card_runtime.h",
+        "integration/lifecycle/result_sinks.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":assignment_contracts",
+        ":runtime_contracts",
+        ":runtime_mechanisms",
+        ":sim_values",
+        ":topology_contracts"
+      ]
+    },
+    "runtime_mechanisms": {
+      "sources": [
+        "card/records/load_session.cpp",
+        "card/records/load_session.h",
+        "device/resource/resource_barrier.cpp",
+        "device/resource/resource_barrier.h",
+        "card/state/session_registry.cpp",
+        "card/state/session_registry.h"
+      ],
+      "public": [
+        "card/records/load_session.h",
+        "device/resource/resource_barrier.h",
+        "card/state/session_registry.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":sim_values"
+      ]
+    },
+    "sim_values": {
+      "sources": [
+        "support/request_ref.h",
+        "support/sim_identity.h",
+        "support/slot_catalog.cpp",
+        "support/slot_catalog.h"
+      ],
+      "public": [
+        "support/request_ref.h",
+        "support/sim_identity.h",
+        "support/slot_catalog.h"
+      ],
+      "deps": [],
+      "public_deps": []
+    },
+    "topology_adapters": {
+      "sources": [
+        "account/account_store_adapter.cpp",
+        "account/account_store_adapter.h",
+        "account/activation/activation_hook_adapter.h"
+      ],
+      "public": [
+        "account/account_store_adapter.h",
+        "account/activation/activation_hook_adapter.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":topology_contracts"
+      ]
+    },
+    "topology_cases": {
+      "sources": [
+        "account/activation/activate_sim_use_case.cpp",
+        "account/activation/activate_sim_use_case.h",
+        "account/number/set_show_number_use_case.cpp",
+        "account/number/set_show_number_use_case.h",
+        "account/number/show_number_query.cpp",
+        "account/number/show_number_query.h",
+        "account/topology_service.cpp",
+        "account/topology_service.h"
+      ],
+      "public": [
+        "account/activation/activate_sim_use_case.h",
+        "account/number/set_show_number_use_case.h",
+        "account/number/show_number_query.h",
+        "account/topology_service.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":assignment_contracts",
+        ":request_mechanism",
+        ":topology_contracts",
+        ":topology_domain",
+        ":topology_protocols"
+      ]
+    },
+    "topology_contracts": {
+      "sources": [
+        "account/account_role_planning_port.h",
+        "account/account_store.h",
+        "account/activation/activation_assignment_port.h",
+        "account/activation/activation_runtime_port.h",
+        "account/discovery/card_observation_port.h",
+        "account/legacy_entry.h",
+        "account/number/number_query_host_port.h",
+        "account/number/show_number_completion_port.h",
+        "account/number/show_number_runtime_port.h",
+        "account/topology_requests.h"
+      ],
+      "public": [
+        "account/account_role_planning_port.h",
+        "account/account_store.h",
+        "account/activation/activation_assignment_port.h",
+        "account/activation/activation_runtime_port.h",
+        "account/discovery/card_observation_port.h",
+        "account/legacy_entry.h",
+        "account/number/number_query_host_port.h",
+        "account/number/show_number_completion_port.h",
+        "account/number/show_number_runtime_port.h",
+        "account/topology_requests.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":assignment_contracts",
+        ":request_protocol",
+        ":sim_values",
+        ":topology_types"
+      ]
+    },
+    "topology_domain": {
+      "sources": [
+        "account/account_registry.cpp",
+        "account/account_registry.h",
+        "account/binding_index.cpp",
+        "account/binding_index.h"
+      ],
+      "public": [
+        "account/account_registry.h",
+        "account/binding_index.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":sim_values",
+        ":topology_types"
+      ]
+    },
+    "topology_protocols": {
+      "sources": [
+        "account/activation/activation_progress.cpp",
+        "account/activation/activation_progress.h",
+        "account/discovery/discovery_observation_ledger.cpp",
+        "account/discovery/discovery_observation_ledger.h",
+        "account/number/show_number_plan.cpp",
+        "account/number/show_number_plan.h"
+      ],
+      "public": [
+        "account/activation/activation_progress.h",
+        "account/discovery/discovery_observation_ledger.h",
+        "account/number/show_number_plan.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":sim_values",
+        ":topology_contracts",
+        ":topology_domain"
+      ]
+    },
+    "topology_types": {
+      "sources": [
+        "account/account_types.h"
+      ],
+      "public": [
+        "account/account_types.h"
+      ],
+      "deps": [],
+      "public_deps": []
+    },
+    "readonly_query": {
+      "sources": [
+        "integration/api/real_sim_count_query.cpp",
+        "integration/api/real_sim_count_query.h"
+      ],
+      "public": [
+        "integration/api/real_sim_count_query.h"
+      ],
+      "deps": [],
+      "public_deps": []
+    }
+  },
+  "before_inventory": {
+    "(root)": {
+      "files": 3,
+      "lines": 1313,
+      "targets": [
+        "documentation/build"
+      ]
+    },
+    "account": {
+      "files": 32,
+      "lines": 2147,
+      "targets": [
+        "topology_adapters",
+        "topology_cases",
+        "topology_contracts",
+        "topology_domain",
+        "topology_protocols",
+        "topology_types"
+      ]
+    },
+    "card": {
+      "files": 10,
+      "lines": 609,
+      "targets": [
+        "compatibility_core",
+        "runtime_cases",
+        "runtime_contracts",
+        "runtime_mechanisms"
+      ]
+    },
+    "card_selection": {
+      "files": 18,
+      "lines": 957,
+      "targets": [
+        "assignment_adapters",
+        "assignment_cases",
+        "assignment_contracts",
+        "assignment_domain",
+        "assignment_protocols",
+        "assignment_types"
+      ]
+    },
+    "device": {
+      "files": 2,
+      "lines": 285,
+      "targets": [
+        "runtime_mechanisms"
+      ]
+    },
+    "integration": {
+      "files": 20,
+      "lines": 1094,
+      "targets": [
+        "assembly_contracts",
+        "assembly_core",
+        "compatibility_contracts",
+        "compatibility_core",
+        "readonly_query",
+        "repository_exports",
+        "runtime_core"
+      ]
+    },
+    "support": {
+      "files": 6,
+      "lines": 326,
+      "targets": [
+        "request_mechanism",
+        "request_protocol",
+        "sim_values"
+      ]
+    }
+  },
+  "protected_default_profraw_sha256": "bbb8d8d54bc9586adf968048bcdf7f08cf72cd1321d4766bafe30b8814ef5f1e"
+}

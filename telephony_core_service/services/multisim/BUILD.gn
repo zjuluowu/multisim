@@ -13,14 +13,14 @@ source_set("assembly_contracts") {
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
   sources = [
-    "integration/lifecycle/host_ports.h",
-    "integration/lifecycle/manager_publication.h",
-    "integration/lifecycle/sim_module_factory.h",
+    "infrastructure/assembly/host_ports.h",
+    "infrastructure/assembly/manager_publication.h",
+    "infrastructure/assembly/sim_module_factory.h",
   ]
   public = [
-    "integration/lifecycle/host_ports.h",
-    "integration/lifecycle/manager_publication.h",
-    "integration/lifecycle/sim_module_factory.h",
+    "infrastructure/assembly/host_ports.h",
+    "infrastructure/assembly/manager_publication.h",
+    "infrastructure/assembly/sim_module_factory.h",
   ]
   public_deps = [
     ":compatibility_contracts",
@@ -38,10 +38,10 @@ source_set("assembly_core") {
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
   sources = [
-    "integration/lifecycle/sim_module.h",
-    "integration/lifecycle/sim_module_factory.cpp",
+    "infrastructure/assembly/sim_module.h",
+    "infrastructure/assembly/sim_module_factory.cpp",
   ]
-  public = [ "integration/lifecycle/sim_module.h" ]
+  public = [ "infrastructure/assembly/sim_module.h" ]
   public_deps = [
     ":assembly_contracts",
     ":assignment_adapters",
@@ -62,12 +62,12 @@ source_set("assignment_adapters") {
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
   sources = [
-    "card_selection/assignment_output_adapter.h",
-    "card_selection/assignment_store_adapter.h",
+    "role_assignment/assignment_output_adapter.h",
+    "role_assignment/assignment_store_adapter.h",
   ]
   public = [
-    "card_selection/assignment_output_adapter.h",
-    "card_selection/assignment_store_adapter.h",
+    "role_assignment/assignment_output_adapter.h",
+    "role_assignment/assignment_store_adapter.h",
   ]
   public_deps = [ ":assignment_contracts" ]
 }
@@ -81,10 +81,10 @@ source_set("assignment_cases") {
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
   sources = [
-    "card_selection/assignment_service.cpp",
-    "card_selection/assignment_service.h",
+    "role_assignment/assignment_service.cpp",
+    "role_assignment/assignment_service.h",
   ]
-  public = [ "card_selection/assignment_service.h" ]
+  public = [ "role_assignment/assignment_service.h" ]
   public_deps = [
     ":assignment_contracts",
     ":assignment_domain",
@@ -103,20 +103,20 @@ source_set("assignment_contracts") {
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
   sources = [
-    "card_selection/assignment_requests.h",
-    "card_selection/assignment_store.h",
-    "card_selection/legacy_entry.h",
-    "card_selection/primary/primary_topology_port.h",
-    "card_selection/profile_preference_port.h",
-    "card_selection/primary/radio_execution_port.h",
+    "role_assignment/assignment_requests.h",
+    "role_assignment/assignment_store.h",
+    "role_assignment/legacy_entry.h",
+    "role_assignment/primary/primary_topology_port.h",
+    "role_assignment/profile_preference_port.h",
+    "role_assignment/primary/radio_execution_port.h",
   ]
   public = [
-    "card_selection/assignment_requests.h",
-    "card_selection/assignment_store.h",
-    "card_selection/legacy_entry.h",
-    "card_selection/primary/primary_topology_port.h",
-    "card_selection/profile_preference_port.h",
-    "card_selection/primary/radio_execution_port.h",
+    "role_assignment/assignment_requests.h",
+    "role_assignment/assignment_store.h",
+    "role_assignment/legacy_entry.h",
+    "role_assignment/primary/primary_topology_port.h",
+    "role_assignment/profile_preference_port.h",
+    "role_assignment/primary/radio_execution_port.h",
   ]
   public_deps = [
     ":assignment_types",
@@ -134,13 +134,13 @@ source_set("assignment_domain") {
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
   sources = [
-    "card_selection/assignment_aggregate.cpp",
-    "card_selection/assignment_aggregate.h",
-    "card_selection/role_selection.h",
+    "role_assignment/assignment_aggregate.cpp",
+    "role_assignment/assignment_aggregate.h",
+    "role_assignment/role_selection.h",
   ]
   public = [
-    "card_selection/assignment_aggregate.h",
-    "card_selection/role_selection.h",
+    "role_assignment/assignment_aggregate.h",
+    "role_assignment/role_selection.h",
   ]
   public_deps = [
     ":assignment_types",
@@ -157,13 +157,13 @@ source_set("assignment_protocols") {
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
   sources = [
-    "card_selection/account_role_protocol.h",
-    "card_selection/primary/primary_switch_plan.cpp",
-    "card_selection/primary/primary_switch_plan.h",
+    "role_assignment/account_role_protocol.h",
+    "role_assignment/primary/primary_switch_plan.cpp",
+    "role_assignment/primary/primary_switch_plan.h",
   ]
   public = [
-    "card_selection/account_role_protocol.h",
-    "card_selection/primary/primary_switch_plan.h",
+    "role_assignment/account_role_protocol.h",
+    "role_assignment/primary/primary_switch_plan.h",
   ]
   public_deps = [
     ":assignment_contracts",
@@ -180,12 +180,12 @@ source_set("assignment_types") {
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
   sources = [
-    "card_selection/assignment_types.h",
-    "card_selection/primary/primary_execution.h",
+    "role_assignment/assignment_types.h",
+    "role_assignment/primary/primary_execution.h",
   ]
   public = [
-    "card_selection/assignment_types.h",
-    "card_selection/primary/primary_execution.h",
+    "role_assignment/assignment_types.h",
+    "role_assignment/primary/primary_execution.h",
   ]
   public_deps = [ ":sim_values" ]
 }
@@ -198,8 +198,8 @@ source_set("compatibility_contracts") {
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
-  sources = [ "integration/api/legacy_boundary_ports.h" ]
-  public = [ "integration/api/legacy_boundary_ports.h" ]
+  sources = [ "infrastructure/compatibility/api/legacy_boundary_ports.h" ]
+  public = [ "infrastructure/compatibility/api/legacy_boundary_ports.h" ]
   public_deps = [ ":topology_contracts" ]
 }
 
@@ -212,20 +212,20 @@ source_set("compatibility_core") {
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
   sources = [
-    "integration/api/legacy_sim_facade.cpp",
-    "integration/api/legacy_sim_facade.h",
-    "integration/events/completion_cell.h",
-    "integration/events/legacy_completion.cpp",
-    "integration/events/legacy_completion.h",
-    "integration/events/legacy_output_adapter.cpp",
-    "integration/events/legacy_output_adapter.h",
+    "infrastructure/compatibility/api/legacy_sim_facade.cpp",
+    "infrastructure/compatibility/api/legacy_sim_facade.h",
+    "infrastructure/compatibility/events/completion_cell.h",
+    "infrastructure/compatibility/events/legacy_completion.cpp",
+    "infrastructure/compatibility/events/legacy_completion.h",
+    "infrastructure/compatibility/events/legacy_output_adapter.cpp",
+    "infrastructure/compatibility/events/legacy_output_adapter.h",
     "card/esim/legacy_profile_result.h",
   ]
   public = [
-    "integration/api/legacy_sim_facade.h",
-    "integration/events/completion_cell.h",
-    "integration/events/legacy_completion.h",
-    "integration/events/legacy_output_adapter.h",
+    "infrastructure/compatibility/api/legacy_sim_facade.h",
+    "infrastructure/compatibility/events/completion_cell.h",
+    "infrastructure/compatibility/events/legacy_completion.h",
+    "infrastructure/compatibility/events/legacy_output_adapter.h",
     "card/esim/legacy_profile_result.h",
   ]
   public_deps = [
@@ -247,12 +247,12 @@ source_set("repository_exports") {
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
   sources = [
-    "integration/lifecycle/exports/sim_host_ports.h",
-    "integration/lifecycle/exports/sim_module_factory.h",
+    "infrastructure/assembly/exports/sim_host_ports.h",
+    "infrastructure/assembly/exports/sim_module_factory.h",
   ]
   public = [
-    "integration/lifecycle/exports/sim_host_ports.h",
-    "integration/lifecycle/exports/sim_module_factory.h",
+    "infrastructure/assembly/exports/sim_host_ports.h",
+    "infrastructure/assembly/exports/sim_module_factory.h",
   ]
   public_deps = [ ":assembly_contracts" ]
 }
@@ -265,8 +265,8 @@ source_set("request_mechanism") {
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
-  sources = [ "support/request/runtime_operation_store.h" ]
-  public = [ "support/request/runtime_operation_store.h" ]
+  sources = [ "infrastructure/request/runtime_operation_store.h" ]
+  public = [ "infrastructure/request/runtime_operation_store.h" ]
   public_deps = [ ":request_protocol" ]
 }
 
@@ -278,8 +278,8 @@ source_set("request_protocol") {
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
-  sources = [ "support/request/request_context.h" ]
-  public = [ "support/request/request_context.h" ]
+  sources = [ "infrastructure/request/request_context.h" ]
+  public = [ "infrastructure/request/request_context.h" ]
   public_deps = [ ":sim_values" ]
 }
 
@@ -331,13 +331,13 @@ source_set("runtime_core") {
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
   sources = [
-    "integration/lifecycle/card_runtime.cpp",
-    "integration/lifecycle/card_runtime.h",
-    "integration/lifecycle/result_sinks.h",
+    "card/runtime/card_runtime.cpp",
+    "card/runtime/card_runtime.h",
+    "card/runtime/result_sinks.h",
   ]
   public = [
-    "integration/lifecycle/card_runtime.h",
-    "integration/lifecycle/result_sinks.h",
+    "card/runtime/card_runtime.h",
+    "card/runtime/result_sinks.h",
   ]
   public_deps = [
     ":assignment_contracts",
@@ -381,15 +381,15 @@ source_set("sim_values") {
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
   sources = [
-    "support/request_ref.h",
-    "support/sim_identity.h",
-    "support/slot_catalog.cpp",
-    "support/slot_catalog.h",
+    "infrastructure/request/request_ref.h",
+    "infrastructure/sim_identity.h",
+    "infrastructure/assembly/slot_catalog.cpp",
+    "infrastructure/assembly/slot_catalog.h",
   ]
   public = [
-    "support/request_ref.h",
-    "support/sim_identity.h",
-    "support/slot_catalog.h",
+    "infrastructure/request/request_ref.h",
+    "infrastructure/sim_identity.h",
+    "infrastructure/assembly/slot_catalog.h",
   ]
 }
 
@@ -555,10 +555,10 @@ source_set("readonly_query") {
   visibility = [ ":*", "//services/multisim/test/multisim_architecture_rules:*" ]
   check_includes = true
   sources = [
-    "integration/api/real_sim_count_query.cpp",
-    "integration/api/real_sim_count_query.h",
+    "infrastructure/compatibility/api/real_sim_count_query.cpp",
+    "infrastructure/compatibility/api/real_sim_count_query.h",
   ]
-  public = [ "integration/api/real_sim_count_query.h" ]
+  public = [ "infrastructure/compatibility/api/real_sim_count_query.h" ]
 }
 
 group("skeleton") {

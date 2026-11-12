@@ -21,58 +21,58 @@ TYPES = {"topology_types", "assignment_types"}
 VALUES = {"sim_values", "request_protocol"}
 
 # Explicit semantic boundaries: physical groups do not define layers.
-SOURCE_GROUPS = {'readonly_query': ('integration/api/real_sim_count_query.cpp', 'integration/api/real_sim_count_query.h'),
- 'assembly_contracts': ('integration/lifecycle/host_ports.h',
-                        'integration/lifecycle/manager_publication.h',
-                        'integration/lifecycle/sim_module_factory.h'),
- 'assembly_core': ('integration/lifecycle/sim_module.h', 'integration/lifecycle/sim_module_factory.cpp'),
- 'assignment_adapters': ('card_selection/assignment_output_adapter.h',
-                         'card_selection/assignment_store_adapter.h'),
- 'assignment_cases': ('card_selection/assignment_service.cpp', 'card_selection/assignment_service.h'),
- 'assignment_contracts': ('card_selection/assignment_requests.h',
-                          'card_selection/assignment_store.h',
-                          'card_selection/legacy_entry.h',
-                          'card_selection/primary/primary_topology_port.h',
-                          'card_selection/profile_preference_port.h',
-                          'card_selection/primary/radio_execution_port.h'),
- 'assignment_domain': ('card_selection/assignment_aggregate.cpp',
-                       'card_selection/assignment_aggregate.h',
-                       'card_selection/role_selection.h'),
- 'assignment_protocols': ('card_selection/account_role_protocol.h',
-                          'card_selection/primary/primary_switch_plan.cpp',
-                          'card_selection/primary/primary_switch_plan.h'),
- 'assignment_types': ('card_selection/assignment_types.h', 'card_selection/primary/primary_execution.h'),
- 'compatibility_contracts': ('integration/api/legacy_boundary_ports.h',),
- 'compatibility_core': ('integration/api/legacy_sim_facade.cpp',
-                        'integration/api/legacy_sim_facade.h',
-                        'integration/events/completion_cell.h',
-                        'integration/events/legacy_completion.cpp',
-                        'integration/events/legacy_completion.h',
-                        'integration/events/legacy_output_adapter.cpp',
-                        'integration/events/legacy_output_adapter.h',
+SOURCE_GROUPS = {'readonly_query': ('infrastructure/compatibility/api/real_sim_count_query.cpp', 'infrastructure/compatibility/api/real_sim_count_query.h'),
+ 'assembly_contracts': ('infrastructure/assembly/host_ports.h',
+                        'infrastructure/assembly/manager_publication.h',
+                        'infrastructure/assembly/sim_module_factory.h'),
+ 'assembly_core': ('infrastructure/assembly/sim_module.h', 'infrastructure/assembly/sim_module_factory.cpp'),
+ 'assignment_adapters': ('role_assignment/assignment_output_adapter.h',
+                         'role_assignment/assignment_store_adapter.h'),
+ 'assignment_cases': ('role_assignment/assignment_service.cpp', 'role_assignment/assignment_service.h'),
+ 'assignment_contracts': ('role_assignment/assignment_requests.h',
+                          'role_assignment/assignment_store.h',
+                          'role_assignment/legacy_entry.h',
+                          'role_assignment/primary/primary_topology_port.h',
+                          'role_assignment/profile_preference_port.h',
+                          'role_assignment/primary/radio_execution_port.h'),
+ 'assignment_domain': ('role_assignment/assignment_aggregate.cpp',
+                       'role_assignment/assignment_aggregate.h',
+                       'role_assignment/role_selection.h'),
+ 'assignment_protocols': ('role_assignment/account_role_protocol.h',
+                          'role_assignment/primary/primary_switch_plan.cpp',
+                          'role_assignment/primary/primary_switch_plan.h'),
+ 'assignment_types': ('role_assignment/assignment_types.h', 'role_assignment/primary/primary_execution.h'),
+ 'compatibility_contracts': ('infrastructure/compatibility/api/legacy_boundary_ports.h',),
+ 'compatibility_core': ('infrastructure/compatibility/api/legacy_sim_facade.cpp',
+                        'infrastructure/compatibility/api/legacy_sim_facade.h',
+                        'infrastructure/compatibility/events/completion_cell.h',
+                        'infrastructure/compatibility/events/legacy_completion.cpp',
+                        'infrastructure/compatibility/events/legacy_completion.h',
+                        'infrastructure/compatibility/events/legacy_output_adapter.cpp',
+                        'infrastructure/compatibility/events/legacy_output_adapter.h',
                         'card/esim/legacy_profile_result.h'),
- 'repository_exports': ('integration/lifecycle/exports/sim_host_ports.h',
-                        'integration/lifecycle/exports/sim_module_factory.h'),
- 'request_mechanism': ('support/request/runtime_operation_store.h',),
- 'request_protocol': ('support/request/request_context.h',),
+ 'repository_exports': ('infrastructure/assembly/exports/sim_host_ports.h',
+                        'infrastructure/assembly/exports/sim_module_factory.h'),
+ 'request_mechanism': ('infrastructure/request/runtime_operation_store.h',),
+ 'request_protocol': ('infrastructure/request/request_context.h',),
  'runtime_cases': ('card/esim/local_card_requests.cpp',),
  'runtime_contracts': ('card/esim/local_card_requests.h',
                        'card/esim/profile_requests.h',
                        'card/records/ef_requests.h',
                        'card/security/pin_requests.h'),
- 'runtime_core': ('integration/lifecycle/card_runtime.cpp',
-                  'integration/lifecycle/card_runtime.h',
-                  'integration/lifecycle/result_sinks.h'),
+ 'runtime_core': ('card/runtime/card_runtime.cpp',
+                  'card/runtime/card_runtime.h',
+                  'card/runtime/result_sinks.h'),
  'runtime_mechanisms': ('card/records/load_session.cpp',
                         'card/records/load_session.h',
                         'device/resource/resource_barrier.cpp',
                         'device/resource/resource_barrier.h',
                         'card/state/session_registry.cpp',
                         'card/state/session_registry.h'),
- 'sim_values': ('support/request_ref.h',
-                'support/sim_identity.h',
-                'support/slot_catalog.cpp',
-                'support/slot_catalog.h'),
+ 'sim_values': ('infrastructure/request/request_ref.h',
+                'infrastructure/sim_identity.h',
+                'infrastructure/assembly/slot_catalog.cpp',
+                'infrastructure/assembly/slot_catalog.h'),
  'topology_adapters': ('account/account_store_adapter.cpp',
                        'account/account_store_adapter.h',
                        'account/activation/activation_hook_adapter.h'),
@@ -208,8 +208,23 @@ def gn_targets(source):
     return result
 
 
+def module_files(source):
+    """Walk module inputs without descending into the excluded evidence/test trees."""
+    for entry in source.iterdir():
+        if entry.name in {"test", "tools"} and entry.is_dir():
+            continue
+        if entry.is_file():
+            yield entry
+        elif entry.is_dir():
+            yield from (p for p in entry.rglob("*") if p.is_file())
+
+
 def check(source=SOURCE):
-    files = {p.relative_to(source).as_posix(): p for p in source.rglob("*") if p.suffix in SUFFIXES and p.relative_to(source).parts[0] not in {"test", "tools"}}
+    allowed = {"account", "card", "role_assignment", "device", "infrastructure", "test", "tools"}
+    for directory in source.iterdir():
+        if directory.is_dir() and directory.name not in allowed:
+            raise ValueError("Unsupported top-level directory: " + directory.name)
+    files = {p.relative_to(source).as_posix(): p for p in module_files(source) if p.suffix in SUFFIXES}
     targets = gn_targets(source)
     membership = Counter()
     target_graph = {}
@@ -315,12 +330,28 @@ def check_migration():
     manifest = json.loads((Path(__file__).parent / "source_migration.json").read_text())
     repo = ROOT.parent
     baseline, prefix = manifest["baseline"], manifest["source_root"] + "/"
+    # Read committed blobs in batches; keep the same fixed revision/digest checks.
+    # This avoids hundreds of Git processes on mounted workspaces.
+    from check_directory_migration import committed_inputs
+    requests = {}
+    def request(commit, name):
+        requests.setdefault(commit, set()).add(name)
+    for entry in manifest["files"]:
+        request(baseline, entry["old"])
+    revision = manifest["layout_revision"]
+    request(revision["baseline"], "BUILD.gn")
+    for entry in revision["files"]:
+        request(revision["baseline"], entry["old"])
+    for entry in manifest.get("additions", []) + manifest.get("documentation_additions", []):
+        request(entry["source_commit"], entry["source_path"])
+    blobs = {commit: committed_inputs(repo, commit, manifest["source_root"], sorted(names))
+             for commit, names in requests.items()}
     original = subprocess.check_output(["git", "ls-tree", "-rz", "--name-only", baseline, "--", prefix], cwd=repo)
     paths = {p.decode()[len(prefix):] for p in original.split(b"\0") if p}
     if paths != {entry["old"] for entry in manifest["files"]}:
         raise ValueError("Migration map does not cover exactly the baseline files")
     for entry in manifest["files"]:
-        before = subprocess.check_output(["git", "show", baseline + ":" + prefix + entry["old"]], cwd=repo)
+        before = blobs[baseline][entry["old"]]
         if hashlib.sha256(before).hexdigest() != entry["sha256"]:
             raise ValueError("Baseline digest mismatch: " + entry["old"])
         text = before.decode()
@@ -348,12 +379,21 @@ def check_migration():
     entries = revision["files"]
     if inputs != {entry["old"] for entry in entries} or len(inputs) != len(entries):
         raise ValueError("Layout revision must map every input file exactly once")
-    actual = {p.relative_to(SOURCE).as_posix() for p in SOURCE.rglob("*") if p.is_file() and p.relative_to(SOURCE).parts[0] not in {"test", "tools"}}
+    actual = {p.relative_to(SOURCE).as_posix() for p in module_files(SOURCE)}
     additions = manifest.get("additions", [])
-    if actual != {entry["target"] for entry in entries} | {entry["target"] for entry in additions}:
+    # A committed design copy was added after B+; register it with its exact digest,
+    # rather than excluding documentation from the complete-file guard.
+    documentation = manifest.get("documentation_additions", [])
+    for entry in documentation:
+        original = blobs[entry["source_commit"]][entry["source_path"]]
+        if (hashlib.sha256(original).hexdigest() != entry["sha256"] or
+                hashlib.sha256((SOURCE / entry["target"]).read_bytes()).hexdigest() != entry["sha256"]):
+            raise ValueError("Documentation addition differs: " + entry["target"])
+    if actual != ({entry["target"] for entry in entries} | {entry["target"] for entry in additions}
+                  | {entry["target"] for entry in documentation}):
         raise ValueError("Layout revision destinations differ from actual files")
     for entry in entries:
-        before = subprocess.check_output(["git", "show", revision["baseline"] + ":" + prefix + entry["old"]], cwd=repo)
+        before = blobs[revision["baseline"]][entry["old"]]
         if hashlib.sha256(before).hexdigest() != entry["sha256"]:
             raise ValueError("Layout input digest mismatch: " + entry["old"])
         if Path(entry["old"]).suffix in SUFFIXES:
@@ -362,26 +402,27 @@ def check_migration():
             if token_sequence(before.decode()) != token_sequence(after):
                 raise ValueError("Layout changed code tokens: " + entry["old"])
     for entry in additions:
-        before = subprocess.check_output(["git", "show", entry["source_commit"] + ":" + prefix + entry["source_path"]], cwd=repo)
+        before = blobs[entry["source_commit"]][entry["source_path"]]
         if hashlib.sha256(before).hexdigest() != entry["source_sha256"]:
             raise ValueError("G2a historical input digest differs")
         if token_sequence(before.decode()) != token_sequence((SOURCE / entry["target"]).read_text()):
             raise ValueError("G2a query semantics differ from historical source")
     # A directory move must preserve sources/public/deps and the complete GN policy.
-    before_build = subprocess.check_output([
-        "git", "show", revision["baseline"] + ":" + prefix + "BUILD.gn"], cwd=repo).decode()
+    before_build = blobs[revision["baseline"]]["BUILD.gn"].decode()
     for entry in sorted(entries, key=lambda e: -len(e["old"])):
         before_build = before_build.replace(entry["old"], entry["target"])
     before_build = before_build.replace("//test/multisim_architecture_rules", "//services/multisim/test/multisim_architecture_rules")
     current_build = (SOURCE / "BUILD.gn").read_text()
     if additions:
-        query_block = 'source_set("readonly_query") {\n  testonly = true\n  visibility = [ ":*", "//services/multisim/test/multisim_architecture_rules:*" ]\n  check_includes = true\n  sources = [\n    "integration/api/real_sim_count_query.cpp",\n    "integration/api/real_sim_count_query.h",\n  ]\n  public = [ "integration/api/real_sim_count_query.h" ]\n}\n\n'
+        query_block = 'source_set("readonly_query") {\n  testonly = true\n  visibility = [ ":*", "//services/multisim/test/multisim_architecture_rules:*" ]\n  check_includes = true\n  sources = [\n    "infrastructure/compatibility/api/real_sim_count_query.cpp",\n    "infrastructure/compatibility/api/real_sim_count_query.h",\n  ]\n  public = [ "infrastructure/compatibility/api/real_sim_count_query.h" ]\n}\n\n'
         if current_build.count(query_block) != 1:
             raise ValueError("G2a query boundary changed")
         current_build = current_build.replace(query_block, "").replace('    ":readonly_query",\n', "")
     if before_build != current_build:
         raise ValueError("Layout changed GN policy beyond mapped paths")
     print(f"layout revision: PASS ({len(entries)} files; C++ tokens unchanged outside directives)", flush=True)
+    from check_directory_migration import check_directory_migration
+    check_directory_migration(SOURCE, token_sequence)
 
 
 

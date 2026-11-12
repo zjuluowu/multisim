@@ -1,0 +1,1138 @@
+services/multisim/
+├── BUILD.gn
+├── README.md
+├── SIM 重构代码目录结构设计方案.md
+├── account/
+│   ├── account_registry.cpp
+│   ├── account_registry.h
+│   ├── account_role_planning_port.h
+│   ├── account_store.h
+│   ├── account_store_adapter.cpp
+│   ├── account_store_adapter.h
+│   ├── account_types.h
+│   ├── activation/
+│   │   ├── activate_sim_use_case.cpp
+│   │   ├── activate_sim_use_case.h
+│   │   ├── activation_assignment_port.h
+│   │   ├── activation_hook_adapter.h
+│   │   ├── activation_progress.cpp
+│   │   ├── activation_progress.h
+│   │   └── activation_runtime_port.h
+│   ├── binding_index.cpp
+│   ├── binding_index.h
+│   ├── discovery/
+│   │   ├── card_observation_port.h
+│   │   ├── discovery_observation_ledger.cpp
+│   │   └── discovery_observation_ledger.h
+│   ├── legacy_entry.h
+│   ├── number/
+│   │   ├── number_query_host_port.h
+│   │   ├── set_show_number_use_case.cpp
+│   │   ├── set_show_number_use_case.h
+│   │   ├── show_number_completion_port.h
+│   │   ├── show_number_plan.cpp
+│   │   ├── show_number_plan.h
+│   │   ├── show_number_query.cpp
+│   │   ├── show_number_query.h
+│   │   └── show_number_runtime_port.h
+│   ├── topology_requests.h
+│   ├── topology_service.cpp
+│   └── topology_service.h
+├── card/
+│   ├── esim/
+│   │   ├── legacy_profile_result.h
+│   │   ├── local_card_requests.cpp
+│   │   ├── local_card_requests.h
+│   │   └── profile_requests.h
+│   ├── records/
+│   │   ├── ef_requests.h
+│   │   ├── load_session.cpp
+│   │   └── load_session.h
+│   ├── runtime/
+│   │   ├── card_runtime.cpp
+│   │   ├── card_runtime.h
+│   │   └── result_sinks.h
+│   ├── security/
+│   │   └── pin_requests.h
+│   └── state/
+│       ├── session_registry.cpp
+│       └── session_registry.h
+├── device/
+│   └── resource/
+│       ├── resource_barrier.cpp
+│       └── resource_barrier.h
+├── infrastructure/
+│   ├── assembly/
+│   │   ├── exports/
+│   │   │   ├── sim_host_ports.h
+│   │   │   └── sim_module_factory.h
+│   │   ├── host_ports.h
+│   │   ├── manager_publication.h
+│   │   ├── sim_module.h
+│   │   ├── sim_module_factory.cpp
+│   │   ├── sim_module_factory.h
+│   │   ├── slot_catalog.cpp
+│   │   └── slot_catalog.h
+│   ├── compatibility/
+│   │   ├── api/
+│   │   │   ├── legacy_boundary_ports.h
+│   │   │   ├── legacy_sim_facade.cpp
+│   │   │   ├── legacy_sim_facade.h
+│   │   │   ├── real_sim_count_query.cpp
+│   │   │   └── real_sim_count_query.h
+│   │   └── events/
+│   │       ├── completion_cell.h
+│   │       ├── legacy_completion.cpp
+│   │       ├── legacy_completion.h
+│   │       ├── legacy_output_adapter.cpp
+│   │       └── legacy_output_adapter.h
+│   ├── request/
+│   │   ├── request_context.h
+│   │   ├── request_ref.h
+│   │   └── runtime_operation_store.h
+│   └── sim_identity.h
+├── role_assignment/
+│   ├── account_role_protocol.h
+│   ├── assignment_aggregate.cpp
+│   ├── assignment_aggregate.h
+│   ├── assignment_output_adapter.h
+│   ├── assignment_requests.h
+│   ├── assignment_service.cpp
+│   ├── assignment_service.h
+│   ├── assignment_store.h
+│   ├── assignment_store_adapter.h
+│   ├── assignment_types.h
+│   ├── legacy_entry.h
+│   ├── primary/
+│   │   ├── primary_execution.h
+│   │   ├── primary_switch_plan.cpp
+│   │   ├── primary_switch_plan.h
+│   │   ├── primary_topology_port.h
+│   │   └── radio_execution_port.h
+│   ├── profile_preference_port.h
+│   └── role_selection.h
+├── test/
+│   ├── README.md
+│   ├── check_relocation.py
+│   ├── docs/
+│   │   ├── SIM_测试防护网建设设计说明书_v1.0.md
+│   │   ├── SIM_测试防护网建设设计说明书_v1.1_融合系统测试用例分析.md
+│   │   └── telephony_core_service_linux_sim_ddd_test_design.md
+│   ├── linux_sim_guard/
+│   │   ├── .gn
+│   │   ├── BUILD.gn
+│   │   ├── build/
+│   │   │   ├── BUILDCONFIG.gn
+│   │   │   ├── config/
+│   │   │   │   └── BUILD.gn
+│   │   │   ├── lsg.gni
+│   │   │   ├── platform.gni
+│   │   │   └── toolchain/
+│   │   │       └── BUILD.gn
+│   │   ├── deps.lock.json
+│   │   ├── env/
+│   │   │   ├── compat/
+│   │   │   │   ├── __mutex_base
+│   │   │   │   ├── linux/
+│   │   │   │   │   └── ashmem.h
+│   │   │   │   ├── ohos_libc_compat.h
+│   │   │   │   └── prelude.h
+│   │   │   ├── gen/
+│   │   │   │   ├── unscripted_samgr.h
+│   │   │   │   └── unscripted_tel_ril_manager.h
+│   │   │   └── include/
+│   │   │       └── lsg/
+│   │   │           └── unscripted.h
+│   │   ├── production/
+│   │   │   ├── BUILD.gn
+│   │   │   └── sources.gni
+│   │   ├── suites/
+│   │   │   └── BUILD.gn
+│   │   ├── third_party/
+│   │   │   ├── BUILD.gn
+│   │   │   ├── ffrt_sources.gni
+│   │   │   └── googletest/
+│   │   │       └── BUILD.gn
+│   │   └── tools/
+│   │       ├── fetch_deps.py
+│   │       └── gen_fake_bases.py
+│   ├── multisim_architecture_rules/
+│   │   ├── BUILD.gn
+│   │   ├── README.md
+│   │   ├── assignment_rules.cpp
+│   │   ├── check_directory_migration.py
+│   │   ├── check_open_closed_contracts.py
+│   │   ├── check_structure.py
+│   │   ├── directory-gn-comparison.json
+│   │   ├── directory-relocation-evolution.json
+│   │   ├── directory_auxiliary_inventory.json
+│   │   ├── directory_migration_20261112.json
+│   │   ├── evidence/
+│   │   │   └── directory_20261112/
+│   │   │       ├── branches.txt
+│   │   │       ├── complete-tree.txt
+│   │   │       ├── raw-evidence.tar.gz
+│   │   │       ├── remotes.txt
+│   │   │       ├── sha256.json
+│   │   │       ├── validation.json
+│   │   │       └── worktrees.txt
+│   │   ├── gn/
+│   │   │   ├── .gn
+│   │   │   ├── BUILD.gn
+│   │   │   └── BUILDCONFIG.gn
+│   │   ├── open_closed_contract_rules.cpp
+│   │   ├── resource_rules.cpp
+│   │   ├── run.py
+│   │   ├── runtime_protocol_rules.cpp
+│   │   ├── source_migration.json
+│   │   ├── test_structure.py
+│   │   └── topology_rules.cpp
+│   ├── relocation_followups.json
+│   ├── relocation_manifest.json
+│   ├── sim_guard/
+│   │   ├── .gitignore
+│   │   ├── README.md
+│   │   ├── adapters/
+│   │   │   ├── legacy/
+│   │   │   │   ├── legacy_primary_adapter.h
+│   │   │   │   ├── legacy_sim_adapter.cpp
+│   │   │   │   ├── platform_spy.cpp
+│   │   │   │   └── platform_spy.h
+│   │   │   └── multisim/
+│   │   │       └── README.md
+│   │   ├── contracts/
+│   │   │   ├── primary_slot.h
+│   │   │   ├── sim_session.h
+│   │   │   └── sim_sut.h
+│   │   ├── evidence.json
+│   │   ├── evidence_round2.json
+│   │   ├── fakes/
+│   │   │   ├── ril_device.h
+│   │   │   └── ril_fault_controls.h
+│   │   ├── oracle/
+│   │   │   ├── card_oracle.h
+│   │   │   ├── check_primary_measurements.py
+│   │   │   ├── primary_oracle.py
+│   │   │   └── test_primary_oracle.py
+│   │   ├── run_pin_memory_contract.py
+│   │   ├── run_sim_guard.py
+│   │   ├── runner/
+│   │   │   ├── contract_driver.h
+│   │   │   ├── contract_test.cpp
+│   │   │   ├── lifecycle_extension_test.cpp
+│   │   │   ├── pin_memory_contract_test.cpp
+│   │   │   └── run_primary_contract.py
+│   │   ├── scenarios/
+│   │   │   ├── compatibility.h
+│   │   │   └── primary_slot.json
+│   │   ├── semantic_baseline.json
+│   │   ├── semantic_baseline_v2.json
+│   │   └── traceability/
+│   │       ├── inventory.json
+│   │       ├── provider_contract_round2.json
+│   │       └── round2_catalog.json
+│   └── systemtest/
+│       ├── .gitignore
+│       ├── .gn
+│       ├── BUILD.gn
+│       ├── HOST.md
+│       ├── README.md
+│       ├── configs/
+│       │   ├── cases.json
+│       │   ├── dependency_lock.json
+│       │   ├── environment_probe.json
+│       │   ├── g2a_bplus_evidence.json
+│       │   ├── g2a_bplus_revalidation_20261105.json
+│       │   ├── g2a_checkpoint_evidence.json
+│       │   ├── host_validation_20261111/
+│       │   │   ├── all.log
+│       │   │   ├── capacity.xml
+│       │   │   ├── clangd-all-features.log
+│       │   │   ├── clangd-parse.log
+│       │   │   ├── compatibility.xml
+│       │   │   ├── host_result.json
+│       │   │   ├── incremental.log
+│       │   │   ├── infrastructure.xml
+│       │   │   ├── known_defects.xml
+│       │   │   ├── legacy-audit.json
+│       │   │   ├── legacy-audit.xml
+│       │   │   ├── lldb.log
+│       │   │   ├── pin_memory.xml
+│       │   │   ├── selected.log
+│       │   │   ├── source-tables.log
+│       │   │   └── zero-cases.log
+│       │   ├── host_validation_20261111.json
+│       │   ├── infrastructure_cases.json
+│       │   ├── initialization_gaps.json
+│       │   ├── open_closed_followup_20261109.json
+│       │   ├── open_closed_followup_20261109_withdrawn.json
+│       │   ├── oracles.json
+│       │   ├── platform_inventory.json
+│       │   ├── platform_resolution.json
+│       │   ├── primary_slot_validation_20261111/
+│       │   │   ├── core-syntax-core_service.cpp.log
+│       │   │   ├── core-syntax-core_service_stub.cpp.log
+│       │   │   ├── core-syntax-result.json
+│       │   │   ├── entry-audit.log
+│       │   │   ├── entry-only-result.json
+│       │   │   ├── host-all-result.json
+│       │   │   ├── initialization-audit.json
+│       │   │   ├── initialization-build.log
+│       │   │   ├── mutation.log
+│       │   │   ├── mutation.xml
+│       │   │   ├── normal.log
+│       │   │   ├── normal.xml
+│       │   │   ├── protected-inputs.json
+│       │   │   ├── restored.log
+│       │   │   ├── restored.xml
+│       │   │   ├── result.json
+│       │   │   └── source-tables.log
+│       │   ├── primary_slot_validation_20261111.json
+│       │   ├── production_sources_candidate.json
+│       │   ├── sim028_ci.json
+│       │   ├── sim028_ci_admission_20261112/
+│       │   │   ├── SHA256SUMS
+│       │   │   ├── changed-files.json
+│       │   │   ├── delivery-checks.json
+│       │   │   ├── environment.json
+│       │   │   ├── final-artifacts.zip
+│       │   │   ├── final-command.log
+│       │   │   ├── gate-tests.log
+│       │   │   ├── incremental-command.log
+│       │   │   ├── incremental-failed.zip
+│       │   │   ├── initial-command.log
+│       │   │   ├── initial-inputs.zip
+│       │   │   ├── initial-passed.zip
+│       │   │   ├── input-protection.json
+│       │   │   └── validation.json
+│       │   ├── sim028_concurrency_fix_20261112/
+│       │   │   ├── README.md
+│       │   │   ├── SHA256SUMS
+│       │   │   ├── build-evidence.zip
+│       │   │   ├── changed-files.json
+│       │   │   ├── delivery-checks.json
+│       │   │   ├── diagnostics.zip
+│       │   │   ├── environment.json
+│       │   │   ├── final-ci.zip
+│       │   │   ├── gate-tests.log
+│       │   │   ├── increment-manifest-v2.json
+│       │   │   ├── increment-manifest-v3.json
+│       │   │   ├── increment-manifest-v4.json
+│       │   │   ├── increment-manifest.json
+│       │   │   ├── input-protection.json
+│       │   │   ├── intermediate-ci-v1.zip
+│       │   │   ├── intermediate-ci-v2.zip
+│       │   │   ├── intermediate-ci-v3.zip
+│       │   │   ├── junit-address.xml
+│       │   │   ├── junit-pressure.xml
+│       │   │   ├── junit-regular.xml
+│       │   │   ├── junit-thread.xml
+│       │   │   ├── pressure.zip
+│       │   │   ├── production-increment-v2.patch
+│       │   │   ├── production-increment-v3.patch
+│       │   │   ├── production-increment-v4.patch
+│       │   │   ├── production-increment.patch
+│       │   │   ├── source-audit.json
+│       │   │   ├── test-increment-v2.patch
+│       │   │   ├── test-increment-v3.patch
+│       │   │   ├── test-increment-v4.patch
+│       │   │   ├── test-increment.patch
+│       │   │   ├── updated-candidate-files.json
+│       │   │   ├── validation.json
+│       │   │   ├── verify_pressure.py
+│       │   │   └── working-changes.diff
+│       │   ├── sim028_dual_prestate_20261112/
+│       │   │   ├── README.md
+│       │   │   ├── artifact-index.json
+│       │   │   ├── attr-detached-probe.cpp
+│       │   │   ├── attr-detached-probe.log
+│       │   │   ├── changes.json
+│       │   │   ├── coordinated-v1-detached-threads.cpp
+│       │   │   ├── coordinated-v1-golden.json
+│       │   │   ├── coordinated-v1-real-scenario.h
+│       │   │   ├── coordinated-v1.tar.gz
+│       │   │   ├── diff-check.log
+│       │   │   ├── documentation.patch
+│       │   │   ├── environment.json
+│       │   │   ├── final-raw.tar.gz
+│       │   │   ├── final-run-detached-threads.cpp
+│       │   │   ├── final-run-golden-input.json
+│       │   │   ├── final-run-real-scenario.h
+│       │   │   ├── final-thread-fix-build.log
+│       │   │   ├── final-validation.json
+│       │   │   ├── host-regression-command.log
+│       │   │   ├── host-regression.json
+│       │   │   ├── host-regression.tar.gz
+│       │   │   ├── initial-dual-smoke.tar.gz
+│       │   │   ├── input-protection-command.log
+│       │   │   ├── input-protection.json
+│       │   │   ├── known-defects.json
+│       │   │   ├── patch-check.log
+│       │   │   ├── pre-metadata-host-regression.tar.gz
+│       │   │   ├── product-version-check.json
+│       │   │   ├── repo-workspace-scan.json
+│       │   │   ├── selected-c1/
+│       │   │   │   ├── result.json
+│       │   │   │   ├── selected-0.log
+│       │   │   │   └── selected-0.xml
+│       │   │   ├── selected-c1-command.log
+│       │   │   ├── sha256.json
+│       │   │   ├── sim028-dual-final-stability-command.log
+│       │   │   ├── sim028-final-classifier-tests.log
+│       │   │   ├── starting-input-sha256.json
+│       │   │   ├── test-environment.patch
+│       │   │   ├── thread-barrier.log
+│       │   │   ├── thread-barrier.xml
+│       │   │   ├── uncoordinated-dual.tar.gz
+│       │   │   ├── uncoordinated-validation.json
+│       │   │   └── validation.json
+│       │   ├── sim028_initialization_stability_20261112/
+│       │   │   ├── adapter-stress.py
+│       │   │   ├── case-observations.json
+│       │   │   ├── classifier-tests.log
+│       │   │   ├── controlled/
+│       │   │   │   ├── build-tested.log
+│       │   │   │   ├── c1.log
+│       │   │   │   ├── c1.xml
+│       │   │   │   ├── causal-final-lldb.log
+│       │   │   │   ├── causal-final.json
+│       │   │   │   ├── causal-final.xml
+│       │   │   │   ├── causal-lldb.log
+│       │   │   │   ├── causal.json
+│       │   │   │   ├── causal.xml
+│       │   │   │   ├── golden-used.json
+│       │   │   │   ├── marker-negative-lldb.log
+│       │   │   │   ├── marker-negative.json
+│       │   │   │   ├── marker-negative.xml
+│       │   │   │   ├── metadata.json
+│       │   │   │   ├── negative-lldb.log
+│       │   │   │   ├── negative.json
+│       │   │   │   ├── negative.xml
+│       │   │   │   ├── old-lldb.log
+│       │   │   │   ├── old.xml
+│       │   │   │   ├── old2-lldb.log
+│       │   │   │   ├── old2.xml
+│       │   │   │   ├── old3-lldb.log
+│       │   │   │   ├── old4-lldb.log
+│       │   │   │   ├── old4.json
+│       │   │   │   ├── old4.xml
+│       │   │   │   ├── positive-lldb.log
+│       │   │   │   ├── positive.json
+│       │   │   │   ├── positive.xml
+│       │   │   │   └── real_scenario-stress.h
+│       │   │   ├── documentation.diff
+│       │   │   ├── final-build.log
+│       │   │   ├── final-marker-check/
+│       │   │   │   ├── C0CoreToRealManagerAndController.log
+│       │   │   │   ├── C0CoreToRealManagerAndController.xml
+│       │   │   │   ├── C1ThreePhasesWithStaleCheckResponseRejected.log
+│       │   │   │   ├── C1ThreePhasesWithStaleCheckResponseRejected.xml
+│       │   │   │   └── result.json
+│       │   │   ├── final-ninja.log
+│       │   │   ├── host-regression/
+│       │   │   │   ├── capacity.log
+│       │   │   │   ├── capacity.xml
+│       │   │   │   ├── compatibility.log
+│       │   │   │   ├── compatibility.xml
+│       │   │   │   ├── infrastructure.log
+│       │   │   │   ├── infrastructure.xml
+│       │   │   │   ├── known_defects.log
+│       │   │   │   ├── known_defects.xml
+│       │   │   │   ├── pin_memory.log
+│       │   │   │   ├── pin_memory.xml
+│       │   │   │   ├── primary_entry_internal_seam.log
+│       │   │   │   ├── primary_entry_internal_seam.xml
+│       │   │   │   └── result.json
+│       │   │   ├── host-regression-command.log
+│       │   │   ├── product-version-check.json
+│       │   │   ├── sha256.json
+│       │   │   ├── stress-raw.tar.gz
+│       │   │   ├── stress-validation.json
+│       │   │   ├── test-environment.patch
+│       │   │   └── validation.json
+│       │   ├── sim028_legacy_contract_20261112/
+│       │   │   ├── classifier-tests.log
+│       │   │   ├── code-diff.patch
+│       │   │   ├── cross-repositories.json
+│       │   │   ├── current/
+│       │   │   │   ├── run-0/
+│       │   │   │   │   ├── result.json
+│       │   │   │   │   ├── selected-0.log
+│       │   │   │   │   ├── selected-0.xml
+│       │   │   │   │   ├── selected-1.log
+│       │   │   │   │   ├── selected-1.xml
+│       │   │   │   │   ├── selected-2.log
+│       │   │   │   │   ├── selected-2.xml
+│       │   │   │   │   ├── selected-3.log
+│       │   │   │   │   ├── selected-3.xml
+│       │   │   │   │   ├── selected-4.log
+│       │   │   │   │   ├── selected-4.xml
+│       │   │   │   │   ├── selected-5.log
+│       │   │   │   │   ├── selected-5.xml
+│       │   │   │   │   ├── selected-6.log
+│       │   │   │   │   └── selected-6.xml
+│       │   │   │   ├── runner-0.log
+│       │   │   │   └── validation.json
+│       │   │   ├── host-regression/
+│       │   │   │   ├── capacity.log
+│       │   │   │   ├── capacity.xml
+│       │   │   │   ├── compatibility.log
+│       │   │   │   ├── compatibility.xml
+│       │   │   │   ├── infrastructure.log
+│       │   │   │   ├── infrastructure.xml
+│       │   │   │   ├── known_defects.log
+│       │   │   │   ├── known_defects.xml
+│       │   │   │   ├── pin_memory.log
+│       │   │   │   ├── pin_memory.xml
+│       │   │   │   ├── primary_entry_internal_seam.log
+│       │   │   │   ├── primary_entry_internal_seam.xml
+│       │   │   │   └── result.json
+│       │   │   ├── initial-raw.tar.gz
+│       │   │   ├── repeat-raw.tar.gz
+│       │   │   ├── sha256.json
+│       │   │   └── validation.json
+│       │   ├── sim028_lifecycle_validation_20261111/
+│       │   │   ├── architecture-check.log
+│       │   │   ├── baseline-c1-command.log
+│       │   │   ├── build.log
+│       │   │   ├── code-diff.patch
+│       │   │   ├── git-input.log
+│       │   │   ├── git-start-status.log
+│       │   │   ├── manager-seam-check.log
+│       │   │   ├── protected-inputs.json
+│       │   │   ├── recovery.json
+│       │   │   ├── regression/
+│       │   │   │   ├── capacity.log
+│       │   │   │   ├── capacity.xml
+│       │   │   │   ├── compatibility.log
+│       │   │   │   ├── compatibility.xml
+│       │   │   │   ├── infrastructure.log
+│       │   │   │   ├── infrastructure.xml
+│       │   │   │   ├── known_defects.log
+│       │   │   │   ├── known_defects.xml
+│       │   │   │   ├── pin_memory.log
+│       │   │   │   ├── pin_memory.xml
+│       │   │   │   ├── primary_entry_internal_seam.log
+│       │   │   │   ├── primary_entry_internal_seam.xml
+│       │   │   │   ├── primary_real_business-10.log
+│       │   │   │   ├── primary_real_business-10.xml
+│       │   │   │   ├── primary_real_business-11.log
+│       │   │   │   ├── primary_real_business-11.xml
+│       │   │   │   ├── primary_real_business-12.log
+│       │   │   │   ├── primary_real_business-12.xml
+│       │   │   │   ├── primary_real_business-13.log
+│       │   │   │   ├── primary_real_business-13.xml
+│       │   │   │   ├── primary_real_business-14.log
+│       │   │   │   ├── primary_real_business-14.xml
+│       │   │   │   ├── primary_real_business-15.log
+│       │   │   │   ├── primary_real_business-15.xml
+│       │   │   │   ├── primary_real_business-16.log
+│       │   │   │   ├── primary_real_business-16.xml
+│       │   │   │   ├── primary_real_business-17.log
+│       │   │   │   ├── primary_real_business-17.xml
+│       │   │   │   ├── primary_real_business-18.log
+│       │   │   │   ├── primary_real_business-18.xml
+│       │   │   │   ├── primary_real_business-19.log
+│       │   │   │   ├── primary_real_business-19.xml
+│       │   │   │   ├── primary_real_business-20.log
+│       │   │   │   ├── primary_real_business-20.xml
+│       │   │   │   ├── primary_real_business-6.log
+│       │   │   │   ├── primary_real_business-6.xml
+│       │   │   │   ├── primary_real_business-7.log
+│       │   │   │   ├── primary_real_business-7.xml
+│       │   │   │   ├── primary_real_business-8.log
+│       │   │   │   ├── primary_real_business-8.xml
+│       │   │   │   ├── primary_real_business-9.log
+│       │   │   │   ├── primary_real_business-9.xml
+│       │   │   │   └── result.json
+│       │   │   ├── regression-command.log
+│       │   │   ├── relocation-check.log
+│       │   │   ├── review-checks.json
+│       │   │   ├── target-commands.log
+│       │   │   ├── toolchain.log
+│       │   │   └── trace/
+│       │   │       ├── graph.json
+│       │   │       ├── ownership-proof.json
+│       │   │       ├── result.json
+│       │   │       ├── test.xml
+│       │   │       ├── trace.lldb
+│       │   │       └── trace.log
+│       │   ├── sim028_lifecycle_validation_20261111.json
+│       │   ├── sim028_real_chain_validation_20261111/
+│       │   │   ├── baseline-initialization.json
+│       │   │   ├── baseline-initialization.log
+│       │   │   ├── changes.diff
+│       │   │   ├── code-files.json
+│       │   │   ├── combined/
+│       │   │   │   ├── capacity.log
+│       │   │   │   ├── capacity.xml
+│       │   │   │   ├── compatibility.log
+│       │   │   │   ├── compatibility.xml
+│       │   │   │   ├── infrastructure.log
+│       │   │   │   ├── infrastructure.xml
+│       │   │   │   ├── known_defects.log
+│       │   │   │   ├── known_defects.xml
+│       │   │   │   ├── pin_memory.log
+│       │   │   │   ├── pin_memory.xml
+│       │   │   │   ├── primary_entry_internal_seam.log
+│       │   │   │   ├── primary_entry_internal_seam.xml
+│       │   │   │   ├── primary_real_business-10.log
+│       │   │   │   ├── primary_real_business-10.xml
+│       │   │   │   ├── primary_real_business-11.log
+│       │   │   │   ├── primary_real_business-11.xml
+│       │   │   │   ├── primary_real_business-12.log
+│       │   │   │   ├── primary_real_business-12.xml
+│       │   │   │   ├── primary_real_business-6.log
+│       │   │   │   ├── primary_real_business-6.xml
+│       │   │   │   ├── primary_real_business-7.log
+│       │   │   │   ├── primary_real_business-7.xml
+│       │   │   │   ├── primary_real_business-8.log
+│       │   │   │   ├── primary_real_business-8.xml
+│       │   │   │   ├── primary_real_business-9.log
+│       │   │   │   ├── primary_real_business-9.xml
+│       │   │   │   └── result.json
+│       │   │   ├── combined-command.log
+│       │   │   ├── diff-check.log
+│       │   │   ├── diff-stat.txt
+│       │   │   ├── entry/
+│       │   │   │   ├── coverage.log
+│       │   │   │   ├── interface.log
+│       │   │   │   ├── merge.log
+│       │   │   │   ├── mutation-build.log
+│       │   │   │   ├── mutation-gn.log
+│       │   │   │   ├── mutation.log
+│       │   │   │   ├── mutation.xml
+│       │   │   │   ├── normal-build.log
+│       │   │   │   ├── normal-gn.log
+│       │   │   │   ├── normal.log
+│       │   │   │   ├── normal.xml
+│       │   │   │   ├── restore-build.log
+│       │   │   │   ├── restore-gn.log
+│       │   │   │   ├── restored.log
+│       │   │   │   ├── restored.xml
+│       │   │   │   └── result.json
+│       │   │   ├── environment.json
+│       │   │   ├── file-list.txt
+│       │   │   ├── function-execution.json
+│       │   │   ├── git-recovery-final.json
+│       │   │   ├── git-recovery-initial.json
+│       │   │   ├── historical-integrity.json
+│       │   │   ├── intermediate-unresolved-symbols.txt
+│       │   │   ├── link-audit-command.log
+│       │   │   ├── link-audit.json
+│       │   │   ├── link-audit.log
+│       │   │   ├── lldb-debug.log
+│       │   │   ├── lldb.commands
+│       │   │   ├── manager-seam-check.log
+│       │   │   ├── native-dependencies.json
+│       │   │   ├── platform/
+│       │   │   │   ├── core_service.cpp.log
+│       │   │   │   ├── core_service_stub.cpp.log
+│       │   │   │   ├── tel_ril_manager.cpp.log
+│       │   │   │   └── tel_ril_sim.cpp.log
+│       │   │   ├── platform-audit.json
+│       │   │   ├── protected-inputs.json
+│       │   │   ├── real/
+│       │   │   │   ├── build.log
+│       │   │   │   ├── case-0-merge.log
+│       │   │   │   ├── case-0.log
+│       │   │   │   ├── case-0.xml
+│       │   │   │   ├── case-1-merge.log
+│       │   │   │   ├── case-1.log
+│       │   │   │   ├── case-1.xml
+│       │   │   │   ├── case-2-merge.log
+│       │   │   │   ├── case-2.log
+│       │   │   │   ├── case-2.xml
+│       │   │   │   ├── case-3-merge.log
+│       │   │   │   ├── case-3.log
+│       │   │   │   ├── case-3.xml
+│       │   │   │   ├── case-4-merge.log
+│       │   │   │   ├── case-4.log
+│       │   │   │   ├── case-4.xml
+│       │   │   │   ├── case-5-merge.log
+│       │   │   │   ├── case-5.log
+│       │   │   │   ├── case-5.xml
+│       │   │   │   ├── case-6-merge.log
+│       │   │   │   ├── case-6.log
+│       │   │   │   ├── case-6.xml
+│       │   │   │   ├── configure.log
+│       │   │   │   ├── list.log
+│       │   │   │   ├── mutation-build.log
+│       │   │   │   ├── mutation-configure.log
+│       │   │   │   ├── mutation-run.log
+│       │   │   │   ├── mutation.patch
+│       │   │   │   ├── mutation.xml
+│       │   │   │   ├── result.json
+│       │   │   │   └── target-commands.log
+│       │   │   ├── relocation-check.log
+│       │   │   ├── selected-task.log
+│       │   │   └── source-tables.log
+│       │   ├── sim028_real_chain_validation_20261111.json
+│       │   ├── sim028_shared_primary_20261112/
+│       │   │   ├── README.md
+│       │   │   ├── artifact-index.json
+│       │   │   ├── build-first-failed.log
+│       │   │   ├── build-pass.log
+│       │   │   ├── changes.json
+│       │   │   ├── classifier-tests.log
+│       │   │   ├── contract-lock.json
+│       │   │   ├── coverage.json
+│       │   │   ├── diff-check.log
+│       │   │   ├── exploratory-first.tar.gz
+│       │   │   ├── exploratory-second.tar.gz
+│       │   │   ├── final-command.log
+│       │   │   ├── final-raw.tar.gz
+│       │   │   ├── final-result.json
+│       │   │   ├── first-run-catalog.json
+│       │   │   ├── first-run-oracle.py
+│       │   │   ├── frozen-baseline.json
+│       │   │   ├── frozen-inputs.tar.gz
+│       │   │   ├── frozen-production.json
+│       │   │   ├── generated-artifact-change.json
+│       │   │   ├── generated-root-profile.tar.gz
+│       │   │   ├── host-command.log
+│       │   │   ├── host-regression.json
+│       │   │   ├── host-regression.tar.gz
+│       │   │   ├── input-protection.json
+│       │   │   ├── known-defects.json
+│       │   │   ├── measurement-checks.json
+│       │   │   ├── measurement-checks.log
+│       │   │   ├── oracle-tests.log
+│       │   │   ├── patch-check.log
+│       │   │   ├── recovery-first-failed.json
+│       │   │   ├── recovery.json
+│       │   │   ├── second-run-runner.py
+│       │   │   ├── sha256.json
+│       │   │   ├── starting-input-sha256.json
+│       │   │   ├── target-command.log
+│       │   │   ├── target-readiness.json
+│       │   │   ├── target-result.json
+│       │   │   ├── task.patch
+│       │   │   └── validation.json
+│       │   ├── sim028_shutdown_review_20261111/
+│       │   │   ├── architecture.log
+│       │   │   ├── baseline/
+│       │   │   │   ├── capacity.log
+│       │   │   │   ├── capacity.xml
+│       │   │   │   ├── compatibility.log
+│       │   │   │   ├── compatibility.xml
+│       │   │   │   ├── infrastructure.log
+│       │   │   │   ├── infrastructure.xml
+│       │   │   │   ├── known_defects.log
+│       │   │   │   ├── known_defects.xml
+│       │   │   │   ├── pin_memory.log
+│       │   │   │   ├── pin_memory.xml
+│       │   │   │   ├── primary_entry_internal_seam.log
+│       │   │   │   ├── primary_entry_internal_seam.xml
+│       │   │   │   ├── primary_real_business-10.log
+│       │   │   │   ├── primary_real_business-10.xml
+│       │   │   │   ├── primary_real_business-11.log
+│       │   │   │   ├── primary_real_business-11.xml
+│       │   │   │   ├── primary_real_business-12.log
+│       │   │   │   ├── primary_real_business-12.xml
+│       │   │   │   ├── primary_real_business-13.log
+│       │   │   │   ├── primary_real_business-13.xml
+│       │   │   │   ├── primary_real_business-14.log
+│       │   │   │   ├── primary_real_business-14.xml
+│       │   │   │   ├── primary_real_business-15.log
+│       │   │   │   ├── primary_real_business-15.xml
+│       │   │   │   ├── primary_real_business-16.log
+│       │   │   │   ├── primary_real_business-16.xml
+│       │   │   │   ├── primary_real_business-17.log
+│       │   │   │   ├── primary_real_business-17.xml
+│       │   │   │   ├── primary_real_business-18.log
+│       │   │   │   ├── primary_real_business-18.xml
+│       │   │   │   ├── primary_real_business-19.log
+│       │   │   │   ├── primary_real_business-19.xml
+│       │   │   │   ├── primary_real_business-20.log
+│       │   │   │   ├── primary_real_business-20.xml
+│       │   │   │   ├── primary_real_business-21.log
+│       │   │   │   ├── primary_real_business-21.xml
+│       │   │   │   ├── primary_real_business-22.log
+│       │   │   │   ├── primary_real_business-22.xml
+│       │   │   │   ├── primary_real_business-23.log
+│       │   │   │   ├── primary_real_business-23.xml
+│       │   │   │   ├── primary_real_business-24.log
+│       │   │   │   ├── primary_real_business-24.xml
+│       │   │   │   ├── primary_real_business-25.log
+│       │   │   │   ├── primary_real_business-25.xml
+│       │   │   │   ├── primary_real_business-26.log
+│       │   │   │   ├── primary_real_business-26.xml
+│       │   │   │   ├── primary_real_business-27.log
+│       │   │   │   ├── primary_real_business-27.xml
+│       │   │   │   ├── primary_real_business-28.log
+│       │   │   │   ├── primary_real_business-28.xml
+│       │   │   │   ├── primary_real_business-29.log
+│       │   │   │   ├── primary_real_business-29.xml
+│       │   │   │   ├── primary_real_business-30.log
+│       │   │   │   ├── primary_real_business-30.xml
+│       │   │   │   ├── primary_real_business-31.log
+│       │   │   │   ├── primary_real_business-31.xml
+│       │   │   │   ├── primary_real_business-32.log
+│       │   │   │   ├── primary_real_business-32.xml
+│       │   │   │   ├── primary_real_business-6.log
+│       │   │   │   ├── primary_real_business-6.xml
+│       │   │   │   ├── primary_real_business-7.log
+│       │   │   │   ├── primary_real_business-7.xml
+│       │   │   │   ├── primary_real_business-8.log
+│       │   │   │   ├── primary_real_business-8.xml
+│       │   │   │   ├── primary_real_business-9.log
+│       │   │   │   ├── primary_real_business-9.xml
+│       │   │   │   └── result.json
+│       │   │   ├── baseline-build.log
+│       │   │   ├── baseline-command.log
+│       │   │   ├── baseline-configure.log
+│       │   │   ├── baseline-target-commands.log
+│       │   │   ├── checks.json
+│       │   │   ├── code-diff.patch
+│       │   │   ├── current-twelve-cycles.json
+│       │   │   ├── historical-phonebook-cycles.json
+│       │   │   ├── host-dependencies.json
+│       │   │   ├── isolated-patch-apply-isolated.log
+│       │   │   ├── isolated-patch-check.log
+│       │   │   ├── isolated-result.json
+│       │   │   ├── isolated-reviewed.patch
+│       │   │   ├── isolated-source-inputs.json
+│       │   │   ├── manager-seam.log
+│       │   │   ├── pairing/
+│       │   │   │   ├── capacity.log
+│       │   │   │   ├── capacity.xml
+│       │   │   │   ├── compatibility.log
+│       │   │   │   ├── compatibility.xml
+│       │   │   │   ├── infrastructure.log
+│       │   │   │   ├── infrastructure.xml
+│       │   │   │   ├── known_defects.log
+│       │   │   │   ├── known_defects.xml
+│       │   │   │   ├── pin_memory.log
+│       │   │   │   ├── pin_memory.xml
+│       │   │   │   ├── primary_entry_internal_seam.log
+│       │   │   │   ├── primary_entry_internal_seam.xml
+│       │   │   │   ├── primary_real_business-10.log
+│       │   │   │   ├── primary_real_business-10.xml
+│       │   │   │   ├── primary_real_business-11.log
+│       │   │   │   ├── primary_real_business-11.xml
+│       │   │   │   ├── primary_real_business-12.log
+│       │   │   │   ├── primary_real_business-12.xml
+│       │   │   │   ├── primary_real_business-13.log
+│       │   │   │   ├── primary_real_business-13.xml
+│       │   │   │   ├── primary_real_business-14.log
+│       │   │   │   ├── primary_real_business-14.xml
+│       │   │   │   ├── primary_real_business-15.log
+│       │   │   │   ├── primary_real_business-15.xml
+│       │   │   │   ├── primary_real_business-16.log
+│       │   │   │   ├── primary_real_business-16.xml
+│       │   │   │   ├── primary_real_business-17.log
+│       │   │   │   ├── primary_real_business-17.xml
+│       │   │   │   ├── primary_real_business-18.log
+│       │   │   │   ├── primary_real_business-18.xml
+│       │   │   │   ├── primary_real_business-19.log
+│       │   │   │   ├── primary_real_business-19.xml
+│       │   │   │   ├── primary_real_business-20.log
+│       │   │   │   ├── primary_real_business-20.xml
+│       │   │   │   ├── primary_real_business-21.log
+│       │   │   │   ├── primary_real_business-21.xml
+│       │   │   │   ├── primary_real_business-22.log
+│       │   │   │   ├── primary_real_business-22.xml
+│       │   │   │   ├── primary_real_business-23.log
+│       │   │   │   ├── primary_real_business-23.xml
+│       │   │   │   ├── primary_real_business-24.log
+│       │   │   │   ├── primary_real_business-24.xml
+│       │   │   │   ├── primary_real_business-25.log
+│       │   │   │   ├── primary_real_business-25.xml
+│       │   │   │   ├── primary_real_business-26.log
+│       │   │   │   ├── primary_real_business-26.xml
+│       │   │   │   ├── primary_real_business-27.log
+│       │   │   │   ├── primary_real_business-27.xml
+│       │   │   │   ├── primary_real_business-28.log
+│       │   │   │   ├── primary_real_business-28.xml
+│       │   │   │   ├── primary_real_business-29.log
+│       │   │   │   ├── primary_real_business-29.xml
+│       │   │   │   ├── primary_real_business-30.log
+│       │   │   │   ├── primary_real_business-30.xml
+│       │   │   │   ├── primary_real_business-31.log
+│       │   │   │   ├── primary_real_business-31.xml
+│       │   │   │   ├── primary_real_business-32.log
+│       │   │   │   ├── primary_real_business-32.xml
+│       │   │   │   ├── primary_real_business-6.log
+│       │   │   │   ├── primary_real_business-6.xml
+│       │   │   │   ├── primary_real_business-7.log
+│       │   │   │   ├── primary_real_business-7.xml
+│       │   │   │   ├── primary_real_business-8.log
+│       │   │   │   ├── primary_real_business-8.xml
+│       │   │   │   ├── primary_real_business-9.log
+│       │   │   │   ├── primary_real_business-9.xml
+│       │   │   │   └── result.json
+│       │   │   ├── pairing-build.log
+│       │   │   ├── pairing-configure.log
+│       │   │   ├── pairing-target-commands.log
+│       │   │   ├── patch-validation-command.log
+│       │   │   ├── recovery.json
+│       │   │   ├── relocation.log
+│       │   │   ├── signature-probe/
+│       │   │   │   ├── compile.log
+│       │   │   │   ├── declarations.patch
+│       │   │   │   └── result.json
+│       │   │   ├── toolchain.log
+│       │   │   └── trace/
+│       │   │       ├── graph.json
+│       │   │       ├── ownership-proof.json
+│       │   │       ├── result.json
+│       │   │       ├── test.xml
+│       │   │       ├── trace.lldb
+│       │   │       └── trace.log
+│       │   ├── sim028_shutdown_review_20261111.json
+│       │   ├── sim028_stop_implementation_20261112/
+│       │   │   ├── README.md
+│       │   │   ├── SHA256SUMS
+│       │   │   ├── asan.zip
+│       │   │   ├── baseline-unpatched.zip
+│       │   │   ├── build-and-test.log
+│       │   │   ├── build-evidence.zip
+│       │   │   ├── c1-functions.json
+│       │   │   ├── c1.log
+│       │   │   ├── c1.profraw.gz
+│       │   │   ├── c1.xml
+│       │   │   ├── changed-files.json
+│       │   │   ├── compiled-sources.json
+│       │   │   ├── final-host.zip
+│       │   │   ├── host-tests.patch
+│       │   │   ├── host-tests.patch.stat
+│       │   │   ├── iterations.zip
+│       │   │   ├── layer-status.json
+│       │   │   ├── lldb-c1.log
+│       │   │   ├── native-api-check.cpp
+│       │   │   ├── native-api-check.log
+│       │   │   ├── objects.json
+│       │   │   ├── pairing-only.zip
+│       │   │   ├── patch-replay-configure.log
+│       │   │   ├── patch-replay.log
+│       │   │   ├── production-stop.patch
+│       │   │   ├── production-stop.patch.stat
+│       │   │   ├── repeat-command.log
+│       │   │   ├── reproduce.py
+│       │   │   ├── single-c1-command.log
+│       │   │   ├── strong-ril-repeat.zip
+│       │   │   ├── subscriptions.json
+│       │   │   ├── target-commands.log
+│       │   │   ├── test-cases.json
+│       │   │   ├── toolchain.json
+│       │   │   ├── tsan-repeat-command.log
+│       │   │   ├── tsan-repeat.zip
+│       │   │   ├── tsan.zip
+│       │   │   ├── validation.json
+│       │   │   ├── verify-runner-smoke.zip
+│       │   │   ├── verify_runtime.py
+│       │   │   ├── workspace-files.json
+│       │   │   └── workspace-protection-before-delivery.json
+│       │   ├── source_manifest.json
+│       │   ├── storage_protocol_requirements.json
+│       │   ├── test_relocation_20261109.json
+│       │   └── upstream_contracts.json
+│       ├── docs/
+│       │   ├── architecture.md
+│       │   ├── blocked_resolution_oct08.md
+│       │   ├── boundaries.md
+│       │   ├── capability_investigation.md
+│       │   ├── cases/
+│       │   │   ├── INFRA-EVENT-004.md
+│       │   │   ├── INFRA-EVENT-005.md
+│       │   │   ├── INFRA-FFRT-001.md
+│       │   │   ├── INFRA-FFRT-002.md
+│       │   │   ├── INFRA-PTR-001.md
+│       │   │   ├── INFRA-PTR-002.md
+│       │   │   ├── INFRA-PTR-003.md
+│       │   │   ├── README.md
+│       │   │   ├── SIM-B-001.md
+│       │   │   ├── SIM-B-002.md
+│       │   │   ├── SIM-B-003.md
+│       │   │   ├── SIM-B-004.md
+│       │   │   ├── SIM-B-005.md
+│       │   │   ├── SIM-CHAR-001.md
+│       │   │   └── SIM-COMP-001.md
+│       │   ├── component_entry.md
+│       │   ├── dependencies.md
+│       │   ├── design_alignment.md
+│       │   ├── event_adapter.md
+│       │   ├── execution_plan.md
+│       │   ├── ffrt_runtime.md
+│       │   ├── initialization_closure.md
+│       │   ├── investigation.md
+│       │   ├── linux_gmock_scenarios.md
+│       │   ├── oracle_catalog.md
+│       │   ├── platform_compile_subset.md
+│       │   ├── ril_mock.md
+│       │   ├── run_record.md
+│       │   ├── suite_matrix.md
+│       │   └── upstream_external_contracts.md
+│       ├── gn/
+│       │   ├── BUILD.gn
+│       │   └── BUILDCONFIG.gn
+│       ├── primary_slot/
+│       │   ├── README.md
+│       │   ├── entry_test.cpp
+│       │   ├── generate_manager_seam.py
+│       │   ├── include/
+│       │   │   ├── accesstoken_kit.h
+│       │   │   ├── bundle_mgr_interface.h
+│       │   │   ├── ipc_skeleton.h
+│       │   │   ├── privacy_kit.h
+│       │   │   └── tokenid_kit.h
+│       │   ├── initialization_trace.h
+│       │   ├── legacy_contract/
+│       │   │   ├── README.md
+│       │   │   ├── golden.json
+│       │   │   └── reproduce_initialization.py
+│       │   ├── lifecycle/
+│       │   │   ├── README.md
+│       │   │   ├── admission/
+│       │   │   │   ├── README.md
+│       │   │   │   ├── patch-manifest.json
+│       │   │   │   ├── production-minimal.patch
+│       │   │   │   ├── review.json
+│       │   │   │   └── test-guard.patch
+│       │   │   ├── check_stop_contract.py
+│       │   │   ├── external_runner.h
+│       │   │   ├── lifecycle_diagnostics.h
+│       │   │   ├── lifetime_test.cpp
+│       │   │   ├── owned_card_graph.h
+│       │   │   ├── pairing_fixes.proposed.patch
+│       │   │   ├── review_graph.py
+│       │   │   ├── run_diagnostics.py
+│       │   │   ├── shutdown_contract.h
+│       │   │   ├── shutdown_contract_test.cpp
+│       │   │   ├── shutdown_plan.md
+│       │   │   ├── subscription_review.json
+│       │   │   ├── summarize_graph.py
+│       │   │   ├── trace_graph.py
+│       │   │   └── validate_patch.py
+│       │   ├── prepare_runtime.py
+│       │   ├── provider/
+│       │   │   ├── LICENSE
+│       │   │   ├── contract.json
+│       │   │   └── include/
+│       │   │       ├── data_storage_errors.h
+│       │   │       └── sim_data.h
+│       │   ├── real_runtime.cpp
+│       │   ├── real_scenario.h
+│       │   ├── real_test.cpp
+│       │   ├── runtime_include/
+│       │   │   └── hisysevent.h
+│       │   ├── security_boundary.cpp
+│       │   ├── security_boundary.h
+│       │   └── unscripted_sim_manager.h
+│       ├── scripts/
+│       │   ├── audit_initialization.py
+│       │   ├── audit_primary_contract.py
+│       │   ├── build_clock.py
+│       │   ├── compare_results.py
+│       │   ├── generate_ril_mock.py
+│       │   ├── prepare_dependencies.py
+│       │   ├── prepare_openssl.py
+│       │   ├── run.py
+│       │   ├── run_g2a_query.py
+│       │   ├── run_legacy_primary_contract.py
+│       │   ├── run_primary_real.py
+│       │   ├── run_primary_slot.py
+│       │   ├── test_g2a_source_tables.py
+│       │   └── test_legacy_primary_contract.py
+│       ├── stubs/
+│       │   ├── detached_threads.cpp
+│       │   ├── event_handler_runtime.cpp
+│       │   ├── external_services.cpp
+│       │   ├── external_services_mock.h
+│       │   ├── ffrt_runtime.cpp
+│       │   ├── ffrt_runtime.h
+│       │   ├── g2a_vendor_boundary.cpp
+│       │   ├── include/
+│       │   │   ├── ability_manager_client.h
+│       │   │   ├── app_mgr_client.h
+│       │   │   ├── bundle_mgr_proxy.h
+│       │   │   ├── cJSON.h
+│       │   │   ├── cellular_data_client.h
+│       │   │   ├── common_event.h
+│       │   │   ├── common_event_data.h
+│       │   │   ├── common_event_manager.h
+│       │   │   ├── common_event_publish_info.h
+│       │   │   ├── common_event_support.h
+│       │   │   ├── compile_declarations.h
+│       │   │   ├── config_policy_utils.h
+│       │   │   ├── configuration.h
+│       │   │   ├── datashare_errno.h
+│       │   │   ├── datashare_helper.h
+│       │   │   ├── datashare_predicates.h
+│       │   │   ├── datashare_result_set.h
+│       │   │   ├── datashare_value_object.h
+│       │   │   ├── datashare_values_bucket.h
+│       │   │   ├── errors.h
+│       │   │   ├── event_handler.h
+│       │   │   ├── event_runner.h
+│       │   │   ├── extension_ability_info.h
+│       │   │   ├── ffrt.h
+│       │   │   ├── ffrt_inner.h
+│       │   │   ├── global_configuration_key.h
+│       │   │   ├── hilog/
+│       │   │   │   └── log.h
+│       │   │   ├── hisysevent.h
+│       │   │   ├── hks_api.h
+│       │   │   ├── hks_error_code.h
+│       │   │   ├── hks_param.h
+│       │   │   ├── hks_tag.h
+│       │   │   ├── hks_type.h
+│       │   │   ├── hks_type_enum.h
+│       │   │   ├── host_refptr.h
+│       │   │   ├── host_standard_prelude.h
+│       │   │   ├── if_system_ability_manager.h
+│       │   │   ├── inner_event.h
+│       │   │   ├── iremote_broker.h
+│       │   │   ├── iremote_object.h
+│       │   │   ├── iremote_proxy.h
+│       │   │   ├── iremote_stub.h
+│       │   │   ├── iservice_registry.h
+│       │   │   ├── linux_platform_types.h
+│       │   │   ├── matching_skills.h
+│       │   │   ├── message_parcel.h
+│       │   │   ├── nocopyable.h
+│       │   │   ├── os_account_manager_wrapper.h
+│       │   │   ├── parameter.h
+│       │   │   ├── parameters.h
+│       │   │   ├── parcel.h
+│       │   │   ├── refbase.h
+│       │   │   ├── result_set.h
+│       │   │   ├── securec.h
+│       │   │   ├── securectype.h
+│       │   │   ├── sim_data.h
+│       │   │   ├── singleton.h
+│       │   │   ├── string_ex.h
+│       │   │   ├── system_ability_definition.h
+│       │   │   ├── system_ability_status_change_stub.h
+│       │   │   ├── uri.h
+│       │   │   └── want.h
+│       │   ├── mock_tel_ril_manager.h
+│       │   ├── parameter_mock.h
+│       │   └── parameter_service.cpp
+│       ├── support/
+│       │   ├── bootstrap_probe.cpp
+│       │   ├── bootstrap_probe.h
+│       │   ├── capacity_probe.cpp
+│       │   ├── capacity_probe.h
+│       │   ├── g2a_query_probe.cpp
+│       │   ├── g2a_query_probe.h
+│       │   └── initialization_link_probe.cpp
+│       ├── tests/
+│       │   ├── bootstrap_test.cpp
+│       │   ├── capacity_test.cpp
+│       │   ├── event_adapter_test.cpp
+│       │   ├── event_transport_test.cpp
+│       │   ├── external_services_test.cpp
+│       │   ├── g2a_query_test.cpp
+│       │   ├── native_pointer_test.cpp
+│       │   └── ril_adapter_test.cpp
+│       └── tools/
+│           ├── build_host.sh
+│           ├── ci_sim028.py
+│           ├── debug_host.sh
+│           ├── host.py
+│           ├── run_host_tests.sh
+│           └── test_ci_sim028.py
+└── tools/
+    └── check_sim_refactor_recovery.py

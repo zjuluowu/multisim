@@ -22,7 +22,7 @@
 #include "card/security/pin_requests.h"
 #include "card/records/ef_requests.h"
 #include "card/esim/profile_requests.h"
-#include "card_selection/profile_preference_port.h"
+#include "role_assignment/profile_preference_port.h"
 
 namespace OHOS::Telephony::MultiSim {
 // C 的短应用请求所需，R CardRuntime 实现；不强制 PIN/APDU 创建账户或多步操作聚合。

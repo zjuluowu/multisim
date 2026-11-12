@@ -1,5 +1,7 @@
 # SIM 架构文档入口
 
+当前物理组织依据：[五组目录方案](SIM重构代码目录结构设计方案.md) → [逐文件迁移及验收记录](SIM_Directory_Migration_20261112.md)。历史ADR/固定提交链接/运行证据保留旧路径，当前源码路径查详细设计§3及README。
+
 当前状态整理日期：2026-11-05。最新G2a分支及合入说明已发布到main，代码测试点与文档发布点在[合入记录](SIM_Refactor_Execution_State.md#main-integration-20261105)分别列出；本次只核对发布和证据、更新状态文档，没有重新运行业务或产品测试。最新分支、已完成项、失败/待裁决、产品阻塞及下一批任务统一查[唯一执行状态 §0](SIM_Refactor_Execution_State.md#current-status)，不从本文推断已完成产品替代。
 
 修订B+骨架、G2a只读闭环及SIM Guard两轮已保存到main；最新G2a构建/执行护栏强化及状态整理也已按本批授权合入main，并在干净合入代码点重验。当前生产成熟业务仍由services/sim承担。此前2026-10-23一致性复审起点 `801877c95ab8d37c60cb60dc210e796be6b96599` 是历史审阅基线，不是当前HEAD或最新测试基线。
@@ -8,7 +10,7 @@
 
 1. [执行状态](SIM_Refactor_Execution_State.md)：先区分当前交付、实际测试基线与未完成门禁，再选择下一批任务。
 2. [目标主设计 v1.2](SIM_Target_Architecture_Design_v1.2.md)：业务边界、唯一写权、协议及阶段门禁；整体仍draft/pending，不覆盖已批准业务契约。
-3. [源码详细设计](SIM_Multisim_Source_Architecture_Detailed_Design.md)及[源码导航](../services/multisim/README.md)：B+实际/稳态目录、文件与GN映射、日常任务入口。
+3. [源码详细设计](SIM_Multisim_Source_Architecture_Detailed_Design.md)及[源码导航](../services/multisim/README.md)：当前五组实际/稳态目录、文件与GN映射、日常任务入口。
 4. [SIM 架构重构设计](SIM_Architecture_Refactor_Design.md)及[分层/迁移补充视图](SIM_Architecture_Layering_and_Migration_Design.md)：沿用SIM-001～062、WU-01～09、兼容轨迹与Q项，不另立架构裁决或当前实施台账。
 5. [SIM 管理对外接口说明](SIM管理对外接口说明_源码核实版.md)：接口分层、签名与本仓委托路径；声明存在性不视为外部服务运行保证。
 6. [G2a/Linux主机切片](../services/multisim/test/systemtest/README.md)、[SIM跨架构契约防护网](../services/multisim/test/sim_guard/README.md)、[架构规则](../services/multisim/test/multisim_architecture_rules/README.md)：分开阅读对应证据，主机/组件与产品/设备验证不互相替代。

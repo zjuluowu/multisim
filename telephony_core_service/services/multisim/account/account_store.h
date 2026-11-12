@@ -23,7 +23,7 @@
 #include <string>
 #include <vector>
 #include "account/topology_requests.h"
-#include "card_selection/assignment_requests.h"
+#include "role_assignment/assignment_requests.h"
 
 namespace OHOS::Telephony::MultiSim {
 struct AccountNumberPatch { SubscriptionId subscription; std::u16string number; };

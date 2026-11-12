@@ -1,46 +1,49 @@
 # 多 SIM 源码导航
 
-修订 B+ 六组已由用户选为源码结构实施基线。main 已包含 G2a 真实只读查询及旧对象附着；`work/g2a-bplus-revalidation-20261104` 的最新窄include、源表/执行审计强化、复验证据及状态整理也已按本批授权合入main，实际重验见[合入记录](../../docs/SIM_Refactor_Execution_State.md#main-integration-20261105)。精确SHA、已验证范围和未完成门禁统一见[执行状态 §0](../../docs/SIM_Refactor_Execution_State.md#current-status)。其余能力仍为 testonly 骨架，成熟 SIM 读源和业务实现仍由原 `services/sim/` 承担，产品准入未完成。最终由 multisim 完整替代旧实现，不长期双执行。
+当前按[目录设计方案](../../docs/SIM重构代码目录结构设计方案.md)组织为四个业务目录与一个基础支撑目录。完整逐文件迁移、风险、GN对照及实测结果见[本批实施记录](../../docs/SIM_Directory_Migration_20261112.md)，唯一阶段状态见[执行状态](../../docs/SIM_Refactor_Execution_State.md#directory-layout-20261112)。G2a查询已列入原产品源表，其余仍为testonly骨架；成熟业务由 services/sim 执行，产品构建和新业务写权尚未验收。
 
-| 目录 | 当前代码与责任 |
-| --- | --- |
-| account | T：账户、绑定、资料接纳；discovery/activation/number 用例及专属契约。纯规则仍由 topology_domain target 隔离。 |
-| card_selection | A：角色、Primary、业务冲突/重试；primary 计划。真实设备租约不属于 A。 |
-| card/state | 卡应用 SessionRegistry：应用代次、期望转换与旧结果资格；不是通用 Modem Session。 |
-| card/security、records、esim | PIN/EF/Profile 契约、LoadSession 与本地 Profile 短请求；成熟协议尚未迁入。 |
-| device/resource | ResourceBarrier 纯规则；物理域/设备结束适配尚未接入。当前没有 device/session 或成熟 Radio 实现。 |
-| integration/api、events | 原兼容门面、共享完成/事件交付；real_sim_count_query.* 为 G2a 旧读源投影。Profile 专属结果在 card/esim。 |
-| integration/lifecycle | HostPorts/私有装配；CardRuntime/result_sinks 为过渡接缝，保留对象/状态，职责拆分另验。exports 保留两个仓内精确转发视图，非公共 ABI。 |
-| test、tools | 重构新增的独立测试、GN/脚本、Fake/Oracle、冻结证据与恢复工具；[统一入口](test/README.md)，不进入产品源表。 |
-| support、support/request | 身份/关联纯值、H 构建的只读 SlotCatalog，以及各 Owner 自有请求机制；不持业务事实或资源租约。 |
-
-Phonebook、STK、Carrier、Radio、profile/channel/provisioning 等完整生产能力尚未迁入；稳态树见[源码详细设计](../../docs/SIM_Multisim_Source_Architecture_Detailed_Design.md)。不创建空目录。
-
-| 业务任务 | 首查入口 | Owner / 验证 |
-| --- | --- | --- |
-| GetRealSimCount | integration/api/real_sim_count_query.*、Core 的 legacy_sim_query_binding.* | C 只读投影/H 旧对象桥；[真实七场景主机测试](test/systemtest/README.md#g2a-bplus)；非账户事实计算 |
-| 插入/发现/激活 | account/discovery、account/activation、topology_service.* | T 接纳，A 准入，R 执行；topology/assignment/runtime_protocol 规则 |
-| 默认卡/Primary | card_selection/assignment_service.*、primary/ | A 唯一角色/业务重试；assignment/resource 规则 |
-| 号码/MSISDN | account/number/ | T 账户资料，R 卡缓存/EF；真实卡→DB→两缓存→通知差分仍待生产切片 |
-| PIN/EF | card/security/pin_requests.h、card/records/ef_requests.h | 目前为契约，不是成熟协议实现 |
-| eSIM Profile/Port | card/esim/local_card_requests.*、profile_requests.h | 卡协议/期望归 R，绑定归 T、偏好归 A；assignment/runtime_protocol/resource 规则 |
-| 四卡扩展 | support/slot_catalog.*、account/binding_index.* | H 描述、T 动态绑定、A 策略、R 真实域；不只改数组 |
-| Modem/RIL和迟到结果 | card/state/session_registry.*、device/resource/、integration/lifecycle/card_runtime.* | 卡会话与 Radio 协议会话不同；Card/Device 非强制转发链 |
-
-T/A 跨 Owner 仅通过窄契约；O 是各用例自有机制。卡能力可使用必要的窄硬件接口，不增加 CardManager/DeviceManager。等待结束不等于设备结束，本地清理不构成资源可重用证据。CardRuntime 仍持多种运行状态，本轮只移动，不宣称已完成职责拆分。
-
-从仓库根运行：
-
-```sh
-python3 -B telephony_core_service/services/multisim/test/multisim_architecture_rules/run.py --with-gn --migration --output /tmp/multisim-bplus-check
+```text
+multisim/
+├── account/                   # 账户/绑定/资料/激活，含专属Adapter
+├── card/                      # 卡应用/会话/加载/卡侧操作
+│   └── runtime/               # 过渡CardRuntime及结果窄出口，职责拆分未完成
+├── role_assignment/           # 主卡及默认Voice/SMS/Data分配
+├── device/                    # 设备资源与真实执行资格
+├── infrastructure/
+│   ├── compatibility/api/     # 旧接口门面、只读查询
+│   ├── compatibility/events/  # 旧完成、结果/通知交付
+│   ├── assembly/exports/      # 模块装配/发布/生命周期及精确导出
+│   ├── request/               # Owner自用请求/步骤/完成机制
+│   └── sim_identity.h         # 跨业务纯身份类型，无映射服务
+├── test/                      # 既有Scenario/Contract/Oracle/Fake及Host设施
+├── tools/                     # 恢复工具
+├── BUILD.gn
+└── README.md
 ```
 
-覆盖显式逻辑源集合/依赖、迁移溯源、严格语法、四套纯规则、负例及 GN/Ninja 对象；不替代产品链接、原 Manager/Core 初始化、IPC/SA 或设备验证。逻辑 target 不按六目录合并。
+| 修改任务 | 首查路径及核心类/接口 | 唯一事实Owner |
+|---|---|---|
+| 插卡/账户发现、绑定、激活 | account/discovery、activation、AccountRegistry、BindingIndex、TopologyService、AccountStore | Account：身份、已接纳绑定、资料、active及激活业务进度；SubscriptionId不等于SlotId |
+| 主卡/默认角色/业务重试 | role_assignment/assignment_service.*、AssignmentAggregate、RoleSelection、primary/PrimarySwitchPlan | Role Assignment：角色意图/分配、冲突准入和业务重试；Primary槽/Radio语义不与Voice/SMS/Data的订阅标识强行合并 |
+| 号码 | account/number 的查询/用例和窄运行端口 | Account：账户号码；Card：卡缓存及EF效果 |
+| PIN/EF、Profile/Port、会话/加载 | card/security、records、esim、state/SessionRegistry、LoadSession | Card：卡协议、库存、会话代次；Profile绑定归Account、偏好归Role Assignment |
+| Radio/资源结束/恢复 | device/resource/ResourceBarrier；primary/radio_execution_port.h为消费端契约 | Device：真实共享设备域与执行资格；不接管账户绑定或角色事实 |
+| GetRealSimCount | infrastructure/compatibility/api/real_sim_count_query.*；Core的legacy_sim_query_binding.* | 旧Manager/EXT读源投影，无新账户缓存 |
+| 宿主/静态槽描述/发布 | infrastructure/assembly 的SlotCatalog、SimHostPorts、ManagerPublicationSequence、SimModule/Factory | Assembly构建只读描述并注入，同一Core RIL及原对象控制块；不持动态业务事实 |
+| 请求关联及旧结果交付 | infrastructure/request、compatibility/events | 请求由各Owner实例化；完成/回调登记是技术状态，无业务写权 |
 
-[主设计：业务不变量](../../docs/SIM_Target_Architecture_Design_v1.2.md) · [执行状态：阶段与证据](../../docs/SIM_Refactor_Execution_State.md) · [架构检查](test/multisim_architecture_rules/README.md)
+CardRuntime仍同时持SessionRegistry、LoadSession与Device ResourceBarrier、Radio引用。本批仅从旧integration/lifecycle迁入card/runtime并保留类型/成员/时序；它是明确的待拆接缝，不能作为新增能力集中入口。RuntimeResultSinks返回原Owner的结果/证据，不负责Legacy通知，也不决定业务提交。未排空不宣称可卸载，等待结束不等于设备结束。
 
-G2a 调用链为 `CoreServiceSim → LegacySimQueryBinding → RealSimCountQuery → RealSimCountHostPort → 原 SimManager/EXT`。Core 宏仍在原翻译单元求值，绑定保存原 Manager/RIL 的 shared_ptr 控制块，不创建第二生产实例；顺序替换/清理会使旧绑定失效，不承诺并发热替换。首次B+验证见[执行状态 §3.4](../../docs/SIM_Refactor_Execution_State.md#g2a-bplus-m1)，最新干净代码/历史差分及保存状态见[§10](../../docs/SIM_Refactor_Execution_State.md#g2a-revalidation-20261105)。
+物理目录与GN target分别治理：保留25个source_set及原sources/public/deps/public_deps/visibility职责，只改必要路径，不合并总target、不扩大public_deps。业务仅依赖对方窄契约，不include具体Service/私有聚合/Adapter；Assembly按装配需要连接实现。AccountStoreAdapter/ActivationHookAdapter及AssignmentStoreAdapter/AssignmentOutputAdapter随Owner，Profile专属legacy_profile_result.h仍在card/esim且属于compatibility_core。
 
-当前业务骨架共90文件（64头/24cpp及BUILD/README），独立测试工程与恢复工具另列在 `test/`、`tools/`，不计入业务骨架。原24个逻辑 source_set 不变，新增无业务依赖的 `readonly_query` testonly 叶子用于骨架验证；根产品及三份 Core 显式测试源表直接列入同一 query/binding 实现，不依赖 testonly 总骨架，也不在同一二进制重复编译。已合入 main 的源表接入仍待产品验证，主机 PASS 不代表原 SO/Feature/初始化发布或产品准入已通过。其余成熟 SIM 能力、目标工厂和写权仍未迁入。
+禁止重建顶层common/support/integration/startup/compatibility代码池；Infrastructure不得接管事实、重试或业务调度，Request不得成为中央控制器，身份头不得建立全局映射/IdentityManager。无成熟实现的能力不建空目录。
 
-2026-11-05 G2a 复验进一步收窄：上述 Core 显式源表及主机 target 仅增加 `integration/api` 的头搜索路径，`readonly_query` 不再导出全骨架 include 配置，其他24个逻辑 target 不变。Query 仍只是原 Manager/EXT 的同步只读投影；没有 Account/T/A 依赖或额外状态。当前/历史七场景均重新构建通过，新的函数审计、源表负例与产品阻塞见[执行状态 §10](../../docs/SIM_Refactor_Execution_State.md#g2a-revalidation-20261105)，不改写 §3.4 的历史结果。
+从Git根验证：
+
+```sh
+python3 -B telephony_core_service/services/multisim/test/multisim_architecture_rules/run.py --with-gn --migration --output /tmp/multisim-directory-check
+python3 -B telephony_core_service/services/multisim/test/check_relocation.py
+python3 -B telephony_core_service/services/multisim/test/systemtest/scripts/test_g2a_source_tables.py
+```
+
+覆盖迁移摘要/类型与实现token、精确include/GN依赖、循环/反向依赖拒绝、四组纯规则、编译负控和GN/Ninja对象。Host业务与已知缺陷分开统计，入口见[test/README](test/README.md)。不能将结构检查或Host PASS等同产品链接、原生SA/IPC/HDI或设备功能验收。模块根同名带空格设计文档为已提交原文副本，权威依据使用docs下无空格版本。

@@ -19,7 +19,7 @@
 #ifndef OHOS_TELEPHONY_MULTISIM_TOPOLOGY_API_ACTIVATION_RUNTIME_PORT_H
 #define OHOS_TELEPHONY_MULTISIM_TOPOLOGY_API_ACTIVATION_RUNTIME_PORT_H
 
-#include "support/request_ref.h"
+#include "infrastructure/request/request_ref.h"
 
 namespace OHOS::Telephony::MultiSim {
 struct ActivationDeviceRequest { StepRef step; SessionRef session; bool enable; };

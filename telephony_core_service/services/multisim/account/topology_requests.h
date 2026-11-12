@@ -20,7 +20,7 @@
 #define OHOS_TELEPHONY_MULTISIM_TOPOLOGY_API_TOPOLOGY_REQUESTS_H
 
 #include <string>
-#include "support/request/request_context.h"
+#include "infrastructure/request/request_context.h"
 #include "account/account_types.h"
 
 namespace OHOS::Telephony::MultiSim {

@@ -33,10 +33,10 @@ class G2aSourceTables(unittest.TestCase):
                 self.files[name] = original
 
     def test_missing_include(self):
-        self.rejected("BUILD.gn", '"services/multisim/integration/api",', "")
+        self.rejected("BUILD.gn", '"services/multisim/infrastructure/compatibility/api",', "")
 
     def test_broad_include(self):
-        self.rejected("BUILD.gn", '"services/multisim/integration/api"', '"services/multisim"')
+        self.rejected("BUILD.gn", '"services/multisim/infrastructure/compatibility/api"', '"services/multisim"')
 
     def test_unrelated_production_source(self):
         self.rejected("BUILD.gn", '"' + SOURCES[2] + '",',
@@ -64,7 +64,7 @@ class G2aSourceTables(unittest.TestCase):
                       '  sources -= ["' + SOURCES[2] + '"]\n  include_dirs = [')
 
     def test_launcher_missing_include(self):
-        self.rejected("services/multisim/test/systemtest/BUILD.gn", '    "$production_root/services/multisim/integration/api",', "")
+        self.rejected("services/multisim/test/systemtest/BUILD.gn", '    "$production_root/services/multisim/infrastructure/compatibility/api",', "")
 
     def test_leaf_cannot_become_production(self):
         # Select only the query block, leaving all other skeleton targets intact.

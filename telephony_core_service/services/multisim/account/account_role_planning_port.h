@@ -20,7 +20,7 @@
 #define OHOS_TELEPHONY_MULTISIM_TOPOLOGY_API_ACCOUNT_ROLE_PLANNING_PORT_H
 
 #include <optional>
-#include "card_selection/assignment_requests.h"
+#include "role_assignment/assignment_requests.h"
 
 namespace OHOS::Telephony::MultiSim {
 // T发现/重载实际所需A应用入口；H注入，资格覆盖原存储调用全过程。

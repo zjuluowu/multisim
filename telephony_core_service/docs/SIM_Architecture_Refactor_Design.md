@@ -278,17 +278,17 @@ flowchart TB
 <a id="target-deployment"></a>
 ### 4.4 目标模块、建议目录与部署边界
 
-目标源码根目录已为 `services/multisim/`，仍未接入生产。表 5.1 的路径是职责导航，具体文件与契约见目标稿 §6.4 和源码详细设计。私有“接口”仅供同版本组件链接，不是新增公开 API/IPC。
+物理目录遵循[五组目录方案](SIM重构代码目录结构设计方案.md)与[实施映射](SIM_Directory_Migration_20261112.md)，历史分析保留原路径。目标源码根目录已为 `services/multisim/`，仍未接入生产。表 5.1 的路径是职责导航，具体文件与契约见目标稿 §6.4 和源码详细设计。私有“接口”仅供同版本组件链接，不是新增公开 API/IPC。
 
 | 模块代号 | 建议目录/构建单元 | SO/SA/进程容纳范围 | 职责来源 |
 |---|---|---|---|
-| T | `services/multisim/topology/domain/`；`topology/application/` | 目标私有 `libtel_sim`，仍由 4010 宿主装配 | SIM-004、020～023、031、035、045、056 |
-| A | `services/multisim/assignment/domain/`；`assignment/application/` | 同 SIM SO；`roles/primary/resources` 为内部模块 | SIM-025～030；初始化角色字段的规则仍由 A 提供给 SIM-020 |
-| O | `services/multisim/application/orchestration/`；无 operation/domain | 同 SIM SO；请求运行期状态不另建 SA | SIM-007～011、023.b、024、028～030、031.c、049～053、058 |
-| R | `services/multisim/runtime/`：state/security/application/records/codec/phonebook/sms_storage/stk/carrier/euicc 等 | 同 SIM SO 容纳本仓所有卡运行职责，包括条件 Core eSIM Runtime；公共 codec 仍可链接 utils | SIM-005～019、023.b/c、031.c、036～054；不是只搬 SimManager |
-| C | `services/multisim/compatibility/`：inbound/query/direct/completion/output | SIM 内兼容实现；公开 Framework、Stub/Proxy、InnerKit 导出门面保留原构建位置 | SIM-003、032、033、059 |
-| I | `services/multisim/infrastructure/`：store/parameter/events/vendor/diagnostics | SIM 内适配；不把数据库提供方、通用 RIL/Registry/CES 实现搬入 | SIM-034、044、055、057、060 |
-| HostPorts/装配 H | 私有 `services/multisim/*/ports/` 与 `assembly/`；宿主实现位于 `services/core/` 的私有集成层 | Core 负责构造/注入；SIM 不反链 Core 具体符号 | SIM-001、002、059 |
+| T | `services/multisim/account/`（原topology逻辑target保留） | 目标私有 `libtel_sim`，仍由 4010 宿主装配 | SIM-004、020～023、031、035、045、056 |
+| A | `services/multisim/role_assignment/`（原assignment逻辑target保留） | 同 SIM SO；`roles/primary/resources` 为内部模块 | SIM-025～030；初始化角色字段的规则仍由 A 提供给 SIM-020 |
+| O | `services/multisim/infrastructure/request/`；无 operation/domain | 同 SIM SO；请求运行期状态不另建 SA | SIM-007～011、023.b、024、028～030、031.c、049～053、058 |
+| R | `services/multisim/card/`及`device/`：state/security/application/records/codec/phonebook/sms_storage/stk/carrier/euicc 等 | 同 SIM SO 容纳本仓所有卡运行职责，包括条件 Core eSIM Runtime；公共 codec 仍可链接 utils | SIM-005～019、023.b/c、031.c、036～054；不是只搬 SimManager |
+| C | `services/multisim/infrastructure/compatibility/`：inbound/query/direct/completion/output | SIM 内兼容实现；公开 Framework、Stub/Proxy、InnerKit 导出门面保留原构建位置 | SIM-003、032、033、059 |
+| I | 业务专属技术适配留Account/Role Assignment/Card/Device；公共机制按`infrastructure/`明确边界归属 | SIM 内适配；不把数据库提供方、通用 RIL/Registry/CES 实现搬入 | SIM-034、044、055、057、060 |
+| HostPorts/装配 H | 私有窄端口随消费Owner；`services/multisim/infrastructure/assembly/`；宿主实现位于 `services/core/` 的私有集成层 | Core 负责构造/注入；SIM 不反链 Core 具体符号 | SIM-001、002、059 |
 | 现有外围 | `services/network_search/`、`services/tel_ril/`、IMS/卫星/EXT、外仓 66250/数据提供方等 | 旧 SO/SA/进程配置保持；RIL 若仍编 Core，由 HostPorts 函数实现调用 | SIM-030、044、046、057、061 |
 
 G2a 先在原 SO 内整理“原实现 + 私有桥”的依赖和所有权，G2b 再机械调整链接边界，G2c 单独验证新增停止/排空协议；不同时激活新领域 writer。`libtel_sim` 名称、GN target 和符号集需 G2b 审核后落地。Core/API SO 只导出旧符号；私有工厂/端口不加入公共 InnerKit vtable。纯策略 `source_set` 可在同 SO 内组织，不能据此声称已经形成多 SO 分层。

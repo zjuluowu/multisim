@@ -1,5 +1,7 @@
 # 多 SIM 架构边界与纯规则检查
 
+当前物理组织为[五组目录](../../../../docs/SIM重构代码目录结构设计方案.md)，本批迁移见[映射及验收](../../../../docs/SIM_Directory_Migration_20261112.md)。以下有日期的B+/G2a记录保留当时路径；当前运行由SOURCE_GROUPS、source_migration的live destinations及directory_migration_20261112.json精确约束。新增校验要求91个输入全部有Owner，88个C++单元和GN仅允许映射路径字节变化；历史输入摘要不重写。目录白名单拒绝重新引入common/support/integration/startup等顶层代码池。
+
 从仓库根目录运行：
 
 ```sh

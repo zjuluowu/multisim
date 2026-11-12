@@ -37,8 +37,8 @@
     {
       "old": "application/orchestration/request_context.h",
       "destinations": [
-        "support/request/request_context.h",
-        "support/request_ref.h"
+        "infrastructure/request/request_context.h",
+        "infrastructure/request/request_ref.h"
       ],
       "sha256": "67b9cfce7a52913eec6eb178bbafa5bb777693012757653398a7dacb6772c9a4",
       "action": "split",
@@ -53,7 +53,7 @@
     {
       "old": "application/orchestration/runtime_operation_store.h",
       "destinations": [
-        "support/request/runtime_operation_store.h"
+        "infrastructure/request/runtime_operation_store.h"
       ],
       "sha256": "e1001bb4c18309d2139b42dcaac08aa26213d78d537e8d4a4cd2e933377559c2",
       "action": "move",
@@ -67,7 +67,7 @@
     {
       "old": "assembly/host_ports.h",
       "destinations": [
-        "integration/lifecycle/host_ports.h"
+        "infrastructure/assembly/host_ports.h"
       ],
       "sha256": "36d040d18f8323e3fbecdc0a6b8aed361c726f9e9bb78847d4cdadc916b23710",
       "action": "retain",
@@ -81,7 +81,7 @@
     {
       "old": "assembly/manager_publication.h",
       "destinations": [
-        "integration/lifecycle/manager_publication.h"
+        "infrastructure/assembly/manager_publication.h"
       ],
       "sha256": "e32def51474b8ae136276fc26b3a620349f855283cb101c881a3fb53197343d9",
       "action": "retain",
@@ -95,7 +95,7 @@
     {
       "old": "assembly/sim_module_factory.cpp",
       "destinations": [
-        "integration/lifecycle/sim_module_factory.cpp"
+        "infrastructure/assembly/sim_module_factory.cpp"
       ],
       "sha256": "93ef455463e5fdd62dda5dc316f5672d3d11db31529fbd2b82094c27d9ac9246",
       "action": "retain",
@@ -109,8 +109,8 @@
     {
       "old": "assembly/sim_module_factory.h",
       "destinations": [
-        "integration/lifecycle/sim_module_factory.h",
-        "integration/lifecycle/sim_module.h"
+        "infrastructure/assembly/sim_module_factory.h",
+        "infrastructure/assembly/sim_module.h"
       ],
       "sha256": "b5dc9272e2422415168a1db912ae5d04aa8d078cc590649fc4d15d5fa02e9689",
       "action": "split",
@@ -125,7 +125,7 @@
     {
       "old": "assignment/api/assignment_requests.h",
       "destinations": [
-        "card_selection/assignment_requests.h"
+        "role_assignment/assignment_requests.h"
       ],
       "sha256": "63dfc7d595630b6800c178bf5e0a10de8944d00e2c70e02f9d6f969e14f0714d",
       "action": "retain",
@@ -139,7 +139,7 @@
     {
       "old": "assignment/api/primary_execution.h",
       "destinations": [
-        "card_selection/primary/primary_execution.h"
+        "role_assignment/primary/primary_execution.h"
       ],
       "sha256": "d943f8986dc02188a1e7def7bd05ca86c57a5c6d1038efd61d99c19e98d70236",
       "action": "retain",
@@ -153,7 +153,7 @@
     {
       "old": "assignment/application/account_role_protocol.h",
       "destinations": [
-        "card_selection/account_role_protocol.h"
+        "role_assignment/account_role_protocol.h"
       ],
       "sha256": "9c7ee353b8b9a8303ed11a9c2072585adf714e447b66762de5e9bb3ffb7c8df8",
       "action": "move",
@@ -167,7 +167,7 @@
     {
       "old": "assignment/application/assignment_service.cpp",
       "destinations": [
-        "card_selection/assignment_service.cpp"
+        "role_assignment/assignment_service.cpp"
       ],
       "sha256": "afc501d6e334a44fa2f0b16064c11f2c46198c5a69a0a13d0242c4d6cb997c04",
       "action": "move",
@@ -181,7 +181,7 @@
     {
       "old": "assignment/application/assignment_service.h",
       "destinations": [
-        "card_selection/assignment_service.h"
+        "role_assignment/assignment_service.h"
       ],
       "sha256": "d1fda15ebd650e71bc250699156dc568ee4ff6efbe71ef7c7d1da6d0838cb1f1",
       "action": "move",
@@ -195,7 +195,7 @@
     {
       "old": "assignment/application/primary_switch_plan.cpp",
       "destinations": [
-        "card_selection/primary/primary_switch_plan.cpp"
+        "role_assignment/primary/primary_switch_plan.cpp"
       ],
       "sha256": "416cf45fb88de12bcf9ed5a5df4924a7e298983d7d30375e11b8b333234e4baa",
       "action": "move",
@@ -209,7 +209,7 @@
     {
       "old": "assignment/application/primary_switch_plan.h",
       "destinations": [
-        "card_selection/primary/primary_switch_plan.h"
+        "role_assignment/primary/primary_switch_plan.h"
       ],
       "sha256": "eb30fd92aaa89217fa347c20812b53b7f705538755360177f2eec96b1312dd3c",
       "action": "move",
@@ -223,7 +223,7 @@
     {
       "old": "assignment/domain/assignment_aggregate.cpp",
       "destinations": [
-        "card_selection/assignment_aggregate.cpp"
+        "role_assignment/assignment_aggregate.cpp"
       ],
       "sha256": "ab4a6b3189063a4c3a66830023b79d9cf83b9e87f029638cecc3faad881a4480",
       "action": "retain",
@@ -237,7 +237,7 @@
     {
       "old": "assignment/domain/assignment_aggregate.h",
       "destinations": [
-        "card_selection/assignment_aggregate.h"
+        "role_assignment/assignment_aggregate.h"
       ],
       "sha256": "dca6ed5995fc1e2543fb8b67fc32f5ab4367c2c09c85ade45b746e7f17c365d4",
       "action": "retain",
@@ -251,8 +251,8 @@
     {
       "old": "assignment/domain/role_selection.h",
       "destinations": [
-        "card_selection/role_selection.h",
-        "card_selection/assignment_types.h"
+        "role_assignment/role_selection.h",
+        "role_assignment/assignment_types.h"
       ],
       "sha256": "7dc4546e93e6c997166b23ecc30141e7e27b496d99ab021d024658873a9f04f4",
       "action": "split",
@@ -267,7 +267,7 @@
     {
       "old": "assignment/ports/assignment_store.h",
       "destinations": [
-        "card_selection/assignment_store.h"
+        "role_assignment/assignment_store.h"
       ],
       "sha256": "f0c1cceef07e70336c4055386af92f24efed3003a32733187f2f1d72d2bffd0a",
       "action": "move",
@@ -281,7 +281,7 @@
     {
       "old": "assignment/ports/primary_topology_port.h",
       "destinations": [
-        "card_selection/primary/primary_topology_port.h"
+        "role_assignment/primary/primary_topology_port.h"
       ],
       "sha256": "83e313da96cd4de68651f388292155e741596bbcefd26d0f3003a4e02bc877c4",
       "action": "move",
@@ -295,7 +295,7 @@
     {
       "old": "assignment/ports/profile_preference_port.h",
       "destinations": [
-        "card_selection/profile_preference_port.h"
+        "role_assignment/profile_preference_port.h"
       ],
       "sha256": "14d89e47df5c61b2ed54516d59d325b330774ac39da10d18a150e74751ea0855",
       "action": "move",
@@ -309,7 +309,7 @@
     {
       "old": "assignment/ports/radio_execution_port.h",
       "destinations": [
-        "card_selection/primary/radio_execution_port.h"
+        "role_assignment/primary/radio_execution_port.h"
       ],
       "sha256": "2fc84d05298057409a3fd9a1d0701a64f236ee1970383c2dfbf3438c0c436f6d",
       "action": "move",
@@ -323,7 +323,7 @@
     {
       "old": "compatibility/completion_cell.h",
       "destinations": [
-        "integration/events/completion_cell.h"
+        "infrastructure/compatibility/events/completion_cell.h"
       ],
       "sha256": "173913f664c0596947ea261d538ce082c397820ab4e63ab51f85932aa0d55306",
       "action": "move",
@@ -337,7 +337,7 @@
     {
       "old": "compatibility/legacy_boundary_ports.h",
       "destinations": [
-        "integration/api/legacy_boundary_ports.h"
+        "infrastructure/compatibility/api/legacy_boundary_ports.h"
       ],
       "sha256": "06fd1c2b54f1ffd2722b506ecec23c1865f9ced640073fe62ef79ca68ce0bf50",
       "action": "move",
@@ -351,7 +351,7 @@
     {
       "old": "compatibility/legacy_completion.cpp",
       "destinations": [
-        "integration/events/legacy_completion.cpp"
+        "infrastructure/compatibility/events/legacy_completion.cpp"
       ],
       "sha256": "1829e33e47629a9d4d2cecd97024eb493ad5b3861770f726f46b2e68bba0bb1d",
       "action": "move",
@@ -365,7 +365,7 @@
     {
       "old": "compatibility/legacy_completion.h",
       "destinations": [
-        "integration/events/legacy_completion.h"
+        "infrastructure/compatibility/events/legacy_completion.h"
       ],
       "sha256": "084cdc6afc48a141b070f93e5de6183c6596291d1e7dbd2f847cd1e1396bd353",
       "action": "move",
@@ -393,7 +393,7 @@
     {
       "old": "compatibility/legacy_sim_facade.cpp",
       "destinations": [
-        "integration/api/legacy_sim_facade.cpp"
+        "infrastructure/compatibility/api/legacy_sim_facade.cpp"
       ],
       "sha256": "08457b477cae6d1cd213bc2a19608a24bcf8eae1c4ef94599cb38a7b1159db95",
       "action": "retain",
@@ -407,7 +407,7 @@
     {
       "old": "compatibility/legacy_sim_facade.h",
       "destinations": [
-        "integration/api/legacy_sim_facade.h"
+        "infrastructure/compatibility/api/legacy_sim_facade.h"
       ],
       "sha256": "cba42b2b21348d3486c72d5129d5253ce7b0f0a92321a8ae5144fe8ba6b44bc1",
       "action": "retain",
@@ -449,7 +449,7 @@
     {
       "old": "infrastructure/assignment_store_adapter.h",
       "destinations": [
-        "card_selection/assignment_store_adapter.h"
+        "role_assignment/assignment_store_adapter.h"
       ],
       "sha256": "9f51dcec43949a9fd05e0b05d9e82604395f2913fd9a2428adee8927372a5c5e",
       "action": "move",
@@ -463,7 +463,7 @@
     {
       "old": "infrastructure/legacy_output_adapter.cpp",
       "destinations": [
-        "integration/events/legacy_output_adapter.cpp"
+        "infrastructure/compatibility/events/legacy_output_adapter.cpp"
       ],
       "sha256": "eadac90ecd1bd7579bbf46e33bf2e2c38be219be8c15d3251702ee3799e216c5",
       "action": "move",
@@ -477,8 +477,8 @@
     {
       "old": "infrastructure/legacy_output_adapter.h",
       "destinations": [
-        "integration/events/legacy_output_adapter.h",
-        "card_selection/assignment_output_adapter.h",
+        "infrastructure/compatibility/events/legacy_output_adapter.h",
+        "role_assignment/assignment_output_adapter.h",
         "account/activation/activation_hook_adapter.h"
       ],
       "sha256": "62ff114137bc113288e6762c4afd8ca5b4298d2872965bdf2aa5b7a8e84c7474",
@@ -495,7 +495,7 @@
     {
       "old": "model/sim_identity.h",
       "destinations": [
-        "support/sim_identity.h"
+        "infrastructure/sim_identity.h"
       ],
       "sha256": "3615dcc01a2d8181220065da9cfcd0bd6d3e057c73dd5db4e179ed45b20c499d",
       "action": "move",
@@ -509,7 +509,7 @@
     {
       "old": "model/slot_catalog.cpp",
       "destinations": [
-        "support/slot_catalog.cpp"
+        "infrastructure/assembly/slot_catalog.cpp"
       ],
       "sha256": "b8f777e41bf134be9d78acab58dd7ebc02523049a00d57c58424708c3fd42e67",
       "action": "move",
@@ -523,7 +523,7 @@
     {
       "old": "model/slot_catalog.h",
       "destinations": [
-        "support/slot_catalog.h"
+        "infrastructure/assembly/slot_catalog.h"
       ],
       "sha256": "321b25ec6f1dbb338aacb5f36b07426b5cf570ce50d9602271f8389852b6f984",
       "action": "move",
@@ -537,7 +537,7 @@
     {
       "old": "runtime/card_runtime.cpp",
       "destinations": [
-        "integration/lifecycle/card_runtime.cpp"
+        "card/runtime/card_runtime.cpp"
       ],
       "sha256": "e41db9041b9d2a99f614aef6aa4b0635a421c92aae3fc1b6e534fd87c41373b9",
       "action": "retain",
@@ -551,7 +551,7 @@
     {
       "old": "runtime/card_runtime.h",
       "destinations": [
-        "integration/lifecycle/card_runtime.h"
+        "card/runtime/card_runtime.h"
       ],
       "sha256": "b1cbcf64d9c4f4304f28101fe22591371f108c1a77041f5b5413498bade5acc7",
       "action": "retain",
@@ -621,7 +621,7 @@
     {
       "old": "runtime/result_sinks.h",
       "destinations": [
-        "integration/lifecycle/result_sinks.h"
+        "card/runtime/result_sinks.h"
       ],
       "sha256": "eb9fc665b8be16d28b770baea1e6309392bb09c71265af410115af37b222dfb0",
       "action": "retain",
@@ -1070,7 +1070,7 @@
       },
       {
         "old": "assembly/host_ports.h",
-        "target": "integration/lifecycle/host_ports.h",
+        "target": "infrastructure/assembly/host_ports.h",
         "sha256": "10c5a8a94d824bf595f7a30b9e72160b8c9d5ea734656116fedb87ce0dd31319",
         "action": "move",
         "migration_type": "M",
@@ -1082,7 +1082,7 @@
       },
       {
         "old": "assembly/manager_publication.h",
-        "target": "integration/lifecycle/manager_publication.h",
+        "target": "infrastructure/assembly/manager_publication.h",
         "sha256": "e32def51474b8ae136276fc26b3a620349f855283cb101c881a3fb53197343d9",
         "action": "move",
         "migration_type": "M",
@@ -1094,7 +1094,7 @@
       },
       {
         "old": "assembly/sim_module.h",
-        "target": "integration/lifecycle/sim_module.h",
+        "target": "infrastructure/assembly/sim_module.h",
         "sha256": "eef5f09b136300b37ddee16307ba1028ac54a2586bf8b795dac604d4c3d32a8b",
         "action": "move",
         "migration_type": "M",
@@ -1106,7 +1106,7 @@
       },
       {
         "old": "assembly/sim_module_factory.cpp",
-        "target": "integration/lifecycle/sim_module_factory.cpp",
+        "target": "infrastructure/assembly/sim_module_factory.cpp",
         "sha256": "2b11517517fa1e7dfc07bd9d0072d21286fe5076ae078404f03b42909bcec789",
         "action": "move",
         "migration_type": "M",
@@ -1118,7 +1118,7 @@
       },
       {
         "old": "assembly/sim_module_factory.h",
-        "target": "integration/lifecycle/sim_module_factory.h",
+        "target": "infrastructure/assembly/sim_module_factory.h",
         "sha256": "9663d848dbf92acfd823dce2bbb4c933fdf9f9e73b355a28c68bf94d1ba85131",
         "action": "move",
         "migration_type": "M",
@@ -1130,7 +1130,7 @@
       },
       {
         "old": "assignment/account_roles/account_role_protocol.h",
-        "target": "card_selection/account_role_protocol.h",
+        "target": "role_assignment/account_role_protocol.h",
         "sha256": "a0c6997eac44a795585f5449a88f2941844d1300ca9abc67483911b09809858a",
         "action": "move",
         "migration_type": "M",
@@ -1142,7 +1142,7 @@
       },
       {
         "old": "assignment/adapters/assignment_output_adapter.h",
-        "target": "card_selection/assignment_output_adapter.h",
+        "target": "role_assignment/assignment_output_adapter.h",
         "sha256": "edd0f605285e403eccde9c3be4d66e7f84e1d020be1492dc7774c93f485e3887",
         "action": "move",
         "migration_type": "M",
@@ -1154,7 +1154,7 @@
       },
       {
         "old": "assignment/adapters/assignment_store_adapter.h",
-        "target": "card_selection/assignment_store_adapter.h",
+        "target": "role_assignment/assignment_store_adapter.h",
         "sha256": "e1e70a1ac907738c939c3cb9d87aead3d5cf45224370be72ad580ff6d5b5ed8a",
         "action": "move",
         "migration_type": "M",
@@ -1166,7 +1166,7 @@
       },
       {
         "old": "assignment/api/assignment_requests.h",
-        "target": "card_selection/assignment_requests.h",
+        "target": "role_assignment/assignment_requests.h",
         "sha256": "136a2e1674e0caeb09a2f1b09b4956a44f21d3a44dd0ace0905134aa5be755cd",
         "action": "move",
         "migration_type": "M",
@@ -1178,7 +1178,7 @@
       },
       {
         "old": "assignment/api/assignment_store.h",
-        "target": "card_selection/assignment_store.h",
+        "target": "role_assignment/assignment_store.h",
         "sha256": "9fb536b5825ed75683da68f6bc51ea70737fa6cdec62983977c9e9d7f932df8a",
         "action": "move",
         "migration_type": "M",
@@ -1190,7 +1190,7 @@
       },
       {
         "old": "assignment/api/assignment_types.h",
-        "target": "card_selection/assignment_types.h",
+        "target": "role_assignment/assignment_types.h",
         "sha256": "f80fa1e31b1bd02250c6ceaf2fa8d95f75abb2f458281f99fcfa1daf114b77d1",
         "action": "move",
         "migration_type": "M",
@@ -1202,7 +1202,7 @@
       },
       {
         "old": "assignment/api/legacy_entry.h",
-        "target": "card_selection/legacy_entry.h",
+        "target": "role_assignment/legacy_entry.h",
         "sha256": "f4923bf8731d6d6483452dea514d0907520d77d1c8eca7d27e78f1eec2463089",
         "action": "move",
         "migration_type": "M",
@@ -1214,7 +1214,7 @@
       },
       {
         "old": "assignment/api/primary_execution.h",
-        "target": "card_selection/primary/primary_execution.h",
+        "target": "role_assignment/primary/primary_execution.h",
         "sha256": "9ab2fc857732e89817598556472be29d668c7a53b98dad2af8833c3921e4c18e",
         "action": "move",
         "migration_type": "M",
@@ -1226,7 +1226,7 @@
       },
       {
         "old": "assignment/api/primary_topology_port.h",
-        "target": "card_selection/primary/primary_topology_port.h",
+        "target": "role_assignment/primary/primary_topology_port.h",
         "sha256": "afc41cf9f79939b013ecc8873cf644097aaa940ce81a1f0d1801d7aa8eab3aeb",
         "action": "move",
         "migration_type": "M",
@@ -1238,7 +1238,7 @@
       },
       {
         "old": "assignment/api/profile_preference_port.h",
-        "target": "card_selection/profile_preference_port.h",
+        "target": "role_assignment/profile_preference_port.h",
         "sha256": "84aefa7ae7b62d00fbac6efa2fa7e1acf0e44dcd6c38383add02c90f4efe3869",
         "action": "move",
         "migration_type": "M",
@@ -1250,7 +1250,7 @@
       },
       {
         "old": "assignment/api/radio_execution_port.h",
-        "target": "card_selection/primary/radio_execution_port.h",
+        "target": "role_assignment/primary/radio_execution_port.h",
         "sha256": "96cee4a6ead710999dea5f7033709a936e934147e6aed9304b6261daf7738045",
         "action": "move",
         "migration_type": "M",
@@ -1262,7 +1262,7 @@
       },
       {
         "old": "assignment/assignment_service.cpp",
-        "target": "card_selection/assignment_service.cpp",
+        "target": "role_assignment/assignment_service.cpp",
         "sha256": "f3874b28abdc1dbc321fec7c522a4d70bde98e966f2b247a0a964aac45143e64",
         "action": "move",
         "migration_type": "M",
@@ -1274,7 +1274,7 @@
       },
       {
         "old": "assignment/assignment_service.h",
-        "target": "card_selection/assignment_service.h",
+        "target": "role_assignment/assignment_service.h",
         "sha256": "9acaf99c008f1d9c19e3578ee571300f1d19a09b24668751150caa7607c0e1bc",
         "action": "move",
         "migration_type": "M",
@@ -1286,7 +1286,7 @@
       },
       {
         "old": "assignment/domain/assignment_aggregate.cpp",
-        "target": "card_selection/assignment_aggregate.cpp",
+        "target": "role_assignment/assignment_aggregate.cpp",
         "sha256": "f3714ab8c2543f1f1178352d18338ed7e59083e72d96e65852c6a988614e7485",
         "action": "move",
         "migration_type": "M",
@@ -1298,7 +1298,7 @@
       },
       {
         "old": "assignment/domain/assignment_aggregate.h",
-        "target": "card_selection/assignment_aggregate.h",
+        "target": "role_assignment/assignment_aggregate.h",
         "sha256": "e9ed229ea4ce22bf5b14294f773976537766c099c41857051b63c35bcbaba3c7",
         "action": "move",
         "migration_type": "M",
@@ -1310,7 +1310,7 @@
       },
       {
         "old": "assignment/domain/role_selection.h",
-        "target": "card_selection/role_selection.h",
+        "target": "role_assignment/role_selection.h",
         "sha256": "aaf022a9bb7fadbbb836e12f233035d52bd9e0fe57668dbc6d4c64b63cc9d1ba",
         "action": "move",
         "migration_type": "M",
@@ -1322,7 +1322,7 @@
       },
       {
         "old": "assignment/primary/primary_switch_plan.cpp",
-        "target": "card_selection/primary/primary_switch_plan.cpp",
+        "target": "role_assignment/primary/primary_switch_plan.cpp",
         "sha256": "c44a391c2aabb504f24ef021a5edaea3e3efe32e52b10f31b209c282f5d0b621",
         "action": "move",
         "migration_type": "M",
@@ -1334,7 +1334,7 @@
       },
       {
         "old": "assignment/primary/primary_switch_plan.h",
-        "target": "card_selection/primary/primary_switch_plan.h",
+        "target": "role_assignment/primary/primary_switch_plan.h",
         "sha256": "e3a39acdc9851bc9ee253ee65838945d6b347e061b8881573d9eb79c770a4b8d",
         "action": "move",
         "migration_type": "M",
@@ -1346,7 +1346,7 @@
       },
       {
         "old": "compatibility/api/legacy_boundary_ports.h",
-        "target": "integration/api/legacy_boundary_ports.h",
+        "target": "infrastructure/compatibility/api/legacy_boundary_ports.h",
         "sha256": "bd8bd71959fd723ed0c2746602b710bc2a0007e170402df346c3289cbfda4948",
         "action": "move",
         "migration_type": "M",
@@ -1358,7 +1358,7 @@
       },
       {
         "old": "compatibility/legacy_sim_facade.cpp",
-        "target": "integration/api/legacy_sim_facade.cpp",
+        "target": "infrastructure/compatibility/api/legacy_sim_facade.cpp",
         "sha256": "4747a6bd28ed5568fc04060686ca0a0bb7c340f971e1942647f0b292b9997bd2",
         "action": "move",
         "migration_type": "M",
@@ -1370,7 +1370,7 @@
       },
       {
         "old": "compatibility/legacy_sim_facade.h",
-        "target": "integration/api/legacy_sim_facade.h",
+        "target": "infrastructure/compatibility/api/legacy_sim_facade.h",
         "sha256": "7266641112f398ee6ccda326579befaa6fe7849e8148636f582038efc280a3a6",
         "action": "move",
         "migration_type": "M",
@@ -1382,7 +1382,7 @@
       },
       {
         "old": "compatibility/output/completion_cell.h",
-        "target": "integration/events/completion_cell.h",
+        "target": "infrastructure/compatibility/events/completion_cell.h",
         "sha256": "5632fd78ae9ed9603baa78f9dcc0b91676be8377c14053304b2af03a4e713687",
         "action": "move",
         "migration_type": "M",
@@ -1394,7 +1394,7 @@
       },
       {
         "old": "compatibility/output/legacy_completion.cpp",
-        "target": "integration/events/legacy_completion.cpp",
+        "target": "infrastructure/compatibility/events/legacy_completion.cpp",
         "sha256": "39da0195eb63bb8cc9eaf09a7ac339247cb04e7f380c7e5dc2fd3e2da88e2212",
         "action": "move",
         "migration_type": "M",
@@ -1406,7 +1406,7 @@
       },
       {
         "old": "compatibility/output/legacy_completion.h",
-        "target": "integration/events/legacy_completion.h",
+        "target": "infrastructure/compatibility/events/legacy_completion.h",
         "sha256": "2643ecda786395dd031fe4e9ed9b9af741ed995cca9204ba4f76c1afe7769a70",
         "action": "move",
         "migration_type": "M",
@@ -1418,7 +1418,7 @@
       },
       {
         "old": "compatibility/output/legacy_output_adapter.cpp",
-        "target": "integration/events/legacy_output_adapter.cpp",
+        "target": "infrastructure/compatibility/events/legacy_output_adapter.cpp",
         "sha256": "97ba55b7921f9ab24106706064ed0ac89b09aca27c2acc5274ba231466f579c0",
         "action": "move",
         "migration_type": "M",
@@ -1430,7 +1430,7 @@
       },
       {
         "old": "compatibility/output/legacy_output_adapter.h",
-        "target": "integration/events/legacy_output_adapter.h",
+        "target": "infrastructure/compatibility/events/legacy_output_adapter.h",
         "sha256": "02a6c44e719f09e808febedcbbb7fd2b172e412d43d2fe41ff565ce80e73d157",
         "action": "move",
         "migration_type": "M",
@@ -1454,7 +1454,7 @@
       },
       {
         "old": "foundation/orchestration/request_context.h",
-        "target": "support/request/request_context.h",
+        "target": "infrastructure/request/request_context.h",
         "sha256": "f442478cb6c66bed0bb4e1506053f6f6b0ffea6a0a9c14d96a966de8f1a84158",
         "action": "move",
         "migration_type": "M",
@@ -1466,7 +1466,7 @@
       },
       {
         "old": "foundation/orchestration/runtime_operation_store.h",
-        "target": "support/request/runtime_operation_store.h",
+        "target": "infrastructure/request/runtime_operation_store.h",
         "sha256": "cc5a9f39411b327fab76aa25c4e15bce271cfb1a26b2f5982bb48b29d0bc5338",
         "action": "move",
         "migration_type": "M",
@@ -1478,7 +1478,7 @@
       },
       {
         "old": "foundation/request_ref.h",
-        "target": "support/request_ref.h",
+        "target": "infrastructure/request/request_ref.h",
         "sha256": "2335835e384f61b7811a274bb2f66000c48a1a93475b82e5e8a1978c96386d00",
         "action": "move",
         "migration_type": "M",
@@ -1490,7 +1490,7 @@
       },
       {
         "old": "foundation/sim_identity.h",
-        "target": "support/sim_identity.h",
+        "target": "infrastructure/sim_identity.h",
         "sha256": "d0821fe30ee5023303ded0976bf894e352516c2773e4db0645002890c9ac991b",
         "action": "move",
         "migration_type": "M",
@@ -1502,7 +1502,7 @@
       },
       {
         "old": "foundation/slot_catalog.cpp",
-        "target": "support/slot_catalog.cpp",
+        "target": "infrastructure/assembly/slot_catalog.cpp",
         "sha256": "410b3545225f0f5b7ef16a3b5f4039bfd928c7a53be1e0e4bc38b66914d93217",
         "action": "move",
         "migration_type": "M",
@@ -1514,7 +1514,7 @@
       },
       {
         "old": "foundation/slot_catalog.h",
-        "target": "support/slot_catalog.h",
+        "target": "infrastructure/assembly/slot_catalog.h",
         "sha256": "7b5dcda92adc293548a152bfaaa1546c9f7066c31978cfbc233bb73bc013918c",
         "action": "move",
         "migration_type": "M",
@@ -1526,7 +1526,7 @@
       },
       {
         "old": "include/sim_host_ports.h",
-        "target": "integration/lifecycle/exports/sim_host_ports.h",
+        "target": "infrastructure/assembly/exports/sim_host_ports.h",
         "sha256": "c2b4bcedba760c23471cdc4c059e4c1b275a4015fe19bc7920de085e018043cb",
         "action": "move",
         "migration_type": "M",
@@ -1538,7 +1538,7 @@
       },
       {
         "old": "include/sim_module_factory.h",
-        "target": "integration/lifecycle/exports/sim_module_factory.h",
+        "target": "infrastructure/assembly/exports/sim_module_factory.h",
         "sha256": "f61d5ca8ad46f6f37d3d775f547aaf61a432152bebe8c05e70d7a09ab7cc7d85",
         "action": "move",
         "migration_type": "M",
@@ -1562,7 +1562,7 @@
       },
       {
         "old": "runtime/card_runtime.cpp",
-        "target": "integration/lifecycle/card_runtime.cpp",
+        "target": "card/runtime/card_runtime.cpp",
         "sha256": "e41db9041b9d2a99f614aef6aa4b0635a421c92aae3fc1b6e534fd87c41373b9",
         "action": "move",
         "migration_type": "M",
@@ -1574,7 +1574,7 @@
       },
       {
         "old": "runtime/card_runtime.h",
-        "target": "integration/lifecycle/card_runtime.h",
+        "target": "card/runtime/card_runtime.h",
         "sha256": "ee3986000f88d387f8d2ce92d045c1d24e26a6c1cef045b22cff35ff7b7e8908",
         "action": "move",
         "migration_type": "M",
@@ -1670,7 +1670,7 @@
       },
       {
         "old": "runtime/result_sinks.h",
-        "target": "integration/lifecycle/result_sinks.h",
+        "target": "card/runtime/result_sinks.h",
         "sha256": "b3ac60f2a149546e4a7d941331d7c864f7fdc95391f0be9244a852b19d363585",
         "action": "move",
         "migration_type": "M",
@@ -2815,7 +2815,7 @@
   ],
   "additions": [
     {
-      "target": "integration/api/real_sim_count_query.h",
+      "target": "infrastructure/compatibility/api/real_sim_count_query.h",
       "source_commit": "cc787945792527eeb94bc20a5e955315d6269e83",
       "source_path": "application/query/real_sim_count_query.h",
       "source_sha256": "efb47c4236b50cbb1b4794624e0cd7b8d297a811b8dc7e5802d386f17fd264e0",
@@ -2824,13 +2824,21 @@
       "scope": "M1 only; root product and explicit test sources compile the same cpp separately per binary"
     },
     {
-      "target": "integration/api/real_sim_count_query.cpp",
+      "target": "infrastructure/compatibility/api/real_sim_count_query.cpp",
       "source_commit": "cc787945792527eeb94bc20a5e955315d6269e83",
       "source_path": "application/query/real_sim_count_query.cpp",
       "source_sha256": "768d7e6f05b9d08eece8ecdaff4f19bbab4b9884125b1a0e1f2a160295d6911c",
       "logical_owner": "C read projection / H host port",
       "target_boundary": "readonly_query",
       "scope": "M1 only; root product and explicit test sources compile the same cpp separately per binary"
+    }
+  ],
+  "documentation_additions": [
+    {
+      "target": "SIM 重构代码目录结构设计方案.md",
+      "sha256": "28864a01afe3ccff3a6b08eadbd3188fbe3414bb8d92477900402a30ee124562",
+      "source_commit": "b283ad2f633686f4d829c5b005e08680f86695a7",
+      "source_path": "SIM 重构代码目录结构设计方案.md"
     }
   ]
 }

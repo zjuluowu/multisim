@@ -1,5 +1,7 @@
 # Telephony Core Service<a name="EN-US_TOPIC_0000001152064913"></a>
 
+SIM refactor source navigation: [five-group layout](services/multisim/README.md), [directory design](docs/SIM重构代码目录结构设计方案.md), and [execution state](docs/SIM_Refactor_Execution_State.md). Mature SIM production behavior remains in services/sim; directory migration does not imply product acceptance.
+
 -   [Introduction](#section117mcpsimp)
 -   [Directory Structure](#section129mcpsimp)
 -   [Constraints](#section133mcpsimp)

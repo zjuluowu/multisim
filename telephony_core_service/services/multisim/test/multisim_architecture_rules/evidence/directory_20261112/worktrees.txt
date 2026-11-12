@@ -1,0 +1,11 @@
+/mnt/e/github/multisim                             b283ad2f [main]
+/mnt/e/g2a-bplus-m1-20261104                       d5f0527c [work/g2a-bplus-revalidation-20261104]
+/mnt/e/g2a-bplus-m1-history-20261104               728ad77e (detached HEAD)
+/mnt/e/multisim-main-integration-20261105          541bb0e8 (detached HEAD)
+/mnt/e/sim-guard-round2-artifacts/baseline-source  e99caba3 (detached HEAD)
+/tmp/multisim-audit-round3                         c70894f8 [docs/sim-target-v1.2-audit-round3]
+/tmp/multisim-g2a                                  5eed2181 [work/g2a-real-query-20261030]
+/tmp/multisim-g2a-bplus-20261102                   2feaf127 [work/g2a-bplus-integration]
+/tmp/multisim-g2a-checkpoint                       728ad77e [work/g2a-readonly-checkpoint-20261030]
+/tmp/multisim-recovery-entry                       9f72e7ff [docs/sim-refactor-recovery-20261030]
+/tmp/multisim-stage1-sync                          5eed2181 [integration/sim-review-fixes-20261029]

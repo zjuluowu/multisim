@@ -4,8 +4,8 @@
   "files": {
     "services/multisim/test/systemtest/configs/infrastructure_cases.json": {
       "relocation_sha256": "375ea4aa0770f8b44a9f32168876fe898f496005b4dc49f75dc4526b2ffe7313",
-      "current_sha256": "5857aad086eaa5fb7e9e1614c7049a06cfffea6e94bd90a6be56cff44c43cca6",
-      "reason": "Register three existing scheduler cases; append IDs only, keep all assertions."
+      "current_sha256": "98c94c898da8e7494e012bf35f747f7d27d7fc36fbdeb354a8630c62e47d74b8",
+      "reason": "2026-11-12五组目录迁移：路径、精确目录/字节护栏及不遍历排除的证据树；既有摘要差异见directory-relocation-evolution.json，未改原业务断言/Golden或历史manifest。"
     },
     "services/multisim/test/systemtest/gn/BUILD.gn": {
       "relocation_sha256": "6c97c232dbd702aa1f97009bd2c23f4e981abab6f4c6c3a8a5d4c9c796b65719",
@@ -19,13 +19,13 @@
     },
     "services/multisim/test/systemtest/tests/event_transport_test.cpp": {
       "relocation_sha256": "ef92fcb5f0ba85550d35d282e20eb64d1fb32a36fa037d0632e13d596809215c",
-      "current_sha256": "a41f34e45c5b23db60a49cede0a129baaa6c34353cbda427c0351dc6f867d6cb",
-      "reason": "Add case_id/oracle_id metadata to three existing tests; assertions unchanged."
+      "current_sha256": "b0df165f62c0c614e5ef854e4b9b536aa518fd8628ca94e7a4bf5b005a880628",
+      "reason": "2026-11-12五组目录迁移：路径、精确目录/字节护栏及不遍历排除的证据树；既有摘要差异见directory-relocation-evolution.json，未改原业务断言/Golden或历史manifest。"
     },
     "services/multisim/test/systemtest/BUILD.gn": {
       "relocation_sha256": "af60d6518d1224eecdac66d5b6fdb148035085eac2f9d2fe918d083751616a53",
-      "current_sha256": "32bcb884540cfbcda5760bba005cc6776039f2ec3bfcb8a49b678f29a8a23c23",
-      "reason": "Add shutdown review cases to the existing real GTest target; preserve all existing assertions and test groups."
+      "current_sha256": "abf5d2d849e2216cbc98a86126b0b29677067d99fd5f664de008022b5841adde",
+      "reason": "2026-11-12五组目录迁移：路径、精确目录/字节护栏及不遍历排除的证据树；既有摘要差异见directory-relocation-evolution.json，未改原业务断言/Golden或历史manifest。"
     },
     "services/multisim/test/systemtest/scripts/audit_initialization.py": {
       "relocation_sha256": "36ab28439ffcf6cdfc4783669d619c9033b5957e403df9571653d284446d7c91",
@@ -34,8 +34,8 @@
     },
     "services/multisim/test/systemtest/stubs/ffrt_runtime.cpp": {
       "relocation_sha256": "47ca6163b88147cfffb1a2fbb0797fe93980da3271e23c734629bef0d5b02f07",
-      "current_sha256": "0cc090d0344f9d1af84de8c0de908ac70e48cce19df0d2343d0337d2fac13c4a",
-      "reason": "Read-only queue evidence and explicit snapshot of real pending callbacks for late-dispatch testing; no task status or scheduler semantics changed."
+      "current_sha256": "58da3fadea5a46d43cdb6150c4a6e1999412e38a870a6c0384a048d7b2babbbd",
+      "reason": "2026-11-12五组目录迁移：路径、精确目录/字节护栏及不遍历排除的证据树；既有摘要差异见directory-relocation-evolution.json，未改原业务断言/Golden或历史manifest。"
     },
     "services/multisim/test/systemtest/stubs/parameter_service.cpp": {
       "relocation_sha256": "8e82238e3cdb8ae448beb68c0026cb15282681e4ffc52416f3529cf2d1e704b7",
@@ -49,13 +49,63 @@
     },
     "services/multisim/test/systemtest/README.md": {
       "relocation_sha256": "3417683496f298fb41ac54ff303482c04b9edf812de0275bc4b3edeff659c884",
-      "current_sha256": "83d1d782576db4ff9925c8cb24a11522a1349912f0f3d5aebe1f7bacd6cbd4e0",
-      "reason": "SIM-028 real Host execution/provenance documentation; original business assertions retained."
+      "current_sha256": "65292ec92b889a052b68c8315a508939540c422fb45abb9bd7ff3257eb071d0d",
+      "reason": "2026-11-12五组目录迁移：路径、精确目录/字节护栏及不遍历排除的证据树；既有摘要差异见directory-relocation-evolution.json，未改原业务断言/Golden或历史manifest。"
     },
     "services/multisim/test/systemtest/stubs/ffrt_runtime.h": {
       "relocation_sha256": "e56da308da2035b69ec7b25b3bdf352eaa3c79c0df2cce62e1b7265d6c99c21e",
-      "current_sha256": "1692f5751492604dddd799070d31cd28195725bb337acd0b7b3fe6db372e43d4",
-      "reason": "Declare named pending callback capture; keep original cleanup assertions and owned queue evidence."
+      "current_sha256": "74e4082e23e1022f5079950ab150f36ca2f756124277ca1a0be240bb7711e27e",
+      "reason": "2026-11-12五组目录迁移：路径、精确目录/字节护栏及不遍历排除的证据树；既有摘要差异见directory-relocation-evolution.json，未改原业务断言/Golden或历史manifest。"
+    },
+    "services/multisim/test/systemtest/scripts/run_g2a_query.py": {
+      "relocation_sha256": "ec6a30a4ba216bcea486d6c7cfca984106d758ab345f7b451ed2941376a4645f",
+      "current_sha256": "3c0ef9ac82b5e965a74798cfa473b236a56d8760e1bcccdb33ec90ade36fe6ce",
+      "reason": "2026-11-12五组目录迁移：路径、精确目录/字节护栏及不遍历排除的证据树；既有摘要差异见directory-relocation-evolution.json，未改原业务断言/Golden或历史manifest。"
+    },
+    "services/multisim/test/systemtest/scripts/test_g2a_source_tables.py": {
+      "relocation_sha256": "98bc163c9a7ca78ed6d776de5ec5da889f1c1a21295d3b33d2aaf5309c3e88ea",
+      "current_sha256": "55c1224fcf0185c521d4be9a01b7c389ab4cb9534706f50fbd3eabd325ca8303",
+      "reason": "2026-11-12五组目录迁移：路径、精确目录/字节护栏及不遍历排除的证据树；既有摘要差异见directory-relocation-evolution.json，未改原业务断言/Golden或历史manifest。"
+    },
+    "services/multisim/test/multisim_architecture_rules/assignment_rules.cpp": {
+      "relocation_sha256": "192f3139d0c3d2fc1f874e64cf949a371c0c5c8563deb4e4c61baf0a377a7c79",
+      "current_sha256": "3c433f63388cc6dbe813624c1611555e39407c8297b30d67a292115855ac7bb7",
+      "reason": "2026-11-12五组目录迁移：路径、精确目录/字节护栏及不遍历排除的证据树；既有摘要差异见directory-relocation-evolution.json，未改原业务断言/Golden或历史manifest。"
+    },
+    "services/multisim/test/multisim_architecture_rules/check_structure.py": {
+      "relocation_sha256": "01fe8a4498ee2ced8032a4801e11ae1667c24a60cc58f0b6b6af78b84df94411",
+      "current_sha256": "c53a546a5d2dddc9ad043feba9d76ee3c470031fea2e8c4fa796b8e4bab8b528",
+      "reason": "2026-11-12五组目录迁移：路径、精确目录/字节护栏及不遍历排除的证据树；既有摘要差异见directory-relocation-evolution.json，未改原业务断言/Golden或历史manifest。"
+    },
+    "services/multisim/test/multisim_architecture_rules/README.md": {
+      "relocation_sha256": "e577bfcf7881f8b950da06de1ef83e4b107f68550909db5326316c8394bd1e85",
+      "current_sha256": "bce92ef5d54af5e2455befd03f53c1b9abdc1b294f1dc0ed0d5607dc8dc13aeb",
+      "reason": "2026-11-12五组目录迁移：路径、精确目录/字节护栏及不遍历排除的证据树；既有摘要差异见directory-relocation-evolution.json，未改原业务断言/Golden或历史manifest。"
+    },
+    "services/multisim/test/multisim_architecture_rules/run.py": {
+      "relocation_sha256": "0b9c6dae739910ae1d0c13e9659d9a2d2cf3f5e6f9c0dd598404a58aae8a9afd",
+      "current_sha256": "72e9efee61c4b4216a179072e5a248acd1155a9104e8e5f59d0e7240f8c92a74",
+      "reason": "2026-11-12五组目录迁移：路径、精确目录/字节护栏及不遍历排除的证据树；既有摘要差异见directory-relocation-evolution.json，未改原业务断言/Golden或历史manifest。"
+    },
+    "services/multisim/test/multisim_architecture_rules/runtime_protocol_rules.cpp": {
+      "relocation_sha256": "3f86e778db6bee02a2784f1f00712306d9f83a19883b896a1b07dcaa40c696ad",
+      "current_sha256": "8060fe40598243f2d150379368a1f0e286ab7cf943cb38d6740df2e5a9891592",
+      "reason": "2026-11-12五组目录迁移：路径、精确目录/字节护栏及不遍历排除的证据树；既有摘要差异见directory-relocation-evolution.json，未改原业务断言/Golden或历史manifest。"
+    },
+    "services/multisim/test/multisim_architecture_rules/source_migration.json": {
+      "relocation_sha256": "185b39841f36c6acfa3f1ead5f1a72e0d872eaf5474cf2ff0a808bfbb2245d01",
+      "current_sha256": "6c088613586e65e8d6b21bcb0921f23b9b20d2f47cc44509362572cfd17e4176",
+      "reason": "2026-11-12五组目录迁移：路径、精确目录/字节护栏及不遍历排除的证据树；既有摘要差异见directory-relocation-evolution.json，未改原业务断言/Golden或历史manifest。"
+    },
+    "services/multisim/test/multisim_architecture_rules/test_structure.py": {
+      "relocation_sha256": "77d456b82e529623956a150ecaa5d6ab48b888944ea937e9c8b5d2312027bce4",
+      "current_sha256": "a04847da7f444dd8f94c11b702cb7725831ef333d137b4bc7272848da94ca135",
+      "reason": "2026-11-12五组目录迁移：路径、精确目录/字节护栏及不遍历排除的证据树；既有摘要差异见directory-relocation-evolution.json，未改原业务断言/Golden或历史manifest。"
+    },
+    "services/multisim/test/sim_guard/README.md": {
+      "relocation_sha256": "022533f485aa7297a665e01a4e24219a7f85da6ad9c79111a6bf8765d4fbe7aa",
+      "current_sha256": "928e6b1fba5ca44e7c6a8b4c3e2ec76e6d7a666aa8141fb8f0988cf8d4d35866",
+      "reason": "2026-11-12五组目录迁移：路径、精确目录/字节护栏及不遍历排除的证据树；既有摘要差异见directory-relocation-evolution.json，未改原业务断言/Golden或历史manifest。"
     }
   }
 }

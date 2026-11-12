@@ -20,7 +20,7 @@
 #define OHOS_TELEPHONY_MULTISIM_RUNTIME_RECORDS_EF_REQUESTS_H
 
 #include <string>
-#include "support/request/request_context.h"
+#include "infrastructure/request/request_context.h"
 
 namespace OHOS::Telephony::MultiSim {
 struct ReadEfRequest { RequestContext context; CardApplicationTarget target; int32_t fileId; std::string path; };

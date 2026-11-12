@@ -20,7 +20,7 @@
 #define OHOS_TELEPHONY_MULTISIM_RUNTIME_STATE_PIN_REQUESTS_H
 
 #include <string>
-#include "support/request/request_context.h"
+#include "infrastructure/request/request_context.h"
 
 namespace OHOS::Telephony::MultiSim {
 struct VerifyPinRequest { RequestContext context; CardApplicationTarget target; std::string pin; };

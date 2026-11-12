@@ -7,7 +7,8 @@ import tempfile
 import unittest
 
 sys.dont_write_bytecode = True
-from check_structure import SOURCE, check
+from check_structure import SOURCE, check, token_sequence
+from check_directory_migration import check_directory_migration
 
 
 class BoundaryGuard(unittest.TestCase):
@@ -33,14 +34,14 @@ class BoundaryGuard(unittest.TestCase):
 
     def test_forbidden_includes(self):
         cases = [
-            ("integration/api/real_sim_count_query.h", "account/topology_service.h"),
-            ("integration/api/real_sim_count_query.h", "integration/lifecycle/card_runtime.h"),
-            ("support/sim_identity.h", "account/topology_service.h"),
-            ("account/account_registry.h", "support/request/request_context.h"),
-            ("account/topology_service.h", "card_selection/assignment_service.h"),
-            ("integration/lifecycle/card_runtime.h", "account/number/set_show_number_use_case.h"),
-            ("integration/lifecycle/card_runtime.h", "integration/api/legacy_boundary_ports.h"),
-            ("integration/api/legacy_sim_facade.h", "account/topology_service.h"),
+            ("infrastructure/compatibility/api/real_sim_count_query.h", "account/topology_service.h"),
+            ("infrastructure/compatibility/api/real_sim_count_query.h", "card/runtime/card_runtime.h"),
+            ("infrastructure/sim_identity.h", "account/topology_service.h"),
+            ("account/account_registry.h", "infrastructure/request/request_context.h"),
+            ("account/topology_service.h", "role_assignment/assignment_service.h"),
+            ("card/runtime/card_runtime.h", "account/number/set_show_number_use_case.h"),
+            ("card/runtime/card_runtime.h", "infrastructure/compatibility/api/legacy_boundary_ports.h"),
+            ("infrastructure/compatibility/api/legacy_sim_facade.h", "account/topology_service.h"),
             ("account/topology_requests.h", "account/account_registry.h"),
         ]
         for source, included in cases:
@@ -48,18 +49,18 @@ class BoundaryGuard(unittest.TestCase):
                 self.mutate(source, lambda s: s + '\n#include "' + included + '"\n', "Forbidden include")
 
     def test_missing_include(self):
-        self.mutate("support/sim_identity.h", lambda s: s + '\n#include "missing_header.h"\n',
+        self.mutate("infrastructure/sim_identity.h", lambda s: s + '\n#include "missing_header.h"\n',
                     "Missing or out-of-scope")
 
     def test_macro_and_continued_includes(self):
-        self.mutate("support/sim_identity.h", lambda s: s +
+        self.mutate("infrastructure/sim_identity.h", lambda s: s +
                     '\n#define PRIVATE_HEADER "account/topology_service.h"\n#include PRIVATE_HEADER\n',
                     "Unsupported non-literal include")
-        self.mutate("support/sim_identity.h", lambda s: s +
+        self.mutate("infrastructure/sim_identity.h", lambda s: s +
                     '\n#include \\\n "account/topology_service.h"\n', "Forbidden include")
 
     def test_include_cycle(self):
-        self.mutate("support/sim_identity.h", lambda s: s + '\n#include "support/request_ref.h"\n',
+        self.mutate("infrastructure/sim_identity.h", lambda s: s + '\n#include "infrastructure/request/request_ref.h"\n',
                     "include cycle")
 
     def test_target_cycle(self):
@@ -81,12 +82,40 @@ class BoundaryGuard(unittest.TestCase):
                     "GN skeleton group must cover")
 
     def test_private_header_export(self):
-        self.mutate("BUILD.gn", lambda s: s.replace('  public = [ "support/request/request_context.h" ]',
+        self.mutate("BUILD.gn", lambda s: s.replace('  public = [ "infrastructure/request/request_context.h" ]',
                     '  public = []'), "Non-public GN header")
 
     def test_duplicate_owner(self):
-        self.mutate("support/sim_identity.h", lambda s: s + "\nstruct RequestId { int duplicate; };\n",
+        self.mutate("infrastructure/sim_identity.h", lambda s: s + "\nstruct RequestId { int duplicate; };\n",
                     "Expected one definition of RequestId")
+
+    def check_mapped_mutation(self, name, transform):
+        path = self.source / name
+        before = path.read_text()
+        try:
+            path.write_text(transform(before))
+            with self.assertRaisesRegex(ValueError, "changed bytes beyond mapped paths"):
+                check_directory_migration(self.source, token_sequence, repo=SOURCE.parents[2])
+        finally:
+            path.write_text(before)
+
+    def test_move_preserves_cpp_members(self):
+        self.check_mapped_mutation("infrastructure/sim_identity.h",
+                                  lambda s: s.replace("struct SlotId {", "struct SlotId { int extra;", 1))
+
+    def test_move_preserves_gn_visibility(self):
+        self.check_mapped_mutation("BUILD.gn", lambda s: s.replace('":*"', '"//*"', 1))
+
+    def test_retired_top_level_directory(self):
+        for name in ("common", "support", "integration", "startup", "compatibility", "card_selection"):
+            path = self.source / name
+            path.mkdir()
+            try:
+                with self.subTest(directory=name):
+                    with self.assertRaisesRegex(ValueError, "Unsupported top-level directory"):
+                        check(self.source)
+            finally:
+                path.rmdir()
 
     def test_unlisted_source(self):
         path = self.source / "card/records/forgotten.h"
@@ -98,7 +127,7 @@ class BoundaryGuard(unittest.TestCase):
             path.unlink()
 
     def test_comment_does_not_add_dependency(self):
-        path = self.source / "support/sim_identity.h"
+        path = self.source / "infrastructure/sim_identity.h"
         before = path.read_text()
         try:
             path.write_text(before + '\n/*\n#include "account/topology_service.h"\n*/\n')

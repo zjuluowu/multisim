@@ -29,7 +29,7 @@
 #include "account/account_store.h"
 #include "account/account_role_planning_port.h"
 #include "account/discovery/card_observation_port.h"
-#include "card_selection/primary/primary_topology_port.h"
+#include "role_assignment/primary/primary_topology_port.h"
 
 namespace OHOS::Telephony::MultiSim {
 struct ReloadAccountInput {

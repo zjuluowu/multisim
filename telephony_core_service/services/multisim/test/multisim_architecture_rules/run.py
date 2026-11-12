@@ -9,12 +9,12 @@ import sys
 import tempfile
 
 sys.dont_write_bytecode = True
-from check_structure import check, check_migration
+from check_structure import check, check_migration, module_files
 from check_open_closed_contracts import check as check_external_declarations
 
 
 def syntax_check(compiler, source, output):
-    units = sorted(p for p in source.rglob("*") if p.suffix in (".h", ".cpp") and p.relative_to(source).parts[0] not in {"test", "tools"})
+    units = sorted(p for p in module_files(source) if p.suffix in (".h", ".cpp"))
     flags = [compiler, "-std=c++17", "-Wall", "-Wextra", "-Werror", "-I", str(source)]
     for unit in units:
         subprocess.run(flags + ["-x", "c++", "-fsyntax-only", str(unit)], check=True)
@@ -52,13 +52,13 @@ def main():
     subprocess.run([sys.executable, "-B", str(tests / "test_structure.py")], check=True)
     check_external_declarations(args.compiler)
     suites = {
-        "topology": ["support/slot_catalog.cpp", "account/binding_index.cpp",
+        "topology": ["infrastructure/assembly/slot_catalog.cpp", "account/binding_index.cpp",
                      "account/account_registry.cpp",
                      "account/discovery/discovery_observation_ledger.cpp",
                      "account/activation/activation_progress.cpp"],
         "resource": ["device/resource/resource_barrier.cpp"],
-        "assignment": ["card_selection/assignment_aggregate.cpp",
-                       "card_selection/primary/primary_switch_plan.cpp",
+        "assignment": ["role_assignment/assignment_aggregate.cpp",
+                       "role_assignment/primary/primary_switch_plan.cpp",
                        "card/esim/local_card_requests.cpp"],
         "runtime_protocol": ["card/state/session_registry.cpp"],
     }

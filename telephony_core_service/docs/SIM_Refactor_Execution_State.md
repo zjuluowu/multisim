@@ -1,12 +1,12 @@
 # 多 SIM 重构执行状态
 
-本文件集中维护当前实施位置、证据、局部阻塞和下一批任务；技术决策继续由[目标主设计](SIM_Target_Architecture_Design_v1.2.md)维护，流程由[流程对照](多SIM架构重构_设计说明与业务流程对照.md)维护，历史裁决留在[原评审](SIM_Target_Architecture_Independent_Review_2026-10-29.md)。最近恢复/一致性核对：2026-11-11；SetPrimarySlotId入口及整链阻塞见[§16](#primary-slot-test-20261111)；Windows VS Code + WSL Host工程及本轮实测见[§15](#wsl-host-20261111)；测试工程内聚迁移见[§13](#test-relocation-20261109)，本地开闭源复审增量见[§12](#open-closed-followup-20261109)，历史分支合入main及重验见[§11](#main-integration-20261105)，G2a工作分支复验见[§10](#g2a-revalidation-20261105)，测试防护网首批见[§8](#sim-guard-20261104)，第二轮结果及阻塞见[§9](#sim-guard-round2)。此前G2a记录保留，各历史运行结果仍按其原日期、基线和覆盖范围解释。
+本文件集中维护当前实施位置、证据、局部阻塞和下一批任务；当前五组目录实施及本轮实测见[§29](#directory-layout-20261112)，本次发布授权及预检见[§30](#directory-publication-20261112)，以下旧批次按原日期/输入解释；技术决策继续由[目标主设计](SIM_Target_Architecture_Design_v1.2.md)维护，流程由[流程对照](多SIM架构重构_设计说明与业务流程对照.md)维护，历史裁决留在[原评审](SIM_Target_Architecture_Independent_Review_2026-10-29.md)。最近恢复/一致性核对：2026-11-11；SetPrimarySlotId入口及整链阻塞见[§16](#primary-slot-test-20261111)；Windows VS Code + WSL Host工程及本轮实测见[§15](#wsl-host-20261111)；测试工程内聚迁移见[§13](#test-relocation-20261109)，本地开闭源复审增量见[§12](#open-closed-followup-20261109)，历史分支合入main及重验见[§11](#main-integration-20261105)，G2a工作分支复验见[§10](#g2a-revalidation-20261105)，测试防护网首批见[§8](#sim-guard-20261104)，第二轮结果及阻塞见[§9](#sim-guard-round2)。此前G2a记录保留，各历史运行结果仍按其原日期、基线和覆盖范围解释。
 
 <a id="current-status"></a>
 
 ## 0. 当前核实摘要（2026-11-09增量；历史运行保留原基线）
 
-**当前结论：B+源码结构已落地；G2a达到 `G2a_BPLUS_HOST_VERIFIED`；真实旧SIM组件兼容集已扩展到17条。完整产品准入、生产写权迁移及新能力均未完成。** 成熟业务仍由 `services/sim/` 承担。下面按交付位置和实际测试基线汇总；§3.1～3.5、§8～10保留各批历史过程，不把旧PASS改写为当前HEAD重跑。
+**当前结论：已发布B+基线上，已完成五组目录安全迁址，验收与遗留见§29，后续发布授权及核验口径见§30；G2a保持 `G2a_BPLUS_HOST_VERIFIED`。完整产品准入、生产写权迁移及新能力均未完成。** 成熟业务仍由 `services/sim/` 承担。下面按交付位置和实际测试基线汇总；§3.1～3.5、§8～10保留各批历史过程，不把旧PASS改写为当前HEAD重跑。
 
 2026-11-09用户授权基于[开闭源交叉审视](SIM_Architecture_Cross_Review_OpenClosed_Boundary.md)优化现有文档和代码；该批输入为本地/远端main `a7d3af8b8809513e7b8e73196a94551a8ecff97d`加工作树变更；复审与测试内聚迁移已按后续授权保存并推送，代码点及核验见[§14](#main-publication-20261109)。账户注销修复已按用户要求撤回；保留旧缺陷记录、独立契约护栏及重新验证，统一见[§12](#open-closed-followup-20261109)。下表2026-11-05记录仍按原日期解释，不把后续工作混入原历史证据。
 
@@ -833,3 +833,42 @@ Target实际StartPrimarySwitch、SwitchPrimaryRadio仍仅声明/流程注释，�
 ### 28. 目录设计文档文件名调整（2026-11-12）
 
 按用户要求发布docs下已完成的改名：`SIM 重构代码目录结构设计方案.md` → `SIM重构代码目录结构设计方案.md`。相对于4c45061cdc79a521218330a956d36995948a09c2，文档字节完全相同，SHA256仍为28864a01afe3ccff3a6b08eadbd3188fbe3414bb8d92477900402a30ee124562；无正文、代码或测试预期变更。services/multisim下另一份文档未改名；历史发布记录保留原文件名。本轮仅核对改名、引用及Git差异，不重跑业务测试；根default.profraw继续留在本地，不纳入提交。
+
+
+<a id="directory-layout-20261112"></a>
+
+### 29. 五组源码目录实际迁移与工程验收（2026-11-12）
+
+输入main@b283ad2f633686f4d829c5b005e08680f86695a7，origin/main经ls-remote核实同SHA；恢复脚本首次fetch失败，不宣称已刷新远端ref。起始暂存区为空，唯一已有未跟踪项default.profraw，最终SHA一致。按本次用户明确要求不提交、不推送、不切换工作区，优先于此前持续发布授权；本批成果仅在工作树。
+
+按已提交[目录设计方案](SIM重构代码目录结构设计方案.md)完成44项迁址：card_selection→role_assignment；兼容API/交付→infrastructure/compatibility；模块装配、exports及只读SlotCatalog→infrastructure/assembly；通用请求机制/身份→infrastructure/request及sim_identity.h。CardRuntime/result_sinks暂放card/runtime，保留成员/状态/顺序及原窄结果出口，明确Card/Device混合职责尚未拆分，不将其归为Assembly或Compatibility业务规则。Account与Role Assignment专属Adapter及Profile专属双结果原位保留；未改旧SIM/Core/RIL/公共接口C++、Golden或业务预期。
+
+模块91项输入全部归属：88个C++单元、BUILD/README及已提交设计文档副本；另有932项测试/工具逐项登记，全部保留原路径，919项字节相同，13项工程路径/导航/护栏或溯源元数据演进。模块47项原位、44项移动；全模块输入1023项中979项原位，新增模块内12项护栏/清单/证据及docs独立总结1项，未拆分或删除原文件。25个source_set保留，16项source/public路径调整，deps/public_deps及全GN策略按精确映射字节比较不变。旧顶层目录已清空移除，无新common/startup公共池。
+
+迁移前骨架完整GN/语法、四组纯规则及12项负控PASS；原--migration因根设计副本未登记失败，原测试relocation因6项既有摘要漂移失败，原始日志与旧/输入/新SHA保留。现精确登记文档摘要和独立演进记录，73文件原溯源、88项历史布局及91项本次输入映射全部PASS，219项测试迁移检查PASS。新增旧目录/C++成员/GN visibility拒绝负控后15/15 PASS，五项公开声明编译负控全部检出；88独立编译单元+合并头、四组纯规则与GN --check/Ninja对象最终PASS。
+
+两次Host各64项59 PASS/相同5个既有FAIL：兼容17、PIN4、设施23、容量1、主卡入口14通过；原始结果仍FAIL，未扩大缺陷容许集。第一轮构建始于迁移前、执行完成于迁移后，Legacy业务源码及测试语义不变，不能称为干净旧目录产品重跑。迁移后G2a真实Core→Query→原Manager/EXT七场景7/7 PASS并验证六函数正执行；源表14/14、Oracle技术15/15、Legacy分类13/13、CI策略13/13通过。READY→LOCKED原业务突变在仓外副本以既有GN覆盖点重新编译/链接，1项预期FAIL检出，原实现恢复17/17 PASS，生产SHA不变。Target adapter实际BLOCKED/exit2，差分NOT_RUN。
+
+探索失败均保留：首次机器GTest不匹配而BLOCKED，改用经原锁定脚本校验的固定归档；基线查询300秒、SIM Guard360秒构建watchdog未产生业务PASS。首轮after进程加载到旧模块/新辅助函数组合产生ImportError，固定版本重跑通过；突变包装首次CRLF锚点拒绝，按原runner read_text换行处理后才执行。没有通过放宽断言、去掉测试或隐藏非零退出码取绿。
+
+[独立实施总结与逐文件映射](SIM_Directory_Migration_20261112.md)、[仓内摘要](../services/multisim/test/multisim_architecture_rules/evidence/directory_20261112/validation.json)、[原始命令/日志/XML/复现脚本](../services/multisim/test/multisim_architecture_rules/evidence/directory_20261112/raw-evidence.tar.gz)及同目录完整树/摘要索引构成本批证据。详细设计、主设计当前物理章节、功能设计过期目标路径、README与两级AGENTS同步；原历史ADR/固定提交链接/测试证据不改写。
+
+目录迁址与工程护栏验收通过，不宣称全部运行职责解耦或生产验收。尚待：CardRuntime按Card会话/加载与Device资源/Radio实际寿命拆分；Target主卡/激活/eSIM写业务闭包与真实差分；五个旧缺陷；匹配OHOS产品/Manifest/Feature下hb构建及SO/SA/IPC/HDI、设备与eSIM验证。当前无hb或匹配产品树，以上NOT_RUN/BLOCKED。后续不得据本次目录调整推定生产迁移或补丁授权。
+
+
+<a id="directory-publication-20261112"></a>
+
+### 30. 五组目录成果发布授权与预检（2026-11-12）
+
+用户在§29交付后明确要求“将本地修改提交到远端main”，本次发布授权替代上一批“不提交、不推送”的限制。发布输入为main@b283ad2f633686f4d829c5b005e08680f86695a7；ls-remote及恢复脚本fetch均核实origin/main同SHA，无远端分歧，暂存区原为空。其他worktree保持原状；根default.profraw的实际SHA仍与迁移输入记录相同，不纳入提交。
+
+本次发布包含§29完整的44项源码迁址、GN/include与测试护栏、13份新增清单/证据/实施总结，以及相关架构文档、README和AGENTS同步。历史validation.json中的committed=false/pushed=false和报告中的“本批不提交”仍是当时交付快照，不改写为事后状态；本节单独记录后续授权。发布不扩大生产迁移/职责拆分范围，不应用旧SIM修复或改变已保存测试预期。
+
+发布预检重跑测试迁移检查（219项，127项C++/JSON保持原字节）、源表审计14/14及固定历史输入的结构/迁移校验；仓内证据索引和验证工具摘要匹配，git diff --check通过。沿用§29实际执行的完整GN/88单元语法/四套纯规则、15项负控、G2a7/7以及Host64项59 PASS/5个既有FAIL；本次未重新宣称完整业务或产品测试。未修改services/sim/Core/RIL/公共接口C++，CardRuntime拆分、Target业务与产品设备门禁继续保留。
+
+仅按核实后的逐文件白名单暂存本批成果，常规提交并推送origin/main，不强推、不合并或变基。保存点以包含本节的实际Git提交为准，推送后按远端SHA与祖先包含关系核验；本节不自引用提交SHA，也不以发布成功代替业务/产品验收。
+
+
+发布执行环境补充：原工作区.git为只读，按147项逐文件白名单执行git add时无法创建index.lock而被拒绝；未形成暂存或提交。改在可写临时独立克隆中，以同一origin/main基线复制这147项明确成果，保持原Git文件模式及删除/迁址关系，再常规提交推送。不修改原仓库Git元数据；即使远端发布成功，原工作区main引用仍停留在输入SHA并保留这些修改。临时克隆仅用于发布，源码映射、测试证据及实施总结均随提交进入仓库，不依赖临时目录恢复。远端分歧仍按原规则停止，不自动合并/变基。
+
+独立发布副本核验：147项白名单对应103项文件内容复制和44项迁出路径删除，逐项字节一致并保留原Git文件模式；Git识别为103项变更（含44项rename）。独立克隆首轮结构检查因删除迁出文件后残留空integration目录而拒绝，按映射清理integration/support/card_selection空目录后，结构检查仍为88文件/157 include/25 targets PASS，源表审计14/14 PASS；没有修改业务源码或放宽护栏。

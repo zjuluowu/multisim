@@ -1,0 +1,388 @@
+{
+  "baseline": "b283ad2f633686f4d829c5b005e08680f86695a7",
+  "branch": "main",
+  "initial_worktree": [
+    "?? default.profraw"
+  ],
+  "initial_index_empty": true,
+  "remote": "https://github.com/zjuluowu/multisim.git",
+  "remote_main_ls_remote": "b283ad2f633686f4d829c5b005e08680f86695a7",
+  "fetch_attempt": "ERROR fetch_failed; no claim of refreshed refs",
+  "committed": false,
+  "pushed": false,
+  "module_input_files": 91,
+  "cpp_units": 88,
+  "moves": 44,
+  "splits": 0,
+  "deletions_excluding_moves": 0,
+  "retained_module_inputs": 47,
+  "retained_auxiliary_inputs": 932,
+  "all_original_module_tree_inputs": 1023,
+  "unchanged_auxiliary_bytes": 919,
+  "default_profraw_protected": true,
+  "gn": {
+    "source_sets": 25,
+    "changed_source_sets": 16,
+    "added": 0,
+    "deleted": 0,
+    "deps_public_deps_unchanged": true,
+    "full_policy_exact_mapped_bytes": true,
+    "cycles_and_reverse_edges": "PASS (textual/GN checks and negative controls)"
+  },
+  "tests": {
+    "architecture_full": "PASS: 88 independent units + combined header, 4 pure rule executables, GN --check/Ninja objects",
+    "boundary_tests": {
+      "tests": 15,
+      "pass": 15,
+      "fail": 0
+    },
+    "external_declaration_negative_controls": {
+      "controls": 5,
+      "detected": 5
+    },
+    "g2a_source_tables": {
+      "tests": 14,
+      "pass": 14
+    },
+    "oracle_technical": {
+      "tests": 15,
+      "pass": 15
+    },
+    "legacy_classifier": {
+      "tests": 13,
+      "pass": 13
+    },
+    "ci_policy": {
+      "tests": 13,
+      "pass": 13
+    },
+    "host_baseline": [
+      {
+        "name": "compatibility",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 17,
+        "passed": 17,
+        "failed": 0,
+        "binary_sha256": "2a660352ce3573b8d6ed340842fe59aee8eeaca4764d0121a071693025e8d9ae",
+        "filter": "*-*DEFECT_*",
+        "skipped": 0
+      },
+      {
+        "name": "known_defects",
+        "exit_code": 1,
+        "status": "FAIL",
+        "tests": 5,
+        "passed": 0,
+        "failed": 5,
+        "binary_sha256": "2a660352ce3573b8d6ed340842fe59aee8eeaca4764d0121a071693025e8d9ae",
+        "filter": "*DEFECT_*",
+        "skipped": 0
+      },
+      {
+        "name": "pin_memory",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 4,
+        "passed": 4,
+        "failed": 0,
+        "binary_sha256": "ac17b8acec14b838cd2602952cad059a9318596848d39b15f10b5b13ad97a96d",
+        "filter": "*",
+        "skipped": 0
+      },
+      {
+        "name": "infrastructure",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 23,
+        "passed": 23,
+        "failed": 0,
+        "binary_sha256": "3746c957e048c5d5d696d9ccff6c0acc9c955b8c16ec5c36bd27068adfa12e1b",
+        "filter": "*",
+        "skipped": 0
+      },
+      {
+        "name": "capacity",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 1,
+        "passed": 1,
+        "failed": 0,
+        "binary_sha256": "89997f0b2d542808bda2e5bc983de39329637aa7f011cf1d67d1ba0a95893862",
+        "filter": "*",
+        "skipped": 0
+      },
+      {
+        "name": "primary_entry_internal_seam",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 14,
+        "passed": 14,
+        "failed": 0,
+        "binary_sha256": "4c8c1fbeb9d865f78383c4e5f753ddb1479669b2b15acfe01d46328fc51a9c1e",
+        "filter": "*",
+        "skipped": 0
+      }
+    ],
+    "host_final": [
+      {
+        "name": "compatibility",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 17,
+        "passed": 17,
+        "failed": 0,
+        "binary_sha256": "2a660352ce3573b8d6ed340842fe59aee8eeaca4764d0121a071693025e8d9ae",
+        "filter": "*-*DEFECT_*",
+        "skipped": 0
+      },
+      {
+        "name": "known_defects",
+        "exit_code": 1,
+        "status": "FAIL",
+        "tests": 5,
+        "passed": 0,
+        "failed": 5,
+        "binary_sha256": "2a660352ce3573b8d6ed340842fe59aee8eeaca4764d0121a071693025e8d9ae",
+        "filter": "*DEFECT_*",
+        "skipped": 0
+      },
+      {
+        "name": "pin_memory",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 4,
+        "passed": 4,
+        "failed": 0,
+        "binary_sha256": "ac17b8acec14b838cd2602952cad059a9318596848d39b15f10b5b13ad97a96d",
+        "filter": "*",
+        "skipped": 0
+      },
+      {
+        "name": "infrastructure",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 23,
+        "passed": 23,
+        "failed": 0,
+        "binary_sha256": "3746c957e048c5d5d696d9ccff6c0acc9c955b8c16ec5c36bd27068adfa12e1b",
+        "filter": "*",
+        "skipped": 0
+      },
+      {
+        "name": "capacity",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 1,
+        "passed": 1,
+        "failed": 0,
+        "binary_sha256": "89997f0b2d542808bda2e5bc983de39329637aa7f011cf1d67d1ba0a95893862",
+        "filter": "*",
+        "skipped": 0
+      },
+      {
+        "name": "primary_entry_internal_seam",
+        "exit_code": 0,
+        "status": "PASS",
+        "tests": 14,
+        "passed": 14,
+        "failed": 0,
+        "binary_sha256": "e964588d41c366629a797da11227fcb3c5aef5b288f520b7e7d6fd0a31373ae8",
+        "filter": "*",
+        "skipped": 0
+      }
+    ],
+    "host_final_total": {
+      "tests": 64,
+      "pass": 59,
+      "fail": 5,
+      "raw_status": "FAIL"
+    },
+    "g2a_final": {
+      "status": "PASS",
+      "executed": true,
+      "counts": {
+        "PASS": 7,
+        "FAIL": 0,
+        "BLOCKED": 0
+      },
+      "binary_sha256": "f28303a7b5b3a0e36c7cde11c1fc815939b6c06f02ccf177dae1e2210a4012be",
+      "production_execution": {
+        "functions": [
+          {
+            "name": "_ZN4OHOS9Telephony14CoreServiceSim15GetRealSimCountEv",
+            "executions": 56,
+            "filenames": [
+              "/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_sim.cpp",
+              "/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/include/telephony_types.h"
+            ]
+          },
+          {
+            "name": "_ZN4OHOS9Telephony14CoreServiceSim21AttachReadOnlyQueriesERKSt10shared_ptrINS0_14ITelRilManagerEE",
+            "executions": 49,
+            "filenames": [
+              "/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_sim.cpp"
+            ]
+          },
+          {
+            "name": "_ZN4OHOS9Telephony21LegacySimQueryBinding22ReadLegacyRealSimCountEv",
+            "executions": 28,
+            "filenames": [
+              "/mnt/e/github/multisim/telephony_core_service/services/core/src/legacy_sim_query_binding.cpp"
+            ]
+          },
+          {
+            "name": "_ZN4OHOS9Telephony8MultiSim17RealSimCountQuery4ReadEv",
+            "executions": 28,
+            "filenames": [
+              "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/compatibility/api/real_sim_count_query.cpp"
+            ]
+          },
+          {
+            "name": "_ZN4OHOS9Telephony10SimManager15GetRealSimCountEv",
+            "executions": 56,
+            "filenames": [
+              "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_manager.cpp",
+              "/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/include/telephony_types.h",
+              "/mnt/e/github/multisim/telephony_core_service/services/telephony_ext_wrapper/include/telephony_ext_wrapper.h"
+            ]
+          },
+          {
+            "name": "_ZN4OHOS9Telephony19TelephonyExtWrapper18GetRealSimCountExtEi",
+            "executions": 56,
+            "filenames": [
+              "/mnt/e/github/multisim/telephony_core_service/services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp"
+            ]
+          }
+        ],
+        "link_map": "sim_g2a_query_test.map",
+        "initializers": [
+          {
+            "function": "SimManager::OnInit",
+            "executions": 0,
+            "present_in_coverage": true
+          },
+          {
+            "function": "CoreService::Init",
+            "executions": 0,
+            "present_in_coverage": false
+          }
+        ],
+        "purpose": "actual production participation, not an exact count Oracle",
+        "lto_scope": "selected query only; uncalled platform paths eliminated"
+      }
+    },
+    "mutation": {
+      "status": "DETECTED",
+      "mutant_tests": 1,
+      "mutant_expected_failures": 1,
+      "restored_tests": 17,
+      "restored_pass": 17,
+      "production_unchanged": true,
+      "production_sha256": "e6856b2acda8a60334e8f61f6d5201fb896106a0a700960f8a36cc26dd1d5e0f",
+      "mutant_sha256": "4d7e62f074d9deea115d68d9a4ab439d352909272a8bfa26ca45207a547540db",
+      "commands": [
+        {
+          "argv": [
+            "gn",
+            "gen",
+            "/tmp/sim-directory-mutation/build",
+            "--root=/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest",
+            "--args=gtest_root=\"/tmp/sim-directory-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59\" production_root=\"/mnt/e/github/multisim/telephony_core_service\" host_debug=true openssl_root=\"\" sim028_runtime_root=\"\" sim_guard_state_source=\"/tmp/sim-directory-mutation/sim_state_handle_mutant.cpp\""
+          ],
+          "exit_code": 0,
+          "seconds": 0.06557878805324435,
+          "log": "gn.log"
+        },
+        {
+          "argv": [
+            "ninja",
+            "-C",
+            "/tmp/sim-directory-mutation/build",
+            "-j",
+            "3",
+            "sim_guard_legacy"
+          ],
+          "exit_code": 0,
+          "seconds": 136.40234273206443,
+          "log": "build.log"
+        },
+        {
+          "argv": [
+            "/tmp/sim-directory-mutation/build/sim_guard_legacy",
+            "--gtest_filter=*LIFE_001",
+            "--gtest_output=xml:/tmp/sim-directory-mutation/mutant.xml"
+          ],
+          "exit_code": 1,
+          "seconds": 0.008775168913416564,
+          "log": "mutant-run.log"
+        },
+        {
+          "argv": [
+            "/tmp/sim-directory-host-before/build/sim_guard_legacy",
+            "--gtest_filter=*-*DEFECT_*",
+            "--gtest_output=xml:/tmp/sim-directory-mutation/restored.xml"
+          ],
+          "exit_code": 0,
+          "seconds": 0.06552571302745491,
+          "log": "restored-run.log"
+        }
+      ]
+    },
+    "target_adapter": {
+      "status": "BLOCKED",
+      "result": {
+        "schema": 1,
+        "catalog_sha256": "d1221b27a0c961d582e1789b4ec9a1d856008c4c771f3e3f58c74c7a8163877e",
+        "legacy": "NOT_RUN",
+        "target": "BLOCKED",
+        "comparison": "NOT_RUN",
+        "target_reason": "StartPrimarySwitch and SwitchPrimaryRadio are declarations without complete production definitions; no Target adapter registered",
+        "native_product": "UNKNOWN",
+        "cases": [],
+        "input_sha256": {
+          "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/scenarios/primary_slot.json": "d1221b27a0c961d582e1789b4ec9a1d856008c4c771f3e3f58c74c7a8163877e",
+          "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/run_primary_contract.py": "70af49561a9e95b041d77088eea6650b4ccd465e50087f80d77665a2b50f07a6",
+          "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/primary_oracle.py": "df4d2520b71b72f17d0ec2c0ee8ee7f0a1b27c867584478caa859d2151c02906",
+          "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/contracts/primary_slot.h": "bcf1eafc52694a817b261da9d3a3df829bd8e52c01c7da5a83f7482ed1475abe",
+          "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/adapters/legacy/legacy_primary_adapter.h": "222b792b6903489ccdf9591e32db82ecf3e19d248eb9947320d99072bddc4cc0",
+          "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/scripts/run_legacy_primary_contract.py": "1635158ce980d4a83dd037f1b270d1e7a5474cf5ce6730d1d4a4c6b001e780b1",
+          "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp": "288fbfe9e01d285b39c898cf6e2d4ec6d30174a6b852074e0ce427d85f623cda",
+          "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h": "175a8877e6ca7fe42f924dd3e46e5300cca250f62f5d954a4c63fe24200baa40",
+          "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/BUILD.gn": "abf5d2d849e2216cbc98a86126b0b29677067d99fd5f664de008022b5841adde"
+        }
+      }
+    },
+    "relocation": "PASS 219 files, 127 C++/JSON byte-identical, 21 explicit followups"
+  },
+  "initial_failures": [
+    "Historical --migration rejected unregistered committed design copy",
+    "Historical relocation followup mismatch (6 stale digests recorded individually)",
+    "System GoogleTest source did not match dependency lock; initial attempts BLOCKED",
+    "Pinned baseline G2a ninja watchdog 300s and SIM Guard watchdog 360s; no business execution in those attempts",
+    "First after-check loaded a pre-edit module with a newer imported helper; ImportError preserved, final fixed-version runs pass",
+    "Mutation wrapper first used raw CRLF string anchor; assertion rejected preparation, read_text normalization corrected",
+    "First GN desc invocation lacked explicit source root; corrected roots used successfully without changing code"
+  ],
+  "limits": [
+    "CardRuntime contains Card session/load/associations and Device ResourceBarrier/radio references: moved only; split deferred",
+    "No new Target primary/activation/eSIM production business closure",
+    "hb absent; matching OHOS product/Feature/SO/SA/IPC/HDI/device build and run NOT_RUN",
+    "Host baseline began before moving; completed after moving. Legacy source/test bytes unchanged, result is not a clean old-directory product checkout run",
+    "Legacy five known defects remain FAIL; no assertion or Golden weakened"
+  ],
+  "verification_tool_sha256": {
+    "services/multisim/test/multisim_architecture_rules/check_directory_migration.py": "7b2b6bdb25fb659b1ef92a0ea9b3b79ae557539ac686498a4ae27f9316d74449",
+    "services/multisim/test/multisim_architecture_rules/check_open_closed_contracts.py": "67c0946325cc6f9740c8420846625077493d20d7002b22c3227418b18b2f801d",
+    "services/multisim/test/multisim_architecture_rules/check_structure.py": "c53a546a5d2dddc9ad043feba9d76ee3c470031fea2e8c4fa796b8e4bab8b528",
+    "services/multisim/test/multisim_architecture_rules/directory-gn-comparison.json": "a514dcc2fd9fca6014fcddc91957b64972132b9b871a1c72a4d6ada7c20b9d8f",
+    "services/multisim/test/multisim_architecture_rules/directory-relocation-evolution.json": "305955a8d809ca8e9489bc1f491621da14aab2e071b07dde7218a0440af5c7d5",
+    "services/multisim/test/multisim_architecture_rules/directory_auxiliary_inventory.json": "a3c4f1cf8a0ea888c406c2d99f47459adf5b582ad1e3d35133ef6f9b53bedac8",
+    "services/multisim/test/multisim_architecture_rules/directory_migration_20261112.json": "033296bd1ca88e354387b78c7270c529a7b18132ff28d99bf329781bcd72943d",
+    "services/multisim/test/multisim_architecture_rules/run.py": "72e9efee61c4b4216a179072e5a248acd1155a9104e8e5f59d0e7240f8c92a74",
+    "services/multisim/test/multisim_architecture_rules/source_migration.json": "6c088613586e65e8d6b21bcb0921f23b9b20d2f47cc44509362572cfd17e4176",
+    "services/multisim/test/multisim_architecture_rules/test_structure.py": "a04847da7f444dd8f94c11b702cb7725831ef333d137b4bc7272848da94ca135"
+  },
+  "current_module_delivery_files": 1035,
+  "new_module_files_excluding_moves": 12
+}

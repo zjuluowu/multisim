@@ -22,7 +22,7 @@
 #include <map>
 #include <optional>
 #include <vector>
-#include "support/request_ref.h"
+#include "infrastructure/request/request_ref.h"
 
 namespace OHOS::Telephony::MultiSim {
 enum class TransitionCause { OrdinaryActivation, ProfileSwitch, RadioSwitch, VerifiedRouteChange };

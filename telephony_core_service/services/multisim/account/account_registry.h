@@ -23,7 +23,7 @@
 #include <optional>
 #include <string>
 #include <vector>
-#include "support/sim_identity.h"
+#include "infrastructure/sim_identity.h"
 #include "account/account_types.h"
 
 namespace OHOS::Telephony::MultiSim {

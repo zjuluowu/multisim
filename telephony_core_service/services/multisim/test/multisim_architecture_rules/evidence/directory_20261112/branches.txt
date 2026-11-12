@@ -1,0 +1,11 @@
++ docs/sim-refactor-recovery-20261030          9f72e7ff9 (/tmp/multisim-recovery-entry) [origin/main: behind 45] docs(sim): record clean remote recovery and relocated validation
+  docs/sim-target-arch-v1.2-independent-review 1afffa4e0 [origin/docs/sim-target-arch-v1.2-independent-review: gone] docs(sim): independent architecture review of target design v1.2
++ docs/sim-target-v1.2-audit-round3            c70894f83 (/tmp/multisim-audit-round3) [origin/docs/sim-target-v1.2-audit-round3: gone] docs(sim): independently audit v1.2 orchestration and migration boundaries
++ integration/sim-review-fixes-20261029        5eed21816 (/tmp/multisim-stage1-sync) [origin/main: behind 49] fix(sim): integrate reviewed architecture contracts with main
+* main                                         b283ad2f6 [origin/main] docs(sim): rename SIM directory design document
++ work/g2a-bplus-integration                   2feaf1277 (/tmp/multisim-g2a-bplus-20261102) [origin/work/g2a-bplus-integration] docs(multisim): record verified G2a B+ host closure and admission gates
++ work/g2a-bplus-revalidation-20261104         d5f0527c5 (/mnt/e/g2a-bplus-m1-20261104) [origin/work/g2a-bplus-revalidation-20261104] docs(sim): consolidate verified refactor and test guard status
++ work/g2a-readonly-checkpoint-20261030        728ad77ed (/tmp/multisim-g2a-checkpoint) [origin/main: ahead 3, behind 45] Merge remote-tracking branch 'origin/main' into work/g2a-readonly-checkpoint-20261030
++ work/g2a-real-query-20261030                 5eed21816 (/tmp/multisim-g2a) fix(sim): integrate reviewed architecture contracts with main
+  work/sim-guard-contract-20261104             01db5ce64 [origin/work/sim-guard-contract-20261104] docs(sim): record authorized guard branch publication
+  work/sim-guard-round2                        5e209a761 docs(sim): record authorized main publication of round2 guard

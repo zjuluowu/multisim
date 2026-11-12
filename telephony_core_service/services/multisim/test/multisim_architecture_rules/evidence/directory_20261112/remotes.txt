@@ -1,0 +1,4 @@
+origin	https://github.com/zjuluowu/multisim.git (fetch)
+origin	https://github.com/zjuluowu/multisim.git (push)
+upstream	https://github.com/openharmony/telephony_core_service.git (fetch)
+upstream	https://github.com/openharmony/telephony_core_service.git (push)

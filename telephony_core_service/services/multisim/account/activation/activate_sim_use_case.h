@@ -22,7 +22,7 @@
 #include "account/topology_service.h"
 #include "account/activation/activation_runtime_port.h"
 #include "account/activation/activation_assignment_port.h"
-#include "support/request/runtime_operation_store.h"
+#include "infrastructure/request/runtime_operation_store.h"
 
 namespace OHOS::Telephony::MultiSim {
 // 第二条流程的关键入口：T 拥有 active 及激活进行中；A 仅作切换准入/偏好/后续主卡复核。

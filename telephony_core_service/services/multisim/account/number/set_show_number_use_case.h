@@ -19,7 +19,7 @@
 #ifndef OHOS_TELEPHONY_MULTISIM_TOPOLOGY_PROFILE_SET_SHOW_NUMBER_USE_CASE_H
 #define OHOS_TELEPHONY_MULTISIM_TOPOLOGY_PROFILE_SET_SHOW_NUMBER_USE_CASE_H
 
-#include "support/request/runtime_operation_store.h"
+#include "infrastructure/request/runtime_operation_store.h"
 #include "account/topology_service.h"
 #include "account/number/show_number_plan.h"
 #include "account/number/show_number_runtime_port.h"

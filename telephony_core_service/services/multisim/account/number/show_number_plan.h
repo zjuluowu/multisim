@@ -20,7 +20,7 @@
 #define OHOS_TELEPHONY_MULTISIM_TOPOLOGY_PROFILE_SHOW_NUMBER_PLAN_H
 
 #include <array>
-#include "support/sim_identity.h"
+#include "infrastructure/sim_identity.h"
 
 namespace OHOS::Telephony::MultiSim {
 enum class NumberUpdateNode { CardMsisdn, AccountStore, CurrentAccountCache, HistoricalAccountCache };

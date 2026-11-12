@@ -28,7 +28,7 @@ SCENARIOS = [
 SOURCES = [
     "services/core/src/core_service_sim.cpp",
     "services/core/src/legacy_sim_query_binding.cpp",
-    "services/multisim/integration/api/real_sim_count_query.cpp",
+    "services/multisim/infrastructure/compatibility/api/real_sim_count_query.cpp",
     "services/sim/src/sim_manager.cpp",
     "services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp",
 ]
@@ -36,7 +36,7 @@ REQUIRED_EXECUTIONS = [
     ("CoreServiceSim", "GetRealSimCount", "services/core/src/core_service_sim.cpp"),
     ("CoreServiceSim", "AttachReadOnlyQueries", "services/core/src/core_service_sim.cpp"),
     ("LegacySimQueryBinding", "ReadLegacyRealSimCount", "services/core/src/legacy_sim_query_binding.cpp"),
-    ("RealSimCountQuery", "Read", "services/multisim/integration/api/real_sim_count_query.cpp"),
+    ("RealSimCountQuery", "Read", "services/multisim/infrastructure/compatibility/api/real_sim_count_query.cpp"),
     ("SimManager", "GetRealSimCount", "services/sim/src/sim_manager.cpp"),
     ("TelephonyExtWrapper", "GetRealSimCountExt", "services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp"),
 ]
@@ -46,7 +46,7 @@ VALIDATION_INPUTS = [
     "test/unittest/raw_parcel_core_service_gtest/BUILD.gn", "services/multisim/test/systemtest/BUILD.gn",
     "services/multisim/test/systemtest/gn/BUILDCONFIG.gn", "services/multisim/test/systemtest/gn/BUILD.gn",
     "services/core/include/core_service_sim.h", "services/core/include/legacy_sim_query_binding.h",
-    "services/multisim/integration/api/real_sim_count_query.h",
+    "services/multisim/infrastructure/compatibility/api/real_sim_count_query.h",
     "interfaces/innerkits/include/i_sim_manager.h", "interfaces/innerkits/include/i_tel_ril_manager.h",
     "interfaces/innerkits/include/telephony_types.h", "services/multisim/test/systemtest/configs/dependency_lock.json",
     "services/multisim/test/systemtest/scripts/run_g2a_query.py", "services/multisim/test/systemtest/scripts/build_clock.py",
@@ -125,7 +125,7 @@ def verify_source_tables(read_text=None):
             raise RuntimeError("Unrelated multisim production source: " + name)
         if any("services/multisim/application/query" in token for token in tokens):
             raise RuntimeError("Obsolete G2a source path: " + name)
-        required_include = prefix + "services/multisim/integration/api"
+        required_include = prefix + "services/multisim/infrastructure/compatibility/api"
         if required_include not in includes or prefix + "services/multisim" in includes:
             raise RuntimeError("Missing narrow G2a include boundary: " + name)
         if name == "services/multisim/test/systemtest/BUILD.gn":
@@ -134,8 +134,8 @@ def verify_source_tables(read_text=None):
                 raise RuntimeError("Missing G2a launcher include boundary")
     leaf = target_body(gn_tokens(read_text("services/multisim/BUILD.gn")), ("source_set", "readonly_query"))
     if (leaf[:3] != ["testonly", "=", "true"] or
-            literal_lists(leaf, "sources") != ["integration/api/real_sim_count_query.cpp", "integration/api/real_sim_count_query.h"] or
-            literal_lists(leaf, "public") != ["integration/api/real_sim_count_query.h"] or
+            literal_lists(leaf, "sources") != ["infrastructure/compatibility/api/real_sim_count_query.cpp", "infrastructure/compatibility/api/real_sim_count_query.h"] or
+            literal_lists(leaf, "public") != ["infrastructure/compatibility/api/real_sim_count_query.h"] or
             any(field in leaf for field in ["deps", "public_deps", "public_configs"])):
         raise RuntimeError("G2a leaf must remain isolated and testonly")
     return {"tables": [row[0] for row in tables], "query_and_binding_once_per_target": True,

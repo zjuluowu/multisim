@@ -1,0 +1,539 @@
+{
+  "added_targets": [],
+  "deleted_targets": [],
+  "target_count": 25,
+  "dependency_edges_unchanged": true,
+  "targets": [
+    {
+      "target": "assembly_contracts",
+      "before_sources": [
+        "integration/lifecycle/host_ports.h",
+        "integration/lifecycle/manager_publication.h",
+        "integration/lifecycle/sim_module_factory.h"
+      ],
+      "after_sources": [
+        "infrastructure/assembly/host_ports.h",
+        "infrastructure/assembly/manager_publication.h",
+        "infrastructure/assembly/sim_module_factory.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":compatibility_contracts",
+        ":sim_values",
+        ":topology_contracts"
+      ],
+      "source_paths_changed": true,
+      "public_paths_changed": true
+    },
+    {
+      "target": "assembly_core",
+      "before_sources": [
+        "integration/lifecycle/sim_module.h",
+        "integration/lifecycle/sim_module_factory.cpp"
+      ],
+      "after_sources": [
+        "infrastructure/assembly/sim_module.h",
+        "infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":assembly_contracts",
+        ":assignment_adapters",
+        ":assignment_cases",
+        ":compatibility_core",
+        ":runtime_core",
+        ":topology_adapters",
+        ":topology_cases"
+      ],
+      "source_paths_changed": true,
+      "public_paths_changed": true
+    },
+    {
+      "target": "assignment_adapters",
+      "before_sources": [
+        "card_selection/assignment_output_adapter.h",
+        "card_selection/assignment_store_adapter.h"
+      ],
+      "after_sources": [
+        "role_assignment/assignment_output_adapter.h",
+        "role_assignment/assignment_store_adapter.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":assignment_contracts"
+      ],
+      "source_paths_changed": true,
+      "public_paths_changed": true
+    },
+    {
+      "target": "assignment_cases",
+      "before_sources": [
+        "card_selection/assignment_service.cpp",
+        "card_selection/assignment_service.h"
+      ],
+      "after_sources": [
+        "role_assignment/assignment_service.cpp",
+        "role_assignment/assignment_service.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":assignment_contracts",
+        ":assignment_domain",
+        ":assignment_protocols",
+        ":request_mechanism",
+        ":topology_contracts"
+      ],
+      "source_paths_changed": true,
+      "public_paths_changed": true
+    },
+    {
+      "target": "assignment_contracts",
+      "before_sources": [
+        "card_selection/assignment_requests.h",
+        "card_selection/assignment_store.h",
+        "card_selection/legacy_entry.h",
+        "card_selection/primary/primary_topology_port.h",
+        "card_selection/profile_preference_port.h",
+        "card_selection/primary/radio_execution_port.h"
+      ],
+      "after_sources": [
+        "role_assignment/assignment_requests.h",
+        "role_assignment/assignment_store.h",
+        "role_assignment/legacy_entry.h",
+        "role_assignment/primary/primary_topology_port.h",
+        "role_assignment/profile_preference_port.h",
+        "role_assignment/primary/radio_execution_port.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":assignment_types",
+        ":request_protocol",
+        ":sim_values"
+      ],
+      "source_paths_changed": true,
+      "public_paths_changed": true
+    },
+    {
+      "target": "assignment_domain",
+      "before_sources": [
+        "card_selection/assignment_aggregate.cpp",
+        "card_selection/assignment_aggregate.h",
+        "card_selection/role_selection.h"
+      ],
+      "after_sources": [
+        "role_assignment/assignment_aggregate.cpp",
+        "role_assignment/assignment_aggregate.h",
+        "role_assignment/role_selection.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":assignment_types",
+        ":sim_values"
+      ],
+      "source_paths_changed": true,
+      "public_paths_changed": true
+    },
+    {
+      "target": "assignment_protocols",
+      "before_sources": [
+        "card_selection/account_role_protocol.h",
+        "card_selection/primary/primary_switch_plan.cpp",
+        "card_selection/primary/primary_switch_plan.h"
+      ],
+      "after_sources": [
+        "role_assignment/account_role_protocol.h",
+        "role_assignment/primary/primary_switch_plan.cpp",
+        "role_assignment/primary/primary_switch_plan.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":assignment_contracts",
+        ":assignment_types"
+      ],
+      "source_paths_changed": true,
+      "public_paths_changed": true
+    },
+    {
+      "target": "assignment_types",
+      "before_sources": [
+        "card_selection/assignment_types.h",
+        "card_selection/primary/primary_execution.h"
+      ],
+      "after_sources": [
+        "role_assignment/assignment_types.h",
+        "role_assignment/primary/primary_execution.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":sim_values"
+      ],
+      "source_paths_changed": true,
+      "public_paths_changed": true
+    },
+    {
+      "target": "compatibility_contracts",
+      "before_sources": [
+        "integration/api/legacy_boundary_ports.h"
+      ],
+      "after_sources": [
+        "infrastructure/compatibility/api/legacy_boundary_ports.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":topology_contracts"
+      ],
+      "source_paths_changed": true,
+      "public_paths_changed": true
+    },
+    {
+      "target": "compatibility_core",
+      "before_sources": [
+        "integration/api/legacy_sim_facade.cpp",
+        "integration/api/legacy_sim_facade.h",
+        "integration/events/completion_cell.h",
+        "integration/events/legacy_completion.cpp",
+        "integration/events/legacy_completion.h",
+        "integration/events/legacy_output_adapter.cpp",
+        "integration/events/legacy_output_adapter.h",
+        "card/esim/legacy_profile_result.h"
+      ],
+      "after_sources": [
+        "infrastructure/compatibility/api/legacy_sim_facade.cpp",
+        "infrastructure/compatibility/api/legacy_sim_facade.h",
+        "infrastructure/compatibility/events/completion_cell.h",
+        "infrastructure/compatibility/events/legacy_completion.cpp",
+        "infrastructure/compatibility/events/legacy_completion.h",
+        "infrastructure/compatibility/events/legacy_output_adapter.cpp",
+        "infrastructure/compatibility/events/legacy_output_adapter.h",
+        "card/esim/legacy_profile_result.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":assignment_contracts",
+        ":compatibility_contracts",
+        ":request_protocol",
+        ":runtime_contracts",
+        ":sim_values",
+        ":topology_contracts"
+      ],
+      "source_paths_changed": true,
+      "public_paths_changed": true
+    },
+    {
+      "target": "readonly_query",
+      "before_sources": [
+        "integration/api/real_sim_count_query.cpp",
+        "integration/api/real_sim_count_query.h"
+      ],
+      "after_sources": [
+        "infrastructure/compatibility/api/real_sim_count_query.cpp",
+        "infrastructure/compatibility/api/real_sim_count_query.h"
+      ],
+      "deps": [],
+      "public_deps": [],
+      "source_paths_changed": true,
+      "public_paths_changed": true
+    },
+    {
+      "target": "repository_exports",
+      "before_sources": [
+        "integration/lifecycle/exports/sim_host_ports.h",
+        "integration/lifecycle/exports/sim_module_factory.h"
+      ],
+      "after_sources": [
+        "infrastructure/assembly/exports/sim_host_ports.h",
+        "infrastructure/assembly/exports/sim_module_factory.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":assembly_contracts"
+      ],
+      "source_paths_changed": true,
+      "public_paths_changed": true
+    },
+    {
+      "target": "request_mechanism",
+      "before_sources": [
+        "support/request/runtime_operation_store.h"
+      ],
+      "after_sources": [
+        "infrastructure/request/runtime_operation_store.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":request_protocol"
+      ],
+      "source_paths_changed": true,
+      "public_paths_changed": true
+    },
+    {
+      "target": "request_protocol",
+      "before_sources": [
+        "support/request/request_context.h"
+      ],
+      "after_sources": [
+        "infrastructure/request/request_context.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":sim_values"
+      ],
+      "source_paths_changed": true,
+      "public_paths_changed": true
+    },
+    {
+      "target": "runtime_cases",
+      "before_sources": [
+        "card/esim/local_card_requests.cpp"
+      ],
+      "after_sources": [
+        "card/esim/local_card_requests.cpp"
+      ],
+      "deps": [
+        ":runtime_contracts"
+      ],
+      "public_deps": [],
+      "source_paths_changed": false,
+      "public_paths_changed": false
+    },
+    {
+      "target": "runtime_contracts",
+      "before_sources": [
+        "card/esim/local_card_requests.h",
+        "card/esim/profile_requests.h",
+        "card/records/ef_requests.h",
+        "card/security/pin_requests.h"
+      ],
+      "after_sources": [
+        "card/esim/local_card_requests.h",
+        "card/esim/profile_requests.h",
+        "card/records/ef_requests.h",
+        "card/security/pin_requests.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":assignment_contracts",
+        ":request_protocol"
+      ],
+      "source_paths_changed": false,
+      "public_paths_changed": false
+    },
+    {
+      "target": "runtime_core",
+      "before_sources": [
+        "integration/lifecycle/card_runtime.cpp",
+        "integration/lifecycle/card_runtime.h",
+        "integration/lifecycle/result_sinks.h"
+      ],
+      "after_sources": [
+        "card/runtime/card_runtime.cpp",
+        "card/runtime/card_runtime.h",
+        "card/runtime/result_sinks.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":assignment_contracts",
+        ":runtime_contracts",
+        ":runtime_mechanisms",
+        ":sim_values",
+        ":topology_contracts"
+      ],
+      "source_paths_changed": true,
+      "public_paths_changed": true
+    },
+    {
+      "target": "runtime_mechanisms",
+      "before_sources": [
+        "card/records/load_session.cpp",
+        "card/records/load_session.h",
+        "device/resource/resource_barrier.cpp",
+        "device/resource/resource_barrier.h",
+        "card/state/session_registry.cpp",
+        "card/state/session_registry.h"
+      ],
+      "after_sources": [
+        "card/records/load_session.cpp",
+        "card/records/load_session.h",
+        "device/resource/resource_barrier.cpp",
+        "device/resource/resource_barrier.h",
+        "card/state/session_registry.cpp",
+        "card/state/session_registry.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":sim_values"
+      ],
+      "source_paths_changed": false,
+      "public_paths_changed": false
+    },
+    {
+      "target": "sim_values",
+      "before_sources": [
+        "support/request_ref.h",
+        "support/sim_identity.h",
+        "support/slot_catalog.cpp",
+        "support/slot_catalog.h"
+      ],
+      "after_sources": [
+        "infrastructure/request/request_ref.h",
+        "infrastructure/sim_identity.h",
+        "infrastructure/assembly/slot_catalog.cpp",
+        "infrastructure/assembly/slot_catalog.h"
+      ],
+      "deps": [],
+      "public_deps": [],
+      "source_paths_changed": true,
+      "public_paths_changed": true
+    },
+    {
+      "target": "topology_adapters",
+      "before_sources": [
+        "account/account_store_adapter.cpp",
+        "account/account_store_adapter.h",
+        "account/activation/activation_hook_adapter.h"
+      ],
+      "after_sources": [
+        "account/account_store_adapter.cpp",
+        "account/account_store_adapter.h",
+        "account/activation/activation_hook_adapter.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":topology_contracts"
+      ],
+      "source_paths_changed": false,
+      "public_paths_changed": false
+    },
+    {
+      "target": "topology_cases",
+      "before_sources": [
+        "account/activation/activate_sim_use_case.cpp",
+        "account/activation/activate_sim_use_case.h",
+        "account/number/set_show_number_use_case.cpp",
+        "account/number/set_show_number_use_case.h",
+        "account/number/show_number_query.cpp",
+        "account/number/show_number_query.h",
+        "account/topology_service.cpp",
+        "account/topology_service.h"
+      ],
+      "after_sources": [
+        "account/activation/activate_sim_use_case.cpp",
+        "account/activation/activate_sim_use_case.h",
+        "account/number/set_show_number_use_case.cpp",
+        "account/number/set_show_number_use_case.h",
+        "account/number/show_number_query.cpp",
+        "account/number/show_number_query.h",
+        "account/topology_service.cpp",
+        "account/topology_service.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":assignment_contracts",
+        ":request_mechanism",
+        ":topology_contracts",
+        ":topology_domain",
+        ":topology_protocols"
+      ],
+      "source_paths_changed": false,
+      "public_paths_changed": false
+    },
+    {
+      "target": "topology_contracts",
+      "before_sources": [
+        "account/account_role_planning_port.h",
+        "account/account_store.h",
+        "account/activation/activation_assignment_port.h",
+        "account/activation/activation_runtime_port.h",
+        "account/discovery/card_observation_port.h",
+        "account/legacy_entry.h",
+        "account/number/number_query_host_port.h",
+        "account/number/show_number_completion_port.h",
+        "account/number/show_number_runtime_port.h",
+        "account/topology_requests.h"
+      ],
+      "after_sources": [
+        "account/account_role_planning_port.h",
+        "account/account_store.h",
+        "account/activation/activation_assignment_port.h",
+        "account/activation/activation_runtime_port.h",
+        "account/discovery/card_observation_port.h",
+        "account/legacy_entry.h",
+        "account/number/number_query_host_port.h",
+        "account/number/show_number_completion_port.h",
+        "account/number/show_number_runtime_port.h",
+        "account/topology_requests.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":assignment_contracts",
+        ":request_protocol",
+        ":sim_values",
+        ":topology_types"
+      ],
+      "source_paths_changed": false,
+      "public_paths_changed": false
+    },
+    {
+      "target": "topology_domain",
+      "before_sources": [
+        "account/account_registry.cpp",
+        "account/account_registry.h",
+        "account/binding_index.cpp",
+        "account/binding_index.h"
+      ],
+      "after_sources": [
+        "account/account_registry.cpp",
+        "account/account_registry.h",
+        "account/binding_index.cpp",
+        "account/binding_index.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":sim_values",
+        ":topology_types"
+      ],
+      "source_paths_changed": false,
+      "public_paths_changed": false
+    },
+    {
+      "target": "topology_protocols",
+      "before_sources": [
+        "account/activation/activation_progress.cpp",
+        "account/activation/activation_progress.h",
+        "account/discovery/discovery_observation_ledger.cpp",
+        "account/discovery/discovery_observation_ledger.h",
+        "account/number/show_number_plan.cpp",
+        "account/number/show_number_plan.h"
+      ],
+      "after_sources": [
+        "account/activation/activation_progress.cpp",
+        "account/activation/activation_progress.h",
+        "account/discovery/discovery_observation_ledger.cpp",
+        "account/discovery/discovery_observation_ledger.h",
+        "account/number/show_number_plan.cpp",
+        "account/number/show_number_plan.h"
+      ],
+      "deps": [],
+      "public_deps": [
+        ":sim_values",
+        ":topology_contracts",
+        ":topology_domain"
+      ],
+      "source_paths_changed": false,
+      "public_paths_changed": false
+    },
+    {
+      "target": "topology_types",
+      "before_sources": [
+        "account/account_types.h"
+      ],
+      "after_sources": [
+        "account/account_types.h"
+      ],
+      "deps": [],
+      "public_deps": [],
+      "source_paths_changed": false,
+      "public_paths_changed": false
+    }
+  ]
+}

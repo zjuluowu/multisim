@@ -1,5 +1,7 @@
 # SIM Linux TDD 防护网
 
+2026-11-12目录实施：当前query位置为 `infrastructure/compatibility/api`，旧日期实测记录中的integration/api等路径继续表示当时源码；[迁移与当前验收](../../../../docs/SIM_Directory_Migration_20261112.md)。原场景、Golden、StrictMock与缺陷分类不因迁址改写。
+
 2026-11-09开闭源复审增量：账户事件注销疑点仅记录为CR-07（旧实现不修改），PIN记忆载荷见[SIM Guard增量](../sim_guard/README.md)。实际命令、源码摘要及结果统一见[执行状态§12](../../../../docs/SIM_Refactor_Execution_State.md#open-closed-followup-20261109)，不改写下列历史容量/G2a/初始化证据。
 
 历史容量切片：**Linux 受控组件最小切片已运行**，该套件仅覆盖 `ISimManager::GetMaxSimCount()` 的只读容量查询。正常 GoogleTest 1 PASS；独立检查器负控1预期FAIL。编译、链接和源级覆盖证据确认执行了未修改的SIM生产方法。
@@ -81,7 +83,7 @@ python3 services/multisim/test/systemtest/scripts/audit_initialization.py --gtes
 
 ## G2a B+ 真实只读查询（M1）
 
-源自 `work/g2a-bplus-integration`、现已按授权合入 main，使用当前 B+ 的 `services/multisim/integration/api/real_sim_count_query.*`，不恢复 application/query 目录。原 Core 入口和 SimManager/EXT 是实际生产 cpp，RIL 仅在平台接口以 StrictMock 替代，厂商覆盖值从明确 ABI 注入。冻结七场景 Oracle 不变：1/2/0/-2/invalid → 1/2/0/-2/0；参数2、厂商5/-31 → 5/-31。
+源自 `work/g2a-bplus-integration`、现已按授权合入 main，当前源码使用 `services/multisim/infrastructure/compatibility/api/real_sim_count_query.*`，不恢复 application/query 目录。原 Core 入口和 SimManager/EXT 是实际生产 cpp，RIL 仅在平台接口以 StrictMock 替代，厂商覆盖值从明确 ABI 注入。冻结七场景 Oracle 不变：1/2/0/-2/invalid → 1/2/0/-2/0；参数2、厂商5/-31 → 5/-31。
 
 从 Git 根准备锁定依赖并运行（变量指向当前机器仓外目录）：
 

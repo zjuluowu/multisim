@@ -21,7 +21,7 @@
 
 #include <optional>
 #include <string>
-#include "support/request_ref.h"
+#include "infrastructure/request/request_ref.h"
 
 namespace OHOS::Telephony::MultiSim {
 struct MsisdnWriteRequest {

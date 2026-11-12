@@ -11,7 +11,8 @@
 | 材料 | 唯一维护职责 |
 | --- | --- |
 | [目标主设计 v1.2](docs/SIM_Target_Architecture_Design_v1.2.md) §4～6、§9～14、§22 | 业务边界、唯一写权、异步/资源协议和阶段门禁；整体仍draft/pending，不覆盖已批准契约 |
-| [源码详细设计](docs/SIM_Multisim_Source_Architecture_Detailed_Design.md) §3/4/17/21 | 当前/稳态目录、全文件归属、具体接口及逻辑GN依赖 |
+| [目录设计方案](docs/SIM重构代码目录结构设计方案.md) | 五组一级组织与Infrastructure职责；物理迁移直接依据 |
+| [源码详细设计](docs/SIM_Multisim_Source_Architecture_Detailed_Design.md) §3/4/17/21 | 在目录设计方案约束下维护当前/稳态路径、全文件归属、具体接口及逻辑GN依赖 |
 | [唯一执行状态](docs/SIM_Refactor_Execution_State.md) | 当前基线、远端检查点、实测证据、局部阻塞及下一批任务；AGENTS不维护动态SHA或PASS数量 |
 | [功能/WU清单](docs/SIM_Architecture_Refactor_Design.md)、[流程对照](docs/多SIM架构重构_设计说明与业务流程对照.md) | 沿用SIM-001～062及子项、WU-01～09、生产入口与迁移闭包；不另建编号或平行台账 |
 | [接口契约](docs/SIM管理对外接口说明_源码核实版.md)、[外仓边界](docs/knowledge/routing/repo-boundary.md) | 外部API、权限、错误、消费者与外仓责任 |
@@ -31,23 +32,24 @@
 
 ## 源码组织与状态责任
 
-修订B+六组是已选结构基线；完整实际树与未来能力分别查详细设计§3，未有源码的能力不建空目录。
+当前一级目录由[目录设计方案](docs/SIM重构代码目录结构设计方案.md)确定为五组；历史B+六组不再作为新增代码落点。逐文件归属、临时接缝和GN对照见[本批迁移记录](docs/SIM_Directory_Migration_20261112.md)。
 
-| 目录/机制 | 状态责任与安全规则 |
-| --- | --- |
-| account / T | 账户身份、Slot/Port/Profile已接纳绑定、资料、active及激活业务进度；唯一事实接纳。生产尚未移交的写点不能因骨架存在宣称已收口 |
-| card_selection / A | 默认Voice/SMS/Data、Primary、业务分配/冲突准入、偏好及唯一业务重试；不拥有真实设备租约 |
-| card / R卡能力 | 卡状态/锁因、协议、Records/加载、电话簿、卡短信、STK、carrier与eUICC能力各自分责；卡库存不等于T绑定 |
-| device / R设备执行 | Radio握手及协议session/phase、真实共享资源资格；不取得T动态绑定/A选卡权。Card/Device不是强制逐层转发链 |
-| integration / C/I/H | 兼容入口、共享交付、技术适配和宿主装配；只有必要组合根连接全体实现，不集中业务重载/重试 |
-| support / O与纯值 | 小型纯值、H构建的只读SlotCatalog、各用例自有请求机制；O不是第三业务Owner，不建全局编排中心 |
+| 目录 | 唯一责任与约束 |
+|---|---|
+| account / T | 账户身份/资料/active、已接纳绑定及激活业务进度；绑定不等于槽号；专属Store/Hook Adapter就近 |
+| role_assignment / A | Primary与默认Voice/SMS/Data的各自角色语义、冲突准入和业务重试；不拥有真实设备租约 |
+| card | 应用会话/代次、Records加载及卡侧安全/EF/APDU/Profile协议；SessionRegistry和LoadSession就近 |
+| device | Radio/Modem执行状态和ResourceBarrier共享设备域资格；不反向写Account或角色事实 |
+| infrastructure/compatibility | 旧API及完成/结果通知适配，无业务规则/业务事实；业务专属适配留原Owner |
+| infrastructure/assembly | 模块创建/初始化/销毁、宿主注入、Manager发布及只读SlotCatalog；不接管Card/Device运行状态 |
+| infrastructure/request | 各用例自有请求/步骤/完成机制，无全局分发、业务流程或重试决策 |
+| infrastructure/sim_identity.h | 纯公共身份/关联类型，无IdentityManager或全局映射状态 |
 
-- 卡应用SessionRegistry在 `card/state`，管理应用代次/ExpectedTransition；Radio协议session属于 `device/radio`（成熟实现待迁入），不预建 `device/session`。T bindingRevision与R bindingGeneration不混同；epoch由宿主提供。
-- ResourceBarrier在 `device/resource`，当前仅有骨架纯规则；真实物理域、结束/恢复证据未接入生产。不能按槽或软件对象复制共享屏障。
-- SlotCatalog在 `support`，含容量/路由/装配/可见性描述，由H构建后只读；不持动态账户绑定，不把调用者投影当Modem原始事实。
-- CardRuntime/result_sinks位于 `integration/lifecycle` 只是过渡位置，仍承担R运行接缝，尚未薄化；`card/esim/legacy_profile_result.h`仍是C的双结果投影。目录位置不转移Owner。
-- Domain仅纯规则/状态；平台I/O、编排、等待、callback在相应外层。T/A仅经窄应用契约协作，不include对方Service/聚合/私有Adapter，不持跨Owner可写引用或嵌套同步等待。
-- 保留独立逻辑target、精确public与依赖DAG，不按六组机械合并target。禁止CardManager、DeviceManager、总公共头/DTO池或无证据的总线/日志/平行执行架构。
+CardRuntime/result_sinks暂在card/runtime；其中设备资源成员尚未拆分，不能据目录推定写权已移交或继续扩大它。保持原对象/成员/异步回调，本批风险及后续裁决见迁移记录。SlotCatalog由Assembly构建后只读，动态绑定归Account。Profile协议/库存归Card、绑定归Account、偏好归Role Assignment，真实设备资源归Device。
+
+新增文件先确定业务事实Owner，再确定物理落点和逻辑target；禁止重新建立common、utils、startup等无边界一级公共目录。业务专属Adapter不得因复用迁入Infrastructure。T/A仅依赖窄契约，不include另一Owner的Service/聚合/私有Adapter，不持跨Owner可写引用或嵌套同步等待。Domain仅纯规则/状态；I/O/等待/callback在相应外层。
+
+保留25个独立逻辑source_set及精确public/visibility与依赖DAG，不按五目录合并target，不靠宽泛public_deps解决依赖。目录、逻辑层、SO和运行对象非一一对应；禁止CardManager/DeviceManager、中央Request调度、总DTO池或无证据的全局总线。
 
 ## 生产迁移与关键不变量
 

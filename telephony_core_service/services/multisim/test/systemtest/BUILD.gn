@@ -43,7 +43,7 @@ source_set("primary_slot_entry_production") {
     sources += [ primary_slot_core_source ]
   }
   configs += [ ":primary_slot_headers", ":production_headers", ":production_execution_evidence" ]
-  include_dirs = [ "$production_root/services/multisim/integration/api" ]
+  include_dirs = [ "$production_root/services/multisim/infrastructure/compatibility/api" ]
 }
 executable("sim_primary_slot_entry_test") {
   sources = [ "primary_slot/entry_test.cpp", "primary_slot/security_boundary.cpp" ]
@@ -331,19 +331,19 @@ source_set("g2a_readonly_production_host") {
   sources = [
     "$production_root/services/core/src/core_service_sim.cpp",
     "$production_root/services/core/src/legacy_sim_query_binding.cpp",
-    "$production_root/services/multisim/integration/api/real_sim_count_query.cpp",
+    "$production_root/services/multisim/infrastructure/compatibility/api/real_sim_count_query.cpp",
   ]
   configs += [
     ":production_headers",
     ":production_execution_evidence",
   ]
-  include_dirs = [ "$production_root/services/multisim/integration/api" ]
+  include_dirs = [ "$production_root/services/multisim/infrastructure/compatibility/api" ]
 }
 source_set("g2a_query_launcher") {
   sources = [ "support/g2a_query_probe.cpp" ]
   configs += [ ":production_headers" ]
   include_dirs = [
-    "$production_root/services/multisim/integration/api",
+    "$production_root/services/multisim/infrastructure/compatibility/api",
     "stubs",
     "$gtest_root/googletest/include",
     "$gtest_root/googlemock/include",

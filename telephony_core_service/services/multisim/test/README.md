@@ -1,5 +1,7 @@
 # 多 SIM 重构测试入口
 
+业务源码按五组目录迁移，test/tools位置保持；当前路径与本轮实际运行见[迁移验收](../../../docs/SIM_Directory_Migration_20261112.md)。历史证据包及冻结Scenario/Contract/Oracle/Fake保留原文，不以路径变化更改业务期望。
+
 2026-11-09按用户要求，将重构新增测试工程及其构建、脚本、Stub/Fake、用例、证据和设计资料统一放在 `services/multisim/` 下。旧 `test/` 仅保留原有部件测试；旧生产实现只读。测试读取真实旧源码作为比较基线，负控只修改仓外副本。
 
 Windows VS Code + WSL 的日常构建、筛选测试和调试见 [Host 使用说明](systemtest/HOST.md)。2026-11-11工程增量不改历史迁移摘要；Host首批四份既有构建/设施资产的明确修改由 [relocation_followups.json](relocation_followups.json) 单列，迁移检查同时验证当前摘要，仍拒绝未登记漂移。

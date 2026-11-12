@@ -19,7 +19,7 @@
 #ifndef OHOS_TELEPHONY_MULTISIM_TOPOLOGY_API_ACTIVATION_ASSIGNMENT_PORT_H
 #define OHOS_TELEPHONY_MULTISIM_TOPOLOGY_API_ACTIVATION_ASSIGNMENT_PORT_H
 
-#include "card_selection/assignment_requests.h"
+#include "role_assignment/assignment_requests.h"
 
 namespace OHOS::Telephony::MultiSim {
 // T激活只依赖A正式应用能力，不握AssignmentService具体类型或A聚合。
