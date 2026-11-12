@@ -1,0 +1,1172 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuites><testsuite name="SimComponent" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:17.824">
+    <testcase name="CapacityReadOnly" file="../../repo/telephony_core_service/services/multisim/test/systemtest/tests/capacity_test.cpp" line="8" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:17.824" classname="SimComponent">
+      <properties>
+        <property name="scenario_framework" value="GoogleMock v1.15.2" />
+        <property name="case_id" value="SIM-COMP-001" />
+        <property name="level" value="B" />
+        <property name="oracle_id" value="O-C11" />
+        <property name="synthetic_only" value="true" />
+        <property name="converged" value="true" />
+        <property name="legacy_capacity" value="1" />
+        <property name="parameter_boundary_observed" value="true" />
+        <property name="corrupted_evidence" value="false" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ContractDriver" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.005" timestamp="2026-11-12T12:42:17.846">
+    <testcase name="PIN_001" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/contract_test.cpp" line="30" status="run" result="completed" time="0.005" timestamp="2026-11-12T12:42:17.846" classname="ContractDriver">
+      <properties>
+        <property name="real_instances_created" value="1" />
+        <property name="observations" value="card-event:slot=0,present=1,state=LOCKED,kind=2;&#10;pin-success-status:slot=0,present=1,state=READY,kind=2;&#10;" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:0;pin:0;pin:0;status:0;" />
+        <property name="real_instances_destroyed" value="1" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="SessionLifecycle" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.005" timestamp="2026-11-12T12:42:18.034">
+    <testcase name="CALLBACK_003_DroppedThenRecovery" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="75" status="run" result="completed" time="0.005" timestamp="2026-11-12T12:42:18.034" classname="SessionLifecycle">
+      <properties>
+        <property name="real_instances_created" value="1" />
+        <property name="pending_state_policy" value="C observation only; no initial/restart state policy frozen" />
+        <property name="observations" value="status-response-not-delivered:slot=0,present=0,state=UNKNOWN,kind=0;&#10;new-status-response:slot=0,present=1,state=LOCKED,kind=2;&#10;" />
+        <property name="injected_fault" value="RIL response dropped; no timeout-policy assertion" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:0;status:0;" />
+        <property name="real_instances_destroyed" value="1" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownExtra" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.003" timestamp="2026-11-12T12:44:12.785">
+    <testcase name="OwnedTaskClosureDestructionIsPartOfStopBarrier" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="330" status="run" result="completed" time="0.003" timestamp="2026-11-12T12:44:12.785" classname="ShutdownExtra" />
+  </testsuite>
+<testsuite name="SessionLifecycle" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.004" timestamp="2026-11-12T12:42:18.059">
+    <testcase name="PUK_002_WrongThenSuccessfulUnlock" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="84" status="run" result="completed" time="0.004" timestamp="2026-11-12T12:42:18.059" classname="SessionLifecycle">
+      <properties>
+        <property name="real_instances_created" value="1" />
+        <property name="observations" value="card-event:slot=0,present=1,state=LOCKED,kind=2;&#10;card-event:slot=0,present=1,state=READY,kind=2;&#10;" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:0;status:0;" />
+        <property name="real_instances_destroyed" value="1" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="SessionLifecycle" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.005" timestamp="2026-11-12T12:42:18.079">
+    <testcase name="REFRESH_001_ExplicitStatusQuery" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="95" status="run" result="completed" time="0.005" timestamp="2026-11-12T12:42:18.079" classname="SessionLifecycle">
+      <properties>
+        <property name="real_instances_created" value="1" />
+        <property name="observations" value="card-event:slot=0,present=1,state=READY,kind=2;&#10;explicit-refresh-completed:slot=0,present=1,state=LOCKED,kind=2;&#10;" />
+        <property name="raw_refresh_return" value="2" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:0;status:0;status:0;" />
+        <property name="real_instances_destroyed" value="1" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="SessionLifecycle" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.008" timestamp="2026-11-12T12:42:18.104">
+    <testcase name="RECREATE_001_DualCardReenumeration" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="100" status="run" result="completed" time="0.007" timestamp="2026-11-12T12:42:18.104" classname="SessionLifecycle">
+      <properties>
+        <property name="real_instances_created" value="4" />
+        <property name="observations" value="card-event:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;&#10;card-event:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;&#10;new-real-SUT-before-enumeration:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=0,state=UNKNOWN,kind=0;&#10;reenumerated-device-facts:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;&#10;" />
+        <property name="real_instances_destroyed" value="4" />
+        <property name="pending_state_policy" value="C observation only; no initial/restart state policy frozen" />
+        <property name="persistence_scope" value="external card facts; no Provider/DB recovery claim" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:1;status:0;" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="SessionLifecycle" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.008" timestamp="2026-11-12T12:42:18.144">
+    <testcase name="RECREATE_002_ReplacementWhileStopped" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="112" status="run" result="completed" time="0.008" timestamp="2026-11-12T12:42:18.144" classname="SessionLifecycle">
+      <properties>
+        <property name="real_instances_created" value="2" />
+        <property name="observations" value="card-event:slot=0,present=1,state=READY,kind=2;&#10;new-card-after-real-recreation:slot=0,present=1,state=LOCKED,kind=1;&#10;" />
+        <property name="real_instances_destroyed" value="2" />
+        <property name="pending_state_policy" value="C observation only; no initial/restart state policy frozen" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:0;" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="SessionLifecycle" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.009" timestamp="2026-11-12T12:42:18.187">
+    <testcase name="DUAL_002_PinWhileOtherCardRemoved" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="122" status="run" result="completed" time="0.008" timestamp="2026-11-12T12:42:18.187" classname="SessionLifecycle">
+      <properties>
+        <property name="real_instances_created" value="2" />
+        <property name="observations" value="card-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;&#10;card-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=1,state=READY,kind=1;&#10;card-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=0,state=ABSENT,kind=0;&#10;unlock-and-other-removal-completed:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=ABSENT,kind=0;&#10;" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:0;status:1;pin:0;status:1;status:0;" />
+        <property name="real_instances_destroyed" value="2" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="SessionLifecycle" tests="1" failures="1" disabled="0" skipped="0" errors="0" time="0.006" timestamp="2026-11-12T12:42:18.226">
+    <testcase name="DEFECT_002_ReadyReplyFromReplacedCard" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="136" status="run" result="completed" time="0.006" timestamp="2026-11-12T12:42:18.226" classname="SessionLifecycle">
+      <failure message="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23&#10;Expected equality of these values:&#10;  actual.state&#10;    Which is: READY&#10;  state&#10;    Which is: LOCKED&#10;" type="">/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23
+Expected equality of these values:
+  actual.state
+    Which is: READY
+  state
+    Which is: LOCKED
+</failure>
+      <failure message="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:24&#10;Expected equality of these values:&#10;  actual.kind&#10;    Which is: 4-byte object &lt;02-00 00-00&gt;&#10;  kind&#10;    Which is: 4-byte object &lt;01-00 00-00&gt;&#10;" type="">/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:24
+Expected equality of these values:
+  actual.kind
+    Which is: 4-byte object &lt;02-00 00-00&gt;
+  kind
+    Which is: 4-byte object &lt;01-00 00-00&gt;
+</failure>
+      <properties>
+        <property name="real_instances_created" value="1" />
+        <property name="observations" value="card-event:slot=0,present=1,state=READY,kind=2;&#10;replacement-card-locked:slot=0,present=1,state=LOCKED,kind=1;&#10;old-card-ready-response:slot=0,present=1,state=READY,kind=2;&#10;" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:0;status:0;status:0;status:0;" />
+        <property name="real_instances_destroyed" value="1" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="SessionLifecycle" tests="1" failures="1" disabled="0" skipped="0" errors="0" time="0.005" timestamp="2026-11-12T12:42:18.249">
+    <testcase name="DEFECT_003_GenericRilErrorIsNotWrongPassword" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="150" status="run" result="completed" time="0.004" timestamp="2026-11-12T12:42:18.249" classname="SessionLifecycle">
+      <failure message="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:157&#10;Expected: (actual.error) != (0), actual: 0 vs 0&#10;" type="">/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:157
+Expected: (actual.error) != (0), actual: 0 vs 0
+</failure>
+      <failure message="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:157&#10;Expected equality of these values:&#10;  actual.result&#10;    Which is: 4-byte object &lt;01-00 00-00&gt;&#10;  Unlock::Failure&#10;    Which is: 4-byte object &lt;02-00 00-00&gt;&#10;" type="">/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:157
+Expected equality of these values:
+  actual.result
+    Which is: 4-byte object &lt;01-00 00-00&gt;
+  Unlock::Failure
+    Which is: 4-byte object &lt;02-00 00-00&gt;
+</failure>
+      <properties>
+        <property name="real_instances_created" value="1" />
+        <property name="observations" value="card-event:slot=0,present=1,state=LOCKED,kind=2;&#10;generic-error-without-password-decision:slot=0,present=1,state=LOCKED,kind=2;&#10;" />
+        <property name="observed_error" value="0" />
+        <property name="observed_unlock_result" value="1" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:0;" />
+        <property name="real_instances_destroyed" value="1" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="SessionLifecycle" tests="1" failures="1" disabled="0" skipped="0" errors="0" time="0.006" timestamp="2026-11-12T12:42:18.272">
+    <testcase name="DEFECT_004_PinReplyFromReplacedCard" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="160" status="run" result="completed" time="0.005" timestamp="2026-11-12T12:42:18.272" classname="SessionLifecycle">
+      <failure message="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23&#10;Expected equality of these values:&#10;  actual.state&#10;    Which is: NOT_READY&#10;  state&#10;    Which is: LOCKED&#10;" type="">/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23
+Expected equality of these values:
+  actual.state
+    Which is: NOT_READY
+  state
+    Which is: LOCKED
+</failure>
+      <properties>
+        <property name="real_instances_created" value="1" />
+        <property name="observations" value="card-event:slot=0,present=1,state=LOCKED,kind=2;&#10;card-event:slot=0,present=0,state=ABSENT,kind=0;&#10;card-event:slot=0,present=1,state=LOCKED,kind=1;&#10;old-pin-result-after-card-replacement:slot=0,present=1,state=NOT_READY,kind=1;&#10;" />
+        <property name="old_request_result" value="0" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:0;pin:0;status:0;status:0;" />
+        <property name="real_instances_destroyed" value="1" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="SessionLifecycle" tests="1" failures="1" disabled="0" skipped="0" errors="0" time="0.005" timestamp="2026-11-12T12:42:18.296">
+    <testcase name="DEFECT_005_RefreshReturnContractConflict" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="172" status="run" result="completed" time="0.005" timestamp="2026-11-12T12:42:18.296" classname="SessionLifecycle">
+      <failure message="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:176&#10;Expected equality of these values:&#10;  RefreshToLocked()&#10;    Which is: 2&#10;  0&#10;core_service_client.h RefreshSimState @return contract&#10;" type="">/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:176
+Expected equality of these values:
+  RefreshToLocked()
+    Which is: 2
+  0
+core_service_client.h RefreshSimState @return contract
+</failure>
+      <properties>
+        <property name="real_instances_created" value="1" />
+        <property name="observations" value="card-event:slot=0,present=1,state=READY,kind=2;&#10;explicit-refresh-completed:slot=0,present=1,state=LOCKED,kind=2;&#10;" />
+        <property name="raw_refresh_return" value="2" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:0;status:0;status:0;" />
+        <property name="real_instances_destroyed" value="1" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ContractDriver" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.005" timestamp="2026-11-12T12:42:17.865">
+    <testcase name="PIN_002_CommandFailure" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/contract_test.cpp" line="46" status="run" result="completed" time="0.005" timestamp="2026-11-12T12:42:17.865" classname="ContractDriver">
+      <properties>
+        <property name="real_instances_created" value="1" />
+        <property name="observations" value="card-event:slot=0,present=1,state=LOCKED,kind=2;&#10;pin-command-failure:slot=0,present=1,state=LOCKED,kind=2;&#10;" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:0;pin:0;" />
+        <property name="real_instances_destroyed" value="1" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="Compatibility/Lifecycle" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.008" timestamp="2026-11-12T12:42:18.322">
+    <testcase name="PublicCardState/LIFE_001" value_param="40-byte object &lt;B1-3E FA-BF 53-5B 00-00 01-00 00-00 00-00 00-00 B0-41 63-C8 53-5B 00-00 70-42 63-C8 53-5B 00-00 70-42 63-C8 53-5B 00-00&gt;" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/contract_test.cpp" line="11" status="run" result="completed" time="0.008" timestamp="2026-11-12T12:42:18.322" classname="Compatibility/Lifecycle">
+      <properties>
+        <property name="real_instances_created" value="1" />
+        <property name="observations" value="card-event:slot=0,present=0,state=ABSENT,kind=0;&#10;card-event:slot=0,present=1,state=LOCKED,kind=2;&#10;card-event:slot=0,present=1,state=READY,kind=2;&#10;card-event:slot=0,present=0,state=ABSENT,kind=0;&#10;" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:0;status:0;status:0;status:0;" />
+        <property name="real_instances_destroyed" value="1" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="Compatibility/Lifecycle" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.005" timestamp="2026-11-12T12:42:18.361">
+    <testcase name="PublicCardState/LIFE_002" value_param="40-byte object &lt;C4-2E 15-7F C2-56 00-00 01-00 00-00 00-00 00-00 80-B3 40-7F C2-56 00-00 10-B4 40-7F C2-56 00-00 10-B4 40-7F C2-56 00-00&gt;" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/contract_test.cpp" line="11" status="run" result="completed" time="0.005" timestamp="2026-11-12T12:42:18.361" classname="Compatibility/Lifecycle">
+      <properties>
+        <property name="real_instances_created" value="1" />
+        <property name="observations" value="card-event:slot=0,present=1,state=READY,kind=1;&#10;card-event:slot=0,present=0,state=ABSENT,kind=0;&#10;card-event:slot=0,present=1,state=READY,kind=2;&#10;" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:0;status:0;status:0;" />
+        <property name="real_instances_destroyed" value="1" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="Compatibility/Lifecycle" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.003" timestamp="2026-11-12T12:42:18.385">
+    <testcase name="PublicCardState/PUK_001" value_param="40-byte object &lt;E1-DE 09-30 D8-56 00-00 01-00 00-00 00-00 00-00 20-EF 62-4D D8-56 00-00 80-EF 62-4D D8-56 00-00 80-EF 62-4D D8-56 00-00&gt;" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/contract_test.cpp" line="11" status="run" result="completed" time="0.003" timestamp="2026-11-12T12:42:18.385" classname="Compatibility/Lifecycle">
+      <properties>
+        <property name="real_instances_created" value="1" />
+        <property name="observations" value="card-event:slot=0,present=1,state=LOCKED,kind=2;&#10;card-event:slot=0,present=0,state=ABSENT,kind=0;&#10;" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:0;status:0;" />
+        <property name="real_instances_destroyed" value="1" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="EventAdapter" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:18.409">
+    <testcase name="SharedTypeSafety" file="../../repo/telephony_core_service/services/multisim/test/systemtest/tests/event_adapter_test.cpp" line="5" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:18.409" classname="EventAdapter">
+      <properties>
+        <property name="case_id" value="INFRA-EVENT-001" />
+        <property name="level" value="INFRA" />
+        <property name="oracle_id" value="EVT-TYPE" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="EventAdapter" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:18.429">
+    <testcase name="UniqueOwnership" file="../../repo/telephony_core_service/services/multisim/test/systemtest/tests/event_adapter_test.cpp" line="17" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:18.429" classname="EventAdapter">
+      <properties>
+        <property name="case_id" value="INFRA-EVENT-002" />
+        <property name="level" value="INFRA" />
+        <property name="oracle_id" value="EVT-OWNERSHIP" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="EventAdapter" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:18.453">
+    <testcase name="WeakLifetimeAndMetadata" file="../../repo/telephony_core_service/services/multisim/test/systemtest/tests/event_adapter_test.cpp" line="32" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:18.453" classname="EventAdapter">
+      <properties>
+        <property name="case_id" value="INFRA-EVENT-003" />
+        <property name="level" value="INFRA" />
+        <property name="oracle_id" value="EVT-LIFETIME" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ProductionEventTransport" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.001" timestamp="2026-11-12T12:42:18.469">
+    <testcase name="DeliversFormalEnvelope" file="../../repo/telephony_core_service/services/multisim/test/systemtest/tests/event_transport_test.cpp" line="63" status="run" result="completed" time="0.001" timestamp="2026-11-12T12:42:18.469" classname="ProductionEventTransport">
+      <properties>
+        <property name="case_id" value="INFRA-EVENT-004" />
+        <property name="level" value="INFRA" />
+        <property name="oracle_id" value="EVT-PRODUCTION" />
+        <property name="converged" value="true" />
+        <property name="cleanup_completed" value="true" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ProductionEventTransport" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:18.493">
+    <testcase name="CancelsPendingAndReapsWorker" file="../../repo/telephony_core_service/services/multisim/test/systemtest/tests/event_transport_test.cpp" line="88" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:18.493" classname="ProductionEventTransport">
+      <properties>
+        <property name="case_id" value="INFRA-EVENT-005" />
+        <property name="level" value="INFRA" />
+        <property name="oracle_id" value="EVT-CANCEL" />
+        <property name="cleanup_completed" value="true" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="SchedulerBoundary" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.001" timestamp="2026-11-12T12:42:18.520">
+    <testcase name="RunningTaskCannotBeCancelled" file="../../repo/telephony_core_service/services/multisim/test/systemtest/tests/event_transport_test.cpp" line="110" status="run" result="completed" time="0.001" timestamp="2026-11-12T12:42:18.520" classname="SchedulerBoundary">
+      <properties>
+        <property name="case_id" value="INFRA-FFRT-001" />
+        <property name="level" value="INFRA" />
+        <property name="oracle_id" value="FFRT-CANCEL-RUNNING" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="SchedulerBoundary" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.001" timestamp="2026-11-12T12:42:18.544">
+    <testcase name="ProductionGeneralTaskWaitsAndCleansUp" file="../../repo/telephony_core_service/services/multisim/test/systemtest/tests/event_transport_test.cpp" line="137" status="run" result="completed" time="0.001" timestamp="2026-11-12T12:42:18.544" classname="SchedulerBoundary">
+      <properties>
+        <property name="case_id" value="INFRA-FFRT-002" />
+        <property name="level" value="INFRA" />
+        <property name="oracle_id" value="FFRT-GENERAL" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ContractDriver" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.005" timestamp="2026-11-12T12:42:17.885">
+    <testcase name="DUAL_001" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/contract_test.cpp" line="57" status="run" result="completed" time="0.005" timestamp="2026-11-12T12:42:17.885" classname="ContractDriver">
+      <properties>
+        <property name="real_instances_created" value="2" />
+        <property name="observations" value="card-event:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;&#10;card-event:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;&#10;card-event:slot=0,present=0,state=ABSENT,kind=0;slot=1,present=1,state=LOCKED,kind=1;&#10;card-event:slot=0,present=1,state=READY,kind=1;slot=1,present=1,state=LOCKED,kind=1;&#10;" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:0;status:1;status:0;status:0;" />
+        <property name="real_instances_destroyed" value="2" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="SchedulerBoundary" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.002" timestamp="2026-11-12T12:42:18.573">
+    <testcase name="IdleWaitDrainsCascadedQueues" file="../../repo/telephony_core_service/services/multisim/test/systemtest/tests/event_transport_test.cpp" line="152" status="run" result="completed" time="0.001" timestamp="2026-11-12T12:42:18.573" classname="SchedulerBoundary">
+      <properties>
+        <property name="case_id" value="INFRA-FFRT-003" />
+        <property name="oracle_id" value="FFRT-IDLE-CASCADE" />
+        <property name="level" value="INFRA" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="SchedulerBoundary" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.012" timestamp="2026-11-12T12:42:18.602">
+    <testcase name="IdleWaitDoesNotIgnoreDelayedOrRunningWork" file="../../repo/telephony_core_service/services/multisim/test/systemtest/tests/event_transport_test.cpp" line="172" status="run" result="completed" time="0.012" timestamp="2026-11-12T12:42:18.602" classname="SchedulerBoundary">
+      <properties>
+        <property name="case_id" value="INFRA-FFRT-004" />
+        <property name="oracle_id" value="FFRT-IDLE-BOUNDED" />
+        <property name="level" value="INFRA" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="SchedulerBoundary" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.001" timestamp="2026-11-12T12:42:18.642">
+    <testcase name="IdleWaitExposesTaskFailure" file="../../repo/telephony_core_service/services/multisim/test/systemtest/tests/event_transport_test.cpp" line="196" status="run" result="completed" time="0.001" timestamp="2026-11-12T12:42:18.642" classname="SchedulerBoundary">
+      <properties>
+        <property name="case_id" value="INFRA-FFRT-005" />
+        <property name="oracle_id" value="FFRT-IDLE-FAILURE" />
+        <property name="level" value="INFRA" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ExternalData" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:18.667">
+    <testcase name="EmptyCursorIsNotQueryFailure" file="../../repo/telephony_core_service/services/multisim/test/systemtest/tests/external_services_test.cpp" line="7" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:18.667" classname="ExternalData">
+      <properties>
+        <property name="case_id" value="INFRA-DATA-001" />
+        <property name="level" value="INFRA" />
+        <property name="oracle_id" value="DS-CURSOR" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ExternalData" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:18.694">
+    <testcase name="ExplicitQueryResponses" file="../../repo/telephony_core_service/services/multisim/test/systemtest/tests/external_services_test.cpp" line="24" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:18.694" classname="ExternalData">
+      <properties>
+        <property name="case_id" value="INFRA-DATA-002" />
+        <property name="level" value="INFRA" />
+        <property name="oracle_id" value="DS-QUERY" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ExternalData" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:18.726">
+    <testcase name="OriginalBucketKeepsFirstPut" file="../../repo/telephony_core_service/services/multisim/test/systemtest/tests/external_services_test.cpp" line="62" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:18.726" classname="ExternalData">
+      <properties>
+        <property name="case_id" value="INFRA-DATA-003" />
+        <property name="level" value="INFRA" />
+        <property name="oracle_id" value="DS-VALUES" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ExternalEvents" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:18.752">
+    <testcase name="PublishPreservesEnvelopeAndFailure" file="../../repo/telephony_core_service/services/multisim/test/systemtest/tests/external_services_test.cpp" line="78" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:18.752" classname="ExternalEvents">
+      <properties>
+        <property name="case_id" value="INFRA-CES-001" />
+        <property name="level" value="INFRA" />
+        <property name="oracle_id" value="CES-PUBLISH" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ExternalEvents" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:18.774">
+    <testcase name="MissingProviderAndScopeCleanup" file="../../repo/telephony_core_service/services/multisim/test/systemtest/tests/external_services_test.cpp" line="102" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:18.774" classname="ExternalEvents">
+      <properties>
+        <property name="case_id" value="INFRA-CES-002" />
+        <property name="level" value="INFRA" />
+        <property name="oracle_id" value="CES-LIFETIME" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="NativePointerSubset" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:18.804">
+    <testcase name="SharedOwnership" file="../../repo/telephony_core_service/services/multisim/test/systemtest/tests/native_pointer_test.cpp" line="15" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:18.804" classname="NativePointerSubset">
+      <properties>
+        <property name="case_id" value="INFRA-PTR-001" />
+        <property name="level" value="INFRA" />
+        <property name="oracle_id" value="PTR-OWNERSHIP" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="NativePointerSubset" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:18.855">
+    <testcase name="WeakIdentityAndPromotion" file="../../repo/telephony_core_service/services/multisim/test/systemtest/tests/native_pointer_test.cpp" line="32" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:18.855" classname="NativePointerSubset">
+      <properties>
+        <property name="case_id" value="INFRA-PTR-002" />
+        <property name="level" value="INFRA" />
+        <property name="oracle_id" value="PTR-WEAK" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ContractDriver" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.007" timestamp="2026-11-12T12:42:17.907">
+    <testcase name="RIL_001_DuplicateAndError" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/contract_test.cpp" line="70" status="run" result="completed" time="0.007" timestamp="2026-11-12T12:42:17.907" classname="ContractDriver">
+      <properties>
+        <property name="real_instances_created" value="1" />
+        <property name="observations" value="card-event:slot=0,present=0,state=ABSENT,kind=0;&#10;ril-error:slot=0,present=0,state=ABSENT,kind=0;&#10;card-event:slot=0,present=1,state=READY,kind=2;&#10;duplicate-ready:slot=0,present=1,state=READY,kind=2;&#10;" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:0;status:0;status:0;" />
+        <property name="real_instances_destroyed" value="1" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="NativePointerSubset" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:18.913">
+    <testcase name="LocalCastRequiresImplementedInterface" file="../../repo/telephony_core_service/services/multisim/test/systemtest/tests/native_pointer_test.cpp" line="51" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:18.913" classname="NativePointerSubset">
+      <properties>
+        <property name="case_id" value="INFRA-PTR-003" />
+        <property name="level" value="INFRA" />
+        <property name="oracle_id" value="PTR-LOCAL-CAST" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="RilAdapter" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.002" timestamp="2026-11-12T12:42:18.973">
+    <testcase name="FormalStatusResponse" file="../../repo/telephony_core_service/services/multisim/test/systemtest/tests/ril_adapter_test.cpp" line="6" status="run" result="completed" time="0.002" timestamp="2026-11-12T12:42:18.973" classname="RilAdapter">
+      <properties>
+        <property name="case_id" value="INFRA-RIL-001" />
+        <property name="level" value="INFRA" />
+        <property name="oracle_id" value="RIL-TRANSPORT" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="PinMemoryContract" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.014" timestamp="2026-11-12T12:42:19.022">
+    <testcase name="PinSuccessUsesOriginalSlotIdentityAndCredential" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/pin_memory_contract_test.cpp" line="94" status="run" result="completed" time="0.014" timestamp="2026-11-12T12:42:19.022" classname="PinMemoryContract">
+      <properties>
+        <property name="real_instances_created" value="2" />
+        <property name="observations" value="card-event:slot=0,present=1,state=READY,kind=1;slot=1,present=0,state=UNKNOWN,kind=0;&#10;card-event:slot=0,present=1,state=READY,kind=1;slot=1,present=1,state=LOCKED,kind=2;&#10;" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:0;status:1;pin:1;pin:1;" />
+        <property name="real_instances_destroyed" value="2" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="PinMemoryContract" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.006" timestamp="2026-11-12T12:42:19.070">
+    <testcase name="PukSuccessUsesNewPinAndPinAlterOperation" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/pin_memory_contract_test.cpp" line="110" status="run" result="completed" time="0.006" timestamp="2026-11-12T12:42:19.070" classname="PinMemoryContract">
+      <properties>
+        <property name="real_instances_created" value="1" />
+        <property name="observations" value="card-event:slot=0,present=1,state=LOCKED,kind=2;&#10;" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:0;" />
+        <property name="real_instances_destroyed" value="1" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="PinMemoryContract" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.007" timestamp="2026-11-12T12:42:19.123">
+    <testcase name="FailedPinDoesNotPublishMemoryHook" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/pin_memory_contract_test.cpp" line="124" status="run" result="completed" time="0.007" timestamp="2026-11-12T12:42:19.123" classname="PinMemoryContract">
+      <properties>
+        <property name="real_instances_created" value="1" />
+        <property name="observations" value="card-event:slot=0,present=1,state=LOCKED,kind=2;&#10;" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:0;pin:0;" />
+        <property name="real_instances_destroyed" value="1" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="PinMemoryContract" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.006" timestamp="2026-11-12T12:42:19.171">
+    <testcase name="RemovalUsesAbsentResponseIdentityWithoutCredential" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/pin_memory_contract_test.cpp" line="136" status="run" result="completed" time="0.006" timestamp="2026-11-12T12:42:19.171" classname="PinMemoryContract">
+      <properties>
+        <property name="real_instances_created" value="2" />
+        <property name="observations" value="card-event:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=1,state=LOCKED,kind=2;&#10;card-event:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=0,state=ABSENT,kind=0;&#10;" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:1;status:1;" />
+        <property name="real_instances_destroyed" value="2" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="PrimaryEntry" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:19.225">
+    <testcase name="NonSystemCallerPrecedesPermissionAndNullManager" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="52" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:19.225" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam" />
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="PrimaryEntry" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:19.261">
+    <testcase name="PermissionDenialPrecedesNullManager" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="59" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:19.261" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam" />
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="PrimaryEntry" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:19.289">
+    <testcase name="NullManagerPrecedesCapabilityRecheck" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="65" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:19.289" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam" />
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="PrimaryEntry" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:19.324">
+    <testcase name="ChangedExternalSystemAppDecisionRejectsExtendedSlot" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="71" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:19.324" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam" />
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ContractDriver" tests="1" failures="1" disabled="0" skipped="0" errors="0" time="0.005" timestamp="2026-11-12T12:42:17.928">
+    <testcase name="DEFECT_001_StaleReadyAfterRemoval" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/contract_test.cpp" line="83" status="run" result="completed" time="0.005" timestamp="2026-11-12T12:42:17.928" classname="ContractDriver">
+      <failure message="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:22&#10;Expected equality of these values:&#10;  actual.present&#10;    Which is: true&#10;  state != State::Absent&#10;    Which is: false&#10;" type="">/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:22
+Expected equality of these values:
+  actual.present
+    Which is: true
+  state != State::Absent
+    Which is: false
+</failure>
+      <failure message="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23&#10;Expected equality of these values:&#10;  actual.state&#10;    Which is: READY&#10;  state&#10;    Which is: ABSENT&#10;" type="">/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23
+Expected equality of these values:
+  actual.state
+    Which is: READY
+  state
+    Which is: ABSENT
+</failure>
+      <failure message="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:24&#10;Expected equality of these values:&#10;  actual.kind&#10;    Which is: 4-byte object &lt;02-00 00-00&gt;&#10;  kind&#10;    Which is: 4-byte object &lt;00-00 00-00&gt;&#10;" type="">/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:24
+Expected equality of these values:
+  actual.kind
+    Which is: 4-byte object &lt;02-00 00-00&gt;
+  kind
+    Which is: 4-byte object &lt;00-00 00-00&gt;
+</failure>
+      <properties>
+        <property name="real_instances_created" value="1" />
+        <property name="observations" value="card-event:slot=0,present=1,state=READY,kind=2;&#10;removed:slot=0,present=0,state=ABSENT,kind=0;&#10;stale-ready:slot=0,present=1,state=READY,kind=2;&#10;" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:0;status:0;status:0;" />
+        <property name="real_instances_destroyed" value="1" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="PrimaryEntry" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:19.357">
+    <testcase name="MissingCardStopsBeforeActiveAndPreference" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="80" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:19.357" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam" />
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="PrimaryEntry" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:19.389">
+    <testcase name="InactiveCardStopsBeforePreferenceAndSwitch" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="86" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:19.389" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam" />
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="PrimaryEntry" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.001" timestamp="2026-11-12T12:42:19.442">
+    <testcase name="ReadyCardWritesPreferenceBeforeDelegatingExactTarget" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="94" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:19.442" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam" />
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="PrimaryEntry" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:19.488">
+    <testcase name="ManagerFailureReturnedUnchangedAfterPreferenceWrite" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="102" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:19.488" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam" />
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="PrimaryEntry" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:19.515">
+    <testcase name="FailedPreferenceWriteStillDelegatesCurrentBehavior" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="110" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:19.515" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam" />
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed" />
+        <property name="oracle" value="legacy_characterization_SetParameter_return_is_ignored" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="PrimaryEntry" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:19.545">
+    <testcase name="PresenceQueryFailureWithFalseOutputReturnsNoCard" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="119" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:19.545" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam" />
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed" />
+        <property name="oracle" value="legacy_characterization_HasSimCard_return_is_ignored" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="PrimaryEntry" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:19.578">
+    <testcase name="PresenceQueryFailureWithTrueOutputStillDelegates" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="126" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:19.578" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam" />
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed" />
+        <property name="oracle" value="legacy_characterization_HasSimCard_return_is_ignored" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="PrimaryEntry" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:19.604">
+    <testcase name="StableSystemAppPassesExtendedSlotCapability" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="135" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:19.604" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam" />
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="CallerKinds/NativeOrShell" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:19.633">
+    <testcase name="SystemAppAndExtendedCapabilityUseRealTokenRules/0" value_param="1" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="146" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:19.633" classname="CallerKinds/NativeOrShell">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam" />
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="CallerKinds/NativeOrShell" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:42:19.662">
+    <testcase name="SystemAppAndExtendedCapabilityUseRealTokenRules/1" value_param="2" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="146" status="run" result="completed" time="0." timestamp="2026-11-12T12:42:19.662" classname="CallerKinds/NativeOrShell">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam" />
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="SessionLifecycle" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.003" timestamp="2026-11-12T12:42:17.949">
+    <testcase name="INIT_001_SingleEnumeration" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="42" status="run" result="completed" time="0.002" timestamp="2026-11-12T12:42:17.949" classname="SessionLifecycle">
+      <properties>
+        <property name="real_instances_created" value="1" />
+        <property name="pending_state_policy" value="C observation only; no initial/restart state policy frozen" />
+        <property name="observations" value="initialized-without-card-response:slot=0,present=0,state=UNKNOWN,kind=0;&#10;card-event:slot=0,present=1,state=READY,kind=2;&#10;" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:0;" />
+        <property name="real_instances_destroyed" value="1" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="RealSimPrimary" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.005" timestamp="2026-11-12T12:42:19.702">
+    <testcase name="InitializesRealManagerAndControllerWithoutRil" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="15" status="run" result="completed" time="0.005" timestamp="2026-11-12T12:42:19.702" classname="RealSimPrimary" />
+  </testsuite>
+<testsuite name="RealSimPrimary" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.065" timestamp="2026-11-12T12:42:19.762">
+    <testcase name="C0CoreToRealManagerAndController" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="40" status="run" result="completed" time="0.065" timestamp="2026-11-12T12:42:19.762" classname="RealSimPrimary">
+      <properties>
+        <property name="business_assertions_before_cleanup" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="RealSimPrimary" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.126" timestamp="2026-11-12T12:42:19.909">
+    <testcase name="BDirectRilSuccessCommitsAfterReply" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="79" status="run" result="completed" time="0.126" timestamp="2026-11-12T12:42:19.909" classname="RealSimPrimary">
+      <properties>
+        <property name="business_assertions_before_cleanup" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="RealSimPrimary" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.052" timestamp="2026-11-12T12:42:20.088">
+    <testcase name="BDirectRilFailureKeepsPreviousPrimary" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="111" status="run" result="completed" time="0.052" timestamp="2026-11-12T12:42:20.088" classname="RealSimPrimary">
+      <properties>
+        <property name="business_assertions_before_cleanup" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="RealSimPrimary" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.124" timestamp="2026-11-12T12:42:20.223">
+    <testcase name="C1ThreePhasesWithStaleCheckResponseRejected" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="129" status="run" result="completed" time="0.123" timestamp="2026-11-12T12:42:20.223" classname="RealSimPrimary">
+      <properties>
+        <property name="business_assertions_before_cleanup" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="RealSimPrimary" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="45.043" timestamp="2026-11-12T12:42:20.396">
+    <testcase name="BRealTimeoutKeepsPreviousPrimary" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="202" status="run" result="completed" time="45.043" timestamp="2026-11-12T12:42:20.396" classname="RealSimPrimary">
+      <properties>
+        <property name="business_assertions_before_cleanup" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="RealSimPrimary" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="5.03" timestamp="2026-11-12T12:43:05.484">
+    <testcase name="C1CheckFailureRestoresParametersAndExhaustsFiveRetries" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="346" status="run" result="completed" time="5.03" timestamp="2026-11-12T12:43:05.484" classname="RealSimPrimary">
+      <properties>
+        <property name="business_assertions_before_cleanup" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ConcurrencyRegression" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="5.035" timestamp="2026-11-12T12:43:10.575">
+    <testcase name="C1RetriesDrainWhileStopping" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="348" status="run" result="completed" time="5.035" timestamp="2026-11-12T12:43:10.575" classname="ConcurrencyRegression">
+      <properties>
+        <property name="stop_started_with_queued_retry" value="true" />
+        <property name="business_assertions_before_cleanup" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ConcurrencyRegression" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="5.237" timestamp="2026-11-12T12:43:15.672">
+    <testcase name="C1RetryHandoffInterleaving" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="350" status="run" result="completed" time="5.237" timestamp="2026-11-12T12:43:15.672" classname="ConcurrencyRegression">
+      <properties>
+        <property name="retry3_inserted_during_handoff" value="false" />
+        <property name="business_assertions_before_cleanup" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ConcurrencyRegression" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.201" timestamp="2026-11-12T12:43:20.964">
+    <testcase name="QueueHandoffDoesNotDelayImmediateEvent" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="383" status="run" result="completed" time="0.201" timestamp="2026-11-12T12:43:20.964" classname="ConcurrencyRegression">
+      <properties>
+        <property name="producer_inserted_during_handoff" value="false" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="SessionLifecycle" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.002" timestamp="2026-11-12T12:42:17.969">
+    <testcase name="INIT_002_MissingRilThenRecreate" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="48" status="run" result="completed" time="0.002" timestamp="2026-11-12T12:42:17.969" classname="SessionLifecycle">
+      <properties>
+        <property name="real_instances_created" value="2" />
+        <property name="pending_state_policy" value="C observation only; no initial/restart state policy frozen" />
+        <property name="observations" value="ril-unavailable:slot=0,present=0,state=UNKNOWN,kind=0;&#10;card-event:slot=0,present=1,state=LOCKED,kind=1;&#10;" />
+        <property name="real_instances_destroyed" value="2" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:0;" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ConcurrencyRegression" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.01" timestamp="2026-11-12T12:43:21.185">
+    <testcase name="CrossQueueStateSnapshotsAndSetter" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="417" status="run" result="completed" time="0.01" timestamp="2026-11-12T12:43:21.185" classname="ConcurrencyRegression" />
+  </testsuite>
+<testsuite name="ConcurrencyRegression" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="50.036" timestamp="2026-11-12T12:43:21.223">
+    <testcase name="C1CommunicationTimeoutThenFiveRetries" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="434" status="run" result="completed" time="50.036" timestamp="2026-11-12T12:43:21.223" classname="ConcurrencyRegression">
+      <properties>
+        <property name="business_assertions_before_cleanup" value="PASS" />
+        <property name="timeout_seconds" value="45" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="RunnerLifetime" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:44:11.283">
+    <testcase name="NormalCompletionAndRepeatedStop" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp" line="23" status="run" result="completed" time="0." timestamp="2026-11-12T12:44:11.283" classname="RunnerLifetime" />
+  </testsuite>
+<testsuite name="RunnerLifetime" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:44:11.306">
+    <testcase name="PendingTaskCancelledAndCapturedOwnerReleased" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp" line="33" status="run" result="completed" time="0." timestamp="2026-11-12T12:44:11.306" classname="RunnerLifetime" />
+  </testsuite>
+<testsuite name="RunnerLifetime" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.001" timestamp="2026-11-12T12:44:11.330">
+    <testcase name="InFlightStopJoinsAndRejectsCallbackRepost" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp" line="46" status="run" result="completed" time="0.001" timestamp="2026-11-12T12:44:11.330" classname="RunnerLifetime" />
+  </testsuite>
+<testsuite name="RunnerLifetime" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.001" timestamp="2026-11-12T12:44:11.350">
+    <testcase name="ConcurrentStopIsIdempotent" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp" line="70" status="run" result="completed" time="0.001" timestamp="2026-11-12T12:44:11.350" classname="RunnerLifetime" />
+  </testsuite>
+<testsuite name="RunnerLifetime" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:44:11.375">
+    <testcase name="CallbackCannotSynchronouslyJoinItself" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp" line="82" status="run" result="completed" time="0." timestamp="2026-11-12T12:44:11.375" classname="RunnerLifetime" />
+  </testsuite>
+<testsuite name="RealCardLifetime" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:44:11.396">
+    <testcase name="MissingRilInitializationReleasesState" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp" line="92" status="run" result="completed" time="0." timestamp="2026-11-12T12:44:11.396" classname="RealCardLifetime" />
+  </testsuite>
+<testsuite name="RealCardLifetime" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.002" timestamp="2026-11-12T12:44:11.419">
+    <testcase name="InitializedStateUnregistersRilAndReleases" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp" line="102" status="run" result="completed" time="0.002" timestamp="2026-11-12T12:44:11.419" classname="RealCardLifetime">
+      <properties>
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="RealCardLifetime" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.004" timestamp="2026-11-12T12:44:11.441">
+    <testcase name="PublicDetachReleasesRealStateFileAndRil" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp" line="116" status="run" result="completed" time="0.004" timestamp="2026-11-12T12:44:11.441" classname="RealCardLifetime">
+      <properties>
+        <property name="real_card_lifetime" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="SessionLifecycle" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.004" timestamp="2026-11-12T12:42:17.993">
+    <testcase name="INIT_DUAL_002_ReversedEnumeration" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="55" status="run" result="completed" time="0.004" timestamp="2026-11-12T12:42:17.993" classname="SessionLifecycle">
+      <properties>
+        <property name="real_instances_created" value="2" />
+        <property name="pending_state_policy" value="C observation only; no initial/restart state policy frozen" />
+        <property name="observations" value="second-slot-response-first:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=1,state=LOCKED,kind=1;&#10;both-enumerated:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;&#10;" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:0;status:1;" />
+        <property name="real_instances_destroyed" value="2" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="PairingReview" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.008" timestamp="2026-11-12T12:44:11.465">
+    <testcase name="AllThreeSlotsPublicDetach" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="9" status="run" result="completed" time="0.008" timestamp="2026-11-12T12:44:11.465" classname="PairingReview">
+      <properties>
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="PairingReview" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.002" timestamp="2026-11-12T12:44:11.505">
+    <testcase name="PartialInitializationAndRepeatedUnregister" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="26" status="run" result="completed" time="0.002" timestamp="2026-11-12T12:44:11.505" classname="PairingReview">
+      <properties>
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="PairingReview" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.007" timestamp="2026-11-12T12:44:11.528">
+    <testcase name="DestroyThenReinitializeCardGraph" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="43" status="run" result="completed" time="0.007" timestamp="2026-11-12T12:44:11.528" classname="PairingReview">
+      <properties>
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="PairingReview" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.002" timestamp="2026-11-12T12:44:11.569">
+    <testcase name="UnrelatedRuntimeWorkerIsBaseline" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="55" status="run" result="completed" time="0.002" timestamp="2026-11-12T12:44:11.569" classname="PairingReview">
+      <properties>
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownContract" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.031" timestamp="2026-11-12T12:44:11.597">
+    <testcase name="ANormalPrimaryThenStop" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="88" status="run" result="completed" time="0.031" timestamp="2026-11-12T12:44:11.597" classname="ShutdownContract">
+      <properties>
+        <property name="business" value="PASS" />
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownContract" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.025" timestamp="2026-11-12T12:44:11.667">
+    <testcase name="BThreeSlotsThenStop" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="101" status="run" result="completed" time="0.025" timestamp="2026-11-12T12:44:11.667" classname="ShutdownContract">
+      <properties>
+        <property name="business" value="PASS" />
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownContract" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.005" timestamp="2026-11-12T12:44:11.743">
+    <testcase name="CPartialInitializationThenStop" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="116" status="run" result="completed" time="0.005" timestamp="2026-11-12T12:44:11.743" classname="ShutdownContract">
+      <properties>
+        <property name="business" value="NOT_RUN" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownContract" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.031" timestamp="2026-11-12T12:44:11.781">
+    <testcase name="DRepeatedStop" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="124" status="run" result="completed" time="0.031" timestamp="2026-11-12T12:44:11.781" classname="ShutdownContract">
+      <properties>
+        <property name="business" value="NOT_RUN" />
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownContract" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.031" timestamp="2026-11-12T12:44:11.858">
+    <testcase name="EInFlightSuccessCompletesBeforeRelease" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="162" status="run" result="completed" time="0.031" timestamp="2026-11-12T12:44:11.858" classname="ShutdownContract">
+      <properties>
+        <property name="business" value="PASS" />
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownContract" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.031" timestamp="2026-11-12T12:44:11.932">
+    <testcase name="FErrorReplyDuringStoppingKeepsOriginalResult" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="164" status="run" result="completed" time="0.031" timestamp="2026-11-12T12:44:11.932" classname="ShutdownContract">
+      <properties>
+        <property name="business" value="PASS" />
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="SessionLifecycle" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.005" timestamp="2026-11-12T12:42:18.014">
+    <testcase name="CALLBACK_002_MalformedThenRecovery" file="/tmp/sim028-concurrency-9_wowy3i/final-ci/repo/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp" line="66" status="run" result="completed" time="0.005" timestamp="2026-11-12T12:42:18.014" classname="SessionLifecycle">
+      <properties>
+        <property name="real_instances_created" value="1" />
+        <property name="pending_state_policy" value="C observation only; no initial/restart state policy frozen" />
+        <property name="observations" value="malformed-status:slot=0,present=0,state=UNKNOWN,kind=0;&#10;valid-status-recovery:slot=0,present=1,state=READY,kind=2;&#10;" />
+        <property name="injected_fault" value="wrong typed RIL response payload" />
+        <property name="pending_responses" value="0" />
+        <property name="external_calls" value="status:0;status:0;" />
+        <property name="real_instances_destroyed" value="1" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownContract" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.029" timestamp="2026-11-12T12:44:12.006">
+    <testcase name="GDelayedDispatchAfterStop" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="166" status="run" result="completed" time="0.029" timestamp="2026-11-12T12:44:12.006" classname="ShutdownContract">
+      <properties>
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="business" value="NOT_RUN" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownContract" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.065" timestamp="2026-11-12T12:44:12.086">
+    <testcase name="HDestroyAndCreateNewGraph" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="181" status="run" result="completed" time="0.065" timestamp="2026-11-12T12:44:12.086" classname="ShutdownContract">
+      <properties>
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="business" value="NOT_RUN" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownExtra" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.033" timestamp="2026-11-12T12:44:12.213">
+    <testcase name="WatcherLateCallbackAfterOwnerDestruction" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="201" status="run" result="completed" time="0.033" timestamp="2026-11-12T12:44:12.213" classname="ShutdownExtra">
+      <properties>
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownExtra" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.036" timestamp="2026-11-12T12:44:12.286">
+    <testcase name="PartialWatcherRegistration" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="215" status="run" result="completed" time="0.035" timestamp="2026-11-12T12:44:12.286" classname="ShutdownExtra">
+      <properties>
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownExtra" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.033" timestamp="2026-11-12T12:44:12.363">
+    <testcase name="FailedWatcherRemovalKeepsStoppingAndRetries" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="222" status="run" result="completed" time="0.033" timestamp="2026-11-12T12:44:12.363" classname="ShutdownExtra">
+      <properties>
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownExtra" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.001" timestamp="2026-11-12T12:44:12.442">
+    <testcase name="ObserverReleaseOutsideLockAllowsReentrantDestruction" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="234" status="run" result="completed" time="0.001" timestamp="2026-11-12T12:44:12.442" classname="ShutdownExtra" />
+  </testsuite>
+<testsuite name="ShutdownExtra" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.042" timestamp="2026-11-12T12:44:12.469">
+    <testcase name="C1StopAtCheck" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="303" status="run" result="completed" time="0.042" timestamp="2026-11-12T12:44:12.469" classname="ShutdownExtra">
+      <properties>
+        <property name="business" value="PASS" />
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownExtra" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.041" timestamp="2026-11-12T12:44:12.547">
+    <testcase name="C1StopAtUpdate" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="304" status="run" result="completed" time="0.041" timestamp="2026-11-12T12:44:12.547" classname="ShutdownExtra">
+      <properties>
+        <property name="business" value="PASS" />
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownExtra" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.044" timestamp="2026-11-12T12:44:12.633">
+    <testcase name="C1StopAtComplete" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="305" status="run" result="completed" time="0.044" timestamp="2026-11-12T12:44:12.633" classname="ShutdownExtra">
+      <properties>
+        <property name="business" value="PASS" />
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownExtra" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.031" timestamp="2026-11-12T12:44:12.707">
+    <testcase name="WatcherInFlightIsDrainedAndSelfStopIsRejected" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="307" status="run" result="completed" time="0.031" timestamp="2026-11-12T12:44:12.707" classname="ShutdownExtra">
+      <properties>
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -1,0 +1,566 @@
+{
+  "source_kit": "configs/sim028_stop_implementation_20261112",
+  "files": [
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/BUILD.gn",
+      "categories": [
+        "B"
+      ],
+      "notes": [],
+      "base_sha256": "32bcb884540cfbcda5760bba005cc6776039f2ec3bfcb8a49b678f29a8a23c23",
+      "production_sha256": "32bcb884540cfbcda5760bba005cc6776039f2ec3bfcb8a49b678f29a8a23c23",
+      "candidate_sha256": "0daacb34e101c2951400a5afbbec5a6b66c2851bb9b19fc27da6feaececeeaf6",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/gn/BUILD.gn",
+      "categories": [
+        "B"
+      ],
+      "notes": [],
+      "base_sha256": "a18276952521388584be002f899e61d4b380ab3cc6e62f77c2316cdc5dd6c3c4",
+      "production_sha256": "a18276952521388584be002f899e61d4b380ab3cc6e62f77c2316cdc5dd6c3c4",
+      "candidate_sha256": "077970636f662160be39254132d73ac1b25479777668162ccd2389b4a25a5718",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/gn/BUILDCONFIG.gn",
+      "categories": [
+        "B"
+      ],
+      "notes": [],
+      "base_sha256": "aa02031dbfba265b6c5b1b1571f65cbfcad88b061375a7cb25b0663f2658c30b",
+      "production_sha256": "aa02031dbfba265b6c5b1b1571f65cbfcad88b061375a7cb25b0663f2658c30b",
+      "candidate_sha256": "3a161c39d5a3691f9f3513c2757b87eeb18954c2cd622aaa93a6c404f3627d88",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h",
+      "categories": [
+        "B",
+        "C"
+      ],
+      "notes": [],
+      "base_sha256": "58a1cae3151e627486ac2647ef6c8a482b71c7ed1de0139c788a69a802253bbd",
+      "production_sha256": "58a1cae3151e627486ac2647ef6c8a482b71c7ed1de0139c788a69a802253bbd",
+      "candidate_sha256": "246b35b3e189282edfe007787067b20abc9a645c8541d7c7ebfaa5a16c21f5b4",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp",
+      "categories": [
+        "B",
+        "C"
+      ],
+      "notes": [],
+      "base_sha256": "62c9a59116b265ebbaa02341acf38b9d09c2a3d3b487d3232ed50611f2c41b9b",
+      "production_sha256": "62c9a59116b265ebbaa02341acf38b9d09c2a3d3b487d3232ed50611f2c41b9b",
+      "candidate_sha256": "14f52208b1a7c8d794bcc3ba44e79af9a778611b5182622eb303c8138cfe3809",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_runtime.cpp",
+      "categories": [
+        "B"
+      ],
+      "notes": [],
+      "base_sha256": "0af408b03778ffce150cfa5cf7fc8883af35c0c0e213651b827da53cab76d17a",
+      "production_sha256": "0af408b03778ffce150cfa5cf7fc8883af35c0c0e213651b827da53cab76d17a",
+      "candidate_sha256": "ee0e5914dda7c5106717f52c305a2297210caff84863ff28efe10cbc6998fead",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h",
+      "categories": [
+        "B",
+        "C"
+      ],
+      "notes": [],
+      "base_sha256": "8ab39c9744d3fae7b0efd60a789ce8602b181cb0f589ddefe24a2c941021e80a",
+      "production_sha256": "8ab39c9744d3fae7b0efd60a789ce8602b181cb0f589ddefe24a2c941021e80a",
+      "candidate_sha256": "f713d5370c9efdce1b43dceee9914e8e753a61cbb6bd8c7baa72190964b059bd",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp",
+      "categories": [
+        "B",
+        "C"
+      ],
+      "notes": [
+        "Failure-path callback state outlives scenario shutdown; no assertion or deadline changes"
+      ],
+      "base_sha256": "898257efed63b0d4d4c264f97adeb7bd9c52db4a178b85cb153a9b1c93d1cf15",
+      "production_sha256": "898257efed63b0d4d4c264f97adeb7bd9c52db4a178b85cb153a9b1c93d1cf15",
+      "candidate_sha256": "685605048410cb09bff232ac9aa13462afc11b13855f56cdaee370e4f2eaf265",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/watcher_boundary.h",
+      "categories": [
+        "B"
+      ],
+      "notes": [],
+      "base_sha256": null,
+      "production_sha256": null,
+      "candidate_sha256": "1a7fc6bbed5c0af554e5bcdb21f8ecd554005839651f64b23228b23ca31220d5",
+      "added": true
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp",
+      "categories": [
+        "B"
+      ],
+      "notes": [],
+      "base_sha256": "0cc090d0344f9d1af84de8c0de908ac70e48cce19df0d2343d0337d2fac13c4a",
+      "production_sha256": "0cc090d0344f9d1af84de8c0de908ac70e48cce19df0d2343d0337d2fac13c4a",
+      "candidate_sha256": "9c2fb658132e7c927e01d4c7d26d4d721845dad679ea70dff5e9b65b9c718966",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/stubs/include/compile_declarations.h",
+      "categories": [
+        "B"
+      ],
+      "notes": [],
+      "base_sha256": "8446ceec1e24fbb6a65a79cb1132246db28195108d9c3b1051f5bb4a6193aa25",
+      "production_sha256": "8446ceec1e24fbb6a65a79cb1132246db28195108d9c3b1051f5bb4a6193aa25",
+      "candidate_sha256": "2e302c87fa26aa216c29559b103c79a672fbc41f380a87f9ae540fe8cdba5681",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/tools/host.py",
+      "categories": [
+        "B"
+      ],
+      "notes": [],
+      "base_sha256": "2c0d4140876901f7867074de419ac195f77da6860d94faf92435cf99a7e5ce01",
+      "production_sha256": "2c0d4140876901f7867074de419ac195f77da6860d94faf92435cf99a7e5ce01",
+      "candidate_sha256": "ea2821a2b2ab7c36f5fdebfe25b3ef522ee3aadc9d56559cdb4a005681eea7eb",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/icc_dialling_numbers_cache.h",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "839f98ca11659bd5b1ca19387f53d05761d0a797dfe5c0c46abfdfec66824b0e",
+      "production_sha256": "baccfaa9f3fd8bffe002493d37c2470f39759ee1fb3544bef05adf1e90a1e53a",
+      "candidate_sha256": "baccfaa9f3fd8bffe002493d37c2470f39759ee1fb3544bef05adf1e90a1e53a",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/icc_dialling_numbers_manager.h",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "ca9a474a7e94c4e10371f660df2f25cb7d2dcce2fc0cbe55cc5b8304f40ea64d",
+      "production_sha256": "3451b7ff634146ba209d613b0ad4c3a84b4cff1a2af81fefe1b478424be468a0",
+      "candidate_sha256": "3451b7ff634146ba209d613b0ad4c3a84b4cff1a2af81fefe1b478424be468a0",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/icc_file.h",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "e97892738668f2fb56fac5e6ecb60f742012d602f68870f45d2f6cbb713957bd",
+      "production_sha256": "ad275ee9e5e7374ae6ca3a6af255cb2f374139fe4aeff2b6419c871540988a97",
+      "candidate_sha256": "ad275ee9e5e7374ae6ca3a6af255cb2f374139fe4aeff2b6419c871540988a97",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/multi_sim_controller.h",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "5f2cc8be512c2a5d5496def0222fa3d31ed779688a4ec57e69c23f54e912c92e",
+      "production_sha256": "19b5fd0b68a57482dd70bf37c4b5467102257edb9ad3f197c7263d1c19a82dc5",
+      "candidate_sha256": "19b5fd0b68a57482dd70bf37c4b5467102257edb9ad3f197c7263d1c19a82dc5",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/multi_sim_monitor.h",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "81aa95a4ef31acc250fac70cdf457bfc2b6803a136008bd662816562575ca15e",
+      "production_sha256": "fc3b7a92a43d7eb10ebed793982fd2d9a23f926d3f0c52103c2af2e4858028e9",
+      "candidate_sha256": "fc3b7a92a43d7eb10ebed793982fd2d9a23f926d3f0c52103c2af2e4858028e9",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/operator_config_cache.h",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "f6d7d4f67cd72e69e4153f93c81b268f54eb4d9298eba8ff2f1851d84d8245a9",
+      "production_sha256": "162e88643c220ba9c7c6bd4da0175123a61533da519d48d2062bd25d798c7711",
+      "candidate_sha256": "162e88643c220ba9c7c6bd4da0175123a61533da519d48d2062bd25d798c7711",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/sim_account_manager.h",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "d23c7dde1238b7ad5781dd2393921327fd07dbadd579eaa43413e88054025318",
+      "production_sha256": "e0810cb47b5d50fbf77c90b5573a5478737bd0729c7dfa5eb68dcc7ccd78ec9a",
+      "candidate_sha256": "e0810cb47b5d50fbf77c90b5573a5478737bd0729c7dfa5eb68dcc7ccd78ec9a",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/sim_file.h",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "20986741e662bdd808c936dfdb43ec34b82029fc07832211a4e86b13bce3cfa9",
+      "production_sha256": "5bf83a108cceafcc00738390bb84dc44a600b8f9d115b6b083a949e53e7a1722",
+      "candidate_sha256": "5bf83a108cceafcc00738390bb84dc44a600b8f9d115b6b083a949e53e7a1722",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/sim_file_manager.h",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "6e949021392d5086410737735220b44adedd0f153fe8da29ff21c9efc87f6910",
+      "production_sha256": "5e87634f48cca5affed9edc9db477df1284f319641c50e433ee080726b7a4cd7",
+      "candidate_sha256": "5e87634f48cca5affed9edc9db477df1284f319641c50e433ee080726b7a4cd7",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/sim_manager.h",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "534b88e68da393ec82ab8a5e1d86c1532f083ec2ab00ffebf001b8db28fcc534",
+      "production_sha256": "242d35df7d16504cf606bb7a1d51549c9c172b694c4cd7311e95cfb4cc44b12e",
+      "candidate_sha256": "242d35df7d16504cf606bb7a1d51549c9c172b694c4cd7311e95cfb4cc44b12e",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/sim_sms_manager.h",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "a0999cb2933ca5dea32d2afeede7ec88bbb085733e767791d8ca11cb155a11b5",
+      "production_sha256": "cc100ba3cd841a6beae0a3acdd5c291992ee57a532bb266541e9af710406168e",
+      "candidate_sha256": "cc100ba3cd841a6beae0a3acdd5c291992ee57a532bb266541e9af710406168e",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/sim_state_handle.h",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "cf13daaa44ad027f8f2d0af8063781dcdd2e9e79b627255cc03d3316901d5227",
+      "production_sha256": "2a30159358f650a8863947dedb18fe1b75885d54b3fecf76ff66c93af41f51dd",
+      "candidate_sha256": "2a30159358f650a8863947dedb18fe1b75885d54b3fecf76ff66c93af41f51dd",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/sim_state_manager.h",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "228abcb8d2553958812afb78b01bc1a98e3ef163d03fa432c93d8ec9af2ec9b7",
+      "production_sha256": "ed36539710f2a65e1f4b85fb10652c8d296ac109fffa3c30bf8793ed4c565acc",
+      "candidate_sha256": "ed36539710f2a65e1f4b85fb10652c8d296ac109fffa3c30bf8793ed4c565acc",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/stk_manager.h",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "36e9ee98a35304584abd3ed18973beae107fb90594a163983674cbdf64bd5a92",
+      "production_sha256": "472fb250aad5e5347ba10d627480e57e27d251a6dff5ce1c3da35ec6d869ec04",
+      "candidate_sha256": "472fb250aad5e5347ba10d627480e57e27d251a6dff5ce1c3da35ec6d869ec04",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/icc_dialling_numbers_cache.cpp",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "f150a14d526073d183c0526e05fd17d52c3ee4e7b2da431191517bfa2cbd63ed",
+      "production_sha256": "cd5273fb9b56fa8463b5d360dc25dff7214e7887b8c01da3ee4350f1b528ed8d",
+      "candidate_sha256": "cd5273fb9b56fa8463b5d360dc25dff7214e7887b8c01da3ee4350f1b528ed8d",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/icc_dialling_numbers_manager.cpp",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "5169424b7d29c86043e513f7b4d9bc4cad183df4eab7177407b1e03e39043c94",
+      "production_sha256": "5a16e6885888120471e559cd57741c98fd84cbb76b45b18405325bc176845095",
+      "candidate_sha256": "5a16e6885888120471e559cd57741c98fd84cbb76b45b18405325bc176845095",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/icc_file.cpp",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "23eaea110b04d9a98e66b1ce1f169ed4fd485c509ae8ee0ced9bf28f508f3aff",
+      "production_sha256": "a0eeae62b1ca174bd74f8cf89bc66b549a1bc2f892d4b9d1055aeab657fe4865",
+      "candidate_sha256": "a0eeae62b1ca174bd74f8cf89bc66b549a1bc2f892d4b9d1055aeab657fe4865",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/multi_sim_controller.cpp",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "f2e6b1c12ba5fc6b4eb0d0343d672ef90efb4a6b419d8544494ae982c42c2245",
+      "production_sha256": "d3a7e5a6f227b4a478aae72583fd3ad72e9c9b3a614043205afe0b5a2fb7ed6b",
+      "candidate_sha256": "d3a7e5a6f227b4a478aae72583fd3ad72e9c9b3a614043205afe0b5a2fb7ed6b",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/multi_sim_monitor.cpp",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba",
+      "production_sha256": "b4c80daaf19f2f3b4c459fac2b4ca336e97cbef096fd2b703dbd15705f45e852",
+      "candidate_sha256": "b4c80daaf19f2f3b4c459fac2b4ca336e97cbef096fd2b703dbd15705f45e852",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/operator_config_cache.cpp",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "aaeb4948aea08376bd86db3277917ecd579e10476a949885719474f25f2948a9",
+      "production_sha256": "e335ec5ad3949f921dcdf76f51347665cd9977c4268f94273b21aaa9073a9203",
+      "candidate_sha256": "e335ec5ad3949f921dcdf76f51347665cd9977c4268f94273b21aaa9073a9203",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/radio_protocol_controller.cpp",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "7391942fa10b22e4692b1873716d4827be68dbbe85ff63587f243e3096d79102",
+      "production_sha256": "c9fc077a9ca94946f37e2558cc86447482a217be9d9df82bbb8f807ad96094ac",
+      "candidate_sha256": "c9fc077a9ca94946f37e2558cc86447482a217be9d9df82bbb8f807ad96094ac",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_account_manager.cpp",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "e76d7e9595830bfb36565ee4bc61d1eb83cb4cacc1e0a349323bf8e78b29f108",
+      "production_sha256": "bde0b167c42a7d97a97a7cc85293e07dd0e1e9d9cd810f1927ff41efb8fdd95b",
+      "candidate_sha256": "bde0b167c42a7d97a97a7cc85293e07dd0e1e9d9cd810f1927ff41efb8fdd95b",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_file.cpp",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "a6798b25077350f348b461dd025f3699aaa6dd61b52ff9f94a4cd8816bbd6224",
+      "production_sha256": "4c758cde7ffc68f623157f01ba60d8b8c1b578b0c2d1cb574110eb136f562691",
+      "candidate_sha256": "4c758cde7ffc68f623157f01ba60d8b8c1b578b0c2d1cb574110eb136f562691",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_file_manager.cpp",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "12045e75e5299fda095155cb8aa2358f62a43f936df9d55aadbf4d95fb47752a",
+      "production_sha256": "96f7e994a1675b5a5f98d55bee532a4f0f6368c8675c7ce10fa54a4cb92f2bdb",
+      "candidate_sha256": "96f7e994a1675b5a5f98d55bee532a4f0f6368c8675c7ce10fa54a4cb92f2bdb",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_manager.cpp",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "9231f9b67e92d80178c878412b16d573c8ed604dfa58638e7441dda7f90a3cd5",
+      "production_sha256": "3ef021e204450df61ec49b06cbdebea4d0533ed191231a1f64a56896e38b9c35",
+      "candidate_sha256": "3ef021e204450df61ec49b06cbdebea4d0533ed191231a1f64a56896e38b9c35",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_sms_manager.cpp",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "4c8d5148cb7585bb5691e12214cfeb13352c9d9b117beed94e57dc10674ef1f3",
+      "production_sha256": "b0b6b2bba940e48db243b23723bf82461a1d279bd43598ece1b776b4eddfc8cf",
+      "candidate_sha256": "b0b6b2bba940e48db243b23723bf82461a1d279bd43598ece1b776b4eddfc8cf",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_state_handle.cpp",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "933bc54a153923543b0b82b9e9aa4b1fd2bb31241e8a177659a171c600f7877c",
+      "production_sha256": "bf6f4d1ff0ecab27e74442b0cf6479c1acf77e9d7a1202b533e6a67e7c743a47",
+      "candidate_sha256": "bf6f4d1ff0ecab27e74442b0cf6479c1acf77e9d7a1202b533e6a67e7c743a47",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_state_manager.cpp",
+      "categories": [
+        "A",
+        "B"
+      ],
+      "notes": [
+        "Host Init sampling moved to test patch"
+      ],
+      "base_sha256": "aca12b2cd0129d2198c685bdd4bc5a7df00be41ad19d2ea72334a2afd745fa7f",
+      "production_sha256": "38593e26111f04004998d56cfeab6f3f9fe11e92258bf62e00d7301b07903897",
+      "candidate_sha256": "a7f01f2926cc8a93e24cdab7c94f3ea62c75b2058e303c4cfbd608ca8140e482",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/stk_controller.cpp",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "ad0c38518762b4488cd062e99d47dc9ec2954ef1fa2f256da1231edbabd4e591",
+      "production_sha256": "a3adc871035050b55a745d7c26abb72578510f94b7c6758a891bb0df3ca20bcc",
+      "candidate_sha256": "a3adc871035050b55a745d7c26abb72578510f94b7c6758a891bb0df3ca20bcc",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/stk_manager.cpp",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "1cfd69b4581e385f28fd020efe0067a9d5fa77b77d9f6d33d74cdbc1c3990b3f",
+      "production_sha256": "5f2772cfdb6c21486ec3241c460accf2d0c9bd4b8b33c573625e815ac0f25bb1",
+      "candidate_sha256": "5f2772cfdb6c21486ec3241c460accf2d0c9bd4b8b33c573625e815ac0f25bb1",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/services/tel_ril/src/observer_handler.cpp",
+      "categories": [
+        "A",
+        "B"
+      ],
+      "notes": [
+        "Host observer sampling/include moved to test patch"
+      ],
+      "base_sha256": "422b74aeb92ee66367a37dfd88ea47e3878b221ef52597a72c38994748f764e4",
+      "production_sha256": "c1007d93a0b4e450bf1c342f72a58c0dd26091f365216514966207ec13eeccdb",
+      "candidate_sha256": "c1ae8c926a59bbc0b2bf75a382a131b9e30af29458514e2367bbf2b4411578d1",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/utils/common/include/tel_event_handler.h",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "590cdd39dcc3b28263332c8dce97dfcb088e4534233ad5cf137c652a80dc83bc",
+      "production_sha256": "7a1c69aa6cd8a6fac24a4188849f99c5c9bccb68efb9224b4456eb0eb365c76e",
+      "candidate_sha256": "7a1c69aa6cd8a6fac24a4188849f99c5c9bccb68efb9224b4456eb0eb365c76e",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/utils/common/include/tel_event_queue.h",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "186ce31138253c3403280f7ad1a858ba1882a2174115449876d12174162d21d4",
+      "production_sha256": "67b502c06c20e0594fe8e1dc0f4178f124eaababdceb9a2cd0a18982359061dd",
+      "candidate_sha256": "67b502c06c20e0594fe8e1dc0f4178f124eaababdceb9a2cd0a18982359061dd",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/utils/common/include/tel_lifecycle.h",
+      "categories": [
+        "A",
+        "B"
+      ],
+      "notes": [
+        "Host weak sampler moved to test patch",
+        "unused exception include dropped (E)"
+      ],
+      "base_sha256": null,
+      "production_sha256": "c31da5cdbf081c3c68f0ea9f671d6cba00d140313cbe14696e8049bf8a00b3ef",
+      "candidate_sha256": "febf07cbdc4189e4cb00fb7a06ba0572d53859605cebc6858d6b3ce16cb6519a",
+      "added": true
+    },
+    {
+      "path": "telephony_core_service/utils/common/include/tel_parameter_watcher.h",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": null,
+      "production_sha256": "18729d9864e34d77cc012afc775293868e8a88febf41384f52ac70abd36a8844",
+      "candidate_sha256": "18729d9864e34d77cc012afc775293868e8a88febf41384f52ac70abd36a8844",
+      "added": true
+    },
+    {
+      "path": "telephony_core_service/utils/common/src/tel_event_handler.cpp",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "d6dbc69c03c8c4810cea31d9efaac5e0c0767b569edcc9ce25f3c61269665e63",
+      "production_sha256": "a67dd3c6a598ac6c1ea07095073ec9df658f286dc20faf297306ca04d9990dec",
+      "candidate_sha256": "a67dd3c6a598ac6c1ea07095073ec9df658f286dc20faf297306ca04d9990dec",
+      "added": false
+    },
+    {
+      "path": "telephony_core_service/utils/common/src/tel_event_queue.cpp",
+      "categories": [
+        "A"
+      ],
+      "notes": [],
+      "base_sha256": "cfd417cf54d8f6df5f6aab120de31f711f2f62810afd8c273275b847a02f7a9d",
+      "production_sha256": "81a6a16a5ceb1823140c1bd0eaa80b1115a47f749ddb4bffec35b7ef135d28ae",
+      "candidate_sha256": "81a6a16a5ceb1823140c1bd0eaa80b1115a47f749ddb4bffec35b7ef135d28ae",
+      "added": false
+    }
+  ],
+  "apply_order": [
+    "production-minimal.patch",
+    "test-guard.patch"
+  ],
+  "native_production_admission": "BLOCKED",
+  "combined_difference_from_historical_candidate": "unused <exception> removed; C1 retry test callback local state constructed before scenario for safe fatal-assert cleanup"
+}

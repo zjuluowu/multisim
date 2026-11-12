@@ -1,0 +1,130 @@
+{
+  "head": {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit_code": 0,
+    "output": "77e3dc4e27dfe33ac728f225843b86b038914f6c\n"
+  },
+  "branch": {
+    "command": [
+      "git",
+      "branch",
+      "--show-current"
+    ],
+    "exit_code": 0,
+    "output": "main\n"
+  },
+  "remotes": {
+    "command": [
+      "git",
+      "remote",
+      "-v"
+    ],
+    "exit_code": 0,
+    "output": "origin\thttps://github.com/zjuluowu/multisim.git (fetch)\norigin\thttps://github.com/zjuluowu/multisim.git (push)\nupstream\thttps://github.com/openharmony/telephony_core_service.git (fetch)\nupstream\thttps://github.com/openharmony/telephony_core_service.git (push)\n"
+  },
+  "tracking_difference": {
+    "command": [
+      "git",
+      "rev-list",
+      "--left-right",
+      "--count",
+      "HEAD...origin/main"
+    ],
+    "exit_code": 0,
+    "output": "0\t0\n"
+  },
+  "status": {
+    "command": [
+      "git",
+      "status",
+      "--short"
+    ],
+    "exit_code": 0,
+    "output": " M telephony_core_service/common/capability_mgr/src/multi_sims_capability_manager.cpp\n M telephony_core_service/docs/SIM_Refactor_Execution_State.md\n M telephony_core_service/frameworks/ets/ani/esim/BUILD.gn\n M telephony_core_service/frameworks/ets/ani/vcard/BUILD.gn\n M telephony_core_service/frameworks/js/napi/napi_util.cpp\n M telephony_core_service/frameworks/js/network_search/src/napi_radio.cpp\n M telephony_core_service/frameworks/js/sim/src/napi_sim.cpp\n M telephony_core_service/frameworks/js/vcard/BUILD.gn\n M telephony_core_service/frameworks/native/src/cell_information.cpp\n M telephony_core_service/frameworks/native/src/core_service_client.cpp\n M telephony_core_service/frameworks/native/src/core_service_proxy.cpp\n M telephony_core_service/frameworks/native/src/telephony_state_registry_client.cpp\n M telephony_core_service/frameworks/native/src/telephony_state_registry_proxy.cpp\n M telephony_core_service/interfaces/innerkits/include/core_manager_inner.h\n M telephony_core_service/interfaces/innerkits/include/i_telephony_state_notify.h\n M telephony_core_service/interfaces/innerkits/include/state_registry_ipc_interface_code.h\n M telephony_core_service/interfaces/innerkits/include/telephony_observer_broker.h\n M telephony_core_service/interfaces/innerkits/include/telephony_state_registry_client.h\n M telephony_core_service/interfaces/innerkits/include/telephony_state_registry_proxy.h\n M telephony_core_service/interfaces/innerkits/include/voip_call_state_info.h\n M telephony_core_service/services/core/include/core_service.h\n M telephony_core_service/services/core/src/core_service_stub.cpp\n M telephony_core_service/services/network_search/include/network_search_handler.h\n M telephony_core_service/services/network_search/include/network_search_manager.h\n M telephony_core_service/services/network_search/include/network_search_state.h\n M telephony_core_service/services/network_search/include/network_utils.h\n M telephony_core_service/services/network_search/include/nr_ssb_info.h\n M telephony_core_service/services/network_search/include/operator_name_utils.h\n M telephony_core_service/services/network_search/include/signal_info.h\n M telephony_core_service/services/network_search/src/cell_info.cpp\n M telephony_core_service/services/network_search/src/network_search_handler.cpp\n M telephony_core_service/services/network_search/src/network_search_manager.cpp\n M telephony_core_service/services/network_search/src/network_search_state.cpp\n M telephony_core_service/services/network_search/src/network_utils.cpp\n M telephony_core_service/services/network_search/src/nr_ssb_info.cpp\n M telephony_core_service/services/network_search/src/operator_name_utils.cpp\n M telephony_core_service/services/network_search/src/setting_utils.cpp\n M telephony_core_service/services/network_search/src/signal_info.cpp\n M telephony_core_service/services/sim/include/esim_file.h\n M telephony_core_service/services/sim/include/icc_dialling_numbers_manager.h\n M telephony_core_service/services/sim/include/icc_file.h\n M telephony_core_service/services/sim/include/mcc_pool.h\n M telephony_core_service/services/sim/include/operator_config_cache.h\n M telephony_core_service/services/sim/include/operator_file_parser.h\n M telephony_core_service/services/sim/include/radio_protocol_controller.h\n M telephony_core_service/services/sim/include/sim_state_handle.h\n M telephony_core_service/services/sim/include/sim_state_manager.h\n M telephony_core_service/services/sim/include/stk_controller.h\n M telephony_core_service/services/sim/include/telephony_data_helper.h\n M telephony_core_service/services/sim/include/usim_dialling_numbers_service.h\n M telephony_core_service/services/sim/src/esim_controller.cpp\n M telephony_core_service/services/sim/src/esim_file.cpp\n M telephony_core_service/services/sim/src/icc_dialling_numbers_handler.cpp\n M telephony_core_service/services/sim/src/icc_dialling_numbers_manager.cpp\n M telephony_core_service/services/sim/src/icc_file.cpp\n M telephony_core_service/services/sim/src/icc_operator_privilege_controller.cpp\n M telephony_core_service/services/sim/src/isim_file.cpp\n M telephony_core_service/services/sim/src/mcc_pool.cpp\n M telephony_core_service/services/sim/src/multi_sim_controller.cpp\n M telephony_core_service/services/sim/src/operator_config_cache.cpp\n M telephony_core_service/services/sim/src/operator_file_parser.cpp\n M telephony_core_service/services/sim/src/ruim_file.cpp\n M telephony_core_service/services/sim/src/sim_file.cpp\n M telephony_core_service/services/sim/src/sim_state_handle.cpp\n M telephony_core_service/services/sim/src/sim_state_manager.cpp\n M telephony_core_service/services/sim/src/sim_utils.cpp\n M telephony_core_service/services/sim/src/stk_controller.cpp\n M telephony_core_service/services/sim/src/telephony_data_helper.cpp\n M telephony_core_service/services/sim/src/usim_dialling_numbers_service.cpp\n M telephony_core_service/services/tel_ril/include/observer_handler.h\n M telephony_core_service/services/tel_ril/include/tel_ril_base.h\n M telephony_core_service/services/tel_ril/include/tel_ril_data.h\n M telephony_core_service/services/tel_ril/include/tel_ril_handler.h\n M telephony_core_service/services/tel_ril/src/observer_handler.cpp\n M telephony_core_service/services/tel_ril/src/tel_ril_base.cpp\n M telephony_core_service/services/tel_ril/src/tel_ril_handler.cpp\n M telephony_core_service/services/tel_ril/src/tel_ril_manager.cpp\n M telephony_core_service/services/tel_ril/src/tel_ril_network.cpp\n M telephony_core_service/test/fuzztest/mcccountrycode_fuzzer/BUILD.gn\n M telephony_core_service/test/fuzztest/vcard_fuzzer/BUILD.gn\n M telephony_core_service/test/unittest/esim_gtest/esim_file_test.cpp\n M telephony_core_service/test/unittest/sim_gtest/core_manager_inner_gtest.cpp\n M telephony_core_service/test/unittest/utils_vcard_gtest/BUILD.gn\n M telephony_core_service/utils/BUILD.gn\n M telephony_core_service/utils/codec/include/asn1_builder.h\n M telephony_core_service/utils/codec/include/asn1_node.h\n M telephony_core_service/utils/codec/include/request_apdu_build.h\n M telephony_core_service/utils/codec/src/asn1_builder.cpp\n M telephony_core_service/utils/codec/src/asn1_decoder.cpp\n M telephony_core_service/utils/codec/src/asn1_node.cpp\n M telephony_core_service/utils/codec/src/request_apdu_build.cpp\n M telephony_core_service/utils/common/src/tel_event_queue.cpp\n M telephony_core_service/utils/vcard/include/vcard_contact.h\n M telephony_core_service/utils/vcard/include/vcard_decoder_v21.h\n M telephony_core_service/utils/vcard/include/vcard_manager.h\n M telephony_core_service/utils/vcard/src/vcard_contact.cpp\n M telephony_core_service/utils/vcard/src/vcard_decoder_v21.cpp\n M telephony_core_service/utils/vcard/src/vcard_manager.cpp\n M telephony_core_service/utils/vcard/src/vcard_utils.cpp\n?? telephony_core_service/services/multisim/test/systemtest/configs/sim028_ci.json\n?? telephony_core_service/services/multisim/test/systemtest/configs/sim028_ci_admission_20261112/\n?? telephony_core_service/services/multisim/test/systemtest/configs/sim028_concurrency_fix_20261112/\n?? telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/\n?? telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/admission/\n?? telephony_core_service/services/multisim/test/systemtest/tools/ci_sim028.py\n?? telephony_core_service/services/multisim/test/systemtest/tools/test_ci_sim028.py\n"
+  },
+  "worktrees": {
+    "command": [
+      "git",
+      "worktree",
+      "list"
+    ],
+    "exit_code": 0,
+    "output": "/mnt/e/github/multisim                             77e3dc4e [main]\n/mnt/e/g2a-bplus-m1-20261104                       d5f0527c [work/g2a-bplus-revalidation-20261104]\n/mnt/e/g2a-bplus-m1-history-20261104               728ad77e (detached HEAD)\n/mnt/e/multisim-main-integration-20261105          541bb0e8 (detached HEAD)\n/mnt/e/sim-guard-round2-artifacts/baseline-source  e99caba3 (detached HEAD)\n/tmp/multisim-audit-round3                         c70894f8 [docs/sim-target-v1.2-audit-round3]\n/tmp/multisim-g2a                                  5eed2181 [work/g2a-real-query-20261030]\n/tmp/multisim-g2a-bplus-20261102                   2feaf127 [work/g2a-bplus-integration]\n/tmp/multisim-g2a-checkpoint                       728ad77e [work/g2a-readonly-checkpoint-20261030]\n/tmp/multisim-recovery-entry                       9f72e7ff [docs/sim-refactor-recovery-20261030]\n/tmp/multisim-stage1-sync                          5eed2181 [integration/sim-review-fixes-20261029]\n"
+  },
+  "clang": {
+    "command": [
+      "clang++",
+      "--version"
+    ],
+    "exit_code": 0,
+    "output": "Ubuntu clang version 18.1.3 (1ubuntu1)\nTarget: x86_64-pc-linux-gnu\nThread model: posix\nInstalledDir: /usr/bin\n"
+  },
+  "clangd": {
+    "command": [
+      "clangd",
+      "--version"
+    ],
+    "exit_code": 0,
+    "output": "Ubuntu clangd version 18.1.3 (1ubuntu1)\nFeatures: linux+grpc\nPlatform: x86_64-pc-linux-gnu\n"
+  },
+  "lldb": {
+    "command": [
+      "lldb",
+      "--version"
+    ],
+    "exit_code": 0,
+    "output": "lldb version 18.1.3\n"
+  },
+  "gn": {
+    "command": [
+      "gn",
+      "--version"
+    ],
+    "exit_code": 0,
+    "output": "1000 (03d10f1)\n"
+  },
+  "ninja": {
+    "command": [
+      "ninja",
+      "--version"
+    ],
+    "exit_code": 0,
+    "output": "1.11.1\n"
+  },
+  "python": {
+    "command": [
+      "python3",
+      "--version"
+    ],
+    "exit_code": 0,
+    "output": "Python 3.12.3\n"
+  },
+  "git": {
+    "command": [
+      "git",
+      "--version"
+    ],
+    "exit_code": 0,
+    "output": "git version 2.43.0\n"
+  },
+  "openssl": {
+    "command": [
+      "openssl",
+      "version"
+    ],
+    "exit_code": 0,
+    "output": "OpenSSL 3.0.13 30 Jan 2024 (Library: OpenSSL 3.0.13 30 Jan 2024)\n"
+  },
+  "kernel": {
+    "command": [
+      "uname",
+      "-a"
+    ],
+    "exit_code": 0,
+    "output": "Linux LuoWuComputer 6.18.40.1-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Fri Jul 31 22:12:15 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux\n"
+  }
+}

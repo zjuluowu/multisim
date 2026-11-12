@@ -1,0 +1,38 @@
+ .../sim/include/icc_dialling_numbers_cache.h       |    5 +
+ .../sim/include/icc_dialling_numbers_manager.h     |    5 +
+ .../services/sim/include/icc_file.h                |    5 +
+ .../services/sim/include/multi_sim_controller.h    |    9 +
+ .../services/sim/include/multi_sim_monitor.h       |    9 +
+ .../services/sim/include/operator_config_cache.h   |    5 +
+ .../services/sim/include/sim_account_manager.h     |    5 +
+ .../services/sim/include/sim_file.h                |    6 +
+ .../services/sim/include/sim_file_manager.h        |    5 +
+ .../services/sim/include/sim_manager.h             |    9 +
+ .../services/sim/include/sim_sms_manager.h         |    5 +
+ .../services/sim/include/sim_state_handle.h        |    5 +
+ .../services/sim/include/sim_state_manager.h       |    7 +
+ .../services/sim/include/stk_manager.h             |    5 +
+ .../sim/src/icc_dialling_numbers_cache.cpp         |    9 +
+ .../sim/src/icc_dialling_numbers_manager.cpp       |    9 +
+ .../services/sim/src/icc_file.cpp                  |   10 +
+ .../services/sim/src/multi_sim_controller.cpp      |   59 ++++--
+ .../services/sim/src/multi_sim_monitor.cpp         |  134 +++++++++++---
+ .../services/sim/src/operator_config_cache.cpp     |   14 +
+ .../services/sim/src/radio_protocol_controller.cpp |    1 
+ .../services/sim/src/sim_account_manager.cpp       |   13 +
+ .../services/sim/src/sim_file.cpp                  |   32 ++-
+ .../services/sim/src/sim_file_manager.cpp          |   21 ++
+ .../services/sim/src/sim_manager.cpp               |  162 +++++++++++++++++
+ .../services/sim/src/sim_sms_manager.cpp           |    7 +
+ .../services/sim/src/sim_state_handle.cpp          |   11 +
+ .../services/sim/src/sim_state_manager.cpp         |   14 +
+ .../services/sim/src/stk_controller.cpp            |    1 
+ .../services/sim/src/stk_manager.cpp               |    7 +
+ .../services/tel_ril/src/observer_handler.cpp      |    8 +
+ .../utils/common/include/tel_event_handler.h       |    4 
+ .../utils/common/include/tel_event_queue.h         |   17 ++
+ .../utils/common/include/tel_lifecycle.h           |  189 ++++++++++++++++++++
+ .../utils/common/include/tel_parameter_watcher.h   |   43 +++++
+ .../utils/common/src/tel_event_handler.cpp         |    6 -
+ .../utils/common/src/tel_event_queue.cpp           |   56 ++++--
+ 37 files changed, 817 insertions(+), 95 deletions(-)

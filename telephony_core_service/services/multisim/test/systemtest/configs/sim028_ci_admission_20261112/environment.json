@@ -1,0 +1,46 @@
+{
+  "head": {
+    "exit": 0,
+    "output": "77e3dc4e27dfe33ac728f225843b86b038914f6c\n"
+  },
+  "branch": {
+    "exit": 0,
+    "output": "main\n"
+  },
+  "remotes": {
+    "exit": 0,
+    "output": "origin\thttps://github.com/zjuluowu/multisim.git (fetch)\norigin\thttps://github.com/zjuluowu/multisim.git (push)\nupstream\thttps://github.com/openharmony/telephony_core_service.git (fetch)\nupstream\thttps://github.com/openharmony/telephony_core_service.git (push)\n"
+  },
+  "remote_difference": {
+    "exit": 0,
+    "output": "0\t0\n"
+  },
+  "staging": {
+    "exit": 0,
+    "output": ""
+  },
+  "worktrees": {
+    "exit": 0,
+    "output": "/mnt/e/github/multisim                             77e3dc4e [main]\n/mnt/e/g2a-bplus-m1-20261104                       d5f0527c [work/g2a-bplus-revalidation-20261104]\n/mnt/e/g2a-bplus-m1-history-20261104               728ad77e (detached HEAD)\n/mnt/e/multisim-main-integration-20261105          541bb0e8 (detached HEAD)\n/mnt/e/sim-guard-round2-artifacts/baseline-source  e99caba3 (detached HEAD)\n/tmp/multisim-audit-round3                         c70894f8 [docs/sim-target-v1.2-audit-round3]\n/tmp/multisim-g2a                                  5eed2181 [work/g2a-real-query-20261030]\n/tmp/multisim-g2a-bplus-20261102                   2feaf127 [work/g2a-bplus-integration]\n/tmp/multisim-g2a-checkpoint                       728ad77e [work/g2a-readonly-checkpoint-20261030]\n/tmp/multisim-recovery-entry                       9f72e7ff [docs/sim-refactor-recovery-20261030]\n/tmp/multisim-stage1-sync                          5eed2181 [integration/sim-review-fixes-20261029]\n"
+  },
+  "clang": {
+    "exit": 0,
+    "output": "Ubuntu clang version 18.1.3 (1ubuntu1)\nTarget: x86_64-pc-linux-gnu\nThread model: posix\nInstalledDir: /usr/bin\n"
+  },
+  "gn": {
+    "exit": 0,
+    "output": "1000 (03d10f1)\n"
+  },
+  "ninja": {
+    "exit": 0,
+    "output": "1.11.1\n"
+  },
+  "python": {
+    "exit": 0,
+    "output": "Python 3.12.3\n"
+  },
+  "kernel": {
+    "exit": 0,
+    "output": "Linux LuoWuComputer 6.18.40.1-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Fri Jul 31 22:12:15 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux\n"
+  }
+}

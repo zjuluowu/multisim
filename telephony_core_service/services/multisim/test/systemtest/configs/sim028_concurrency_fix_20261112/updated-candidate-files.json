@@ -1,0 +1,268 @@
+{
+  "production_count": 37,
+  "production_increment_count": 5,
+  "production_files": [
+    {
+      "path": "telephony_core_service/services/sim/include/icc_dialling_numbers_cache.h",
+      "production_sha256": "baccfaa9f3fd8bffe002493d37c2470f39759ee1fb3544bef05adf1e90a1e53a",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/icc_dialling_numbers_manager.h",
+      "production_sha256": "3451b7ff634146ba209d613b0ad4c3a84b4cff1a2af81fefe1b478424be468a0",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/icc_file.h",
+      "production_sha256": "ad275ee9e5e7374ae6ca3a6af255cb2f374139fe4aeff2b6419c871540988a97",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/multi_sim_controller.h",
+      "production_sha256": "19b5fd0b68a57482dd70bf37c4b5467102257edb9ad3f197c7263d1c19a82dc5",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/multi_sim_monitor.h",
+      "production_sha256": "fc3b7a92a43d7eb10ebed793982fd2d9a23f926d3f0c52103c2af2e4858028e9",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/operator_config_cache.h",
+      "production_sha256": "162e88643c220ba9c7c6bd4da0175123a61533da519d48d2062bd25d798c7711",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/sim_account_manager.h",
+      "production_sha256": "e0810cb47b5d50fbf77c90b5573a5478737bd0729c7dfa5eb68dcc7ccd78ec9a",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/sim_file.h",
+      "production_sha256": "5bf83a108cceafcc00738390bb84dc44a600b8f9d115b6b083a949e53e7a1722",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/sim_file_manager.h",
+      "production_sha256": "5e87634f48cca5affed9edc9db477df1284f319641c50e433ee080726b7a4cd7",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/sim_manager.h",
+      "production_sha256": "242d35df7d16504cf606bb7a1d51549c9c172b694c4cd7311e95cfb4cc44b12e",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/sim_sms_manager.h",
+      "production_sha256": "cc100ba3cd841a6beae0a3acdd5c291992ee57a532bb266541e9af710406168e",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/sim_state_handle.h",
+      "production_sha256": "e43fdea1feee78ae42780c3f38acfc75edf3b2fcc52d212643ce6a126512e2ea",
+      "changed_this_round": true
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/sim_state_manager.h",
+      "production_sha256": "ed36539710f2a65e1f4b85fb10652c8d296ac109fffa3c30bf8793ed4c565acc",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/stk_manager.h",
+      "production_sha256": "472fb250aad5e5347ba10d627480e57e27d251a6dff5ce1c3da35ec6d869ec04",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/icc_dialling_numbers_cache.cpp",
+      "production_sha256": "cd5273fb9b56fa8463b5d360dc25dff7214e7887b8c01da3ee4350f1b528ed8d",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/icc_dialling_numbers_manager.cpp",
+      "production_sha256": "5a16e6885888120471e559cd57741c98fd84cbb76b45b18405325bc176845095",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/icc_file.cpp",
+      "production_sha256": "a0eeae62b1ca174bd74f8cf89bc66b549a1bc2f892d4b9d1055aeab657fe4865",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/multi_sim_controller.cpp",
+      "production_sha256": "1ff823a48feab4f7ed364ed6bfe910c6c7a039ce5918f8c71cb4642a72d4a4dd",
+      "changed_this_round": true
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/multi_sim_monitor.cpp",
+      "production_sha256": "b4c80daaf19f2f3b4c459fac2b4ca336e97cbef096fd2b703dbd15705f45e852",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/operator_config_cache.cpp",
+      "production_sha256": "e335ec5ad3949f921dcdf76f51347665cd9977c4268f94273b21aaa9073a9203",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/radio_protocol_controller.cpp",
+      "production_sha256": "3639a44f68147f3ab7eed787ad0cd8dfb90d764c5c353f0edc7056c8ab99b1b4",
+      "changed_this_round": true
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_account_manager.cpp",
+      "production_sha256": "bde0b167c42a7d97a97a7cc85293e07dd0e1e9d9cd810f1927ff41efb8fdd95b",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_file.cpp",
+      "production_sha256": "4c758cde7ffc68f623157f01ba60d8b8c1b578b0c2d1cb574110eb136f562691",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_file_manager.cpp",
+      "production_sha256": "96f7e994a1675b5a5f98d55bee532a4f0f6368c8675c7ce10fa54a4cb92f2bdb",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_manager.cpp",
+      "production_sha256": "3ef021e204450df61ec49b06cbdebea4d0533ed191231a1f64a56896e38b9c35",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_sms_manager.cpp",
+      "production_sha256": "b0b6b2bba940e48db243b23723bf82461a1d279bd43598ece1b776b4eddfc8cf",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_state_handle.cpp",
+      "production_sha256": "8ff3d3fb33c0feb3175bb8cff20751c669196c3fb8e2b41e796aad7892adb418",
+      "changed_this_round": true
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_state_manager.cpp",
+      "production_sha256": "38593e26111f04004998d56cfeab6f3f9fe11e92258bf62e00d7301b07903897",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/stk_controller.cpp",
+      "production_sha256": "a3adc871035050b55a745d7c26abb72578510f94b7c6758a891bb0df3ca20bcc",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/stk_manager.cpp",
+      "production_sha256": "5f2772cfdb6c21486ec3241c460accf2d0c9bd4b8b33c573625e815ac0f25bb1",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/services/tel_ril/src/observer_handler.cpp",
+      "production_sha256": "c1007d93a0b4e450bf1c342f72a58c0dd26091f365216514966207ec13eeccdb",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/utils/common/include/tel_event_handler.h",
+      "production_sha256": "7a1c69aa6cd8a6fac24a4188849f99c5c9bccb68efb9224b4456eb0eb365c76e",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/utils/common/include/tel_event_queue.h",
+      "production_sha256": "67b502c06c20e0594fe8e1dc0f4178f124eaababdceb9a2cd0a18982359061dd",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/utils/common/include/tel_lifecycle.h",
+      "production_sha256": "c31da5cdbf081c3c68f0ea9f671d6cba00d140313cbe14696e8049bf8a00b3ef",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/utils/common/include/tel_parameter_watcher.h",
+      "production_sha256": "18729d9864e34d77cc012afc775293868e8a88febf41384f52ac70abd36a8844",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/utils/common/src/tel_event_handler.cpp",
+      "production_sha256": "a67dd3c6a598ac6c1ea07095073ec9df658f286dc20faf297306ca04d9990dec",
+      "changed_this_round": false
+    },
+    {
+      "path": "telephony_core_service/utils/common/src/tel_event_queue.cpp",
+      "production_sha256": "3e28634baf63ef5929cbada91e4709536f31df7ef8f446069ae216c94383bfb7",
+      "changed_this_round": true
+    }
+  ],
+  "test_count": 18,
+  "test_paths": [
+    "telephony_core_service/services/multisim/test/systemtest/BUILD.gn",
+    "telephony_core_service/services/multisim/test/systemtest/gn/BUILD.gn",
+    "telephony_core_service/services/multisim/test/systemtest/gn/BUILDCONFIG.gn",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_runtime.cpp",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/watcher_boundary.h",
+    "telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp",
+    "telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.h",
+    "telephony_core_service/services/multisim/test/systemtest/stubs/include/compile_declarations.h",
+    "telephony_core_service/services/multisim/test/systemtest/stubs/include/hilog/log.h",
+    "telephony_core_service/services/multisim/test/systemtest/tools/host.py",
+    "telephony_core_service/services/sim/src/sim_state_manager.cpp",
+    "telephony_core_service/services/tel_ril/src/observer_handler.cpp",
+    "telephony_core_service/utils/common/include/tel_lifecycle.h",
+    "telephony_core_service/utils/common/src/tel_event_queue.cpp"
+  ],
+  "combined_count": 51,
+  "combined_candidate_sha256": {
+    "telephony_core_service/services/multisim/test/systemtest/BUILD.gn": "0daacb34e101c2951400a5afbbec5a6b66c2851bb9b19fc27da6feaececeeaf6",
+    "telephony_core_service/services/multisim/test/systemtest/gn/BUILD.gn": "077970636f662160be39254132d73ac1b25479777668162ccd2389b4a25a5718",
+    "telephony_core_service/services/multisim/test/systemtest/gn/BUILDCONFIG.gn": "3a161c39d5a3691f9f3513c2757b87eeb18954c2cd622aaa93a6c404f3627d88",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h": "246b35b3e189282edfe007787067b20abc9a645c8541d7c7ebfaa5a16c21f5b4",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp": "14f52208b1a7c8d794bcc3ba44e79af9a778611b5182622eb303c8138cfe3809",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_runtime.cpp": "ee0e5914dda7c5106717f52c305a2297210caff84863ff28efe10cbc6998fead",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h": "f713d5370c9efdce1b43dceee9914e8e753a61cbb6bd8c7baa72190964b059bd",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp": "8b78a9fd0a51ff6912355c13eb73ef7edbaf605550e110e0e53707a1c245f318",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/watcher_boundary.h": "1a7fc6bbed5c0af554e5bcdb21f8ecd554005839651f64b23228b23ca31220d5",
+    "telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp": "e46b1c555d3a69916f2fc3bcf40e83232318fa17cfc0a660084fa27959327e34",
+    "telephony_core_service/services/multisim/test/systemtest/stubs/include/compile_declarations.h": "2e302c87fa26aa216c29559b103c79a672fbc41f380a87f9ae540fe8cdba5681",
+    "telephony_core_service/services/multisim/test/systemtest/tools/host.py": "ea2821a2b2ab7c36f5fdebfe25b3ef522ee3aadc9d56559cdb4a005681eea7eb",
+    "telephony_core_service/services/sim/include/icc_dialling_numbers_cache.h": "baccfaa9f3fd8bffe002493d37c2470f39759ee1fb3544bef05adf1e90a1e53a",
+    "telephony_core_service/services/sim/include/icc_dialling_numbers_manager.h": "3451b7ff634146ba209d613b0ad4c3a84b4cff1a2af81fefe1b478424be468a0",
+    "telephony_core_service/services/sim/include/icc_file.h": "ad275ee9e5e7374ae6ca3a6af255cb2f374139fe4aeff2b6419c871540988a97",
+    "telephony_core_service/services/sim/include/multi_sim_controller.h": "19b5fd0b68a57482dd70bf37c4b5467102257edb9ad3f197c7263d1c19a82dc5",
+    "telephony_core_service/services/sim/include/multi_sim_monitor.h": "fc3b7a92a43d7eb10ebed793982fd2d9a23f926d3f0c52103c2af2e4858028e9",
+    "telephony_core_service/services/sim/include/operator_config_cache.h": "162e88643c220ba9c7c6bd4da0175123a61533da519d48d2062bd25d798c7711",
+    "telephony_core_service/services/sim/include/sim_account_manager.h": "e0810cb47b5d50fbf77c90b5573a5478737bd0729c7dfa5eb68dcc7ccd78ec9a",
+    "telephony_core_service/services/sim/include/sim_file.h": "5bf83a108cceafcc00738390bb84dc44a600b8f9d115b6b083a949e53e7a1722",
+    "telephony_core_service/services/sim/include/sim_file_manager.h": "5e87634f48cca5affed9edc9db477df1284f319641c50e433ee080726b7a4cd7",
+    "telephony_core_service/services/sim/include/sim_manager.h": "242d35df7d16504cf606bb7a1d51549c9c172b694c4cd7311e95cfb4cc44b12e",
+    "telephony_core_service/services/sim/include/sim_sms_manager.h": "cc100ba3cd841a6beae0a3acdd5c291992ee57a532bb266541e9af710406168e",
+    "telephony_core_service/services/sim/include/sim_state_handle.h": "e43fdea1feee78ae42780c3f38acfc75edf3b2fcc52d212643ce6a126512e2ea",
+    "telephony_core_service/services/sim/include/sim_state_manager.h": "ed36539710f2a65e1f4b85fb10652c8d296ac109fffa3c30bf8793ed4c565acc",
+    "telephony_core_service/services/sim/include/stk_manager.h": "472fb250aad5e5347ba10d627480e57e27d251a6dff5ce1c3da35ec6d869ec04",
+    "telephony_core_service/services/sim/src/icc_dialling_numbers_cache.cpp": "cd5273fb9b56fa8463b5d360dc25dff7214e7887b8c01da3ee4350f1b528ed8d",
+    "telephony_core_service/services/sim/src/icc_dialling_numbers_manager.cpp": "5a16e6885888120471e559cd57741c98fd84cbb76b45b18405325bc176845095",
+    "telephony_core_service/services/sim/src/icc_file.cpp": "a0eeae62b1ca174bd74f8cf89bc66b549a1bc2f892d4b9d1055aeab657fe4865",
+    "telephony_core_service/services/sim/src/multi_sim_controller.cpp": "1ff823a48feab4f7ed364ed6bfe910c6c7a039ce5918f8c71cb4642a72d4a4dd",
+    "telephony_core_service/services/sim/src/multi_sim_monitor.cpp": "b4c80daaf19f2f3b4c459fac2b4ca336e97cbef096fd2b703dbd15705f45e852",
+    "telephony_core_service/services/sim/src/operator_config_cache.cpp": "e335ec5ad3949f921dcdf76f51347665cd9977c4268f94273b21aaa9073a9203",
+    "telephony_core_service/services/sim/src/radio_protocol_controller.cpp": "3639a44f68147f3ab7eed787ad0cd8dfb90d764c5c353f0edc7056c8ab99b1b4",
+    "telephony_core_service/services/sim/src/sim_account_manager.cpp": "bde0b167c42a7d97a97a7cc85293e07dd0e1e9d9cd810f1927ff41efb8fdd95b",
+    "telephony_core_service/services/sim/src/sim_file.cpp": "4c758cde7ffc68f623157f01ba60d8b8c1b578b0c2d1cb574110eb136f562691",
+    "telephony_core_service/services/sim/src/sim_file_manager.cpp": "96f7e994a1675b5a5f98d55bee532a4f0f6368c8675c7ce10fa54a4cb92f2bdb",
+    "telephony_core_service/services/sim/src/sim_manager.cpp": "3ef021e204450df61ec49b06cbdebea4d0533ed191231a1f64a56896e38b9c35",
+    "telephony_core_service/services/sim/src/sim_sms_manager.cpp": "b0b6b2bba940e48db243b23723bf82461a1d279bd43598ece1b776b4eddfc8cf",
+    "telephony_core_service/services/sim/src/sim_state_handle.cpp": "8ff3d3fb33c0feb3175bb8cff20751c669196c3fb8e2b41e796aad7892adb418",
+    "telephony_core_service/services/sim/src/sim_state_manager.cpp": "a7f01f2926cc8a93e24cdab7c94f3ea62c75b2058e303c4cfbd608ca8140e482",
+    "telephony_core_service/services/sim/src/stk_controller.cpp": "a3adc871035050b55a745d7c26abb72578510f94b7c6758a891bb0df3ca20bcc",
+    "telephony_core_service/services/sim/src/stk_manager.cpp": "5f2772cfdb6c21486ec3241c460accf2d0c9bd4b8b33c573625e815ac0f25bb1",
+    "telephony_core_service/services/tel_ril/src/observer_handler.cpp": "c1ae8c926a59bbc0b2bf75a382a131b9e30af29458514e2367bbf2b4411578d1",
+    "telephony_core_service/utils/common/include/tel_event_handler.h": "7a1c69aa6cd8a6fac24a4188849f99c5c9bccb68efb9224b4456eb0eb365c76e",
+    "telephony_core_service/utils/common/include/tel_event_queue.h": "67b502c06c20e0594fe8e1dc0f4178f124eaababdceb9a2cd0a18982359061dd",
+    "telephony_core_service/utils/common/include/tel_lifecycle.h": "febf07cbdc4189e4cb00fb7a06ba0572d53859605cebc6858d6b3ce16cb6519a",
+    "telephony_core_service/utils/common/include/tel_parameter_watcher.h": "18729d9864e34d77cc012afc775293868e8a88febf41384f52ac70abd36a8844",
+    "telephony_core_service/utils/common/src/tel_event_handler.cpp": "a67dd3c6a598ac6c1ea07095073ec9df658f286dc20faf297306ca04d9990dec",
+    "telephony_core_service/utils/common/src/tel_event_queue.cpp": "d74c359d5e3cae74d87216af7eaf7c4a4997321980ba71841c46d63271362b62",
+    "telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.h": "62d0da852d9f669811e765bed9be5a0d89f2c25550ab650942f5147ccc1cfe1d",
+    "telephony_core_service/services/multisim/test/systemtest/stubs/include/hilog/log.h": "57d8836228f9cf0671941ff2362ef0e7fa3043a5fc58a4617d0f0925a617a444"
+  },
+  "production_release_admission": "BLOCKED",
+  "native_compile": "NOT_RUN"
+}

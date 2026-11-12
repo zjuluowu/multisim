@@ -1,0 +1,137 @@
+{
+  "compiled_source_root": "/tmp/sim028-concurrency-9_wowy3i/final-ci/repo",
+  "candidate_manifest_sha256": "b18e56d4d23420ef59c51045812cb9ca81e61dc27d234320e1bab2429d34fda1",
+  "files": [
+    {
+      "path": "telephony_core_service/services/sim/include/sim_state_handle.h",
+      "sha256": "e43fdea1feee78ae42780c3f38acfc75edf3b2fcc52d212643ce6a126512e2ea",
+      "accesses_and_lock_sites": [
+        {
+          "line": 224,
+          "text": "    IccState iccState_; // icc card states",
+          "context": "    SimAuthenticationResponse simIORespon_ = { 0 };\n    int32_t sendSimMatchedOperatorInfoResult_ = static_cast<int32_t>(ErrType::NONE);\n    LockStatusResponse simlockRespon_ = { UNLOCK_FAIL, TELEPHONY_ERROR };\n    IccState iccState_; // icc card states\n    // State snapshots cross StateHandle, Monitor and File queues. Never hold\n    // this mutex across notification, RIL or platform callbacks.\n    ffrt::mutex externalStateMutex_;"
+        },
+        {
+          "line": 228,
+          "text": "    SimState externalState_ = SimState::SIM_STATE_UNKNOWN;",
+          "context": "    // State snapshots cross StateHandle, Monitor and File queues. Never hold\n    // this mutex across notification, RIL or platform callbacks.\n    ffrt::mutex externalStateMutex_;\n    SimState externalState_ = SimState::SIM_STATE_UNKNOWN;\n    CardType externalType_ = CardType::UNKNOWN_CARD; // need to broadcast card type;\n    LockReason lockReason_ = LockReason::SIM_NONE; // need to broadcast lock reason\n    std::weak_ptr<SimStateManager> simStateManager_;"
+        }
+      ]
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_state_handle.cpp",
+      "sha256": "8ff3d3fb33c0feb3175bb8cff20751c669196c3fb8e2b41e796aad7892adb418",
+      "accesses_and_lock_sites": [
+        {
+          "line": 170,
+          "text": "        cardStatus = iccState_.simStatus_;",
+          "context": "    int32_t cardStatus;\n    {\n        std::lock_guard<ffrt::mutex> lock(externalStateMutex_);\n        cardStatus = iccState_.simStatus_;\n    }\n    if (cardStatus == ICC_CARD_ABSENT ||\n        (cardStatus == ICC_CONTENT_UNKNOWN && CoreManagerInner::GetInstance().IsEsim(slotId_))) {"
+        },
+        {
+          "line": 182,
+          "text": "    return externalState_;",
+          "context": "SimState SimStateHandle::GetSimState()\n{\n    std::lock_guard<ffrt::mutex> lock(externalStateMutex_);\n    return externalState_;\n}\n\nIccSimStatus SimStateHandle::GetSimIccStatus()"
+        },
+        {
+          "line": 193,
+          "text": "    externalState_ = simState;",
+          "context": "void SimStateHandle::SetSimState(SimState simState)\n{\n    std::lock_guard<ffrt::mutex> lock(externalStateMutex_);\n    externalState_ = simState;\n}\n\nCardType SimStateHandle::GetCardType()"
+        },
+        {
+          "line": 418,
+          "text": "        iccState_ = ar;",
+          "context": "    {\n        // Publish the value snapshot without holding this lock across callbacks.\n        std::lock_guard<ffrt::mutex> lock(externalStateMutex_);\n        iccState_ = ar;\n    }\n    auto iter = simIccStatusMap_.find(newSimStatus);\n    HILOG_COMM_INFO(\"ProcessIccCardState slotId:%{public}d, newSimType:%{public}d, newSimStatus:%{public}s(%{public}d),\""
+        },
+        {
+          "line": 1160,
+          "text": "        present = iccState_.simStatus_ != ICC_CARD_ABSENT;",
+          "context": "    bool present;\n    {\n        std::lock_guard<ffrt::mutex> lock(externalStateMutex_);\n        present = iccState_.simStatus_ != ICC_CARD_ABSENT;\n    }\n    if (present) {\n        IccState iccState;"
+        }
+      ]
+    },
+    {
+      "path": "telephony_core_service/utils/common/src/tel_event_queue.cpp",
+      "sha256": "d74c359d5e3cae74d87216af7eaf7c4a4997321980ba71841c46d63271362b62",
+      "accesses_and_lock_sites": [
+        {
+          "line": 208,
+          "text": "            std::lock_guard<ffrt::mutex> admission(thiz->admissionMutex_);",
+          "context": "            // Serialize the next wake-up snapshot with external insertion. An\n            // immediate reply must not arrive between selecting a future timer\n            // and publishing that timer as the current scheduled task.\n            std::lock_guard<ffrt::mutex> admission(thiz->admissionMutex_);\n            thiz->SubmitInner(queueId);\n        },\n        ffrt::task_attr().delay(delayTime));"
+        }
+      ]
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/radio_protocol_controller.cpp",
+      "sha256": "3639a44f68147f3ab7eed787ad0cd8dfb90d764c5c353f0edc7056c8ab99b1b4",
+      "accesses_and_lock_sites": [
+        {
+          "line": 44,
+          "text": "    std::unique_lock<ffrt::mutex> radioProtocolLock(radioProtocolMutex_);",
+          "context": "    slotCount_ = SIM_SLOT_COUNT_REAL >= DUAL_SLOT_COUNT ? DUAL_SLOT_COUNT : SIM_SLOT_COUNT_REAL;\n    InitMemberFunc();\n    // make sure communication is in the initial state\n    std::unique_lock<ffrt::mutex> radioProtocolLock(radioProtocolMutex_);\n    CleanUpCommunication();\n    for (int32_t i = 0; i < slotCount_; i++) {\n        RadioProtocol protocol;"
+        },
+        {
+          "line": 61,
+          "text": "    std::unique_lock<ffrt::mutex> radioProtocolLock(radioProtocolMutex_);",
+          "context": "\nint32_t RadioProtocolController::GetRadioProtocolTech(int32_t slotId)\n{\n    std::unique_lock<ffrt::mutex> radioProtocolLock(radioProtocolMutex_);\n    if (slotId < DEFAULT_SIM_SLOT_ID || slotId >= static_cast<int32_t>(radioProtocol_.size()) || slotId == SIM_SLOT_2) {\n        return 0;\n    }"
+        },
+        {
+          "line": 70,
+          "text": "    std::unique_lock<ffrt::mutex> radioProtocolLock(radioProtocolMutex_);",
+          "context": "\nint32_t RadioProtocolController::GetRadioProtocolModemId(int32_t slotId)\n{\n    std::unique_lock<ffrt::mutex> radioProtocolLock(radioProtocolMutex_);\n    if (slotId < DEFAULT_SIM_SLOT_ID || slotId >= static_cast<int32_t>(radioProtocol_.size()) || slotId == SIM_SLOT_2) {\n        return 0;\n    }"
+        },
+        {
+          "line": 79,
+          "text": "    std::unique_lock<ffrt::mutex> radioProtocolLock(radioProtocolMutex_);",
+          "context": "\nint32_t RadioProtocolController::GetRadioProtocolSlotIdByModemId(int32_t modemId)\n{\n    std::unique_lock<ffrt::mutex> radioProtocolLock(radioProtocolMutex_);\n    for (int32_t i = 0; i < static_cast<int32_t>(radioProtocol_.size()); i++) {\n        if (radioProtocol_[i].modemId == modemId) {\n            return i;"
+        },
+        {
+          "line": 106,
+          "text": "    std::unique_lock<ffrt::mutex> radioProtocolLock(radioProtocolMutex_);",
+          "context": "\nbool RadioProtocolController::SetRadioProtocol(int32_t slotId)\n{\n    std::unique_lock<ffrt::mutex> radioProtocolLock(radioProtocolMutex_);\n    if (isCommunicating_) {\n        TELEPHONY_LOGE(\"protocol is communicating, can not set now\");\n        return false;"
+        },
+        {
+          "line": 166,
+          "text": "        std::unique_lock<ffrt::mutex> protocolLock(radioProtocolMutex_, std::defer_lock);",
+          "context": "            id == RADIO_SIM_CHECK_RADIO_PROTOCOL || id == RADIO_SIM_UPDATE_RADIO_PROTOCOL ||\n            id == RADIO_SIM_RADIO_PROTOCOL_NOTIFY || id == RADIO_SIM_SET_RADIO_PROTOCOL_COMPLETE ||\n            id == RADIO_SIM_SET_RADIO_PROTOCOL_TIMEOUT;\n        std::unique_lock<ffrt::mutex> protocolLock(radioProtocolMutex_, std::defer_lock);\n        if (protocolEvent) {\n            protocolLock.lock();\n        }"
+        },
+        {
+          "line": 293,
+          "text": "// Called with radioProtocolMutex_ held by protocol dispatch or SetRadioProtocol.",
+          "context": "    SendRadioProtocolEvent(oldRadioProtocol_, RADIO_SIM_CHECK_RADIO_PROTOCOL);\n}\n\n// Called with radioProtocolMutex_ held by protocol dispatch or SetRadioProtocol.\nvoid RadioProtocolController::ExecuteUpdateCommunication()\n{\n    BuildRadioProtocolForCommunication(RadioProtocolPhase::RADIO_PROTOCOL_PHASE_UPDATE,"
+        },
+        {
+          "line": 302,
+          "text": "// Called with radioProtocolMutex_ held by protocol dispatch or SetRadioProtocol.",
+          "context": "    SendRadioProtocolEvent(newRadioProtocol_, RADIO_SIM_UPDATE_RADIO_PROTOCOL);\n}\n\n// Called with radioProtocolMutex_ held by protocol dispatch or SetRadioProtocol.\nvoid RadioProtocolController::ExecuteCompleteCommunication()\n{\n    TELEPHONY_LOGI(\"failed:%{public}d\", communicationFailed_);"
+        },
+        {
+          "line": 401,
+          "text": "// Called with radioProtocolMutex_ held by protocol dispatch or SetRadioProtocol.",
+          "context": "    }\n}\n\n// Called with radioProtocolMutex_ held by protocol dispatch or SetRadioProtocol.\nvoid RadioProtocolController::UpdateRadioProtocol(std::shared_ptr<RadioProtocol> radioProtocol)\n{\n    int32_t slotId = radioProtocol->slotId;"
+        }
+      ]
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/multi_sim_controller.cpp",
+      "sha256": "1ff823a48feab4f7ed364ed6bfe910c6c7a039ce5918f8c71cb4642a72d4a4dd",
+      "accesses_and_lock_sites": [
+        {
+          "line": 1670,
+          "text": "    const int32_t simId = primarySimId_;",
+          "context": "    }\n    primarySimId_ = localCacheInfo_[slotId].simId;\n    primarySlotId_ = slotId;\n    const int32_t simId = primarySimId_;\n    lock.unlock();\n    TELEPHONY_LOGI(\"Announce main simId %{public}d\", simId);\n    multiSimHelper_->AnnouncePrimarySimIdChanged(simId, slotId);"
+        },
+        {
+          "line": 1676,
+          "text": "void MultiSimController::SendDefaultCellularDataBroadCast(int32_t slotId)",
+          "context": "    multiSimHelper_->AnnouncePrimarySimIdChanged(simId, slotId);\n}\n\nvoid MultiSimController::SendDefaultCellularDataBroadCast(int32_t slotId)\n{\n    std::unique_lock<ffrt::shared_mutex> lock(mutex_);\n    if (localCacheInfo_.empty() || static_cast<uint32_t>(slotId) >= localCacheInfo_.size()) {"
+        },
+        {
+          "line": 1684,
+          "text": "    const int32_t simId = defaultCellularSimId_;",
+          "context": "        return;\n    }\n    defaultCellularSimId_ = localCacheInfo_[slotId].simId;\n    const int32_t simId = defaultCellularSimId_;\n    lock.unlock(); // Publish external notifications from the coherent value snapshot.\n    TELEPHONY_LOGI(\"Announce default cellular data simId %{public}d\", simId);\n    AnnounceDefaultCellularDataSimIdChanged(simId);"
+        }
+      ]
+    }
+  ],
+  "scope": "Candidate source audit, not native runtime qualification"
+}

@@ -714,3 +714,53 @@ Provider根因已闭合：生产bundle/GN实际依赖telephony_data，Host此前
 用户在§19验收后明确授权将本地修改提交并推送远端main。本次按186项文件白名单发布停止方案审查、测试改进和两套隔离验证证据；不纳入98份原有修改，不在生产工作区应用补丁。发布前fetch确认本地main与origin/main同为e21f1ef3，暂存区为空；166份证据摘要、19份代码/说明摘要及98份保护输入逐项匹配，迁移资产核验通过，其他worktree未改变。
 
 沿用§19真实执行结果：未补丁87条65 PASS/22 FAIL，隔离配对补丁87条68 PASS/19 FAIL，均包含8条明确BLOCKED的GTest失败；原Host55 PASS/5已知FAIL与完整生产Stop阻塞保持不变。独立JSON、归档diff和其中执行状态摘要是此次发布授权前的验收快照，保留原字节；本小节为后续授权/发布准备增量，当前状态文件以本次Git提交为准。提交与推送不构成生产修复批准，精确SHA及远端包含关系以Git发布核验为准。
+
+
+### 20. SIM-028 隔离生产Stop实现与Host阶段验收（2026-11-12）
+
+本轮实际HEAD为77e3dc4e27dfe33ac728f225843b86b038914f6c，main与远端一致。按本次授权只在显式覆盖真实未提交输入的独立克隆中实现生产Stop；未在主工作区应用生产补丁，未提交、推送或合并。原1861份输入在交付前逐字节SHA保持不变，98份既有用户修改完整保留；本文件仅追加本检查点。
+
+M1通过；M2在当前Host执行边界通过，M3原生集成仍BLOCKED。原Host60条55 PASS/5既有FAIL、入口14/14、RealSimPrimary7/7、生命周期8/8、Pairing4/4、Stop A～H8/8；新增安全9/9。原87口径82 PASS/5 FAIL；扩展96条91 PASS/5 FAIL，完整命令真实exit1，五条独立缺陷未删除或弱化。ASan/TSan各36/36；强RIL所有权216次通过（含18场景各10次重复），另19场景TSan重复3次57/57。最终二进制SHA为88066bb3c257c14db08f86bfe78532926904f57ea85abe452e732d135b07f6a9。
+
+显式Running→Stopping→Stopped协调已接纳B/C1完成及原重试、封闭回调、完整调度句柄/闭包与线程退出、队列及订阅注销、三槽与缓存去重后逐对象释放。26个内部弱对象在Manager外部根仍保留时过期，四类12条代表闭环解除；SIM释放自身RIL引用而保留真实CMI消费者。新发现三槽卫星Watcher，合并历史16组为17组源码审查；Host实测两类共5个参数回调的失败重试/在途/迟到，CES/SA原生成功路径仍BLOCKED。TSan实测暴露并修复了应答条件同步、闭包完成屏障及账户缓存读锁问题，测试设施自身竞态另行修复并保留失败记录。
+
+[交付套件与可复现命令](../services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/README.md)、[分层实测结果](../services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/validation.json)保存37份生产/12份Host隔离差异、源码摘要、完整逐例XML/日志、旧基线与中间失败、sanitizer及重复结果。补丁在全新克隆完成实际应用、49份规范化摘要核对及GN配置；不把prepare-only算作运行通过。最终单C1通过，LLDB确认CoreServiceSim→SimManager→MultiSimController→RadioProtocolController真实栈，不能等同完整Core/Stub/IPC/HDI运行。
+
+生产发布评审暂不通过：还需匹配OHOS树中补齐Core对同一控制块Manager的Stop调用和失败处理、其他RIL消费者协调、SA/CES/死亡回调的原生屏障及注销失败验证。成功运营商配置/APN延迟任务、完整C1无应答长重试与Stop预算失败后重试、缓存卡类型切换矩阵本轮NOT_RUN；SO卸载及IDE GUI不作PASS。FFRT真实头fno-exceptions语法检查仅为API编译证据。历史20261111记录与§19结论保留原事实，本次Host候选通过不授权合入或生产迁移。
+
+
+### 21. SIM-028 Host CI收敛与生产补丁准入审查（2026-11-12）
+
+基线仍为77e3dc4e27dfe33ac728f225843b86b038914f6c，main与origin/main无差异；暂存区为空。按本轮明确限制不提交、推送、合并或发布，主工作区生产实现不变。开始时1903份实际输入（含98份用户修改及上一批未提交交付）在本小节追加前逐字节核对无变化；历史Stop交付套件42份保持原字节，旧状态内容保留。
+
+在已有GN/Host入口上新增可执行ci_sim028.py，隔离覆盖实际tracked/untracked输入后应用独立候选，校验49份源码摘要，使用GN/Ninja生成真实编译数据库和逐例进程/JUnit。支持完整回归、业务/生命周期分档、ASan/TSan及增量复用，自动发现并执行新增用例；5条既有缺陷保留原FAIL/exit1/XML，只有精确原断言签名才允许“无新增回归”判定。新增失败、crash、跳过、断言变化、漏用例或空XML均使CI非零；13条准入策略正负控实测通过。未激活远端CI工作流/分支保护。
+
+完成49文件逐项A/B/C分类、42历史产物D分类和E类无用include剔除；生产候选37文件移出Host探针，独立测试补丁15文件（并集49），未应用主工作区。首次新克隆普通96条91 PASS/5既有FAIL、ASan36/36、TSan36/36，CI exit0；同输入增量重跑普通结果未变，ASan35 PASS/1 FAIL、TSan36/36，CI exit1。ASan记录C1重试会话3 CHECK后未达原12秒/24请求断言，fatal return销毁局部记录后Stop回调访问该记录。独立测试补丁仅调整记录构造顺序使其寿命覆盖场景Stop，不改业务断言/超时；C1进度失败根因尚未确认，不能被后续通过抹去。
+
+修正测试布局后的全新克隆再次GN/Ninja构建：普通96条仍91 PASS/5既有FAIL，其中RealSimPrimary7/7、生命周期8/8、配对4/4、Stop A～H8/8、新增安全9/9、入口14/14；ASan36/36。TSan35 PASS/1 FAIL，BDirectRilFailureKeepsPreviousPrimary在初始化路径暴露真实SimStateHandle externalState_竞争：本对象队列SimStateEscape写与Monitor队列RegisterCoreNotify→IsIccReady读无共同同步，exit87；CI实际exit1，没有加入第六条容许缺陷。两侧访问亦见基线，不宣称由Stop补丁新引入。未授权生产同步修复，保持FAIL。
+
+生产准入BLOCKED，重复性准入FAIL。除新失败外，Core原OnStop未接入Manager Stop、SA/CES注销错误/屏障、隐式组归属/同任务业务重入、完整停止预算、Watcher并发、内部ABI及异常初始化矩阵仍需裁决与原生验证。原生计划明确替换Host驱动/观察层、使用真实FFRT（现有原生gtest含ffrt_mocked不能作为证据）、真实SA/IPC及RIL/HDI分层；APN成功配置/延迟重试和长C1无应答/预算失败重试仍NOT_RUN，原生平台运行BLOCKED。本轮未重跑历史216/57次专项，不继承为本轮结果。
+
+[审查、最小补丁与原生计划](../services/multisim/test/systemtest/primary_slot/lifecycle/admission/README.md)、[实际验证与三轮独立归档](../services/multisim/test/systemtest/configs/sim028_ci_admission_20261112/validation.json)保存精确命令、输入/源码/二进制SHA、原始失败与XML、当前环境、49份应用核验及用户输入保护。下一最小项为另行授权的externalState_访问同步修复及C1进度追踪，不通过过滤、等待延长或抑制sanitizer获取准入。
+
+
+### 22. SIM-028 状态竞争/C1进度隔离修复与CI准入复验（2026-11-12）
+
+实际HEAD仍为77e3dc4e27dfe33ac728f225843b86b038914f6c；本轮只在新隔离副本修改生产候选，不修改主工作区生产实现，不提交、推送或合并。开始的1925份实际输入逐字节保护，98份用户修改未变；共享CI工具及策略两份按授权改进，本文件仅追加本节。历史补丁/日志/XML/JSON及此前状态原字节保留；旧交付中的工具摘要仍代表当时快照，不改写历史摘要。
+
+确认并修复五项不同问题：externalState_跨State/Monitor/File访问（原100次并发复现3次TSan）；队列回调尾部下一唤醒快照与外部入队非原子交接，使C1第3会话CHECK应答滞留45秒；真实超时暴露协议完成谓词/清理与调用线程未同锁；后续280次压力暴露IccState整值更新与HasSimCard后台读取5次竞争；再复验发现Data通知无锁读localCacheInfo_。分别使用对象快照锁、既有admissionMutex、既有radioProtocolMutex及既有Controller缓存锁修复，锁外调用外部通知。没有volatile、压制、等待延长、减少并发/重试、私有访问或忽略链接错误。
+
+最终v4生产增量仅5份既有候选文件（65增/28删），未重写Stop框架、修改IDL/Provider契约或主卡规则；旧生产候选总量仍37。独立Host测试增量、观察钩子和5条新回归与生产补丁分离，当前组合51份。公共队列和真实C1受控负控均保留原12秒/24请求失败，修复后同一交错通过；实际45秒C1超时后5次重试、Stop期间原重试耗尽、原过期CHECK拒绝均实测。Host ITelRilManager边界不创建真实serial，不把sessionId当serial。
+
+最终GN/Ninja构建及完整准入：原96条91 PASS/5既有FAIL，扩展101条96 PASS/同5既有FAIL，机器结果/原始JUnit仍为FAIL5；基线感知CI为PASS/exit0。原Host60为55/5、入口14/14、RealSimPrimary7/7、生命周期8/8、Pairing4/4、Stop A～H8/8、新安全9/9、新并发5/5；ASan和TSan各41/41。完整TSan后，4进程执行6组各50次及3个Stop阶段各10次，共330/330 PASS，无新增报告。CI策略13/13及2个快照完整性拒绝负控通过。故意ASSERT后的原GTest FAIL/exit1保留，对象与严格RIL PASS、worker0/RIL1且无ASan错误，未将负控混入正常通过数。
+
+探索失败完整保存：最初3文件版本两档并发LTO构建触发900秒看门狗，均为构建FAIL而非业务PASS；v2普通CI通过但280次压力275 PASS/5个IccState竞争FAIL，v3 TSan40 PASS/1个缓存竞争FAIL；全部原栈、命令、XML和二进制SHA归档。一次整包运行被既有单场景入口保护exit2拒绝，随后按原框架逐例独立进程执行，没有放宽保护。候选升级在输出锁内验证旧源码、独立重建新快照、逐文件同步并保留旧isolation/CI档案，仅复用未变化源码的Ninja增量输出，不手工改状态取绿。
+
+[最小补丁、锁关系与复现命令](../services/multisim/test/systemtest/configs/sim028_concurrency_fix_20261112/README.md)、[分层实际结果](../services/multisim/test/systemtest/configs/sim028_concurrency_fix_20261112/validation.json)及同目录归档为本轮证据。Host技术验收与五文件增量局部审查通过，不批准整个37文件候选生产发布：Core::OnStop同控制块协调及失败保留、共享RIL其他消费者、SA/CES/Watcher/真实FFRT屏障、跨SO组归属与重入、原生SA/IPC/HDI及厂商ABI仍BLOCKED；APN成功配置重试、全部无应答长链/75秒失败后重试与卡类型矩阵NOT_RUN。一次Host超时不证明物理Modem资源终止，整个旧SIM组件所有共享字段亦未获无竞争证明。
+
+
+### 22.1 SIM-028 隔离修复及CI成果发布授权与预检
+
+用户在§22验收后明确授权将本地成果推送远端main。本次按100项明确文件白名单发布§20～22尚未提交的隔离Stop套件、生产候选补丁与测试增量、CI工程及全部验证证据；不应用生产补丁，不纳入98份原有用户修改。发布前恢复核查已刷新origin，本地main与origin/main同为77e3dc4e，暂存区为空；94项适用摘要校验通过，当前CI工具/策略与最终构建归档一致，98份受保护修改逐字节匹配。
+
+沿用§22已执行的101条96 PASS/5既有FAIL、ASan/TSan各41 PASS及330次压力通过；发布预检另实跑13条CI策略测试通过。未重复声明新的全量运行或生产准入。各独立JSON中的未提交/未推送标记和旧工具摘要为当时验收快照，保持原字节；本小节记录后续发布授权。常规提交与origin/main推送后以Git实际SHA及远端包含关系核验，不将发布视为主工作区生产修复应用、OHOS集成或生产发布准入。

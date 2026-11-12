@@ -1,0 +1,132 @@
+--- a/telephony_core_service/docs/SIM_Refactor_Execution_State.md
++++ b/telephony_core_service/docs/SIM_Refactor_Execution_State.md
+@@ -742,3 +742,18 @@
+ 生产准入BLOCKED，重复性准入FAIL。除新失败外，Core原OnStop未接入Manager Stop、SA/CES注销错误/屏障、隐式组归属/同任务业务重入、完整停止预算、Watcher并发、内部ABI及异常初始化矩阵仍需裁决与原生验证。原生计划明确替换Host驱动/观察层、使用真实FFRT（现有原生gtest含ffrt_mocked不能作为证据）、真实SA/IPC及RIL/HDI分层；APN成功配置/延迟重试和长C1无应答/预算失败重试仍NOT_RUN，原生平台运行BLOCKED。本轮未重跑历史216/57次专项，不继承为本轮结果。
+ 
+ [审查、最小补丁与原生计划](../services/multisim/test/systemtest/primary_slot/lifecycle/admission/README.md)、[实际验证与三轮独立归档](../services/multisim/test/systemtest/configs/sim028_ci_admission_20261112/validation.json)保存精确命令、输入/源码/二进制SHA、原始失败与XML、当前环境、49份应用核验及用户输入保护。下一最小项为另行授权的externalState_访问同步修复及C1进度追踪，不通过过滤、等待延长或抑制sanitizer获取准入。
++
++
++### 22. SIM-028 状态竞争/C1进度隔离修复与CI准入复验（2026-11-12）
++
++实际HEAD仍为77e3dc4e27dfe33ac728f225843b86b038914f6c；本轮只在新隔离副本修改生产候选，不修改主工作区生产实现，不提交、推送或合并。开始的1925份实际输入逐字节保护，98份用户修改未变；共享CI工具及策略两份按授权改进，本文件仅追加本节。历史补丁/日志/XML/JSON及此前状态原字节保留；旧交付中的工具摘要仍代表当时快照，不改写历史摘要。
++
++确认并修复五项不同问题：externalState_跨State/Monitor/File访问（原100次并发复现3次TSan）；队列回调尾部下一唤醒快照与外部入队非原子交接，使C1第3会话CHECK应答滞留45秒；真实超时暴露协议完成谓词/清理与调用线程未同锁；后续280次压力暴露IccState整值更新与HasSimCard后台读取5次竞争；再复验发现Data通知无锁读localCacheInfo_。分别使用对象快照锁、既有admissionMutex、既有radioProtocolMutex及既有Controller缓存锁修复，锁外调用外部通知。没有volatile、压制、等待延长、减少并发/重试、私有访问或忽略链接错误。
++
++最终v4生产增量仅5份既有候选文件（65增/28删），未重写Stop框架、修改IDL/Provider契约或主卡规则；旧生产候选总量仍37。独立Host测试增量、观察钩子和5条新回归与生产补丁分离，当前组合51份。公共队列和真实C1受控负控均保留原12秒/24请求失败，修复后同一交错通过；实际45秒C1超时后5次重试、Stop期间原重试耗尽、原过期CHECK拒绝均实测。Host ITelRilManager边界不创建真实serial，不把sessionId当serial。
++
++最终GN/Ninja构建及完整准入：原96条91 PASS/5既有FAIL，扩展101条96 PASS/同5既有FAIL，机器结果/原始JUnit仍为FAIL5；基线感知CI为PASS/exit0。原Host60为55/5、入口14/14、RealSimPrimary7/7、生命周期8/8、Pairing4/4、Stop A～H8/8、新安全9/9、新并发5/5；ASan和TSan各41/41。完整TSan后，4进程执行6组各50次及3个Stop阶段各10次，共330/330 PASS，无新增报告。CI策略13/13及2个快照完整性拒绝负控通过。故意ASSERT后的原GTest FAIL/exit1保留，对象与严格RIL PASS、worker0/RIL1且无ASan错误，未将负控混入正常通过数。
++
++探索失败完整保存：最初3文件版本两档并发LTO构建触发900秒看门狗，均为构建FAIL而非业务PASS；v2普通CI通过但280次压力275 PASS/5个IccState竞争FAIL，v3 TSan40 PASS/1个缓存竞争FAIL；全部原栈、命令、XML和二进制SHA归档。一次整包运行被既有单场景入口保护exit2拒绝，随后按原框架逐例独立进程执行，没有放宽保护。候选升级在输出锁内验证旧源码、独立重建新快照、逐文件同步并保留旧isolation/CI档案，仅复用未变化源码的Ninja增量输出，不手工改状态取绿。
++
++[最小补丁、锁关系与复现命令](../services/multisim/test/systemtest/configs/sim028_concurrency_fix_20261112/README.md)、[分层实际结果](../services/multisim/test/systemtest/configs/sim028_concurrency_fix_20261112/validation.json)及同目录归档为本轮证据。Host技术验收与五文件增量局部审查通过，不批准整个37文件候选生产发布：Core::OnStop同控制块协调及失败保留、共享RIL其他消费者、SA/CES/Watcher/真实FFRT屏障、跨SO组归属与重入、原生SA/IPC/HDI及厂商ABI仍BLOCKED；APN成功配置重试、全部无应答长链/75秒失败后重试与卡类型矩阵NOT_RUN。一次Host超时不证明物理Modem资源终止，整个旧SIM组件所有共享字段亦未获无竞争证明。
+--- a/telephony_core_service/services/multisim/test/systemtest/tools/ci_sim028.py
++++ b/telephony_core_service/services/multisim/test/systemtest/tools/ci_sim028.py
+@@ -85,12 +85,48 @@
+     return sha(json.dumps(source_input_hashes(root, names), sort_keys=True).encode())
+ 
+ 
+-def prepare(root, out):
++def prepare(root, out, increments=(), advance=False):
+     names = source_files(root)
+     signature = source_signature(root, names)
++    increment_records = [{"path": str(p.resolve()), "sha256": sha(p.read_bytes())} for p in increments]
+     marker = out / 'isolation.json'
+     if marker.exists():
+         old = json.loads(marker.read_text())
++        if advance:
++            # A candidate revision must prove the previous source untouched,
++            # reconstruct the new pinned candidate independently, then preserve
++            # unchanged source mtimes so Ninja can rebuild only the real delta.
++            for name, expected in old['snapshot_hashes'].items():
++                p = out / 'repo' / name
++                if not p.is_file() or sha(p.read_bytes()) != expected:
++                    raise RuntimeError('Cannot advance a modified isolated source: ' + name)
++            stage = out / ('candidate-input-' + str(time.time_ns()))
++            stage.mkdir()
++            fresh_repo = prepare(root, stage, increments)
++            fresh = json.loads((stage / 'isolation.json').read_text())
++            if set(old['snapshot_hashes']) - set(fresh['snapshot_hashes']):
++                raise RuntimeError('Candidate file removal requires a fresh --out')
++            changed = []
++            for name, expected in fresh['snapshot_hashes'].items():
++                p = out / 'repo' / name
++                if not p.is_file() or sha(p.read_bytes()) != expected:
++                    p.parent.mkdir(parents=True, exist_ok=True)
++                    shutil.copy2(fresh_repo / name, p)
++                    if sha(p.read_bytes()) != expected:
++                        raise RuntimeError('Candidate advance copy mismatch: ' + name)
++                    changed.append(name)
++            epoch = str(time.time_ns())
++            shutil.copy2(marker, out / ('isolation-' + epoch + '.json'))
++            save(out / ('advance-' + epoch + '.json'), {
++                'old_marker_sha256': sha(marker.read_bytes()),
++                'new_marker_sha256': sha((stage / 'isolation.json').read_bytes()),
++                'changed_files': changed, 'fresh_snapshot': str(stage)})
++            if (out / 'ci-artifacts.zip').exists():
++                shutil.copy2(out / 'ci-artifacts.zip', out / ('ci-artifacts-' + epoch + '.zip'))
++            shutil.copy2(stage / 'isolation.json', marker)
++            return out / 'repo'
++        if old.get('increments', []) != increment_records:
++            raise RuntimeError('Candidate increments changed: choose a new --out or explicitly --advance-candidate')
+         current_inputs = source_input_hashes(root, names)
+         unchanged_inputs = all(old['actual_input_hashes'].get(n) == h for n, h in current_inputs.items())
+         old_relevant = set(source_input_hashes(out / 'repo', old['actual_input_hashes']))
+@@ -132,9 +168,16 @@
+     for row in manifest:
+         if sha((repo / row['path']).read_bytes()) != row['candidate_sha256']:
+             raise RuntimeError('Candidate hash mismatch: ' + row['path'])
++    increment_paths = set()
++    for patch in increments:
++        subprocess.run(['git', 'apply', '--check', str(patch.resolve())], cwd=repo, check=True)
++        paths = subprocess.check_output(['git', 'apply', '--numstat', str(patch.resolve())], cwd=repo, text=True)
++        increment_paths.update(line.split('\t', 2)[2] for line in paths.splitlines())
++        subprocess.run(['git', 'apply', str(patch.resolve())], cwd=repo, check=True)
+     snapshot_hashes = {name: sha((repo / name).read_bytes()) for name in names}
+     snapshot_hashes.update({r['path']: sha((repo / r['path']).read_bytes()) for r in manifest})
+-    save(marker, {'source_root': str(root), 'source_signature': signature,
++    snapshot_hashes.update({n: sha((repo / n).read_bytes()) for n in increment_paths})
++    save(marker, {'increments': increment_records, 'source_root': str(root), 'source_signature': signature,
+                   'head': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip(),
+                   'actual_input_hashes': raw_hashes, 'snapshot_hashes': snapshot_hashes,
+                   'patches': {n: sha((ADMISSION / n).read_bytes()) for n in ('production-minimal.patch', 'test-guard.patch')}})
+@@ -311,6 +354,10 @@
+     parser.add_argument('--gtest-root', type=Path, required=True)
+     parser.add_argument('--openssl-root', type=Path, required=True)
+     parser.add_argument('--runtime-root', type=Path, required=True)
++    parser.add_argument('--candidate-increment', type=Path, action='append', default=[],
++                        help='Reviewed incremental patch, applied only after the pinned base candidate (repeatable)')
++    parser.add_argument('--advance-candidate', action='store_true',
++                        help='Under the output lock, verify old source and independently reconstruct a revised candidate before incremental reuse')
+     parser.add_argument('--jobs', default='2')
+     parser.add_argument('--timeout', type=int, default=120)
+     parser.add_argument('--parallel-profiles', action='store_true')
+@@ -327,7 +374,7 @@
+                   'policy_sha256': sha(POLICY_PATH.read_bytes()),
+                   'runner_sha256': sha(Path(__file__).read_bytes())}
+         try:
+-            repo = prepare(ROOT, out)
++            repo = prepare(ROOT, out, args.candidate_increment, args.advance_candidate)
+             profiles = ['regular', 'address', 'thread'] if args.profile == 'all' else [args.profile]
+             if args.parallel_profiles:
+                 with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:
+@@ -341,6 +388,8 @@
+         with zipfile.ZipFile(out / 'ci-artifacts.zip', 'w', zipfile.ZIP_DEFLATED) as archive:
+             for name in ['result.json', 'isolation.json']:
+                 if (out / name).exists(): archive.write(out / name, name)
++            for index, patch in enumerate(args.candidate_increment):
++                archive.write(patch, f'increments/{index}-' + patch.name)
+             archive.write(POLICY_PATH, 'sim028_ci.json')
+             archive.write(ADMISSION / 'patch-manifest.json', 'patch-manifest.json')
+             for profile in result['profiles']:
+--- a/telephony_core_service/services/multisim/test/systemtest/configs/sim028_ci.json
++++ b/telephony_core_service/services/multisim/test/systemtest/configs/sim028_ci.json
+@@ -153,7 +153,8 @@
+     "RealCardLifetime",
+     "PairingReview",
+     "ShutdownContract",
+-    "ShutdownExtra"
++    "ShutdownExtra",
++    "ConcurrencyRegression"
+   ],
+   "note": "Known cases remain FAIL in raw JSON/JUnit; CI admission passes only exact expected signatures. New, missing, duplicate, skipped, crashed or changed cases fail admission.",
+   "required_properties": {

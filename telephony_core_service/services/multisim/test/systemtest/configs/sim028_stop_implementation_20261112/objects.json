@@ -1,0 +1,416 @@
+{
+  "scenario": "ShutdownContract.BThreeSlotsThenStop",
+  "status": "PASS",
+  "objects": [
+    {
+      "address": "0x5a7358bdbb30",
+      "type": "N4OHOS9Telephony15SimStateTrackerE",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "OHOS::Telephony::SimStateTracker"
+    },
+    {
+      "address": "0x5a7358bdfe80",
+      "type": "SimStateManager",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "SimStateManager"
+    },
+    {
+      "address": "0x5a7358be0210",
+      "type": "N4OHOS9Telephony14SimStateHandleE",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "OHOS::Telephony::SimStateHandle"
+    },
+    {
+      "address": "0x5a7358be0c80",
+      "type": "N4OHOS9Telephony14SimFileManagerE",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "OHOS::Telephony::SimFileManager"
+    },
+    {
+      "address": "0x5a7358be22e8",
+      "type": "N4OHOS9Telephony7SimFileE",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "OHOS::Telephony::SimFile"
+    },
+    {
+      "address": "0x5a7358be4750",
+      "type": "N10Sim028Host15AccountObserverE",
+      "caller_owned": true,
+      "expired_before_manager_root_release": false,
+      "class": "Sim028Host::AccountObserver"
+    },
+    {
+      "address": "0x5a7358be4bf0",
+      "type": "N4OHOS9Telephony19OperatorConfigCacheE",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "OHOS::Telephony::OperatorConfigCache"
+    },
+    {
+      "address": "0x5a7358be67c0",
+      "type": "N4OHOS9Telephony25IccDiallingNumbersManagerE",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "OHOS::Telephony::IccDiallingNumbersManager"
+    },
+    {
+      "address": "0x5a7358be8310",
+      "type": "N4OHOS9Telephony13StkControllerE",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "OHOS::Telephony::StkController"
+    },
+    {
+      "address": "0x5a7358be9270",
+      "type": "SimStateManager",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "SimStateManager"
+    },
+    {
+      "address": "0x5a7358be9630",
+      "type": "N4OHOS9Telephony14SimStateHandleE",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "OHOS::Telephony::SimStateHandle"
+    },
+    {
+      "address": "0x5a7358bea040",
+      "type": "N4OHOS9Telephony14SimFileManagerE",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "OHOS::Telephony::SimFileManager"
+    },
+    {
+      "address": "0x5a7358beb728",
+      "type": "N4OHOS9Telephony7SimFileE",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "OHOS::Telephony::SimFile"
+    },
+    {
+      "address": "0x5a7358bee1d0",
+      "type": "N4OHOS9Telephony19OperatorConfigCacheE",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "OHOS::Telephony::OperatorConfigCache"
+    },
+    {
+      "address": "0x5a7358beed00",
+      "type": "N4OHOS9Telephony15SimStateTrackerE",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "OHOS::Telephony::SimStateTracker"
+    },
+    {
+      "address": "0x5a7358befe00",
+      "type": "N4OHOS9Telephony25IccDiallingNumbersManagerE",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "OHOS::Telephony::IccDiallingNumbersManager"
+    },
+    {
+      "address": "0x5a7358bf1950",
+      "type": "N4OHOS9Telephony13StkControllerE",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "OHOS::Telephony::StkController"
+    },
+    {
+      "address": "0x5a7358bf2ca0",
+      "type": "SimStateManager",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "SimStateManager"
+    },
+    {
+      "address": "0x5a7358bf3060",
+      "type": "N4OHOS9Telephony14SimStateHandleE",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "OHOS::Telephony::SimStateHandle"
+    },
+    {
+      "address": "0x5a7358bf3a40",
+      "type": "N4OHOS9Telephony14SimFileManagerE",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "OHOS::Telephony::SimFileManager"
+    },
+    {
+      "address": "0x5a7358bf5128",
+      "type": "N4OHOS9Telephony7SimFileE",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "OHOS::Telephony::SimFile"
+    },
+    {
+      "address": "0x5a7358bf7a60",
+      "type": "N4OHOS9Telephony19OperatorConfigCacheE",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "OHOS::Telephony::OperatorConfigCache"
+    },
+    {
+      "address": "0x5a7358bf8570",
+      "type": "N4OHOS9Telephony15SimStateTrackerE",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "OHOS::Telephony::SimStateTracker"
+    },
+    {
+      "address": "0x5a7358bf9a80",
+      "type": "N4OHOS9Telephony25IccDiallingNumbersManagerE",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "OHOS::Telephony::IccDiallingNumbersManager"
+    },
+    {
+      "address": "0x5a7358bfb5d0",
+      "type": "N4OHOS9Telephony13StkControllerE",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "OHOS::Telephony::StkController"
+    },
+    {
+      "address": "0x5a7358bfd4d0",
+      "type": "N4OHOS9Telephony23RadioProtocolControllerE",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "OHOS::Telephony::RadioProtocolController"
+    },
+    {
+      "address": "0x5a7358bfe180",
+      "type": "N4OHOS9Telephony15MultiSimMonitorE",
+      "caller_owned": false,
+      "expired_before_manager_root_release": true,
+      "class": "OHOS::Telephony::MultiSimMonitor"
+    }
+  ],
+  "internal_weak_objects": 26,
+  "ril_subscriptions": [
+    {
+      "slot": 0,
+      "event": 515,
+      "address": "0x5a7358be0210",
+      "type": "N4OHOS9Telephony14SimStateHandleE"
+    },
+    {
+      "slot": 0,
+      "event": 0,
+      "address": "0x5a7358be0210",
+      "type": "N4OHOS9Telephony14SimStateHandleE"
+    },
+    {
+      "slot": 0,
+      "event": 4,
+      "address": "0x5a7358be0c80",
+      "type": "N4OHOS9Telephony14SimFileManagerE"
+    },
+    {
+      "slot": 0,
+      "event": 14,
+      "address": "0x5a7358be0c80",
+      "type": "N4OHOS9Telephony14SimFileManagerE"
+    },
+    {
+      "slot": 0,
+      "event": 536,
+      "address": "0x5a7358be8310",
+      "type": "N4OHOS9Telephony13StkControllerE"
+    },
+    {
+      "slot": 0,
+      "event": 537,
+      "address": "0x5a7358be8310",
+      "type": "N4OHOS9Telephony13StkControllerE"
+    },
+    {
+      "slot": 0,
+      "event": 538,
+      "address": "0x5a7358be8310",
+      "type": "N4OHOS9Telephony13StkControllerE"
+    },
+    {
+      "slot": 0,
+      "event": 539,
+      "address": "0x5a7358be8310",
+      "type": "N4OHOS9Telephony13StkControllerE"
+    },
+    {
+      "slot": 0,
+      "event": 540,
+      "address": "0x5a7358be8310",
+      "type": "N4OHOS9Telephony13StkControllerE"
+    },
+    {
+      "slot": 0,
+      "event": 14,
+      "address": "0x5a7358be8310",
+      "type": "N4OHOS9Telephony13StkControllerE"
+    },
+    {
+      "slot": 0,
+      "event": 0,
+      "address": "0x5a7358be8310",
+      "type": "N4OHOS9Telephony13StkControllerE"
+    },
+    {
+      "slot": 1,
+      "event": 515,
+      "address": "0x5a7358be9630",
+      "type": "N4OHOS9Telephony14SimStateHandleE"
+    },
+    {
+      "slot": 1,
+      "event": 0,
+      "address": "0x5a7358be9630",
+      "type": "N4OHOS9Telephony14SimStateHandleE"
+    },
+    {
+      "slot": 1,
+      "event": 4,
+      "address": "0x5a7358bea040",
+      "type": "N4OHOS9Telephony14SimFileManagerE"
+    },
+    {
+      "slot": 1,
+      "event": 14,
+      "address": "0x5a7358bea040",
+      "type": "N4OHOS9Telephony14SimFileManagerE"
+    },
+    {
+      "slot": 1,
+      "event": 536,
+      "address": "0x5a7358bf1950",
+      "type": "N4OHOS9Telephony13StkControllerE"
+    },
+    {
+      "slot": 1,
+      "event": 537,
+      "address": "0x5a7358bf1950",
+      "type": "N4OHOS9Telephony13StkControllerE"
+    },
+    {
+      "slot": 1,
+      "event": 538,
+      "address": "0x5a7358bf1950",
+      "type": "N4OHOS9Telephony13StkControllerE"
+    },
+    {
+      "slot": 1,
+      "event": 539,
+      "address": "0x5a7358bf1950",
+      "type": "N4OHOS9Telephony13StkControllerE"
+    },
+    {
+      "slot": 1,
+      "event": 540,
+      "address": "0x5a7358bf1950",
+      "type": "N4OHOS9Telephony13StkControllerE"
+    },
+    {
+      "slot": 1,
+      "event": 14,
+      "address": "0x5a7358bf1950",
+      "type": "N4OHOS9Telephony13StkControllerE"
+    },
+    {
+      "slot": 1,
+      "event": 0,
+      "address": "0x5a7358bf1950",
+      "type": "N4OHOS9Telephony13StkControllerE"
+    },
+    {
+      "slot": 2,
+      "event": 515,
+      "address": "0x5a7358bf3060",
+      "type": "N4OHOS9Telephony14SimStateHandleE"
+    },
+    {
+      "slot": 2,
+      "event": 0,
+      "address": "0x5a7358bf3060",
+      "type": "N4OHOS9Telephony14SimStateHandleE"
+    },
+    {
+      "slot": 2,
+      "event": 4,
+      "address": "0x5a7358bf3a40",
+      "type": "N4OHOS9Telephony14SimFileManagerE"
+    },
+    {
+      "slot": 2,
+      "event": 14,
+      "address": "0x5a7358bf3a40",
+      "type": "N4OHOS9Telephony14SimFileManagerE"
+    },
+    {
+      "slot": 2,
+      "event": 536,
+      "address": "0x5a7358bfb5d0",
+      "type": "N4OHOS9Telephony13StkControllerE"
+    },
+    {
+      "slot": 2,
+      "event": 537,
+      "address": "0x5a7358bfb5d0",
+      "type": "N4OHOS9Telephony13StkControllerE"
+    },
+    {
+      "slot": 2,
+      "event": 538,
+      "address": "0x5a7358bfb5d0",
+      "type": "N4OHOS9Telephony13StkControllerE"
+    },
+    {
+      "slot": 2,
+      "event": 539,
+      "address": "0x5a7358bfb5d0",
+      "type": "N4OHOS9Telephony13StkControllerE"
+    },
+    {
+      "slot": 2,
+      "event": 540,
+      "address": "0x5a7358bfb5d0",
+      "type": "N4OHOS9Telephony13StkControllerE"
+    },
+    {
+      "slot": 2,
+      "event": 14,
+      "address": "0x5a7358bfb5d0",
+      "type": "N4OHOS9Telephony13StkControllerE"
+    },
+    {
+      "slot": 2,
+      "event": 0,
+      "address": "0x5a7358bfb5d0",
+      "type": "N4OHOS9Telephony13StkControllerE"
+    },
+    {
+      "slot": 0,
+      "event": 525,
+      "address": "0x5a7358bfd4d0",
+      "type": "N4OHOS9Telephony23RadioProtocolControllerE"
+    },
+    {
+      "slot": 1,
+      "event": 525,
+      "address": "0x5a7358bfd4d0",
+      "type": "N4OHOS9Telephony23RadioProtocolControllerE"
+    }
+  ],
+  "proof": "VerifyStopped asserts every sampled internal weak_ptr expired, ledger inactive and RIL observer weak_ptr expired before releasing manager root; caller observer has exactly one external owner, then caller stops its executor. Source in host-tests.patch.",
+  "patterns": {
+    "R1": "State -> Handle -> Observer -> Monitor -> State",
+    "R2": "State -> Handle -> Observer -> IccFile -> State",
+    "R3": "FileManager -> IccFile -> Observer -> FileManager",
+    "R4": "State -> Handle -> Observer -> PhonebookManager -> State"
+  },
+  "representative_cycles": 12
+}

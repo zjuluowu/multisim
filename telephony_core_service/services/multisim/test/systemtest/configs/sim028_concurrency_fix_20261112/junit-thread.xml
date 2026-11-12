@@ -1,0 +1,508 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuites><testsuite name="RealSimPrimary" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.019" timestamp="2026-11-12T12:42:33.146">
+    <testcase name="InitializesRealManagerAndControllerWithoutRil" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="15" status="run" result="completed" time="0.019" timestamp="2026-11-12T12:42:33.146" classname="RealSimPrimary" />
+  </testsuite>
+<testsuite name="RealSimPrimary" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.128" timestamp="2026-11-12T12:42:33.329">
+    <testcase name="C0CoreToRealManagerAndController" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="40" status="run" result="completed" time="0.128" timestamp="2026-11-12T12:42:33.329" classname="RealSimPrimary">
+      <properties>
+        <property name="business_assertions_before_cleanup" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ConcurrencyRegression" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.078" timestamp="2026-11-12T12:43:36.021">
+    <testcase name="CrossQueueStateSnapshotsAndSetter" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="417" status="run" result="completed" time="0.077" timestamp="2026-11-12T12:43:36.021" classname="ConcurrencyRegression" />
+  </testsuite>
+<testsuite name="ConcurrencyRegression" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="50.132" timestamp="2026-11-12T12:43:36.192">
+    <testcase name="C1CommunicationTimeoutThenFiveRetries" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="434" status="run" result="completed" time="50.132" timestamp="2026-11-12T12:43:36.192" classname="ConcurrencyRegression">
+      <properties>
+        <property name="business_assertions_before_cleanup" value="PASS" />
+        <property name="timeout_seconds" value="45" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="RunnerLifetime" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.001" timestamp="2026-11-12T12:44:26.398">
+    <testcase name="NormalCompletionAndRepeatedStop" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp" line="23" status="run" result="completed" time="0.001" timestamp="2026-11-12T12:44:26.398" classname="RunnerLifetime" />
+  </testsuite>
+<testsuite name="RunnerLifetime" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:44:26.460">
+    <testcase name="PendingTaskCancelledAndCapturedOwnerReleased" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp" line="33" status="run" result="completed" time="0." timestamp="2026-11-12T12:44:26.460" classname="RunnerLifetime" />
+  </testsuite>
+<testsuite name="RunnerLifetime" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.001" timestamp="2026-11-12T12:44:26.526">
+    <testcase name="InFlightStopJoinsAndRejectsCallbackRepost" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp" line="46" status="run" result="completed" time="0.001" timestamp="2026-11-12T12:44:26.526" classname="RunnerLifetime" />
+  </testsuite>
+<testsuite name="RunnerLifetime" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.001" timestamp="2026-11-12T12:44:26.594">
+    <testcase name="ConcurrentStopIsIdempotent" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp" line="70" status="run" result="completed" time="0.001" timestamp="2026-11-12T12:44:26.594" classname="RunnerLifetime" />
+  </testsuite>
+<testsuite name="RunnerLifetime" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.001" timestamp="2026-11-12T12:44:26.662">
+    <testcase name="CallbackCannotSynchronouslyJoinItself" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp" line="82" status="run" result="completed" time="0.001" timestamp="2026-11-12T12:44:26.662" classname="RunnerLifetime" />
+  </testsuite>
+<testsuite name="RealCardLifetime" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-12T12:44:26.730">
+    <testcase name="MissingRilInitializationReleasesState" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp" line="92" status="run" result="completed" time="0." timestamp="2026-11-12T12:44:26.730" classname="RealCardLifetime" />
+  </testsuite>
+<testsuite name="RealCardLifetime" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.006" timestamp="2026-11-12T12:44:26.791">
+    <testcase name="InitializedStateUnregistersRilAndReleases" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp" line="102" status="run" result="completed" time="0.006" timestamp="2026-11-12T12:44:26.791" classname="RealCardLifetime">
+      <properties>
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="RealCardLifetime" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.01" timestamp="2026-11-12T12:44:26.856">
+    <testcase name="PublicDetachReleasesRealStateFileAndRil" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp" line="116" status="run" result="completed" time="0.01" timestamp="2026-11-12T12:44:26.856" classname="RealCardLifetime">
+      <properties>
+        <property name="real_card_lifetime" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="RealSimPrimary" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.18" timestamp="2026-11-12T12:42:33.584">
+    <testcase name="BDirectRilSuccessCommitsAfterReply" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="79" status="run" result="completed" time="0.18" timestamp="2026-11-12T12:42:33.584" classname="RealSimPrimary">
+      <properties>
+        <property name="business_assertions_before_cleanup" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="PairingReview" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.019" timestamp="2026-11-12T12:44:26.943">
+    <testcase name="AllThreeSlotsPublicDetach" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="9" status="run" result="completed" time="0.019" timestamp="2026-11-12T12:44:26.943" classname="PairingReview">
+      <properties>
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="PairingReview" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.007" timestamp="2026-11-12T12:44:27.055">
+    <testcase name="PartialInitializationAndRepeatedUnregister" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="26" status="run" result="completed" time="0.007" timestamp="2026-11-12T12:44:27.055" classname="PairingReview">
+      <properties>
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="PairingReview" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.015" timestamp="2026-11-12T12:44:27.111">
+    <testcase name="DestroyThenReinitializeCardGraph" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="43" status="run" result="completed" time="0.015" timestamp="2026-11-12T12:44:27.111" classname="PairingReview">
+      <properties>
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="PairingReview" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.008" timestamp="2026-11-12T12:44:27.178">
+    <testcase name="UnrelatedRuntimeWorkerIsBaseline" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="55" status="run" result="completed" time="0.008" timestamp="2026-11-12T12:44:27.178" classname="PairingReview">
+      <properties>
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownContract" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.06" timestamp="2026-11-12T12:44:27.249">
+    <testcase name="ANormalPrimaryThenStop" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="88" status="run" result="completed" time="0.06" timestamp="2026-11-12T12:44:27.249" classname="ShutdownContract">
+      <properties>
+        <property name="business" value="PASS" />
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownContract" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.058" timestamp="2026-11-12T12:44:27.365">
+    <testcase name="BThreeSlotsThenStop" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="101" status="run" result="completed" time="0.058" timestamp="2026-11-12T12:44:27.365" classname="ShutdownContract">
+      <properties>
+        <property name="business" value="PASS" />
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownContract" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.016" timestamp="2026-11-12T12:44:27.475">
+    <testcase name="CPartialInitializationThenStop" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="116" status="run" result="completed" time="0.016" timestamp="2026-11-12T12:44:27.475" classname="ShutdownContract">
+      <properties>
+        <property name="business" value="NOT_RUN" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownContract" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.064" timestamp="2026-11-12T12:44:27.555">
+    <testcase name="DRepeatedStop" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="124" status="run" result="completed" time="0.064" timestamp="2026-11-12T12:44:27.555" classname="ShutdownContract">
+      <properties>
+        <property name="business" value="NOT_RUN" />
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownContract" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.067" timestamp="2026-11-12T12:44:27.722">
+    <testcase name="EInFlightSuccessCompletesBeforeRelease" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="162" status="run" result="completed" time="0.067" timestamp="2026-11-12T12:44:27.722" classname="ShutdownContract">
+      <properties>
+        <property name="business" value="PASS" />
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownContract" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.069" timestamp="2026-11-12T12:44:27.889">
+    <testcase name="FErrorReplyDuringStoppingKeepsOriginalResult" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="164" status="run" result="completed" time="0.069" timestamp="2026-11-12T12:44:27.889" classname="ShutdownContract">
+      <properties>
+        <property name="business" value="PASS" />
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="RealSimPrimary" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.126" timestamp="2026-11-12T12:42:33.888">
+    <testcase name="BDirectRilFailureKeepsPreviousPrimary" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="111" status="run" result="completed" time="0.126" timestamp="2026-11-12T12:42:33.888" classname="RealSimPrimary">
+      <properties>
+        <property name="business_assertions_before_cleanup" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownContract" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.07" timestamp="2026-11-12T12:44:28.059">
+    <testcase name="GDelayedDispatchAfterStop" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="166" status="run" result="completed" time="0.07" timestamp="2026-11-12T12:44:28.059" classname="ShutdownContract">
+      <properties>
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="business" value="NOT_RUN" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownContract" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.124" timestamp="2026-11-12T12:44:28.225">
+    <testcase name="HDestroyAndCreateNewGraph" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="181" status="run" result="completed" time="0.124" timestamp="2026-11-12T12:44:28.225" classname="ShutdownContract">
+      <properties>
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="business" value="NOT_RUN" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownExtra" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.073" timestamp="2026-11-12T12:44:28.443">
+    <testcase name="WatcherLateCallbackAfterOwnerDestruction" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="201" status="run" result="completed" time="0.073" timestamp="2026-11-12T12:44:28.443" classname="ShutdownExtra">
+      <properties>
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownExtra" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.073" timestamp="2026-11-12T12:44:28.612">
+    <testcase name="PartialWatcherRegistration" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="215" status="run" result="completed" time="0.073" timestamp="2026-11-12T12:44:28.612" classname="ShutdownExtra">
+      <properties>
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownExtra" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.078" timestamp="2026-11-12T12:44:28.783">
+    <testcase name="FailedWatcherRemovalKeepsStoppingAndRetries" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="222" status="run" result="completed" time="0.077" timestamp="2026-11-12T12:44:28.783" classname="ShutdownExtra">
+      <properties>
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownExtra" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.001" timestamp="2026-11-12T12:44:28.955">
+    <testcase name="ObserverReleaseOutsideLockAllowsReentrantDestruction" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="234" status="run" result="completed" time="0.001" timestamp="2026-11-12T12:44:28.955" classname="ShutdownExtra" />
+  </testsuite>
+<testsuite name="ShutdownExtra" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.095" timestamp="2026-11-12T12:44:29.023">
+    <testcase name="C1StopAtCheck" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="303" status="run" result="completed" time="0.095" timestamp="2026-11-12T12:44:29.023" classname="ShutdownExtra">
+      <properties>
+        <property name="business" value="PASS" />
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownExtra" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.097" timestamp="2026-11-12T12:44:29.190">
+    <testcase name="C1StopAtUpdate" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="304" status="run" result="completed" time="0.097" timestamp="2026-11-12T12:44:29.190" classname="ShutdownExtra">
+      <properties>
+        <property name="business" value="PASS" />
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownExtra" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.098" timestamp="2026-11-12T12:44:29.360">
+    <testcase name="C1StopAtComplete" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="305" status="run" result="completed" time="0.098" timestamp="2026-11-12T12:44:29.360" classname="ShutdownExtra">
+      <properties>
+        <property name="business" value="PASS" />
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownExtra" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.09" timestamp="2026-11-12T12:44:29.568">
+    <testcase name="WatcherInFlightIsDrainedAndSelfStopIsRejected" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="307" status="run" result="completed" time="0.09" timestamp="2026-11-12T12:44:29.568" classname="ShutdownExtra">
+      <properties>
+        <property name="expired_R1_Monitor" value="1" />
+        <property name="expired_R2_Records" value="3" />
+        <property name="expired_R3_FileManager" value="3" />
+        <property name="expired_R4_Phonebook" value="3" />
+        <property name="expired_State" value="3" />
+        <property name="post_stop_admission" value="PASS" />
+        <property name="resource_lifetime" value="PASS" />
+        <property name="async_safety" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="RealSimPrimary" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.185" timestamp="2026-11-12T12:42:34.158">
+    <testcase name="C1ThreePhasesWithStaleCheckResponseRejected" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="129" status="run" result="completed" time="0.185" timestamp="2026-11-12T12:42:34.158" classname="RealSimPrimary">
+      <properties>
+        <property name="business_assertions_before_cleanup" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ShutdownExtra" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.004" timestamp="2026-11-12T12:44:29.752">
+    <testcase name="OwnedTaskClosureDestructionIsPartOfStopBarrier" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp" line="330" status="run" result="completed" time="0.004" timestamp="2026-11-12T12:44:29.752" classname="ShutdownExtra" />
+  </testsuite>
+<testsuite name="RealSimPrimary" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="45.105" timestamp="2026-11-12T12:42:34.470">
+    <testcase name="BRealTimeoutKeepsPreviousPrimary" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="202" status="run" result="completed" time="45.105" timestamp="2026-11-12T12:42:34.470" classname="RealSimPrimary">
+      <properties>
+        <property name="business_assertions_before_cleanup" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="RealSimPrimary" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="5.128" timestamp="2026-11-12T12:43:19.679">
+    <testcase name="C1CheckFailureRestoresParametersAndExhaustsFiveRetries" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="346" status="run" result="completed" time="5.128" timestamp="2026-11-12T12:43:19.679" classname="RealSimPrimary">
+      <properties>
+        <property name="business_assertions_before_cleanup" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ConcurrencyRegression" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="5.135" timestamp="2026-11-12T12:43:24.919">
+    <testcase name="C1RetriesDrainWhileStopping" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="348" status="run" result="completed" time="5.135" timestamp="2026-11-12T12:43:24.919" classname="ConcurrencyRegression">
+      <properties>
+        <property name="stop_started_with_queued_retry" value="true" />
+        <property name="business_assertions_before_cleanup" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ConcurrencyRegression" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="5.338" timestamp="2026-11-12T12:43:30.252">
+    <testcase name="C1RetryHandoffInterleaving" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="350" status="run" result="completed" time="5.338" timestamp="2026-11-12T12:43:30.252" classname="ConcurrencyRegression">
+      <properties>
+        <property name="retry3_inserted_during_handoff" value="false" />
+        <property name="business_assertions_before_cleanup" value="PASS" />
+        <property name="workers_after_cleanup" value="0" />
+        <property name="ril_references_after_cleanup" value="1" />
+        <property name="account_observer_expired" value="true" />
+        <property name="object_lifetime" value="PASS" />
+        <property name="strict_ril_expectations_verified" value="PASS" />
+      </properties>
+    </testcase>
+  </testsuite>
+<testsuite name="ConcurrencyRegression" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.204" timestamp="2026-11-12T12:43:35.707">
+    <testcase name="QueueHandoffDoesNotDelayImmediateEvent" file="../../repo/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="383" status="run" result="completed" time="0.204" timestamp="2026-11-12T12:43:35.707" classname="ConcurrencyRegression">
+      <properties>
+        <property name="producer_inserted_during_handoff" value="false" />
+      </properties>
+    </testcase>
+  </testsuite>
+</testsuites>

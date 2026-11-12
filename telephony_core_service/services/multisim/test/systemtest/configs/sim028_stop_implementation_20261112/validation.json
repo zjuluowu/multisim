@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "completed_utc": "2026-11-12T00:59:18.910172+00:00",
+  "head": "77e3dc4e27dfe33ac728f225843b86b038914f6c",
+  "requested_historical_report_head": "e21f1ef3",
+  "scope": "isolated candidate ONLY; main production unchanged; no commit/push/merge",
+  "full_command_exit_code": 1,
+  "counts": {
+    "original_host": {
+      "tests": 60,
+      "passed": 55,
+      "failed": 5
+    },
+    "original_87": {
+      "tests": 87,
+      "passed": 82,
+      "failed": 5
+    },
+    "expanded": {
+      "tests": 96,
+      "passed": 91,
+      "failed": 5
+    },
+    "real_sim_primary": {
+      "tests": 7,
+      "passed": 7,
+      "failed": 0
+    },
+    "lifecycle": {
+      "tests": 8,
+      "passed": 8,
+      "failed": 0
+    },
+    "pairing": {
+      "tests": 4,
+      "passed": 4,
+      "failed": 0
+    },
+    "shutdown_A_H": {
+      "tests": 8,
+      "passed": 8,
+      "failed": 0
+    },
+    "additional_safety": {
+      "tests": 9,
+      "passed": 9,
+      "failed": 0
+    }
+  },
+  "m1": "PASS",
+  "m2_host_contract": "PASS",
+  "m3_native": "BLOCKED",
+  "production_release_review": "BLOCKED",
+  "binary_sha256": "88066bb3c257c14db08f86bfe78532926904f57ea85abe452e732d135b07f6a9",
+  "strong_ril": {
+    "cases": 216,
+    "failed": 0,
+    "critical_repeats": 10
+  },
+  "sanitizers": {
+    "address": {
+      "tests": 36,
+      "failed": 0,
+      "exit_code": 0,
+      "binary_sha256": "768b72db7640f75915bf8ba7eb0dd768ba473d79a3790a83f6c3dd3b64aa946c"
+    },
+    "thread": {
+      "tests": 36,
+      "failed": 0,
+      "exit_code": 0,
+      "binary_sha256": "dbec6d41bc1b01693e66ee251853a6a98bb52479a0a7fc09ac6c67780431d2de"
+    }
+  },
+  "tsan_repeat": {
+    "tests": 57,
+    "failed": 0,
+    "exit_code": 0
+  },
+  "native_api_header_check": {
+    "status": "PASS",
+    "kind": "syntax-only; no native runtime/link/integration",
+    "ffrt_source_commit": "1d559e70feda31fa8afd45d564daa242660e4edd",
+    "flags": "-std=c++17 -fno-exceptions -fsyntax-only"
+  },
+  "files": {
+    "production_candidate": 37,
+    "host_candidate": 12
+  },
+  "known_failures": [
+    "ContractDriver.DEFECT_001_StaleReadyAfterRemoval",
+    "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+    "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+    "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+    "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict"
+  ],
+  "limitations": {
+    "native_core_stop_coordinator": "BLOCKED: full matching OHOS tree/SA/IPC runtime unavailable; current product Core has not been wired to invoke new typed Stop on the same manager control block",
+    "native_sa_ces_death_callbacks": "BLOCKED: successful native registration/unregistration and weak-lock-before-admission races not verified; some native unsubscribe errors still follow existing void/ignored-return paths",
+    "native_ril_other_consumers": "BLOCKED: actual NetworkSearch/SMS/HDI not run; Host proves real CMI retains shared RIL and SIM never calls DeInit",
+    "apn_retry_runtime": "NOT_RUN: RemoveTask compiled, successful operator-config/APN-ready branch not entered by PIN-locked-card fixture",
+    "c1_all_responses_missing_stop_retry_budget": "NOT_RUN: C1 CHECK errors and five retries run; B real 45s timeout runs; exhaustive C1 no-response retry duration and Stop false/retry budget not run",
+    "cached_card_type_variants": "NOT_RUN: cleanup deduplicates all cached Records, but GSM/USIM/CDMA type-switch matrix not executed",
+    "so_unload": "BLOCKED: Host actor fences are not proof a native service cannot call callback code after unloading the SO",
+    "ide_gui": "MANUAL: no GUI claim; final CLI LLDB call stack and exit0 verified"
+  },
+  "review_conclusion": "Host stage candidate validated; not approved for direct native production release without Core integration and platform callback/consumer validation.",
+  "runtime_verifier_smoke": {
+    "tests": 19,
+    "exit_code": 0
+  },
+  "patch_replay": {
+    "status": "PASS",
+    "scope": "fresh clone + actual overlay + both patches + 49 canonical hashes + GN configure; no second full build claim"
+  },
+  "delivery_protection": {
+    "checked_original_inputs": 1861,
+    "unchanged_original_files": 1860,
+    "only_changed_original": "telephony_core_service/docs/SIM_Refactor_Execution_State.md",
+    "state_original_prefix_preserved": true,
+    "existing_98_user_changes_preserved": true,
+    "main_production_modified_by_this_task": false,
+    "staging_empty": true,
+    "commit_push_merge_performed": false,
+    "json_python_markdown_links_valid": true,
+    "final_host_archive_xml_cases": 96,
+    "final_host_archive_xml_failures": 5,
+    "skipped": 0
+  }
+}

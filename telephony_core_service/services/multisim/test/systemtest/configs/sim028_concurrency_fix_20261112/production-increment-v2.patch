@@ -1,0 +1,216 @@
+diff --git a/telephony_core_service/services/sim/include/sim_state_handle.h b/telephony_core_service/services/sim/include/sim_state_handle.h
+--- a/telephony_core_service/services/sim/include/sim_state_handle.h
++++ b/telephony_core_service/services/sim/include/sim_state_handle.h
+@@ -222,7 +222,10 @@
+     int32_t sendSimMatchedOperatorInfoResult_ = static_cast<int32_t>(ErrType::NONE);
+     LockStatusResponse simlockRespon_ = { UNLOCK_FAIL, TELEPHONY_ERROR };
+     IccState iccState_; // icc card states
+-    SimState externalState_; // need to broadcast sim state;
++    // State snapshots cross StateHandle, Monitor and File queues. Never hold
++    // this mutex across notification, RIL or platform callbacks.
++    ffrt::mutex externalStateMutex_;
++    SimState externalState_ = SimState::SIM_STATE_UNKNOWN;
+     CardType externalType_ = CardType::UNKNOWN_CARD; // need to broadcast card type;
+     LockReason lockReason_ = LockReason::SIM_NONE; // need to broadcast lock reason
+     std::weak_ptr<SimStateManager> simStateManager_;
+diff --git a/telephony_core_service/services/sim/src/sim_state_handle.cpp b/telephony_core_service/services/sim/src/sim_state_handle.cpp
+--- a/telephony_core_service/services/sim/src/sim_state_handle.cpp
++++ b/telephony_core_service/services/sim/src/sim_state_handle.cpp
+@@ -148,8 +148,8 @@
+         TELEPHONY_LOGE("SimStateHandle::failed to create new ObserverHandler");
+         return;
+     }
+-    externalState_ = SimState::SIM_STATE_UNKNOWN;
+-    CoreServiceHiSysEvent::WriteSimStateBehaviorEvent(slotId, static_cast<int32_t>(externalState_));
++    SetSimState(SimState::SIM_STATE_UNKNOWN);
++    CoreServiceHiSysEvent::WriteSimStateBehaviorEvent(slotId, static_cast<int32_t>(GetSimState()));
+     externalType_ = CardType::UNKNOWN_CARD;
+ }
+ 
+@@ -173,6 +173,7 @@
+ 
+ SimState SimStateHandle::GetSimState()
+ {
++    std::lock_guard<ffrt::mutex> lock(externalStateMutex_);
+     return externalState_;
+ }
+ 
+@@ -183,6 +184,7 @@
+ 
+ void SimStateHandle::SetSimState(SimState simState)
+ {
++    std::lock_guard<ffrt::mutex> lock(externalStateMutex_);
+     externalState_ = simState;
+ }
+ 
+@@ -436,7 +438,7 @@
+         }
+         UpdateSimStateToStateRegistry(slotId, reason);
+         if (TELEPHONY_EXT_WRAPPER.updateHotPlugCardState_ != nullptr) {
+-            TELEPHONY_EXT_WRAPPER.updateHotPlugCardState_(slotId, externalState_);
++            TELEPHONY_EXT_WRAPPER.updateHotPlugCardState_(slotId, GetSimState());
+         }
+         return;
+     }
+@@ -479,7 +481,7 @@
+ {
+     lockReason_ = reason;
+     int32_t ret = DelayedRefSingleton<TelephonyStateRegistryClient>::GetInstance().UpdateSimState(
+-        slotId, externalType_, externalState_, reason);
++        slotId, externalType_, GetSimState(), reason);
+     needReupdate_ = (ret == TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL);
+     TELEPHONY_LOGI("SimStateHandle::UpdateSimStateToStateRegistry slotId: %{public}d ret: %{public}d", slotId, ret);
+ }
+@@ -894,12 +896,12 @@
+ 
+ bool SimStateHandle::IsIccReady()
+ {
+-    return externalState_ >= SimState::SIM_STATE_READY;
++    return GetSimState() >= SimState::SIM_STATE_READY;
+ }
+ 
+ bool SimStateHandle::IsIccLocked()
+ {
+-    return externalState_ == SimState::SIM_STATE_LOCKED;
++    return GetSimState() == SimState::SIM_STATE_LOCKED;
+ }
+ 
+ void SimStateHandle::SimStateEscape(
+@@ -907,18 +909,18 @@
+ {
+     switch (simState) {
+         case ICC_CARD_ABSENT:
+-            externalState_ = SimState::SIM_STATE_NOT_PRESENT;
++            SetSimState(SimState::SIM_STATE_NOT_PRESENT);
+             PublishSimStateEvent(EventFwk::CommonEventSupport::COMMON_EVENT_SIM_STATE_CHANGED, ICC_STATE_ABSENT, "");
+             break;
+         case ICC_CONTENT_READY:
+-            externalState_ = SimState::SIM_STATE_READY;
++            SetSimState(SimState::SIM_STATE_READY);
+             if (observerHandler_ != nullptr) {
+                 observerHandler_->NotifyObserver(RadioEvent::RADIO_SIM_STATE_READY, slotId);
+             }
+             PublishSimStateEvent(EventFwk::CommonEventSupport::COMMON_EVENT_SIM_STATE_CHANGED, ICC_STATE_READY, "");
+             break;
+         case ICC_CONTENT_PIN:
+-            externalState_ = SimState::SIM_STATE_LOCKED;
++            SetSimState(SimState::SIM_STATE_LOCKED);
+             reason = LockReason::SIM_PIN;
+             if (observerHandler_ != nullptr) {
+                 observerHandler_->NotifyObserver(RadioEvent::RADIO_SIM_STATE_LOCKED, slotId);
+@@ -926,7 +928,7 @@
+             PublishSimStateEvent(EventFwk::CommonEventSupport::COMMON_EVENT_SIM_STATE_CHANGED, ICC_STATE_PIN, "");
+             break;
+         case ICC_CONTENT_PUK:
+-            externalState_ = SimState::SIM_STATE_LOCKED;
++            SetSimState(SimState::SIM_STATE_LOCKED);
+             reason = LockReason::SIM_PUK;
+             if (observerHandler_ != nullptr) {
+                 observerHandler_->NotifyObserver(RadioEvent::RADIO_SIM_STATE_LOCKED, slotId);
+@@ -937,7 +939,7 @@
+             SimLockStateEscape(simState, slotId, reason);
+             break;
+     }
+-    CoreServiceHiSysEvent::WriteSimStateBehaviorEvent(slotId, static_cast<int32_t>(externalState_));
++    CoreServiceHiSysEvent::WriteSimStateBehaviorEvent(slotId, static_cast<int32_t>(GetSimState()));
+ }
+ 
+ void SimStateHandle::SimLockStateEscape(
+@@ -967,8 +969,8 @@
+             [[fallthrough]]; // fall_through
+         default:
+             isSimLockState = false;
+-            externalState_ = SimState::SIM_STATE_UNKNOWN;
+-            CoreServiceHiSysEvent::WriteSimStateBehaviorEvent(slotId, static_cast<int32_t>(externalState_));
++            SetSimState(SimState::SIM_STATE_UNKNOWN);
++            CoreServiceHiSysEvent::WriteSimStateBehaviorEvent(slotId, static_cast<int32_t>(GetSimState()));
+             PublishSimStateEvent(EventFwk::CommonEventSupport::COMMON_EVENT_SIM_STATE_CHANGED,
+                 ICC_STATE_NOT_READY, "");
+             break;
+@@ -980,8 +982,8 @@
+ 
+ void SimStateHandle::NotifySimLock(int slotId)
+ {
+-    externalState_ = SimState::SIM_STATE_LOCKED;
+-    CoreServiceHiSysEvent::WriteSimStateBehaviorEvent(slotId, static_cast<int32_t>(externalState_));
++    SetSimState(SimState::SIM_STATE_LOCKED);
++    CoreServiceHiSysEvent::WriteSimStateBehaviorEvent(slotId, static_cast<int32_t>(GetSimState()));
+     if (observerHandler_ != nullptr) {
+         observerHandler_->NotifyObserver(RadioEvent::RADIO_SIM_STATE_SIMLOCK);
+     }
+diff --git a/telephony_core_service/utils/common/src/tel_event_queue.cpp b/telephony_core_service/utils/common/src/tel_event_queue.cpp
+--- a/telephony_core_service/utils/common/src/tel_event_queue.cpp
++++ b/telephony_core_service/utils/common/src/tel_event_queue.cpp
+@@ -195,6 +195,10 @@
+                 TELEPHONY_LOGD("%{public}s task no need to submit", thiz->name_.c_str());
+                 return;
+             }
++            // Serialize the next wake-up snapshot with external insertion. An
++            // immediate reply must not arrive between selecting a future timer
++            // and publishing that timer as the current scheduled task.
++            std::lock_guard<ffrt::mutex> admission(thiz->admissionMutex_);
+             thiz->SubmitInner(queueId);
+         },
+         ffrt::task_attr().delay(delayTime));
+diff --git a/telephony_core_service/services/sim/src/radio_protocol_controller.cpp b/telephony_core_service/services/sim/src/radio_protocol_controller.cpp
+--- a/telephony_core_service/services/sim/src/radio_protocol_controller.cpp
++++ b/telephony_core_service/services/sim/src/radio_protocol_controller.cpp
+@@ -41,8 +41,8 @@
+     slotCount_ = SIM_SLOT_COUNT_REAL >= DUAL_SLOT_COUNT ? DUAL_SLOT_COUNT : SIM_SLOT_COUNT_REAL;
+     InitMemberFunc();
+     // make sure communication is in the initial state
++    std::unique_lock<ffrt::mutex> radioProtocolLock(radioProtocolMutex_);
+     CleanUpCommunication();
+-    std::unique_lock<ffrt::mutex> radioProtocolLock(radioProtocolMutex_);
+     for (int32_t i = 0; i < slotCount_; i++) {
+         RadioProtocol protocol;
+         protocol.slotId = i;
+@@ -157,6 +157,16 @@
+             TELEPHONY_LOGE("memberFunc is nullptr");
+             return;
+         }
++        // Protocol predicates, sessions, phase counters and cleanup share the
++        // caller's wait mutex. Active-SIM events use their separate ctx_/cv_.
++        const bool protocolEvent = id == RADIO_SIM_GET_RADIO_PROTOCOL ||
++            id == RADIO_SIM_CHECK_RADIO_PROTOCOL || id == RADIO_SIM_UPDATE_RADIO_PROTOCOL ||
++            id == RADIO_SIM_RADIO_PROTOCOL_NOTIFY || id == RADIO_SIM_SET_RADIO_PROTOCOL_COMPLETE ||
++            id == RADIO_SIM_SET_RADIO_PROTOCOL_TIMEOUT;
++        std::unique_lock<ffrt::mutex> protocolLock(radioProtocolMutex_, std::defer_lock);
++        if (protocolEvent) {
++            protocolLock.lock();
++        }
+         memberFunc(event);
+     }
+ }
+@@ -280,18 +290,18 @@
+     SendRadioProtocolEvent(oldRadioProtocol_, RADIO_SIM_CHECK_RADIO_PROTOCOL);
+ }
+ 
++// Called with radioProtocolMutex_ held by protocol dispatch or SetRadioProtocol.
+ void RadioProtocolController::ExecuteUpdateCommunication()
+ {
+-    std::unique_lock<ffrt::mutex> radioProtocolLock(radioProtocolMutex_);
+     BuildRadioProtocolForCommunication(RadioProtocolPhase::RADIO_PROTOCOL_PHASE_UPDATE,
+         RadioProtocolStatus::RADIO_PROTOCOL_STATUS_NONE);
+     ResetNextCommunicationSlotCount();
+     SendRadioProtocolEvent(newRadioProtocol_, RADIO_SIM_UPDATE_RADIO_PROTOCOL);
+ }
+ 
++// Called with radioProtocolMutex_ held by protocol dispatch or SetRadioProtocol.
+ void RadioProtocolController::ExecuteCompleteCommunication()
+ {
+-    std::unique_lock<ffrt::mutex> radioProtocolLock(radioProtocolMutex_);
+     TELEPHONY_LOGI("failed:%{public}d", communicationFailed_);
+     BuildRadioProtocolForCommunication(RadioProtocolPhase::RADIO_PROTOCOL_PHASE_COMPLETE,
+         communicationFailed_ ? RadioProtocolStatus::RADIO_PROTOCOL_STATUS_FAIL :
+@@ -388,9 +398,9 @@
+     }
+ }
+ 
++// Called with radioProtocolMutex_ held by protocol dispatch or SetRadioProtocol.
+ void RadioProtocolController::UpdateRadioProtocol(std::shared_ptr<RadioProtocol> radioProtocol)
+ {
+-    std::unique_lock<ffrt::mutex> radioProtocolLock(radioProtocolMutex_);
+     int32_t slotId = radioProtocol->slotId;
+     if ((slotId >= DEFAULT_SIM_SLOT_ID) && (slotId < static_cast<int32_t>(radioProtocol_.size()))) {
+         radioProtocol_[slotId].sessionId = radioProtocol->sessionId;

@@ -1,0 +1,637 @@
+diff --git a/telephony_core_service/services/multisim/test/systemtest/BUILD.gn b/telephony_core_service/services/multisim/test/systemtest/BUILD.gn
+--- a/telephony_core_service/services/multisim/test/systemtest/BUILD.gn
++++ b/telephony_core_service/services/multisim/test/systemtest/BUILD.gn
+@@ -18,7 +18,7 @@
+     include_dirs += [ "$production_root/$dir" ]
+   }
+   include_dirs += [ libxml2_include_dir ]
+-  defines = [ "LOG_DOMAIN=0xD001F04" ]
++  defines = [ "LOG_DOMAIN=0xD001F04", "TELEPHONY_HOST_LIFETIME_AUDIT" ]
+ }
+ config("production_execution_evidence") {
+   cflags_cc = [
+@@ -159,6 +159,7 @@
+     "stubs",
+   ]
+   deps = [
++    ":scheduler_boundaries",
+     ":component_launcher",
+     ":googlemock",
+     ":platform_boundaries",
+diff --git a/telephony_core_service/services/multisim/test/systemtest/gn/BUILD.gn b/telephony_core_service/services/multisim/test/systemtest/gn/BUILD.gn
+--- a/telephony_core_service/services/multisim/test/systemtest/gn/BUILD.gn
++++ b/telephony_core_service/services/multisim/test/systemtest/gn/BUILD.gn
+@@ -13,12 +13,18 @@
+   } else {
+     cflags_cc += [ "-O2" ]
+   }
++  if (host_sanitizer != "") {
++    assert(host_sanitizer == "address" || host_sanitizer == "thread")
++    cflags_cc += [ "-fsanitize=" + host_sanitizer ]
++    if (host_sanitizer == "thread") { cflags_cc += [ "-fprofile-update=atomic" ] }
++  }
+   ldflags = [
+     "-flto=full",
+     "-fuse-ld=gold",
+     "-Wl,--gc-sections",
+     "-pthread",
+   ]
++  if (host_sanitizer != "") { ldflags += [ "-fsanitize=" + host_sanitizer ] }
+ }
+ toolchain("linux") {
+   tool("cxx") {
+diff --git a/telephony_core_service/services/multisim/test/systemtest/gn/BUILDCONFIG.gn b/telephony_core_service/services/multisim/test/systemtest/gn/BUILDCONFIG.gn
+--- a/telephony_core_service/services/multisim/test/systemtest/gn/BUILDCONFIG.gn
++++ b/telephony_core_service/services/multisim/test/systemtest/gn/BUILDCONFIG.gn
+@@ -1,4 +1,5 @@
+ declare_args() {
++  host_sanitizer = ""
+   host_debug = false  # IDE host builds keep DWARF; legacy runners retain their profile.
+   primary_slot_core_source = ""  # Optional negative-control copy outside the source tree.
+   primary_slot_controller_source = ""  # Outside-source negative control only.
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h
+--- a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h
+@@ -38,6 +38,14 @@
+ template<class Manager> void VerifyStopped(RealScenario &s, const Manager &manager, const QueueBaseline &baseline)
+ {
+     EXPECT_TRUE(manager->IsStopped());
++    EXPECT_EQ(ActiveWatchers(), 0u) << "PARAMETER_WATCHER_NOT_UNREGISTERED";
++    if (s.coreRilAttached) {
++        // Core is an independent consumer, not a SIM-owned reference. Its RIL
++        // must remain valid until the harness explicitly detaches that consumer.
++        EXPECT_EQ(s.ril.use_count(), 2) << "SIM_MUST_PRESERVE_CORE_RIL_OWNER";
++        CoreManagerInner::GetInstance().SetTelRilMangerObj(nullptr);
++        s.coreRilAttached = false;
++    }
+     EXPECT_EQ(s.ril.use_count(), 1) << "PRODUCTION_RIL_REFERENCES_BEFORE_ROOT_RELEASE";
+     {
+         std::lock_guard<std::mutex> lock(s.mutex);
+@@ -47,9 +55,34 @@
+             EXPECT_TRUE(r.owner.expired()) << "RIL_OBSERVER_ALIVE slot=" << r.slot << " event=" << r.event;
+         }
+     }
+-    if (s.accountObserver) EXPECT_EQ(s.accountObserver.use_count(), 1);
++    std::map<std::string,unsigned> retired;
++    for(const auto &sample:s.lifetimeSamples) {
++        std::string role;
++        if(sample.type=="SimStateManager")role="State";
++        else if(sample.type.find("MultiSimMonitor")!=std::string::npos)role="R1_Monitor";
++        else if(sample.type.find("7SimFileE")!=std::string::npos || sample.type.find("8UsimFileE")!=std::string::npos)role="R2_Records";
++        else if(sample.type.find("SimFileManager")!=std::string::npos)role="R3_FileManager";
++        else if(sample.type.find("IccDiallingNumbersManager")!=std::string::npos)role="R4_Phonebook";
++        if(sample.type.find("AccountObserver")==std::string::npos)
++            EXPECT_TRUE(sample.object.expired())<<"INTERNAL_SUBSCRIBER_ALIVE "<<sample.type<<" address="<<sample.address;
++        if(role.empty())continue;
++        ++retired[role];
++        EXPECT_TRUE(sample.object.expired()) << "CYCLE_MEMBER_ALIVE role="<<role<<" address="<<sample.address<<" type="<<sample.type;
++    }
++    if(s.accountObserver && !s.lifetimeSamples.empty()) {
++        EXPECT_EQ(retired["State"],3u);EXPECT_EQ(retired["R1_Monitor"],1u);
++        EXPECT_EQ(retired["R2_Records"],3u);EXPECT_EQ(retired["R3_FileManager"],3u);EXPECT_EQ(retired["R4_Phonebook"],3u);
++        for(auto &p:retired)testing::Test::RecordProperty("expired_"+p.first,p.second);
++    }
++    if (s.accountObserver) {
++        EXPECT_EQ(s.accountObserver.use_count(), 1) << "CALLER_IS_ONLY_OBSERVER_OWNER";
++        EXPECT_TRUE(s.accountObserver->StopEvents()); // external subscriber owns its own executor
++    }
+     baseline.ExpectNoOwnedWork();
+     EXPECT_FALSE(manager->IsSetPrimarySlotIdInProgress());
++    EXPECT_EQ(manager->SetPrimarySlotId(1,true), TELEPHONY_ERR_LOCAL_PTR_NULL) << "NEW_BUSINESS_AFTER_STOP";
++    EXPECT_FALSE(manager->OnInit(3)) << "REINITIALIZATION_OF_STOPPED_INSTANCE";
++    testing::Test::RecordProperty("post_stop_admission",testing::Test::HasFailure()?"FAIL":"PASS");
+     auto observer = std::make_shared<AccountObserver>([] { ADD_FAILURE() << "CALLBACK_AFTER_STOP"; });
+     std::weak_ptr<AccountObserver> weak = observer;
+     manager->RegisterCoreNotify(1, observer, RadioEvent::RADIO_SIM_ACCOUNT_LOADED);
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp
+--- a/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp
+@@ -67,12 +67,17 @@
+ template<class M = SimManager, class F> void WithRealGraph(F body, bool locked = true)
+ {
+     if constexpr (HasShutdown<M>::value) {
++        WatchBoundaryScope watchers;
+         RealScenario s(true);
++        // FFRT's caller executor is runtime-owned; create it before measuring
++        // component queues. Stop is still required to drain all SIM tasks.
++        ffrt::submit([] {}); ffrt::wait();
+         QueueBaseline baseline;
+         if (locked) ASSERT_TRUE(s.StartLockedCard());
+         else {
+             s.manager = std::make_shared<M>(nullptr);
+             ASSERT_TRUE(s.manager->OnInit(3));
++            s.lifetimeSamples=TelLifetimeEvidence::Live();
+         }
+         auto manager = std::static_pointer_cast<M>(s.manager);
+         body(s, manager, baseline);
+@@ -111,6 +116,7 @@
+ TEST(ShutdownContract, CPartialInitializationThenStop)
+ {
+     WithRealGraph([](auto &s, auto &manager, const auto &baseline) {
++        EXPECT_EQ(manager->SetPrimarySlotId(1,true),TELEPHONY_ERR_NO_SIM_CARD);
+         testing::Test::RecordProperty("business", "NOT_RUN");
+         EXPECT_TRUE(manager->Stop()); VerifyStopped(s, manager, baseline);
+     }, false);
+@@ -162,7 +168,7 @@
+     WithRealGraph([](auto &s, auto &manager, const auto &baseline) {
+         // Snapshot the real pending FFRT callbacks, not fabricated SIM results.
+         auto delayed = SimHost::CapturePendingActions("SimStateHandle");
+-        EXPECT_FALSE(delayed.empty());
++        EXPECT_EQ(delayed.size(),3u);
+         EXPECT_TRUE(manager->Stop()); VerifyStopped(s, manager, baseline);
+         unsigned writes;
+         { std::lock_guard<std::mutex> lock(s.mutex); writes = s.writes.size(); }
+@@ -191,4 +197,163 @@
+         testing::Test::RecordProperty("business", "NOT_RUN");
+     });
+ }
++
++TEST(ShutdownExtra, WatcherLateCallbackAfterOwnerDestruction)
++{
++    std::vector<WatchedCallback> callbacks;
++    {
++        WatchBoundaryScope watchers;
++        RealScenario s(true); ffrt::submit([]{});ffrt::wait();QueueBaseline baseline;
++        ASSERT_TRUE(s.StartLockedCard());callbacks=WatchCallbacks();ASSERT_EQ(callbacks.size(),5u);
++        for(auto &callback:callbacks)callback.invoke(); // real registered callback while Running
++        EXPECT_TRUE(s.manager->Stop());VerifyStopped(s,s.manager,baseline);
++        EXPECT_EQ(ActiveWatchers(),0u);
++        for(auto &callback:callbacks)callback.invoke(); // closed context while root still alive
++    }
++    for(auto &callback:callbacks)callback.invoke(); // stale service copy after all actors destroyed
++}
++TEST(ShutdownExtra, PartialWatcherRegistration)
++{
++    WatchBoundaryScope watchers;FailWatcherRegistration(1);
++    RealScenario s(true);ffrt::submit([]{});ffrt::wait();QueueBaseline baseline;
++    ASSERT_TRUE(s.StartLockedCard());ASSERT_EQ(ActiveWatchers(),4u);
++    EXPECT_TRUE(s.manager->Stop());VerifyStopped(s,s.manager,baseline);
++}
++TEST(ShutdownExtra, FailedWatcherRemovalKeepsStoppingAndRetries)
++{
++    WatchBoundaryScope watchers;
++    RealScenario s(true);ffrt::submit([]{});ffrt::wait();QueueBaseline baseline;
++    ASSERT_TRUE(s.StartLockedCard());auto callbacks=WatchCallbacks();ASSERT_EQ(callbacks.size(),5u);
++    FailWatcherRemoval(true);EXPECT_FALSE(s.manager->Stop());
++    EXPECT_TRUE(s.manager->IsStopping());EXPECT_FALSE(s.manager->IsStopped());EXPECT_EQ(ActiveWatchers(),5u);
++    unsigned writes;{std::lock_guard<std::mutex> lock(s.mutex);writes=s.writes.size();}
++    for(auto &callback:callbacks)callback.invoke(); // service still registered, actor access is fenced
++    {std::lock_guard<std::mutex> lock(s.mutex);EXPECT_EQ(s.writes.size(),writes);}
++    FailWatcherRemoval(false);EXPECT_TRUE(s.manager->Stop());VerifyStopped(s,s.manager,baseline);
++}
++TEST(ShutdownExtra, ObserverReleaseOutsideLockAllowsReentrantDestruction)
++{
++    ObserverHandler observers;
++    struct Reentrant final:TelEventHandler {
++        ObserverHandler &owner;bool &destroyed;
++        Reentrant(ObserverHandler &o,bool &d):TelEventHandler("reentrant-subscriber"),owner(o),destroyed(d){}
++        ~Reentrant(){owner.RemoveAll();destroyed=true;}
++    };
++    bool destroyed=false;auto subscriber=std::make_shared<Reentrant>(observers,destroyed);
++    observers.RegObserver(17,subscriber);std::weak_ptr<Reentrant> weak=subscriber;
++    subscriber.reset();observers.RemoveAll();EXPECT_TRUE(destroyed);EXPECT_TRUE(weak.expired());
++}
++void StopC1AtPhase(unsigned stopStage)
++{
++    WatchBoundaryScope watchers;RealScenario s;
++    ffrt::submit([]{});ffrt::wait();QueueBaseline baseline;
++    ASSERT_TRUE(s.StartLockedCard());s.ClearObservations();s.Permit();
++    EXPECT_CALL(*s.ril,SetPrimarySlot(testing::_,testing::_)).Times(0);
++    EXPECT_CALL(*s.ril,GetRadioProtocol(testing::_,testing::_)).Times(2).WillRepeatedly([](int slot,const auto &event){
++        auto value=std::make_shared<RadioProtocol>();value->slotId=slot;value->modemId=slot;value->technology=slot?0x22:0x11;
++        RealScenario::Reply({slot,event->GetOwner(),event->GetInnerEventId()},value);return 0;
++    });
++    s.manager->GetRadioProtocol(0);s.manager->GetRadioProtocol(1);
++    auto deadline=std::chrono::steady_clock::now()+3s;
++    while(s.manager->GetRadioProtocolSlotIdByModemId(1)!=1 && std::chrono::steady_clock::now()<deadline)std::this_thread::yield();
++    ASSERT_EQ(s.manager->GetRadioProtocolSlotIdByModemId(1),1);
++    struct Request {RealScenario::Pending transport;RadioProtocol value;};std::vector<Request> requests;
++    EXPECT_CALL(*s.ril,SetRadioProtocol(testing::_,testing::_,testing::_)).Times(6).WillRepeatedly([&](int slot,RadioProtocol value,const auto &event){
++        EXPECT_EQ(value.slotId,slot);EXPECT_TRUE(std::dynamic_pointer_cast<RadioProtocolController>(event->GetOwner()));
++        std::lock_guard<std::mutex> lock(s.mutex);requests.push_back({{slot,event->GetOwner(),event->GetInnerEventId()},value});s.changed.notify_all();return 0;
++    });
++    auto caller=std::async(std::launch::async,[&]{return s.core.SetPrimarySlotId(1);});std::future<bool> stopper;int session=-1;
++    for(unsigned stage=0;stage<3;++stage){
++        std::vector<Request> pair;
++        {std::unique_lock<std::mutex> lock(s.mutex);
++         ASSERT_TRUE(s.changed.wait_for(lock,3s,[&]{return requests.size()>=(stage+1)*2;}));
++         pair.assign(requests.begin()+stage*2,requests.begin()+stage*2+2);
++         EXPECT_EQ(caller.wait_for(0s),std::future_status::timeout);
++         // C1 saves tentative parameters before CHECK and restores them on failure.
++         // A successful MAIN/DATA broadcast must still wait for COMPLETE.
++         for(const auto &want:s.broadcasts)
++             EXPECT_NE(want.GetAction(),EventFwk::CommonEventSupport::COMMON_EVENT_SIM_CARD_DEFAULT_MAIN_SUBSCRIPTION_CHANGED);}
++        if(stage==stopStage){
++            stopper=std::async(std::launch::async,[&]{return s.manager->Stop();});auto limit=std::chrono::steady_clock::now()+3s;
++            while(!s.manager->IsStopping()&&!s.manager->IsStopped()&&std::chrono::steady_clock::now()<limit)std::this_thread::yield();
++            ASSERT_TRUE(s.manager->IsStopping());EXPECT_EQ(stopper.wait_for(0s),std::future_status::timeout);
++            EXPECT_EQ(s.manager->SetPrimarySlotId(0,true),TELEPHONY_ERR_LOCAL_PTR_NULL)<<"NEW_REQUEST_REJECTED_WHILE_STOPPING";
++        }
++        for(auto &request:pair){
++            auto reply=std::make_shared<RadioProtocol>(request.value);
++            if(session<0)session=reply->sessionId;EXPECT_EQ(reply->sessionId,session);
++            EXPECT_EQ(static_cast<int>(reply->phase),stage==0?1:stage==1?2:4);
++            EXPECT_EQ(reply->modemId,stage==0?request.transport.slot:1-request.transport.slot);
++            std::cout<<"STOP_C1 stage="<<stage<<" session="<<session<<" slot="<<request.transport.slot<<"\n";
++            RealScenario::Reply(request.transport,reply);
++            if(stage==1){
++                reply=std::make_shared<RadioProtocol>(*reply);reply->phase=RadioProtocolPhase::RADIO_PROTOCOL_PHASE_NOTIFY;
++                reply->status=RadioProtocolStatus::RADIO_PROTOCOL_STATUS_SUCCESS;
++                std::weak_ptr<AppExecFwk::EventHandler> owner;
++                {std::lock_guard<std::mutex> lock(s.mutex);owner=s.notifications.at({request.transport.slot,RADIO_SIM_RADIO_PROTOCOL_NOTIFY});}
++                RealScenario::Reply({request.transport.slot,owner,RADIO_SIM_RADIO_PROTOCOL_NOTIFY},reply);
++            }
++        }
++    }
++    ASSERT_EQ(caller.wait_for(3s),std::future_status::ready);EXPECT_EQ(caller.get(),TELEPHONY_ERR_SUCCESS);
++    ASSERT_EQ(stopper.wait_for(3s),std::future_status::ready);EXPECT_TRUE(stopper.get());
++    {std::lock_guard<std::mutex> lock(s.mutex);EXPECT_EQ(s.parametersDb["persist.telephony.MainSlotId"],"1");s.ExpectNotifications(true,1,false);}
++    testing::Test::RecordProperty("business","PASS");VerifyStopped(s,s.manager,baseline);
++}
++TEST(ShutdownExtra,C1StopAtCheck){StopC1AtPhase(0);}
++TEST(ShutdownExtra,C1StopAtUpdate){StopC1AtPhase(1);}
++TEST(ShutdownExtra,C1StopAtComplete){StopC1AtPhase(2);}
++
++TEST(ShutdownExtra, WatcherInFlightIsDrainedAndSelfStopIsRejected)
++{
++    WatchBoundaryScope watchers;RealScenario s(true);ffrt::submit([]{});ffrt::wait();QueueBaseline baseline;
++    std::promise<void> entered,release;auto released=release.get_future().share();std::atomic<bool> intercept{false};
++    // Configure all mock behavior before any production threads start. Only an
++    // atomic latch changes during execution; no concurrent EXPECT_CALL mutation.
++    s.beforeParameterRead=[&](const char *key){
++        if(std::string(key)!="persist.ril.reboot_detect_sim0" || !intercept.exchange(false))return;
++        EXPECT_FALSE(s.manager->Stop())<<"CALLBACK_MUST_NOT_WAIT_FOR_ITSELF";
++        EXPECT_FALSE(s.manager->IsStopping());entered.set_value();released.wait();
++    };
++    ASSERT_TRUE(s.StartLockedCard());auto callbacks=WatchCallbacks();
++    auto it=std::find_if(callbacks.begin(),callbacks.end(),[](const auto &c){return c.key=="persist.ril.reboot_detect_sim0";});ASSERT_NE(it,callbacks.end());
++    intercept=true;
++    auto callback=std::async(std::launch::async,[&]{it->invoke();});
++    ASSERT_EQ(entered.get_future().wait_for(3s),std::future_status::ready);
++    auto stopper=std::async(std::launch::async,[&]{return s.manager->Stop();});auto deadline=std::chrono::steady_clock::now()+3s;
++    while(!s.manager->IsStopping() && std::chrono::steady_clock::now()<deadline)std::this_thread::yield();
++    EXPECT_TRUE(s.manager->IsStopping());EXPECT_EQ(stopper.wait_for(0s),std::future_status::timeout);
++    release.set_value();callback.get();EXPECT_TRUE(stopper.get());VerifyStopped(s,s.manager,baseline);
++    s.beforeParameterRead={};
++}
++
++TEST(ShutdownExtra, OwnedTaskClosureDestructionIsPartOfStopBarrier)
++{
++    for(bool threadMode:{false,true}) {
++        auto group=std::make_shared<TelLifecycle>();
++        std::promise<void> entered,release,start;auto released=release.get_future().share();auto started=start.get_future().share();
++        struct ExitLatch {
++            std::promise<void> &entered;std::shared_future<void> released;
++            ExitLatch(std::promise<void> &e,std::shared_future<void> r):entered(e),released(std::move(r)){}
++            ~ExitLatch(){entered.set_value();released.wait();}
++        };
++        auto latch=std::make_shared<ExitLatch>(entered,released);std::weak_ptr<ExitLatch> weak=latch;
++        auto resource=std::make_shared<int>(17);std::weak_ptr<int> resourceWeak=resource;
++        ASSERT_TRUE(group->Submit(resource,[latch,started]{started.wait();},threadMode));resource.reset();latch.reset();start.set_value();
++        ASSERT_EQ(entered.get_future().wait_for(3s),std::future_status::ready);
++        auto stop=std::async(std::launch::async,[&]{
++            auto deadline=std::chrono::steady_clock::now()+3s;
++            if(!group->BeginStop(deadline))return false;
++            if(!group->SealWhenIdle([]{return true;},deadline)){group->FinishStop(false);return false;}
++            group->JoinOwnedWork();group->FinishStop(true);return true;
++        });
++        auto deadline=std::chrono::steady_clock::now()+3s;
++        while(group->GetState()==TelLifecycle::State::Running && std::chrono::steady_clock::now()<deadline)std::this_thread::yield();
++        EXPECT_EQ(group->GetState(),TelLifecycle::State::Stopping);
++        EXPECT_EQ(stop.wait_for(0s),std::future_status::timeout);
++        release.set_value();EXPECT_TRUE(stop.get());EXPECT_TRUE(weak.expired());EXPECT_TRUE(resourceWeak.expired());
++        EXPECT_EQ(group->GetState(),TelLifecycle::State::Stopped);
++        SimHost::StopCallingThreadTasks();EXPECT_TRUE(SimHost::AwaitSchedulerStopped(3s));
++    }
++}
+ } // namespace
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_runtime.cpp b/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_runtime.cpp
+--- a/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_runtime.cpp
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_runtime.cpp
+@@ -1,3 +1,6 @@
++#include "watcher_boundary.h"
++#include <mutex>
++#include <map>
+ // Linux external runtime bridges. SIM/CoreManager/Controller implementations are production sources.
+ #include "sim_manager.h"
+ #include "pdp_profile_rdb_helper.h"
+@@ -58,22 +61,24 @@
+     std::condition_variable changed;
+     Sim028Host::RunnerState state = Sim028Host::RunnerState::Stopped;
+     std::unique_ptr<ffrt::queue> queue;
++    std::map<std::pair<const EventHandler *,std::string>,std::vector<ffrt::task_handle>> namedTasks;
+ };
+ RunnerRuntime &Runtime() { static RunnerRuntime runtime; return runtime; }
+ thread_local bool onExternalRunner = false;
+-bool SubmitExternal(std::function<void()> task, int64_t delay)
++bool SubmitExternal(std::function<void()> task, int64_t delay, const EventHandler *owner=nullptr, const std::string &name="")
+ {
+     auto &runtime = Runtime();
+     std::lock_guard<std::mutex> lock(runtime.mutex);
+     if (runtime.state != Sim028Host::RunnerState::Running) return false;
+     if (!runtime.queue) runtime.queue = std::make_unique<ffrt::queue>("sim028-platform-runner");
+-    runtime.queue->submit_h([task = std::move(task)] {
++    auto handle=runtime.queue->submit_h([task = std::move(task)] {
+         struct Guard {
+             Guard() { onExternalRunner = true; }
+             ~Guard() { onExternalRunner = false; }
+         } guard;
+         task();
+     }, ffrt::task_attr().delay(delay * 1000));
++    if(owner)runtime.namedTasks[{owner,name}].push_back(handle);
+     return true;
+ }
+ }
+@@ -104,6 +109,7 @@
+         if (runtime.state == Sim028Host::RunnerState::Stopped) return true;
+         runtime.state = Sim028Host::RunnerState::Stopping;
+         retiring = std::move(runtime.queue);
++        runtime.namedTasks.clear();
+     }
+     // Cancel queued work and join in-flight work normally. No admission lock
+     // is held while callbacks complete, including callbacks attempting a post.
+@@ -124,9 +130,14 @@
+     auto envelope = std::make_shared<InnerEvent::Pointer>(std::move(event));
+     return SubmitExternal([owner, envelope] { if (auto target = owner.lock()) target->ProcessEvent(*envelope); }, delay);
+ }
+-bool EventHandler::PostTask(const std::function<void()> &task, const std::string &, int64_t delay)
+-{
+-    return SubmitExternal(task, delay);
++bool EventHandler::PostTask(const std::function<void()> &task, const std::string &name, int64_t delay)
++{ return SubmitExternal(task, delay, this, name); }
++void EventHandler::RemoveTask(const std::string &name)
++{
++    auto &runtime=Runtime();std::lock_guard<std::mutex> lock(runtime.mutex);
++    auto it=runtime.namedTasks.find({this,name});if(it==runtime.namedTasks.end())return;
++    if(runtime.queue)for(auto &task:it->second)runtime.queue->cancel(task);
++    runtime.namedTasks.erase(it);
+ }
+ bool Configuration::AddItem(const std::string &, const std::string &) { return false; }
+ int32_t AppMgrClient::UpdateConfiguration(const Configuration &) { return -1; }
+@@ -170,8 +181,40 @@
+ }
+ extern "C" int32_t GetIntParameter(const char *key, int32_t fallback)
+ { return OHOS::system::GetIntParameter<int>(key, fallback); }
+-extern "C" int WatchParameter(const char *, ParameterChgPtr, void *) { return -1; }
+-extern "C" int RemoveParameterWatcher(const char *, ParameterChgPtr, void *) { return -1; }
++namespace {
++std::mutex watcherMutex;
++bool watcherEnabled = false, watcherRemoveFailure = false;
++int watcherRegisterFailure = -1;
++struct WatchRecord { std::string key; ParameterChgPtr fn; void *context; };
++std::vector<WatchRecord> watcherRecords;
++}
++namespace Sim028Host {
++void EnableWatchBoundary(bool enabled) {
++    std::lock_guard<std::mutex> lock(watcherMutex);
++    if (!enabled && !watcherRecords.empty()) throw std::logic_error("ACTIVE_PARAMETER_WATCHERS");
++    watcherEnabled=enabled; watcherRemoveFailure=false; watcherRegisterFailure=-1;
++}
++void FailWatcherRegistration(int slot) { std::lock_guard<std::mutex> lock(watcherMutex);watcherRegisterFailure=slot; }
++void FailWatcherRemoval(bool fail) {std::lock_guard<std::mutex> lock(watcherMutex);watcherRemoveFailure=fail;}
++unsigned ActiveWatchers() {std::lock_guard<std::mutex> lock(watcherMutex);return watcherRecords.size();}
++std::vector<WatchedCallback> WatchCallbacks() {
++    std::lock_guard<std::mutex> lock(watcherMutex);std::vector<WatchedCallback> result;
++    for(auto r:watcherRecords)result.push_back({r.key,[r]{r.fn(r.key.c_str(),"0",r.context);}});
++    return result;
++}
++}
++extern "C" int WatchParameter(const char *key, ParameterChgPtr fn, void *context) {
++    std::lock_guard<std::mutex> lock(watcherMutex);
++    if(!watcherEnabled || (watcherRegisterFailure>=0 && std::string(key).back()=='0'+watcherRegisterFailure))return -1;
++    watcherRecords.push_back({key,fn,context});return 0;
++}
++extern "C" int RemoveParameterWatcher(const char *key, ParameterChgPtr fn, void *context) {
++    std::lock_guard<std::mutex> lock(watcherMutex);
++    if(!watcherEnabled || watcherRemoveFailure)return -1;
++    auto it=std::find_if(watcherRecords.begin(),watcherRecords.end(),[&](const auto &r){return r.key==key && r.fn==fn && r.context==context;});
++    if(it==watcherRecords.end())return -1;
++    watcherRecords.erase(it);return 0;
++}
+ extern "C" CfgFiles *GetCfgFilesEx(const char *, int, const char *) { return nullptr; }
+ extern "C" void FreeCfgFiles(CfgFiles *) {}
+ // Serialization is not reached by this business slice. Fail explicitly if it is.
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h b/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h
+--- a/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h
+@@ -1,3 +1,5 @@
++#include <cstdlib>
++#include "watcher_boundary.h"
+ #pragma once
+ #include "sim_manager.h"
+ #include "lifecycle/lifecycle_diagnostics.h"
+@@ -109,6 +111,10 @@
+     CoreServiceSim core;
+     std::shared_ptr<AccountObserver> accountObserver;
+     bool accountLoaded = false;
++    bool coreRilAttached = false;
++    // Installed before initialization; immutable until the graph has stopped.
++    std::function<void(const char *)> beforeParameterRead;
++    std::vector<TelLifetimeSample> lifetimeSamples;
+     std::mutex mutex;
+     std::condition_variable changed;
+     ProviderRow row;
+@@ -125,6 +131,7 @@
+         int slot, event;
+         std::weak_ptr<AppExecFwk::EventHandler> owner;
+         bool active;
++        std::shared_ptr<AppExecFwk::EventHandler> strong;
+     };
+     std::vector<Registration> registrationLedger; // weak only; full multi-owner pairing ledger
+     template<class T> static void Reply(const Pending &request, std::shared_ptr<T> response)
+@@ -146,6 +153,7 @@
+         EXPECT_TRUE(StartExternalRunner());
+         parametersDb["const.vendor.ril.set_primary_slot_support"] = directRil ? "true" : "false";
+         EXPECT_CALL(parameters, Read(_, _, _, _)).WillRepeatedly([this](auto key, auto fallback, auto out, auto size) {
++            if(beforeParameterRead)beforeParameterRead(key);
+             std::lock_guard<std::mutex> lock(mutex);
+             auto it = parametersDb.find(key);
+             return SimHost::CopyParameterValue(it == parametersDb.end() ? fallback : it->second.c_str(), out, size);
+@@ -183,21 +191,24 @@
+             ++updates; changed.notify_all(); return 0; // verified Provider RdbStore::Update status, not row count
+         });
+         EXPECT_CALL(*ril, RegisterCoreNotify(_, _, _, _)).WillRepeatedly([this](int slot, const auto &owner, int id, int *) {
++            TelLifetimeEvidence::Remember(typeid(*owner).name(),owner);
++            std::cout<<"RIL_SUBSCRIBE slot="<<slot<<" event="<<id<<" object="<<reinterpret_cast<uintptr_t>(owner.get())<<" type="<<typeid(*owner).name()<<"\n";
+             std::lock_guard<std::mutex> lock(mutex);
+             bool existing = false;
+             std::weak_ptr<AppExecFwk::EventHandler> weak = owner;
+             for (const auto &r : registrationLedger)
+                 existing |= r.active && r.slot == slot && r.event == id &&
+                     !r.owner.owner_before(weak) && !weak.owner_before(r.owner);
+-            if (!existing) registrationLedger.push_back({slot, id, weak, true});
++            if (!existing) registrationLedger.push_back({slot, id, weak, true, std::getenv("SIM_HOST_STRONG_RIL_SUBSCRIPTIONS") ? owner : nullptr});
+             notifications[{slot, id}] = owner; return 0;
+         });
+         EXPECT_CALL(*ril, UnRegisterCoreNotify(_, _, _)).WillRepeatedly([this](int slot, const auto &owner, int id) {
++            std::vector<std::shared_ptr<AppExecFwk::EventHandler>> retired;
+             std::lock_guard<std::mutex> lock(mutex);
+             std::weak_ptr<AppExecFwk::EventHandler> weak = owner;
+             for (auto &r : registrationLedger)
+                 if (r.active && r.slot == slot && r.event == id &&
+-                    !r.owner.owner_before(weak) && !weak.owner_before(r.owner)) r.active = false;
++                    !r.owner.owner_before(weak) && !weak.owner_before(r.owner)) {r.active = false;retired.push_back(std::move(r.strong));}
+             auto it = notifications.find({slot, id});
+             if (it != notifications.end() && it->second.lock() == owner) {
+                 notifications.erase(it);
+@@ -246,6 +257,7 @@
+     {
+         manager = std::make_shared<SimManager>(ril);
+         CoreManagerInner::GetInstance().OnInit(nullptr, manager, ril);
++        coreRilAttached = true;
+         core.SetSimManager(manager);
+         // Same logical slot-vector sizing as real CoreService::Init, including the extra slot.
+         if (!manager->OnInit(SIM_SLOT_COUNT_MD + 1)) return false;
+@@ -264,7 +276,10 @@
+         { std::lock_guard<std::mutex> lock(mutex); autoStatus = true; }
+         ffrt::wait(); // real RefreshSimState callers have received their correlated replies
+         std::unique_lock<std::mutex> lock(mutex);
+-        return changed.wait_for(lock, 5s, [&] { return accountLoaded; });
++        bool loaded = changed.wait_for(lock, 5s, [&] { return accountLoaded; });
++        lifetimeSamples = TelLifetimeEvidence::Live();
++        for(const auto &p:lifetimeSamples)std::cout<<"LIFETIME_SAMPLE address="<<p.address<<" type="<<p.type<<"\n";
++        return loaded;
+     }
+     void ClearObservations()
+     { std::lock_guard<std::mutex> lock(mutex); writes.clear(); events.clear(); broadcasts.clear(); }
+@@ -302,6 +317,7 @@
+     }
+     ~RealScenario()
+     {
++        if(manager) EXPECT_TRUE(manager->Stop()) << "REAL_SIM_STOP_NOT_DRAINED";
+         LifecycleCheckpoint("before_cleanup", manager.get(), ril.get());
+         DumpQueues("before_cleanup");
+         if (manager && accountObserver)
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp b/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp
+--- a/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp
+@@ -32,6 +32,7 @@
+     EXPECT_EQ(manager->SetPrimarySlotId(1, true), TELEPHONY_ERR_NO_SIM_CARD);
+     EXPECT_FALSE(manager->IsSetPrimarySlotIdInProgress());
+     SimHost::StopCallingThreadTasks();
++    EXPECT_TRUE(manager->Stop());
+     manager.reset();
+     EXPECT_TRUE(SimHost::AwaitSchedulerStopped(3s));
+ }
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/watcher_boundary.h b/telephony_core_service/services/multisim/test/systemtest/primary_slot/watcher_boundary.h
+new file mode 100644
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/watcher_boundary.h
+@@ -0,0 +1,16 @@
++#pragma once
++#include <functional>
++#include <string>
++#include <vector>
++namespace Sim028Host {
++struct WatchedCallback { std::string key; std::function<void()> invoke; };
++void EnableWatchBoundary(bool enabled);
++std::vector<WatchedCallback> WatchCallbacks();
++unsigned ActiveWatchers();
++void FailWatcherRegistration(int slot);
++void FailWatcherRemoval(bool fail);
++struct WatchBoundaryScope {
++    WatchBoundaryScope() {EnableWatchBoundary(true);}
++    ~WatchBoundaryScope() {EnableWatchBoundary(false);}
++};
++}
+diff --git a/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp b/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp
+--- a/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp
++++ b/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp
+@@ -22,8 +22,12 @@
+ }
+ 
+ namespace ffrt {
++static std::atomic<uint64_t> nextTaskId{1};
++static thread_local uint64_t currentTaskId=0;
++namespace this_task { uint64_t get_id() { return currentTaskId; } }
+ enum class HostTaskStatus { PENDING, RUNNING, DONE, CANCELLED };
+ struct HostTask {
++    uint64_t id=nextTaskId.fetch_add(1);
+     mutex lock;
+     condition_variable changed;
+     std::atomic<HostTaskStatus> status{HostTaskStatus::PENDING};
+@@ -75,6 +79,7 @@
+         state->running = true;
+         SchedulerChanged();
+         guard.unlock();
++        currentTaskId=task->id;
+         try {
+             task->action();
+         } catch (...) {
+@@ -83,10 +88,12 @@
+             ++schedulerRevision;
+             evidenceChanged.notify_all();
+         }
++        currentTaskId=0;
++        // DONE includes capture destruction, matching a completed scheduler task.
++        // Destructors run outside the queue lock and may reenter the runtime.
++        task->action = {};
+         task->status.store(HostTaskStatus::DONE);
+         SignalTask(task);
+-        // Release captured owners outside the queue lock; their destructors may stop this queue.
+-        task->action = {};
+         guard.lock();
+         state->running = false;
+         state->changed.notify_all();
+@@ -210,6 +217,18 @@
+     return *general;
+ }
+ void submit(std::function<void()> task) { GeneralQueue().submit_h(std::move(task)); }
++task_handle submit_h(std::function<void()> task) {return GeneralQueue().submit_h(std::move(task));}
++void wait(std::initializer_list<task_handle> tasks) {
++    for(const auto &handle:tasks) {
++        if(!handle.task_)continue;
++        if(auto owner=handle.task_->owner.lock()) {
++            std::lock_guard<mutex> lock(owner->lock);
++            if(owner->workerId==std::this_thread::get_id())throw std::logic_error("owned task cannot wait on itself");
++        }
++        std::unique_lock<mutex> lock(handle.task_->lock);
++        handle.task_->changed.wait(lock,[&]{auto state=handle.task_->status.load();return state==HostTaskStatus::DONE || state==HostTaskStatus::CANCELLED;});
++    }
++}
+ void wait() { GeneralQueue().wait_idle(); }
+ }
+ 
+diff --git a/telephony_core_service/services/multisim/test/systemtest/stubs/include/compile_declarations.h b/telephony_core_service/services/multisim/test/systemtest/stubs/include/compile_declarations.h
+--- a/telephony_core_service/services/multisim/test/systemtest/stubs/include/compile_declarations.h
++++ b/telephony_core_service/services/multisim/test/systemtest/stubs/include/compile_declarations.h
+@@ -61,6 +61,7 @@
+     explicit operator bool() const { return task_ != nullptr; }
+ private:
+     friend class queue;
++    friend void wait(std::initializer_list<task_handle>);
+     explicit task_handle(std::shared_ptr<HostTask> task) : task_(std::move(task)) {}
+     std::shared_ptr<HostTask> task_;
+ };
+@@ -79,8 +80,11 @@
+     std::thread worker_;
+ };
+ void submit(std::function<void()> task);
++task_handle submit_h(std::function<void()> task);
++void wait(std::initializer_list<task_handle> tasks);
+ void wait();
+ namespace this_task {
++uint64_t get_id();
+ template<class Rep, class Period> void sleep_for(std::chrono::duration<Rep, Period> delay)
+ {
+     std::this_thread::sleep_for(delay);
+diff --git a/telephony_core_service/services/multisim/test/systemtest/tools/host.py b/telephony_core_service/services/multisim/test/systemtest/tools/host.py
+--- a/telephony_core_service/services/multisim/test/systemtest/tools/host.py
++++ b/telephony_core_service/services/multisim/test/systemtest/tools/host.py
+@@ -97,7 +97,7 @@
+     production = (args.production_root or CORE).resolve()
+     if not (production / 'services/sim/src/sim_manager.cpp').is_file():
+         raise RuntimeError('Missing production source root: ' + str(production))
+-    values = [('gtest_root', str(root)), ('production_root', str(production)), ('host_debug', True),
++    values = [('gtest_root', str(root)), ('production_root', str(production)), ('host_debug', True), ('host_sanitizer', args.sanitizer),
+               ('openssl_root', str(Path(openssl).resolve()) if openssl else ''),
+               ('sim028_runtime_root', str(Path(runtime).resolve()) if runtime else '')]
+     gnargs = ' '.join(f'{key}={json.dumps(value)}' for key, value in values)
+@@ -221,6 +221,7 @@
+     parser.add_argument('--runtime-root')
+     parser.add_argument('--with-real-primary', action='store_true')
+     parser.add_argument('--jobs', default='4')
++    parser.add_argument('--sanitizer', choices=['', 'address', 'thread'], default='')
+     parser.add_argument('--target', choices=TARGETS + [REAL_TARGET], default=TARGETS[0])
+     parser.add_argument('--filter', default='*')
+     args = parser.parse_args()

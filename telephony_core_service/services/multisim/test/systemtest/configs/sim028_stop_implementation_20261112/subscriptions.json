@@ -1,0 +1,441 @@
+{
+  "historical_relations": 16,
+  "additional_relations": 1,
+  "rows": [
+    {
+      "id": "state-monitor",
+      "owner": "SimStateHandle ObserverHandler",
+      "subscriber": "MultiSimMonitor",
+      "source_pairing": "PASS",
+      "host_execution": "PASS",
+      "native_execution": "NOT_RUN",
+      "registration": {
+        "path": "services/sim/src/multi_sim_monitor.cpp",
+        "needle": "RegisterCoreNotify(shared_from_this(), RadioEvent::RADIO_SIM_STATE_",
+        "lines": [
+          870,
+          871,
+          872,
+          890,
+          891,
+          892
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/multi_sim_monitor.cpp",
+        "needle": "UnRegisterCoreNotify(shared_from_this(), RadioEvent::RADIO_SIM_STATE_",
+        "lines": [
+          890,
+          891,
+          892
+        ]
+      }
+    },
+    {
+      "id": "iccid-monitor",
+      "owner": "IccFile filesFetchedObser",
+      "subscriber": "MultiSimMonitor",
+      "source_pairing": "PASS",
+      "host_execution": "PASS",
+      "native_execution": "NOT_RUN",
+      "registration": {
+        "path": "services/sim/src/multi_sim_monitor.cpp",
+        "needle": "RegisterCoreNotify(shared_from_this(), RadioEvent::RADIO_QUERY_ICCID_DONE)",
+        "lines": [
+          865,
+          885
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/multi_sim_monitor.cpp",
+        "needle": "UnRegisterCoreNotify(shared_from_this(), RadioEvent::RADIO_QUERY_ICCID_DONE)",
+        "lines": [
+          885
+        ]
+      }
+    },
+    {
+      "id": "state-records",
+      "owner": "SimStateHandle ObserverHandler",
+      "subscriber": "IccFile",
+      "source_pairing": "PASS",
+      "host_execution": "PASS",
+      "native_execution": "NOT_RUN",
+      "registration": {
+        "path": "services/sim/src/icc_file.cpp",
+        "needle": "stateManager_->RegisterCoreNotify(shared_from_this()",
+        "lines": [
+          87,
+          88,
+          89
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/icc_file.cpp",
+        "needle": "stateManager_->UnRegisterCoreNotify(shared_from_this()",
+        "lines": [
+          854,
+          855,
+          856
+        ]
+      }
+    },
+    {
+      "id": "state-file",
+      "owner": "SimStateHandle ObserverHandler",
+      "subscriber": "SimFileManager",
+      "source_pairing": "PASS",
+      "host_execution": "PASS",
+      "native_execution": "NOT_RUN",
+      "registration": {
+        "path": "services/sim/src/sim_file_manager.cpp",
+        "needle": "simStateManager->RegisterCoreNotify(shared_from_this()",
+        "lines": [
+          105,
+          106
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/sim_file_manager.cpp",
+        "needle": "UnRegisterCoreNotify(shared_from_this()",
+        "lines": [
+          1041,
+          1042,
+          1049
+        ]
+      }
+    },
+    {
+      "id": "records-file",
+      "owner": "IccFile filesFetchedObser",
+      "subscriber": "SimFileManager",
+      "source_pairing": "PASS",
+      "host_execution": "PASS",
+      "native_execution": "NOT_RUN",
+      "registration": {
+        "path": "services/sim/src/sim_file_manager.cpp",
+        "needle": "simFile_->RegisterCoreNotify(shared_from_this(), RadioEvent::RADIO_SIM_RECORDS_LOADED)",
+        "lines": [
+          133
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/icc_file.cpp",
+        "needle": "UnregisterAllFilesLoaded(handler)",
+        "lines": [
+          553
+        ]
+      }
+    },
+    {
+      "id": "state-phonebook",
+      "owner": "SimStateHandle ObserverHandler via FileManager",
+      "subscriber": "IccDiallingNumbersManager",
+      "source_pairing": "PASS",
+      "host_execution": "PASS",
+      "native_execution": "NOT_RUN",
+      "registration": {
+        "path": "services/sim/src/icc_dialling_numbers_manager.cpp",
+        "needle": "simFileManager->RegisterCoreNotify(shared_from_this(), RadioEvent::RADIO_SIM_STATE_CHANGE)",
+        "lines": [
+          54
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/icc_dialling_numbers_manager.cpp",
+        "needle": "UnRegisterCoreNotify(shared_from_this()",
+        "lines": [
+          436
+        ]
+      }
+    },
+    {
+      "id": "account-observer",
+      "owner": "MultiSimMonitor ObserverHandler",
+      "subscriber": "external account observer",
+      "source_pairing": "PASS",
+      "host_execution": "PASS",
+      "native_execution": "NOT_RUN",
+      "registration": {
+        "path": "services/sim/src/sim_manager.cpp",
+        "needle": "what == RadioEvent::RADIO_SIM_ACCOUNT_LOADED",
+        "lines": [
+          1296,
+          1330
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/multi_sim_monitor.cpp",
+        "needle": "observerHandler_->RemoveAll()",
+        "lines": [
+          918
+        ]
+      }
+    },
+    {
+      "id": "ril-state",
+      "owner": "RIL external ObserverHandler",
+      "subscriber": "SimStateHandle",
+      "source_pairing": "PASS",
+      "host_execution": "PASS",
+      "native_execution": "NOT_RUN",
+      "registration": {
+        "path": "services/sim/src/sim_state_handle.cpp",
+        "needle": "telRilManager->RegisterCoreNotify(slotId_",
+        "lines": [
+          140,
+          141
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/sim_state_handle.cpp",
+        "needle": "telRilManager->UnRegisterCoreNotify(slotId_",
+        "lines": [
+          491,
+          492
+        ]
+      }
+    },
+    {
+      "id": "ril-file",
+      "owner": "RIL external ObserverHandler",
+      "subscriber": "SimFileManager",
+      "source_pairing": "PASS",
+      "host_execution": "PASS",
+      "native_execution": "NOT_RUN",
+      "registration": {
+        "path": "services/sim/src/sim_file_manager.cpp",
+        "needle": "telRilManager->RegisterCoreNotify(slotId, shared_from_this()",
+        "lines": [
+          107,
+          108
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/sim_file_manager.cpp",
+        "needle": "UnRegisterCoreNotify(",
+        "lines": [
+          559,
+          563,
+          570,
+          1041,
+          1042,
+          1045,
+          1046,
+          1049
+        ]
+      }
+    },
+    {
+      "id": "ril-radio",
+      "owner": "RIL external ObserverHandler",
+      "subscriber": "RadioProtocolController",
+      "source_pairing": "PASS",
+      "host_execution": "PASS",
+      "native_execution": "NOT_RUN",
+      "registration": {
+        "path": "services/sim/src/radio_protocol_controller.cpp",
+        "needle": "RegisterCoreNotify(i, shared_from_this()",
+        "lines": [
+          55,
+          445
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/radio_protocol_controller.cpp",
+        "needle": "UnRegisterCoreNotify(i, shared_from_this()",
+        "lines": [
+          445
+        ]
+      }
+    },
+    {
+      "id": "stk",
+      "owner": "State/RIL observers",
+      "subscriber": "StkController",
+      "source_pairing": "PASS",
+      "host_execution": "PASS",
+      "native_execution": "NOT_RUN",
+      "registration": {
+        "path": "services/sim/src/stk_controller.cpp",
+        "needle": "RegisterCoreNotify(slotId_, shared_from_this()",
+        "lines": [
+          245,
+          246,
+          247,
+          248,
+          249,
+          250,
+          251,
+          267,
+          268,
+          269,
+          270,
+          271,
+          272,
+          273
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/stk_controller.cpp",
+        "needle": "UnRegisterCoreNotify(slotId_, shared_from_this()",
+        "lines": [
+          267,
+          268,
+          269,
+          270,
+          271,
+          272,
+          273
+        ]
+      }
+    },
+    {
+      "id": "tracker",
+      "owner": "IccFile observers",
+      "subscriber": "SimStateTracker",
+      "source_pairing": "PASS",
+      "host_execution": "PASS",
+      "native_execution": "NOT_RUN",
+      "registration": {
+        "path": "services/sim/src/sim_state_tracker.cpp",
+        "needle": "RegisterCoreNotify(shared_from_this()",
+        "lines": [
+          209,
+          220,
+          231,
+          242,
+          253,
+          264,
+          275,
+          286
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/sim_state_tracker.cpp",
+        "needle": "UnRegisterCoreNotify(shared_from_this()",
+        "lines": [
+          253,
+          264,
+          275,
+          286
+        ]
+      }
+    },
+    {
+      "id": "operator-cache",
+      "owner": "State observer via FileManager",
+      "subscriber": "OperatorConfigCache",
+      "source_pairing": "PASS",
+      "host_execution": "PASS",
+      "native_execution": "NOT_RUN",
+      "registration": {
+        "path": "services/sim/src/operator_config_cache.cpp",
+        "needle": "RegisterCoreNotify(shared_from_this()",
+        "lines": [
+          302,
+          339
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/operator_config_cache.cpp",
+        "needle": "UnRegisterCoreNotify(shared_from_this()",
+        "lines": [
+          339
+        ]
+      },
+      "limitation": "Internal state-change unsubscribe/object release executed. Optional APN retry RemoveTask compiled, APN-ready successful-config branch NOT_RUN."
+    },
+    {
+      "id": "monitor-watch",
+      "owner": "system parameter service (raw context)",
+      "subscriber": "MultiSimMonitor raw this",
+      "source_pairing": "PASS",
+      "host_execution": "PASS",
+      "native_execution": "NOT_RUN",
+      "registration": {
+        "path": "services/sim/src/multi_sim_monitor.cpp",
+        "needle": "WatchParameter(",
+        "lines": [
+          206
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/multi_sim_monitor.cpp",
+        "needle": "RemoveParameterWatcher(",
+        "lines": [
+          224
+        ]
+      }
+    },
+    {
+      "id": "monitor-ces",
+      "owner": "CMI common event registry (weak callbacks inside subscribers)",
+      "subscriber": "MultiSimMonitor subscribers",
+      "source_pairing": "PASS",
+      "host_execution": "BLOCKED",
+      "native_execution": "NOT_RUN",
+      "registration": {
+        "path": "services/sim/src/multi_sim_monitor.cpp",
+        "needle": "RegisterCommonEventCallback(",
+        "lines": [
+          555,
+          568
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/multi_sim_monitor.cpp",
+        "needle": "UnregisterCommonEventCallback(",
+        "lines": [
+          466,
+          467
+        ]
+      },
+      "limitation": "Native service unavailable; registration returns failure / Core common-event hub absent. Static unregister and gates are not native callback-barrier proof."
+    },
+    {
+      "id": "monitor-sa",
+      "owner": "SA service registry (weak callback owner inside listener)",
+      "subscriber": "MultiSimMonitor listener",
+      "source_pairing": "PASS",
+      "host_execution": "BLOCKED",
+      "native_execution": "NOT_RUN",
+      "registration": {
+        "path": "services/sim/src/multi_sim_monitor.cpp",
+        "needle": "SubscribeSystemAbility(",
+        "lines": [
+          474,
+          475,
+          492,
+          493
+        ]
+      },
+      "unregistration": {
+        "path": "services/sim/src/multi_sim_monitor.cpp",
+        "needle": "UnSubscribeSystemAbility(",
+        "lines": [
+          474,
+          475
+        ]
+      },
+      "limitation": "Native service unavailable; registration returns failure / Core common-event hub absent. Static unregister and gates are not native callback-barrier proof."
+    },
+    {
+      "id": "records-satellite-watch",
+      "owner": "parameter service",
+      "subscriber": "SimFile (all three logical slots)",
+      "source_pairing": "PASS",
+      "host_execution": "PASS",
+      "native_execution": "NOT_RUN",
+      "registration": {
+        "path": "services/sim/src/sim_file.cpp",
+        "method": "RegisterParamsListener -> TelParameterWatcher::Register"
+      },
+      "unregistration": {
+        "path": "services/sim/src/sim_file.cpp",
+        "method": "Shutdown / UnRegisterParamsListener -> TelParameterWatcher::Stop"
+      },
+      "proof": "five actual registered callbacks = two Monitor + three SimFile; partial-registration/removal failure, retry, inflight and stale callbacks exercised"
+    }
+  ]
+}

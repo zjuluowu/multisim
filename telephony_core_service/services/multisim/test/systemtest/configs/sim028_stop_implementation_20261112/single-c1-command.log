@@ -1,0 +1,135 @@
++ gn gen /tmp/sim028-stop-impl-7b9ma6mi/build/build --root=/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/multisim/test/systemtest --export-compile-commands --args=gtest_root="/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59" production_root="/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service" host_debug=true host_sanitizer="" openssl_root="/tmp/sim028-deps/openssl" sim028_runtime_root="/tmp/sim028-deps/native"
+Generating compile_commands took 0ms
+Done. Made 24 targets from 3 files in 3ms
++ ninja -C /tmp/sim028-stop-impl-7b9ma6mi/build/build -j 4 sim_guard_legacy sim_guard_pin_memory platform_adapter_test sim_component_test sim_primary_slot_entry_test sim_primary_slot_real_test
+ninja: Entering directory `/tmp/sim028-stop-impl-7b9ma6mi/build/build'
+ninja: no work to do.
++ /tmp/sim028-stop-impl-7b9ma6mi/build/build/sim_primary_slot_real_test --gtest_filter=RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected --gtest_output=xml:/tmp/sim028-stop-impl-7b9ma6mi/build/runs/run-e5q_irom/selected-0.xml
+Note: Google Test filter = RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RealSimPrimary
+[ RUN      ] RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected
+RIL_SUBSCRIBE slot=0 event=515 object=110129605991984 type=N4OHOS9Telephony14SimStateHandleE
+RIL_SUBSCRIBE slot=0 event=0 object=110129605991984 type=N4OHOS9Telephony14SimStateHandleE
+DIAGNOSTIC SIM_STATE_CHANGE
+RIL_SUBSCRIBE slot=0 event=4 object=110129605994464 type=N4OHOS9Telephony14SimFileManagerE
+RIL_SUBSCRIBE slot=0 event=14 object=110129605994464 type=N4OHOS9Telephony14SimFileManagerE
+TRACE parameter telephony.sim.opkey0=-1
+RIL_SUBSCRIBE slot=0 event=536 object=110129606024704 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=0 event=537 object=110129606024704 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=0 event=538 object=110129606024704 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=0 event=539 object=110129606024704 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=0 event=540 object=110129606024704 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=0 event=14 object=110129606024704 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=0 event=0 object=110129606024704 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=1 event=515 object=110129606030352 type=N4OHOS9Telephony14SimStateHandleE
+RIL_SUBSCRIBE slot=1 event=0 object=110129606030352 type=N4OHOS9Telephony14SimStateHandleE
+DIAGNOSTIC SIM_STATE_CHANGE
+RIL_SUBSCRIBE slot=1 event=4 object=110129606032928 type=N4OHOS9Telephony14SimFileManagerE
+RIL_SUBSCRIBE slot=1 event=14 object=110129606032928 type=N4OHOS9Telephony14SimFileManagerE
+TRACE parameter telephony.sim.opkey1=-1
+RIL_SUBSCRIBE slot=1 event=536 object=110129606063808 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=1 event=537 object=110129606063808 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=1 event=538 object=110129606063808 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=1 event=539 object=110129606063808 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=1 event=540 object=110129606063808 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=1 event=14 object=110129606063808 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=1 event=0 object=110129606063808 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=2 event=515 object=110129606069712 type=N4OHOS9Telephony14SimStateHandleE
+RIL_SUBSCRIBE slot=2 event=0 object=110129606069712 type=N4OHOS9Telephony14SimStateHandleE
+DIAGNOSTIC SIM_STATE_CHANGE
+RIL_SUBSCRIBE slot=2 event=4 object=110129606072240 type=N4OHOS9Telephony14SimFileManagerE
+RIL_SUBSCRIBE slot=2 event=14 object=110129606072240 type=N4OHOS9Telephony14SimFileManagerE
+TRACE parameter telephony.sim.opkey2=-1
+RIL_SUBSCRIBE slot=2 event=536 object=110129606103712 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=2 event=537 object=110129606103712 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=2 event=538 object=110129606103712 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=2 event=539 object=110129606103712 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=2 event=540 object=110129606103712 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=2 event=14 object=110129606103712 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=2 event=0 object=110129606103712 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=0 event=525 object=110129606111648 type=N4OHOS9Telephony23RadioProtocolControllerE
+RIL_SUBSCRIBE slot=1 event=525 object=110129606111648 type=N4OHOS9Telephony23RadioProtocolControllerE
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey0=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey1=-1
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+DIAGNOSTIC ACCOUNT_NOTIFY
+DIAGNOSTIC ACCOUNT_NOTIFY
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE parameter telephony.sim.opkey2=-1
+LIFETIME_SAMPLE address=110129605974832 type=N4OHOS9Telephony15SimStateTrackerE
+LIFETIME_SAMPLE address=110129605991072 type=SimStateManager
+LIFETIME_SAMPLE address=110129605991984 type=N4OHOS9Telephony14SimStateHandleE
+LIFETIME_SAMPLE address=110129605994464 type=N4OHOS9Telephony14SimFileManagerE
+LIFETIME_SAMPLE address=110129606000296 type=N4OHOS9Telephony7SimFileE
+LIFETIME_SAMPLE address=110129606009536 type=N10Sim028Host15AccountObserverE
+LIFETIME_SAMPLE address=110129606010592 type=N4OHOS9Telephony19OperatorConfigCacheE
+LIFETIME_SAMPLE address=110129606017440 type=N4OHOS9Telephony25IccDiallingNumbersManagerE
+LIFETIME_SAMPLE address=110129606024704 type=N4OHOS9Telephony13StkControllerE
+LIFETIME_SAMPLE address=110129606029392 type=SimStateManager
+LIFETIME_SAMPLE address=110129606030352 type=N4OHOS9Telephony14SimStateHandleE
+LIFETIME_SAMPLE address=110129606032928 type=N4OHOS9Telephony14SimFileManagerE
+LIFETIME_SAMPLE address=110129606038792 type=N4OHOS9Telephony7SimFileE
+LIFETIME_SAMPLE address=110129606049600 type=N4OHOS9Telephony19OperatorConfigCacheE
+LIFETIME_SAMPLE address=110129606052464 type=N4OHOS9Telephony15SimStateTrackerE
+LIFETIME_SAMPLE address=110129606056816 type=N4OHOS9Telephony25IccDiallingNumbersManagerE
+LIFETIME_SAMPLE address=110129606063808 type=N4OHOS9Telephony13StkControllerE
+LIFETIME_SAMPLE address=110129606068752 type=SimStateManager
+LIFETIME_SAMPLE address=110129606069712 type=N4OHOS9Telephony14SimStateHandleE
+LIFETIME_SAMPLE address=110129606072240 type=N4OHOS9Telephony14SimFileManagerE
+LIFETIME_SAMPLE address=110129606078104 type=N4OHOS9Telephony7SimFileE
+LIFETIME_SAMPLE address=110129606088384 type=N4OHOS9Telephony19OperatorConfigCacheE
+LIFETIME_SAMPLE address=110129606091328 type=N4OHOS9Telephony15SimStateTrackerE
+LIFETIME_SAMPLE address=110129606096720 type=N4OHOS9Telephony25IccDiallingNumbersManagerE
+LIFETIME_SAMPLE address=110129606103712 type=N4OHOS9Telephony13StkControllerE
+LIFETIME_SAMPLE address=110129606111648 type=N4OHOS9Telephony23RadioProtocolControllerE
+LIFETIME_SAMPLE address=110129606114896 type=N4OHOS9Telephony15MultiSimMonitorE
+TRACE input request=C1ThreePhasesWithStaleCheckResponseRejected slot=1 userSet=true
+TRACE parameter persist.telephony.userPreferPrimarySlot=true
+TRACE parameter persist.telephony.MainSlotId=1
+TRACE parameter persist.telephony.MainCard.Iccid=AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=0 user=0
+TRACE radio slot=0 session=1 phase=1 modem=0
+TRACE radio slot=1 session=1 phase=1 modem=1
+TRACE radio slot=0 session=1 phase=2 modem=1
+TRACE radio slot=1 session=1 phase=2 modem=0
+TRACE radio slot=0 session=1 phase=4 modem=1
+TRACE radio slot=1 session=1 phase=4 modem=0
+TRACE notify usual.event.SIM.DEFAULT_MAIN_SUBSCRIPTION_CHANGED slot=1 sim=1 done=0 user=0
+TRACE parameter persist.telephony.MainCellularDataSlotId=1
+TRACE notify usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED slot=-1 sim=1 done=0 user=0
+DIAGNOSTIC SET_DEFAULT_CELLULAR_DATA
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=1 user=0
+DIAGNOSTIC ACCOUNT_NOTIFY
+LIFE_CHECKPOINT stage=before_cleanup manager=0x64298c0b5010 ril=0x64298c0a5960
+LIFE_QUEUE stage=before_cleanup address=110129606009904 name=host-general pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=110129606119616 name=sim028-account-observer pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_CHECKPOINT stage=after_cleanup manager=0 ril=0x64298c0a5960
+[       OK ] RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected (64 ms)
+[----------] 1 test from RealSimPrimary (64 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (64 ms total)
+[  PASSED  ] 1 test.
+[
+  {
+    "name": "selected-0",
+    "exit_code": 0,
+    "status": "PASS",
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "binary_sha256": "88066bb3c257c14db08f86bfe78532926904f57ea85abe452e732d135b07f6a9",
+    "filter": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+    "skipped": 0
+  }
+]
+Evidence: /tmp/sim028-stop-impl-7b9ma6mi/build/runs/run-e5q_irom

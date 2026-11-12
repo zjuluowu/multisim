@@ -1,0 +1,746 @@
+{
+  "scope": "one original real C1 scenario, function hits supplement request/response assertions and LLDB call stack; not a whole-component proof",
+  "functions": [
+    {
+      "name": "OHOS::Telephony::CoreServiceSim::SetPrimarySlotId(int)",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/core/src/core_service_sim.cpp",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::SimManager::SetPrimarySlotId(int, bool)",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/sim_manager.cpp",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::SimManager::UnRegisterCoreNotify(int, std::shared_ptr<OHOS::AppExecFwk::EventHandler> const&, int)",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/sim_manager.cpp",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/telephony_ext_wrapper/include/telephony_ext_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/telephony_ext_wrapper/include/telephony_ext_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::SimManager::IsSetPrimarySlotIdInProgress()",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/sim_manager.cpp",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::SimManager::Stop()",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/sim_manager.cpp"
+      ]
+    },
+    {
+      "name": "sim_manager.cpp:OHOS::Telephony::SimManager::Stop()::Finish::~Finish()",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/sim_manager.cpp"
+      ]
+    },
+    {
+      "name": "sim_manager.cpp:OHOS::Telephony::SimManager::Stop()::$_0::operator()() const",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/sim_manager.cpp"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::IccDiallingNumbersCache::Shutdown()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/icc_dialling_numbers_cache.cpp"
+      ]
+    },
+    {
+      "name": "icc_dialling_numbers_cache.cpp:bool OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::IccDiallingNumbersCache::Shutdown()::$_0>(OHOS::Telephony::IccDiallingNumbersCache::Shutdown()::$_0)",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "icc_dialling_numbers_cache.cpp:OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::IccDiallingNumbersCache::Shutdown()::$_0>(OHOS::Telephony::IccDiallingNumbersCache::Shutdown()::$_0)::{lambda()#1}::operator()() const",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "icc_dialling_numbers_cache.cpp:OHOS::Telephony::IccDiallingNumbersCache::Shutdown()::$_0::operator()() const",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/icc_dialling_numbers_cache.cpp"
+      ]
+    },
+    {
+      "name": "icc_dialling_numbers_cache.cpp:OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::IccDiallingNumbersCache::Shutdown()::$_0>(OHOS::Telephony::IccDiallingNumbersCache::Shutdown()::$_0)::Completion::~Completion()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::IccDiallingNumbersManager::Shutdown()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/icc_dialling_numbers_manager.cpp"
+      ]
+    },
+    {
+      "name": "icc_dialling_numbers_manager.cpp:bool OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::IccDiallingNumbersManager::Shutdown()::$_0>(OHOS::Telephony::IccDiallingNumbersManager::Shutdown()::$_0)",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "icc_dialling_numbers_manager.cpp:OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::IccDiallingNumbersManager::Shutdown()::$_0>(OHOS::Telephony::IccDiallingNumbersManager::Shutdown()::$_0)::{lambda()#1}::operator()() const",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "icc_dialling_numbers_manager.cpp:OHOS::Telephony::IccDiallingNumbersManager::Shutdown()::$_0::operator()() const",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/icc_dialling_numbers_manager.cpp"
+      ]
+    },
+    {
+      "name": "icc_dialling_numbers_manager.cpp:OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::IccDiallingNumbersManager::Shutdown()::$_0>(OHOS::Telephony::IccDiallingNumbersManager::Shutdown()::$_0)::Completion::~Completion()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::IccFile::UnRegisterCoreNotify(std::shared_ptr<OHOS::AppExecFwk::EventHandler> const&, int)",
+      "count": 18,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/icc_file.cpp",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::IccFile::Shutdown()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/icc_file.cpp"
+      ]
+    },
+    {
+      "name": "icc_file.cpp:bool OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::IccFile::Shutdown()::$_0>(OHOS::Telephony::IccFile::Shutdown()::$_0)",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "icc_file.cpp:OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::IccFile::Shutdown()::$_0>(OHOS::Telephony::IccFile::Shutdown()::$_0)::{lambda()#1}::operator()() const",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "icc_file.cpp:OHOS::Telephony::IccFile::Shutdown()::$_0::operator()() const",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/icc_file.cpp"
+      ]
+    },
+    {
+      "name": "icc_file.cpp:OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::IccFile::Shutdown()::$_0>(OHOS::Telephony::IccFile::Shutdown()::$_0)::Completion::~Completion()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::MultiSimMonitor::UnRegisterSimNotify()",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/multi_sim_monitor.cpp",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/multi_sim_monitor.cpp",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/multi_sim_monitor.cpp"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::MultiSimMonitor::Shutdown()",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/multi_sim_monitor.cpp"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::MultiSimController::IsSetPrimarySlotIdInProgress()",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/include/multi_sim_controller.h"
+      ]
+    },
+    {
+      "name": "multi_sim_monitor.cpp:bool OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::MultiSimMonitor::Shutdown()::$_0>(OHOS::Telephony::MultiSimMonitor::Shutdown()::$_0)",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "multi_sim_monitor.cpp:OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::MultiSimMonitor::Shutdown()::$_0>(OHOS::Telephony::MultiSimMonitor::Shutdown()::$_0)::{lambda()#1}::operator()() const",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "multi_sim_monitor.cpp:OHOS::Telephony::MultiSimMonitor::Shutdown()::$_0::operator()() const",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/multi_sim_monitor.cpp"
+      ]
+    },
+    {
+      "name": "multi_sim_monitor.cpp:OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::MultiSimMonitor::Shutdown()::$_0>(OHOS::Telephony::MultiSimMonitor::Shutdown()::$_0)::Completion::~Completion()",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::OperatorConfigCache::UnRegisterForIccChange()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/operator_config_cache.cpp",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::OperatorConfigCache::Shutdown()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/operator_config_cache.cpp"
+      ]
+    },
+    {
+      "name": "operator_config_cache.cpp:bool OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::OperatorConfigCache::Shutdown()::$_0>(OHOS::Telephony::OperatorConfigCache::Shutdown()::$_0)",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "operator_config_cache.cpp:OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::OperatorConfigCache::Shutdown()::$_0>(OHOS::Telephony::OperatorConfigCache::Shutdown()::$_0)::{lambda()#1}::operator()() const",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "operator_config_cache.cpp:OHOS::Telephony::OperatorConfigCache::Shutdown()::$_0::operator()() const",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/operator_config_cache.cpp"
+      ]
+    },
+    {
+      "name": "operator_config_cache.cpp:OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::OperatorConfigCache::Shutdown()::$_0>(OHOS::Telephony::OperatorConfigCache::Shutdown()::$_0)::Completion::~Completion()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::RadioProtocolController::SetRadioProtocol(int)",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/radio_protocol_controller.cpp",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::RadioProtocolController::ProcessSetRadioProtocolComplete(std::unique_ptr<OHOS::AppExecFwk::InnerEvent, void (*)(OHOS::AppExecFwk::InnerEvent*)> const&)",
+      "count": 2,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/radio_protocol_controller.cpp",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::RadioProtocolController::UnRegisterEvents()",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/radio_protocol_controller.cpp",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::SimAccountManager::Shutdown()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/sim_account_manager.cpp"
+      ]
+    },
+    {
+      "name": "sim_account_manager.cpp:bool OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::SimAccountManager::Shutdown()::$_0>(OHOS::Telephony::SimAccountManager::Shutdown()::$_0)",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "sim_account_manager.cpp:OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::SimAccountManager::Shutdown()::$_0>(OHOS::Telephony::SimAccountManager::Shutdown()::$_0)::{lambda()#1}::operator()() const",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "sim_account_manager.cpp:OHOS::Telephony::SimAccountManager::Shutdown()::$_0::operator()() const",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/sim_account_manager.cpp"
+      ]
+    },
+    {
+      "name": "sim_account_manager.cpp:OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::SimAccountManager::Shutdown()::$_0>(OHOS::Telephony::SimAccountManager::Shutdown()::$_0)::Completion::~Completion()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::SimFile::UnRegisterParamsListener()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/sim_file.cpp"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::SimFile::Shutdown()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/sim_file.cpp"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::SimFileManager::UnRegisterCoreNotify(std::shared_ptr<OHOS::AppExecFwk::EventHandler> const&, int)",
+      "count": 21,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/sim_file_manager.cpp",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::SimFileManager::Shutdown()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/sim_file_manager.cpp"
+      ]
+    },
+    {
+      "name": "sim_file_manager.cpp:bool OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::SimFileManager::Shutdown()::$_0>(OHOS::Telephony::SimFileManager::Shutdown()::$_0)",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "sim_file_manager.cpp:OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::SimFileManager::Shutdown()::$_0>(OHOS::Telephony::SimFileManager::Shutdown()::$_0)::{lambda()#1}::operator()() const",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "sim_file_manager.cpp:OHOS::Telephony::SimFileManager::Shutdown()::$_0::operator()() const",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/sim_file_manager.cpp"
+      ]
+    },
+    {
+      "name": "sim_file_manager.cpp:OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::SimFileManager::Shutdown()::$_0>(OHOS::Telephony::SimFileManager::Shutdown()::$_0)::Completion::~Completion()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::SimSmsManager::Shutdown()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/sim_sms_manager.cpp"
+      ]
+    },
+    {
+      "name": "sim_sms_manager.cpp:bool OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::SimSmsManager::Shutdown()::$_0>(OHOS::Telephony::SimSmsManager::Shutdown()::$_0)",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "sim_sms_manager.cpp:OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::SimSmsManager::Shutdown()::$_0>(OHOS::Telephony::SimSmsManager::Shutdown()::$_0)::{lambda()#1}::operator()() const",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "sim_sms_manager.cpp:OHOS::Telephony::SimSmsManager::Shutdown()::$_0::operator()() const",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/sim_sms_manager.cpp"
+      ]
+    },
+    {
+      "name": "sim_sms_manager.cpp:OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::SimSmsManager::Shutdown()::$_0>(OHOS::Telephony::SimSmsManager::Shutdown()::$_0)::Completion::~Completion()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::SimStateHandle::UnRegisterCoreNotify(std::shared_ptr<OHOS::AppExecFwk::EventHandler> const&, int)",
+      "count": 33,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/sim_state_handle.cpp",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::SimStateHandle::Shutdown()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/sim_state_handle.cpp"
+      ]
+    },
+    {
+      "name": "sim_state_handle.cpp:bool OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::SimStateHandle::Shutdown()::$_0>(OHOS::Telephony::SimStateHandle::Shutdown()::$_0)",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "sim_state_handle.cpp:OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::SimStateHandle::Shutdown()::$_0>(OHOS::Telephony::SimStateHandle::Shutdown()::$_0)::{lambda()#1}::operator()() const",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "sim_state_handle.cpp:OHOS::Telephony::SimStateHandle::Shutdown()::$_0::operator()() const",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/sim_state_handle.cpp"
+      ]
+    },
+    {
+      "name": "sim_state_handle.cpp:OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::SimStateHandle::Shutdown()::$_0>(OHOS::Telephony::SimStateHandle::Shutdown()::$_0)::Completion::~Completion()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::SimStateManager::UnRegisterCoreNotify(std::shared_ptr<OHOS::AppExecFwk::EventHandler> const&, int)",
+      "count": 33,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/sim_state_manager.cpp",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::SimStateManager::Shutdown()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/sim_state_manager.cpp"
+      ]
+    },
+    {
+      "name": "sim_state_manager.cpp:bool OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::SimStateManager::Shutdown()::$_0>(OHOS::Telephony::SimStateManager::Shutdown()::$_0)",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "sim_state_manager.cpp:OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::SimStateManager::Shutdown()::$_0>(OHOS::Telephony::SimStateManager::Shutdown()::$_0)::{lambda()#1}::operator()() const",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "sim_state_manager.cpp:OHOS::Telephony::SimStateManager::Shutdown()::$_0::operator()() const",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/sim_state_manager.cpp"
+      ]
+    },
+    {
+      "name": "sim_state_manager.cpp:OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::SimStateManager::Shutdown()::$_0>(OHOS::Telephony::SimStateManager::Shutdown()::$_0)::Completion::~Completion()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::SimStateTracker::UnRegisterForIccLoaded()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/sim_state_tracker.cpp",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::SimStateTracker::UnRegisterOpkeyLoaded()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/sim_state_tracker.cpp",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::SimStateTracker::UnRegisterOperatorConfigUpdate()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/sim_state_tracker.cpp",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::StkController::UnRegisterEvents()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/stk_controller.cpp",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::StkManager::Shutdown()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/stk_manager.cpp"
+      ]
+    },
+    {
+      "name": "stk_manager.cpp:bool OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::StkManager::Shutdown()::$_0>(OHOS::Telephony::StkManager::Shutdown()::$_0)",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "stk_manager.cpp:OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::StkManager::Shutdown()::$_0>(OHOS::Telephony::StkManager::Shutdown()::$_0)::{lambda()#1}::operator()() const",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "stk_manager.cpp:OHOS::Telephony::StkManager::Shutdown()::$_0::operator()() const",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/stk_manager.cpp"
+      ]
+    },
+    {
+      "name": "stk_manager.cpp:OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::StkManager::Shutdown()::$_0>(OHOS::Telephony::StkManager::Shutdown()::$_0)::Completion::~Completion()",
+      "count": 3,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::MultiSimController::SetPrimarySlotIdDone(bool)",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/multi_sim_controller.cpp"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::MultiSimController::IsSetPrimarySlotIdAllowed()",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/multi_sim_controller.cpp",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/telephony_ext_wrapper/include/telephony_ext_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/telephony_ext_wrapper/include/telephony_ext_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/telephony_ext_wrapper/include/telephony_ext_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/telephony_ext_wrapper/include/telephony_ext_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/interfaces/innerkits/include/telephony_types.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/interfaces/innerkits/include/telephony_types.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::MultiSimController::SetPrimarySlotId(int, bool)",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/multi_sim_controller.cpp",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::MultiSimController::SavePrimaryCardInfo(int)",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/multi_sim_controller.cpp",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::MultiSimController::ResetSetPrimarySlotRemain(int)",
+      "count": 2,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/multi_sim_controller.cpp",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/interfaces/innerkits/include/telephony_types.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::MultiSimController::IsSetPrimarySlotReady(int)",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/multi_sim_controller.cpp",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/interfaces/innerkits/include/telephony_types.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/interfaces/innerkits/include/telephony_types.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h",
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::MultiSimController::Shutdown()",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/multi_sim_controller.cpp"
+      ]
+    },
+    {
+      "name": "multi_sim_controller.cpp:bool OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::MultiSimController::Shutdown()::$_0>(OHOS::Telephony::MultiSimController::Shutdown()::$_0)",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "multi_sim_controller.cpp:OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::MultiSimController::Shutdown()::$_0>(OHOS::Telephony::MultiSimController::Shutdown()::$_0)::{lambda()#1}::operator()() const",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "multi_sim_controller.cpp:OHOS::Telephony::MultiSimController::Shutdown()::$_0::operator()() const",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/services/sim/src/multi_sim_controller.cpp"
+      ]
+    },
+    {
+      "name": "multi_sim_controller.cpp:OHOS::Telephony::TelStopOnce::Run<OHOS::Telephony::MultiSimController::Shutdown()::$_0>(OHOS::Telephony::MultiSimController::Shutdown()::$_0)::Completion::~Completion()",
+      "count": 1,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/include/tel_lifecycle.h"
+      ]
+    },
+    {
+      "name": "OHOS::Telephony::TelEventQueue::RemoveAllEvents()",
+      "count": 79,
+      "files": [
+        "/tmp/sim028-stop-impl-7b9ma6mi/repo/telephony_core_service/utils/common/src/tel_event_queue.cpp"
+      ]
+    }
+  ]
+}

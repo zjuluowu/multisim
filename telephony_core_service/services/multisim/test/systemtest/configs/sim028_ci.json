@@ -1,0 +1,401 @@
+{
+  "schema_version": 1,
+  "targets": {
+    "sim_component_test": [
+      "SimComponent.CapacityReadOnly"
+    ],
+    "sim_guard_legacy": [
+      "ContractDriver.PIN_001",
+      "ContractDriver.PIN_002_CommandFailure",
+      "ContractDriver.DUAL_001",
+      "ContractDriver.RIL_001_DuplicateAndError",
+      "SessionLifecycle.INIT_001_SingleEnumeration",
+      "SessionLifecycle.INIT_002_MissingRilThenRecreate",
+      "SessionLifecycle.INIT_DUAL_002_ReversedEnumeration",
+      "SessionLifecycle.CALLBACK_002_MalformedThenRecovery",
+      "SessionLifecycle.CALLBACK_003_DroppedThenRecovery",
+      "SessionLifecycle.PUK_002_WrongThenSuccessfulUnlock",
+      "SessionLifecycle.REFRESH_001_ExplicitStatusQuery",
+      "SessionLifecycle.RECREATE_001_DualCardReenumeration",
+      "SessionLifecycle.RECREATE_002_ReplacementWhileStopped",
+      "SessionLifecycle.DUAL_002_PinWhileOtherCardRemoved",
+      "Compatibility/Lifecycle.PublicCardState/LIFE_001",
+      "Compatibility/Lifecycle.PublicCardState/LIFE_002",
+      "Compatibility/Lifecycle.PublicCardState/PUK_001",
+      "ContractDriver.DEFECT_001_StaleReadyAfterRemoval",
+      "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+      "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+      "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+      "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict"
+    ],
+    "platform_adapter_test": [
+      "EventAdapter.SharedTypeSafety",
+      "EventAdapter.UniqueOwnership",
+      "EventAdapter.WeakLifetimeAndMetadata",
+      "ProductionEventTransport.DeliversFormalEnvelope",
+      "ProductionEventTransport.CancelsPendingAndReapsWorker",
+      "SchedulerBoundary.RunningTaskCannotBeCancelled",
+      "SchedulerBoundary.ProductionGeneralTaskWaitsAndCleansUp",
+      "SchedulerBoundary.IdleWaitDrainsCascadedQueues",
+      "SchedulerBoundary.IdleWaitDoesNotIgnoreDelayedOrRunningWork",
+      "SchedulerBoundary.IdleWaitExposesTaskFailure",
+      "ExternalData.EmptyCursorIsNotQueryFailure",
+      "ExternalData.ExplicitQueryResponses",
+      "ExternalData.OriginalBucketKeepsFirstPut",
+      "ExternalEvents.PublishPreservesEnvelopeAndFailure",
+      "ExternalEvents.MissingProviderAndScopeCleanup",
+      "NativePointerSubset.SharedOwnership",
+      "NativePointerSubset.WeakIdentityAndPromotion",
+      "NativePointerSubset.LocalCastRequiresImplementedInterface",
+      "RilAdapter.FormalStatusResponse"
+    ],
+    "sim_guard_pin_memory": [
+      "PinMemoryContract.PinSuccessUsesOriginalSlotIdentityAndCredential",
+      "PinMemoryContract.PukSuccessUsesNewPinAndPinAlterOperation",
+      "PinMemoryContract.FailedPinDoesNotPublishMemoryHook",
+      "PinMemoryContract.RemovalUsesAbsentResponseIdentityWithoutCredential"
+    ],
+    "sim_primary_slot_entry_test": [
+      "PrimaryEntry.NonSystemCallerPrecedesPermissionAndNullManager",
+      "PrimaryEntry.PermissionDenialPrecedesNullManager",
+      "PrimaryEntry.NullManagerPrecedesCapabilityRecheck",
+      "PrimaryEntry.ChangedExternalSystemAppDecisionRejectsExtendedSlot",
+      "PrimaryEntry.MissingCardStopsBeforeActiveAndPreference",
+      "PrimaryEntry.InactiveCardStopsBeforePreferenceAndSwitch",
+      "PrimaryEntry.ReadyCardWritesPreferenceBeforeDelegatingExactTarget",
+      "PrimaryEntry.ManagerFailureReturnedUnchangedAfterPreferenceWrite",
+      "PrimaryEntry.FailedPreferenceWriteStillDelegatesCurrentBehavior",
+      "PrimaryEntry.PresenceQueryFailureWithFalseOutputReturnsNoCard",
+      "PrimaryEntry.PresenceQueryFailureWithTrueOutputStillDelegates",
+      "PrimaryEntry.StableSystemAppPassesExtendedSlotCapability",
+      "CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/0",
+      "CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/1"
+    ],
+    "sim_primary_slot_real_test": [
+      "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+      "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+      "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+      "RunnerLifetime.NormalCompletionAndRepeatedStop",
+      "RunnerLifetime.PendingTaskCancelledAndCapturedOwnerReleased",
+      "RunnerLifetime.InFlightStopJoinsAndRejectsCallbackRepost",
+      "RunnerLifetime.ConcurrentStopIsIdempotent",
+      "RunnerLifetime.CallbackCannotSynchronouslyJoinItself",
+      "RealCardLifetime.MissingRilInitializationReleasesState",
+      "RealCardLifetime.InitializedStateUnregistersRilAndReleases",
+      "RealCardLifetime.PublicDetachReleasesRealStateFileAndRil",
+      "PairingReview.AllThreeSlotsPublicDetach",
+      "PairingReview.PartialInitializationAndRepeatedUnregister",
+      "PairingReview.DestroyThenReinitializeCardGraph",
+      "PairingReview.UnrelatedRuntimeWorkerIsBaseline",
+      "ShutdownContract.ANormalPrimaryThenStop",
+      "ShutdownContract.BThreeSlotsThenStop",
+      "ShutdownContract.CPartialInitializationThenStop",
+      "ShutdownContract.DRepeatedStop",
+      "ShutdownContract.EInFlightSuccessCompletesBeforeRelease",
+      "ShutdownContract.FErrorReplyDuringStoppingKeepsOriginalResult",
+      "ShutdownContract.GDelayedDispatchAfterStop",
+      "ShutdownContract.HDestroyAndCreateNewGraph",
+      "ShutdownExtra.WatcherLateCallbackAfterOwnerDestruction",
+      "ShutdownExtra.PartialWatcherRegistration",
+      "ShutdownExtra.FailedWatcherRemovalKeepsStoppingAndRetries",
+      "ShutdownExtra.ObserverReleaseOutsideLockAllowsReentrantDestruction",
+      "ShutdownExtra.C1StopAtCheck",
+      "ShutdownExtra.C1StopAtUpdate",
+      "ShutdownExtra.C1StopAtComplete",
+      "ShutdownExtra.WatcherInFlightIsDrainedAndSelfStopIsRejected",
+      "ShutdownExtra.OwnedTaskClosureDestructionIsPartOfStopBarrier",
+      "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+      "RealSimPrimary.C0CoreToRealManagerAndController",
+      "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+      "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary"
+    ]
+  },
+  "known_failures": {
+    "ContractDriver.DEFECT_001_StaleReadyAfterRemoval": {
+      "status": "FAIL",
+      "failure_messages": [
+        "telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:22\nExpected equality of these values:\n  actual.present\n    Which is: true\n  state != State::Absent\n    Which is: false\n",
+        "telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: ABSENT\n",
+        "telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:24\nExpected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <00-00 00-00>\n"
+      ]
+    },
+    "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard": {
+      "status": "FAIL",
+      "failure_messages": [
+        "telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: LOCKED\n",
+        "telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:24\nExpected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <01-00 00-00>\n"
+      ]
+    },
+    "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword": {
+      "status": "FAIL",
+      "failure_messages": [
+        "telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:157\nExpected: (actual.error) != (0), actual: 0 vs 0\n",
+        "telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:157\nExpected equality of these values:\n  actual.result\n    Which is: 4-byte object <01-00 00-00>\n  Unlock::Failure\n    Which is: 4-byte object <02-00 00-00>\n"
+      ]
+    },
+    "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard": {
+      "status": "FAIL",
+      "failure_messages": [
+        "telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: NOT_READY\n  state\n    Which is: LOCKED\n"
+      ]
+    },
+    "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict": {
+      "status": "FAIL",
+      "failure_messages": [
+        "telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:176\nExpected equality of these values:\n  RefreshToLocked()\n    Which is: 2\n  0\ncore_service_client.h RefreshSimState @return contract\n"
+      ]
+    }
+  },
+  "expected_original_cases": 96,
+  "real_target": "sim_primary_slot_real_test",
+  "lifecycle_suites": [
+    "RunnerLifetime",
+    "RealCardLifetime",
+    "PairingReview",
+    "ShutdownContract",
+    "ShutdownExtra",
+    "ConcurrencyRegression"
+  ],
+  "note": "Known cases remain FAIL in raw JSON/JUnit; CI admission passes only exact expected signatures. New, missing, duplicate, skipped, crashed or changed cases fail admission.",
+  "required_properties": {
+    "SimComponent.CapacityReadOnly": {
+      "case_id": "SIM-COMP-001",
+      "oracle_id": "O-C11"
+    },
+    "EventAdapter.SharedTypeSafety": {
+      "case_id": "INFRA-EVENT-001",
+      "oracle_id": "EVT-TYPE"
+    },
+    "EventAdapter.UniqueOwnership": {
+      "case_id": "INFRA-EVENT-002",
+      "oracle_id": "EVT-OWNERSHIP"
+    },
+    "EventAdapter.WeakLifetimeAndMetadata": {
+      "case_id": "INFRA-EVENT-003",
+      "oracle_id": "EVT-LIFETIME"
+    },
+    "ProductionEventTransport.DeliversFormalEnvelope": {
+      "case_id": "INFRA-EVENT-004",
+      "oracle_id": "EVT-PRODUCTION"
+    },
+    "ProductionEventTransport.CancelsPendingAndReapsWorker": {
+      "case_id": "INFRA-EVENT-005",
+      "oracle_id": "EVT-CANCEL"
+    },
+    "SchedulerBoundary.RunningTaskCannotBeCancelled": {
+      "case_id": "INFRA-FFRT-001",
+      "oracle_id": "FFRT-CANCEL-RUNNING"
+    },
+    "SchedulerBoundary.ProductionGeneralTaskWaitsAndCleansUp": {
+      "case_id": "INFRA-FFRT-002",
+      "oracle_id": "FFRT-GENERAL"
+    },
+    "SchedulerBoundary.IdleWaitDrainsCascadedQueues": {
+      "case_id": "INFRA-FFRT-003",
+      "oracle_id": "FFRT-IDLE-CASCADE"
+    },
+    "SchedulerBoundary.IdleWaitDoesNotIgnoreDelayedOrRunningWork": {
+      "case_id": "INFRA-FFRT-004",
+      "oracle_id": "FFRT-IDLE-BOUNDED"
+    },
+    "SchedulerBoundary.IdleWaitExposesTaskFailure": {
+      "case_id": "INFRA-FFRT-005",
+      "oracle_id": "FFRT-IDLE-FAILURE"
+    },
+    "ExternalData.EmptyCursorIsNotQueryFailure": {
+      "case_id": "INFRA-DATA-001",
+      "oracle_id": "DS-CURSOR"
+    },
+    "ExternalData.ExplicitQueryResponses": {
+      "case_id": "INFRA-DATA-002",
+      "oracle_id": "DS-QUERY"
+    },
+    "ExternalData.OriginalBucketKeepsFirstPut": {
+      "case_id": "INFRA-DATA-003",
+      "oracle_id": "DS-VALUES"
+    },
+    "ExternalEvents.PublishPreservesEnvelopeAndFailure": {
+      "case_id": "INFRA-CES-001",
+      "oracle_id": "CES-PUBLISH"
+    },
+    "ExternalEvents.MissingProviderAndScopeCleanup": {
+      "case_id": "INFRA-CES-002",
+      "oracle_id": "CES-LIFETIME"
+    },
+    "NativePointerSubset.SharedOwnership": {
+      "case_id": "INFRA-PTR-001",
+      "oracle_id": "PTR-OWNERSHIP"
+    },
+    "NativePointerSubset.WeakIdentityAndPromotion": {
+      "case_id": "INFRA-PTR-002",
+      "oracle_id": "PTR-WEAK"
+    },
+    "NativePointerSubset.LocalCastRequiresImplementedInterface": {
+      "case_id": "INFRA-PTR-003",
+      "oracle_id": "PTR-LOCAL-CAST"
+    },
+    "RilAdapter.FormalStatusResponse": {
+      "case_id": "INFRA-RIL-001",
+      "oracle_id": "RIL-TRANSPORT"
+    },
+    "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected": {
+      "business_assertions_before_cleanup": "PASS",
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary": {
+      "business_assertions_before_cleanup": "PASS",
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries": {
+      "business_assertions_before_cleanup": "PASS",
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "RealCardLifetime.InitializedStateUnregistersRilAndReleases": {
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "RealCardLifetime.PublicDetachReleasesRealStateFileAndRil": {
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "PairingReview.AllThreeSlotsPublicDetach": {
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "PairingReview.PartialInitializationAndRepeatedUnregister": {
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "PairingReview.DestroyThenReinitializeCardGraph": {
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "PairingReview.UnrelatedRuntimeWorkerIsBaseline": {
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "ShutdownContract.ANormalPrimaryThenStop": {
+      "post_stop_admission": "PASS",
+      "resource_lifetime": "PASS",
+      "async_safety": "PASS",
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "ShutdownContract.BThreeSlotsThenStop": {
+      "post_stop_admission": "PASS",
+      "resource_lifetime": "PASS",
+      "async_safety": "PASS",
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "ShutdownContract.CPartialInitializationThenStop": {
+      "post_stop_admission": "PASS",
+      "resource_lifetime": "PASS",
+      "async_safety": "PASS",
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "ShutdownContract.DRepeatedStop": {
+      "post_stop_admission": "PASS",
+      "resource_lifetime": "PASS",
+      "async_safety": "PASS",
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "ShutdownContract.EInFlightSuccessCompletesBeforeRelease": {
+      "post_stop_admission": "PASS",
+      "resource_lifetime": "PASS",
+      "async_safety": "PASS",
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "ShutdownContract.FErrorReplyDuringStoppingKeepsOriginalResult": {
+      "post_stop_admission": "PASS",
+      "resource_lifetime": "PASS",
+      "async_safety": "PASS",
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "ShutdownContract.GDelayedDispatchAfterStop": {
+      "post_stop_admission": "PASS",
+      "resource_lifetime": "PASS",
+      "async_safety": "PASS",
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "ShutdownContract.HDestroyAndCreateNewGraph": {
+      "post_stop_admission": "PASS",
+      "resource_lifetime": "PASS",
+      "async_safety": "PASS",
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "ShutdownExtra.WatcherLateCallbackAfterOwnerDestruction": {
+      "post_stop_admission": "PASS",
+      "resource_lifetime": "PASS",
+      "async_safety": "PASS",
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "ShutdownExtra.PartialWatcherRegistration": {
+      "post_stop_admission": "PASS",
+      "resource_lifetime": "PASS",
+      "async_safety": "PASS",
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "ShutdownExtra.FailedWatcherRemovalKeepsStoppingAndRetries": {
+      "post_stop_admission": "PASS",
+      "resource_lifetime": "PASS",
+      "async_safety": "PASS",
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "ShutdownExtra.C1StopAtCheck": {
+      "post_stop_admission": "PASS",
+      "resource_lifetime": "PASS",
+      "async_safety": "PASS",
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "ShutdownExtra.C1StopAtUpdate": {
+      "post_stop_admission": "PASS",
+      "resource_lifetime": "PASS",
+      "async_safety": "PASS",
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "ShutdownExtra.C1StopAtComplete": {
+      "post_stop_admission": "PASS",
+      "resource_lifetime": "PASS",
+      "async_safety": "PASS",
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "ShutdownExtra.WatcherInFlightIsDrainedAndSelfStopIsRejected": {
+      "post_stop_admission": "PASS",
+      "resource_lifetime": "PASS",
+      "async_safety": "PASS",
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "RealSimPrimary.C0CoreToRealManagerAndController": {
+      "business_assertions_before_cleanup": "PASS",
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "RealSimPrimary.BDirectRilSuccessCommitsAfterReply": {
+      "business_assertions_before_cleanup": "PASS",
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary": {
+      "business_assertions_before_cleanup": "PASS",
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    }
+  }
+}

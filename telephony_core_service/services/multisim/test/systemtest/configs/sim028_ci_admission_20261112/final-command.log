@@ -1,0 +1,177 @@
+{
+  "admission": "FAIL",
+  "profiles": [
+    {
+      "profile": "regular",
+      "status": "PASS",
+      "reasons": [],
+      "raw_test_status": "FAIL",
+      "passed": 91,
+      "failed": 5,
+      "known_failures": [
+        {
+          "name": "ContractDriver.DEFECT_001_StaleReadyAfterRemoval",
+          "exit_code": 1,
+          "status": "FAIL",
+          "messages": [
+            "telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:22\nExpected equality of these values:\n  actual.present\n    Which is: true\n  state != State::Absent\n    Which is: false\n",
+            "telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: ABSENT\n",
+            "telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:24\nExpected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <00-00 00-00>\n"
+          ],
+          "valid_xml": true,
+          "actual_name": "ContractDriver.DEFECT_001_StaleReadyAfterRemoval",
+          "skipped": false,
+          "properties": {
+            "real_instances_created": "1",
+            "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nremoved:slot=0,present=0,state=ABSENT,kind=0;\nstale-ready:slot=0,present=1,state=READY,kind=2;\n",
+            "pending_responses": "0",
+            "external_calls": "status:0;status:0;status:0;",
+            "real_instances_destroyed": "1"
+          },
+          "target": "sim_guard_legacy",
+          "command": [
+            "/tmp/sim028-admission-awbgqsjq/ci-final/regular/build/sim_guard_legacy",
+            "--gtest_filter=ContractDriver.DEFECT_001_StaleReadyAfterRemoval",
+            "--gtest_output=xml:/tmp/sim028-admission-awbgqsjq/ci-final/regular/run-1794449349987262496/case-5.xml"
+          ],
+          "seconds": 0.003657880937680602,
+          "xml": "case-5.xml"
+        },
+        {
+          "name": "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+          "exit_code": 1,
+          "status": "FAIL",
+          "messages": [
+            "telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: LOCKED\n",
+            "telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:24\nExpected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <01-00 00-00>\n"
+          ],
+          "valid_xml": true,
+          "actual_name": "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+          "skipped": false,
+          "properties": {
+            "real_instances_created": "1",
+            "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nreplacement-card-locked:slot=0,present=1,state=LOCKED,kind=1;\nold-card-ready-response:slot=0,present=1,state=READY,kind=2;\n",
+            "pending_responses": "0",
+            "external_calls": "status:0;status:0;status:0;status:0;",
+            "real_instances_destroyed": "1"
+          },
+          "target": "sim_guard_legacy",
+          "command": [
+            "/tmp/sim028-admission-awbgqsjq/ci-final/regular/build/sim_guard_legacy",
+            "--gtest_filter=SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+            "--gtest_output=xml:/tmp/sim028-admission-awbgqsjq/ci-final/regular/run-1794449349987262496/case-16.xml"
+          ],
+          "seconds": 0.0037227770080789924,
+          "xml": "case-16.xml"
+        },
+        {
+          "name": "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+          "exit_code": 1,
+          "status": "FAIL",
+          "messages": [
+            "telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:157\nExpected: (actual.error) != (0), actual: 0 vs 0\n",
+            "telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:157\nExpected equality of these values:\n  actual.result\n    Which is: 4-byte object <01-00 00-00>\n  Unlock::Failure\n    Which is: 4-byte object <02-00 00-00>\n"
+          ],
+          "valid_xml": true,
+          "actual_name": "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+          "skipped": false,
+          "properties": {
+            "real_instances_created": "1",
+            "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ngeneric-error-without-password-decision:slot=0,present=1,state=LOCKED,kind=2;\n",
+            "observed_error": "0",
+            "observed_unlock_result": "1",
+            "pending_responses": "0",
+            "external_calls": "status:0;",
+            "real_instances_destroyed": "1"
+          },
+          "target": "sim_guard_legacy",
+          "command": [
+            "/tmp/sim028-admission-awbgqsjq/ci-final/regular/build/sim_guard_legacy",
+            "--gtest_filter=SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+            "--gtest_output=xml:/tmp/sim028-admission-awbgqsjq/ci-final/regular/run-1794449349987262496/case-17.xml"
+          ],
+          "seconds": 0.003841932979412377,
+          "xml": "case-17.xml"
+        },
+        {
+          "name": "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+          "exit_code": 1,
+          "status": "FAIL",
+          "messages": [
+            "telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: NOT_READY\n  state\n    Which is: LOCKED\n"
+          ],
+          "valid_xml": true,
+          "actual_name": "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+          "skipped": false,
+          "properties": {
+            "real_instances_created": "1",
+            "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=1;\nold-pin-result-after-card-replacement:slot=0,present=1,state=NOT_READY,kind=1;\n",
+            "old_request_result": "0",
+            "pending_responses": "0",
+            "external_calls": "status:0;pin:0;status:0;status:0;",
+            "real_instances_destroyed": "1"
+          },
+          "target": "sim_guard_legacy",
+          "command": [
+            "/tmp/sim028-admission-awbgqsjq/ci-final/regular/build/sim_guard_legacy",
+            "--gtest_filter=SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+            "--gtest_output=xml:/tmp/sim028-admission-awbgqsjq/ci-final/regular/run-1794449349987262496/case-18.xml"
+          ],
+          "seconds": 0.007776587037369609,
+          "xml": "case-18.xml"
+        },
+        {
+          "name": "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+          "exit_code": 1,
+          "status": "FAIL",
+          "messages": [
+            "telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:176\nExpected equality of these values:\n  RefreshToLocked()\n    Which is: 2\n  0\ncore_service_client.h RefreshSimState @return contract\n"
+          ],
+          "valid_xml": true,
+          "actual_name": "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+          "skipped": false,
+          "properties": {
+            "real_instances_created": "1",
+            "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nexplicit-refresh-completed:slot=0,present=1,state=LOCKED,kind=2;\n",
+            "raw_refresh_return": "2",
+            "pending_responses": "0",
+            "external_calls": "status:0;status:0;status:0;",
+            "real_instances_destroyed": "1"
+          },
+          "target": "sim_guard_legacy",
+          "command": [
+            "/tmp/sim028-admission-awbgqsjq/ci-final/regular/build/sim_guard_legacy",
+            "--gtest_filter=SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+            "--gtest_output=xml:/tmp/sim028-admission-awbgqsjq/ci-final/regular/run-1794449349987262496/case-19.xml"
+          ],
+          "seconds": 0.0036472469801083207,
+          "xml": "case-19.xml"
+        }
+      ]
+    },
+    {
+      "profile": "address",
+      "status": "PASS",
+      "reasons": [],
+      "raw_test_status": "PASS",
+      "passed": 36,
+      "failed": 0,
+      "known_failures": []
+    },
+    {
+      "profile": "thread",
+      "status": "FAIL",
+      "reasons": [
+        "invalid_or_skipped:RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+        "metadata_mismatch:RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary:business_assertions_before_cleanup",
+        "metadata_mismatch:RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary:object_lifetime",
+        "metadata_mismatch:RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary:strict_ril_expectations_verified",
+        "new_regression:RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary"
+      ],
+      "raw_test_status": "FAIL",
+      "passed": 35,
+      "failed": 1,
+      "known_failures": []
+    }
+  ]
+}

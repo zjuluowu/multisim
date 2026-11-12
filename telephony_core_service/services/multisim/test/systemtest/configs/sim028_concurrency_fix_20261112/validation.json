@@ -1,0 +1,596 @@
+{
+  "schema_version": 1,
+  "head": "77e3dc4e27dfe33ac728f225843b86b038914f6c",
+  "date": "2026-11-12",
+  "acceptance": {
+    "externalState_race": "PASS",
+    "IccState_snapshot_race": "PASS",
+    "C1_handoff_progress": "PASS",
+    "protocol_predicate_race": "PASS",
+    "notification_cache_race": "PASS",
+    "host_M1_M2": "PASS",
+    "host_CI": "PASS",
+    "increment_scoped_code_review": "PASS",
+    "whole_production_patch_review": "BLOCKED",
+    "native_OHOS_integration": "BLOCKED",
+    "production_release": "BLOCKED"
+  },
+  "main_production_modified": false,
+  "committed": false,
+  "pushed": false,
+  "production_increment": {
+    "file_count": 5,
+    "files": [
+      "telephony_core_service/services/sim/include/sim_state_handle.h",
+      "telephony_core_service/services/sim/src/sim_state_handle.cpp",
+      "telephony_core_service/utils/common/src/tel_event_queue.cpp",
+      "telephony_core_service/services/sim/src/radio_protocol_controller.cpp",
+      "telephony_core_service/services/sim/src/multi_sim_controller.cpp"
+    ],
+    "patch": "production-increment-v4.patch",
+    "sha256": "c5eaa1f8a850ea2cad23ee9bef3ae7389408a55dd823d3cf908a857f1691c17f",
+    "diffstat": "5 files,65 insertions,28 deletions",
+    "base_production_files": 37,
+    "all_candidate_files": 51,
+    "host_test_files": 18
+  },
+  "final_ci": {
+    "admission": "PASS",
+    "exit_code": 0,
+    "profiles": {
+      "regular": {
+        "tests": 101,
+        "admission": {
+          "status": "PASS",
+          "reasons": [],
+          "raw_test_status": "FAIL",
+          "passed": 96,
+          "failed": 5,
+          "known_failures": [
+            {
+              "name": "ContractDriver.DEFECT_001_StaleReadyAfterRemoval",
+              "exit_code": 1,
+              "status": "FAIL",
+              "messages": [
+                "telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:22\nExpected equality of these values:\n  actual.present\n    Which is: true\n  state != State::Absent\n    Which is: false\n",
+                "telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: ABSENT\n",
+                "telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:24\nExpected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <00-00 00-00>\n"
+              ],
+              "valid_xml": true,
+              "actual_name": "ContractDriver.DEFECT_001_StaleReadyAfterRemoval",
+              "skipped": false,
+              "properties": {
+                "real_instances_created": "1",
+                "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nremoved:slot=0,present=0,state=ABSENT,kind=0;\nstale-ready:slot=0,present=1,state=READY,kind=2;\n",
+                "pending_responses": "0",
+                "external_calls": "status:0;status:0;status:0;",
+                "real_instances_destroyed": "1"
+              },
+              "target": "sim_guard_legacy",
+              "command": [
+                "/tmp/sim028-concurrency-9_wowy3i/final-ci/regular/build/sim_guard_legacy",
+                "--gtest_filter=ContractDriver.DEFECT_001_StaleReadyAfterRemoval",
+                "--gtest_output=xml:/tmp/sim028-concurrency-9_wowy3i/final-ci/regular/run-1794457830619633637/case-5.xml"
+              ],
+              "seconds": 0.017707742052152753,
+              "xml": "case-5.xml"
+            },
+            {
+              "name": "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+              "exit_code": 1,
+              "status": "FAIL",
+              "messages": [
+                "telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: LOCKED\n",
+                "telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:24\nExpected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <01-00 00-00>\n"
+              ],
+              "valid_xml": true,
+              "actual_name": "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+              "skipped": false,
+              "properties": {
+                "real_instances_created": "1",
+                "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nreplacement-card-locked:slot=0,present=1,state=LOCKED,kind=1;\nold-card-ready-response:slot=0,present=1,state=READY,kind=2;\n",
+                "pending_responses": "0",
+                "external_calls": "status:0;status:0;status:0;status:0;",
+                "real_instances_destroyed": "1"
+              },
+              "target": "sim_guard_legacy",
+              "command": [
+                "/tmp/sim028-concurrency-9_wowy3i/final-ci/regular/build/sim_guard_legacy",
+                "--gtest_filter=SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+                "--gtest_output=xml:/tmp/sim028-concurrency-9_wowy3i/final-ci/regular/run-1794457830619633637/case-16.xml"
+              ],
+              "seconds": 0.019284878042526543,
+              "xml": "case-16.xml"
+            },
+            {
+              "name": "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+              "exit_code": 1,
+              "status": "FAIL",
+              "messages": [
+                "telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:157\nExpected: (actual.error) != (0), actual: 0 vs 0\n",
+                "telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:157\nExpected equality of these values:\n  actual.result\n    Which is: 4-byte object <01-00 00-00>\n  Unlock::Failure\n    Which is: 4-byte object <02-00 00-00>\n"
+              ],
+              "valid_xml": true,
+              "actual_name": "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+              "skipped": false,
+              "properties": {
+                "real_instances_created": "1",
+                "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ngeneric-error-without-password-decision:slot=0,present=1,state=LOCKED,kind=2;\n",
+                "observed_error": "0",
+                "observed_unlock_result": "1",
+                "pending_responses": "0",
+                "external_calls": "status:0;",
+                "real_instances_destroyed": "1"
+              },
+              "target": "sim_guard_legacy",
+              "command": [
+                "/tmp/sim028-concurrency-9_wowy3i/final-ci/regular/build/sim_guard_legacy",
+                "--gtest_filter=SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+                "--gtest_output=xml:/tmp/sim028-concurrency-9_wowy3i/final-ci/regular/run-1794457830619633637/case-17.xml"
+              ],
+              "seconds": 0.018417073995806277,
+              "xml": "case-17.xml"
+            },
+            {
+              "name": "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+              "exit_code": 1,
+              "status": "FAIL",
+              "messages": [
+                "telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: NOT_READY\n  state\n    Which is: LOCKED\n"
+              ],
+              "valid_xml": true,
+              "actual_name": "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+              "skipped": false,
+              "properties": {
+                "real_instances_created": "1",
+                "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=1;\nold-pin-result-after-card-replacement:slot=0,present=1,state=NOT_READY,kind=1;\n",
+                "old_request_result": "0",
+                "pending_responses": "0",
+                "external_calls": "status:0;pin:0;status:0;status:0;",
+                "real_instances_destroyed": "1"
+              },
+              "target": "sim_guard_legacy",
+              "command": [
+                "/tmp/sim028-concurrency-9_wowy3i/final-ci/regular/build/sim_guard_legacy",
+                "--gtest_filter=SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+                "--gtest_output=xml:/tmp/sim028-concurrency-9_wowy3i/final-ci/regular/run-1794457830619633637/case-18.xml"
+              ],
+              "seconds": 0.01865792495664209,
+              "xml": "case-18.xml"
+            },
+            {
+              "name": "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+              "exit_code": 1,
+              "status": "FAIL",
+              "messages": [
+                "telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:176\nExpected equality of these values:\n  RefreshToLocked()\n    Which is: 2\n  0\ncore_service_client.h RefreshSimState @return contract\n"
+              ],
+              "valid_xml": true,
+              "actual_name": "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+              "skipped": false,
+              "properties": {
+                "real_instances_created": "1",
+                "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nexplicit-refresh-completed:slot=0,present=1,state=LOCKED,kind=2;\n",
+                "raw_refresh_return": "2",
+                "pending_responses": "0",
+                "external_calls": "status:0;status:0;status:0;",
+                "real_instances_destroyed": "1"
+              },
+              "target": "sim_guard_legacy",
+              "command": [
+                "/tmp/sim028-concurrency-9_wowy3i/final-ci/regular/build/sim_guard_legacy",
+                "--gtest_filter=SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+                "--gtest_output=xml:/tmp/sim028-concurrency-9_wowy3i/final-ci/regular/run-1794457830619633637/case-19.xml"
+              ],
+              "seconds": 0.017977827927097678,
+              "xml": "case-19.xml"
+            }
+          ]
+        },
+        "binary_sha256": {
+          "sim_component_test": "7d31320a61ca3ff52ea7d160a4f3d96617e63fe980a4178f812ba7c08df87d65",
+          "sim_guard_legacy": "6a44505654f72f656923c609065d069fda8e592ec1740932fe550d94746e14c7",
+          "platform_adapter_test": "4e46299c0c89f6148e98e568bce692e33aaa28ace23ea13bbd645eec43ef304e",
+          "sim_guard_pin_memory": "fbb9085e5e8a0c739f444c7f89e11643a90e86ccf97e2817438469b7f990e5c2",
+          "sim_primary_slot_entry_test": "e8372769896d8975a5cb1a9603bf7f5701d604513f08a8e7b43fe609f8a6ee7d",
+          "sim_primary_slot_real_test": "7fa15de279457b4787a5413ff03c428d443ca695f3fa1ae6c89641e16a12e387"
+        },
+        "business_contract": {
+          "tests": 67,
+          "passed": 62,
+          "failed": 5
+        },
+        "lifecycle_stop": {
+          "tests": 34,
+          "passed": 34,
+          "failed": 0
+        },
+        "run": "/tmp/sim028-concurrency-9_wowy3i/final-ci/regular/run-1794457830619633637"
+      },
+      "address": {
+        "tests": 41,
+        "admission": {
+          "status": "PASS",
+          "reasons": [],
+          "raw_test_status": "PASS",
+          "passed": 41,
+          "failed": 0,
+          "known_failures": []
+        },
+        "binary_sha256": {
+          "sim_primary_slot_real_test": "b3a58588793711eedede5f22b7a19eae09d16ad4090a97cd1038996a5b719586"
+        },
+        "business_contract": {
+          "tests": 7,
+          "passed": 7,
+          "failed": 0
+        },
+        "lifecycle_stop": {
+          "tests": 34,
+          "passed": 34,
+          "failed": 0
+        },
+        "run": "/tmp/sim028-concurrency-9_wowy3i/final-ci/address/run-1794457830620976530"
+      },
+      "thread": {
+        "tests": 41,
+        "admission": {
+          "status": "PASS",
+          "reasons": [],
+          "raw_test_status": "PASS",
+          "passed": 41,
+          "failed": 0,
+          "known_failures": []
+        },
+        "binary_sha256": {
+          "sim_primary_slot_real_test": "356f4de0aa2d7900c6458c1de26e4bd1a426363c94e32fa826e6c7ed9998bd4e"
+        },
+        "business_contract": {
+          "tests": 7,
+          "passed": 7,
+          "failed": 0
+        },
+        "lifecycle_stop": {
+          "tests": 34,
+          "passed": 34,
+          "failed": 0
+        },
+        "run": "/tmp/sim028-concurrency-9_wowy3i/final-ci/thread/run-1794457830623066355"
+      }
+    }
+  },
+  "regular_suites": {
+    "SimComponent": {
+      "PASS": 1,
+      "FAIL": 0
+    },
+    "ContractDriver": {
+      "PASS": 4,
+      "FAIL": 1
+    },
+    "SessionLifecycle": {
+      "PASS": 10,
+      "FAIL": 4
+    },
+    "Compatibility/Lifecycle": {
+      "PASS": 3,
+      "FAIL": 0
+    },
+    "EventAdapter": {
+      "PASS": 3,
+      "FAIL": 0
+    },
+    "ProductionEventTransport": {
+      "PASS": 2,
+      "FAIL": 0
+    },
+    "SchedulerBoundary": {
+      "PASS": 5,
+      "FAIL": 0
+    },
+    "ExternalData": {
+      "PASS": 3,
+      "FAIL": 0
+    },
+    "ExternalEvents": {
+      "PASS": 2,
+      "FAIL": 0
+    },
+    "NativePointerSubset": {
+      "PASS": 3,
+      "FAIL": 0
+    },
+    "RilAdapter": {
+      "PASS": 1,
+      "FAIL": 0
+    },
+    "PinMemoryContract": {
+      "PASS": 4,
+      "FAIL": 0
+    },
+    "PrimaryEntry": {
+      "PASS": 12,
+      "FAIL": 0
+    },
+    "CallerKinds/NativeOrShell": {
+      "PASS": 2,
+      "FAIL": 0
+    },
+    "RealSimPrimary": {
+      "PASS": 7,
+      "FAIL": 0
+    },
+    "ConcurrencyRegression": {
+      "PASS": 5,
+      "FAIL": 0
+    },
+    "RunnerLifetime": {
+      "PASS": 5,
+      "FAIL": 0
+    },
+    "RealCardLifetime": {
+      "PASS": 3,
+      "FAIL": 0
+    },
+    "PairingReview": {
+      "PASS": 4,
+      "FAIL": 0
+    },
+    "ShutdownContract": {
+      "PASS": 8,
+      "FAIL": 0
+    },
+    "ShutdownExtra": {
+      "PASS": 9,
+      "FAIL": 0
+    }
+  },
+  "original_inventory": {
+    "Host60": {
+      "PASS": 55,
+      "FAIL": 5
+    },
+    "entry14": {
+      "PASS": 14,
+      "FAIL": 0
+    },
+    "original96": {
+      "PASS": 91,
+      "FAIL": 5
+    },
+    "RealSimPrimary7": {
+      "PASS": 7,
+      "FAIL": 0
+    },
+    "Lifecycle8": {
+      "PASS": 8,
+      "FAIL": 0
+    },
+    "Pairing4": {
+      "PASS": 4,
+      "FAIL": 0
+    },
+    "Stop8": {
+      "PASS": 8,
+      "FAIL": 0
+    },
+    "Safety9": {
+      "PASS": 9,
+      "FAIL": 0
+    },
+    "new_concurrency5": {
+      "PASS": 5,
+      "FAIL": 0
+    }
+  },
+  "pressure": {
+    "status": "PASS",
+    "exit_code": 0,
+    "tests": 330,
+    "PASS": 330,
+    "FAIL": 0,
+    "parallel": 4,
+    "by_case": {
+      "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary": {
+        "PASS": 50,
+        "FAIL": 0
+      },
+      "ConcurrencyRegression.CrossQueueStateSnapshotsAndSetter": {
+        "PASS": 50,
+        "FAIL": 0
+      },
+      "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries": {
+        "PASS": 50,
+        "FAIL": 0
+      },
+      "ConcurrencyRegression.C1RetryHandoffInterleaving": {
+        "PASS": 50,
+        "FAIL": 0
+      },
+      "ConcurrencyRegression.C1RetriesDrainWhileStopping": {
+        "PASS": 50,
+        "FAIL": 0
+      },
+      "ShutdownContract.ANormalPrimaryThenStop": {
+        "PASS": 50,
+        "FAIL": 0
+      },
+      "ShutdownExtra.C1StopAtCheck": {
+        "PASS": 10,
+        "FAIL": 0
+      },
+      "ShutdownExtra.C1StopAtUpdate": {
+        "PASS": 10,
+        "FAIL": 0
+      },
+      "ShutdownExtra.C1StopAtComplete": {
+        "PASS": 10,
+        "FAIL": 0
+      }
+    },
+    "binary_sha256": "356f4de0aa2d7900c6458c1de26e4bd1a426363c94e32fa826e6c7ed9998bd4e",
+    "candidate_isolation_sha256": "6e4915cdb351fa5f24c85f9553597e1ccd8ac3b866589f17b1d4b1c6a43a7648",
+    "full_ci_result_sha256": "15491ffd991d67ddee726ed296b3c5cfd091fb7faf5d2ba7511440549083dce0",
+    "archive": "pressure.zip"
+  },
+  "policy_tests": {
+    "tests": 13,
+    "PASS": 13,
+    "FAIL": 0,
+    "exit_code": 0
+  },
+  "integrity_guards": [
+    {
+      "name": "modified_source",
+      "status": "PASS",
+      "error": "Cannot advance a modified isolated source: guard.cpp"
+    },
+    {
+      "name": "changed_increment",
+      "status": "PASS",
+      "error": "Candidate increments changed: choose a new --out or explicitly --advance-candidate"
+    }
+  ],
+  "negative_fatal_cleanup": {
+    "raw_test_status": "FAIL",
+    "raw_exit_code": 1,
+    "expected": "INJECTED_C1_FATAL_ASSERT",
+    "negative_control": "PASS",
+    "properties": {
+      "workers_after_cleanup": "0",
+      "ril_references_after_cleanup": "1",
+      "account_observer_expired": "true",
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    },
+    "archive_path": "diagnostics.zip:fatal-cleanup-v4/"
+  },
+  "intermediate_ci_archives": {
+    "intermediate-ci-v1.zip": {
+      "input": "production-increment.patch",
+      "result": "FAIL"
+    },
+    "intermediate-ci-v2.zip": {
+      "input": "production-increment-v2.patch",
+      "result": "PASS"
+    },
+    "intermediate-ci-v3.zip": {
+      "input": "production-increment-v3.patch",
+      "result": "FAIL"
+    }
+  },
+  "intermediate_failures": {
+    "externalState_before_fix": "100 concurrent repetitions:97 PASS/3 TSan exit87; separate10 sequential repetitions PASS",
+    "queue_negative": "public queue handoff FAIL1; real C1 third-session handoff FAIL1 under TSan and ASan, unchanged12s/24-request assertion; RIL/lifetime PASS",
+    "protocol_predicate": "real45s timeout TSan exit87 before same-mutex protocol dispatch fix",
+    "v1_ci_builds": "regular/address900s build timeout FAIL; thread41 PASS; no missing XML reclassified asPASS",
+    "v2_pressure": "full41 TSan PASS then280 pressure275 PASS/5 IccState races FAIL87",
+    "v3_ci": "TSan40 PASS/1 notification-cache race FAIL87",
+    "invalid_aggregate_invocation": "exit2 guard rejection, no test XML; repaired invocation uses one process per case, no guard changes"
+  },
+  "production_functions": [
+    "CoreServiceSim::SetPrimarySlotId",
+    "SimManager::OnInit/SetPrimarySlotId/Stop",
+    "MultiSimController::SetPrimarySlotId/RetrySetPrimarySlotId/SendDefaultCellularDataBroadCast",
+    "RadioProtocolController::SetRadioProtocol/ProcessEvent/CHECK/UPDATE/COMPLETE/TIMEOUT",
+    "SimStateHandle::GetSimState/SetSimState/HasSimCard/ProcessIccCardState",
+    "TelEventQueue::Submit/SubmitInner/SubmitToFFRT/Stop"
+  ],
+  "boundaries": {
+    "RIL": "StrictMock ITelRilManager; serial is NOT_CREATED at this boundary, sessionId is real production value",
+    "Provider": "existing verified-contract memory DataShare I/O",
+    "parameters": "existing strict Host parameter/Watcher boundary",
+    "FFRT": "Host scheduler adapter, native FFRT runtime not executed",
+    "permissions_SA_IPC": "Host identity/services, full Core/Stub/Binder/SA not executed"
+  },
+  "native_remaining": [
+    "Core OnStop must coordinate same manager and failure retention before shared RIL DeInit",
+    "SA/CES unregister failures and native callback barrier",
+    "Watcher concurrency and real FFRT completion/cancellation",
+    "Cross-consumer/cross-SO lifecycle group ownership and reentrant admission",
+    "Matching product rebuild/vendor ABI and RIL/HDI serial/device session validation",
+    "All-six-attempt no-reply C1,75s Stop budget failure/retry,APN success/retry and cached card-type matrix NOT_RUN"
+  ],
+  "command_examples": {
+    "fresh_CI": "See README; existing base patches plus production-increment-v4.patch and test-increment-v4.patch; parameterized installed dependency roots",
+    "actual_CI_log": "diagnostics.zip:final-ci-v4-command.log",
+    "exact_configure_Ninja_test_argv": "final-ci.zip:result.json profiles[].steps/cases[].command",
+    "pressure_script": "verify_pressure.py --ci-out <CI_OUT> --out <outside-repo-new-output> --rounds 50 --phase-rounds 10 --parallel 4"
+  },
+  "evidence_limits": [
+    "Scoped Host verification and code review do not approve the entire37-file production patch.",
+    "Earlier failures are retained even when final gates pass.",
+    "No proof that every shared field in the legacy component is race-free.",
+    "First timeout keeps original cleanup/empty COMPLETE behavior; Host does not establish physical modem resource termination."
+  ],
+  "exact_commands": {
+    "CI": [
+      "python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/systemtest/tools/ci_sim028.py",
+      "--out",
+      "/tmp/sim028-concurrency-9_wowy3i/final-ci",
+      "--profile",
+      "all",
+      "--parallel-profiles",
+      "--jobs",
+      "1",
+      "--gtest-root",
+      "/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59",
+      "--openssl-root",
+      "/tmp/sim028-deps/openssl",
+      "--runtime-root",
+      "/tmp/sim028-deps/native",
+      "--candidate-increment",
+      "telephony_core_service/services/multisim/test/systemtest/configs/sim028_concurrency_fix_20261112/production-increment-v4.patch",
+      "--candidate-increment",
+      "telephony_core_service/services/multisim/test/systemtest/configs/sim028_concurrency_fix_20261112/test-increment-v4.patch",
+      "--advance-candidate"
+    ],
+    "pressure": [
+      "python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/systemtest/configs/sim028_concurrency_fix_20261112/verify_pressure.py",
+      "--ci-out",
+      "/tmp/sim028-concurrency-9_wowy3i/final-ci",
+      "--out",
+      "/tmp/sim028-concurrency-9_wowy3i/pressure-v4",
+      "--rounds",
+      "50",
+      "--phase-rounds",
+      "10",
+      "--parallel",
+      "4"
+    ]
+  },
+  "source_version": {
+    "HEAD": "77e3dc4e27dfe33ac728f225843b86b038914f6c",
+    "isolation_sha256": "6e4915cdb351fa5f24c85f9553597e1ccd8ac3b866589f17b1d4b1c6a43a7648",
+    "base_patch_sha256": {
+      "production-minimal.patch": "d93c3c2b14bdd2e4e79986678ffdc4965ebfdb13079685b8596bc8a66389ac72",
+      "test-guard.patch": "3e3209dcf936488c51dc573801abc553f18f8b684a5a0c6b2a73dc54873e64c7"
+    },
+    "production_increment_sha256": "c5eaa1f8a850ea2cad23ee9bef3ae7389408a55dd823d3cf908a857f1691c17f",
+    "test_increment_sha256": "21be58e5dadef5de31d175ea2cc8e5c1380b3e1d2d68bf57ff6100e0ae474658",
+    "note": "HEAD plus actual protected working input plus pinned base patches plus v4 increments; not a production commit."
+  },
+  "life_graph_example": {
+    "test": "ShutdownContract.ANormalPrimaryThenStop",
+    "properties": {
+      "business": "PASS",
+      "expired_R1_Monitor": "1",
+      "expired_R2_Records": "3",
+      "expired_R3_FileManager": "3",
+      "expired_R4_Phonebook": "3",
+      "expired_State": "3",
+      "post_stop_admission": "PASS",
+      "resource_lifetime": "PASS",
+      "async_safety": "PASS",
+      "workers_after_cleanup": "0",
+      "ril_references_after_cleanup": "1",
+      "account_observer_expired": "true",
+      "object_lifetime": "PASS",
+      "strict_ril_expectations_verified": "PASS"
+    }
+  }
+}

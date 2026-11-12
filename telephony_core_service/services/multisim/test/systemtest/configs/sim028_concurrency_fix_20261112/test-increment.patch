@@ -1,0 +1,350 @@
+diff --git a/telephony_core_service/utils/common/src/tel_event_queue.cpp b/telephony_core_service/utils/common/src/tel_event_queue.cpp
+--- a/telephony_core_service/utils/common/src/tel_event_queue.cpp
++++ b/telephony_core_service/utils/common/src/tel_event_queue.cpp
+@@ -17,6 +17,9 @@
+ 
+ #include "tel_event_handler.h"
+ #include "telephony_log_wrapper.h"
++#ifdef TELEPHONY_HOST_LIFETIME_AUDIT
++namespace SimHost { void ObserveHostLog(const std::string &line); }
++#endif
+ 
+ namespace OHOS {
+ namespace Telephony {
+@@ -141,6 +144,10 @@
+     if (handleTime > now) {
+         delayTime = std::chrono::duration_cast<std::chrono::microseconds>(handleTime - now).count();
+     }
++    #ifdef TELEPHONY_HOST_LIFETIME_AUDIT
++    SimHost::ObserveHostLog("SIM028_QUEUE_HANDOFF name="+name_+" revision="+std::to_string(queueId)+
++        " delay_us="+std::to_string(delayTime));
++    #endif
+     SubmitToFFRT(queueId, handleTime, delayTime);
+ }
+ 
+diff --git a/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.h b/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.h
+--- a/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.h
++++ b/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.h
+@@ -25,3 +25,9 @@
+ void StopCallingThreadTasks();
+ void ResetSchedulerEvidence(); // Requires all queue owners/workers released.
+ }
++
++namespace SimHost {
++bool HasLogObserver();
++void ObserveHostLog(const std::string &line);
++void SetLogObserver(std::function<void(const std::string &)> observer);
++}
+diff --git a/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp b/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp
+--- a/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp
++++ b/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp
+@@ -332,3 +332,22 @@
+     failures = 0;
+ }
+ }
++
++namespace SimHost {
++namespace {
++std::mutex logObserverMutex;
++std::function<void(const std::string &)> logObserver;
++std::atomic_bool hasLogObserver{false};
++}
++bool HasLogObserver() {return hasLogObserver.load();}
++void SetLogObserver(std::function<void(const std::string &)> observer) {
++    std::lock_guard<std::mutex> lock(logObserverMutex);
++    logObserver=std::move(observer);hasLogObserver=bool(logObserver);
++}
++void ObserveHostLog(const std::string &line) {
++    if (!hasLogObserver.load(std::memory_order_acquire)) return;
++    std::function<void(const std::string &)> observer;
++    {std::lock_guard<std::mutex> lock(logObserverMutex);observer=logObserver;}
++    if(observer)observer(line); // No registry lock across a test barrier.
++}
++}
+diff --git a/telephony_core_service/services/multisim/test/systemtest/stubs/include/hilog/log.h b/telephony_core_service/services/multisim/test/systemtest/stubs/include/hilog/log.h
+--- a/telephony_core_service/services/multisim/test/systemtest/stubs/include/hilog/log.h
++++ b/telephony_core_service/services/multisim/test/systemtest/stubs/include/hilog/log.h
+@@ -1,7 +1,25 @@
+ #pragma once
+ // Logging-only sink; discard all format arguments to avoid identity leakage.
+ enum { LOG_CORE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL };
+-inline int HILOG_IMPL(int, int, unsigned int, const char*, const char*, ...) { return 0; }
++#include <cstdarg>
++#include <cstdio>
++#include <cstdlib>
++#include <string>
++#include <thread>
++#include <chrono>
++inline int HILOG_IMPL(int, int, unsigned int, const char*, const char* fmt, ...) {
++    if (!std::getenv("SIM_HOST_TRACE")) return 0;
++    std::string clean(fmt);
++    for (const auto &tag : {std::string("{public}"), std::string("{private}")})
++        for (size_t p; (p=clean.find(tag))!=std::string::npos;) clean.erase(p,tag.size());
++    va_list args; va_start(args,fmt);
++    flockfile(stderr);
++    std::fprintf(stderr,"HOST_TRACE us=%lld tid=%zu ",
++        static_cast<long long>(std::chrono::duration_cast<std::chrono::microseconds>(
++        std::chrono::steady_clock::now().time_since_epoch()).count()),std::hash<std::thread::id>{}(std::this_thread::get_id()));
++    std::vfprintf(stderr,clean.c_str(),args); std::fputc('\n',stderr);
++    funlockfile(stderr); va_end(args); return 0;
++}
+ 
+ // Fork diagnostic call shape; deliberately discards all arguments like HILOG_IMPL.
+ inline void HILOG_COMM_INFO(const char *, ...) {}
+diff --git a/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp b/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp
+--- a/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp
+@@ -8,6 +8,7 @@
+ #include "real_scenario.h"
+ #include <future>
+ #include <optional>
++#include "sim_state_handle.h"
+ namespace {
+ using namespace OHOS::Telephony;
+ using namespace std::chrono_literals;
+@@ -217,12 +218,18 @@
+     s.ExpectNotifications(false, 1, true);
+     testing::Test::RecordProperty("business_assertions_before_cleanup", testing::Test::HasFailure() ? "FAIL" : "PASS");
+ }
+-TEST(RealSimPrimary, C1CheckFailureRestoresParametersAndExhaustsFiveRetries)
++void VerifyC1FailureRetries(bool stopDuringRetry = false, bool interleaveHandoff = false)
+ {
+     using namespace Sim028Host;
+     // Callback state must outlive RealScenario::Stop even after a fatal assertion.
+     std::map<int, std::vector<std::pair<int, RadioProtocolPhase>>> phases;
+     unsigned requests = 0;
++    struct RetryHandoff {
++        std::mutex mutex;std::condition_variable changed;
++        bool paused=false,release=false,producerDone=false,insertedWhilePaused=false;
++        std::optional<RealScenario::Pending> first,second;
++    };
++    auto handoff=std::make_shared<RetryHandoff>();
+     RealScenario s;
+     ASSERT_TRUE(s.StartLockedCard()); s.ClearObservations(); s.Permit();
+     { std::lock_guard<std::mutex> lock(s.mutex);
+@@ -239,6 +246,33 @@
+     while (s.manager->GetRadioProtocolSlotIdByModemId(1) != 1 && std::chrono::steady_clock::now() < deadline)
+         std::this_thread::sleep_for(1ms);
+     ASSERT_EQ(s.manager->GetRadioProtocolSlotIdByModemId(1), 1);
++    struct ClearObserver {~ClearObserver(){SimHost::SetLogObserver({});}} clearObserver;
++    std::future<bool> coordinate;
++    if(interleaveHandoff) {
++        SimHost::SetLogObserver([handoff](const std::string &line) {
++            if(line.find("SIM028_QUEUE_HANDOFF name=RadioProtocolController")==std::string::npos ||
++               line.find("delay_us=4")==std::string::npos)return;
++            std::unique_lock<std::mutex> lock(handoff->mutex);
++            if(!handoff->second || handoff->paused)return;
++            handoff->paused=true;handoff->changed.notify_all();
++            handoff->changed.wait(lock,[&]{return handoff->release;});
++        });
++        coordinate=std::async(std::launch::async,[handoff] {
++            RealScenario::Pending pending;
++            {std::unique_lock<std::mutex> lock(handoff->mutex);
++             if(!handoff->changed.wait_for(lock,10s,[&]{return handoff->paused;}))return false;
++             pending=*handoff->second;}
++            auto producer=std::async(std::launch::async,[handoff,pending] {
++                auto error=std::make_shared<RadioResponseInfo>();error->error=ErrType::ERR_GENERIC_FAILURE;
++                RealScenario::Reply(pending,error);
++                std::lock_guard<std::mutex> lock(handoff->mutex);handoff->producerDone=true;handoff->changed.notify_all();
++            });
++            {std::unique_lock<std::mutex> lock(handoff->mutex);
++             handoff->insertedWhilePaused=handoff->changed.wait_for(lock,200ms,[&]{return handoff->producerDone;});
++             handoff->release=true;handoff->changed.notify_all();}
++            producer.get();return true;
++        });
++    }
+     EXPECT_CALL(*s.ril, SetRadioProtocol(testing::_, testing::_, testing::_)).Times(24)
+         .WillRepeatedly([&](int slot, RadioProtocol protocol, const auto &event) {
+             std::cout << "TRACE radio slot=" << slot << " session=" << protocol.sessionId
+@@ -252,7 +286,13 @@
+             }
+             if (protocol.phase == RadioProtocolPhase::RADIO_PROTOCOL_PHASE_CHECK) {
+                 auto response = std::make_shared<RadioResponseInfo>(); response->error = ErrType::ERR_GENERIC_FAILURE;
+-                RealScenario::Reply({slot, event->GetOwner(), event->GetInnerEventId()}, response);
++                if(interleaveHandoff && protocol.sessionId==3) {
++                    std::optional<RealScenario::Pending> first;
++                    {std::lock_guard<std::mutex> lock(handoff->mutex);
++                     if(slot==0)handoff->first=RealScenario::Pending{slot,event->GetOwner(),event->GetInnerEventId()};
++                     else {handoff->second=RealScenario::Pending{slot,event->GetOwner(),event->GetInnerEventId()};first=handoff->first;}}
++                    if(first)RealScenario::Reply(*first,response);
++                } else RealScenario::Reply({slot, event->GetOwner(), event->GetInnerEventId()}, response);
+             } else {
+                 EXPECT_EQ(protocol.status, RadioProtocolStatus::RADIO_PROTOCOL_STATUS_FAIL);
+                 RealScenario::Reply({slot, event->GetOwner(), event->GetInnerEventId()}, std::make_shared<RadioProtocol>(protocol));
+@@ -260,6 +300,17 @@
+             return 0;
+         });
+     EXPECT_EQ(s.core.SetPrimarySlotId(1), TELEPHONY_ERR_LOCAL_PTR_NULL);
++    if(stopDuringRetry) {
++        bool pending=false;
++        for(const auto &q:SimHost::GetQueueEvidence())
++            pending|=q.name=="MultiSimController" && q.pending>0;
++        EXPECT_TRUE(pending) << "STOP_MUST_BEGIN_WITH_ORIGINAL_RETRY_PENDING";
++        EXPECT_TRUE(s.manager->Stop());EXPECT_TRUE(s.manager->IsStopped());
++        testing::Test::RecordProperty("stop_started_with_queued_retry",pending?"true":"false");
++    }
++    if (std::getenv("SIM_HOST_INJECT_C1_ASSERT")) {
++        ASSERT_TRUE(false) << "INJECTED_C1_FATAL_ASSERT";
++    }
+     {
+         std::lock_guard<std::mutex> lock(s.mutex);
+         EXPECT_EQ(s.parametersDb["persist.telephony.MainSlotId"], "0") << "ROLLBACK_SLOT";
+@@ -277,6 +328,10 @@
+                 std::make_pair(1, RadioProtocolPhase::RADIO_PROTOCOL_PHASE_COMPLETE)));
+         }
+     }
++    if(coordinate.valid()) {
++        EXPECT_TRUE(coordinate.get());
++        testing::Test::RecordProperty("retry3_inserted_during_handoff",handoff->insertedWhilePaused?"true":"false");
++    }
+     const auto done = std::chrono::steady_clock::now() + 3s;
+     while (s.manager->IsSetPrimarySlotIdInProgress() && std::chrono::steady_clock::now() < done)
+         std::this_thread::sleep_for(1ms);
+@@ -287,6 +342,13 @@
+     s.ExpectNotifications(false, 6, false);
+     testing::Test::RecordProperty("business_assertions_before_cleanup", testing::Test::HasFailure() ? "FAIL" : "PASS");
+ }
++
++TEST(RealSimPrimary, C1CheckFailureRestoresParametersAndExhaustsFiveRetries)
++{VerifyC1FailureRetries();}
++TEST(ConcurrencyRegression, C1RetriesDrainWhileStopping)
++{VerifyC1FailureRetries(true);}
++TEST(ConcurrencyRegression, C1RetryHandoffInterleaving)
++{VerifyC1FailureRetries(false,true);}
+ }
+ int main(int argc, char **argv)
+ {
+@@ -301,3 +363,133 @@
+     }
+     return RUN_ALL_TESTS();
+ }
++
++namespace {
++struct HandoffState {
++    std::mutex mutex;std::condition_variable changed;
++    bool paused=false,release=false,producerStarted=false,producerDone=false,delivered=false;
++};
++class HandoffHandler final : public OHOS::Telephony::TelEventHandler {
++public:
++    explicit HandoffHandler(std::shared_ptr<HandoffState> state)
++        : TelEventHandler("QueueHandoffRegression"),state_(std::move(state)) {}
++    void ProcessEvent(const OHOS::AppExecFwk::InnerEvent::Pointer &event) override {
++        if(event->GetInnerEventId()==3) {
++            std::lock_guard<std::mutex> lock(state_->mutex);state_->delivered=true;state_->changed.notify_all();
++        }
++    }
++private:std::shared_ptr<HandoffState> state_;
++};
++TEST(ConcurrencyRegression, QueueHandoffDoesNotDelayImmediateEvent)
++{
++    auto state=std::make_shared<HandoffState>();
++    auto handler=std::make_shared<HandoffHandler>(state);
++    ASSERT_TRUE(handler->SendEvent(2,45000)); // Retain real long-delay work behind the initial event.
++    SimHost::SetLogObserver([state](const std::string &line) {
++        if(line.find("SIM028_QUEUE_HANDOFF name=QueueHandoffRegression")==std::string::npos ||
++           line.find("delay_us=4")==std::string::npos)return;
++        std::unique_lock<std::mutex> lock(state->mutex);
++        if(state->paused)return;
++        state->paused=true;state->changed.notify_all();state->changed.wait(lock,[&]{return state->release;});
++    });
++    EXPECT_TRUE(handler->SendEvent(1));
++    bool paused;
++    {std::unique_lock<std::mutex> lock(state->mutex);paused=state->changed.wait_for(lock,3s,[&]{return state->paused;});}
++    std::thread producer([handler,state] {
++        {std::lock_guard<std::mutex> lock(state->mutex);state->producerStarted=true;state->changed.notify_all();}
++        EXPECT_TRUE(handler->SendEvent(3));
++        {std::lock_guard<std::mutex> lock(state->mutex);state->producerDone=true;state->changed.notify_all();}
++    });
++    bool insertedWhilePaused=false;
++    {std::unique_lock<std::mutex> lock(state->mutex);
++     EXPECT_TRUE(state->changed.wait_for(lock,3s,[&]{return state->producerStarted;}));
++     // A bounded observation rendezvous, not a sleep or a business deadline change.
++     insertedWhilePaused=state->changed.wait_for(lock,200ms,[&]{return state->producerDone;});
++     state->release=true;state->changed.notify_all();}
++    producer.join();SimHost::SetLogObserver({});
++    bool delivered;
++    {std::unique_lock<std::mutex> lock(state->mutex);delivered=state->changed.wait_for(lock,1s,[&]{return state->delivered;});}
++    EXPECT_TRUE(paused);EXPECT_TRUE(delivered) << "IMMEDIATE_EVENT_STRANDED_BEHIND_STALE_45S_SNAPSHOT";
++    testing::Test::RecordProperty("producer_inserted_during_handoff",insertedWhilePaused?"true":"false");
++    EXPECT_TRUE(handler->StopEvents());std::weak_ptr<HandoffHandler> weak=handler;handler.reset();
++    EXPECT_TRUE(weak.expired());EXPECT_TRUE(SimHost::AwaitSchedulerStopped(3s));
++}
++TEST(ConcurrencyRegression, CrossQueueStateSnapshotsAndSetter)
++{
++    auto handle=std::make_shared<OHOS::Telephony::SimStateHandle>(std::weak_ptr<OHOS::Telephony::SimStateManager>{});
++    handle->SetSimState(OHOS::Telephony::SimState::SIM_STATE_UNKNOWN);
++    std::promise<void> start;auto ready=start.get_future().share();std::atomic_uint reads{0};
++    std::thread writer([&] {ready.wait();for(int i=0;i<20000;++i)
++        handle->SetSimState(i%2?OHOS::Telephony::SimState::SIM_STATE_READY:OHOS::Telephony::SimState::SIM_STATE_LOCKED);});
++    std::thread reader([&] {ready.wait();for(int i=0;i<20000;++i) {
++        auto state=handle->GetSimState();EXPECT_TRUE(state==OHOS::Telephony::SimState::SIM_STATE_UNKNOWN ||
++            state==OHOS::Telephony::SimState::SIM_STATE_READY || state==OHOS::Telephony::SimState::SIM_STATE_LOCKED);++reads;}});
++    start.set_value();writer.join();reader.join();EXPECT_EQ(reads.load(),20000u);
++    EXPECT_TRUE(handle->StopEvents());std::weak_ptr<OHOS::Telephony::SimStateHandle> weak=handle;handle.reset();
++    EXPECT_TRUE(weak.expired());EXPECT_TRUE(SimHost::AwaitSchedulerStopped(3s));
++}
++}
++
++namespace {
++TEST(ConcurrencyRegression, C1CommunicationTimeoutThenFiveRetries)
++{
++    using namespace Sim028Host;
++    std::map<int,std::vector<std::pair<int,RadioProtocolPhase>>> phases;
++    unsigned requests=0;
++    RealScenario s;
++    ASSERT_TRUE(s.StartLockedCard());s.ClearObservations();s.Permit();
++    {std::lock_guard<std::mutex> lock(s.mutex);
++     s.parametersDb["persist.telephony.MainSlotId"]="0";
++     s.parametersDb["persist.telephony.MainCard.Iccid"]="timeout-original-iccid";}
++    EXPECT_CALL(*s.ril,SetPrimarySlot(testing::_,testing::_)).Times(0);
++    EXPECT_CALL(*s.ril,GetRadioProtocol(testing::_,testing::_)).Times(2).WillRepeatedly([](int slot,const auto &event) {
++        auto response=std::make_shared<RadioProtocol>();response->slotId=slot;response->modemId=slot;
++        response->technology=slot==0?0x11:0x22;
++        RealScenario::Reply({slot,event->GetOwner(),event->GetInnerEventId()},response);return 0;
++    });
++    s.manager->GetRadioProtocol(0);s.manager->GetRadioProtocol(1);
++    const auto deadline=std::chrono::steady_clock::now()+3s;
++    while(s.manager->GetRadioProtocolSlotIdByModemId(1)!=1 && std::chrono::steady_clock::now()<deadline)
++        std::this_thread::yield();
++    ASSERT_EQ(s.manager->GetRadioProtocolSlotIdByModemId(1),1);
++    EXPECT_CALL(*s.ril,SetRadioProtocol(testing::_,testing::_,testing::_)).Times(22)
++        .WillRepeatedly([&](int slot,RadioProtocol protocol,const auto &event) {
++            {std::lock_guard<std::mutex> lock(s.mutex);
++             ++requests;phases[protocol.sessionId].emplace_back(slot,protocol.phase);}
++            std::cout<<"TIMEOUT_RETRY session="<<protocol.sessionId<<" phase="<<static_cast<int>(protocol.phase)
++                <<" slot="<<slot<<" serial=NOT_CREATED_AT_ITelRilManager_MOCK_BOUNDARY\n";
++            EXPECT_EQ(protocol.slotId,slot);EXPECT_EQ(protocol.modemId,slot);
++            if(protocol.sessionId==1) {EXPECT_EQ(protocol.phase,RadioProtocolPhase::RADIO_PROTOCOL_PHASE_CHECK);return 0;}
++            if(protocol.phase==RadioProtocolPhase::RADIO_PROTOCOL_PHASE_CHECK) {
++                auto error=std::make_shared<RadioResponseInfo>();error->error=ErrType::ERR_GENERIC_FAILURE;
++                RealScenario::Reply({slot,event->GetOwner(),event->GetInnerEventId()},error);
++            } else {
++                EXPECT_EQ(protocol.phase,RadioProtocolPhase::RADIO_PROTOCOL_PHASE_COMPLETE);
++                EXPECT_EQ(protocol.status,RadioProtocolStatus::RADIO_PROTOCOL_STATUS_FAIL);
++                RealScenario::Reply({slot,event->GetOwner(),event->GetInnerEventId()},std::make_shared<RadioProtocol>(protocol));
++            }
++            return 0;
++        });
++    auto start=std::chrono::steady_clock::now();
++    EXPECT_EQ(s.core.SetPrimarySlotId(1),TELEPHONY_ERR_LOCAL_PTR_NULL);
++    EXPECT_GE(std::chrono::steady_clock::now()-start,44s);
++    EXPECT_TRUE(s.manager->Stop());EXPECT_TRUE(s.manager->IsStopped());
++    std::lock_guard<std::mutex> lock(s.mutex);
++    EXPECT_EQ(requests,22u);EXPECT_EQ(phases.size(),6u);EXPECT_EQ(phases.count(2),0u);
++    for(const auto &[session,sequence]:phases) {
++        if(session==1)EXPECT_THAT(sequence,testing::ElementsAre(
++            std::make_pair(0,RadioProtocolPhase::RADIO_PROTOCOL_PHASE_CHECK),
++            std::make_pair(1,RadioProtocolPhase::RADIO_PROTOCOL_PHASE_CHECK)));
++        else EXPECT_THAT(sequence,testing::ElementsAre(
++            std::make_pair(0,RadioProtocolPhase::RADIO_PROTOCOL_PHASE_CHECK),
++            std::make_pair(1,RadioProtocolPhase::RADIO_PROTOCOL_PHASE_CHECK),
++            std::make_pair(0,RadioProtocolPhase::RADIO_PROTOCOL_PHASE_COMPLETE),
++            std::make_pair(1,RadioProtocolPhase::RADIO_PROTOCOL_PHASE_COMPLETE)));
++    }
++    EXPECT_EQ(s.parametersDb["persist.telephony.MainSlotId"],"0");
++    EXPECT_EQ(s.parametersDb["persist.telephony.MainCard.Iccid"],"timeout-original-iccid");
++    s.ExpectNotifications(false,6,false);
++    testing::Test::RecordProperty("business_assertions_before_cleanup",testing::Test::HasFailure()?"FAIL":"PASS");
++    testing::Test::RecordProperty("timeout_seconds",45);
++}
++}

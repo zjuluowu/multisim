@@ -1,0 +1,43 @@
+{
+  "status": "PASS",
+  "original_files": 1925,
+  "unchanged_original_files": 1922,
+  "main_production_unchanged": true,
+  "state_prefix_preserved": true,
+  "staging_empty": true,
+  "source_manifest51_matches": true,
+  "production_patch_without_Host_probes": true,
+  "final_XML": {
+    "junit-address.xml": {
+      "tests": 41,
+      "failed_tests": 0,
+      "skipped": 0
+    },
+    "junit-pressure.xml": {
+      "tests": 330,
+      "failed_tests": 0,
+      "skipped": 0
+    },
+    "junit-regular.xml": {
+      "tests": 101,
+      "failed_tests": 5,
+      "skipped": 0
+    },
+    "junit-thread.xml": {
+      "tests": 41,
+      "failed_tests": 0,
+      "skipped": 0
+    }
+  },
+  "ZIP_entries": {
+    "build-evidence.zip": 44,
+    "diagnostics.zip": 1338,
+    "final-ci.zip": 9,
+    "intermediate-ci-v1.zip": 9,
+    "intermediate-ci-v2.zip": 9,
+    "intermediate-ci-v3.zip": 9,
+    "pressure.zip": 991
+  },
+  "malformed_diagnostic_XML": [],
+  "note": "Sanitizer aborts without XML remain raw FAIL in JSON/logs; diagnostic invocations are not counted as passing tests."
+}

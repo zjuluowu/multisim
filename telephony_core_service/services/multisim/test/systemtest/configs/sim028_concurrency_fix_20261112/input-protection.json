@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "original_files": 1925,
+  "allowed_modified": [
+    "telephony_core_service/services/multisim/test/systemtest/configs/sim028_ci.json",
+    "telephony_core_service/services/multisim/test/systemtest/tools/ci_sim028.py"
+  ],
+  "unexpected_changed": [],
+  "main_production_unchanged": true,
+  "stage_empty": true,
+  "note": "Before appending section22; prior execution state must remain a byte prefix.",
+  "state_append_prefix": "PASS",
+  "final_unchanged_original_files": 1922
+}

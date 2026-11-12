@@ -1,0 +1,145 @@
+(lldb) target create "/tmp/sim028-stop-impl-7b9ma6mi/build/build/sim_primary_slot_real_test"
+Current executable set to '/tmp/sim028-stop-impl-7b9ma6mi/build/build/sim_primary_slot_real_test' (x86_64).
+(lldb) settings set target.disable-aslr false
+(lldb) breakpoint set -n OHOS::Telephony::RadioProtocolController::SetRadioProtocol
+Breakpoint 1: where = sim_primary_slot_real_test`OHOS::Telephony::SimManager::SetPrimarySlotId(int, bool) + 1958 [inlined] OHOS::Telephony::RadioProtocolController::SetRadioProtocol(int) at radio_protocol_controller.cpp:105:1, address = 0x00000000001b6576
+(lldb) run --gtest_filter=RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected
+[0;33mNote: Google Test filter = RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected
+[m[0;32m[==========] [mRunning 1 test from 1 test suite.
+[0;32m[----------] [mGlobal test environment set-up.
+[0;32m[----------] [m1 test from RealSimPrimary
+[0;32m[ RUN      ] [mRealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected
+RIL_SUBSCRIBE slot=0 event=515 object=108744959303616 type=N4OHOS9Telephony14SimStateHandleE
+RIL_SUBSCRIBE slot=0 event=0 object=108744959303616 type=N4OHOS9Telephony14SimStateHandleE
+DIAGNOSTIC SIM_STATE_CHANGE
+RIL_SUBSCRIBE slot=0 event=4 object=108744959306096 type=N4OHOS9Telephony14SimFileManagerE
+RIL_SUBSCRIBE slot=0 event=14 object=108744959306096 type=N4OHOS9Telephony14SimFileManagerE
+TRACE parameter telephony.sim.opkey0=-1
+RIL_SUBSCRIBE slot=0 event=536 object=108744959336336 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=0 event=537 object=108744959336336 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=0 event=538 object=108744959336336 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=0 event=539 object=108744959336336 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=0 event=540 object=108744959336336 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=0 event=14 object=108744959336336 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=0 event=0 object=108744959336336 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=1 event=515 object=108744959341984 type=N4OHOS9Telephony14SimStateHandleE
+RIL_SUBSCRIBE slot=1 event=0 object=108744959341984 type=N4OHOS9Telephony14SimStateHandleE
+DIAGNOSTIC SIM_STATE_CHANGE
+RIL_SUBSCRIBE slot=1 event=4 object=108744959344560 type=N4OHOS9Telephony14SimFileManagerE
+RIL_SUBSCRIBE slot=1 event=14 object=108744959344560 type=N4OHOS9Telephony14SimFileManagerE
+TRACE parameter telephony.sim.opkey1=-1
+RIL_SUBSCRIBE slot=1 event=536 object=108744959375440 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=1 event=537 object=108744959375440 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=1 event=538 object=108744959375440 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=1 event=539 object=108744959375440 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=1 event=540 object=108744959375440 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=1 event=14 object=108744959375440 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=1 event=0 object=108744959375440 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=2 event=515 object=108744959381344 type=N4OHOS9Telephony14SimStateHandleE
+RIL_SUBSCRIBE slot=2 event=0 object=108744959381344 type=N4OHOS9Telephony14SimStateHandleE
+DIAGNOSTIC SIM_STATE_CHANGE
+RIL_SUBSCRIBE slot=2 event=4 object=108744959383872 type=N4OHOS9Telephony14SimFileManagerE
+RIL_SUBSCRIBE slot=2 event=14 object=108744959383872 type=N4OHOS9Telephony14SimFileManagerE
+TRACE parameter telephony.sim.opkey2=-1
+RIL_SUBSCRIBE slot=2 event=536 object=108744959415344 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=2 event=537 object=108744959415344 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=2 event=538 object=108744959415344 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=2 event=539 object=108744959415344 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=2 event=540 object=108744959415344 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=2 event=14 object=108744959415344 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=2 event=0 object=108744959415344 type=N4OHOS9Telephony13StkControllerE
+RIL_SUBSCRIBE slot=0 event=525 object=108744959423280 type=N4OHOS9Telephony23RadioProtocolControllerE
+RIL_SUBSCRIBE slot=1 event=525 object=108744959423280 type=N4OHOS9Telephony23RadioProtocolControllerE
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey0=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey1=-1
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE parameter telephony.sim.opkey2=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+LIFETIME_SAMPLE address=108744959286464 type=N4OHOS9Telephony15SimStateTrackerE
+LIFETIME_SAMPLE address=108744959302704 type=SimStateManager
+LIFETIME_SAMPLE address=108744959303616 type=N4OHOS9Telephony14SimStateHandleE
+LIFETIME_SAMPLE address=108744959306096 type=N4OHOS9Telephony14SimFileManagerE
+LIFETIME_SAMPLE address=108744959311928 type=N4OHOS9Telephony7SimFileE
+LIFETIME_SAMPLE address=108744959321168 type=N10Sim028Host15AccountObserverE
+LIFETIME_SAMPLE address=108744959322224 type=N4OHOS9Telephony19OperatorConfigCacheE
+LIFETIME_SAMPLE address=108744959329072 type=N4OHOS9Telephony25IccDiallingNumbersManagerE
+LIFETIME_SAMPLE address=108744959336336 type=N4OHOS9Telephony13StkControllerE
+LIFETIME_SAMPLE address=108744959341024 type=SimStateManager
+LIFETIME_SAMPLE address=108744959341984 type=N4OHOS9Telephony14SimStateHandleE
+LIFETIME_SAMPLE address=108744959344560 type=N4OHOS9Telephony14SimFileManagerE
+LIFETIME_SAMPLE address=108744959350424 type=N4OHOS9Telephony7SimFileE
+LIFETIME_SAMPLE address=108744959361232 type=N4OHOS9Telephony19OperatorConfigCacheE
+LIFETIME_SAMPLE address=108744959364096 type=N4OHOS9Telephony15SimStateTrackerE
+LIFETIME_SAMPLE address=108744959368448 type=N4OHOS9Telephony25IccDiallingNumbersManagerE
+LIFETIME_SAMPLE address=108744959375440 type=N4OHOS9Telephony13StkControllerE
+LIFETIME_SAMPLE address=108744959380384 type=SimStateManager
+LIFETIME_SAMPLE address=108744959381344 type=N4OHOS9Telephony14SimStateHandleE
+LIFETIME_SAMPLE address=108744959383872 type=N4OHOS9Telephony14SimFileManagerE
+LIFETIME_SAMPLE address=108744959389736 type=N4OHOS9Telephony7SimFileE
+LIFETIME_SAMPLE address=108744959400016 type=N4OHOS9Telephony19OperatorConfigCacheE
+LIFETIME_SAMPLE address=108744959402960 type=N4OHOS9Telephony15SimStateTrackerE
+LIFETIME_SAMPLE address=108744959408352 type=N4OHOS9Telephony25IccDiallingNumbersManagerE
+LIFETIME_SAMPLE address=108744959415344 type=N4OHOS9Telephony13StkControllerE
+LIFETIME_SAMPLE address=108744959423280 type=N4OHOS9Telephony23RadioProtocolControllerE
+LIFETIME_SAMPLE address=108744959426528 type=N4OHOS9Telephony15MultiSimMonitorE
+TRACE input request=C1ThreePhasesWithStaleCheckResponseRejected slot=1 userSet=true
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE parameter persist.telephony.userPreferPrimarySlot=true
+TRACE parameter persist.telephony.MainSlotId=1
+TRACE parameter persist.telephony.MainCard.Iccid=AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=0 user=0
+Process 48 launched: '/tmp/sim028-stop-impl-7b9ma6mi/build/build/sim_primary_slot_real_test' (x86_64)
+Process 48 stopped
+* thread #43, name = 'sim_primary_slo', stop reason = breakpoint 1.1
+    frame #0: 0x000062e6f5127576 sim_primary_slot_real_test`OHOS::Telephony::SimManager::SetPrimarySlotId(int, bool) [inlined] OHOS::Telephony::RadioProtocolController::SetRadioProtocol(this=0x000062e728ad7330, slotId=<unavailable>) at radio_protocol_controller.cpp:105:1
+   102 	}
+   103 	
+   104 	bool RadioProtocolController::SetRadioProtocol(int32_t slotId)
+-> 105 	{
+    	^
+   106 	    std::unique_lock<ffrt::mutex> radioProtocolLock(radioProtocolMutex_);
+   107 	    if (isCommunicating_) {
+   108 	        TELEPHONY_LOGE("protocol is communicating, can not set now");
+(lldb) thread backtrace -c 8
+* thread #43, name = 'sim_primary_slo', stop reason = breakpoint 1.1
+  * frame #0: 0x000062e6f5127576 sim_primary_slot_real_test`OHOS::Telephony::SimManager::SetPrimarySlotId(int, bool) [inlined] OHOS::Telephony::RadioProtocolController::SetRadioProtocol(this=0x000062e728ad7330, slotId=<unavailable>) at radio_protocol_controller.cpp:105:1
+    frame #1: 0x000062e6f5127576 sim_primary_slot_real_test`OHOS::Telephony::SimManager::SetPrimarySlotId(int, bool) [inlined] OHOS::Telephony::MultiSimController::SetPrimarySlotId(this=0x000062e728ad6b80, slotId=1, isUserSet=<unavailable>) at multi_sim_controller.cpp:1523:75
+    frame #2: 0x000062e6f5126fb7 sim_primary_slot_real_test`OHOS::Telephony::SimManager::SetPrimarySlotId(this=0x000062e728ab91a0, slotId=1, isUserSet=<unavailable>) at sim_manager.cpp:456:40
+    frame #3: 0x000062e6f511a692 sim_primary_slot_real_test`OHOS::Telephony::CoreServiceSim::SetPrimarySlotId(this=0x00007fff2da58848, slotId=1) at core_service_sim.cpp:493:25
+    frame #4: 0x000062e6f50dff8a sim_primary_slot_real_test`std::_Function_handler<std::unique_ptr<std::__future_base::_Result_base, std::__future_base::_Result_base::_Deleter> (), std::__future_base::_Task_setter<std::unique_ptr<std::__future_base::_Result<int>, std::__future_base::_Result_base::_Deleter>, std::thread::_Invoker<std::tuple<(anonymous namespace)::RealSimPrimary_C1ThreePhasesWithStaleCheckResponseRejected_Test::TestBody()::$_2>>, int>>::_M_invoke(std::_Any_data const&) [inlined] (anonymous namespace)::RealSimPrimary_C1ThreePhasesWithStaleCheckResponseRejected_Test::TestBody()::$_2::operator()(this=<unavailable>) const at real_test.cpp:156:70
+    frame #5: 0x000062e6f50dff82 sim_primary_slot_real_test`std::_Function_handler<std::unique_ptr<std::__future_base::_Result_base, std::__future_base::_Result_base::_Deleter> (), std::__future_base::_Task_setter<std::unique_ptr<std::__future_base::_Result<int>, std::__future_base::_Result_base::_Deleter>, std::thread::_Invoker<std::tuple<(anonymous namespace)::RealSimPrimary_C1ThreePhasesWithStaleCheckResponseRejected_Test::TestBody()::$_2>>, int>>::_M_invoke(std::_Any_data const&) [inlined] int std::__invoke_impl<int, (anonymous namespace)::RealSimPrimary_C1ThreePhasesWithStaleCheckResponseRejected_Test::TestBody()::$_2>((null)=<unavailable>, __f=<unavailable>) at invoke.h:61:14
+    frame #6: 0x000062e6f50dff82 sim_primary_slot_real_test`std::_Function_handler<std::unique_ptr<std::__future_base::_Result_base, std::__future_base::_Result_base::_Deleter> (), std::__future_base::_Task_setter<std::unique_ptr<std::__future_base::_Result<int>, std::__future_base::_Result_base::_Deleter>, std::thread::_Invoker<std::tuple<(anonymous namespace)::RealSimPrimary_C1ThreePhasesWithStaleCheckResponseRejected_Test::TestBody()::$_2>>, int>>::_M_invoke(std::_Any_data const&) [inlined] std::__invoke_result<(anonymous namespace)::RealSimPrimary_C1ThreePhasesWithStaleCheckResponseRejected_Test::TestBody()::$_2>::type std::__invoke<(anonymous namespace)::RealSimPrimary_C1ThreePhasesWithStaleCheckResponseRejected_Test::TestBody()::$_2>(__fn=<unavailable>) at invoke.h:96:14
+    frame #7: 0x000062e6f50dff82 sim_primary_slot_real_test`std::_Function_handler<std::unique_ptr<std::__future_base::_Result_base, std::__future_base::_Result_base::_Deleter> (), std::__future_base::_Task_setter<std::unique_ptr<std::__future_base::_Result<int>, std::__future_base::_Result_base::_Deleter>, std::thread::_Invoker<std::tuple<(anonymous namespace)::RealSimPrimary_C1ThreePhasesWithStaleCheckResponseRejected_Test::TestBody()::$_2>>, int>>::_M_invoke(std::_Any_data const&) [inlined] int std::thread::_Invoker<std::tuple<(anonymous namespace)::RealSimPrimary_C1ThreePhasesWithStaleCheckResponseRejected_Test::TestBody()::$_2>>::_M_invoke<0ul>(this=<unavailable>, (null)=<unavailable>) at std_thread.h:292:13
+(lldb) continue
+TRACE radio slot=0 session=1 phase=1 modem=0
+TRACE radio slot=1 session=1 phase=1 modem=1
+TRACE radio slot=0 session=1 phase=2 modem=1
+TRACE radio slot=1 session=1 phase=2 modem=0
+TRACE radio slot=0 session=1 phase=4 modem=1
+TRACE radio slot=1 session=1 phase=4 modem=0
+TRACE notify usual.event.SIM.DEFAULT_MAIN_SUBSCRIPTION_CHANGED slot=1 sim=1 done=0 user=0
+TRACE parameter persist.telephony.MainCellularDataSlotId=1
+TRACE notify usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED slot=-1 sim=1 done=0 user=0
+DIAGNOSTIC SET_DEFAULT_CELLULAR_DATA
+TRACE notify usual.event.SET_PRIMARY_SLOT_STATUS slot=-1 sim=-1 done=1 user=0
+DIAGNOSTIC ACCOUNT_NOTIFY
+LIFE_CHECKPOINT stage=before_cleanup manager=0x62e728ab91a0 ril=0x62e728aa9b50
+LIFE_QUEUE stage=before_cleanup address=108744959321536 name=host-general pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=108744959431248 name=sim028-account-observer pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_CHECKPOINT stage=after_cleanup manager=0 ril=0x62e728aa9b50
+[0;32m[       OK ] [mRealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected (180 ms)
+[0;32m[----------] [m1 test from RealSimPrimary (180 ms total)
+
+[0;32m[----------] [mGlobal test environment tear-down
+[0;32m[==========] [m1 test from 1 test suite ran. (180 ms total)
+[0;32m[  PASSED  ] [m1 test.
+Process 48 resuming
+Process 48 exited with status = 0 (0x00000000)

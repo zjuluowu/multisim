@@ -1,0 +1,54 @@
+{
+  "status": "PASS",
+  "unchanged_original_inputs_except_appended_state": 1902,
+  "state_original_prefix_preserved": true,
+  "main_production_unchanged": true,
+  "staging_empty": true,
+  "zip_entries": {
+    "final-artifacts.zip": 7,
+    "incremental-failed.zip": 7,
+    "initial-inputs.zip": 6,
+    "initial-passed.zip": 3
+  },
+  "xml_counts": {
+    "initial-passed.zip:regular/logs.zip": {
+      "testcases": 96,
+      "failed_testcases": 5
+    },
+    "initial-passed.zip:address/logs.zip": {
+      "testcases": 36,
+      "failed_testcases": 0
+    },
+    "initial-passed.zip:thread/logs.zip": {
+      "testcases": 36,
+      "failed_testcases": 0
+    },
+    "incremental-failed.zip:regular/logs.zip": {
+      "testcases": 96,
+      "failed_testcases": 5
+    },
+    "incremental-failed.zip:address/logs.zip": {
+      "testcases": 35,
+      "failed_testcases": 0
+    },
+    "incremental-failed.zip:thread/logs.zip": {
+      "testcases": 36,
+      "failed_testcases": 0
+    },
+    "final-artifacts.zip:regular/logs.zip": {
+      "testcases": 96,
+      "failed_testcases": 5
+    },
+    "final-artifacts.zip:address/logs.zip": {
+      "testcases": 36,
+      "failed_testcases": 0
+    },
+    "final-artifacts.zip:thread/logs.zip": {
+      "testcases": 35,
+      "failed_testcases": 0
+    }
+  },
+  "new_file_count_before_manifests": 19,
+  "note": "Sanitizer aborts may lack XML and remain FAIL in result.json; testcase XML count alone is not the execution count.",
+  "new_file_count": 22
+}

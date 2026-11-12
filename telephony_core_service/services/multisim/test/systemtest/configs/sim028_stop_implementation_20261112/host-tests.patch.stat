@@ -1,0 +1,13 @@
+ .../services/multisim/test/systemtest/BUILD.gn     |    3 
+ .../services/multisim/test/systemtest/gn/BUILD.gn  |    6 +
+ .../multisim/test/systemtest/gn/BUILDCONFIG.gn     |    1 
+ .../primary_slot/lifecycle/shutdown_contract.h     |   35 ++++
+ .../lifecycle/shutdown_contract_test.cpp           |  167 ++++++++++++++++++++
+ .../test/systemtest/primary_slot/real_runtime.cpp  |   57 ++++++-
+ .../test/systemtest/primary_slot/real_scenario.h   |   22 ++-
+ .../test/systemtest/primary_slot/real_test.cpp     |    1 
+ .../systemtest/primary_slot/watcher_boundary.h     |   16 ++
+ .../test/systemtest/stubs/ffrt_runtime.cpp         |   23 +++
+ .../stubs/include/compile_declarations.h           |    4 
+ .../multisim/test/systemtest/tools/host.py         |    3 
+ 12 files changed, 322 insertions(+), 16 deletions(-)

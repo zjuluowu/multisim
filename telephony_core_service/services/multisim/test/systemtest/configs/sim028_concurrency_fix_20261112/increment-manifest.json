@@ -1,0 +1,76 @@
+{
+  "base_head": "77e3dc4e27dfe33ac728f225843b86b038914f6c",
+  "base_patches": {
+    "production-minimal.patch": "d93c3c2b14bdd2e4e79986678ffdc4965ebfdb13079685b8596bc8a66389ac72",
+    "test-guard.patch": "3e3209dcf936488c51dc573801abc553f18f8b684a5a0c6b2a73dc54873e64c7"
+  },
+  "apply_order": [
+    "admission/production-minimal.patch",
+    "admission/test-guard.patch",
+    "production-increment.patch",
+    "test-increment.patch"
+  ],
+  "production_files": [
+    "telephony_core_service/services/sim/include/sim_state_handle.h",
+    "telephony_core_service/services/sim/src/sim_state_handle.cpp",
+    "telephony_core_service/utils/common/src/tel_event_queue.cpp"
+  ],
+  "files": [
+    {
+      "path": "telephony_core_service/services/sim/include/sim_state_handle.h",
+      "production_changed": true,
+      "test_changed": false,
+      "base_sha256": "2a30159358f650a8863947dedb18fe1b75885d54b3fecf76ff66c93af41f51dd",
+      "production_sha256": "e43fdea1feee78ae42780c3f38acfc75edf3b2fcc52d212643ce6a126512e2ea",
+      "candidate_sha256": "e43fdea1feee78ae42780c3f38acfc75edf3b2fcc52d212643ce6a126512e2ea"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_state_handle.cpp",
+      "production_changed": true,
+      "test_changed": false,
+      "base_sha256": "bf6f4d1ff0ecab27e74442b0cf6479c1acf77e9d7a1202b533e6a67e7c743a47",
+      "production_sha256": "6ce1413fbf797a65154bce600fad013066cea553e70609023e7c27bcd1fb49f2",
+      "candidate_sha256": "6ce1413fbf797a65154bce600fad013066cea553e70609023e7c27bcd1fb49f2"
+    },
+    {
+      "path": "telephony_core_service/utils/common/src/tel_event_queue.cpp",
+      "production_changed": true,
+      "test_changed": true,
+      "base_sha256": "81a6a16a5ceb1823140c1bd0eaa80b1115a47f749ddb4bffec35b7ef135d28ae",
+      "production_sha256": "3e28634baf63ef5929cbada91e4709536f31df7ef8f446069ae216c94383bfb7",
+      "candidate_sha256": "d74c359d5e3cae74d87216af7eaf7c4a4997321980ba71841c46d63271362b62"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.h",
+      "production_changed": false,
+      "test_changed": true,
+      "base_sha256": "1692f5751492604dddd799070d31cd28195725bb337acd0b7b3fe6db372e43d4",
+      "production_sha256": "1692f5751492604dddd799070d31cd28195725bb337acd0b7b3fe6db372e43d4",
+      "candidate_sha256": "62d0da852d9f669811e765bed9be5a0d89f2c25550ab650942f5147ccc1cfe1d"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp",
+      "production_changed": false,
+      "test_changed": true,
+      "base_sha256": "9c2fb658132e7c927e01d4c7d26d4d721845dad679ea70dff5e9b65b9c718966",
+      "production_sha256": "9c2fb658132e7c927e01d4c7d26d4d721845dad679ea70dff5e9b65b9c718966",
+      "candidate_sha256": "e46b1c555d3a69916f2fc3bcf40e83232318fa17cfc0a660084fa27959327e34"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/stubs/include/hilog/log.h",
+      "production_changed": false,
+      "test_changed": true,
+      "base_sha256": "e191f5f05f83fdeddce8bb541a6ca49203afc8a720bb548fc62f633523d7368d",
+      "production_sha256": "e191f5f05f83fdeddce8bb541a6ca49203afc8a720bb548fc62f633523d7368d",
+      "candidate_sha256": "57d8836228f9cf0671941ff2362ef0e7fa3043a5fc58a4617d0f0925a617a444"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp",
+      "production_changed": false,
+      "test_changed": true,
+      "base_sha256": "685605048410cb09bff232ac9aa13462afc11b13855f56cdaee370e4f2eaf265",
+      "production_sha256": "685605048410cb09bff232ac9aa13462afc11b13855f56cdaee370e4f2eaf265",
+      "candidate_sha256": "8b78a9fd0a51ff6912355c13eb73ef7edbaf605550e110e0e53707a1c245f318"
+    }
+  ]
+}

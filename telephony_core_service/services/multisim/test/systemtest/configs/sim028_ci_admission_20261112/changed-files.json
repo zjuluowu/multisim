@@ -1,0 +1,31 @@
+{
+  "modified": [
+    "telephony_core_service/docs/SIM_Refactor_Execution_State.md"
+  ],
+  "added": [
+    "telephony_core_service/services/multisim/test/systemtest/configs/sim028_ci.json",
+    "telephony_core_service/services/multisim/test/systemtest/configs/sim028_ci_admission_20261112/SHA256SUMS",
+    "telephony_core_service/services/multisim/test/systemtest/configs/sim028_ci_admission_20261112/changed-files.json",
+    "telephony_core_service/services/multisim/test/systemtest/configs/sim028_ci_admission_20261112/delivery-checks.json",
+    "telephony_core_service/services/multisim/test/systemtest/configs/sim028_ci_admission_20261112/environment.json",
+    "telephony_core_service/services/multisim/test/systemtest/configs/sim028_ci_admission_20261112/final-artifacts.zip",
+    "telephony_core_service/services/multisim/test/systemtest/configs/sim028_ci_admission_20261112/final-command.log",
+    "telephony_core_service/services/multisim/test/systemtest/configs/sim028_ci_admission_20261112/gate-tests.log",
+    "telephony_core_service/services/multisim/test/systemtest/configs/sim028_ci_admission_20261112/incremental-command.log",
+    "telephony_core_service/services/multisim/test/systemtest/configs/sim028_ci_admission_20261112/incremental-failed.zip",
+    "telephony_core_service/services/multisim/test/systemtest/configs/sim028_ci_admission_20261112/initial-command.log",
+    "telephony_core_service/services/multisim/test/systemtest/configs/sim028_ci_admission_20261112/initial-inputs.zip",
+    "telephony_core_service/services/multisim/test/systemtest/configs/sim028_ci_admission_20261112/initial-passed.zip",
+    "telephony_core_service/services/multisim/test/systemtest/configs/sim028_ci_admission_20261112/input-protection.json",
+    "telephony_core_service/services/multisim/test/systemtest/configs/sim028_ci_admission_20261112/validation.json",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/admission/README.md",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/admission/patch-manifest.json",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/admission/production-minimal.patch",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/admission/review.json",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/admission/test-guard.patch",
+    "telephony_core_service/services/multisim/test/systemtest/tools/ci_sim028.py",
+    "telephony_core_service/services/multisim/test/systemtest/tools/test_ci_sim028.py"
+  ],
+  "existing_user_changes_preserved": true,
+  "not_committed_or_pushed": true
+}

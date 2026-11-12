@@ -1,0 +1,294 @@
+{
+  "sources": [
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp",
+      "sha256": "75dae341f277487aa651cd9b349c295d9497ca80a5ec7b01f94b5a0035257887"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_runtime.cpp",
+      "sha256": "ee0e5914dda7c5106717f52c305a2297210caff84863ff28efe10cbc6998fead"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/security_boundary.cpp",
+      "sha256": "06caf0a25551d39b9d36b93d574ad1f638a0cefcec7dbd0dcf0bb23a27976b4e"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp",
+      "sha256": "0535f2c22561a5e8818c7a9c4aeb7b2b1847bd75cf412873f4891708743aa8d2"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp",
+      "sha256": "14f52208b1a7c8d794bcc3ba44e79af9a778611b5182622eb303c8138cfe3809"
+    },
+    {
+      "path": "telephony_core_service/utils/common/src/telephony_permission.cpp",
+      "sha256": "3ead60a37b3e50bad9c2175e2dbf6b130b47e5be0574298f786a36d49ea21611"
+    },
+    {
+      "path": "telephony_core_service/common/capability_mgr/src/multi_sims_capability_manager.cpp",
+      "sha256": "d1453865fd6003b513dc76fcf65b503668c6a7f96b0da193fd396f53957eb2ef"
+    },
+    {
+      "path": "telephony_core_service/services/core/src/core_service_sim.cpp",
+      "sha256": "6bc4f83b79983b319e41572a6c8683808e4cd485d652eb531fc65a154376df34"
+    },
+    {
+      "path": "telephony_core_service/frameworks/native/src/core_manager_inner.cpp",
+      "sha256": "2bbfe3133a8f57e7774ba554874acf00763531d395a5acdd294d3e0a12e99733"
+    },
+    {
+      "path": "telephony_core_service/frameworks/native/src/operator_config_types.cpp",
+      "sha256": "891c77eda302d76d7ceb0aee257e2b02c3e81d120a81c9b36432d869255aeedf"
+    },
+    {
+      "path": "telephony_core_service/services/tel_ril/src/observer_handler.cpp",
+      "sha256": "c1ae8c926a59bbc0b2bf75a382a131b9e30af29458514e2367bbf2b4411578d1"
+    },
+    {
+      "path": "telephony_core_service/services/core/src/core_service_hisysevent.cpp",
+      "sha256": "34bf546d96830b4e195a80af754fe0901f517f580276ba1bacc2e134691106af"
+    },
+    {
+      "path": "telephony_core_service/utils/common/src/telephony_common_utils.cpp",
+      "sha256": "4d74a30cf4d1e0963c91948f8942eb646e8291792c0d8c9aceaf26b8527d3e3c"
+    },
+    {
+      "path": "telephony_core_service/utils/common/src/str_convert.cpp",
+      "sha256": "20f6f4af091416f04ec8910d2260fb872ce92a379e7f6d867d165ba5a82bf757"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_manager.cpp",
+      "sha256": "3ef021e204450df61ec49b06cbdebea4d0533ed191231a1f64a56896e38b9c35"
+    },
+    {
+      "path": "telephony_core_service/services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp",
+      "sha256": "b3d5e06f22790da1ee1b3373fe528e045a3452f18e0bec01472a7c7f23fc6b27"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/card_file_detect_manager.cpp",
+      "sha256": "2986acdc382f702f0a08ee15d446d68e9a9dec846189a90e322effe762425c41"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/csim_file_controller.cpp",
+      "sha256": "9a5df536c65668d0311eece5c8b4ed33274928c64a0f84ed20854ab6002135e4"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/esim_manager.cpp",
+      "sha256": "c13572bf449e181015515e73a1febdc31d524bc22c57a245d3f783598920b7a2"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/icc_dialling_numbers_cache.cpp",
+      "sha256": "cd5273fb9b56fa8463b5d360dc25dff7214e7887b8c01da3ee4350f1b528ed8d"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/icc_dialling_numbers_handler.cpp",
+      "sha256": "2ac46452530d191f1049155127af5388405c04144ffa72c661dbcf7274758765"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/icc_dialling_numbers_manager.cpp",
+      "sha256": "18fb11c66fa3b4fbf7cbeba4be111bdad56d36bb0469f35d82879a333549fbc8"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/icc_file.cpp",
+      "sha256": "8e4e84a73b149bd6d0fefa5cf5317626357ebf9200d85bb2b7a118a9774b5d6e"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/icc_file_controller.cpp",
+      "sha256": "397c7805e3130236c355a0144a868bd8d091ebe7347e6856cb07e995f5fd3471"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/icc_operator_privilege_controller.cpp",
+      "sha256": "ca3048bda553b8a71a9d51820282221c4ac6dabc8f21d19d6163fd9143b96708"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/icc_operator_rule.cpp",
+      "sha256": "03b27f8ec60614f63d603fa3091ca2d10125fe5881f492f0d3ab387faf2b8ed2"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/icc_state.cpp",
+      "sha256": "f44d7f4ba3a3dec16a0edb9ba8b24b6d1bcb66f50fce9d79f936626ba0d9e7cd"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/isim_file.cpp",
+      "sha256": "cd6736b9c70517805e8b8810c55ba5a6e9a82b74df7c00f29f7c4c7e3bec7182"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/isim_file_controller.cpp",
+      "sha256": "95aa7256dc134971062364beb6feee28241e1a0f07b873b7754b69dc97fea590"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/mcc_pool.cpp",
+      "sha256": "e9d2c866df6e36d8a77c63e1d4f04167d9a2e91419bed4cf93b4c3e8d355cb0b"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/multi_sim_helper.cpp",
+      "sha256": "dfeb08121cf1c87b9941516fb58c03ef4d25d47b65c85dd45052f55635eb78d9"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/multi_sim_monitor.cpp",
+      "sha256": "b4c80daaf19f2f3b4c459fac2b4ca336e97cbef096fd2b703dbd15705f45e852"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/operator_config_cache.cpp",
+      "sha256": "e335ec5ad3949f921dcdf76f51347665cd9977c4268f94273b21aaa9073a9203"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/operator_config_hisysevent.cpp",
+      "sha256": "1d3a868297ab72cb15a57826539bd8bec8a4938d7350420b32537283617c2fe6"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/operator_config_loader.cpp",
+      "sha256": "c60bcac6ed36932444beeee10b21107492f2ea55c18d21d28e06d2167e70a42a"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/operator_file_parser.cpp",
+      "sha256": "661b9c208686cc164dd839d0df1401f96c70d9a03058d2e5d3f4ef0456d7e97b"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/operator_matching_rule.cpp",
+      "sha256": "65066b9aa8f1b824839398f3e21e04f4a883e5e679ac0df06a4935d9f97b919e"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/pdp_profile_rdb_helper.cpp",
+      "sha256": "dffc17c008029ed133639683871ebf57a9e6593284e248113516c121280b6927"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/plmn_file.cpp",
+      "sha256": "ce91952f395f202d3ed4212c8495fbf684e1e9aa7bcea0ccde3d1101c7b23c35"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/radio_protocol_controller.cpp",
+      "sha256": "c9fc077a9ca94946f37e2558cc86447482a217be9d9df82bbb8f807ad96094ac"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/ruim_file.cpp",
+      "sha256": "bd055f0028598c8800ab5fabd2f5aa096caa7e1e06cc05da6985e01b0b9c1bc6"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/ruim_file_controller.cpp",
+      "sha256": "e56479355d8189162beb8199828fbee46c522188093efb52947a9ca04b10cee9"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_account_callback_death_recipient.cpp",
+      "sha256": "480adf72c92a5c68285cbfbcf87a7cf15c161eee3bb8c5fc98d11da82eee09c1"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_account_manager.cpp",
+      "sha256": "bde0b167c42a7d97a97a7cc85293e07dd0e1e9d9cd810f1927ff41efb8fdd95b"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_char_decode.cpp",
+      "sha256": "6d1bd0e24a958ccce41b4c05148b231a3292f95b4075a057be0d18a36657da50"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_file.cpp",
+      "sha256": "4c758cde7ffc68f623157f01ba60d8b8c1b578b0c2d1cb574110eb136f562691"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_file_controller.cpp",
+      "sha256": "bbd724bc8d20eb154f81dfa4389d81519d14b9cc579c954fa349afc9d30b1570"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_file_init.cpp",
+      "sha256": "3e331c90149589fbade06a178a3f808d1ed072521d0473e2878e6e47390af345"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_file_manager.cpp",
+      "sha256": "96f7e994a1675b5a5f98d55bee532a4f0f6368c8675c7ce10fa54a4cb92f2bdb"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_file_parse.cpp",
+      "sha256": "9d91141762124f4211d8e5bf234a3acf98dbe47c2f513c9e6ccc7fcb03dfc57b"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_number_decode.cpp",
+      "sha256": "929240de7614c05edb4a79b751870cfafc4973f2f7505af43aa906d224d7f1b8"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_rdb_helper.cpp",
+      "sha256": "99656cbd23c29e0575de75c9ba439eaca65c2c4f1c72e6b6528efe9496538c23"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_sms_controller.cpp",
+      "sha256": "044e456c3fd8e5128503a6a9db8f0268fe9c5c5c069e309b34cfba4cf53bd0db"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_sms_manager.cpp",
+      "sha256": "b0b6b2bba940e48db243b23723bf82461a1d279bd43598ece1b776b4eddfc8cf"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_state_handle.cpp",
+      "sha256": "d01cd35f13cc80f3addb59951ace7d235e30883cbfae4a66d06bbf29e4c6fe7f"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_state_manager.cpp",
+      "sha256": "a7f01f2926cc8a93e24cdab7c94f3ea62c75b2058e303c4cfbd608ca8140e482"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_state_tracker.cpp",
+      "sha256": "0ebadb176c101095d8561c1f7eb55fa108c8757016a4d71e630e8242df44ea4c"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_utils.cpp",
+      "sha256": "7940f2dd69a770aaaf96efcad4f7d491cf1bf868521c2bc05b6e55458742e4b8"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/stk_controller.cpp",
+      "sha256": "5d054c5334564ed6ea2e46f771f3d7d84b5df57328782db8c700009741a1a1c2"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/stk_manager.cpp",
+      "sha256": "5f2772cfdb6c21486ec3241c460accf2d0c9bd4b8b33c573625e815ac0f25bb1"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/tag_service.cpp",
+      "sha256": "9ce64e8f84e6cffe0fd68b801005cf54acddaec2131e45fa2258d97ab32f1595"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/telephony_data_helper.cpp",
+      "sha256": "2bd5757223716843e712813d03727d45f4abafec1cb3a42faebe5ad1e79884f8"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/usim_dialling_numbers_service.cpp",
+      "sha256": "1e0931644fe084c7109f44203093f19cf6f9515498359a3d2289771986e37bc2"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/usim_file_controller.cpp",
+      "sha256": "75e66a9550201da634cb2a78975739caa05b0f50c00530dae247b658b141d76d"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/voice_mail_constants.cpp",
+      "sha256": "ed4e43caf5e615fc403bf262417909d004e36e867d182f8ca4fd4b8df305a3d9"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/multi_sim_controller.cpp",
+      "sha256": "d3a7e5a6f227b4a478aae72583fd3ad72e9c9b3a614043205afe0b5a2fb7ed6b"
+    },
+    {
+      "path": "telephony_core_service/utils/common/src/tel_event_handler.cpp",
+      "sha256": "a67dd3c6a598ac6c1ea07095073ec9df658f286dc20faf297306ca04d9990dec"
+    },
+    {
+      "path": "telephony_core_service/utils/common/src/tel_event_queue.cpp",
+      "sha256": "2e28460229c39f636bc9c041e3656068ea8e68807cdc03461375e498ef9cf5f1"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/stubs/event_handler_runtime.cpp",
+      "sha256": "4c963d526c054b93d2a94919b40e27dcd0ee65f9fbfcea86da0b7740ca2fbf86"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp",
+      "sha256": "9c2fb658132e7c927e01d4c7d26d4d721845dad679ea70dff5e9b65b9c718966"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/stubs/parameter_service.cpp",
+      "sha256": "7c9ec5810a76a3175ccccd578392cf06fac5b55d76c2beb3233795104eea56c4"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/stubs/external_services.cpp",
+      "sha256": "f3d7b4802b91b7a54f51c6670216754634fb9ab29e8634a5cf31e99c62136469"
+    }
+  ],
+  "sim_source_count": 51,
+  "scope": "Ninja dependency graph for sim_primary_slot_real_test"
+}

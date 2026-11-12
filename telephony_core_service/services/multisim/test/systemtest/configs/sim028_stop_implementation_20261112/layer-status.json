@@ -1,0 +1,54 @@
+{
+  "entry_contract": {
+    "status": "PASS",
+    "detail": "14 original entry cases; internal ISimManager StrictMock"
+  },
+  "real_sim_manager": {
+    "status": "PASS",
+    "detail": "7 real scenarios and 8 Stop contracts"
+  },
+  "real_multi_sim_controller": {
+    "status": "PASS",
+    "detail": "real production assembly and logic"
+  },
+  "branch_A": {
+    "status": "BLOCKED",
+    "detail": "vendor mapping implementation unavailable"
+  },
+  "branch_B": {
+    "status": "PASS",
+    "detail": "dedicated SetPrimarySlot success/error/real 45s timeout"
+  },
+  "branch_C0": {
+    "status": "PASS",
+    "detail": "actual reported mapping; no unnecessary device command"
+  },
+  "branch_C1": {
+    "status": "PASS",
+    "detail": "CHECK/UPDATE/COMPLETE, stale session, CHECK error/five retries, Stop at each phase; exhaustive no-response duration NOT_RUN"
+  },
+  "real_core_service": {
+    "status": "BLOCKED",
+    "detail": "real CoreServiceSim methods execute; full CoreService/SA lifecycle not linked/run"
+  },
+  "stub_dispatch": {
+    "status": "BLOCKED",
+    "detail": "native Binder/Parcel dispatch unavailable"
+  },
+  "host_ipc_boundary": {
+    "status": "NOT_RUN",
+    "detail": "identity and SA creator token are external stubs, not IPC simulation proof"
+  },
+  "real_ohos_ipc": {
+    "status": "BLOCKED",
+    "detail": "matching OHOS runtime required"
+  },
+  "ril_hdi_boundary": {
+    "status": "BLOCKED",
+    "detail": "strict ITelRilManager Host contract PASS; real TelRilManager/TelRilSim/HDI transport not executed"
+  },
+  "whole_component_chain": {
+    "status": "BLOCKED",
+    "detail": "single Host business causal chain PASS; native IPC/Core/HDI remains unavailable"
+  }
+}

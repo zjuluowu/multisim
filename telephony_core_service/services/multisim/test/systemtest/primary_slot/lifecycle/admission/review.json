@@ -1,0 +1,829 @@
+{
+  "schema_version": 1,
+  "head": "77e3dc4e27dfe33ac728f225843b86b038914f6c",
+  "categories": {
+    "A": "必需的生产生命周期候选/验证前置同步修复，非已获产品批准",
+    "B": "Host适配/测试诊断，原生不得包含",
+    "C": "可复用业务契约/防护网，Native需替换驱动",
+    "D": "保留的历史调试/验证产物，不进入生产",
+    "E": "不必要改动，已从新组合移除"
+  },
+  "production_admission": "BLOCKED",
+  "host_ci_admission": "FAIL",
+  "minimal_split": "37 production files; Host probes moved to separate test patch; unused <exception> removed",
+  "files": [
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/BUILD.gn",
+      "categories": [
+        "B"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "B:独立Linux GN与真实编译数据库/sanitizer配置，不可导入OHOS产品toolchain",
+      "source_historical_sha256": "0daacb34e101c2951400a5afbbec5a6b66c2851bb9b19fc27da6feaececeeaf6"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/gn/BUILD.gn",
+      "categories": [
+        "B"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "B:独立Linux GN与真实编译数据库/sanitizer配置，不可导入OHOS产品toolchain",
+      "source_historical_sha256": "077970636f662160be39254132d73ac1b25479777668162ccd2389b4a25a5718"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/gn/BUILDCONFIG.gn",
+      "categories": [
+        "B"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "B:独立Linux GN与真实编译数据库/sanitizer配置，不可导入OHOS产品toolchain",
+      "source_historical_sha256": "3a161c39d5a3691f9f3513c2757b87eeb18954c2cd622aaa93a6c404f3627d88"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h",
+      "categories": [
+        "B",
+        "C"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "C:真实业务/停止契约、参数及通知断言可复用；B:参数/RIL/Provider/调度边界和RTTI采样须替换后才能迁原生",
+      "source_historical_sha256": "246b35b3e189282edfe007787067b20abc9a645c8541d7c7ebfaa5a16c21f5b4"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp",
+      "categories": [
+        "B",
+        "C"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "C:真实业务/停止契约、参数及通知断言可复用；B:参数/RIL/Provider/调度边界和RTTI采样须替换后才能迁原生",
+      "source_historical_sha256": "14f52208b1a7c8d794bcc3ba44e79af9a778611b5182622eb303c8138cfe3809"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_runtime.cpp",
+      "categories": [
+        "B"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "B:外部SA身份token、Watcher登记、具名任务取消等Host实现；不是Binder/SA集成",
+      "source_historical_sha256": "ee0e5914dda7c5106717f52c305a2297210caff84863ff28efe10cbc6998fead"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h",
+      "categories": [
+        "B",
+        "C"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "C:真实业务/停止契约、参数及通知断言可复用；B:参数/RIL/Provider/调度边界和RTTI采样须替换后才能迁原生",
+      "source_historical_sha256": "f713d5370c9efdce1b43dceee9914e8e753a61cbb6bd8c7baa72190964b059bd"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp",
+      "categories": [
+        "B",
+        "C"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "C:真实业务/停止契约、参数及通知断言可复用；B:参数/RIL/Provider/调度边界和RTTI采样须替换后才能迁原生",
+      "source_historical_sha256": "75dae341f277487aa651cd9b349c295d9497ca80a5ec7b01f94b5a0035257887"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/watcher_boundary.h",
+      "categories": [
+        "B"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "B:Host参数服务登记/故障注入接口，不生成SIM业务结果",
+      "source_historical_sha256": "1a7fc6bbed5c0af554e5bcdb21f8ecd554005839651f64b23228b23ca31220d5"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp",
+      "categories": [
+        "B"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "B:Host FFRT逻辑任务ID、完整闭包完成、等待/队列证据；不能代替真实FFRT",
+      "source_historical_sha256": "9c2fb658132e7c927e01d4c7d26d4d721845dad679ea70dff5e9b65b9c718966"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/stubs/include/compile_declarations.h",
+      "categories": [
+        "B"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "B:Host声明和FFRT兼容面，严禁加入原生include路径",
+      "source_historical_sha256": "2e302c87fa26aa216c29559b103c79a672fbc41f380a87f9ae540fe8cdba5681"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/tools/host.py",
+      "categories": [
+        "B"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "B/C:复用既有GN入口，增加显式sanitizer选择，不隐式安装工具",
+      "source_historical_sha256": "ea2821a2b2ab7c36f5fdebfe25b3ef522ee3aadc9d56559cdb4a005681eea7eb"
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/icc_dialling_numbers_cache.h",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "关闭USIM/ADN子队列，释放号码缓存和文件引用；需要原生缓存类型矩阵",
+      "source_historical_sha256": "baccfaa9f3fd8bffe002493d37c2470f39759ee1fb3544bef05adf1e90a1e53a"
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/icc_dialling_numbers_manager.h",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "在共享所有权仍有效时注销文件状态观察者，断R4并释放缓存/State",
+      "source_historical_sha256": "3451b7ff634146ba209d613b0ad4c3a84b4cff1a2af81fefe1b478424be468a0"
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/icc_file.h",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "显式UnInit、七类Observer清空，断R2/R3；新增virtual Shutdown要求全量重编",
+      "source_historical_sha256": "ad275ee9e5e7374ae6ca3a6af255cb2f374139fe4aeff2b6419c871540988a97"
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/multi_sim_controller.h",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "准入、主卡重试终点、Radio解绑与持有释放；应答同锁和缓存读锁为TSan暴露的必要前置修复",
+      "source_historical_sha256": "19b5fd0b68a57482dd70bf37c4b5467102257edb9ad3f197c7263d1c19a82dc5"
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/multi_sim_monitor.h",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "三槽通知、账户Observer、Watcher及CES/SA解绑；原生回调/注销错误仍有阻塞",
+      "source_historical_sha256": "fc3b7a92a43d7eb10ebed793982fd2d9a23f926d3f0c52103c2af2e4858028e9"
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/operator_config_cache.h",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "停止自身队列、取消具名APN重试、释放State/File；APN成功配置路径未实测",
+      "source_historical_sha256": "162e88643c220ba9c7c6bd4da0175123a61533da519d48d2062bd25d798c7711"
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/sim_account_manager.h",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "在有效共享所有权时清理Tracker四类通知和OperatorCache，释放RIL/State/File",
+      "source_historical_sha256": "e0810cb47b5d50fbf77c90b5573a5478737bd0729c7dfa5eb68dcc7ccd78ec9a"
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/sim_file.h",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "卫星参数Watcher opaque上下文与屏障；保留ApplySatelliteParameter业务判断",
+      "source_historical_sha256": "5bf83a108cceafcc00738390bb84dc44a600b8f9d115b6b083a949e53e7a1722"
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/sim_file_manager.h",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "CARD_TYPE/ICCID及RIL通知配对；遍历去重缓存Records和Controller，断R3",
+      "source_historical_sha256": "5e87634f48cca5affed9edc9db477df1284f319641c50e433ee080726b7a4cd7"
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/sim_manager.h",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "统一Stopping准入、等待原有在途/重试、join后编排子对象；保留共享RIL其他持有者",
+      "source_historical_sha256": "242d35df7d16504cf606bb7a1d51549c9c172b694c4cd7311e95cfb4cc44b12e"
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/sim_sms_manager.h",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "停止SMS子队列并释放State/File/RIL；不是关闭全局SMS或共享RIL",
+      "source_historical_sha256": "cc100ba3cd841a6beae0a3acdd5c291992ee57a532bb266541e9af710406168e"
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/sim_state_handle.h",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "停止队列、注销RIL、清空状态Observer，断R1/R2/R4；补ICCID配对",
+      "source_historical_sha256": "2a30159358f650a8863947dedb18fe1b75885d54b3fecf76ff66c93af41f51dd"
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/sim_state_manager.h",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "Init准入、显式Handle Shutdown、释放RIL；析构fallback仍需原生异常退出验证",
+      "source_historical_sha256": "ed36539710f2a65e1f4b85fb10652c8d296ac109fffa3c30bf8793ed4c565acc"
+    },
+    {
+      "path": "telephony_core_service/services/sim/include/stk_manager.h",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "关闭STK控制器、在共享所有权有效时注销事件，再释放RIL/State",
+      "source_historical_sha256": "472fb250aad5e5347ba10d627480e57e27d251a6dff5ce1c3da35ec6d869ec04"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/icc_dialling_numbers_cache.cpp",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "关闭USIM/ADN子队列，释放号码缓存和文件引用；需要原生缓存类型矩阵",
+      "source_historical_sha256": "cd5273fb9b56fa8463b5d360dc25dff7214e7887b8c01da3ee4350f1b528ed8d"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/icc_dialling_numbers_manager.cpp",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "在共享所有权仍有效时注销文件状态观察者，断R4并释放缓存/State",
+      "source_historical_sha256": "5a16e6885888120471e559cd57741c98fd84cbb76b45b18405325bc176845095"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/icc_file.cpp",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "显式UnInit、七类Observer清空，断R2/R3；新增virtual Shutdown要求全量重编",
+      "source_historical_sha256": "a0eeae62b1ca174bd74f8cf89bc66b549a1bc2f892d4b9d1055aeab657fe4865"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/multi_sim_controller.cpp",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "准入、主卡重试终点、Radio解绑与持有释放；应答同锁和缓存读锁为TSan暴露的必要前置修复",
+      "source_historical_sha256": "d3a7e5a6f227b4a478aae72583fd3ad72e9c9b3a614043205afe0b5a2fb7ed6b"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/multi_sim_monitor.cpp",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "三槽通知、账户Observer、Watcher及CES/SA解绑；原生回调/注销错误仍有阻塞",
+      "source_historical_sha256": "b4c80daaf19f2f3b4c459fac2b4ca336e97cbef096fd2b703dbd15705f45e852"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/operator_config_cache.cpp",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "停止自身队列、取消具名APN重试、释放State/File；APN成功配置路径未实测",
+      "source_historical_sha256": "e335ec5ad3949f921dcdf76f51347665cd9977c4268f94273b21aaa9073a9203"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/radio_protocol_controller.cpp",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "阻止Stopping阶段新事件注册；三阶段业务与session判断保留",
+      "source_historical_sha256": "c9fc077a9ca94946f37e2558cc86447482a217be9d9df82bbb8f807ad96094ac"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_account_manager.cpp",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "在有效共享所有权时清理Tracker四类通知和OperatorCache，释放RIL/State/File",
+      "source_historical_sha256": "bde0b167c42a7d97a97a7cc85293e07dd0e1e9d9cd810f1927ff41efb8fdd95b"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_file.cpp",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "卫星参数Watcher opaque上下文与屏障；保留ApplySatelliteParameter业务判断",
+      "source_historical_sha256": "4c758cde7ffc68f623157f01ba60d8b8c1b578b0c2d1cb574110eb136f562691"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_file_manager.cpp",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "CARD_TYPE/ICCID及RIL通知配对；遍历去重缓存Records和Controller，断R3",
+      "source_historical_sha256": "96f7e994a1675b5a5f98d55bee532a4f0f6368c8675c7ce10fa54a4cb92f2bdb"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_manager.cpp",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "统一Stopping准入、等待原有在途/重试、join后编排子对象；保留共享RIL其他持有者",
+      "source_historical_sha256": "3ef021e204450df61ec49b06cbdebea4d0533ed191231a1f64a56896e38b9c35"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_sms_manager.cpp",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "停止SMS子队列并释放State/File/RIL；不是关闭全局SMS或共享RIL",
+      "source_historical_sha256": "b0b6b2bba940e48db243b23723bf82461a1d279bd43598ece1b776b4eddfc8cf"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_state_handle.cpp",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "停止队列、注销RIL、清空状态Observer，断R1/R2/R4；补ICCID配对",
+      "source_historical_sha256": "bf6f4d1ff0ecab27e74442b0cf6479c1acf77e9d7a1202b533e6a67e7c743a47"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/sim_state_manager.cpp",
+      "categories": [
+        "A",
+        "B"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "Init准入、显式Handle Shutdown、释放RIL；析构fallback仍需原生异常退出验证",
+      "hunk_decisions": [
+        "Host Init sampling moved to test patch"
+      ],
+      "source_historical_sha256": "a7f01f2926cc8a93e24cdab7c94f3ea62c75b2058e303c4cfbd608ca8140e482"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/stk_controller.cpp",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "阻止Stopping阶段新RIL注册；正常STK业务未改",
+      "source_historical_sha256": "a3adc871035050b55a745d7c26abb72578510f94b7c6758a891bb0df3ca20bcc"
+    },
+    {
+      "path": "telephony_core_service/services/sim/src/stk_manager.cpp",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "关闭STK控制器、在共享所有权有效时注销事件，再释放RIL/State",
+      "source_historical_sha256": "5f2772cfdb6c21486ec3241c460accf2d0c9bd4b8b33c573625e815ac0f25bb1"
+    },
+    {
+      "path": "telephony_core_service/services/tel_ril/src/observer_handler.cpp",
+      "categories": [
+        "A",
+        "B"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "RemoveAll锁内交换容器、锁外销毁；Host重入析构通过；探针不进生产补丁",
+      "hunk_decisions": [
+        "Host observer sampling/include moved to test patch"
+      ],
+      "source_historical_sha256": "c1ae8c926a59bbc0b2bf75a382a131b9e30af29458514e2367bbf2b4411578d1"
+    },
+    {
+      "path": "telephony_core_service/utils/common/include/tel_event_handler.h",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "返回真实队列准入结果，提供技术Stop/Lifecycle；需要核实其他消费者可见变化",
+      "source_historical_sha256": "7a1c69aa6cd8a6fac24a4188849f99c5c9bccb68efb9224b4456eb0eb365c76e"
+    },
+    {
+      "path": "telephony_core_service/utils/common/include/tel_event_queue.h",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "自有队列关闭、取消、无锁等待、事件载荷锁外释放；不销毁FFRT全局线程池",
+      "source_historical_sha256": "67b502c06c20e0594fe8e1dc0f4178f124eaababdceb9a2cd0a18982359061dd"
+    },
+    {
+      "path": "telephony_core_service/utils/common/include/tel_lifecycle.h",
+      "categories": [
+        "A",
+        "B"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "FFRT逻辑上下文、计数/发布/闭包屏障、Stop leader及完成句柄回收；归属、重入、期限需架构裁决",
+      "hunk_decisions": [
+        "Host weak sampler moved to test patch",
+        "unused exception include dropped (E)"
+      ],
+      "source_historical_sha256": "0a510d04cd5ca834b55783ec9304b6cd1222bbe440a9b34c63a538ab2692d658"
+    },
+    {
+      "path": "telephony_core_service/utils/common/include/tel_parameter_watcher.h",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "外部C回调opaque token、弱对象、双屏障及注销失败重试；不机械改变业务共享引用",
+      "source_historical_sha256": "18729d9864e34d77cc012afc775293868e8a88febf41384f52ac70abd36a8844"
+    },
+    {
+      "path": "telephony_core_service/utils/common/src/tel_event_handler.cpp",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "返回真实队列准入结果，提供技术Stop/Lifecycle；需要核实其他消费者可见变化",
+      "source_historical_sha256": "a67dd3c6a598ac6c1ea07095073ec9df658f286dc20faf297306ca04d9990dec"
+    },
+    {
+      "path": "telephony_core_service/utils/common/src/tel_event_queue.cpp",
+      "categories": [
+        "A"
+      ],
+      "review": "READ_AND_CLASSIFIED",
+      "disposition": "candidate_only_not_native_admitted",
+      "responsibility": "自有队列关闭、取消、无锁等待、事件载荷锁外释放；不销毁FFRT全局线程池",
+      "source_historical_sha256": "81a6a16a5ceb1823140c1bd0eaa80b1115a47f749ddb4bffec35b7ef135d28ae"
+    }
+  ],
+  "findings": [
+    {
+      "id": "R01",
+      "severity": "BLOCKER",
+      "location": "services/core/src/core_service.cpp:146-158 (unchanged baseline)",
+      "finding": "OnStop当前只停止IMS/NetworkSearch后DeInit共享RIL，未调用真实SimManager Stop。现候选没有产品生命周期调用点。",
+      "decision": "由Core控制线程关闭新入口，持有同一控制块typed/weak生命周期hook；Stop失败不得继续释放根/DeInit RIL。不得另造Manager或改写ISimManager错误协议。"
+    },
+    {
+      "id": "R02",
+      "severity": "BLOCKER",
+      "location": "multi_sim_monitor.cpp UnSubscribeListeners / SystemAbilityStatusChangeListener / CES/death handlers",
+      "finding": "SA退订返回码仍忽略；先weak.lock后Lease会在被拒绝前取得临时强引用；CES Hub原生完成屏障未验证。Host没有成功CES/SA订阅。",
+      "decision": "持有注册账本、确认失败重试；在weak锁对象前先进入外部回调上下文屏障；若平台能证明注销为同步屏障，提供匹配实现证据和竞争测试。"
+    },
+    {
+      "id": "R03",
+      "severity": "ARCHITECTURE",
+      "location": "utils/common/include/tel_lifecycle.h CurrentOrNew / Context / Lease",
+      "finding": "按逻辑任务隐式向所有新TelEventQueue传播组；同进程其他消费者/跨SO构造可能被错误纳入。Host单二进制不证明原生链接唯一性。",
+      "decision": "裁决显式组归属注入或严格组件边界；验证NetworkSearch/SMS/其他Core消费者不受Sim Stop误封闭。"
+    },
+    {
+      "id": "R04",
+      "severity": "ARCHITECTURE",
+      "location": "tel_lifecycle.h Lease Kind::Business / Reserve",
+      "finding": "nested business标记等同延续许可，没有request/epoch身份；同任务外部重入新请求可能被视为已接纳延续。当前测试拒绝的是另一调用线程的新请求。",
+      "decision": "区分根业务准入与内部已接纳延续，选择显式许可或原生不可重入前提；不得靠假设所有回调都为新线程通过审查。"
+    },
+    {
+      "id": "R05",
+      "severity": "BLOCKER",
+      "location": "SimManager::Stop / JoinOwnedWork / TelEventQueue::Stop / TelStopOnce::Run",
+      "finding": "75秒仅覆盖部分CV等待；join、queue wait、外部注销及子Stop等待不共享完整截止时间。无在途时才回收句柄，持续繁忙峰值未验证。",
+      "decision": "明确Stop失败/可重试/最大等待契约、统一预算或有证据的完成界限；压力与永久阻塞负控不可缺少。"
+    },
+    {
+      "id": "R06",
+      "severity": "BLOCKER",
+      "location": "RebootDetectCallback / SimFile ApplySatelliteParameter / TelParameterWatcher",
+      "finding": "Lease提供计数屏障而非业务串行化。Native参数服务两键或同键并发调用时，hasCheckedSimPresent_/sateState_的访问需要真实并发模型。",
+      "decision": "平台提供串行保证或在对象层串行化；若改为投递队列，先裁决正常通知/状态偏序，不能为测试方便改变同步语义。"
+    },
+    {
+      "id": "R07",
+      "severity": "NATIVE_VALIDATION",
+      "location": "SimManager destructor / SimStateManager destructor / leaf Shutdown",
+      "finding": "完整Root退出以显式Stop为前提，析构只记录遗漏。现PartialInit为null-RIL子初始化；未覆盖全部分配失败、正常初始化中断、叶子并发Shutdown。",
+      "decision": "定义Core Init失败后的同一退出路径；Stopped实例不可复用，只支持新对象重新装配；原生部分注册失败、重入析构、叶子并发补测。"
+    },
+    {
+      "id": "R08",
+      "severity": "NATIVE_VALIDATION",
+      "location": "operator_config_cache.cpp / cached Records / C1 retry chain",
+      "finding": "APN RemoveTask只编译；缓存卡类型切换、多轮无应答/Stop预算失败后重试未执行；不能以96/ASan/TSan Host结果覆盖。",
+      "decision": "保留NOT_RUN，按README原生计划补齐；真实FFRT/HDI/SA及其他RIL消费者必须独立验收。"
+    },
+    {
+      "id": "R09",
+      "severity": "ABI",
+      "location": "IccFile::Shutdown virtual + lifecycle fields in internal classes",
+      "finding": "未改变ISimManager/IDL，但内部布局和vtable变化不能与旧对象/插件混装；所有权与stop错误返回属于新增运行契约。",
+      "decision": "整体产品重编及厂商扩展兼容性回归；运行态已有返回/参数暂存恢复/通知时机保持源码断言，停止态错误码需明确接纳。"
+    },
+    {
+      "id": "R10",
+      "severity": "TEST_PORTABILITY",
+      "location": "real_scenario.h / shutdown_contract.h / compile_declarations.h",
+      "finding": "硬编码3逻辑对象、2设备成员、RTTI mangled角色名、Host Provider内存行、共享运行时模型只在该fixture成立。",
+      "decision": "保留真实业务断言，抽离输入/观察适配；Native使用实际SlotCatalog/原生类型与参数/服务，不链接Host替身；Runtime生命周期测试不得链接ffrt_mocked。"
+    },
+    {
+      "id": "R11",
+      "severity": "BLOCKER",
+      "location": "primary_slot/real_test.cpp C1CheckFailureRestoresParametersAndExhaustsFiveRetries; radio_protocol_controller.cpp completion/cleanup ordering",
+      "finding": "Actual incremental ASan run reached session3 CHECK then failed unchanged 12s/24-request assertion. Fatal return destroyed phases before scenario Stop; later COMPLETE accessed destroyed map (ASan exit86).",
+      "decision": "Test patch moves callback state before RealScenario so teardown drains while state valid. Retry liveness root remains unproven; preserve FAIL and investigate separately without unauthorized production change; no timeout increase or passing rerun erases failure."
+    },
+    {
+      "id": "R12",
+      "severity": "BLOCKER",
+      "location": "services/sim/src/sim_state_handle.cpp:897 IsIccReady / :910 SimStateEscape; RegisterCoreNotify:1057; MultiSimMonitor::RegisterSimNotify",
+      "finding": "Fresh split-candidate TSan run BDirectRilFailureKeepsPreviousPrimary exited87: StateHandle queue writes externalState_ while Monitor queue reads same address via RegisterCoreNotify->IsIccReady, with no common synchronization. Actual full stacks archived. These running-path accesses also exist in baseline; this run does not establish introduction by Stop patch.",
+      "decision": "Do not whitelist as sixth known failure, serialize or synchronize all state accesses with established state/notification ordering in a separately authorized production fix. Need native delivery order and locking/reentrancy review, not blanket shared_ptr/atomic conversion."
+    }
+  ],
+  "historical_artifacts": [
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/README.md",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/SHA256SUMS",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/asan.zip",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/baseline-unpatched.zip",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/build-and-test.log",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/build-evidence.zip",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/c1-functions.json",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/c1.log",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/c1.profraw.gz",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/c1.xml",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/changed-files.json",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/compiled-sources.json",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/final-host.zip",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/host-tests.patch",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/host-tests.patch.stat",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/iterations.zip",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/layer-status.json",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/lldb-c1.log",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/native-api-check.cpp",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/native-api-check.log",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/objects.json",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/pairing-only.zip",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/patch-replay-configure.log",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/patch-replay.log",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/production-stop.patch",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/production-stop.patch.stat",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/repeat-command.log",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/reproduce.py",
+      "category": "C",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/single-c1-command.log",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/strong-ril-repeat.zip",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/subscriptions.json",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/target-commands.log",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/test-cases.json",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/toolchain.json",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/tsan-repeat-command.log",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/tsan-repeat.zip",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/tsan.zip",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/validation.json",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/verify-runner-smoke.zip",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/verify_runtime.py",
+      "category": "C",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/workspace-files.json",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    },
+    {
+      "path": "telephony_core_service/services/multisim/test/systemtest/configs/sim028_stop_implementation_20261112/workspace-protection-before-delivery.json",
+      "category": "D",
+      "disposition": "preserve immutable historical evidence; not part of production patch; CI creates external archives"
+    }
+  ],
+  "excluded": [
+    {
+      "category": "E",
+      "change": "unused <exception> in tel_lifecycle.h",
+      "reason": "旧调试遗留，当前无异常捕获代码使用，最小生产/测试组合均移除"
+    }
+  ],
+  "actual_validation": "../../../configs/sim028_ci_admission_20261112/validation.json"
+}
