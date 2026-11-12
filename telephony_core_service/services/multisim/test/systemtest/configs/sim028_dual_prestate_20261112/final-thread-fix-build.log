@@ -1,0 +1,7 @@
+ninja: Entering directory `/mnt/e/github/multisim/.host-out/build'
+[1/6] CXX ../../telephony_core_service/services/multisim/test/systemtest/stubs/detached_threads.cpp
+[2/6] touch obj/scheduler_boundaries.stamp
+[3/6] LINK sim_guard_pin_memory
+[4/6] LINK sim_guard_legacy
+[5/6] LINK platform_adapter_test
+[6/6] LINK sim_primary_slot_real_test

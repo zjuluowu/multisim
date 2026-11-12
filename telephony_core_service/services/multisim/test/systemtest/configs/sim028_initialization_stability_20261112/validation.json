@@ -1,0 +1,175 @@
+{
+  "head": "39d63590cfb6be5b813ecbed346252573442e0ac",
+  "production_bytes_unchanged": true,
+  "phase": "Host initialization admission fix plus original contract conflicts retained",
+  "rounds": 50,
+  "cases": 350,
+  "business_counts": {
+    "PASS": 254,
+    "FAIL": 96,
+    "NOT_RUN": 0
+  },
+  "gtest_counts": {
+    "PASS": 50,
+    "FAIL": 300
+  },
+  "strict_ril_counts": {
+    "PASS": 252,
+    "FAIL": 48
+  },
+  "ril_not_applicable": 50,
+  "initialization_checks": {
+    "initialization_account_event": {
+      "PASS": 300,
+      "FAIL": 0
+    },
+    "initialization_ready_idle": {
+      "PASS": 300,
+      "FAIL": 0
+    },
+    "initialization_present": {
+      "PASS": 300,
+      "FAIL": 0
+    },
+    "initialization_active": {
+      "PASS": 300,
+      "FAIL": 0
+    }
+  },
+  "by_order": {
+    "native-arrival": {
+      "PASS": 119,
+      "FAIL": 0,
+      "NOT_RUN": 0
+    },
+    "reverse": {
+      "PASS": 119,
+      "FAIL": 0,
+      "NOT_RUN": 0
+    },
+    "present-first": {
+      "PASS": 16,
+      "FAIL": 96,
+      "NOT_RUN": 0
+    }
+  },
+  "failure_categories": {
+    "notification_history_conflict": 32,
+    "initialization_RIL_mock_contract_gap": 48,
+    "none": 254,
+    "preexisting_data_role_conflict": 16
+  },
+  "raw_stress_exit": 1,
+  "host_counts": {
+    "tests": 62,
+    "passed": 57,
+    "failed": 5
+  },
+  "original_host_counts": {
+    "tests": 60,
+    "passed": 55,
+    "failed": 5
+  },
+  "new_ready_barrier_tests": {
+    "tests": 2,
+    "passed": 2
+  },
+  "entry_tests": 14,
+  "entry_passed": 14,
+  "old_production_cache_defect": "CONFIRMED_BY_CONTROLLED_HOST_EXECUTION, NOT_FIXED",
+  "complete_initialization_state_deterministic": "FAIL: initial primary/data/history and auto-RIL vary by legal response order",
+  "business_baseline_freeze": "FAIL",
+  "native_product_match": "UNKNOWN",
+  "native_verification": "BLOCKED",
+  "asan": "NOT_RUN",
+  "tsan": "NOT_RUN",
+  "limits": [
+    "Stable activation sample is not proof of no race. Future timers and detached production threads are not globally drained by the new Host barrier.",
+    "Additional bootstrap Mock and notification/persistence failures were not admitted to the five known-defect allowlist.",
+    "Golden conflicts remain pending; no old business assertion was changed."
+  ],
+  "input_protection": {
+    "input_count": 2002,
+    "production_files_protected": 190,
+    "modified_authorized_inputs": [
+      "telephony_core_service/services/multisim/test/systemtest/primary_slot/legacy_contract/README.md",
+      "telephony_core_service/services/multisim/test/systemtest/primary_slot/legacy_contract/golden.json",
+      "telephony_core_service/services/multisim/test/systemtest/scripts/run_legacy_primary_contract.py",
+      "telephony_core_service/docs/SIM_Refactor_Execution_State.md",
+      "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_runtime.cpp",
+      "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h",
+      "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp",
+      "telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp",
+      "telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.h",
+      "telephony_core_service/services/multisim/test/systemtest/tests/event_transport_test.cpp",
+      "telephony_core_service/services/multisim/test/systemtest/tools/host.py"
+    ],
+    "unrelated_input_changes": [],
+    "historical_evidence_unchanged": true,
+    "original_real_test_assertion_lines_unchanged": true
+  },
+  "classifier_tests": {
+    "tests": 12,
+    "passed": 12
+  },
+  "final_diagnostic_marker_refinement": {
+    "build_exit": 0,
+    "binary_sha256": "faf950cc3921d27c64781e72f1ef5a3d38f3e2553befd55a8abe69ce7a57209a",
+    "stress_binary_sha256": "254e334d3a380f8e203b61926a9d16d456734478b2d0a79a5a524c66099f2d2d",
+    "change": "Two diagnostic-only metadata expressions: bypassed barrier reports NOT_RUN. Normal branch result/ordering checks unchanged. The 350-case sample is explicitly the preceding binary, not re-labelled as this build.",
+    "normal_smoke_cases": [
+      {
+        "test": "C0CoreToRealManagerAndController",
+        "command": [
+          "/mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test",
+          "--gtest_filter=RealSimPrimary.C0CoreToRealManagerAndController",
+          "--gtest_output=xml:/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/configs/sim028_initialization_stability_20261112/final-marker-check/C0CoreToRealManagerAndController.xml"
+        ],
+        "raw_exit": 1,
+        "properties": {
+          "initialization_order": "native-arrival",
+          "initialization_account_event": "PASS",
+          "initialization_ready_idle": "PASS",
+          "initialization_active": "PASS",
+          "initialization_present": "PASS",
+          "business_assertions_before_cleanup": "PASS",
+          "workers_after_cleanup": "28",
+          "ril_references_after_cleanup": "10",
+          "account_observer_expired": "false",
+          "object_lifetime": "FAIL",
+          "strict_ril_expectations_verified": "PASS"
+        }
+      },
+      {
+        "test": "C1ThreePhasesWithStaleCheckResponseRejected",
+        "command": [
+          "/mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test",
+          "--gtest_filter=RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+          "--gtest_output=xml:/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/configs/sim028_initialization_stability_20261112/final-marker-check/C1ThreePhasesWithStaleCheckResponseRejected.xml"
+        ],
+        "raw_exit": 1,
+        "properties": {
+          "initialization_order": "native-arrival",
+          "initialization_account_event": "PASS",
+          "initialization_ready_idle": "PASS",
+          "initialization_active": "PASS",
+          "initialization_present": "PASS",
+          "business_assertions_before_cleanup": "PASS",
+          "workers_after_cleanup": "28",
+          "ril_references_after_cleanup": "10",
+          "account_observer_expired": "false",
+          "object_lifetime": "FAIL",
+          "strict_ril_expectations_verified": "PASS"
+        }
+      }
+    ],
+    "negative_control": {
+      "gtest_exit": 1,
+      "active": "FAIL",
+      "ready_idle": "NOT_RUN",
+      "original_line45_failure_reproduced": true
+    },
+    "stress_header_snapshot": "controlled/real_scenario-stress.h",
+    "exact_header_delta": "--- stress-header\n+++ final-header\n@@ -310,13 +310,13 @@\n         const auto stateResult = manager->GetSimState(1, state);\n         const bool active = manager->IsSimActive(1);\n         InitTrace(\"precondition_snapshot\", 1, manager.get(), 0, 0,\n-            \"loaded=\" + std::to_string(loaded) + \" drained=\" + std::to_string(drained) +\n+            \"loaded=\" + std::to_string(loaded) + \" drained=\" + (legacyWait ? \"NOT_RUN\" : std::to_string(drained)) +\n             \" active=\" + std::to_string(active) + \" present=\" + std::to_string(present) +\n             \" presence_result=\" + std::to_string(presenceResult) +\n             \" sim_state=\" + std::to_string(static_cast<int>(state)) +\n             \" state_result=\" + std::to_string(stateResult));\n         testing::Test::RecordProperty(\"initialization_account_event\", loaded ? \"PASS\" : \"FAIL\");\n-        testing::Test::RecordProperty(\"initialization_ready_idle\", drained ? \"PASS\" : \"FAIL\");\n+        testing::Test::RecordProperty(\"initialization_ready_idle\", legacyWait ? \"NOT_RUN\" : drained ? \"PASS\" : \"FAIL\");\n         testing::Test::RecordProperty(\"initialization_active\", active ? \"PASS\" : \"FAIL\");\n         testing::Test::RecordProperty(\"initialization_present\",\n             present && presenceResult == TELEPHONY_ERR_SUCCESS ? \"PASS\" : \"FAIL\");\n"
+  }
+}

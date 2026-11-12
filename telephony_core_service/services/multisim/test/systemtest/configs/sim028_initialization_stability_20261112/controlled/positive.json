@@ -1,0 +1,32 @@
+[
+  {
+    "kind": "account_event",
+    "time_ns": 896511914984511,
+    "thread": 92,
+    "function": "Sim028Host::AccountObserver::ProcessEvent(std::unique_ptr<OHOS::AppExecFwk::InnerEvent, void (*)(OHOS::AppExecFwk::InnerEvent*)> const&)"
+  },
+  {
+    "kind": "cache_inspection",
+    "time_ns": 896512307284752,
+    "thread": 91,
+    "function": "OHOS::Telephony::MultiSimController::GetListFromDataBase(bool)",
+    "cache_size": 0,
+    "queried_rows": 1
+  },
+  {
+    "kind": "cache_clear_writer_paused",
+    "time_ns": 896512309454768,
+    "thread": 91,
+    "function": "OHOS::Telephony::MultiSimController::GetListFromDataBase(bool)",
+    "controller": "0x0000575e28af8180",
+    "cache_size": 0,
+    "queried_rows": 1,
+    "caller": "OHOS::Telephony::MultiSimMonitor::RefreshData(int)"
+  },
+  {
+    "kind": "ready_barrier_releases_controlled_writer",
+    "time_ns": 896512481555159,
+    "thread": 49,
+    "function": "SimHost::AwaitIdle(std::chrono::duration<long, std::ratio<1l, 1000l>>, bool)"
+  }
+]

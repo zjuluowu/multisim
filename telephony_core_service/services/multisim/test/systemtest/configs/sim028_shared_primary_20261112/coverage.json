@@ -1,0 +1,262 @@
+[
+  {
+    "id": "SIM028-LEGACY-INIT-NO-RIL",
+    "branch": "initialization failure boundary",
+    "legacy_test": "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+    "expect": {
+      "error": "TELEPHONY_ERR_NO_SIM_CARD",
+      "primary": null,
+      "data": null,
+      "success_publications": false,
+      "attempts": 0,
+      "status_user_set": true,
+      "ril_primary_count": 0,
+      "protocol_phases": [],
+      "protocol_attempts": 0,
+      "minimum_api_seconds": 0
+    },
+    "grades": {
+      "production_path": "VERIFIED_SOURCE",
+      "host_execution": "VERIFIED_HOST",
+      "external_response_schedule": "CONDITIONAL",
+      "consumer_delivery": "UNKNOWN",
+      "native_product": "UNKNOWN"
+    },
+    "uncovered": [
+      "matched device manifest/firmware",
+      "real IPC/HDI serial and consumer delivery",
+      "durable Provider/parameter state",
+      "safe component teardown"
+    ],
+    "legacy_only": [
+      "dynamic owner type",
+      "concrete manager bootstrap",
+      "graph/worker/RIL lifecycle checks"
+    ],
+    "shared_status": "PASS"
+  },
+  {
+    "id": "SIM028-LEGACY-C0-DUAL-PRIMARY0",
+    "branch": "C0",
+    "legacy_test": "RealSimPrimary.C0CoreToRealManagerAndController",
+    "expect": {
+      "error": "TELEPHONY_ERR_SUCCESS",
+      "primary": 1,
+      "data": 1,
+      "success_publications": true,
+      "attempts": 0,
+      "status_user_set": true,
+      "ril_primary_count": 0,
+      "protocol_phases": [],
+      "protocol_attempts": 0,
+      "minimum_api_seconds": 0
+    },
+    "grades": {
+      "production_path": "VERIFIED_SOURCE",
+      "host_execution": "VERIFIED_HOST",
+      "external_response_schedule": "CONDITIONAL",
+      "consumer_delivery": "UNKNOWN",
+      "native_product": "UNKNOWN"
+    },
+    "uncovered": [
+      "matching native product and vendor semantics",
+      "real IPC/SA/HDI serial and consumer delivery",
+      "durable Provider and parameters",
+      "component teardown safety",
+      "Native transition from bootstrap mapping0=M0 to C0 reported mapping1=M0; external query fixture, not a verified product transition"
+    ],
+    "legacy_only": [
+      "dynamic owner type",
+      "concrete manager bootstrap",
+      "graph/worker/RIL lifecycle checks"
+    ],
+    "shared_status": "PASS"
+  },
+  {
+    "id": "SIM028-LEGACY-B-SUCCESS-DUAL-PRIMARY0",
+    "branch": "B",
+    "legacy_test": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+    "expect": {
+      "error": "TELEPHONY_ERR_SUCCESS",
+      "primary": 1,
+      "data": 1,
+      "success_publications": true,
+      "attempts": 1,
+      "status_user_set": true,
+      "ril_primary_count": 1,
+      "protocol_phases": [],
+      "protocol_attempts": 0,
+      "minimum_api_seconds": 0
+    },
+    "grades": {
+      "production_path": "VERIFIED_SOURCE",
+      "host_execution": "VERIFIED_HOST",
+      "external_response_schedule": "CONDITIONAL",
+      "consumer_delivery": "UNKNOWN",
+      "native_product": "UNKNOWN"
+    },
+    "uncovered": [
+      "matching native product and vendor semantics",
+      "real IPC/SA/HDI serial and consumer delivery",
+      "durable Provider and parameters",
+      "component teardown safety"
+    ],
+    "legacy_only": [
+      "dynamic owner type",
+      "concrete manager bootstrap",
+      "graph/worker/RIL lifecycle checks"
+    ],
+    "shared_status": "PASS"
+  },
+  {
+    "id": "SIM028-LEGACY-B-ERROR-DUAL-PRIMARY0",
+    "branch": "B",
+    "legacy_test": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+    "expect": {
+      "error": "TELEPHONY_ERR_LOCAL_PTR_NULL",
+      "primary": 0,
+      "data": 0,
+      "success_publications": false,
+      "attempts": 1,
+      "status_user_set": true,
+      "ril_primary_count": 1,
+      "protocol_phases": [],
+      "protocol_attempts": 0,
+      "minimum_api_seconds": 0
+    },
+    "grades": {
+      "production_path": "VERIFIED_SOURCE",
+      "host_execution": "VERIFIED_HOST",
+      "external_response_schedule": "CONDITIONAL",
+      "consumer_delivery": "UNKNOWN",
+      "native_product": "UNKNOWN"
+    },
+    "uncovered": [
+      "matching native product and vendor semantics",
+      "real IPC/SA/HDI serial and consumer delivery",
+      "durable Provider and parameters",
+      "component teardown safety"
+    ],
+    "legacy_only": [
+      "dynamic owner type",
+      "concrete manager bootstrap",
+      "graph/worker/RIL lifecycle checks"
+    ],
+    "shared_status": "PASS"
+  },
+  {
+    "id": "SIM028-LEGACY-C1-SUCCESS-STALE-DUAL-PRIMARY0",
+    "branch": "C1",
+    "legacy_test": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+    "expect": {
+      "error": "TELEPHONY_ERR_SUCCESS",
+      "primary": 1,
+      "data": 1,
+      "success_publications": true,
+      "attempts": 1,
+      "status_user_set": false,
+      "ril_primary_count": 0,
+      "protocol_phases": [
+        1,
+        2,
+        4
+      ],
+      "protocol_attempts": 1,
+      "minimum_api_seconds": 0
+    },
+    "grades": {
+      "production_path": "VERIFIED_SOURCE",
+      "host_execution": "VERIFIED_HOST",
+      "external_response_schedule": "CONDITIONAL",
+      "consumer_delivery": "UNKNOWN",
+      "native_product": "UNKNOWN"
+    },
+    "uncovered": [
+      "matching native product and vendor semantics",
+      "real IPC/SA/HDI serial and consumer delivery",
+      "durable Provider and parameters",
+      "component teardown safety"
+    ],
+    "legacy_only": [
+      "dynamic owner type",
+      "concrete manager bootstrap",
+      "graph/worker/RIL lifecycle checks"
+    ],
+    "shared_status": "PASS"
+  },
+  {
+    "id": "SIM028-LEGACY-B-TIMEOUT-DUAL-PRIMARY0",
+    "branch": "B",
+    "legacy_test": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+    "expect": {
+      "error": "TELEPHONY_ERR_LOCAL_PTR_NULL",
+      "primary": 0,
+      "data": 0,
+      "success_publications": false,
+      "attempts": 1,
+      "status_user_set": true,
+      "ril_primary_count": 1,
+      "protocol_phases": [],
+      "protocol_attempts": 0,
+      "minimum_api_seconds": 44
+    },
+    "grades": {
+      "production_path": "VERIFIED_SOURCE",
+      "host_execution": "VERIFIED_HOST",
+      "external_response_schedule": "CONDITIONAL",
+      "consumer_delivery": "UNKNOWN",
+      "native_product": "UNKNOWN"
+    },
+    "uncovered": [
+      "matching native product and vendor semantics",
+      "real IPC/SA/HDI serial and consumer delivery",
+      "durable Provider and parameters",
+      "component teardown safety"
+    ],
+    "legacy_only": [
+      "dynamic owner type",
+      "concrete manager bootstrap",
+      "graph/worker/RIL lifecycle checks"
+    ],
+    "shared_status": "PASS"
+  },
+  {
+    "id": "SIM028-LEGACY-C1-CHECK-ERROR-RETRY-DUAL-PRIMARY0",
+    "branch": "C1",
+    "legacy_test": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+    "expect": {
+      "error": "TELEPHONY_ERR_LOCAL_PTR_NULL",
+      "primary": 0,
+      "data": 0,
+      "success_publications": false,
+      "attempts": 6,
+      "status_user_set": false,
+      "ril_primary_count": 0,
+      "protocol_phases": [
+        1,
+        4
+      ],
+      "protocol_attempts": 6,
+      "minimum_api_seconds": 0
+    },
+    "grades": {
+      "production_path": "VERIFIED_SOURCE",
+      "host_execution": "VERIFIED_HOST",
+      "external_response_schedule": "CONDITIONAL",
+      "consumer_delivery": "UNKNOWN",
+      "native_product": "UNKNOWN"
+    },
+    "uncovered": [
+      "matching native product and vendor semantics",
+      "real IPC/SA/HDI serial and consumer delivery",
+      "durable Provider and parameters",
+      "component teardown safety"
+    ],
+    "legacy_only": [
+      "dynamic owner type",
+      "concrete manager bootstrap",
+      "graph/worker/RIL lifecycle checks"
+    ],
+    "shared_status": "PASS"
+  }
+]

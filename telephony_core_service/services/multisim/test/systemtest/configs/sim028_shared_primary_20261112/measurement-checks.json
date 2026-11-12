@@ -1,0 +1,67 @@
+{
+  "technical_only": true,
+  "target_business_execution": "NOT_RUN",
+  "checks": [
+    {
+      "check": "wrong requested slot",
+      "status": "PASS",
+      "rejection": [
+        "input target"
+      ]
+    },
+    {
+      "check": "wrong final public role",
+      "status": "PASS",
+      "rejection": [
+        "public primary"
+      ]
+    },
+    {
+      "check": "wrong rollback ICCID",
+      "status": "PASS",
+      "rejection": [
+        "ICCID rollback"
+      ]
+    },
+    {
+      "check": "reused retry session",
+      "status": "PASS",
+      "rejection": [
+        "protocol attempt/session count",
+        "phase barrier sequence",
+        "phase participants",
+        "phase participants"
+      ]
+    },
+    {
+      "check": "primary commit before dedicated reply",
+      "status": "PASS",
+      "rejection": [
+        "no early success persistence"
+      ]
+    },
+    {
+      "check": "missing protocol response evidence",
+      "status": "PASS",
+      "rejection": [
+        "one measured stale response",
+        "CHECK replies, UPDATE NOTIFY and COMPLETE replies"
+      ]
+    },
+    {
+      "check": "UPDATE ACK substituted for NOTIFY",
+      "status": "PASS",
+      "rejection": [
+        "CHECK replies, UPDATE NOTIFY and COMPLETE replies"
+      ]
+    },
+    {
+      "check": "absolute session renumbering",
+      "status": "PASS"
+    },
+    {
+      "check": "within-phase slot request order",
+      "status": "PASS"
+    }
+  ]
+}

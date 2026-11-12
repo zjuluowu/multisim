@@ -10,6 +10,7 @@ unsigned workers = 0;
 unsigned failures = 0;
 uint64_t schedulerRevision = 0;
 std::vector<std::weak_ptr<ffrt::HostQueue>> queues;
+thread_local std::string currentQueueName = "calling-thread";
 
 // Queue locks may precede this lock. Never acquire a queue lock while holding
 // evidenceMutex; idle observation snapshots the registry before inspecting it.
@@ -49,6 +50,7 @@ static void SignalTask(const std::shared_ptr<HostTask> &task)
 
 static void Worker(const std::shared_ptr<HostQueue> &state)
 {
+    currentQueueName = state->name;
     std::unique_lock<mutex> guard(state->lock);
     state->workerId = std::this_thread::get_id();
     for (;;) {
@@ -214,6 +216,7 @@ void wait() { GeneralQueue().wait_idle(); }
 }
 
 namespace SimHost {
+std::string CurrentQueueName() { return currentQueueName; }
 void StopCallingThreadTasks()
 {
     auto &general = ffrt::GeneralOwner();
@@ -263,7 +266,7 @@ SchedulerEvidence GetSchedulerEvidence()
     std::lock_guard<ffrt::mutex> guard(evidenceMutex);
     return {workers, failures};
 }
-bool AwaitSchedulerIdle(std::chrono::milliseconds budget)
+static bool AwaitIdle(std::chrono::milliseconds budget, bool includeFuture)
 {
     const auto deadline = std::chrono::steady_clock::now() + budget;
     for (;;) {
@@ -283,8 +286,9 @@ bool AwaitSchedulerIdle(std::chrono::milliseconds budget)
         bool idle = true;
         for (const auto &state : snapshot) {
             std::lock_guard<ffrt::mutex> guard(state->lock);
-            if (state->running || std::any_of(state->tasks.begin(), state->tasks.end(), [](const auto &task) {
-                return task->status.load() == ffrt::HostTaskStatus::PENDING;
+            if (state->running || std::any_of(state->tasks.begin(), state->tasks.end(), [includeFuture](const auto &task) {
+                return task->status.load() == ffrt::HostTaskStatus::PENDING &&
+                    (includeFuture || task->due <= std::chrono::steady_clock::now());
             })) {
                 idle = false;
             }
@@ -301,6 +305,8 @@ bool AwaitSchedulerIdle(std::chrono::milliseconds budget)
         })) return false;
     }
 }
+bool AwaitSchedulerIdle(std::chrono::milliseconds budget) { return AwaitIdle(budget, true); }
+bool AwaitSchedulerReadyIdle(std::chrono::milliseconds budget) { return AwaitIdle(budget, false); }
 bool AwaitSchedulerStopped(std::chrono::milliseconds budget)
 {
     std::unique_lock<ffrt::mutex> guard(evidenceMutex);

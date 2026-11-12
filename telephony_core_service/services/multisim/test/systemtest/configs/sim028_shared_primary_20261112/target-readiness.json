@@ -1,0 +1,179 @@
+{
+  "status": "BLOCKED",
+  "adapter_registered": false,
+  "actual_business_execution": "NOT_RUN",
+  "missing": [
+    "defined StartPrimarySwitch business closure",
+    "defined SwitchPrimaryRadio execution closure",
+    "real production assembly and public queries",
+    "scenario-driven external response binding, not forwarding to Legacy"
+  ],
+  "sources": {
+    "services/multisim/card_selection/assignment_service.h": {
+      "sha256": "23f7b69bbf2a4fe11bbf31bc104341067b10ab56567e2b32312a5887c1e1318d",
+      "lines": [
+        {
+          "line": 42,
+          "text": "    RequestId StartPrimarySwitch(const SwitchPrimaryCommand &command);"
+        }
+      ]
+    },
+    "services/multisim/card_selection/assignment_service.cpp": {
+      "sha256": "06f5e17b58956a8035d74d1ceee3b12ce2b9206a06861de664c830ff1512e3b7",
+      "lines": [
+        {
+          "line": 26,
+          "text": "{ return entry.StartPrimarySwitch(command); }"
+        },
+        {
+          "line": 55,
+          "text": " * StartPrimarySwitch在原执行点读取T窄事实与R动态PrimaryRadioObservation，不从目录推断当前分配。"
+        }
+      ]
+    },
+    "services/multisim/integration/lifecycle/card_runtime.h": {
+      "sha256": "0c1d2d6ff57da7ee77660311daa361b4637fe1f692f5bae52d90d9c5daa93947",
+      "lines": [
+        {
+          "line": 80,
+          "text": "    void SwitchPrimaryRadio(const RadioSwitchRequest &request) override;"
+        }
+      ]
+    },
+    "services/multisim/integration/lifecycle/card_runtime.cpp": {
+      "sha256": "a9c6e29a2e2d6b533c8acdd04f58e80b6c11de349dc4504390f2127e030eec65",
+      "lines": [
+        {
+          "line": 89,
+          "text": " * SwitchPrimaryRadio按request.mode分别复用原三阶段或sharedRil_.SetPrimarySlot路径；"
+        }
+      ]
+    },
+    "services/multisim/BUILD.gn": {
+      "sha256": "9360b707b7e2e97339ea88b3a03180b889ac74d8c82f650de4fb379fe0be0195",
+      "lines": [
+        {
+          "line": 8,
+          "text": "  testonly = true"
+        },
+        {
+          "line": 33,
+          "text": "  testonly = true"
+        },
+        {
+          "line": 57,
+          "text": "  testonly = true"
+        },
+        {
+          "line": 76,
+          "text": "  testonly = true"
+        },
+        {
+          "line": 98,
+          "text": "  testonly = true"
+        },
+        {
+          "line": 129,
+          "text": "  testonly = true"
+        },
+        {
+          "line": 152,
+          "text": "  testonly = true"
+        },
+        {
+          "line": 175,
+          "text": "  testonly = true"
+        },
+        {
+          "line": 194,
+          "text": "  testonly = true"
+        },
+        {
+          "line": 207,
+          "text": "  testonly = true"
+        },
+        {
+          "line": 242,
+          "text": "  testonly = true"
+        },
+        {
+          "line": 261,
+          "text": "  testonly = true"
+        },
+        {
+          "line": 274,
+          "text": "  testonly = true"
+        },
+        {
+          "line": 287,
+          "text": "  testonly = true"
+        },
+        {
+          "line": 300,
+          "text": "  testonly = true"
+        },
+        {
+          "line": 326,
+          "text": "  testonly = true"
+        },
+        {
+          "line": 352,
+          "text": "  testonly = true"
+        },
+        {
+          "line": 376,
+          "text": "  testonly = true"
+        },
+        {
+          "line": 397,
+          "text": "  testonly = true"
+        },
+        {
+          "line": 417,
+          "text": "  testonly = true"
+        },
+        {
+          "line": 450,
+          "text": "  testonly = true"
+        },
+        {
+          "line": 490,
+          "text": "  testonly = true"
+        },
+        {
+          "line": 514,
+          "text": "  testonly = true"
+        },
+        {
+          "line": 542,
+          "text": "  testonly = true"
+        },
+        {
+          "line": 554,
+          "text": "  testonly = true"
+        },
+        {
+          "line": 565,
+          "text": "  testonly = true"
+        }
+      ]
+    },
+    "services/core/src/core_service_sim.cpp": {
+      "sha256": "6bc4f83b79983b319e41572a6c8683808e4cd485d652eb531fc65a154376df34",
+      "lines": [
+        {
+          "line": 464,
+          "text": "int32_t CoreServiceSim::SetPrimarySlotId(int32_t slotId)"
+        },
+        {
+          "line": 479,
+          "text": "        TELEPHONY_LOGE(\"SetPrimarySlotId slotId %{public}d is not supported\", slotId);"
+        },
+        {
+          "line": 493,
+          "text": "    return simManager_->SetPrimarySlotId(slotId, true);"
+        }
+      ]
+    }
+  }
+}

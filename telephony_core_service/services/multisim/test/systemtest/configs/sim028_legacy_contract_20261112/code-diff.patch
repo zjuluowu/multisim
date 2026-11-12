@@ -1,0 +1,623 @@
+--- a/telephony_core_service/docs/SIM_Refactor_Execution_State.md
++++ b/telephony_core_service/docs/SIM_Refactor_Execution_State.md
+@@ -764,3 +764,15 @@
+ 用户在§22验收后明确授权将本地成果推送远端main。本次按100项明确文件白名单发布§20～22尚未提交的隔离Stop套件、生产候选补丁与测试增量、CI工程及全部验证证据；不应用生产补丁，不纳入98份原有用户修改。发布前恢复核查已刷新origin，本地main与origin/main同为77e3dc4e，暂存区为空；94项适用摘要校验通过，当前CI工具/策略与最终构建归档一致，98份受保护修改逐字节匹配。
+ 
+ 沿用§22已执行的101条96 PASS/5既有FAIL、ASan/TSan各41 PASS及330次压力通过；发布预检另实跑13条CI策略测试通过。未重复声明新的全量运行或生产准入。各独立JSON中的未提交/未推送标记和旧工具摘要为当时验收快照，保持原字节；本小节记录后续发布授权。常规提交与origin/main推送后以Git实际SHA及远端包含关系核验，不将发布视为主工作区生产修复应用、OHOS集成或生产发布准入。
++
++### 23. SIM-028 跨仓契约审计与未经修复的Legacy业务基线（2026-11-12）
++
++实际HEAD为39d63590cfb6be5b813ecbed346252573442e0ac，main；按本轮明确要求不修改生产代码、不提交、不推送。98份已有用户修改逐字节保护。新增Legacy业务证据入口复用原host.py/GN/GTest及逐例进程，不修改原七条断言、不应用Stop/并发补丁；原始XML、泄漏诊断与非零退出码均保留。分类器12项正负控通过，额外断言、Mock失败、崩溃、跳过或sanitizer报告不能当作纯清理失败。
++
++五轮共35次逐例执行：原GTest每轮1 PASS/6 FAIL，合计5 PASS/30 FAIL，均exit1；独立业务34 PASS/0 FAIL/1 NOT_RUN。初次双轮的第二轮C0在real_test.cpp:45 IsSimActive(1)前置断言失败，尚未发起请求，不能归入纯生命周期失败或业务通过。保留原失败并以最终分类器重算，没有重试断言取绿；后续双轮和最终单轮均业务7/7、完整GTest仍1/7。初始化准备/旧缓存读时序风险尚未确证具体交错，不能声明稳定全绿或停止安全。另实跑旧Host60条55 PASS/5既有FAIL，含入口14/14；未改变五条缺陷分类。本轮未执行ASan/TSan、Target差分或原生集成。
++
++扫描五个明确工作区，记录31份可访问仓库副本及实际HEAD、remote、源码SHA/行、关系检索；不同副本不视为同一产品版本。证实JS radio/Client/Proxy是上游，SIM生产对象承担分支，公开HDI与RIL Adapter提供专用SetPrimarySlot和RadioProtocol两种不同命令，DataShare/telephony_data提供账户行，CellularData/搜网/SMS是已核实的状态消费者；CallManager未发现直接setter调用，不臆造同步关系。telephony_ext芯片实现、simollie和匹配manifest/固件仍缺失或参与关系未证实。Provider头与本地源码规范化相同，但其Update返回状态与DataShare通用头的行数文档存在语义差异，保留产品核验条件。
++
++已明确Host边界不具权威性之处：RIL弱订阅/单目标通知与真实多强订阅不同；C1夹具额外UPDATE应答不见于参考AT实现；参数仅内存成功路径；发布成功不等于消费者接收；StateRegistry固定返回不等于真实观察者通知；身份、SA、Watcher、FFRT、serial/HDI及物理Modem未真实运行。共享Golden记录七例和A阻塞场景的输入/应答/返回/最终状态/副作用/偏序/证据/可信度/变更策略，只是有条件的characterization，不将旧缺陷自动批准为规范。Target Adapter尚未实现，不以Fake或回调旧SIM冒充迁移。
++
++[使用、审计及裁决边界](../services/multisim/test/systemtest/primary_slot/legacy_contract/README.md)、[实际逐例验证](../services/multisim/test/systemtest/configs/sim028_legacy_contract_20261112/validation.json)保存本轮证据。原始探索XML/日志压缩归档，最终单轮与Host回归直接归档；生产字节保护、二进制/构建命令、Mock差异、准备失败、原生补证与差分规则可复核。当前结论为Host业务条件基线可复现，但重复性与析构后回调安全未达标；OHOS原生Golden、厂商A及产品兼容验收仍BLOCKED，不启动生产迁移。
+--- a/telephony_core_service/services/multisim/test/systemtest/primary_slot/README.md
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/README.md
+@@ -1,4 +1,6 @@
+ # SetPrimarySlotId Host 验证（SIM-028）
++
++未经生产修复的旧实现业务基线、跨仓Mock真实性审计及独立业务/生命周期分类入口，见[Legacy行为契约校准](legacy_contract/README.md)。该入口保留原始GTest失败退出码；下文历史清理失败记录保持原事实，不代表隔离候选补丁的结果。
+ 
+ 目前有两个互补目标，复用同一 GN/GTest 工程：
+ 
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/legacy_contract/README.md
+@@ -0,0 +1,73 @@
++# SIM-028：未经修复的旧实现业务基线
++
++此入口执行当前工作区的 `services/sim`，没有应用 Stop 或并发候选补丁，没有修改原有 GTest、业务断言或生产调用路径。它复用 `host.py` 和原 GN 目标，逐例独立进程运行，保留原始退出码、XML、泄漏诊断和生命周期红灯。**业务结果与完整 GTest 结果是两个字段；本入口仍以原始非零退出码退出。**
++
++```sh
++# Git 根目录；复用已配置的 .host-out/host.json，output 必须是新目录。
++python3 -B telephony_core_service/services/multisim/test/systemtest/scripts/run_legacy_primary_contract.py \
++  --output /tmp/sim028-legacy-contract-new --repeat 2
++
++# 分类器正负控；不是新增 SIM 业务通过数。
++python3 -B telephony_core_service/services/multisim/test/systemtest/scripts/test_legacy_primary_contract.py
++
++# 可重跑的本地跨仓审计；不会拉取/修改外仓。
++python3 -B telephony_core_service/services/multisim/test/systemtest/scripts/audit_primary_contract.py \
++  --workspace /mnt/e/telephony --workspace /mnt/e/github/telephony \
++  --workspace /mnt/e/work/github/telephony --workspace /mnt/e/OpenHarmony \
++  --workspace /mnt/e/code --output /tmp/sim028-contract-repositories.json
++```
++
++本轮原始记录见 [验证目录](../../configs/sim028_legacy_contract_20261112/)。`validation.json` 保存实际工具版本、完整 Ninja 命令、二进制摘要、生产字节保护及逐例独立业务分类；`cross-repositories.json` 固定各源码副本 HEAD、remote、实际文件 SHA、源码行和关系搜索。外仓存在多个不同 HEAD，**未核实它们属于同一产品 manifest**。不能用其中一份参考 Vendor 实现代表目标手机芯片。
++
++## 验收边界与安全
++
++完整通过需要原 GTest 返回0且无失败。独立业务 PASS 只接纳已完成的单例 XML、`business_assertions_before_cleanup=PASS`、`strict_ril_expectations_verified=PASS`，以及仅来自 `real_scenario.h` 的精确 Manager/Graph 清理断言失败；任何新增断言、Mock 失败、跳过、异常退出、超时或 sanitizer 报告均不能获得业务 PASS。准备阶段在请求输入前失败时，业务为 NOT_RUN，原 GTest 仍为 FAIL。初始化无 RIL 场景本身完整通过，没有 StrictMock RIL 对象。
++
++这不是安全停止的新实现。`CoreService::OnStop`（`services/core/src/core_service.cpp:146`）仅停止 Network/RIL/扩展，不等同每条测试释放整张 SIM 订阅图；`SimManager::~SimManager` 为空。常驻服务生命周期与短命 fixture 的全析构模型不同，但**不能据此宣布真实资源环无害**。原测试退出仍有28个 Host worker、RIL use_count=10、未过期账户观察者；计数不等于独立泄漏数量。内部四类强环证据沿用原生命周期审查，本轮没有重新做地址图，也没有应用其修复。
++
++业务断言、显式严格 RIL 验证后，残留对象仍可能持有捕获 fixture/局部变量的回调；未来延迟任务及失败路径的内存安全没有排空保证。本入口不使用 AllowLeak、强杀、延时掩盖或屏蔽清理断言。没有足够条件安全构建完全绿色的常驻 fixture，故选择保留原 FAIL 和明确的 `post_destruction_callback_safety=NOT_VERIFIED`。本轮不是 ASan/TSan 验收，也不继承隔离补丁的通过记录。
++
++本轮第一次双轮运行额外捕获 C0 的 `real_test.cpp:45 IsSimActive(1)=false`：发生于 `Permit()`/`TRACE input` 和 setter 调用之前，不能归入 SetPrimarySlotId 失败，也不能归入纯生命周期失败。`StartLockedCard` 只等待账户事件；`MultiSimMonitor::RefreshData` 可重新加载缓存，而 `IsSimActive` 没有获取写缓存的 `mutex_`。这些源码说明当前准备/读时序的风险，**尚不足以证明该次具体交错根因**，不通过增加 sleep、重试失败断言或修改旧代码消除记录。需要受控初始化轨迹/原生事件顺序进一步裁决。
++
++## 真实协作与 Mock 真实性
++
++下表 A=真实业务执行，B=外部接口有源码依据，C=Host 受控假设，D=证据不足。每个边界可以同时拥有不同级别的证据；B不等于真实平台运行。
++
++| 关系/责任 | 实际源码与边界 | 本轮结论 |
++| --- | --- | --- |
++| 上游 API/IPC | `frameworks/js/network_search/src/napi_radio.cpp:2635` 的 NativeSetPrimarySlotId，经 CoreServiceClient/Proxy/Stub；ANI radio 也有绑定 | 源码 B。当前不是 JS SIM 文件入口；测试直接进入真实 CoreServiceSim，未执行上层 NAPI/Proxy/Stub/完整 CoreService，运行 D |
++| SIM 内部 | CoreServiceSim→SimManager→MultiSimController，C1→RadioProtocolController | A；真实状态、持久化调用、分支和错误码断言。初始无 RIL 例只进入 Manager，不冒称 Core 全链 |
++| 厂商 A/VSIM/eSIM | slot==SIM_SLOT_3 优先走 NeedSwitchSimCard→SwapM0M2SimCards→SetTargetPrimarySlotId；VSIM 检查依赖扩展指针，eSIM账户也参与初始化 | wrapper B；真实 libtelephony_ext 的映射、开关、事件与芯片库 D。缺省函数未装载不代表厂商行为；七例不覆盖 A/VSIM/eSIM成功路径 |
++| RIL/HDI/芯片 | `TelRilSim` B使用V1_5 SetPrimarySlot，C1使用V1_1 SetRadioProtocol；HRil将 serial/slot 分开并调用 vendor 函数 | 参数/载荷形状 B；Host StrictMock 直接给原 owner/event 投递异步应答 C。真实 Request/serial分配、错误转换链、HDF、物理Modem未执行 D |
++| RIL订阅 | 真实 ObserverHandler 保存事件到多个 shared_ptr 观察者，并可能在注册时立即通知已有状态 | Host弱引用 ledger 用于记录，但实际通知表只保留每槽/事件的一个目标，Register 始终返回0且不重现立即通知。C；不能用于所有权、广播扇出或初始通知顺序的权威 Oracle |
++| C1 UPDATE | `radio_protocol_controller.cpp:196` 的 UPDATE应答不推进；NOTIFY驱动COMPLETE。参考 `ril_adapter/services/vendor/src/at_sim.c:1083` 的 UPDATE只发NOTIFY | 七例成功夹具额外发UPDATE应答再NOTIFY。协议相关B，具体设备调度C。ACK存在性、NOTIFY先后/重复/丢失需设备变体验证；不能强制未来实现依赖ACK |
++| Provider/DataShare | `SimAbility::Update`→`RdbBaseHelper::Update`返回RDB状态；`sim_info` URI与列有生产源码。当前本地 sim_data.h 与锁定头规范化行尾后完全一致 | 单行关系/谓词替身 C；列/URI/该Provider返回语义 B。DataShare通用头文档称Update返回行数，与此Provider实现不同，需按产品路径裁决，不能统一猜测。权限、SQL全部语法、事务、重启恢复、通知、Release寿命没有模拟 |
++| 参数服务 | systemparameter Get/Set接口；Primary/ICCID/Data/preference 由真实业务代码调用 | 参数名/值/调用顺序 B/A；内存map成功读写 C。DAC/MAC、persist刷盘、写失败、Watcher和跨进程读取 D；LSI等初始化值是指定fixture，不是数据库规范默认值 |
++| CommonEvent | CommonEventManager Publish 返回发布操作结果；不能证明所有订阅者收到 | Host捕获 Want 并返回true C，真实payload和发布偏序 A；主卡→Data只证明发布次序，不证明接收顺序或数据连接已建立 |
++| StateRegistry | MultiSimMonitor 通知直接账户回调及 UpdateIccAccount；真实registry校验权限，遍历 ICC_ACCOUNT 观察者 | Host UpdateIccAccount 仅打印并返回0 C，不等于有监听者/回调交付。真实实现无监听者可返回DATA_NOT_EXIST；服务权限/IPC/observer返回 D |
++| Cellular Data | `cellular_data_controller.cpp:194-197`订阅SIM状态/records/account；`incall_data_state_machine.cpp`查询Primary并调整Data，配置 Data订阅URI | 跨仓消费者 B，Host 没有构造这些消费者。数据参数/广播不能推导APN切换、通话数据状态或连接成功 |
++| 搜网/SMS/Call | 本仓搜网 RadioInfo/NetworkSearchManager 查询Primary；外仓 sms_short_code_matcher.cpp:195 查询Primary；本次生产文本搜索未发现CallManager/CellularCall直接setter调用 | 间接读状态 B；不是每次setter同步调用全体组件。未找到不等于动态依赖不存在；不把CallManager或state_registry误画成主卡切换下层 |
++| FFRT/SA/身份 | Host线程队列、参数Watcher失败返回、SA订阅失败返回、固定native token和Creator身份token | 全为C；真实CES/SA/Binder/权限、Watcher时序和FFRT调度为D。独立进程不能证明原生服务重启安全 |
++
++缺失清单在审计 JSON 中：telephony_ext SIM库、实际芯片 vendor 的 SetPrimarySlot/SetRadioProtocol 实现及固件/产品manifest；版本均 UNKNOWN，不能编造提交。可访问的公开 RIL Adapter 有函数指针契约及参考AT实现，但参考 `vendor_adapter.c` 没有绑定 SetPrimarySlot，不能据此声称B在设备上可执行。`simollie` 在本次明确扫描的工作区未定位到源码，尚无证据证明参与该业务。
++
++## 分支及返回时机
++
++| 分支 | 返回前 | 返回后/未知 |
++| --- | --- | --- |
++| A | 校验在卡，厂商swap返回后保存target并投递ready等待事件，返回SetTargetPrimarySlotId结果 | ready后进一步决策与实际设备完成；缺厂商实现，BLOCKED |
++| B | userSet且专用能力开启，发送专用请求并同步等待业务应答或45秒超时；成功才保存Primary/Data并发布；失败保留旧主卡，返回LOCAL_PTR_NULL | 设备实际资源释放、各消费者交付未知；setDone=true只表示该软件阶段结束 |
++| C0 | 经真实查询应答确认目标已是modem0；无设备setter，保存主卡及Data、发布通知后返回成功 | 跨进程消费者异步处理未知 |
++| C1 | 保存旧参数，先写目标Primary/ICCID；CHECK→UPDATE/NOTIFY→COMPLETE后成功提交广播/Data，失败先恢复旧参数再返回失败 | 原失败返回不等于五次后台重试已结束；重试使用新session。C1状态广播固定userSet=false与调用输入true不同，保留观察并请求裁决 |
++
++`TELEPHONY_ERR_LOCAL_PTR_NULL` 对设备错误/超时的映射、偏好先写且写失败仍转发、HasSimCard返回码未使用、C1提前写可被其他读者观察、原失败返回后的后台重试均是兼容性候选事实，**不是自动批准的正确规范**。保留现有五条独立DEFECT用例；生命周期失败和准备阶段失败不加入五条缺陷容许集。
++
++## 统一契约与原生校准
++
++[golden.json](golden.json)含7条已执行场景和A分支阻塞场景的稳定ID、前置条件、输入、应答、API返回、最终状态、副作用、偏序、来源、可信等级和变更策略。优先级1原OHOS执行轨迹本轮没有；优先级2采用真实HDI/接口及已有系统测试作为接口证据；优先级3跨仓源码；优先级4本轮Host结果。没有将历史隔离补丁全绿结果写成旧实现基线。
++
++当前 Legacy Adapter 是上述执行入口；原C++断言仍为执行 Oracle，不能用JSON预期值反向生成业务结果。Target Adapter尚未实现/运行，不以转调旧SIM或纯Fake冒充。未来统一场景需要两Adapter接受相同外部应答，输出规范化观测：API返回、公开状态查询、参数/Provider变更、事件payload和偏序、RIL slot/phase/resource、每次尝试内部一致且跨尝试更新的session关联。只比外部行为，忽略对象地址/队列/线程/绝对session序号；serial保持独立。Target必须有自己的真实业务闭包，不能仅替换类型名。
++
++原GTest红灯与业务观测分别比较；旧FAIL/新PASS先区分准备失败、模拟差异、已知旧缺陷修复、未经批准的行为变化和平台差异，再人工裁决。未知Mock时序不得自动成为硬性门禁；业务断言本身不因此降低。Target差分、原生IPC/设备整链本轮均NOT_RUN/BLOCKED。
++
++原生最小补证：匹配manifest的core_service、telephony_ext、ril_adapter及芯片库、drivers_interface生成头、telephony_data/DataShare/RDB、CES、StateRegistry、CellularData、samgr/IPC/真实FFRT和systemparameter。在设备用合成/脱敏卡信息记录API进入/返回、vendor模式开关、slot、RIL serial与协议session、CHECK/UPDATE/NOTIFY/COMPLETE及错误/超时、每次参数变化和跨仓接收时间。分别验证B、C0、C1失败/重试/迟到及A映射；抓Data/APN和通话中的消费者行为、参数写失败/重启恢复、所有订阅者初始通知/扇出。固定版本后再把已裁决部分提升为Golden规范。APN、物理Modem取消、完整长超时、SA重启和厂商A仍需平台环境。
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/legacy_contract/golden.json
+@@ -0,0 +1,148 @@
++{
++  "schema_version": 1,
++  "status": "PROVISIONAL_CHARACTERIZATION",
++  "evidence_priority": ["native OHOS trace (not available)", "published interface/IDL/system tests", "pinned cross-repository source", "reproducible Host assertions"],
++  "authority": "Conditional legacy behavior; neither every old behavior nor every Host scheduling assumption is normative",
++  "shared_fixture": {
++    "physical_slots": 2,
++    "logical_objects": 3,
++    "present_slot": 1,
++    "card": "synthetic PIN-locked USIM, ICCID 8900000000000000001, active persisted account simId=1",
++    "provider": "One existing unbound account row; no RDB durability or schema migration",
++    "ef_io": "ICCID/LI/PBR metadata and STK return explicit generic errors",
++    "api": "CoreServiceSim::SetPrimarySlotId(1) -> real SimManager(slot=1,userSet=true)",
++    "identity": "Host native token 101 granted SET_TELEPHONY_STATE; not actual IPC identity",
++    "parameter_failure": "NOT_RUN",
++    "notification_delivery": "Capture publisher arguments only; subscriber delivery NOT_RUN"
++  },
++  "comparison": {
++    "include": ["API error symbol", "queried final primary/data state", "parameter writes and rollback", "notification payload and causal partial order", "device request slot/phase/resource/session association", "failure and retry completion"],
++    "exclude": ["object address", "thread ID", "queue name", "internal call stack", "absolute session number", "wall clock scheduling"],
++    "session_rule": "Compare session equality within an attempt and freshness across retries; RIL serial is a distinct untested transport value",
++    "policy": "Unexpected difference blocks compatibility. Legacy FAIL/Target PASS requires classification and explicit adjudication, never automatic correctness",
++    "target_adapter": "BLOCKED: no authorized complete multisim SetPrimarySlotId implementation; do not delegate Target back to Legacy",
++    "lifecycle": "Separate gate; raw GTest exit/XML always retained and propagated"
++  },
++  "scenarios": [
++    {
++      "id": "SIM028-LEGACY-INIT-NO-RIL",
++      "test": "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
++      "branch": "initialization failure boundary",
++      "preconditions": "No RIL; DataShare Creator returns nullptr",
++      "input": "SimManager::OnInit(3); SetPrimarySlotId(1,true), no Core entry",
++      "external_response": "Provider unavailable, broadcasts accepted locally",
++      "api_return": "OnInit=true; SetPrimarySlotId=TELEPHONY_ERR_NO_SIM_CARD",
++      "final_state": "GetMaxSimCount=2; no switch in progress; scheduler drained",
++      "side_effects": "No device possible; no durable provider created",
++      "order": ["OnInit before query and setter", "manager destruction before scheduler drain assertion"],
++      "evidence": ["primary_slot/real_test.cpp:13-40", "services/sim/src/sim_manager.cpp:SetPrimarySlotId"],
++      "confidence": "P3 source + P4 Host; no native trace",
++      "change_policy": "Characterization; OnInit success under unavailable dependency needs business adjudication"
++    },
++    {
++      "id": "SIM028-LEGACY-C0",
++      "test": "RealSimPrimary.C0CoreToRealManagerAndController",
++      "branch": "C0",
++      "preconditions": "Common fixture; GetRadioProtocol confirms target slot1 is modem0, tech=0x11",
++      "input": "SetPrimarySlotId(1)",
++      "external_response": "Two correlated GetRadioProtocol replies; no setter request expected",
++      "api_return": "TELEPHONY_ERR_SUCCESS synchronously after persistence and publisher calls",
++      "final_state": "Primary=1; default data=1; inProgress=false",
++      "side_effects": "User preference=true; primary parameter=1; SHA256 of synthetic ICCID; data parameter=1; primary then data publication",
++      "order": ["device mapping query before input", "primary publication before data publication", "no SetPrimarySlot or SetRadioProtocol"],
++      "evidence": ["primary_slot/real_test.cpp:C0CoreToRealManagerAndController", "services/sim/src/multi_sim_controller.cpp:1483-1533"],
++      "confidence": "P3 source + P4 Host; PUBLISH order only, not consumer delivery order",
++      "change_policy": "Preserve externally observed result; no-device behavior eligible for differential comparison; native delivery pending"
++    },
++    {
++      "id": "SIM028-LEGACY-B-SUCCESS",
++      "test": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
++      "branch": "B",
++      "preconditions": "Common fixture; const.vendor.ril.set_primary_slot_support=true; userSet=true",
++      "input": "SetPrimarySlotId(1)",
++      "external_response": "One SetPrimarySlot(slot1), then correlated RadioResponseInfo(error=NONE)",
++      "api_return": "TELEPHONY_ERR_SUCCESS after response; caller remains blocked before reply",
++      "final_state": "Primary=1; data=1; inProgress=false",
++      "side_effects": "No early primary commit; primary/ICCID/data writes after response; primary then data publications; setDone false then true with isUserSet=true",
++      "order": ["start status before response", "response before commit", "commit before API return", "no three-phase commands"],
++      "evidence": ["services/sim/src/multi_sim_controller.cpp:2071-2140", "services/tel_ril/src/tel_ril_sim.cpp:613-627", "drivers_interface/ril/v1_5/IRil.idl:99"],
++      "confidence": "P2 IDL + P3 conversion/source + P4 Host; actual vendor handler unavailable",
++      "change_policy": "Preserve conditional transport contract; device integration pending"
++    },
++    {
++      "id": "SIM028-LEGACY-B-ERROR",
++      "test": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
++      "branch": "B",
++      "preconditions": "B enabled, old primary parameter=0",
++      "input": "SetPrimarySlotId(1)",
++      "external_response": "SetPrimarySlot(slot1), RadioResponseInfo(ERR_GENERIC_FAILURE)",
++      "api_return": "TELEPHONY_ERR_LOCAL_PTR_NULL (characterized device-error mapping)",
++      "final_state": "Primary remains0; no data switch; inProgress=false",
++      "side_effects": "User preference still written before forwarding; setDone=false,true with userSet=true; no success broadcasts",
++      "order": ["error response before caller returns", "setDone=true is completion, not success"],
++      "evidence": ["primary_slot/real_test.cpp:BDirectRilFailureKeepsPreviousPrimary", "services/sim/src/multi_sim_controller.cpp:SetPrimarySlotIdWithoutModemReboot"],
++      "confidence": "P3 + P4; no hardware error run",
++      "change_policy": "Preserve error mapping for compatibility unless separately approved bug fix"
++    },
++    {
++      "id": "SIM028-LEGACY-C1-SUCCESS-STALE",
++      "test": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
++      "branch": "C1",
++      "preconditions": "B disabled; target initially modem1; old resources tech(slot0=0x11,slot1=0x22)",
++      "input": "SetPrimarySlotId(1)",
++      "external_response": "CHECK each slot; stale session+99 ignored; valid CHECK, UPDATE acknowledgments plus UPDATE NOTIFY, COMPLETE each slot",
++      "api_return": "TELEPHONY_ERR_SUCCESS after protocol completion",
++      "final_state": "modem0 mapped to slot1; primary/data1; inProgress=false",
++      "side_effects": "Primary and ICCID saved speculatively before protocol; primary/data broadcasts only after success; status false,true with isUserSet=false even though input user=true",
++      "order": ["CHECK before UPDATE before COMPLETE", "UPDATE NOTIFY drives COMPLETE", "stale CHECK does not advance", "main publication before data publication"],
++      "evidence": ["services/sim/src/radio_protocol_controller.cpp:177-250", "telephony_ril_adapter/services/vendor/src/at_sim.c:1083-1108", "primary_slot/real_test.cpp:C1ThreePhasesWithStaleCheckResponseRejected"],
++      "confidence": "P2/P3 protocol + P4 conditional Host; extra UPDATE acknowledgment is Host assumption, not normative",
++      "change_policy": "Preserve session/commit semantics; UPDATE ack availability and isUserSet discrepancy require adjudication/native variants"
++    },
++    {
++      "id": "SIM028-LEGACY-B-TIMEOUT",
++      "test": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
++      "branch": "B",
++      "preconditions": "B enabled; old primary0",
++      "input": "SetPrimarySlotId(1)",
++      "external_response": "Request accepted, no device response; production 45000ms timeout executes",
++      "api_return": "TELEPHONY_ERR_LOCAL_PTR_NULL after real timeout",
++      "final_state": "Old primary retained; no switch in progress",
++      "side_effects": "No success broadcasts; status false,true userSet=true; physical modem cancellation NOT_VERIFIED",
++      "order": ["request before production timeout", "timeout before failure return"],
++      "evidence": ["primary_slot/real_test.cpp:BRealTimeoutKeepsPreviousPrimary", "services/sim/src/multi_sim_controller.cpp:OnRilSetPrimarySlotTimeout"],
++      "confidence": "P3 + P4 actual elapsed timer; no modem cancellation evidence",
++      "change_policy": "Preserve software timeout behavior; do not infer resource release"
++    },
++    {
++      "id": "SIM028-LEGACY-C1-CHECK-ERROR-RETRY",
++      "test": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
++      "branch": "C1",
++      "preconditions": "B disabled; previous primary0; previous ICCID parameter explicitly seeded",
++      "input": "SetPrimarySlotId(1)",
++      "external_response": "Each CHECK generic error via RadioResponseInfo; failure COMPLETE echoes old resources; 6 sessions including original, 24 requests",
++      "api_return": "TELEPHONY_ERR_LOCAL_PTR_NULL after first attempt, before all background retries finish",
++      "final_state": "After retries primary0 and previous ICCID restored; no data commit; inProgress=false",
++      "side_effects": "Speculative write then rollback each attempt; no UPDATE; status false,true six times with userSet=false; no success publication",
++      "order": ["first failure return precedes retry exhaustion", "fresh session for every retry", "CHECK then failure COMPLETE with old resource mapping"],
++      "evidence": ["primary_slot/real_test.cpp:C1CheckFailureRestoresParametersAndExhaustsFiveRetries", "services/sim/src/multi_sim_controller.cpp:1535-1544", "services/sim/src/radio_protocol_controller.cpp:ProcessCheckRadioProtocol"],
++      "confidence": "P3 + P4; original queue race can make progress intermittent; not a blanket stability proof",
++      "change_policy": "Preserve retries and rollback; original concurrency defect remains separate failure gate"
++    },
++    {
++      "id": "SIM028-LEGACY-A-VENDOR-MAP",
++      "branch": "A",
++      "status": "BLOCKED",
++      "preconditions": "Requested slot SIM_SLOT_3 valid and present; vendor mapping library loaded",
++      "input": "SetPrimarySlotId(SIM_SLOT_3)",
++      "external_response": "Unknown SwapM0M2SimCards returned mapped slot",
++      "api_return": "SetTargetPrimarySlotId(true,mappedSlot) immediate success schedules readiness wait; not proof of device completion",
++      "final_state": "UNKNOWN without vendor implementation and readiness events",
++      "side_effects": "targetPrimarySlotId and waitCardsReady set; readiness timer queued",
++      "order": ["valid data before swap", "swap before target selection", "readiness asynchronous after return"],
++      "evidence": ["services/sim/src/multi_sim_controller.cpp:368-380,502-515,1483-1488"],
++      "confidence": "P3 wrapper/source only; vendor ABI and product version missing",
++      "change_policy": "Not an executable authoritative oracle; requires matching vendor source/library and product configuration"
++    }
++  ]
++}
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/scripts/audit_primary_contract.py
+@@ -0,0 +1,129 @@
++#!/usr/bin/env python3
++"""Capture local cross-repository evidence without downloading or changing source."""
++import argparse
++from concurrent.futures import ThreadPoolExecutor
++import hashlib
++import json
++from pathlib import Path
++import re
++import subprocess
++
++SYSTEM = Path(__file__).resolve().parents[1]
++CORE = SYSTEM.parents[3]
++
++# Exact files keep the audit bounded; missing files are evidence, not guessed contracts.
++SOURCES = {
++    'telephony_core_service': {
++        'services/core/src/core_service_sim.cpp': r'SetPrimarySlotId|HasSimCard|IsSimActive|SET_TELEPHONY_STATE',
++        'services/core/src/core_service.cpp': r'CoreService::Init|CoreService::OnStop|make_shared<SimManager>|DeInit',
++        'services/sim/src/sim_manager.cpp': r'SimManager::SetPrimarySlotId|NotifySimAccountChanged',
++        'services/sim/src/multi_sim_controller.cpp': r'SetPrimarySlotId|NeedSwitchSimCard|SwapM0M2|SavePrimary|ResumePrimary|PublishSetPrimary|SendMainCardBroadCast|SetDefaultCellularDataSlotId',
++        'services/sim/src/radio_protocol_controller.cpp': r'ProcessCheckRadio|ProcessUpdateRadio|ProcessRadioProtocolNotify|ProcessSetRadioProtocolComplete|ProcessResponseInfoOfEvent|sessionId_|COMMUNICATION_TIMEOUT',
++        'services/tel_ril/src/tel_ril_sim.cpp': r'SetPrimarySlot|SetRadioProtocol|SimRadioProtocolUpdated',
++        'services/tel_ril/include/observer_handler.h': r'observerHandlerMap_|shared_ptr',
++        'services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp': r'swapM0M2|isHandleVSim|dlopen|\.so',
++        'services/network_search/src/radio_info.cpp': r'GetPrimarySlotId',
++        'services/network_search/src/network_search_manager.cpp': r'GetPrimarySlotId',
++        'frameworks/native/src/core_service_proxy.cpp': r'SetPrimarySlotId|SET_PRIMARY_SLOT',
++        'frameworks/native/src/core_service_client.cpp': r'SetPrimarySlotId',
++        'frameworks/js/network_search/src/napi_radio.cpp': r'NativeSetPrimarySlotId|SetPrimarySlotIdCallback|SetPrimarySlotId\(context|setPrimarySlotId',
++        'services/tel_ril/include/tel_ril_base.h': r'ErrorResponse|Response\(|serialId|serial',
++    },
++    'telephony_ril_adapter': {
++        'services/hril/src/hril_sim.cpp': r'SetPrimarySlot|SetRadioProtocol|BuildRadioProtocol|sessionId',
++        'services/vendor/src/at_sim.c': r'ReqSetRadioProtocol|HRIL_RADIO_PROTOCOL_PHASE_UPDATE|HRIL_RADIO_PROTOCOL_PHASE_NOTIFY|HNOTI_SIM_RADIO_PROTOCOL_UPDATED',
++        'services/vendor/src/vendor_adapter.c': r'\.SetRadioProtocol|\.SetPrimarySlot',
++        'interfaces/innerkits/include/hril_vendor_sim_defs.h': r'SetPrimarySlot|SetRadioProtocol',
++    },
++    'drivers_interface': {
++        'ril/v1_5/IRil.idl': r'SetPrimarySlot',
++        'ril/v1_1/IRil.idl': r'SetRadioProtocol',
++        'ril/v1_1/IRilCallback.idl': r'SetRadioProtocolResponse|SimRadioProtocolUpdated',
++    },
++    'telephony_cellular_data': {
++        'services/src/cellular_data_controller.cpp': r'RADIO_SIM_ACCOUNT_LOADED|SIM_CARD_DEFAULT_DATA_SUBSCRIPTION_CHANGED',
++        'services/src/cellular_data_handler.cpp': r'GetPrimarySlotId|RADIO_SIM_ACCOUNT_LOADED',
++        'services/src/state_machine/incall_data_state_machine.cpp': r'GetPrimarySlotId|SetDefaultCellularDataSlotId',
++    },
++    'telephony_state_registry': {
++        'services/src/telephony_state_registry_service.cpp': r'UpdateIccAccount|OnIccAccountUpdated|OBSERVER_MASK_ICC_ACCOUNT',
++    },
++    'telephony_telephony_data': {
++        'sim/src/sim_ability.cpp': r'SimAbility::Update|helper_\.Update|SET_TELEPHONY_STATE|/sim/sim_info',
++        'sim/src/rdb_sim_helper.cpp': r'CreateSimInfoTableStr|IS_MAIN_CARD|IS_CELLULAR_DATA_CARD|LSI',
++        'common/src/rdb_base_helper.cpp': r'RdbBaseHelper::Update|store_->Update',
++        'interfaces/innerkits/include/sim_data.h': r'PHY_CARD|LSI|SIM_LABEL_INDEX|IS_MAIN_CARD|IS_CELLULAR_DATA_CARD',
++    },
++    'distributeddatamgr_data_share': {
++        'interfaces/inner_api/consumer/include/datashare_helper.h': r'Creator\(|virtual int Update',
++    },
++    'notification_common_event_service': {
++        'frameworks/native/src/common_event_manager.cpp': r'CommonEventManager::PublishCommonEvent\(|return NewPublishCommonEvent\(',
++    },
++    'startup_init': {
++        'interfaces/innerkits/syspara/parameter.c': r'^int SetParameter|^int GetParameter|SystemSetParameter|SystemReadParam',
++    },
++}
++
++
++def git(root, *argv):
++    p = subprocess.run(['git', '-C', str(root), *argv], text=True, capture_output=True, timeout=30)
++    return p.stdout.strip() if p.returncode == 0 else 'UNAVAILABLE: ' + p.stderr.strip()[:200]
++
++
++def inspect(root):
++    entry = {'path': str(root), 'name': root.name, 'head': git(root, 'rev-parse', 'HEAD'),
++             'remote': git(root, 'remote', 'get-url', 'origin'), 'sources': []}
++    for name, pattern in SOURCES.get(root.name, {}).items():
++        path = root / name
++        if not path.is_file():
++            entry['sources'].append({'path': name, 'status': 'MISSING'})
++            continue
++        content = path.read_bytes()
++        entry['sources'].append({'path': name, 'sha256': hashlib.sha256(content).hexdigest(),
++            'matches': [{'line': i, 'text': line.strip()} for i, line in enumerate(
++                content.decode(errors='replace').splitlines(), 1) if re.search(pattern, line)]})
++    # Actual bytes, not HEAD, are authoritative for each audited file.
++    entry['audited_file_changes'] = git(root, 'diff', '--name-only', '--', *SOURCES.get(root.name, {}).keys()) if entry['sources'] else 'NOT_AUDITED'
++    if root.name.startswith('telephony_'):
++        argv = ['rg', '-n', 'SetPrimarySlotId|GetPrimarySlotId|SET_PRIMARY_SLOT_STATUS|DEFAULT_MAIN_SUBSCRIPTION_CHANGED|SIM_CARD_DEFAULT_DATA_SUBSCRIPTION_CHANGED',
++                '--glob', '*.{cpp,h,c,idl}', '--glob', '!**/test/**', '--glob', '!test/**', '.']
++        search = subprocess.run(argv, cwd=root, capture_output=True, text=True, timeout=60)
++        lines = search.stdout.splitlines()
++        entry['relationship_search'] = {'argv': argv, 'exit_code': search.returncode,
++            'matches': lines[:120], 'total_matches': len(lines), 'stderr': search.stderr[:200]}
++    return entry
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--workspace', type=Path, action='append', required=True)
++    parser.add_argument('--output', type=Path, required=True)
++    args = parser.parse_args()
++    roots = {CORE}
++    scans = []
++    for workspace in args.workspace:
++        children = sorted(workspace.iterdir()) if workspace.is_dir() else []
++        scans.append({'path': str(workspace), 'exists': workspace.is_dir(),
++                      'directories': [p.name for p in children if p.is_dir()]})
++        roots.update(p for p in children if p.is_dir() and (p / '.git').exists() and
++                     (p.name.startswith('telephony_') or p.name in SOURCES or
++                      p.name in ('distributeddatamgr_data_share', 'startup_init',
++                                 'notification_common_event_service', 'resourceschedule_ffrt')))
++    with ThreadPoolExecutor(max_workers=4) as pool:
++        repos = list(pool.map(inspect, sorted(roots)))
++    result = {'workspace_scans': scans, 'repositories': repos,
++              'product_manifest_compatibility': 'NOT_VERIFIED',
++              'missing_implementations': [
++                  {'name': n, 'version': 'UNKNOWN: matching product manifest not supplied',
++                   'required': why} for n, why in [
++                      ('telephony_ext SIM vendor library', 'SwapM0M2SimCards/isHandleVSim/SendSimChgTypeInfo implementation and build feature'),
++                      ('simollie', 'No directory/implementation found in the explicitly scanned workspaces; participation not established'),
++                      ('product chipset radio/RIL', 'Actual vendor SetPrimarySlot/SetRadioProtocol functions, modem and firmware version')]],
++              'source_snippets_are_static_evidence_only': True}
++    args.output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
++    print(f'{len(repos)} repository copies inventoried; output {args.output}')
++
++
++if __name__ == '__main__':
++    main()
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/scripts/run_legacy_primary_contract.py
+@@ -0,0 +1,146 @@
++#!/usr/bin/env python3
++"""Run unchanged legacy GTests; report business evidence separately, preserve raw failures.
++
++This is an evidence adapter, not a replacement GTest suite or a leak workaround.
++Each case still owns a process using the existing host.py runner.
++"""
++import argparse
++import hashlib
++import json
++from pathlib import Path
++import re
++import shutil
++import subprocess
++import sys
++import xml.etree.ElementTree as ET
++
++SYSTEM = Path(__file__).resolve().parents[1]
++CORE = SYSTEM.parents[3]
++REPO = CORE.parent
++GOLDEN = SYSTEM / 'primary_slot/legacy_contract/golden.json'
++
++
++def digest(path):
++    return hashlib.sha256(path.read_bytes()).hexdigest()
++
++
++def classify(case, returncode, log):
++    """Only an exact cleanup-only failure may coexist with business PASS."""
++    props = {p.get('name'): p.get('value') for p in case.findall('./properties/property')}
++    failures = [f.get('message', '') + (f.text or '') for f in case.findall('failure')]
++    cleanup_pattern = re.compile(
++        r'^.*(?:/|^)real_scenario\.h:\d+\nValue of: '
++        r'(?:SimHost::AwaitSchedulerStopped\(3s\)|retiring\.expired\(\))\n'
++        r'  Actual: false\nExpected: true\nREAL_(?:GRAPH|MANAGER)_LIFETIME_NOT_DRAINED\n?$')
++    clean_failure = bool(failures) and all(
++        cleanup_pattern.fullmatch(f.get('message', '')) for f in case.findall('failure'))
++    completed = (case.get('status') == 'run' and case.get('result') == 'completed' and
++                 case.find('skipped') is None)
++    unsafe = any(s in log for s in ('AddressSanitizer:', 'ThreadSanitizer:',
++                                    'runtime error:', 'Segmentation fault', 'Aborted'))
++    full_pass = completed and returncode == 0 and not failures and not unsafe
++    # Signals, timeout, missing/contradictory XML and other assertion failures fail closed.
++    business_pass = full_pass or (completed and returncode == 1 and clean_failure and not unsafe and
++        props.get('business_assertions_before_cleanup') == 'PASS' and
++        props.get('strict_ril_expectations_verified') == 'PASS' and
++        props.get('object_lifetime') == 'FAIL')
++    precondition_failure = (completed and returncode == 1 and not unsafe and bool(failures) and
++        not clean_failure and 'business_assertions_before_cleanup' not in props and
++        'TRACE input request=' not in log)
++    return {
++        'gtest': 'PASS' if full_pass else 'FAIL',
++        'business': 'PASS' if business_pass else 'NOT_RUN' if precondition_failure else 'FAIL',
++        'lifecycle': props.get('object_lifetime', 'PASS' if full_pass else 'NOT_RUN'),
++        'classification': 'cleanup_only' if business_pass and clean_failure else
++                          'full_pass' if full_pass else 'precondition_failure' if precondition_failure else
++                          'business_or_execution_failure',
++        'properties': props, 'failures': failures,
++        'post_destruction_callback_safety': 'NOT_VERIFIED' if clean_failure else 'NOT_RUN',
++    }
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--host-out', type=Path, default=REPO / '.host-out')
++    parser.add_argument('--output', type=Path, required=True, help='New evidence directory (never overwritten)')
++    parser.add_argument('--repeat', type=int, default=1)
++    args = parser.parse_args()
++    if args.repeat < 1:
++        parser.error('--repeat must be positive')
++    output = args.output.resolve()
++    output.mkdir(parents=True, exist_ok=False)
++    host_out = args.host_out.resolve()
++    config = json.loads((host_out / 'host.json').read_text())
++    if Path(config['production_root']).resolve() != CORE.resolve():
++        raise RuntimeError('Legacy baseline requires the current unpatched production root')
++    golden = json.loads(GOLDEN.read_text())
++    names = {s['test']: s['id'] for s in golden['scenarios'] if s.get('test')}
++    protected = {p: digest(p) for folder in ('services/sim', 'services/core', 'services/tel_ril',
++        'services/telephony_ext_wrapper', 'utils/common') for p in (CORE / folder).rglob('*') if p.is_file()}
++    result = {
++        'schema_version': 1, 'adapter': 'Legacy/services/sim/unpatched',
++        'head': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=REPO, text=True).strip(),
++        'golden_sha256': digest(GOLDEN), 'host_config': config,
++        'scope': 'Host business assertions under audited external response fixtures; not OHOS golden truth',
++        'whole_gtest_status': 'NOT_RUN', 'business_status': 'NOT_RUN', 'runs': [],
++        'native_ohos': 'BLOCKED', 'target_adapter': 'NOT_IMPLEMENTED',
++        'adapter_sha256': digest(Path(__file__)),
++    }
++    raw_exit = 0
++    for repetition in range(args.repeat):
++        argv = [sys.executable, '-B', str(SYSTEM / 'tools/host.py'), 'selected',
++                '--out', str(host_out), '--production-root', str(CORE),
++                '--target', 'sim_primary_slot_real_test', '--filter', 'RealSimPrimary.*']
++        with (output / f'runner-{repetition}.log').open('w') as log:
++            code = subprocess.run(argv, cwd=REPO, stdout=log, stderr=subprocess.STDOUT).returncode
++        raw_exit = max(raw_exit, code if code >= 0 else 1)
++        raw = json.loads((host_out / 'latest.json').read_text())
++        session = Path(raw['artifacts'])
++        # Never reuse stale evidence if build/discovery failed before writing latest.json.
++        runner_log = (output / f'runner-{repetition}.log').read_text()
++        if 'Evidence: ' + str(session) not in runner_log or raw['head'] != result['head']:
++            raise RuntimeError('Runner did not complete this execution; inspect raw runner log')
++        dest = output / f'run-{repetition}'
++        dest.mkdir()
++        for source in session.iterdir():
++            if source.suffix in ('.log', '.xml', '.json'):
++                shutil.copy2(source, dest / source.name)
++        cases = []
++        for group in raw['groups']:
++            xml = dest / (group['name'] + '.xml')
++            log = (dest / (group['name'] + '.log')).read_text()
++            elements = ET.parse(xml).getroot().findall('.//testcase')
++            if len(elements) != 1:
++                raise RuntimeError('Expected exactly one isolated GTest case')
++            element = elements[0]
++            name = element.get('classname') + '.' + element.get('name')
++            trace = [line for line in log.splitlines() if line.startswith('TRACE ')]
++            cases.append(dict(id=names.get(name), test=name, raw_exit=group['exit_code'],
++                              xml=str(xml.relative_to(output)), publisher_and_request_trace=trace,
++                              trace_scope='Publisher calls/parameter boundary/RIL-interface request logs; no consumer or physical modem observation',
++                              **classify(element, group['exit_code'], log)))
++        if {c['test'] for c in cases} != set(names) or len(cases) != len(names):
++            raise RuntimeError('Golden scenario discovery mismatch')
++        result['runs'].append({'command': argv, 'raw_exit': code, 'cases': cases})
++        print(f'run {repetition + 1}: business {sum(c["business"] == "PASS" for c in cases)}/{len(cases)}, '
++              f'GTest {sum(c["gtest"] == "PASS" for c in cases)}/{len(cases)}, raw exit {code}', flush=True)
++    result['production_bytes_unchanged'] = all(digest(p) == sha for p, sha in protected.items())
++    result['production_sha256'] = {str(p.relative_to(CORE)): sha for p, sha in protected.items()}
++    binary = host_out / 'build/sim_primary_slot_real_test'
++    result['binary_sha256'] = digest(binary)
++    result['toolchain'] = {name: subprocess.check_output([name, '--version'], text=True).splitlines()[0]
++                           for name in ('clang++', 'gn', 'ninja', 'python3')}
++    result['build_commands'] = subprocess.check_output(
++        ['ninja', '-C', str(host_out / 'build'), '-t', 'commands', 'sim_primary_slot_real_test'], text=True)
++    all_cases = [c for run in result['runs'] for c in run['cases']]
++    result['whole_gtest_status'] = 'PASS' if all(c['gtest'] == 'PASS' for c in all_cases) else 'FAIL'
++    result['business_status'] = 'PASS' if all(c['business'] == 'PASS' for c in all_cases) else 'FAIL'
++    result['raw_process_exit'] = raw_exit
++    result['exit_code'] = raw_exit or int(not result['production_bytes_unchanged'] or result['business_status'] != 'PASS')
++    (output / 'validation.json').write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
++    print(f'Evidence: {output}; exit {result["exit_code"]} (raw GTest failures preserved)')
++    return result['exit_code']
++
++
++if __name__ == '__main__':
++    sys.exit(main())
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/scripts/test_legacy_primary_contract.py
+@@ -0,0 +1,85 @@
++#!/usr/bin/env python3
++"""Negative controls for separating business evidence from original failing GTest."""
++import unittest
++import xml.etree.ElementTree as ET
++from run_legacy_primary_contract import classify
++
++
++def fixture():
++    case = ET.Element('testcase', status='run', result='completed')
++    props = ET.SubElement(case, 'properties')
++    for name, value in {'business_assertions_before_cleanup': 'PASS',
++                        'strict_ril_expectations_verified': 'PASS', 'object_lifetime': 'FAIL'}.items():
++        ET.SubElement(props, 'property', name=name, value=value)
++    ET.SubElement(case, 'failure', message='../../primary_slot/real_scenario.h:321\n'
++                  'Value of: SimHost::AwaitSchedulerStopped(3s)\n'
++                  '  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n')
++    return case
++
++
++class EvidenceClassification(unittest.TestCase):
++    def test_cleanup_does_not_turn_gtest_green(self):
++        result = classify(fixture(), 1, '')
++        self.assertEqual(result['business'], 'PASS')
++        self.assertEqual(result['gtest'], 'FAIL')
++        self.assertEqual(result['post_destruction_callback_safety'], 'NOT_VERIFIED')
++
++    def test_business_failure_is_not_accepted(self):
++        case = fixture()
++        ET.SubElement(case, 'failure', message='real_test.cpp:99 PRIMARY_COMMIT_TARGET')
++        self.assertEqual(classify(case, 1, '')['business'], 'FAIL')
++
++    def test_marker_substring_is_not_accepted(self):
++        case = fixture()
++        case.find('failure').set('message', 'real_scenario.h:321\nwrong business value REAL_GRAPH_LIFETIME_NOT_DRAINED')
++        self.assertEqual(classify(case, 1, '')['business'], 'FAIL')
++
++    def test_mock_failure_is_not_accepted(self):
++        case = fixture()
++        ET.SubElement(case, 'failure', message='Unexpected mock function call')
++        self.assertEqual(classify(case, 1, '')['business'], 'FAIL')
++
++    def test_missing_business_marker_is_not_accepted(self):
++        case = fixture()
++        case.find('properties').remove(case.find('properties/property'))
++        self.assertEqual(classify(case, 1, '')['business'], 'FAIL')
++
++    def test_strict_verification_must_pass(self):
++        case = fixture()
++        case.findall('properties/property')[1].set('value', 'FAIL')
++        self.assertEqual(classify(case, 1, '')['business'], 'FAIL')
++
++    def test_crash_timeout_and_sanitizer_fail_closed(self):
++        for code, log in [(-11, ''), (124, ''), (87, ''), (1, 'AddressSanitizer: heap-use-after-free'),
++                          (1, 'ThreadSanitizer: data race')]:
++            with self.subTest(code=code, log=log):
++                self.assertEqual(classify(fixture(), code, log)['business'], 'FAIL')
++
++    def test_skip_is_not_accepted(self):
++        case = fixture()
++        ET.SubElement(case, 'skipped')
++        self.assertEqual(classify(case, 1, '')['business'], 'FAIL')
++
++    def test_incomplete_xml_is_not_accepted(self):
++        case = fixture()
++        case.set('result', 'suppressed')
++        self.assertEqual(classify(case, 1, '')['business'], 'FAIL')
++
++    def test_zero_exit_with_failure_is_not_accepted(self):
++        self.assertEqual(classify(fixture(), 0, '')['business'], 'FAIL')
++
++    def test_real_full_pass_remains_pass(self):
++        case = ET.Element('testcase', status='run', result='completed')
++        self.assertEqual(classify(case, 0, '')['gtest'], 'PASS')
++
++    def test_setup_failure_is_not_business_failure_or_pass(self):
++        case = ET.Element('testcase', status='run', result='completed')
++        ET.SubElement(case, 'failure', message='real_test.cpp:45 IsSimActive=false')
++        result = classify(case, 1, '')
++        self.assertEqual(result['business'], 'NOT_RUN')
++        self.assertEqual(result['gtest'], 'FAIL')
++        self.assertEqual(result['classification'], 'precondition_failure')
++
++
++if __name__ == '__main__':
++    unittest.main()

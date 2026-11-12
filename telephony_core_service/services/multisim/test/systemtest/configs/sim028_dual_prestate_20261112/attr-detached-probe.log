@@ -1,0 +1,6 @@
+Command: clang++ -std=c++17 -pthread -I telephony_core_service/services/multisim/test/systemtest/stubs -I telephony_core_service/services/multisim/test/systemtest/stubs/include /tmp/sim028-attr-detached-probe.cpp telephony_core_service/services/multisim/test/systemtest/stubs/detached_threads.cpp -ldl -Wl,--export-dynamic-symbol=pthread_create -Wl,--export-dynamic-symbol=pthread_detach -o /tmp/sim028-attr-detached-probe
+Compile exit: 0
+Command: /tmp/sim028-attr-detached-probe
+100 attribute-detached completion checks PASS
+Exit: 0
+Earlier exploratory compile omitted stubs/include, failed with ffrt.h missing; corrected include path, no dependency installed.

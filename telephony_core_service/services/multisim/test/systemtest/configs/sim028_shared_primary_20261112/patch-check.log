@@ -1,0 +1,1 @@
+git apply --check task.patch against /tmp/sim028-shared-before: exit0; no patch applied

@@ -1,0 +1,10 @@
+{
+  "same_names_and_failure_text_as_pre_metadata_regression": true,
+  "cases": {
+    "ContractDriver.DEFECT_001_StaleReadyAfterRemoval": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:22\nExpected equality of these values:\n  actual.present\n    Which is: true\n  state != State::Absent\n    Which is: false\n",
+    "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: LOCKED\n",
+    "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:157\nExpected: (actual.error) != (0), actual: 0 vs 0\n",
+    "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/card_oracle.h:23\nExpected equality of these values:\n  actual.state\n    Which is: NOT_READY\n  state\n    Which is: LOCKED\n",
+    "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/lifecycle_extension_test.cpp:176\nExpected equality of these values:\n  RefreshToLocked()\n    Which is: 2\n  0\ncore_service_client.h RefreshSimState @return contract\n"
+  }
+}

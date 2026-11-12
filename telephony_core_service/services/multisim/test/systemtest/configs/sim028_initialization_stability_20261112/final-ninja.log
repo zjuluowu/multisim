@@ -1,0 +1,5 @@
+ninja: Entering directory `/mnt/e/github/multisim/.host-out/build'
+[1/4] CXX ../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp
+[2/4] CXX ../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp
+[3/4] CXX ../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp
+[4/4] LINK sim_primary_slot_real_test

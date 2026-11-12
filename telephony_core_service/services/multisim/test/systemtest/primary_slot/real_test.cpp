@@ -29,7 +29,9 @@ TEST(RealSimPrimary, InitializesRealManagerAndControllerWithoutRil)
     auto manager = std::make_shared<SimManager>(nullptr);
     ASSERT_TRUE(manager->OnInit(SIM_SLOT_COUNT_MD + 1));
     EXPECT_EQ(manager->GetMaxSimCount(), 2);
-    EXPECT_EQ(manager->SetPrimarySlotId(1, true), TELEPHONY_ERR_NO_SIM_CARD);
+    testing::Test::RecordProperty("primary_max_sim_count", manager->GetMaxSimCount());
+    auto observedNoRil = [&](int result) { testing::Test::RecordProperty("primary_direct_no_ril_result", result); testing::Test::RecordProperty("primary_direct_no_ril_symbol", SimGuard::Primary::LegacyAdapter::ErrorSymbol(result)); return result; };
+    EXPECT_EQ(observedNoRil(manager->SetPrimarySlotId(1, true)), TELEPHONY_ERR_NO_SIM_CARD);
     EXPECT_FALSE(manager->IsSetPrimarySlotIdInProgress());
     SimHost::StopCallingThreadTasks();
     manager.reset();
@@ -84,6 +86,7 @@ TEST(RealSimPrimary, BDirectRilSuccessCommitsAfterReply)
     EXPECT_CALL(*s.ril, SetPrimarySlot(1, testing::_)).Times(1).WillOnce([&](int slot, const auto &event) {
         EXPECT_TRUE(std::dynamic_pointer_cast<MultiSimController>(event->GetOwner()));
         std::lock_guard<std::mutex> lock(s.mutex);
+        s.observation.Add("ril_primary", {{"slot", std::to_string(slot)}});
         request = Pending{slot, event->GetOwner(), event->GetInnerEventId()}; s.changed.notify_all(); return 0;
     });
     EXPECT_CALL(*s.ril, SetRadioProtocol(testing::_, testing::_, testing::_)).Times(0);
@@ -96,6 +99,7 @@ TEST(RealSimPrimary, BDirectRilSuccessCommitsAfterReply)
     EXPECT_EQ(caller.wait_for(50ms), std::future_status::timeout);
     EXPECT_TRUE(s.manager->IsSetPrimarySlotIdInProgress());
     auto reply = std::make_shared<RadioResponseInfo>(); reply->error = ErrType::NONE;
+    s.observation.Add("ril_response", {{"slot", std::to_string(request->slot)}, {"error", std::to_string(static_cast<int>(reply->error))}});
     Sim028Host::RealScenario::Reply(*request, reply);
     ASSERT_EQ(caller.wait_for(3s), std::future_status::ready);
     EXPECT_EQ(caller.get(), TELEPHONY_ERR_SUCCESS);
@@ -111,8 +115,10 @@ TEST(RealSimPrimary, BDirectRilFailureKeepsPreviousPrimary)
     Sim028Host::RealScenario s(true);
     ASSERT_TRUE(s.StartLockedCard()); s.ClearObservations(); s.Permit();
     { std::lock_guard<std::mutex> lock(s.mutex); s.parametersDb["persist.telephony.MainSlotId"] = "0"; }
-    EXPECT_CALL(*s.ril, SetPrimarySlot(1, testing::_)).Times(1).WillOnce([](int slot, const auto &event) {
+    EXPECT_CALL(*s.ril, SetPrimarySlot(1, testing::_)).Times(1).WillOnce([&](int slot, const auto &event) {
+        s.observation.Add("ril_primary", {{"slot", std::to_string(slot)}});
         auto reply = std::make_shared<RadioResponseInfo>(); reply->error = ErrType::ERR_GENERIC_FAILURE;
+        s.observation.Add("ril_response", {{"slot", std::to_string(slot)}, {"error", std::to_string(static_cast<int>(reply->error))}});
         Sim028Host::RealScenario::Reply({slot, event->GetOwner(), event->GetInnerEventId()}, reply); return 0;
     });
     EXPECT_CALL(*s.ril, SetRadioProtocol(testing::_, testing::_, testing::_)).Times(0);
@@ -144,6 +150,9 @@ TEST(RealSimPrimary, C1ThreePhasesWithStaleCheckResponseRejected)
     std::vector<ProtocolRequest> requests;
     EXPECT_CALL(*s.ril, SetRadioProtocol(testing::_, testing::_, testing::_)).Times(6)
         .WillRepeatedly([&](int slot, RadioProtocol protocol, const auto &event) {
+            s.observation.Add("ril_protocol", {{"slot", std::to_string(slot)},
+                {"session", std::to_string(protocol.sessionId)}, {"phase", std::to_string(static_cast<int>(protocol.phase))},
+                {"modem", std::to_string(protocol.modemId)}, {"technology", std::to_string(protocol.technology)}});
             std::cout << "TRACE radio slot=" << slot << " session=" << protocol.sessionId
                 << " phase=" << static_cast<int>(protocol.phase) << " modem=" << protocol.modemId << "\n";
             EXPECT_EQ(protocol.slotId, slot);
@@ -172,17 +181,24 @@ TEST(RealSimPrimary, C1ThreePhasesWithStaleCheckResponseRejected)
                 (request.transport.slot == 0 ? 0x22 : 0x11));
             if (stage == 0 && request.transport.slot == 0) {
                 auto stale = std::make_shared<RadioProtocol>(*reply); stale->sessionId += 99;
+                s.observation.Add("ril_response", {{"slot", std::to_string(request.transport.slot)}, {"session", std::to_string(stale->sessionId)}, {"phase", std::to_string(static_cast<int>(stale->phase))}});
                 RealScenario::Reply(request.transport, stale);
                 EXPECT_EQ(caller.wait_for(20ms), std::future_status::timeout);
                 std::lock_guard<std::mutex> lock(s.mutex); EXPECT_EQ(requests.size(), 2u);
             }
-            RealScenario::Reply(request.transport, reply);
+            // UPDATE completion is an unsolicited NOTIFY; an extra solicited
+            // acknowledgment is not required by the current controller.
+            if (stage != 1) {
+                s.observation.Add("ril_response", {{"slot", std::to_string(request.transport.slot)}, {"session", std::to_string(reply->sessionId)}, {"phase", std::to_string(static_cast<int>(reply->phase))}});
+                RealScenario::Reply(request.transport, reply);
+            }
             if (stage == 1) {
                 reply = std::make_shared<RadioProtocol>(*reply);
                 reply->phase = RadioProtocolPhase::RADIO_PROTOCOL_PHASE_NOTIFY;
                 reply->status = RadioProtocolStatus::RADIO_PROTOCOL_STATUS_SUCCESS;
                 std::weak_ptr<AppExecFwk::EventHandler> owner;
                 { std::lock_guard<std::mutex> lock(s.mutex); owner = s.notifications.at({request.transport.slot, RADIO_SIM_RADIO_PROTOCOL_NOTIFY}); }
+                s.observation.Add("ril_response", {{"slot", std::to_string(request.transport.slot)}, {"session", std::to_string(reply->sessionId)}, {"phase", std::to_string(static_cast<int>(reply->phase))}});
                 RealScenario::Reply({request.transport.slot, owner, RADIO_SIM_RADIO_PROTOCOL_NOTIFY}, reply);
             }
         }
@@ -202,7 +218,8 @@ TEST(RealSimPrimary, BRealTimeoutKeepsPreviousPrimary)
     Sim028Host::RealScenario s(true);
     ASSERT_TRUE(s.StartLockedCard()); s.ClearObservations(); s.Permit();
     { std::lock_guard<std::mutex> lock(s.mutex); s.parametersDb["persist.telephony.MainSlotId"] = "0"; }
-    EXPECT_CALL(*s.ril, SetPrimarySlot(1, testing::_)).Times(1).WillOnce([](int, const auto &) {
+    EXPECT_CALL(*s.ril, SetPrimarySlot(1, testing::_)).Times(1).WillOnce([&](int slot, const auto &) {
+        s.observation.Add("ril_primary", {{"slot", std::to_string(slot)}});
         return 0; // device accepted the request but supplies no reply; real 45-second timer must end it
     });
     EXPECT_CALL(*s.ril, SetRadioProtocol(testing::_, testing::_, testing::_)).Times(0);
@@ -239,6 +256,9 @@ TEST(RealSimPrimary, C1CheckFailureRestoresParametersAndExhaustsFiveRetries)
     unsigned requests = 0;
     EXPECT_CALL(*s.ril, SetRadioProtocol(testing::_, testing::_, testing::_)).Times(24)
         .WillRepeatedly([&](int slot, RadioProtocol protocol, const auto &event) {
+            s.observation.Add("ril_protocol", {{"slot", std::to_string(slot)},
+                {"session", std::to_string(protocol.sessionId)}, {"phase", std::to_string(static_cast<int>(protocol.phase))},
+                {"modem", std::to_string(protocol.modemId)}, {"technology", std::to_string(protocol.technology)}});
             std::cout << "TRACE radio slot=" << slot << " session=" << protocol.sessionId
                 << " phase=" << static_cast<int>(protocol.phase) << " modem=" << protocol.modemId << "\n";
             EXPECT_EQ(protocol.slotId, slot); EXPECT_EQ(protocol.modemId, slot);
@@ -250,9 +270,11 @@ TEST(RealSimPrimary, C1CheckFailureRestoresParametersAndExhaustsFiveRetries)
             }
             if (protocol.phase == RadioProtocolPhase::RADIO_PROTOCOL_PHASE_CHECK) {
                 auto response = std::make_shared<RadioResponseInfo>(); response->error = ErrType::ERR_GENERIC_FAILURE;
+                s.observation.Add("ril_response", {{"slot", std::to_string(slot)}, {"error", std::to_string(static_cast<int>(response->error))}, {"session", std::to_string(protocol.sessionId)}, {"phase", std::to_string(static_cast<int>(protocol.phase))}});
                 RealScenario::Reply({slot, event->GetOwner(), event->GetInnerEventId()}, response);
             } else {
                 EXPECT_EQ(protocol.status, RadioProtocolStatus::RADIO_PROTOCOL_STATUS_FAIL);
+                s.observation.Add("ril_response", {{"slot", std::to_string(slot)}, {"session", std::to_string(protocol.sessionId)}, {"phase", std::to_string(static_cast<int>(protocol.phase))}});
                 RealScenario::Reply({slot, event->GetOwner(), event->GetInnerEventId()}, std::make_shared<RadioProtocol>(protocol));
             }
             return 0;

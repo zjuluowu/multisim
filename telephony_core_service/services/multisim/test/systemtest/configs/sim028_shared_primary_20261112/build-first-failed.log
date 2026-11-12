@@ -1,0 +1,99 @@
+ninja: Entering directory `/mnt/e/github/multisim/.host-out/build'
+[1/7] touch obj/primary_slot_contract.stamp
+[2/7] CXX ../../telephony_core_service/services/multisim/test/systemtest/primary_slot/security_boundary.cpp
+[3/7] CXX ../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_runtime.cpp
+[4/7] CXX ../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp
+FAILED: obj/primary_slot/sim_primary_slot_real_test.real_test.o 
+clang++ -DLOG_DOMAIN=0xD001F04 -I/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard -I../../telephony_core_service/services/multisim/test/systemtest/primary_slot/runtime_include -I../../telephony_core_service/services/multisim/test/systemtest/primary_slot/include -I../../telephony_core_service/services/multisim/test/systemtest/primary_slot/provider/include -I../../telephony_core_service/services/multisim/test/systemtest/primary_slot -I../../telephony_core_service/services/multisim/test/systemtest/stubs -I/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59/googletest/include -I/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59/googlemock/include -I../../telephony_core_service/services/multisim/test/systemtest/stubs/include -I/mnt/e/github/multisim/telephony_core_service/services/sim/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/ims/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/satellite -I/mnt/e/github/multisim/telephony_core_service/services/tel_ril/include -I/mnt/e/github/multisim/telephony_core_service/services/network_search/include -I/mnt/e/github/multisim/telephony_core_service/services/core/include -I/mnt/e/github/multisim/telephony_core_service/services/telephony_ext_wrapper/include -I/mnt/e/github/multisim/telephony_core_service/utils/common/include -I/mnt/e/github/multisim/telephony_core_service/utils/log/include -I/mnt/e/github/multisim/telephony_core_service/utils/preferences/include -I/mnt/e/github/multisim/telephony_core_service/common/capability_mgr/include -I/usr/include/libxml2  -std=c++17 -flto=full -fwhole-program-vtables -fvirtual-function-elimination -fvisibility=hidden -ffunction-sections -fdata-sections -O1 -g -fno-omit-frame-pointer -MMD -MF obj/primary_slot/sim_primary_slot_real_test.real_test.o.d -c ../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp -o obj/primary_slot/sim_primary_slot_real_test.real_test.o
+In file included from ../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp:8:
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:515:74: error: too many arguments to function call, expected 0, have 1
+  515 |             const int dataResult = manager->GetDefaultCellularDataSlotId(data);
+      |                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^~~~
+/mnt/e/github/multisim/telephony_core_service/services/sim/include/sim_manager.h:86:13: note: 'GetDefaultCellularDataSlotId' declared here
+   86 |     int32_t GetDefaultCellularDataSlotId() override;
+      |             ^
+PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace, preprocessed source, and associated run script.
+Stack dump:
+0.	Program arguments: clang++ -DLOG_DOMAIN=0xD001F04 -I/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard -I../../telephony_core_service/services/multisim/test/systemtest/primary_slot/runtime_include -I../../telephony_core_service/services/multisim/test/systemtest/primary_slot/include -I../../telephony_core_service/services/multisim/test/systemtest/primary_slot/provider/include -I../../telephony_core_service/services/multisim/test/systemtest/primary_slot -I../../telephony_core_service/services/multisim/test/systemtest/stubs -I/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59/googletest/include -I/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59/googlemock/include -I../../telephony_core_service/services/multisim/test/systemtest/stubs/include -I/mnt/e/github/multisim/telephony_core_service/services/sim/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/ims/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/satellite -I/mnt/e/github/multisim/telephony_core_service/services/tel_ril/include -I/mnt/e/github/multisim/telephony_core_service/services/network_search/include -I/mnt/e/github/multisim/telephony_core_service/services/core/include -I/mnt/e/github/multisim/telephony_core_service/services/telephony_ext_wrapper/include -I/mnt/e/github/multisim/telephony_core_service/utils/common/include -I/mnt/e/github/multisim/telephony_core_service/utils/log/include -I/mnt/e/github/multisim/telephony_core_service/utils/preferences/include -I/mnt/e/github/multisim/telephony_core_service/common/capability_mgr/include -I/usr/include/libxml2 -std=c++17 -flto=full -fwhole-program-vtables -fvirtual-function-elimination -fvisibility=hidden -ffunction-sections -fdata-sections -O1 -g -fno-omit-frame-pointer -MMD -MF obj/primary_slot/sim_primary_slot_real_test.real_test.o.d -c ../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp -o obj/primary_slot/sim_primary_slot_real_test.real_test.o
+1.	../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp:58:5: current parser token 'Scenario'
+2.	../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp:11:1: parsing namespace '(anonymous)'
+3.	../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp:41:1: parsing function body '(anonymous namespace)::RealSimPrimary_C0CoreToRealManagerAndController_Test::TestBody'
+4.	../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp:41:1: in compound statement ('{}')
+ #0 0x00007e51133a63bf llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/usr/lib/llvm-18/bin/../lib/libLLVM.so.18.1+0xda63bf)
+ #1 0x00007e51133a44f9 llvm::sys::RunSignalHandlers() (/usr/lib/llvm-18/bin/../lib/libLLVM.so.18.1+0xda44f9)
+ #2 0x00007e51132f0227 (/usr/lib/llvm-18/bin/../lib/libLLVM.so.18.1+0xcf0227)
+ #3 0x00007e5111e45330 (/lib/x86_64-linux-gnu/libc.so.6+0x45330)
+ #4 0x00007e511a925c32 clang::Lexer::LexTokenInternal(clang::Token&, bool) (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0xb25c32)
+ #5 0x00007e511a98f5ed clang::Preprocessor::Lex(clang::Token&) (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0xb8f5ed)
+ #6 0x00007e511a94ef8c clang::Preprocessor::PeekAhead(unsigned int) (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0xb4ef8c)
+ #7 0x00007e511aa3f14a clang::Parser::ParseStatementOrDeclarationAfterAttributes(llvm::SmallVector<clang::Stmt*, 32u>&, clang::Parser::ParsedStmtContext, clang::SourceLocation*, clang::ParsedAttributes&, clang::ParsedAttributes&) (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0xc3f14a)
+ #8 0x00007e511aa3edfc clang::Parser::ParseStatementOrDeclaration(llvm::SmallVector<clang::Stmt*, 32u>&, clang::Parser::ParsedStmtContext, clang::SourceLocation*) (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0xc3edfc)
+ #9 0x00007e511aa47aa2 clang::Parser::ParseCompoundStatementBody(bool) (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0xc47aa2)
+#10 0x00007e511aa48b77 clang::Parser::ParseFunctionStatementBody(clang::Decl*, clang::Parser::ParseScope&) (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0xc48b77)
+#11 0x00007e511aa640c7 clang::Parser::ParseFunctionDefinition(clang::ParsingDeclarator&, clang::Parser::ParsedTemplateInfo const&, clang::Parser::LateParsedAttrList*) (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0xc640c7)
+#12 0x00007e511a9ad2a1 clang::Parser::ParseDeclGroup(clang::ParsingDeclSpec&, clang::DeclaratorContext, clang::ParsedAttributes&, clang::SourceLocation*, clang::Parser::ForRangeInit*) (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0xbad2a1)
+#13 0x00007e511aa6307f clang::Parser::ParseDeclOrFunctionDefInternal(clang::ParsedAttributes&, clang::ParsedAttributes&, clang::ParsingDeclSpec&, clang::AccessSpecifier) (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0xc6307f)
+#14 0x00007e511aa62a39 clang::Parser::ParseDeclarationOrFunctionDefinition(clang::ParsedAttributes&, clang::ParsedAttributes&, clang::ParsingDeclSpec*, clang::AccessSpecifier) (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0xc62a39)
+#15 0x00007e511aa61c65 clang::Parser::ParseExternalDeclaration(clang::ParsedAttributes&, clang::ParsedAttributes&, clang::ParsingDeclSpec*) (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0xc61c65)
+#16 0x00007e511a9c7eca clang::Parser::ParseInnerNamespace(llvm::SmallVector<clang::Parser::InnerNamespaceInfo, 4u> const&, unsigned int, clang::SourceLocation&, clang::ParsedAttributes&, clang::BalancedDelimiterTracker&) (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0xbc7eca)
+#17 0x00007e511a9c78f3 clang::Parser::ParseNamespace(clang::DeclaratorContext, clang::SourceLocation&, clang::SourceLocation) (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0xbc78f3)
+#18 0x00007e511a9ab4a4 clang::Parser::ParseDeclaration(clang::DeclaratorContext, clang::SourceLocation&, clang::ParsedAttributes&, clang::ParsedAttributes&, clang::SourceLocation*) (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0xbab4a4)
+#19 0x00007e511aa6148f clang::Parser::ParseExternalDeclaration(clang::ParsedAttributes&, clang::ParsedAttributes&, clang::ParsingDeclSpec*) (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0xc6148f)
+#20 0x00007e511aa5ff7b clang::Parser::ParseTopLevelDecl(clang::OpaquePtr<clang::DeclGroupRef>&, clang::Sema::ModuleImportState&) (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0xc5ff7b)
+#21 0x00007e511a99747e clang::ParseAST(clang::Sema&, bool, bool) (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0xb9747e)
+#22 0x00007e511c80662c clang::FrontendAction::Execute() (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0x2a0662c)
+#23 0x00007e511c7830b4 clang::CompilerInstance::ExecuteAction(clang::FrontendAction&) (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0x29830b4)
+#24 0x00007e511c88263d clang::ExecuteCompilerInvocation(clang::CompilerInstance*) (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0x2a8263d)
+#25 0x000057bf5c5bd42e cc1_main(llvm::ArrayRef<char const*>, char const*, void*) (/usr/lib/llvm-18/bin/clang+0x1442e)
+#26 0x000057bf5c5ba894 (/usr/lib/llvm-18/bin/clang+0x11894)
+#27 0x00007e511c433972 (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0x2633972)
+#28 0x00007e51132eff77 llvm::CrashRecoveryContext::RunSafely(llvm::function_ref<void ()>) (/usr/lib/llvm-18/bin/../lib/libLLVM.so.18.1+0xceff77)
+#29 0x00007e511c433237 clang::driver::CC1Command::Execute(llvm::ArrayRef<std::optional<llvm::StringRef>>, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char>>*, bool*) const (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0x2633237)
+#30 0x00007e511c3fb518 clang::driver::Compilation::ExecuteCommand(clang::driver::Command const&, clang::driver::Command const*&, bool) const (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0x25fb518)
+#31 0x00007e511c3fb77f clang::driver::Compilation::ExecuteJobs(clang::driver::JobList const&, llvm::SmallVectorImpl<std::pair<int, clang::driver::Command const*>>&, bool) const (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0x25fb77f)
+#32 0x00007e511c417c20 clang::driver::Driver::ExecuteCompilation(clang::driver::Compilation&, llvm::SmallVectorImpl<std::pair<int, clang::driver::Command const*>>&) (/usr/lib/llvm-18/bin/../lib/libclang-cpp.so.18.1+0x2617c20)
+#33 0x000057bf5c5ba1ec clang_main(int, char**, llvm::ToolContext const&) (/usr/lib/llvm-18/bin/clang+0x111ec)
+#34 0x000057bf5c5c7383 main (/usr/lib/llvm-18/bin/clang+0x1e383)
+#35 0x00007e5111e2a1ca __libc_start_call_main ./csu/../sysdeps/nptl/libc_start_call_main.h:74:3
+#36 0x00007e5111e2a28b call_init ./csu/../csu/libc-start.c:128:20
+#37 0x00007e5111e2a28b __libc_start_main ./csu/../csu/libc-start.c:347:5
+#38 0x000057bf5c5b7255 _start (/usr/lib/llvm-18/bin/clang+0xe255)
+clang++: error: clang frontend command failed with exit code 135 (use -v to see invocation)
+Ubuntu clang version 18.1.3 (1ubuntu1)
+Target: x86_64-pc-linux-gnu
+Thread model: posix
+InstalledDir: /usr/bin
+clang++: note: diagnostic msg: 
+********************
+
+PLEASE ATTACH THE FOLLOWING FILES TO THE BUG REPORT:
+Preprocessed source(s) and associated run script(s) are located at:
+clang++: note: diagnostic msg: /tmp/real_test-89864d.cpp
+clang++: note: diagnostic msg: /tmp/real_test-89864d.sh
+clang++: note: diagnostic msg: 
+
+********************
+[5/7] CXX ../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp
+FAILED: obj/primary_slot/lifecycle/sim_primary_slot_real_test.lifetime_test.o 
+clang++ -DLOG_DOMAIN=0xD001F04 -I/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard -I../../telephony_core_service/services/multisim/test/systemtest/primary_slot/runtime_include -I../../telephony_core_service/services/multisim/test/systemtest/primary_slot/include -I../../telephony_core_service/services/multisim/test/systemtest/primary_slot/provider/include -I../../telephony_core_service/services/multisim/test/systemtest/primary_slot -I../../telephony_core_service/services/multisim/test/systemtest/stubs -I/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59/googletest/include -I/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59/googlemock/include -I../../telephony_core_service/services/multisim/test/systemtest/stubs/include -I/mnt/e/github/multisim/telephony_core_service/services/sim/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/ims/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/satellite -I/mnt/e/github/multisim/telephony_core_service/services/tel_ril/include -I/mnt/e/github/multisim/telephony_core_service/services/network_search/include -I/mnt/e/github/multisim/telephony_core_service/services/core/include -I/mnt/e/github/multisim/telephony_core_service/services/telephony_ext_wrapper/include -I/mnt/e/github/multisim/telephony_core_service/utils/common/include -I/mnt/e/github/multisim/telephony_core_service/utils/log/include -I/mnt/e/github/multisim/telephony_core_service/utils/preferences/include -I/mnt/e/github/multisim/telephony_core_service/common/capability_mgr/include -I/usr/include/libxml2  -std=c++17 -flto=full -fwhole-program-vtables -fvirtual-function-elimination -fvisibility=hidden -ffunction-sections -fdata-sections -O1 -g -fno-omit-frame-pointer -MMD -MF obj/primary_slot/lifecycle/sim_primary_slot_real_test.lifetime_test.o.d -c ../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp -o obj/primary_slot/lifecycle/sim_primary_slot_real_test.lifetime_test.o
+In file included from ../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp:1:
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:515:74: error: too many arguments to function call, expected 0, have 1
+  515 |             const int dataResult = manager->GetDefaultCellularDataSlotId(data);
+      |                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^~~~
+/mnt/e/github/multisim/telephony_core_service/services/sim/include/sim_manager.h:86:13: note: 'GetDefaultCellularDataSlotId' declared here
+   86 |     int32_t GetDefaultCellularDataSlotId() override;
+      |             ^
+1 error generated.
+[6/7] CXX ../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp
+FAILED: obj/primary_slot/lifecycle/sim_primary_slot_real_test.shutdown_contract_test.o 
+clang++ -DLOG_DOMAIN=0xD001F04 -I/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard -I../../telephony_core_service/services/multisim/test/systemtest/primary_slot/runtime_include -I../../telephony_core_service/services/multisim/test/systemtest/primary_slot/include -I../../telephony_core_service/services/multisim/test/systemtest/primary_slot/provider/include -I../../telephony_core_service/services/multisim/test/systemtest/primary_slot -I../../telephony_core_service/services/multisim/test/systemtest/stubs -I/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59/googletest/include -I/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59/googlemock/include -I../../telephony_core_service/services/multisim/test/systemtest/stubs/include -I/mnt/e/github/multisim/telephony_core_service/services/sim/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/ims/include -I/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/satellite -I/mnt/e/github/multisim/telephony_core_service/services/tel_ril/include -I/mnt/e/github/multisim/telephony_core_service/services/network_search/include -I/mnt/e/github/multisim/telephony_core_service/services/core/include -I/mnt/e/github/multisim/telephony_core_service/services/telephony_ext_wrapper/include -I/mnt/e/github/multisim/telephony_core_service/utils/common/include -I/mnt/e/github/multisim/telephony_core_service/utils/log/include -I/mnt/e/github/multisim/telephony_core_service/utils/preferences/include -I/mnt/e/github/multisim/telephony_core_service/common/capability_mgr/include -I/usr/include/libxml2  -std=c++17 -flto=full -fwhole-program-vtables -fvirtual-function-elimination -fvisibility=hidden -ffunction-sections -fdata-sections -O1 -g -fno-omit-frame-pointer -MMD -MF obj/primary_slot/lifecycle/sim_primary_slot_real_test.shutdown_contract_test.o.d -c ../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp -o obj/primary_slot/lifecycle/sim_primary_slot_real_test.shutdown_contract_test.o
+In file included from ../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp:1:
+In file included from ../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract.h:2:
+../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:515:74: error: too many arguments to function call, expected 0, have 1
+  515 |             const int dataResult = manager->GetDefaultCellularDataSlotId(data);
+      |                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^~~~
+/mnt/e/github/multisim/telephony_core_service/services/sim/include/sim_manager.h:86:13: note: 'GetDefaultCellularDataSlotId' declared here
+   86 |     int32_t GetDefaultCellularDataSlotId() override;
+      |             ^
+1 error generated.
+ninja: build stopped: subcommand failed.

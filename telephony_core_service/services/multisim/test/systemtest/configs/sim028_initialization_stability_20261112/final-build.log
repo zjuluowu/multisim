@@ -1,0 +1,9 @@
++ gn gen /mnt/e/github/multisim/.host-out/build --root=/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest --export-compile-commands --args=gtest_root="/tmp/sim-host-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59" production_root="/mnt/e/github/multisim/telephony_core_service" host_debug=true openssl_root="/tmp/sim028-deps/openssl" sim028_runtime_root="/tmp/sim028-deps/native"
+Generating compile_commands took 5ms
+Done. Made 24 targets from 3 files in 127ms
++ ninja -C /mnt/e/github/multisim/.host-out/build -j 4 sim_guard_legacy sim_guard_pin_memory platform_adapter_test sim_component_test sim_primary_slot_entry_test sim_primary_slot_real_test
+ninja: Entering directory `/mnt/e/github/multisim/.host-out/build'
+[1/4] CXX ../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/shutdown_contract_test.cpp
+[2/4] CXX ../../telephony_core_service/services/multisim/test/systemtest/primary_slot/lifecycle/lifetime_test.cpp
+[3/4] CXX ../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp
+[4/4] LINK sim_primary_slot_real_test

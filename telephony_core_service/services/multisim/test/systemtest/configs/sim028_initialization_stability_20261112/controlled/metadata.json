@@ -1,0 +1,17 @@
+{
+  "stress_binary_sha256": "254e334d3a380f8e203b61926a9d16d456734478b2d0a79a5a524c66099f2d2d",
+  "controlled_final_binary_sha256": "254e334d3a380f8e203b61926a9d16d456734478b2d0a79a5a524c66099f2d2d",
+  "early_diagnostic_binary_sha256": "830cb74e9e66970d421854c0c1f597957daa9eb2bd89afef0d84b02dd108ff50",
+  "diagnostic_processes": {
+    "old1": "no controlled cache pause, GTest1",
+    "old2": "expression lookup failed, GTest1",
+    "old3": "diagnostic interrupted, exit130, incomplete XML; not business evidence",
+    "old4": "intermediate fixture reproduced inactive during clear, GTest1",
+    "negative": "final fixture exact original IsSimActive failure, GTest1",
+    "positive": "ready/active PASS but notification/lifecycle FAIL, GTest1",
+    "causal": "state init/event/transition plus same-controller cache counterexample, GTest1",
+    "causal-final": "expanded source/stack/queue typed DWARF reads, GTest1"
+  },
+  "lldb_exit_is_not_inferior_exit": "LLDB batch commonly exits0 while the actual GTest exits1; logs retain Process exited with status1",
+  "diagnostic_raw_ready_marker_note": "Old-wait negative control bypasses the barrier: interpret that field as NOT_RUN regardless of the intermediate raw PASS marker. Final source marker-only correction is separately built and rechecked."
+}

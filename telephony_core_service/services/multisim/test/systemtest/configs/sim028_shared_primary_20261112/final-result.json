@@ -1,0 +1,2233 @@
+{
+  "schema": 1,
+  "catalog_sha256": "d1221b27a0c961d582e1789b4ec9a1d856008c4c771f3e3f58c74c7a8163877e",
+  "legacy": "PASS",
+  "target": "BLOCKED",
+  "comparison": "NOT_RUN",
+  "target_reason": "StartPrimarySwitch and SwitchPrimaryRadio are declarations without complete production definitions; no Target adapter registered",
+  "native_product": "UNKNOWN",
+  "cases": [
+    {
+      "id": "SIM028-LEGACY-INIT-NO-RIL",
+      "original": "PASS",
+      "lifecycle": "PASS",
+      "raw_exit": 0,
+      "observation": {
+        "api_symbol": "TELEPHONY_ERR_NO_SIM_CARD",
+        "max_sim_count": 2
+      },
+      "contract": {
+        "status": "PASS",
+        "differences": [],
+        "normalized": {
+          "api_symbol": "TELEPHONY_ERR_NO_SIM_CARD",
+          "max_sim_count": 2,
+          "scenario_id": "SIM028-LEGACY-INIT-NO-RIL"
+        }
+      }
+    },
+    {
+      "id": "SIM028-LEGACY-C0-DUAL-PRIMARY0",
+      "original": "PASS",
+      "lifecycle": "FAIL",
+      "raw_exit": 1,
+      "observation": {
+        "schema": 1,
+        "parameters": {
+          "const.telephony.slotCount": "2",
+          "const.vendor.ril.set_primary_slot_support": "false",
+          "persist.telephony.MainCard.Iccid": "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2",
+          "persist.telephony.MainCellularDataSlotId": "1",
+          "persist.telephony.MainSlotId": "1",
+          "persist.telephony.userPreferPrimarySlot": "true",
+          "telephony.sim.opkey0": "-1",
+          "telephony.sim.opkey1": "-1",
+          "telephony.sim.opkey2": "-1"
+        },
+        "public": {
+          "data": "1",
+          "primary": "1",
+          "primary_result": "0",
+          "switching": "false"
+        },
+        "events": [
+          {
+            "kind": "api_input",
+            "fields": {
+              "at_us": "32",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "48",
+              "key": "persist.telephony.userPreferPrimarySlot",
+              "value": "true"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "54",
+              "key": "persist.telephony.MainSlotId",
+              "value": "1"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "64",
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SIM.DEFAULT_MAIN_SUBSCRIPTION_CHANGED",
+              "at_us": "75",
+              "done": "false",
+              "sim": "1",
+              "slot": "1",
+              "user": "false"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "82",
+              "key": "persist.telephony.MainCellularDataSlotId",
+              "value": "1"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED",
+              "at_us": "88",
+              "done": "false",
+              "sim": "1",
+              "slot": "-1",
+              "user": "false"
+            }
+          },
+          {
+            "kind": "api_return",
+            "fields": {
+              "at_us": "94",
+              "result": "0",
+              "symbol": "TELEPHONY_ERR_SUCCESS"
+            }
+          }
+        ]
+      },
+      "contract": {
+        "status": "PASS",
+        "differences": [],
+        "normalized": {
+          "scenario_id": "SIM028-LEGACY-C0-DUAL-PRIMARY0",
+          "api_symbol": "TELEPHONY_ERR_SUCCESS",
+          "target": 1,
+          "public": {
+            "primary": "1",
+            "data": "1",
+            "switching": "false"
+          },
+          "parameters": {
+            "persist.telephony.MainSlotId": "1",
+            "persist.telephony.MainCellularDataSlotId": "1",
+            "persist.telephony.MainCard.Iccid": "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+          },
+          "publications": [
+            {
+              "action": "usual.event.SIM.DEFAULT_MAIN_SUBSCRIPTION_CHANGED",
+              "slot": "1",
+              "sim": "1"
+            },
+            {
+              "action": "usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED",
+              "sim": "1"
+            }
+          ],
+          "parameter_writes": [
+            {
+              "key": "persist.telephony.userPreferPrimarySlot",
+              "value": "true"
+            },
+            {
+              "key": "persist.telephony.MainSlotId",
+              "value": "1"
+            },
+            {
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+            },
+            {
+              "key": "persist.telephony.MainCellularDataSlotId",
+              "value": "1"
+            }
+          ],
+          "ril_primary": [],
+          "protocol": [],
+          "timing": "not_compared"
+        }
+      }
+    },
+    {
+      "id": "SIM028-LEGACY-B-SUCCESS-DUAL-PRIMARY0",
+      "original": "PASS",
+      "lifecycle": "FAIL",
+      "raw_exit": 1,
+      "observation": {
+        "schema": 1,
+        "parameters": {
+          "const.telephony.slotCount": "2",
+          "const.vendor.ril.set_primary_slot_support": "true",
+          "persist.telephony.MainCard.Iccid": "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2",
+          "persist.telephony.MainCellularDataSlotId": "1",
+          "persist.telephony.MainSlotId": "1",
+          "persist.telephony.userPreferPrimarySlot": "true",
+          "telephony.sim.opkey0": "-1",
+          "telephony.sim.opkey1": "-1",
+          "telephony.sim.opkey2": "-1"
+        },
+        "public": {
+          "data": "1",
+          "primary": "1",
+          "primary_result": "0",
+          "switching": "false"
+        },
+        "events": [
+          {
+            "kind": "api_input",
+            "fields": {
+              "at_us": "525",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "541",
+              "key": "persist.telephony.userPreferPrimarySlot",
+              "value": "true"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "at_us": "576",
+              "done": "false",
+              "sim": "-1",
+              "slot": "-1",
+              "user": "true"
+            }
+          },
+          {
+            "kind": "ril_primary",
+            "fields": {
+              "at_us": "613",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "50805",
+              "error": "0",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "50986",
+              "key": "persist.telephony.MainSlotId",
+              "value": "1"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "50999",
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SIM.DEFAULT_MAIN_SUBSCRIPTION_CHANGED",
+              "at_us": "51010",
+              "done": "false",
+              "sim": "1",
+              "slot": "1",
+              "user": "false"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "51014",
+              "key": "persist.telephony.MainCellularDataSlotId",
+              "value": "1"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED",
+              "at_us": "51030",
+              "done": "false",
+              "sim": "1",
+              "slot": "-1",
+              "user": "false"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "at_us": "51036",
+              "done": "true",
+              "sim": "-1",
+              "slot": "-1",
+              "user": "true"
+            }
+          },
+          {
+            "kind": "api_return",
+            "fields": {
+              "at_us": "51042",
+              "result": "0",
+              "symbol": "TELEPHONY_ERR_SUCCESS"
+            }
+          }
+        ]
+      },
+      "contract": {
+        "status": "PASS",
+        "differences": [],
+        "normalized": {
+          "scenario_id": "SIM028-LEGACY-B-SUCCESS-DUAL-PRIMARY0",
+          "api_symbol": "TELEPHONY_ERR_SUCCESS",
+          "target": 1,
+          "public": {
+            "primary": "1",
+            "data": "1",
+            "switching": "false"
+          },
+          "parameters": {
+            "persist.telephony.MainSlotId": "1",
+            "persist.telephony.MainCellularDataSlotId": "1",
+            "persist.telephony.MainCard.Iccid": "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+          },
+          "publications": [
+            {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "done": "false",
+              "user": "true"
+            },
+            {
+              "action": "usual.event.SIM.DEFAULT_MAIN_SUBSCRIPTION_CHANGED",
+              "slot": "1",
+              "sim": "1"
+            },
+            {
+              "action": "usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED",
+              "sim": "1"
+            },
+            {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "done": "true",
+              "user": "true"
+            }
+          ],
+          "parameter_writes": [
+            {
+              "key": "persist.telephony.userPreferPrimarySlot",
+              "value": "true"
+            },
+            {
+              "key": "persist.telephony.MainSlotId",
+              "value": "1"
+            },
+            {
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+            },
+            {
+              "key": "persist.telephony.MainCellularDataSlotId",
+              "value": "1"
+            }
+          ],
+          "ril_primary": [
+            {
+              "slot": 1
+            }
+          ],
+          "protocol": [],
+          "timing": "not_compared"
+        }
+      }
+    },
+    {
+      "id": "SIM028-LEGACY-B-ERROR-DUAL-PRIMARY0",
+      "original": "PASS",
+      "lifecycle": "FAIL",
+      "raw_exit": 1,
+      "observation": {
+        "schema": 1,
+        "parameters": {
+          "const.telephony.slotCount": "2",
+          "const.vendor.ril.set_primary_slot_support": "true",
+          "persist.telephony.MainCard.Iccid": "5BC332BC693934EB3D0DEAED37C106D2DEFD6F9767721BFE2B1AC6E209D6B67D",
+          "persist.telephony.MainCellularDataSlotId": "0",
+          "persist.telephony.MainSlotId": "0",
+          "persist.telephony.userPreferPrimarySlot": "true",
+          "telephony.sim.opkey0": "-1",
+          "telephony.sim.opkey1": "-1",
+          "telephony.sim.opkey2": "-1"
+        },
+        "public": {
+          "data": "0",
+          "primary": "0",
+          "primary_result": "0",
+          "switching": "false"
+        },
+        "events": [
+          {
+            "kind": "api_input",
+            "fields": {
+              "at_us": "368",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "381",
+              "key": "persist.telephony.userPreferPrimarySlot",
+              "value": "true"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "at_us": "389",
+              "done": "false",
+              "sim": "-1",
+              "slot": "-1",
+              "user": "true"
+            }
+          },
+          {
+            "kind": "ril_primary",
+            "fields": {
+              "at_us": "395",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "397",
+              "error": "1",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "at_us": "479",
+              "done": "true",
+              "sim": "-1",
+              "slot": "-1",
+              "user": "true"
+            }
+          },
+          {
+            "kind": "api_return",
+            "fields": {
+              "at_us": "484",
+              "result": "83886087",
+              "symbol": "TELEPHONY_ERR_LOCAL_PTR_NULL"
+            }
+          }
+        ]
+      },
+      "contract": {
+        "status": "PASS",
+        "differences": [],
+        "normalized": {
+          "scenario_id": "SIM028-LEGACY-B-ERROR-DUAL-PRIMARY0",
+          "api_symbol": "TELEPHONY_ERR_LOCAL_PTR_NULL",
+          "target": 1,
+          "public": {
+            "primary": "0",
+            "data": "0",
+            "switching": "false"
+          },
+          "parameters": {
+            "persist.telephony.MainSlotId": "0",
+            "persist.telephony.MainCellularDataSlotId": "0"
+          },
+          "publications": [
+            {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "done": "false",
+              "user": "true"
+            },
+            {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "done": "true",
+              "user": "true"
+            }
+          ],
+          "parameter_writes": [
+            {
+              "key": "persist.telephony.userPreferPrimarySlot",
+              "value": "true"
+            }
+          ],
+          "ril_primary": [
+            {
+              "slot": 1
+            }
+          ],
+          "protocol": [],
+          "timing": "not_compared"
+        }
+      }
+    },
+    {
+      "id": "SIM028-LEGACY-C1-SUCCESS-STALE-DUAL-PRIMARY0",
+      "original": "PASS",
+      "lifecycle": "FAIL",
+      "raw_exit": 1,
+      "observation": {
+        "schema": 1,
+        "parameters": {
+          "const.telephony.slotCount": "2",
+          "const.vendor.ril.set_primary_slot_support": "false",
+          "persist.telephony.MainCard.Iccid": "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2",
+          "persist.telephony.MainCellularDataSlotId": "1",
+          "persist.telephony.MainSlotId": "1",
+          "persist.telephony.userPreferPrimarySlot": "true",
+          "telephony.sim.opkey0": "-1",
+          "telephony.sim.opkey1": "-1",
+          "telephony.sim.opkey2": "-1"
+        },
+        "public": {
+          "data": "1",
+          "primary": "1",
+          "primary_result": "0",
+          "switching": "false"
+        },
+        "events": [
+          {
+            "kind": "api_input",
+            "fields": {
+              "at_us": "183",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "199",
+              "key": "persist.telephony.userPreferPrimarySlot",
+              "value": "true"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "231",
+              "key": "persist.telephony.MainSlotId",
+              "value": "1"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "244",
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "at_us": "259",
+              "done": "false",
+              "sim": "-1",
+              "slot": "-1",
+              "user": "false"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "599",
+              "modem": "0",
+              "phase": "1",
+              "session": "1",
+              "slot": "0",
+              "technology": "17"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "628",
+              "modem": "1",
+              "phase": "1",
+              "session": "1",
+              "slot": "1",
+              "technology": "34"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "10990",
+              "phase": "1",
+              "session": "100",
+              "slot": "0"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "31598",
+              "phase": "1",
+              "session": "1",
+              "slot": "0"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "31856",
+              "phase": "1",
+              "session": "1",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "32146",
+              "modem": "1",
+              "phase": "2",
+              "session": "1",
+              "slot": "0",
+              "technology": "34"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "32257",
+              "modem": "0",
+              "phase": "2",
+              "session": "1",
+              "slot": "1",
+              "technology": "17"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "42646",
+              "phase": "3",
+              "session": "1",
+              "slot": "0"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "42781",
+              "phase": "3",
+              "session": "1",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "42917",
+              "modem": "1",
+              "phase": "4",
+              "session": "1",
+              "slot": "0",
+              "technology": "34"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "42988",
+              "modem": "0",
+              "phase": "4",
+              "session": "1",
+              "slot": "1",
+              "technology": "17"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "53309",
+              "phase": "4",
+              "session": "1",
+              "slot": "0"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "53445",
+              "phase": "4",
+              "session": "1",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SIM.DEFAULT_MAIN_SUBSCRIPTION_CHANGED",
+              "at_us": "53747",
+              "done": "false",
+              "sim": "1",
+              "slot": "1",
+              "user": "false"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "53768",
+              "key": "persist.telephony.MainCellularDataSlotId",
+              "value": "1"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED",
+              "at_us": "53808",
+              "done": "false",
+              "sim": "1",
+              "slot": "-1",
+              "user": "false"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "at_us": "53833",
+              "done": "true",
+              "sim": "-1",
+              "slot": "-1",
+              "user": "false"
+            }
+          },
+          {
+            "kind": "api_return",
+            "fields": {
+              "at_us": "54820",
+              "result": "0",
+              "symbol": "TELEPHONY_ERR_SUCCESS"
+            }
+          }
+        ]
+      },
+      "contract": {
+        "status": "PASS",
+        "differences": [],
+        "normalized": {
+          "scenario_id": "SIM028-LEGACY-C1-SUCCESS-STALE-DUAL-PRIMARY0",
+          "api_symbol": "TELEPHONY_ERR_SUCCESS",
+          "target": 1,
+          "public": {
+            "primary": "1",
+            "data": "1",
+            "switching": "false"
+          },
+          "parameters": {
+            "persist.telephony.MainSlotId": "1",
+            "persist.telephony.MainCellularDataSlotId": "1",
+            "persist.telephony.MainCard.Iccid": "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+          },
+          "publications": [
+            {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "done": "false",
+              "user": "false"
+            },
+            {
+              "action": "usual.event.SIM.DEFAULT_MAIN_SUBSCRIPTION_CHANGED",
+              "slot": "1",
+              "sim": "1"
+            },
+            {
+              "action": "usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED",
+              "sim": "1"
+            },
+            {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "done": "true",
+              "user": "false"
+            }
+          ],
+          "parameter_writes": [
+            {
+              "key": "persist.telephony.userPreferPrimarySlot",
+              "value": "true"
+            },
+            {
+              "key": "persist.telephony.MainSlotId",
+              "value": "1"
+            },
+            {
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+            },
+            {
+              "key": "persist.telephony.MainCellularDataSlotId",
+              "value": "1"
+            }
+          ],
+          "ril_primary": [],
+          "protocol": [
+            {
+              "attempt": 0,
+              "phase": 1,
+              "slot": 0,
+              "modem": 0,
+              "technology": 17
+            },
+            {
+              "attempt": 0,
+              "phase": 1,
+              "slot": 1,
+              "modem": 1,
+              "technology": 34
+            },
+            {
+              "attempt": 0,
+              "phase": 2,
+              "slot": 0,
+              "modem": 1,
+              "technology": 34
+            },
+            {
+              "attempt": 0,
+              "phase": 2,
+              "slot": 1,
+              "modem": 0,
+              "technology": 17
+            },
+            {
+              "attempt": 0,
+              "phase": 4,
+              "slot": 0,
+              "modem": 1,
+              "technology": 34
+            },
+            {
+              "attempt": 0,
+              "phase": 4,
+              "slot": 1,
+              "modem": 0,
+              "technology": 17
+            }
+          ],
+          "timing": "not_compared"
+        }
+      }
+    },
+    {
+      "id": "SIM028-LEGACY-B-TIMEOUT-DUAL-PRIMARY0",
+      "original": "PASS",
+      "lifecycle": "FAIL",
+      "raw_exit": 1,
+      "observation": {
+        "schema": 1,
+        "parameters": {
+          "const.telephony.slotCount": "2",
+          "const.vendor.ril.set_primary_slot_support": "true",
+          "persist.telephony.MainCard.Iccid": "5BC332BC693934EB3D0DEAED37C106D2DEFD6F9767721BFE2B1AC6E209D6B67D",
+          "persist.telephony.MainCellularDataSlotId": "0",
+          "persist.telephony.MainSlotId": "0",
+          "persist.telephony.userPreferPrimarySlot": "true",
+          "telephony.sim.opkey0": "-1",
+          "telephony.sim.opkey1": "-1",
+          "telephony.sim.opkey2": "-1"
+        },
+        "public": {
+          "data": "0",
+          "primary": "0",
+          "primary_result": "0",
+          "switching": "false"
+        },
+        "events": [
+          {
+            "kind": "api_input",
+            "fields": {
+              "at_us": "18",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "30",
+              "key": "persist.telephony.userPreferPrimarySlot",
+              "value": "true"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "at_us": "37",
+              "done": "false",
+              "sim": "-1",
+              "slot": "-1",
+              "user": "true"
+            }
+          },
+          {
+            "kind": "ril_primary",
+            "fields": {
+              "at_us": "43",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "at_us": "45000292",
+              "done": "true",
+              "sim": "-1",
+              "slot": "-1",
+              "user": "true"
+            }
+          },
+          {
+            "kind": "api_return",
+            "fields": {
+              "at_us": "45000301",
+              "result": "83886087",
+              "symbol": "TELEPHONY_ERR_LOCAL_PTR_NULL"
+            }
+          }
+        ]
+      },
+      "contract": {
+        "status": "PASS",
+        "differences": [],
+        "normalized": {
+          "scenario_id": "SIM028-LEGACY-B-TIMEOUT-DUAL-PRIMARY0",
+          "api_symbol": "TELEPHONY_ERR_LOCAL_PTR_NULL",
+          "target": 1,
+          "public": {
+            "primary": "0",
+            "data": "0",
+            "switching": "false"
+          },
+          "parameters": {
+            "persist.telephony.MainSlotId": "0",
+            "persist.telephony.MainCellularDataSlotId": "0"
+          },
+          "publications": [
+            {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "done": "false",
+              "user": "true"
+            },
+            {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "done": "true",
+              "user": "true"
+            }
+          ],
+          "parameter_writes": [
+            {
+              "key": "persist.telephony.userPreferPrimarySlot",
+              "value": "true"
+            }
+          ],
+          "ril_primary": [
+            {
+              "slot": 1
+            }
+          ],
+          "protocol": [],
+          "timing": "at_least_44_seconds"
+        }
+      }
+    },
+    {
+      "id": "SIM028-LEGACY-C1-CHECK-ERROR-RETRY-DUAL-PRIMARY0",
+      "original": "PASS",
+      "lifecycle": "FAIL",
+      "raw_exit": 1,
+      "observation": {
+        "schema": 1,
+        "parameters": {
+          "const.telephony.slotCount": "2",
+          "const.vendor.ril.set_primary_slot_support": "false",
+          "persist.telephony.MainCard.Iccid": "previous-parameter-value",
+          "persist.telephony.MainCellularDataSlotId": "0",
+          "persist.telephony.MainSlotId": "0",
+          "persist.telephony.userPreferPrimarySlot": "true",
+          "telephony.sim.opkey0": "-1",
+          "telephony.sim.opkey1": "-1",
+          "telephony.sim.opkey2": "-1"
+        },
+        "public": {
+          "data": "0",
+          "primary": "0",
+          "primary_result": "0",
+          "switching": "false"
+        },
+        "events": [
+          {
+            "kind": "api_input",
+            "fields": {
+              "at_us": "77",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "91",
+              "key": "persist.telephony.userPreferPrimarySlot",
+              "value": "true"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "99",
+              "key": "persist.telephony.MainSlotId",
+              "value": "1"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "106",
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "at_us": "114",
+              "done": "false",
+              "sim": "-1",
+              "slot": "-1",
+              "user": "false"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "501",
+              "modem": "0",
+              "phase": "1",
+              "session": "1",
+              "slot": "0",
+              "technology": "17"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "508",
+              "error": "1",
+              "phase": "1",
+              "session": "1",
+              "slot": "0"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "544",
+              "modem": "1",
+              "phase": "1",
+              "session": "1",
+              "slot": "1",
+              "technology": "34"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "549",
+              "error": "1",
+              "phase": "1",
+              "session": "1",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "608",
+              "modem": "0",
+              "phase": "4",
+              "session": "1",
+              "slot": "0",
+              "technology": "17"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "614",
+              "phase": "4",
+              "session": "1",
+              "slot": "0"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "621",
+              "modem": "1",
+              "phase": "4",
+              "session": "1",
+              "slot": "1",
+              "technology": "34"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "624",
+              "phase": "4",
+              "session": "1",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "670",
+              "key": "persist.telephony.MainSlotId",
+              "value": "0"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "674",
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "previous-parameter-value"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "at_us": "682",
+              "done": "true",
+              "sim": "-1",
+              "slot": "-1",
+              "user": "false"
+            }
+          },
+          {
+            "kind": "api_return",
+            "fields": {
+              "at_us": "1080",
+              "result": "83886087",
+              "symbol": "TELEPHONY_ERR_LOCAL_PTR_NULL"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "1001891",
+              "key": "persist.telephony.MainSlotId",
+              "value": "1"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "1002096",
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "at_us": "1002128",
+              "done": "false",
+              "sim": "-1",
+              "slot": "-1",
+              "user": "false"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "1002279",
+              "modem": "0",
+              "phase": "1",
+              "session": "2",
+              "slot": "0",
+              "technology": "17"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "1002361",
+              "error": "1",
+              "phase": "1",
+              "session": "2",
+              "slot": "0"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "1002470",
+              "modem": "1",
+              "phase": "1",
+              "session": "2",
+              "slot": "1",
+              "technology": "34"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "1002542",
+              "error": "1",
+              "phase": "1",
+              "session": "2",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "1002825",
+              "modem": "0",
+              "phase": "4",
+              "session": "2",
+              "slot": "0",
+              "technology": "17"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "1002857",
+              "phase": "4",
+              "session": "2",
+              "slot": "0"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "1002882",
+              "modem": "1",
+              "phase": "4",
+              "session": "2",
+              "slot": "1",
+              "technology": "34"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "1002889",
+              "phase": "4",
+              "session": "2",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "1003154",
+              "key": "persist.telephony.MainSlotId",
+              "value": "0"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "1003256",
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "previous-parameter-value"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "at_us": "1003312",
+              "done": "true",
+              "sim": "-1",
+              "slot": "-1",
+              "user": "false"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "2004694",
+              "key": "persist.telephony.MainSlotId",
+              "value": "1"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "2004756",
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "at_us": "2004836",
+              "done": "false",
+              "sim": "-1",
+              "slot": "-1",
+              "user": "false"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "2004920",
+              "modem": "0",
+              "phase": "1",
+              "session": "3",
+              "slot": "0",
+              "technology": "17"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "2004953",
+              "error": "1",
+              "phase": "1",
+              "session": "3",
+              "slot": "0"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "2005000",
+              "modem": "1",
+              "phase": "1",
+              "session": "3",
+              "slot": "1",
+              "technology": "34"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "2005031",
+              "error": "1",
+              "phase": "1",
+              "session": "3",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "2005104",
+              "modem": "0",
+              "phase": "4",
+              "session": "3",
+              "slot": "0",
+              "technology": "17"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "2005144",
+              "phase": "4",
+              "session": "3",
+              "slot": "0"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "2005161",
+              "modem": "1",
+              "phase": "4",
+              "session": "3",
+              "slot": "1",
+              "technology": "34"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "2005200",
+              "phase": "4",
+              "session": "3",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "2005302",
+              "key": "persist.telephony.MainSlotId",
+              "value": "0"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "2005356",
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "previous-parameter-value"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "at_us": "2005392",
+              "done": "true",
+              "sim": "-1",
+              "slot": "-1",
+              "user": "false"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "3006450",
+              "key": "persist.telephony.MainSlotId",
+              "value": "1"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "3006509",
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "at_us": "3006524",
+              "done": "false",
+              "sim": "-1",
+              "slot": "-1",
+              "user": "false"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "3006597",
+              "modem": "0",
+              "phase": "1",
+              "session": "4",
+              "slot": "0",
+              "technology": "17"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "3006662",
+              "error": "1",
+              "phase": "1",
+              "session": "4",
+              "slot": "0"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "3006711",
+              "modem": "1",
+              "phase": "1",
+              "session": "4",
+              "slot": "1",
+              "technology": "34"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "3006742",
+              "error": "1",
+              "phase": "1",
+              "session": "4",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "3006867",
+              "modem": "0",
+              "phase": "4",
+              "session": "4",
+              "slot": "0",
+              "technology": "17"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "3006906",
+              "phase": "4",
+              "session": "4",
+              "slot": "0"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "3006922",
+              "modem": "1",
+              "phase": "4",
+              "session": "4",
+              "slot": "1",
+              "technology": "34"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "3006936",
+              "phase": "4",
+              "session": "4",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "3007043",
+              "key": "persist.telephony.MainSlotId",
+              "value": "0"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "3007091",
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "previous-parameter-value"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "at_us": "3007146",
+              "done": "true",
+              "sim": "-1",
+              "slot": "-1",
+              "user": "false"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "4008105",
+              "key": "persist.telephony.MainSlotId",
+              "value": "1"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "4008169",
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "at_us": "4008205",
+              "done": "false",
+              "sim": "-1",
+              "slot": "-1",
+              "user": "false"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "4008294",
+              "modem": "0",
+              "phase": "1",
+              "session": "5",
+              "slot": "0",
+              "technology": "17"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "4008329",
+              "error": "1",
+              "phase": "1",
+              "session": "5",
+              "slot": "0"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "4008353",
+              "modem": "1",
+              "phase": "1",
+              "session": "5",
+              "slot": "1",
+              "technology": "34"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "4008403",
+              "error": "1",
+              "phase": "1",
+              "session": "5",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "4008492",
+              "modem": "0",
+              "phase": "4",
+              "session": "5",
+              "slot": "0",
+              "technology": "17"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "4008530",
+              "phase": "4",
+              "session": "5",
+              "slot": "0"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "4008589",
+              "modem": "1",
+              "phase": "4",
+              "session": "5",
+              "slot": "1",
+              "technology": "34"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "4008630",
+              "phase": "4",
+              "session": "5",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "4008736",
+              "key": "persist.telephony.MainSlotId",
+              "value": "0"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "4008789",
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "previous-parameter-value"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "at_us": "4008802",
+              "done": "true",
+              "sim": "-1",
+              "slot": "-1",
+              "user": "false"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "5009776",
+              "key": "persist.telephony.MainSlotId",
+              "value": "1"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "5009835",
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "at_us": "5009849",
+              "done": "false",
+              "sim": "-1",
+              "slot": "-1",
+              "user": "false"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "5009900",
+              "modem": "0",
+              "phase": "1",
+              "session": "6",
+              "slot": "0",
+              "technology": "17"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "5009931",
+              "error": "1",
+              "phase": "1",
+              "session": "6",
+              "slot": "0"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "5009951",
+              "modem": "1",
+              "phase": "1",
+              "session": "6",
+              "slot": "1",
+              "technology": "34"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "5009969",
+              "error": "1",
+              "phase": "1",
+              "session": "6",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "5010081",
+              "modem": "0",
+              "phase": "4",
+              "session": "6",
+              "slot": "0",
+              "technology": "17"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "5010116",
+              "phase": "4",
+              "session": "6",
+              "slot": "0"
+            }
+          },
+          {
+            "kind": "ril_protocol",
+            "fields": {
+              "at_us": "5010139",
+              "modem": "1",
+              "phase": "4",
+              "session": "6",
+              "slot": "1",
+              "technology": "34"
+            }
+          },
+          {
+            "kind": "ril_response",
+            "fields": {
+              "at_us": "5010143",
+              "phase": "4",
+              "session": "6",
+              "slot": "1"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "5010251",
+              "key": "persist.telephony.MainSlotId",
+              "value": "0"
+            }
+          },
+          {
+            "kind": "parameter_write",
+            "fields": {
+              "at_us": "5010257",
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "previous-parameter-value"
+            }
+          },
+          {
+            "kind": "publication",
+            "fields": {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "at_us": "5010376",
+              "done": "true",
+              "sim": "-1",
+              "slot": "-1",
+              "user": "false"
+            }
+          }
+        ]
+      },
+      "contract": {
+        "status": "PASS",
+        "differences": [],
+        "normalized": {
+          "scenario_id": "SIM028-LEGACY-C1-CHECK-ERROR-RETRY-DUAL-PRIMARY0",
+          "api_symbol": "TELEPHONY_ERR_LOCAL_PTR_NULL",
+          "target": 1,
+          "public": {
+            "primary": "0",
+            "data": "0",
+            "switching": "false"
+          },
+          "parameters": {
+            "persist.telephony.MainSlotId": "0",
+            "persist.telephony.MainCellularDataSlotId": "0",
+            "persist.telephony.MainCard.Iccid": "previous-parameter-value"
+          },
+          "publications": [
+            {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "done": "false",
+              "user": "false"
+            },
+            {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "done": "true",
+              "user": "false"
+            },
+            {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "done": "false",
+              "user": "false"
+            },
+            {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "done": "true",
+              "user": "false"
+            },
+            {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "done": "false",
+              "user": "false"
+            },
+            {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "done": "true",
+              "user": "false"
+            },
+            {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "done": "false",
+              "user": "false"
+            },
+            {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "done": "true",
+              "user": "false"
+            },
+            {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "done": "false",
+              "user": "false"
+            },
+            {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "done": "true",
+              "user": "false"
+            },
+            {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "done": "false",
+              "user": "false"
+            },
+            {
+              "action": "usual.event.SET_PRIMARY_SLOT_STATUS",
+              "done": "true",
+              "user": "false"
+            }
+          ],
+          "parameter_writes": [
+            {
+              "key": "persist.telephony.userPreferPrimarySlot",
+              "value": "true"
+            },
+            {
+              "key": "persist.telephony.MainSlotId",
+              "value": "1"
+            },
+            {
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+            },
+            {
+              "key": "persist.telephony.MainSlotId",
+              "value": "0"
+            },
+            {
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "previous-parameter-value"
+            },
+            {
+              "key": "persist.telephony.MainSlotId",
+              "value": "1"
+            },
+            {
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+            },
+            {
+              "key": "persist.telephony.MainSlotId",
+              "value": "0"
+            },
+            {
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "previous-parameter-value"
+            },
+            {
+              "key": "persist.telephony.MainSlotId",
+              "value": "1"
+            },
+            {
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+            },
+            {
+              "key": "persist.telephony.MainSlotId",
+              "value": "0"
+            },
+            {
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "previous-parameter-value"
+            },
+            {
+              "key": "persist.telephony.MainSlotId",
+              "value": "1"
+            },
+            {
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+            },
+            {
+              "key": "persist.telephony.MainSlotId",
+              "value": "0"
+            },
+            {
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "previous-parameter-value"
+            },
+            {
+              "key": "persist.telephony.MainSlotId",
+              "value": "1"
+            },
+            {
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+            },
+            {
+              "key": "persist.telephony.MainSlotId",
+              "value": "0"
+            },
+            {
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "previous-parameter-value"
+            },
+            {
+              "key": "persist.telephony.MainSlotId",
+              "value": "1"
+            },
+            {
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+            },
+            {
+              "key": "persist.telephony.MainSlotId",
+              "value": "0"
+            },
+            {
+              "key": "persist.telephony.MainCard.Iccid",
+              "value": "previous-parameter-value"
+            }
+          ],
+          "ril_primary": [],
+          "protocol": [
+            {
+              "attempt": 0,
+              "phase": 1,
+              "slot": 0,
+              "modem": 0,
+              "technology": 17
+            },
+            {
+              "attempt": 0,
+              "phase": 1,
+              "slot": 1,
+              "modem": 1,
+              "technology": 34
+            },
+            {
+              "attempt": 0,
+              "phase": 4,
+              "slot": 0,
+              "modem": 0,
+              "technology": 17
+            },
+            {
+              "attempt": 0,
+              "phase": 4,
+              "slot": 1,
+              "modem": 1,
+              "technology": 34
+            },
+            {
+              "attempt": 1,
+              "phase": 1,
+              "slot": 0,
+              "modem": 0,
+              "technology": 17
+            },
+            {
+              "attempt": 1,
+              "phase": 1,
+              "slot": 1,
+              "modem": 1,
+              "technology": 34
+            },
+            {
+              "attempt": 1,
+              "phase": 4,
+              "slot": 0,
+              "modem": 0,
+              "technology": 17
+            },
+            {
+              "attempt": 1,
+              "phase": 4,
+              "slot": 1,
+              "modem": 1,
+              "technology": 34
+            },
+            {
+              "attempt": 2,
+              "phase": 1,
+              "slot": 0,
+              "modem": 0,
+              "technology": 17
+            },
+            {
+              "attempt": 2,
+              "phase": 1,
+              "slot": 1,
+              "modem": 1,
+              "technology": 34
+            },
+            {
+              "attempt": 2,
+              "phase": 4,
+              "slot": 0,
+              "modem": 0,
+              "technology": 17
+            },
+            {
+              "attempt": 2,
+              "phase": 4,
+              "slot": 1,
+              "modem": 1,
+              "technology": 34
+            },
+            {
+              "attempt": 3,
+              "phase": 1,
+              "slot": 0,
+              "modem": 0,
+              "technology": 17
+            },
+            {
+              "attempt": 3,
+              "phase": 1,
+              "slot": 1,
+              "modem": 1,
+              "technology": 34
+            },
+            {
+              "attempt": 3,
+              "phase": 4,
+              "slot": 0,
+              "modem": 0,
+              "technology": 17
+            },
+            {
+              "attempt": 3,
+              "phase": 4,
+              "slot": 1,
+              "modem": 1,
+              "technology": 34
+            },
+            {
+              "attempt": 4,
+              "phase": 1,
+              "slot": 0,
+              "modem": 0,
+              "technology": 17
+            },
+            {
+              "attempt": 4,
+              "phase": 1,
+              "slot": 1,
+              "modem": 1,
+              "technology": 34
+            },
+            {
+              "attempt": 4,
+              "phase": 4,
+              "slot": 0,
+              "modem": 0,
+              "technology": 17
+            },
+            {
+              "attempt": 4,
+              "phase": 4,
+              "slot": 1,
+              "modem": 1,
+              "technology": 34
+            },
+            {
+              "attempt": 5,
+              "phase": 1,
+              "slot": 0,
+              "modem": 0,
+              "technology": 17
+            },
+            {
+              "attempt": 5,
+              "phase": 1,
+              "slot": 1,
+              "modem": 1,
+              "technology": 34
+            },
+            {
+              "attempt": 5,
+              "phase": 4,
+              "slot": 0,
+              "modem": 0,
+              "technology": 17
+            },
+            {
+              "attempt": 5,
+              "phase": 4,
+              "slot": 1,
+              "modem": 1,
+              "technology": 34
+            }
+          ],
+          "timing": "not_compared"
+        }
+      }
+    }
+  ],
+  "input_sha256": {
+    "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/scenarios/primary_slot.json": "d1221b27a0c961d582e1789b4ec9a1d856008c4c771f3e3f58c74c7a8163877e",
+    "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/run_primary_contract.py": "70af49561a9e95b041d77088eea6650b4ccd465e50087f80d77665a2b50f07a6",
+    "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/primary_oracle.py": "df4d2520b71b72f17d0ec2c0ee8ee7f0a1b27c867584478caa859d2151c02906",
+    "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/contracts/primary_slot.h": "bcf1eafc52694a817b261da9d3a3df829bd8e52c01c7da5a83f7482ed1475abe",
+    "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/adapters/legacy/legacy_primary_adapter.h": "222b792b6903489ccdf9591e32db82ecf3e19d248eb9947320d99072bddc4cc0",
+    "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/scripts/run_legacy_primary_contract.py": "1635158ce980d4a83dd037f1b270d1e7a5474cf5ce6730d1d4a4c6b001e780b1",
+    "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp": "288fbfe9e01d285b39c898cf6e2d4ec6d30174a6b852074e0ce427d85f623cda",
+    "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h": "175a8877e6ca7fe42f924dd3e46e5300cca250f62f5d954a4c63fe24200baa40",
+    "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/BUILD.gn": "986de0b85905861fd95b55cc5d350fa94ba3efb5f81397580ab1842e549d0741"
+  },
+  "command": [
+    "/usr/bin/python3",
+    "-B",
+    "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/scripts/run_legacy_primary_contract.py",
+    "--output",
+    "/tmp/sim028-shared-primary-admission/legacy",
+    "--repeat",
+    "1",
+    "--jobs",
+    "2",
+    "--init-model",
+    "dual-active-primary0"
+  ],
+  "raw_legacy_exit": 1,
+  "binary_sha256": "7a3bfa7419cae502b6eabd228a3778bcacc5ec3602b001297b899a040a5e9f69",
+  "legacy_whole_gtest": "FAIL",
+  "legacy_original_business": "PASS"
+}

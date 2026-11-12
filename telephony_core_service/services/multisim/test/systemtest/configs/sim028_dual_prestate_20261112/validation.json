@@ -1,0 +1,55 @@
+{
+  "head": "39d63590cfb6be5b813ecbed346252573442e0ac",
+  "status": "HOST_CONDITIONAL_BASELINE_SAMPLE_PASS",
+  "business": {
+    "PASS": 350,
+    "FAIL": 0,
+    "NOT_RUN": 0
+  },
+  "preconditions": {
+    "in_card_cases": 300,
+    "PASS": 300,
+    "both_account_events": 300,
+    "primary0_data0": 300,
+    "detached_callables_at_admission": 0
+  },
+  "strict_ril": {
+    "PASS": 300,
+    "not_applicable_no_ril": 50
+  },
+  "gtest": {
+    "PASS": 50,
+    "FAIL": 300,
+    "all_failures": "original graph lifetime cleanup",
+    "round_raw_exit": 1,
+    "adapter_exit": 1
+  },
+  "orders": {
+    "native-arrival": 17,
+    "reverse": 17,
+    "present-first": 16
+  },
+  "unique_processes": 350,
+  "repetitions": 50,
+  "binary_sha256": "1356401467d9073a6fc80b848ebd66c617836a5f4feb196c11755d847e3c0162",
+  "source_hashes": "final-validation.json:production_sha256",
+  "golden_input": "final-run-golden-input.json",
+  "production_bytes_unchanged": true,
+  "native_product_match": "UNKNOWN",
+  "native_execution": "NOT_RUN",
+  "post_destruction_callback_safety": "NOT_VERIFIED",
+  "asan_tsan_this_task": "NOT_RUN",
+  "full_results": "final-validation.json",
+  "raw_xml_logs": "final-raw.tar.gz",
+  "intermediate_failures": {
+    "single_card": "../sim028_initialization_stability_20261112/validation.json",
+    "uncoordinated_dual": "uncoordinated-validation.json",
+    "coordinated_previous_tracker": "coordinated-v1.tar.gz"
+  },
+  "toolchain": {
+    "clang++": "Ubuntu clang version 18.1.3 (1ubuntu1)",
+    "gn": "1000 (03d10f1)",
+    "ninja": "1.11.1",
+    "python3": "Python 3.12.3"
+  }
+}

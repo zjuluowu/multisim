@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="1" failures="1" disabled="0" errors="0" time="7.102" timestamp="2026-11-12T16:27:49.418" name="AllTests">
+  <testsuite name="RealSimPrimary" tests="1" failures="1" disabled="0" skipped="0" errors="0" time="7.102" timestamp="2026-11-12T16:27:49.419">
+    <testcase name="C0CoreToRealManagerAndController" file="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp" line="38" status="run" result="completed" time="7.102" timestamp="2026-11-12T16:27:49.419" classname="RealSimPrimary">
+      <failure message="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp:41&#x0A;Value of: scenario.StartLockedCard()&#x0A;  Actual: false&#x0A;Expected: true&#x0A;" type=""><![CDATA[../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp:41
+Value of: scenario.StartLockedCard()
+  Actual: false
+Expected: true
+]]></failure>
+      <failure message="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:368&#x0A;Value of: SimHost::AwaitSchedulerStopped(3s)&#x0A;  Actual: false&#x0A;Expected: true&#x0A;REAL_GRAPH_LIFETIME_NOT_DRAINED&#x0A;" type=""><![CDATA[../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:368
+Value of: SimHost::AwaitSchedulerStopped(3s)
+  Actual: false
+Expected: true
+REAL_GRAPH_LIFETIME_NOT_DRAINED
+]]></failure>
+      <properties>
+        <property name="initialization_account_event" value="PASS"/>
+        <property name="initialization_ready_idle" value="PASS"/>
+        <property name="initialization_active" value="FAIL"/>
+        <property name="workers_after_cleanup" value="28"/>
+        <property name="ril_references_after_cleanup" value="10"/>
+        <property name="account_observer_expired" value="false"/>
+        <property name="object_lifetime" value="FAIL"/>
+        <property name="strict_ril_expectations_verified" value="PASS"/>
+      </properties>
+    </testcase>
+  </testsuite>
+</testsuites>

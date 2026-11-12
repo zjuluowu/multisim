@@ -1,0 +1,559 @@
+{
+  "schema": 1,
+  "scope": "conditional frozen legacy expectations; not native normative truth",
+  "scenarios": [
+    {
+      "id": "SIM028-LEGACY-INIT-NO-RIL",
+      "legacy_test": "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+      "branch": "initialization failure boundary",
+      "input": {
+        "slot": 1,
+        "user_set": true
+      },
+      "external_response": "Provider unavailable, broadcasts accepted locally",
+      "expect": {
+        "error": "TELEPHONY_ERR_NO_SIM_CARD",
+        "primary": null,
+        "data": null,
+        "success_publications": false,
+        "attempts": 0,
+        "status_user_set": true,
+        "ril_primary_count": 0,
+        "protocol_phases": [],
+        "protocol_attempts": 0,
+        "minimum_api_seconds": 0
+      },
+      "grades": {
+        "production_path": "VERIFIED_SOURCE",
+        "host_execution": "VERIFIED_HOST",
+        "external_response_schedule": "CONDITIONAL",
+        "consumer_delivery": "UNKNOWN",
+        "native_product": "UNKNOWN"
+      },
+      "source": {
+        "golden_id": "SIM028-LEGACY-INIT-NO-RIL",
+        "golden_sha256": "269e558608f92c7c8ee9f8ac482c2073bb6ec93402532fa53b6da286ca22e720"
+      },
+      "unverified": [
+        "matched device manifest/firmware",
+        "real IPC/HDI serial and consumer delivery",
+        "durable Provider/parameter state",
+        "safe component teardown"
+      ],
+      "legacy_preparation_evidence": "No RIL; DataShare Creator returns nullptr",
+      "preconditions": {
+        "ril_available": false,
+        "provider_available": false,
+        "physical_slots": 2
+      },
+      "driver_binding": {
+        "legacy": "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+        "target": "BLOCKED: no real binding; do not invoke Legacy from Target"
+      },
+      "device_fixture": {
+        "query_mapping": [
+          {
+            "slot": 0,
+            "modem": 0,
+            "technology": 17
+          },
+          {
+            "slot": 1,
+            "modem": 1,
+            "technology": 34
+          }
+        ],
+        "response_schedule": "Provider unavailable, broadcasts accepted locally",
+        "real_serial": "NOT_OBSERVED"
+      }
+    },
+    {
+      "id": "SIM028-LEGACY-C0-DUAL-PRIMARY0",
+      "legacy_test": "RealSimPrimary.C0CoreToRealManagerAndController",
+      "branch": "C0",
+      "input": {
+        "slot": 1,
+        "user_set": true
+      },
+      "external_response": "Two correlated GetRadioProtocol replies; no setter request expected",
+      "expect": {
+        "error": "TELEPHONY_ERR_SUCCESS",
+        "primary": 1,
+        "data": 1,
+        "success_publications": true,
+        "attempts": 0,
+        "status_user_set": true,
+        "ril_primary_count": 0,
+        "protocol_phases": [],
+        "protocol_attempts": 0,
+        "minimum_api_seconds": 0
+      },
+      "grades": {
+        "production_path": "VERIFIED_SOURCE",
+        "host_execution": "VERIFIED_HOST",
+        "external_response_schedule": "CONDITIONAL",
+        "consumer_delivery": "UNKNOWN",
+        "native_product": "UNKNOWN"
+      },
+      "source": {
+        "golden_id": "SIM028-LEGACY-C0-DUAL-PRIMARY0",
+        "golden_sha256": "269e558608f92c7c8ee9f8ac482c2073bb6ec93402532fa53b6da286ca22e720"
+      },
+      "unverified": [
+        "matching native product and vendor semantics",
+        "real IPC/SA/HDI serial and consumer delivery",
+        "durable Provider and parameters",
+        "component teardown safety",
+        "Native transition from bootstrap mapping0=M0 to C0 reported mapping1=M0; external query fixture, not a verified product transition"
+      ],
+      "legacy_preparation_evidence": "Two PIN-locked active USIM accounts (slot1/simId1 and slot0/simId2), both real account-loaded events; real SimManager::SetPrimarySlotId(0,false) prepares prior primary0/data0; public queries verify both active and no switch in progress before business; after role preparation, two real GetRadioProtocol calls consume the explicit external slot1=modem0/slot0=modem1 replies before C0 input",
+      "preconditions": {
+        "physical_slots": 2,
+        "active_accounts": [
+          {
+            "slot": 0,
+            "sim_id": 2,
+            "synthetic_iccid": "8900000000000000000",
+            "card": "PIN-locked USIM"
+          },
+          {
+            "slot": 1,
+            "sim_id": 1,
+            "synthetic_iccid": "8900000000000000001",
+            "card": "PIN-locked USIM"
+          }
+        ],
+        "public_primary": 0,
+        "public_data": 0,
+        "initialization_settled": true
+      },
+      "driver_binding": {
+        "legacy": "RealSimPrimary.C0CoreToRealManagerAndController",
+        "target": "BLOCKED: no real binding; do not invoke Legacy from Target"
+      },
+      "device_fixture": {
+        "query_mapping": [
+          {
+            "slot": 0,
+            "modem": 1,
+            "technology": 34
+          },
+          {
+            "slot": 1,
+            "modem": 0,
+            "technology": 17
+          }
+        ],
+        "response_schedule": "Two correlated GetRadioProtocol replies; no setter request expected",
+        "real_serial": "NOT_OBSERVED"
+      }
+    },
+    {
+      "id": "SIM028-LEGACY-B-SUCCESS-DUAL-PRIMARY0",
+      "legacy_test": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+      "branch": "B",
+      "input": {
+        "slot": 1,
+        "user_set": true
+      },
+      "external_response": "One SetPrimarySlot(slot1), then correlated RadioResponseInfo(error=NONE)",
+      "expect": {
+        "error": "TELEPHONY_ERR_SUCCESS",
+        "primary": 1,
+        "data": 1,
+        "success_publications": true,
+        "attempts": 1,
+        "status_user_set": true,
+        "ril_primary_count": 1,
+        "protocol_phases": [],
+        "protocol_attempts": 0,
+        "minimum_api_seconds": 0
+      },
+      "grades": {
+        "production_path": "VERIFIED_SOURCE",
+        "host_execution": "VERIFIED_HOST",
+        "external_response_schedule": "CONDITIONAL",
+        "consumer_delivery": "UNKNOWN",
+        "native_product": "UNKNOWN"
+      },
+      "source": {
+        "golden_id": "SIM028-LEGACY-B-SUCCESS-DUAL-PRIMARY0",
+        "golden_sha256": "269e558608f92c7c8ee9f8ac482c2073bb6ec93402532fa53b6da286ca22e720"
+      },
+      "unverified": [
+        "matching native product and vendor semantics",
+        "real IPC/SA/HDI serial and consumer delivery",
+        "durable Provider and parameters",
+        "component teardown safety"
+      ],
+      "legacy_preparation_evidence": "Two PIN-locked active USIM accounts (slot1/simId1 and slot0/simId2), both real account-loaded events; real SimManager::SetPrimarySlotId(0,false) prepares prior primary0/data0; public queries verify both active and no switch in progress before business",
+      "preconditions": {
+        "physical_slots": 2,
+        "active_accounts": [
+          {
+            "slot": 0,
+            "sim_id": 2,
+            "synthetic_iccid": "8900000000000000000",
+            "card": "PIN-locked USIM"
+          },
+          {
+            "slot": 1,
+            "sim_id": 1,
+            "synthetic_iccid": "8900000000000000001",
+            "card": "PIN-locked USIM"
+          }
+        ],
+        "public_primary": 0,
+        "public_data": 0,
+        "initialization_settled": true
+      },
+      "driver_binding": {
+        "legacy": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+        "target": "BLOCKED: no real binding; do not invoke Legacy from Target"
+      },
+      "device_fixture": {
+        "query_mapping": [
+          {
+            "slot": 0,
+            "modem": 0,
+            "technology": 17
+          },
+          {
+            "slot": 1,
+            "modem": 1,
+            "technology": 34
+          }
+        ],
+        "response_schedule": "One SetPrimarySlot(slot1), then correlated RadioResponseInfo(error=NONE)",
+        "real_serial": "NOT_OBSERVED"
+      }
+    },
+    {
+      "id": "SIM028-LEGACY-B-ERROR-DUAL-PRIMARY0",
+      "legacy_test": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+      "branch": "B",
+      "input": {
+        "slot": 1,
+        "user_set": true
+      },
+      "external_response": "SetPrimarySlot(slot1), RadioResponseInfo(ERR_GENERIC_FAILURE)",
+      "expect": {
+        "error": "TELEPHONY_ERR_LOCAL_PTR_NULL",
+        "primary": 0,
+        "data": 0,
+        "success_publications": false,
+        "attempts": 1,
+        "status_user_set": true,
+        "ril_primary_count": 1,
+        "protocol_phases": [],
+        "protocol_attempts": 0,
+        "minimum_api_seconds": 0
+      },
+      "grades": {
+        "production_path": "VERIFIED_SOURCE",
+        "host_execution": "VERIFIED_HOST",
+        "external_response_schedule": "CONDITIONAL",
+        "consumer_delivery": "UNKNOWN",
+        "native_product": "UNKNOWN"
+      },
+      "source": {
+        "golden_id": "SIM028-LEGACY-B-ERROR-DUAL-PRIMARY0",
+        "golden_sha256": "269e558608f92c7c8ee9f8ac482c2073bb6ec93402532fa53b6da286ca22e720"
+      },
+      "unverified": [
+        "matching native product and vendor semantics",
+        "real IPC/SA/HDI serial and consumer delivery",
+        "durable Provider and parameters",
+        "component teardown safety"
+      ],
+      "legacy_preparation_evidence": "Two PIN-locked active USIM accounts (slot1/simId1 and slot0/simId2), both real account-loaded events; real SimManager::SetPrimarySlotId(0,false) prepares prior primary0/data0; public queries verify both active and no switch in progress before business",
+      "preconditions": {
+        "physical_slots": 2,
+        "active_accounts": [
+          {
+            "slot": 0,
+            "sim_id": 2,
+            "synthetic_iccid": "8900000000000000000",
+            "card": "PIN-locked USIM"
+          },
+          {
+            "slot": 1,
+            "sim_id": 1,
+            "synthetic_iccid": "8900000000000000001",
+            "card": "PIN-locked USIM"
+          }
+        ],
+        "public_primary": 0,
+        "public_data": 0,
+        "initialization_settled": true
+      },
+      "driver_binding": {
+        "legacy": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+        "target": "BLOCKED: no real binding; do not invoke Legacy from Target"
+      },
+      "device_fixture": {
+        "query_mapping": [
+          {
+            "slot": 0,
+            "modem": 0,
+            "technology": 17
+          },
+          {
+            "slot": 1,
+            "modem": 1,
+            "technology": 34
+          }
+        ],
+        "response_schedule": "SetPrimarySlot(slot1), RadioResponseInfo(ERR_GENERIC_FAILURE)",
+        "real_serial": "NOT_OBSERVED"
+      }
+    },
+    {
+      "id": "SIM028-LEGACY-C1-SUCCESS-STALE-DUAL-PRIMARY0",
+      "legacy_test": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+      "branch": "C1",
+      "input": {
+        "slot": 1,
+        "user_set": true
+      },
+      "external_response": "CHECK each slot; stale session+99 ignored; valid CHECK, UPDATE NOTIFY without fabricated acknowledgment, COMPLETE each slot",
+      "expect": {
+        "error": "TELEPHONY_ERR_SUCCESS",
+        "primary": 1,
+        "data": 1,
+        "success_publications": true,
+        "attempts": 1,
+        "status_user_set": false,
+        "ril_primary_count": 0,
+        "protocol_phases": [
+          1,
+          2,
+          4
+        ],
+        "protocol_attempts": 1,
+        "minimum_api_seconds": 0
+      },
+      "grades": {
+        "production_path": "VERIFIED_SOURCE",
+        "host_execution": "VERIFIED_HOST",
+        "external_response_schedule": "CONDITIONAL",
+        "consumer_delivery": "UNKNOWN",
+        "native_product": "UNKNOWN"
+      },
+      "source": {
+        "golden_id": "SIM028-LEGACY-C1-SUCCESS-STALE-DUAL-PRIMARY0",
+        "golden_sha256": "269e558608f92c7c8ee9f8ac482c2073bb6ec93402532fa53b6da286ca22e720"
+      },
+      "unverified": [
+        "matching native product and vendor semantics",
+        "real IPC/SA/HDI serial and consumer delivery",
+        "durable Provider and parameters",
+        "component teardown safety"
+      ],
+      "legacy_preparation_evidence": "Two PIN-locked active USIM accounts (slot1/simId1 and slot0/simId2), both real account-loaded events; real SimManager::SetPrimarySlotId(0,false) prepares prior primary0/data0; public queries verify both active and no switch in progress before business",
+      "preconditions": {
+        "physical_slots": 2,
+        "active_accounts": [
+          {
+            "slot": 0,
+            "sim_id": 2,
+            "synthetic_iccid": "8900000000000000000",
+            "card": "PIN-locked USIM"
+          },
+          {
+            "slot": 1,
+            "sim_id": 1,
+            "synthetic_iccid": "8900000000000000001",
+            "card": "PIN-locked USIM"
+          }
+        ],
+        "public_primary": 0,
+        "public_data": 0,
+        "initialization_settled": true
+      },
+      "driver_binding": {
+        "legacy": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+        "target": "BLOCKED: no real binding; do not invoke Legacy from Target"
+      },
+      "device_fixture": {
+        "query_mapping": [
+          {
+            "slot": 0,
+            "modem": 0,
+            "technology": 17
+          },
+          {
+            "slot": 1,
+            "modem": 1,
+            "technology": 34
+          }
+        ],
+        "response_schedule": "CHECK each slot; stale session+99 ignored; valid CHECK, UPDATE NOTIFY without fabricated acknowledgment, COMPLETE each slot",
+        "real_serial": "NOT_OBSERVED"
+      }
+    },
+    {
+      "id": "SIM028-LEGACY-B-TIMEOUT-DUAL-PRIMARY0",
+      "legacy_test": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+      "branch": "B",
+      "input": {
+        "slot": 1,
+        "user_set": true
+      },
+      "external_response": "Request accepted, no device response; production 45000ms timeout executes",
+      "expect": {
+        "error": "TELEPHONY_ERR_LOCAL_PTR_NULL",
+        "primary": 0,
+        "data": 0,
+        "success_publications": false,
+        "attempts": 1,
+        "status_user_set": true,
+        "ril_primary_count": 1,
+        "protocol_phases": [],
+        "protocol_attempts": 0,
+        "minimum_api_seconds": 44
+      },
+      "grades": {
+        "production_path": "VERIFIED_SOURCE",
+        "host_execution": "VERIFIED_HOST",
+        "external_response_schedule": "CONDITIONAL",
+        "consumer_delivery": "UNKNOWN",
+        "native_product": "UNKNOWN"
+      },
+      "source": {
+        "golden_id": "SIM028-LEGACY-B-TIMEOUT-DUAL-PRIMARY0",
+        "golden_sha256": "269e558608f92c7c8ee9f8ac482c2073bb6ec93402532fa53b6da286ca22e720"
+      },
+      "unverified": [
+        "matching native product and vendor semantics",
+        "real IPC/SA/HDI serial and consumer delivery",
+        "durable Provider and parameters",
+        "component teardown safety"
+      ],
+      "legacy_preparation_evidence": "Two PIN-locked active USIM accounts (slot1/simId1 and slot0/simId2), both real account-loaded events; real SimManager::SetPrimarySlotId(0,false) prepares prior primary0/data0; public queries verify both active and no switch in progress before business",
+      "preconditions": {
+        "physical_slots": 2,
+        "active_accounts": [
+          {
+            "slot": 0,
+            "sim_id": 2,
+            "synthetic_iccid": "8900000000000000000",
+            "card": "PIN-locked USIM"
+          },
+          {
+            "slot": 1,
+            "sim_id": 1,
+            "synthetic_iccid": "8900000000000000001",
+            "card": "PIN-locked USIM"
+          }
+        ],
+        "public_primary": 0,
+        "public_data": 0,
+        "initialization_settled": true
+      },
+      "driver_binding": {
+        "legacy": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+        "target": "BLOCKED: no real binding; do not invoke Legacy from Target"
+      },
+      "device_fixture": {
+        "query_mapping": [
+          {
+            "slot": 0,
+            "modem": 0,
+            "technology": 17
+          },
+          {
+            "slot": 1,
+            "modem": 1,
+            "technology": 34
+          }
+        ],
+        "response_schedule": "Request accepted, no device response; production 45000ms timeout executes",
+        "real_serial": "NOT_OBSERVED"
+      }
+    },
+    {
+      "id": "SIM028-LEGACY-C1-CHECK-ERROR-RETRY-DUAL-PRIMARY0",
+      "legacy_test": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+      "branch": "C1",
+      "input": {
+        "slot": 1,
+        "user_set": true
+      },
+      "external_response": "Each CHECK generic error via RadioResponseInfo; failure COMPLETE echoes old resources; 6 sessions including original, 24 requests",
+      "expect": {
+        "error": "TELEPHONY_ERR_LOCAL_PTR_NULL",
+        "primary": 0,
+        "data": 0,
+        "success_publications": false,
+        "attempts": 6,
+        "status_user_set": false,
+        "ril_primary_count": 0,
+        "protocol_phases": [
+          1,
+          4
+        ],
+        "protocol_attempts": 6,
+        "minimum_api_seconds": 0
+      },
+      "grades": {
+        "production_path": "VERIFIED_SOURCE",
+        "host_execution": "VERIFIED_HOST",
+        "external_response_schedule": "CONDITIONAL",
+        "consumer_delivery": "UNKNOWN",
+        "native_product": "UNKNOWN"
+      },
+      "source": {
+        "golden_id": "SIM028-LEGACY-C1-CHECK-ERROR-RETRY-DUAL-PRIMARY0",
+        "golden_sha256": "269e558608f92c7c8ee9f8ac482c2073bb6ec93402532fa53b6da286ca22e720"
+      },
+      "unverified": [
+        "matching native product and vendor semantics",
+        "real IPC/SA/HDI serial and consumer delivery",
+        "durable Provider and parameters",
+        "component teardown safety"
+      ],
+      "legacy_preparation_evidence": "Two PIN-locked active USIM accounts (slot1/simId1 and slot0/simId2), both real account-loaded events; real SimManager::SetPrimarySlotId(0,false) prepares prior primary0/data0; public queries verify both active and no switch in progress before business",
+      "preconditions": {
+        "physical_slots": 2,
+        "active_accounts": [
+          {
+            "slot": 0,
+            "sim_id": 2,
+            "synthetic_iccid": "8900000000000000000",
+            "card": "PIN-locked USIM"
+          },
+          {
+            "slot": 1,
+            "sim_id": 1,
+            "synthetic_iccid": "8900000000000000001",
+            "card": "PIN-locked USIM"
+          }
+        ],
+        "public_primary": 0,
+        "public_data": 0,
+        "initialization_settled": true
+      },
+      "driver_binding": {
+        "legacy": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+        "target": "BLOCKED: no real binding; do not invoke Legacy from Target"
+      },
+      "device_fixture": {
+        "query_mapping": [
+          {
+            "slot": 0,
+            "modem": 0,
+            "technology": 0
+          },
+          {
+            "slot": 1,
+            "modem": 1,
+            "technology": 0
+          }
+        ],
+        "response_schedule": "Each CHECK generic error via RadioResponseInfo; failure COMPLETE echoes old resources; 6 sessions including original, 24 requests",
+        "real_serial": "NOT_OBSERVED"
+      }
+    }
+  ]
+}

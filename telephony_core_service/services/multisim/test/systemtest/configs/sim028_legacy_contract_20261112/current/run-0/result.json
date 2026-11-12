@@ -1,0 +1,110 @@
+{
+  "status": "FAIL",
+  "head": "39d63590cfb6be5b813ecbed346252573442e0ac",
+  "groups": [
+    {
+      "name": "selected-0",
+      "exit_code": 0,
+      "status": "PASS",
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+      "filter": "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+      "skipped": 0
+    },
+    {
+      "name": "selected-1",
+      "exit_code": 1,
+      "status": "FAIL",
+      "tests": 1,
+      "passed": 0,
+      "failed": 1,
+      "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+      "filter": "RealSimPrimary.C0CoreToRealManagerAndController",
+      "skipped": 0
+    },
+    {
+      "name": "selected-2",
+      "exit_code": 1,
+      "status": "FAIL",
+      "tests": 1,
+      "passed": 0,
+      "failed": 1,
+      "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+      "filter": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+      "skipped": 0
+    },
+    {
+      "name": "selected-3",
+      "exit_code": 1,
+      "status": "FAIL",
+      "tests": 1,
+      "passed": 0,
+      "failed": 1,
+      "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+      "filter": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+      "skipped": 0
+    },
+    {
+      "name": "selected-4",
+      "exit_code": 1,
+      "status": "FAIL",
+      "tests": 1,
+      "passed": 0,
+      "failed": 1,
+      "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+      "filter": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+      "skipped": 0
+    },
+    {
+      "name": "selected-5",
+      "exit_code": 1,
+      "status": "FAIL",
+      "tests": 1,
+      "passed": 0,
+      "failed": 1,
+      "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+      "filter": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+      "skipped": 0
+    },
+    {
+      "name": "selected-6",
+      "exit_code": 1,
+      "status": "FAIL",
+      "tests": 1,
+      "passed": 0,
+      "failed": 1,
+      "binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+      "filter": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+      "skipped": 0
+    }
+  ],
+  "scope": "legacy_card_state_component_and_primary_entry_internal_seam",
+  "artifacts": "/mnt/e/github/multisim/.host-out/runs/run-81m2ggoq",
+  "primary_whole_component_chain": "BLOCKED",
+  "uncovered": [
+    "full_Core_Init",
+    "SimManager_OnInit",
+    "account",
+    "default_roles",
+    "persistence",
+    "eSIM",
+    "IPC",
+    "device"
+  ],
+  "production_root": "/mnt/e/github/multisim/telephony_core_service",
+  "production_sources": {
+    "services/sim/src/sim_state_manager.cpp": "99a3194d52aa58af9eb475e08b315821c6eb3a787583f48580ad76cb89d0b44d",
+    "services/sim/src/sim_state_handle.cpp": "e6856b2acda8a60334e8f61f6d5201fb896106a0a700960f8a36cc26dd1d5e0f",
+    "services/sim/src/icc_state.cpp": "f44d7f4ba3a3dec16a0edb9ba8b24b6d1bcb66f50fce9d79f936626ba0d9e7cd",
+    "services/tel_ril/src/observer_handler.cpp": "80d56eca572bf285eb3f54e4f057255a582a7f5bf85e35a17dfbdba0e0e74d63",
+    "frameworks/native/src/core_manager_inner.cpp": "2bbfe3133a8f57e7774ba554874acf00763531d395a5acdd294d3e0a12e99733",
+    "services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp": "b3d5e06f22790da1ee1b3373fe528e045a3452f18e0bec01472a7c7f23fc6b27",
+    "utils/common/src/tel_event_handler.cpp": "d6dbc69c03c8c4810cea31d9efaac5e0c0767b569edcc9ce25f3c61269665e63",
+    "utils/common/src/tel_event_queue.cpp": "d536be6a17f2710dda6e145f7c15a482bfa9f053689ab3dc24fae91ef6d3bccf",
+    "services/core/src/core_service_sim.cpp": "6bc4f83b79983b319e41572a6c8683808e4cd485d652eb531fc65a154376df34",
+    "utils/common/src/telephony_permission.cpp": "3ead60a37b3e50bad9c2175e2dbf6b130b47e5be0574298f786a36d49ea21611",
+    "common/capability_mgr/src/multi_sims_capability_manager.cpp": "d1453865fd6003b513dc76fcf65b503668c6a7f96b0da193fd396f53957eb2ef"
+  }
+}

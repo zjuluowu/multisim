@@ -1,0 +1,16 @@
+{
+  "path": "default.profraw",
+  "before_sha256": "cd39c6e07ca8e1d68d9f873df8184956ab67e3837f7d251d79c9d5ddf189ef99",
+  "after_discovery_sha256": "bbb8d8d54bc9586adf968048bcdf7f08cf72cd1321d4766bafe30b8814ef5f1e",
+  "cause": "preexisting legacy launcher gtest-list-tests process had no output-specific LLVM_PROFILE_FILE",
+  "original_bytes_backed_up": false,
+  "byte_restoration": "NOT_POSSIBLE from SHA alone; no fabricated replacement",
+  "scope": "generated profile, not frozen business evidence or production source",
+  "fix": "discovery profile explicitly scoped to requested run output",
+  "post_fix_before_sha256": "bbb8d8d54bc9586adf968048bcdf7f08cf72cd1321d4766bafe30b8814ef5f1e",
+  "post_fix_after_sha256": "bbb8d8d54bc9586adf968048bcdf7f08cf72cd1321d4766bafe30b8814ef5f1e",
+  "post_fix_root_profile_unchanged": true,
+  "new_run_discovery_profiles": [
+    "discovery-18.profraw"
+  ]
+}

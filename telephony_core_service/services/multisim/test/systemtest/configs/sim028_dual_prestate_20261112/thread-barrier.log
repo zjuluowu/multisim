@@ -1,0 +1,27 @@
+Note: Google Test filter = SchedulerBoundary.*
+[==========] Running 9 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 9 tests from SchedulerBoundary
+[ RUN      ] SchedulerBoundary.RunningTaskCannotBeCancelled
+[       OK ] SchedulerBoundary.RunningTaskCannotBeCancelled (1 ms)
+[ RUN      ] SchedulerBoundary.ProductionGeneralTaskWaitsAndCleansUp
+[       OK ] SchedulerBoundary.ProductionGeneralTaskWaitsAndCleansUp (0 ms)
+[ RUN      ] SchedulerBoundary.IdleWaitDrainsCascadedQueues
+[       OK ] SchedulerBoundary.IdleWaitDrainsCascadedQueues (1 ms)
+[ RUN      ] SchedulerBoundary.IdleWaitDoesNotIgnoreDelayedOrRunningWork
+[       OK ] SchedulerBoundary.IdleWaitDoesNotIgnoreDelayedOrRunningWork (11 ms)
+[ RUN      ] SchedulerBoundary.IdleWaitExposesTaskFailure
+[       OK ] SchedulerBoundary.IdleWaitExposesTaskFailure (3 ms)
+[ RUN      ] SchedulerBoundary.ReadyIdleLeavesFutureTimersAndDrainsCascades
+[       OK ] SchedulerBoundary.ReadyIdleLeavesFutureTimersAndDrainsCascades (1 ms)
+[ RUN      ] SchedulerBoundary.ReadyIdleDoesNotAcceptRunningInitialization
+[       OK ] SchedulerBoundary.ReadyIdleDoesNotAcceptRunningInitialization (0 ms)
+[ RUN      ] SchedulerBoundary.DetachedCallableBarrierIncludesCaptureDestruction
+[       OK ] SchedulerBoundary.DetachedCallableBarrierIncludesCaptureDestruction (0 ms)
+[ RUN      ] SchedulerBoundary.JoinablePoolWorkerIsNotAnUnfinishedDetachedActor
+[       OK ] SchedulerBoundary.JoinablePoolWorkerIsNotAnUnfinishedDetachedActor (0 ms)
+[----------] 9 tests from SchedulerBoundary (21 ms total)
+
+[----------] Global test environment tear-down
+[==========] 9 tests from 1 test suite ran. (23 ms total)
+[  PASSED  ] 9 tests.

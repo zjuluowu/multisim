@@ -1,0 +1,44 @@
+{
+  "head": "39d63590cfb6be5b813ecbed346252573442e0ac",
+  "golden_unchanged": true,
+  "golden_sha256": "269e558608f92c7c8ee9f8ac482c2073bb6ec93402532fa53b6da286ca22e720",
+  "frozen_manifest_sha256": "26142a83a21846c2ac08e6d040d47a4b02e07b141909cb1d214e88d0cba6ca30",
+  "legacy_original_business": {
+    "PASS": 7,
+    "FAIL": 0
+  },
+  "shared_oracle": {
+    "PASS": 7,
+    "FAIL": 0
+  },
+  "gtest": {
+    "PASS": 1,
+    "FAIL": 6,
+    "raw_exit": 1
+  },
+  "strict_ril": {
+    "PASS": 6,
+    "not_applicable": 1
+  },
+  "target": "BLOCKED",
+  "target_business_execution": "NOT_RUN",
+  "differential": "NOT_RUN",
+  "host": {
+    "tests": 64,
+    "PASS": 59,
+    "known_FAIL": 5,
+    "original_60": "55 PASS/5 unchanged known FAIL",
+    "entry": "14/14"
+  },
+  "technical_tests": {
+    "oracle_policy": 15,
+    "real_observation_copy_checks": 9,
+    "legacy_classifier": 13
+  },
+  "binary_sha256": "7a3bfa7419cae502b6eabd228a3778bcacc5ec3602b001297b899a040a5e9f69",
+  "native_product": "UNKNOWN",
+  "native_execution": "NOT_RUN",
+  "sanitizers": "NOT_RUN",
+  "generated_artifact_exception": "generated-artifact-change.json: old root default.profraw bytes unavailable; output isolation fixed and verified",
+  "git_commit_push_merge": "NOT_RUN, prohibited"
+}

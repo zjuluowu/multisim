@@ -1,0 +1,9 @@
+{
+  "original": 2002,
+  "unchanged": 1988,
+  "allowed_modified": 14,
+  "new_code": 3,
+  "patch_files": 17,
+  "code_patch_bytes": 57040,
+  "docs_patch_bytes": 73831
+}

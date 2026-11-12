@@ -1,0 +1,50 @@
+{
+  "binary_sha256": "faf950cc3921d27c64781e72f1ef5a3d38f3e2553befd55a8abe69ce7a57209a",
+  "cases": [
+    {
+      "test": "C0CoreToRealManagerAndController",
+      "command": [
+        "/mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test",
+        "--gtest_filter=RealSimPrimary.C0CoreToRealManagerAndController",
+        "--gtest_output=xml:/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/configs/sim028_initialization_stability_20261112/final-marker-check/C0CoreToRealManagerAndController.xml"
+      ],
+      "raw_exit": 1,
+      "properties": {
+        "initialization_order": "native-arrival",
+        "initialization_account_event": "PASS",
+        "initialization_ready_idle": "PASS",
+        "initialization_active": "PASS",
+        "initialization_present": "PASS",
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    },
+    {
+      "test": "C1ThreePhasesWithStaleCheckResponseRejected",
+      "command": [
+        "/mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test",
+        "--gtest_filter=RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+        "--gtest_output=xml:/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/configs/sim028_initialization_stability_20261112/final-marker-check/C1ThreePhasesWithStaleCheckResponseRejected.xml"
+      ],
+      "raw_exit": 1,
+      "properties": {
+        "initialization_order": "native-arrival",
+        "initialization_account_event": "PASS",
+        "initialization_ready_idle": "PASS",
+        "initialization_active": "PASS",
+        "initialization_present": "PASS",
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    }
+  ],
+  "scope": "Diagnostic-marker-only refinement after the archived 350-process sample; normal branch unchanged"
+}

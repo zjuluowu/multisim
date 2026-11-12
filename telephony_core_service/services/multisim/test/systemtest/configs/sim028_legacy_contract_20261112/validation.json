@@ -1,0 +1,850 @@
+{
+  "head": "39d63590cfb6be5b813ecbed346252573442e0ac",
+  "scope": "Unpatched legacy business characterization under audited Host fixture boundaries",
+  "business_counts": {
+    "PASS": 34,
+    "FAIL": 0,
+    "NOT_RUN": 1
+  },
+  "gtest_counts": {
+    "PASS": 5,
+    "FAIL": 30
+  },
+  "cases": [
+    {
+      "run": "initial",
+      "repetition": 0,
+      "id": "SIM028-LEGACY-INIT-NO-RIL",
+      "test": "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+      "raw_exit": 0,
+      "xml": "run-0/selected-0.xml",
+      "gtest": "PASS",
+      "business": "PASS",
+      "lifecycle": "PASS",
+      "classification": "full_pass",
+      "properties": {},
+      "failures": [],
+      "post_destruction_callback_safety": "NOT_RUN"
+    },
+    {
+      "run": "initial",
+      "repetition": 0,
+      "id": "SIM028-LEGACY-C0",
+      "test": "RealSimPrimary.C0CoreToRealManagerAndController",
+      "raw_exit": 1,
+      "xml": "run-0/selected-1.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "initial",
+      "repetition": 0,
+      "id": "SIM028-LEGACY-B-SUCCESS",
+      "test": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+      "raw_exit": 1,
+      "xml": "run-0/selected-2.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "initial",
+      "repetition": 0,
+      "id": "SIM028-LEGACY-B-ERROR",
+      "test": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+      "raw_exit": 1,
+      "xml": "run-0/selected-3.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "initial",
+      "repetition": 0,
+      "id": "SIM028-LEGACY-C1-SUCCESS-STALE",
+      "test": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+      "raw_exit": 1,
+      "xml": "run-0/selected-4.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "initial",
+      "repetition": 0,
+      "id": "SIM028-LEGACY-B-TIMEOUT",
+      "test": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+      "raw_exit": 1,
+      "xml": "run-0/selected-5.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "initial",
+      "repetition": 0,
+      "id": "SIM028-LEGACY-C1-CHECK-ERROR-RETRY",
+      "test": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+      "raw_exit": 1,
+      "xml": "run-0/selected-6.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "initial",
+      "repetition": 1,
+      "id": "SIM028-LEGACY-INIT-NO-RIL",
+      "test": "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+      "raw_exit": 0,
+      "xml": "run-1/selected-0.xml",
+      "gtest": "PASS",
+      "business": "PASS",
+      "lifecycle": "PASS",
+      "classification": "full_pass",
+      "properties": {},
+      "failures": [],
+      "post_destruction_callback_safety": "NOT_RUN"
+    },
+    {
+      "run": "initial",
+      "repetition": 1,
+      "id": "SIM028-LEGACY-C0",
+      "test": "RealSimPrimary.C0CoreToRealManagerAndController",
+      "raw_exit": 1,
+      "xml": "run-1/selected-1.xml",
+      "gtest": "FAIL",
+      "business": "NOT_RUN",
+      "lifecycle": "FAIL",
+      "classification": "precondition_failure",
+      "properties": {
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp:45\nValue of: scenario.manager->IsSimActive(1)\n  Actual: false\nExpected: true\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp:45\nValue of: scenario.manager->IsSimActive(1)\n  Actual: false\nExpected: true\n",
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_RUN"
+    },
+    {
+      "run": "initial",
+      "repetition": 1,
+      "id": "SIM028-LEGACY-B-SUCCESS",
+      "test": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+      "raw_exit": 1,
+      "xml": "run-1/selected-2.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "initial",
+      "repetition": 1,
+      "id": "SIM028-LEGACY-B-ERROR",
+      "test": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+      "raw_exit": 1,
+      "xml": "run-1/selected-3.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "initial",
+      "repetition": 1,
+      "id": "SIM028-LEGACY-C1-SUCCESS-STALE",
+      "test": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+      "raw_exit": 1,
+      "xml": "run-1/selected-4.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "initial",
+      "repetition": 1,
+      "id": "SIM028-LEGACY-B-TIMEOUT",
+      "test": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+      "raw_exit": 1,
+      "xml": "run-1/selected-5.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "initial",
+      "repetition": 1,
+      "id": "SIM028-LEGACY-C1-CHECK-ERROR-RETRY",
+      "test": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+      "raw_exit": 1,
+      "xml": "run-1/selected-6.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "repeat",
+      "repetition": 0,
+      "id": "SIM028-LEGACY-INIT-NO-RIL",
+      "test": "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+      "raw_exit": 0,
+      "xml": "run-0/selected-0.xml",
+      "gtest": "PASS",
+      "business": "PASS",
+      "lifecycle": "PASS",
+      "classification": "full_pass",
+      "properties": {},
+      "failures": [],
+      "post_destruction_callback_safety": "NOT_RUN"
+    },
+    {
+      "run": "repeat",
+      "repetition": 0,
+      "id": "SIM028-LEGACY-C0",
+      "test": "RealSimPrimary.C0CoreToRealManagerAndController",
+      "raw_exit": 1,
+      "xml": "run-0/selected-1.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "repeat",
+      "repetition": 0,
+      "id": "SIM028-LEGACY-B-SUCCESS",
+      "test": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+      "raw_exit": 1,
+      "xml": "run-0/selected-2.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "repeat",
+      "repetition": 0,
+      "id": "SIM028-LEGACY-B-ERROR",
+      "test": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+      "raw_exit": 1,
+      "xml": "run-0/selected-3.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "repeat",
+      "repetition": 0,
+      "id": "SIM028-LEGACY-C1-SUCCESS-STALE",
+      "test": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+      "raw_exit": 1,
+      "xml": "run-0/selected-4.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "repeat",
+      "repetition": 0,
+      "id": "SIM028-LEGACY-B-TIMEOUT",
+      "test": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+      "raw_exit": 1,
+      "xml": "run-0/selected-5.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "repeat",
+      "repetition": 0,
+      "id": "SIM028-LEGACY-C1-CHECK-ERROR-RETRY",
+      "test": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+      "raw_exit": 1,
+      "xml": "run-0/selected-6.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "repeat",
+      "repetition": 1,
+      "id": "SIM028-LEGACY-INIT-NO-RIL",
+      "test": "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+      "raw_exit": 0,
+      "xml": "run-1/selected-0.xml",
+      "gtest": "PASS",
+      "business": "PASS",
+      "lifecycle": "PASS",
+      "classification": "full_pass",
+      "properties": {},
+      "failures": [],
+      "post_destruction_callback_safety": "NOT_RUN"
+    },
+    {
+      "run": "repeat",
+      "repetition": 1,
+      "id": "SIM028-LEGACY-C0",
+      "test": "RealSimPrimary.C0CoreToRealManagerAndController",
+      "raw_exit": 1,
+      "xml": "run-1/selected-1.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "repeat",
+      "repetition": 1,
+      "id": "SIM028-LEGACY-B-SUCCESS",
+      "test": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+      "raw_exit": 1,
+      "xml": "run-1/selected-2.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "repeat",
+      "repetition": 1,
+      "id": "SIM028-LEGACY-B-ERROR",
+      "test": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+      "raw_exit": 1,
+      "xml": "run-1/selected-3.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "repeat",
+      "repetition": 1,
+      "id": "SIM028-LEGACY-C1-SUCCESS-STALE",
+      "test": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+      "raw_exit": 1,
+      "xml": "run-1/selected-4.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "repeat",
+      "repetition": 1,
+      "id": "SIM028-LEGACY-B-TIMEOUT",
+      "test": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+      "raw_exit": 1,
+      "xml": "run-1/selected-5.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "repeat",
+      "repetition": 1,
+      "id": "SIM028-LEGACY-C1-CHECK-ERROR-RETRY",
+      "test": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+      "raw_exit": 1,
+      "xml": "run-1/selected-6.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "current",
+      "repetition": 0,
+      "id": "SIM028-LEGACY-INIT-NO-RIL",
+      "test": "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+      "raw_exit": 0,
+      "xml": "run-0/selected-0.xml",
+      "gtest": "PASS",
+      "business": "PASS",
+      "lifecycle": "PASS",
+      "classification": "full_pass",
+      "properties": {},
+      "failures": [],
+      "post_destruction_callback_safety": "NOT_RUN"
+    },
+    {
+      "run": "current",
+      "repetition": 0,
+      "id": "SIM028-LEGACY-C0",
+      "test": "RealSimPrimary.C0CoreToRealManagerAndController",
+      "raw_exit": 1,
+      "xml": "run-0/selected-1.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "current",
+      "repetition": 0,
+      "id": "SIM028-LEGACY-B-SUCCESS",
+      "test": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+      "raw_exit": 1,
+      "xml": "run-0/selected-2.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "current",
+      "repetition": 0,
+      "id": "SIM028-LEGACY-B-ERROR",
+      "test": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+      "raw_exit": 1,
+      "xml": "run-0/selected-3.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "current",
+      "repetition": 0,
+      "id": "SIM028-LEGACY-C1-SUCCESS-STALE",
+      "test": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+      "raw_exit": 1,
+      "xml": "run-0/selected-4.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "current",
+      "repetition": 0,
+      "id": "SIM028-LEGACY-B-TIMEOUT",
+      "test": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+      "raw_exit": 1,
+      "xml": "run-0/selected-5.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    },
+    {
+      "run": "current",
+      "repetition": 0,
+      "id": "SIM028-LEGACY-C1-CHECK-ERROR-RETRY",
+      "test": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+      "raw_exit": 1,
+      "xml": "run-0/selected-6.xml",
+      "gtest": "FAIL",
+      "business": "PASS",
+      "lifecycle": "FAIL",
+      "classification": "cleanup_only",
+      "properties": {
+        "business_assertions_before_cleanup": "PASS",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      },
+      "failures": [
+        "../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n../../telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h:321\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "post_destruction_callback_safety": "NOT_VERIFIED"
+    }
+  ],
+  "latest_run": "current/validation.json",
+  "current_binary_sha256": "97e1aedd99fee426325d7ffa08bcb65dcf8cbedd16b182187d86d89bb7aa6eae",
+  "all_original_process_exit_codes_preserved": true,
+  "whole_gtest_status": "FAIL",
+  "latest_business_status": "PASS",
+  "business_repeatability": "NOT_ESTABLISHED: C0 setup failed once before input; no failure discarded",
+  "lifecycle_status": "FAIL",
+  "post_destruction_callback_safety": "NOT_VERIFIED",
+  "native_ohos": "BLOCKED",
+  "target_differential": "NOT_RUN",
+  "known_defect_regression": {
+    "tests": 60,
+    "passed": 55,
+    "failed": 5
+  },
+  "known_defect_raw_exit": 1,
+  "known_defect_names": [
+    "ContractDriver.DEFECT_001_StaleReadyAfterRemoval",
+    "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+    "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+    "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+    "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict"
+  ],
+  "protected_user_files": 98,
+  "protected_user_files_changed": [],
+  "production_bytes_unchanged_in_all_runs": true,
+  "normalization_check": {
+    "provider_sim_data_header_matches_local_source_ignoring_line_endings": true
+  },
+  "notes": [
+    "Initial and repeat archives contain original logs/XML/JSON; final classifier re-evaluates XML here without overwriting originals.",
+    "Only exact cleanup assertion failures can coexist with business PASS. Pre-input readiness failure is NOT_RUN and still fails the GTest/process.",
+    "CommonEvent publisher capture is not subscriber delivery. Mock RIL owner/event is not real serial/HDI/device correlation.",
+    "Production unchanged compares actual starting working bytes, not HEAD: 98 preexisting modifications retained."
+  ],
+  "classifier_tests": {
+    "tests": 12,
+    "passed": 12,
+    "exit": 0
+  }
+}

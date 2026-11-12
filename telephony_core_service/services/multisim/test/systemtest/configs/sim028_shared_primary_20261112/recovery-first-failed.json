@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "status": "ERROR",
+  "remote_refs_refreshed": false,
+  "current_runtime_test_executed": false,
+  "repository_root": "/mnt/e/github/multisim",
+  "head": "39d63590cfb6be5b813ecbed346252573442e0ac",
+  "current_branch": "main",
+  "dirty": true,
+  "worktree_change_count": 258,
+  "remote": "origin",
+  "remote_url": "https://github.com/zjuluowu/multisim.git",
+  "error": {
+    "code": "fetch_failed",
+    "detail": "Explicit checkpoint fetch failed; check network, access and branch existence"
+  }
+}

@@ -1,0 +1,134 @@
+[
+  {
+    "kind": "state_manager_init",
+    "time_ns": 896683728977466,
+    "thread": 48,
+    "function": "OHOS::Telephony::SimStateManager::Init(int)",
+    "object": "0x00005875cc7318c0",
+    "slot": 0
+  },
+  {
+    "kind": "state_manager_init",
+    "time_ns": 896683745372482,
+    "thread": 48,
+    "function": "OHOS::Telephony::SimStateManager::Init(int)",
+    "object": "0x00005875cc738f90",
+    "slot": 1
+  },
+  {
+    "kind": "state_manager_init",
+    "time_ns": 896683770130259,
+    "thread": 48,
+    "function": "OHOS::Telephony::SimStateManager::Init(int)",
+    "object": "0x00005875cc7407b0",
+    "slot": 2
+  },
+  {
+    "kind": "state_handler_event",
+    "time_ns": 896686807190115,
+    "thread": 64,
+    "function": "OHOS::Telephony::SimStateHandle::ProcessEvent(std::unique_ptr<OHOS::AppExecFwk::InnerEvent, void (*)(OHOS::AppExecFwk::InnerEvent*)> const&)",
+    "object": "0x00005875cc7391f0",
+    "slot": 1,
+    "event": 21,
+    "state": 0
+  },
+  {
+    "kind": "state_transition_before",
+    "time_ns": 896686828652368,
+    "thread": 64,
+    "function": "OHOS::Telephony::SimStateHandle::SimStateEscape(int, int, OHOS::Telephony::LockReason&)",
+    "object": "0x00005875cc7391f0",
+    "slot": 1,
+    "ril_state": 2,
+    "state": 0
+  },
+  {
+    "kind": "state_handler_event",
+    "time_ns": 896686941633974,
+    "thread": 76,
+    "function": "OHOS::Telephony::SimStateHandle::ProcessEvent(std::unique_ptr<OHOS::AppExecFwk::InnerEvent, void (*)(OHOS::AppExecFwk::InnerEvent*)> const&)",
+    "object": "0x00005875cc740a10",
+    "slot": 2,
+    "event": 21,
+    "state": 0
+  },
+  {
+    "kind": "state_transition_before",
+    "time_ns": 896686958865597,
+    "thread": 76,
+    "function": "OHOS::Telephony::SimStateHandle::SimStateEscape(int, int, OHOS::Telephony::LockReason&)",
+    "object": "0x00005875cc740a10",
+    "slot": 2,
+    "ril_state": 0,
+    "state": 0
+  },
+  {
+    "kind": "account_event",
+    "time_ns": 896686980698253,
+    "thread": 91,
+    "function": "Sim028Host::AccountObserver::ProcessEvent(std::unique_ptr<OHOS::AppExecFwk::InnerEvent, void (*)(OHOS::AppExecFwk::InnerEvent*)> const&)"
+  },
+  {
+    "kind": "cache_inspection",
+    "time_ns": 896687041277685,
+    "thread": 90,
+    "function": "OHOS::Telephony::MultiSimController::GetListFromDataBase(bool)",
+    "cache_size": 0,
+    "queried_rows": 1
+  },
+  {
+    "kind": "cache_clear_writer_paused",
+    "time_ns": 896687041841789,
+    "thread": 90,
+    "function": "OHOS::Telephony::MultiSimController::GetListFromDataBase(bool)",
+    "controller": "0x00005875cc740180",
+    "cache_size": 0,
+    "queried_rows": 1,
+    "caller": "OHOS::Telephony::MultiSimMonitor::RefreshData(int)"
+  },
+  {
+    "kind": "public_active_query_while_writer_paused",
+    "time_ns": 896687103128426,
+    "thread": 48,
+    "function": "OHOS::Telephony::MultiSimController::IsSimActive(int)",
+    "controller": "0x00005875cc740180",
+    "cache_size": 0,
+    "slot": 1
+  },
+  {
+    "kind": "public_active_query_while_writer_paused",
+    "time_ns": 896687132007432,
+    "thread": 48,
+    "function": "OHOS::Telephony::MultiSimController::IsSimActive(int)",
+    "controller": "0x00005875cc740180",
+    "cache_size": 0,
+    "slot": 1
+  },
+  {
+    "kind": "fixture_cleanup_releases_writer",
+    "time_ns": 896687148815652,
+    "thread": 48,
+    "function": "std::__shared_ptr<testing::StrictMock<OHOS::Telephony::MockTelRilManager>, (__gnu_cxx::_Lock_policy)2>::get() const"
+  },
+  {
+    "kind": "state_handler_event",
+    "time_ns": 896687182214790,
+    "thread": 51,
+    "function": "OHOS::Telephony::SimStateHandle::ProcessEvent(std::unique_ptr<OHOS::AppExecFwk::InnerEvent, void (*)(OHOS::AppExecFwk::InnerEvent*)> const&)",
+    "object": "0x00005875cc731b20",
+    "slot": 0,
+    "event": 21,
+    "state": 0
+  },
+  {
+    "kind": "state_transition_before",
+    "time_ns": 896687197086497,
+    "thread": 51,
+    "function": "OHOS::Telephony::SimStateHandle::SimStateEscape(int, int, OHOS::Telephony::LockReason&)",
+    "object": "0x00005875cc731b20",
+    "slot": 0,
+    "ril_state": 0,
+    "state": 0
+  }
+]

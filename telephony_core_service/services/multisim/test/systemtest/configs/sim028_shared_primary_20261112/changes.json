@@ -1,0 +1,80 @@
+[
+  {
+    "path": "telephony_core_service/services/multisim/test/systemtest/BUILD.gn",
+    "kind": "modified",
+    "before_sha256": "6d5f45802cf94a4eb47a149e299e117b1318f6a6e52b723aaa34b790e8cab92c",
+    "after_sha256": "986de0b85905861fd95b55cc5d350fa94ba3efb5f81397580ab1842e549d0741"
+  },
+  {
+    "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp",
+    "kind": "modified",
+    "before_sha256": "ff15bb8f0ee75e9b340e6f3bc11c7d0c328a8da0b6cfb948a312c88128e1a4c8",
+    "after_sha256": "288fbfe9e01d285b39c898cf6e2d4ec6d30174a6b852074e0ce427d85f623cda"
+  },
+  {
+    "path": "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h",
+    "kind": "modified",
+    "before_sha256": "16ab7d3c4ecd0b59c5a5f40f279b80466fde125183232af22b965cb7f44f3cc7",
+    "after_sha256": "175a8877e6ca7fe42f924dd3e46e5300cca250f62f5d954a4c63fe24200baa40"
+  },
+  {
+    "path": "telephony_core_service/services/multisim/test/systemtest/scripts/run_legacy_primary_contract.py",
+    "kind": "modified",
+    "before_sha256": "003a80b5ac4f694a1e9a1bc2271ac97c310960ff4dcdfd1b035a04f1593125c4",
+    "after_sha256": "1635158ce980d4a83dd037f1b270d1e7a5474cf5ce6730d1d4a4c6b001e780b1"
+  },
+  {
+    "path": "telephony_core_service/services/multisim/test/sim_guard/README.md",
+    "kind": "modified",
+    "before_sha256": "022533f485aa7297a665e01a4e24219a7f85da6ad9c79111a6bf8765d4fbe7aa",
+    "after_sha256": "928e6b1fba5ca44e7c6a8b4c3e2ec76e6d7a666aa8141fb8f0988cf8d4d35866"
+  },
+  {
+    "path": "telephony_core_service/docs/SIM_Refactor_Execution_State.md",
+    "kind": "modified",
+    "before_sha256": "f86f2c44eeeb89fe2c1c30385b947fbb8467078ff7fadc640c9de9f970f93b1e",
+    "after_sha256": "f5a3eb88ddf04224f364f1edb408bb12d8bfd39f881c6b4d27e367a56b5ed4a3"
+  },
+  {
+    "path": "telephony_core_service/services/multisim/test/sim_guard/contracts/primary_slot.h",
+    "kind": "new",
+    "before_sha256": null,
+    "after_sha256": "bcf1eafc52694a817b261da9d3a3df829bd8e52c01c7da5a83f7482ed1475abe"
+  },
+  {
+    "path": "telephony_core_service/services/multisim/test/sim_guard/adapters/legacy/legacy_primary_adapter.h",
+    "kind": "new",
+    "before_sha256": null,
+    "after_sha256": "222b792b6903489ccdf9591e32db82ecf3e19d248eb9947320d99072bddc4cc0"
+  },
+  {
+    "path": "telephony_core_service/services/multisim/test/sim_guard/scenarios/primary_slot.json",
+    "kind": "new",
+    "before_sha256": null,
+    "after_sha256": "d1221b27a0c961d582e1789b4ec9a1d856008c4c771f3e3f58c74c7a8163877e"
+  },
+  {
+    "path": "telephony_core_service/services/multisim/test/sim_guard/oracle/primary_oracle.py",
+    "kind": "new",
+    "before_sha256": null,
+    "after_sha256": "df4d2520b71b72f17d0ec2c0ee8ee7f0a1b27c867584478caa859d2151c02906"
+  },
+  {
+    "path": "telephony_core_service/services/multisim/test/sim_guard/oracle/test_primary_oracle.py",
+    "kind": "new",
+    "before_sha256": null,
+    "after_sha256": "73ce2a12c4799d5fbff10e8fd867e305b3a4a92abd2cb5ebbbd59d60bbc89df0"
+  },
+  {
+    "path": "telephony_core_service/services/multisim/test/sim_guard/oracle/check_primary_measurements.py",
+    "kind": "new",
+    "before_sha256": null,
+    "after_sha256": "a27274731fe0977958f680a949281e3ca0be03a118398a319e7348f634cf6934"
+  },
+  {
+    "path": "telephony_core_service/services/multisim/test/sim_guard/runner/run_primary_contract.py",
+    "kind": "new",
+    "before_sha256": null,
+    "after_sha256": "70af49561a9e95b041d77088eea6650b4ccd465e50087f80d77665a2b50f07a6"
+  }
+]

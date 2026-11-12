@@ -1,0 +1,50 @@
+[
+  {
+    "kind": "account_event",
+    "time_ns": 896303729965164,
+    "thread": 92,
+    "function": "Sim028Host::AccountObserver::ProcessEvent(std::unique_ptr<OHOS::AppExecFwk::InnerEvent, void (*)(OHOS::AppExecFwk::InnerEvent*)> const&)"
+  },
+  {
+    "kind": "cache_inspection",
+    "time_ns": 896303799773169,
+    "thread": 91,
+    "function": "OHOS::Telephony::MultiSimController::GetListFromDataBase(bool)",
+    "cache_size": 0,
+    "queried_rows": 1
+  },
+  {
+    "kind": "cache_clear_writer_paused",
+    "time_ns": 896303800220471,
+    "thread": 91,
+    "function": "OHOS::Telephony::MultiSimController::GetListFromDataBase(bool)",
+    "controller": "0x000061d445c57190",
+    "cache_size": 0,
+    "queried_rows": 1,
+    "caller": "OHOS::Telephony::MultiSimMonitor::RefreshData(int)"
+  },
+  {
+    "kind": "public_active_query_while_writer_paused",
+    "time_ns": 896303835586776,
+    "thread": 49,
+    "function": "OHOS::Telephony::MultiSimController::IsSimActive(int)",
+    "controller": "0x000061d445c57190",
+    "cache_size": 0,
+    "slot": 1
+  },
+  {
+    "kind": "public_active_query_while_writer_paused",
+    "time_ns": 896303855956094,
+    "thread": 49,
+    "function": "OHOS::Telephony::MultiSimController::IsSimActive(int)",
+    "controller": "0x000061d445c57190",
+    "cache_size": 0,
+    "slot": 1
+  },
+  {
+    "kind": "fixture_cleanup_releases_writer",
+    "time_ns": 896303868851569,
+    "thread": 49,
+    "function": "std::__shared_ptr<testing::StrictMock<OHOS::Telephony::MockTelRilManager>, (__gnu_cxx::_Lock_policy)2>::get() const"
+  }
+]

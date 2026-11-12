@@ -1,0 +1,6 @@
+{
+  "catalog_sha256": "d1221b27a0c961d582e1789b4ec9a1d856008c4c771f3e3f58c74c7a8163877e",
+  "source": "frozen-inputs.tar.gz + frozen Golden + source-line-checked existing assertions",
+  "expectations_changed": false,
+  "portable_preconditions": "role/card state, no legacy object ownership requirement"
+}

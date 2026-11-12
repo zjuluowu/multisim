@@ -14,10 +14,23 @@
 #include <iostream>
 #include "ipc_skeleton.h"
 #include "lifecycle/external_runner.h"
+#include "initialization_trace.h"
 #include <mutex>
 #include <condition_variable>
 namespace Sim028Host {
 void Diagnostic(const std::string &name) { std::cout << "DIAGNOSTIC " << name << '\n'; }
+namespace { std::mutex initializationProbeMutex; std::function<void()> initializationProbe; }
+void SetInitializationAccountProbe(std::function<void()> probe)
+{
+    std::lock_guard<std::mutex> lock(initializationProbeMutex);
+    initializationProbe = std::move(probe);
+}
+void SignalInitializationAccountProbe()
+{
+    std::function<void()> probe;
+    { std::lock_guard<std::mutex> lock(initializationProbeMutex); probe = initializationProbe; }
+    if (probe) probe();
+}
 }
 namespace OHOS {
 // Original classes explicitly friend the platform singleton; normal constructors/destructors run.
@@ -136,7 +149,15 @@ TelephonyStateRegistryClient::TelephonyStateRegistryClient() = default;
 TelephonyStateRegistryClient::~TelephonyStateRegistryClient() = default;
 int32_t TelephonyStateRegistryClient::UpdateSimState(int32_t, CardType, SimState, LockReason)
 { return -1; }
-int32_t TelephonyStateRegistryClient::UpdateIccAccount() { Sim028Host::Diagnostic("ACCOUNT_NOTIFY"); return 0; }
+int32_t TelephonyStateRegistryClient::UpdateIccAccount()
+{
+    Sim028Host::SignalInitializationAccountProbe();
+    Sim028Host::Diagnostic("ACCOUNT_NOTIFY");
+    // The Host SA boundary exposes no state-registry SA. Match this checkout's
+    // real client GetProxy()==nullptr path, rather than fabricating delivery.
+    std::cout << "REGISTRY_UNAVAILABLE code=" << TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL << '\n';
+    return TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL;
+}
 int32_t TelephonyStateRegistryClient::UpdateCfuIndicator(int32_t, bool) { return -1; }
 int32_t TelephonyStateRegistryClient::UpdateVoiceMailMsgIndicator(int32_t, bool) { return -1; }
 }

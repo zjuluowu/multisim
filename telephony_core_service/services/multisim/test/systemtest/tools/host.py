@@ -166,10 +166,11 @@ def run_tests(args, out):
         env = dict(os.environ, LLVM_PROFILE_FILE=str(session / (name + '-%p.profraw')))
         # Explicit scenario inputs; never inherit fault-injection controls from a shell.
         for key in list(env):
-            if key.startswith('SIM_') and key != 'SIM_GTEST_ROOT':
+            if key.startswith(('SIM_', 'SIM028_')) and key != 'SIM_GTEST_ROOT':
                 del env[key]
         if target == REAL_TARGET:
             env['SIM_HOST_BOOT_SLOT_COUNT'] = '2'
+            env['SIM028_INIT_MODEL'] = args.init_model
         code = command([out / 'build' / target, '--gtest_filter=' + test_filter,
                         '--gtest_output=xml:' + str(xml)], session / (name + '.log'), session, env, 90)
         group = {'name': name, 'exit_code': code, 'status': 'FAIL', 'tests': 0, 'passed': 0, 'failed': 0,
@@ -220,6 +221,7 @@ def main():
     parser.add_argument('--openssl-root')
     parser.add_argument('--runtime-root')
     parser.add_argument('--with-real-primary', action='store_true')
+    parser.add_argument('--init-model', choices=['single-active', 'dual-active-primary0'], default='single-active')
     parser.add_argument('--jobs', default='4')
     parser.add_argument('--target', choices=TARGETS + [REAL_TARGET], default=TARGETS[0])
     parser.add_argument('--filter', default='*')

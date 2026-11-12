@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "catalog_sha256": "d1221b27a0c961d582e1789b4ec9a1d856008c4c771f3e3f58c74c7a8163877e",
+  "legacy": "PASS",
+  "target": "BLOCKED",
+  "comparison": "NOT_RUN",
+  "target_reason": "StartPrimarySwitch and SwitchPrimaryRadio are declarations without complete production definitions; no Target adapter registered",
+  "native_product": "UNKNOWN",
+  "input_sha256": {
+    "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/scenarios/primary_slot.json": "d1221b27a0c961d582e1789b4ec9a1d856008c4c771f3e3f58c74c7a8163877e",
+    "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/run_primary_contract.py": "70af49561a9e95b041d77088eea6650b4ccd465e50087f80d77665a2b50f07a6",
+    "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/oracle/primary_oracle.py": "df4d2520b71b72f17d0ec2c0ee8ee7f0a1b27c867584478caa859d2151c02906",
+    "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/contracts/primary_slot.h": "bcf1eafc52694a817b261da9d3a3df829bd8e52c01c7da5a83f7482ed1475abe",
+    "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/adapters/legacy/legacy_primary_adapter.h": "222b792b6903489ccdf9591e32db82ecf3e19d248eb9947320d99072bddc4cc0",
+    "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/scripts/run_legacy_primary_contract.py": "1635158ce980d4a83dd037f1b270d1e7a5474cf5ce6730d1d4a4c6b001e780b1",
+    "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp": "288fbfe9e01d285b39c898cf6e2d4ec6d30174a6b852074e0ce427d85f623cda",
+    "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h": "175a8877e6ca7fe42f924dd3e46e5300cca250f62f5d954a4c63fe24200baa40",
+    "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/BUILD.gn": "986de0b85905861fd95b55cc5d350fa94ba3efb5f81397580ab1842e549d0741"
+  },
+  "command": [
+    "/usr/bin/python3",
+    "-B",
+    "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/systemtest/scripts/run_legacy_primary_contract.py",
+    "--output",
+    "/tmp/sim028-shared-primary-admission/legacy",
+    "--repeat",
+    "1",
+    "--jobs",
+    "2",
+    "--init-model",
+    "dual-active-primary0"
+  ],
+  "raw_legacy_exit": 1,
+  "binary_sha256": "7a3bfa7419cae502b6eabd228a3778bcacc5ec3602b001297b899a040a5e9f69",
+  "legacy_whole_gtest": "FAIL",
+  "legacy_original_business": "PASS"
+}

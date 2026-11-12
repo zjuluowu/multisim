@@ -1,0 +1,4 @@
+Git apply --check against exact pre-task input copy (outside working tree)
+test-environment.patch: exit0
+documentation.patch: exit0
+No patch applied to production or main working tree.

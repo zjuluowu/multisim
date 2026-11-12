@@ -95,6 +95,26 @@
       "case_id": "INFRA-FFRT-005",
       "oracle_id": "FFRT-IDLE-FAILURE",
       "level": "INFRA"
+    },
+    {
+      "case_id": "INFRA-FFRT-006",
+      "oracle_id": "FFRT-READY-CASCADE",
+      "level": "INFRA"
+    },
+    {
+      "case_id": "INFRA-FFRT-007",
+      "oracle_id": "FFRT-READY-RUNNING",
+      "level": "INFRA"
+    },
+    {
+      "case_id": "INFRA-FFRT-008",
+      "oracle_id": "THREAD-DETACHED-CAPTURE",
+      "level": "INFRA"
+    },
+    {
+      "case_id": "INFRA-FFRT-009",
+      "oracle_id": "THREAD-POOL-BASELINE",
+      "level": "INFRA"
     }
   ]
 }

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="4" failures="0" disabled="0" errors="0" time="0.11" timestamp="2026-11-12T16:36:47.519" name="AllTests">
+  <testsuite name="PinMemoryContract" tests="4" failures="0" disabled="0" skipped="0" errors="0" time="0.094" timestamp="2026-11-12T16:36:47.530">
+    <testcase name="PinSuccessUsesOriginalSlotIdentityAndCredential" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/pin_memory_contract_test.cpp" line="94" status="run" result="completed" time="0.048" timestamp="2026-11-12T16:36:47.536" classname="PinMemoryContract">
+      <properties>
+        <property name="real_instances_created" value="2"/>
+        <property name="observations" value="card-event:slot=0,present=1,state=READY,kind=1;slot=1,present=0,state=UNKNOWN,kind=0;&#x0A;card-event:slot=0,present=1,state=READY,kind=1;slot=1,present=1,state=LOCKED,kind=2;&#x0A;"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:0;status:1;pin:1;pin:1;"/>
+        <property name="real_instances_destroyed" value="2"/>
+      </properties>
+    </testcase>
+    <testcase name="PukSuccessUsesNewPinAndPinAlterOperation" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/pin_memory_contract_test.cpp" line="110" status="run" result="completed" time="0.004" timestamp="2026-11-12T16:36:47.592" classname="PinMemoryContract">
+      <properties>
+        <property name="real_instances_created" value="1"/>
+        <property name="observations" value="card-event:slot=0,present=1,state=LOCKED,kind=2;&#x0A;"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:0;"/>
+        <property name="real_instances_destroyed" value="1"/>
+      </properties>
+    </testcase>
+    <testcase name="FailedPinDoesNotPublishMemoryHook" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/pin_memory_contract_test.cpp" line="124" status="run" result="completed" time="0.009" timestamp="2026-11-12T16:36:47.602" classname="PinMemoryContract">
+      <properties>
+        <property name="real_instances_created" value="1"/>
+        <property name="observations" value="card-event:slot=0,present=1,state=LOCKED,kind=2;&#x0A;"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:0;pin:0;"/>
+        <property name="real_instances_destroyed" value="1"/>
+      </properties>
+    </testcase>
+    <testcase name="RemovalUsesAbsentResponseIdentityWithoutCredential" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/sim_guard/runner/pin_memory_contract_test.cpp" line="136" status="run" result="completed" time="0.003" timestamp="2026-11-12T16:36:47.617" classname="PinMemoryContract">
+      <properties>
+        <property name="real_instances_created" value="2"/>
+        <property name="observations" value="card-event:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=1,state=LOCKED,kind=2;&#x0A;card-event:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=0,state=ABSENT,kind=0;&#x0A;"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:1;status:1;"/>
+        <property name="real_instances_destroyed" value="2"/>
+      </properties>
+    </testcase>
+  </testsuite>
+</testsuites>

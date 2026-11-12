@@ -1,0 +1,69 @@
+{
+  "status": "UNKNOWN_PRODUCT_MATCH",
+  "reason": "No pinned product revision manifest or device build fingerprint supplied; local default/ohos manifests use master; local gitlink cohort differs from tested SIM sources",
+  "local_manifest_head": "7be88f147200cdf60a6f542dc758ac5f1d54e036",
+  "manifests": {
+    "default.xml": {
+      "sha256": "94192ecae7a697051f9d107a83bf76176b24394ed2d1f11e4da33416cccf693c",
+      "relevant_lines": [
+        {
+          "line": 19,
+          "text": "<default remote=\"gitcode\" revision=\"master\" sync-j=\"4\"/>"
+        }
+      ]
+    },
+    "ohos/ohos.xml": {
+      "sha256": "2762c82c24e016d9dd00287e8c311cf78ca5b4fab6367bcdae5e8a2b40420abd",
+      "relevant_lines": [
+        {
+          "line": 19,
+          "text": "<default remote=\"gitcode\" revision=\"master\" sync-j=\"4\"/>"
+        },
+        {
+          "line": 52,
+          "text": "<project groups=\"default,ohos:small,ohos:standard,ohos:system,ohos:chipset\" name=\"drivers_interface\" path=\"drivers/interface\" remote=\"gitcode\" revision=\"master\"/>"
+        },
+        {
+          "line": 121,
+          "text": "<project groups=\"default,ohos:standard,ohos:system,ohos:chipset\" name=\"telephony_core_service\" path=\"base/telephony/core_service\" remote=\"gitcode\" revision=\"master\"/>"
+        },
+        {
+          "line": 124,
+          "text": "<project groups=\"default,ohos:standard,ohos:system,ohos:chipset\" name=\"telephony_ril_adapter\" path=\"base/telephony/ril_adapter\" remote=\"gitcode\" revision=\"master\"/>"
+        },
+        {
+          "line": 125,
+          "text": "<project groups=\"default,ohos:standard,ohos:system\" name=\"telephony_telephony_data\" path=\"base/telephony/telephony_data\" remote=\"gitcode\" revision=\"master\"/>"
+        },
+        {
+          "line": 455,
+          "text": "<project groups=\"default,ohos:standard,ohos:system\" name=\"resourceschedule_ffrt\" path=\"foundation/resourceschedule/ffrt\" remote=\"gitcode\" revision=\"master\"/>"
+        }
+      ]
+    }
+  },
+  "superproject_gitlinks": "160000 commit 98fad3704fccfb30f8517ff9ea3eb8d587dc8503\ttelephony_cellular_data\n160000 commit 7f8ade7643f970533ff2580c671a34bd1007d1e0\ttelephony_core_service\n160000 commit 843a8be7f8d1dc304870a3999b754a03c6cce57d\ttelephony_data_storage\n160000 commit e510a4b985f53e40651cf7e558f61228566d6b27\ttelephony_ril_adapter\n160000 commit dd63492943be521dc7febd45fcd8841bfb35aaad\ttelephony_state_registry\n",
+  "source_comparison": {
+    "services/sim/src/sim_manager.cpp": {
+      "same_normalized": false,
+      "working_sha256": "9231f9b67e92d80178c878412b16d573c8ed604dfa58638e7441dda7f90a3cd5"
+    },
+    "services/sim/src/multi_sim_controller.cpp": {
+      "same_normalized": false,
+      "working_sha256": "e4194d662ddd164a2c527c7793a3b673ecc283c2385a3a56921856aec7e3afbc"
+    },
+    "services/sim/src/multi_sim_monitor.cpp": {
+      "same_normalized": false,
+      "working_sha256": "b052088e35de0a0f39120014f11a9411340b4998efb04edb32300b46827a9bba"
+    },
+    "services/sim/src/radio_protocol_controller.cpp": {
+      "same_normalized": true,
+      "working_sha256": "7391942fa10b22e4692b1873716d4827be68dbbe85ff63587f243e3096d79102"
+    },
+    "services/core/src/core_service_sim.cpp": {
+      "same_normalized": false,
+      "working_sha256": "6bc4f83b79983b319e41572a6c8683808e4cd485d652eb531fc65a154376df34"
+    }
+  },
+  "contract_versions": "Current core checkout is the source contract for Host boundaries; other repository snapshots remain independent reference evidence, not a matched native product"
+}

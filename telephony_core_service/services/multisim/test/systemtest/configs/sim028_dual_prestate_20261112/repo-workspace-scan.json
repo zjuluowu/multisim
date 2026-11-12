@@ -1,0 +1,77 @@
+{
+  "roots": [
+    "/mnt/e/telephony",
+    "/mnt/e/OpenHarmony",
+    "/mnt/e/github",
+    "/mnt/e/work",
+    "/mnt/e/code",
+    "/home/luowu/simdeps"
+  ],
+  "maximum_depth": 4,
+  "directories_inspected": 9294,
+  "repo_workspaces": [],
+  "candidate_build_records": [],
+  "matching_product": "UNKNOWN",
+  "repo_cli": null,
+  "manifest_export_attempts": [
+    {
+      "cwd": "/mnt/e/telephony",
+      "command": [
+        "repo",
+        "manifest",
+        "-r"
+      ],
+      "repo_metadata_exists": false,
+      "status": "BLOCKED",
+      "reason": "repo launcher not available; .repo metadata status recorded independently",
+      "error": "[Errno 2] No such file or directory: 'repo'"
+    },
+    {
+      "cwd": "/mnt/e/github/telephony",
+      "command": [
+        "repo",
+        "manifest",
+        "-r"
+      ],
+      "repo_metadata_exists": false,
+      "status": "BLOCKED",
+      "reason": "repo launcher not available; .repo metadata status recorded independently",
+      "error": "[Errno 2] No such file or directory: 'repo'"
+    },
+    {
+      "cwd": "/mnt/e/work/github/telephony",
+      "command": [
+        "repo",
+        "manifest",
+        "-r"
+      ],
+      "repo_metadata_exists": false,
+      "status": "BLOCKED",
+      "reason": "repo launcher not available; .repo metadata status recorded independently",
+      "error": "[Errno 2] No such file or directory: 'repo'"
+    },
+    {
+      "cwd": "/mnt/e/OpenHarmony",
+      "command": [
+        "repo",
+        "manifest",
+        "-r"
+      ],
+      "repo_metadata_exists": false,
+      "status": "BLOCKED",
+      "reason": "repo launcher not available; .repo metadata status recorded independently",
+      "error": "[Errno 2] No such file or directory: 'repo'"
+    }
+  ],
+  "build_record_interpretation": "Candidate filenames require inspection; Host build.ninja is not an OHOS product build record. No product relationship assumed.",
+  "additional_parent_scan": {
+    "roots": [
+      "/mnt/e",
+      "/home/luowu"
+    ],
+    "maximum_depth": 3,
+    "directories_inspected": 1087,
+    "read_errors": []
+  },
+  "repo_metadata_found": false
+}

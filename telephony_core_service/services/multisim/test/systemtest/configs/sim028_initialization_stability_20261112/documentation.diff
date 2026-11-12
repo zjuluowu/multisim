@@ -1,0 +1,489 @@
+--- a/telephony_core_service/docs/SIM_Refactor_Execution_State.md
++++ b/telephony_core_service/docs/SIM_Refactor_Execution_State.md
+@@ -776,3 +776,19 @@
+ 已明确Host边界不具权威性之处：RIL弱订阅/单目标通知与真实多强订阅不同；C1夹具额外UPDATE应答不见于参考AT实现；参数仅内存成功路径；发布成功不等于消费者接收；StateRegistry固定返回不等于真实观察者通知；身份、SA、Watcher、FFRT、serial/HDI及物理Modem未真实运行。共享Golden记录七例和A阻塞场景的输入/应答/返回/最终状态/副作用/偏序/证据/可信度/变更策略，只是有条件的characterization，不将旧缺陷自动批准为规范。Target Adapter尚未实现，不以Fake或回调旧SIM冒充迁移。
+ 
+ [使用、审计及裁决边界](../services/multisim/test/systemtest/primary_slot/legacy_contract/README.md)、[实际逐例验证](../services/multisim/test/systemtest/configs/sim028_legacy_contract_20261112/validation.json)保存本轮证据。原始探索XML/日志压缩归档，最终单轮与Host回归直接归档；生产字节保护、二进制/构建命令、Mock差异、准备失败、原生补证与差分规则可复核。当前结论为Host业务条件基线可复现，但重复性与析构后回调安全未达标；OHOS原生Golden、厂商A及产品兼容验收仍BLOCKED，不启动生产迁移。
++
++### 24. SIM-028 初始化假阴性因果复现与50轮基线复验（2026-11-12）
++
++HEAD仍为39d63590cfb6be5b813ecbed346252573442e0ac；未修改旧SIM/Core/RIL/公共实现，未应用隔离Stop补丁，未提交或推送。保护起始2002份实际输入，只有本批明确的测试、Host协调、Golden及状态文件发生修改，98份既有用户修改和历史证据保持原字节。
++
++P0根因已通过受控真实执行确认：账户事件到达后，MultiSimMonitor::RefreshData→MultiSimController::GetListFromDataBase在写锁内clear缓存；同一Controller被另一线程调用不取该锁的IsSimActive(1)，看到size=0返回false。Provider仍slot1/active1，真实StateManager/Handle的三槽初始化、RIL请求/原owner应答、状态转移、队列/线程/对象地址和公开查询均有时间戳。最终负控精确复现原real_test.cpp:45的断言；正控通过Host运行/到期任务屏障后active/present为真，但原业务与生命周期红灯不因此改成PASS。早期调试表达式失败及一次中断exit130独立保存，不作为业务通过证据。
++
++最小Host修复在账户事件后等待稳定schedulerRevision下全部运行/已到期工作，保留未来定时器并检查真实active/present；没有sleep、内部状态改写、业务断言删改或宽松Mock。新增两项屏障测试通过；StateRegistry使用当前真实client缺proxy错误，C1仅投递UPDATE NOTIFY，不添加无依据成功。普通Host入口清除诊断环境变量；负控绕过屏障必须标NOT_RUN。50轮压力执行版本与末次诊断标记纠正的源码/二进制及复核记录分别保留，不混称同一构建。
++
++50轮全七例350进程全部实际完成，6条在卡场景的300份account/event、ready-idle、active及present检查全PASS。业务254 PASS/96 FAIL，无NOT_RUN；完整GTest50 PASS/300 FAIL，所有轮次exit1。Strict RIL252 PASS/48 FAIL，50条无RIL场景不适用。native-arrival17轮及reverse17轮各119/119业务通过；present-first16轮业务16 PASS/96 FAIL。失败为48条初始化自动SetPrimarySlot未被原StrictMock覆盖、32条既存主卡广播去重与原预期冲突、16条数据卡参数在正式输入前已为1。没有筛掉失败顺序、伪造应答或将额外失败加入旧五条缺陷容许集。
++
++因此只通过激活就绪的本次样本门禁，不通过完整业务基线冻结：账户加载不等于全部业务前态一致，Host就绪屏障不覆盖所有生产detached线程/未来事件。唯一在卡先加载可触发真实自动选卡，原七例没有规定初始primary/data/通知历史和自动发令；原断言保持不变，Golden仅增加证据等级和待裁决项。需区分“单卡已自动成为主卡后重选”和“从另一有效主卡切换”，不能为全绿随意改卡模型、重置生产私有字段或放宽StrictMock。旧getter并发缺陷和生命周期问题都未修复。
++
++本轮原Host60条仍55 PASS/5既有FAIL，含入口14/14；加两条屏障测试为62条57 PASS/5 FAIL，分类器12项通过。未执行新的ASan/TSan或OHOS设备集成。本地manifest@7be88f1的清单只跟踪master，superproject关键SIM源码与当前fork不符；匹配产品manifest、build fingerprint及厂商RIL仍UNKNOWN。弱引用单目标RIL、内存Provider/参数、发布成功与真实消费者交付、原生FFRT等继续分级，未把其他版本的同名接口拼成产品契约。
++
++[初始化复验说明](../services/multisim/test/systemtest/primary_slot/legacy_contract/README.md)及[逐例/分层证据](../services/multisim/test/systemtest/configs/sim028_initialization_stability_20261112/validation.json)保存最小测试补丁、50轮全部日志/XML压缩归档、350条前态观测、负控/正控/调试失败、版本核对及最终标记复核。下一最小项是初始primary/data/自动请求契约裁决及匹配产品原生轨迹补证，不擅自修复旧生产代码或开始multisim迁移。
+--- a/telephony_core_service/services/multisim/test/systemtest/primary_slot/legacy_contract/README.md
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/legacy_contract/README.md
+@@ -1,6 +1,39 @@
+ # SIM-028：未经修复的旧实现业务基线
+ 
+-此入口执行当前工作区的 `services/sim`，没有应用 Stop 或并发候选补丁，没有修改原有 GTest、业务断言或生产调用路径。它复用 `host.py` 和原 GN 目标，逐例独立进程运行，保留原始退出码、XML、泄漏诊断和生命周期红灯。**业务结果与完整 GTest 结果是两个字段；本入口仍以原始非零退出码退出。**
++此入口执行当前工作区的 `services/sim`，没有应用 Stop 或并发候选补丁，原业务断言和生产调用路径不变。它复用 `host.py` 和原 GN 目标，逐例独立进程运行，保留原始退出码、XML、泄漏诊断和生命周期红灯。**业务结果与完整 GTest 结果是两个字段；本入口仍以原始非零退出码退出。**
++
++## 初始化稳定性复验（本批最新结果）
++
++HEAD仍为39d63590。本批测试环境修复和[独立证据](../../configs/sim028_initialization_stability_20261112/validation.json)与下文早一批的35次执行分开保存。50轮全部七例，共350进程：在卡六例的300份账户事件、就绪屏障、在卡和激活检查全部PASS；业务254 PASS/96 FAIL，GTest50 PASS/300 FAIL，所有轮次原始exit1。Strict RIL252 PASS/48 FAIL，另外50个无RIL场景不适用RIL验证。新旧断言均未删改。
++
++三个交错按轮循环：native-arrival17轮与reverse17轮业务各119/119；present-first16轮业务16/112，仅无RIL例通过。这里不是把三种初始化历史视为相同前态：受控变化实际揭示了原七例仅以“active”作为前置条件的不充分性。没有过滤失败顺序、改NOT_RUN为PASS或容许额外Mock调用。
++
++受控LLDB复现确认，账户事件后，MultiSimMonitor::RefreshData→GetListFromDataBase在写锁内清空缓存、尚未回填；Controller同一地址被另一线程调用IsSimActive(1)，旧getter不持该锁，读空缓存返回false。最终负控精确重现real_test.cpp:45原断言，Provider当时slot1/active1。正控在相同写入暂停点使用新就绪屏障，激活检查通过；完整GTest仍因通知差异和清理失败退出1。调试器只读取DWARF字段、暂停/恢复真实线程，不改对象数据；业务测试不依赖调试器。早期表达式诊断失败和一次中断exit130均归档，没有列为通过。
++
++最小环境修复是账户事件后调用AwaitSchedulerReadyIdle(5s)：以稳定schedulerRevision等待当前运行和已到期任务，保留未来定时器；不写激活状态、不取消生产任务、不增加sleep。普通all任务自动清除诊断环境变量。两个新增屏障测试验证跨队列级联任务、仍在运行的任务和未来定时器；原Host60仍55 PASS/5 FAIL，加上两例为62条57 PASS/5 FAIL，入口14/14。生产cache getter的并发缺陷没有修复；Host就绪屏障也不等于原生FFRT完成协议或所有detached线程已结束。
++
++新失败解释：present-first令唯一在卡slot1先完成加载，旧实现会自动选主卡/数据卡。C0/C1再次选择同一账户的主卡广播由SendMainCardBroadCast去重，原断言却要求再次收到主卡广播；B还会在正式请求前自动发送SetPrimarySlot(1)，原StrictMock没有覆盖此初始化调用；C1失败例的数据卡参数已在正式输入前为1，原“No data commit”断言把既存状态当作本次副作用。这些红灯表明**原Golden缺少初始主卡/数据卡/通知历史和初始化设备请求的约束**。不通过修改旧代码、放宽StrictMock、重置私有缓存或换成更容易通过的卡模型处理。
++
++冻结结论：激活前置样本通过，完整七例业务基线仍不满足冻结条件。需要裁决“单卡已自动成为主卡后再次选择”和“从另一有效主卡切换”两种独立前态、初始化自动发令的处理及消费者通知要求；现有预期保持不变，仅增加冲突标记。C1夹具现仅投递UPDATE NOTIFY，未伪造额外UPDATE应答；StateRegistry现返回当前真实client无proxy时的IPC连接错误，不再假装通知成功。弱引用单目标RIL订阅、内存Provider、参数和CES成功路径等剩余模拟限制仍为CONDITIONAL/UNKNOWN。
++
++产品版本核对：本地manifest@7be88f147200cdf60a6f542dc758ac5f1d54e036的default/ohos清单均指向master；本地superproject虽有gitlink SHA，但其Manager/Controller/Monitor/Core入口源码与当前fork不同。尚无目标产品锁定manifest、build fingerprint和厂商RIL库，不能拼接31份仓库副本当作同一产品契约。
++
++```sh
++# 所有七例，每轮独立进程；一次GN/Ninja构建后并行执行完整轮次。
++# 本轮确实存在业务及生命周期FAIL，入口应返回1。
++python3 -B telephony_core_service/services/multisim/test/systemtest/scripts/run_legacy_primary_contract.py \
++  --output /tmp/sim028-init-repeat-new --repeat 50 --jobs 8
++
++# 仅用于负控重现旧等待方式，禁止用于声称业务基线通过。
++SIM_HOST_BOOT_SLOT_COUNT=2 SIM028_INIT_ORDER=present-first SIM028_INIT_OLD_WAIT=1 \
++lldb --batch -o 'settings set target.disable-aslr false' \
++  -o 'command script import telephony_core_service/services/multisim/test/systemtest/primary_slot/legacy_contract/reproduce_initialization.py' \
++  -o run -- .host-out/build/sim_primary_slot_real_test \
++  --gtest_filter=RealSimPrimary.C0CoreToRealManagerAndController \
++  --gtest_output=xml:/tmp/sim028-init-negative.xml
++```
++
++下面保留上一批审计的来源与边界；其中原固定返回/额外应答的历史状态已由本节更正，原验证目录和历史Golden字节没有覆盖。
+ 
+ ```sh
+ # Git 根目录；复用已配置的 .host-out/host.json，output 必须是新目录。
+@@ -40,11 +73,11 @@
+ | 厂商 A/VSIM/eSIM | slot==SIM_SLOT_3 优先走 NeedSwitchSimCard→SwapM0M2SimCards→SetTargetPrimarySlotId；VSIM 检查依赖扩展指针，eSIM账户也参与初始化 | wrapper B；真实 libtelephony_ext 的映射、开关、事件与芯片库 D。缺省函数未装载不代表厂商行为；七例不覆盖 A/VSIM/eSIM成功路径 |
+ | RIL/HDI/芯片 | `TelRilSim` B使用V1_5 SetPrimarySlot，C1使用V1_1 SetRadioProtocol；HRil将 serial/slot 分开并调用 vendor 函数 | 参数/载荷形状 B；Host StrictMock 直接给原 owner/event 投递异步应答 C。真实 Request/serial分配、错误转换链、HDF、物理Modem未执行 D |
+ | RIL订阅 | 真实 ObserverHandler 保存事件到多个 shared_ptr 观察者，并可能在注册时立即通知已有状态 | Host弱引用 ledger 用于记录，但实际通知表只保留每槽/事件的一个目标，Register 始终返回0且不重现立即通知。C；不能用于所有权、广播扇出或初始通知顺序的权威 Oracle |
+-| C1 UPDATE | `radio_protocol_controller.cpp:196` 的 UPDATE应答不推进；NOTIFY驱动COMPLETE。参考 `ril_adapter/services/vendor/src/at_sim.c:1083` 的 UPDATE只发NOTIFY | 七例成功夹具额外发UPDATE应答再NOTIFY。协议相关B，具体设备调度C。ACK存在性、NOTIFY先后/重复/丢失需设备变体验证；不能强制未来实现依赖ACK |
++| C1 UPDATE | `radio_protocol_controller.cpp:196` 的 UPDATE应答不推进；NOTIFY驱动COMPLETE。参考 `ril_adapter/services/vendor/src/at_sim.c:1083` 的 UPDATE只发NOTIFY | 上一批额外应答已在本批去除，业务状态机完成但present-first仍有独立通知断言失败。具体设备调度C；NOTIFY先后/重复/丢失仍需设备变体验证 |
+ | Provider/DataShare | `SimAbility::Update`→`RdbBaseHelper::Update`返回RDB状态；`sim_info` URI与列有生产源码。当前本地 sim_data.h 与锁定头规范化行尾后完全一致 | 单行关系/谓词替身 C；列/URI/该Provider返回语义 B。DataShare通用头文档称Update返回行数，与此Provider实现不同，需按产品路径裁决，不能统一猜测。权限、SQL全部语法、事务、重启恢复、通知、Release寿命没有模拟 |
+ | 参数服务 | systemparameter Get/Set接口；Primary/ICCID/Data/preference 由真实业务代码调用 | 参数名/值/调用顺序 B/A；内存map成功读写 C。DAC/MAC、persist刷盘、写失败、Watcher和跨进程读取 D；LSI等初始化值是指定fixture，不是数据库规范默认值 |
+ | CommonEvent | CommonEventManager Publish 返回发布操作结果；不能证明所有订阅者收到 | Host捕获 Want 并返回true C，真实payload和发布偏序 A；主卡→Data只证明发布次序，不证明接收顺序或数据连接已建立 |
+-| StateRegistry | MultiSimMonitor 通知直接账户回调及 UpdateIccAccount；真实registry校验权限，遍历 ICC_ACCOUNT 观察者 | Host UpdateIccAccount 仅打印并返回0 C，不等于有监听者/回调交付。真实实现无监听者可返回DATA_NOT_EXIST；服务权限/IPC/observer返回 D |
++| StateRegistry | MultiSimMonitor 通知直接账户回调及 UpdateIccAccount；真实registry校验权限，遍历 ICC_ACCOUNT 观察者 | 上一批固定返回0已改为当前client无proxy的IPC连接错误（B），Host未提供registry SA。服务端监听者交付、权限和IPC仍为D |
+ | Cellular Data | `cellular_data_controller.cpp:194-197`订阅SIM状态/records/account；`incall_data_state_machine.cpp`查询Primary并调整Data，配置 Data订阅URI | 跨仓消费者 B，Host 没有构造这些消费者。数据参数/广播不能推导APN切换、通话数据状态或连接成功 |
+ | 搜网/SMS/Call | 本仓搜网 RadioInfo/NetworkSearchManager 查询Primary；外仓 sms_short_code_matcher.cpp:195 查询Primary；本次生产文本搜索未发现CallManager/CellularCall直接setter调用 | 间接读状态 B；不是每次setter同步调用全体组件。未找到不等于动态依赖不存在；不把CallManager或state_registry误画成主卡切换下层 |
+ | FFRT/SA/身份 | Host线程队列、参数Watcher失败返回、SA订阅失败返回、固定native token和Creator身份token | 全为C；真实CES/SA/Binder/权限、Watcher时序和FFRT调度为D。独立进程不能证明原生服务重启安全 |
+--- a/telephony_core_service/services/multisim/test/systemtest/primary_slot/legacy_contract/golden.json
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/legacy_contract/golden.json
+@@ -1,7 +1,12 @@
+ {
+   "schema_version": 1,
+-  "status": "PROVISIONAL_CHARACTERIZATION",
+-  "evidence_priority": ["native OHOS trace (not available)", "published interface/IDL/system tests", "pinned cross-repository source", "reproducible Host assertions"],
++  "status": "NOT_FROZEN",
++  "evidence_priority": [
++    "native OHOS trace (not available)",
++    "published interface/IDL/system tests",
++    "pinned cross-repository source",
++    "reproducible Host assertions"
++  ],
+   "authority": "Conditional legacy behavior; neither every old behavior nor every Host scheduling assumption is normative",
+   "shared_fixture": {
+     "physical_slots": 2,
+@@ -13,11 +18,27 @@
+     "api": "CoreServiceSim::SetPrimarySlotId(1) -> real SimManager(slot=1,userSet=true)",
+     "identity": "Host native token 101 granted SET_TELEPHONY_STATE; not actual IPC identity",
+     "parameter_failure": "NOT_RUN",
+-    "notification_delivery": "Capture publisher arguments only; subscriber delivery NOT_RUN"
++    "notification_delivery": "Capture publisher arguments only; subscriber delivery NOT_RUN",
++    "initialization": "Account-loaded event followed by stable-revision Host running/due-work barrier, bounded 5s; all original card/activation assertions remain; future timers intact",
++    "state_registry": "Actual current client proxy-unavailable error; no registry consumer simulated"
+   },
+   "comparison": {
+-    "include": ["API error symbol", "queried final primary/data state", "parameter writes and rollback", "notification payload and causal partial order", "device request slot/phase/resource/session association", "failure and retry completion"],
+-    "exclude": ["object address", "thread ID", "queue name", "internal call stack", "absolute session number", "wall clock scheduling"],
++    "include": [
++      "API error symbol",
++      "queried final primary/data state",
++      "parameter writes and rollback",
++      "notification payload and causal partial order",
++      "device request slot/phase/resource/session association",
++      "failure and retry completion"
++    ],
++    "exclude": [
++      "object address",
++      "thread ID",
++      "queue name",
++      "internal call stack",
++      "absolute session number",
++      "wall clock scheduling"
++    ],
+     "session_rule": "Compare session equality within an attempt and freshness across retries; RIL serial is a distinct untested transport value",
+     "policy": "Unexpected difference blocks compatibility. Legacy FAIL/Target PASS requires classification and explicit adjudication, never automatic correctness",
+     "target_adapter": "BLOCKED: no authorized complete multisim SetPrimarySlotId implementation; do not delegate Target back to Legacy",
+@@ -34,10 +55,29 @@
+       "api_return": "OnInit=true; SetPrimarySlotId=TELEPHONY_ERR_NO_SIM_CARD",
+       "final_state": "GetMaxSimCount=2; no switch in progress; scheduler drained",
+       "side_effects": "No device possible; no durable provider created",
+-      "order": ["OnInit before query and setter", "manager destruction before scheduler drain assertion"],
+-      "evidence": ["primary_slot/real_test.cpp:13-40", "services/sim/src/sim_manager.cpp:SetPrimarySlotId"],
++      "order": [
++        "OnInit before query and setter",
++        "manager destruction before scheduler drain assertion"
++      ],
++      "evidence": [
++        "primary_slot/real_test.cpp:13-40",
++        "services/sim/src/sim_manager.cpp:SetPrimarySlotId"
++      ],
+       "confidence": "P3 source + P4 Host; no native trace",
+-      "change_policy": "Characterization; OnInit success under unavailable dependency needs business adjudication"
++      "change_policy": "Characterization; OnInit success under unavailable dependency needs business adjudication",
++      "evidence_grade": {
++        "production_path": "VERIFIED_SOURCE",
++        "host_execution": "VERIFIED_HOST",
++        "external_response_schedule": "CONDITIONAL",
++        "consumer_delivery": "UNKNOWN",
++        "native_product": "UNKNOWN"
++      },
++      "unverified": [
++        "matched device manifest/firmware",
++        "real IPC/HDI serial and consumer delivery",
++        "durable Provider/parameter state",
++        "safe component teardown"
++      ]
+     },
+     {
+       "id": "SIM028-LEGACY-C0",
+@@ -49,10 +89,36 @@
+       "api_return": "TELEPHONY_ERR_SUCCESS synchronously after persistence and publisher calls",
+       "final_state": "Primary=1; default data=1; inProgress=false",
+       "side_effects": "User preference=true; primary parameter=1; SHA256 of synthetic ICCID; data parameter=1; primary then data publication",
+-      "order": ["device mapping query before input", "primary publication before data publication", "no SetPrimarySlot or SetRadioProtocol"],
+-      "evidence": ["primary_slot/real_test.cpp:C0CoreToRealManagerAndController", "services/sim/src/multi_sim_controller.cpp:1483-1533"],
++      "order": [
++        "device mapping query before input",
++        "primary publication before data publication",
++        "no SetPrimarySlot or SetRadioProtocol"
++      ],
++      "evidence": [
++        "primary_slot/real_test.cpp:C0CoreToRealManagerAndController",
++        "services/sim/src/multi_sim_controller.cpp:1483-1533"
++      ],
+       "confidence": "P3 source + P4 Host; PUBLISH order only, not consumer delivery order",
+-      "change_policy": "Preserve externally observed result; no-device behavior eligible for differential comparison; native delivery pending"
++      "change_policy": "Preserve externally observed result; no-device behavior eligible for differential comparison; native delivery pending",
++      "evidence_grade": {
++        "production_path": "VERIFIED_SOURCE",
++        "host_execution": "VERIFIED_HOST",
++        "external_response_schedule": "CONDITIONAL",
++        "consumer_delivery": "UNKNOWN",
++        "native_product": "UNKNOWN"
++      },
++      "unverified": [
++        "matched device manifest/firmware",
++        "real IPC/HDI serial and consumer delivery",
++        "durable Provider/parameter state",
++        "safe component teardown"
++      ],
++      "initialization_result": "50/50 active/present/event/ready-idle checks PASS for this test; 17 native-arrival + 17 reverse + 16 present-first",
++      "business_result": "34 PASS / 16 FAIL; original assertions retained",
++      "conflicting_fields": [
++        "notification/persistence history or unhandled initialization RIL command in present-first order"
++      ],
++      "refactor_change_allowed": "No automatic behavior change; conditional expectation requires adjudication"
+     },
+     {
+       "id": "SIM028-LEGACY-B-SUCCESS",
+@@ -64,10 +130,38 @@
+       "api_return": "TELEPHONY_ERR_SUCCESS after response; caller remains blocked before reply",
+       "final_state": "Primary=1; data=1; inProgress=false",
+       "side_effects": "No early primary commit; primary/ICCID/data writes after response; primary then data publications; setDone false then true with isUserSet=true",
+-      "order": ["start status before response", "response before commit", "commit before API return", "no three-phase commands"],
+-      "evidence": ["services/sim/src/multi_sim_controller.cpp:2071-2140", "services/tel_ril/src/tel_ril_sim.cpp:613-627", "drivers_interface/ril/v1_5/IRil.idl:99"],
++      "order": [
++        "start status before response",
++        "response before commit",
++        "commit before API return",
++        "no three-phase commands"
++      ],
++      "evidence": [
++        "services/sim/src/multi_sim_controller.cpp:2071-2140",
++        "services/tel_ril/src/tel_ril_sim.cpp:613-627",
++        "drivers_interface/ril/v1_5/IRil.idl:99"
++      ],
+       "confidence": "P2 IDL + P3 conversion/source + P4 Host; actual vendor handler unavailable",
+-      "change_policy": "Preserve conditional transport contract; device integration pending"
++      "change_policy": "Preserve conditional transport contract; device integration pending",
++      "evidence_grade": {
++        "production_path": "VERIFIED_SOURCE",
++        "host_execution": "VERIFIED_HOST",
++        "external_response_schedule": "CONDITIONAL",
++        "consumer_delivery": "UNKNOWN",
++        "native_product": "UNKNOWN"
++      },
++      "unverified": [
++        "matched device manifest/firmware",
++        "real IPC/HDI serial and consumer delivery",
++        "durable Provider/parameter state",
++        "safe component teardown"
++      ],
++      "initialization_result": "50/50 active/present/event/ready-idle checks PASS for this test; 17 native-arrival + 17 reverse + 16 present-first",
++      "business_result": "34 PASS / 16 FAIL; original assertions retained",
++      "conflicting_fields": [
++        "notification/persistence history or unhandled initialization RIL command in present-first order"
++      ],
++      "refactor_change_allowed": "No automatic behavior change; conditional expectation requires adjudication"
+     },
+     {
+       "id": "SIM028-LEGACY-B-ERROR",
+@@ -79,10 +173,35 @@
+       "api_return": "TELEPHONY_ERR_LOCAL_PTR_NULL (characterized device-error mapping)",
+       "final_state": "Primary remains0; no data switch; inProgress=false",
+       "side_effects": "User preference still written before forwarding; setDone=false,true with userSet=true; no success broadcasts",
+-      "order": ["error response before caller returns", "setDone=true is completion, not success"],
+-      "evidence": ["primary_slot/real_test.cpp:BDirectRilFailureKeepsPreviousPrimary", "services/sim/src/multi_sim_controller.cpp:SetPrimarySlotIdWithoutModemReboot"],
++      "order": [
++        "error response before caller returns",
++        "setDone=true is completion, not success"
++      ],
++      "evidence": [
++        "primary_slot/real_test.cpp:BDirectRilFailureKeepsPreviousPrimary",
++        "services/sim/src/multi_sim_controller.cpp:SetPrimarySlotIdWithoutModemReboot"
++      ],
+       "confidence": "P3 + P4; no hardware error run",
+-      "change_policy": "Preserve error mapping for compatibility unless separately approved bug fix"
++      "change_policy": "Preserve error mapping for compatibility unless separately approved bug fix",
++      "evidence_grade": {
++        "production_path": "VERIFIED_SOURCE",
++        "host_execution": "VERIFIED_HOST",
++        "external_response_schedule": "CONDITIONAL",
++        "consumer_delivery": "UNKNOWN",
++        "native_product": "UNKNOWN"
++      },
++      "unverified": [
++        "matched device manifest/firmware",
++        "real IPC/HDI serial and consumer delivery",
++        "durable Provider/parameter state",
++        "safe component teardown"
++      ],
++      "initialization_result": "50/50 active/present/event/ready-idle checks PASS for this test; 17 native-arrival + 17 reverse + 16 present-first",
++      "business_result": "34 PASS / 16 FAIL; original assertions retained",
++      "conflicting_fields": [
++        "notification/persistence history or unhandled initialization RIL command in present-first order"
++      ],
++      "refactor_change_allowed": "No automatic behavior change; conditional expectation requires adjudication"
+     },
+     {
+       "id": "SIM028-LEGACY-C1-SUCCESS-STALE",
+@@ -90,14 +209,42 @@
+       "branch": "C1",
+       "preconditions": "B disabled; target initially modem1; old resources tech(slot0=0x11,slot1=0x22)",
+       "input": "SetPrimarySlotId(1)",
+-      "external_response": "CHECK each slot; stale session+99 ignored; valid CHECK, UPDATE acknowledgments plus UPDATE NOTIFY, COMPLETE each slot",
++      "external_response": "CHECK each slot; stale session+99 ignored; valid CHECK, UPDATE NOTIFY without fabricated acknowledgment, COMPLETE each slot",
+       "api_return": "TELEPHONY_ERR_SUCCESS after protocol completion",
+       "final_state": "modem0 mapped to slot1; primary/data1; inProgress=false",
+       "side_effects": "Primary and ICCID saved speculatively before protocol; primary/data broadcasts only after success; status false,true with isUserSet=false even though input user=true",
+-      "order": ["CHECK before UPDATE before COMPLETE", "UPDATE NOTIFY drives COMPLETE", "stale CHECK does not advance", "main publication before data publication"],
+-      "evidence": ["services/sim/src/radio_protocol_controller.cpp:177-250", "telephony_ril_adapter/services/vendor/src/at_sim.c:1083-1108", "primary_slot/real_test.cpp:C1ThreePhasesWithStaleCheckResponseRejected"],
+-      "confidence": "P2/P3 protocol + P4 conditional Host; extra UPDATE acknowledgment is Host assumption, not normative",
+-      "change_policy": "Preserve session/commit semantics; UPDATE ack availability and isUserSet discrepancy require adjudication/native variants"
++      "order": [
++        "CHECK before UPDATE before COMPLETE",
++        "UPDATE NOTIFY drives COMPLETE",
++        "stale CHECK does not advance",
++        "main publication before data publication"
++      ],
++      "evidence": [
++        "services/sim/src/radio_protocol_controller.cpp:177-250",
++        "telephony_ril_adapter/services/vendor/src/at_sim.c:1083-1108",
++        "primary_slot/real_test.cpp:C1ThreePhasesWithStaleCheckResponseRejected"
++      ],
++      "confidence": "VERIFIED_SOURCE current RadioProtocolController NOTIFY progression; CONDITIONAL fixture timing, VERIFIED_HOST only after actual new validation",
++      "change_policy": "Preserve session/commit semantics; do not require UPDATE acknowledgment. Native delivery order and userSet discrepancy still need adjudication",
++      "evidence_grade": {
++        "production_path": "VERIFIED_SOURCE",
++        "host_execution": "VERIFIED_HOST",
++        "external_response_schedule": "CONDITIONAL",
++        "consumer_delivery": "UNKNOWN",
++        "native_product": "UNKNOWN"
++      },
++      "unverified": [
++        "matched device manifest/firmware",
++        "real IPC/HDI serial and consumer delivery",
++        "durable Provider/parameter state",
++        "safe component teardown"
++      ],
++      "initialization_result": "50/50 active/present/event/ready-idle checks PASS for this test; 17 native-arrival + 17 reverse + 16 present-first",
++      "business_result": "34 PASS / 16 FAIL; original assertions retained",
++      "conflicting_fields": [
++        "notification/persistence history or unhandled initialization RIL command in present-first order"
++      ],
++      "refactor_change_allowed": "No automatic behavior change; conditional expectation requires adjudication"
+     },
+     {
+       "id": "SIM028-LEGACY-B-TIMEOUT",
+@@ -109,10 +256,35 @@
+       "api_return": "TELEPHONY_ERR_LOCAL_PTR_NULL after real timeout",
+       "final_state": "Old primary retained; no switch in progress",
+       "side_effects": "No success broadcasts; status false,true userSet=true; physical modem cancellation NOT_VERIFIED",
+-      "order": ["request before production timeout", "timeout before failure return"],
+-      "evidence": ["primary_slot/real_test.cpp:BRealTimeoutKeepsPreviousPrimary", "services/sim/src/multi_sim_controller.cpp:OnRilSetPrimarySlotTimeout"],
++      "order": [
++        "request before production timeout",
++        "timeout before failure return"
++      ],
++      "evidence": [
++        "primary_slot/real_test.cpp:BRealTimeoutKeepsPreviousPrimary",
++        "services/sim/src/multi_sim_controller.cpp:OnRilSetPrimarySlotTimeout"
++      ],
+       "confidence": "P3 + P4 actual elapsed timer; no modem cancellation evidence",
+-      "change_policy": "Preserve software timeout behavior; do not infer resource release"
++      "change_policy": "Preserve software timeout behavior; do not infer resource release",
++      "evidence_grade": {
++        "production_path": "VERIFIED_SOURCE",
++        "host_execution": "VERIFIED_HOST",
++        "external_response_schedule": "CONDITIONAL",
++        "consumer_delivery": "UNKNOWN",
++        "native_product": "UNKNOWN"
++      },
++      "unverified": [
++        "matched device manifest/firmware",
++        "real IPC/HDI serial and consumer delivery",
++        "durable Provider/parameter state",
++        "safe component teardown"
++      ],
++      "initialization_result": "50/50 active/present/event/ready-idle checks PASS for this test; 17 native-arrival + 17 reverse + 16 present-first",
++      "business_result": "34 PASS / 16 FAIL; original assertions retained",
++      "conflicting_fields": [
++        "notification/persistence history or unhandled initialization RIL command in present-first order"
++      ],
++      "refactor_change_allowed": "No automatic behavior change; conditional expectation requires adjudication"
+     },
+     {
+       "id": "SIM028-LEGACY-C1-CHECK-ERROR-RETRY",
+@@ -124,10 +296,37 @@
+       "api_return": "TELEPHONY_ERR_LOCAL_PTR_NULL after first attempt, before all background retries finish",
+       "final_state": "After retries primary0 and previous ICCID restored; no data commit; inProgress=false",
+       "side_effects": "Speculative write then rollback each attempt; no UPDATE; status false,true six times with userSet=false; no success publication",
+-      "order": ["first failure return precedes retry exhaustion", "fresh session for every retry", "CHECK then failure COMPLETE with old resource mapping"],
+-      "evidence": ["primary_slot/real_test.cpp:C1CheckFailureRestoresParametersAndExhaustsFiveRetries", "services/sim/src/multi_sim_controller.cpp:1535-1544", "services/sim/src/radio_protocol_controller.cpp:ProcessCheckRadioProtocol"],
++      "order": [
++        "first failure return precedes retry exhaustion",
++        "fresh session for every retry",
++        "CHECK then failure COMPLETE with old resource mapping"
++      ],
++      "evidence": [
++        "primary_slot/real_test.cpp:C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
++        "services/sim/src/multi_sim_controller.cpp:1535-1544",
++        "services/sim/src/radio_protocol_controller.cpp:ProcessCheckRadioProtocol"
++      ],
+       "confidence": "P3 + P4; original queue race can make progress intermittent; not a blanket stability proof",
+-      "change_policy": "Preserve retries and rollback; original concurrency defect remains separate failure gate"
++      "change_policy": "Preserve retries and rollback; original concurrency defect remains separate failure gate",
++      "evidence_grade": {
++        "production_path": "VERIFIED_SOURCE",
++        "host_execution": "VERIFIED_HOST",
++        "external_response_schedule": "CONDITIONAL",
++        "consumer_delivery": "UNKNOWN",
++        "native_product": "UNKNOWN"
++      },
++      "unverified": [
++        "matched device manifest/firmware",
++        "real IPC/HDI serial and consumer delivery",
++        "durable Provider/parameter state",
++        "safe component teardown"
++      ],
++      "initialization_result": "50/50 active/present/event/ready-idle checks PASS for this test; 17 native-arrival + 17 reverse + 16 present-first",
++      "business_result": "34 PASS / 16 FAIL; original assertions retained",
++      "conflicting_fields": [
++        "notification/persistence history or unhandled initialization RIL command in present-first order"
++      ],
++      "refactor_change_allowed": "No automatic behavior change; conditional expectation requires adjudication"
+     },
+     {
+       "id": "SIM028-LEGACY-A-VENDOR-MAP",
+@@ -139,10 +338,76 @@
+       "api_return": "SetTargetPrimarySlotId(true,mappedSlot) immediate success schedules readiness wait; not proof of device completion",
+       "final_state": "UNKNOWN without vendor implementation and readiness events",
+       "side_effects": "targetPrimarySlotId and waitCardsReady set; readiness timer queued",
+-      "order": ["valid data before swap", "swap before target selection", "readiness asynchronous after return"],
+-      "evidence": ["services/sim/src/multi_sim_controller.cpp:368-380,502-515,1483-1488"],
++      "order": [
++        "valid data before swap",
++        "swap before target selection",
++        "readiness asynchronous after return"
++      ],
++      "evidence": [
++        "services/sim/src/multi_sim_controller.cpp:368-380,502-515,1483-1488"
++      ],
+       "confidence": "P3 wrapper/source only; vendor ABI and product version missing",
+-      "change_policy": "Not an executable authoritative oracle; requires matching vendor source/library and product configuration"
++      "change_policy": "Not an executable authoritative oracle; requires matching vendor source/library and product configuration",
++      "evidence_grade": {
++        "production_path": "VERIFIED_SOURCE",
++        "host_execution": "UNKNOWN",
++        "external_response_schedule": "CONDITIONAL",
++        "consumer_delivery": "UNKNOWN",
++        "native_product": "UNKNOWN"
++      },
++      "unverified": [
++        "matched device manifest/firmware",
++        "real IPC/HDI serial and consumer delivery",
++        "durable Provider/parameter state",
++        "safe component teardown"
++      ]
++    }
++  ],
++  "evidence_grades": [
++    "VERIFIED_NATIVE",
++    "VERIFIED_SOURCE",
++    "VERIFIED_HOST",
++    "CONDITIONAL",
++    "UNKNOWN"
++  ],
++  "version_scope": {
++    "core_head": "39d63590cfb6be5b813ecbed346252573442e0ac",
++    "production": "actual starting working bytes protected; no Stop/concurrency patch",
++    "matched_product_manifest": "UNKNOWN: local manifest 7be88f147200cdf60a6f542dc758ac5f1d54e036 tracks master, not pinned SHAs; local superproject pins different critical SIM source",
++    "native_execution": "UNKNOWN"
++  },
++  "freeze_blockers": [
++    "Controlled present-first initialization changes primary/data/history and issues automatic RIL commands; original assertions conflict with that real legacy history",
++    "Matching product manifest and native consumer/device traces UNKNOWN",
++    "Unpatched cache getter and lifecycle defects remain; Host barrier is not a production fix"
++  ],
++  "stability_evidence": "configs/sim028_initialization_stability_20261112/validation.json",
++  "adjudications": [
++    {
++      "id": "INIT-ACTIVE-CACHE",
++      "grade": "VERIFIED_HOST",
++      "source": "MultiSimController::GetListFromDataBase:749-754 versus IsSimActive:915-925",
++      "observation": "Same controller: post-account cache clear observed by public query as inactive; original real_test.cpp:45 failure reproduced",
++      "decision": "Old production synchronization defect preserved; Host admission waits running/due work, does not fix getter"
++    },
++    {
++      "id": "INIT-AUTO-SELECTION-HISTORY",
++      "grade": "VERIFIED_HOST",
++      "source": "MultiSimController::CheckIfNeedSwitchMainSlotId and SendMainCardBroadCast",
++      "observation": "present-first single-card bootstrap changes primary/data and notification history before test input",
++      "decision": "Requires explicit initial primary/data/mapping/notification history contract; do not silently rewrite existing notification assertions"
++    },
++    {
++      "id": "INIT-AUTO-RIL",
++      "grade": "VERIFIED_HOST",
++      "observation": "Direct-RIL capability can cause automatic SetPrimarySlot during initialization, before original business expectations",
++      "decision": "StrictMock failures preserved; no unproven catch-all successful response installed"
++    },
++    {
++      "id": "MATCHED-PRODUCT",
++      "grade": "UNKNOWN",
++      "observation": "Local master manifests and mismatching source cohort do not identify the target product",
++      "decision": "Need locked product manifest, device fingerprint, and vendor implementation; no VERIFIED_NATIVE claim"
+     }
+   ]
+ }

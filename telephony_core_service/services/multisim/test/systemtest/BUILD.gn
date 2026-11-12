@@ -64,12 +64,16 @@ source_set("primary_real_support") {
   include_dirs = [ "primary_slot/runtime_include", "primary_slot/include" ]
   configs += [ ":production_headers", ":production_execution_evidence", ":initialization_standard_headers" ]
 }
+# Platform-free shared port/observation format. No Target business implementation is bound.
+source_set("primary_slot_contract") {
+  sources = [ "../sim_guard/contracts/primary_slot.h" ]
+}
 executable("sim_primary_slot_real_test") {
   sources = [ "primary_slot/real_test.cpp", "primary_slot/real_runtime.cpp", "primary_slot/security_boundary.cpp", "primary_slot/lifecycle/lifetime_test.cpp", "primary_slot/lifecycle/shutdown_contract_test.cpp" ]
-  include_dirs = [ "primary_slot/runtime_include", "primary_slot/include", "primary_slot/provider/include",
+  include_dirs = [ "../sim_guard", "primary_slot/runtime_include", "primary_slot/include", "primary_slot/provider/include",
                    "primary_slot", "stubs", "$gtest_root/googletest/include", "$gtest_root/googlemock/include" ]
   configs += [ ":production_headers" ]
-  deps = [ ":primary_slot_entry_production", ":primary_real_support", ":sim_production_host",
+  deps = [ ":primary_slot_contract", ":primary_slot_entry_production", ":primary_real_support", ":sim_production_host",
            ":sim_initialization_production_host", ":event_transport_production_host", ":scheduler_boundaries",
            ":platform_boundaries", ":external_service_boundaries", ":googlemock" ]
   ldflags = [ "-fprofile-instr-generate", "-Wl,-Map,sim_primary_slot_real_test.map" ]
@@ -119,15 +123,21 @@ source_set("event_transport_production_host") {
     ":production_execution_evidence",
   ]
 }
+config("tracked_host_threads") {
+  ldflags = [ "-Wl,--export-dynamic-symbol=pthread_create", "-Wl,--export-dynamic-symbol=pthread_detach" ]
+  libs = [ "dl" ]
+}
 source_set("scheduler_boundaries") {
   sources = [
     "stubs/event_handler_runtime.cpp",
     "stubs/ffrt_runtime.cpp",
+    "stubs/detached_threads.cpp",
   ]
   include_dirs = [
     "stubs",
     "stubs/include",
   ]
+  all_dependent_configs = [ ":tracked_host_threads" ]
 }
 
 source_set("component_launcher") {

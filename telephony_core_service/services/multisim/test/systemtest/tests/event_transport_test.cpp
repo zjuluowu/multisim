@@ -209,3 +209,78 @@ TEST(SchedulerBoundary, IdleWaitExposesTaskFailure)
     EXPECT_TRUE(SimHost::AwaitSchedulerStopped(2s));
     SimHost::ResetSchedulerEvidence();
 }
+
+TEST(SchedulerBoundary, ReadyIdleLeavesFutureTimersAndDrainsCascades)
+{
+    RecordProperty("case_id", "INFRA-FFRT-006");
+    RecordProperty("oracle_id", "FFRT-READY-CASCADE");
+    RecordProperty("level", "INFRA");
+    SimHost::ResetSchedulerEvidence();
+    std::atomic<unsigned> completed{0};
+    {
+        ffrt::queue first("init-first"), second("init-second");
+        auto future = first.submit_h([&] { ADD_FAILURE() << "FUTURE_TIMER_EXECUTED"; },
+                                    ffrt::task_attr().delay(180000000));
+        first.submit_h([&] { second.submit_h([&] { ++completed; }); ++completed; });
+        EXPECT_TRUE(SimHost::AwaitSchedulerReadyIdle(2s));
+        EXPECT_EQ(completed.load(), 2u);
+        EXPECT_FALSE(SimHost::AwaitSchedulerIdle(0ms));
+        EXPECT_EQ(first.cancel(future), 0);
+    }
+    EXPECT_TRUE(SimHost::AwaitSchedulerStopped(2s));
+}
+
+TEST(SchedulerBoundary, ReadyIdleDoesNotAcceptRunningInitialization)
+{
+    RecordProperty("case_id", "INFRA-FFRT-007");
+    RecordProperty("oracle_id", "FFRT-READY-RUNNING");
+    RecordProperty("level", "INFRA");
+    SimHost::ResetSchedulerEvidence();
+    Completion started, release;
+    {
+        ffrt::queue queue("init-blocked");
+        queue.submit_h([&] { started.Signal(); release.Await(); });
+        EXPECT_TRUE(started.Await());
+        EXPECT_FALSE(SimHost::AwaitSchedulerReadyIdle(0ms));
+        release.Signal();
+        EXPECT_TRUE(SimHost::AwaitSchedulerReadyIdle(2s));
+    }
+    EXPECT_TRUE(SimHost::AwaitSchedulerStopped(2s));
+}
+
+TEST(SchedulerBoundary, DetachedCallableBarrierIncludesCaptureDestruction)
+{
+    RecordProperty("case_id", "INFRA-FFRT-008");
+    RecordProperty("oracle_id", "THREAD-DETACHED-CAPTURE");
+    RecordProperty("level", "INFRA");
+    auto owner = std::make_shared<int>(7);
+    std::weak_ptr<int> retiring = owner;
+    Completion entered, release;
+    std::thread actor([owner, &entered, &release] { entered.Signal(); release.Await(); });
+    actor.detach(); owner.reset();
+    EXPECT_TRUE(entered.Await());
+    EXPECT_EQ(SimHost::GetDetachedThreadEvidence().active, 1u);
+    EXPECT_FALSE(SimHost::AwaitDetachedThreadsIdle(0ms));
+    EXPECT_FALSE(retiring.expired());
+    release.Signal();
+    EXPECT_TRUE(SimHost::AwaitDetachedThreadsIdle(2s));
+    EXPECT_TRUE(retiring.expired());
+}
+
+TEST(SchedulerBoundary, JoinablePoolWorkerIsNotAnUnfinishedDetachedActor)
+{
+    RecordProperty("case_id", "INFRA-FFRT-009");
+    RecordProperty("oracle_id", "THREAD-POOL-BASELINE");
+    RecordProperty("level", "INFRA");
+    Completion entered, release;
+    {
+        ffrt::queue queue("pool-baseline");
+        queue.submit_h([&] { entered.Signal(); release.Await(); });
+        EXPECT_TRUE(entered.Await());
+        EXPECT_TRUE(SimHost::AwaitDetachedThreadsIdle(0ms));
+        EXPECT_FALSE(SimHost::AwaitSchedulerReadyIdle(0ms));
+        release.Signal();
+        EXPECT_TRUE(SimHost::AwaitSchedulerReadyIdle(2s));
+    }
+    EXPECT_TRUE(SimHost::AwaitSchedulerStopped(2s));
+}

@@ -1,0 +1,608 @@
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/initialization_trace.h
+@@ -0,0 +1,24 @@
++#pragma once
++#include "ffrt_runtime.h"
++#include <atomic>
++#include <iostream>
++#include <sstream>
++#include <mutex>
++
++namespace Sim028Host {
++inline uint64_t InitRequestId()
++{ static std::atomic<uint64_t> next{0}; return ++next; }
++inline void InitTrace(const char *stage, int slot, const void *object, uint32_t event = 0,
++    uint64_t request = 0, const std::string &detail = "")
++{
++    static std::mutex output;
++    static uint64_t sequence = 0;
++    std::lock_guard<std::mutex> lock(output);
++    std::cout << "INIT_TRACE seq=" << ++sequence
++        << " us=" << std::chrono::duration_cast<std::chrono::microseconds>(
++            std::chrono::steady_clock::now().time_since_epoch()).count()
++        << " thread=" << std::this_thread::get_id() << " queue=" << SimHost::CurrentQueueName()
++        << " stage=" << stage << " slot=" << slot << " object=" << object
++        << " event=" << event << " request=" << request << ' ' << detail << '\n';
++}
++}
+--- /dev/null
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/legacy_contract/reproduce_initialization.py
+@@ -0,0 +1,175 @@
++"""LLDB-only controlled counterexample; no inferior memory writes or production edits.
++
++Run C0 with SIM028_INIT_OLD_WAIT=1 and SIM028_INIT_ORDER=present-first.
++Pause a *real* post-account cache rebuild between clear and assignment, let the
++test's public getter run, then release the writer at normal fixture destruction.
++The expected result is the original IsSimActive assertion failure, not a PASS.
++"""
++import json
++from pathlib import Path
++import time
++import lldb
++
++events = []
++inspections = 0
++loaded = False
++held = None
++main_held = None
++output = '/tmp/sim028-initialization-debug.json'
++
++
++def owning_frame(frame, name):
++    for candidate in frame.GetThread():
++        if name in (candidate.GetFunctionName() or ''):
++            return candidate
++    return frame
++
++
++def vector_size(value):
++    # Typed DWARF reads only: no inferior function calls while threads are gated.
++    impl = value.GetNonSyntheticValue().GetChildMemberWithName('_M_impl')
++    begin = impl.GetChildMemberWithName('_M_start')
++    end = impl.GetChildMemberWithName('_M_finish')
++    if not begin.IsValid() or not end.IsValid():
++        return None
++    stride = begin.GetType().GetPointeeType().GetByteSize()
++    return (end.GetValueAsUnsigned() - begin.GetValueAsUnsigned()) // stride if stride else None
++
++
++def cache_size(frame):
++    obj = frame.FindVariable('this').Dereference()
++    return vector_size(obj.GetChildMemberWithName('localCacheInfo_'))
++
++
++def record(kind, frame, **values):
++    queue = 'UNKNOWN'
++    for caller in frame.GetThread():
++        if 'ffrt::Worker' in (caller.GetFunctionName() or ''):
++            state = caller.FindVariable('state').GetNonSyntheticValue()
++            ptr = state.GetChildMemberWithName('_M_ptr')
++            if ptr.IsValid():
++                queue = ptr.Dereference().GetChildMemberWithName('name').GetSummary() or 'UNKNOWN'
++            break
++    row = dict(kind=kind, time_ns=time.monotonic_ns(), thread=frame.GetThread().GetThreadID(),
++               function=frame.GetFunctionName(), queue=queue,
++               source=str(frame.GetLineEntry().GetFileSpec()), line=frame.GetLineEntry().GetLine(),
++               stack=[f.GetFunctionName() for f in frame.GetThread()][:12], **values)
++    events.append(row)
++    Path(output).write_text(json.dumps(events, indent=2) + '\n')
++    print('CONTROLLED_INIT ' + json.dumps(row))
++
++
++def account(frame, bp_loc, internal_dict):
++    global loaded
++    loaded = True
++    record('account_event', owning_frame(frame, 'AccountObserver::ProcessEvent'))
++    return False
++
++
++def cache(frame, bp_loc, internal_dict):
++    global held, inspections
++    if not loaded or held is not None:
++        return False
++    frame = owning_frame(frame, 'MultiSimController::GetListFromDataBase')
++    size = cache_size(frame)
++    row_count = vector_size(frame.FindVariable('newCache'))
++    if inspections < 4:
++        record('cache_inspection', frame, cache_size=size, queried_rows=row_count)
++        inspections += 1
++    if size != 0 or not row_count:
++        if main_held is not None and main_held.IsSuspended():
++            main_held.Resume()
++        return False
++    # Pause only the real writer. The test thread continues its original getter.
++    thread = frame.GetThread()
++    if not thread.Suspend():
++        record('suspend_failed', frame)
++        return True
++    held = thread
++    record('cache_clear_writer_paused', frame, controller=frame.FindVariable('this').GetValue(),
++           cache_size=size, queried_rows=row_count,
++           caller=thread.GetFrameAtIndex(1).GetFunctionName())
++    if main_held is not None and main_held.IsSuspended():
++        main_held.Resume()
++    return False
++
++
++def trace(frame, bp_loc, internal_dict):
++    global main_held
++    frame = owning_frame(frame, 'Sim028Host::InitTrace')
++    stage = frame.FindVariable('stage')
++    error = lldb.SBError()
++    text = frame.GetThread().GetProcess().ReadCStringFromMemory(stage.GetValueAsUnsigned(), 128, error)
++    if error.Success() and text == 'account_wait_returned' and held is None:
++        main_held = frame.GetThread()
++        if main_held.Suspend():
++            record('reader_waits_for_controlled_cache_refresh', frame)
++    return False
++
++
++def query(frame, bp_loc, internal_dict):
++    frame = owning_frame(frame, 'MultiSimController::IsSimActive')
++    if held is not None and held.IsSuspended() and frame.GetThread().GetThreadID() != held.GetThreadID():
++        record('public_active_query_while_writer_paused', frame,
++               controller=frame.FindVariable('this').GetValue(), cache_size=cache_size(frame),
++               slot=frame.FindVariable('slotId').GetValueAsSigned())
++    return False
++
++
++def release(frame, bp_loc, internal_dict):
++    if held is not None and held.IsSuspended():
++        record('fixture_cleanup_releases_writer', frame)
++        held.Resume()
++    return False
++
++
++def ready(frame, bp_loc, internal_dict):
++    if held is not None and held.IsSuspended():
++        record('ready_barrier_releases_controlled_writer', frame)
++        held.Resume()
++    return False
++
++
++def state_init(frame, bp_loc, internal_dict):
++    frame = owning_frame(frame, 'SimStateManager::Init')
++    record('state_manager_init', frame, object=frame.FindVariable('this').GetValue(),
++           slot=frame.FindVariable('slotId').GetValueAsSigned())
++    return False
++
++
++def state_event(frame, bp_loc, internal_dict):
++    frame = owning_frame(frame, 'SimStateHandle::ProcessEvent')
++    obj = frame.FindVariable('this').Dereference()
++    record('state_handler_event', frame, object=frame.FindVariable('this').GetValue(),
++           slot=obj.GetChildMemberWithName('slotId_').GetValueAsSigned(),
++           event=frame.FindVariable('eventId').GetValueAsUnsigned(),
++           state=obj.GetChildMemberWithName('externalState_').GetValueAsSigned())
++    return False
++
++
++def state_transition(frame, bp_loc, internal_dict):
++    frame = owning_frame(frame, 'SimStateHandle::SimStateEscape')
++    obj = frame.FindVariable('this').Dereference()
++    record('state_transition_before', frame, object=frame.FindVariable('this').GetValue(),
++           slot=frame.FindVariable('slotId').GetValueAsSigned(),
++           ril_state=frame.FindVariable('simState').GetValueAsSigned(),
++           state=obj.GetChildMemberWithName('externalState_').GetValueAsSigned())
++    return False
++
++
++def __lldb_init_module(debugger, internal_dict):
++    target = debugger.GetSelectedTarget()
++    callbacks = [('Sim028Host::AccountObserver::ProcessEvent', 'account'),
++                 ('Sim028Host::InitTrace', 'trace'),
++                 ('OHOS::Telephony::MultiSimController::IsSimActive', 'query'),
++                 ('SimHost::AwaitSchedulerReadyIdle', 'ready'),
++                 ('OHOS::Telephony::SimStateManager::Init', 'state_init'),
++                 ('OHOS::Telephony::SimStateHandle::SimStateEscape', 'state_transition'),
++                 ('Sim028Host::RealScenario::~RealScenario', 'release')]
++    for name, callback in callbacks:
++        bp = target.BreakpointCreateByName(name)
++        bp.SetScriptCallbackFunction(__name__ + '.' + callback)
++    bp = target.BreakpointCreateByLocation('multi_sim_controller.cpp', 753)
++    bp.SetScriptCallbackFunction(__name__ + '.cache')
++    bp = target.BreakpointCreateByLocation('sim_state_handle.cpp', 839)
++    bp.SetScriptCallbackFunction(__name__ + '.state_event')
+--- a/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_runtime.cpp
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_runtime.cpp
+@@ -136,7 +136,14 @@
+ TelephonyStateRegistryClient::~TelephonyStateRegistryClient() = default;
+ int32_t TelephonyStateRegistryClient::UpdateSimState(int32_t, CardType, SimState, LockReason)
+ { return -1; }
+-int32_t TelephonyStateRegistryClient::UpdateIccAccount() { Sim028Host::Diagnostic("ACCOUNT_NOTIFY"); return 0; }
++int32_t TelephonyStateRegistryClient::UpdateIccAccount()
++{
++    Sim028Host::Diagnostic("ACCOUNT_NOTIFY");
++    // The Host SA boundary exposes no state-registry SA. Match this checkout's
++    // real client GetProxy()==nullptr path, rather than fabricating delivery.
++    std::cout << "REGISTRY_UNAVAILABLE code=" << TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL << '\n';
++    return TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL;
++}
+ int32_t TelephonyStateRegistryClient::UpdateCfuIndicator(int32_t, bool) { return -1; }
+ int32_t TelephonyStateRegistryClient::UpdateVoiceMailMsgIndicator(int32_t, bool) { return -1; }
+ }
+--- a/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h
+@@ -17,6 +17,8 @@
+ #include "multi_sim_controller.h"
+ #include "radio_protocol_controller.h"
+ #include "telephony_permission.h"
++#include "initialization_trace.h"
++#include <cstdlib>
+ #include <mutex>
+ #include <condition_variable>
+ #include <thread>
+@@ -89,7 +91,12 @@
+ public:
+     explicit AccountObserver(std::function<void()> loaded) : TelEventHandler("sim028-account-observer"), loaded_(std::move(loaded)) {}
+     void ProcessEvent(const AppExecFwk::InnerEvent::Pointer &event) override
+-    { if (event && event->GetInnerEventId() == RadioEvent::RADIO_SIM_ACCOUNT_LOADED) loaded_(); }
++    {
++        if (event && event->GetInnerEventId() == RadioEvent::RADIO_SIM_ACCOUNT_LOADED) {
++            InitTrace("account_loaded_event", event->GetParam(), this, event->GetInnerEventId());
++            loaded_();
++        }
++    }
+ private:
+     std::function<void()> loaded_;
+ };
+@@ -116,7 +123,10 @@
+     std::vector<std::pair<std::string, std::string>> writes;
+     std::vector<std::string> events;
+     std::vector<AAFwk::Want> broadcasts;
+-    struct Pending { int slot; std::weak_ptr<AppExecFwk::EventHandler> owner; uint32_t id; };
++    struct Pending {
++        int slot; std::weak_ptr<AppExecFwk::EventHandler> owner; uint32_t id;
++        uint64_t request = InitRequestId(); // Host correlation only, never an RIL serial
++    };
+     std::vector<Pending> statusRequests;
+     unsigned updates = 0;
+     bool autoStatus = false;
+@@ -130,6 +140,7 @@
+     template<class T> static void Reply(const Pending &request, std::shared_ptr<T> response)
+     {
+         auto owner = std::dynamic_pointer_cast<TelEventHandler>(request.owner.lock());
++        InitTrace("ril_response_enqueue", request.slot, owner.get(), request.id, request.request);
+         if (!owner || !owner->SendEvent(AppExecFwk::InnerEvent::Get(request.id, response)))
+             throw std::runtime_error("Real RIL response owner unavailable");
+     }
+@@ -174,12 +185,19 @@
+         EXPECT_CALL(*provider, Release()).WillRepeatedly(testing::Return(true));
+         EXPECT_CALL(*provider, Query(_, _, _, _)).WillRepeatedly([this](auto &uri, const auto &predicate, auto &, auto *) {
+             EXPECT_EQ(uri.ToString(), "datashare:///com.ohos.simability/sim/sim_info");
+-            std::lock_guard<std::mutex> lock(mutex); return row.Query(predicate);
++            std::lock_guard<std::mutex> lock(mutex);
++            InitTrace("provider_query", -1, provider.get(), 0, 0,
++                "row_slot=" + ProviderRow::Text(row.cells[SimData::SLOT_INDEX]) +
++                " row_active=" + ProviderRow::Text(row.cells[SimData::IS_ACTIVE]));
++            return row.Query(predicate);
+         });
+         EXPECT_CALL(*provider, Update(_, _, _)).WillRepeatedly([this](auto &uri, const auto &predicate, const auto &bucket) {
+             EXPECT_EQ(uri.ToString(), "datashare:///com.ohos.simability/sim/sim_info");
+             std::lock_guard<std::mutex> lock(mutex);
+             if (row.Matches(predicate)) for (const auto &[key, value] : bucket.valuesMap) row.cells[key] = value;
++            InitTrace("provider_update", -1, provider.get(), 0, 0,
++                "row_slot=" + ProviderRow::Text(row.cells[SimData::SLOT_INDEX]) +
++                " row_active=" + ProviderRow::Text(row.cells[SimData::IS_ACTIVE]));
+             ++updates; changed.notify_all(); return 0; // verified Provider RdbStore::Update status, not row count
+         });
+         EXPECT_CALL(*ril, RegisterCoreNotify(_, _, _, _)).WillRepeatedly([this](int slot, const auto &owner, int id, int *) {
+@@ -231,6 +249,7 @@
+         });
+         EXPECT_CALL(*ril, GetSimStatus(_, _)).WillRepeatedly([this](int slot, const auto &event) {
+             Pending request{slot, event->GetOwner(), event->GetInnerEventId()};
++            InitTrace("ril_status_request", slot, event->GetOwner().get(), request.id, request.request);
+             bool respond;
+             {
+                 std::lock_guard<std::mutex> lock(mutex);
+@@ -245,10 +264,12 @@
+     bool StartLockedCard()
+     {
+         manager = std::make_shared<SimManager>(ril);
++        InitTrace("manager_constructed", -1, manager.get());
+         CoreManagerInner::GetInstance().OnInit(nullptr, manager, ril);
+         core.SetSimManager(manager);
+         // Same logical slot-vector sizing as real CoreService::Init, including the extra slot.
+         if (!manager->OnInit(SIM_SLOT_COUNT_MD + 1)) return false;
++        InitTrace("manager_oninit_returned", -1, manager.get());
+         accountObserver = std::make_shared<AccountObserver>([this] {
+             std::lock_guard<std::mutex> lock(mutex); accountLoaded = true; changed.notify_all();
+         });
+@@ -260,11 +281,47 @@
+             autoStatus = true;
+             pending.swap(statusRequests);
+         }
+-        for (const auto &request : pending) Reply(request, CardStatus(request.slot));
++        const std::string order = std::getenv("SIM028_INIT_ORDER") ? std::getenv("SIM028_INIT_ORDER") : "native-arrival";
++        testing::Test::RecordProperty("initialization_order", order);
++        if (order == "present-first") {
++            for (const auto &request : pending) if (request.slot == 1) Reply(request, CardStatus(request.slot));
++            std::unique_lock<std::mutex> lock(mutex);
++            if (!changed.wait_for(lock, 5s, [&] { return accountLoaded; })) return false;
++            lock.unlock();
++            InitTrace("account_event_before_absent_replies", 1, manager.get());
++            for (const auto &request : pending) if (request.slot != 1) Reply(request, CardStatus(request.slot));
++        } else {
++            if (order == "reverse") std::reverse(pending.begin(), pending.end());
++            for (const auto &request : pending) Reply(request, CardStatus(request.slot));
++        }
+         { std::lock_guard<std::mutex> lock(mutex); autoStatus = true; }
+         ffrt::wait(); // real RefreshSimState callers have received their correlated replies
+         std::unique_lock<std::mutex> lock(mutex);
+-        return changed.wait_for(lock, 5s, [&] { return accountLoaded; });
++        const bool loaded = changed.wait_for(lock, 5s, [&] { return accountLoaded; });
++        lock.unlock();
++        InitTrace("account_wait_returned", 1, manager.get());
++        // The account event precedes later cross-slot refresh tasks. Admit the
++        // business request only after all currently runnable Host work finishes.
++        const bool legacyWait = std::getenv("SIM028_INIT_OLD_WAIT") != nullptr;
++        const bool drained = legacyWait || SimHost::AwaitSchedulerReadyIdle(5s);
++        bool present = false;
++        const auto presenceResult = manager->HasSimCard(1, present);
++        SimState state = SimState::SIM_STATE_UNKNOWN;
++        const auto stateResult = manager->GetSimState(1, state);
++        const bool active = manager->IsSimActive(1);
++        InitTrace("precondition_snapshot", 1, manager.get(), 0, 0,
++            "loaded=" + std::to_string(loaded) + " drained=" + (legacyWait ? "NOT_RUN" : std::to_string(drained)) +
++            " active=" + std::to_string(active) + " present=" + std::to_string(present) +
++            " presence_result=" + std::to_string(presenceResult) +
++            " sim_state=" + std::to_string(static_cast<int>(state)) +
++            " state_result=" + std::to_string(stateResult));
++        testing::Test::RecordProperty("initialization_account_event", loaded ? "PASS" : "FAIL");
++        testing::Test::RecordProperty("initialization_ready_idle", legacyWait ? "NOT_RUN" : drained ? "PASS" : "FAIL");
++        testing::Test::RecordProperty("initialization_active", active ? "PASS" : "FAIL");
++        testing::Test::RecordProperty("initialization_present",
++            present && presenceResult == TELEPHONY_ERR_SUCCESS ? "PASS" : "FAIL");
++        DumpQueues("initialization_admission");
++        return legacyWait ? loaded : loaded && drained && active && present && presenceResult == TELEPHONY_ERR_SUCCESS;
+     }
+     void ClearObservations()
+     { std::lock_guard<std::mutex> lock(mutex); writes.clear(); events.clear(); broadcasts.clear(); }
+--- a/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp
++++ b/telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp
+@@ -176,7 +176,9 @@
+                 EXPECT_EQ(caller.wait_for(20ms), std::future_status::timeout);
+                 std::lock_guard<std::mutex> lock(s.mutex); EXPECT_EQ(requests.size(), 2u);
+             }
+-            RealScenario::Reply(request.transport, reply);
++            // UPDATE completion is an unsolicited NOTIFY; an extra solicited
++            // acknowledgment is not required by the current controller.
++            if (stage != 1) RealScenario::Reply(request.transport, reply);
+             if (stage == 1) {
+                 reply = std::make_shared<RadioProtocol>(*reply);
+                 reply->phase = RadioProtocolPhase::RADIO_PROTOCOL_PHASE_NOTIFY;
+--- a/telephony_core_service/services/multisim/test/systemtest/scripts/run_legacy_primary_contract.py
++++ b/telephony_core_service/services/multisim/test/systemtest/scripts/run_legacy_primary_contract.py
+@@ -5,8 +5,10 @@
+ Each case still owns a process using the existing host.py runner.
+ """
+ import argparse
++from concurrent.futures import ThreadPoolExecutor, as_completed
+ import hashlib
+ import json
++import os
+ from pathlib import Path
+ import re
+ import shutil
+@@ -59,14 +61,82 @@
+     }
+ 
+ 
++def parallel_runs(args, output, host_out, names):
++    """One GN/Ninja build, then the same seven GTests in isolated processes.
++
++    Parallelism is between complete rounds, never shared SIM objects or mocks.
++    Original timeouts and real 45-second timer remain unchanged.
++    """
++    build = [sys.executable, '-B', str(SYSTEM / 'tools/host.py'), 'build',
++             '--out', str(host_out), '--production-root', str(CORE),
++             '--target', 'sim_primary_slot_real_test']
++    with (output / 'build.log').open('w') as stream:
++        code = subprocess.run(build, cwd=REPO, stdout=stream, stderr=subprocess.STDOUT).returncode
++    if code:
++        raise RuntimeError(f'Build failed with exit {code}; see build.log')
++    binary = host_out / 'build/sim_primary_slot_real_test'
++    env = {k: v for k, v in os.environ.items() if not k.startswith(('SIM_', 'SIM028_'))}
++    env['SIM_HOST_BOOT_SLOT_COUNT'] = '2'
++    listing = subprocess.check_output([binary, '--gtest_list_tests', '--gtest_filter=RealSimPrimary.*'],
++                                      env=env, text=True)
++    discovered, suite = [], ''
++    for line in listing.splitlines():
++        if line and not line.startswith(' '):
++            suite = line.strip()
++        elif line.strip():
++            discovered.append(suite + line.strip().split('#')[0].strip())
++    if set(discovered) != set(names) or len(discovered) != 7:
++        raise RuntimeError('Full seven-case discovery required; refuse reduced coverage')
++    def round_run(repetition):
++        dest = output / f'run-{repetition}'
++        dest.mkdir()
++        order = ('native-arrival', 'reverse', 'present-first')[repetition % 3]
++        round_env = dict(env, SIM028_INIT_ORDER=order)
++        cases = []
++        for index, name in enumerate(discovered):
++            xml = dest / f'selected-{index}.xml'
++            log = dest / f'selected-{index}.log'
++            argv = [str(binary), '--gtest_filter=' + name, '--gtest_output=xml:' + str(xml)]
++            round_env['LLVM_PROFILE_FILE'] = str(dest / f'case-{index}-%p.profraw')
++            with log.open('w') as stream:
++                try:
++                    code = subprocess.run(argv, env=round_env, cwd=dest, stdout=stream,
++                                          stderr=subprocess.STDOUT, timeout=90).returncode
++                except subprocess.TimeoutExpired:
++                    code = 124
++            elements = ET.parse(xml).getroot().findall('.//testcase') if xml.exists() else []
++            if len(elements) == 1 and elements[0].get('classname') + '.' + elements[0].get('name') == name:
++                outcome = classify(elements[0], code, log.read_text())
++            else:
++                outcome = {'gtest': 'FAIL', 'business': 'FAIL', 'lifecycle': 'NOT_RUN',
++                           'classification': 'missing_or_wrong_xml', 'properties': {}}
++            cases.append(dict(id=names[name], test=name, command=argv, raw_exit=code,
++                              xml=str(xml.relative_to(output)), **outcome))
++        result = {'repetition': repetition, 'initialization_order': order,
++                  'raw_exit': max(c['raw_exit'] if c['raw_exit'] >= 0 else 1 for c in cases), 'cases': cases}
++        (dest / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
++        return result
++    runs = []
++    with ThreadPoolExecutor(max_workers=args.jobs) as pool:
++        pending = [pool.submit(round_run, index) for index in range(args.repeat)]
++        for task in as_completed(pending):
++            run = task.result()
++            runs.append(run)
++            (output / 'progress.json').write_text(json.dumps(runs, indent=2) + '\n')
++            print(f'round {run["repetition"] + 1} order={run["initialization_order"]}: '
++                  f'business {sum(c["business"] == "PASS" for c in run["cases"])}/7, raw exit {run["raw_exit"]}', flush=True)
++    return sorted(runs, key=lambda r: r['repetition']), max(r['raw_exit'] for r in runs)
++
++
+ def main():
+     parser = argparse.ArgumentParser(description=__doc__)
+     parser.add_argument('--host-out', type=Path, default=REPO / '.host-out')
+     parser.add_argument('--output', type=Path, required=True, help='New evidence directory (never overwritten)')
+     parser.add_argument('--repeat', type=int, default=1)
++    parser.add_argument('--jobs', type=int, default=1, help='Independent round processes; one shared build first')
+     args = parser.parse_args()
+-    if args.repeat < 1:
+-        parser.error('--repeat must be positive')
++    if args.repeat < 1 or args.jobs < 1:
++        parser.error('--repeat and --jobs must be positive')
+     output = args.output.resolve()
+     output.mkdir(parents=True, exist_ok=False)
+     host_out = args.host_out.resolve()
+@@ -87,7 +157,10 @@
+         'adapter_sha256': digest(Path(__file__)),
+     }
+     raw_exit = 0
+-    for repetition in range(args.repeat):
++    if args.jobs > 1:
++        result['runs'], raw_exit = parallel_runs(args, output, host_out, names)
++        result['jobs'] = args.jobs
++    for repetition in range(args.repeat if args.jobs == 1 else 0):
+         argv = [sys.executable, '-B', str(SYSTEM / 'tools/host.py'), 'selected',
+                 '--out', str(host_out), '--production-root', str(CORE),
+                 '--target', 'sim_primary_slot_real_test', '--filter', 'RealSimPrimary.*']
+--- a/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp
++++ b/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp
+@@ -10,6 +10,7 @@
+ unsigned failures = 0;
+ uint64_t schedulerRevision = 0;
+ std::vector<std::weak_ptr<ffrt::HostQueue>> queues;
++thread_local std::string currentQueueName = "calling-thread";
+ 
+ // Queue locks may precede this lock. Never acquire a queue lock while holding
+ // evidenceMutex; idle observation snapshots the registry before inspecting it.
+@@ -49,6 +50,7 @@
+ 
+ static void Worker(const std::shared_ptr<HostQueue> &state)
+ {
++    currentQueueName = state->name;
+     std::unique_lock<mutex> guard(state->lock);
+     state->workerId = std::this_thread::get_id();
+     for (;;) {
+@@ -214,6 +216,7 @@
+ }
+ 
+ namespace SimHost {
++std::string CurrentQueueName() { return currentQueueName; }
+ void StopCallingThreadTasks()
+ {
+     auto &general = ffrt::GeneralOwner();
+@@ -263,7 +266,7 @@
+     std::lock_guard<ffrt::mutex> guard(evidenceMutex);
+     return {workers, failures};
+ }
+-bool AwaitSchedulerIdle(std::chrono::milliseconds budget)
++static bool AwaitIdle(std::chrono::milliseconds budget, bool includeFuture)
+ {
+     const auto deadline = std::chrono::steady_clock::now() + budget;
+     for (;;) {
+@@ -283,8 +286,9 @@
+         bool idle = true;
+         for (const auto &state : snapshot) {
+             std::lock_guard<ffrt::mutex> guard(state->lock);
+-            if (state->running || std::any_of(state->tasks.begin(), state->tasks.end(), [](const auto &task) {
+-                return task->status.load() == ffrt::HostTaskStatus::PENDING;
++            if (state->running || std::any_of(state->tasks.begin(), state->tasks.end(), [includeFuture](const auto &task) {
++                return task->status.load() == ffrt::HostTaskStatus::PENDING &&
++                    (includeFuture || task->due <= std::chrono::steady_clock::now());
+             })) {
+                 idle = false;
+             }
+@@ -301,6 +305,8 @@
+         })) return false;
+     }
+ }
++bool AwaitSchedulerIdle(std::chrono::milliseconds budget) { return AwaitIdle(budget, true); }
++bool AwaitSchedulerReadyIdle(std::chrono::milliseconds budget) { return AwaitIdle(budget, false); }
+ bool AwaitSchedulerStopped(std::chrono::milliseconds budget)
+ {
+     std::unique_lock<ffrt::mutex> guard(evidenceMutex);
+--- a/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.h
++++ b/telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.h
+@@ -7,6 +7,7 @@
+     unsigned taskFailures;
+ };
+ SchedulerEvidence GetSchedulerEvidence();
++std::string CurrentQueueName();
+ struct QueueEvidence {
+     uintptr_t address;
+     std::string name;
+@@ -21,6 +22,9 @@
+ // Drain all host queues, including tasks submitted by other tasks. Future delayed
+ // work counts as pending. False means timeout or a recorded task failure.
+ bool AwaitSchedulerIdle(std::chrono::milliseconds budget);
++// Fixture admission barrier: drain running and already-due work, leaving future
++// production timers intact. This does not cancel tasks or change business state.
++bool AwaitSchedulerReadyIdle(std::chrono::milliseconds budget);
+ bool AwaitSchedulerStopped(std::chrono::milliseconds budget);
+ void StopCallingThreadTasks();
+ void ResetSchedulerEvidence(); // Requires all queue owners/workers released.
+--- a/telephony_core_service/services/multisim/test/systemtest/tests/event_transport_test.cpp
++++ b/telephony_core_service/services/multisim/test/systemtest/tests/event_transport_test.cpp
+@@ -209,3 +209,35 @@
+     EXPECT_TRUE(SimHost::AwaitSchedulerStopped(2s));
+     SimHost::ResetSchedulerEvidence();
+ }
++
++TEST(SchedulerBoundary, ReadyIdleLeavesFutureTimersAndDrainsCascades)
++{
++    SimHost::ResetSchedulerEvidence();
++    std::atomic<unsigned> completed{0};
++    {
++        ffrt::queue first("init-first"), second("init-second");
++        auto future = first.submit_h([&] { ADD_FAILURE() << "FUTURE_TIMER_EXECUTED"; },
++                                    ffrt::task_attr().delay(180000000));
++        first.submit_h([&] { second.submit_h([&] { ++completed; }); ++completed; });
++        EXPECT_TRUE(SimHost::AwaitSchedulerReadyIdle(2s));
++        EXPECT_EQ(completed.load(), 2u);
++        EXPECT_FALSE(SimHost::AwaitSchedulerIdle(0ms));
++        EXPECT_EQ(first.cancel(future), 0);
++    }
++    EXPECT_TRUE(SimHost::AwaitSchedulerStopped(2s));
++}
++
++TEST(SchedulerBoundary, ReadyIdleDoesNotAcceptRunningInitialization)
++{
++    SimHost::ResetSchedulerEvidence();
++    Completion started, release;
++    {
++        ffrt::queue queue("init-blocked");
++        queue.submit_h([&] { started.Signal(); release.Await(); });
++        EXPECT_TRUE(started.Await());
++        EXPECT_FALSE(SimHost::AwaitSchedulerReadyIdle(0ms));
++        release.Signal();
++        EXPECT_TRUE(SimHost::AwaitSchedulerReadyIdle(2s));
++    }
++    EXPECT_TRUE(SimHost::AwaitSchedulerStopped(2s));
++}
+--- a/telephony_core_service/services/multisim/test/systemtest/tools/host.py
++++ b/telephony_core_service/services/multisim/test/systemtest/tools/host.py
+@@ -166,7 +166,7 @@
+         env = dict(os.environ, LLVM_PROFILE_FILE=str(session / (name + '-%p.profraw')))
+         # Explicit scenario inputs; never inherit fault-injection controls from a shell.
+         for key in list(env):
+-            if key.startswith('SIM_') and key != 'SIM_GTEST_ROOT':
++            if key.startswith(('SIM_', 'SIM028_')) and key != 'SIM_GTEST_ROOT':
+                 del env[key]
+         if target == REAL_TARGET:
+             env['SIM_HOST_BOOT_SLOT_COUNT'] = '2'

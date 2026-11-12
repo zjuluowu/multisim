@@ -1,5 +1,7 @@
 # SetPrimarySlotId Host 验证（SIM-028）
 
+未经生产修复的旧实现业务基线、跨仓Mock真实性审计及独立业务/生命周期分类入口，见[Legacy行为契约校准](legacy_contract/README.md)。该入口保留原始GTest失败退出码；下文历史清理失败记录保持原事实，不代表隔离候选补丁的结果。
+
 目前有两个互补目标，复用同一 GN/GTest 工程：
 
 - `sim_primary_slot_entry_test`：14 条入口契约，执行真实 CoreServiceSim/Permission/Capability，ISimManager 为 StrictMock。不能推定真实 Manager/设备链通过。

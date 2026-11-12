@@ -1,0 +1,33 @@
+{
+  "start_head": "39d63590cfb6be5b813ecbed346252573442e0ac",
+  "original_inputs": 2002,
+  "original_inputs_unchanged": 1988,
+  "authorized_changes": [
+    "telephony_core_service/docs/SIM_Refactor_Execution_State.md",
+    "telephony_core_service/services/multisim/test/systemtest/BUILD.gn",
+    "telephony_core_service/services/multisim/test/systemtest/configs/infrastructure_cases.json",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/legacy_contract/README.md",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/legacy_contract/golden.json",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_runtime.cpp",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_scenario.h",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/real_test.cpp",
+    "telephony_core_service/services/multisim/test/systemtest/scripts/run_legacy_primary_contract.py",
+    "telephony_core_service/services/multisim/test/systemtest/scripts/test_legacy_primary_contract.py",
+    "telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.cpp",
+    "telephony_core_service/services/multisim/test/systemtest/stubs/ffrt_runtime.h",
+    "telephony_core_service/services/multisim/test/systemtest/tests/event_transport_test.cpp",
+    "telephony_core_service/services/multisim/test/systemtest/tools/host.py"
+  ],
+  "unexpected_changes": [],
+  "new_authored_files": [
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/initialization_trace.h",
+    "telephony_core_service/services/multisim/test/systemtest/primary_slot/legacy_contract/reproduce_initialization.py",
+    "telephony_core_service/services/multisim/test/systemtest/stubs/detached_threads.cpp"
+  ],
+  "old_production_unchanged": true,
+  "checked_production_related_original_files": 434,
+  "all_original_real_test_assertion_lines_unchanged": true,
+  "original_unique_state_prefix_preserved": true,
+  "git_commit_push": "NOT_RUN, explicitly prohibited",
+  "start_manifest_sha256": "9a4b771c5eb84d857cb02537bfcb13c88942b199289c5b2cee9b9cd06b9d880b"
+}

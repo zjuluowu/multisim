@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="14" failures="0" disabled="0" errors="0" time="0.082" timestamp="2026-11-12T15:53:02.732" name="AllTests">
+  <testsuite name="PrimaryEntry" tests="12" failures="0" disabled="0" skipped="0" errors="0" time="0.06" timestamp="2026-11-12T15:53:02.738">
+    <testcase name="NonSystemCallerPrecedesPermissionAndNullManager" file="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="52" status="run" result="completed" time="0.007" timestamp="2026-11-12T15:53:02.739" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+      </properties>
+    </testcase>
+    <testcase name="PermissionDenialPrecedesNullManager" file="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="59" status="run" result="completed" time="0." timestamp="2026-11-12T15:53:02.751" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+      </properties>
+    </testcase>
+    <testcase name="NullManagerPrecedesCapabilityRecheck" file="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="65" status="run" result="completed" time="0." timestamp="2026-11-12T15:53:02.755" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+      </properties>
+    </testcase>
+    <testcase name="ChangedExternalSystemAppDecisionRejectsExtendedSlot" file="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="71" status="run" result="completed" time="0." timestamp="2026-11-12T15:53:02.760" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+      </properties>
+    </testcase>
+    <testcase name="MissingCardStopsBeforeActiveAndPreference" file="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="80" status="run" result="completed" time="0." timestamp="2026-11-12T15:53:02.765" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+      </properties>
+    </testcase>
+    <testcase name="InactiveCardStopsBeforePreferenceAndSwitch" file="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="86" status="run" result="completed" time="0.001" timestamp="2026-11-12T15:53:02.769" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+      </properties>
+    </testcase>
+    <testcase name="ReadyCardWritesPreferenceBeforeDelegatingExactTarget" file="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="94" status="run" result="completed" time="0." timestamp="2026-11-12T15:53:02.774" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+      </properties>
+    </testcase>
+    <testcase name="ManagerFailureReturnedUnchangedAfterPreferenceWrite" file="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="102" status="run" result="completed" time="0." timestamp="2026-11-12T15:53:02.779" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+      </properties>
+    </testcase>
+    <testcase name="FailedPreferenceWriteStillDelegatesCurrentBehavior" file="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="110" status="run" result="completed" time="0." timestamp="2026-11-12T15:53:02.783" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+        <property name="oracle" value="legacy_characterization_SetParameter_return_is_ignored"/>
+      </properties>
+    </testcase>
+    <testcase name="PresenceQueryFailureWithFalseOutputReturnsNoCard" file="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="119" status="run" result="completed" time="0." timestamp="2026-11-12T15:53:02.788" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+        <property name="oracle" value="legacy_characterization_HasSimCard_return_is_ignored"/>
+      </properties>
+    </testcase>
+    <testcase name="PresenceQueryFailureWithTrueOutputStillDelegates" file="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="126" status="run" result="completed" time="0." timestamp="2026-11-12T15:53:02.792" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+        <property name="oracle" value="legacy_characterization_HasSimCard_return_is_ignored"/>
+      </properties>
+    </testcase>
+    <testcase name="StableSystemAppPassesExtendedSlotCapability" file="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="135" status="run" result="completed" time="0." timestamp="2026-11-12T15:53:02.796" classname="PrimaryEntry">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+      </properties>
+    </testcase>
+  </testsuite>
+  <testsuite name="CallerKinds/NativeOrShell" tests="2" failures="0" disabled="0" skipped="0" errors="0" time="0.009" timestamp="2026-11-12T15:53:02.802">
+    <testcase name="SystemAppAndExtendedCapabilityUseRealTokenRules/0" value_param="1" file="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="146" status="run" result="completed" time="0." timestamp="2026-11-12T15:53:02.804" classname="CallerKinds/NativeOrShell">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+      </properties>
+    </testcase>
+    <testcase name="SystemAppAndExtendedCapabilityUseRealTokenRules/1" value_param="2" file="../../telephony_core_service/services/multisim/test/systemtest/primary_slot/entry_test.cpp" line="146" status="run" result="completed" time="0." timestamp="2026-11-12T15:53:02.809" classname="CallerKinds/NativeOrShell">
+      <properties>
+        <property name="scope" value="real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam"/>
+        <property name="whole_core_service_chain" value="BLOCKED_not_executed"/>
+      </properties>
+    </testcase>
+  </testsuite>
+</testsuites>

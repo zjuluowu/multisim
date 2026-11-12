@@ -764,3 +764,68 @@ M1通过；M2在当前Host执行边界通过，M3原生集成仍BLOCKED。原Hos
 用户在§22验收后明确授权将本地成果推送远端main。本次按100项明确文件白名单发布§20～22尚未提交的隔离Stop套件、生产候选补丁与测试增量、CI工程及全部验证证据；不应用生产补丁，不纳入98份原有用户修改。发布前恢复核查已刷新origin，本地main与origin/main同为77e3dc4e，暂存区为空；94项适用摘要校验通过，当前CI工具/策略与最终构建归档一致，98份受保护修改逐字节匹配。
 
 沿用§22已执行的101条96 PASS/5既有FAIL、ASan/TSan各41 PASS及330次压力通过；发布预检另实跑13条CI策略测试通过。未重复声明新的全量运行或生产准入。各独立JSON中的未提交/未推送标记和旧工具摘要为当时验收快照，保持原字节；本小节记录后续发布授权。常规提交与origin/main推送后以Git实际SHA及远端包含关系核验，不将发布视为主工作区生产修复应用、OHOS集成或生产发布准入。
+
+### 23. SIM-028 跨仓契约审计与未经修复的Legacy业务基线（2026-11-12）
+
+实际HEAD为39d63590cfb6be5b813ecbed346252573442e0ac，main；按本轮明确要求不修改生产代码、不提交、不推送。98份已有用户修改逐字节保护。新增Legacy业务证据入口复用原host.py/GN/GTest及逐例进程，不修改原七条断言、不应用Stop/并发补丁；原始XML、泄漏诊断与非零退出码均保留。分类器12项正负控通过，额外断言、Mock失败、崩溃、跳过或sanitizer报告不能当作纯清理失败。
+
+五轮共35次逐例执行：原GTest每轮1 PASS/6 FAIL，合计5 PASS/30 FAIL，均exit1；独立业务34 PASS/0 FAIL/1 NOT_RUN。初次双轮的第二轮C0在real_test.cpp:45 IsSimActive(1)前置断言失败，尚未发起请求，不能归入纯生命周期失败或业务通过。保留原失败并以最终分类器重算，没有重试断言取绿；后续双轮和最终单轮均业务7/7、完整GTest仍1/7。初始化准备/旧缓存读时序风险尚未确证具体交错，不能声明稳定全绿或停止安全。另实跑旧Host60条55 PASS/5既有FAIL，含入口14/14；未改变五条缺陷分类。本轮未执行ASan/TSan、Target差分或原生集成。
+
+扫描五个明确工作区，记录31份可访问仓库副本及实际HEAD、remote、源码SHA/行、关系检索；不同副本不视为同一产品版本。证实JS radio/Client/Proxy是上游，SIM生产对象承担分支，公开HDI与RIL Adapter提供专用SetPrimarySlot和RadioProtocol两种不同命令，DataShare/telephony_data提供账户行，CellularData/搜网/SMS是已核实的状态消费者；CallManager未发现直接setter调用，不臆造同步关系。telephony_ext芯片实现、simollie和匹配manifest/固件仍缺失或参与关系未证实。Provider头与本地源码规范化相同，但其Update返回状态与DataShare通用头的行数文档存在语义差异，保留产品核验条件。
+
+已明确Host边界不具权威性之处：RIL弱订阅/单目标通知与真实多强订阅不同；C1夹具额外UPDATE应答不见于参考AT实现；参数仅内存成功路径；发布成功不等于消费者接收；StateRegistry固定返回不等于真实观察者通知；身份、SA、Watcher、FFRT、serial/HDI及物理Modem未真实运行。共享Golden记录七例和A阻塞场景的输入/应答/返回/最终状态/副作用/偏序/证据/可信度/变更策略，只是有条件的characterization，不将旧缺陷自动批准为规范。Target Adapter尚未实现，不以Fake或回调旧SIM冒充迁移。
+
+[使用、审计及裁决边界](../services/multisim/test/systemtest/primary_slot/legacy_contract/README.md)、[实际逐例验证](../services/multisim/test/systemtest/configs/sim028_legacy_contract_20261112/validation.json)保存本轮证据。原始探索XML/日志压缩归档，最终单轮与Host回归直接归档；生产字节保护、二进制/构建命令、Mock差异、准备失败、原生补证与差分规则可复核。当前结论为Host业务条件基线可复现，但重复性与析构后回调安全未达标；OHOS原生Golden、厂商A及产品兼容验收仍BLOCKED，不启动生产迁移。
+
+### 24. SIM-028 初始化假阴性因果复现与50轮基线复验（2026-11-12）
+
+HEAD仍为39d63590cfb6be5b813ecbed346252573442e0ac；未修改旧SIM/Core/RIL/公共实现，未应用隔离Stop补丁，未提交或推送。保护起始2002份实际输入，只有本批明确的测试、Host协调、Golden及状态文件发生修改，98份既有用户修改和历史证据保持原字节。
+
+P0根因已通过受控真实执行确认：账户事件到达后，MultiSimMonitor::RefreshData→MultiSimController::GetListFromDataBase在写锁内clear缓存；同一Controller被另一线程调用不取该锁的IsSimActive(1)，看到size=0返回false。Provider仍slot1/active1，真实StateManager/Handle的三槽初始化、RIL请求/原owner应答、状态转移、队列/线程/对象地址和公开查询均有时间戳。最终负控精确复现原real_test.cpp:45的断言；正控通过Host运行/到期任务屏障后active/present为真，但原业务与生命周期红灯不因此改成PASS。早期调试表达式失败及一次中断exit130独立保存，不作为业务通过证据。
+
+最小Host修复在账户事件后等待稳定schedulerRevision下全部运行/已到期工作，保留未来定时器并检查真实active/present；没有sleep、内部状态改写、业务断言删改或宽松Mock。新增两项屏障测试通过；StateRegistry使用当前真实client缺proxy错误，C1仅投递UPDATE NOTIFY，不添加无依据成功。普通Host入口清除诊断环境变量；负控绕过屏障必须标NOT_RUN。50轮压力执行版本与末次诊断标记纠正的源码/二进制及复核记录分别保留，不混称同一构建。
+
+50轮全七例350进程全部实际完成，6条在卡场景的300份account/event、ready-idle、active及present检查全PASS。业务254 PASS/96 FAIL，无NOT_RUN；完整GTest50 PASS/300 FAIL，所有轮次exit1。Strict RIL252 PASS/48 FAIL，50条无RIL场景不适用。native-arrival17轮及reverse17轮各119/119业务通过；present-first16轮业务16 PASS/96 FAIL。失败为48条初始化自动SetPrimarySlot未被原StrictMock覆盖、32条既存主卡广播去重与原预期冲突、16条数据卡参数在正式输入前已为1。没有筛掉失败顺序、伪造应答或将额外失败加入旧五条缺陷容许集。
+
+因此只通过激活就绪的本次样本门禁，不通过完整业务基线冻结：账户加载不等于全部业务前态一致，Host就绪屏障不覆盖所有生产detached线程/未来事件。唯一在卡先加载可触发真实自动选卡，原七例没有规定初始primary/data/通知历史和自动发令；原断言保持不变，Golden仅增加证据等级和待裁决项。需区分“单卡已自动成为主卡后重选”和“从另一有效主卡切换”，不能为全绿随意改卡模型、重置生产私有字段或放宽StrictMock。旧getter并发缺陷和生命周期问题都未修复。
+
+本轮原Host60条仍55 PASS/5既有FAIL，含入口14/14；加两条屏障测试为62条57 PASS/5 FAIL，分类器13项通过。新增负控确保绕过屏障的NOT_RUN不能成为业务PASS，全部350份原始XML在新分类器下复算结果不变。未执行新的ASan/TSan或OHOS设备集成。本地manifest@7be88f1的清单只跟踪master，superproject关键SIM源码与当前fork不符；匹配产品manifest、build fingerprint及厂商RIL仍UNKNOWN。弱引用单目标RIL、内存Provider/参数、发布成功与真实消费者交付、原生FFRT等继续分级，未把其他版本的同名接口拼成产品契约。
+
+[初始化复验说明](../services/multisim/test/systemtest/primary_slot/legacy_contract/README.md)及[逐例/分层证据](../services/multisim/test/systemtest/configs/sim028_initialization_stability_20261112/validation.json)保存最小测试补丁、50轮全部日志/XML压缩归档、350条前态观测、负控/正控/调试失败、版本核对及最终标记复核。下一最小项是初始primary/data/自动请求契约裁决及匹配产品原生轨迹补证，不擅自修复旧生产代码或开始multisim迁移。
+
+
+### 25. SIM-028 双卡前态显式化与未修复旧实现业务基线稳定（2026-11-12）
+
+HEAD仍为39d63590cfb6be5b813ecbed346252573442e0ac。用户明确选择“双卡激活、真实公开接口准备slot0为旧主卡/数据卡，保留单卡反例”；未修改旧SIM/Core/RIL/公共实现，未应用Stop/并发补丁，未提交推送或启动multisim迁移。原98份修改及起始2002份实际输入按字节保护，只修改本批明确的测试/Host协调/Golden/状态，原业务断言不变。
+
+修正准备模型：等待两张卡各自真实ACCOUNT_LOADED，排空运行/到期队列及真实分离调用，公开查询协议映射，经真实SimManager::SetPrimarySlotId(0,false)建立Primary0/Data0，再检查两卡active且无切换在途。初始化设备应答是明确的外部成功fixture，仅限物理槽0/1，进入业务前用Times(0)关闭初始化规则；各原用例保留自己的精确StrictMock。Future timer不取消，不写私有状态，不增加固定sleep作为就绪条件。该前态与旧单卡重选用不同场景ID，未自动裁决单卡通知冲突为生产规范。
+
+首先双卡350次为307业务PASS/1 FAIL/42 NOT_RUN：队列空闲仍有真实detach调用未返回，自动选卡可晚于正式C1写回slot0。补充Host/Linux真实pthread创建/分离记账与真实Manager完成通知屏障后，协调初版50轮350业务PASS；随后修正诊断记账的native handle复用/属性分离细节，最终版本重新50轮350/350业务PASS，无前置失败或NOT_RUN。两次样本分开归档，不混合二进制。最终300份在卡事件、ready/active/present、Primary0/Data0及Strict RIL均PASS，另50条无RIL例不适用RIL；350个不同进程，三种应答顺序分别17/17/16轮。只证明本次样本稳定，未修复旧getter同步缺陷，也不证明未来定时器、原生运行时或析构后回调安全。
+
+完整GTest仍每轮1 PASS/6生命周期FAIL，最终共50 PASS/300 FAIL，每轮exit1，Legacy入口也exit1；原始清理断言、28 worker/RIL10及泄漏诊断保留。普通Host原60仍55/5，新增4例后64条59 PASS/5相同既有FAIL，入口14/14；最终新增元数据已登记，各非缺陷组门禁PASS，首次元数据不全的拒收回归保留。分类器13/13，分离线程专项9/9及属性分离100次检查通过。本轮ASan/TSan、Target差分、原生SA/IPC/HDI和生产发布均NOT_RUN/BLOCKED。
+
+按用户答复扫描六个根9294目录及两处父目录1087目录，未发现可用.repo工作区；四处repo manifest -r实际尝试因CLI缺失BLOCKED，未安装工具。manifest@7be88f147200cdf60a6f542dc758ac5f1d54e036仅跟踪master，superproject关键SIM源码不同，无目标产品构建关联证据，产品版本UNKNOWN。外仓接口分源记录，不拼接为统一产品版本。RIL弱引用单目标/即时订阅差异、参数/Provider内存成功路径、消费者交付及原生FFRT仍CONDITIONAL/UNKNOWN。
+
+[最终双卡基线及全部中间失败](../services/multisim/test/systemtest/configs/sim028_dual_prestate_20261112/validation.json)、[使用与契约分级](../services/multisim/test/systemtest/primary_slot/legacy_contract/README.md)保存最小测试增量补丁、精确命令/工具/生产及二进制SHA、350份XML/日志、已知缺陷签名、注册元数据修正和输入保护。Golden仅冻结明确双卡前态下的条件性Host业务结果；原单卡反例、旧缓存/生命周期缺陷保留。下一项是锁定产品Manifest后的版本对齐、真实RIL多订阅/持久化/通知消费者轨迹补证，未经授权不进行旧代码修复或新业务迁移。
+
+### 26. SIM-028 Legacy冻结及新旧共用业务契约接缝（2026-11-12）
+
+HEAD/main仍为39d63590cfb6be5b813ecbed346252573442e0ac；恢复检查首次fetch失败、沙箱外重试CHECKPOINT_VERIFIED，未提交、推送或合并。冻结Golden、原七例/Fixture/Runtime、GN/执行脚本的SHA和实际字节快照，固定上批50轮证据42份摘要；190份生产源码与该样本一致，旧生产实现、Golden期望及历史记录不变。冻结是明确双卡前态的条件性Host契约，不等于原生产品规范。
+
+在现有sim_guard和systemtest内新增平台无关Primary端口/观测、结构化七场景、共用Oracle、透明Legacy Core装饰器及复用原脚本的Runner。公共前态只规定卡/账户/公开角色、设备观察与应答，三逻辑对象、具体owner类型和初始化屏障留在Legacy driver。原EXPECT/ASSERT和StrictMock匹配参数逐项核对不变；无RIL断言仅包装同一次实际返回以采集结果，没有新增setter调用。额外公开查询/参数/通知/RIL轨迹在原断言完成后形成独立观测，不从Golden或Fake生成业务结果。
+
+最终锁定输入的实际GN/Ninja及真实七例：原业务7/7、共用Oracle7/7，六例Strict RIL PASS；原完整GTest1 PASS/6生命周期FAIL，原始入口及共用入口均exit1。B真实45秒超时仍执行。两个先前观测版本各七例通过并单独归档，不混同最终Oracle来源。Host64为59 PASS/5既有FAIL，入口14/14，缺陷名及原断言特征匹配；Oracle技术测试15/15，真实轨迹副本的7个拒绝与2个归一化检查9/9，原分类器13/13。首次getter签名编译错误已修正并保留原构建日志；本轮未运行ASan/TSan。
+
+Target实际StartPrimarySwitch、SwitchPrimaryRadio仍仅声明/流程注释，没有完整生产闭包或已注册Adapter；端口随Legacy真实GN编译，但没有Target业务二进制/执行PASS。Target入口实际BLOCKED/exit2，both的差分NOT_RUN。未来同场景及同外部计划各自执行后，使用同一Oracle比较错误、公开状态、契约参数写序、发布偏序及RIL资源；忽略绝对session、线程/地址及同阶段槽发令顺序。Legacy FAIL/Target PASS必须裁决；缺目标/前态不一致不能比较成功。未采集的Provider列、失败COMPLETE.status等字段、仓外消费者及原生权限/SA/IPC/HDI仍属缺口，A厂商与匹配产品版本继续BLOCKED/UNKNOWN，不启动生产迁移。
+
+输入保护发现一项生成文件例外：原执行脚本用例发现覆盖了上批遗留根default.profraw；原字节未预备份，无法从SHA恢复。已记录前后SHA及实际影响，修改脚本将发现profile写入指定运行目录；最终复验根profile保持不变。该文件不属于冻结业务证据，所有生产/Golden/历史记录及其他既有修改保护独立核对，不将此例外隐藏为全部输入未变。
+
+[冻结及本轮实际证据](../services/multisim/test/systemtest/configs/sim028_shared_primary_20261112/README.md)、[共用资产/七例矩阵/边界与判定规则](../services/multisim/test/sim_guard/README.md)记录完整交付。下一步仍需真实Target写业务、独立装配与外部事件绑定获授权后才能做真实新旧差分；原生设备版本和消费者轨迹未具备，不由Host兼容性代替产品准入。
+
+### 27. 本地成果发布准备（2026-11-12）
+
+用户本轮明确授权将当前本地修改提交并常规推送origin/main，包含docs/SIM 重构代码目录结构设计方案.md；此前“不提交、不推送”限制被本轮发布授权替代。发布前HEAD与远端main均为39d63590cfb6be5b813ecbed346252573442e0ac，无分歧，暂存区原为空。纳入现有测试/文档/证据以及98份仅行尾变化的已有文件；生产文件未发现超出行尾的新增语义变更。docs与services/multisim下同名新方案内容相同，均按原文保存；本次发布不实施目录迁移或改写业务。
+
+发布前重跑Oracle技术测试15/15、Legacy分类器13/13；检查新增JSON/XML/压缩归档格式及实质修改的diff。最新双卡证据42项、共用契约证据39项校验全部匹配。旧初始化证据58项中classifier-tests.log与历史sha256.json不符：索引f14fa4d68125be780e9740d44119802d97d828ad67e5d698da64639170ef5df2，当前799a1eccbe8913a4214c637ac83fc778cd5caadb315f5f664c645ee44d2a6bc9（13 tests / OK，时间0.023s）。保留两份原文并明确记录差异，不改写历史索引或宣称该旧包完全匹配。原业务/生命周期/已知缺陷及Target阻塞结论沿用对应实际记录，本次发布没有重新执行完整业务回归。
+
+根default.profraw仍为本地生成文件，不纳入提交，既有生成文件问题仍按§26保留。发布使用审核后的明确逐文件清单，不进行reset/clean/stash、强推、合并或变基；远端SHA及包含关系在推送后单独核验，避免本文件自引用提交SHA。
