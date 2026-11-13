@@ -41,9 +41,9 @@ CardRuntime仍同时持SessionRegistry、LoadSession与Device ResourceBarrier、
 从Git根验证：
 
 ```sh
-python3 -B telephony_core_service/services/multisim/test/multisim_architecture_rules/run.py --with-gn --migration --output /tmp/multisim-directory-check
-python3 -B telephony_core_service/services/multisim/test/check_relocation.py
-python3 -B telephony_core_service/services/multisim/test/systemtest/scripts/test_g2a_source_tables.py
+python3 -B telephony_core_service/services/multisim/test/scripts/run_architecture.py --with-gn --migration --output /tmp/multisim-directory-check
+python3 -B telephony_core_service/services/multisim/test/scripts/check_relocation.py
+python3 -B telephony_core_service/services/multisim/test/cases/architecture/test_g2a_source_tables.py
 ```
 
 覆盖迁移摘要/类型与实现token、精确include/GN依赖、循环/反向依赖拒绝、四组纯规则、编译负控和GN/Ninja对象。Host业务与已知缺陷分开统计，入口见[test/README](test/README.md)。不能将结构检查或Host PASS等同产品链接、原生SA/IPC/HDI或设备功能验收。模块根同名带空格设计文档为已提交原文副本，权威依据使用docs下无空格版本。

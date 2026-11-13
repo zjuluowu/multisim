@@ -123,9 +123,9 @@ Profile专属 `card/esim/legacy_profile_result.h` 仅投影双结果，保持原
 
 ## 目录调整结果与实际统计
 
-五组一级源码目录已落地，旧card_selection/integration/support目录已移空并移除；common/startup/顶层compatibility在输入中不存在，也未新增。完整业务树见[详细设计§3.1](SIM_Multisim_Source_Architecture_Detailed_Design.md#source-tree)，包含全部测试、工具与证据的完整实际交付树见[complete-tree.txt](../services/multisim/test/multisim_architecture_rules/evidence/directory_20261112/complete-tree.txt)。该树由Git已跟踪与非忽略新文件的实际存在路径生成，排除本次清理的生成bytecode。
+五组一级源码目录已落地，旧card_selection/integration/support目录已移空并移除；common/startup/顶层compatibility在输入中不存在，也未新增。完整业务树见[详细设计§3.1](SIM_Multisim_Source_Architecture_Detailed_Design.md#source-tree)，包含全部测试、工具与证据的完整实际交付树见[complete-tree.txt](../services/multisim/test/docs/archive/multisim_architecture_rules/evidence/directory_20261112/complete-tree.txt)。该树由Git已跟踪与非忽略新文件的实际存在路径生成，排除本次清理的生成bytecode。
 
-输入模块树共1023项：上述91项业务/构建/导航文件及932项test/tools文件。辅助文件逐项原路径、当前路径、Owner、Git blob及演进结论见[directory_auxiliary_inventory.json](../services/multisim/test/multisim_architecture_rules/directory_auxiliary_inventory.json)；所有932项保留原路径，919项字节相同，13项只涉及路径、护栏、导航或精确溯源元数据。无业务Golden/Scenario/Contract/Oracle/Fake断言改写。
+输入模块树共1023项：上述91项业务/构建/导航文件及932项test/tools文件。辅助文件逐项原路径、当前路径、Owner、Git blob及演进结论见[directory_auxiliary_inventory.json](../services/multisim/test/cases/architecture/directory_auxiliary_inventory.json)；所有932项保留原路径，919项字节相同，13项只涉及路径、护栏、导航或精确溯源元数据。无业务Golden/Scenario/Contract/Oracle/Fake断言改写。
 
 | 统计口径 | 实测数量 |
 |---|---:|
@@ -178,7 +178,7 @@ Profile专属 `card/esim/legacy_profile_result.h` 仅投影双结果，保持原
 
 25个source_set全部保留原名、testonly、visibility、check_includes及public_configs；16个仅修改source/public路径，9个源路径不变。新增target 0、删除target 0、合并target 0。deps/public_deps全部不变，原业务契约/Domain/用例/Adapter继续分别隔离。`sim_values`横跨身份、Request纯值与只读Catalog，`runtime_mechanisms`横跨Card/Device，未因目录收敛合并。
 
-完整前后sources/public/deps等见[输入及映射](../services/multisim/test/multisim_architecture_rules/directory_migration_20261112.json)与[GN对照](../services/multisim/test/multisim_architecture_rules/directory-gn-comparison.json)。精确映射后的BUILD字节比较通过；GN/include两个DAG无新增循环和反向边，15项正负控覆盖旧目录、私有include、环、逆向target、宏include、缺源、C++成员变动和visibility变动。原始实际GN desc（含source/public/include_dirs/deps/public_deps等）随证据归档；首次未传显式root的desc失败亦保留。
+完整前后sources/public/deps等见[输入及映射](../services/multisim/test/cases/architecture/directory_migration_20261112.json)与[GN对照](../services/multisim/test/cases/architecture/directory-gn-comparison.json)。精确映射后的BUILD字节比较通过；GN/include两个DAG无新增循环和反向边，15项正负控覆盖旧目录、私有include、环、逆向target、宏include、缺源、C++成员变动和visibility变动。原始实际GN desc（含source/public/include_dirs/deps/public_deps等）随证据归档；首次未传显式root的desc失败亦保留。
 
 | 逻辑target | 调整前物理区域 | 调整后物理区域 | 依赖变化 |
 |---|---|---|---|
@@ -248,7 +248,7 @@ READY负控复用原run_sim_guard.py的唯一锚点、LIFE_001及原17项恢复�
 
 首次after运行期间检查器模块演进造成ImportError已保留；固定脚本后完整重验成功。辅助突变包装首次使用原始CRLF字节定位锚点被断言拒绝，改为原runner使用的read_text换行规范化后才执行；不改变原负控或生产源码。首次系统GTest不匹配、两次构建watchdog、原始业务FAIL均完整保存。
 
-[验证摘要](../services/multisim/test/multisim_architecture_rules/evidence/directory_20261112/validation.json)、[原始日志/XML及复现脚本归档](../services/multisim/test/multisim_architecture_rules/evidence/directory_20261112/raw-evidence.tar.gz)、[证据摘要索引](../services/multisim/test/multisim_architecture_rules/evidence/directory_20261112/sha256.json)是本批独立证据。历史17×5等结果不改写成本轮通过数，Host五条缺陷不因目录移动改预期。
+[验证摘要](../services/multisim/test/docs/archive/multisim_architecture_rules/evidence/directory_20261112/validation.json)、[原始日志/XML及复现脚本归档](../services/multisim/test/docs/archive/multisim_architecture_rules/evidence/directory_20261112/raw-evidence.tar.gz)、[证据摘要索引](../services/multisim/test/docs/archive/multisim_architecture_rules/evidence/directory_20261112/sha256.json)是本批独立证据。历史17×5等结果不改写成本轮通过数，Host五条缺陷不因目录移动改预期。
 
 ## 文档同步与旧路径分类
 

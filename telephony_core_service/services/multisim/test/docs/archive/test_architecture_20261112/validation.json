@@ -1,0 +1,116 @@
+{
+  "status": "TEST_ENGINEERING_REFACTOR_VERIFIED_WITH_RECORDED_FAILURES_AND_BLOCKERS",
+  "input_head": "abd07fd85e87eba0f0883599538548bbcc09d8f2",
+  "branch": "main",
+  "original_files": 943,
+  "relocated_files": 939,
+  "byte_identical_files": 889,
+  "engineering_changed_files": 54,
+  "immutable_business_and_evidence_assets": 838,
+  "test_results": {
+    "host": {
+      "before": {
+        "PASS": 59,
+        "FAIL": 5,
+        "tests": 64
+      },
+      "after": {
+        "PASS": 59,
+        "FAIL": 5,
+        "tests": 64
+      },
+      "raw_exit": 1,
+      "executed_via_unified_entry": true
+    },
+    "g2a": {
+      "before": {
+        "PASS": 7,
+        "FAIL": 0
+      },
+      "after": {
+        "PASS": 7,
+        "FAIL": 0
+      }
+    },
+    "compatibility": {
+      "PASS": 17,
+      "FAIL": 5,
+      "raw_exit": 1
+    },
+    "ready_mutation": {
+      "status": "DETECTED",
+      "restored_pass": 17
+    },
+    "pin": {
+      "PASS": 4,
+      "FAIL": 0,
+      "mutation": "DETECTED",
+      "restored_pass": 4
+    },
+    "architecture": {
+      "independent_units": 88,
+      "logical_targets": 25,
+      "pure_rule_suites": 4,
+      "structure_negative_tests": 15,
+      "compiler_negative_controls": 5,
+      "GN": "PASS"
+    },
+    "technical": {
+      "source_tables": 14,
+      "oracle": 15,
+      "legacy_classifier": 13,
+      "ci_policy": 13
+    },
+    "original_relocation": "PASS / 219",
+    "target": "BLOCKED / exit2",
+    "real_primary": "BLOCKED / dependencies not configured",
+    "product_native": "NOT_RUN/BLOCKED",
+    "frozen_ci_candidate_admission": "FAIL; pinned historical test layout and base digests incompatible"
+  },
+  "historical_index": {
+    "total": 181,
+    "matching": 180,
+    "preexisting_mismatch": 1,
+    "before_after": "identical"
+  },
+  "public_observations": {
+    "identical": 25,
+    "total": 26,
+    "recorded_difference": "independent-slot initial status request arrival order; no cross-slot ordering assertion changed"
+  },
+  "git": {
+    "committed": false,
+    "pushed": false,
+    "index_changed": false,
+    "default_profraw_sha256": "bbb8d8d54bc9586adf968048bcdf7f08cf72cd1321d4766bafe30b8814ef5f1e",
+    "default_profraw_protected": true
+  },
+  "mapping_sha256": "03b241b5f6c277bfe8ce98e9a040a1ceec753c0000a5458be1f7ad73baf0f039",
+  "raw_archive": {
+    "path": "raw-evidence.tar.gz",
+    "sha256": "f474576dd9a3a06758312c2543193009464e7fa765bd8fa520b5c2515bc8a82d",
+    "index": "raw-evidence-index.json",
+    "members": 831,
+    "index_sha256": "7b10ec37edfa227bea76342c902190d90a8a5ccbd16450e0bbe7a0fa82341e06"
+  },
+  "portable_replay": {
+    "status": "PASS",
+    "verified_members": 831,
+    "relocated_archive_comparison": "PASS",
+    "original_runtime_directories_required": false,
+    "stdout": "comparison: PASS (case identities, statuses, assertion failures, raw exits and restored mutation results)"
+  },
+  "navigation": {
+    "introduced_missing": 0,
+    "preexisting_historical_source_links": 9
+  },
+  "validation_tools_sha256": {
+    "scripts/test.py": "8f37497f200c9e9777beeb15cc690ac6559371fbfc1114413d496769c7d4b5d7",
+    "scripts/_paths.py": "c0703445048e71a3f9fe538fcb46edf8c7d43840a9f9dfffaa5e90147731a0a6",
+    "scripts/check_test_integrity.py": "048575ec5e9dc927d69d41e7c96412da15d4d955d5fd5d69f93737558491b452",
+    "scripts/check_relocation.py": "3d0fc8730f71cfbb5a77042d486e6b0b9b7dbddf20fea7a64e348db6575d1761",
+    "scripts/compare_layout_results.py": "b7afcf2891bfdf25bf52583ca9adc05e1e594d39e60c08975ca08ee9d4dc27df",
+    "docs/archive/test_architecture_20261112/verify_gn_policy.py": "761a71a55e87bd7f82d7c1f6632b5bc26114e5ff228fb5fcdb79cc198d1a87a9",
+    "docs/archive/test_architecture_20261112/verify_ci_locations.py": "729bee448c53e4ac0f721a1b76a567244b2149d8c82494782f87ad8f0f1dee30"
+  }
+}

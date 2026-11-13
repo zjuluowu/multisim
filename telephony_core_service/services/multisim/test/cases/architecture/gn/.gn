@@ -1,0 +1,2 @@
+buildconfig = "//services/multisim/test/cases/architecture/gn/BUILDCONFIG.gn"
+root = "//services/multisim/test/cases/architecture:all"

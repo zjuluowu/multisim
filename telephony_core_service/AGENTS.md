@@ -18,7 +18,7 @@
 | [接口契约](docs/SIM管理对外接口说明_源码核实版.md)、[外仓边界](docs/knowledge/routing/repo-boundary.md) | 外部API、权限、错误、消费者与外仓责任 |
 | [源码README](services/multisim/README.md) | 日常任务→路径→Owner→测试导航；不重复完整架构 |
 | [独立目录ADR](docs/SIM_Multisim_Source_Directory_Architecture_Decision_Independent_2026-10-31.md)、[原ADR](docs/SIM_Multisim_Source_Directory_Architecture_Decision_2026-10-31.md)、[历史实施评审](docs/SIM_Target_Architecture_Independent_Review_2026-10-29.md) | 取舍、反证和历史证据；两份ADR仍Proposed，用户已选修订B+仅作为结构实施基线 |
-| [构建规则](docs/knowledge/verify/build-test.md)、[主机测试入口](services/multisim/test/systemtest/README.md)、[骨架验证](services/multisim/test/multisim_architecture_rules/README.md) | 环境、参数、运行范围和验证限制 |
+| [构建规则](docs/knowledge/verify/build-test.md)、[主机测试入口](services/multisim/test/docs/Host_Overview.md)、[骨架验证](services/multisim/test/cases/architecture/README.md) | 环境、参数、运行范围和验证限制 |
 
 用户当前明确授权决定本批范围；已发布/批准契约约束行为，固定源码/构建证明现状，主设计维护目标语义，详细设计维护物理组织。历史文档中O作为业务Owner、旧目录和旧方法草图不得覆盖主设计当前裁决。冲突以具体证据定位并同步责任文档，不按日期或文件名决定权威，不把旧缺陷默认为永久契约。
 
@@ -72,8 +72,8 @@ CardRuntime/result_sinks暂在card/runtime；其中设备资源成员尚未拆�
 G0/G1为基线/护栏，G2a为原SO依赖收口，G2b为产物工程边界，G2c为生命周期，G3a～d按完整WU接管，G4为独立新能力。按主设计§22的依赖关系执行，不把全部阶段强制串行；状态/阻塞/下一批仍只查执行状态。
 
 - 文档：核对源码事实、当前/计划分离、链接/锚点/围栏及 `git diff --check`；不因此声称业务测试通过。
-- 纯规则：`python3 -B telephony_core_service/services/multisim/test/multisim_architecture_rules/run.py`。
-- 目录/契约/骨架：同步BUILD、include、测试及既有 `source_migration.json`，保留历史追溯；运行 `python3 -B telephony_core_service/services/multisim/test/multisim_architecture_rules/run.py --with-gn --migration --output /tmp/multisim-architecture-check`。输出目录可另选仓外路径。
+- 纯规则：`python3 -B telephony_core_service/services/multisim/test/scripts/run_architecture.py`。
+- 目录/契约/骨架：同步BUILD、include、测试及既有 `source_migration.json`，保留历史追溯；运行 `python3 -B telephony_core_service/services/multisim/test/scripts/run_architecture.py --with-gn --migration --output /tmp/multisim-architecture-check`。输出目录可另选仓外路径。
 - 生产接入：运行对应真实切片/Oracle及必要Feature、初始化/消费者差分；匹配OHOS树中构建 `hb build -T //base/telephony/core_service:tel_core_service`。G2a B+主机脚本及证据已合入main，准确命令与被测代码基线查执行状态；历史检查点仍按原路径恢复。
 - 产品、SO/SA、provider和设备结束资格按各自门禁验证；骨架检查只覆盖文本/target、有限纯规则、语法和对象，不证明生产链接、行为、字段写权或硬件静止。
 

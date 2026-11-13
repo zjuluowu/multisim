@@ -1,0 +1,38 @@
+{
+  "base_head": "abd07fd85e87eba0f0883599538548bbcc09d8f2",
+  "authorization": "User explicitly requested committing and pushing current local changes to origin/main on 2026-11-13; overrides the prior no-commit/no-push instruction",
+  "historical_validation": "test_architecture_20261112 records remain immutable snapshots",
+  "excluded": [
+    "default.profraw"
+  ],
+  "architecture_preflight": {
+    "command": [
+      "python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/cases/architecture/check_structure.py",
+      "--migration"
+    ],
+    "exit_code": 1,
+    "structure": {
+      "status": "PASS",
+      "units": 88,
+      "includes": 157,
+      "targets": 25
+    },
+    "migration": "FAIL: locally deleted source-directory design copy is still required by frozen migration guard"
+  },
+  "additional_local_deletion": {
+    "path": "telephony_core_service/services/multisim/SIM 重构代码目录结构设计方案.md",
+    "deleted_blob_sha256": "28864a01afe3ccff3a6b08eadbd3188fbe3414bb8d92477900402a30ee124562",
+    "authoritative_document": "telephony_core_service/docs/SIM重构代码目录结构设计方案.md",
+    "current_document_sha256": "28864a01afe3ccff3a6b08eadbd3188fbe3414bb8d92477900402a30ee124562"
+  },
+  "publication_method": "Explicit per-file allowlist copied into a writable isolated clone; original .git and worktrees unchanged; normal non-forced origin/main push only",
+  "clone_recovery": {
+    "status": "CHECKPOINT_VERIFIED",
+    "remote_refs_refreshed": true,
+    "current_runtime_test_executed": false,
+    "main_sha": "abd07fd85e87eba0f0883599538548bbcc09d8f2",
+    "g2a_sha": "cc787945792527eeb94bc20a5e955315d6269e83"
+  }
+}

@@ -1,0 +1,4 @@
+set_default_toolchain("//services/multisim/test/cases/architecture/gn:host")
+set_defaults("source_set") {
+  configs = [ "//services/multisim/test/cases/architecture/gn:compiler" ]
+}

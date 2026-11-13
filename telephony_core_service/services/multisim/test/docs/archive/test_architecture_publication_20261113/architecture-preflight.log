@@ -1,0 +1,3 @@
+structure: PASS {"files": 88, "includes": 157, "targets": 25} (textual includes/targets only)
+migration: PASS (73 original files, type definitions and implementation token order)
+structure: FAIL: [Errno 2] No such file or directory: '/mnt/e/github/multisim/telephony_core_service/services/multisim/SIM 重构代码目录结构设计方案.md'

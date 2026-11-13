@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "verified_members": 831,
+  "relocated_archive_comparison": "PASS",
+  "original_runtime_directories_required": false,
+  "stdout": "comparison: PASS (case identities, statuses, assertion failures, raw exits and restored mutation results)"
+}

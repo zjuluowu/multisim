@@ -620,7 +620,7 @@ Controller、Monitor、StateManager/Handle、EsimManager/File、Loader、Detect�
 | 事实 / 待保护节点 | Git相对源码定位 |
 | --- | --- |
 | product 51基础SIM源与3个eSIM条件源 | [根源表起点](../BUILD.gn#L67)、[Feature条件源](../BUILD.gn#L139) |
-| 检查器target/classification/public与环 | [allowed_edge](../services/multisim/test/multisim_architecture_rules/check_structure.py#L64)、[testonly](../services/multisim/test/multisim_architecture_rules/check_structure.py#L146)、[target检查](../services/multisim/test/multisim_architecture_rules/check_structure.py#L158) |
+| 检查器target/classification/public与环 | [allowed_edge](../services/multisim/test/cases/architecture/check_structure.py#L64)、[testonly](../services/multisim/test/cases/architecture/check_structure.py#L146)、[target检查](../services/multisim/test/cases/architecture/check_structure.py#L158) |
 | Detect先构造、Controller后创建、weak捕获 | [OnInit](../services/sim/src/sim_manager.cpp#L46)、[InitSingleSimObject](../services/sim/src/sim_manager.cpp#L133)、[构造](../services/sim/src/card_file_detect_manager.cpp#L26) |
 | Detect独立Insert/Update及刷新 | [InsertCardFileDetectData](../services/sim/src/card_file_detect_manager.cpp#L98)、[UpdateCardFileDetectData](../services/sim/src/card_file_detect_manager.cpp#L113)、[SaveCardFileDetectData](../services/sim/src/card_file_detect_manager.cpp#L127) |
 | ICCID匹配/建行与一次字段计划 | [InitIccId](../services/sim/src/multi_sim_controller.cpp#L421)、[SimDataBuilder](../services/sim/src/multi_sim_helper.cpp#L144) |

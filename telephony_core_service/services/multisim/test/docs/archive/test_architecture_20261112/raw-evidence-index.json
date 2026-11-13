@@ -1,0 +1,4160 @@
+{
+  "recorded_runtime_root": "/tmp/sim-test-architecture-20261112",
+  "members": [
+    {
+      "path": "after/adapter-observation-comparison.json",
+      "bytes": 1672,
+      "sha256": "0c37ab7792dde33a8db799e3063b58053d7caa580a5edd4e6ff7c19f73bc22ce"
+    },
+    {
+      "path": "after/architecture/all_headers.cpp",
+      "bytes": 3202,
+      "sha256": "1049a1a9a36607360b8becdd5f320423f352dacb4c4bf77c875068c5fa3d543f"
+    },
+    {
+      "path": "after/architecture/gn/args.gn",
+      "bytes": 34,
+      "sha256": "5c8d8bf4551a5b84858ae4c09b39dd83b29cc9bbee012a01fd8206b80ee54f9c"
+    },
+    {
+      "path": "after/architecture/gn/build.ninja",
+      "bytes": 6717,
+      "sha256": "6747ffa74cc9cff16f89b2260f7f78a9a9d5f78744edc77ec5175870270ad64b"
+    },
+    {
+      "path": "after/architecture/gn/obj/services/multisim/assembly_contracts.ninja",
+      "bytes": 530,
+      "sha256": "c9b3378785a895eddc4c533128d2381e8e5e2a548688fc67300d7b1ae794c95b"
+    },
+    {
+      "path": "after/architecture/gn/obj/services/multisim/assembly_core.ninja",
+      "bytes": 1598,
+      "sha256": "b661a613335a657b298fcdb04b21223fa8bd4a6b13dc1ac7c934a7ec9b572cc1"
+    },
+    {
+      "path": "after/architecture/gn/obj/services/multisim/assignment_adapters.ninja",
+      "bytes": 390,
+      "sha256": "6f4726eee429f463278086f1224f8c87a37c08805e52cf92c12671ff62d01434"
+    },
+    {
+      "path": "after/architecture/gn/obj/services/multisim/assignment_cases.ninja",
+      "bytes": 1033,
+      "sha256": "24da7e5154a17f5cfc262df5ff811a4f612aa55cda63ed486d6b3ef08d2698f2"
+    },
+    {
+      "path": "after/architecture/gn/obj/services/multisim/assignment_contracts.ninja",
+      "bytes": 343,
+      "sha256": "48a9164ab10568dbcae38c02fb3da85dd367492b6428a6473f075b02e0028fc0"
+    },
+    {
+      "path": "after/architecture/gn/obj/services/multisim/assignment_domain.ninja",
+      "bytes": 722,
+      "sha256": "72e7034782e67de4545e6808d60565c2c8626247eb3175a94efd79f5729ab384"
+    },
+    {
+      "path": "after/architecture/gn/obj/services/multisim/assignment_protocols.ninja",
+      "bytes": 847,
+      "sha256": "e38904e299629fbbefcb4df4eb9c0e782264f664c58b5475c63bc1d604234642"
+    },
+    {
+      "path": "after/architecture/gn/obj/services/multisim/assignment_types.ninja",
+      "bytes": 245,
+      "sha256": "4c94c656c7b27a0b52e4f23dca68e56bbf1673c93138c4137b5aad8528224987"
+    },
+    {
+      "path": "after/architecture/gn/obj/services/multisim/compatibility_contracts.ninja",
+      "bytes": 488,
+      "sha256": "2eca0c36a36b3f6b98c514351ff0cd4a05312080a055b8940e0b7727f9fb3b36"
+    },
+    {
+      "path": "after/architecture/gn/obj/services/multisim/compatibility_core.ninja",
+      "bytes": 1910,
+      "sha256": "417c79b0a255f61ff555de4701a62aa51c9e8de6adb4293bcafe5239a766d47b"
+    },
+    {
+      "path": "after/architecture/gn/obj/services/multisim/readonly_query.ninja",
+      "bytes": 594,
+      "sha256": "5dfd2065e3622067324cc8f51342461c22416b58a52e7bcf32750ccbfb664f92"
+    },
+    {
+      "path": "after/architecture/gn/obj/services/multisim/repository_exports.ninja",
+      "bytes": 577,
+      "sha256": "7cc296d990ac1724911aca9b6d91c86c22667e18e35918c4240b0e6d92d31d43"
+    },
+    {
+      "path": "after/architecture/gn/obj/services/multisim/request_mechanism.ninja",
+      "bytes": 292,
+      "sha256": "895c5fec2770399c5a8f7122a53e6d4e2b3321a3ff65d2f7255f8b324b607a97"
+    },
+    {
+      "path": "after/architecture/gn/obj/services/multisim/request_protocol.ninja",
+      "bytes": 245,
+      "sha256": "303db8fef6de3b3e241044892bac4ec630021417ff71d651aed903c8788e7cd2"
+    },
+    {
+      "path": "after/architecture/gn/obj/services/multisim/runtime_cases.ninja",
+      "bytes": 823,
+      "sha256": "71d9b78cd97bfe4ac6ba17543848e9a99a9a945a951b0c4ab8565e47fc512c9c"
+    },
+    {
+      "path": "after/architecture/gn/obj/services/multisim/runtime_contracts.ninja",
+      "bytes": 386,
+      "sha256": "f5fb06c26f6f07f02ed338c01ca22fdf15da0e7be45789525d437938b194768d"
+    },
+    {
+      "path": "after/architecture/gn/obj/services/multisim/runtime_core.ninja",
+      "bytes": 930,
+      "sha256": "a80abddeaed1afa1de766bcc573e4ec3dc3280d802743ad461152b2087232d64"
+    },
+    {
+      "path": "after/architecture/gn/obj/services/multisim/runtime_mechanisms.ninja",
+      "bytes": 1333,
+      "sha256": "34882c6543e1761c37fc739d12794fec53aae44e86f156921764603b5a6071ec"
+    },
+    {
+      "path": "after/architecture/gn/obj/services/multisim/sim_values.ninja",
+      "bytes": 591,
+      "sha256": "bf1d4002f5c98444ab2d197f3bbd7c1cfe5ce478e28c87d669ec9d89fbc722cd"
+    },
+    {
+      "path": "after/architecture/gn/obj/services/multisim/topology_adapters.ninja",
+      "bytes": 887,
+      "sha256": "204b23c5648d136d4f8bac31125a8a985bbd7db775034ae2f26b51253a515da5"
+    },
+    {
+      "path": "after/architecture/gn/obj/services/multisim/topology_cases.ninja",
+      "bytes": 2110,
+      "sha256": "5faf177c77e9c57997c7a6876a7223b5ee04db06e83475ab598dde01b8163e13"
+    },
+    {
+      "path": "after/architecture/gn/obj/services/multisim/topology_contracts.ninja",
+      "bytes": 431,
+      "sha256": "c02c208a7ea0778f85b1fe88f4f563f81cb2606af5de212ac3c3d0001e8bf441"
+    },
+    {
+      "path": "after/architecture/gn/obj/services/multisim/topology_domain.ninja",
+      "bytes": 981,
+      "sha256": "2783376b7db895128d2d19a80900b365403c2f09a329205e1f86c2eac6d698f4"
+    },
+    {
+      "path": "after/architecture/gn/obj/services/multisim/topology_protocols.ninja",
+      "bytes": 1737,
+      "sha256": "b852885abac351ff373cca38ddbfbff1d951334021f6c0adb3952b4c20e0e259"
+    },
+    {
+      "path": "after/architecture/gn/obj/services/multisim/topology_types.ninja",
+      "bytes": 199,
+      "sha256": "e5545c18e00e4da2b074038bbc558f1925e76c41f5fd03e7cb50666653bac204"
+    },
+    {
+      "path": "after/architecture/gn/toolchain.ninja",
+      "bytes": 2877,
+      "sha256": "925b268efd3f377f26b8ec6e7bc65795c475d011b4a7a2d999ab42091838b417"
+    },
+    {
+      "path": "after/architecture.log",
+      "bytes": 5893,
+      "sha256": "98578cc6fda345a9803abbcc3ac7284d45d64ad9c8e353e56a00c006a9cba9a6"
+    },
+    {
+      "path": "after/ci-candidate-preflight/ci-artifacts.zip",
+      "bytes": 9266,
+      "sha256": "5bd58b793dca0c51f467cdd114a9c43e144a83369c8f7fd8c4180811e8930840"
+    },
+    {
+      "path": "after/ci-candidate-preflight/result.json",
+      "bytes": 481,
+      "sha256": "60eff0d4d9b7d85aaf3932bcd1f4a077f0c5f79bcad18594c56b894ef0f037cc"
+    },
+    {
+      "path": "after/ci-candidate-preflight.log",
+      "bytes": 44,
+      "sha256": "65fe5e9ed0e1a702105de3954fafe6e5028fd1ac7e87598a9075edaa18220517"
+    },
+    {
+      "path": "after/ci-location-comparison.json",
+      "bytes": 274,
+      "sha256": "89355528e05763802d2d19a3d8380db508b52eda0fbaaa20e62c7ab58b74b7ac"
+    },
+    {
+      "path": "after/ci-policy-final.log",
+      "bytes": 1643,
+      "sha256": "dced11dfcaa19f068dc72711e79df797ab50444ce6c4a5188c0139643dfcaed1"
+    },
+    {
+      "path": "after/comparison.json",
+      "bytes": 1776,
+      "sha256": "dedf42fb1289269072c876373dc5882098464cfa00b41f9c244f3bf4b807d88e"
+    },
+    {
+      "path": "after/diff-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "after/exploration/BUILD-before-support-fix.gn",
+      "bytes": 17869,
+      "sha256": "8e18fd8e67d1d79f03f763b21d7ce807d235682f8f9b30e7913ef9fcd21107b3"
+    },
+    {
+      "path": "after/exploration/first-g2a-ninja-build.log",
+      "bytes": 2509,
+      "sha256": "1257d07efa77e8e6e222510d6820a99bd9404c1c60e7dea2c36f37703e99f930"
+    },
+    {
+      "path": "after/exploration/first-g2a.log",
+      "bytes": 170,
+      "sha256": "8609ec1d4b893492c04b7a1d9c1c6b93cfc98890adda4fba8a4d945e1008b226"
+    },
+    {
+      "path": "after/exploration/first-host-build.log",
+      "bytes": 4602,
+      "sha256": "79eafd03f3a5dcc3e3fd1bcd975d0d3c9ebd7308b82ff3143cc01cbac0d8f82c"
+    },
+    {
+      "path": "after/exploration/first-host.log",
+      "bytes": 5304,
+      "sha256": "ec1bdd0e36ff3eb7a29022c47cf77b028515aa384573f9351a45bd1adab2cf67"
+    },
+    {
+      "path": "after/exploration/gn-first-configure.log",
+      "bytes": 173,
+      "sha256": "68ee4c4a7883535ac9b216aa3ef35ae55abb7b16da6a4fde165822eccb839116"
+    },
+    {
+      "path": "after/exploration/mutation-before-support-fix-result.json",
+      "bytes": 48978,
+      "sha256": "699e266ab9b322f1a1e7f895e19ef3c15f9e9c1d04a2cd39c9af14de4cca08e9"
+    },
+    {
+      "path": "after/exploration/mutation-parallel-timeout-result.json",
+      "bytes": 28638,
+      "sha256": "306c79f0b0a9f6c45db72cd89e3f39862381ea9c7fb936f295a0c7e6d29faaab"
+    },
+    {
+      "path": "after/final-integrity.log",
+      "bytes": 66,
+      "sha256": "81bb8104db48df7ad8009c780d6b5f834a36bade573b2bf34ff8608c46f68b95"
+    },
+    {
+      "path": "after/final-mutation.log",
+      "bytes": 152,
+      "sha256": "c87dc727c55aef4624a38a9421a4ffb3e021bef028532e1c52540df6cb65c663"
+    },
+    {
+      "path": "after/final-relocation.log",
+      "bytes": 106,
+      "sha256": "354b6d2fee7b1323fd50c41339929099e30a40474c51848c901da7f6adb71b31"
+    },
+    {
+      "path": "after/final-serial-mutation.log",
+      "bytes": 156,
+      "sha256": "d0c9d4fc0d198c0088bdfe4131c97204de006bdc76e3bde93c56af444477a925"
+    },
+    {
+      "path": "after/final-unified-host.log",
+      "bytes": 177,
+      "sha256": "d704febe2c761589a90cbbddd7f989d18e81d3bd9493e1393e2cef8763068fc2"
+    },
+    {
+      "path": "after/g2a/args.gn",
+      "bytes": 219,
+      "sha256": "f7e77b6beb91fafb38b55507d68615fade05f3f5c9df651fa6ec3ff732c20858"
+    },
+    {
+      "path": "after/g2a/build.ninja",
+      "bytes": 4437,
+      "sha256": "fc35ce0bb307d7510013ff28ca25efda8f5fdbeb3063d219bf873d00cf9e0b89"
+    },
+    {
+      "path": "after/g2a/coverage-export.log",
+      "bytes": 1212662,
+      "sha256": "adfc6c9bd57e48537051be3d582f95044518f66acbb0a2838a462efb52e16ccb"
+    },
+    {
+      "path": "after/g2a/coverage-merge.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "after/g2a/g2a-dual.profraw",
+      "bytes": 213752,
+      "sha256": "b7b7e03968c8f417830a83064ae9e6ea2d278a8df2fa492586324152371c864a"
+    },
+    {
+      "path": "after/g2a/g2a-dual.xml",
+      "bytes": 1605,
+      "sha256": "9093117905097a886be4e5d8412d3c94a3d15d766542acb683f8bc793408f039"
+    },
+    {
+      "path": "after/g2a/g2a-malformed_atoi.profraw",
+      "bytes": 213752,
+      "sha256": "0c5a823149fecbc663c155410a9946b0905cd60fd363cb9ceea8e3d0a5ac4a93"
+    },
+    {
+      "path": "after/g2a/g2a-malformed_atoi.xml",
+      "bytes": 1611,
+      "sha256": "9061a6ec1cb22cd454c5faab33d56b88000a60514924575fb83d22995ec74ce7"
+    },
+    {
+      "path": "after/g2a/g2a-negative_atoi.profraw",
+      "bytes": 213752,
+      "sha256": "62739fcea39b752d33e9d7563f6fc6c8cfec88b9b74f0323dd10447689e8d1ca"
+    },
+    {
+      "path": "after/g2a/g2a-negative_atoi.xml",
+      "bytes": 1608,
+      "sha256": "20ddf8ccde9a7c7033dcea1222acfe406d2bc21ada994c6633569b171e77c93b"
+    },
+    {
+      "path": "after/g2a/g2a-query-result.json",
+      "bytes": 21536,
+      "sha256": "8475ee72944520ddca320f809100b861863b48a3f2ba0de23ad6bcb61f31e748"
+    },
+    {
+      "path": "after/g2a/g2a-query.profdata",
+      "bytes": 41872,
+      "sha256": "ae3dab0fbf4629c45f608bbc0a71182404b062135305dcb9b51967772165892b"
+    },
+    {
+      "path": "after/g2a/g2a-single.profraw",
+      "bytes": 213752,
+      "sha256": "1400380716b8f28ce0b6539a47abd8491a92c95f4bfe556e8b8b68118911a122"
+    },
+    {
+      "path": "after/g2a/g2a-single.xml",
+      "bytes": 1605,
+      "sha256": "f9adefa3a552c1df40de42dc187ce893a590b01b155a381ab1c223a2f0062f95"
+    },
+    {
+      "path": "after/g2a/g2a-vendor_override.profraw",
+      "bytes": 213752,
+      "sha256": "69a41bd8bfc9cf55f21ab8c0ed181b477384819cccb82eff016e8769cb78d3f4"
+    },
+    {
+      "path": "after/g2a/g2a-vendor_override.xml",
+      "bytes": 1612,
+      "sha256": "0e4e4afa43af07172e2164915fb25a6218a75c381d5beec769240f71d3a2a3bc"
+    },
+    {
+      "path": "after/g2a/g2a-vendor_result_propagation.profraw",
+      "bytes": 213752,
+      "sha256": "818eef110f93bf4e7f33781dce5c6a261ad550c4b6bdf1c9627257664327a1da"
+    },
+    {
+      "path": "after/g2a/g2a-vendor_result_propagation.xml",
+      "bytes": 1614,
+      "sha256": "63457f2c8243b89a345ff0ad909596ed6a10ad4d1b1920022dd41afc0de62f5c"
+    },
+    {
+      "path": "after/g2a/g2a-zero.profraw",
+      "bytes": 213752,
+      "sha256": "e7ed3fb4076fe0184782622d74e47f95f54ac3fade2e0d246a84c4228dca5e26"
+    },
+    {
+      "path": "after/g2a/g2a-zero.xml",
+      "bytes": 1605,
+      "sha256": "ff634297bb00efe718f1360f771f516f896f29fa10268a27a8a09d0eb3ced867"
+    },
+    {
+      "path": "after/g2a/gn-gen.log",
+      "bytes": 44,
+      "sha256": "d6d6e37bdeab84fa535a9e8dd2dbbbc5382418b78567279103278ced972e25cd"
+    },
+    {
+      "path": "after/g2a/ninja-build.log",
+      "bytes": 866,
+      "sha256": "a6c43bd717e573408b33fcbef9c2d8e6d8f0f1db4670adbebaa84c51c22bd146"
+    },
+    {
+      "path": "after/g2a/obj/bootstrap_launcher.ninja",
+      "bytes": 1836,
+      "sha256": "7a2a63413410dbea0276498e19316040d82ece7df0a33b2b2723ff3a21791eca"
+    },
+    {
+      "path": "after/g2a/obj/component_launcher.ninja",
+      "bytes": 1831,
+      "sha256": "463f1316ecfc8a26dbc95deaccbdbf1024e599fbdf73e8efc060dd23273ca889"
+    },
+    {
+      "path": "after/g2a/obj/event_transport_production_host.ninja",
+      "bytes": 2289,
+      "sha256": "bd2ad125998bb060b6097ca92fb5b480ca1ce396233637e9b7efa1c858bbcc5c"
+    },
+    {
+      "path": "after/g2a/obj/external_service_boundaries.ninja",
+      "bytes": 1097,
+      "sha256": "154dc426d0b9861e97db111342f595f361763443f1ecafb177e28d2b826a651a"
+    },
+    {
+      "path": "after/g2a/obj/g2a_query_launcher.ninja",
+      "bytes": 2266,
+      "sha256": "6b2e4993ffc7dbb080c5e3f6c85f76b8a70d045a404b74e6c3a75b838013d7bf"
+    },
+    {
+      "path": "after/g2a/obj/g2a_readonly_production_host.ninja",
+      "bytes": 2959,
+      "sha256": "94aacd067d1728278f64e641ca92a98ac85c4659d691b7040aa9d015daa1023e"
+    },
+    {
+      "path": "after/g2a/obj/googlemock.ninja",
+      "bytes": 1195,
+      "sha256": "8e72a7995a61ce208aa496ab2c5a8898d787b5a0c29f06a2c1554ca91002a650"
+    },
+    {
+      "path": "after/g2a/obj/googletest.ninja",
+      "bytes": 1055,
+      "sha256": "13567c8658941b2e4e8eda712375a68c64d2f1eb5264e817e8ba2e4adcd45376"
+    },
+    {
+      "path": "after/g2a/obj/platform_adapter_test.ninja",
+      "bytes": 5123,
+      "sha256": "eb3038417b4a966123ebc071163f8c9f3b54ae62486b3d6fbf02426c6135460d"
+    },
+    {
+      "path": "after/g2a/obj/platform_boundaries.ninja",
+      "bytes": 962,
+      "sha256": "2f141e73367016c2f14c734bd89cba92973d083cf88ab0c2ad7ae2d31adbaf57"
+    },
+    {
+      "path": "after/g2a/obj/primary_real_support.ninja",
+      "bytes": 4309,
+      "sha256": "54c9bc575b9ad6cbfc53512c1c899cc3723c28733262283a9d7b8e14ae86183d"
+    },
+    {
+      "path": "after/g2a/obj/primary_slot_contract.ninja",
+      "bytes": 153,
+      "sha256": "c7d2b750cf9a96399e8e5564771ab5d5717475724f9b7d086e89ce28d98c0b51"
+    },
+    {
+      "path": "after/g2a/obj/primary_slot_entry_production.ninja",
+      "bytes": 3102,
+      "sha256": "b73265ad3cc0837021b4c28d5570cdd92ebb0ca37a92909eab22c439d6309071"
+    },
+    {
+      "path": "after/g2a/obj/scheduler_boundaries.ninja",
+      "bytes": 1467,
+      "sha256": "c127fc4eb05403a63e61686aea1cd8e9f6d2f2bdd34f0eef788b64b8322e13ee"
+    },
+    {
+      "path": "after/g2a/obj/sim_bootstrap_characterization.ninja",
+      "bytes": 1773,
+      "sha256": "f7ffa444a8215be5d453b2b8d3032bb3011b7f8d8a91ee5f29154f069162a4a4"
+    },
+    {
+      "path": "after/g2a/obj/sim_component_test.ninja",
+      "bytes": 1924,
+      "sha256": "4cc834f1c57b8ad037ac750ff433f44dfb57e341c496908592092e04b10012e1"
+    },
+    {
+      "path": "after/g2a/obj/sim_g2a_query_test.ninja",
+      "bytes": 2386,
+      "sha256": "5aee402328c2618e799cc83a3e17f23bc2d4f7f7c11b8aded027e9aa8117248b"
+    },
+    {
+      "path": "after/g2a/obj/sim_guard_legacy.ninja",
+      "bytes": 5734,
+      "sha256": "fa46e3aa5bcc41407e67ce054687a7264013536009948e5d0497467ceecb42af"
+    },
+    {
+      "path": "after/g2a/obj/sim_guard_legacy_production.ninja",
+      "bytes": 4169,
+      "sha256": "3fee6b49f3d83bcf2c88bf24bae5d9e98fc49bd1aec347fc0fc0e2aa2cc63801"
+    },
+    {
+      "path": "after/g2a/obj/sim_guard_pin_memory.ninja",
+      "bytes": 5289,
+      "sha256": "9b379b7b771cb56727bcc5aa33b0d3d8c2d68aac6c75434024ee109121497d7f"
+    },
+    {
+      "path": "after/g2a/obj/sim_initialization_link_probe.ninja",
+      "bytes": 9751,
+      "sha256": "e7b715c06b9b1180b2d03ccab2730ed71835164b6630b434e4d9959ca514a0d2"
+    },
+    {
+      "path": "after/g2a/obj/sim_initialization_production_host.ninja",
+      "bytes": 23835,
+      "sha256": "3ea2efc9358ddbbea5ace48bc67336e25c9af281e91033176b40e12eb29c7f9a"
+    },
+    {
+      "path": "after/g2a/obj/sim_primary_slot_entry_test.ninja",
+      "bytes": 3450,
+      "sha256": "86529fe3b5cc848e1befd53a954fdab03b7685430ba7ed3784f20a830bf7c650"
+    },
+    {
+      "path": "after/g2a/obj/sim_primary_slot_real_test.ninja",
+      "bytes": 13867,
+      "sha256": "f2e603c11372b371818683b357bde400e83a4e840c0b113a089773792afecc8d"
+    },
+    {
+      "path": "after/g2a/obj/sim_production_host.ninja",
+      "bytes": 2271,
+      "sha256": "17d22ca8efae9baef812b73b4e6f6374659172863d61dd3641bd682d9d3504a7"
+    },
+    {
+      "path": "after/g2a/ril-interface-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "after/g2a/run-dual.log",
+      "bytes": 503,
+      "sha256": "2fe00dc33aef79ecdaa770b4f8c3ec0d11e0cdc5948de94a5c63861ae2789c28"
+    },
+    {
+      "path": "after/g2a/run-malformed_atoi.log",
+      "bytes": 503,
+      "sha256": "164c53de0dfeadcba3bae53f325b34bc7da77ae5600722720557c5fa1bf1e6d3"
+    },
+    {
+      "path": "after/g2a/run-negative_atoi.log",
+      "bytes": 503,
+      "sha256": "b87e997232f54d16153997ad9a1a828b03730e12961d50dad83a2d3213b632fd"
+    },
+    {
+      "path": "after/g2a/run-single.log",
+      "bytes": 503,
+      "sha256": "2fe00dc33aef79ecdaa770b4f8c3ec0d11e0cdc5948de94a5c63861ae2789c28"
+    },
+    {
+      "path": "after/g2a/run-vendor_override.log",
+      "bytes": 503,
+      "sha256": "172ae90bb718299d9d07bbb729a62357f2cfb7fd8ae8e7e16ed9a5cfcd573187"
+    },
+    {
+      "path": "after/g2a/run-vendor_result_propagation.log",
+      "bytes": 503,
+      "sha256": "9a1e21bdab270322ee8133fccd0b9ba059b93012aeb7aa249323e7b734fb9ecd"
+    },
+    {
+      "path": "after/g2a/run-zero.log",
+      "bytes": 503,
+      "sha256": "2fe00dc33aef79ecdaa770b4f8c3ec0d11e0cdc5948de94a5c63861ae2789c28"
+    },
+    {
+      "path": "after/g2a/toolchain.ninja",
+      "bytes": 1403,
+      "sha256": "74d1b195fad85be6474372d770ddd9e959aa2101ea3db75ce1725ac4c83b00db"
+    },
+    {
+      "path": "after/g2a/vendor-abi-boundary-build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "after/g2a/version-clang++.log",
+      "bytes": 110,
+      "sha256": "3635b8631d4ebcd8ed7586f4e01e7a6b44407de9d38db6e01daca9c242ed7a53"
+    },
+    {
+      "path": "after/g2a/version-gn.log",
+      "bytes": 15,
+      "sha256": "35c7bdf4eacd209bf6f22e9ac8fa7b2e047ce9e15d4014307c50c8744e051c2e"
+    },
+    {
+      "path": "after/g2a/version-ld.gold.log",
+      "bytes": 288,
+      "sha256": "eebd5fcb32627bd445ac96a181ae2cb866ca8d9ef7cec11f38ff048a7737e270"
+    },
+    {
+      "path": "after/g2a/version-llvm-cov-18.log",
+      "bytes": 46,
+      "sha256": "cfb9286322cccef53a692448cf4007a998d186dfb8e8313d317390a95eeb10f1"
+    },
+    {
+      "path": "after/g2a/version-llvm-profdata-18.log",
+      "bytes": 46,
+      "sha256": "cfb9286322cccef53a692448cf4007a998d186dfb8e8313d317390a95eeb10f1"
+    },
+    {
+      "path": "after/g2a/version-ninja.log",
+      "bytes": 7,
+      "sha256": "4f9416d650bd28343244b868dfebdb11e70d7b32423536cb87b8c31fde62f993"
+    },
+    {
+      "path": "after/g2a-command.json",
+      "bytes": 327,
+      "sha256": "2b1216a5d2179c754a51f7ca51cade6b8727471342a8d12853ecd493bfe74655"
+    },
+    {
+      "path": "after/g2a-final.log",
+      "bytes": 166,
+      "sha256": "a4ab4e209ef735d2ca6a13ef25c9d63d8413a1636bb63777cdf6a61df8adb7cc"
+    },
+    {
+      "path": "after/g2a.log",
+      "bytes": 170,
+      "sha256": "8609ec1d4b893492c04b7a1d9c1c6b93cfc98890adda4fba8a4d945e1008b226"
+    },
+    {
+      "path": "after/git-status.txt",
+      "bytes": 112011,
+      "sha256": "8e30ff771e6b669c4c9bfbf18883beb871119fedeb61e5f5f7b8824ecc1b9024"
+    },
+    {
+      "path": "after/gn-policy.json",
+      "bytes": 348,
+      "sha256": "d2abcd374e899b45edf1cab27fa9403dcd799ea67aca07967ecb3aa11ae96099"
+    },
+    {
+      "path": "after/historic-index-check.json",
+      "bytes": 57856,
+      "sha256": "ad56514f1de8f6637b9e5cac20ee47878dcb25072c1ba3fce9c980d27870086f"
+    },
+    {
+      "path": "after/host/build/args.gn",
+      "bytes": 235,
+      "sha256": "5d6e292947cf86af0ac179767ecdaf782a9177372813d23d171c1191952c721f"
+    },
+    {
+      "path": "after/host/build/build.ninja",
+      "bytes": 4469,
+      "sha256": "4e441fbf981f73e9a1be597f8ebbe1ddeb5916382f73692e8f3ddac0a37d31bc"
+    },
+    {
+      "path": "after/host/build/compile_commands.json",
+      "bytes": 215265,
+      "sha256": "01159ec92e6be508a145cbb70e5dc280b4c59336b78f2758a27077275695c4e0"
+    },
+    {
+      "path": "after/host/build/obj/bootstrap_launcher.ninja",
+      "bytes": 1866,
+      "sha256": "f0d9492856af8e14e080996a3c4bef5bb49dcb9826b79c92081535b8d301900c"
+    },
+    {
+      "path": "after/host/build/obj/component_launcher.ninja",
+      "bytes": 1861,
+      "sha256": "2d092b92295d560be0c4c56a41791ffecf9be4e07a6ce0ebbd3f3a6f487f3627"
+    },
+    {
+      "path": "after/host/build/obj/event_transport_production_host.ninja",
+      "bytes": 2319,
+      "sha256": "0f8f26893eec3a542d3a2ebab18e48f70d79d79f5a59e01fdf45d9a083a7eba2"
+    },
+    {
+      "path": "after/host/build/obj/external_service_boundaries.ninja",
+      "bytes": 1133,
+      "sha256": "611e705994382db9aee96c6b0b3c35834beb16d8c54a0e2ace6cd993fa83690e"
+    },
+    {
+      "path": "after/host/build/obj/g2a_query_launcher.ninja",
+      "bytes": 2299,
+      "sha256": "d302477064b2453689fd57ec42dea4f69e7d8e7880881be7510dc22af2769c84"
+    },
+    {
+      "path": "after/host/build/obj/g2a_readonly_production_host.ninja",
+      "bytes": 2989,
+      "sha256": "a60a15f721441fbac619f72a2fc4d731b4c8009e71a50e9b310e3c430a9d2615"
+    },
+    {
+      "path": "after/host/build/obj/googlemock.ninja",
+      "bytes": 1222,
+      "sha256": "21434da6a9abc494d352929fa380781a9e8535b09a96397a16d00636e600f68e"
+    },
+    {
+      "path": "after/host/build/obj/googletest.ninja",
+      "bytes": 1082,
+      "sha256": "c67e4ef4d7be37fa2628d2aa591031f615eb25510803b28cf241e531a5edabdf"
+    },
+    {
+      "path": "after/host/build/obj/platform_adapter_test.ninja",
+      "bytes": 5156,
+      "sha256": "dde32a378d771687d3404785f06bd01a5f7ab71ab99889f00b57dd8b7567496b"
+    },
+    {
+      "path": "after/host/build/obj/platform_boundaries.ninja",
+      "bytes": 995,
+      "sha256": "82064ec28449a7d7e97328d809c7725db20848206f385bb553c849cb84a73f54"
+    },
+    {
+      "path": "after/host/build/obj/primary_real_support.ninja",
+      "bytes": 4342,
+      "sha256": "29b401fb3f1131cbda0a82508ec5600c9bb864e0fb791a878d01f3546e98d8ba"
+    },
+    {
+      "path": "after/host/build/obj/primary_slot_contract.ninja",
+      "bytes": 153,
+      "sha256": "c7d2b750cf9a96399e8e5564771ab5d5717475724f9b7d086e89ce28d98c0b51"
+    },
+    {
+      "path": "after/host/build/obj/primary_slot_entry_production.ninja",
+      "bytes": 3132,
+      "sha256": "72f5b1ee6f51f26ce8dadfc4c486ad6b3d0be8c556141099142fc2480e6668a2"
+    },
+    {
+      "path": "after/host/build/obj/scheduler_boundaries.ninja",
+      "bytes": 1509,
+      "sha256": "59edd5f7e2f10250d62642cfd753f5bd497d6d38538a5d3c19ddf95adba4aaa4"
+    },
+    {
+      "path": "after/host/build/obj/sim_bootstrap_characterization.ninja",
+      "bytes": 1818,
+      "sha256": "1bf95e77b193b36d8ccfdef4ad290ef8cd4a2114aab3a3e1dc508600b4ab3048"
+    },
+    {
+      "path": "after/host/build/obj/sim_component_test.ninja",
+      "bytes": 1972,
+      "sha256": "bdbed0c5c0c9f6a4c818abdcfdb8bddb396e716a7bdd220677d449fcd839b2c5"
+    },
+    {
+      "path": "after/host/build/obj/sim_g2a_query_test.ninja",
+      "bytes": 2434,
+      "sha256": "653ab3eb1a208aecdc2293ac69c578f4906c713f21dd1e0192bc927814f6b567"
+    },
+    {
+      "path": "after/host/build/obj/sim_guard_legacy.ninja",
+      "bytes": 5767,
+      "sha256": "7ec1f626c3db7d82d1f8eb333e7e6c5720275c9cd1a37d77d6b3ebc5b20b8d88"
+    },
+    {
+      "path": "after/host/build/obj/sim_guard_legacy_production.ninja",
+      "bytes": 4202,
+      "sha256": "5003c2acf738fdfaf8e222163076d3b20e973615cf6657e21a86d0c3dbcab184"
+    },
+    {
+      "path": "after/host/build/obj/sim_guard_pin_memory.ninja",
+      "bytes": 5322,
+      "sha256": "aadd99841b7bbc8a4b689839ce114b42a33f62ba812c1cc2c79e937295a5b441"
+    },
+    {
+      "path": "after/host/build/obj/sim_initialization_link_probe.ninja",
+      "bytes": 9781,
+      "sha256": "4c0e0a45cf3986724c1c96dc368b588a3b51d6a5b85bcc37e91ffb7aa8a6eb31"
+    },
+    {
+      "path": "after/host/build/obj/sim_initialization_production_host.ninja",
+      "bytes": 23868,
+      "sha256": "177ded959dc3f5b4d1be0c4442e02b6f1c184930e953565bac3c5af7be620820"
+    },
+    {
+      "path": "after/host/build/obj/sim_primary_slot_entry_test.ninja",
+      "bytes": 3480,
+      "sha256": "c6555bf682cfcd368b6258dda5093ea358a70812a2d0cf03c843d03f6cae35a2"
+    },
+    {
+      "path": "after/host/build/obj/sim_primary_slot_real_test.ninja",
+      "bytes": 13900,
+      "sha256": "121e58c0f19f3b23e724bc56805f6f550dd13f105943971566a08e4ca3e2efba"
+    },
+    {
+      "path": "after/host/build/obj/sim_production_host.ninja",
+      "bytes": 2301,
+      "sha256": "a6e73f4ab780a9b9ce639638afaca16f183f53c29efc9967a8a5236b7aeed978"
+    },
+    {
+      "path": "after/host/build/toolchain.ninja",
+      "bytes": 1403,
+      "sha256": "74d1b195fad85be6474372d770ddd9e959aa2101ea3db75ce1725ac4c83b00db"
+    },
+    {
+      "path": "after/host/build.log",
+      "bytes": 4602,
+      "sha256": "79eafd03f3a5dcc3e3fd1bcd975d0d3c9ebd7308b82ff3143cc01cbac0d8f82c"
+    },
+    {
+      "path": "after/host/configure.log",
+      "bytes": 81,
+      "sha256": "bae991ff2b8b2293ab0a0cfe551d35d9414c7aa61391413438bae9a0cbb8049f"
+    },
+    {
+      "path": "after/host/error.json",
+      "bytes": 114,
+      "sha256": "11870c1228df0cdc9db5b70fd24daaf685e810c15094aa47274150f9f136de92"
+    },
+    {
+      "path": "after/host/host.json",
+      "bytes": 258,
+      "sha256": "2e267f533959b30c6f6ba54f9fe6097ed37df5fb25e808e708011700fb0e0eda"
+    },
+    {
+      "path": "after/host/latest.json",
+      "bytes": 3576,
+      "sha256": "4509956e0246567c015bb63018c8d54e121b69097abc5fecb0e72a696b44f59f"
+    },
+    {
+      "path": "after/host-command.json",
+      "bytes": 350,
+      "sha256": "0a5f0d5af8a1e0629d62b8c4c8076b7b2c341f23430aa044c6ef56a279c5ac22"
+    },
+    {
+      "path": "after/host.log",
+      "bytes": 5304,
+      "sha256": "ec1bdd0e36ff3eb7a29022c47cf77b028515aa384573f9351a45bd1adab2cf67"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/args.gn",
+      "bytes": 174,
+      "sha256": "44742282ca728ffae9c0904d04286f4447fa52101e053657ddec23f2e5817965"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/build.ninja",
+      "bytes": 4449,
+      "sha256": "c957401c7f6337bddd1e468eaf3240f44c958901083177e3a4cad057c77c0732"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/obj/bootstrap_launcher.ninja",
+      "bytes": 1842,
+      "sha256": "52fd8ed2f13ad7896c49c6413cba2baaf5855c2a27eff02842710eba27e2831d"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/obj/component_launcher.ninja",
+      "bytes": 1837,
+      "sha256": "9d5008391389d5d5d8b7f8c11f2c13e6cc707d00deb4803be4af6a2c3e4eb4f4"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/obj/event_transport_production_host.ninja",
+      "bytes": 2295,
+      "sha256": "8470bfaec4313c0951845b30395c0fdda2f850a9caa9c0709eaeb3396f51e94d"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/obj/external_service_boundaries.ninja",
+      "bytes": 1115,
+      "sha256": "a59a91c52c248e945e420ddbba09a916a68ed837bdcdcb97e2527d3e9749a475"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/obj/g2a_query_launcher.ninja",
+      "bytes": 2278,
+      "sha256": "6d6b8ae290ccc5874091aae4d1cfb60a09cded7e9d8633751790c45395e8525e"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/obj/g2a_readonly_production_host.ninja",
+      "bytes": 2965,
+      "sha256": "9cafe27a86ca2352756cfe8161bae49c50aea4da2ef6c9da6919d48e2fafc426"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/obj/googlemock.ninja",
+      "bytes": 1195,
+      "sha256": "8e72a7995a61ce208aa496ab2c5a8898d787b5a0c29f06a2c1554ca91002a650"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/obj/googletest.ninja",
+      "bytes": 1055,
+      "sha256": "13567c8658941b2e4e8eda712375a68c64d2f1eb5264e817e8ba2e4adcd45376"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/obj/platform_adapter_test.ninja",
+      "bytes": 5135,
+      "sha256": "26542a30e351e84b6960edf5ba0c1fa1d9608b2289ad8f285ee1b217a85d8178"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/obj/platform_boundaries.ninja",
+      "bytes": 974,
+      "sha256": "9a8068e921bc0f4c5e1f4d372aac8cae2a6a8e6e49426c65ce707ed1d33492e3"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/obj/primary_real_support.ninja",
+      "bytes": 4321,
+      "sha256": "147d6b571bef893acfe7cd5a892448b9b2d7903c129d40bbb64dbf73be5bf577"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/obj/primary_slot_contract.ninja",
+      "bytes": 153,
+      "sha256": "c7d2b750cf9a96399e8e5564771ab5d5717475724f9b7d086e89ce28d98c0b51"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/obj/primary_slot_entry_production.ninja",
+      "bytes": 3108,
+      "sha256": "b9c383a0c9226eb3807d0e34328b9df747ad837dd1f8c0e8333f24d68d2664b8"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/obj/scheduler_boundaries.ninja",
+      "bytes": 1497,
+      "sha256": "91f78269bd3a1d295e00f42713f3a3cfbe4e58a5d1e21be9b2d4320aa5009d65"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/obj/sim_bootstrap_characterization.ninja",
+      "bytes": 1794,
+      "sha256": "3b4c3464c396cdf780ef23f46cc6c50b9c534a1a3afcb0e1d29c768b91ad6f95"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/obj/sim_component_test.ninja",
+      "bytes": 1951,
+      "sha256": "1d604c35c6e908e79c9159e3ea95065c4d3ffc44f59a6f97d9bdeb7ee7b97f64"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/obj/sim_g2a_query_test.ninja",
+      "bytes": 2413,
+      "sha256": "a956f8898e836f75bda8a6a0bc2ed7f1521983cc99e90f220d14d18abcbe07e0"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/obj/sim_guard_legacy.ninja",
+      "bytes": 5746,
+      "sha256": "6390c8e193483be1958cd15445cd15d5989eed50448b5119b8f5814547f207f7"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/obj/sim_guard_legacy_production.ninja",
+      "bytes": 4181,
+      "sha256": "09f59af4f1d64490bddc9bc94ccf354406acb19d69c54cde70776e818e3ce140"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/obj/sim_guard_pin_memory.ninja",
+      "bytes": 5301,
+      "sha256": "779eb4087ab2c29d8fe4eaf25cbf0112821fdc04f4e23b155a726e7677b0599a"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/obj/sim_initialization_link_probe.ninja",
+      "bytes": 9757,
+      "sha256": "f2e41af043f2fd2ca30913edac8d18bcc96d441c46c8cb6d579beabef76c75d7"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/obj/sim_initialization_production_host.ninja",
+      "bytes": 23847,
+      "sha256": "00112689a0090dfcfbc78c34e77ef66a6462294c322332f5c9010f34cf0256bb"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/obj/sim_primary_slot_entry_test.ninja",
+      "bytes": 3456,
+      "sha256": "3e680f203f621308e23b4f7f0a564395c056d9fac0b4a21533d48b744efe501f"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/obj/sim_primary_slot_real_test.ninja",
+      "bytes": 13879,
+      "sha256": "4f6cd1285e83280adb4d934814f07f3566b0a85f4f7d89a5ff9b903fc2692722"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/obj/sim_production_host.ninja",
+      "bytes": 2277,
+      "sha256": "e8cf8a92d0565bb55d67266150c453b325cd47164b1c1261f2313b5fb8a1bb92"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/build/toolchain.ninja",
+      "bytes": 1403,
+      "sha256": "74d1b195fad85be6474372d770ddd9e959aa2101ea3db75ce1725ac4c83b00db"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/coverage.log",
+      "bytes": 1488291,
+      "sha256": "df9752f505040f3fedc9c5b3bceae7121ac517170ac3e01d7322d8781c13ed64"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/merge.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/args.gn",
+      "bytes": 299,
+      "sha256": "21ef1a2153979af504be2300cbf34f65b37990479e40ecaf18bf1a16402a97d4"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/build.ninja",
+      "bytes": 4449,
+      "sha256": "c957401c7f6337bddd1e468eaf3240f44c958901083177e3a4cad057c77c0732"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/obj/bootstrap_launcher.ninja",
+      "bytes": 1842,
+      "sha256": "52fd8ed2f13ad7896c49c6413cba2baaf5855c2a27eff02842710eba27e2831d"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/obj/component_launcher.ninja",
+      "bytes": 1837,
+      "sha256": "9d5008391389d5d5d8b7f8c11f2c13e6cc707d00deb4803be4af6a2c3e4eb4f4"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/obj/event_transport_production_host.ninja",
+      "bytes": 2295,
+      "sha256": "8470bfaec4313c0951845b30395c0fdda2f850a9caa9c0709eaeb3396f51e94d"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/obj/external_service_boundaries.ninja",
+      "bytes": 1115,
+      "sha256": "a59a91c52c248e945e420ddbba09a916a68ed837bdcdcb97e2527d3e9749a475"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/obj/g2a_query_launcher.ninja",
+      "bytes": 2278,
+      "sha256": "6d6b8ae290ccc5874091aae4d1cfb60a09cded7e9d8633751790c45395e8525e"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/obj/g2a_readonly_production_host.ninja",
+      "bytes": 2965,
+      "sha256": "9cafe27a86ca2352756cfe8161bae49c50aea4da2ef6c9da6919d48e2fafc426"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/obj/googlemock.ninja",
+      "bytes": 1195,
+      "sha256": "8e72a7995a61ce208aa496ab2c5a8898d787b5a0c29f06a2c1554ca91002a650"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/obj/googletest.ninja",
+      "bytes": 1055,
+      "sha256": "13567c8658941b2e4e8eda712375a68c64d2f1eb5264e817e8ba2e4adcd45376"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/obj/platform_adapter_test.ninja",
+      "bytes": 5135,
+      "sha256": "26542a30e351e84b6960edf5ba0c1fa1d9608b2289ad8f285ee1b217a85d8178"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/obj/platform_boundaries.ninja",
+      "bytes": 974,
+      "sha256": "9a8068e921bc0f4c5e1f4d372aac8cae2a6a8e6e49426c65ce707ed1d33492e3"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/obj/primary_real_support.ninja",
+      "bytes": 4321,
+      "sha256": "147d6b571bef893acfe7cd5a892448b9b2d7903c129d40bbb64dbf73be5bf577"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/obj/primary_slot_contract.ninja",
+      "bytes": 153,
+      "sha256": "c7d2b750cf9a96399e8e5564771ab5d5717475724f9b7d086e89ce28d98c0b51"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/obj/primary_slot_entry_production.ninja",
+      "bytes": 3108,
+      "sha256": "b9c383a0c9226eb3807d0e34328b9df747ad837dd1f8c0e8333f24d68d2664b8"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/obj/scheduler_boundaries.ninja",
+      "bytes": 1497,
+      "sha256": "91f78269bd3a1d295e00f42713f3a3cfbe4e58a5d1e21be9b2d4320aa5009d65"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/obj/sim_bootstrap_characterization.ninja",
+      "bytes": 1773,
+      "sha256": "f7ffa444a8215be5d453b2b8d3032bb3011b7f8d8a91ee5f29154f069162a4a4"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/obj/sim_component_test.ninja",
+      "bytes": 1930,
+      "sha256": "fbfbd2a98234fc68422bc735d214b9542d1e3dcdcc0516ccc408fad9ea88ffdc"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/obj/sim_g2a_query_test.ninja",
+      "bytes": 2392,
+      "sha256": "24400d1dfb131d505bf536dd97db36c6fcd2bbe84039baefb8d7b10e577481b4"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/obj/sim_guard_legacy.ninja",
+      "bytes": 5760,
+      "sha256": "b144bdf73329e07cc943eaa95fccd22515468d15cdfaaaf6325a1d91b41bd041"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/obj/sim_guard_legacy_production.ninja",
+      "bytes": 4237,
+      "sha256": "04b92fea8e9b48a2a99e94cb7fa17f4e10ce4f9dbe45f864985117ba7461fd1e"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/obj/sim_guard_pin_memory.ninja",
+      "bytes": 5315,
+      "sha256": "478fccfa7f99cb39a1855fd7f57c5b583e5491f188c6825af5caf00b14aaff35"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/obj/sim_initialization_link_probe.ninja",
+      "bytes": 9757,
+      "sha256": "f2e41af043f2fd2ca30913edac8d18bcc96d441c46c8cb6d579beabef76c75d7"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/obj/sim_initialization_production_host.ninja",
+      "bytes": 23847,
+      "sha256": "00112689a0090dfcfbc78c34e77ef66a6462294c322332f5c9010f34cf0256bb"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/obj/sim_primary_slot_entry_test.ninja",
+      "bytes": 3456,
+      "sha256": "3e680f203f621308e23b4f7f0a564395c056d9fac0b4a21533d48b744efe501f"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/obj/sim_primary_slot_real_test.ninja",
+      "bytes": 13879,
+      "sha256": "4f6cd1285e83280adb4d934814f07f3566b0a85f4f7d89a5ff9b903fc2692722"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/obj/sim_production_host.ninja",
+      "bytes": 2277,
+      "sha256": "e8cf8a92d0565bb55d67266150c453b325cd47164b1c1261f2313b5fb8a1bb92"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build/toolchain.ninja",
+      "bytes": 1403,
+      "sha256": "74d1b195fad85be6474372d770ddd9e959aa2101ea3db75ce1725ac4c83b00db"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-build.log",
+      "bytes": 3043,
+      "sha256": "35c3a6a6a80a62c2acd3a14bc7e93f0149cb2c565cf514229a0aec7e32136aea"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/mutant-gn.log",
+      "bytes": 43,
+      "sha256": "8ea2d5d7e400c01ffe2c3161afd449c04e6cd1ca7cd7f405acd5a01e3cfe461e"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/normal-build.log",
+      "bytes": 3052,
+      "sha256": "e45eaa5ddc1b20cd8efcbe3bd9189ea7226f267eb290c5cae10fb8336089239b"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/normal-gn.log",
+      "bytes": 43,
+      "sha256": "ab993e9868b38ef705caafba7b7365cb0b1b3db049313aa8eab4cc53c11b0619"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/normal.profdata",
+      "bytes": 224984,
+      "sha256": "be5deb6163b1eb96207931b5a0f7206e7f8d44aef71d4cbbdf1eb4bcb3f98a58"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/ril-interface.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/run-0.log",
+      "bytes": 5998,
+      "sha256": "f50fc503f180eb60a563ca9d5bbb9cb426c6077c9a4b41e30f8780385b8bf841"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/run-0.profraw",
+      "bytes": 227792,
+      "sha256": "30d2d313b8491dbf8a8b4b711f5bb8df9de28723fd1dcf0e594e4216460ae3e4"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/run-0.xml",
+      "bytes": 25948,
+      "sha256": "94a67df8e6319dc8d650016bc511cb74977b431f66a644213b3859a94946779f"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/sim_state_handle_mutant.cpp",
+      "bytes": 48729,
+      "sha256": "4d7e62f074d9deea115d68d9a4ab439d352909272a8bfa26ca45207a547540db"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/version-clang++.log",
+      "bytes": 110,
+      "sha256": "3635b8631d4ebcd8ed7586f4e01e7a6b44407de9d38db6e01daca9c242ed7a53"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/version-gn.log",
+      "bytes": 15,
+      "sha256": "35c7bdf4eacd209bf6f22e9ac8fa7b2e047ce9e15d4014307c50c8744e051c2e"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/version-ld.gold.log",
+      "bytes": 288,
+      "sha256": "eebd5fcb32627bd445ac96a181ae2cb866ca8d9ef7cec11f38ff048a7737e270"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/version-llvm-cov-18.log",
+      "bytes": 46,
+      "sha256": "cfb9286322cccef53a692448cf4007a998d186dfb8e8313d317390a95eeb10f1"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/version-llvm-profdata-18.log",
+      "bytes": 46,
+      "sha256": "cfb9286322cccef53a692448cf4007a998d186dfb8e8313d317390a95eeb10f1"
+    },
+    {
+      "path": "after/mutation/execution-38otatj3/version-ninja.log",
+      "bytes": 7,
+      "sha256": "4f9416d650bd28343244b868dfebdb11e70d7b32423536cb87b8c31fde62f993"
+    },
+    {
+      "path": "after/mutation/result.json",
+      "bytes": 63013,
+      "sha256": "763d4869da4f040fa5d8aa9d26728c1ba4b99261f59b861055c466843494121b"
+    },
+    {
+      "path": "after/mutation-command.json",
+      "bytes": 382,
+      "sha256": "fe5decf5801df852a8b262d7ffbfde428677ed36c92c4445dff570c4f1e36ea4"
+    },
+    {
+      "path": "after/mutation.log",
+      "bytes": 148,
+      "sha256": "3342fd32034cd2505ac50ecfa1316bf98c1a4289ea4af3ef31546193ece6add0"
+    },
+    {
+      "path": "after/navigation-check.json",
+      "bytes": 4162,
+      "sha256": "ac2a9c21256d6110b31b5983463f50de32d633ce6b00352e3a5f23afbcee981d"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/args.gn",
+      "bytes": 232,
+      "sha256": "c0a25f911069c841d5ede88fd9ef03e89dd0479f09eae0278d98fd9712bf62c8"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/build.ninja",
+      "bytes": 4449,
+      "sha256": "c957401c7f6337bddd1e468eaf3240f44c958901083177e3a4cad057c77c0732"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/obj/bootstrap_launcher.ninja",
+      "bytes": 1842,
+      "sha256": "52fd8ed2f13ad7896c49c6413cba2baaf5855c2a27eff02842710eba27e2831d"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/obj/component_launcher.ninja",
+      "bytes": 1837,
+      "sha256": "9d5008391389d5d5d8b7f8c11f2c13e6cc707d00deb4803be4af6a2c3e4eb4f4"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/obj/event_transport_production_host.ninja",
+      "bytes": 2295,
+      "sha256": "8470bfaec4313c0951845b30395c0fdda2f850a9caa9c0709eaeb3396f51e94d"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/obj/external_service_boundaries.ninja",
+      "bytes": 1115,
+      "sha256": "a59a91c52c248e945e420ddbba09a916a68ed837bdcdcb97e2527d3e9749a475"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/obj/g2a_query_launcher.ninja",
+      "bytes": 2278,
+      "sha256": "6d6b8ae290ccc5874091aae4d1cfb60a09cded7e9d8633751790c45395e8525e"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/obj/g2a_readonly_production_host.ninja",
+      "bytes": 2965,
+      "sha256": "9cafe27a86ca2352756cfe8161bae49c50aea4da2ef6c9da6919d48e2fafc426"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/obj/googlemock.ninja",
+      "bytes": 1195,
+      "sha256": "8e72a7995a61ce208aa496ab2c5a8898d787b5a0c29f06a2c1554ca91002a650"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/obj/googletest.ninja",
+      "bytes": 1055,
+      "sha256": "13567c8658941b2e4e8eda712375a68c64d2f1eb5264e817e8ba2e4adcd45376"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/obj/platform_adapter_test.ninja",
+      "bytes": 5135,
+      "sha256": "26542a30e351e84b6960edf5ba0c1fa1d9608b2289ad8f285ee1b217a85d8178"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/obj/platform_boundaries.ninja",
+      "bytes": 974,
+      "sha256": "9a8068e921bc0f4c5e1f4d372aac8cae2a6a8e6e49426c65ce707ed1d33492e3"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/obj/primary_real_support.ninja",
+      "bytes": 4321,
+      "sha256": "147d6b571bef893acfe7cd5a892448b9b2d7903c129d40bbb64dbf73be5bf577"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/obj/primary_slot_contract.ninja",
+      "bytes": 153,
+      "sha256": "c7d2b750cf9a96399e8e5564771ab5d5717475724f9b7d086e89ce28d98c0b51"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/obj/primary_slot_entry_production.ninja",
+      "bytes": 3108,
+      "sha256": "b9c383a0c9226eb3807d0e34328b9df747ad837dd1f8c0e8333f24d68d2664b8"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/obj/scheduler_boundaries.ninja",
+      "bytes": 1497,
+      "sha256": "91f78269bd3a1d295e00f42713f3a3cfbe4e58a5d1e21be9b2d4320aa5009d65"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/obj/sim_bootstrap_characterization.ninja",
+      "bytes": 1773,
+      "sha256": "f7ffa444a8215be5d453b2b8d3032bb3011b7f8d8a91ee5f29154f069162a4a4"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/obj/sim_component_test.ninja",
+      "bytes": 1930,
+      "sha256": "fbfbd2a98234fc68422bc735d214b9542d1e3dcdcc0516ccc408fad9ea88ffdc"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/obj/sim_g2a_query_test.ninja",
+      "bytes": 2392,
+      "sha256": "24400d1dfb131d505bf536dd97db36c6fcd2bbe84039baefb8d7b10e577481b4"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/obj/sim_guard_legacy.ninja",
+      "bytes": 5746,
+      "sha256": "6390c8e193483be1958cd15445cd15d5989eed50448b5119b8f5814547f207f7"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/obj/sim_guard_legacy_production.ninja",
+      "bytes": 4181,
+      "sha256": "09f59af4f1d64490bddc9bc94ccf354406acb19d69c54cde70776e818e3ce140"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/obj/sim_guard_pin_memory.ninja",
+      "bytes": 5301,
+      "sha256": "779eb4087ab2c29d8fe4eaf25cbf0112821fdc04f4e23b155a726e7677b0599a"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/obj/sim_initialization_link_probe.ninja",
+      "bytes": 9757,
+      "sha256": "f2e41af043f2fd2ca30913edac8d18bcc96d441c46c8cb6d579beabef76c75d7"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/obj/sim_initialization_production_host.ninja",
+      "bytes": 23847,
+      "sha256": "00112689a0090dfcfbc78c34e77ef66a6462294c322332f5c9010f34cf0256bb"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/obj/sim_primary_slot_entry_test.ninja",
+      "bytes": 3456,
+      "sha256": "3e680f203f621308e23b4f7f0a564395c056d9fac0b4a21533d48b744efe501f"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/obj/sim_primary_slot_real_test.ninja",
+      "bytes": 13879,
+      "sha256": "4f6cd1285e83280adb4d934814f07f3566b0a85f4f7d89a5ff9b903fc2692722"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/obj/sim_production_host.ninja",
+      "bytes": 2277,
+      "sha256": "e8cf8a92d0565bb55d67266150c453b325cd47164b1c1261f2313b5fb8a1bb92"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build/toolchain.ninja",
+      "bytes": 1403,
+      "sha256": "74d1b195fad85be6474372d770ddd9e959aa2101ea3db75ce1725ac4c83b00db"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/build.log",
+      "bytes": 2926,
+      "sha256": "43fe9af1e9c642a93a320aa5556cfd3d0eb72f7ce2105a630de8cfa138b86ad9"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/coverage.log",
+      "bytes": 1485308,
+      "sha256": "3cb5b8ccfc382a7e0110fc1f2942cd2b4c0f7e63367864061595b76b2428dd3d"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/gn.log",
+      "bytes": 44,
+      "sha256": "b56b3967e333c8d309f31066a35376e987c3729d7a161571d9f34f0640f28437"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/merge.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/args.gn",
+      "bytes": 326,
+      "sha256": "7a515fc08059d119de4b99f7d38a3e4e2f84f556f1a41b010ac7eb3bcaf45d08"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/build.ninja",
+      "bytes": 4449,
+      "sha256": "c957401c7f6337bddd1e468eaf3240f44c958901083177e3a4cad057c77c0732"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/obj/bootstrap_launcher.ninja",
+      "bytes": 1842,
+      "sha256": "52fd8ed2f13ad7896c49c6413cba2baaf5855c2a27eff02842710eba27e2831d"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/obj/component_launcher.ninja",
+      "bytes": 1837,
+      "sha256": "9d5008391389d5d5d8b7f8c11f2c13e6cc707d00deb4803be4af6a2c3e4eb4f4"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/obj/event_transport_production_host.ninja",
+      "bytes": 2295,
+      "sha256": "8470bfaec4313c0951845b30395c0fdda2f850a9caa9c0709eaeb3396f51e94d"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/obj/external_service_boundaries.ninja",
+      "bytes": 1115,
+      "sha256": "a59a91c52c248e945e420ddbba09a916a68ed837bdcdcb97e2527d3e9749a475"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/obj/g2a_query_launcher.ninja",
+      "bytes": 2278,
+      "sha256": "6d6b8ae290ccc5874091aae4d1cfb60a09cded7e9d8633751790c45395e8525e"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/obj/g2a_readonly_production_host.ninja",
+      "bytes": 2965,
+      "sha256": "9cafe27a86ca2352756cfe8161bae49c50aea4da2ef6c9da6919d48e2fafc426"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/obj/googlemock.ninja",
+      "bytes": 1195,
+      "sha256": "8e72a7995a61ce208aa496ab2c5a8898d787b5a0c29f06a2c1554ca91002a650"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/obj/googletest.ninja",
+      "bytes": 1055,
+      "sha256": "13567c8658941b2e4e8eda712375a68c64d2f1eb5264e817e8ba2e4adcd45376"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/obj/platform_adapter_test.ninja",
+      "bytes": 5135,
+      "sha256": "26542a30e351e84b6960edf5ba0c1fa1d9608b2289ad8f285ee1b217a85d8178"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/obj/platform_boundaries.ninja",
+      "bytes": 974,
+      "sha256": "9a8068e921bc0f4c5e1f4d372aac8cae2a6a8e6e49426c65ce707ed1d33492e3"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/obj/primary_real_support.ninja",
+      "bytes": 4321,
+      "sha256": "147d6b571bef893acfe7cd5a892448b9b2d7903c129d40bbb64dbf73be5bf577"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/obj/primary_slot_contract.ninja",
+      "bytes": 153,
+      "sha256": "c7d2b750cf9a96399e8e5564771ab5d5717475724f9b7d086e89ce28d98c0b51"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/obj/primary_slot_entry_production.ninja",
+      "bytes": 3108,
+      "sha256": "b9c383a0c9226eb3807d0e34328b9df747ad837dd1f8c0e8333f24d68d2664b8"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/obj/scheduler_boundaries.ninja",
+      "bytes": 1497,
+      "sha256": "91f78269bd3a1d295e00f42713f3a3cfbe4e58a5d1e21be9b2d4320aa5009d65"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/obj/sim_bootstrap_characterization.ninja",
+      "bytes": 1773,
+      "sha256": "f7ffa444a8215be5d453b2b8d3032bb3011b7f8d8a91ee5f29154f069162a4a4"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/obj/sim_component_test.ninja",
+      "bytes": 1930,
+      "sha256": "fbfbd2a98234fc68422bc735d214b9542d1e3dcdcc0516ccc408fad9ea88ffdc"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/obj/sim_g2a_query_test.ninja",
+      "bytes": 2392,
+      "sha256": "24400d1dfb131d505bf536dd97db36c6fcd2bbe84039baefb8d7b10e577481b4"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/obj/sim_guard_legacy.ninja",
+      "bytes": 5756,
+      "sha256": "c1f308a6846b6fdd8b659b03adca72953f5c8598349775b7199f46fb07ab69bf"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/obj/sim_guard_legacy_production.ninja",
+      "bytes": 4225,
+      "sha256": "21db5612c2a25da9848cd73282b80901e4c8ae56abae19584d2b0c3a46fd5250"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/obj/sim_guard_pin_memory.ninja",
+      "bytes": 5311,
+      "sha256": "735e05245b0ade5c68a1f6234fb059fd91f1252302949a34d757ff8180516f68"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/obj/sim_initialization_link_probe.ninja",
+      "bytes": 9757,
+      "sha256": "f2e41af043f2fd2ca30913edac8d18bcc96d441c46c8cb6d579beabef76c75d7"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/obj/sim_initialization_production_host.ninja",
+      "bytes": 23847,
+      "sha256": "00112689a0090dfcfbc78c34e77ef66a6462294c322332f5c9010f34cf0256bb"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/obj/sim_primary_slot_entry_test.ninja",
+      "bytes": 3456,
+      "sha256": "3e680f203f621308e23b4f7f0a564395c056d9fac0b4a21533d48b744efe501f"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/obj/sim_primary_slot_real_test.ninja",
+      "bytes": 13879,
+      "sha256": "4f6cd1285e83280adb4d934814f07f3566b0a85f4f7d89a5ff9b903fc2692722"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/obj/sim_production_host.ninja",
+      "bytes": 2277,
+      "sha256": "e8cf8a92d0565bb55d67266150c453b325cd47164b1c1261f2313b5fb8a1bb92"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build/toolchain.ninja",
+      "bytes": 1403,
+      "sha256": "74d1b195fad85be6474372d770ddd9e959aa2101ea3db75ce1725ac4c83b00db"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-build.log",
+      "bytes": 2943,
+      "sha256": "e38bcb8dabf0b75c2f3d76c479ab4e2a5f5ee8cb16fa1f742813e51a8231bf1d"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-gn.log",
+      "bytes": 44,
+      "sha256": "12589c1e808a3d9836736098db553d6abcebd299d27ce987fee7901a9b36ec27"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutant-source-table.log",
+      "bytes": 628,
+      "sha256": "27cacfc185ccebdfefdfc59a4670456768357a2010071da2e2153736e793cfd6"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutation.log",
+      "bytes": 920,
+      "sha256": "414e8f000f1d590ffd2e0361819a75c007f8a1a8cd836cdc8eebc1bc612953f3"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutation.profraw",
+      "bytes": 227800,
+      "sha256": "2e5725aae8b171e058e65cf273611b667902d96745bdafe1f9d29e796262b822"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/mutation.xml",
+      "bytes": 1600,
+      "sha256": "95d4b6d451d3c503e47fe46e4493405f10ebaec49cc28de2fbcf51d0f29b4a32"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/normal-source-table.log",
+      "bytes": 618,
+      "sha256": "f3c7708da554cd9aa86ab7fe09c8c89e434cc071c5f0f33569aba857f812eb13"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/pin-memory.profdata",
+      "bytes": 220592,
+      "sha256": "9104161470d376e1ec47582fa3877d6e6658f56449f16d80da429072346658dd"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/pin-memory.profraw",
+      "bytes": 227792,
+      "sha256": "093541b3993e1832df67d542c09ff3ca1fc585de454a960854e4828ac9a22ecf"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/pin-memory.xml",
+      "bytes": 3507,
+      "sha256": "c6da2c3d99ceab7080387c3af8d762a47ae4c378a2b586d3e8e7b521dc41c777"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/restored.log",
+      "bytes": 945,
+      "sha256": "b937631bf01853830f43c1e01d24627ad61afaac488af2a1c7a4378ccf40b41d"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/restored.profraw",
+      "bytes": 227792,
+      "sha256": "fa3a5851e29d099a1229ce78063ab073dbac210fde7d1b6da74f0d0c78fc309e"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/restored.xml",
+      "bytes": 3490,
+      "sha256": "641f958dff040dc7f235ce87ace24a19bb55bc63e6b9b682d5eb5604f18b9b36"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/ril-interface.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/run.log",
+      "bytes": 999,
+      "sha256": "987fb37ff0b6810d6176806ea2253facc2643be03b4971777f2826c821a60e0a"
+    },
+    {
+      "path": "after/pin/pin-memory-hyt40hh_/sim_state_manager_mutant.cpp",
+      "bytes": 26588,
+      "sha256": "78807ac01ef95b8b2dd9396d414ad9cb4899156850260584637d3578240145e6"
+    },
+    {
+      "path": "after/pin/result.json",
+      "bytes": 31097,
+      "sha256": "5b0d08b1f5aa0a3b1d2ae02bf976b8e2a6af4ffce7c359d90bc7e9769304b863"
+    },
+    {
+      "path": "after/pin-command.json",
+      "bytes": 361,
+      "sha256": "7dd4a1d5b3009efbc15f354dc658ad269d5c3703dc66dd7bafe5b44b8c2bbd0c"
+    },
+    {
+      "path": "after/pin.log",
+      "bytes": 143,
+      "sha256": "8378c9dd0e67a57c0778bff32807f7eeefc850a1c59af1fc63e6b9fb96837de4"
+    },
+    {
+      "path": "after/primary-preflight.log",
+      "bytes": 192,
+      "sha256": "cd5f072f24b17db9257b36b1fc2028f006a74c0af88052cb87054ab49ce9c415"
+    },
+    {
+      "path": "after/python-path-check.json",
+      "bytes": 65,
+      "sha256": "3db03b843ebc0c123ce831d9795be6399a744c8c00dc679140805b4b1f92ddb2"
+    },
+    {
+      "path": "after/scope-check.json",
+      "bytes": 1291,
+      "sha256": "2f970319d19b0327fbc8652cc6fa1c10c161f74f41c25f234b73df43cfb9fe76"
+    },
+    {
+      "path": "after/target.log",
+      "bytes": 172,
+      "sha256": "6added393ecf6c3297ea5476a47bd74ad91a14daf03f8dca02deebc8fe941819"
+    },
+    {
+      "path": "after-integrity/test-cc3efage/integrity.log",
+      "bytes": 66,
+      "sha256": "81bb8104db48df7ad8009c780d6b5f834a36bade573b2bf34ff8608c46f68b95"
+    },
+    {
+      "path": "after-integrity/test-cc3efage/relocation.log",
+      "bytes": 106,
+      "sha256": "354b6d2fee7b1323fd50c41339929099e30a40474c51848c901da7f6adb71b31"
+    },
+    {
+      "path": "after-integrity/test-cc3efage/result.json",
+      "bytes": 861,
+      "sha256": "0291188c958fffea2ad16468e1c2cd8f0f8fb48fdc309f711895bef3d13eeacf"
+    },
+    {
+      "path": "after-primary/test-9a5j3j4n/primary/host/error.json",
+      "bytes": 184,
+      "sha256": "0625165c47acff4bdd6280da1d697b81f75bf47e82a8bf1084bb328b1a198911"
+    },
+    {
+      "path": "after-primary/test-9a5j3j4n/primary-prepare.log",
+      "bytes": 98,
+      "sha256": "6abd278e4bea63470cff731685cd962d13a999afd1e08839b2e4a271d27f7f78"
+    },
+    {
+      "path": "after-primary/test-9a5j3j4n/result.json",
+      "bytes": 809,
+      "sha256": "f5e209f2067ede07e49cb31435d86d65a419b27eade341e8b3114d7efcc88957"
+    },
+    {
+      "path": "after-target/test-mhl5f_zo/result.json",
+      "bytes": 634,
+      "sha256": "5345a6fa58255395d3fd3790ddbb7a6ceef65969ea73e67545cd8287721a30ad"
+    },
+    {
+      "path": "after-target/test-mhl5f_zo/target/result.json",
+      "bytes": 2064,
+      "sha256": "3768822edc3034d1bb381ed3a6468a83c40721bb1917e263802b470667726ecb"
+    },
+    {
+      "path": "after-target/test-mhl5f_zo/target.log",
+      "bytes": 2049,
+      "sha256": "f2e44122b268c8ca99a58e1b98755ce5e3f881801ed367854623d5d76483f0f4"
+    },
+    {
+      "path": "after-technical/test-xan455l1/ci-policy.log",
+      "bytes": 1643,
+      "sha256": "d0ab355944fe951d5abaae9015c3f91e5e36dfa436d59ee9988ccda7c74d7f02"
+    },
+    {
+      "path": "after-technical/test-xan455l1/classifier.log",
+      "bytes": 1678,
+      "sha256": "50da7c8ee152d696d8e3e127861411fa8ef53ad23d8f8b5a6ef6115e45b7716e"
+    },
+    {
+      "path": "after-technical/test-xan455l1/oracle.log",
+      "bytes": 1549,
+      "sha256": "ce551da0b13c3bbe7a7311bcbbfd619e31bd0f774be32c44cf058dd964c92866"
+    },
+    {
+      "path": "after-technical/test-xan455l1/result.json",
+      "bytes": 1707,
+      "sha256": "64b8c3c324e2b9c114b1dcf74b3111b33783d1b5aa62a0186a5425ecec9fa8e5"
+    },
+    {
+      "path": "after-technical/test-xan455l1/source-tables.log",
+      "bytes": 1371,
+      "sha256": "d439a35e6a4788791f67ef447a3204e382daba4a4a80b7272eb78ff1d26853e1"
+    },
+    {
+      "path": "before/architecture/all_headers.cpp",
+      "bytes": 3202,
+      "sha256": "1049a1a9a36607360b8becdd5f320423f352dacb4c4bf77c875068c5fa3d543f"
+    },
+    {
+      "path": "before/architecture/gn/args.gn",
+      "bytes": 34,
+      "sha256": "5c8d8bf4551a5b84858ae4c09b39dd83b29cc9bbee012a01fd8206b80ee54f9c"
+    },
+    {
+      "path": "before/architecture/gn/build.ninja",
+      "bytes": 6753,
+      "sha256": "b59eaadc66af8fcb2e5d8913deeeadd987f94f7d6a9d445677dedab198675473"
+    },
+    {
+      "path": "before/architecture/gn/obj/services/multisim/assembly_contracts.ninja",
+      "bytes": 530,
+      "sha256": "c9b3378785a895eddc4c533128d2381e8e5e2a548688fc67300d7b1ae794c95b"
+    },
+    {
+      "path": "before/architecture/gn/obj/services/multisim/assembly_core.ninja",
+      "bytes": 1598,
+      "sha256": "b661a613335a657b298fcdb04b21223fa8bd4a6b13dc1ac7c934a7ec9b572cc1"
+    },
+    {
+      "path": "before/architecture/gn/obj/services/multisim/assignment_adapters.ninja",
+      "bytes": 390,
+      "sha256": "6f4726eee429f463278086f1224f8c87a37c08805e52cf92c12671ff62d01434"
+    },
+    {
+      "path": "before/architecture/gn/obj/services/multisim/assignment_cases.ninja",
+      "bytes": 1033,
+      "sha256": "24da7e5154a17f5cfc262df5ff811a4f612aa55cda63ed486d6b3ef08d2698f2"
+    },
+    {
+      "path": "before/architecture/gn/obj/services/multisim/assignment_contracts.ninja",
+      "bytes": 343,
+      "sha256": "48a9164ab10568dbcae38c02fb3da85dd367492b6428a6473f075b02e0028fc0"
+    },
+    {
+      "path": "before/architecture/gn/obj/services/multisim/assignment_domain.ninja",
+      "bytes": 722,
+      "sha256": "72e7034782e67de4545e6808d60565c2c8626247eb3175a94efd79f5729ab384"
+    },
+    {
+      "path": "before/architecture/gn/obj/services/multisim/assignment_protocols.ninja",
+      "bytes": 847,
+      "sha256": "e38904e299629fbbefcb4df4eb9c0e782264f664c58b5475c63bc1d604234642"
+    },
+    {
+      "path": "before/architecture/gn/obj/services/multisim/assignment_types.ninja",
+      "bytes": 245,
+      "sha256": "4c94c656c7b27a0b52e4f23dca68e56bbf1673c93138c4137b5aad8528224987"
+    },
+    {
+      "path": "before/architecture/gn/obj/services/multisim/compatibility_contracts.ninja",
+      "bytes": 488,
+      "sha256": "2eca0c36a36b3f6b98c514351ff0cd4a05312080a055b8940e0b7727f9fb3b36"
+    },
+    {
+      "path": "before/architecture/gn/obj/services/multisim/compatibility_core.ninja",
+      "bytes": 1910,
+      "sha256": "417c79b0a255f61ff555de4701a62aa51c9e8de6adb4293bcafe5239a766d47b"
+    },
+    {
+      "path": "before/architecture/gn/obj/services/multisim/readonly_query.ninja",
+      "bytes": 594,
+      "sha256": "5dfd2065e3622067324cc8f51342461c22416b58a52e7bcf32750ccbfb664f92"
+    },
+    {
+      "path": "before/architecture/gn/obj/services/multisim/repository_exports.ninja",
+      "bytes": 577,
+      "sha256": "7cc296d990ac1724911aca9b6d91c86c22667e18e35918c4240b0e6d92d31d43"
+    },
+    {
+      "path": "before/architecture/gn/obj/services/multisim/request_mechanism.ninja",
+      "bytes": 292,
+      "sha256": "895c5fec2770399c5a8f7122a53e6d4e2b3321a3ff65d2f7255f8b324b607a97"
+    },
+    {
+      "path": "before/architecture/gn/obj/services/multisim/request_protocol.ninja",
+      "bytes": 245,
+      "sha256": "303db8fef6de3b3e241044892bac4ec630021417ff71d651aed903c8788e7cd2"
+    },
+    {
+      "path": "before/architecture/gn/obj/services/multisim/runtime_cases.ninja",
+      "bytes": 823,
+      "sha256": "71d9b78cd97bfe4ac6ba17543848e9a99a9a945a951b0c4ab8565e47fc512c9c"
+    },
+    {
+      "path": "before/architecture/gn/obj/services/multisim/runtime_contracts.ninja",
+      "bytes": 386,
+      "sha256": "f5fb06c26f6f07f02ed338c01ca22fdf15da0e7be45789525d437938b194768d"
+    },
+    {
+      "path": "before/architecture/gn/obj/services/multisim/runtime_core.ninja",
+      "bytes": 930,
+      "sha256": "a80abddeaed1afa1de766bcc573e4ec3dc3280d802743ad461152b2087232d64"
+    },
+    {
+      "path": "before/architecture/gn/obj/services/multisim/runtime_mechanisms.ninja",
+      "bytes": 1333,
+      "sha256": "34882c6543e1761c37fc739d12794fec53aae44e86f156921764603b5a6071ec"
+    },
+    {
+      "path": "before/architecture/gn/obj/services/multisim/sim_values.ninja",
+      "bytes": 591,
+      "sha256": "bf1d4002f5c98444ab2d197f3bbd7c1cfe5ce478e28c87d669ec9d89fbc722cd"
+    },
+    {
+      "path": "before/architecture/gn/obj/services/multisim/topology_adapters.ninja",
+      "bytes": 887,
+      "sha256": "204b23c5648d136d4f8bac31125a8a985bbd7db775034ae2f26b51253a515da5"
+    },
+    {
+      "path": "before/architecture/gn/obj/services/multisim/topology_cases.ninja",
+      "bytes": 2110,
+      "sha256": "5faf177c77e9c57997c7a6876a7223b5ee04db06e83475ab598dde01b8163e13"
+    },
+    {
+      "path": "before/architecture/gn/obj/services/multisim/topology_contracts.ninja",
+      "bytes": 431,
+      "sha256": "c02c208a7ea0778f85b1fe88f4f563f81cb2606af5de212ac3c3d0001e8bf441"
+    },
+    {
+      "path": "before/architecture/gn/obj/services/multisim/topology_domain.ninja",
+      "bytes": 981,
+      "sha256": "2783376b7db895128d2d19a80900b365403c2f09a329205e1f86c2eac6d698f4"
+    },
+    {
+      "path": "before/architecture/gn/obj/services/multisim/topology_protocols.ninja",
+      "bytes": 1737,
+      "sha256": "b852885abac351ff373cca38ddbfbff1d951334021f6c0adb3952b4c20e0e259"
+    },
+    {
+      "path": "before/architecture/gn/obj/services/multisim/topology_types.ninja",
+      "bytes": 199,
+      "sha256": "e5545c18e00e4da2b074038bbc558f1925e76c41f5fd03e7cb50666653bac204"
+    },
+    {
+      "path": "before/architecture/gn/toolchain.ninja",
+      "bytes": 2886,
+      "sha256": "45af6347f93f2dfe7a70e14c3d4c016ad101d860af7f04d2ad74b94a94454530"
+    },
+    {
+      "path": "before/architecture.log",
+      "bytes": 5903,
+      "sha256": "0d87177da69d007659728c4ee4019f22e759dd1232e16628485c442c2cc7ef4b"
+    },
+    {
+      "path": "before/ci.log",
+      "bytes": 1643,
+      "sha256": "2b3e9d44bed01fd9613ba5b925d8980aab8daf348d193a1284189cae68d12049"
+    },
+    {
+      "path": "before/classifier.log",
+      "bytes": 1678,
+      "sha256": "d7de289ed9bcfea9fde0627c0130bcad28d0f3b7a6009a37db065196406d6169"
+    },
+    {
+      "path": "before/commands.json",
+      "bytes": 2437,
+      "sha256": "5df79b32c844dd5f5319f2e4881aad4230532800faa6d7f1ebdf0da011c32f01"
+    },
+    {
+      "path": "before/g2a/args.gn",
+      "bytes": 219,
+      "sha256": "f7e77b6beb91fafb38b55507d68615fade05f3f5c9df651fa6ec3ff732c20858"
+    },
+    {
+      "path": "before/g2a/build.ninja",
+      "bytes": 4433,
+      "sha256": "2a6bca98f1ff796fb793b14f3b32ef1b156f205beee6e522dcac3faf7be545a5"
+    },
+    {
+      "path": "before/g2a/coverage-export.log",
+      "bytes": 1212174,
+      "sha256": "5efb19656d0c3fc11336e45723d062970f1744763de3103ad112ac32598f3167"
+    },
+    {
+      "path": "before/g2a/coverage-merge.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "before/g2a/g2a-dual.profraw",
+      "bytes": 213752,
+      "sha256": "05069e5f4003d528e1fd3a598d526fc725872e4fb3d681eb824a08e4822b6cf8"
+    },
+    {
+      "path": "before/g2a/g2a-dual.xml",
+      "bytes": 1622,
+      "sha256": "300d696678d8fcc4b14a3dd98b091f1cba2439976642990e64f1f67155e4c5b1"
+    },
+    {
+      "path": "before/g2a/g2a-malformed_atoi.profraw",
+      "bytes": 213752,
+      "sha256": "cff9f8a74f567fe090bbc0cb749691b635c1af032fbe13450c1393605aab5928"
+    },
+    {
+      "path": "before/g2a/g2a-malformed_atoi.xml",
+      "bytes": 1628,
+      "sha256": "53843678b3eec29e5ac4ab14550446b256dfcaa72fe779d973c25867c60f39b6"
+    },
+    {
+      "path": "before/g2a/g2a-negative_atoi.profraw",
+      "bytes": 213752,
+      "sha256": "1860d3b4fd38dc2ecb5fbbd9484d5a7bf9d703b6726f533bed2267ae701bf2b9"
+    },
+    {
+      "path": "before/g2a/g2a-negative_atoi.xml",
+      "bytes": 1625,
+      "sha256": "8c04b7b93d32c65e6901892597cdf4468cf48f6d26ab47b7350d123f8661f4cf"
+    },
+    {
+      "path": "before/g2a/g2a-query-result.json",
+      "bytes": 21568,
+      "sha256": "7cf5481148ac230d2f484f78915f9aaac4ee6be9922c3cee50e6129354343767"
+    },
+    {
+      "path": "before/g2a/g2a-query.profdata",
+      "bytes": 41872,
+      "sha256": "c669a5eab6c6efd012abb1f75d6d25deb0fe8b9c78871f38438e8b49f7f0b5e6"
+    },
+    {
+      "path": "before/g2a/g2a-single.profraw",
+      "bytes": 213752,
+      "sha256": "957285d8afdd527f48d7f365130d9de41077013b87cf5260ca1bbe59cf2ebd80"
+    },
+    {
+      "path": "before/g2a/g2a-single.xml",
+      "bytes": 1622,
+      "sha256": "facea901f992aff0e4763f299ab8182b7fafaedb11e21ef236d7ddc2c467f0e0"
+    },
+    {
+      "path": "before/g2a/g2a-vendor_override.profraw",
+      "bytes": 213752,
+      "sha256": "89876489fe407a382cff8a0621c09a3f5b7909288962b0dd7bfe9b0bfaf1331f"
+    },
+    {
+      "path": "before/g2a/g2a-vendor_override.xml",
+      "bytes": 1629,
+      "sha256": "b1295b4504534c62f81d6a893651ca62f0fb475452faa3303b3105e2153fa46b"
+    },
+    {
+      "path": "before/g2a/g2a-vendor_result_propagation.profraw",
+      "bytes": 213752,
+      "sha256": "56ee21936d78272a17238f87be72b2d6be4108fb93a737cba9535833ff71bbbe"
+    },
+    {
+      "path": "before/g2a/g2a-vendor_result_propagation.xml",
+      "bytes": 1631,
+      "sha256": "c9eee9f4b82a74e843b777471266358a9a029b4253c07add20f6259b34948486"
+    },
+    {
+      "path": "before/g2a/g2a-zero.profraw",
+      "bytes": 213752,
+      "sha256": "0a666dc7cd2c66810d081ad5d81ed447848784417eeb066e2dcdb364f010842b"
+    },
+    {
+      "path": "before/g2a/g2a-zero.xml",
+      "bytes": 1622,
+      "sha256": "c881d1f8427a6c0f84dcea8e2e7975f4af4fdfd7ff666875bd346f7c6466518b"
+    },
+    {
+      "path": "before/g2a/gn-gen.log",
+      "bytes": 44,
+      "sha256": "e2bb8ae658fee589bb521af5815db492d016a88390e817fd302f639870b26c49"
+    },
+    {
+      "path": "before/g2a/ninja-build.log",
+      "bytes": 1852,
+      "sha256": "2a601c9f0a7e3d2b2e3a6ca6158ac991ed40d890c5fdd4e000366e249ac879a3"
+    },
+    {
+      "path": "before/g2a/obj/bootstrap_launcher.ninja",
+      "bytes": 1667,
+      "sha256": "09bbc7988ee012cde70628bf5f3b73cb08326e213f4e207370c0734787651f0e"
+    },
+    {
+      "path": "before/g2a/obj/component_launcher.ninja",
+      "bytes": 1662,
+      "sha256": "300016e5bdf238c17e523e1c8ec7ea3e38585a55034445db03cf739151fc879b"
+    },
+    {
+      "path": "before/g2a/obj/event_transport_production_host.ninja",
+      "bytes": 2285,
+      "sha256": "76793ecdf2917b738786f93a56c26b134282072c2001c00424ad2bdab651da34"
+    },
+    {
+      "path": "before/g2a/obj/external_service_boundaries.ninja",
+      "bytes": 1085,
+      "sha256": "d9749a74b72f188e0e24085976febc15286eed1dacc40088249b09ce4e3a6c4a"
+    },
+    {
+      "path": "before/g2a/obj/g2a_query_launcher.ninja",
+      "bytes": 2093,
+      "sha256": "d458b7cea5d3fdf00502d7ef09953cff01af116c62d2c038d42085fe8613356c"
+    },
+    {
+      "path": "before/g2a/obj/g2a_readonly_production_host.ninja",
+      "bytes": 2955,
+      "sha256": "88ef8a707d868a0f355a7fa8fa218e98cd36463d5138cc710a1d0ad72b5695f5"
+    },
+    {
+      "path": "before/g2a/obj/googlemock.ninja",
+      "bytes": 1195,
+      "sha256": "8e72a7995a61ce208aa496ab2c5a8898d787b5a0c29f06a2c1554ca91002a650"
+    },
+    {
+      "path": "before/g2a/obj/googletest.ninja",
+      "bytes": 1055,
+      "sha256": "13567c8658941b2e4e8eda712375a68c64d2f1eb5264e817e8ba2e4adcd45376"
+    },
+    {
+      "path": "before/g2a/obj/platform_adapter_test.ninja",
+      "bytes": 4230,
+      "sha256": "cbc7f3618a5d53a27be572c4a483baecf3d0a311d2a82be9cca3f15f7bc6b8c1"
+    },
+    {
+      "path": "before/g2a/obj/platform_boundaries.ninja",
+      "bytes": 954,
+      "sha256": "40152bbda484fd6a03b0586eba563d72cc885c26e8a379154535dbbdc25dc1a2"
+    },
+    {
+      "path": "before/g2a/obj/primary_real_support.ninja",
+      "bytes": 4333,
+      "sha256": "e381e4685b693ff90b5e1b9b460aa81a1dc46e4d61ef6c1c659df7154dd9e89e"
+    },
+    {
+      "path": "before/g2a/obj/primary_slot_contract.ninja",
+      "bytes": 153,
+      "sha256": "c7d2b750cf9a96399e8e5564771ab5d5717475724f9b7d086e89ce28d98c0b51"
+    },
+    {
+      "path": "before/g2a/obj/primary_slot_entry_production.ninja",
+      "bytes": 3130,
+      "sha256": "25bf3c5cff86c26fe6d8ccf1500b1152c4dad597ebb3339baaae4b7a9f2dbdde"
+    },
+    {
+      "path": "before/g2a/obj/scheduler_boundaries.ninja",
+      "bytes": 1447,
+      "sha256": "f79775067878329094e5375205cf2aa9860b3481d76014ea637e23927ac5a22b"
+    },
+    {
+      "path": "before/g2a/obj/sim_bootstrap_characterization.ninja",
+      "bytes": 1549,
+      "sha256": "1b03b5f5ee2168cf996163f05dca0261910e69918d6cf8d885343dde1ef217a4"
+    },
+    {
+      "path": "before/g2a/obj/sim_component_test.ninja",
+      "bytes": 1696,
+      "sha256": "37257ad4c16fcaf22116a7d9eb0d6f4d0c6dc74d52e82298dca52e25b9f5a745"
+    },
+    {
+      "path": "before/g2a/obj/sim_g2a_query_test.ninja",
+      "bytes": 2158,
+      "sha256": "f6f7263467f0e4f58167161b4fba0a4fc670bec4cc4193e30a884e058418fae1"
+    },
+    {
+      "path": "before/g2a/obj/sim_guard_legacy.ninja",
+      "bytes": 5477,
+      "sha256": "8a0d266c1e77b638f6170f7d53f90ec258cadb8e7b254e22598436ca98798b18"
+    },
+    {
+      "path": "before/g2a/obj/sim_guard_legacy_production.ninja",
+      "bytes": 4161,
+      "sha256": "05aa215b6f54ffe6e9cbe6c9ced6264027829bc528e384b3f4db0a254a0cae95"
+    },
+    {
+      "path": "before/g2a/obj/sim_guard_pin_memory.ninja",
+      "bytes": 5062,
+      "sha256": "2b13e5150140b2c633016e1dcdf0690ed47c8ec6a5af71018233213efcca3ca3"
+    },
+    {
+      "path": "before/g2a/obj/sim_initialization_link_probe.ninja",
+      "bytes": 9582,
+      "sha256": "1ea7e2a4618781a40c2f041f0ee51691d8dd1c5f08d5e0eccdfa719fecbec469"
+    },
+    {
+      "path": "before/g2a/obj/sim_initialization_production_host.ninja",
+      "bytes": 23843,
+      "sha256": "c06c1e8fef36d73a5ec0a4baf27cdc072db1d8e0aa89ea73822c2e7600151121"
+    },
+    {
+      "path": "before/g2a/obj/sim_primary_slot_entry_test.ninja",
+      "bytes": 3178,
+      "sha256": "a68be5659d971d3252d344137f76f121814e3862968ce072e1423825dac3160b"
+    },
+    {
+      "path": "before/g2a/obj/sim_primary_slot_real_test.ninja",
+      "bytes": 13068,
+      "sha256": "9fbdbdf699e21fd4ef073ec763376dd34e94e0d8a286ff66edd6fd65555e62fe"
+    },
+    {
+      "path": "before/g2a/obj/sim_production_host.ninja",
+      "bytes": 2267,
+      "sha256": "58eddbea83778a3892240c79dbe9c10fdc755d36971afdbe674b66e99474abbe"
+    },
+    {
+      "path": "before/g2a/ril-interface-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "before/g2a/run-dual.log",
+      "bytes": 503,
+      "sha256": "122bd692ce30522c531166bd18cf6d4513f8ef1f9762bd41ddbc916402cdda81"
+    },
+    {
+      "path": "before/g2a/run-malformed_atoi.log",
+      "bytes": 503,
+      "sha256": "122bd692ce30522c531166bd18cf6d4513f8ef1f9762bd41ddbc916402cdda81"
+    },
+    {
+      "path": "before/g2a/run-negative_atoi.log",
+      "bytes": 503,
+      "sha256": "122bd692ce30522c531166bd18cf6d4513f8ef1f9762bd41ddbc916402cdda81"
+    },
+    {
+      "path": "before/g2a/run-single.log",
+      "bytes": 503,
+      "sha256": "b87e997232f54d16153997ad9a1a828b03730e12961d50dad83a2d3213b632fd"
+    },
+    {
+      "path": "before/g2a/run-vendor_override.log",
+      "bytes": 503,
+      "sha256": "122bd692ce30522c531166bd18cf6d4513f8ef1f9762bd41ddbc916402cdda81"
+    },
+    {
+      "path": "before/g2a/run-vendor_result_propagation.log",
+      "bytes": 503,
+      "sha256": "b87e997232f54d16153997ad9a1a828b03730e12961d50dad83a2d3213b632fd"
+    },
+    {
+      "path": "before/g2a/run-zero.log",
+      "bytes": 503,
+      "sha256": "122bd692ce30522c531166bd18cf6d4513f8ef1f9762bd41ddbc916402cdda81"
+    },
+    {
+      "path": "before/g2a/toolchain.ninja",
+      "bytes": 1403,
+      "sha256": "74d1b195fad85be6474372d770ddd9e959aa2101ea3db75ce1725ac4c83b00db"
+    },
+    {
+      "path": "before/g2a/vendor-abi-boundary-build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "before/g2a/version-clang++.log",
+      "bytes": 110,
+      "sha256": "3635b8631d4ebcd8ed7586f4e01e7a6b44407de9d38db6e01daca9c242ed7a53"
+    },
+    {
+      "path": "before/g2a/version-gn.log",
+      "bytes": 15,
+      "sha256": "35c7bdf4eacd209bf6f22e9ac8fa7b2e047ce9e15d4014307c50c8744e051c2e"
+    },
+    {
+      "path": "before/g2a/version-ld.gold.log",
+      "bytes": 288,
+      "sha256": "eebd5fcb32627bd445ac96a181ae2cb866ca8d9ef7cec11f38ff048a7737e270"
+    },
+    {
+      "path": "before/g2a/version-llvm-cov-18.log",
+      "bytes": 46,
+      "sha256": "cfb9286322cccef53a692448cf4007a998d186dfb8e8313d317390a95eeb10f1"
+    },
+    {
+      "path": "before/g2a/version-llvm-profdata-18.log",
+      "bytes": 46,
+      "sha256": "cfb9286322cccef53a692448cf4007a998d186dfb8e8313d317390a95eeb10f1"
+    },
+    {
+      "path": "before/g2a/version-ninja.log",
+      "bytes": 7,
+      "sha256": "4f9416d650bd28343244b868dfebdb11e70d7b32423536cb87b8c31fde62f993"
+    },
+    {
+      "path": "before/g2a.log",
+      "bytes": 167,
+      "sha256": "7e07ffd030aa271e8baa6b83fb61cbbb514338946eefe0705fcb1c0e63072932"
+    },
+    {
+      "path": "before/git-head.txt",
+      "bytes": 41,
+      "sha256": "00405097571814a87290bf1329d7dd4cab79886e7a4022db39cb701ebe2a727f"
+    },
+    {
+      "path": "before/git-status.txt",
+      "bytes": 289,
+      "sha256": "8623f33d7330ff11ed0f8cc3fc7cec1d3162d81f45e453fcc7b1cbfcb1abee0a"
+    },
+    {
+      "path": "before/historic-index-check.json",
+      "bytes": 57856,
+      "sha256": "ad56514f1de8f6637b9e5cac20ee47878dcb25072c1ba3fce9c980d27870086f"
+    },
+    {
+      "path": "before/host/build/args.gn",
+      "bytes": 235,
+      "sha256": "5d6e292947cf86af0ac179767ecdaf782a9177372813d23d171c1191952c721f"
+    },
+    {
+      "path": "before/host/build/build.ninja",
+      "bytes": 4465,
+      "sha256": "76f4fc61ff23902be4bd5fcd7f393d2bb3b12217ee7c2aaafe3d52d9ff39332f"
+    },
+    {
+      "path": "before/host/build/compile_commands.json",
+      "bytes": 212038,
+      "sha256": "0aacfb2dcc71bd5785cba0ea1e0cb5429fec345f7d09881d14eaa0f970e2f280"
+    },
+    {
+      "path": "before/host/build/obj/bootstrap_launcher.ninja",
+      "bytes": 1700,
+      "sha256": "5b66e117902f50e0f6b143eaa140035d6e83d659889a6dcfd8981ed641ba65eb"
+    },
+    {
+      "path": "before/host/build/obj/component_launcher.ninja",
+      "bytes": 1695,
+      "sha256": "836bfcbe1a2a99c63c4c517bf7ea5795d6dfe9c469d589b97df01650c7fab53d"
+    },
+    {
+      "path": "before/host/build/obj/event_transport_production_host.ninja",
+      "bytes": 2315,
+      "sha256": "c36a63a4692e3d1101a2fdd815cb1acf6291bbae3febc3455cfbe199d3d3d192"
+    },
+    {
+      "path": "before/host/build/obj/external_service_boundaries.ninja",
+      "bytes": 1121,
+      "sha256": "6e61f401f231d1421b6bee1f1be64c9834c0a622c8a5947af5b757bc1854a9ea"
+    },
+    {
+      "path": "before/host/build/obj/g2a_query_launcher.ninja",
+      "bytes": 2129,
+      "sha256": "4fc1b3c7b6860d72aeeb7afda09248043eaf657f6b6ea285601050727c24ed8a"
+    },
+    {
+      "path": "before/host/build/obj/g2a_readonly_production_host.ninja",
+      "bytes": 2985,
+      "sha256": "04eb1501e74f97ddd6e4284e92ecff438db24f66d402f1d0e1f177e9886d217f"
+    },
+    {
+      "path": "before/host/build/obj/googlemock.ninja",
+      "bytes": 1222,
+      "sha256": "21434da6a9abc494d352929fa380781a9e8535b09a96397a16d00636e600f68e"
+    },
+    {
+      "path": "before/host/build/obj/googletest.ninja",
+      "bytes": 1082,
+      "sha256": "c67e4ef4d7be37fa2628d2aa591031f615eb25510803b28cf241e531a5edabdf"
+    },
+    {
+      "path": "before/host/build/obj/platform_adapter_test.ninja",
+      "bytes": 4278,
+      "sha256": "b9d871eefdeb650ed9581bd163e16f58e2af0db23cd01ce3883ef2e685c7d8b8"
+    },
+    {
+      "path": "before/host/build/obj/platform_boundaries.ninja",
+      "bytes": 987,
+      "sha256": "24e22d1a73d1e98c49347ce759d649851975f4369d007a63fa770321128851c4"
+    },
+    {
+      "path": "before/host/build/obj/primary_real_support.ninja",
+      "bytes": 4372,
+      "sha256": "f1dce74fdf4c102bde3b0900dd199f1c33f6b33857287959451d4f3fd68639bf"
+    },
+    {
+      "path": "before/host/build/obj/primary_slot_contract.ninja",
+      "bytes": 153,
+      "sha256": "c7d2b750cf9a96399e8e5564771ab5d5717475724f9b7d086e89ce28d98c0b51"
+    },
+    {
+      "path": "before/host/build/obj/primary_slot_entry_production.ninja",
+      "bytes": 3166,
+      "sha256": "a0d6e11831b6b78624541a8250cc25f2f1856ad5300ecf9d968552ed01f5ecae"
+    },
+    {
+      "path": "before/host/build/obj/scheduler_boundaries.ninja",
+      "bytes": 1489,
+      "sha256": "f24f47e4f54f9bea57930e74d8d045c24fb38c73f01aab7a91a1c4c06d129d1f"
+    },
+    {
+      "path": "before/host/build/obj/sim_bootstrap_characterization.ninja",
+      "bytes": 1582,
+      "sha256": "fd62312ea5028495542f0fbfac7f27f6f0f6d6cbd565fa8135d360ea7b2dd4be"
+    },
+    {
+      "path": "before/host/build/obj/sim_component_test.ninja",
+      "bytes": 1732,
+      "sha256": "e0bd16f8c5a02c26052ebcd30719f8533d62d704616403bb7fa2ef1227284679"
+    },
+    {
+      "path": "before/host/build/obj/sim_g2a_query_test.ninja",
+      "bytes": 2194,
+      "sha256": "143aac315a28b04d06e44819aee3ce1f56bc0059167fbbc0944fe847166ea280"
+    },
+    {
+      "path": "before/host/build/obj/sim_guard_legacy.ninja",
+      "bytes": 5510,
+      "sha256": "99dd07ddb140b020d519d5b00c82a2fb18056875b09d7965a1192c0c27e7a416"
+    },
+    {
+      "path": "before/host/build/obj/sim_guard_legacy_production.ninja",
+      "bytes": 4194,
+      "sha256": "4d7972652748c8e5eb43f9d739ac22546df294c26a8d7f5c3c6a1a597347fc11"
+    },
+    {
+      "path": "before/host/build/obj/sim_guard_pin_memory.ninja",
+      "bytes": 5095,
+      "sha256": "ee89a23d907699fbd540f754a4cc16261de4e71ed899bb9c9bda26ba12c32fdc"
+    },
+    {
+      "path": "before/host/build/obj/sim_initialization_link_probe.ninja",
+      "bytes": 9615,
+      "sha256": "526433c5e084a950ad2782cfa4027efeb61e83581afb117d67f51d3f6b5ad442"
+    },
+    {
+      "path": "before/host/build/obj/sim_initialization_production_host.ninja",
+      "bytes": 23879,
+      "sha256": "22008c790a59c71649c65530c9e0a354d2a73ce56f28c3a1aac976f56073a511"
+    },
+    {
+      "path": "before/host/build/obj/sim_primary_slot_entry_test.ninja",
+      "bytes": 3220,
+      "sha256": "21f4aa55e190e49020c55cf660f959c0dadcf4a0c2852c7a12885974eae306a1"
+    },
+    {
+      "path": "before/host/build/obj/sim_primary_slot_real_test.ninja",
+      "bytes": 13128,
+      "sha256": "00ad87610470106af3f12e3065dec716138fe9e51c230ac61ebd9b1e3a48586c"
+    },
+    {
+      "path": "before/host/build/obj/sim_production_host.ninja",
+      "bytes": 2297,
+      "sha256": "fd5c6c74d8aae142e61f2ef620d01e360d49832ef2c02306c9ca8a6e5fe41b6d"
+    },
+    {
+      "path": "before/host/build/toolchain.ninja",
+      "bytes": 1403,
+      "sha256": "74d1b195fad85be6474372d770ddd9e959aa2101ea3db75ce1725ac4c83b00db"
+    },
+    {
+      "path": "before/host/build.log",
+      "bytes": 5354,
+      "sha256": "df6c7bd0913f10f39917479c6b0c742699557b6d93f6e7068ecf79b049783815"
+    },
+    {
+      "path": "before/host/configure.log",
+      "bytes": 80,
+      "sha256": "6496a3407cbb48552058c94f6831cf6d75ee3ebdd9c1c4f27e50a392a137df42"
+    },
+    {
+      "path": "before/host/host.json",
+      "bytes": 258,
+      "sha256": "2e267f533959b30c6f6ba54f9fe6097ed37df5fb25e808e708011700fb0e0eda"
+    },
+    {
+      "path": "before/host/latest.json",
+      "bytes": 3550,
+      "sha256": "b9aeb53e531b3caa4fb81f1bdc1bed0e4b8abb6ded435c7539a54f5ec270b3fc"
+    },
+    {
+      "path": "before/host/runs/run-x_pm4x4c/capacity-439.profraw",
+      "bytes": 130304,
+      "sha256": "c5c02d9ac870521952e6f838b72dc301ddbc57618360e2cb459d37793f07b949"
+    },
+    {
+      "path": "before/host/runs/run-x_pm4x4c/capacity.log",
+      "bytes": 399,
+      "sha256": "0ea167ba7f6bdfee4ce4af95799e5a53858f82b6931fd096cf9f29b7c6e29c26"
+    },
+    {
+      "path": "before/host/runs/run-x_pm4x4c/capacity.xml",
+      "bytes": 1169,
+      "sha256": "9384e4c76363d5e9b9f9b4a4a45a127e01f1ea1842e7831b1c33f0f35b34490e"
+    },
+    {
+      "path": "before/host/runs/run-x_pm4x4c/compatibility-383.profraw",
+      "bytes": 227792,
+      "sha256": "0f9156282ab7a65448b970f015e812e2e6fdb239b51f1fba1043e5bd4359c559"
+    },
+    {
+      "path": "before/host/runs/run-x_pm4x4c/compatibility.log",
+      "bytes": 2689,
+      "sha256": "d022309c7bf8a8a257705f79466e6a43a189c391e54ae54538066e66df80be1d"
+    },
+    {
+      "path": "before/host/runs/run-x_pm4x4c/compatibility.xml",
+      "bytes": 16355,
+      "sha256": "70e749041e0f5c568b06d2190bdbb2463bf5a3f595094f69bcb78cd101907ee2"
+    },
+    {
+      "path": "before/host/runs/run-x_pm4x4c/infrastructure-425.profraw",
+      "bytes": 49592,
+      "sha256": "7bc26c66755d85db875a501dc84fae1ec6e370453b8313ff9e0b8e60dce1ccd0"
+    },
+    {
+      "path": "before/host/runs/run-x_pm4x4c/infrastructure.log",
+      "bytes": 3874,
+      "sha256": "8857a0d2144804f7acd8bf3eafc0b5360ba52194162aff7800954a393eebc8bb"
+    },
+    {
+      "path": "before/host/runs/run-x_pm4x4c/infrastructure.xml",
+      "bytes": 13455,
+      "sha256": "e9dd312ca8bd4604b396cba61135dc41dde92eef29cbf6460f42a595cb2c25b2"
+    },
+    {
+      "path": "before/host/runs/run-x_pm4x4c/known_defects-410.profraw",
+      "bytes": 227792,
+      "sha256": "a3946514e2965226c584ff8b9f8c65e2c8f74f3a6fb9372640ea07b4684db208"
+    },
+    {
+      "path": "before/host/runs/run-x_pm4x4c/known_defects.log",
+      "bytes": 3661,
+      "sha256": "eb863525a0d8dbba8827e159b2b2620d3959729a7b1b5c3d2261469d3810bf50"
+    },
+    {
+      "path": "before/host/runs/run-x_pm4x4c/known_defects.xml",
+      "bytes": 9673,
+      "sha256": "e0f259272d5e58bc711f633389f5e0fbdb8a0079e3e604956229856b559309da"
+    },
+    {
+      "path": "before/host/runs/run-x_pm4x4c/pin_memory-418.profraw",
+      "bytes": 227792,
+      "sha256": "937874cb3b13628a5c67890cebc4871ba1a8e27128da6c5a9ea61855530038fd"
+    },
+    {
+      "path": "before/host/runs/run-x_pm4x4c/pin_memory.log",
+      "bytes": 945,
+      "sha256": "e00cdd4dd4af63f27ab9b9972ac1950965285c73afd4beed0211602c7ffd9917"
+    },
+    {
+      "path": "before/host/runs/run-x_pm4x4c/pin_memory.xml",
+      "bytes": 3450,
+      "sha256": "573d94107948688b2bd8f2033c11edf8a98df2962073095a61bdea3470d6c047"
+    },
+    {
+      "path": "before/host/runs/run-x_pm4x4c/primary_entry_internal_seam-440.profraw",
+      "bytes": 97344,
+      "sha256": "67b7d28c5504283ed7ce61b54851fe31702f7ea9ee7bf3a941d5115772455a5c"
+    },
+    {
+      "path": "before/host/runs/run-x_pm4x4c/primary_entry_internal_seam.log",
+      "bytes": 2626,
+      "sha256": "33c6ba07af82598a0a00d784f322fb0d743759d1902e0adc11abf2ce7fc251c5"
+    },
+    {
+      "path": "before/host/runs/run-x_pm4x4c/primary_entry_internal_seam.xml",
+      "bytes": 8632,
+      "sha256": "eaee0cd070a77baf06add4614054eae9525330e5d784e8a32067a8a3e694379c"
+    },
+    {
+      "path": "before/host/runs/run-x_pm4x4c/result.json",
+      "bytes": 3550,
+      "sha256": "b9aeb53e531b3caa4fb81f1bdc1bed0e4b8abb6ded435c7539a54f5ec270b3fc"
+    },
+    {
+      "path": "before/host.log",
+      "bytes": 23058,
+      "sha256": "ca8d6e39023de255d50057a92ab1d576cfce4538b6a9b8adf8e9afc5b9def678"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/args.gn",
+      "bytes": 174,
+      "sha256": "44742282ca728ffae9c0904d04286f4447fa52101e053657ddec23f2e5817965"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/build.ninja",
+      "bytes": 4445,
+      "sha256": "b13b9400fa9ee6e1cf35c8fa74b7178b4aec6b20299562d16e3749aeb3c3809a"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/obj/bootstrap_launcher.ninja",
+      "bytes": 1679,
+      "sha256": "4a0342b8ecded9f3ebb61e6a2612525f002c1685878b3c76221e9deda7fb5ab7"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/obj/component_launcher.ninja",
+      "bytes": 1674,
+      "sha256": "5035dafe20593d79caced0fd4fc76b7534fc2b024c1cc63b22bbc25b8929770e"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/obj/event_transport_production_host.ninja",
+      "bytes": 2291,
+      "sha256": "0f21778c0ed871dc942968a5e8c099b0b674e8185b97aa9283ef6fe99f98324d"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/obj/external_service_boundaries.ninja",
+      "bytes": 1103,
+      "sha256": "1ca2d07f5efb208e69aaecc69bcae5ecad29c8faabef8fcb165b3181e98bc2ce"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/obj/g2a_query_launcher.ninja",
+      "bytes": 2111,
+      "sha256": "5f7351e2d912ac38ac5010d0920a8266e02045b8d8ab7b3407374d780b879afd"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/obj/g2a_readonly_production_host.ninja",
+      "bytes": 2961,
+      "sha256": "0b20e192adde13c05f11258256806b89428fc1baf42f20a51d394f91a8d181f3"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/obj/googlemock.ninja",
+      "bytes": 1195,
+      "sha256": "8e72a7995a61ce208aa496ab2c5a8898d787b5a0c29f06a2c1554ca91002a650"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/obj/googletest.ninja",
+      "bytes": 1055,
+      "sha256": "13567c8658941b2e4e8eda712375a68c64d2f1eb5264e817e8ba2e4adcd45376"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/obj/platform_adapter_test.ninja",
+      "bytes": 4272,
+      "sha256": "c5722a7222b2606110b5823125e500a77d0f85dae84dc3a14e27f38b75660e92"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/obj/platform_boundaries.ninja",
+      "bytes": 966,
+      "sha256": "7d4500603088a239c2da1eca46f651c482532a97cceb6487cd68b05ded99af72"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/obj/primary_real_support.ninja",
+      "bytes": 4357,
+      "sha256": "3ad1209544ac601e8fd1a867ad623dd308a9e713872a6968f9fde2dfe21d993c"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/obj/primary_slot_contract.ninja",
+      "bytes": 153,
+      "sha256": "c7d2b750cf9a96399e8e5564771ab5d5717475724f9b7d086e89ce28d98c0b51"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/obj/primary_slot_entry_production.ninja",
+      "bytes": 3148,
+      "sha256": "1556f6be7bc86db1e27b21b1b5f06cab9fbac9d9fe41fe9c528f4e386f41420a"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/obj/scheduler_boundaries.ninja",
+      "bytes": 1477,
+      "sha256": "072b33093991c64deceb32a6fafc42e053a400e329d1567b4d475a9ef75ef58c"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/obj/sim_bootstrap_characterization.ninja",
+      "bytes": 1561,
+      "sha256": "373a01fe1d2331ac395b97782354b1bae4a4c42435b6af1a7a9097d55ef866c7"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/obj/sim_component_test.ninja",
+      "bytes": 1714,
+      "sha256": "ae80fc3f107c2ebc6bbb033a5f8aafea2878e26b235e090758e87a9dc5166b69"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/obj/sim_g2a_query_test.ninja",
+      "bytes": 2176,
+      "sha256": "efdb465bf77e3fb1aeffdcb00959ea0d3fb47f0a6bfc47739f4cf4a966aae738"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/obj/sim_guard_legacy.ninja",
+      "bytes": 5489,
+      "sha256": "4f07eaf2a4ca9f2ab088eff7f7e04ef09271a5bf5a43572dbc1478a604cee6c0"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/obj/sim_guard_legacy_production.ninja",
+      "bytes": 4173,
+      "sha256": "978449c5f92d6f57cc24fb29d1782de21bcd5a25d675c1e68a7464d58af4bf11"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/obj/sim_guard_pin_memory.ninja",
+      "bytes": 5074,
+      "sha256": "02efca1dfbbca5c2408e3697d65f56e3465b95a4acf159286b0cea6f4bccaecb"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/obj/sim_initialization_link_probe.ninja",
+      "bytes": 9594,
+      "sha256": "d7a6fab9524d4c2bdcc6f8f24dc416da3c7037454f32ae1a4545fe1bd61c0fbf"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/obj/sim_initialization_production_host.ninja",
+      "bytes": 23861,
+      "sha256": "8d6ceb0fe8507462f9b566033222544ca1b83ab9f4b3a1db14572894e8b165ba"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/obj/sim_primary_slot_entry_test.ninja",
+      "bytes": 3208,
+      "sha256": "a620c4800810c961d769b9b9da155155e501655a038f749775c7af99c4c88e5e"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/obj/sim_primary_slot_real_test.ninja",
+      "bytes": 13134,
+      "sha256": "22741028adecd2cff4fd758c3dfa711b2f9f59ffe35e161d3fc64eaef90895b8"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/obj/sim_production_host.ninja",
+      "bytes": 2273,
+      "sha256": "14527634290891e2c6cd6e4188f623b5b805920bcbfbe9d795d60749f8b5bf27"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/build/toolchain.ninja",
+      "bytes": 1403,
+      "sha256": "74d1b195fad85be6474372d770ddd9e959aa2101ea3db75ce1725ac4c83b00db"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/coverage.log",
+      "bytes": 1487747,
+      "sha256": "f54c281091f779fe4e82182fa41aa391aaa9fe4a2253010c1159df3de21a20bc"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/merge.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/args.gn",
+      "bytes": 300,
+      "sha256": "70324c2f686a6218526d53ac20a1daac43a87fee3104fad5d7b139e139c50ba2"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/build.ninja",
+      "bytes": 4445,
+      "sha256": "b13b9400fa9ee6e1cf35c8fa74b7178b4aec6b20299562d16e3749aeb3c3809a"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/obj/bootstrap_launcher.ninja",
+      "bytes": 1679,
+      "sha256": "4a0342b8ecded9f3ebb61e6a2612525f002c1685878b3c76221e9deda7fb5ab7"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/obj/component_launcher.ninja",
+      "bytes": 1674,
+      "sha256": "5035dafe20593d79caced0fd4fc76b7534fc2b024c1cc63b22bbc25b8929770e"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/obj/event_transport_production_host.ninja",
+      "bytes": 2291,
+      "sha256": "0f21778c0ed871dc942968a5e8c099b0b674e8185b97aa9283ef6fe99f98324d"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/obj/external_service_boundaries.ninja",
+      "bytes": 1103,
+      "sha256": "1ca2d07f5efb208e69aaecc69bcae5ecad29c8faabef8fcb165b3181e98bc2ce"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/obj/g2a_query_launcher.ninja",
+      "bytes": 2111,
+      "sha256": "5f7351e2d912ac38ac5010d0920a8266e02045b8d8ab7b3407374d780b879afd"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/obj/g2a_readonly_production_host.ninja",
+      "bytes": 2961,
+      "sha256": "0b20e192adde13c05f11258256806b89428fc1baf42f20a51d394f91a8d181f3"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/obj/googlemock.ninja",
+      "bytes": 1195,
+      "sha256": "8e72a7995a61ce208aa496ab2c5a8898d787b5a0c29f06a2c1554ca91002a650"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/obj/googletest.ninja",
+      "bytes": 1055,
+      "sha256": "13567c8658941b2e4e8eda712375a68c64d2f1eb5264e817e8ba2e4adcd45376"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/obj/platform_adapter_test.ninja",
+      "bytes": 4272,
+      "sha256": "c5722a7222b2606110b5823125e500a77d0f85dae84dc3a14e27f38b75660e92"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/obj/platform_boundaries.ninja",
+      "bytes": 966,
+      "sha256": "7d4500603088a239c2da1eca46f651c482532a97cceb6487cd68b05ded99af72"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/obj/primary_real_support.ninja",
+      "bytes": 4357,
+      "sha256": "3ad1209544ac601e8fd1a867ad623dd308a9e713872a6968f9fde2dfe21d993c"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/obj/primary_slot_contract.ninja",
+      "bytes": 153,
+      "sha256": "c7d2b750cf9a96399e8e5564771ab5d5717475724f9b7d086e89ce28d98c0b51"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/obj/primary_slot_entry_production.ninja",
+      "bytes": 3148,
+      "sha256": "1556f6be7bc86db1e27b21b1b5f06cab9fbac9d9fe41fe9c528f4e386f41420a"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/obj/scheduler_boundaries.ninja",
+      "bytes": 1477,
+      "sha256": "072b33093991c64deceb32a6fafc42e053a400e329d1567b4d475a9ef75ef58c"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/obj/sim_bootstrap_characterization.ninja",
+      "bytes": 1561,
+      "sha256": "373a01fe1d2331ac395b97782354b1bae4a4c42435b6af1a7a9097d55ef866c7"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/obj/sim_component_test.ninja",
+      "bytes": 1714,
+      "sha256": "ae80fc3f107c2ebc6bbb033a5f8aafea2878e26b235e090758e87a9dc5166b69"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/obj/sim_g2a_query_test.ninja",
+      "bytes": 2176,
+      "sha256": "efdb465bf77e3fb1aeffdcb00959ea0d3fb47f0a6bfc47739f4cf4a966aae738"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/obj/sim_guard_legacy.ninja",
+      "bytes": 5504,
+      "sha256": "e69c6cf4a81e58d9cc250bb594aadf34d6607c4c05e4ba0497206d46cd95e49b"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/obj/sim_guard_legacy_production.ninja",
+      "bytes": 4232,
+      "sha256": "8369e02d70de7c7aa5c7568fcbafcdb6c4d55d61d81064f88798470d94be6071"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/obj/sim_guard_pin_memory.ninja",
+      "bytes": 5089,
+      "sha256": "c1e0f020bfb1887b147a0a81d5ca65d91e68794b912634a715bdcc9c6e873854"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/obj/sim_initialization_link_probe.ninja",
+      "bytes": 9594,
+      "sha256": "d7a6fab9524d4c2bdcc6f8f24dc416da3c7037454f32ae1a4545fe1bd61c0fbf"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/obj/sim_initialization_production_host.ninja",
+      "bytes": 23861,
+      "sha256": "8d6ceb0fe8507462f9b566033222544ca1b83ab9f4b3a1db14572894e8b165ba"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/obj/sim_primary_slot_entry_test.ninja",
+      "bytes": 3208,
+      "sha256": "a620c4800810c961d769b9b9da155155e501655a038f749775c7af99c4c88e5e"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/obj/sim_primary_slot_real_test.ninja",
+      "bytes": 13134,
+      "sha256": "22741028adecd2cff4fd758c3dfa711b2f9f59ffe35e161d3fc64eaef90895b8"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/obj/sim_production_host.ninja",
+      "bytes": 2273,
+      "sha256": "14527634290891e2c6cd6e4188f623b5b805920bcbfbe9d795d60749f8b5bf27"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build/toolchain.ninja",
+      "bytes": 1403,
+      "sha256": "74d1b195fad85be6474372d770ddd9e959aa2101ea3db75ce1725ac4c83b00db"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-build.log",
+      "bytes": 3007,
+      "sha256": "c0f0a8dff6d244c41aa03be1af6e4dae51b1245bc602b087fad8196bcf0b13f7"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutant-gn.log",
+      "bytes": 43,
+      "sha256": "d2e89dde6760e9c8d49c555c82011075e7ea16e0abd3ea977bf97c70d13c84be"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutation.log",
+      "bytes": 1669,
+      "sha256": "2cfb034473e4d005fe42b020e9dad977602e1d92f5ad8e087be06432415e2cc7"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutation.profraw",
+      "bytes": 227800,
+      "sha256": "2d2ce0fc88f6a6deba83833dc64106aee4817a39fae66ae17bccafa0bc48b4ae"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/mutation.xml",
+      "bytes": 2924,
+      "sha256": "6c312d6199ab618e127a75de61250cbf54174f0783d272c5a8ae36259bac20e9"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/normal-build.log",
+      "bytes": 2985,
+      "sha256": "2a681f8e5a4e88eeaddf35cf1a81e4108555d5fac8ff1268ea2860188f78ba44"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/normal-gn.log",
+      "bytes": 43,
+      "sha256": "26e9152137e454154435799863a84e675b64eb84b7d14e7e03903833a50e6852"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/normal.profdata",
+      "bytes": 224984,
+      "sha256": "f2fa7531bb969ceac2a980ce5d7adb89089f13ae989d70e84a7f1c27661ca47e"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/restored.log",
+      "bytes": 2740,
+      "sha256": "d97b78ca33d2b86078be881cdf921568c4499689eaf1eebba01c9fb7e47a2b80"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/restored.profraw",
+      "bytes": 227792,
+      "sha256": "c108d7f752c1d2dc69b82c2959afb4dfba4f88ae6cf50758de7c3e5611affa66"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/restored.xml",
+      "bytes": 16372,
+      "sha256": "d21cfbe3c24cb31a9f3bca84a160ddc7ef1bcbbcdf7f698468a4bc5631dfd3c7"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/ril-interface.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/run-0.log",
+      "bytes": 5910,
+      "sha256": "db14230f19660c963898e11fe790b2409446bf603982de6b2dc3ad835dbb7819"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/run-0.profraw",
+      "bytes": 227792,
+      "sha256": "7b282fade65e2faaeb329af4fabe5550d6f46062e7a762fa64fed6cb8e12f567"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/run-0.xml",
+      "bytes": 25548,
+      "sha256": "12322b374ba69f01b78969895d0c5d366b80f3b6d687632f7f7ca73d155a04be"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/sim_state_handle_mutant.cpp",
+      "bytes": 48729,
+      "sha256": "4d7e62f074d9deea115d68d9a4ab439d352909272a8bfa26ca45207a547540db"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/version-clang++.log",
+      "bytes": 110,
+      "sha256": "3635b8631d4ebcd8ed7586f4e01e7a6b44407de9d38db6e01daca9c242ed7a53"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/version-gn.log",
+      "bytes": 15,
+      "sha256": "35c7bdf4eacd209bf6f22e9ac8fa7b2e047ce9e15d4014307c50c8744e051c2e"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/version-ld.gold.log",
+      "bytes": 288,
+      "sha256": "eebd5fcb32627bd445ac96a181ae2cb866ca8d9ef7cec11f38ff048a7737e270"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/version-llvm-cov-18.log",
+      "bytes": 46,
+      "sha256": "cfb9286322cccef53a692448cf4007a998d186dfb8e8313d317390a95eeb10f1"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/version-llvm-profdata-18.log",
+      "bytes": 46,
+      "sha256": "cfb9286322cccef53a692448cf4007a998d186dfb8e8313d317390a95eeb10f1"
+    },
+    {
+      "path": "before/mutation/execution-l5u0nx0x/version-ninja.log",
+      "bytes": 7,
+      "sha256": "4f9416d650bd28343244b868dfebdb11e70d7b32423536cb87b8c31fde62f993"
+    },
+    {
+      "path": "before/mutation/result.json",
+      "bytes": 63306,
+      "sha256": "86c586602ed44de32c5d307aea7c6ad1e3bd7ab8b72ccefc643ee46fd5beb8dd"
+    },
+    {
+      "path": "before/mutation-command.json",
+      "bytes": 385,
+      "sha256": "147f4e28cc4435ca5ffe3a3d1d5255c38a1b093a83f103949c98c538053da573"
+    },
+    {
+      "path": "before/mutation.log",
+      "bytes": 150,
+      "sha256": "ff42882930efee2be6ede1a379b03ab72cad70ab1c334312150c29e91b0d3cdc"
+    },
+    {
+      "path": "before/oracle.log",
+      "bytes": 1549,
+      "sha256": "9ec12ed918e8c32edc0a2f99c1784ca23de03845c9cbf0905572b3587eb768ab"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/args.gn",
+      "bytes": 232,
+      "sha256": "c0a25f911069c841d5ede88fd9ef03e89dd0479f09eae0278d98fd9712bf62c8"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/build.ninja",
+      "bytes": 4445,
+      "sha256": "b13b9400fa9ee6e1cf35c8fa74b7178b4aec6b20299562d16e3749aeb3c3809a"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/obj/bootstrap_launcher.ninja",
+      "bytes": 1679,
+      "sha256": "4a0342b8ecded9f3ebb61e6a2612525f002c1685878b3c76221e9deda7fb5ab7"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/obj/component_launcher.ninja",
+      "bytes": 1674,
+      "sha256": "5035dafe20593d79caced0fd4fc76b7534fc2b024c1cc63b22bbc25b8929770e"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/obj/event_transport_production_host.ninja",
+      "bytes": 2291,
+      "sha256": "0f21778c0ed871dc942968a5e8c099b0b674e8185b97aa9283ef6fe99f98324d"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/obj/external_service_boundaries.ninja",
+      "bytes": 1103,
+      "sha256": "1ca2d07f5efb208e69aaecc69bcae5ecad29c8faabef8fcb165b3181e98bc2ce"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/obj/g2a_query_launcher.ninja",
+      "bytes": 2111,
+      "sha256": "5f7351e2d912ac38ac5010d0920a8266e02045b8d8ab7b3407374d780b879afd"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/obj/g2a_readonly_production_host.ninja",
+      "bytes": 2961,
+      "sha256": "0b20e192adde13c05f11258256806b89428fc1baf42f20a51d394f91a8d181f3"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/obj/googlemock.ninja",
+      "bytes": 1195,
+      "sha256": "8e72a7995a61ce208aa496ab2c5a8898d787b5a0c29f06a2c1554ca91002a650"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/obj/googletest.ninja",
+      "bytes": 1055,
+      "sha256": "13567c8658941b2e4e8eda712375a68c64d2f1eb5264e817e8ba2e4adcd45376"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/obj/platform_adapter_test.ninja",
+      "bytes": 4272,
+      "sha256": "c5722a7222b2606110b5823125e500a77d0f85dae84dc3a14e27f38b75660e92"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/obj/platform_boundaries.ninja",
+      "bytes": 966,
+      "sha256": "7d4500603088a239c2da1eca46f651c482532a97cceb6487cd68b05ded99af72"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/obj/primary_real_support.ninja",
+      "bytes": 4357,
+      "sha256": "3ad1209544ac601e8fd1a867ad623dd308a9e713872a6968f9fde2dfe21d993c"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/obj/primary_slot_contract.ninja",
+      "bytes": 153,
+      "sha256": "c7d2b750cf9a96399e8e5564771ab5d5717475724f9b7d086e89ce28d98c0b51"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/obj/primary_slot_entry_production.ninja",
+      "bytes": 3148,
+      "sha256": "1556f6be7bc86db1e27b21b1b5f06cab9fbac9d9fe41fe9c528f4e386f41420a"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/obj/scheduler_boundaries.ninja",
+      "bytes": 1477,
+      "sha256": "072b33093991c64deceb32a6fafc42e053a400e329d1567b4d475a9ef75ef58c"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/obj/sim_bootstrap_characterization.ninja",
+      "bytes": 1561,
+      "sha256": "373a01fe1d2331ac395b97782354b1bae4a4c42435b6af1a7a9097d55ef866c7"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/obj/sim_component_test.ninja",
+      "bytes": 1714,
+      "sha256": "ae80fc3f107c2ebc6bbb033a5f8aafea2878e26b235e090758e87a9dc5166b69"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/obj/sim_g2a_query_test.ninja",
+      "bytes": 2176,
+      "sha256": "efdb465bf77e3fb1aeffdcb00959ea0d3fb47f0a6bfc47739f4cf4a966aae738"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/obj/sim_guard_legacy.ninja",
+      "bytes": 5489,
+      "sha256": "4f07eaf2a4ca9f2ab088eff7f7e04ef09271a5bf5a43572dbc1478a604cee6c0"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/obj/sim_guard_legacy_production.ninja",
+      "bytes": 4173,
+      "sha256": "978449c5f92d6f57cc24fb29d1782de21bcd5a25d675c1e68a7464d58af4bf11"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/obj/sim_guard_pin_memory.ninja",
+      "bytes": 5074,
+      "sha256": "02efca1dfbbca5c2408e3697d65f56e3465b95a4acf159286b0cea6f4bccaecb"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/obj/sim_initialization_link_probe.ninja",
+      "bytes": 9594,
+      "sha256": "d7a6fab9524d4c2bdcc6f8f24dc416da3c7037454f32ae1a4545fe1bd61c0fbf"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/obj/sim_initialization_production_host.ninja",
+      "bytes": 23861,
+      "sha256": "8d6ceb0fe8507462f9b566033222544ca1b83ab9f4b3a1db14572894e8b165ba"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/obj/sim_primary_slot_entry_test.ninja",
+      "bytes": 3208,
+      "sha256": "a620c4800810c961d769b9b9da155155e501655a038f749775c7af99c4c88e5e"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/obj/sim_primary_slot_real_test.ninja",
+      "bytes": 13134,
+      "sha256": "22741028adecd2cff4fd758c3dfa711b2f9f59ffe35e161d3fc64eaef90895b8"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/obj/sim_production_host.ninja",
+      "bytes": 2273,
+      "sha256": "14527634290891e2c6cd6e4188f623b5b805920bcbfbe9d795d60749f8b5bf27"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build/toolchain.ninja",
+      "bytes": 1403,
+      "sha256": "74d1b195fad85be6474372d770ddd9e959aa2101ea3db75ce1725ac4c83b00db"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/build.log",
+      "bytes": 2869,
+      "sha256": "03057832cf4694a49f66c20c34187453d2692b8cded9f099ac8efb4c097842c4"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/coverage.log",
+      "bytes": 1484764,
+      "sha256": "12015b6fad15e69b0bc34a7d85a815c1f8090179c9dfc72903f076221fb8ab0f"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/gn.log",
+      "bytes": 43,
+      "sha256": "bf41015565756195ea174f248d7933ee299572916e62dbbc069f6ea9ae72e194"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/merge.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/args.gn",
+      "bytes": 327,
+      "sha256": "435d30cf651007c117e3a7e66eedec17a6191667c6397fc8c3eac143343fa4ca"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/build.ninja",
+      "bytes": 4445,
+      "sha256": "b13b9400fa9ee6e1cf35c8fa74b7178b4aec6b20299562d16e3749aeb3c3809a"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/obj/bootstrap_launcher.ninja",
+      "bytes": 1679,
+      "sha256": "4a0342b8ecded9f3ebb61e6a2612525f002c1685878b3c76221e9deda7fb5ab7"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/obj/component_launcher.ninja",
+      "bytes": 1674,
+      "sha256": "5035dafe20593d79caced0fd4fc76b7534fc2b024c1cc63b22bbc25b8929770e"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/obj/event_transport_production_host.ninja",
+      "bytes": 2291,
+      "sha256": "0f21778c0ed871dc942968a5e8c099b0b674e8185b97aa9283ef6fe99f98324d"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/obj/external_service_boundaries.ninja",
+      "bytes": 1103,
+      "sha256": "1ca2d07f5efb208e69aaecc69bcae5ecad29c8faabef8fcb165b3181e98bc2ce"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/obj/g2a_query_launcher.ninja",
+      "bytes": 2111,
+      "sha256": "5f7351e2d912ac38ac5010d0920a8266e02045b8d8ab7b3407374d780b879afd"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/obj/g2a_readonly_production_host.ninja",
+      "bytes": 2961,
+      "sha256": "0b20e192adde13c05f11258256806b89428fc1baf42f20a51d394f91a8d181f3"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/obj/googlemock.ninja",
+      "bytes": 1195,
+      "sha256": "8e72a7995a61ce208aa496ab2c5a8898d787b5a0c29f06a2c1554ca91002a650"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/obj/googletest.ninja",
+      "bytes": 1055,
+      "sha256": "13567c8658941b2e4e8eda712375a68c64d2f1eb5264e817e8ba2e4adcd45376"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/obj/platform_adapter_test.ninja",
+      "bytes": 4272,
+      "sha256": "c5722a7222b2606110b5823125e500a77d0f85dae84dc3a14e27f38b75660e92"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/obj/platform_boundaries.ninja",
+      "bytes": 966,
+      "sha256": "7d4500603088a239c2da1eca46f651c482532a97cceb6487cd68b05ded99af72"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/obj/primary_real_support.ninja",
+      "bytes": 4357,
+      "sha256": "3ad1209544ac601e8fd1a867ad623dd308a9e713872a6968f9fde2dfe21d993c"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/obj/primary_slot_contract.ninja",
+      "bytes": 153,
+      "sha256": "c7d2b750cf9a96399e8e5564771ab5d5717475724f9b7d086e89ce28d98c0b51"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/obj/primary_slot_entry_production.ninja",
+      "bytes": 3148,
+      "sha256": "1556f6be7bc86db1e27b21b1b5f06cab9fbac9d9fe41fe9c528f4e386f41420a"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/obj/scheduler_boundaries.ninja",
+      "bytes": 1477,
+      "sha256": "072b33093991c64deceb32a6fafc42e053a400e329d1567b4d475a9ef75ef58c"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/obj/sim_bootstrap_characterization.ninja",
+      "bytes": 1561,
+      "sha256": "373a01fe1d2331ac395b97782354b1bae4a4c42435b6af1a7a9097d55ef866c7"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/obj/sim_component_test.ninja",
+      "bytes": 1714,
+      "sha256": "ae80fc3f107c2ebc6bbb033a5f8aafea2878e26b235e090758e87a9dc5166b69"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/obj/sim_g2a_query_test.ninja",
+      "bytes": 2176,
+      "sha256": "efdb465bf77e3fb1aeffdcb00959ea0d3fb47f0a6bfc47739f4cf4a966aae738"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/obj/sim_guard_legacy.ninja",
+      "bytes": 5500,
+      "sha256": "6e6268c11ebd1740805537be3745ea6391c81bd7bcb34880963de441f04a7e93"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/obj/sim_guard_legacy_production.ninja",
+      "bytes": 4220,
+      "sha256": "9d18ffad6c674379015220d2b0783cee8c656e226953b62ef779dfb212bd5b8e"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/obj/sim_guard_pin_memory.ninja",
+      "bytes": 5085,
+      "sha256": "775e22cbd2ba5b28c9ef73b797e629140606a075706a2fe804da5fbd36816825"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/obj/sim_initialization_link_probe.ninja",
+      "bytes": 9594,
+      "sha256": "d7a6fab9524d4c2bdcc6f8f24dc416da3c7037454f32ae1a4545fe1bd61c0fbf"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/obj/sim_initialization_production_host.ninja",
+      "bytes": 23861,
+      "sha256": "8d6ceb0fe8507462f9b566033222544ca1b83ab9f4b3a1db14572894e8b165ba"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/obj/sim_primary_slot_entry_test.ninja",
+      "bytes": 3208,
+      "sha256": "a620c4800810c961d769b9b9da155155e501655a038f749775c7af99c4c88e5e"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/obj/sim_primary_slot_real_test.ninja",
+      "bytes": 13134,
+      "sha256": "22741028adecd2cff4fd758c3dfa711b2f9f59ffe35e161d3fc64eaef90895b8"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/obj/sim_production_host.ninja",
+      "bytes": 2273,
+      "sha256": "14527634290891e2c6cd6e4188f623b5b805920bcbfbe9d795d60749f8b5bf27"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build/toolchain.ninja",
+      "bytes": 1403,
+      "sha256": "74d1b195fad85be6474372d770ddd9e959aa2101ea3db75ce1725ac4c83b00db"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-build.log",
+      "bytes": 2887,
+      "sha256": "3f8bfe9e2d58dab279abe386793b9c5a28c0daac194880ab3552219d428d9aff"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-gn.log",
+      "bytes": 43,
+      "sha256": "d2b5b398d03af6dbbb1ba0aaeb41a4660e4d8a6919b3e9598862eb3b8d19a184"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutant-source-table.log",
+      "bytes": 629,
+      "sha256": "20cc706eda74d65e614f641678f16cd6bb398fef20de878dcb27b823ee7158d7"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutation.log",
+      "bytes": 910,
+      "sha256": "71633756069f7626511c882d1f0c20848715ac4742bb9ac23c3667ce87b3f2a7"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutation.profraw",
+      "bytes": 227800,
+      "sha256": "d8c157d16f5587f8b48e1ae419c05ad93984a2ff3feb22ba9bfcebdde410488f"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/mutation.xml",
+      "bytes": 1570,
+      "sha256": "68d0b8d43f910da34fd92eaee833d45321263bff8f675c768235409501e8cbca"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/normal-source-table.log",
+      "bytes": 618,
+      "sha256": "f3c7708da554cd9aa86ab7fe09c8c89e434cc071c5f0f33569aba857f812eb13"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/pin-memory.profdata",
+      "bytes": 220592,
+      "sha256": "d9f36e2e070e14a45af65754741ec6d92a32d55c69d3d605cd57d449375b5c10"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/pin-memory.profraw",
+      "bytes": 227792,
+      "sha256": "a9b8b4b0a59791f067dfb6c0c577e8062bc3fc19df2cfbdbf80bab871f5ee0b9"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/pin-memory.xml",
+      "bytes": 3467,
+      "sha256": "373dbf050101615cd7cecd02edaa11099e8dd17463ca0dfe032c552c546c03e0"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/restored.log",
+      "bytes": 945,
+      "sha256": "b937631bf01853830f43c1e01d24627ad61afaac488af2a1c7a4378ccf40b41d"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/restored.profraw",
+      "bytes": 227792,
+      "sha256": "69dfc68c233129069cff54c9fe3475b763753e5b0807e0f9679c69774a1185ad"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/restored.xml",
+      "bytes": 3450,
+      "sha256": "ccad3440a02bebd7280d6424ae4fec687ba3bf93b37b4f72fae72f31ef51e218"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/ril-interface.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/run.log",
+      "bytes": 997,
+      "sha256": "3bddd5421ee9efb82657516174cfe617ec2d332449a7c5cc04ac122da23faba0"
+    },
+    {
+      "path": "before/pin/pin-memory-m1ypx8rg/sim_state_manager_mutant.cpp",
+      "bytes": 26588,
+      "sha256": "78807ac01ef95b8b2dd9396d414ad9cb4899156850260584637d3578240145e6"
+    },
+    {
+      "path": "before/pin/result.json",
+      "bytes": 31686,
+      "sha256": "403c1e41579ea2bf887ec39dc925579a65f8414723dce0df0e3661dea9fd3bc4"
+    },
+    {
+      "path": "before/pin-command.json",
+      "bytes": 364,
+      "sha256": "beaa99e408ed42e080fda76290645d7582f68fb9a91f55d138845628c3043f47"
+    },
+    {
+      "path": "before/pin.log",
+      "bytes": 144,
+      "sha256": "0512d75409f9dbb62ebb47472242b7980fbe2ba0892d621c4b7e9cb58042135e"
+    },
+    {
+      "path": "before/primary-preflight/error.json",
+      "bytes": 184,
+      "sha256": "1e522513d32bb4c7f92f4e01d4e3a88bbec1b8891e52c01f67d1cc4d42361085"
+    },
+    {
+      "path": "before/primary-preflight.log",
+      "bytes": 98,
+      "sha256": "6abd278e4bea63470cff731685cd962d13a999afd1e08839b2e4a271d27f7f78"
+    },
+    {
+      "path": "before/relocation.log",
+      "bytes": 89,
+      "sha256": "6797f8864ffcf2c99d22f7fb8a1cf5bccd5953ea907ebd28e0ecf6d1d4b793ba"
+    },
+    {
+      "path": "before/source-sha256.json",
+      "bytes": 132614,
+      "sha256": "9da11eb1e9b0a8f5d543d24dfaf3de29e091c058f708ef2b5a23a7c725d1b609"
+    },
+    {
+      "path": "before/source_tables.log",
+      "bytes": 1371,
+      "sha256": "3e259abc71c493c2ec42c907e2275903ecf5c473dbf9d405dd027b96f9daac58"
+    },
+    {
+      "path": "before/target/result.json",
+      "bytes": 2044,
+      "sha256": "a7a284a4435a692b160274bc5d57f9474ce5f8946b2d61f2c358c4b3f610cf65"
+    },
+    {
+      "path": "before/target.log",
+      "bytes": 2029,
+      "sha256": "7da39fe6da9bb49f10e352e54ccc89bfbd41097bde1a25f19ec8039cecab8c21"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/args.gn",
+      "bytes": 174,
+      "sha256": "44742282ca728ffae9c0904d04286f4447fa52101e053657ddec23f2e5817965"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/build.ninja",
+      "bytes": 4443,
+      "sha256": "8e7bf6427f2ead8ced30f726d5bff5b5beab10d0290b152a146c90cbb1eb88bb"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/obj/bootstrap_launcher.ninja",
+      "bytes": 1839,
+      "sha256": "ad6992b231671e04237236e4793819fe22b00c6e2397ec3b1a4123bda7705697"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/obj/component_launcher.ninja",
+      "bytes": 1834,
+      "sha256": "6c515ff49578ee09e38fd54682eff614b37ea43caa1c52d3bacf32a5421ea147"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/obj/event_transport_production_host.ninja",
+      "bytes": 2292,
+      "sha256": "d39dc883c4363ae07fe3604c277263c6de30ea719b43d643ee1e21be2ec62031"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/obj/external_service_boundaries.ninja",
+      "bytes": 1106,
+      "sha256": "cc26bbf378abb01df19c2f6906de3116e582bba46914a39ec364160a771100ff"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/obj/g2a_query_launcher.ninja",
+      "bytes": 2272,
+      "sha256": "47b5a90ee4088798bfddc39df2b2feec28f56b8e9d4c8743a8e1dedc837305e7"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/obj/g2a_readonly_production_host.ninja",
+      "bytes": 2962,
+      "sha256": "a73df1e9577be5d1ceaba037b8d33e25b8353cef99badcba223f45632e080fbb"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/obj/googlemock.ninja",
+      "bytes": 1195,
+      "sha256": "8e72a7995a61ce208aa496ab2c5a8898d787b5a0c29f06a2c1554ca91002a650"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/obj/googletest.ninja",
+      "bytes": 1055,
+      "sha256": "13567c8658941b2e4e8eda712375a68c64d2f1eb5264e817e8ba2e4adcd45376"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/obj/platform_adapter_test.ninja",
+      "bytes": 5129,
+      "sha256": "6f2f691c80596be1a6aca2ab1881125db986863763a9d55a5eb124772768b690"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/obj/platform_boundaries.ninja",
+      "bytes": 968,
+      "sha256": "07c802c9ec4e95907c64efae5963bab2e1c7d25a8cb16f4017dfbdc018c718d6"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/obj/primary_real_support.ninja",
+      "bytes": 4315,
+      "sha256": "8143811878ac63b7581c44c3e80982d9ee6e8f83caff636da82bb0006d677c23"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/obj/primary_slot_contract.ninja",
+      "bytes": 153,
+      "sha256": "c7d2b750cf9a96399e8e5564771ab5d5717475724f9b7d086e89ce28d98c0b51"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/obj/primary_slot_entry_production.ninja",
+      "bytes": 3105,
+      "sha256": "8bf69874f3184cb166e584aca77083ee604255af0f53bb93ec2e7ca1c65ea209"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/obj/scheduler_boundaries.ninja",
+      "bytes": 1482,
+      "sha256": "50112d27785247538a3f6142f68d2262280c70fad17560afc3a1e2c6fe479a9f"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/obj/sim_bootstrap_characterization.ninja",
+      "bytes": 1773,
+      "sha256": "f7ffa444a8215be5d453b2b8d3032bb3011b7f8d8a91ee5f29154f069162a4a4"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/obj/sim_component_test.ninja",
+      "bytes": 1927,
+      "sha256": "cca2b767da3f816f0610cbf85b5f6b160bf5f74b33be63978a74ee6f5dd7d57d"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/obj/sim_g2a_query_test.ninja",
+      "bytes": 2389,
+      "sha256": "87bfa6aeeebde8e4a9cb868815a226e6d821a4285affe11a93d71492cc06df1b"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/obj/sim_guard_legacy.ninja",
+      "bytes": 5740,
+      "sha256": "c57a86ca6668336d3906d603890a9d6477cf8534c3a4d0a09037f005ea641fe0"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/obj/sim_guard_legacy_production.ninja",
+      "bytes": 4175,
+      "sha256": "f5f1bdbacbac7d77fdd945a4c3d37f83368d85bb7588092f01d5f640d0297aa0"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/obj/sim_guard_pin_memory.ninja",
+      "bytes": 5295,
+      "sha256": "4b28e1b8d9b3b38367a8a88e52b99ab46dd46724ef618fb1fac199088bb6f9aa"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/obj/sim_initialization_link_probe.ninja",
+      "bytes": 9754,
+      "sha256": "d51f29dbc292ab51c086a50670b9272b7a5866e0b58d9b6f716a2cfb2f478eac"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/obj/sim_initialization_production_host.ninja",
+      "bytes": 23841,
+      "sha256": "47703a341ca890e06501ef8b9344f90fd41089d97f80863f10e5eed10cf05779"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/obj/sim_primary_slot_entry_test.ninja",
+      "bytes": 3453,
+      "sha256": "9015dbd70f4c44cdfdb906ada41c2f3fe9387ed4f7fb564bf9fcff4862a89fd8"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/obj/sim_primary_slot_real_test.ninja",
+      "bytes": 13873,
+      "sha256": "72200ee680edb4738408c4f2aa16619081d2c67af8b73e396f162a0ca07b8048"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/obj/sim_production_host.ninja",
+      "bytes": 2274,
+      "sha256": "acc6e004b0bff2c29a25012a6012f3a807317c45277769afdbbb23062f2982cc"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/build/toolchain.ninja",
+      "bytes": 1403,
+      "sha256": "74d1b195fad85be6474372d770ddd9e959aa2101ea3db75ce1725ac4c83b00db"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/normal-build.log",
+      "bytes": 3007,
+      "sha256": "8514f9a2dcbf2b6df8d99eea6024693503f1a3343f440eed8a8e8b5398c7f223"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/normal-gn.log",
+      "bytes": 43,
+      "sha256": "37d33c18184451504f1b9451b1a18a8eb4edf4058f00f0419adbb309137e8d88"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/ril-interface.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/version-clang++.log",
+      "bytes": 110,
+      "sha256": "3635b8631d4ebcd8ed7586f4e01e7a6b44407de9d38db6e01daca9c242ed7a53"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/version-gn.log",
+      "bytes": 15,
+      "sha256": "35c7bdf4eacd209bf6f22e9ac8fa7b2e047ce9e15d4014307c50c8744e051c2e"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/version-ld.gold.log",
+      "bytes": 288,
+      "sha256": "eebd5fcb32627bd445ac96a181ae2cb866ca8d9ef7cec11f38ff048a7737e270"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/version-llvm-cov-18.log",
+      "bytes": 46,
+      "sha256": "cfb9286322cccef53a692448cf4007a998d186dfb8e8313d317390a95eeb10f1"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/version-llvm-profdata-18.log",
+      "bytes": 46,
+      "sha256": "cfb9286322cccef53a692448cf4007a998d186dfb8e8313d317390a95eeb10f1"
+    },
+    {
+      "path": "final-mutation/execution-c8p90qj6/version-ninja.log",
+      "bytes": 7,
+      "sha256": "4f9416d650bd28343244b868dfebdb11e70d7b32423536cb87b8c31fde62f993"
+    },
+    {
+      "path": "final-mutation/result.json",
+      "bytes": 28638,
+      "sha256": "306c79f0b0a9f6c45db72cd89e3f39862381ea9c7fb936f295a0c7e6d29faaab"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/args.gn",
+      "bytes": 174,
+      "sha256": "44742282ca728ffae9c0904d04286f4447fa52101e053657ddec23f2e5817965"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/build.ninja",
+      "bytes": 4443,
+      "sha256": "8e7bf6427f2ead8ced30f726d5bff5b5beab10d0290b152a146c90cbb1eb88bb"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/obj/bootstrap_launcher.ninja",
+      "bytes": 1839,
+      "sha256": "ad6992b231671e04237236e4793819fe22b00c6e2397ec3b1a4123bda7705697"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/obj/component_launcher.ninja",
+      "bytes": 1834,
+      "sha256": "6c515ff49578ee09e38fd54682eff614b37ea43caa1c52d3bacf32a5421ea147"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/obj/event_transport_production_host.ninja",
+      "bytes": 2292,
+      "sha256": "d39dc883c4363ae07fe3604c277263c6de30ea719b43d643ee1e21be2ec62031"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/obj/external_service_boundaries.ninja",
+      "bytes": 1106,
+      "sha256": "cc26bbf378abb01df19c2f6906de3116e582bba46914a39ec364160a771100ff"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/obj/g2a_query_launcher.ninja",
+      "bytes": 2272,
+      "sha256": "47b5a90ee4088798bfddc39df2b2feec28f56b8e9d4c8743a8e1dedc837305e7"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/obj/g2a_readonly_production_host.ninja",
+      "bytes": 2962,
+      "sha256": "a73df1e9577be5d1ceaba037b8d33e25b8353cef99badcba223f45632e080fbb"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/obj/googlemock.ninja",
+      "bytes": 1195,
+      "sha256": "8e72a7995a61ce208aa496ab2c5a8898d787b5a0c29f06a2c1554ca91002a650"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/obj/googletest.ninja",
+      "bytes": 1055,
+      "sha256": "13567c8658941b2e4e8eda712375a68c64d2f1eb5264e817e8ba2e4adcd45376"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/obj/platform_adapter_test.ninja",
+      "bytes": 5129,
+      "sha256": "6f2f691c80596be1a6aca2ab1881125db986863763a9d55a5eb124772768b690"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/obj/platform_boundaries.ninja",
+      "bytes": 968,
+      "sha256": "07c802c9ec4e95907c64efae5963bab2e1c7d25a8cb16f4017dfbdc018c718d6"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/obj/primary_real_support.ninja",
+      "bytes": 4315,
+      "sha256": "8143811878ac63b7581c44c3e80982d9ee6e8f83caff636da82bb0006d677c23"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/obj/primary_slot_contract.ninja",
+      "bytes": 153,
+      "sha256": "c7d2b750cf9a96399e8e5564771ab5d5717475724f9b7d086e89ce28d98c0b51"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/obj/primary_slot_entry_production.ninja",
+      "bytes": 3105,
+      "sha256": "8bf69874f3184cb166e584aca77083ee604255af0f53bb93ec2e7ca1c65ea209"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/obj/scheduler_boundaries.ninja",
+      "bytes": 1482,
+      "sha256": "50112d27785247538a3f6142f68d2262280c70fad17560afc3a1e2c6fe479a9f"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/obj/sim_bootstrap_characterization.ninja",
+      "bytes": 1773,
+      "sha256": "f7ffa444a8215be5d453b2b8d3032bb3011b7f8d8a91ee5f29154f069162a4a4"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/obj/sim_component_test.ninja",
+      "bytes": 1927,
+      "sha256": "cca2b767da3f816f0610cbf85b5f6b160bf5f74b33be63978a74ee6f5dd7d57d"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/obj/sim_g2a_query_test.ninja",
+      "bytes": 2389,
+      "sha256": "87bfa6aeeebde8e4a9cb868815a226e6d821a4285affe11a93d71492cc06df1b"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/obj/sim_guard_legacy.ninja",
+      "bytes": 5740,
+      "sha256": "c57a86ca6668336d3906d603890a9d6477cf8534c3a4d0a09037f005ea641fe0"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/obj/sim_guard_legacy_production.ninja",
+      "bytes": 4175,
+      "sha256": "f5f1bdbacbac7d77fdd945a4c3d37f83368d85bb7588092f01d5f640d0297aa0"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/obj/sim_guard_pin_memory.ninja",
+      "bytes": 5295,
+      "sha256": "4b28e1b8d9b3b38367a8a88e52b99ab46dd46724ef618fb1fac199088bb6f9aa"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/obj/sim_initialization_link_probe.ninja",
+      "bytes": 9754,
+      "sha256": "d51f29dbc292ab51c086a50670b9272b7a5866e0b58d9b6f716a2cfb2f478eac"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/obj/sim_initialization_production_host.ninja",
+      "bytes": 23841,
+      "sha256": "47703a341ca890e06501ef8b9344f90fd41089d97f80863f10e5eed10cf05779"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/obj/sim_primary_slot_entry_test.ninja",
+      "bytes": 3453,
+      "sha256": "9015dbd70f4c44cdfdb906ada41c2f3fe9387ed4f7fb564bf9fcff4862a89fd8"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/obj/sim_primary_slot_real_test.ninja",
+      "bytes": 13873,
+      "sha256": "72200ee680edb4738408c4f2aa16619081d2c67af8b73e396f162a0ca07b8048"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/obj/sim_production_host.ninja",
+      "bytes": 2274,
+      "sha256": "acc6e004b0bff2c29a25012a6012f3a807317c45277769afdbbb23062f2982cc"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/build/toolchain.ninja",
+      "bytes": 1403,
+      "sha256": "74d1b195fad85be6474372d770ddd9e959aa2101ea3db75ce1725ac4c83b00db"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/coverage.log",
+      "bytes": 1488291,
+      "sha256": "df9752f505040f3fedc9c5b3bceae7121ac517170ac3e01d7322d8781c13ed64"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/merge.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/args.gn",
+      "bytes": 306,
+      "sha256": "866be29603c2be5954e2f330a50cdce64fd4272049baed375c85bb0636f15b14"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/build.ninja",
+      "bytes": 4443,
+      "sha256": "8e7bf6427f2ead8ced30f726d5bff5b5beab10d0290b152a146c90cbb1eb88bb"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/obj/bootstrap_launcher.ninja",
+      "bytes": 1839,
+      "sha256": "ad6992b231671e04237236e4793819fe22b00c6e2397ec3b1a4123bda7705697"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/obj/component_launcher.ninja",
+      "bytes": 1834,
+      "sha256": "6c515ff49578ee09e38fd54682eff614b37ea43caa1c52d3bacf32a5421ea147"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/obj/event_transport_production_host.ninja",
+      "bytes": 2292,
+      "sha256": "d39dc883c4363ae07fe3604c277263c6de30ea719b43d643ee1e21be2ec62031"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/obj/external_service_boundaries.ninja",
+      "bytes": 1106,
+      "sha256": "cc26bbf378abb01df19c2f6906de3116e582bba46914a39ec364160a771100ff"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/obj/g2a_query_launcher.ninja",
+      "bytes": 2272,
+      "sha256": "47b5a90ee4088798bfddc39df2b2feec28f56b8e9d4c8743a8e1dedc837305e7"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/obj/g2a_readonly_production_host.ninja",
+      "bytes": 2962,
+      "sha256": "a73df1e9577be5d1ceaba037b8d33e25b8353cef99badcba223f45632e080fbb"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/obj/googlemock.ninja",
+      "bytes": 1195,
+      "sha256": "8e72a7995a61ce208aa496ab2c5a8898d787b5a0c29f06a2c1554ca91002a650"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/obj/googletest.ninja",
+      "bytes": 1055,
+      "sha256": "13567c8658941b2e4e8eda712375a68c64d2f1eb5264e817e8ba2e4adcd45376"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/obj/platform_adapter_test.ninja",
+      "bytes": 5129,
+      "sha256": "6f2f691c80596be1a6aca2ab1881125db986863763a9d55a5eb124772768b690"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/obj/platform_boundaries.ninja",
+      "bytes": 968,
+      "sha256": "07c802c9ec4e95907c64efae5963bab2e1c7d25a8cb16f4017dfbdc018c718d6"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/obj/primary_real_support.ninja",
+      "bytes": 4315,
+      "sha256": "8143811878ac63b7581c44c3e80982d9ee6e8f83caff636da82bb0006d677c23"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/obj/primary_slot_contract.ninja",
+      "bytes": 153,
+      "sha256": "c7d2b750cf9a96399e8e5564771ab5d5717475724f9b7d086e89ce28d98c0b51"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/obj/primary_slot_entry_production.ninja",
+      "bytes": 3105,
+      "sha256": "8bf69874f3184cb166e584aca77083ee604255af0f53bb93ec2e7ca1c65ea209"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/obj/scheduler_boundaries.ninja",
+      "bytes": 1482,
+      "sha256": "50112d27785247538a3f6142f68d2262280c70fad17560afc3a1e2c6fe479a9f"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/obj/sim_bootstrap_characterization.ninja",
+      "bytes": 1773,
+      "sha256": "f7ffa444a8215be5d453b2b8d3032bb3011b7f8d8a91ee5f29154f069162a4a4"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/obj/sim_component_test.ninja",
+      "bytes": 1927,
+      "sha256": "cca2b767da3f816f0610cbf85b5f6b160bf5f74b33be63978a74ee6f5dd7d57d"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/obj/sim_g2a_query_test.ninja",
+      "bytes": 2389,
+      "sha256": "87bfa6aeeebde8e4a9cb868815a226e6d821a4285affe11a93d71492cc06df1b"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/obj/sim_guard_legacy.ninja",
+      "bytes": 5761,
+      "sha256": "e3b714d046e7635367deba4cb40fd64464994a0e762e5df8abbadb06902f840a"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/obj/sim_guard_legacy_production.ninja",
+      "bytes": 4252,
+      "sha256": "e50d0d5e143081cddb6a0a3b8d9f3c025d75595aa63ecc1b1a05ec3a515e76e2"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/obj/sim_guard_pin_memory.ninja",
+      "bytes": 5316,
+      "sha256": "600d39bccac33bab65d10d282030fdec42d722096653e23e01376cc543ff35c8"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/obj/sim_initialization_link_probe.ninja",
+      "bytes": 9754,
+      "sha256": "d51f29dbc292ab51c086a50670b9272b7a5866e0b58d9b6f716a2cfb2f478eac"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/obj/sim_initialization_production_host.ninja",
+      "bytes": 23841,
+      "sha256": "47703a341ca890e06501ef8b9344f90fd41089d97f80863f10e5eed10cf05779"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/obj/sim_primary_slot_entry_test.ninja",
+      "bytes": 3453,
+      "sha256": "9015dbd70f4c44cdfdb906ada41c2f3fe9387ed4f7fb564bf9fcff4862a89fd8"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/obj/sim_primary_slot_real_test.ninja",
+      "bytes": 13873,
+      "sha256": "72200ee680edb4738408c4f2aa16619081d2c67af8b73e396f162a0ca07b8048"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/obj/sim_production_host.ninja",
+      "bytes": 2274,
+      "sha256": "acc6e004b0bff2c29a25012a6012f3a807317c45277769afdbbb23062f2982cc"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build/toolchain.ninja",
+      "bytes": 1403,
+      "sha256": "74d1b195fad85be6474372d770ddd9e959aa2101ea3db75ce1725ac4c83b00db"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-build.log",
+      "bytes": 3072,
+      "sha256": "d053d4819e1eb92413fe0111c0c00deb3918dabe01502543d4fb78f9cea9d7f9"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutant-gn.log",
+      "bytes": 43,
+      "sha256": "a73766833bbc4bd7d3bc1be8afb60d0e5d101710ca7a6a34331ffbbdbec2b42d"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutation.log",
+      "bytes": 1709,
+      "sha256": "8efcb0dc35fbf0460e8b6d1ec5c3485ca86f3d12b86faa43c6b6d0f5cca37542"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutation.profraw",
+      "bytes": 227800,
+      "sha256": "90ee4fd2f56372dbcc1711032bb40d52991d50c33e826867b89777dbcf843f2c"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/mutation.xml",
+      "bytes": 3014,
+      "sha256": "dd1f7832c96e3430eb8a9e5ec6e02ac3a0158f20588b63f59936137b7f6e07ae"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/normal-build.log",
+      "bytes": 3044,
+      "sha256": "292001a5d7f3db75350181ad7437d91c0877895212692f75ad01327454ceb137"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/normal-gn.log",
+      "bytes": 44,
+      "sha256": "df20b82bc6b94ac6b8e91144e1a98d33ba3ecebdc292be540abd12d0842b8803"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/normal.profdata",
+      "bytes": 224984,
+      "sha256": "8e19aec02f1311078725ac6d4e7ec15111d0eaaacc1d7091f5a6586c16bd443b"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/restored.log",
+      "bytes": 2740,
+      "sha256": "ab724803666fb61444ee2d160d1872fd5b507720a5fbc6ce941efb78b2c0edf0"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/restored.profraw",
+      "bytes": 227792,
+      "sha256": "3f94d449d1deb2d04129f3fcc8fd7b04c8fcf445dd3271c26bf3d4af97b579b1"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/restored.xml",
+      "bytes": 16541,
+      "sha256": "c3c7d98054526fd4ad893157069771f86dae8537b20b6ccf7c9bab61c096badd"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/ril-interface.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/run-0.log",
+      "bytes": 5999,
+      "sha256": "9d0deab2d73e6f74284d68b96dc99e565e7796a00c4b6e709158b77463c3bcb9"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/run-0.profraw",
+      "bytes": 227792,
+      "sha256": "b2e275277a26cd246b4f44309d679d1ad3d7a3a5e74c9875748d2495a6156089"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/run-0.xml",
+      "bytes": 25947,
+      "sha256": "7b3fe31f50f19f483ce50a7233277d89bfcc25fdfe3910616a5497a9a09484b6"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/sim_state_handle_mutant.cpp",
+      "bytes": 48729,
+      "sha256": "4d7e62f074d9deea115d68d9a4ab439d352909272a8bfa26ca45207a547540db"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/version-clang++.log",
+      "bytes": 110,
+      "sha256": "3635b8631d4ebcd8ed7586f4e01e7a6b44407de9d38db6e01daca9c242ed7a53"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/version-gn.log",
+      "bytes": 15,
+      "sha256": "35c7bdf4eacd209bf6f22e9ac8fa7b2e047ce9e15d4014307c50c8744e051c2e"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/version-ld.gold.log",
+      "bytes": 288,
+      "sha256": "eebd5fcb32627bd445ac96a181ae2cb866ca8d9ef7cec11f38ff048a7737e270"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/version-llvm-cov-18.log",
+      "bytes": 46,
+      "sha256": "cfb9286322cccef53a692448cf4007a998d186dfb8e8313d317390a95eeb10f1"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/version-llvm-profdata-18.log",
+      "bytes": 46,
+      "sha256": "cfb9286322cccef53a692448cf4007a998d186dfb8e8313d317390a95eeb10f1"
+    },
+    {
+      "path": "final-serial-mutation/execution-8xvudyqk/version-ninja.log",
+      "bytes": 7,
+      "sha256": "4f9416d650bd28343244b868dfebdb11e70d7b32423536cb87b8c31fde62f993"
+    },
+    {
+      "path": "final-serial-mutation/result.json",
+      "bytes": 63013,
+      "sha256": "763d4869da4f040fa5d8aa9d26728c1ba4b99261f59b861055c466843494121b"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/args.gn",
+      "bytes": 235,
+      "sha256": "5d6e292947cf86af0ac179767ecdaf782a9177372813d23d171c1191952c721f"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/build.ninja",
+      "bytes": 4475,
+      "sha256": "b2b23a83d104e4e4dd64cf38606b681f7a9c180a42e756a9bd3c1ddfc30ba527"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/compile_commands.json",
+      "bytes": 218634,
+      "sha256": "1eb0e3ac9bef7593fefc6d2dde269c3e87e026350fb06e1d22a046164782a4c6"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/obj/bootstrap_launcher.ninja",
+      "bytes": 1869,
+      "sha256": "0d89c7165516f1de2ad185a01af08d384062a9ef20763ac8104d95eaa4eb98d9"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/obj/component_launcher.ninja",
+      "bytes": 1864,
+      "sha256": "20209438c6059093714143756405208281822b0005e821e85f31dac5d9885080"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/obj/event_transport_production_host.ninja",
+      "bytes": 2322,
+      "sha256": "2970b8e59b9a8a6288331fae4cc0bc2d83211a8bf4248c15718b6ac959f0ccdf"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/obj/external_service_boundaries.ninja",
+      "bytes": 1142,
+      "sha256": "75148e22aa1cdea6ece493095f1871de9789d8123a977ce480f3da210ce65eb3"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/obj/g2a_query_launcher.ninja",
+      "bytes": 2305,
+      "sha256": "d6cacf7994e7e81150131aef7e64562d0adce0edc12a776c0be11bf4466a4f6a"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/obj/g2a_readonly_production_host.ninja",
+      "bytes": 2992,
+      "sha256": "a52a4f6c28b7800956d3725f844974cd7c1eaf5a2b84b28255c6c52f72afe273"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/obj/googlemock.ninja",
+      "bytes": 1222,
+      "sha256": "21434da6a9abc494d352929fa380781a9e8535b09a96397a16d00636e600f68e"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/obj/googletest.ninja",
+      "bytes": 1082,
+      "sha256": "c67e4ef4d7be37fa2628d2aa591031f615eb25510803b28cf241e531a5edabdf"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/obj/platform_adapter_test.ninja",
+      "bytes": 5162,
+      "sha256": "9ff5630daeae8c5e832ee874f153eeef17f02cd1fc792cd91bb7cd83f6d2e0a0"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/obj/platform_boundaries.ninja",
+      "bytes": 1001,
+      "sha256": "1eb95083f7bdbc3e689ae6c7d8e3ce61223cb897488802c6839fc593736f43c4"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/obj/primary_real_support.ninja",
+      "bytes": 4348,
+      "sha256": "c5400af6d01bdf566e2c7c7b4ab17fdefd509832835a5201e12ef56d314709a0"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/obj/primary_slot_contract.ninja",
+      "bytes": 153,
+      "sha256": "c7d2b750cf9a96399e8e5564771ab5d5717475724f9b7d086e89ce28d98c0b51"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/obj/primary_slot_entry_production.ninja",
+      "bytes": 3135,
+      "sha256": "4a871190177e30dada81e7234cae528a83065f00075748154ddfa89e5546fd6e"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/obj/scheduler_boundaries.ninja",
+      "bytes": 1524,
+      "sha256": "243bc2cbe55696be6a677ac44834742b9f00d85568c2c690e59a9d609fb4e922"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/obj/sim_bootstrap_characterization.ninja",
+      "bytes": 1800,
+      "sha256": "7861fc7d51367f6ce83adbd8c254c4c7327b18fa5d11fec99783a61410d23790"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/obj/sim_component_test.ninja",
+      "bytes": 1957,
+      "sha256": "f19709e634b6a05c5dfb5a2157cd1e809a2a033457f280c85bf2c2b7d557a27b"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/obj/sim_g2a_query_test.ninja",
+      "bytes": 2419,
+      "sha256": "d87625fe0800f1a091349dd2073cb4092aca1cc6ff8ed7cbea8bdca863755201"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/obj/sim_guard_legacy.ninja",
+      "bytes": 5773,
+      "sha256": "da8cc8a1b2ff80944463dc192fe3a0c98b4c781d7ea9fd8d52a90fd83a58c324"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/obj/sim_guard_legacy_production.ninja",
+      "bytes": 4208,
+      "sha256": "25139b6aabe00b3bd5a85d1cb9c043b28016259dc58aee97c793b5f93e262c33"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/obj/sim_guard_pin_memory.ninja",
+      "bytes": 5328,
+      "sha256": "70be53d7be213325fec443b7d5cf81687d7da03f304ca995d47769bbbd2da7b0"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/obj/sim_initialization_link_probe.ninja",
+      "bytes": 9784,
+      "sha256": "e6d84d70833ccc1122d14c50dcf705d78afcf4e449e2d3d02c19ffcbd6ad00e5"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/obj/sim_initialization_production_host.ninja",
+      "bytes": 23874,
+      "sha256": "ed4dd64e4be43b5ecf5bf1e320b426c93c7629cac877099996a71f7efc63c321"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/obj/sim_primary_slot_entry_test.ninja",
+      "bytes": 3483,
+      "sha256": "7bc7184c9b96d9f20b6c156cdab6b89af2e75cf3460ca8f71009a4f13262a6ee"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/obj/sim_primary_slot_real_test.ninja",
+      "bytes": 13906,
+      "sha256": "7995b3add0f2b63b9b9dc7009b18cdf26980212dc11fc5e27f926cc1d4c4592b"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/obj/sim_production_host.ninja",
+      "bytes": 2304,
+      "sha256": "e9ff680effa787d6fb14f6e24fda9f9f0b07905aeac6a0cab8d79a53bf7ceb9c"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build/toolchain.ninja",
+      "bytes": 1403,
+      "sha256": "74d1b195fad85be6474372d770ddd9e959aa2101ea3db75ce1725ac4c83b00db"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/build.log",
+      "bytes": 5379,
+      "sha256": "886188c567e2a58bb6bd42382e90e24bb6b82f9e4c85672371bbd5af8abd6340"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/configure.log",
+      "bytes": 81,
+      "sha256": "26b818231a509a30d34b86dc00715a928a125b1038e161036dc8e412750a40ca"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/host.json",
+      "bytes": 258,
+      "sha256": "2e267f533959b30c6f6ba54f9fe6097ed37df5fb25e808e708011700fb0e0eda"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/latest.json",
+      "bytes": 3576,
+      "sha256": "4509956e0246567c015bb63018c8d54e121b69097abc5fecb0e72a696b44f59f"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/runs/run-z1khb78h/capacity-179.profraw",
+      "bytes": 130304,
+      "sha256": "4ce16a2f6e43ed99cf6356d6443179d152e8ef16331e0ffe471aee3029ce3f40"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/runs/run-z1khb78h/capacity.log",
+      "bytes": 399,
+      "sha256": "0ea167ba7f6bdfee4ce4af95799e5a53858f82b6931fd096cf9f29b7c6e29c26"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/runs/run-z1khb78h/capacity.xml",
+      "bytes": 1149,
+      "sha256": "57a6f1da7217899f796db2164c4214d73f6f9ccab275e0c08fa2eccc15072915"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/runs/run-z1khb78h/compatibility-123.profraw",
+      "bytes": 227792,
+      "sha256": "0d7baaedda9167701d8d94809062010aa3ebbe9e229338a526793d9ebbf6f9bb"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/runs/run-z1khb78h/compatibility.log",
+      "bytes": 2690,
+      "sha256": "bae4ea0cdd7560c8ed3b4fb3d871171d31803be15beb8bf646c11d3eb6f5cae1"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/runs/run-z1khb78h/compatibility.xml",
+      "bytes": 16524,
+      "sha256": "d8ac80d59909c0aaeb0e9983da7659360a52b4334e92428d0cdb0a1f1337d4d3"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/runs/run-z1khb78h/infrastructure-165.profraw",
+      "bytes": 49592,
+      "sha256": "33e66c9ebd172c04519594e421da1bef82c2a7e2b301798e9e789f8559e39a9b"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/runs/run-z1khb78h/infrastructure.log",
+      "bytes": 3874,
+      "sha256": "e2b4afa55e6168f3a4e9fa255caba5a998f98562d86fbaa23290a081f9a3082e"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/runs/run-z1khb78h/infrastructure.xml",
+      "bytes": 13238,
+      "sha256": "2bf4e3b61f9ce048a66affbd45a1610cb286dd5a2572ae53456b547e2c56749e"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/runs/run-z1khb78h/known_defects-150.profraw",
+      "bytes": 227792,
+      "sha256": "e2cc4d4ffd638c709826bd923c017c2fb3a53274846c0cec0671acec37d65aef"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/runs/run-z1khb78h/known_defects.log",
+      "bytes": 3751,
+      "sha256": "27c8218702682fc842b9666bf18f405f5cb11ff0c0262c1304591b987d87a942"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/runs/run-z1khb78h/known_defects.xml",
+      "bytes": 9904,
+      "sha256": "0f7ca5fd9b30d877d6db4502a63f19c674ff8e2761d1e419e720cac1aac47e75"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/runs/run-z1khb78h/pin_memory-158.profraw",
+      "bytes": 227792,
+      "sha256": "36b59609e592d1d59166f4d652520d8c37f5d358ea9baa2fb35ccf5ddc015c32"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/runs/run-z1khb78h/pin_memory.log",
+      "bytes": 947,
+      "sha256": "2896ca81585bd046117fe2dd80d85b34ba453606e6ae48dc4f562db4c669e361"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/runs/run-z1khb78h/pin_memory.xml",
+      "bytes": 3490,
+      "sha256": "9c322c939c2a8c2b3d40938c23d34809e4e0c60a017c66c7fd67f82e9326ee6b"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/runs/run-z1khb78h/primary_entry_internal_seam-180.profraw",
+      "bytes": 97344,
+      "sha256": "6fe944c8065a9ff1e7b577dd826920b966da1bdaacefe37c18f7f78cd9f5ce10"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/runs/run-z1khb78h/primary_entry_internal_seam.log",
+      "bytes": 2626,
+      "sha256": "d6b2d6a0d9faa93a40086d775f784c837feef0d00571cf9f6872ad1bb1f7b8f7"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/runs/run-z1khb78h/primary_entry_internal_seam.xml",
+      "bytes": 8372,
+      "sha256": "0073b22684a4b24bc48060ed711b17f0797acf563ea6cdc91c87b60af4ab4f12"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host/runs/run-z1khb78h/result.json",
+      "bytes": 3576,
+      "sha256": "4509956e0246567c015bb63018c8d54e121b69097abc5fecb0e72a696b44f59f"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/host.log",
+      "bytes": 23571,
+      "sha256": "900d02423e0c9308b01017f8569163fc7760dc73286ce41bd366eed226bb9efd"
+    },
+    {
+      "path": "final-unified-host/test-zjfw_h7p/result.json",
+      "bytes": 753,
+      "sha256": "d0607134fce7aac692cbef33bdf80175d10a89063848292604390844362e3bfc"
+    },
+    {
+      "path": "inventory-before.json",
+      "bytes": 312879,
+      "sha256": "0a3ecfa2bb79e35a17289f6a9a28ac1b52c6e82735517a72b07852e84e4e4fef"
+    },
+    {
+      "path": "navigation-changes.json",
+      "bytes": 2143,
+      "sha256": "f0d7bdd37ceef645d7fde6a7d9f0206d8c50f508c60e667d11519f25302fdd31"
+    },
+    {
+      "path": "profile-before.sha256",
+      "bytes": 64,
+      "sha256": "c4d226b69d106fbc3c897444fe51fcee03352046771a944bc379dc473f2131ab"
+    },
+    {
+      "path": "run_context.json",
+      "bytes": 658,
+      "sha256": "9fae3db0b276ffaf945c5829a4549bb625401737e8b4a13ad353ea142c501873"
+    }
+  ]
+}

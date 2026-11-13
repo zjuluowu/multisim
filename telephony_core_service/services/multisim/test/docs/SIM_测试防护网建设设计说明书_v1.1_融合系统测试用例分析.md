@@ -686,7 +686,7 @@ approval: NEEDS_CODE_MAPPING
 | SIM-OC-015 | T 身份、C 整数/label 投影、H 只读目录；容量/VSIM旧测 | slot/sim/label/Port/特殊值往返；槽数查询不代替身份绑定与产品能力验证 | L1＋LSI/真实硬件 L2/L3 |
 | SIM-OC-016 | 逻辑 GN/公共头/Feature；现有源表与架构规则 | 公/厂版完整链接/导出/NEEDED/CFI/PAC/LTO/安装与 Feature 差分 | 主机规则 L1；产品 L2/L3 |
 
-实施入口继续使用 [SIM Guard](../sim_guard/README.md) 和 [systemtest](../systemtest/README.md)。独立新增契约套件必须单列统计，不能改旧七条/新增十条共同业务 Oracle、五条缺陷或冻结资产来制造通过。原 TR/Envelope 等用例中环境缺失仅记日志、超时 `EXPECT_TRUE(true)` 的路径不计作业务覆盖；补确定性强断言后独立验收，不以文件存在推定已覆盖。
+实施入口继续使用 [SIM Guard](../cases/compatibility/README.md) 和 [systemtest](Host_Overview.md)。独立新增契约套件必须单列统计，不能改旧七条/新增十条共同业务 Oracle、五条缺陷或冻结资产来制造通过。原 TR/Envelope 等用例中环境缺失仅记日志、超时 `EXPECT_TRUE(true)` 的路径不计作业务覆盖；补确定性强断言后独立验收，不以文件存在推定已覆盖。
 
 PIN 记忆的 L1 Spy 仅比较内存中的合成凭证并输出匹配布尔值，不将 PIN/PUK 或资产明文写入日志/XML/JSON。当前无卡回包会先更新生产 `iccid_` 再触发 SIM_ABSENT：空 ICCID 是需明示的现行为刻画，不能自动批准为旧卡资产清除协议。独立套件只覆盖其真实 Driver 已绑定的 UnlockPin/UnlockPuk/拔卡路径，未接入 AlterPin/SetLockState/FDN、厂端资产和设备恢复仍保持未验收。
 

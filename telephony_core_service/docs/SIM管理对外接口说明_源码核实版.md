@@ -577,4 +577,4 @@ https://github.com/search?q=repo%3Azjuluowu%2Fmultisim+GetInternalSlotId&type=co
 
 缺卡RIL响应会先更新Handle ICCID，可能已为空，不能将当前拔卡Hook描述为“必然携旧卡ICCID并完成旧资产清除”。固定原身份、迟到抑制和资产清理策略须安全/产品/vendor单独裁决；本轮只刻画当前成功/失败及载荷关联。测试只用合成凭证并输出比较结果，不记录真实PIN/PUK或敏感明文。
 
-L1声明护栏入口为[check_open_closed_contracts.py](../services/multisim/test/multisim_architecture_rules/check_open_closed_contracts.py)，由架构检查默认执行。它直接编译真实公共头并用五类仓外变异检出数值/类型漂移，不证明虚表槽顺序、真实导出/布局、动态调用/设备效果。当前新增行为测试、剩余未覆盖能力和实际结果见执行状态，不能因新增断言文件存在就标为通过。
+L1声明护栏入口为[check_open_closed_contracts.py](../services/multisim/test/cases/architecture/check_open_closed_contracts.py)，由架构检查默认执行。它直接编译真实公共头并用五类仓外变异检出数值/类型漂移，不证明虚表槽顺序、真实导出/布局、动态调用/设备效果。当前新增行为测试、剩余未覆盖能力和实际结果见执行状态，不能因新增断言文件存在就标为通过。

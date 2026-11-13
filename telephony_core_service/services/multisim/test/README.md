@@ -1,33 +1,36 @@
-# 多 SIM 重构测试入口
+# 多 SIM 测试防护网
 
-业务源码按五组目录迁移，test/tools位置保持；当前路径与本轮实际运行见[迁移验收](../../../docs/SIM_Directory_Migration_20261112.md)。历史证据包及冻结Scenario/Contract/Oracle/Fake保留原文，不以路径变化更改业务期望。
+测试行为、Golden和既有缺陷保持原义。按职责查找文件：
 
-2026-11-09按用户要求，将重构新增测试工程及其构建、脚本、Stub/Fake、用例、证据和设计资料统一放在 `services/multisim/` 下。旧 `test/` 仅保留原有部件测试；旧生产实现只读。测试读取真实旧源码作为比较基线，负控只修改仓外副本。
+| 位置 | 增加或维护什么 |
+|---|---|
+| [cases/compatibility](cases/compatibility/README.md) | 卡状态、PIN/PUK、异步交错、生命周期及5条独立缺陷；场景、Oracle和测试实现就近 |
+| [cases/primary_slot](cases/primary_slot/README.md) | 主卡入口、真实七场景、条件性Legacy Golden、业务Oracle及专属Fixture |
+| cases/host | 容量、bootstrap、G2a与专属probe |
+| cases/infrastructure | 平台设施自测及Python分类器/CI策略自测 |
+| [cases/architecture](cases/architecture/README.md) | 依赖边界、纯规则、声明负控及迁移约束；保留独立GN入口 |
+| framework/compatibility | 公共端口、RIL Fake、Legacy及Target Adapter；不放业务预期 |
+| framework/host | Host GN根、Stub、固定依赖锁及构建环境 |
+| scripts | 统一调度、构建/准备、执行及证据采集 |
+| docs | [现状审计](docs/Test_Architecture_Current_Analysis.md)、[目标设计](docs/Test_Architecture_Refactor_Design.md)、[使用说明](docs/Host_Usage.md)、[本次验收](docs/Test_Architecture_Validation.md) |
+| docs/archive | 历史日志/XML/ZIP/PATCH与Linux编译实验；保留原文和旧索引 |
 
-Windows VS Code + WSL 的日常构建、筛选测试和调试见 [Host 使用说明](systemtest/HOST.md)。2026-11-11工程增量不改历史迁移摘要；Host首批四份既有构建/设施资产的明确修改由 [relocation_followups.json](relocation_followups.json) 单列，迁移检查同时验证当前摘要，仍拒绝未登记漂移。
-
-`SetPrimarySlotId`新增[真实入口用例与覆盖审计](systemtest/primary_slot/README.md)：14条入口契约单列，使用真实CoreServiceSim/权限/能力源码；ISimManager处是内部测试接缝，完整Stub→RIL部件调用链仍BLOCKED。既有五条缺陷不变，完整范围以唯一执行状态§16及本轮证据为准。
-
-| 目录 | 用途与边界 |
-| --- | --- |
-| [systemtest](systemtest/README.md) | 独立主机 GN 根、平台 Stub、容量/初始化切片、G2a 查询及历史结果。不是产品或设备验收。 |
-| [sim_guard](sim_guard/README.md) | 跨架构兼容场景、冻结 Fake/Oracle、独立缺陷及 PIN 记忆契约；复用 systemtest 的主机构建。 |
-| [multisim_architecture_rules](multisim_architecture_rules/README.md) | 业务骨架依赖、迁移溯源、纯规则、声明负控及独立 GN 入口。 |
-| linux_sim_guard | 保留原实验构建、依赖锁及环境材料；本次迁移不使其自动成为有效运行基线。 |
-| docs | 原测试防护网 v1.0/v1.1 设计与 Linux DDD 设计输入；版本权威关系不因移动改变。 |
-| [../tools](../tools/check_sim_refactor_recovery.py) | Git 历史检查点恢复校验，不执行当前业务测试。 |
-
-从 Git 根运行；依赖准备、参数及环境要求见各工程 README，输出目录选择仓外路径：
+从Git根执行，输出选择仓外专属目录：
 
 ```sh
-python3 -B telephony_core_service/services/multisim/test/check_relocation.py
-python3 -B telephony_core_service/services/multisim/test/multisim_architecture_rules/run.py --with-gn --migration --output "$SIM_TEST_OUTPUT/architecture"
-python3 -B telephony_core_service/services/multisim/test/systemtest/scripts/test_g2a_source_tables.py -v
-python3 -B telephony_core_service/services/multisim/test/systemtest/scripts/run_g2a_query.py --gtest-root "$SIM_GTEST_ROOT" --output "$SIM_TEST_OUTPUT/g2a"
-python3 -B telephony_core_service/services/multisim/test/sim_guard/run_sim_guard.py --sut=legacy --suite=all --repeat=1 --mutation-check --gtest-root "$SIM_GTEST_ROOT" --output "$SIM_TEST_OUTPUT/legacy"
-python3 -B telephony_core_service/services/multisim/test/sim_guard/run_pin_memory_contract.py --mutation-check --gtest-root "$SIM_GTEST_ROOT" --output "$SIM_TEST_OUTPUT/pin"
+TEST=telephony_core_service/services/multisim/test
+python3 -B "$TEST/scripts/test.py" --suite all --gtest-root "$SIM_GTEST_ROOT" --output "$SIM_TEST_OUTPUT"
+python3 -B "$TEST/scripts/test.py" --suite compat --mutation-check --gtest-root "$SIM_GTEST_ROOT" --output "$SIM_TEST_OUTPUT"
+python3 -B "$TEST/scripts/test.py" --suite pin --mutation-check --gtest-root "$SIM_GTEST_ROOT" --output "$SIM_TEST_OUTPUT"
+python3 -B "$TEST/scripts/test.py" --suite architecture --output "$SIM_TEST_OUTPUT"
 ```
 
-5条既有缺陷/待裁决的中央记录是 [round2_catalog.json](sim_guard/traceability/round2_catalog.json)，对应独立断言仍在 sim_guard/runner；全套运行保留红灯，不能据此修旧实现或降低期望。账户注销 CR-07 另记于[执行状态 §12](../../../docs/SIM_Refactor_Execution_State.md#open-closed-followup-20261109)。
+`--suite`还支持`host / defect / g2a / primary / target / technical / integrity`。`all`包含Host完整64项、G2a、技术与架构检查、完整性、Primary预检和Target；追加`--mutation-check`执行兼容及PIN突变。Host已包含兼容/缺陷/PIN，不将重复执行累加成覆盖数量。真实Primary还需`--openssl-root`及`--runtime-root`，按固定依赖[说明](docs/Host_Usage.md)准备。
 
-[relocation_manifest.json](relocation_manifest.json) 保存迁移前后路径和摘要。所有 C++ 用例、适配器、Fake、Oracle 和 JSON 证据保持原字节。历史 JSON 内的旧路径按当时提交解释，用此映射查找当前文件；恢复状态内的历史检查点路径也保持原值，不能替换成当前路径。迁移后的验证与限制见[执行状态 §13](../../../docs/SIM_Refactor_Execution_State.md#test-relocation-20261109)。业务骨架检查只排除顶层 test/tools，仍校验业务源码完整集合并拒绝业务对测试的 include 依赖。各测试 GN 使用显式 testonly 入口，不接入原产品构建。
+每次调用建立独立运行目录，`result.json`记录命令、原退出码和日志；子runner原报告/XML保持权威。退出0表示所选命令全部通过，1保留FAIL，2表示所选命令有BLOCKED且没有FAIL。**完整Host仍有5个既有FAIL，Target仍BLOCKED，all不会全绿。** 技术检查通过不等于业务、生命周期或产品准入。
+
+增加普通业务测试：在相应cases目录添加场景和断言，使用framework中的公开contracts/Fake；在既有GN target显式登记源文件，再按原分类表登记case ID。仅在确有跨场景复用时抽公共能力。用`--suite compat`、`pin`或`primary`执行相关测试；查看原始XML和子runner结果，不放宽断言以适配旧缺陷。
+
+[完整943文件迁移映射](docs/Test_Architecture_Migration.json)保留输入提交、旧/新路径和前后SHA；[冻结基线](docs/Test_Architecture_Baseline.md)记录本次真实结果。Golden、业务Oracle、Fake/Adapter和历史索引均不改预期。旧证据内路径按其固定提交解释，使用映射定位当前文件；`scripts/check_relocation.py`仍检查原219项来源，`scripts/check_test_integrity.py`检查本次全量映射与受控字节。
+
+Linux历史工程没有实际测试executable，归档保留，未宣称新运行验收。未知用途文件没有删除。产品构建、真实Target写业务、设备/eSIM及原生SA/IPC/HDI仍单独验收。

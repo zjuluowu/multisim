@@ -11,9 +11,9 @@
 
 **文件存在、语法可检查和有限纯规则通过，均不等于目标业务已经实现。** 原生产仍位于`services/sim/`。本文保留原21个显式导航锚点，区分当前与稳态目录、刷新方法/构造及实现状态；不据源码目录数量建立新的上下文、SO或进程。
 
-当前逐文件输入摘要、去向和职责以[source_migration.json](../services/multisim/test/multisim_architecture_rules/source_migration.json)的layout_revision（88项）及additions（G2a两项）为准；原73文件及layout_history中的前轮布局溯源保留。
+当前逐文件输入摘要、去向和职责以[source_migration.json](../services/multisim/test/cases/architecture/source_migration.json)的layout_revision（88项）及additions（G2a两项）为准；原73文件及layout_history中的前轮布局溯源保留。
 
-2026-11-09用户明确调整测试物理位置：重构新增的四个测试工程、独立GN、脚本、Fake/Oracle、设计资料与证据统一置于 `services/multisim/test/`，恢复工具置于 `services/multisim/tools/`。当时90文件指**业务骨架**；当前91文件清单见§3.1，不包含这两个辅助目录；当时业务六组、25个逻辑源集及事实所有权不变；当前物理布局采用五组方案。辅助目录与运行入口见[测试导航](../services/multisim/test/README.md)，测试文件移动由[专属映射](../services/multisim/test/relocation_manifest.json)记录，不改写业务源迁移清单或历史证据。独立host构建通过显式入口选择；原产品/测试源表本轮不作修改，业务头不得依赖测试文件。
+2026-11-09用户明确调整测试物理位置：重构新增的四个测试工程、独立GN、脚本、Fake/Oracle、设计资料与证据统一置于 `services/multisim/test/`，恢复工具置于 `services/multisim/tools/`。当时90文件指**业务骨架**；当前91文件清单见§3.1，不包含这两个辅助目录；当时业务六组、25个逻辑源集及事实所有权不变；当前物理布局采用五组方案。辅助目录与运行入口见[测试导航](../services/multisim/test/README.md)，测试文件移动由[专属映射](../services/multisim/test/docs/archive/relocation/relocation_manifest.json)记录，不改写业务源迁移清单或历史证据。独立host构建通过显式入口选择；原产品/测试源表本轮不作修改，业务头不得依赖测试文件。
 
 ## 目录
 
@@ -267,7 +267,7 @@ services/multisim/
 | assembly、include两个导出头 | integration/lifecycle、lifecycle/exports | 同对象/共享RIL/原发布与匹配销毁；repository_exports白名单保留 |
 | foundation纯值/catalog、orchestration | support、support/request | H建只读catalog；O应用机制独立，Domain不依赖机制 |
 
-B+原88项的旧路径、输入摘要、新路径和职责以既有[source_migration.json](../services/multisim/test/multisim_architecture_rules/source_migration.json)的layout_revision为准；G2a两项另在additions追溯历史检查点，不改写该输入；保留前两轮溯源，不另建平行迁移表。无源文件的profile/default_roles/radio等计划目录不创建。
+B+原88项的旧路径、输入摘要、新路径和职责以既有[source_migration.json](../services/multisim/test/cases/architecture/source_migration.json)的layout_revision为准；G2a两项另在additions追溯历史检查点，不改写该输入；保留前两轮溯源，不另建平行迁移表。无源文件的profile/default_roles/radio等计划目录不创建。
 
 
 上述为历史转换与原输入追溯，当前五组迁移在[新映射](SIM_Directory_Migration_20261112.md)，不据旧表新增目录。
@@ -754,6 +754,6 @@ IDE转到定义只会落到已有定义。业务方法未定义是当前状态�
 
 ## 21. 附录：逐文件功能及实现状态
 
-全部B+输入文件的逐文件映射见[source_migration.json](../services/multisim/test/multisim_architecture_rules/source_migration.json)的layout_revision（输入5404aefe，88项，含old/target、SHA256、动作、logical_owner及依赖/测试影响、remaining_work）。本分支G2a两个新增文件由同一清单的additions记录，含历史源码路径/提交/摘要和readonly_query逻辑target；两历史集合合计90文件；后加设计副本按documentation_additions精确摘要追溯。当前91项输入/目标、风险与Owner见directory_migration_20261112.json及本批迁移映射；历史输入摘要与layout_history不改写。§3.1列出全部实际业务文件。
+全部B+输入文件的逐文件映射见[source_migration.json](../services/multisim/test/cases/architecture/source_migration.json)的layout_revision（输入5404aefe，88项，含old/target、SHA256、动作、logical_owner及依赖/测试影响、remaining_work）。本分支G2a两个新增文件由同一清单的additions记录，含历史源码路径/提交/摘要和readonly_query逻辑target；两历史集合合计90文件；后加设计副本按documentation_additions精确摘要追溯。当前91项输入/目标、风险与Owner见directory_migration_20261112.json及本批迁移映射；历史输入摘要与layout_history不改写。§3.1列出全部实际业务文件。
 
 原73文件的destinations继续指向当前落点，并保留原摘要和拆分来源；layout_history保存上一轮layout_revision，当前记录不可用前轮PASS代替。每个C++输入除预处理指令外的token顺序必须与本轮输入一致；include另由边界检查与GN验证。未实现的方法不补成功桩。

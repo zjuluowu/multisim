@@ -7,7 +7,7 @@
       "command": "/usr/bin/python3",
       "args": [
         "-B",
-        "${workspaceFolder}/telephony_core_service/services/multisim/test/systemtest/tools/host.py",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/host.py",
         "configure"
       ],
       "options": {
@@ -23,7 +23,7 @@
       "command": "/usr/bin/python3",
       "args": [
         "-B",
-        "${workspaceFolder}/telephony_core_service/services/multisim/test/systemtest/tools/host.py",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/host.py",
         "build"
       ],
       "options": {
@@ -43,7 +43,7 @@
       "command": "/usr/bin/python3",
       "args": [
         "-B",
-        "${workspaceFolder}/telephony_core_service/services/multisim/test/systemtest/tools/host.py",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/host.py",
         "all"
       ],
       "options": {
@@ -59,7 +59,7 @@
       "command": "/usr/bin/python3",
       "args": [
         "-B",
-        "${workspaceFolder}/telephony_core_service/services/multisim/test/systemtest/tools/host.py",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/host.py",
         "selected",
         "--target",
         "${input:hostTarget}",
@@ -79,7 +79,7 @@
       "command": "/usr/bin/python3",
       "args": [
         "-B",
-        "${workspaceFolder}/telephony_core_service/services/multisim/test/systemtest/tools/host.py",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/host.py",
         "clean"
       ],
       "options": {
@@ -101,7 +101,7 @@
       "label": "Build Real SIM Host",
       "args": [
         "-B",
-        "${workspaceFolder}/telephony_core_service/services/multisim/test/systemtest/tools/host.py",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/host.py",
         "build",
         "--target",
         "sim_primary_slot_real_test"
@@ -119,7 +119,7 @@
       "label": "Run All Tests + Real SIM",
       "args": [
         "-B",
-        "${workspaceFolder}/telephony_core_service/services/multisim/test/systemtest/tools/host.py",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/host.py",
         "all",
         "--with-real-primary"
       ]

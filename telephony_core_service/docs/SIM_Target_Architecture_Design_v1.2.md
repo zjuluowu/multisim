@@ -61,7 +61,7 @@ verification_note: 本轮输入main@5404aefe66decde4e5c5f03a01f355f6bf127e7e，8
 | 现状与证据 / SIM-ARCH-001、SIM-EVID-001 | [旧现状基线](MultiSIM/01_sim_subsystem_baseline.md)、[演进分析](MultiSIM/02_current_architecture_and_evolution.md)、[重构设计来源](SIM_Architecture_Refactor_Design.md#document-sources) | 仅作定位与历史比较；本次结论重新读取固定提交，证据在 §20.2 |
 | 理想、分层、类设计 / SIM-IDEAL-001 | [分层与迁移设计](SIM_Architecture_Layering_and_Migration_Design.md)、[V3 类设计](SIM_Layered_Architecture_Class_Design_Version3.md)，实际 ID 为 SIM-CLASS-001；[评估与优化设计](多SIM架构评估与优化设计.md) §3～5 | 保留有效职责；裁决“四业务 Context”、Coordinator 入 Domain、统一提交与持久日志等冲突。原 supersedes 对 SIM-IDEAL 章节的声明因源缺失撤回为未核实历史引用 |
 | 功能及迁移 / SIM-FUNC-001、SIM-MIG-001 | [SIM-001～062 及子项](SIM_Architecture_Refactor_Design.md#feature-mapping)、[WU-01～09](SIM_Architecture_Refactor_Design.md#writer-cutover)、[迁移阶段](SIM_Architecture_Refactor_Design.md#migration-stages) | 沿用稳定功能 ID 和写权单元；本文 §6 / §22 仅给架构映射与门禁摘要，不复制完整迁移计划 |
-| 测试 / SIM-TEST-001 | [systemtest README](../services/multisim/test/systemtest/README.md)、[初始化闭包](../services/multisim/test/systemtest/docs/initialization_closure.md)、[Oracle](../services/multisim/test/systemtest/docs/oracle_catalog.md)、[执行记录](../services/multisim/test/systemtest/docs/run_record.md) | 各自是设计、缺口或历史执行记录；本次不运行或晋升业务测试结果。基线 3fd0f815 已含 489c88fe 提交的测试设施更新，提交只说明设施存在 |
+| 测试 / SIM-TEST-001 | [systemtest README](../services/multisim/test/docs/Host_Overview.md)、[初始化闭包](../services/multisim/test/docs/host/initialization_closure.md)、[Oracle](../services/multisim/test/docs/host/oracle_catalog.md)、[执行记录](../services/multisim/test/docs/host/run_record.md) | 各自是设计、缺口或历史执行记录；本次不运行或晋升业务测试结果。基线 3fd0f815 已含 489c88fe 提交的测试设施更新，提交只说明设施存在 |
 | 源码组织详细设计 | [源码结构与功能详细设计](SIM_Multisim_Source_Architecture_Detailed_Design.md#target-tree) §3/4/17/21 | 本文定义边界和依赖不变量；详细设计维护唯一完整目标目录树、当前文件清单和生产功能落点。物理目录由五组方案确定；整体业务设计仍draft/pending |
 | 目录评审输入 | [Opus](SIM_Multisim_Source_Directory_Review_2026-10-30_Opus.md)、[Gemini](SIM_Multisim_Source_Directory_Review_2026-10-30_Gemini_argon.md) | 同等地位的只读建议；融合裁决见详细设计§4.3，不据模型名称或历史统计决定方案 |
 | 历史冲突与规则 | [2026-10-15 裁决](MultiSIM/08_design_unification_decisions.md)、[历史索引](history/pre_unification_20261015/README.md)、[仓库约束](knowledge/expert/constraints.md) | DU 等是历史设计取舍，不自动等于批准；约束中的新增 API/schema 禁止在本次继续遵守 |
@@ -1263,7 +1263,7 @@ SIM-OC-001～016 的消费集合沿用既有[接口说明](SIM管理对外接口
 
 ### 19.1 既有工程及可信范围
 
-继续以 [services/multisim/test/systemtest](../services/multisim/test/systemtest/README.md) 的独立 GN/Clang/GoogleTest 工程及其[场景目录](../services/multisim/test/systemtest/docs/cases/README.md)、[Oracle](../services/multisim/test/systemtest/docs/oracle_catalog.md)为详细来源，不在本文复制用例全集。原文“不得依赖现有 test 的任何 Mock/清单”过宽：应禁止借用能替换被测业务的旧单测替身及未知测试静态库；可复用已核实的独立 host 边界设施、依赖锁定和真实生产源清单，保持执行审计。
+继续以 [services/multisim/test/systemtest](../services/multisim/test/docs/Host_Overview.md) 的独立 GN/Clang/GoogleTest 工程及其[场景目录](../services/multisim/test/docs/host/cases/README.md)、[Oracle](../services/multisim/test/docs/host/oracle_catalog.md)为详细来源，不在本文复制用例全集。原文“不得依赖现有 test 的任何 Mock/清单”过宽：应禁止借用能替换被测业务的旧单测替身及未知测试静态库；可复用已核实的独立 host 边界设施、依赖锁定和真实生产源清单，保持执行审计。
 
 历史记录只有容量切片、有限设施自检的运行证据；无卡/Ready/账户/PIN/双卡及完整初始化闭包不能由容量 PASS 推出。初始化审计记录 45 个 object 编译、14 个 fork 存储字段缺口及链接/运行未闭合，均是其记录时的状态，**本轮未重跑，不当成当前重新测得的数字**。前轮所述 services/multisim/test/systemtest 的工作区修改与 services/multisim/test/linux_sim_guard 设施骨架已于 489c88fe 提交；提交只说明设施存在，本轮未构建或运行，最新执行记录仍是 2026-10-08 的容量切片 PASS 与初始化审计 BLOCKED。
 
@@ -1394,7 +1394,7 @@ F01～F31 保留固定提交 `6017003eff50c1bc8c5dfa72336a4bfe42e948b0` 的既�
 
 ### 20.3 分轮检查记录（历史结果不继承）
 
-2026-10-29 分支整合修订（revision consolidated-05）：实际执行64个骨架头/源（43h/21cpp）的 `clang++ -std=c++17 -Wall -Wextra -Werror -fsyntax-only`，全部通过；仓内新增[纯规则入口](../services/multisim/test/multisim_architecture_rules/README.md)，topology/resource/assignment三套实际编译并运行通过，包含字段/会话/ABA、51项资源断言、29项分配/请求/完成及资格负控。它们不构建生产对象，不证明设备执行或外仓协议。
+2026-10-29 分支整合修订（revision consolidated-05）：实际执行64个骨架头/源（43h/21cpp）的 `clang++ -std=c++17 -Wall -Wextra -Werror -fsyntax-only`，全部通过；仓内新增[纯规则入口](../services/multisim/test/cases/architecture/README.md)，topology/resource/assignment三套实际编译并运行通过，包含字段/会话/ABA、51项资源断言、29项分配/请求/完成及资格负控。它们不构建生产对象，不证明设备执行或外仓协议。
 
 本轮检查本地链接、显式锚点、表格列数、代码围栏、include依赖及空白；Mermaid 11.4.1在jsdom下31幅语法解析通过且错误语法负控被拒绝，PlantUML 4幅 `-checkonly` 通过，未做图形视觉验收。合入的56页PPTX与publish分支原字节一致，ZIP CRC与251个XML/关系部件解析通过；技能完整验证脚本因缺少defusedxml未完成，不继承或宣称新视觉验收。未运行hb、OHOS gTest/fuzzer、生产初始化/完整链接、IPC/ABI、设备或产品联调。当前声明/伪代码的业务I/O、工厂与旧用例桥仍待相应切片实现。
 
