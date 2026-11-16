@@ -1,0 +1,1712 @@
+{
+  "schema_version": 1,
+  "head": "877162ff1b2425fee0c9db1aadd7221497fd32db",
+  "platform": "Linux-6.18.58.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "machine": "x86_64",
+  "git_status": "M .vscode/launch.json\n M .vscode/settings.json\n M .vscode/tasks.json\n M telephony_core_service/services/multisim/test/README.md\n M telephony_core_service/services/multisim/test/framework/host/BUILD.gn\n M telephony_core_service/services/multisim/test/scripts/check_test_integrity.py\n?? default.profraw\n?? telephony_core_service/services/multisim/test/cases/event_adapter_test.cpp\n?? telephony_core_service/services/multisim/test/cases/event_transport_test.cpp\n?? telephony_core_service/services/multisim/test/cases/external_services_test.cpp\n?? telephony_core_service/services/multisim/test/cases/infrastructure/test_run_gtest.py\n?? telephony_core_service/services/multisim/test/cases/lifecycle_test.cpp\n?? telephony_core_service/services/multisim/test/cases/native_pointer_test.cpp\n?? telephony_core_service/services/multisim/test/cases/pin_and_response_test.cpp\n?? telephony_core_service/services/multisim/test/cases/pin_memory_test.cpp\n?? telephony_core_service/services/multisim/test/cases/ril_adapter_test.cpp\n?? telephony_core_service/services/multisim/test/cases/sim_card_test.cpp\n?? telephony_core_service/services/multisim/test/cases/sources.gni\n?? telephony_core_service/services/multisim/test/docs/Full_Replacement.md\n?? telephony_core_service/services/multisim/test/docs/Full_Replacement_Evolution.json\n?? telephony_core_service/services/multisim/test/docs/archive/full_replacement_20261116/\n?? telephony_core_service/services/multisim/test/framework/common/\n?? telephony_core_service/services/multisim/test/framework/host/pin_memory_spy.h\n?? telephony_core_service/services/multisim/test/framework/host/ril_device.h\n?? telephony_core_service/services/multisim/test/framework/host/ril_fault_controls.h\n?? telephony_core_service/services/multisim/test/framework/host/sim_test.cpp\n?? telephony_core_service/services/multisim/test/framework/host/state_platform_spy.cpp\n?? telephony_core_service/services/multisim/test/framework/host/state_platform_spy.h\n?? telephony_core_service/services/multisim/test/framework/sim_advanced_test.h\n?? telephony_core_service/services/multisim/test/framework/sim_test.h\n?? telephony_core_service/services/multisim/test/scripts/audit_replacement_execution.py\n?? telephony_core_service/services/multisim/test/scripts/build_replacement.py\n?? telephony_core_service/services/multisim/test/scripts/capture_replacement_baseline.py\n?? telephony_core_service/services/multisim/test/scripts/compare_replacement.py\n?? telephony_core_service/services/multisim/test/scripts/run_gtest.py\n?? telephony_core_service/services/multisim/test/scripts/update_case_sources.py",
+  "scope": "Original inputs and results; planned dispositions are not completed migrations",
+  "commands": [
+    {
+      "id": "EventAdapter.SharedTypeSafety",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=EventAdapter.SharedTypeSafety",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0000.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "EventAdapter.UniqueOwnership",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=EventAdapter.UniqueOwnership",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0001.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "EventAdapter.WeakLifetimeAndMetadata",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=EventAdapter.WeakLifetimeAndMetadata",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0002.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "ProductionEventTransport.DeliversFormalEnvelope",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=ProductionEventTransport.DeliversFormalEnvelope",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0003.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "ProductionEventTransport.CancelsPendingAndReapsWorker",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=ProductionEventTransport.CancelsPendingAndReapsWorker",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0004.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SchedulerBoundary.RunningTaskCannotBeCancelled",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SchedulerBoundary.RunningTaskCannotBeCancelled",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0005.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SchedulerBoundary.ProductionGeneralTaskWaitsAndCleansUp",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SchedulerBoundary.ProductionGeneralTaskWaitsAndCleansUp",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0006.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SchedulerBoundary.IdleWaitDrainsCascadedQueues",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SchedulerBoundary.IdleWaitDrainsCascadedQueues",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0007.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SchedulerBoundary.IdleWaitDoesNotIgnoreDelayedOrRunningWork",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SchedulerBoundary.IdleWaitDoesNotIgnoreDelayedOrRunningWork",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0008.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SchedulerBoundary.IdleWaitExposesTaskFailure",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SchedulerBoundary.IdleWaitExposesTaskFailure",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0009.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SchedulerBoundary.ReadyIdleLeavesFutureTimersAndDrainsCascades",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SchedulerBoundary.ReadyIdleLeavesFutureTimersAndDrainsCascades",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0010.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SchedulerBoundary.ReadyIdleDoesNotAcceptRunningInitialization",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SchedulerBoundary.ReadyIdleDoesNotAcceptRunningInitialization",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0011.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SchedulerBoundary.DetachedCallableBarrierIncludesCaptureDestruction",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SchedulerBoundary.DetachedCallableBarrierIncludesCaptureDestruction",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0012.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SchedulerBoundary.JoinablePoolWorkerIsNotAnUnfinishedDetachedActor",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SchedulerBoundary.JoinablePoolWorkerIsNotAnUnfinishedDetachedActor",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0013.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "ExternalData.EmptyCursorIsNotQueryFailure",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=ExternalData.EmptyCursorIsNotQueryFailure",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0014.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "ExternalData.ExplicitQueryResponses",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=ExternalData.ExplicitQueryResponses",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0015.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "ExternalData.OriginalBucketKeepsFirstPut",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=ExternalData.OriginalBucketKeepsFirstPut",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0016.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "ExternalEvents.PublishPreservesEnvelopeAndFailure",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=ExternalEvents.PublishPreservesEnvelopeAndFailure",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0017.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "ExternalEvents.MissingProviderAndScopeCleanup",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=ExternalEvents.MissingProviderAndScopeCleanup",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0018.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SessionLifecycle.INIT_001_SingleEnumeration",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SessionLifecycle.INIT_001_SingleEnumeration",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0019.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SessionLifecycle.INIT_002_MissingRilThenRecreate",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SessionLifecycle.INIT_002_MissingRilThenRecreate",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0020.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SessionLifecycle.INIT_DUAL_002_ReversedEnumeration",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SessionLifecycle.INIT_DUAL_002_ReversedEnumeration",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0021.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SessionLifecycle.CALLBACK_002_MalformedThenRecovery",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SessionLifecycle.CALLBACK_002_MalformedThenRecovery",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0022.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SessionLifecycle.CALLBACK_003_DroppedThenRecovery",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SessionLifecycle.CALLBACK_003_DroppedThenRecovery",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0023.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SessionLifecycle.PUK_002_WrongThenSuccessfulUnlock",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SessionLifecycle.PUK_002_WrongThenSuccessfulUnlock",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0024.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SessionLifecycle.REFRESH_001_ExplicitStatusQuery",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SessionLifecycle.REFRESH_001_ExplicitStatusQuery",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0025.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SessionLifecycle.RECREATE_001_DualCardReenumeration",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SessionLifecycle.RECREATE_001_DualCardReenumeration",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0026.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SessionLifecycle.RECREATE_002_ReplacementWhileStopped",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SessionLifecycle.RECREATE_002_ReplacementWhileStopped",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0027.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SessionLifecycle.DUAL_002_PinWhileOtherCardRemoved",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SessionLifecycle.DUAL_002_PinWhileOtherCardRemoved",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0028.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+      "status": "FAIL",
+      "exit_code": 1,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0029.xml"
+      ],
+      "reason": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/framework/common/state_assertions.h:23\nExpected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: LOCKED\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/framework/common/state_assertions.h:24\nExpected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <01-00 00-00>\n"
+    },
+    {
+      "id": "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+      "status": "FAIL",
+      "exit_code": 1,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0030.xml"
+      ],
+      "reason": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/lifecycle_test.cpp:151\nExpected: (actual.error) != (0), actual: 0 vs 0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/lifecycle_test.cpp:151\nExpected equality of these values:\n  actual.result\n    Which is: 4-byte object <01-00 00-00>\n  Unlock::Failure\n    Which is: 4-byte object <02-00 00-00>\n"
+    },
+    {
+      "id": "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+      "status": "FAIL",
+      "exit_code": 1,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0031.xml"
+      ],
+      "reason": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/framework/common/state_assertions.h:23\nExpected equality of these values:\n  actual.state\n    Which is: NOT_READY\n  state\n    Which is: LOCKED\n"
+    },
+    {
+      "id": "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+      "status": "FAIL",
+      "exit_code": 1,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0032.xml"
+      ],
+      "reason": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/lifecycle_test.cpp:170\nExpected equality of these values:\n  RefreshToLocked()\n    Which is: 2\n  0\ncore_service_client.h RefreshSimState @return contract\n"
+    },
+    {
+      "id": "NativePointerSubset.SharedOwnership",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=NativePointerSubset.SharedOwnership",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0033.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "NativePointerSubset.WeakIdentityAndPromotion",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=NativePointerSubset.WeakIdentityAndPromotion",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0034.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "NativePointerSubset.LocalCastRequiresImplementedInterface",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=NativePointerSubset.LocalCastRequiresImplementedInterface",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0035.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SimAdvancedTest.PIN_001",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SimAdvancedTest.PIN_001",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0036.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SimAdvancedTest.PIN_002_CommandFailure",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SimAdvancedTest.PIN_002_CommandFailure",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0037.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SimAdvancedTest.DUAL_001",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SimAdvancedTest.DUAL_001",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0038.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SimAdvancedTest.RIL_001_DuplicateAndError",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SimAdvancedTest.RIL_001_DuplicateAndError",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0039.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SimAdvancedTest.DEFECT_001_StaleReadyAfterRemoval",
+      "status": "FAIL",
+      "exit_code": 1,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SimAdvancedTest.DEFECT_001_StaleReadyAfterRemoval",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0040.xml"
+      ],
+      "reason": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/framework/common/state_assertions.h:22\nExpected equality of these values:\n  actual.present\n    Which is: true\n  state != State::Absent\n    Which is: false\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/framework/common/state_assertions.h:23\nExpected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: ABSENT\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/framework/common/state_assertions.h:24\nExpected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <00-00 00-00>\n"
+    },
+    {
+      "id": "PinMemoryContract.PinSuccessUsesOriginalSlotIdentityAndCredential",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=PinMemoryContract.PinSuccessUsesOriginalSlotIdentityAndCredential",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0041.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "PinMemoryContract.PukSuccessUsesNewPinAndPinAlterOperation",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=PinMemoryContract.PukSuccessUsesNewPinAndPinAlterOperation",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0042.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "PinMemoryContract.FailedPinDoesNotPublishMemoryHook",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=PinMemoryContract.FailedPinDoesNotPublishMemoryHook",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0043.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "PinMemoryContract.RemovalUsesAbsentResponseIdentityWithoutCredential",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=PinMemoryContract.RemovalUsesAbsentResponseIdentityWithoutCredential",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0044.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "RilAdapter.FormalStatusResponse",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=RilAdapter.FormalStatusResponse",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0045.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SimTest.LIFE_001",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SimTest.LIFE_001",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0046.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SimTest.LIFE_002",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SimTest.LIFE_002",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0047.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SimTest.PUK_001",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SimTest.PUK_001",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0048.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "SimTest.DualSimPinUnlock",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-new/sim_test_host",
+        "--gtest_filter=SimTest.DualSimPinUnlock",
+        "--gtest_output=xml:/tmp/sim-replacement-results/gtest-jbe9889b/0049.xml"
+      ],
+      "reason": ""
+    }
+  ],
+  "assets": [],
+  "raw_files": [
+    {
+      "path": "0000.log",
+      "sha256": "610c8439ef5b64f12bab8fb40edd5d96fc6b8143f05928ddd6101b8b47048def",
+      "bytes": 456
+    },
+    {
+      "path": "0000.xml",
+      "sha256": "b45e5ef9810ac964538c0b9e974c56150898fc58bf7f57050f87c0b7d819fd99",
+      "bytes": 800
+    },
+    {
+      "path": "0001.log",
+      "sha256": "234b7998e883254c316f27e2213c2074f0bdf36e24740d899a29ecc8c2cf0ba2",
+      "bytes": 453
+    },
+    {
+      "path": "0001.xml",
+      "sha256": "4f6a88dcc254801e38368bc745c1b630291b5afe155ee0981303324f5364e4ff",
+      "bytes": 805
+    },
+    {
+      "path": "0002.log",
+      "sha256": "2a1d4b5c271334e9558c72b87f4c299954bdecdb09981ea344e99b4e0c7f6cab",
+      "bytes": 477
+    },
+    {
+      "path": "0002.xml",
+      "sha256": "2781a84848c0d1850736047b9dac4407df018298256482b56dfcf6d52737d805",
+      "bytes": 812
+    },
+    {
+      "path": "0003.log",
+      "sha256": "f44e3ce7f94eac503152e91a231553033fa223cf362c2eed14174266eeb1a3c2",
+      "bytes": 534
+    },
+    {
+      "path": "0003.xml",
+      "sha256": "45a441db45c9ac9cae93127931c3fd5ef0c5488964007ab1e3692bdd065ddcb4",
+      "bytes": 947
+    },
+    {
+      "path": "0004.log",
+      "sha256": "a50ac5a80383abad4c021bd14c5d47b86cb660a06f1869155208e4fc39a3e989",
+      "bytes": 552
+    },
+    {
+      "path": "0004.xml",
+      "sha256": "912bfd51ccac4d526725b9790bba0af3fac287c16500e6998ed0ed089f1c5558",
+      "bytes": 899
+    },
+    {
+      "path": "0005.log",
+      "sha256": "54b952cd272aa3ee7a51342247b1f125f83147b58518813ec6a473455ab50868",
+      "bytes": 517
+    },
+    {
+      "path": "0005.xml",
+      "sha256": "20d287fe9610acb530a2c9163a86cd7634a1c40d6a1873ec51c6ac1ca9c50409",
+      "bytes": 836
+    },
+    {
+      "path": "0006.log",
+      "sha256": "3894146bca1883f9e6f631e31f53b656be48cbd2e98cd0b5b4706a709be5383a",
+      "bytes": 544
+    },
+    {
+      "path": "0006.xml",
+      "sha256": "62cd895915d1e28d4fc15fd79633c2b10fe96ae483688695adee580b2a0643b3",
+      "bytes": 838
+    },
+    {
+      "path": "0007.log",
+      "sha256": "61548d3f30aa4a66646fe819846c51d84352c499b61cec0002dd0193d9b4873a",
+      "bytes": 517
+    },
+    {
+      "path": "0007.xml",
+      "sha256": "beda3481751492f286afade039fb79e8792a885f2498005854efdb3a4d44e5cb",
+      "bytes": 834
+    },
+    {
+      "path": "0008.log",
+      "sha256": "465d746f800c64508c1b4204bb645c943c3e8a6666aff7345d580cc594ebe9ad",
+      "bytes": 559
+    },
+    {
+      "path": "0008.xml",
+      "sha256": "4dccdba8606f917c65858b564cc75429614309fe46804a32b9959dad77338979",
+      "bytes": 853
+    },
+    {
+      "path": "0009.log",
+      "sha256": "0ce7bad732e3b1afb2486575a112b71c9f1b8e5714b71b9ab6738039a7b6b401",
+      "bytes": 511
+    },
+    {
+      "path": "0009.xml",
+      "sha256": "843e7b55d127bd66e0fd794fdd76b55db100851d86dba915d8e50a649d89b118",
+      "bytes": 832
+    },
+    {
+      "path": "0010.log",
+      "sha256": "ab3bc0dcb83a8c5471a9cee6deb876814585e28b4f748b30c82be5e7671f470d",
+      "bytes": 565
+    },
+    {
+      "path": "0010.xml",
+      "sha256": "5bd684bd6edebea622ce91f84739a0bd0dfbdf14f8ce8ea4bf0da02ab99661fa",
+      "bytes": 851
+    },
+    {
+      "path": "0011.log",
+      "sha256": "59784a430903b2740f43875265ab03e9765ec1fcce2856af38c52d3f5072dc03",
+      "bytes": 562
+    },
+    {
+      "path": "0011.xml",
+      "sha256": "8ccb01d07e8956a5f78b176f8d85c7b513f2efd53757be53fe79020f0bb8cdbd",
+      "bytes": 850
+    },
+    {
+      "path": "0012.log",
+      "sha256": "1a379ad3150ec2cc2302dcd0b502ea20d6ef0cb1e3d5970a4a4518594a7f4ada",
+      "bytes": 580
+    },
+    {
+      "path": "0012.xml",
+      "sha256": "374cbd2ddb72df644edc39bc7c73dfe5f7bb902393140a3f9d79a63432cf79c0",
+      "bytes": 861
+    },
+    {
+      "path": "0013.log",
+      "sha256": "231ff32b6deb8027eaf15e2b8a7ec4fcc5c33e7524a83acd2228ea06dc327790",
+      "bytes": 577
+    },
+    {
+      "path": "0013.xml",
+      "sha256": "7d81a94aa1339c4fe85214fffb5ee6c11e4e115466bf8203ba9371a352b74406",
+      "bytes": 857
+    },
+    {
+      "path": "0014.log",
+      "sha256": "2451e46f60c4102e47ad4b92fe50c467079aca3fc1c19a18ed3789bb5620bb57",
+      "bytes": 492
+    },
+    {
+      "path": "0014.xml",
+      "sha256": "202d3a3b0cf5e621491c7923459a011d7c1ec2a168743e3fe8992464d4e58544",
+      "bytes": 816
+    },
+    {
+      "path": "0015.log",
+      "sha256": "3c7df30f5bc8b72fdda04a005eb7a195d1ea82539797462fe704a5b4a6fe9f60",
+      "bytes": 474
+    },
+    {
+      "path": "0015.xml",
+      "sha256": "10ace15fd6d7cf17157d340bacabcde2c44c238fbb9c4380dfc44a07e84241e1",
+      "bytes": 810
+    },
+    {
+      "path": "0016.log",
+      "sha256": "18a03f5cac06b0e9c6352cb260dbbb3b454cb2b7daa255ba684805b94df93fa4",
+      "bytes": 489
+    },
+    {
+      "path": "0016.xml",
+      "sha256": "7335771dfbca87878e841b8c242f29611eed8bfbe27621bf7f0a77d81eacbb47",
+      "bytes": 816
+    },
+    {
+      "path": "0017.log",
+      "sha256": "b6bf09f6b6fb4ecce3e65eedab17f74576d38d9ebf9645cff040af5848c4a98f",
+      "bytes": 520
+    },
+    {
+      "path": "0017.xml",
+      "sha256": "94bddd6e955eb125e779aa5ad520798fe565a11fe061c4a7e127e0e610f84678",
+      "bytes": 828
+    },
+    {
+      "path": "0018.log",
+      "sha256": "88ee7d36b5befcac34839ad5989ee81db1866f5c51a1adbe5b57d9bcf5cd708e",
+      "bytes": 508
+    },
+    {
+      "path": "0018.xml",
+      "sha256": "e2ccf36fa68f24eedb32d6100a1283590aff667c197dc1f51d18cba86f76ae50",
+      "bytes": 826
+    },
+    {
+      "path": "0019.log",
+      "sha256": "7f7853e3315291fda33573c13c267e87edf289c80d26fdeb4ba79b56e3d3828b",
+      "bytes": 506
+    },
+    {
+      "path": "0019.xml",
+      "sha256": "12e80c7980374abce731a7279b7008352fbeb5f4a8749408fb11f3e467e035f2",
+      "bytes": 1196
+    },
+    {
+      "path": "0020.log",
+      "sha256": "1b744ded2b5d0a398054b51c9adb503b3160e6244c91d7f81c74d843665247f6",
+      "bytes": 521
+    },
+    {
+      "path": "0020.xml",
+      "sha256": "fd874ca1721e41446c615fbe4f3ae678349ddb8a5d6454509dff4d83647aec54",
+      "bytes": 1184
+    },
+    {
+      "path": "0021.log",
+      "sha256": "227648f0fded81ddeb8e70715a189ca8f33d6bce00f364a536ce86399c0b0ba1",
+      "bytes": 527
+    },
+    {
+      "path": "0021.xml",
+      "sha256": "be8c83c00395656a83479f1aa5559637409872470d9079cfdd78c9be43f6e677",
+      "bytes": 1284
+    },
+    {
+      "path": "0022.log",
+      "sha256": "98284ef85d0f2510aaf8512562af6f14c4a03d6287a16f5b4391bb1f3457a4b0",
+      "bytes": 530
+    },
+    {
+      "path": "0022.xml",
+      "sha256": "1ce4bb07554d508a8d7ecba366e95e9434c1ca300dc839404925d8a9b486d723",
+      "bytes": 1290
+    },
+    {
+      "path": "0023.log",
+      "sha256": "df7997063594d38c1a6e5964c94b78e981fcacb5a294d80ebc3be1ed5c5cbd8e",
+      "bytes": 524
+    },
+    {
+      "path": "0023.xml",
+      "sha256": "b0dfedae9627f68ffb91570c5585149555bd2a3a83721ab1fd5d62bb1fa3fc37",
+      "bytes": 1317
+    },
+    {
+      "path": "0024.log",
+      "sha256": "60eb1137c70f701901c0ba7606cf3bccee584535f89a99c29ff0161baf94faec",
+      "bytes": 527
+    },
+    {
+      "path": "0024.xml",
+      "sha256": "74045c774350af076c138b070fac2affa5feda02d0d7d53cc5ab0d1981e5987f",
+      "bytes": 1073
+    },
+    {
+      "path": "0025.log",
+      "sha256": "542ee11339576cd017b6d3da62f364dd89a356d8316febd6206e033274a3e844",
+      "bytes": 521
+    },
+    {
+      "path": "0025.xml",
+      "sha256": "18332ac69731f83446c4e586e7bfc3a858abc3b11476207f0d6a71fa89ce962b",
+      "bytes": 1152
+    },
+    {
+      "path": "0026.log",
+      "sha256": "6a6b38a11e1d0042e93aeea11a6834f527bdf042ad0bd2982d4f519cdcef3d59",
+      "bytes": 530
+    },
+    {
+      "path": "0026.xml",
+      "sha256": "edd2ce2a650332904a723b0bd04458cb13bc7ffbd62017c942240d361be9f28e",
+      "bytes": 1586
+    },
+    {
+      "path": "0027.log",
+      "sha256": "bdd32c0f3e7b7267e283687667f88554af2486e7e4d7943677ed62d1238141c0",
+      "bytes": 536
+    },
+    {
+      "path": "0027.xml",
+      "sha256": "c1026740990def332421b9073d3f0f7101302ebc622916a70f549fb87e13a123",
+      "bytes": 1203
+    },
+    {
+      "path": "0028.log",
+      "sha256": "f680489fa7e2c9b697ad903a098a5edae3cea1c86dac8431cf089b5adb50cd14",
+      "bytes": 527
+    },
+    {
+      "path": "0028.xml",
+      "sha256": "4514704380ec69c6b4546635a5b07b7dc4752763a55fe29e3c9d36948497fee0",
+      "bytes": 1378
+    },
+    {
+      "path": "0029.log",
+      "sha256": "16700f914e7a60de0bca95fe5695b93fa3b0194d0f953e31bca00ae11c06dc7e",
+      "bytes": 1134
+    },
+    {
+      "path": "0029.xml",
+      "sha256": "aa382db61a2f87d71663dc389fbf294875ded4b63bfd9e782c2068c6f3d7bd26",
+      "bytes": 2271
+    },
+    {
+      "path": "0030.log",
+      "sha256": "95d4552b35123a1390e641d6026f28040a8b36811c8250c1ef293bd5ec825846",
+      "bytes": 1104
+    },
+    {
+      "path": "0030.xml",
+      "sha256": "82c0a6a21c404a260dbeeb9f3d66fd3b8b13eb2d33a5b08dbcbc77703e0c4049",
+      "bytes": 2178
+    },
+    {
+      "path": "0031.log",
+      "sha256": "768786c2dc93b33b001efcc6a1814e6631da2083a778cd4ea47e0ce704d8ce68",
+      "bytes": 872
+    },
+    {
+      "path": "0031.xml",
+      "sha256": "432da97acfbcf505de41c2bf74faff578e42d35b27d1b5699eb603b5534fb37a",
+      "bytes": 1795
+    },
+    {
+      "path": "0032.log",
+      "sha256": "5ab06e8531867fa00bac019799b2f419d487a0768186f4c300e257b7edfd444e",
+      "bytes": 909
+    },
+    {
+      "path": "0032.xml",
+      "sha256": "f717ac75d93177678a07b7c2858056bd5c62298f80423d6e8b91056f006ba8d9",
+      "bytes": 1705
+    },
+    {
+      "path": "0033.log",
+      "sha256": "274b1b98004bc167d56cfa95b628411978ef6d211056f36c6748e9980c7b1912",
+      "bytes": 488
+    },
+    {
+      "path": "0033.xml",
+      "sha256": "8cee06161e9804156f6a52909c204da642691907231f86035b9ad3bf2acef06e",
+      "bytes": 818
+    },
+    {
+      "path": "0034.log",
+      "sha256": "d97c95c742848de16cf024ae90c43e7c721caa8e28617dd854e4dfa44888d576",
+      "bytes": 515
+    },
+    {
+      "path": "0034.xml",
+      "sha256": "fbd9ada08dbc10163b7ec8c757fc6b0e046607962539428fde7399c3f100e214",
+      "bytes": 822
+    },
+    {
+      "path": "0035.log",
+      "sha256": "b4ba1f26d249a29e9aad6a3f6670b0eb7ed9671231dbdf4eccd9c6b824e1604c",
+      "bytes": 554
+    },
+    {
+      "path": "0035.xml",
+      "sha256": "af084a08af00f391fa7d50fe774e2db2a0588b3ccf6531e7e49d5b28ee91c91b",
+      "bytes": 841
+    },
+    {
+      "path": "0036.log",
+      "sha256": "10e8c015589d7a7a169a974c6958358ddadb5ac59451ff7f52dc8b794583fa4f",
+      "bytes": 444
+    },
+    {
+      "path": "0036.xml",
+      "sha256": "596155b080e8d69f3a704e43d350470236e757b46226fe6474c99f4bcb2a3baf",
+      "bytes": 1071
+    },
+    {
+      "path": "0037.log",
+      "sha256": "f11c33be26a526e175a1d9353e8e6cf9475ed668e1842cba392ab426907fff6b",
+      "bytes": 489
+    },
+    {
+      "path": "0037.xml",
+      "sha256": "2330a69211905f92632bb24d01889e16511e40d471d05d82f96471274d67e55d",
+      "bytes": 1074
+    },
+    {
+      "path": "0038.log",
+      "sha256": "1ba2f5806c2706ad650deb8b5f275197b552d36ba2953730953d431a0dc39126",
+      "bytes": 447
+    },
+    {
+      "path": "0038.xml",
+      "sha256": "620b8315ee3405948236b91c4914ec61b173c6f8a10a67b13c1bc0c5e0a7d372",
+      "bytes": 1326
+    },
+    {
+      "path": "0039.log",
+      "sha256": "2d641d1153bfc5728ed849ea88e6562dac121d5bda4a67875a6fcbe260391790",
+      "bytes": 498
+    },
+    {
+      "path": "0039.xml",
+      "sha256": "e5148d5ff41866ee5eaa4e9378040f255f3f83f273c0e605f3a010894d493e81",
+      "bytes": 1190
+    },
+    {
+      "path": "0040.log",
+      "sha256": "e706b11d9593bf1ab33e833d86fd68d1d34ba1a0c123b5dedcdc80d922087175",
+      "bytes": 1346
+    },
+    {
+      "path": "0040.xml",
+      "sha256": "331633508170485e8aa705956cfdff32eaab85eb89bcca876697a1865dbec13e",
+      "bytes": 2769
+    },
+    {
+      "path": "0041.log",
+      "sha256": "2309b3a168a229d3552e1c915f224b8b6c1b3c2641b1ee0336075ee4b110cbbe",
+      "bytes": 574
+    },
+    {
+      "path": "0041.xml",
+      "sha256": "c61160227e6f739977adf7967e0c118e0108ded58f79057a16c1739cc7727cdd",
+      "bytes": 1176
+    },
+    {
+      "path": "0042.log",
+      "sha256": "a8ea4791e5347c4430c92a98d097560fe7fd5326bacae8c5220ef0ee5409adf7",
+      "bytes": 553
+    },
+    {
+      "path": "0042.xml",
+      "sha256": "12dbac237220323681c13f02c6eee52d382656a83794f87d959b69de85818339",
+      "bytes": 1021
+    },
+    {
+      "path": "0043.log",
+      "sha256": "847dcd498ee9a9362027b10bc5472beb8c322b040ea5004fa724f94457d436ab",
+      "bytes": 532
+    },
+    {
+      "path": "0043.xml",
+      "sha256": "cee230a1fdeec18fdddf766bad43ee62b2075e6b58c2af231e450191b75ebc72",
+      "bytes": 1020
+    },
+    {
+      "path": "0044.log",
+      "sha256": "dc79ed00eaf7d0c411f528c50eec371f8b7d3658f35d9dd9bea20fdd6c9b5458",
+      "bytes": 583
+    },
+    {
+      "path": "0044.xml",
+      "sha256": "effb9b7c8a54829d745c5d525a0228a8f38e90a5724af0ebf57bee366ee15320",
+      "bytes": 1170
+    },
+    {
+      "path": "0045.log",
+      "sha256": "5cd660b0a02b6e797e9f0f714ddf99497f99fc9fa7c4d617bac0882b8faab2fa",
+      "bytes": 458
+    },
+    {
+      "path": "0045.xml",
+      "sha256": "a1e263722b24d657311c488b530485feaab33956f6395fa6bcb0d1b60db396a3",
+      "bytes": 801
+    },
+    {
+      "path": "0046.log",
+      "sha256": "adc4be0e7f74261f4f2f232aafb63fc49344a9f0ef4fea461232a87b03570fad",
+      "bytes": 407
+    },
+    {
+      "path": "0046.xml",
+      "sha256": "acf4c29201e6b46020e633615eb809a9c178505bcd4169e9657a30903f229ba1",
+      "bytes": 1154
+    },
+    {
+      "path": "0047.log",
+      "sha256": "e67c64007aa9c75837f63e28aaaa19c2986fe467f61734028e9d860e995fac6f",
+      "bytes": 407
+    },
+    {
+      "path": "0047.xml",
+      "sha256": "d953bb4fa7a4629ce40eb25f071f9989c1ca43eb2ccbd5979ac60dad0acf5ba5",
+      "bytes": 1091
+    },
+    {
+      "path": "0048.log",
+      "sha256": "1a561c70967aa5cc9404e99db5d95b3b1029d88cbaa441f38ae56d87854b8828",
+      "bytes": 404
+    },
+    {
+      "path": "0048.xml",
+      "sha256": "2bb8b653ecf2c9bd5be9fd0f0c15db5938fc43b988c2f1d88c8b3ba558dac76a",
+      "bytes": 1029
+    },
+    {
+      "path": "0049.log",
+      "sha256": "2142375634d3fa82c7fc669bb3eeb17c5b6f5e9b508ff478579b36e9c94f6a72",
+      "bytes": 431
+    },
+    {
+      "path": "0049.xml",
+      "sha256": "377bb4d7e9eb3ae0c67083c1d86920f47d4b07cf5e6a590bb3786d49b9a72a75",
+      "bytes": 1126
+    },
+    {
+      "path": "discovery.txt",
+      "sha256": "231a32a358bb00fbb42223c3f2e6daef6e7a4d86b34c5107a04c45c0bf918cd5",
+      "bytes": 1803
+    },
+    {
+      "path": "result.json",
+      "sha256": "a0cdcb001808b2951eee33fe6d5f61e9249ab517ebc05e633ecf6073597d415c",
+      "bytes": 212353
+    }
+  ],
+  "cases": [
+    {
+      "report": "0000.xml",
+      "id": "EventAdapter.SharedTypeSafety",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "case_id": "INFRA-EVENT-001",
+        "level": "INFRA",
+        "oracle_id": "EVT-TYPE"
+      }
+    },
+    {
+      "report": "0001.xml",
+      "id": "EventAdapter.UniqueOwnership",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "case_id": "INFRA-EVENT-002",
+        "level": "INFRA",
+        "oracle_id": "EVT-OWNERSHIP"
+      }
+    },
+    {
+      "report": "0002.xml",
+      "id": "EventAdapter.WeakLifetimeAndMetadata",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "case_id": "INFRA-EVENT-003",
+        "level": "INFRA",
+        "oracle_id": "EVT-LIFETIME"
+      }
+    },
+    {
+      "report": "0003.xml",
+      "id": "ProductionEventTransport.DeliversFormalEnvelope",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "case_id": "INFRA-EVENT-004",
+        "level": "INFRA",
+        "oracle_id": "EVT-PRODUCTION",
+        "converged": "true",
+        "cleanup_completed": "true"
+      }
+    },
+    {
+      "report": "0004.xml",
+      "id": "ProductionEventTransport.CancelsPendingAndReapsWorker",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "case_id": "INFRA-EVENT-005",
+        "level": "INFRA",
+        "oracle_id": "EVT-CANCEL",
+        "cleanup_completed": "true"
+      }
+    },
+    {
+      "report": "0005.xml",
+      "id": "SchedulerBoundary.RunningTaskCannotBeCancelled",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "case_id": "INFRA-FFRT-001",
+        "level": "INFRA",
+        "oracle_id": "FFRT-CANCEL-RUNNING"
+      }
+    },
+    {
+      "report": "0006.xml",
+      "id": "SchedulerBoundary.ProductionGeneralTaskWaitsAndCleansUp",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "case_id": "INFRA-FFRT-002",
+        "level": "INFRA",
+        "oracle_id": "FFRT-GENERAL"
+      }
+    },
+    {
+      "report": "0007.xml",
+      "id": "SchedulerBoundary.IdleWaitDrainsCascadedQueues",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "case_id": "INFRA-FFRT-003",
+        "oracle_id": "FFRT-IDLE-CASCADE",
+        "level": "INFRA"
+      }
+    },
+    {
+      "report": "0008.xml",
+      "id": "SchedulerBoundary.IdleWaitDoesNotIgnoreDelayedOrRunningWork",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "case_id": "INFRA-FFRT-004",
+        "oracle_id": "FFRT-IDLE-BOUNDED",
+        "level": "INFRA"
+      }
+    },
+    {
+      "report": "0009.xml",
+      "id": "SchedulerBoundary.IdleWaitExposesTaskFailure",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "case_id": "INFRA-FFRT-005",
+        "oracle_id": "FFRT-IDLE-FAILURE",
+        "level": "INFRA"
+      }
+    },
+    {
+      "report": "0010.xml",
+      "id": "SchedulerBoundary.ReadyIdleLeavesFutureTimersAndDrainsCascades",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "case_id": "INFRA-FFRT-006",
+        "oracle_id": "FFRT-READY-CASCADE",
+        "level": "INFRA"
+      }
+    },
+    {
+      "report": "0011.xml",
+      "id": "SchedulerBoundary.ReadyIdleDoesNotAcceptRunningInitialization",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "case_id": "INFRA-FFRT-007",
+        "oracle_id": "FFRT-READY-RUNNING",
+        "level": "INFRA"
+      }
+    },
+    {
+      "report": "0012.xml",
+      "id": "SchedulerBoundary.DetachedCallableBarrierIncludesCaptureDestruction",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "case_id": "INFRA-FFRT-008",
+        "oracle_id": "THREAD-DETACHED-CAPTURE",
+        "level": "INFRA"
+      }
+    },
+    {
+      "report": "0013.xml",
+      "id": "SchedulerBoundary.JoinablePoolWorkerIsNotAnUnfinishedDetachedActor",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "case_id": "INFRA-FFRT-009",
+        "oracle_id": "THREAD-POOL-BASELINE",
+        "level": "INFRA"
+      }
+    },
+    {
+      "report": "0014.xml",
+      "id": "ExternalData.EmptyCursorIsNotQueryFailure",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "case_id": "INFRA-DATA-001",
+        "level": "INFRA",
+        "oracle_id": "DS-CURSOR"
+      }
+    },
+    {
+      "report": "0015.xml",
+      "id": "ExternalData.ExplicitQueryResponses",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "case_id": "INFRA-DATA-002",
+        "level": "INFRA",
+        "oracle_id": "DS-QUERY"
+      }
+    },
+    {
+      "report": "0016.xml",
+      "id": "ExternalData.OriginalBucketKeepsFirstPut",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "case_id": "INFRA-DATA-003",
+        "level": "INFRA",
+        "oracle_id": "DS-VALUES"
+      }
+    },
+    {
+      "report": "0017.xml",
+      "id": "ExternalEvents.PublishPreservesEnvelopeAndFailure",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "case_id": "INFRA-CES-001",
+        "level": "INFRA",
+        "oracle_id": "CES-PUBLISH"
+      }
+    },
+    {
+      "report": "0018.xml",
+      "id": "ExternalEvents.MissingProviderAndScopeCleanup",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "case_id": "INFRA-CES-002",
+        "level": "INFRA",
+        "oracle_id": "CES-LIFETIME"
+      }
+    },
+    {
+      "report": "0019.xml",
+      "id": "SessionLifecycle.INIT_001_SingleEnumeration",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "real_instances_created": "1",
+        "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+        "observations": "initialized-without-card-response:slot=0,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "report": "0020.xml",
+      "id": "SessionLifecycle.INIT_002_MissingRilThenRecreate",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "real_instances_created": "2",
+        "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+        "observations": "ril-unavailable:slot=0,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=1;\n",
+        "real_instances_destroyed": "2",
+        "pending_responses": "0",
+        "external_calls": "status:0;"
+      }
+    },
+    {
+      "report": "0021.xml",
+      "id": "SessionLifecycle.INIT_DUAL_002_ReversedEnumeration",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "real_instances_created": "2",
+        "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+        "observations": "second-slot-response-first:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=1,state=LOCKED,kind=1;\nboth-enumerated:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:1;",
+        "real_instances_destroyed": "2"
+      }
+    },
+    {
+      "report": "0022.xml",
+      "id": "SessionLifecycle.CALLBACK_002_MalformedThenRecovery",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "real_instances_created": "1",
+        "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+        "observations": "malformed-status:slot=0,present=0,state=UNKNOWN,kind=0;\nvalid-status-recovery:slot=0,present=1,state=READY,kind=2;\n",
+        "injected_fault": "wrong typed RIL response payload",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "report": "0023.xml",
+      "id": "SessionLifecycle.CALLBACK_003_DroppedThenRecovery",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "real_instances_created": "1",
+        "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+        "observations": "status-response-not-delivered:slot=0,present=0,state=UNKNOWN,kind=0;\nnew-status-response:slot=0,present=1,state=LOCKED,kind=2;\n",
+        "injected_fault": "RIL response dropped; no timeout-policy assertion",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "report": "0024.xml",
+      "id": "SessionLifecycle.PUK_002_WrongThenSuccessfulUnlock",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=1,state=READY,kind=2;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "report": "0025.xml",
+      "id": "SessionLifecycle.REFRESH_001_ExplicitStatusQuery",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nexplicit-refresh-completed:slot=0,present=1,state=LOCKED,kind=2;\n",
+        "raw_refresh_return": "2",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "report": "0026.xml",
+      "id": "SessionLifecycle.RECREATE_001_DualCardReenumeration",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "real_instances_created": "4",
+        "observations": "card-event:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\nnew-real-SUT-before-enumeration:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=0,state=UNKNOWN,kind=0;\nreenumerated-device-facts:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\n",
+        "real_instances_destroyed": "4",
+        "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+        "persistence_scope": "external card facts; no Provider/DB recovery claim",
+        "pending_responses": "0",
+        "external_calls": "status:1;status:0;"
+      }
+    },
+    {
+      "report": "0027.xml",
+      "id": "SessionLifecycle.RECREATE_002_ReplacementWhileStopped",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "real_instances_created": "2",
+        "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nnew-card-after-real-recreation:slot=0,present=1,state=LOCKED,kind=1;\n",
+        "real_instances_destroyed": "2",
+        "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+        "pending_responses": "0",
+        "external_calls": "status:0;"
+      }
+    },
+    {
+      "report": "0028.xml",
+      "id": "SessionLifecycle.DUAL_002_PinWhileOtherCardRemoved",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "real_instances_created": "2",
+        "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=1,state=READY,kind=1;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=0,state=ABSENT,kind=0;\nunlock-and-other-removal-completed:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=ABSENT,kind=0;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:1;pin:0;status:1;status:0;",
+        "real_instances_destroyed": "2"
+      }
+    },
+    {
+      "report": "0029.xml",
+      "id": "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+      "status": "FAIL",
+      "failures": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/framework/common/state_assertions.h:23\nExpected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: LOCKED\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/framework/common/state_assertions.h:24\nExpected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <01-00 00-00>\n"
+      ],
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nreplacement-card-locked:slot=0,present=1,state=LOCKED,kind=1;\nold-card-ready-response:slot=0,present=1,state=READY,kind=2;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:0;status:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "report": "0030.xml",
+      "id": "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+      "status": "FAIL",
+      "failures": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/lifecycle_test.cpp:151\nExpected: (actual.error) != (0), actual: 0 vs 0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/lifecycle_test.cpp:151\nExpected equality of these values:\n  actual.result\n    Which is: 4-byte object <01-00 00-00>\n  Unlock::Failure\n    Which is: 4-byte object <02-00 00-00>\n"
+      ],
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ngeneric-error-without-password-decision:slot=0,present=1,state=LOCKED,kind=2;\n",
+        "observed_error": "0",
+        "observed_unlock_result": "1",
+        "pending_responses": "0",
+        "external_calls": "status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "report": "0031.xml",
+      "id": "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+      "status": "FAIL",
+      "failures": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/framework/common/state_assertions.h:23\nExpected equality of these values:\n  actual.state\n    Which is: NOT_READY\n  state\n    Which is: LOCKED\n"
+      ],
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=1;\nold-pin-result-after-card-replacement:slot=0,present=1,state=NOT_READY,kind=1;\n",
+        "old_request_result": "0",
+        "pending_responses": "0",
+        "external_calls": "status:0;pin:0;status:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "report": "0032.xml",
+      "id": "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+      "status": "FAIL",
+      "failures": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/lifecycle_test.cpp:170\nExpected equality of these values:\n  RefreshToLocked()\n    Which is: 2\n  0\ncore_service_client.h RefreshSimState @return contract\n"
+      ],
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nexplicit-refresh-completed:slot=0,present=1,state=LOCKED,kind=2;\n",
+        "raw_refresh_return": "2",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "report": "0033.xml",
+      "id": "NativePointerSubset.SharedOwnership",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "case_id": "INFRA-PTR-001",
+        "level": "INFRA",
+        "oracle_id": "PTR-OWNERSHIP"
+      }
+    },
+    {
+      "report": "0034.xml",
+      "id": "NativePointerSubset.WeakIdentityAndPromotion",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "case_id": "INFRA-PTR-002",
+        "level": "INFRA",
+        "oracle_id": "PTR-WEAK"
+      }
+    },
+    {
+      "report": "0035.xml",
+      "id": "NativePointerSubset.LocalCastRequiresImplementedInterface",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "case_id": "INFRA-PTR-003",
+        "level": "INFRA",
+        "oracle_id": "PTR-LOCAL-CAST"
+      }
+    },
+    {
+      "report": "0036.xml",
+      "id": "SimAdvancedTest.PIN_001",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\npin-success-status:slot=0,present=1,state=READY,kind=2;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;pin:0;pin:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "report": "0037.xml",
+      "id": "SimAdvancedTest.PIN_002_CommandFailure",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\npin-command-failure:slot=0,present=1,state=LOCKED,kind=2;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;pin:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "report": "0038.xml",
+      "id": "SimAdvancedTest.DUAL_001",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "real_instances_created": "2",
+        "observations": "card-event:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;slot=1,present=1,state=LOCKED,kind=1;\ncard-event:slot=0,present=1,state=READY,kind=1;slot=1,present=1,state=LOCKED,kind=1;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:1;status:0;status:0;",
+        "real_instances_destroyed": "2"
+      }
+    },
+    {
+      "report": "0039.xml",
+      "id": "SimAdvancedTest.RIL_001_DuplicateAndError",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=0,state=ABSENT,kind=0;\nril-error:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;\nduplicate-ready:slot=0,present=1,state=READY,kind=2;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "report": "0040.xml",
+      "id": "SimAdvancedTest.DEFECT_001_StaleReadyAfterRemoval",
+      "status": "FAIL",
+      "failures": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/framework/common/state_assertions.h:22\nExpected equality of these values:\n  actual.present\n    Which is: true\n  state != State::Absent\n    Which is: false\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/framework/common/state_assertions.h:23\nExpected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: ABSENT\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/framework/common/state_assertions.h:24\nExpected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <00-00 00-00>\n"
+      ],
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nremoved:slot=0,present=0,state=ABSENT,kind=0;\nstale-ready:slot=0,present=1,state=READY,kind=2;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "report": "0041.xml",
+      "id": "PinMemoryContract.PinSuccessUsesOriginalSlotIdentityAndCredential",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "real_instances_created": "2",
+        "observations": "card-event:slot=0,present=1,state=READY,kind=1;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=1;slot=1,present=1,state=LOCKED,kind=2;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:1;pin:1;pin:1;",
+        "real_instances_destroyed": "2"
+      }
+    },
+    {
+      "report": "0042.xml",
+      "id": "PinMemoryContract.PukSuccessUsesNewPinAndPinAlterOperation",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "report": "0043.xml",
+      "id": "PinMemoryContract.FailedPinDoesNotPublishMemoryHook",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;pin:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "report": "0044.xml",
+      "id": "PinMemoryContract.RemovalUsesAbsentResponseIdentityWithoutCredential",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "real_instances_created": "2",
+        "observations": "card-event:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=0,state=ABSENT,kind=0;\n",
+        "pending_responses": "0",
+        "external_calls": "status:1;status:1;",
+        "real_instances_destroyed": "2"
+      }
+    },
+    {
+      "report": "0045.xml",
+      "id": "RilAdapter.FormalStatusResponse",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "case_id": "INFRA-RIL-001",
+        "level": "INFRA",
+        "oracle_id": "RIL-TRANSPORT"
+      }
+    },
+    {
+      "report": "0046.xml",
+      "id": "SimTest.LIFE_001",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=1,state=READY,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:0;status:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "report": "0047.xml",
+      "id": "SimTest.LIFE_002",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=READY,kind=1;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "report": "0048.xml",
+      "id": "SimTest.PUK_001",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "real_instances_created": "1",
+        "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:0;",
+        "real_instances_destroyed": "1"
+      }
+    },
+    {
+      "report": "0049.xml",
+      "id": "SimTest.DualSimPinUnlock",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "real_instances_created": "2",
+        "observations": "card-event:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=2;\n",
+        "pending_responses": "0",
+        "external_calls": "status:0;status:1;pin:1;status:1;",
+        "real_instances_destroyed": "2"
+      }
+    }
+  ],
+  "archive_sha256": "fce5afaa98a9c4b17c05a30816381fa359cf337798ffb5e5c1d2a5c01621e7b5"
+}

@@ -1,0 +1,31 @@
+{
+  "normal_run_binary_sha256": "26855b3823980c8759c3826f1a1fe723b4478ca88d103beb5ee68b6918c8edb4",
+  "preserved_normal_binary_sha256": "26855b3823980c8759c3826f1a1fe723b4478ca88d103beb5ee68b6918c8edb4",
+  "restored_binary_sha256": "26855b3823980c8759c3826f1a1fe723b4478ca88d103beb5ee68b6918c8edb4",
+  "normal_gn_args_restored": true,
+  "mutations": [
+    {
+      "id": "ready",
+      "status": "DETECTED",
+      "exit_code": 1
+    },
+    {
+      "id": "puk",
+      "status": "DETECTED",
+      "exit_code": 1
+    }
+  ],
+  "recovery_exit_code": 0,
+  "files": {
+    "comparison.json": "aab5a5befb6c40aafb9d507689978896529477be2991bd70f32a1cc4574052dd",
+    "mutations.tar.gz": "9889c69271fb69df68056a4a22cb1e26502af2f23f508f5f5884c7ea206bb720",
+    "native-dependencies.json": "2213827bca3a1ddc2261510920f517f8322472cd6219ebdd1dbe6b94e91296fb",
+    "openssl-dependency.json": "2b27ca0818c38764416127e322d27e511cf3497f7ff26630cef1dbf68ff78083",
+    "production-execution.json": "7023176633a9c3696e7bb320e69661dc86a9ad075f3f1c64062102a732d09790",
+    "debug.tar.gz": "ad693c9d6778dc523a9fad76f2ec6fd971ec79e61955b5f13e3eb194fce7fe38",
+    "cli-smoke.tar.gz": "7230bbc8705c2fefc411ceaa602fea929918040b65f80eaac821ed3ce2b7a4b2",
+    "technical.tar.gz": "7d0a92355cf949e583623a5c449727919c64c73dc2fd082622adf3003710dbf4"
+  },
+  "cli_cold_build": "PASS",
+  "cli_dual_pin_smoke": "PASS"
+}

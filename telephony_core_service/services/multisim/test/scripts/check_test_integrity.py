@@ -48,6 +48,14 @@ def current_output_digests(rows):
         if hashlib.sha256(before).hexdigest() != update['previous_sha256'] or not update['reason']:
             raise RuntimeError('Upstream adaptation input mismatch: ' + name)
         result[name] = update['current_sha256']
+    replacement = json.loads((TEST / 'docs/Full_Replacement_Evolution.json').read_text())
+    if set(replacement['files']) != {'framework/host/BUILD.gn', 'scripts/check_test_integrity.py', 'README.md'}:
+        raise RuntimeError('Unexpected full-replacement bootstrap scope')
+    for name, update in replacement['files'].items():
+        before = subprocess.check_output(['git', 'show', replacement['baseline'] + ':' + prefix + name], cwd=REPO)
+        if hashlib.sha256(before).hexdigest() != update['previous_sha256'] or not update['reason']:
+            raise RuntimeError('Full-replacement bootstrap input mismatch: ' + name)
+        result[name] = update['current_sha256']
     return result
 
 

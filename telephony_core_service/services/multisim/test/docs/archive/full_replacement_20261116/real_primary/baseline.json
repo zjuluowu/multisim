@@ -1,0 +1,1027 @@
+{
+  "schema_version": 1,
+  "head": "877162ff1b2425fee0c9db1aadd7221497fd32db",
+  "platform": "Linux-6.18.58.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "machine": "x86_64",
+  "git_status": "M .vscode/launch.json\n M .vscode/settings.json\n M .vscode/tasks.json\n M telephony_core_service/services/multisim/test/README.md\n M telephony_core_service/services/multisim/test/framework/host/BUILD.gn\n M telephony_core_service/services/multisim/test/scripts/check_test_integrity.py\n?? default.profraw\n?? telephony_core_service/services/multisim/test/cases/event_adapter_test.cpp\n?? telephony_core_service/services/multisim/test/cases/event_transport_test.cpp\n?? telephony_core_service/services/multisim/test/cases/external_services_test.cpp\n?? telephony_core_service/services/multisim/test/cases/infrastructure/test_run_gtest.py\n?? telephony_core_service/services/multisim/test/cases/lifecycle_test.cpp\n?? telephony_core_service/services/multisim/test/cases/native_pointer_test.cpp\n?? telephony_core_service/services/multisim/test/cases/pin_and_response_test.cpp\n?? telephony_core_service/services/multisim/test/cases/pin_memory_test.cpp\n?? telephony_core_service/services/multisim/test/cases/ril_adapter_test.cpp\n?? telephony_core_service/services/multisim/test/cases/sim_card_test.cpp\n?? telephony_core_service/services/multisim/test/cases/sources.gni\n?? telephony_core_service/services/multisim/test/docs/Full_Replacement.md\n?? telephony_core_service/services/multisim/test/docs/Full_Replacement_Evolution.json\n?? telephony_core_service/services/multisim/test/docs/archive/full_replacement_20261116/\n?? telephony_core_service/services/multisim/test/framework/common/\n?? telephony_core_service/services/multisim/test/framework/host/pin_memory_spy.h\n?? telephony_core_service/services/multisim/test/framework/host/ril_device.h\n?? telephony_core_service/services/multisim/test/framework/host/ril_fault_controls.h\n?? telephony_core_service/services/multisim/test/framework/host/sim_test.cpp\n?? telephony_core_service/services/multisim/test/framework/host/state_platform_spy.cpp\n?? telephony_core_service/services/multisim/test/framework/host/state_platform_spy.h\n?? telephony_core_service/services/multisim/test/framework/sim_advanced_test.h\n?? telephony_core_service/services/multisim/test/framework/sim_test.h\n?? telephony_core_service/services/multisim/test/scripts/audit_replacement_execution.py\n?? telephony_core_service/services/multisim/test/scripts/build_replacement.py\n?? telephony_core_service/services/multisim/test/scripts/capture_replacement_baseline.py\n?? telephony_core_service/services/multisim/test/scripts/compare_replacement.py\n?? telephony_core_service/services/multisim/test/scripts/run_gtest.py\n?? telephony_core_service/services/multisim/test/scripts/update_case_sources.py",
+  "scope": "Original inputs and results; planned dispositions are not completed migrations",
+  "commands": [
+    {
+      "id": "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0000.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "RealSimPrimary.C0CoreToRealManagerAndController",
+      "status": "FAIL",
+      "exit_code": 1,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=RealSimPrimary.C0CoreToRealManagerAndController",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0001.xml"
+      ],
+      "reason": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/real_scenario.h:542\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+    },
+    {
+      "id": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+      "status": "FAIL",
+      "exit_code": 1,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0002.xml"
+      ],
+      "reason": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/real_scenario.h:542\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+    },
+    {
+      "id": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+      "status": "FAIL",
+      "exit_code": 1,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0003.xml"
+      ],
+      "reason": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/real_scenario.h:542\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+    },
+    {
+      "id": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+      "status": "FAIL",
+      "exit_code": 1,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0004.xml"
+      ],
+      "reason": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/real_scenario.h:542\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+    },
+    {
+      "id": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+      "status": "FAIL",
+      "exit_code": 1,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0005.xml"
+      ],
+      "reason": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/real_scenario.h:542\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+    },
+    {
+      "id": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+      "status": "FAIL",
+      "exit_code": 1,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0006.xml"
+      ],
+      "reason": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/real_scenario.h:542\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+    },
+    {
+      "id": "RunnerLifetime.NormalCompletionAndRepeatedStop",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=RunnerLifetime.NormalCompletionAndRepeatedStop",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0007.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "RunnerLifetime.PendingTaskCancelledAndCapturedOwnerReleased",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=RunnerLifetime.PendingTaskCancelledAndCapturedOwnerReleased",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0008.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "RunnerLifetime.InFlightStopJoinsAndRejectsCallbackRepost",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=RunnerLifetime.InFlightStopJoinsAndRejectsCallbackRepost",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0009.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "RunnerLifetime.ConcurrentStopIsIdempotent",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=RunnerLifetime.ConcurrentStopIsIdempotent",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0010.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "RunnerLifetime.CallbackCannotSynchronouslyJoinItself",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=RunnerLifetime.CallbackCannotSynchronouslyJoinItself",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0011.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "RealCardLifetime.MissingRilInitializationReleasesState",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=RealCardLifetime.MissingRilInitializationReleasesState",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0012.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "RealCardLifetime.InitializedStateUnregistersRilAndReleases",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=RealCardLifetime.InitializedStateUnregistersRilAndReleases",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0013.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "RealCardLifetime.PublicDetachReleasesRealStateFileAndRil",
+      "status": "FAIL",
+      "exit_code": 1,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=RealCardLifetime.PublicDetachReleasesRealStateFileAndRil",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0014.xml"
+      ],
+      "reason": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/lifetime_test.cpp:126\nValue of: state.expired()\n  Actual: false\nExpected: true\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/lifetime_test.cpp:126\nValue of: files.expired()\n  Actual: false\nExpected: true\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/lifetime_test.cpp:127\nValue of: records.expired()\n  Actual: false\nExpected: true\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/lifetime_test.cpp:127\nValue of: controller.expired()\n  Actual: false\nExpected: true\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/lifetime_test.cpp:128\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/lifetime_test.cpp:129\nExpected equality of these values:\n  environment.ril.use_count()\n    Which is: 4\n  1\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/lifetime_test.cpp:132\nValue of: environment.notifications.empty()\n  Actual: false\nExpected: true\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/real_scenario.h:542\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+    },
+    {
+      "id": "PairingReview.AllThreeSlotsPublicDetach",
+      "status": "FAIL",
+      "exit_code": 1,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=PairingReview.AllThreeSlotsPublicDetach",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0015.xml"
+      ],
+      "reason": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract_test.cpp:20\nValue of: s.expired()\n  Actual: false\nExpected: true\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract_test.cpp:20\nValue of: s.expired()\n  Actual: false\nExpected: true\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract_test.cpp:20\nValue of: s.expired()\n  Actual: false\nExpected: true\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFileManager pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS UsimFileController pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFile pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFileManager pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS UsimFileController pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFile pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFileManager pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS UsimFileController pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFile pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract_test.cpp:22\nExpected equality of these values:\n  environment.ril.use_count()\n    Which is: 10\n  1\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract_test.cpp:24\nValue of: environment.notifications.empty()\n  Actual: false\nExpected: true\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/real_scenario.h:542\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+    },
+    {
+      "id": "PairingReview.PartialInitializationAndRepeatedUnregister",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=PairingReview.PartialInitializationAndRepeatedUnregister",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0016.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "PairingReview.DestroyThenReinitializeCardGraph",
+      "status": "FAIL",
+      "exit_code": 1,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=PairingReview.DestroyThenReinitializeCardGraph",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0017.xml"
+      ],
+      "reason": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract_test.cpp:51\nValue of: state.expired()\n  Actual: false\nExpected: true\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract_test.cpp:51\nValue of: records.expired()\n  Actual: false\nExpected: true\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFileManager pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS UsimFileController pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFile pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract_test.cpp:52\nExpected equality of these values:\n  environment.ril.use_count()\n    Which is: 4\n  1\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract_test.cpp:51\nValue of: state.expired()\n  Actual: false\nExpected: true\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract_test.cpp:51\nValue of: records.expired()\n  Actual: false\nExpected: true\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFileManager pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS UsimFileController pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFile pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFileManager pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS UsimFileController pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFile pending=0 running=0\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract_test.cpp:52\nExpected equality of these values:\n  environment.ril.use_count()\n    Which is: 7\n  1\n\n/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/real_scenario.h:542\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+    },
+    {
+      "id": "PairingReview.UnrelatedRuntimeWorkerIsBaseline",
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=PairingReview.UnrelatedRuntimeWorkerIsBaseline",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0018.xml"
+      ],
+      "reason": ""
+    },
+    {
+      "id": "ShutdownContract.ANormalPrimaryThenStop",
+      "status": "FAIL",
+      "exit_code": 1,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=ShutdownContract.ANormalPrimaryThenStop",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0019.xml"
+      ],
+      "reason": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+    },
+    {
+      "id": "ShutdownContract.BThreeSlotsThenStop",
+      "status": "FAIL",
+      "exit_code": 1,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=ShutdownContract.BThreeSlotsThenStop",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0020.xml"
+      ],
+      "reason": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+    },
+    {
+      "id": "ShutdownContract.CPartialInitializationThenStop",
+      "status": "FAIL",
+      "exit_code": 1,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=ShutdownContract.CPartialInitializationThenStop",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0021.xml"
+      ],
+      "reason": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+    },
+    {
+      "id": "ShutdownContract.DRepeatedStop",
+      "status": "FAIL",
+      "exit_code": 1,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=ShutdownContract.DRepeatedStop",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0022.xml"
+      ],
+      "reason": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+    },
+    {
+      "id": "ShutdownContract.EInFlightSuccessCompletesBeforeRelease",
+      "status": "FAIL",
+      "exit_code": 1,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=ShutdownContract.EInFlightSuccessCompletesBeforeRelease",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0023.xml"
+      ],
+      "reason": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+    },
+    {
+      "id": "ShutdownContract.FErrorReplyDuringStoppingKeepsOriginalResult",
+      "status": "FAIL",
+      "exit_code": 1,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=ShutdownContract.FErrorReplyDuringStoppingKeepsOriginalResult",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0024.xml"
+      ],
+      "reason": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+    },
+    {
+      "id": "ShutdownContract.GDelayedDispatchAfterStop",
+      "status": "FAIL",
+      "exit_code": 1,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=ShutdownContract.GDelayedDispatchAfterStop",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0025.xml"
+      ],
+      "reason": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+    },
+    {
+      "id": "ShutdownContract.HDestroyAndCreateNewGraph",
+      "status": "FAIL",
+      "exit_code": 1,
+      "command": [
+        "/tmp/sim-replacement-primary/sim_primary_slot_real_test",
+        "--gtest_filter=ShutdownContract.HDestroyAndCreateNewGraph",
+        "--gtest_output=xml:/tmp/sim-replacement-primary-results/gtest-qiueke3i/0026.xml"
+      ],
+      "reason": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+    }
+  ],
+  "assets": [],
+  "raw_files": [
+    {
+      "path": "0000.log",
+      "sha256": "b1fb92e2aaeeecd0f5b3368117dd6cb38fe84b3d037bdae45b2c15ec6ca632e5",
+      "bytes": 553
+    },
+    {
+      "path": "0000.xml",
+      "sha256": "d8196eab3589992e1546d24aa04de8efbb574089d8b23d5a0919fc7d2fc3aa6c",
+      "bytes": 909
+    },
+    {
+      "path": "0001.log",
+      "sha256": "08896e22a6bfd4b68cab64214888614d79487c45a7308c8cd6bee985b414d819",
+      "bytes": 21960
+    },
+    {
+      "path": "0001.xml",
+      "sha256": "c60aaf33f8f6ab23705fb8627d9adc72e3f8bf8cff02d0131971d49f0955f49e",
+      "bytes": 4639
+    },
+    {
+      "path": "0002.log",
+      "sha256": "31325a53415e4457bf23e719df269bedd79b051f2458dc7331615000a48d1b09",
+      "bytes": 21983
+    },
+    {
+      "path": "0002.xml",
+      "sha256": "575fa99a1c81d1aebaefc0ddd7a222053ca5d34202e12be61466aeedeec242cf",
+      "bytes": 5547
+    },
+    {
+      "path": "0003.log",
+      "sha256": "5731b1ad656ca6ace689bee416ab5a73e6ac8a455033f6a89191c6e4fe4d7a15",
+      "bytes": 21392
+    },
+    {
+      "path": "0003.xml",
+      "sha256": "f72cbbacb0c62813a03c0146620e0d0f29de722b79f4eb511bc0440b7ffdbe1c",
+      "bytes": 4148
+    },
+    {
+      "path": "0004.log",
+      "sha256": "02bf0551c92ef83af2224284bbce3bd2a93f1a1e0d4c558b9540c54be91486d1",
+      "bytes": 24779
+    },
+    {
+      "path": "0004.xml",
+      "sha256": "22c7a4230fe320cce7b576e8a8b5ea0c9142b1839bd9bb3373496d3d21fbc7c6",
+      "bytes": 8259
+    },
+    {
+      "path": "0005.log",
+      "sha256": "acd2ebb747e160f0b8e11ac17e49385dfc4d22edd359fde8493bf5bb14051f49",
+      "bytes": 21457
+    },
+    {
+      "path": "0005.xml",
+      "sha256": "dff14de91f9bec6d545204b11e80573786b77eb8896da82d119ccc4202ea1154",
+      "bytes": 3995
+    },
+    {
+      "path": "0006.log",
+      "sha256": "48572856441c2f5fd6b92b43dcb7acd6e4d8298c5692acdc65848e59cd1e5ead",
+      "bytes": 35750
+    },
+    {
+      "path": "0006.xml",
+      "sha256": "2602cead0f719e3afa35da0d0a20ca7b9176fc5b3079dbbfad45427bf5d01e82",
+      "bytes": 23856
+    },
+    {
+      "path": "0007.log",
+      "sha256": "591bf2e7da12522d65a640168c0547551b70de7a5924cc0cf47ad77f74c32fd2",
+      "bytes": 511
+    },
+    {
+      "path": "0007.xml",
+      "sha256": "9dd04bee8aa2ab3931666979d332d4dead029df0c1eef7b32cbdad83a1554661",
+      "bytes": 625
+    },
+    {
+      "path": "0008.log",
+      "sha256": "4fcbcbb910dec8dd3a702f9c4d2591e2808d9c00a9dbe4d6d12145ca21233166",
+      "bytes": 550
+    },
+    {
+      "path": "0008.xml",
+      "sha256": "8529469d345aac975a434b23ab2b229f2d658e3238f29ec55af3d4a1fa86c078",
+      "bytes": 638
+    },
+    {
+      "path": "0009.log",
+      "sha256": "d3688d5d8345ab8183f5c6464cb3230d6766296459cf935dc962b9f382d33647",
+      "bytes": 541
+    },
+    {
+      "path": "0009.xml",
+      "sha256": "48766aaf72944100518b2c6f36ab496783420f1b329422a290cbc27bf9831696",
+      "bytes": 635
+    },
+    {
+      "path": "0010.log",
+      "sha256": "bbe73df2c9c406ca22a86d3b746d5f0f6e5879a26123b3584a5eb9c75cfde761",
+      "bytes": 496
+    },
+    {
+      "path": "0010.xml",
+      "sha256": "dbae8155f152d59ba44a731fd9a0aec3c83b2735d7ca3e0d197210f0e0453ea7",
+      "bytes": 620
+    },
+    {
+      "path": "0011.log",
+      "sha256": "ac566f8ab6d1806a0d3c23f64045e5e31cc4fe82096f24d00eef0c3078479ab2",
+      "bytes": 529
+    },
+    {
+      "path": "0011.xml",
+      "sha256": "528d74e535f6dcc4a9567b9edc190b2e1f25a1cf9bb553afe6fde1d63a179692",
+      "bytes": 631
+    },
+    {
+      "path": "0012.log",
+      "sha256": "2d654a9a655aee83d6908042bfde206cc1ae996a431483aecccd5a8ef07ee754",
+      "bytes": 539
+    },
+    {
+      "path": "0012.xml",
+      "sha256": "56bc698d2f31c68cc0c95df21485c555b450bec1da295cae699e07a544f2c94b",
+      "bytes": 635
+    },
+    {
+      "path": "0013.log",
+      "sha256": "ff93fa2364ddb064e1eb7c1ffeaa3b86f50fe042b19c3f1991c91c2a31f2ade9",
+      "bytes": 710
+    },
+    {
+      "path": "0013.xml",
+      "sha256": "25b65b1f7d64bc731b60b219b322dff304deb2f2316f122de7c79b1092f545d2",
+      "bytes": 1283
+    },
+    {
+      "path": "0014.log",
+      "sha256": "1f9ef3ccac1e6293d88dc35e4f0428811aee38e4f666013bad9e8ce1f6e53d9c",
+      "bytes": 4471
+    },
+    {
+      "path": "0014.xml",
+      "sha256": "1e178cafe7ff44b31c458ab7a11de73a07f25cc013474f205ad51352ababfa99",
+      "bytes": 5029
+    },
+    {
+      "path": "0015.log",
+      "sha256": "8e8d01abce075cdeac99e4f40d7650290707a3e9c9ed295f8ed0c0d6972292e1",
+      "bytes": 10673
+    },
+    {
+      "path": "0015.xml",
+      "sha256": "7b9f46ae68281476216196521bfa0f3fa4c519b035ca9e61fe66041061cae395",
+      "bytes": 12701
+    },
+    {
+      "path": "0016.log",
+      "sha256": "b84c145868791081ccc2101f2032b977e15a488b846f44da7d05c953d9760ade",
+      "bytes": 698
+    },
+    {
+      "path": "0016.xml",
+      "sha256": "0207653b96766692731825613c704b3cacb63218708064c5e75ba7536e80847d",
+      "bytes": 1286
+    },
+    {
+      "path": "0017.log",
+      "sha256": "7cf58223d210b9b81f3763a5d2ea0a18f230d769ece9ccef537051a7bd3eaec4",
+      "bytes": 9518
+    },
+    {
+      "path": "0017.xml",
+      "sha256": "82dd398424bb03fb0d46db03a26e365114b21e104458c7eb0d4a6b355b43239b",
+      "bytes": 13210
+    },
+    {
+      "path": "0018.log",
+      "sha256": "976a802c593b4c8c669deb9db8c7d3d87b2f149cee194e46931724652248a08c",
+      "bytes": 668
+    },
+    {
+      "path": "0018.xml",
+      "sha256": "d9891b11e2f40480ad33eab02c08500ba89bed4cde7247d10389cfb616be5363",
+      "bytes": 1285
+    },
+    {
+      "path": "0019.log",
+      "sha256": "29d888549f051c8a163da5277fff8046c913cab23ebcd4bd466581bb7e336ebe",
+      "bytes": 871
+    },
+    {
+      "path": "0019.xml",
+      "sha256": "9ac4d0e722e230fd873d3668d40edb18da36d60db2d41e682ac14ddfa3e09d67",
+      "bytes": 1447
+    },
+    {
+      "path": "0020.log",
+      "sha256": "f4faa4939c121d266b6e5b258f0b692685758cbb0f7666a596616c3ab1805c62",
+      "bytes": 859
+    },
+    {
+      "path": "0020.xml",
+      "sha256": "dcc5bb179ac58acf6f882afaaf1e1b14719ae392efcb6aeadf50be663c3d5a89",
+      "bytes": 1444
+    },
+    {
+      "path": "0021.log",
+      "sha256": "c08e0dccbce74684faae4897cd2cdf4da9956757b6a418ef9ff527710dbbfa77",
+      "bytes": 903
+    },
+    {
+      "path": "0021.xml",
+      "sha256": "d149bbbb3b2025725507aeb8a29bfe92e9de17d978126ef56aa887baee8953f2",
+      "bytes": 1456
+    },
+    {
+      "path": "0022.log",
+      "sha256": "53f5dd1dca194509d78e9f6473fa9515667426f86d284535744d8941e22fbb0f",
+      "bytes": 835
+    },
+    {
+      "path": "0022.xml",
+      "sha256": "f0488ad45f7ea778f83777b121e0e6720c9d07d9c629a5d191e47eb66acc01e6",
+      "bytes": 1439
+    },
+    {
+      "path": "0023.log",
+      "sha256": "b97b035d2e7d6160185aba2930cc9232f1dd4eabca626a164ca6eb5c3835359c",
+      "bytes": 935
+    },
+    {
+      "path": "0023.xml",
+      "sha256": "d86c510285f3140d5d254aa04b3f6618d8978d3a5c6a6c7bfdaed766362a3195",
+      "bytes": 1464
+    },
+    {
+      "path": "0024.log",
+      "sha256": "f7477b82e0ebd86168ca0515d45b11ec57212f97e83c68a5a749d90f9f673a44",
+      "bytes": 959
+    },
+    {
+      "path": "0024.xml",
+      "sha256": "2d8b9a7bc93c8935e6e7d44f2f918a1dae032e6de819f788744bed13a072587f",
+      "bytes": 1470
+    },
+    {
+      "path": "0025.log",
+      "sha256": "a881dc2ac7c94d3d6a97ef46c27e1e31724b1f3c9e50fb6d23a2b7c747e221e8",
+      "bytes": 883
+    },
+    {
+      "path": "0025.xml",
+      "sha256": "4ed5bd7286814d6befbce9cb43992aa0a2eceae8c87f1b660f3aeccfe032581d",
+      "bytes": 1451
+    },
+    {
+      "path": "0026.log",
+      "sha256": "5c1561af3479a9091d526bb2161abf083b69c77759db8276677234cba443d92c",
+      "bytes": 883
+    },
+    {
+      "path": "0026.xml",
+      "sha256": "f20ba7208891367afec7ea49c47d414ab62d84cbe38ccf3c288a54df847681a6",
+      "bytes": 1451
+    },
+    {
+      "path": "discovery.txt",
+      "sha256": "3d20ad31118c540608e5225d04e3b1cb2089f63cdbc09a31993f24e18767d77d",
+      "bytes": 1084
+    },
+    {
+      "path": "result.json",
+      "sha256": "94633b219b0415a480f8ac6fc457eb31eeaaa672f97dd461d2c8eaae8fb13384",
+      "bytes": 216781
+    }
+  ],
+  "cases": [
+    {
+      "report": "0000.xml",
+      "id": "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "primary_max_sim_count": "2",
+        "primary_direct_no_ril_result": "83886104",
+        "primary_direct_no_ril_symbol": "TELEPHONY_ERR_NO_SIM_CARD"
+      }
+    },
+    {
+      "report": "0001.xml",
+      "id": "RealSimPrimary.C0CoreToRealManagerAndController",
+      "status": "FAIL",
+      "failures": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/real_scenario.h:542\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "properties": {
+        "initialization_order": "native-arrival",
+        "initialization_account_event": "PASS",
+        "initialization_ready_idle": "PASS",
+        "initialization_active": "PASS",
+        "initialization_present": "PASS",
+        "initialization_model": "single-active",
+        "business_assertions_before_cleanup": "PASS",
+        "primary_observation": "{\"schema\":1,\"parameters\":{\"const.telephony.slotCount\":\"2\",\"const.vendor.ril.set_primary_slot_support\":\"false\",\"persist.telephony.MainCard.Iccid\":\"AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2\",\"persist.telephony.MainCellularDataSlotId\":\"1\",\"persist.telephony.MainSlotId\":\"1\",\"persist.telephony.userPreferPrimarySlot\":\"true\",\"telephony.sim.opkey0\":\"-1\",\"telephony.sim.opkey1\":\"-1\",\"telephony.sim.opkey2\":\"-1\"},\"public\":{\"data\":\"1\",\"primary\":\"1\",\"primary_result\":\"0\",\"switching\":\"false\"},\"events\":[{\"kind\":\"api_input\",\"fields\":{\"at_us\":\"26\",\"slot\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"40\",\"key\":\"persist.telephony.userPreferPrimarySlot\",\"value\":\"true\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"50\",\"key\":\"persist.telephony.MainSlotId\",\"value\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"63\",\"key\":\"persist.telephony.MainCard.Iccid\",\"value\":\"AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SIM.DEFAULT_MAIN_SUBSCRIPTION_CHANGED\",\"at_us\":\"84\",\"done\":\"false\",\"sim\":\"1\",\"slot\":\"1\",\"user\":\"false\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"95\",\"key\":\"persist.telephony.MainCellularDataSlotId\",\"value\":\"1\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED\",\"at_us\":\"99\",\"done\":\"false\",\"sim\":\"1\",\"slot\":\"-1\",\"user\":\"false\"}},{\"kind\":\"api_return\",\"fields\":{\"at_us\":\"104\",\"result\":\"0\",\"symbol\":\"TELEPHONY_ERR_SUCCESS\"}}]}",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    },
+    {
+      "report": "0002.xml",
+      "id": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+      "status": "FAIL",
+      "failures": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/real_scenario.h:542\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "properties": {
+        "initialization_order": "native-arrival",
+        "initialization_account_event": "PASS",
+        "initialization_ready_idle": "PASS",
+        "initialization_active": "PASS",
+        "initialization_present": "PASS",
+        "initialization_model": "single-active",
+        "business_assertions_before_cleanup": "PASS",
+        "primary_observation": "{\"schema\":1,\"parameters\":{\"const.telephony.slotCount\":\"2\",\"const.vendor.ril.set_primary_slot_support\":\"true\",\"persist.telephony.MainCard.Iccid\":\"AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2\",\"persist.telephony.MainCellularDataSlotId\":\"1\",\"persist.telephony.MainSlotId\":\"1\",\"persist.telephony.userPreferPrimarySlot\":\"true\",\"telephony.sim.opkey0\":\"-1\",\"telephony.sim.opkey1\":\"-1\",\"telephony.sim.opkey2\":\"-1\"},\"public\":{\"data\":\"1\",\"primary\":\"1\",\"primary_result\":\"0\",\"switching\":\"false\"},\"events\":[{\"kind\":\"api_input\",\"fields\":{\"at_us\":\"137\",\"slot\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"150\",\"key\":\"persist.telephony.userPreferPrimarySlot\",\"value\":\"true\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SET_PRIMARY_SLOT_STATUS\",\"at_us\":\"191\",\"done\":\"false\",\"sim\":\"-1\",\"slot\":\"-1\",\"user\":\"true\"}},{\"kind\":\"ril_primary\",\"fields\":{\"at_us\":\"196\",\"slot\":\"1\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"50630\",\"error\":\"0\",\"slot\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"50997\",\"key\":\"persist.telephony.MainSlotId\",\"value\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"51041\",\"key\":\"persist.telephony.MainCard.Iccid\",\"value\":\"AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SIM.DEFAULT_MAIN_SUBSCRIPTION_CHANGED\",\"at_us\":\"51061\",\"done\":\"false\",\"sim\":\"1\",\"slot\":\"1\",\"user\":\"false\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"51072\",\"key\":\"persist.telephony.MainCellularDataSlotId\",\"value\":\"1\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED\",\"at_us\":\"51086\",\"done\":\"false\",\"sim\":\"1\",\"slot\":\"-1\",\"user\":\"false\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SET_PRIMARY_SLOT_STATUS\",\"at_us\":\"51099\",\"done\":\"true\",\"sim\":\"-1\",\"slot\":\"-1\",\"user\":\"true\"}},{\"kind\":\"api_return\",\"fields\":{\"at_us\":\"51110\",\"result\":\"0\",\"symbol\":\"TELEPHONY_ERR_SUCCESS\"}}]}",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    },
+    {
+      "report": "0003.xml",
+      "id": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+      "status": "FAIL",
+      "failures": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/real_scenario.h:542\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "properties": {
+        "initialization_order": "native-arrival",
+        "initialization_account_event": "PASS",
+        "initialization_ready_idle": "PASS",
+        "initialization_active": "PASS",
+        "initialization_present": "PASS",
+        "initialization_model": "single-active",
+        "business_assertions_before_cleanup": "PASS",
+        "primary_observation": "{\"schema\":1,\"parameters\":{\"const.telephony.slotCount\":\"2\",\"const.vendor.ril.set_primary_slot_support\":\"true\",\"persist.telephony.MainCellularDataSlotId\":\"\",\"persist.telephony.MainSlotId\":\"0\",\"persist.telephony.userPreferPrimarySlot\":\"true\",\"telephony.sim.opkey0\":\"-1\",\"telephony.sim.opkey1\":\"-1\",\"telephony.sim.opkey2\":\"-1\"},\"public\":{\"data\":\"0\",\"primary\":\"0\",\"primary_result\":\"0\",\"switching\":\"false\"},\"events\":[{\"kind\":\"api_input\",\"fields\":{\"at_us\":\"19\",\"slot\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"27\",\"key\":\"persist.telephony.userPreferPrimarySlot\",\"value\":\"true\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SET_PRIMARY_SLOT_STATUS\",\"at_us\":\"50\",\"done\":\"false\",\"sim\":\"-1\",\"slot\":\"-1\",\"user\":\"true\"}},{\"kind\":\"ril_primary\",\"fields\":{\"at_us\":\"54\",\"slot\":\"1\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"55\",\"error\":\"1\",\"slot\":\"1\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SET_PRIMARY_SLOT_STATUS\",\"at_us\":\"109\",\"done\":\"true\",\"sim\":\"-1\",\"slot\":\"-1\",\"user\":\"true\"}},{\"kind\":\"api_return\",\"fields\":{\"at_us\":\"113\",\"result\":\"83886087\",\"symbol\":\"TELEPHONY_ERR_LOCAL_PTR_NULL\"}}]}",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    },
+    {
+      "report": "0004.xml",
+      "id": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+      "status": "FAIL",
+      "failures": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/real_scenario.h:542\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "properties": {
+        "initialization_order": "native-arrival",
+        "initialization_account_event": "PASS",
+        "initialization_ready_idle": "PASS",
+        "initialization_active": "PASS",
+        "initialization_present": "PASS",
+        "initialization_model": "single-active",
+        "business_assertions_before_cleanup": "PASS",
+        "primary_observation": "{\"schema\":1,\"parameters\":{\"const.telephony.slotCount\":\"2\",\"const.vendor.ril.set_primary_slot_support\":\"false\",\"persist.telephony.MainCard.Iccid\":\"AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2\",\"persist.telephony.MainCellularDataSlotId\":\"1\",\"persist.telephony.MainSlotId\":\"1\",\"persist.telephony.userPreferPrimarySlot\":\"true\",\"telephony.sim.opkey0\":\"-1\",\"telephony.sim.opkey1\":\"-1\",\"telephony.sim.opkey2\":\"-1\"},\"public\":{\"data\":\"1\",\"primary\":\"1\",\"primary_result\":\"0\",\"switching\":\"false\"},\"events\":[{\"kind\":\"api_input\",\"fields\":{\"at_us\":\"1274\",\"slot\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"1295\",\"key\":\"persist.telephony.userPreferPrimarySlot\",\"value\":\"true\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"1320\",\"key\":\"persist.telephony.MainSlotId\",\"value\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"1341\",\"key\":\"persist.telephony.MainCard.Iccid\",\"value\":\"AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SET_PRIMARY_SLOT_STATUS\",\"at_us\":\"1364\",\"done\":\"false\",\"sim\":\"-1\",\"slot\":\"-1\",\"user\":\"false\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"1401\",\"modem\":\"0\",\"phase\":\"1\",\"session\":\"1\",\"slot\":\"0\",\"technology\":\"17\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"1419\",\"modem\":\"1\",\"phase\":\"1\",\"session\":\"1\",\"slot\":\"1\",\"technology\":\"34\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"11592\",\"phase\":\"1\",\"session\":\"100\",\"slot\":\"0\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"31729\",\"phase\":\"1\",\"session\":\"1\",\"slot\":\"0\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"31777\",\"phase\":\"1\",\"session\":\"1\",\"slot\":\"1\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"31858\",\"modem\":\"1\",\"phase\":\"2\",\"session\":\"1\",\"slot\":\"0\",\"technology\":\"34\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"31890\",\"modem\":\"0\",\"phase\":\"2\",\"session\":\"1\",\"slot\":\"1\",\"technology\":\"17\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"42041\",\"phase\":\"3\",\"session\":\"1\",\"slot\":\"0\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"42127\",\"phase\":\"3\",\"session\":\"1\",\"slot\":\"1\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"42203\",\"modem\":\"1\",\"phase\":\"4\",\"session\":\"1\",\"slot\":\"0\",\"technology\":\"34\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"42234\",\"modem\":\"0\",\"phase\":\"4\",\"session\":\"1\",\"slot\":\"1\",\"technology\":\"17\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"52578\",\"phase\":\"4\",\"session\":\"1\",\"slot\":\"0\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"52658\",\"phase\":\"4\",\"session\":\"1\",\"slot\":\"1\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SIM.DEFAULT_MAIN_SUBSCRIPTION_CHANGED\",\"at_us\":\"52810\",\"done\":\"false\",\"sim\":\"1\",\"slot\":\"1\",\"user\":\"false\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"52821\",\"key\":\"persist.telephony.MainCellularDataSlotId\",\"value\":\"1\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED\",\"at_us\":\"52833\",\"done\":\"false\",\"sim\":\"1\",\"slot\":\"-1\",\"user\":\"false\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SET_PRIMARY_SLOT_STATUS\",\"at_us\":\"52842\",\"done\":\"true\",\"sim\":\"-1\",\"slot\":\"-1\",\"user\":\"false\"}},{\"kind\":\"api_return\",\"fields\":{\"at_us\":\"53287\",\"result\":\"0\",\"symbol\":\"TELEPHONY_ERR_SUCCESS\"}}]}",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    },
+    {
+      "report": "0005.xml",
+      "id": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+      "status": "FAIL",
+      "failures": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/real_scenario.h:542\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "properties": {
+        "initialization_order": "native-arrival",
+        "initialization_account_event": "PASS",
+        "initialization_ready_idle": "PASS",
+        "initialization_active": "PASS",
+        "initialization_present": "PASS",
+        "initialization_model": "single-active",
+        "business_assertions_before_cleanup": "PASS",
+        "primary_observation": "{\"schema\":1,\"parameters\":{\"const.telephony.slotCount\":\"2\",\"const.vendor.ril.set_primary_slot_support\":\"true\",\"persist.telephony.MainCellularDataSlotId\":\"\",\"persist.telephony.MainSlotId\":\"0\",\"persist.telephony.userPreferPrimarySlot\":\"true\",\"telephony.sim.opkey0\":\"-1\",\"telephony.sim.opkey1\":\"-1\",\"telephony.sim.opkey2\":\"-1\"},\"public\":{\"data\":\"0\",\"primary\":\"0\",\"primary_result\":\"0\",\"switching\":\"false\"},\"events\":[{\"kind\":\"api_input\",\"fields\":{\"at_us\":\"23\",\"slot\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"32\",\"key\":\"persist.telephony.userPreferPrimarySlot\",\"value\":\"true\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SET_PRIMARY_SLOT_STATUS\",\"at_us\":\"65\",\"done\":\"false\",\"sim\":\"-1\",\"slot\":\"-1\",\"user\":\"true\"}},{\"kind\":\"ril_primary\",\"fields\":{\"at_us\":\"72\",\"slot\":\"1\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SET_PRIMARY_SLOT_STATUS\",\"at_us\":\"45000652\",\"done\":\"true\",\"sim\":\"-1\",\"slot\":\"-1\",\"user\":\"true\"}},{\"kind\":\"api_return\",\"fields\":{\"at_us\":\"45000662\",\"result\":\"83886087\",\"symbol\":\"TELEPHONY_ERR_LOCAL_PTR_NULL\"}}]}",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    },
+    {
+      "report": "0006.xml",
+      "id": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+      "status": "FAIL",
+      "failures": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/real_scenario.h:542\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "properties": {
+        "initialization_order": "native-arrival",
+        "initialization_account_event": "PASS",
+        "initialization_ready_idle": "PASS",
+        "initialization_active": "PASS",
+        "initialization_present": "PASS",
+        "initialization_model": "single-active",
+        "business_assertions_before_cleanup": "PASS",
+        "primary_observation": "{\"schema\":1,\"parameters\":{\"const.telephony.slotCount\":\"2\",\"const.vendor.ril.set_primary_slot_support\":\"false\",\"persist.telephony.MainCard.Iccid\":\"previous-parameter-value\",\"persist.telephony.MainCellularDataSlotId\":\"\",\"persist.telephony.MainSlotId\":\"0\",\"persist.telephony.userPreferPrimarySlot\":\"true\",\"telephony.sim.opkey0\":\"-1\",\"telephony.sim.opkey1\":\"-1\",\"telephony.sim.opkey2\":\"-1\"},\"public\":{\"data\":\"0\",\"primary\":\"0\",\"primary_result\":\"0\",\"switching\":\"false\"},\"events\":[{\"kind\":\"api_input\",\"fields\":{\"at_us\":\"1138\",\"slot\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"1151\",\"key\":\"persist.telephony.userPreferPrimarySlot\",\"value\":\"true\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"1161\",\"key\":\"persist.telephony.MainSlotId\",\"value\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"1168\",\"key\":\"persist.telephony.MainCard.Iccid\",\"value\":\"AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SET_PRIMARY_SLOT_STATUS\",\"at_us\":\"1179\",\"done\":\"false\",\"sim\":\"-1\",\"slot\":\"-1\",\"user\":\"false\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"1209\",\"modem\":\"0\",\"phase\":\"1\",\"session\":\"1\",\"slot\":\"0\",\"technology\":\"17\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"1214\",\"error\":\"1\",\"phase\":\"1\",\"session\":\"1\",\"slot\":\"0\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"1227\",\"modem\":\"1\",\"phase\":\"1\",\"session\":\"1\",\"slot\":\"1\",\"technology\":\"34\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"1230\",\"error\":\"1\",\"phase\":\"1\",\"session\":\"1\",\"slot\":\"1\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"1257\",\"modem\":\"0\",\"phase\":\"4\",\"session\":\"1\",\"slot\":\"0\",\"technology\":\"17\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"1261\",\"phase\":\"4\",\"session\":\"1\",\"slot\":\"0\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"1266\",\"modem\":\"1\",\"phase\":\"4\",\"session\":\"1\",\"slot\":\"1\",\"technology\":\"34\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"1267\",\"phase\":\"4\",\"session\":\"1\",\"slot\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"1321\",\"key\":\"persist.telephony.MainSlotId\",\"value\":\"0\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"1325\",\"key\":\"persist.telephony.MainCard.Iccid\",\"value\":\"previous-parameter-value\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SET_PRIMARY_SLOT_STATUS\",\"at_us\":\"1337\",\"done\":\"true\",\"sim\":\"-1\",\"slot\":\"-1\",\"user\":\"false\"}},{\"kind\":\"api_return\",\"fields\":{\"at_us\":\"1720\",\"result\":\"83886087\",\"symbol\":\"TELEPHONY_ERR_LOCAL_PTR_NULL\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"1002283\",\"key\":\"persist.telephony.MainSlotId\",\"value\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"1002382\",\"key\":\"persist.telephony.MainCard.Iccid\",\"value\":\"AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SET_PRIMARY_SLOT_STATUS\",\"at_us\":\"1002411\",\"done\":\"false\",\"sim\":\"-1\",\"slot\":\"-1\",\"user\":\"false\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"1002509\",\"modem\":\"0\",\"phase\":\"1\",\"session\":\"2\",\"slot\":\"0\",\"technology\":\"17\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"1002621\",\"error\":\"1\",\"phase\":\"1\",\"session\":\"2\",\"slot\":\"0\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"1002707\",\"modem\":\"1\",\"phase\":\"1\",\"session\":\"2\",\"slot\":\"1\",\"technology\":\"34\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"1002762\",\"error\":\"1\",\"phase\":\"1\",\"session\":\"2\",\"slot\":\"1\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"1002891\",\"modem\":\"0\",\"phase\":\"4\",\"session\":\"2\",\"slot\":\"0\",\"technology\":\"17\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"1002959\",\"phase\":\"4\",\"session\":\"2\",\"slot\":\"0\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"1002989\",\"modem\":\"1\",\"phase\":\"4\",\"session\":\"2\",\"slot\":\"1\",\"technology\":\"34\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"1002997\",\"phase\":\"4\",\"session\":\"2\",\"slot\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"1003158\",\"key\":\"persist.telephony.MainSlotId\",\"value\":\"0\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"1003317\",\"key\":\"persist.telephony.MainCard.Iccid\",\"value\":\"previous-parameter-value\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SET_PRIMARY_SLOT_STATUS\",\"at_us\":\"1003339\",\"done\":\"true\",\"sim\":\"-1\",\"slot\":\"-1\",\"user\":\"false\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"2004589\",\"key\":\"persist.telephony.MainSlotId\",\"value\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"2004672\",\"key\":\"persist.telephony.MainCard.Iccid\",\"value\":\"AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SET_PRIMARY_SLOT_STATUS\",\"at_us\":\"2004724\",\"done\":\"false\",\"sim\":\"-1\",\"slot\":\"-1\",\"user\":\"false\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"2004887\",\"modem\":\"0\",\"phase\":\"1\",\"session\":\"3\",\"slot\":\"0\",\"technology\":\"17\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"2004898\",\"error\":\"1\",\"phase\":\"1\",\"session\":\"3\",\"slot\":\"0\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"2004929\",\"modem\":\"1\",\"phase\":\"1\",\"session\":\"3\",\"slot\":\"1\",\"technology\":\"34\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"2004976\",\"error\":\"1\",\"phase\":\"1\",\"session\":\"3\",\"slot\":\"1\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"2005122\",\"modem\":\"0\",\"phase\":\"4\",\"session\":\"3\",\"slot\":\"0\",\"technology\":\"17\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"2005179\",\"phase\":\"4\",\"session\":\"3\",\"slot\":\"0\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"2005203\",\"modem\":\"1\",\"phase\":\"4\",\"session\":\"3\",\"slot\":\"1\",\"technology\":\"34\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"2005210\",\"phase\":\"4\",\"session\":\"3\",\"slot\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"2005375\",\"key\":\"persist.telephony.MainSlotId\",\"value\":\"0\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"2005435\",\"key\":\"persist.telephony.MainCard.Iccid\",\"value\":\"previous-parameter-value\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SET_PRIMARY_SLOT_STATUS\",\"at_us\":\"2005466\",\"done\":\"true\",\"sim\":\"-1\",\"slot\":\"-1\",\"user\":\"false\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"3006872\",\"key\":\"persist.telephony.MainSlotId\",\"value\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"3006931\",\"key\":\"persist.telephony.MainCard.Iccid\",\"value\":\"AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SET_PRIMARY_SLOT_STATUS\",\"at_us\":\"3006942\",\"done\":\"false\",\"sim\":\"-1\",\"slot\":\"-1\",\"user\":\"false\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"3006982\",\"modem\":\"0\",\"phase\":\"1\",\"session\":\"4\",\"slot\":\"0\",\"technology\":\"17\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"3007001\",\"error\":\"1\",\"phase\":\"1\",\"session\":\"4\",\"slot\":\"0\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"3007019\",\"modem\":\"1\",\"phase\":\"1\",\"session\":\"4\",\"slot\":\"1\",\"technology\":\"34\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"3007023\",\"error\":\"1\",\"phase\":\"1\",\"session\":\"4\",\"slot\":\"1\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"3007052\",\"modem\":\"0\",\"phase\":\"4\",\"session\":\"4\",\"slot\":\"0\",\"technology\":\"17\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"3007058\",\"phase\":\"4\",\"session\":\"4\",\"slot\":\"0\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"3007064\",\"modem\":\"1\",\"phase\":\"4\",\"session\":\"4\",\"slot\":\"1\",\"technology\":\"34\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"3007094\",\"phase\":\"4\",\"session\":\"4\",\"slot\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"3007145\",\"key\":\"persist.telephony.MainSlotId\",\"value\":\"0\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"3007203\",\"key\":\"persist.telephony.MainCard.Iccid\",\"value\":\"previous-parameter-value\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SET_PRIMARY_SLOT_STATUS\",\"at_us\":\"3007239\",\"done\":\"true\",\"sim\":\"-1\",\"slot\":\"-1\",\"user\":\"false\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"4008066\",\"key\":\"persist.telephony.MainSlotId\",\"value\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"4008137\",\"key\":\"persist.telephony.MainCard.Iccid\",\"value\":\"AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SET_PRIMARY_SLOT_STATUS\",\"at_us\":\"4008181\",\"done\":\"false\",\"sim\":\"-1\",\"slot\":\"-1\",\"user\":\"false\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"4008254\",\"modem\":\"0\",\"phase\":\"1\",\"session\":\"5\",\"slot\":\"0\",\"technology\":\"17\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"4008298\",\"error\":\"1\",\"phase\":\"1\",\"session\":\"5\",\"slot\":\"0\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"4008359\",\"modem\":\"1\",\"phase\":\"1\",\"session\":\"5\",\"slot\":\"1\",\"technology\":\"34\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"4008418\",\"error\":\"1\",\"phase\":\"1\",\"session\":\"5\",\"slot\":\"1\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"4008598\",\"modem\":\"0\",\"phase\":\"4\",\"session\":\"5\",\"slot\":\"0\",\"technology\":\"17\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"4008651\",\"phase\":\"4\",\"session\":\"5\",\"slot\":\"0\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"4008680\",\"modem\":\"1\",\"phase\":\"4\",\"session\":\"5\",\"slot\":\"1\",\"technology\":\"34\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"4008688\",\"phase\":\"4\",\"session\":\"5\",\"slot\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"4008854\",\"key\":\"persist.telephony.MainSlotId\",\"value\":\"0\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"4008907\",\"key\":\"persist.telephony.MainCard.Iccid\",\"value\":\"previous-parameter-value\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SET_PRIMARY_SLOT_STATUS\",\"at_us\":\"4008926\",\"done\":\"true\",\"sim\":\"-1\",\"slot\":\"-1\",\"user\":\"false\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"5010334\",\"key\":\"persist.telephony.MainSlotId\",\"value\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"5010521\",\"key\":\"persist.telephony.MainCard.Iccid\",\"value\":\"AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SET_PRIMARY_SLOT_STATUS\",\"at_us\":\"5010718\",\"done\":\"false\",\"sim\":\"-1\",\"slot\":\"-1\",\"user\":\"false\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"5010994\",\"modem\":\"0\",\"phase\":\"1\",\"session\":\"6\",\"slot\":\"0\",\"technology\":\"17\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"5011135\",\"error\":\"1\",\"phase\":\"1\",\"session\":\"6\",\"slot\":\"0\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"5011475\",\"modem\":\"1\",\"phase\":\"1\",\"session\":\"6\",\"slot\":\"1\",\"technology\":\"34\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"5011588\",\"error\":\"1\",\"phase\":\"1\",\"session\":\"6\",\"slot\":\"1\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"5011836\",\"modem\":\"0\",\"phase\":\"4\",\"session\":\"6\",\"slot\":\"0\",\"technology\":\"17\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"5011971\",\"phase\":\"4\",\"session\":\"6\",\"slot\":\"0\"}},{\"kind\":\"ril_protocol\",\"fields\":{\"at_us\":\"5012060\",\"modem\":\"1\",\"phase\":\"4\",\"session\":\"6\",\"slot\":\"1\",\"technology\":\"34\"}},{\"kind\":\"ril_response\",\"fields\":{\"at_us\":\"5012187\",\"phase\":\"4\",\"session\":\"6\",\"slot\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"5012549\",\"key\":\"persist.telephony.MainSlotId\",\"value\":\"0\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"5012569\",\"key\":\"persist.telephony.MainCard.Iccid\",\"value\":\"previous-parameter-value\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SET_PRIMARY_SLOT_STATUS\",\"at_us\":\"5012624\",\"done\":\"true\",\"sim\":\"-1\",\"slot\":\"-1\",\"user\":\"false\"}}]}",
+        "workers_after_cleanup": "28",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "false",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    },
+    {
+      "report": "0007.xml",
+      "id": "RunnerLifetime.NormalCompletionAndRepeatedStop",
+      "status": "PASS",
+      "failures": [],
+      "properties": {}
+    },
+    {
+      "report": "0008.xml",
+      "id": "RunnerLifetime.PendingTaskCancelledAndCapturedOwnerReleased",
+      "status": "PASS",
+      "failures": [],
+      "properties": {}
+    },
+    {
+      "report": "0009.xml",
+      "id": "RunnerLifetime.InFlightStopJoinsAndRejectsCallbackRepost",
+      "status": "PASS",
+      "failures": [],
+      "properties": {}
+    },
+    {
+      "report": "0010.xml",
+      "id": "RunnerLifetime.ConcurrentStopIsIdempotent",
+      "status": "PASS",
+      "failures": [],
+      "properties": {}
+    },
+    {
+      "report": "0011.xml",
+      "id": "RunnerLifetime.CallbackCannotSynchronouslyJoinItself",
+      "status": "PASS",
+      "failures": [],
+      "properties": {}
+    },
+    {
+      "report": "0012.xml",
+      "id": "RealCardLifetime.MissingRilInitializationReleasesState",
+      "status": "PASS",
+      "failures": [],
+      "properties": {}
+    },
+    {
+      "report": "0013.xml",
+      "id": "RealCardLifetime.InitializedStateUnregistersRilAndReleases",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "primary_observation": "{\"schema\":1,\"parameters\":{\"const.telephony.slotCount\":\"2\",\"const.vendor.ril.set_primary_slot_support\":\"false\"},\"public\":{},\"events\":[]}",
+        "workers_after_cleanup": "0",
+        "ril_references_after_cleanup": "1",
+        "account_observer_expired": "true",
+        "object_lifetime": "PASS",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    },
+    {
+      "report": "0014.xml",
+      "id": "RealCardLifetime.PublicDetachReleasesRealStateFileAndRil",
+      "status": "FAIL",
+      "failures": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/lifetime_test.cpp:126\nValue of: state.expired()\n  Actual: false\nExpected: true\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/lifetime_test.cpp:126\nValue of: files.expired()\n  Actual: false\nExpected: true\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/lifetime_test.cpp:127\nValue of: records.expired()\n  Actual: false\nExpected: true\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/lifetime_test.cpp:127\nValue of: controller.expired()\n  Actual: false\nExpected: true\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/lifetime_test.cpp:128\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/lifetime_test.cpp:129\nExpected equality of these values:\n  environment.ril.use_count()\n    Which is: 4\n  1\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/lifetime_test.cpp:132\nValue of: environment.notifications.empty()\n  Actual: false\nExpected: true\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/real_scenario.h:542\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "properties": {
+        "real_card_lifetime": "FAIL",
+        "primary_observation": "{\"schema\":1,\"parameters\":{\"const.telephony.slotCount\":\"2\",\"const.vendor.ril.set_primary_slot_support\":\"false\"},\"public\":{},\"events\":[]}",
+        "workers_after_cleanup": "5",
+        "ril_references_after_cleanup": "4",
+        "account_observer_expired": "true",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    },
+    {
+      "report": "0015.xml",
+      "id": "PairingReview.AllThreeSlotsPublicDetach",
+      "status": "FAIL",
+      "failures": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract_test.cpp:20\nValue of: s.expired()\n  Actual: false\nExpected: true\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract_test.cpp:20\nValue of: s.expired()\n  Actual: false\nExpected: true\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract_test.cpp:20\nValue of: s.expired()\n  Actual: false\nExpected: true\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFileManager pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS UsimFileController pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFile pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFileManager pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS UsimFileController pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFile pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFileManager pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS UsimFileController pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFile pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract_test.cpp:22\nExpected equality of these values:\n  environment.ril.use_count()\n    Which is: 10\n  1\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract_test.cpp:24\nValue of: environment.notifications.empty()\n  Actual: false\nExpected: true\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/real_scenario.h:542\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "properties": {
+        "primary_observation": "{\"schema\":1,\"parameters\":{\"const.telephony.slotCount\":\"2\",\"const.vendor.ril.set_primary_slot_support\":\"false\"},\"public\":{},\"events\":[]}",
+        "workers_after_cleanup": "15",
+        "ril_references_after_cleanup": "10",
+        "account_observer_expired": "true",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    },
+    {
+      "report": "0016.xml",
+      "id": "PairingReview.PartialInitializationAndRepeatedUnregister",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "primary_observation": "{\"schema\":1,\"parameters\":{\"const.telephony.slotCount\":\"2\",\"const.vendor.ril.set_primary_slot_support\":\"false\"},\"public\":{},\"events\":[]}",
+        "workers_after_cleanup": "0",
+        "ril_references_after_cleanup": "1",
+        "account_observer_expired": "true",
+        "object_lifetime": "PASS",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    },
+    {
+      "report": "0017.xml",
+      "id": "PairingReview.DestroyThenReinitializeCardGraph",
+      "status": "FAIL",
+      "failures": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract_test.cpp:51\nValue of: state.expired()\n  Actual: false\nExpected: true\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract_test.cpp:51\nValue of: records.expired()\n  Actual: false\nExpected: true\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFileManager pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS UsimFileController pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFile pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract_test.cpp:52\nExpected equality of these values:\n  environment.ril.use_count()\n    Which is: 4\n  1\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract_test.cpp:51\nValue of: state.expired()\n  Actual: false\nExpected: true\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract_test.cpp:51\nValue of: records.expired()\n  Actual: false\nExpected: true\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFileManager pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS UsimFileController pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFile pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimStateHandle pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFileManager pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS UsimFileController pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS IccDiallingNumbersHandler pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:21\nValue of: addresses.count(q.address)\n  Actual: false\nExpected: true\nOWNED_QUEUE_REMAINS SimFile pending=0 running=0\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract_test.cpp:52\nExpected equality of these values:\n  environment.ril.use_count()\n    Which is: 7\n  1\n",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/real_scenario.h:542\nValue of: SimHost::AwaitSchedulerStopped(3s)\n  Actual: false\nExpected: true\nREAL_GRAPH_LIFETIME_NOT_DRAINED\n"
+      ],
+      "properties": {
+        "primary_observation": "{\"schema\":1,\"parameters\":{\"const.telephony.slotCount\":\"2\",\"const.vendor.ril.set_primary_slot_support\":\"false\"},\"public\":{},\"events\":[]}",
+        "workers_after_cleanup": "10",
+        "ril_references_after_cleanup": "7",
+        "account_observer_expired": "true",
+        "object_lifetime": "FAIL",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    },
+    {
+      "report": "0018.xml",
+      "id": "PairingReview.UnrelatedRuntimeWorkerIsBaseline",
+      "status": "PASS",
+      "failures": [],
+      "properties": {
+        "primary_observation": "{\"schema\":1,\"parameters\":{\"const.telephony.slotCount\":\"2\",\"const.vendor.ril.set_primary_slot_support\":\"false\"},\"public\":{},\"events\":[]}",
+        "workers_after_cleanup": "0",
+        "ril_references_after_cleanup": "1",
+        "account_observer_expired": "true",
+        "object_lifetime": "PASS",
+        "strict_ril_expectations_verified": "PASS"
+      }
+    },
+    {
+      "report": "0019.xml",
+      "id": "ShutdownContract.ANormalPrimaryThenStop",
+      "status": "FAIL",
+      "failures": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+      ],
+      "properties": {
+        "business": "NOT_RUN",
+        "resource_lifetime": "BLOCKED",
+        "async_safety": "BLOCKED"
+      }
+    },
+    {
+      "report": "0020.xml",
+      "id": "ShutdownContract.BThreeSlotsThenStop",
+      "status": "FAIL",
+      "failures": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+      ],
+      "properties": {
+        "business": "NOT_RUN",
+        "resource_lifetime": "BLOCKED",
+        "async_safety": "BLOCKED"
+      }
+    },
+    {
+      "report": "0021.xml",
+      "id": "ShutdownContract.CPartialInitializationThenStop",
+      "status": "FAIL",
+      "failures": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+      ],
+      "properties": {
+        "business": "NOT_RUN",
+        "resource_lifetime": "BLOCKED",
+        "async_safety": "BLOCKED"
+      }
+    },
+    {
+      "report": "0022.xml",
+      "id": "ShutdownContract.DRepeatedStop",
+      "status": "FAIL",
+      "failures": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+      ],
+      "properties": {
+        "business": "NOT_RUN",
+        "resource_lifetime": "BLOCKED",
+        "async_safety": "BLOCKED"
+      }
+    },
+    {
+      "report": "0023.xml",
+      "id": "ShutdownContract.EInFlightSuccessCompletesBeforeRelease",
+      "status": "FAIL",
+      "failures": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+      ],
+      "properties": {
+        "business": "NOT_RUN",
+        "resource_lifetime": "BLOCKED",
+        "async_safety": "BLOCKED"
+      }
+    },
+    {
+      "report": "0024.xml",
+      "id": "ShutdownContract.FErrorReplyDuringStoppingKeepsOriginalResult",
+      "status": "FAIL",
+      "failures": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+      ],
+      "properties": {
+        "business": "NOT_RUN",
+        "resource_lifetime": "BLOCKED",
+        "async_safety": "BLOCKED"
+      }
+    },
+    {
+      "report": "0025.xml",
+      "id": "ShutdownContract.GDelayedDispatchAfterStop",
+      "status": "FAIL",
+      "failures": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+      ],
+      "properties": {
+        "business": "NOT_RUN",
+        "resource_lifetime": "BLOCKED",
+        "async_safety": "BLOCKED"
+      }
+    },
+    {
+      "report": "0026.xml",
+      "id": "ShutdownContract.HDestroyAndCreateNewGraph",
+      "status": "FAIL",
+      "failures": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_contract.h:34\nFailed\nBLOCKED_PRODUCTION_STOP_API: requires bool SimManager::Stop(), IsStopping() const and IsStopped() const; no mock shutdown substituted\n"
+      ],
+      "properties": {
+        "business": "NOT_RUN",
+        "resource_lifetime": "BLOCKED",
+        "async_safety": "BLOCKED"
+      }
+    }
+  ],
+  "archive_sha256": "e61d52df3f72b4c44995c03885a6e627ecacebd12b8c8bb45d7d920f43c504ef"
+}

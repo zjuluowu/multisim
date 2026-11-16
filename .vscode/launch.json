@@ -2,6 +2,20 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "SIM: replacement selected GoogleTest",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/.host-out/build/sim_test_host",
+      "args": [
+        "--gtest_filter=${input:gtestFilter}"
+      ],
+      "cwd": "${workspaceFolder}/.host-out",
+      "env": {
+        "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/debug-%p.profraw"
+      },
+      "preLaunchTask": "Build Replacement Host"
+    },
+    {
       "name": "SIM Host: selected GTest (WSL)",
       "type": "lldb",
       "request": "launch",

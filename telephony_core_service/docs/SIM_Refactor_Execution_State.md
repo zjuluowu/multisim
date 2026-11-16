@@ -1,5 +1,7 @@
 # 多 SIM 重构执行状态
 
+当前新增任务：测试防护网全量重建，首批实际代码及失败/阻塞见§38；尚未完成全量替换，不将阶段提交作为整体验收。
+
 当前任务（2026-11-16）：按用户明确授权撤回原生产重构接入，并同步GitCode主仓master@43ac8ae7df5b9c17c4efb3433415693d925b98c7；当前生产不再接入G2a Query。以下G2a生产附着结论仅为历史检查点，当前测试参考与验证见§37。
 
 当前提交模式（2026-11-16用户调整）：默认在当前本地工作区直接提交并推送origin/main，不通过独立副本发布，具体规则及本次保存状态见[§34](#direct-publication-20261116)。
@@ -968,3 +970,20 @@ GitCode最新源码实际验证：Host64项59 PASS/同样5个既有FAIL，与本
 [本批说明、最终摘要、1066项源码SHA及原始证据](../services/multisim/test/docs/archive/upstream_sync_20261116/README.md)随仓保存；固定上游获取和测试复现命令已登记，不依赖/tmp恢复。按持续授权在当前工作区逐文件暂存本批成果，常规提交并推送origin/main；发布前核对远端无分歧，发布后核实SHA及包含关系，不使用独立发布副本、强推、合并或变基。当前未完成的产品/Target/原缺陷门禁如上保存，下一批应基于该新上游SHA补齐对应环境与真实Target闭包，生产接入需另行明确授权。
 
 发布索引预检补充：1066项暂存内容blob均与GitCode源树一致。首次同时比较模式的断言检出246项既有导入差异（上游100755、本仓100644），本次保留本仓既有文件模式，不为源码同步给C++/图片等批量增加执行位；逐项记录在本批file-modes.json。该差异不属于内容字节不一致，源码核验工具及上文PASS均明确只指内容。
+
+
+### 38. 测试防护网全量重建：基线与直接Fixture首批（2026-11-16）
+
+用户明确授权完整替换test内部架构，不授权生产C++/接口/正式GN接入变化。输入main/远端main@877162ff1b2425fee0c9db1aadd7221497fd32db，暂存区为空；恢复工具实际fetch后CHECKPOINT_VERIFIED。原始1005项输入及旧all的XML/日志/退出码按Git内容摘要归档，原始Golden及历史证据未改写。旧Host64项59 PASS/5 FAIL、G2a参考和原版Core各7场景PASS、完整架构/技术/完整性/迁址检查PASS，Primary准备/Target BLOCKED。
+
+实现统一sim_test.h、直接生产Environment及高级传输控制，无调用旧ContractDriver/Adapter/Runner。新sim_test_host含50项：45 PASS/5个相同生产缺陷FAIL，其中49项来自原64项并新增双卡PIN场景。逐项比较48项状态/失败/观测相同；逆序枚举一项跨槽status调用顺序不同，业务状态/失败相同，原始DIFFERENT不归一化。11个原生产方法正执行审计PASS。READY映射及PUK hook两项受控生产源码变异均检出；恢复后两项通过，正常/恢复二进制SHA相同。不修改仓内生产源码。
+
+显式准备固定OpenSSL包和三个固定原生源码依赖后，原真实Primary完整闭包本轮构建并逐例执行27项，10 PASS/17 FAIL。C0业务断言PASS，但清理后28 worker/10 RIL引用/观察者未释放，REAL_GRAPH_LIFETIME_NOT_DRAINED/exit1。该结果属于本轮旧真实链重验，不计为新框架迁移完成，不应用生命周期候选补丁。
+
+新增独立构建、逐例进程执行、显式源清单自动更新、结果对照与正执行审计工具。结果协议10项自测PASS；所有新业务运行按独立进程隔离。VS Code增加新目标、每进程单例及统一LLDB模板；本机schema核实、LLDB真实UnlockPin断点/slotId/调用栈及继续通过已实测，GUI点击和独立初级开发人员体验未验收。
+
+仍未完成：原64中的容量/Primary入口15项迁移，G2a/真实Primary/生命周期及CI统一切换、旧Framework/重复Runner退役；Device Framework/sim_test_device/产品GN同源编译和设备执行。没有hb/hdc及匹配产品树，不声称产品、SA/IPC/HDI或设备通过。旧实现只作短期对照，本批不是完整替换完成；后续必须继续上述范围，不能以阶段成果维持双框架。
+
+工作区保护失误：一次手工LLDB未设LLVM_PROFILE_FILE，覆盖既存未跟踪default.profraw；原SHA bbb8d8d54bc9586adf968048bcdf7f08cf72cd1321d4766bafe30b8814ef5f1e，发现时新SHA d35445fd920ef489cfb908b6968c9d3dea874688ea39daa53328c9f76be2d675。已明确告知用户并扫描可访问profile副本，未找到匹配原字节；不称已恢复，不纳入提交。新执行器/IDE/后续命令显式设置独立输出。
+
+[当前架构、完整旧资产处置、实测及后续切换](../services/multisim/test/docs/Full_Replacement.md)与其仓内证据包为本批交付，不依赖/tmp作为唯一证据。原生产源码与正式GN未改；框架引导仅对Host GN、完整性工具及README设置精确演进记录，其他835项受控资产继续原字节核验。逐文件保存本批成果并常规推送origin/main，推送前后核实远端；分歧/保护拒绝不合并、不变基、不强推、不改用副本发布。实际提交由包含本节的Git提交定位，不自引用SHA。

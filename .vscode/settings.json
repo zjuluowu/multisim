@@ -11,11 +11,27 @@
   },
   "testMate.cpp.test.advancedExecutables": [
     {
-      "pattern": ".host-out/build/{sim_guard_legacy,sim_guard_pin_memory,platform_adapter_test,sim_component_test,sim_primary_slot_entry_test}",
+      "pattern": ".host-out/build/sim_test_host",
       "cwd": "${workspaceFolder}/.host-out",
       "env": {
         "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/testmate-%p.profraw"
+      },
+      "maxTestsPerExecutable": 1,
+      "parallelizationLimit": 1,
+      "runTask": {
+        "before": [
+          "Build Replacement Host"
+        ]
       }
+    },
+    {
+      "pattern": ".host-out/build/{sim_component_test,sim_primary_slot_entry_test}",
+      "cwd": "${workspaceFolder}/.host-out",
+      "env": {
+        "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/testmate-%p.profraw"
+      },
+      "maxTestsPerExecutable": 1,
+      "parallelizationLimit": 1
     },
     {
       "pattern": ".host-out/build/sim_primary_slot_real_test",
@@ -23,7 +39,17 @@
       "env": {
         "SIM_HOST_BOOT_SLOT_COUNT": "2",
         "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/real-testmate-%p.profraw"
-      }
+      },
+      "maxTestsPerExecutable": 1,
+      "parallelizationLimit": 1
     }
-  ]
+  ],
+  "testMate.cpp.debug.configTemplate": {
+    "type": "lldb",
+    "request": "launch",
+    "program": "${exec}",
+    "args": "${argsArray}",
+    "cwd": "${cwd}",
+    "env": "${envObj}"
+  }
 }

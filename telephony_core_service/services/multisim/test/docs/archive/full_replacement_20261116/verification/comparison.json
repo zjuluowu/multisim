@@ -1,0 +1,1680 @@
+{
+  "scope": "Observed result/failure/trace equality; does not alone establish source-path or mutation equivalence",
+  "rows": [
+    {
+      "old": "CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/0",
+      "new": "CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/0",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        }
+      },
+      "after": null,
+      "status": "NOT_MIGRATED"
+    },
+    {
+      "old": "CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/1",
+      "new": "CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/1",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        }
+      },
+      "after": null,
+      "status": "NOT_MIGRATED"
+    },
+    {
+      "old": "Compatibility/Lifecycle.PublicCardState/LIFE_001",
+      "new": "SimTest.LIFE_001",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=1,state=READY,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=1,state=READY,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "Compatibility/Lifecycle.PublicCardState/LIFE_002",
+      "new": "SimTest.LIFE_002",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=1;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=1;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "Compatibility/Lifecycle.PublicCardState/PUK_001",
+      "new": "SimTest.PUK_001",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "ContractDriver.DEFECT_001_StaleReadyAfterRemoval",
+      "new": "SimAdvancedTest.DEFECT_001_StaleReadyAfterRemoval",
+      "before": {
+        "status": "FAIL",
+        "failures": [
+          "Expected equality of these values:\n  actual.present\n    Which is: true\n  state != State::Absent\n    Which is: false\n",
+          "Expected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: ABSENT\n",
+          "Expected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <00-00 00-00>\n"
+        ],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nremoved:slot=0,present=0,state=ABSENT,kind=0;\nstale-ready:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "after": {
+        "status": "FAIL",
+        "failures": [
+          "Expected equality of these values:\n  actual.present\n    Which is: true\n  state != State::Absent\n    Which is: false\n",
+          "Expected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: ABSENT\n",
+          "Expected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <00-00 00-00>\n"
+        ],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nremoved:slot=0,present=0,state=ABSENT,kind=0;\nstale-ready:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "ContractDriver.DUAL_001",
+      "new": "SimAdvancedTest.DUAL_001",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "2",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;slot=1,present=1,state=LOCKED,kind=1;\ncard-event:slot=0,present=1,state=READY,kind=1;slot=1,present=1,state=LOCKED,kind=1;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:1;status:0;status:0;",
+          "real_instances_destroyed": "2"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "2",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;slot=1,present=1,state=LOCKED,kind=1;\ncard-event:slot=0,present=1,state=READY,kind=1;slot=1,present=1,state=LOCKED,kind=1;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:1;status:0;status:0;",
+          "real_instances_destroyed": "2"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "ContractDriver.PIN_001",
+      "new": "SimAdvancedTest.PIN_001",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\npin-success-status:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;pin:0;pin:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\npin-success-status:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;pin:0;pin:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "ContractDriver.PIN_002_CommandFailure",
+      "new": "SimAdvancedTest.PIN_002_CommandFailure",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\npin-command-failure:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;pin:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\npin-command-failure:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;pin:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "ContractDriver.RIL_001_DuplicateAndError",
+      "new": "SimAdvancedTest.RIL_001_DuplicateAndError",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=0,state=ABSENT,kind=0;\nril-error:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;\nduplicate-ready:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=0,state=ABSENT,kind=0;\nril-error:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;\nduplicate-ready:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "EventAdapter.SharedTypeSafety",
+      "new": "EventAdapter.SharedTypeSafety",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-EVENT-001",
+          "level": "INFRA",
+          "oracle_id": "EVT-TYPE"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-EVENT-001",
+          "level": "INFRA",
+          "oracle_id": "EVT-TYPE"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "EventAdapter.UniqueOwnership",
+      "new": "EventAdapter.UniqueOwnership",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-EVENT-002",
+          "level": "INFRA",
+          "oracle_id": "EVT-OWNERSHIP"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-EVENT-002",
+          "level": "INFRA",
+          "oracle_id": "EVT-OWNERSHIP"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "EventAdapter.WeakLifetimeAndMetadata",
+      "new": "EventAdapter.WeakLifetimeAndMetadata",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-EVENT-003",
+          "level": "INFRA",
+          "oracle_id": "EVT-LIFETIME"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-EVENT-003",
+          "level": "INFRA",
+          "oracle_id": "EVT-LIFETIME"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "ExternalData.EmptyCursorIsNotQueryFailure",
+      "new": "ExternalData.EmptyCursorIsNotQueryFailure",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-DATA-001",
+          "level": "INFRA",
+          "oracle_id": "DS-CURSOR"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-DATA-001",
+          "level": "INFRA",
+          "oracle_id": "DS-CURSOR"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "ExternalData.ExplicitQueryResponses",
+      "new": "ExternalData.ExplicitQueryResponses",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-DATA-002",
+          "level": "INFRA",
+          "oracle_id": "DS-QUERY"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-DATA-002",
+          "level": "INFRA",
+          "oracle_id": "DS-QUERY"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "ExternalData.OriginalBucketKeepsFirstPut",
+      "new": "ExternalData.OriginalBucketKeepsFirstPut",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-DATA-003",
+          "level": "INFRA",
+          "oracle_id": "DS-VALUES"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-DATA-003",
+          "level": "INFRA",
+          "oracle_id": "DS-VALUES"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "ExternalEvents.MissingProviderAndScopeCleanup",
+      "new": "ExternalEvents.MissingProviderAndScopeCleanup",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-CES-002",
+          "level": "INFRA",
+          "oracle_id": "CES-LIFETIME"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-CES-002",
+          "level": "INFRA",
+          "oracle_id": "CES-LIFETIME"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "ExternalEvents.PublishPreservesEnvelopeAndFailure",
+      "new": "ExternalEvents.PublishPreservesEnvelopeAndFailure",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-CES-001",
+          "level": "INFRA",
+          "oracle_id": "CES-PUBLISH"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-CES-001",
+          "level": "INFRA",
+          "oracle_id": "CES-PUBLISH"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "NativePointerSubset.LocalCastRequiresImplementedInterface",
+      "new": "NativePointerSubset.LocalCastRequiresImplementedInterface",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-PTR-003",
+          "level": "INFRA",
+          "oracle_id": "PTR-LOCAL-CAST"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-PTR-003",
+          "level": "INFRA",
+          "oracle_id": "PTR-LOCAL-CAST"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "NativePointerSubset.SharedOwnership",
+      "new": "NativePointerSubset.SharedOwnership",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-PTR-001",
+          "level": "INFRA",
+          "oracle_id": "PTR-OWNERSHIP"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-PTR-001",
+          "level": "INFRA",
+          "oracle_id": "PTR-OWNERSHIP"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "NativePointerSubset.WeakIdentityAndPromotion",
+      "new": "NativePointerSubset.WeakIdentityAndPromotion",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-PTR-002",
+          "level": "INFRA",
+          "oracle_id": "PTR-WEAK"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-PTR-002",
+          "level": "INFRA",
+          "oracle_id": "PTR-WEAK"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "PinMemoryContract.FailedPinDoesNotPublishMemoryHook",
+      "new": "PinMemoryContract.FailedPinDoesNotPublishMemoryHook",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;pin:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;pin:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "PinMemoryContract.PinSuccessUsesOriginalSlotIdentityAndCredential",
+      "new": "PinMemoryContract.PinSuccessUsesOriginalSlotIdentityAndCredential",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "2",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=1;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=1;slot=1,present=1,state=LOCKED,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:1;pin:1;pin:1;",
+          "real_instances_destroyed": "2"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "2",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=1;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=1;slot=1,present=1,state=LOCKED,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:1;pin:1;pin:1;",
+          "real_instances_destroyed": "2"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "PinMemoryContract.PukSuccessUsesNewPinAndPinAlterOperation",
+      "new": "PinMemoryContract.PukSuccessUsesNewPinAndPinAlterOperation",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "PinMemoryContract.RemovalUsesAbsentResponseIdentityWithoutCredential",
+      "new": "PinMemoryContract.RemovalUsesAbsentResponseIdentityWithoutCredential",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "2",
+          "observations": "card-event:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=0,state=ABSENT,kind=0;\n",
+          "pending_responses": "0",
+          "external_calls": "status:1;status:1;",
+          "real_instances_destroyed": "2"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "2",
+          "observations": "card-event:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=0,state=ABSENT,kind=0;\n",
+          "pending_responses": "0",
+          "external_calls": "status:1;status:1;",
+          "real_instances_destroyed": "2"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "PrimaryEntry.ChangedExternalSystemAppDecisionRejectsExtendedSlot",
+      "new": "PrimaryEntry.ChangedExternalSystemAppDecisionRejectsExtendedSlot",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        }
+      },
+      "after": null,
+      "status": "NOT_MIGRATED"
+    },
+    {
+      "old": "PrimaryEntry.FailedPreferenceWriteStillDelegatesCurrentBehavior",
+      "new": "PrimaryEntry.FailedPreferenceWriteStillDelegatesCurrentBehavior",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed",
+          "oracle": "legacy_characterization_SetParameter_return_is_ignored"
+        }
+      },
+      "after": null,
+      "status": "NOT_MIGRATED"
+    },
+    {
+      "old": "PrimaryEntry.InactiveCardStopsBeforePreferenceAndSwitch",
+      "new": "PrimaryEntry.InactiveCardStopsBeforePreferenceAndSwitch",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        }
+      },
+      "after": null,
+      "status": "NOT_MIGRATED"
+    },
+    {
+      "old": "PrimaryEntry.ManagerFailureReturnedUnchangedAfterPreferenceWrite",
+      "new": "PrimaryEntry.ManagerFailureReturnedUnchangedAfterPreferenceWrite",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        }
+      },
+      "after": null,
+      "status": "NOT_MIGRATED"
+    },
+    {
+      "old": "PrimaryEntry.MissingCardStopsBeforeActiveAndPreference",
+      "new": "PrimaryEntry.MissingCardStopsBeforeActiveAndPreference",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        }
+      },
+      "after": null,
+      "status": "NOT_MIGRATED"
+    },
+    {
+      "old": "PrimaryEntry.NonSystemCallerPrecedesPermissionAndNullManager",
+      "new": "PrimaryEntry.NonSystemCallerPrecedesPermissionAndNullManager",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        }
+      },
+      "after": null,
+      "status": "NOT_MIGRATED"
+    },
+    {
+      "old": "PrimaryEntry.NullManagerPrecedesCapabilityRecheck",
+      "new": "PrimaryEntry.NullManagerPrecedesCapabilityRecheck",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        }
+      },
+      "after": null,
+      "status": "NOT_MIGRATED"
+    },
+    {
+      "old": "PrimaryEntry.PermissionDenialPrecedesNullManager",
+      "new": "PrimaryEntry.PermissionDenialPrecedesNullManager",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        }
+      },
+      "after": null,
+      "status": "NOT_MIGRATED"
+    },
+    {
+      "old": "PrimaryEntry.PresenceQueryFailureWithFalseOutputReturnsNoCard",
+      "new": "PrimaryEntry.PresenceQueryFailureWithFalseOutputReturnsNoCard",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed",
+          "oracle": "legacy_characterization_HasSimCard_return_is_ignored"
+        }
+      },
+      "after": null,
+      "status": "NOT_MIGRATED"
+    },
+    {
+      "old": "PrimaryEntry.PresenceQueryFailureWithTrueOutputStillDelegates",
+      "new": "PrimaryEntry.PresenceQueryFailureWithTrueOutputStillDelegates",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed",
+          "oracle": "legacy_characterization_HasSimCard_return_is_ignored"
+        }
+      },
+      "after": null,
+      "status": "NOT_MIGRATED"
+    },
+    {
+      "old": "PrimaryEntry.ReadyCardWritesPreferenceBeforeDelegatingExactTarget",
+      "new": "PrimaryEntry.ReadyCardWritesPreferenceBeforeDelegatingExactTarget",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        }
+      },
+      "after": null,
+      "status": "NOT_MIGRATED"
+    },
+    {
+      "old": "PrimaryEntry.StableSystemAppPassesExtendedSlotCapability",
+      "new": "PrimaryEntry.StableSystemAppPassesExtendedSlotCapability",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "scope": "real_CoreServiceSim_Permission_Capability_internal_ISimManager_seam",
+          "whole_core_service_chain": "BLOCKED_not_executed"
+        }
+      },
+      "after": null,
+      "status": "NOT_MIGRATED"
+    },
+    {
+      "old": "ProductionEventTransport.CancelsPendingAndReapsWorker",
+      "new": "ProductionEventTransport.CancelsPendingAndReapsWorker",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-EVENT-005",
+          "level": "INFRA",
+          "oracle_id": "EVT-CANCEL",
+          "cleanup_completed": "true"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-EVENT-005",
+          "level": "INFRA",
+          "oracle_id": "EVT-CANCEL",
+          "cleanup_completed": "true"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "ProductionEventTransport.DeliversFormalEnvelope",
+      "new": "ProductionEventTransport.DeliversFormalEnvelope",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-EVENT-004",
+          "level": "INFRA",
+          "oracle_id": "EVT-PRODUCTION",
+          "converged": "true",
+          "cleanup_completed": "true"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-EVENT-004",
+          "level": "INFRA",
+          "oracle_id": "EVT-PRODUCTION",
+          "converged": "true",
+          "cleanup_completed": "true"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "RilAdapter.FormalStatusResponse",
+      "new": "RilAdapter.FormalStatusResponse",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-RIL-001",
+          "level": "INFRA",
+          "oracle_id": "RIL-TRANSPORT"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-RIL-001",
+          "level": "INFRA",
+          "oracle_id": "RIL-TRANSPORT"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "SchedulerBoundary.DetachedCallableBarrierIncludesCaptureDestruction",
+      "new": "SchedulerBoundary.DetachedCallableBarrierIncludesCaptureDestruction",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-FFRT-008",
+          "oracle_id": "THREAD-DETACHED-CAPTURE",
+          "level": "INFRA"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-FFRT-008",
+          "oracle_id": "THREAD-DETACHED-CAPTURE",
+          "level": "INFRA"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "SchedulerBoundary.IdleWaitDoesNotIgnoreDelayedOrRunningWork",
+      "new": "SchedulerBoundary.IdleWaitDoesNotIgnoreDelayedOrRunningWork",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-FFRT-004",
+          "oracle_id": "FFRT-IDLE-BOUNDED",
+          "level": "INFRA"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-FFRT-004",
+          "oracle_id": "FFRT-IDLE-BOUNDED",
+          "level": "INFRA"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "SchedulerBoundary.IdleWaitDrainsCascadedQueues",
+      "new": "SchedulerBoundary.IdleWaitDrainsCascadedQueues",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-FFRT-003",
+          "oracle_id": "FFRT-IDLE-CASCADE",
+          "level": "INFRA"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-FFRT-003",
+          "oracle_id": "FFRT-IDLE-CASCADE",
+          "level": "INFRA"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "SchedulerBoundary.IdleWaitExposesTaskFailure",
+      "new": "SchedulerBoundary.IdleWaitExposesTaskFailure",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-FFRT-005",
+          "oracle_id": "FFRT-IDLE-FAILURE",
+          "level": "INFRA"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-FFRT-005",
+          "oracle_id": "FFRT-IDLE-FAILURE",
+          "level": "INFRA"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "SchedulerBoundary.JoinablePoolWorkerIsNotAnUnfinishedDetachedActor",
+      "new": "SchedulerBoundary.JoinablePoolWorkerIsNotAnUnfinishedDetachedActor",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-FFRT-009",
+          "oracle_id": "THREAD-POOL-BASELINE",
+          "level": "INFRA"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-FFRT-009",
+          "oracle_id": "THREAD-POOL-BASELINE",
+          "level": "INFRA"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "SchedulerBoundary.ProductionGeneralTaskWaitsAndCleansUp",
+      "new": "SchedulerBoundary.ProductionGeneralTaskWaitsAndCleansUp",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-FFRT-002",
+          "level": "INFRA",
+          "oracle_id": "FFRT-GENERAL"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-FFRT-002",
+          "level": "INFRA",
+          "oracle_id": "FFRT-GENERAL"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "SchedulerBoundary.ReadyIdleDoesNotAcceptRunningInitialization",
+      "new": "SchedulerBoundary.ReadyIdleDoesNotAcceptRunningInitialization",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-FFRT-007",
+          "oracle_id": "FFRT-READY-RUNNING",
+          "level": "INFRA"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-FFRT-007",
+          "oracle_id": "FFRT-READY-RUNNING",
+          "level": "INFRA"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "SchedulerBoundary.ReadyIdleLeavesFutureTimersAndDrainsCascades",
+      "new": "SchedulerBoundary.ReadyIdleLeavesFutureTimersAndDrainsCascades",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-FFRT-006",
+          "oracle_id": "FFRT-READY-CASCADE",
+          "level": "INFRA"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-FFRT-006",
+          "oracle_id": "FFRT-READY-CASCADE",
+          "level": "INFRA"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "SchedulerBoundary.RunningTaskCannotBeCancelled",
+      "new": "SchedulerBoundary.RunningTaskCannotBeCancelled",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-FFRT-001",
+          "level": "INFRA",
+          "oracle_id": "FFRT-CANCEL-RUNNING"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "case_id": "INFRA-FFRT-001",
+          "level": "INFRA",
+          "oracle_id": "FFRT-CANCEL-RUNNING"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "SessionLifecycle.CALLBACK_002_MalformedThenRecovery",
+      "new": "SessionLifecycle.CALLBACK_002_MalformedThenRecovery",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "observations": "malformed-status:slot=0,present=0,state=UNKNOWN,kind=0;\nvalid-status-recovery:slot=0,present=1,state=READY,kind=2;\n",
+          "injected_fault": "wrong typed RIL response payload",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "observations": "malformed-status:slot=0,present=0,state=UNKNOWN,kind=0;\nvalid-status-recovery:slot=0,present=1,state=READY,kind=2;\n",
+          "injected_fault": "wrong typed RIL response payload",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "SessionLifecycle.CALLBACK_003_DroppedThenRecovery",
+      "new": "SessionLifecycle.CALLBACK_003_DroppedThenRecovery",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "observations": "status-response-not-delivered:slot=0,present=0,state=UNKNOWN,kind=0;\nnew-status-response:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "injected_fault": "RIL response dropped; no timeout-policy assertion",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "observations": "status-response-not-delivered:slot=0,present=0,state=UNKNOWN,kind=0;\nnew-status-response:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "injected_fault": "RIL response dropped; no timeout-policy assertion",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+      "new": "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+      "before": {
+        "status": "FAIL",
+        "failures": [
+          "Expected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: LOCKED\n",
+          "Expected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <01-00 00-00>\n"
+        ],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nreplacement-card-locked:slot=0,present=1,state=LOCKED,kind=1;\nold-card-ready-response:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "after": {
+        "status": "FAIL",
+        "failures": [
+          "Expected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: LOCKED\n",
+          "Expected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <01-00 00-00>\n"
+        ],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nreplacement-card-locked:slot=0,present=1,state=LOCKED,kind=1;\nold-card-ready-response:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+      "new": "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+      "before": {
+        "status": "FAIL",
+        "failures": [
+          "Expected: (actual.error) != (0), actual: 0 vs 0\n",
+          "Expected equality of these values:\n  actual.result\n    Which is: 4-byte object <01-00 00-00>\n  Unlock::Failure\n    Which is: 4-byte object <02-00 00-00>\n"
+        ],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ngeneric-error-without-password-decision:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "observed_error": "0",
+          "observed_unlock_result": "1",
+          "pending_responses": "0",
+          "external_calls": "status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "after": {
+        "status": "FAIL",
+        "failures": [
+          "Expected: (actual.error) != (0), actual: 0 vs 0\n",
+          "Expected equality of these values:\n  actual.result\n    Which is: 4-byte object <01-00 00-00>\n  Unlock::Failure\n    Which is: 4-byte object <02-00 00-00>\n"
+        ],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ngeneric-error-without-password-decision:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "observed_error": "0",
+          "observed_unlock_result": "1",
+          "pending_responses": "0",
+          "external_calls": "status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+      "new": "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+      "before": {
+        "status": "FAIL",
+        "failures": [
+          "Expected equality of these values:\n  actual.state\n    Which is: NOT_READY\n  state\n    Which is: LOCKED\n"
+        ],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=1;\nold-pin-result-after-card-replacement:slot=0,present=1,state=NOT_READY,kind=1;\n",
+          "old_request_result": "0",
+          "pending_responses": "0",
+          "external_calls": "status:0;pin:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "after": {
+        "status": "FAIL",
+        "failures": [
+          "Expected equality of these values:\n  actual.state\n    Which is: NOT_READY\n  state\n    Which is: LOCKED\n"
+        ],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=0,state=ABSENT,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=1;\nold-pin-result-after-card-replacement:slot=0,present=1,state=NOT_READY,kind=1;\n",
+          "old_request_result": "0",
+          "pending_responses": "0",
+          "external_calls": "status:0;pin:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+      "new": "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+      "before": {
+        "status": "FAIL",
+        "failures": [
+          "Expected equality of these values:\n  RefreshToLocked()\n    Which is: 2\n  0\ncore_service_client.h RefreshSimState @return contract\n"
+        ],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nexplicit-refresh-completed:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "raw_refresh_return": "2",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "after": {
+        "status": "FAIL",
+        "failures": [
+          "Expected equality of these values:\n  RefreshToLocked()\n    Which is: 2\n  0\ncore_service_client.h RefreshSimState @return contract\n"
+        ],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nexplicit-refresh-completed:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "raw_refresh_return": "2",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "SessionLifecycle.DUAL_002_PinWhileOtherCardRemoved",
+      "new": "SessionLifecycle.DUAL_002_PinWhileOtherCardRemoved",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "2",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=1,state=READY,kind=1;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=0,state=ABSENT,kind=0;\nunlock-and-other-removal-completed:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=ABSENT,kind=0;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:1;pin:0;status:1;status:0;",
+          "real_instances_destroyed": "2"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "2",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=1,state=READY,kind=1;\ncard-event:slot=0,present=1,state=LOCKED,kind=2;slot=1,present=0,state=ABSENT,kind=0;\nunlock-and-other-removal-completed:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=ABSENT,kind=0;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:1;pin:0;status:1;status:0;",
+          "real_instances_destroyed": "2"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "SessionLifecycle.INIT_001_SingleEnumeration",
+      "new": "SessionLifecycle.INIT_001_SingleEnumeration",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "observations": "initialized-without-card-response:slot=0,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "observations": "initialized-without-card-response:slot=0,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "SessionLifecycle.INIT_002_MissingRilThenRecreate",
+      "new": "SessionLifecycle.INIT_002_MissingRilThenRecreate",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "2",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "observations": "ril-unavailable:slot=0,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=1;\n",
+          "real_instances_destroyed": "2",
+          "pending_responses": "0",
+          "external_calls": "status:0;"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "2",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "observations": "ril-unavailable:slot=0,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=LOCKED,kind=1;\n",
+          "real_instances_destroyed": "2",
+          "pending_responses": "0",
+          "external_calls": "status:0;"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "SessionLifecycle.INIT_DUAL_002_ReversedEnumeration",
+      "new": "SessionLifecycle.INIT_DUAL_002_ReversedEnumeration",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "2",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "observations": "second-slot-response-first:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=1,state=LOCKED,kind=1;\nboth-enumerated:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\n",
+          "pending_responses": "0",
+          "external_calls": "status:1;status:0;",
+          "real_instances_destroyed": "2"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "2",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "observations": "second-slot-response-first:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=1,state=LOCKED,kind=1;\nboth-enumerated:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:1;",
+          "real_instances_destroyed": "2"
+        }
+      },
+      "status": "DIFFERENT",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {
+        "external_calls": [
+          "status:1;status:0;",
+          "status:0;status:1;"
+        ]
+      }
+    },
+    {
+      "old": "SessionLifecycle.PUK_002_WrongThenSuccessfulUnlock",
+      "new": "SessionLifecycle.PUK_002_WrongThenSuccessfulUnlock",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=LOCKED,kind=2;\ncard-event:slot=0,present=1,state=READY,kind=2;\n",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "SessionLifecycle.RECREATE_001_DualCardReenumeration",
+      "new": "SessionLifecycle.RECREATE_001_DualCardReenumeration",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "4",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\nnew-real-SUT-before-enumeration:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=0,state=UNKNOWN,kind=0;\nreenumerated-device-facts:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\n",
+          "real_instances_destroyed": "4",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "persistence_scope": "external card facts; no Provider/DB recovery claim",
+          "pending_responses": "0",
+          "external_calls": "status:1;status:0;"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "4",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;slot=1,present=0,state=UNKNOWN,kind=0;\ncard-event:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\nnew-real-SUT-before-enumeration:slot=0,present=0,state=UNKNOWN,kind=0;slot=1,present=0,state=UNKNOWN,kind=0;\nreenumerated-device-facts:slot=0,present=1,state=READY,kind=2;slot=1,present=1,state=LOCKED,kind=1;\n",
+          "real_instances_destroyed": "4",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "persistence_scope": "external card facts; no Provider/DB recovery claim",
+          "pending_responses": "0",
+          "external_calls": "status:1;status:0;"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "SessionLifecycle.RECREATE_002_ReplacementWhileStopped",
+      "new": "SessionLifecycle.RECREATE_002_ReplacementWhileStopped",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "2",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nnew-card-after-real-recreation:slot=0,present=1,state=LOCKED,kind=1;\n",
+          "real_instances_destroyed": "2",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "pending_responses": "0",
+          "external_calls": "status:0;"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "2",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nnew-card-after-real-recreation:slot=0,present=1,state=LOCKED,kind=1;\n",
+          "real_instances_destroyed": "2",
+          "pending_state_policy": "C observation only; no initial/restart state policy frozen",
+          "pending_responses": "0",
+          "external_calls": "status:0;"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "SessionLifecycle.REFRESH_001_ExplicitStatusQuery",
+      "new": "SessionLifecycle.REFRESH_001_ExplicitStatusQuery",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nexplicit-refresh-completed:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "raw_refresh_return": "2",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "after": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "real_instances_created": "1",
+          "observations": "card-event:slot=0,present=1,state=READY,kind=2;\nexplicit-refresh-completed:slot=0,present=1,state=LOCKED,kind=2;\n",
+          "raw_refresh_return": "2",
+          "pending_responses": "0",
+          "external_calls": "status:0;status:0;status:0;",
+          "real_instances_destroyed": "1"
+        }
+      },
+      "status": "MATCH",
+      "result_equal": true,
+      "failure_equal": true,
+      "observation_differences": {}
+    },
+    {
+      "old": "SimComponent.CapacityReadOnly",
+      "new": "SimComponent.CapacityReadOnly",
+      "before": {
+        "status": "PASS",
+        "failures": [],
+        "properties": {
+          "scenario_framework": "GoogleMock v1.15.2",
+          "case_id": "SIM-COMP-001",
+          "level": "B",
+          "oracle_id": "O-C11",
+          "synthetic_only": "true",
+          "converged": "true",
+          "legacy_capacity": "1",
+          "parameter_boundary_observed": "true",
+          "corrupted_evidence": "false"
+        }
+      },
+      "after": null,
+      "status": "NOT_MIGRATED"
+    }
+  ],
+  "new_cases": [
+    "SimTest.DualSimPinUnlock"
+  ],
+  "counts": {
+    "MATCH": 48,
+    "DIFFERENT": 1,
+    "NOT_MIGRATED": 15
+  }
+}

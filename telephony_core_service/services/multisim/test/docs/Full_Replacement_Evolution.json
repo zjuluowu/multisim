@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "baseline": "877162ff1b2425fee0c9db1aadd7221497fd32db",
+  "files": {
+    "framework/host/BUILD.gn": {
+      "previous_sha256": "9e531438069e1b06a0c5db51b102b67945b2bd5f4731332934a48a301a99caf8",
+      "current_sha256": "63ee0a40971e4a31ae8e85f9a86e6b996b76b811b3175f448f4be9beb6b818d7",
+      "reason": "Authorized full replacement bootstrap: direct fixture, shared production wrapper target and developer entry; preserve original business assets until equivalence and retirement."
+    },
+    "scripts/check_test_integrity.py": {
+      "previous_sha256": "14c19dc273659792035f4e42b40a1815e23d15e6183760bfd520350aa7f4f928",
+      "current_sha256": "76dda845b41caf3f4759cb92171ad495d0a653eecd913d3678ececd2e85047ea",
+      "reason": "Authorized full replacement bootstrap: direct fixture, shared production wrapper target and developer entry; preserve original business assets until equivalence and retirement."
+    },
+    "README.md": {
+      "previous_sha256": "5ae1bf1067d5b2cd054bcb426cb183af26f3e8b00bcd077f25ee66d1136251ff",
+      "current_sha256": "a9e06a1e79dc5a6fd1bf51122839acc4f835590ce13cc2be9b40e2472146a8d4",
+      "reason": "Authorized full replacement bootstrap: direct fixture, shared production wrapper target and developer entry; preserve original business assets until equivalence and retirement."
+    }
+  }
+}

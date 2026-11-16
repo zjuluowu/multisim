@@ -1,4 +1,5 @@
 test_root = "$production_root/services/multisim/test"
+import("../../cases/sources.gni")
 config("production_headers") {
   include_dirs = [ "$test_root/framework/host/stubs/include" ]
   foreach(dir,
@@ -86,10 +87,14 @@ executable("sim_primary_slot_real_test") {
 }
 
 # Original implementation sources, not copied and not mixed with fixtures/stubs.
+source_set("sim_wrapper_production_host") {
+  sources = [ "$production_root/services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp" ]
+  configs += [ ":production_headers", ":production_execution_evidence" ]
+}
 source_set("sim_production_host") {
+  deps = [ ":sim_wrapper_production_host" ]
   sources = [
     "$production_root/services/sim/src/sim_manager.cpp",
-    "$production_root/services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp",
   ]
   configs += [
     ":production_headers",
@@ -375,11 +380,11 @@ executable("sim_g2a_query_test") {
 
 # Shared contract runner. The adapter binding is the only implementation-specific source list.
 source_set("sim_guard_legacy_production") {
+  deps = [ ":sim_wrapper_production_host" ]
   sources = [
     "$production_root/frameworks/native/src/core_manager_inner.cpp",
     "$production_root/services/sim/src/icc_state.cpp",
     "$production_root/services/tel_ril/src/observer_handler.cpp",
-    "$production_root/services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp",
   ]
   if (sim_guard_manager_source == "") {
     sources += [ "$production_root/services/sim/src/sim_state_manager.cpp" ]
@@ -473,4 +478,32 @@ executable("sim_upstream_query_test") {
   ]
   deps = [ ":upstream_query_core", ":googlemock", ":platform_boundaries", ":sim_production_host" ]
   ldflags = [ "-fprofile-instr-generate", "-Wl,-Map,sim_upstream_query_test.map" ]
+}
+
+# Replacement state-component suite. It links the same production source_set as
+# the original reference suite, with a direct fixture instead of its adapters.
+executable("sim_test_host") {
+  sources = sim_case_sources + [
+    "$test_root/framework/common/main.cpp",
+    "$test_root/framework/host/sim_test.cpp",
+    "$test_root/framework/host/state_platform_spy.cpp",
+  ]
+  configs += [ ":production_headers" ]
+  include_dirs = [
+    "$test_root/framework",
+    "$test_root/cases/host/support",
+    "$test_root/framework/host",
+    "$test_root/framework/host/stubs",
+    "$gtest_root/googletest/include",
+    "$gtest_root/googlemock/include",
+  ]
+  deps = [
+    ":event_transport_production_host",
+    ":external_service_boundaries",
+    ":googlemock",
+    ":platform_boundaries",
+    ":scheduler_boundaries",
+    ":sim_guard_legacy_production",
+  ]
+  ldflags = [ "-fprofile-instr-generate", "-Wl,-Map,sim_test_host.map" ]
 }

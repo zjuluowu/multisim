@@ -1,0 +1,118 @@
+{
+  "scope": "Positive execution of eleven original production methods; not full SIM coverage",
+  "methods": [
+    {
+      "owner": "SimStateManager",
+      "method": "Init",
+      "count": 38,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_state_manager.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimStateManager",
+      "method": "GetSimState",
+      "count": 155,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_state_manager.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimStateManager",
+      "method": "HasSimCard",
+      "count": 148,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_state_manager.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimStateManager",
+      "method": "UnlockPin",
+      "count": 10,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_state_manager.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/services/telephony_ext_wrapper/include/telephony_ext_wrapper.h",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimStateManager",
+      "method": "UnlockPuk",
+      "count": 4,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_state_manager.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/services/telephony_ext_wrapper/include/telephony_ext_wrapper.h",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimStateManager",
+      "method": "RefreshSimState",
+      "count": 2,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_state_manager.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimStateHandle",
+      "method": "ProcessEvent",
+      "count": 142,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_state_handle.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimStateHandle",
+      "method": "GetSimCardData",
+      "count": 65,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/interfaces/innerkits/include/telephony_types.h",
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_state_handle.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/services/telephony_ext_wrapper/include/telephony_ext_wrapper.h",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimStateHandle",
+      "method": "ProcessIccCardState",
+      "count": 63,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_state_handle.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/services/telephony_ext_wrapper/include/telephony_ext_wrapper.h",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimStateHandle",
+      "method": "SimStateEscape",
+      "count": 60,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_state_handle.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimStateHandle",
+      "method": "GetUnlockResult",
+      "count": 14,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_state_handle.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}
