@@ -29,6 +29,7 @@
 #include "if_system_ability_manager.h"
 #include "inner_event.h"
 #include "iservice_registry.h"
+#include "multi_sim_helper.h"
 #include "radio_event.h"
 #ifdef CORE_SERVICE_SATELLITE
 #include "satellite_service_client.h"
@@ -1258,9 +1259,14 @@ bool SimStateHandle::IsEsim()
     }
  
     ResetResponse resetResponse;
-    resetResponse.AnalysisAtrData(cardAtr);
-    TELEPHONY_LOGI("slot%{public}d isEsim: %{public}s", slotId_, resetResponse.IsEuiccAvailable() ? "true" : "false");
-    return resetResponse.IsEuiccAvailable();
+    if (!resetResponse.AnalysisAtrData(cardAtr)) {
+        TELEPHONY_LOGE("analysis card atr failed, slotId: %{public}d", slotId_);
+        return false;
+    }
+    const bool isEsim = MultiSimHelper::IsEsimSlot(slotId_, resetResponse.IsEuiccAvailable());
+    TELEPHONY_LOGI("SimStateHandle IsEsim slot%{public}d isEsim: %{public}s",
+        slotId_, isEsim ? "true" : "false");
+    return isEsim;
 #else
     return false;
 #endif

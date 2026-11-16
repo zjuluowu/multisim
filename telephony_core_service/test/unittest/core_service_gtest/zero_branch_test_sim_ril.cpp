@@ -1248,7 +1248,7 @@ HWTEST_F(SimRilBranchTest, Telephony_IccDiallingNumbersManager_002, Function | M
 
     EXPECT_TRUE(iccDiallingNumbersManager.IsValidType(DiallingNumbersInfo::SIM_ADN));
     EXPECT_TRUE(iccDiallingNumbersManager.IsValidType(DiallingNumbersInfo::SIM_FDN));
-    EXPECT_TRUE(iccDiallingNumbersManager.IsValidType(DiallingNumbersInfo::SIM_SDN));
+    EXPECT_FALSE(iccDiallingNumbersManager.IsValidType(DiallingNumbersInfo::SIM_SDN));
     EXPECT_FALSE(iccDiallingNumbersManager.IsValidType(-1));
 
     EXPECT_TRUE(iccDiallingNumbersManager.IsValidParam(DiallingNumbersInfo::SIM_ADN, diallingNumbers));

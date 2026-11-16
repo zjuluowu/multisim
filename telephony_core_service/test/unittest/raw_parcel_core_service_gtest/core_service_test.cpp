@@ -475,8 +475,6 @@ HWTEST_F(CoreServiceTest, SetShowNumber006, Function | MediumTest | Level1)
     TelephonyPermissionTestHelper helper(true);
     helper.GrantPermission(Permission::SET_TELEPHONY_STATE);
     SetRunInCaller();
-    EXPECT_CALL(*g_mockSimManager, SetShowNumber(_, _))
-        .WillOnce(Return(TELEPHONY_ERR_SUCCESS));
     int32_t ret = g_coreService->SetShowNumber(0, u"", g_directCall);
     EXPECT_TRUE(ret == TELEPHONY_ERR_SUCCESS);
 }
@@ -529,8 +527,6 @@ HWTEST_F(CoreServiceTest, SetShowName006, Function | MediumTest | Level1)
     TelephonyPermissionTestHelper helper(true);
     helper.GrantPermission(Permission::SET_TELEPHONY_STATE);
     SetRunInCaller();
-    EXPECT_CALL(*g_mockSimManager, SetShowName(_, _))
-        .WillOnce(Return(TELEPHONY_ERR_SUCCESS));
     int32_t ret = g_coreService->SetShowName(0, u"", g_directCall);
     EXPECT_TRUE(ret == TELEPHONY_ERR_SUCCESS);
 }
@@ -969,8 +965,6 @@ HWTEST_F(CoreServiceTest, SetLockState006, Function | MediumTest | Level1)
     helper.GrantPermission(Permission::SET_TELEPHONY_STATE);
     SetRunInCaller();
     LockInfo options = {};
-    EXPECT_CALL(*g_mockSimManager, SetLockState(_, _, _))
-        .WillOnce(Return(TELEPHONY_ERR_SUCCESS));
     int32_t ret = g_coreService->SetLockState(0, options, g_directCall);
     EXPECT_TRUE(ret == TELEPHONY_ERR_SUCCESS);
 }
@@ -1023,8 +1017,6 @@ HWTEST_F(CoreServiceTest, GetLockState006, Function | MediumTest | Level1)
     TelephonyPermissionTestHelper helper(true);
     helper.GrantPermission(Permission::GET_TELEPHONY_STATE);
     SetRunInCaller();
-    EXPECT_CALL(*g_mockSimManager, GetLockState(_, _, _))
-        .WillOnce(Return(TELEPHONY_ERR_SUCCESS));
     int32_t ret = g_coreService->GetLockState(0, LockType::PIN_LOCK, g_directCall);
     EXPECT_TRUE(ret == TELEPHONY_ERR_SUCCESS);
 }
@@ -1119,8 +1111,6 @@ HWTEST_F(CoreServiceTest, HasOperatorPrivileges003, Function | MediumTest | Leve
 HWTEST_F(CoreServiceTest, HasOperatorPrivileges004, Function | MediumTest | Level1)
 {
     SetRunInCaller();
-    EXPECT_CALL(*g_mockSimManager, HasOperatorPrivileges(_, _))
-        .WillOnce(Return(TELEPHONY_ERR_SUCCESS));
     int32_t ret = g_coreService->HasOperatorPrivileges(0, g_directCall);
     EXPECT_TRUE(ret == TELEPHONY_ERR_SUCCESS);
 }

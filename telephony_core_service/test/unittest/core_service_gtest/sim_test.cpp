@@ -29,6 +29,7 @@
 #include "string_ex.h"
 #include "tel_profile_util.h"
 #include "operator_config_types.h"
+#include "preferences_errno.h"
 
 namespace OHOS {
 namespace Telephony {

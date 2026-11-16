@@ -37,6 +37,7 @@
 #include "signal_information.h"
 #include "sim_state_type.h"
 #include "i_raw_parcel_callback.h"
+#include "i_hidden_camera_detection_callback.h"
 
 namespace OHOS {
 namespace Telephony {
@@ -178,6 +179,11 @@ public:
     virtual int32_t SetSimLabelIndex(
         int32_t simId, int32_t simLabelIndex, const sptr<IRawParcelCallback> &callback) = 0;
     virtual bool IsMultiSimsCapabilitySupported(int32_t slotId) = 0;
+    virtual int32_t StartHiddenCameraDetection(
+        const sptr<IHiddenCameraDetectionCallback> &callback, const HiddenCameraDetectionConfig &config,
+        const sptr<IRawParcelCallback> &rawCallback) = 0;
+    virtual int32_t StopHiddenCameraDetection(const sptr<IRawParcelCallback> &rawCallback) = 0;
+    virtual int32_t KeepHiddenCameraDetection(const sptr<IRawParcelCallback> &rawCallback) = 0;
 protected:
     const int32_t ERROR = -1;
     const int32_t MIN_STRING_LE = 0;

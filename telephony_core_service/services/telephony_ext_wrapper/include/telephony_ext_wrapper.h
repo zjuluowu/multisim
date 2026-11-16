@@ -30,6 +30,8 @@
 #include "tel_ril_types.h"
 #include "operator_name_params.h"
 #include "telephony_types.h"
+#include "i_raw_parcel_callback.h"
+#include "i_hidden_camera_detection_callback.h"
 
 namespace OHOS {
 namespace Telephony {
@@ -140,8 +142,13 @@ public:
     typedef bool (*GetResetActiveFlagFunc)(int32_t slotId, bool &isActive);
     typedef void (*SavePreferredNetworkValue)(int32_t slotId, int32_t networkMode);
     typedef int32_t (*SwapM0M2SimCardsFunc)(int32_t slotId);
+    typedef int32_t (*SwapTwoModemSimCardsFunc)(int32_t slotId);
     typedef bool (*GetSimLabelIndexFromLsiCfgFunc)(int32_t slotId, int32_t &simLabelindex);
     typedef void (*NotifyRebootDetectSim)(bool isPSIM1Prensent, bool isPSIM2Prensent);
+    typedef int32_t (*StartHiddenCameraDetectionExtFunc)(const sptr<IHiddenCameraDetectionCallback> &callback,
+        const HiddenCameraDetectionConfig &config, const sptr<IRawParcelCallback> &rawCallback);
+    typedef int32_t (*StopHiddenCameraDetectionExtFunc)(const sptr<IRawParcelCallback> &rawCallback);
+    typedef int32_t (*KeepHiddenCameraDetectionExtFunc)(const sptr<IRawParcelCallback> &rawCallback);
 
     CHECK_OPC_VERSION_IS_UPDATE checkOpcVersionIsUpdate_ = nullptr;
     UPDATE_OPC_VERSION updateOpcVersion_ = nullptr;
@@ -217,6 +224,9 @@ public:
     RegisterEsimSwitchNotify registerEsimSwitchNotify_ = nullptr;
     RegisterEsimSwitchNotify unregisterEsimSwitchNotify_ = nullptr;
     NotifyRebootDetectSim notifyRebootDetectSim_ = nullptr;
+    StartHiddenCameraDetectionExtFunc startHiddenCameraDetectionExt_ = nullptr;
+    StopHiddenCameraDetectionExtFunc stopHiddenCameraDetectionExt_ = nullptr;
+    KeepHiddenCameraDetectionExtFunc keepHiddenCameraDetectionExt_ = nullptr;
     bool GetStkBundleName(std::string &bundleName);
     void SendSimChgTypeInfo(int32_t slotId, int32_t type);
     bool ReportEventToChr(int32_t slotId, const char* scenario, int32_t cause);
@@ -228,6 +238,7 @@ public:
     bool GetResetActiveFlag(int32_t slotId, bool &isActive);
     void SavePreferredNetworkValueFunc(int32_t slotId, int32_t networkMode);
     int32_t SwapM0M2SimCards(int32_t slotId);
+    int32_t SwapTwoModemSimCards(int32_t slotId);
     bool GetSimLabelIndexFromLsiCfg(int32_t slotId, int32_t &simLabelindex);
 
 private:
@@ -245,6 +256,7 @@ private:
     void InitTelephonyExtWrapperForOpkeyVersion();
     void InitTelephonyExtWrapperForOpnameVersion();
     void InitTelephonyExtWrapperForDynamicLoad();
+    void InitTelephonyExtWrapperForSense();
     GetStkBundleNameFunc getStkBundleNameFunc_ = nullptr;
     SendSimChgTypeInfoFunc sendSimChgTypeInfo_ = nullptr;
     ReportEventToChrFunc reportEventToChr_ = nullptr;
@@ -256,6 +268,7 @@ private:
     GetResetActiveFlagFunc getResetActiveFlag_ = nullptr;
     SavePreferredNetworkValue savePreferredNetworkValue_ = nullptr;
     SwapM0M2SimCardsFunc swapM0M2SimCards_ = nullptr;
+    SwapTwoModemSimCardsFunc swapTwoModemSimCards_ = nullptr;
     GetSimLabelIndexFromLsiCfgFunc getSimLabelIndexFromLsiCfg_ = nullptr;
 };
 

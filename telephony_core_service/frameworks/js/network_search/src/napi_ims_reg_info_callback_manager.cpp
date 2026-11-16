@@ -128,9 +128,18 @@ int32_t NapiImsRegInfoCallbackManager::ReportImsRegInfoInner(
         TELEPHONY_LOGE("stateCallback.env is null");
         return TELEPHONY_ERROR;
     }
-    napi_reference_ref(stateCallback.env, stateCallback.thisVar, nullptr);
-    napi_reference_ref(stateCallback.env, stateCallback.callbackRef, nullptr);
     auto task = [stateCallback, info]() {
+        napi_status refStatus = napi_reference_ref(stateCallback.env, stateCallback.thisVar, nullptr);
+        if (refStatus != napi_ok) {
+            TELEPHONY_LOGE("ref thisVar failed, status: %{public}d", static_cast<int32_t>(refStatus));
+            return;
+        }
+        refStatus = napi_reference_ref(stateCallback.env, stateCallback.callbackRef, nullptr);
+        if (refStatus != napi_ok) {
+            TELEPHONY_LOGE("ref callbackRef failed, status: %{public}d", static_cast<int32_t>(refStatus));
+            napi_reference_unref(stateCallback.env, stateCallback.thisVar, nullptr);
+            return;
+        }
         int32_t ret = ReportImsRegInfo(info, stateCallback);
         uint32_t refCount = 0;
         if (napi_reference_unref(stateCallback.env, stateCallback.thisVar, &refCount) == napi_ok && refCount == 0) {

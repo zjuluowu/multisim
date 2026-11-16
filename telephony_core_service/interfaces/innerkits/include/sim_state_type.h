@@ -542,6 +542,7 @@ struct SimCardInfo {
     std::string ehplmn = "";
     int32_t plmnLength = 0;
     int32_t phyCard = -1;
+    int32_t lsi = -1;
     CarrierType carrierType = CarrierType::UNKNOWN;
     SimLabel simlabel;
 };

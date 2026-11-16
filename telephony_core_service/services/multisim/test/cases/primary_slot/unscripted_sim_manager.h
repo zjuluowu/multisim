@@ -1,5 +1,5 @@
 // Generated from real ISimManager; unsupported calls throw, never fabricate business results.
-// Interface SHA256: 0456f3753dfafdcb55d5bb18002e5a9626513b3340be806150dba6967b944230
+// Interface SHA256: 4fb0c439602a1542b4b5afe42f4400423b20b293d2f7587bc0709f101ee5e398
 #pragma once
 #include "i_sim_manager.h"
 #include <stdexcept>
@@ -252,5 +252,7 @@ public:
     { throw std::logic_error("ISimManager seam: unexpected GetAllSimCardInfo"); }
     void SetSpecifiedIccidBySlotId(int32_t slotId, std::string &iccid) override
     { throw std::logic_error("ISimManager seam: unexpected SetSpecifiedIccidBySlotId"); }
+    int32_t UpdateDBActiveByIccId(const std::string iccId, int32_t enable) override
+    { throw std::logic_error("ISimManager seam: unexpected UpdateDBActiveByIccId"); }
 };
 }

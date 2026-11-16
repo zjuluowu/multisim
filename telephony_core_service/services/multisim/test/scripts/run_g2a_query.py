@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build and audit the G2a real read-only attachment, independently of capacity and OnInit suites."""
+"""Compare a host-only G2a reference with the unmodified upstream Core query."""
 
 import sys as _sys
 from pathlib import Path as _Path
@@ -32,16 +32,16 @@ SCENARIOS = [
     ("vendor_result_propagation", "2", "-31"),
 ]
 SOURCES = [
-    "services/core/src/core_service_sim.cpp",
-    "services/core/src/legacy_sim_query_binding.cpp",
+    "services/multisim/test/framework/host/g2a_reference/core_service_sim.cpp",
+    "services/multisim/test/framework/host/g2a_reference/legacy_sim_query_binding.cpp",
     "services/multisim/infrastructure/compatibility/api/real_sim_count_query.cpp",
     "services/sim/src/sim_manager.cpp",
     "services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp",
 ]
 REQUIRED_EXECUTIONS = [
-    ("CoreServiceSim", "GetRealSimCount", "services/core/src/core_service_sim.cpp"),
-    ("CoreServiceSim", "AttachReadOnlyQueries", "services/core/src/core_service_sim.cpp"),
-    ("LegacySimQueryBinding", "ReadLegacyRealSimCount", "services/core/src/legacy_sim_query_binding.cpp"),
+    ("CoreServiceSim", "GetRealSimCount", "services/multisim/test/framework/host/g2a_reference/core_service_sim.cpp"),
+    ("CoreServiceSim", "AttachReadOnlyQueries", "services/multisim/test/framework/host/g2a_reference/core_service_sim.cpp"),
+    ("LegacySimQueryBinding", "ReadLegacyRealSimCount", "services/multisim/test/framework/host/g2a_reference/legacy_sim_query_binding.cpp"),
     ("RealSimCountQuery", "Read", "services/multisim/infrastructure/compatibility/api/real_sim_count_query.cpp"),
     ("SimManager", "GetRealSimCount", "services/sim/src/sim_manager.cpp"),
     ("TelephonyExtWrapper", "GetRealSimCountExt", "services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp"),
@@ -51,7 +51,7 @@ VALIDATION_INPUTS = [
     "BUILD.gn", "test/BUILD.gn", "test/core_service_test.gni",
     "test/unittest/raw_parcel_core_service_gtest/BUILD.gn", "services/multisim/test/framework/host/BUILD.gn",
     "services/multisim/test/framework/host/gn/BUILDCONFIG.gn", "services/multisim/test/framework/host/gn/BUILD.gn",
-    "services/core/include/core_service_sim.h", "services/core/include/legacy_sim_query_binding.h",
+    "services/multisim/test/framework/host/g2a_reference/core_service_sim.h", "services/multisim/test/framework/host/g2a_reference/legacy_sim_query_binding.h",
     "services/multisim/infrastructure/compatibility/api/real_sim_count_query.h",
     "interfaces/innerkits/include/i_sim_manager.h", "interfaces/innerkits/include/i_tel_ril_manager.h",
     "interfaces/innerkits/include/telephony_types.h", "services/multisim/test/framework/host/configs/dependency_lock.json",
@@ -110,41 +110,33 @@ def literal_lists(tokens, field):
 
 def verify_source_tables(read_text=None):
     read_text = read_text or (lambda name: (CORE / name).read_text())
-    tables = [
-        ("BUILD.gn", ("ohos_shared_library", "tel_core_service"), "", "sources", "include_dirs"),
-        ("test/BUILD.gn", ("ohos_static_library", "tel_core_service_static"), "$CORE_SERVICE_ROOT/", "sources", "include_dirs"),
-        ("test/core_service_test.gni", None, "$CORE_SERVICE_ROOT/", "tel_core_service_src", "core_service_incluedirs"),
-        ("test/unittest/raw_parcel_core_service_gtest/BUILD.gn", ("ohos_unittest", "raw_parcel_core_service_test"), "$SOURCE_DIR/", "sources", "include_dirs"),
-        ("services/multisim/test/framework/host/BUILD.gn", ("source_set", "g2a_readonly_production_host"), "$production_root/", "sources", "include_dirs"),
-    ]
-    for name, target, prefix, source_field, include_field in tables:
+    production_tables = ["BUILD.gn", "test/BUILD.gn", "test/core_service_test.gni",
+                         "test/unittest/raw_parcel_core_service_gtest/BUILD.gn"]
+    for name in production_tables:
         tokens = gn_tokens(read_text(name))
-        body = target_body(tokens, target) if target else tokens
-        sources = literal_lists(body, source_field)
-        includes = literal_lists(body, include_field)
-        for source in SOURCES[1:3]:
-            if tokens.count('"' + prefix + source + '"') != 1 or sources.count(prefix + source) != 1:
-                raise RuntimeError("Missing, conditional, misplaced or duplicate query source: " + name + ": " + source)
-        # Check every string in this target, including conditional additions.
-        if any("services/multisim/" in token and token.endswith('.cpp"') and
-               token != '"' + prefix + SOURCES[2] + '"' for token in body):
-            raise RuntimeError("Unrelated multisim production source: " + name)
-        if any("services/multisim/application/query" in token for token in tokens):
-            raise RuntimeError("Obsolete G2a source path: " + name)
-        required_include = prefix + "services/multisim/infrastructure/compatibility/api"
-        if required_include not in includes or prefix + "services/multisim" in includes:
-            raise RuntimeError("Missing narrow G2a include boundary: " + name)
-        if name == "services/multisim/test/framework/host/BUILD.gn":
-            launcher = target_body(tokens, ("source_set", "g2a_query_launcher"))
-            if required_include not in literal_lists(launcher, "include_dirs"):
-                raise RuntimeError("Missing G2a launcher include boundary")
+        if any("multisim" in token or "legacy_sim_query_binding" in token for token in tokens):
+            raise RuntimeError("Refactor attachment leaked into upstream build: " + name)
+    name = "services/multisim/test/framework/host/BUILD.gn"
+    tokens = gn_tokens(read_text(name))
+    body = target_body(tokens, ("source_set", "g2a_readonly_production_host"))
+    sources = literal_lists(body, "sources")
+    for source in SOURCES[:3]:
+        expected = ("$test_root/" + source.split("services/multisim/test/", 1)[1]
+                    if "/test/" in source else "$production_root/" + source)
+        if sources.count(expected) != 1:
+            raise RuntimeError("Missing or duplicate reference input: " + source)
+    if len(sources) != 3:
+        raise RuntimeError("Unexpected reference source")
+    launcher = target_body(tokens, ("source_set", "g2a_query_launcher"))
+    if "$test_root/framework/host/g2a_reference" not in literal_lists(launcher, "include_dirs"):
+        raise RuntimeError("Missing reference header boundary")
     leaf = target_body(gn_tokens(read_text("services/multisim/BUILD.gn")), ("source_set", "readonly_query"))
     if (leaf[:3] != ["testonly", "=", "true"] or
             literal_lists(leaf, "sources") != ["infrastructure/compatibility/api/real_sim_count_query.cpp", "infrastructure/compatibility/api/real_sim_count_query.h"] or
             literal_lists(leaf, "public") != ["infrastructure/compatibility/api/real_sim_count_query.h"] or
             any(field in leaf for field in ["deps", "public_deps", "public_configs"])):
         raise RuntimeError("G2a leaf must remain isolated and testonly")
-    return {"tables": [row[0] for row in tables], "query_and_binding_once_per_target": True,
+    return {"tables": production_tables + [name], "production_attachment_absent": True, "reference_inputs_exact": True,
             "narrow_query_include_boundary": True, "isolated_testonly_leaf": True,
             "product_admission": "NOT_PROVEN_BY_SOURCE_TABLE_CHECK"}
 
@@ -179,7 +171,7 @@ def main():
         "case_id": "SIM-G2A-READ-001",
         "status": "BLOCKED",
         "executed": False,
-        "scope": "real_CoreServiceSim_to_original_SimManager_readonly_attachment",
+        "scope": "test_reference_Core_attachment_to_upstream_SimManager",
         "manager_on_init_executed": False,
         "core_init_executed": False,
         "card_presence": "not_observed_or_required_for_this_query",
@@ -187,11 +179,13 @@ def main():
         "original_capacity_suite": "not_run_or_counted_here",
         "full_sim_initialization": "not_claimed",
         "production_sources": [],
+        "production_attachment_present": False,
+        "scenario_counting": "Seven parameter/vendor scenarios, each run against reference and upstream executables",
         "commands": [],
         "scenarios": [],
         "counts": {"PASS": 0, "FAIL": 0, "BLOCKED": 1},
         "environment": {"os": platform.platform(), "cpu": platform.machine()},
-        "limits": ["No CoreService::Init, Manager::OnInit, IPC/SA/permission or device validation",
+        "limits": ["Core attachment is a test reference only; upstream production has no attachment. No CoreService::Init, Manager::OnInit, IPC/SA/permission or device validation",
                    "LTO intentionally closes only the selected production query",
                    "RIL is a strict platform Mock; vendor override is an explicit ABI boundary"],
     }
@@ -201,6 +195,7 @@ def main():
     for name, _, _ in SCENARIOS:
         for extension in [".xml", ".profraw"]:
             (output / ("g2a-" + name + extension)).unlink(missing_ok=True)
+            (output / ("upstream-" + name + extension)).unlink(missing_ok=True)
     for artifact in ["g2a-query.profdata", "coverage-export.log"]:
         (output / artifact).unlink(missing_ok=True)
     (output / "g2a-query-result.json").write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n")
@@ -252,7 +247,7 @@ def main():
         result["blocking_stage"] = "gn_generation"
         command(["gn", "gen", str(output), "--root=" + str(SYSTEM), "--args=" + gn_args], "gn-gen")
         result["blocking_stage"] = "query_product_link"
-        command(["ninja", "-C", str(output), "-j", "3", "sim_g2a_query_test"], "ninja-build", timeout=300)
+        command(["ninja", "-C", str(output), "-j", "3", "sim_g2a_query_test", "sim_upstream_query_test"], "ninja-build", timeout=300)
         command(["clang++", "-std=c++17", "-fPIC", "-shared",
                  str((_TEST / 'framework/host/stubs/g2a_vendor_boundary.cpp')),
                  "-o", str(output / "libtelephony_ext_service.z.so")], "vendor-abi-boundary-build")
@@ -282,6 +277,15 @@ def main():
             result["scenarios"].append({"name": name, "status": "PASS", "xml": xml.name,
                                         "slot_parameter": parameter, "vendor_result": vendor,
                                         "properties": properties})
+            upstream_xml = output / ("upstream-" + name + ".xml")
+            upstream_xml.unlink(missing_ok=True)
+            environment["LLVM_PROFILE_FILE"] = str(output / ("upstream-" + name + ".profraw"))
+            command([str(output / "sim_upstream_query_test"), "--gtest_output=xml:" + str(upstream_xml)],
+                    "upstream-run-" + name, timeout=15, environment=environment, runtime=True)
+            upstream_tree = ET.parse(upstream_xml).getroot()
+            if len(upstream_tree.findall(".//testcase")) != 1 or upstream_tree.findall(".//failure") or upstream_tree.findall(".//skipped"):
+                raise RuntimeError("Upstream query scenario failed: " + name)
+            result["scenarios"][-1]["upstream_xml"] = upstream_xml.name
             profiles.append(str(profile))
         result["blocking_stage"] = "production_execution_audit"
         profdata = output / "g2a-query.profdata"

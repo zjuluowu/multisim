@@ -111,5 +111,54 @@ HWTEST_F(TelStkControllerTest, Telephony_SavePreferredNetworkValue, Function | M
     telephonyExtWrapper.SavePreferredNetworkValueFunc(0, 0);
     EXPECT_TRUE(telephonyExtWrapper.savePreferredNetworkValue_ != nullptr);
 }
+
+/**
+ * @tc.number   Telephony_Sim_SwapTwoModemSimCards_001
+ * @tc.name     test SwapTwoModemSimCards
+ * @tc.desc     Function test
+ */
+HWTEST_F(TelStkControllerTest, Telephony_Sim_SwapTwoModemSimCards_001, Function | MediumTest | Level1)
+{
+    TelephonyExtWrapper telephonyExtWrapper;
+    // 函数指针为nullptr时直接返回-1
+    telephonyExtWrapper.swapTwoModemSimCards_ = nullptr;
+    EXPECT_EQ(telephonyExtWrapper.SwapTwoModemSimCards(0), -1);
+    // 函数指针非空时透传调用
+    telephonyExtWrapper.swapTwoModemSimCards_ = [](int32_t slotId) { return slotId + 1; };
+    EXPECT_EQ(telephonyExtWrapper.SwapTwoModemSimCards(0), 1);
+}
+
+/**
+ * @tc.number   Telephony_Sim_InitTelephonyExtWrapperForSim_001
+ * @tc.name     test InitTelephonyExtWrapperForSim with null handle
+ * @tc.desc     Function test
+ */
+HWTEST_F(TelStkControllerTest, Telephony_Sim_InitTelephonyExtWrapperForSim_001, Function | MediumTest | Level1)
+{
+    TelephonyExtWrapper telephonyExtWrapper;
+    // handle为空时dlsym失败，swapTwoModemSimCards_为nullptr，if(swapTwoModemSimCards_ == nullptr)分支成立
+    telephonyExtWrapper.telephonyExtWrapperHandle_ = nullptr;
+    telephonyExtWrapper.swapTwoModemSimCards_ = nullptr;
+    telephonyExtWrapper.InitTelephonyExtWrapperForSim();
+    EXPECT_EQ(telephonyExtWrapper.swapTwoModemSimCards_, nullptr);
+    EXPECT_EQ(telephonyExtWrapper.SwapTwoModemSimCards(0), -1);
+}
+
+/**
+ * @tc.number   Telephony_Sim_InitTelephonyExtWrapperForSim_002
+ * @tc.name     test InitTelephonyExtWrapperForSim with valid handle
+ * @tc.desc     Function test
+ */
+HWTEST_F(TelStkControllerTest, Telephony_Sim_InitTelephonyExtWrapperForSim_002, Function | MediumTest | Level1)
+{
+    TelephonyExtWrapper telephonyExtWrapper;
+    // dlopen成功后dlsym到SwapTwoModemSimCards符号，swapTwoModemSimCards_非nullptr，if分支不成立
+    telephonyExtWrapper.telephonyExtWrapperHandle_ = dlopen(TELEPHONY_EXT_WRAPPER_PATH.c_str(), RTLD_NOW);
+    telephonyExtWrapper.InitTelephonyExtWrapperForSim();
+    EXPECT_NE(telephonyExtWrapper.swapTwoModemSimCards_, nullptr);
+    // 替换为透传桩，避免调用真实ext库函数
+    telephonyExtWrapper.swapTwoModemSimCards_ = [](int32_t slotId) { return slotId; };
+    EXPECT_EQ(telephonyExtWrapper.SwapTwoModemSimCards(0), 0);
+}
 } // namespace Telephony
 } // namespace OHOS

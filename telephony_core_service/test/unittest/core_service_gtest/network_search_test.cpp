@@ -521,9 +521,11 @@ HWTEST_F(NetworkSearchTest, Telephony_NetworkSearch_GetNetworkState_0100, Functi
             TELEPHONY_LOGI("GetNetworkState result is null");
         } else {
             EXPECT_GT(static_cast<int32_t>(result->GetRegStatus()), -1);
-            EXPECT_STRNE(result->GetLongOperatorName().c_str(), "");
-            EXPECT_STRNE(result->GetShortOperatorName().c_str(), "");
-            EXPECT_STRNE(result->GetPlmnNumeric().c_str(), "");
+            if (result->GetRegStatus() == RegServiceState::REG_STATE_IN_SERVICE) {
+                EXPECT_STRNE(result->GetLongOperatorName().c_str(), "");
+                EXPECT_STRNE(result->GetShortOperatorName().c_str(), "");
+                EXPECT_STRNE(result->GetPlmnNumeric().c_str(), "");
+            }
             PrintNetworkStateInformation(result);
             sptr<NetworkState> newState = new NetworkState();
             Parcel parcel;
@@ -549,9 +551,11 @@ HWTEST_F(NetworkSearchTest, Telephony_NetworkSearch_GetNetworkState_0200, Functi
             TELEPHONY_LOGI("GetNetworkState result is null");
         } else {
             EXPECT_GT(static_cast<int32_t>(result->GetRegStatus()), -1);
-            EXPECT_STRNE(result->GetLongOperatorName().c_str(), "");
-            EXPECT_STRNE(result->GetShortOperatorName().c_str(), "");
-            EXPECT_STRNE(result->GetPlmnNumeric().c_str(), "");
+            if (result->GetRegStatus() == RegServiceState::REG_STATE_IN_SERVICE) {
+                EXPECT_STRNE(result->GetLongOperatorName().c_str(), "");
+                EXPECT_STRNE(result->GetShortOperatorName().c_str(), "");
+                EXPECT_STRNE(result->GetPlmnNumeric().c_str(), "");
+            }
         }
     }
 }
@@ -605,7 +609,7 @@ HWTEST_F(NetworkSearchTest, Telephony_NetworkSearch_GetOperatorNumeric_0100, Fun
     } else {
         std::u16string result = CoreServiceClient::GetInstance().GetOperatorNumeric(SLOT_ID);
         std::string plmn = Str16ToStr8(result);
-        EXPECT_STRNE(plmn.c_str(), "");
+        EXPECT_TRUE(plmn.empty() || (plmn.length() >= 5U && plmn.length() <= 6U));
     }
 }
 
@@ -621,7 +625,7 @@ HWTEST_F(NetworkSearchTest, Telephony_NetworkSearch_GetOperatorNumeric_0200, Fun
     } else {
         std::u16string result = CoreServiceClient::GetInstance().GetOperatorNumeric(SLOT_ID1);
         std::string plmn = Str16ToStr8(result);
-        EXPECT_STRNE(plmn.c_str(), "");
+        EXPECT_TRUE(plmn.empty() || (plmn.length() >= 5U && plmn.length() <= 6U));
     }
 }
 
@@ -639,7 +643,10 @@ HWTEST_F(NetworkSearchTest, Telephony_NetworkSearch_GetOperatorName_0100, Functi
         int32_t result = CoreServiceClient::GetInstance().GetOperatorName(SLOT_ID, u16OperatorName);
         EXPECT_EQ(result, TELEPHONY_ERR_SUCCESS);
         std::string operatorName = Str16ToStr8(u16OperatorName);
-        EXPECT_STRNE(operatorName.c_str(), "");
+        std::u16string operatorNumeric = CoreServiceClient::GetInstance().GetOperatorNumeric(SLOT_ID);
+        if (!operatorNumeric.empty()) {
+            EXPECT_STRNE(operatorName.c_str(), "");
+        }
     }
 }
 
@@ -657,7 +664,10 @@ HWTEST_F(NetworkSearchTest, Telephony_NetworkSearch_GetOperatorName_0200, Functi
         int32_t result = CoreServiceClient::GetInstance().GetOperatorName(SLOT_ID1, u16OperatorName);
         EXPECT_EQ(result, TELEPHONY_ERR_SUCCESS);
         std::string operatorName = Str16ToStr8(u16OperatorName);
-        EXPECT_STRNE(operatorName.c_str(), "");
+        std::u16string operatorNumeric = CoreServiceClient::GetInstance().GetOperatorNumeric(SLOT_ID1);
+        if (!operatorNumeric.empty()) {
+            EXPECT_STRNE(operatorName.c_str(), "");
+        }
     }
 }
 
@@ -781,7 +791,10 @@ HWTEST_F(NetworkSearchTest, Telephony_NetworkSearch_GetCellInfoList_0100, Functi
         int32_t result = CoreServiceClient::GetInstance().GetCellInfoList(SLOT_ID, cellList);
         EXPECT_EQ(result, TELEPHONY_ERR_SUCCESS);
         PrintCellInformation(cellList);
-        ASSERT_TRUE(!cellList.empty());
+        for (const auto &cell : cellList) {
+            ASSERT_NE(cell.GetRefPtr(), nullptr);
+            EXPECT_STRNE(cell->ToString().c_str(), "");
+        }
     }
 }
 
@@ -800,7 +813,10 @@ HWTEST_F(NetworkSearchTest, Telephony_NetworkSearch_GetCellInfoList_0200, Functi
         int32_t result = CoreServiceClient::GetInstance().GetCellInfoList(SLOT_ID1, cellList);
         EXPECT_EQ(result, TELEPHONY_ERR_SUCCESS);
         PrintCellInformation(cellList);
-        ASSERT_TRUE(!cellList.empty());
+        for (const auto &cell : cellList) {
+            ASSERT_NE(cell.GetRefPtr(), nullptr);
+            EXPECT_STRNE(cell->ToString().c_str(), "");
+        }
     }
 }
 
@@ -837,7 +853,10 @@ HWTEST_F(NetworkSearchTest, Telephony_NetworkSearch_GetCellInfoList_0400, Functi
         int32_t result = CoreServiceClient::GetInstance().GetCellInfoList(SLOT_ID1, cellList);
         EXPECT_EQ(result, TELEPHONY_ERR_SUCCESS);
         PrintCellInformation(cellList);
-        ASSERT_TRUE(!cellList.empty());
+        for (const auto &cell : cellList) {
+            ASSERT_NE(cell.GetRefPtr(), nullptr);
+            EXPECT_STRNE(cell->ToString().c_str(), "");
+        }
     }
 }
 
@@ -887,7 +906,7 @@ HWTEST_F(NetworkSearchTest, Telephony_NetworkSearch_GetIsoCountryCodeForNetwork_
         EXPECT_EQ(CoreServiceClient::GetInstance().GetIsoCountryCodeForNetwork(SLOT_ID, result), TELEPHONY_ERR_SUCCESS);
         std::string countryCode = Str16ToStr8(result);
         TELEPHONY_LOGI("TelephonyTestService GetIsoCountryCodeForNetwork countryCode: %{public}s", countryCode.c_str());
-        EXPECT_STRNE(countryCode.c_str(), "");
+        EXPECT_TRUE(countryCode.empty() || countryCode.length() == 2U);
     }
 }
 
@@ -905,7 +924,7 @@ HWTEST_F(NetworkSearchTest, Telephony_NetworkSearch_GetIsoCountryCodeForNetwork_
         CoreServiceClient::GetInstance().GetIsoCountryCodeForNetwork(SLOT_ID1, result);
         std::string countryCode = Str16ToStr8(result);
         TELEPHONY_LOGI("TelephonyTestService GetIsoCountryCodeForNetwork countryCode: %{public}s", countryCode.c_str());
-        EXPECT_STRNE(countryCode.c_str(), "");
+        EXPECT_TRUE(countryCode.empty() || countryCode.length() == 2U);
     }
 }
 

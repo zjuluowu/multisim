@@ -15,6 +15,9 @@
 
 #include "tel_profile_util.h"
 #include "preferences_helper.h"
+#include "preferences.h"
+#include "preferences_errno.h"
+#include "preferences_observer.h"
 
 namespace OHOS {
 namespace Telephony {

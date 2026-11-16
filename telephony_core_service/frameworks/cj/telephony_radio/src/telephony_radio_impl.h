@@ -38,6 +38,15 @@ public:
     static bool IsNRSupported();
     static bool IsRadioOn(int32_t slotId, int32_t &errCode);
     static char* GetOperatorName(int32_t slotId, int32_t &errCode);
+
+    // N-API aligned paths for the new Cangjie API. Existing FFI callers retain legacy error conversion.
+    static CNetworkRadioTech GetRadioTechSync(int32_t slotId);
+    static char* GetISOCountryCodeForNetworkSync(int32_t slotId);
+    // isRomApi=false preserves compatibility-package errors and legacy selection timeout behavior.
+    // isRomApi=true uses N-API aligned errors and rejects incomplete selection queries for ROM APIs.
+    static CNetworkState GetNetworkState(int32_t slotId, int32_t &errCode, bool isRomApi);
+    static int32_t GetNetworkSelectionMode(int32_t slotId, int32_t &errCode, bool isRomApi);
+    static int32_t GetPrimarySlotId(int32_t &errCode, bool isRomApi);
 };
 }
 }

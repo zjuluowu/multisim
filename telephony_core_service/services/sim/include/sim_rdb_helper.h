@@ -64,6 +64,7 @@ public:
     virtual int32_t UpdateOpKeyInfo();
     virtual bool IsDataShareError();
     virtual void ResetDataShareError();
+    virtual bool IsMaintenanceMode();
 
 private:
     std::shared_ptr<TelephonyDataHelper> mTelephonyDatahelper = DelayedSingleton<TelephonyDataHelper>::GetInstance();

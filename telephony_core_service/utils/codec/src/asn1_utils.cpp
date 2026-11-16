@@ -246,6 +246,7 @@ uint8_t Asn1Utils::CountTrailingZeros(const uint8_t value)
     }
 
     uint32_t valueTemp = ((static_cast<uint32_t>(value)) & MAX_UINT8);
+    valueTemp &= (~valueTemp) + 1;
     // The number of bits occupied by non-zero values
     uint8_t nonZeroBitCount = static_cast<uint8_t>(NONZERO_OCCUPIED_BITS);
     if ((valueTemp & static_cast<uint32_t>(MASK_BYTES_ONE_BYTE)) != 0) {

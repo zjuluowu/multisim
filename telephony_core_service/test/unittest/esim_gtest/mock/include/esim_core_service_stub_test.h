@@ -594,6 +594,23 @@ public:
     {
         return false;
     }
+
+    int32_t StartHiddenCameraDetection(
+        const sptr<IHiddenCameraDetectionCallback> &callback, const HiddenCameraDetectionConfig &config,
+        const sptr<IRawParcelCallback> &rawCallback) override
+    {
+        return 0;
+    }
+
+    int32_t StopHiddenCameraDetection(const sptr<IRawParcelCallback> &rawCallback) override
+    {
+        return 0;
+    }
+
+    int32_t KeepHiddenCameraDetection(const sptr<IRawParcelCallback> &rawCallback) override
+    {
+        return 0;
+    }
 };
 } // namespace Telephony
 } // namespace OHOS

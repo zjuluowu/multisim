@@ -22,6 +22,8 @@
       *CoreManagerInner*;
       *CoreServiceClient*;
       *CoreServiceProxy*;
+      *HiddenCameraDetectionCallbackStub*;
+      *RawParcelCallbackStub*;
       *DownloadProfileConfigInfo*;
       *DownloadProfileResult*;
       *DownloadableProfile*;

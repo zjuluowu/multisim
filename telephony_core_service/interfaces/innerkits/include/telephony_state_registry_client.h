@@ -63,12 +63,22 @@ public:
      */
     int32_t UpdateVoIPCallState(const VoIPCallStateInfo &info);
     /**
+     * @brief Update call transfer status
+     *
+     * @param slotId sim slot id
+     * @param enabled whether the unconditional call transfer is enabled
+     * @return int32_t TELEPHONY_SUCCESS on success, others on failure.
+     */
+
+    int32_t UpdateCallTransferStatus(int32_t slotId, bool enabled);
+    /**
      * @brief Update signal information
      *
      * @param slotId sim slot id
      * @param vec networkType search signal information
      * @return int32_t TELEPHONY_SUCCESS on success, others on failure.
      */
+     
     int32_t UpdateSignalInfo(int32_t slotId, const std::vector<sptr<SignalInformation>> &vec);
     /**
      * @brief Update cell information

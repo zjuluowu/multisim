@@ -1,6 +1,6 @@
 # 多 SIM 源码导航
 
-当前按[目录设计方案](../../docs/SIM重构代码目录结构设计方案.md)组织为四个业务目录与一个基础支撑目录。完整逐文件迁移、风险、GN对照及实测结果见[本批实施记录](../../docs/SIM_Directory_Migration_20261112.md)，唯一阶段状态见[执行状态](../../docs/SIM_Refactor_Execution_State.md#directory-layout-20261112)。G2a查询已列入原产品源表，其余仍为testonly骨架；成熟业务由 services/sim 执行，产品构建和新业务写权尚未验收。
+当前按[目录设计方案](../../docs/SIM重构代码目录结构设计方案.md)组织为四个业务目录与一个基础支撑目录。完整逐文件迁移、风险、GN对照及实测结果见[本批实施记录](../../docs/SIM_Directory_Migration_20261112.md)，唯一阶段状态见[执行状态](../../docs/SIM_Refactor_Execution_State.md#directory-layout-20261112)。2026-11-16已回退G2a生产接入并同步GitCode主仓；当前均为testonly骨架；成熟业务由 services/sim 执行，产品构建和新业务写权尚未验收。
 
 ```text
 multisim/
@@ -28,7 +28,7 @@ multisim/
 | 号码 | account/number 的查询/用例和窄运行端口 | Account：账户号码；Card：卡缓存及EF效果 |
 | PIN/EF、Profile/Port、会话/加载 | card/security、records、esim、state/SessionRegistry、LoadSession | Card：卡协议、库存、会话代次；Profile绑定归Account、偏好归Role Assignment |
 | Radio/资源结束/恢复 | device/resource/ResourceBarrier；primary/radio_execution_port.h为消费端契约 | Device：真实共享设备域与执行资格；不接管账户绑定或角色事实 |
-| GetRealSimCount | infrastructure/compatibility/api/real_sim_count_query.*；Core的legacy_sim_query_binding.* | 旧Manager/EXT读源投影，无新账户缓存 |
+| GetRealSimCount | infrastructure/compatibility/api/real_sim_count_query.*；test/framework/host/g2a_reference中的Core/legacy_sim_query_binding.*测试参考 | 旧Manager/EXT读源投影，无新账户缓存 |
 | 宿主/静态槽描述/发布 | infrastructure/assembly 的SlotCatalog、SimHostPorts、ManagerPublicationSequence、SimModule/Factory | Assembly构建只读描述并注入，同一Core RIL及原对象控制块；不持动态业务事实 |
 | 请求关联及旧结果交付 | infrastructure/request、compatibility/events | 请求由各Owner实例化；完成/回调登记是技术状态，无业务写权 |
 

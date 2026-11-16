@@ -912,7 +912,7 @@ HWTEST_F(ContactDataTest, VCardUtils_ConstructListFromValue_001, Function | Medi
 
 HWTEST_F(ContactDataTest, VCardUtils_ConstructListFromValue_002, Function | MediumTest | Level3)
 {
-    std::string value = "Hello;World";
+    std::string value = "Hello;HelloWorld";
     std::string vcardType = "VCARD";
     std::vector<std::string> expected = {"Hello", "HelloWorld"};
     std::vector<std::string> result = VCardUtils::ConstructListFromValue(value, vcardType);
@@ -930,7 +930,7 @@ HWTEST_F(ContactDataTest, VCardUtils_ConstructListFromValue_003, Function | Medi
 
 HWTEST_F(ContactDataTest, VCardUtils_ConstructListFromValue_004, Function | MediumTest | Level3)
 {
-    std::string value = "Hello;World;";
+    std::string value = "Hello;HelloWorld;HelloWorld";
     std::string vcardType = "VCARD";
     std::vector<std::string> expected = {"Hello", "HelloWorld", "HelloWorld"};
     std::vector<std::string> result = VCardUtils::ConstructListFromValue(value, vcardType);
@@ -1168,7 +1168,7 @@ HWTEST_F(ContactDataTest, GetVersionFromFileUtils_001, Function | MediumTest | L
 HWTEST_F(ContactDataTest, EncodeQuotedPrintable_001, Function | MediumTest | Level3)
 {
     VCardConstructor vCardConstructor;
-    std::string input = std::string(550, 'A');
+    std::string input = std::string(800, 'A');
     string result = vCardConstructor.EncodeQuotedPrintable(input);
     EXPECT_EQ(result, "");
     input = "inPUT";

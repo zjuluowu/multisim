@@ -80,6 +80,15 @@ public:
      * @return int32_t TELEPHONY_SUCCESS on success, others on failure.
      */
     virtual int32_t UpdateVoIPCallState(const VoIPCallStateInfo &info) = 0;
+    
+    /**
+     * Update call transfer status
+     *
+     * @param slotId sim slot id
+     * @param enabled whether the unconditional call transfer is enabled
+     * @return int32_t TELEPHONY_SUCCESS on success, others on failure.
+     */
+    virtual int32_t UpdateCallTransferStatus(int32_t slotId, bool enabled) = 0;
 
     /**
      * UpdateSignalInfo

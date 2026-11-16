@@ -37,6 +37,7 @@ enum {
     TELEPHONY_CORE_SERVICE_CORE = 0x09,
     TELEPHONY_DATA_STORAGE = 0x10,
     TELEPHONY_IMS = 0x11,
+    TELEPHONY_CORE_SERVICE_SENSE = 0x12,
 };
 
 // Error code for common
@@ -123,6 +124,9 @@ constexpr ErrCode CORE_DATA_STORAGE_ERR_OFFSET = ErrCodeOffset(SUBSYS_TELEPONY, 
 
 // Error code for telephony ims
 constexpr ErrCode IMS_ERR_OFFSET = ErrCodeOffset(SUBSYS_TELEPONY, TELEPHONY_IMS);
+
+// Error code for telephony sense
+constexpr ErrCode CORE_SERVICE_SENSE_ERR_OFFSET = ErrCodeOffset(SUBSYS_TELEPONY, TELEPHONY_CORE_SERVICE_SENSE);
 } // namespace Telephony
 } // namespace OHOS
 #endif // TELEPHONY_ERRORS_H

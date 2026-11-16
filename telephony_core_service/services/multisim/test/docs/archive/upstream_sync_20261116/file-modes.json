@@ -1,0 +1,1235 @@
+{
+  "scope": "source content synchronized; retain existing local Git executable modes",
+  "differences": [
+    {
+      "path": "LICENSE",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "README.md",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "README_zh.md",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "figures/en-us_architecture-of-the-core_service-module.png",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "figures/zh-cn_architecture-of-the-core_service-module.png",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/napi/base_context.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/napi/napi_util.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/napi/napi_util.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/napi/service_interface_death_recipient.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/napi/telephony_napi_common_error.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/napi/telephony_napi_hril_error_code.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/network_search/BUILD.gn",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/network_search/include/get_network_search_info_callback.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/network_search/include/get_network_search_mode_callback.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/network_search/include/get_preferred_network_callback.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/network_search/include/get_radio_state_callback.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/network_search/include/napi_radio_types.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/network_search/include/set_network_search_mode_callback.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/network_search/include/set_preferred_network_callback.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/network_search/include/set_radio_state_callback.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/network_search/src/get_network_search_info_callback.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/network_search/src/get_network_search_mode_callback.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/network_search/src/get_preferred_network_callback.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/network_search/src/get_radio_state_callback.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/network_search/src/set_network_search_mode_callback.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/network_search/src/set_preferred_network_callback.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/network_search/src/set_radio_state_callback.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/sim/BUILD.gn",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/sim/include/napi_sim.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/sim/include/napi_sim_type.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/sim/src/napi_sim.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/vcard/BUILD.gn",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/vcard/include/napi_vcard.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/vcard/include/napi_vcard_type.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/js/vcard/src/napi_vcard.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/native/src/i_network_search_callback_stub.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/native/src/network_information.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/native/src/network_search_result.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/native/src/network_state.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/native/src/operator_config_types.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/native/src/signal_information.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/native/src/telephony_state_registry_client.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "frameworks/native/src/telephony_state_registry_proxy.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "interfaces/innerkits/BUILD.gn",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "interfaces/innerkits/include/cell_information.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "interfaces/innerkits/include/cell_location.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "interfaces/innerkits/include/i_network_search_callback.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "interfaces/innerkits/include/i_network_search_callback_stub.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "interfaces/innerkits/include/i_telephony_state_notify.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "interfaces/innerkits/include/network_information.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "interfaces/innerkits/include/network_search_callback_base.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "interfaces/innerkits/include/network_search_result.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "interfaces/innerkits/include/network_search_types.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "interfaces/innerkits/include/network_state.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "interfaces/innerkits/include/operator_config_types.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "interfaces/innerkits/include/signal_information.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "interfaces/innerkits/include/sim_state_type.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "interfaces/innerkits/include/state_registry_errors.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "interfaces/innerkits/include/telephony_errors.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "interfaces/innerkits/include/telephony_observer_broker.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "interfaces/innerkits/include/telephony_state_registry_client.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "interfaces/innerkits/include/telephony_state_registry_proxy.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "interfaces/innerkits/satellite/i_satellite_core_callback.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "interfaces/innerkits/satellite/i_satellite_service.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "interfaces/innerkits/satellite/satellite_service_client.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "interfaces/innerkits/satellite/satellite_service_proxy.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "interfaces/kits/js/@ohos.telephony.sim.d.ts",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "interfaces/kits/js/basic.d.ts",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "sa_profile/BUILD.gn",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/etc/carrier/BUILD.gn",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/etc/init/BUILD.gn",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/etc/operatorname/BUILD.gn",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/etc/param/BUILD.gn",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/etc/param/telephony.para",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/network_search/include/cell_info.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/network_search/include/network_register.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/network_search/include/network_search_callback_proxy.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/network_search/include/network_search_notify.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/network_search/include/network_search_state.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/network_search/include/network_selection.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/network_search/include/network_type.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/network_search/include/network_utils.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/network_search/include/operator_name.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/network_search/include/operator_name_utils.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/network_search/include/signal_info.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/network_search/src/cell_info.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/network_search/src/network_register.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/network_search/src/network_search_callback_proxy.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/network_search/src/network_search_notify.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/network_search/src/network_search_state.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/network_search/src/network_selection.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/network_search/src/network_type.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/network_search/src/operator_name.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/network_search/src/signal_info.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/network_search/test/network_search_test_callback_stub.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/network_search/test/network_search_test_callback_stub.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/network_search/test/test_broadcast.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/network_search/test/test_broadcast.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/satellite_service_interaction/src/satellite_service_client.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/satellite_service_interaction/src/satellite_service_proxy.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/csim_file_controller.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/icc_dialling_numbers_cache.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/icc_dialling_numbers_handler.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/icc_dialling_numbers_manager.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/icc_file.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/icc_file_controller.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/icc_operator_privilege_controller.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/icc_operator_rule.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/icc_state.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/isim_file.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/isim_file_controller.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/mcc_pool.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/multi_sim_controller.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/operator_config_loader.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/pdp_profile_rdb_helper.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/plmn_file.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/ruim_file.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/ruim_file_controller.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/sim_account_manager.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/sim_char_decode.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/sim_constant.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/sim_data_type.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/sim_file.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/sim_file_controller.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/sim_file_manager.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/sim_number_decode.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/sim_rdb_helper.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/sim_rdb_info.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/sim_sms_controller.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/sim_sms_manager.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/sim_state_tracker.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/sim_utils.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/stk_controller.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/stk_manager.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/tag_service.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/usim_dialling_numbers_service.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/usim_file_controller.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/include/usim_function_handle.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/src/csim_file_controller.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/src/icc_file.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/src/icc_operator_rule.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/src/icc_state.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/src/isim_file.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/src/isim_file_controller.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/src/mcc_pool.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/src/operator_config_loader.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/src/pdp_profile_rdb_helper.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/src/plmn_file.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/src/ruim_file_controller.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/src/sim_account_manager.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/src/sim_char_decode.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/src/sim_file.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/src/sim_file_controller.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/src/sim_file_manager.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/src/sim_number_decode.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/src/sim_rdb_helper.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/src/sim_sms_manager.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/src/sim_state_tracker.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/src/stk_controller.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/src/stk_manager.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/src/tag_service.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/src/usim_file_controller.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/test/BUILD.gn",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/test/common_event_test.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/sim/test/test.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/tel_ril/include/observer_handler.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/tel_ril/include/tel_ril_common.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "services/tel_ril/src/observer_handler.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "telephonyres/BUILD.gn",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "telephonyres/TelephonyResources.p7b",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "telephonyres/main/config.json",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/core_service_test_helper.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/core_service_test_helper.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/network_search_test.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/network_search_test_callback_stub.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/network_search_test_callback_stub.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/sim_operator_brocast_test.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/sim_operator_brocast_test.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/sim_test.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/sim_test_util.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/BUILD.gn",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/common/include/str_convert.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/common/include/telephony_permission.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/common/src/str_convert.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/common/src/telephony_permission.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/log/include/telephony_log_c.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/log/include/telephony_log_wrapper.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/log/test/BUILD.gn",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/log/test/unittest/common_telephony_log_test/BUILD.gn",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/preferences/cfg/telephonyProperties.xml",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/preferences/include/tel_profile_util.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/preferences/src/tel_profile_util.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_anniversary_data.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_birthday_data.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_contact_data.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_email_data.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_event_data.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_im_data.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_name_data.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_nickname_data.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_note_data.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_organization_data.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_phone_data.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_photo_data.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_postal_data.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_relation_data.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_sip_data.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_website_data.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/vcard_configuration.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/vcard_constant.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/vcard_constructor.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/vcard_contact.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/vcard_decoder.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/vcard_decoder_v21.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/vcard_decoder_v30.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/vcard_decoder_v40.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/vcard_encoder.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/vcard_file_utils.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/vcard_manager.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/include/vcard_raw_data.h",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_anniversary_data.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_birthday_data.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_email_data.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_event_data.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_im_data.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_name_data.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_nickname_data.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_note_data.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_organization_data.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_phone_data.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_photo_data.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_postal_data.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_relation_data.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_sip_data.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_website_data.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/vcard_constructor.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/vcard_contact.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/vcard_decoder.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/vcard_decoder_v21.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/vcard_decoder_v30.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/vcard_decoder_v40.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/vcard_encoder.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/vcard_file_utils.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/vcard_manager.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/vcard_raw_data.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    },
+    {
+      "path": "utils/vcard/src/vcard_rdb_helper.cpp",
+      "upstream": "100755",
+      "local": "100644"
+    }
+  ]
+}

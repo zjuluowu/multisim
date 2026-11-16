@@ -1081,5 +1081,33 @@ HWTEST_F(CoreManagerInnerTest, IsModemInitDone_001, Function | MediumTest | Leve
     ret = mInner.IsModemInitDone(0);
     EXPECT_TRUE(ret);
 }
+
+/**
+ * @tc.number: CoreManagerInner_UpdateDBActiveByIccId_001
+ * @tc.name: Test UpdateDBActiveByIccId with null simManager_ and normal delegation
+ * @tc.desc: Verify UpdateDBActiveByIccId returns TELEPHONY_ERR_LOCAL_PTR_NULL when simManager_ is nullptr,
+ *           and forwards the call with iccId/enable and returns the ISimManager result on success/failure
+ */
+HWTEST_F(CoreManagerInnerTest, CoreManagerInner_UpdateDBActiveByIccId_001, Function | MediumTest | Level1)
+{
+    const std::string iccId = "89860000000000000001";
+    const int32_t enable = 1;
+    // simManager_ is nullptr, should return TELEPHONY_ERR_LOCAL_PTR_NULL
+    mInner.simManager_ = nullptr;
+    int32_t ret = mInner.UpdateDBActiveByIccId(iccId, enable);
+    EXPECT_EQ(ret, TELEPHONY_ERR_LOCAL_PTR_NULL);
+ 
+    // delegate to simManager_, should forward arguments and return value
+    mInner.simManager_ = mockeSimManager;
+    EXPECT_CALL(*mockeSimManager, UpdateDBActiveByIccId(iccId, enable))
+        .WillOnce(Return(TELEPHONY_ERR_SUCCESS));
+    ret = mInner.UpdateDBActiveByIccId(iccId, enable);
+    EXPECT_EQ(ret, TELEPHONY_ERR_SUCCESS);
+ 
+    EXPECT_CALL(*mockeSimManager, UpdateDBActiveByIccId(iccId, enable))
+        .WillOnce(Return(TELEPHONY_ERR_DATABASE_WRITE_FAIL));
+    ret = mInner.UpdateDBActiveByIccId(iccId, enable);
+    EXPECT_EQ(ret, TELEPHONY_ERR_DATABASE_WRITE_FAIL);
+}
 } // Telephony
 } // OHOS

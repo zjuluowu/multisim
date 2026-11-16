@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "baseline": "37be229d4816824c7931a1c2050f13012f8d1061",
+  "upstream": "43ac8ae7df5b9c17c4efb3433415693d925b98c7",
+  "remote": "https://gitcode.com/openharmony/telephony_core_service.git",
+  "branch": "master",
+  "files": {
+    "framework/host/BUILD.gn": {
+      "previous_sha256": "f006377549d566f8f3cd011a314ad68bd0af18aa139693c47f8ede44b7a28027",
+      "current_sha256": "9e531438069e1b06a0c5db51b102b67945b2bd5f4731332934a48a301a99caf8",
+      "reason": "Remove production attachment; keep candidate integration in an explicit host-only reference and verify upstream source boundary."
+    },
+    "scripts/run_g2a_query.py": {
+      "previous_sha256": "37a670bbda41d71b7de97a8ba431df5e81b8c49fb93f992ad14c1c3243f8cad9",
+      "current_sha256": "bd32c0524b4ee1e70997af5f72bcb40b2f01c1418ce961c1d1b63eba2683ef9d",
+      "reason": "Remove production attachment; keep candidate integration in an explicit host-only reference and verify upstream source boundary."
+    },
+    "cases/architecture/test_g2a_source_tables.py": {
+      "previous_sha256": "e29546af9d427b1031f4f59e67f2730d198d81e6a029fabd65ac16a7d062fa73",
+      "current_sha256": "f4b1b607f6fe804e88cfd95e29c2a3c395c331c87641abbef3215e8596acc2ab",
+      "reason": "Remove production attachment; keep candidate integration in an explicit host-only reference and verify upstream source boundary."
+    },
+    "scripts/check_test_integrity.py": {
+      "previous_sha256": "284b080d10ad4d58bbd87b81d51a91184a8e4c79d97e58494e8b17cb30f8b034",
+      "current_sha256": "14c19dc273659792035f4e42b40a1815e23d15e6183760bfd520350aa7f4f928",
+      "reason": "Remove production attachment; keep candidate integration in an explicit host-only reference and verify upstream source boundary."
+    },
+    "README.md": {
+      "previous_sha256": "5747c3a448bc51492015445c078354a19095a80663a9072e9e804f1bc58999a5",
+      "current_sha256": "5ae1bf1067d5b2cd054bcb426cb183af26f3e8b00bcd077f25ee66d1136251ff",
+      "reason": "Remove production attachment; keep candidate integration in an explicit host-only reference and verify upstream source boundary."
+    },
+    "cases/primary_slot/unscripted_sim_manager.h": {
+      "previous_sha256": "993858e9bbcb4ffc21d916a9bd2d85c97efc4c26052aedb2b97e687567d84075",
+      "current_sha256": "4b17b1a83ea6a8e382a9016c6a26567303ea3d3d61f7efbec281625ea9e8e598",
+      "reason": "Remove production attachment; keep candidate integration in an explicit host-only reference and verify upstream source boundary."
+    },
+    "framework/host/stubs/include/compile_declarations.h": {
+      "previous_sha256": "8446ceec1e24fbb6a65a79cb1132246db28195108d9c3b1051f5bb4a6193aa25",
+      "current_sha256": "c8d07b8e8940ba47a6fd45d355517d3d390ba12b2dbb7f22daae441f98a5da8e",
+      "reason": "Remove production attachment; keep candidate integration in an explicit host-only reference and verify upstream source boundary."
+    },
+    "cases/architecture/open_closed_contract_rules.cpp": {
+      "previous_sha256": "9ba46f8451043c966df87a59c36dc6a82c521fb6d8cc9f5bc052a20646a8b530",
+      "current_sha256": "e098f6bb664a503f677f50f541726ccc991b6bf9f47e959cc18ea741a7fa792a",
+      "reason": "Remove production attachment; keep candidate integration in an explicit host-only reference and verify upstream source boundary."
+    }
+  },
+  "reference_sources": {
+    "framework/host/g2a_reference/core_service_sim.cpp": {
+      "source": "telephony_core_service/services/core/src/core_service_sim.cpp",
+      "commit": "37be229d4816824c7931a1c2050f13012f8d1061",
+      "sha256": "6bc4f83b79983b319e41572a6c8683808e4cd485d652eb531fc65a154376df34"
+    },
+    "framework/host/g2a_reference/core_service_sim.h": {
+      "source": "telephony_core_service/services/core/include/core_service_sim.h",
+      "commit": "37be229d4816824c7931a1c2050f13012f8d1061",
+      "sha256": "d79e21476fee96e15230a1728961229f6e7d52a5a29c9c2010dabf92deff64c3"
+    },
+    "framework/host/g2a_reference/legacy_sim_query_binding.cpp": {
+      "source": "telephony_core_service/services/core/src/legacy_sim_query_binding.cpp",
+      "commit": "37be229d4816824c7931a1c2050f13012f8d1061",
+      "sha256": "fb77d07c06d829d5ed33cbf8138e325f78437cc22cf4d30fcc56d4016173b5fe"
+    },
+    "framework/host/g2a_reference/legacy_sim_query_binding.h": {
+      "source": "telephony_core_service/services/core/include/legacy_sim_query_binding.h",
+      "commit": "37be229d4816824c7931a1c2050f13012f8d1061",
+      "sha256": "fcd27f3b774cb047859a53b4de5fb57debad51c607b4570d8683ba2e418fcb17"
+    }
+  }
+}

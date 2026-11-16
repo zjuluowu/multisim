@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "input_head": "37be229d4816824c7931a1c2050f13012f8d1061",
+  "upstream": "43ac8ae7df5b9c17c4efb3433415693d925b98c7",
+  "upstream_exact_files": 1066,
+  "production_refactor_attachment": false,
+  "host": {
+    "status": "FAIL",
+    "total": 64,
+    "passed": 59,
+    "failed": 5,
+    "case_status_equal_to_mirror_baseline": true,
+    "failures": [
+      "ContractDriver.DEFECT_001_StaleReadyAfterRemoval",
+      "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+      "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+      "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+      "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict"
+    ]
+  },
+  "query": {
+    "status": "PASS",
+    "reference_scenarios": 7,
+    "upstream_scenarios": 7,
+    "production_attachment_claimed": false
+  },
+  "architecture": "PASS: 88 units, 25 targets, 17 structural controls, 5 declaration controls, 4 pure-rule groups, GN/Ninja and migrations",
+  "technical": "PASS: source boundary, Oracle, classifier, CI policy",
+  "integrity": "PASS: 943 historical mappings, 835 original-byte assets, 13 explicit followups; three declaration assets constrained separately",
+  "relocation": "PASS: 219 files",
+  "diff_check": {
+    "all": "FAIL: upstream exact bytes retain existing CRLF/trailing whitespace",
+    "refactor_and_docs": "PASS excluding byte-identical reference snapshots; staged reference header retains 3 pre-existing whitespace lines"
+  },
+  "blocked": [
+    "Primary real runtime: OpenSSL/native dependencies",
+    "Target real write implementation",
+    "hb product/SO/SA/IPC/HDI/device/eSIM not run; no hb"
+  ],
+  "default_profraw_sha256": "bbb8d8d54bc9586adf968048bcdf7f08cf72cd1321d4766bafe30b8814ef5f1e",
+  "git_modes": "246 pre-existing executable-mode differences preserved; all 1066 staged content blobs match upstream"
+}

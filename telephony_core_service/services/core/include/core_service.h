@@ -277,6 +277,11 @@ public:
     int32_t StartManualNetworkScanCallback(int32_t slotId, const sptr<INetworkSearchCallback> &callback) override;
     int32_t SetSimLabelIndex(int32_t simId, int32_t simLabelIndex, const sptr<IRawParcelCallback> &callback) override;
     bool IsMultiSimsCapabilitySupported(int32_t slotId) override;
+    int32_t StartHiddenCameraDetection(
+        const sptr<IHiddenCameraDetectionCallback> &callback, const HiddenCameraDetectionConfig &config,
+        const sptr<IRawParcelCallback> &rawCallback) override;
+    int32_t StopHiddenCameraDetection(const sptr<IRawParcelCallback> &rawCallback) override;
+    int32_t KeepHiddenCameraDetection(const sptr<IRawParcelCallback> &rawCallback) override;
 private:
     bool Init();
     bool NotifyCoreServiceReady();

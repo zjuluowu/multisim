@@ -331,8 +331,8 @@ executable("sim_bootstrap_characterization") {
 # Independent from capacity and full Manager::OnInit audit; no card lifecycle is implied.
 source_set("g2a_readonly_production_host") {
   sources = [
-    "$production_root/services/core/src/core_service_sim.cpp",
-    "$production_root/services/core/src/legacy_sim_query_binding.cpp",
+    "$test_root/framework/host/g2a_reference/core_service_sim.cpp",
+    "$test_root/framework/host/g2a_reference/legacy_sim_query_binding.cpp",
     "$production_root/services/multisim/infrastructure/compatibility/api/real_sim_count_query.cpp",
   ]
   configs += [
@@ -342,9 +342,10 @@ source_set("g2a_readonly_production_host") {
   include_dirs = [ "$production_root/services/multisim/infrastructure/compatibility/api" ]
 }
 source_set("g2a_query_launcher") {
+  include_dirs = [ "$test_root/framework/host/g2a_reference" ]
   sources = [ "$test_root/cases/host/support/g2a_query_probe.cpp" ]
   configs += [ ":production_headers" ]
-  include_dirs = [
+  include_dirs += [
     "$production_root/services/multisim/infrastructure/compatibility/api",
     "$test_root/framework/host/stubs",
     "$gtest_root/googletest/include",
@@ -455,4 +456,21 @@ executable("sim_guard_legacy") {
     "-fprofile-instr-generate",
     "-Wl,-Map,sim_guard_legacy.map",
   ]
+}
+
+# Separate executable: the unmodified upstream Core is never linked with reference Core.
+source_set("upstream_query_core") {
+  sources = [ "$production_root/services/core/src/core_service_sim.cpp" ]
+  configs += [ ":production_headers", ":production_execution_evidence" ]
+}
+executable("sim_upstream_query_test") {
+  sources = [ "$test_root/cases/host/g2a_upstream_test.cpp" ]
+  configs += [ ":production_headers" ]
+  include_dirs = [
+    "$test_root/framework/host/stubs",
+    "$gtest_root/googletest/include",
+    "$gtest_root/googlemock/include",
+  ]
+  deps = [ ":upstream_query_core", ":googlemock", ":platform_boundaries", ":sim_production_host" ]
+  ldflags = [ "-fprofile-instr-generate", "-Wl,-Map,sim_upstream_query_test.map" ]
 }

@@ -3682,6 +3682,7 @@ static napi_module _simModule = {
 
 extern "C" __attribute__((constructor)) void RegisterSimCardModule(void)
 {
+    static_cast<void>(DelayedRefSingleton<CoreServiceClient>::GetInstance());
     napi_module_register(&_simModule);
 }
 } // namespace Telephony

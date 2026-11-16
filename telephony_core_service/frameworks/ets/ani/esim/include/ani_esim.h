@@ -35,6 +35,7 @@ struct GetDownloadableProfileMetadataResultAni;
 
 constexpr int WAIT_TIME_SECOND = 30;
 constexpr int WAIT_LONG_TERM_TASK_SECOND = 180;
+const int32_t PARAMETER_COUNT_ONE = 1;
 ArktsError ResetMemory(int32_t slotId, int32_t options, int32_t &resultCode);
 ArktsError IsSupported(int32_t slotId, bool &isSupportedResult);
 ArktsError AddProfile(const DownloadableProfileAni &profileAni, bool &addProfileResult);

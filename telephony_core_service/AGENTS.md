@@ -55,7 +55,7 @@ CardRuntime/result_sinks暂在card/runtime；其中设备资源成员尚未拆�
 
 - 当前用户明确要求：旧实现只读，缺陷只记录，不在本任务修复。不得修改 `services/sim/` 或旧 Core/CMI/wrapper/RIL 实现及公共接口，也不得为测试加入 friend、生产探针或改变旧业务路径。文档和新实现/测试优化不得默认为旧代码修复授权；新实现的正确性与旧缺陷兼容分别验收。
 
-- 成熟SIM能力仍由原`services/sim/`实现；main已包含G2a只读Query及Core旧对象附着，其他multisim能力仍为testonly骨架，产品验收未完成。以根GN和Core真实装配判定接入，不以目录或对象声明判定。最终替代前按完整能力/WU退出旧写者、执行者和重试者，无双写/双发令/双重试。
+- 成熟SIM能力仍由原`services/sim/`实现；2026-11-16按用户授权回退G2a生产接入并同步GitCode主仓，multisim能力保持testonly骨架；G2a Core/Binding仅保留Host测试参考实现，产品验收未完成。以根GN和Core真实装配判定接入，不以目录或对象声明判定。最终替代前按完整能力/WU退出旧写者、执行者和重试者，无双写/双发令/双重试。
 - 完整WU包含初始化、重载、后台、恢复、厂商入口和查询回写；特别覆盖Carrier Loader及CardFileDetectManager独立账户写入口，不只迁公开setter。同一行可合并T/A字段计划，不赋予技术Store跨Owner写权。
 - 请求发起时保存Owner/epoch/request/step/attempt、原Session及传输关联，实际写点同域准入。迟到结果只更新允许的原效果认知，不污染新请求或复活旧完成出口。
 - 调用返回、等待结束、业务效果、通道关闭及真实设备结束分开；本地ChannelId/AID清零不能证明资源可复用。设备结束未证时不得新增释放/安全重试承诺，新的隔离/取消/重试策略须单独批准和差分。

@@ -1503,7 +1503,6 @@ int32_t CoreServiceClient::HasOperatorPrivileges(const int32_t slotId, bool &has
 #endif
     auto proxy = GetProxy();
     if (proxy == nullptr) {
-        TELEPHONY_LOGE("proxy is null!");
         return TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL;
     }
     auto hasOpPriTmp = std::make_shared<bool>(false);
@@ -1842,6 +1841,107 @@ bool CoreServiceClient::IsMultiSimsCapabilitySupported(int32_t slotId)
         return false;
     }
     return proxy->IsMultiSimsCapabilitySupported(slotId);
+}
+
+int32_t CoreServiceClient::StartHiddenCameraDetection(
+    const sptr<IHiddenCameraDetectionCallback> &callback, const HiddenCameraDetectionConfig &config,
+    int64_t timeoutMs)
+{
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        TELEPHONY_LOGE("proxy is null!");
+        return TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL;
+    }
+    auto result = std::make_shared<int32_t>(TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL);
+    auto rawCallback = sptr<RawParcelCallbackStub>::MakeSptr(
+        [wpRet = std::weak_ptr<int32_t>(result)](MessageParcel &data) {
+            auto spRet = wpRet.lock();
+            if (!spRet) {
+                return;
+            }
+            *spRet = data.ReadInt32();
+        });
+    if (rawCallback == nullptr) {
+        TELEPHONY_LOGE("create RawParcelCallbackStub failed");
+        return TELEPHONY_ERR_LOCAL_PTR_NULL;
+    }
+    int ret = proxy->StartHiddenCameraDetection(callback, config, rawCallback);
+    if (ret != TELEPHONY_ERR_SUCCESS) {
+        TELEPHONY_LOGE("connect stub failed, code: %{public}d", ret);
+        return ret;
+    }
+    ret = rawCallback->WaitForResult(timeoutMs);
+    if (!ret) {
+        TELEPHONY_LOGE("StartHiddenCameraDetection wait callback timeout");
+        return TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL;
+    }
+    return *result;
+}
+
+int32_t CoreServiceClient::StopHiddenCameraDetection(int64_t timeoutMs)
+{
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        TELEPHONY_LOGE("proxy is null!");
+        return TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL;
+    }
+    auto result = std::make_shared<int32_t>(TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL);
+    auto rawCallback = sptr<RawParcelCallbackStub>::MakeSptr(
+        [wpRet = std::weak_ptr<int32_t>(result)](MessageParcel &data) {
+            auto spRet = wpRet.lock();
+            if (!spRet) {
+                return;
+            }
+            *spRet = data.ReadInt32();
+        });
+    if (rawCallback == nullptr) {
+        TELEPHONY_LOGE("create RawParcelCallbackStub failed");
+        return TELEPHONY_ERR_LOCAL_PTR_NULL;
+    }
+    int ret = proxy->StopHiddenCameraDetection(rawCallback);
+    if (ret != TELEPHONY_ERR_SUCCESS) {
+        TELEPHONY_LOGE("connect stub failed, code: %{public}d", ret);
+        return ret;
+    }
+    ret = rawCallback->WaitForResult(timeoutMs);
+    if (!ret) {
+        TELEPHONY_LOGE("StopHiddenCameraDetection wait callback timeout");
+        return TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL;
+    }
+    return *result;
+}
+
+int32_t CoreServiceClient::KeepHiddenCameraDetection(int64_t timeoutMs)
+{
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        TELEPHONY_LOGE("proxy is null!");
+        return TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL;
+    }
+    auto result = std::make_shared<int32_t>(TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL);
+    auto rawCallback = sptr<RawParcelCallbackStub>::MakeSptr(
+        [wpRet = std::weak_ptr<int32_t>(result)](MessageParcel &data) {
+            auto spRet = wpRet.lock();
+            if (!spRet) {
+                return;
+            }
+            *spRet = data.ReadInt32();
+        });
+    if (rawCallback == nullptr) {
+        TELEPHONY_LOGE("create RawParcelCallbackStub failed");
+        return TELEPHONY_ERR_LOCAL_PTR_NULL;
+    }
+    int ret = proxy->KeepHiddenCameraDetection(rawCallback);
+    if (ret != TELEPHONY_ERR_SUCCESS) {
+        TELEPHONY_LOGE("connect stub failed, code: %{public}d", ret);
+        return ret;
+    }
+    ret = rawCallback->WaitForResult(timeoutMs);
+    if (!ret) {
+        TELEPHONY_LOGE("KeepHiddenCameraDetection wait callback timeout");
+        return TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL;
+    }
+    return *result;
 }
 }  // namespace Telephony
 } // namespace OHOS

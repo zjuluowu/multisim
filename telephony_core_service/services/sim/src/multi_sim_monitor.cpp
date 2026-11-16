@@ -35,6 +35,7 @@ const int64_t DELAY_TIME = 1000;
 const int64_t DELAY_THREE_SECONDS = 3000;
 const int64_t RETRY_TIME = 3 * 60 * 1000;
 const int32_t ACTIVE_USER_ID = 100;
+const int32_t MAINTENANCE_USER_ID = 10736;
 static constexpr int32_t SIM_ACCOUNT_LOADED_SEND = 1;
 const int INIT_TIMES = 3;
 const int INIT_DATA_TIMES = 10;
@@ -512,7 +513,7 @@ void MultiSimMonitor::SubscribeUserSwitch()
 void MultiSimMonitor::OnDataShareReady(int32_t userId)
 {
     isDataShareReady_ = true;
-    if (lastUserId_ != -1 || userId == ACTIVE_USER_ID) {
+    if (lastUserId_ != -1 || userId == ACTIVE_USER_ID || userId == MAINTENANCE_USER_ID) {
         CheckDataShareError();
         CheckSimNotifyRegister();
         CheckSimPresentWhenReboot();
@@ -582,7 +583,7 @@ void MultiSimMonitor::UpdateAllSimData(int32_t userId)
 
 void MultiSimMonitor::OnUserSwitched(int32_t userId)
 {
-    if (userId == ACTIVE_USER_ID && isDataShareReady_) {
+    if ((userId == ACTIVE_USER_ID || userId == MAINTENANCE_USER_ID) && isDataShareReady_) {
         CheckDataShareError();
         CheckSimNotifyRegister();
     }

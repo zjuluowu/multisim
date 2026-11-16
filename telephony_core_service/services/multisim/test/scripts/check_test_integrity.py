@@ -33,7 +33,22 @@ def current_output_digests(rows):
                 or hashlib.sha256(before).hexdigest() != indexed[name]['after_sha256']
                 or update['previous_sha256'] != indexed[name]['after_sha256']):
             raise RuntimeError('Follow-up input differs from frozen migration output: ' + name)
-    return {name: update['current_sha256'] for name, update in updates.items()}
+    result = {name: update['current_sha256'] for name, update in updates.items()}
+    sync = json.loads((TEST / 'docs/Upstream_Sync_Test_Adaptation.json').read_text())
+    allowed_sync = {'framework/host/BUILD.gn', 'scripts/run_g2a_query.py',
+                    'cases/architecture/test_g2a_source_tables.py',
+                    'scripts/check_test_integrity.py', 'README.md',
+                    'cases/primary_slot/unscripted_sim_manager.h',
+                    'framework/host/stubs/include/compile_declarations.h',
+                    'cases/architecture/open_closed_contract_rules.cpp'}
+    if set(sync['files']) != allowed_sync:
+        raise RuntimeError('Unexpected upstream adaptation scope')
+    for name, update in sync['files'].items():
+        before = subprocess.check_output(['git', 'show', sync['baseline'] + ':' + prefix + name], cwd=REPO)
+        if hashlib.sha256(before).hexdigest() != update['previous_sha256'] or not update['reason']:
+            raise RuntimeError('Upstream adaptation input mismatch: ' + name)
+        result[name] = update['current_sha256']
+    return result
 
 
 def check():
@@ -77,6 +92,23 @@ def check():
         if digest != current_digests.get(row['new'], row['after_sha256']):
             raise RuntimeError('Output drift: ' + row['new'])
         # Business tests/Fake/Adapter/Golden, all JSON and all evidence keep their bytes.
+        if row['new'] == 'cases/architecture/open_closed_contract_rules.cpp':
+            expected = originals[row['old']].replace(b'static_assert(RADIO_ESIM_ENABLED_PROFILE_NUM == 1129);',
+                b'static_assert(RADIO_ESIM_UPDATE_START == 1129);\nstatic_assert(RADIO_ESIM_UPDATE_END == 1130);\nstatic_assert(RADIO_ESIM_ENABLED_PROFILE_NUM == 1131);')
+            if path.read_bytes() != expected:
+                raise RuntimeError('Declaration expectations exceed upstream event insertion')
+            continue
+        if row['new'] == 'framework/host/stubs/include/compile_declarations.h':
+            expected = originals[row['old']].replace(b'    bool WriteInt32(int32_t);',
+                b'    bool WriteUint32(uint32_t); bool ReadUint32(uint32_t&);\n    bool WriteInt32(int32_t);')
+            if path.read_bytes() != expected:
+                raise RuntimeError('Parcel declaration adaptation exceeds two unsigned methods')
+            continue
+        if row['new'] == 'cases/primary_slot/unscripted_sim_manager.h':
+            from generate_manager_seam import generate
+            if path.read_text() != generate():
+                raise RuntimeError('Upstream interface seam differs from fail-closed generator')
+            continue
         frozen = path.suffix in {'.cpp', '.h', '.hpp', '.json'} or row['new'].startswith('docs/archive/')
         if frozen and row['old'] != 'systemtest/primary_slot/runtime_include/hisysevent.h':
             if digest != row['before_sha256']:

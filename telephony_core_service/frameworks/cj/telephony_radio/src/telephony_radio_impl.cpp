@@ -16,7 +16,10 @@
 
 #include "telephony_radio_impl.h"
 
+#include <map>
+
 #include "core_service_client.h"
+#include "core_service_errors.h"
 #include "telephony_config.h"
 #include "telephony_ext_utils_wrapper.h"
 #include "telephony_log_wrapper.h"
@@ -24,64 +27,83 @@
 namespace OHOS {
 namespace Telephony {
 
-    static int32_t ConvertCJErrCode(int32_t errCode)
+namespace {
+    struct ErrorCodeMapping {
+        int32_t legacyCode;
+        int32_t romApiCode;
+    };
+    static const std::map<int32_t, ErrorCodeMapping> RADIO_ERROR_CODE_MAP = {
+        // Preserve success explicitly before applying the unknown-error fallback.
+        {TELEPHONY_SUCCESS, {TELEPHONY_SUCCESS, TELEPHONY_SUCCESS}},
+        // Parameter errors.
+        {TELEPHONY_ERR_ARGUMENT_MISMATCH, {CJ_ERROR_TELEPHONY_ARGUMENT_ERROR, CJ_ERROR_TELEPHONY_ARGUMENT_ERROR}},
+        {TELEPHONY_ERR_ARGUMENT_INVALID, {CJ_ERROR_TELEPHONY_ARGUMENT_ERROR, CJ_ERROR_TELEPHONY_ARGUMENT_ERROR}},
+        {TELEPHONY_ERR_ARGUMENT_NULL, {CJ_ERROR_TELEPHONY_ARGUMENT_ERROR, CJ_ERROR_TELEPHONY_ARGUMENT_ERROR}},
+        {TELEPHONY_ERR_SLOTID_INVALID, {CJ_ERROR_TELEPHONY_ARGUMENT_ERROR, CJ_ERROR_TELEPHONY_ARGUMENT_ERROR}},
+        {ERROR_SLOT_ID_INVALID, {CJ_ERROR_TELEPHONY_ARGUMENT_ERROR, CJ_ERROR_TELEPHONY_ARGUMENT_ERROR}},
+        // Service connection errors.
+        {TELEPHONY_ERR_DESCRIPTOR_MISMATCH, {CJ_ERROR_TELEPHONY_SERVICE_ERROR, CJ_ERROR_TELEPHONY_SERVICE_ERROR}},
+        {TELEPHONY_ERR_WRITE_DESCRIPTOR_TOKEN_FAIL,
+         {CJ_ERROR_TELEPHONY_SERVICE_ERROR, CJ_ERROR_TELEPHONY_SERVICE_ERROR}},
+        {TELEPHONY_ERR_WRITE_DATA_FAIL, {CJ_ERROR_TELEPHONY_SERVICE_ERROR, CJ_ERROR_TELEPHONY_SERVICE_ERROR}},
+        {TELEPHONY_ERR_WRITE_REPLY_FAIL, {CJ_ERROR_TELEPHONY_SERVICE_ERROR, CJ_ERROR_TELEPHONY_SERVICE_ERROR}},
+        {TELEPHONY_ERR_READ_DATA_FAIL, {CJ_ERROR_TELEPHONY_SERVICE_ERROR, CJ_ERROR_TELEPHONY_SERVICE_ERROR}},
+        {TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL, {CJ_ERROR_TELEPHONY_SERVICE_ERROR, CJ_ERROR_TELEPHONY_SERVICE_ERROR}},
+        {TELEPHONY_ERR_REGISTER_CALLBACK_FAIL,
+         {CJ_ERROR_TELEPHONY_SERVICE_ERROR, CJ_ERROR_TELEPHONY_SERVICE_ERROR}},
+        {TELEPHONY_ERR_CALLBACK_ALREADY_REGISTERED,
+         {CJ_ERROR_TELEPHONY_SERVICE_ERROR, CJ_ERROR_TELEPHONY_SERVICE_ERROR}},
+        {TELEPHONY_ERR_UNINIT, {CJ_ERROR_TELEPHONY_SERVICE_ERROR, CJ_ERROR_TELEPHONY_SERVICE_ERROR}},
+        {TELEPHONY_ERR_UNREGISTER_CALLBACK_FAIL,
+         {CJ_ERROR_TELEPHONY_SERVICE_ERROR, CJ_ERROR_TELEPHONY_SERVICE_ERROR}},
+        // System errors.
+        {TELEPHONY_ERR_VCARD_FILE_INVALID, {CJ_ERROR_TELEPHONY_SYSTEM_ERROR, CJ_ERROR_TELEPHONY_SYSTEM_ERROR}},
+        {TELEPHONY_ERR_FAIL, {CJ_ERROR_TELEPHONY_SYSTEM_ERROR, CJ_ERROR_TELEPHONY_SYSTEM_ERROR}},
+        {TELEPHONY_ERR_MEMCPY_FAIL, {CJ_ERROR_TELEPHONY_SYSTEM_ERROR, CJ_ERROR_TELEPHONY_SYSTEM_ERROR}},
+        {TELEPHONY_ERR_MEMSET_FAIL, {CJ_ERROR_TELEPHONY_SYSTEM_ERROR, CJ_ERROR_TELEPHONY_SYSTEM_ERROR}},
+        {TELEPHONY_ERR_STRCPY_FAIL, {CJ_ERROR_TELEPHONY_SYSTEM_ERROR, CJ_ERROR_TELEPHONY_SYSTEM_ERROR}},
+        {TELEPHONY_ERR_LOCAL_PTR_NULL, {CJ_ERROR_TELEPHONY_SYSTEM_ERROR, CJ_ERROR_TELEPHONY_SYSTEM_ERROR}},
+        {TELEPHONY_ERR_SUBSCRIBE_BROADCAST_FAIL,
+         {CJ_ERROR_TELEPHONY_SYSTEM_ERROR, CJ_ERROR_TELEPHONY_SYSTEM_ERROR}},
+        {TELEPHONY_ERR_PUBLISH_BROADCAST_FAIL, {CJ_ERROR_TELEPHONY_SYSTEM_ERROR, CJ_ERROR_TELEPHONY_SYSTEM_ERROR}},
+        {TELEPHONY_ERR_ADD_DEATH_RECIPIENT_FAIL,
+         {CJ_ERROR_TELEPHONY_SYSTEM_ERROR, CJ_ERROR_TELEPHONY_SYSTEM_ERROR}},
+        {TELEPHONY_ERR_STRTOINT_FAIL, {CJ_ERROR_TELEPHONY_SYSTEM_ERROR, CJ_ERROR_TELEPHONY_SYSTEM_ERROR}},
+        {TELEPHONY_ERR_RIL_CMD_FAIL, {CJ_ERROR_TELEPHONY_SYSTEM_ERROR, CJ_ERROR_TELEPHONY_SYSTEM_ERROR}},
+        {TELEPHONY_ERR_DATABASE_WRITE_FAIL, {CJ_ERROR_TELEPHONY_SYSTEM_ERROR, CJ_ERROR_TELEPHONY_SYSTEM_ERROR}},
+        {TELEPHONY_ERR_DATABASE_READ_FAIL, {CJ_ERROR_TELEPHONY_SYSTEM_ERROR, CJ_ERROR_TELEPHONY_SYSTEM_ERROR}},
+        {TELEPHONY_ERR_UNKNOWN_NETWORK_TYPE, {CJ_ERROR_TELEPHONY_SYSTEM_ERROR, CJ_ERROR_TELEPHONY_SYSTEM_ERROR}},
+        {ERROR_SERVICE_UNAVAILABLE, {CJ_ERROR_TELEPHONY_SYSTEM_ERROR, CJ_ERROR_TELEPHONY_SYSTEM_ERROR}},
+        {ERROR_NATIVE_API_EXECUTE_FAIL, {CJ_ERROR_TELEPHONY_SYSTEM_ERROR, CJ_ERROR_TELEPHONY_SYSTEM_ERROR}},
+        // Other errors shared by both entry types.
+        {TELEPHONY_ERR_NO_SIM_CARD, {CJ_ERROR_TELEPHONY_NO_SIM_CARD, CJ_ERROR_TELEPHONY_NO_SIM_CARD}},
+        {TELEPHONY_ERR_AIRPLANE_MODE_ON,
+         {CJ_ERROR_TELEPHONY_AIRPLANE_MODE_ON, CJ_ERROR_TELEPHONY_AIRPLANE_MODE_ON}},
+        {TELEPHONY_ERR_NETWORK_NOT_IN_SERVICE,
+         {CJ_ERROR_TELEPHONY_NETWORK_NOT_IN_SERVICE, CJ_ERROR_TELEPHONY_NETWORK_NOT_IN_SERVICE}},
+        {TELEPHONY_ERR_PERMISSION_ERR,
+         {CJ_ERROR_TELEPHONY_PERMISSION_DENIED, CJ_ERROR_TELEPHONY_PERMISSION_DENIED}},
+        // Intentional differences: {legacy result, ROM API result}.
+        {TELEPHONY_ERR_ILLEGAL_USE_OF_SYSTEM_API,
+         {CJ_ERROR_TELEPHONY_PERMISSION_DENIED, CJ_ERROR_ILLEGAL_USE_OF_SYSTEM_API}},
+        {CORE_SERVICE_SEND_CALLBACK_FAILED, {CORE_SERVICE_SEND_CALLBACK_FAILED, CJ_ERROR_TELEPHONY_SYSTEM_ERROR}},
+        {CORE_SERVICE_RADIO_PROTOCOL_TECH_UNKNOWN,
+         {CORE_SERVICE_RADIO_PROTOCOL_TECH_UNKNOWN, CJ_ERROR_TELEPHONY_SYSTEM_ERROR}},
+        {TELEPHONY_ERR_POLICY_DISABLED, {TELEPHONY_ERR_POLICY_DISABLED, CJ_ERROR_TELEPHONY_POLICY_DISABLED}},
+    };
+} // namespace
+
+    // isRomApi=false preserves the compatibility package's legacy error codes.
+    // isRomApi=true uses N-API aligned error codes for the new system ROM APIs.
+    // Keep false as the default so existing callers retain their original behavior.
+    static int32_t ConvertCJErrCode(int32_t errCode, bool isRomApi = false)
     {
-        switch (errCode) {
-            case TELEPHONY_ERR_ARGUMENT_MISMATCH:
-            case TELEPHONY_ERR_ARGUMENT_INVALID:
-            case TELEPHONY_ERR_ARGUMENT_NULL:
-            case TELEPHONY_ERR_SLOTID_INVALID:
-            case ERROR_SLOT_ID_INVALID:
-                // 83000001
-                return CJ_ERROR_TELEPHONY_ARGUMENT_ERROR;
-            case TELEPHONY_ERR_DESCRIPTOR_MISMATCH:
-            case TELEPHONY_ERR_WRITE_DESCRIPTOR_TOKEN_FAIL:
-            case TELEPHONY_ERR_WRITE_DATA_FAIL:
-            case TELEPHONY_ERR_WRITE_REPLY_FAIL:
-            case TELEPHONY_ERR_READ_DATA_FAIL:
-            case TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL:
-            case TELEPHONY_ERR_REGISTER_CALLBACK_FAIL:
-            case TELEPHONY_ERR_CALLBACK_ALREADY_REGISTERED:
-            case TELEPHONY_ERR_UNINIT:
-            case TELEPHONY_ERR_UNREGISTER_CALLBACK_FAIL:
-                // 83000002
-                return CJ_ERROR_TELEPHONY_SERVICE_ERROR;
-            case TELEPHONY_ERR_VCARD_FILE_INVALID:
-            case TELEPHONY_ERR_FAIL:
-            case TELEPHONY_ERR_MEMCPY_FAIL:
-            case TELEPHONY_ERR_MEMSET_FAIL:
-            case TELEPHONY_ERR_STRCPY_FAIL:
-            case TELEPHONY_ERR_LOCAL_PTR_NULL:
-            case TELEPHONY_ERR_SUBSCRIBE_BROADCAST_FAIL:
-            case TELEPHONY_ERR_PUBLISH_BROADCAST_FAIL:
-            case TELEPHONY_ERR_ADD_DEATH_RECIPIENT_FAIL:
-            case TELEPHONY_ERR_STRTOINT_FAIL:
-            case TELEPHONY_ERR_RIL_CMD_FAIL:
-            case TELEPHONY_ERR_DATABASE_WRITE_FAIL:
-            case TELEPHONY_ERR_DATABASE_READ_FAIL:
-            case TELEPHONY_ERR_UNKNOWN_NETWORK_TYPE:
-            case ERROR_SERVICE_UNAVAILABLE:
-            case ERROR_NATIVE_API_EXECUTE_FAIL:
-                // 83000003
-                return CJ_ERROR_TELEPHONY_SYSTEM_ERROR;
-            case TELEPHONY_ERR_NO_SIM_CARD:
-                // 83000004
-                return CJ_ERROR_TELEPHONY_NO_SIM_CARD;
-            case TELEPHONY_ERR_AIRPLANE_MODE_ON:
-                // 83000005
-                return CJ_ERROR_TELEPHONY_AIRPLANE_MODE_ON;
-            case TELEPHONY_ERR_NETWORK_NOT_IN_SERVICE:
-                // 83000006
-                return CJ_ERROR_TELEPHONY_NETWORK_NOT_IN_SERVICE;
-            case TELEPHONY_ERR_PERMISSION_ERR:
-                // 201
-                return CJ_ERROR_TELEPHONY_PERMISSION_DENIED;
-            case TELEPHONY_ERR_ILLEGAL_USE_OF_SYSTEM_API:
-                // 202
-                return CJ_ERROR_TELEPHONY_PERMISSION_DENIED;
-            default:
-                return errCode;
+        const auto it = RADIO_ERROR_CODE_MAP.find(errCode);
+        if (it != RADIO_ERROR_CODE_MAP.end()) {
+            return isRomApi ? it->second.romApiCode : it->second.legacyCode;
         }
+        // Unmapped errors stay unchanged for legacy callers and become unknown errors for ROM APIs.
+        return isRomApi ? CJ_ERROR_TELEPHONY_UNKNOW_ERROR : errCode;
     }
 
     static inline bool IsValidSlotId(int32_t slotId)
@@ -201,6 +223,11 @@ namespace Telephony {
 
     CNetworkState TelephonyRadioImpl::GetNetworkState(int32_t slotId, int32_t &errCode)
     {
+        return GetNetworkState(slotId, errCode, false);
+    }
+
+    CNetworkState TelephonyRadioImpl::GetNetworkState(int32_t slotId, int32_t &errCode, bool isRomApi)
+    {
         CNetworkState cnetworkState = {
             .longOperatorName = nullptr,
             .shortOperatorName = nullptr,
@@ -211,19 +238,19 @@ namespace Telephony {
         };
         if (!IsValidSlotIdEx(slotId)) {
             TELEPHONY_LOGE("NativeGetNetworkState slotId is invalid");
-            errCode = ConvertCJErrCode(ERROR_SLOT_ID_INVALID);
+            errCode = ConvertCJErrCode(ERROR_SLOT_ID_INVALID, isRomApi);
             return cnetworkState;
         }
         sptr<NetworkState> networkState = nullptr;
         int32_t result = DelayedRefSingleton<CoreServiceClient>::GetInstance().GetNetworkState(slotId, networkState);
-        errCode = ConvertCJErrCode(result);
+        errCode = ConvertCJErrCode(result, isRomApi);
         if (errCode != TELEPHONY_SUCCESS) {
             TELEPHONY_LOGE("NativeGetNetworkState errorCode = %{public}d", result);
             return cnetworkState;
         }
         if (networkState == nullptr) {
             TELEPHONY_LOGE("NativeGetNetworkState networkState is nullptr");
-            errCode = ConvertCJErrCode(ERROR_NATIVE_API_EXECUTE_FAIL);
+            errCode = ConvertCJErrCode(ERROR_NATIVE_API_EXECUTE_FAIL, isRomApi);
             return cnetworkState;
         }
         cnetworkState.longOperatorName = MallocCString(networkState->GetLongOperatorName());
@@ -238,10 +265,15 @@ namespace Telephony {
 
     int32_t TelephonyRadioImpl::GetNetworkSelectionMode(int32_t slotId, int32_t &errCode)
     {
+        return GetNetworkSelectionMode(slotId, errCode, false);
+    }
+
+    int32_t TelephonyRadioImpl::GetNetworkSelectionMode(int32_t slotId, int32_t &errCode, bool isRomApi)
+    {
         int32_t selectMode = NETWORK_SELECTION_UNKNOWN;
         if (!IsValidSlotId(slotId)) {
             TELEPHONY_LOGE("NativeGetNetworkSelectionMode slotId is invalid");
-            errCode = ConvertCJErrCode(ERROR_SLOT_ID_INVALID);
+            errCode = ConvertCJErrCode(ERROR_SLOT_ID_INVALID, isRomApi);
             return selectMode;
         }
         auto asyncContext = std::make_shared<GetSelectModeContext>();
@@ -258,7 +290,12 @@ namespace Telephony {
                 [asyncContext] { return asyncContext->callbackEnd; });
             TELEPHONY_LOGI("NativeGetNetworkSelectionMode after callback end");
         }
-        errCode = ConvertCJErrCode(asyncContext->errorCode);
+        // Preserve the legacy FFI timeout result; only the new Cangjie entry reports an incomplete query as failure.
+        if (isRomApi && !asyncContext->resolved && asyncContext->errorCode == TELEPHONY_SUCCESS) {
+            TELEPHONY_LOGE("NativeGetNetworkSelectionMode did not complete successfully");
+            asyncContext->errorCode = TELEPHONY_ERR_FAIL;
+        }
+        errCode = ConvertCJErrCode(asyncContext->errorCode, isRomApi);
         selectMode = asyncContext->selectMode;
         return selectMode;
     }
@@ -281,11 +318,46 @@ namespace Telephony {
 
     int32_t TelephonyRadioImpl::GetPrimarySlotId(int32_t &errCode)
     {
+        return GetPrimarySlotId(errCode, false);
+    }
+
+    int32_t TelephonyRadioImpl::GetPrimarySlotId(int32_t &errCode, bool isRomApi)
+    {
         int32_t slotId = DEFAULT_SIM_SLOT_ID;
         errCode =
             DelayedRefSingleton<CoreServiceClient>::GetInstance().GetPrimarySlotId(slotId);
-        errCode = ConvertCJErrCode(errCode);
+        errCode = ConvertCJErrCode(errCode, isRomApi);
         return slotId;
+    }
+
+    CNetworkRadioTech TelephonyRadioImpl::GetRadioTechSync(int32_t slotId)
+    {
+        int32_t psRadioTech = static_cast<int32_t>(RadioTech::RADIO_TECHNOLOGY_INVALID);
+        int32_t csRadioTech = static_cast<int32_t>(RadioTech::RADIO_TECHNOLOGY_INVALID);
+        CNetworkRadioTech networkRadioTech = {
+            .psRadioTech = WrapRadioTech(psRadioTech),
+            .csRadioTech = WrapRadioTech(csRadioTech)
+        };
+        if (IsValidSlotIdEx(slotId)) {
+            int32_t psResult =
+                DelayedRefSingleton<CoreServiceClient>::GetInstance().GetPsRadioTech(slotId, psRadioTech);
+            int32_t csResult =
+                DelayedRefSingleton<CoreServiceClient>::GetInstance().GetCsRadioTech(slotId, csRadioTech);
+            if (psResult == TELEPHONY_SUCCESS && csResult == TELEPHONY_SUCCESS) {
+                networkRadioTech.psRadioTech = WrapRadioTech(psRadioTech);
+                networkRadioTech.csRadioTech = WrapRadioTech(csRadioTech);
+            }
+        }
+        return networkRadioTech;
+    }
+
+    char* TelephonyRadioImpl::GetISOCountryCodeForNetworkSync(int32_t slotId)
+    {
+        std::u16string countryCode;
+        if (IsValidSlotIdEx(slotId)) {
+            DelayedRefSingleton<CoreServiceClient>::GetInstance().GetIsoCountryCodeForNetwork(slotId, countryCode);
+        }
+        return MallocCString(ToUtf8(countryCode));
     }
 
     CArraySignalInformation TelephonyRadioImpl::GetSignalInfoList(int32_t slotId, int32_t &errCode)

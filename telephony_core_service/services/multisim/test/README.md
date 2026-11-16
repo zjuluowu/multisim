@@ -34,3 +34,7 @@ python3 -B "$TEST/scripts/test.py" --suite architecture --output "$SIM_TEST_OUTP
 [完整943文件迁移映射](docs/Test_Architecture_Migration.json)保留输入提交、旧/新路径和前后SHA；[冻结基线](docs/Test_Architecture_Baseline.md)记录本次真实结果。Golden、业务Oracle、Fake/Adapter和历史索引均不改预期。旧证据内路径按其固定提交解释，使用映射定位当前文件；`scripts/check_relocation.py`仍检查原219项来源，`scripts/check_test_integrity.py`检查本次全量映射与受控字节。
 
 Linux历史工程没有实际测试executable，归档保留，未宣称新运行验收。未知用途文件没有删除。产品构建、真实Target写业务、设备/eSIM及原生SA/IPC/HDI仍单独验收。
+
+2026-11-16上游同步：原生产代码与OpenHarmony GitCode主仓master@43ac8ae7df5b固定提交逐字节对齐，Core/生产GN不再接入重构Query。`scripts/check_upstream_sync.py`检查该边界。G2a保留在`framework/host/g2a_reference`的测试参考Core及Binding上运行，仅验证候选接入与原Manager的查询契约，不能宣称当前生产已接入。Host其他用例直接编译上游源码。历史迁移快照不改写，本次工具演进见`docs/Upstream_Sync_Test_Adaptation.json`。
+
+复核上游原始字节前，使用`git fetch --no-tags https://gitcode.com/openharmony/telephony_core_service.git 43ac8ae7df5b9c17c4efb3433415693d925b98c7`取得固定Git对象，再运行`python3 -B telephony_core_service/services/multisim/test/scripts/check_upstream_sync.py`。G2a runner在两个独立程序中各执行7个场景：原版生产Core查询与Host参考接入，避免将两种Core定义链接在一起。新增接口接缝及Parcel声明的适配均受精确检查约束。

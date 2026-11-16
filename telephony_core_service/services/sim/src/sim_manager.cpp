@@ -1634,6 +1634,15 @@ void SimManager::SetSpecifiedIccidBySlotId(int32_t slotId, std::string &iccid)
     }
     simStateManager_[slotId]->SetSpecifiedIccidBySlotId(iccid);
 }
+ 
+int32_t SimManager::UpdateDBActiveByIccId(const std::string iccId, int32_t enable)
+{
+    if (multiSimController_ == nullptr) {
+        TELEPHONY_LOGE("multiSimController_ is null");
+        return TELEPHONY_ERR_LOCAL_PTR_NULL;
+    }
+    return multiSimController_->UpdateDBActiveByIccId(iccId, enable);
+}
 } // namespace Telephony
 } // namespace OHOS
 // LOCV_EXCL_STOP

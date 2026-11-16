@@ -32,6 +32,15 @@ extern "C" {
     FFI_EXPORT bool FfiTelephonyRadioIsNRSupported();
     FFI_EXPORT bool FfiTelephonyRadioIsRadioOn(int32_t slotId, int32_t *errCode);
     FFI_EXPORT char* FfiTelephonyRadioGetOperatorName(int32_t slotId, int32_t *errCode);
+    FFI_EXPORT CNetworkRadioTech FfiTelephonyRadioGetRadioTechSync(int32_t slotId);
+    FFI_EXPORT char* FfiTelephonyRadioGetISOCountryCodeForNetworkSync(int32_t slotId);
+    // Releases a string allocated by Radio FFI queries. A null pointer is accepted.
+    FFI_EXPORT void FfiTelephonyRadioFreeCString(char *value);
+    // Internal entry points for system-provided Cangjie APIs, using N-API-aligned error handling.
+    // Compatibility packages must continue using the legacy FfiTelephonyRadio entry points above.
+    FFI_EXPORT CNetworkState FfiOhosTelephonyRadioGetNetworkState(int32_t slotId, int32_t *errCode);
+    FFI_EXPORT int32_t FfiOhosTelephonyRadioGetNetworkSelectionMode(int32_t slotId, int32_t *errCode);
+    FFI_EXPORT int32_t FfiOhosTelephonyRadioGetPrimarySlotId(int32_t *errCode);
 }
 }
 }

@@ -496,13 +496,13 @@ HWTEST_F(EsimTest, ProcessDisableProfile_001, Function | MediumTest | Level2)
     esimFile->currentChannelId_ = 2;
     std::string iccIdStr = "ABCDEFG";
     esimFile->esimProfile_.iccId = Str8ToStr16(iccIdStr);
-    EXPECT_TRUE(esimFile->ProcessDisableProfile(slotId, eventGetProfile));
+    EXPECT_FALSE(esimFile->ProcessDisableProfile(slotId, eventGetProfile));
     std::shared_ptr<IccFileController> file = std::make_shared<SimFileController>(slotId);
     std::shared_ptr<IccDiallingNumbersHandler> handler = std::make_shared<IccDiallingNumbersHandler>(file);
-    EXPECT_TRUE(esimFile->ProcessDisableProfile(slotId, eventGetProfile));
+    EXPECT_FALSE(esimFile->ProcessDisableProfile(slotId, eventGetProfile));
     std::string str = "ABCDEFGG";
     esimFile->esimProfile_.iccId = Str8ToStr16(str);
-    EXPECT_TRUE(esimFile->ProcessDisableProfile(slotId, eventGetProfile));
+    EXPECT_FALSE(esimFile->ProcessDisableProfile(slotId, eventGetProfile));
 }
 
 HWTEST_F(EsimTest, ProcessDisableProfileDone_001, Function | MediumTest | Level2)
@@ -672,10 +672,10 @@ HWTEST_F(EsimTest, ProcessObtainSmdsAddress_001, Function | MediumTest | Level2)
     esimFile->currentChannelId_ = 0;
     EXPECT_FALSE(esimFile->ProcessObtainSmdsAddress(slotId, eventObtainSmdsAddress));
     esimFile->currentChannelId_ = 2;
-    EXPECT_TRUE(esimFile->ProcessObtainSmdsAddress(slotId, eventObtainSmdsAddress));
+    EXPECT_FALSE(esimFile->ProcessObtainSmdsAddress(slotId, eventObtainSmdsAddress));
     std::shared_ptr<IccFileController> file = std::make_shared<SimFileController>(slotId);
     std::shared_ptr<IccDiallingNumbersHandler> handler = std::make_shared<IccDiallingNumbersHandler>(file);
-    EXPECT_TRUE(esimFile->ProcessObtainSmdsAddress(slotId, eventObtainSmdsAddress));
+    EXPECT_FALSE(esimFile->ProcessObtainSmdsAddress(slotId, eventObtainSmdsAddress));
 }
 
 HWTEST_F(EsimTest, ProcessObtainEuiccChallenge_001, Function | MediumTest | Level2)

@@ -16,15 +16,16 @@
 #ifndef DATA_STORAGE_PREFERENCES_UTILS_H
 #define DATA_STORAGE_PREFERENCES_UTILS_H
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "singleton.h"
-#include "preferences.h"
-#include "preferences_errno.h"
-#include "preferences_observer.h"
 
 namespace OHOS {
+namespace NativePreferences {
+class Preferences;
+}
 namespace Telephony {
 class TelProfileUtil {
     DECLARE_DELAYED_SINGLETON(TelProfileUtil);
@@ -52,7 +53,7 @@ private:
 
 private:
     std::string path_ = "/data/service/el1/public/telephony/telephonyProperties.xml";
-    int errCode_ = NativePreferences::E_OK;
+    int errCode_ = 0;
     const std::string error_ = "error";
 };
 } // namespace Telephony

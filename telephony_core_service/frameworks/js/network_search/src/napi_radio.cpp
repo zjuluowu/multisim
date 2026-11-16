@@ -2402,7 +2402,7 @@ static napi_value GetUniqueDeviceId(napi_env env, napi_callback_info info)
         NapiUtil::ThrowParameterError(env);
         return nullptr;
     }
-    auto asyncContext = std::make_unique<GetIMEIContext>();
+    auto asyncContext = std::make_unique<GetUniqueDeviceIdContext>();
     if (parameterCount == PARAMETER_COUNT_ZERO) {
         asyncContext->slotId = GetDefaultSlotId();
     } else if (parameterCount == PARAMETER_COUNT_ONE) {

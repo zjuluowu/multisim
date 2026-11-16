@@ -44,7 +44,9 @@ static_assert(RADIO_ESIM_DOWNLOADING_PROFLIE_START == 1125);
 static_assert(RADIO_ESIM_DOWNLOADING_PROFLIE_END == 1126);
 static_assert(RADIO_ESIM_RESET_MEMORY_START == 1127);
 static_assert(RADIO_ESIM_RESET_MEMORY_END == 1128);
-static_assert(RADIO_ESIM_ENABLED_PROFILE_NUM == 1129);
+static_assert(RADIO_ESIM_UPDATE_START == 1129);
+static_assert(RADIO_ESIM_UPDATE_END == 1130);
+static_assert(RADIO_ESIM_ENABLED_PROFILE_NUM == 1131);
 static_assert(RADIO_ESIM_END == 1140);
 
 using FileChange = IIccFileExt::FileChangeType;

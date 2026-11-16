@@ -1,5 +1,7 @@
 # 多 SIM 重构执行状态
 
+当前任务（2026-11-16）：按用户明确授权撤回原生产重构接入，并同步GitCode主仓master@43ac8ae7df5b9c17c4efb3433415693d925b98c7；当前生产不再接入G2a Query。以下G2a生产附着结论仅为历史检查点，当前测试参考与验证见§37。
+
 当前提交模式（2026-11-16用户调整）：默认在当前本地工作区直接提交并推送origin/main，不通过独立副本发布，具体规则及本次保存状态见[§34](#direct-publication-20261116)。
 
 2026-11-16目录文档护栏冲突已修复，当前完整架构验证通过，见[§33](#documentation-guard-20261116)；该结果不扩大生产迁移或产品验收范围。
@@ -946,3 +948,23 @@ Target实际StartPrimarySwitch、SwitchPrimaryRadio仍仅声明/流程注释，�
 通过获准的Git写入操作，仅将索引对齐origin/main，再以merge --ff-only正常快进原main至上述已发布基线，保留本地工作文件及其他worktree；不使用reset/clean/stash，不创建发布副本。此次新提交仅包含三份文档的直接发布规则和状态同步；已发布的测试迁址及护栏修复不重复提交。两份AGENTS的22项本地链接、直接发布状态锚点及git diff --check通过；本次不运行业务或产品测试，不改变§31～33的实测结果与验收限制。
 
 仅逐文件暂存上述三份文档，发布前再次核对远端，常规提交推送origin/main并核实远端SHA与包含关系；实际保存点由包含本节的提交定位，不在本节自引用SHA。远端分歧或保护拒绝则保留本地提交并报告，不自动合并/变基或强推。
+
+<a id="upstream-sync-20261116"></a>
+
+### 37. 原生产接入回退、GitCode最新基线同步与测试适配（2026-11-16）
+
+用户明确授权回退原生产重构修改、同步OpenHarmony最新源码并适配重构测试，覆盖此前旧实现只读限制中本批必要的上游同步。输入当前工作区main@37be229d4816824c7931a1c2050f13012f8d1061，暂存区为空，仅原default.profraw未跟踪；其SHA256仍为bbb8d8d54bc9586adf968048bcdf7f08cf72cd1321d4766bafe30b8814ef5f1e，不纳入提交。其他worktree不变。
+
+配置的GitHub upstream/master仍为b2ddf49ab0fc；进一步直接查询并fetch官方GitCode主仓，master最新为43ac8ae7df5b9c17c4efb3433415693d925b98c7（2026-11-16），发布预检再次ls-remote同SHA。最终采用GitCode，未把镜像旧HEAD当最新。同步上游1066个原有常规文件并逐字节核验PASS，保留本仓AGENTS、docs及重构新增目录；无遗留的非上游生产新增文件。包含恢复原CRLF/空白以及镜像之后84文件的上游变更，非自研业务修复。
+
+原Core AttachReadOnlyQueries、GetRealSimCount新分支及生产/上游测试GN接入撤回；原生产legacy_sim_query_binding.h/.cpp删除。当前生产只走原Core→Manager/EXT，multisim未接入生产源表。G2a原Core/Binding四文件按输入Git blob原字节迁入test/framework/host/g2a_reference并登记来源，只供Host参考接入测试；不得继续将历史G2a附着PASS解释为当前生产已接入。
+
+测试适配：Host源表编译独立参考Core，新增独立原版Core查询程序，避免两个Core定义共同链接；源表护栏改为拒绝生产接入并检查参考源完整。新增ISimManager::UpdateDBActiveByIccId按原生成器补充抛错接缝；Host Parcel只补WriteUint32/ReadUint32声明。上游事件插入UPDATE_START/END后，精确验证1129/1130和ENABLED_PROFILE_NUM=1131。三个声明资产按精确差量/生成器核验，其余835项历史受控资产保持原字节；Golden、业务Oracle、分类器/CI统计和历史JSON/证据不改写，943项历史映射和219项原溯源PASS。
+
+GitCode最新源码实际验证：Host64项59 PASS/同样5个既有FAIL，与本轮先运行的镜像基线逐例名字/状态一致；原始总结果仍FAIL。G2a参考接入7场景及原版Core查询7场景全部PASS，保留参考链六函数正执行审计；无Core::Init/Manager::OnInit或产品运行声明。完整架构88单元/合并头、25逻辑target、17结构测试、5声明负控、4组纯规则、迁移约束及GN/Ninja PASS；源表、Oracle、分类器、CI策略技术检查PASS。
+
+首次新版Host/G2a因Parcel缺声明而构建失败，首次新版架构因旧事件编号失败，修复前日志保留；镜像基线中间结果单独标注。完整git diff --check因恢复上游CRLF/既有尾空白而FAIL，原文归档；排除原字节参考快照后的重构/文档暂存差异空白检查PASS；参考头文件有3处原有尾空白，按来源字节保留，不修改上游字节隐藏失败。真实Primary携带固定GTest预检仍因缺OpenSSL而BLOCKED；Target因StartPrimarySwitch/SwitchPrimaryRadio无完整实现而BLOCKED、差分NOT_RUN。无hb/匹配产品树，产品/SO/SA/IPC/HDI/设备/eSIM未运行，不继承历史产品验收。
+
+[本批说明、最终摘要、1066项源码SHA及原始证据](../services/multisim/test/docs/archive/upstream_sync_20261116/README.md)随仓保存；固定上游获取和测试复现命令已登记，不依赖/tmp恢复。按持续授权在当前工作区逐文件暂存本批成果，常规提交并推送origin/main；发布前核对远端无分歧，发布后核实SHA及包含关系，不使用独立发布副本、强推、合并或变基。当前未完成的产品/Target/原缺陷门禁如上保存，下一批应基于该新上游SHA补齐对应环境与真实Target闭包，生产接入需另行明确授权。
+
+发布索引预检补充：1066项暂存内容blob均与GitCode源树一致。首次同时比较模式的断言检出246项既有导入差异（上游100755、本仓100644），本次保留本仓既有文件模式，不为源码同步给C++/图片等批量增加执行位；逐项记录在本批file-modes.json。该差异不属于内容字节不一致，源码核验工具及上文PASS均明确只指内容。

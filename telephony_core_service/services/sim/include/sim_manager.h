@@ -189,6 +189,7 @@ public:
     int32_t SaveCardFileDetectData(const CardFileDetectData &data) override;
     int32_t GetAllSimCardInfo(std::vector<SimCardInfo> &results) override;
     void SetSpecifiedIccidBySlotId(int32_t slotId, std::string &iccid) override;
+    int32_t UpdateDBActiveByIccId(const std::string iccId, int32_t enable) override;
 
     inline void SetMatchSimStateTracker(int8_t matchSimStateTracker, int32_t slotId) override
     {

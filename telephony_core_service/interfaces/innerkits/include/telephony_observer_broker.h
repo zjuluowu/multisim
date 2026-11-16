@@ -44,6 +44,7 @@ public:
         ON_CCALL_STATE_UPDATED,
         ON_SIM_ACTIVE_STATE_UPDATED,
         ON_VOIP_STATE_UPDATED,
+        ON_CALL_TRANSFER_STATUS_UPDATED,
     };
 
     virtual void OnCellularDataConnectStateUpdated(
@@ -68,6 +69,7 @@ public:
         int32_t slotId, int32_t callState, const std::u16string &phoneNumber) = 0;
     virtual void OnSimActiveStateUpdated(int32_t slotId, bool enable) = 0;
     virtual void OnVoIPStateUpdated(const VoIPCallStateInfo &info) = 0;
+    virtual void OnCallTransferStatusUpdated(int32_t slotId, bool enabled) = 0;
 
 public:
     static const uint32_t OBSERVER_MASK_NETWORK_STATE = 0x00000001;
@@ -84,6 +86,7 @@ public:
     static const uint32_t OBSERVER_MASK_CCALL_STATE = 0x00000800;
     static const uint32_t OBSERVER_MASK_SIM_ACTIVE_STATE = 0x00001000;
     static const uint32_t OBSERVER_MASK_VOIP_CALL_STATE = 0x00004000;
+    static const uint32_t OBSERVER_MASK_CALL_TRANSFER_STATUS = 0x00008000;
 };
 } // namespace Telephony
 } // namespace OHOS

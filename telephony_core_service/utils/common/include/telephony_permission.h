@@ -122,6 +122,10 @@ static constexpr const char *MANAGE_APN_SETTING = "ohos.permission.MANAGE_APN_SE
  * This permission allows a application to manage call state.
  */
 static constexpr const char *MANAGE_CALL_FOR_DEVICES = "ohos.permission.MANAGE_CALL_FOR_DEVICES";
+/**
+ * This permission allows detecting hidden camera.
+ */
+static constexpr const char *HIDDEN_CAMERA_DETECTION = "ohos.permission.HIDDEN_CAMERA_DETECTION";
 } // namespace Permission
 
 class TelephonyPermission {

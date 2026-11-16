@@ -32,6 +32,7 @@
 #include "mock_sim_manager.h"
 #include "tel_ril_manager.h"
 #include "telephony_ext_wrapper.h"
+#include "tel_profile_util.h"
 
 namespace OHOS {
 namespace Telephony {
@@ -42,6 +43,9 @@ const std::string LAST_DEACTIVE_PROFILE_SLOT0 = "persist.telephony.last_deactive
 const std::string LAST_DEACTIVE_PROFILE_SLOT1 = "persist.telephony.last_deactive_profile_slot1";
 const std::string SUPPORT_ESIM_MEP = "const.ril.sim.esim_support_mep";
 const std::string ESIM_SUPPORT_PARAM = "const.ril.esim_type";
+const std::string TSTS_MODE_PARAM = "persist.telephony.tsts_mode";
+const std::string MAINTENANCE_MODE_PARAM = "persist.hiviewcare.maintenancemode";
+const std::string MAINTENANCE_MODE_PROFILE_KEY = "maintenancemode";
 constexpr int32_t PSIM1 = 1;
 constexpr int32_t PSIM2 = 2;
 class MultiSimControllerTest : public testing::Test {

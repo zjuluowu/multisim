@@ -57,7 +57,7 @@ void EsimManagerTest::TearDown() {}
 #ifdef CORE_SERVICE_SUPPORT_ESIM
 HWTEST_F(EsimManagerTest, OnInit_001, Function | MediumTest | Level1)
 {
-    int32_t slotCount = 4;
+    int32_t slotCount = ESIM_MAX_SLOT_COUNT + 1;
     bool ret = esimManager->OnInit(slotCount);
     EXPECT_FALSE(ret);
 
@@ -293,7 +293,7 @@ HWTEST_F(EsimManagerTest, IsSupported_001, Function | MediumTest | Level1)
     mInner.esimManager_ = mockesimManager;
     EXPECT_CALL(*mockesimManager, IsSupported(testing::_)).WillRepeatedly(testing::Return(false));
     esimManager->esimFiles_[1] = nullptr;
-    EXPECT_EQ(ret, true);
+    EXPECT_EQ(ret, false);
 }
 
 HWTEST_F(EsimManagerTest, SendApduData_001, Function | MediumTest | Level1)
@@ -571,7 +571,6 @@ HWTEST_F(EsimManagerTest, RegisterCoreNotify_001, Function | MediumTest | Level1
     esimManager->RegisterCoreNotify(0, nullptr, RADIO_ESIM_ENABLING_PROFLIE_START);
     esimManager->RegisterCoreNotify(-1, handler, RADIO_ESIM_ENABLING_PROFLIE_START);
     esimManager->RegisterCoreNotify(0, handler, RADIO_ESIM_ENABLING_PROFLIE_START);
-    esimManager->enabledProfileNum_ = 2;
     esimManager->RegisterCoreNotify(0, handler, RADIO_ESIM_ENABLED_PROFILE_NUM);
     EXPECT_NE(esimManager->observerHandler_, nullptr);
 }

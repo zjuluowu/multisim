@@ -34,7 +34,8 @@ enum class StateNotifyInterfaceCode {
     VOICE_MAIL_MSG_INDICATOR,
     ICC_ACCOUNT_CHANGE,
     SIM_ACTIVR_STATE,
-    VOIP_CALL_STATE
+    VOIP_CALL_STATE,
+    CALL_TRANSFER_STATUS
 };
 } // namespace Telephony
 } // namespace OHOS

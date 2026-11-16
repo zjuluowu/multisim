@@ -19,11 +19,14 @@
 #include "telephony_errors.h"
 #include "telephony_ext_wrapper.h"
 #include "telephony_types.h"
+#include "tel_profile_util.h"
 
 namespace OHOS {
 namespace Telephony {
 #undef TELEPHONY_LOG_TAG
 #define TELEPHONY_LOG_TAG "SimRdbHelper"
+const std::string MAINTENANCE_MODE_KEY = "maintenancemode";
+
 SimRdbHelper::SimRdbHelper() {}
 
 SimRdbHelper::~SimRdbHelper() {}
@@ -556,10 +559,6 @@ int32_t SimRdbHelper::ForgetAllData()
     DataShare::DataSharePredicates predicates1;
     DataShare::DataShareValuesBucket value;
     DataShare::DataShareValueObject valueObj(INVALID_VALUE);
-    if (OHOS::system::GetIntParameter("persist.telephony.tsts_mode", 0) >= 1) {
-        TELEPHONY_LOGI("ForgetAllData tsts is on");
-        predicates1.EqualTo(SimData::IS_ESIM, std::to_string(0));
-    }
     value.Put(SimData::SLOT_INDEX, valueObj);
     std::shared_ptr<DataShare::DataShareHelper> dataShareHelper =
         CreateDataHelper(TelephonyDataHelper::DB_CONNECT_MAX_WAIT_TIME);
@@ -580,6 +579,22 @@ int32_t SimRdbHelper::ForgetAllData()
     TELEPHONY_LOGI("ForgetAllData result:%{public}d", result);
     dataShareHelper->Release();
     return result;
+}
+
+bool SimRdbHelper::IsMaintenanceMode()
+{
+    std::string isMaintenancemode = OHOS::system::GetParameter("persist.hiviewcare.maintenancemode", "false");
+    auto telProfileUtil = DelayedSingleton<TelProfileUtil>::GetInstance();
+    if (isMaintenancemode == "true") {
+        telProfileUtil->SaveString(MAINTENANCE_MODE_KEY, "true");
+        return true;
+    }
+    if (telProfileUtil->ObtainString(MAINTENANCE_MODE_KEY, "false") == "true") {
+        telProfileUtil->SaveString(MAINTENANCE_MODE_KEY, "false");
+        return true;
+    }
+    telProfileUtil->SaveString(MAINTENANCE_MODE_KEY, isMaintenancemode);
+    return false;
 }
 
 int32_t SimRdbHelper::ForgetAllData(int32_t slotId, bool isNeedUpdateSimLabel, bool isUpdateActiveState)

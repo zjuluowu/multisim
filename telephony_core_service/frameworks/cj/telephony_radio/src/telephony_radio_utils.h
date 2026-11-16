@@ -312,6 +312,9 @@ namespace Telephony {
          */
         CJ_ERROR_TELEPHONY_UNKNOW_ERROR = 8300999,
 
+        /** Operation prohibited by policy. Matches the N-API error code. */
+        CJ_ERROR_TELEPHONY_POLICY_DISABLED = 8300011,
+
         /**
          * SIM card is not activated.
          */

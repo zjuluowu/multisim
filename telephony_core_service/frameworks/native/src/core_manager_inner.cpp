@@ -3181,5 +3181,14 @@ void CoreManagerInner::PublishEsimProfileChange(int32_t slotId, int32_t what, in
     }
     esimManager_->PublishEsimProfileChange(slotId, what, data);
 }
+
+int32_t CoreManagerInner::UpdateDBActiveByIccId(const std::string iccId, int32_t enable)
+{
+    if (simManager_ == nullptr) {
+        TELEPHONY_LOGE("simManager_ is null!");
+        return TELEPHONY_ERR_LOCAL_PTR_NULL;
+    }
+    return simManager_->UpdateDBActiveByIccId(iccId, enable);
+}
 } // namespace Telephony
 } // namespace OHOS

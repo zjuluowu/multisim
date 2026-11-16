@@ -176,6 +176,7 @@ public:
     virtual int32_t SaveCardFileDetectData(const CardFileDetectData &data) = 0;
     virtual int32_t GetAllSimCardInfo(std::vector<SimCardInfo> &results) = 0;
     virtual void SetSpecifiedIccidBySlotId(int32_t slotId, std::string &iccid) = 0;
+    virtual int32_t UpdateDBActiveByIccId(const std::string iccId, int32_t enable) = 0;
 };
 } // namespace Telephony
 } // namespace OHOS

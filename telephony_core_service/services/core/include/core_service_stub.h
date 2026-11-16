@@ -41,6 +41,7 @@ private:
     void AddHandlerEsimToMap();
     void AddHandlerManualScanToMap();
     void AddHandlerCapabilityToMap();
+    void AddHandlerSenseToMap();
     int32_t SetTimer(uint32_t code);
     void CancelTimer(int32_t id);
 
@@ -156,6 +157,9 @@ private:
     int32_t OnStartManualNetworkScan(MessageParcel &data, MessageParcel &reply);
     int32_t OnSetSimLabelIndex(MessageParcel &data, MessageParcel &reply);
     int32_t OnIsMultiSimsCapabilitySupported(MessageParcel &data, MessageParcel &reply);
+    int32_t OnStartHiddenCameraDetection(MessageParcel &data, MessageParcel &reply);
+    int32_t OnStopHiddenCameraDetection(MessageParcel &data, MessageParcel &reply);
+    int32_t OnKeepHiddenCameraDetection(MessageParcel &data, MessageParcel &reply);
 
 private:
     std::map<uint32_t, CoreServiceFunc> memberFuncMap_;

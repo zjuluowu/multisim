@@ -419,6 +419,7 @@ public:
     bool IsModemInitDone(int32_t slotId);
     int32_t GetEsimPortIndex(int32_t slotId, int32_t &portIndex);
     void PublishEsimProfileChange(int32_t slotId, int32_t what, int32_t data);
+    int32_t UpdateDBActiveByIccId(const std::string iccId, int32_t enable);
     /******************** esimManager end *****************************/
 
 private:

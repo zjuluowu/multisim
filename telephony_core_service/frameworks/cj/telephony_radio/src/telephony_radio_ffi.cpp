@@ -15,6 +15,8 @@
 
 #include "telephony_radio_ffi.h"
 
+#include <cstdlib>
+
 using namespace OHOS::FFI;
 
 namespace OHOS {
@@ -64,6 +66,38 @@ extern "C" {
     char* FfiTelephonyRadioGetOperatorName(int32_t slotId, int32_t *errCode)
     {
         return TelephonyRadioImpl::GetOperatorName(slotId, *errCode);
+    }
+
+    CNetworkRadioTech FfiTelephonyRadioGetRadioTechSync(int32_t slotId)
+    {
+        return TelephonyRadioImpl::GetRadioTechSync(slotId);
+    }
+
+    char* FfiTelephonyRadioGetISOCountryCodeForNetworkSync(int32_t slotId)
+    {
+        return TelephonyRadioImpl::GetISOCountryCodeForNetworkSync(slotId);
+    }
+
+    void FfiTelephonyRadioFreeCString(char *value)
+    {
+        std::free(value);
+    }
+
+    // System-provided Cangjie APIs use these entries to enable the new error handling and,
+    // for network selection, incomplete-query checks. Legacy compatibility entries remain unchanged.
+    CNetworkState FfiOhosTelephonyRadioGetNetworkState(int32_t slotId, int32_t *errCode)
+    {
+        return TelephonyRadioImpl::GetNetworkState(slotId, *errCode, true);
+    }
+
+    int32_t FfiOhosTelephonyRadioGetNetworkSelectionMode(int32_t slotId, int32_t *errCode)
+    {
+        return TelephonyRadioImpl::GetNetworkSelectionMode(slotId, *errCode, true);
+    }
+
+    int32_t FfiOhosTelephonyRadioGetPrimarySlotId(int32_t *errCode)
+    {
+        return TelephonyRadioImpl::GetPrimarySlotId(*errCode, true);
     }
 }
 }  // namespace Telephony

@@ -319,19 +319,21 @@ HWTEST_F(SimStateHandleTest, Telephony_SimStateHandle_012, Function | MediumTest
  */
 HWTEST_F(SimStateHandleTest, Telephony_SimStateHandle_013, Function | MediumTest | Level1)
 {
-    auto future = std::async(std::launch::async, [this]() {
-        simStateManager_->simStateHandle_->SetSimState(SimState::SIM_STATE_LOCKED);
-        LockStatusResponse response;
-        simStateManager_->simStateHandle_->unlockRespon_.result = UNLOCK_OK;
-        simStateManager_->simStateHandle_->unlockRespon_.remain = -1;
-        simStateManager_->simStateHandle_->unlockRespon_.lockState = 1;
-        simStateManager_->UnlockPuk(slotId, "1234", "12345678", response);
-        EXPECT_TRUE(simStateManager_->simStateHandle_->GetSimState() == SimState::SIM_STATE_NOT_READY);
-    });
-    usleep(100 * 1000);
-    simStateManager_->SyncCmdResponse();
-    usleep(100 * 1000);
-    future.get();
+    EXPECT_CALL(*telRilManager_, UnlockPuk(_, _, _, _))
+        .WillOnce(Invoke([this](int32_t, const std::string &, const std::string &,
+            const AppExecFwk::InnerEvent::Pointer &) {
+            simStateManager_->responseReady_ = true;
+            return 0;
+        }));
+
+    simStateManager_->simStateHandle_->SetSimState(SimState::SIM_STATE_LOCKED);
+    LockStatusResponse response;
+    simStateManager_->simStateHandle_->unlockRespon_.result = UNLOCK_OK;
+    simStateManager_->simStateHandle_->unlockRespon_.remain = -1;
+    simStateManager_->simStateHandle_->unlockRespon_.lockState = 1;
+    simStateManager_->UnlockPuk(slotId, "1234", "12345678", response);
+
+    EXPECT_TRUE(simStateManager_->simStateHandle_->GetSimState() == SimState::SIM_STATE_NOT_READY);
 }
 }
 }

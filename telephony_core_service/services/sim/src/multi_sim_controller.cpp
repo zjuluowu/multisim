@@ -166,6 +166,9 @@ bool MultiSimController::ForgetAllData(int32_t slotId)
         isNeedUpdateSimLabel = !IsSimSlotsMapping() && !(slotId == 1 && simLabelState != PSIM1_PSIM2) &&
                                  !IsEsim(slotId) && !isSimSlotsMapping_[slotId];
     }
+    if (tstsMode_ && slotId == SIM_SLOT_2) {
+        isNeedUpdateSimLabel = true;
+    }
     bool isUpdateActiveState = !IsSimSlotsMapping();
     isSimSlotsMapping_[slotId] = false;
     TELEPHONY_LOGI("slotId %{public}d: isNeedUpdateSimLabel is %{public}d, isUpdateActiveState %{public}d",
@@ -504,13 +507,18 @@ int32_t MultiSimController::SwapM0M2SimCards(int32_t slotId)
     return TELEPHONY_EXT_WRAPPER.SwapM0M2SimCards(slotId);
 }
 
+int32_t MultiSimController::SwapTwoModemSimCards(int32_t slotId)
+{
+    return TELEPHONY_EXT_WRAPPER.SwapTwoModemSimCards(slotId);
+}
+
 int32_t MultiSimController::NeedSwitchSimCard(int32_t slotId)
 {
     if (!IsValidData(slotId)) {
         TELEPHONY_LOGE("no sim card");
         return TELEPHONY_ERR_NO_SIM_CARD;
     }
-    slotId = SwapM0M2SimCards(slotId);
+    slotId = SwapTwoModemSimCards(slotId);
     return SetTargetPrimarySlotId(true, slotId);
 }
 

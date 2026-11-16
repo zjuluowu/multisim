@@ -174,6 +174,11 @@ public:
     MOCK_METHOD(int32_t, SetSimLabelIndex, (
         int32_t simId, int32_t simLabelIndex, const sptr<IRawParcelCallback> &callback), (override));
     MOCK_METHOD(bool, IsMultiSimsCapabilitySupported, (int32_t slotId), (override));
+    MOCK_METHOD(int32_t, StartHiddenCameraDetection,
+        (const sptr<IHiddenCameraDetectionCallback> &callback, const HiddenCameraDetectionConfig &config,
+        const sptr<IRawParcelCallback> &rawCallback), (override));
+    MOCK_METHOD(int32_t, StopHiddenCameraDetection, (const sptr<IRawParcelCallback> &rawCallback), (override));
+    MOCK_METHOD(int32_t, KeepHiddenCameraDetection, (const sptr<IRawParcelCallback> &rawCallback), (override));
 };
 } // namespace Telephony
 } // namespace OHOS

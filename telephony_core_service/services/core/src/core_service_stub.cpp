@@ -17,6 +17,7 @@
 
 #include "string_ex.h"
 #include "telephony_errors.h"
+#include "telephony_ext_wrapper.h"
 #include "telephony_log_wrapper.h"
 #include "raw_parcel_callback_proxy.h"
 
@@ -44,6 +45,7 @@ CoreServiceStub::CoreServiceStub()
     AddHandlerEsimToMap();
     AddHandlerManualScanToMap();
     AddHandlerCapabilityToMap();
+    AddHandlerSenseToMap();
 }
 
 void CoreServiceStub::AddHandlerNetWorkToMap()
@@ -310,6 +312,16 @@ void CoreServiceStub::AddHandlerCapabilityToMap()
 {
     memberFuncMap_[uint32_t(CoreServiceInterfaceCode::IS_MULTI_SIMS_CAPABILITY_SUPPORTED)] =
         [this](MessageParcel &data, MessageParcel &reply) { return OnIsMultiSimsCapabilitySupported(data, reply); };
+}
+
+void CoreServiceStub::AddHandlerSenseToMap()
+{
+    memberFuncMap_[uint32_t(CoreServiceInterfaceCode::START_HIDDEN_CAMERA_DETECTION)] =
+        [this](MessageParcel &data, MessageParcel &reply) { return OnStartHiddenCameraDetection(data, reply); };
+    memberFuncMap_[uint32_t(CoreServiceInterfaceCode::STOP_HIDDEN_CAMERA_DETECTION)] =
+        [this](MessageParcel &data, MessageParcel &reply) { return OnStopHiddenCameraDetection(data, reply); };
+    memberFuncMap_[uint32_t(CoreServiceInterfaceCode::KEEP_HIDDEN_CAMERA_DETECTION)] =
+        [this](MessageParcel &data, MessageParcel &reply) { return OnKeepHiddenCameraDetection(data, reply); };
 }
 
 int32_t CoreServiceStub::OnRemoteRequest(
@@ -2087,6 +2099,64 @@ int32_t CoreServiceStub::OnIsMultiSimsCapabilitySupported(MessageParcel &data, M
         return ERR_FLATTEN_OBJECT;
     }
     return NO_ERROR;
+}
+
+int32_t CoreServiceStub::OnStartHiddenCameraDetection(MessageParcel &data, MessageParcel &reply)
+{
+    HiddenCameraDetectionConfig config;
+    uint32_t periodVal = 0;
+    if (!data.ReadUint32(periodVal)) {
+        return TELEPHONY_ERR_READ_DATA_FAIL;
+    }
+    config.period = static_cast<HiddenCameraDetectionTimeoutPeriod>(periodVal);
+
+    sptr<IRemoteObject> callbackRemote = data.ReadRemoteObject();
+    if (callbackRemote == nullptr) {
+        return TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL;
+    }
+    sptr<IHiddenCameraDetectionCallback> callback = iface_cast<IHiddenCameraDetectionCallback>(callbackRemote);
+    if (callback == nullptr) {
+        return TELEPHONY_ERR_LOCAL_PTR_NULL;
+    }
+
+    sptr<IRemoteObject> rawRemote = data.ReadRemoteObject();
+    if (rawRemote == nullptr) {
+        return TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL;
+    }
+    sptr<IRawParcelCallback> rawCallback = iface_cast<IRawParcelCallback>(rawRemote);
+    if (rawCallback == nullptr) {
+        return TELEPHONY_ERR_LOCAL_PTR_NULL;
+    }
+
+    return StartHiddenCameraDetection(callback, config, rawCallback);
+}
+
+int32_t CoreServiceStub::OnStopHiddenCameraDetection(MessageParcel &data, MessageParcel &reply)
+{
+    sptr<IRemoteObject> rawRemote = data.ReadRemoteObject();
+    if (rawRemote == nullptr) {
+        return TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL;
+    }
+    sptr<IRawParcelCallback> rawCallback = iface_cast<IRawParcelCallback>(rawRemote);
+    if (rawCallback == nullptr) {
+        return TELEPHONY_ERR_LOCAL_PTR_NULL;
+    }
+
+    return StopHiddenCameraDetection(rawCallback);
+}
+
+int32_t CoreServiceStub::OnKeepHiddenCameraDetection(MessageParcel &data, MessageParcel &reply)
+{
+    sptr<IRemoteObject> rawRemote = data.ReadRemoteObject();
+    if (rawRemote == nullptr) {
+        return TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL;
+    }
+    sptr<IRawParcelCallback> rawCallback = iface_cast<IRawParcelCallback>(rawRemote);
+    if (rawCallback == nullptr) {
+        return TELEPHONY_ERR_LOCAL_PTR_NULL;
+    }
+
+    return KeepHiddenCameraDetection(rawCallback);
 }
 } // namespace Telephony
 } // namespace OHOS

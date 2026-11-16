@@ -22,7 +22,6 @@
 #ifdef CORE_SERVICE_SUPPORT_ESIM
 #include "esim_service_client.h"
 #include "esim_controller.h"
-#include "tel_profile_util.h"
 namespace OHOS {
 namespace Telephony {
 static constexpr const char* LAST_DEACTIVE_PROFILE = "persist.telephony.last_deactive_profile";
@@ -52,12 +51,6 @@ bool EsimManager::OnInit(int32_t slotCount)
             esimFiles_[slotId] = std::make_shared<EsimFile>(telRilManager_, slotId);
             esimFilesLowPriority_[slotId] = std::make_shared<EsimFile>(telRilManager_, slotId);
         }
-    }
-    auto telProfileUtil = DelayedSingleton<TelProfileUtil>::GetInstance();
-    if (telProfileUtil != nullptr) {
-        std::string key = "enabled_profile_num";
-        enabledProfileNum_ = telProfileUtil->ObtainInt(key, 0);
-        TELEPHONY_LOGI("obtain enabled profile num, num = %{public}d", enabledProfileNum_.load());
     }
     return true;
 }
@@ -433,17 +426,11 @@ void EsimManager::PublishEsimProfileChange(int32_t slotId, int32_t what, int32_t
         TELEPHONY_LOGE("bad slotId: %{public}d", slotId);
         return;
     }
-    if (what >= RADIO_ESIM_ENABLING_PROFLIE_START && what <= RADIO_ESIM_RESET_MEMORY_END) {
-        observerHandler_->NotifyObserver(what, slotId);
-    } else if (what == RADIO_ESIM_ENABLED_PROFILE_NUM) {
+    if (what == RADIO_ESIM_ENABLED_PROFILE_NUM) {
         enabledProfileNum_ = param;
         observerHandler_->NotifyObserver(what, param);
-        auto telProfileUtil = DelayedSingleton<TelProfileUtil>::GetInstance();
-        if (telProfileUtil != nullptr) {
-            std::string key = "enabled_profile_num";
-            auto ret = telProfileUtil->SaveInt(key, param);
-            TELEPHONY_LOGI("save enabled profile num, num = %{public}d, ret = %{public}d", param, ret);
-        }
+    } else if (what >= RADIO_ESIM_ENABLING_PROFLIE_START && what <= RADIO_ESIM_END) {
+        observerHandler_->NotifyObserver(what, slotId);
     }
 }
 

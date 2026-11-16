@@ -103,6 +103,8 @@ public:
     void CheckIfNeedSwitchMainSlotId(bool isUserSet);
     int32_t SetTargetPrimarySlotId(bool isDualCard, int32_t primarySlotId);
     int32_t SwapM0M2SimCards(int32_t slotId);
+    int32_t SwapTwoModemSimCards(int32_t slotId);
+    int32_t UpdateDBActiveByIccId(const std::string iccId, int32_t enable);
 
 public:
     int32_t unInitModemSlotId_ = INVALID_VALUE;
@@ -177,7 +179,6 @@ private:
     bool IsESimUpdateStatus(int32_t slotId);
     void SimDataBuilder(int32_t slotId, DataShare::DataShareValuesBucket &values, const std::string &iccId,
         int32_t simLabel, bool isEsim);
-    int32_t UpdateDBActiveByIccId(const std::string iccId, int32_t enable);
     void UpdateActiveSimInProgress(int32_t slotId, int32_t enable);
     void RetrySetPrimarySlotId(int32_t slotId);
 

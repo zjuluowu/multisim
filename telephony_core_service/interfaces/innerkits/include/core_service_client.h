@@ -1025,6 +1025,18 @@ public:
      */
     bool IsMultiSimsCapabilitySupported(int32_t slotId);
 
+    /**
+     * @brief Start hidden camera detection.
+     *
+     * @param callback[in], detection status callback
+     * @param config[in], detection configuration
+     * @return int32_t TELEPHONY_SUCCESS on success, others on failure.
+     */
+    int32_t StartHiddenCameraDetection(const sptr<IHiddenCameraDetectionCallback> &callback,
+        const HiddenCameraDetectionConfig &config, int64_t timeoutMs = DEFAULT_RAW_CALLBACK_TIMEOUT_MS);
+    int32_t StopHiddenCameraDetection(int64_t timeoutMs = DEFAULT_RAW_CALLBACK_TIMEOUT_MS);
+    int32_t KeepHiddenCameraDetection(int64_t timeoutMs = DEFAULT_RAW_CALLBACK_TIMEOUT_MS);
+
 private:
     void RemoveDeathRecipient(const wptr<IRemoteObject> &remote, bool isRemoteDied);
     class CoreServiceDeathRecipient : public IRemoteObject::DeathRecipient {

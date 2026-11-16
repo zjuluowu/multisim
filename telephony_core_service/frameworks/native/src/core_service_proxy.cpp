@@ -3574,6 +3574,113 @@ int32_t CoreServiceProxy::StopManualNetworkScanCallback(int32_t slotId)
     return reply.ReadInt32();
 }
 
+int32_t CoreServiceProxy::StartHiddenCameraDetection(
+    const sptr<IHiddenCameraDetectionCallback> &callback, const HiddenCameraDetectionConfig &config,
+    const sptr<IRawParcelCallback> &rawCallback)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option(MessageOption::TF_ASYNC);
+    if (!WriteInterfaceToken(data)) {
+        TELEPHONY_LOGE("StartHiddenCameraDetection WriteInterfaceToken failed");
+        return TELEPHONY_ERR_WRITE_DESCRIPTOR_TOKEN_FAIL;
+    }
+    if (!data.WriteUint32(static_cast<uint32_t>(config.period))) {
+        TELEPHONY_LOGE("StartHiddenCameraDetection write period failed");
+        return TELEPHONY_ERR_WRITE_DATA_FAIL;
+    }
+    if (callback == nullptr) {
+        TELEPHONY_LOGE("StartHiddenCameraDetection callback is nullptr");
+        return TELEPHONY_ERR_ARGUMENT_INVALID;
+    }
+    if (!data.WriteRemoteObject(callback->AsObject())) {
+        TELEPHONY_LOGE("StartHiddenCameraDetection write callback failed");
+        return TELEPHONY_ERR_WRITE_DATA_FAIL;
+    }
+    if (rawCallback == nullptr) {
+        TELEPHONY_LOGE("StartHiddenCameraDetection rawCallback is nullptr");
+        return TELEPHONY_ERR_ARGUMENT_INVALID;
+    }
+    if (!data.WriteRemoteObject(rawCallback->AsObject())) {
+        TELEPHONY_LOGE("StartHiddenCameraDetection write rawCallback failed");
+        return TELEPHONY_ERR_WRITE_DATA_FAIL;
+    }
+    auto remote = Remote();
+    if (remote == nullptr) {
+        TELEPHONY_LOGE("StartHiddenCameraDetection Remote is null");
+        return TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL;
+    }
+    int32_t error = remote->SendRequest(
+        static_cast<uint32_t>(CoreServiceInterfaceCode::START_HIDDEN_CAMERA_DETECTION), data, reply, option);
+    if (error != ERR_NONE) {
+        TELEPHONY_LOGE("StartHiddenCameraDetection SendRequest error: %{public}d", error);
+        return TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL;
+    }
+    return TELEPHONY_SUCCESS;
+}
+
+int32_t CoreServiceProxy::StopHiddenCameraDetection(const sptr<IRawParcelCallback> &rawCallback)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option(MessageOption::TF_ASYNC);
+    if (!WriteInterfaceToken(data)) {
+        TELEPHONY_LOGE("StopHiddenCameraDetection WriteInterfaceToken failed");
+        return TELEPHONY_ERR_WRITE_DESCRIPTOR_TOKEN_FAIL;
+    }
+    if (rawCallback == nullptr) {
+        TELEPHONY_LOGE("StopHiddenCameraDetection rawCallback is nullptr");
+        return TELEPHONY_ERR_ARGUMENT_INVALID;
+    }
+    if (!data.WriteRemoteObject(rawCallback->AsObject())) {
+        TELEPHONY_LOGE("StopHiddenCameraDetection write rawCallback failed");
+        return TELEPHONY_ERR_WRITE_DATA_FAIL;
+    }
+    auto remote = Remote();
+    if (remote == nullptr) {
+        TELEPHONY_LOGE("StopHiddenCameraDetection Remote is null");
+        return TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL;
+    }
+    int32_t error = remote->SendRequest(
+        static_cast<uint32_t>(CoreServiceInterfaceCode::STOP_HIDDEN_CAMERA_DETECTION), data, reply, option);
+    if (error != ERR_NONE) {
+        TELEPHONY_LOGE("StopHiddenCameraDetection SendRequest error: %{public}d", error);
+        return TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL;
+    }
+    return TELEPHONY_SUCCESS;
+}
+
+int32_t CoreServiceProxy::KeepHiddenCameraDetection(const sptr<IRawParcelCallback> &rawCallback)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option(MessageOption::TF_ASYNC);
+    if (!WriteInterfaceToken(data)) {
+        TELEPHONY_LOGE("KeepHiddenCameraDetection WriteInterfaceToken failed");
+        return TELEPHONY_ERR_WRITE_DESCRIPTOR_TOKEN_FAIL;
+    }
+    if (rawCallback == nullptr) {
+        TELEPHONY_LOGE("KeepHiddenCameraDetection rawCallback is nullptr");
+        return TELEPHONY_ERR_ARGUMENT_INVALID;
+    }
+    if (!data.WriteRemoteObject(rawCallback->AsObject())) {
+        TELEPHONY_LOGE("KeepHiddenCameraDetection write rawCallback failed");
+        return TELEPHONY_ERR_WRITE_DATA_FAIL;
+    }
+    auto remote = Remote();
+    if (remote == nullptr) {
+        TELEPHONY_LOGE("KeepHiddenCameraDetection Remote is null");
+        return TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL;
+    }
+    int32_t error = remote->SendRequest(
+        static_cast<uint32_t>(CoreServiceInterfaceCode::KEEP_HIDDEN_CAMERA_DETECTION), data, reply, option);
+    if (error != ERR_NONE) {
+        TELEPHONY_LOGE("KeepHiddenCameraDetection SendRequest error: %{public}d", error);
+        return TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL;
+    }
+    return TELEPHONY_SUCCESS;
+}
+
 int32_t CoreServiceProxy::SetSimLabelIndex(
     int32_t simId, int32_t simLabelIndex, const sptr<IRawParcelCallback> &callback)
 {

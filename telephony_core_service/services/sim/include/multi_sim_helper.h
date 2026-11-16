@@ -36,10 +36,15 @@ public:
         int32_t simLabel, bool isEsim);
     void BuildSimPresentValues(int32_t slotId, DataShare::DataShareValuesBucket &values, const std::string &iccId);
     bool IsValidSlotString(const char* slotIdStr);
+    static bool IsValidSci(int32_t sci);
+    static bool ParseSci(const std::string &sciStr, int32_t &sci);
     int32_t GetPsimLabelIndex(int slotId);
-    bool IsEsim(int32_t slotId);
+    bool IsEsim(int32_t slotId) const;
+    static bool IsEsimSlot(int32_t slotId, bool isEuiccAtr);
+    static void GetEsimSci(std::vector<int> &sci);
 
 private:
+    static bool IsMff2Esim(int32_t slotId, bool isTstsMode, bool isSupportEsimMep);
     bool PublishSimFileEvent(const AAFwk::Want &want, int eventCode, const std::string &eventData);
 
     int32_t tstsMode_ = 0;
