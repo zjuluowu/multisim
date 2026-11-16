@@ -43,9 +43,11 @@ def check_directory_migration(source, token_sequence, *, repo=None):
     if len(set(names)) != len(rows) or set(names) != inputs:
         raise ValueError('Directory map must cover every committed module input exactly once')
     outputs = [r['target'] for r in rows]
+    from documentation_migration import documentation_moves, module_destinations
+    moved_docs = documentation_moves(source)
     from check_structure import module_files
     actual = {p.relative_to(source).as_posix() for p in module_files(source)}
-    if len(set(outputs)) != len(rows) or set(outputs) != actual:
+    if len(set(outputs)) != len(rows) or module_destinations(outputs, moved_docs) != actual:
         raise ValueError('Directory map destinations differ from actual module files')
     before = committed_inputs(repo, manifest['baseline'], prefix, names)
     moves = {r['old']: r['target'] for r in rows if r['old'] != r['target']}
@@ -56,6 +58,8 @@ def check_directory_migration(source, token_sequence, *, repo=None):
         original = before[name]
         if hashlib.sha256(original).hexdigest() != row['sha256']:
             raise ValueError('Directory input digest mismatch: ' + name)
+        if target in moved_docs and moved_docs[target].read_bytes() != original:
+            raise ValueError('Canonical documentation differs from directory input: ' + name)
         if Path(name).suffix in {'.h', '.cpp'} or name == 'BUILD.gn':
             expected = original
             for old, new in sorted(moves.items(), key=lambda pair: -len(pair[0])):
@@ -67,4 +71,5 @@ def check_directory_migration(source, token_sequence, *, repo=None):
                 raise ValueError('Directory changed bytes beyond mapped paths: ' + name)
             if Path(name).suffix in {'.h', '.cpp'} and token_sequence(original.decode()) != token_sequence(current.decode()):
                 raise ValueError('Directory changed C++ behavior/type layout: ' + name)
-    print(f'directory migration: PASS ({len(rows)} inputs; exact mapped C++/GN bytes; no target policy change)', flush=True)
+    print(f'directory migration: PASS ({len(rows)} inputs; {len(actual)} module destinations; '
+          f'{len(moved_docs)} canonical document; exact mapped C++/GN bytes; no target policy change)', flush=True)

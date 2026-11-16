@@ -22,8 +22,14 @@ class BoundaryGuard(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.temporary = tempfile.TemporaryDirectory(prefix="multisim-boundary-negative-")
-        cls.source = Path(cls.temporary.name) / "multisim"
+        cls.source = Path(cls.temporary.name) / "core/services/multisim"
         shutil.copytree(SOURCE, cls.source, ignore=shutil.ignore_patterns("test", "tools"))
+        from documentation_migration import documentation_moves
+        cls.documents = documentation_moves(SOURCE)
+        for path in cls.documents.values():
+            target = cls.source.parents[1] / path.relative_to(SOURCE.parents[1])
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(path, target)
 
     @classmethod
     def tearDownClass(cls):
@@ -112,6 +118,43 @@ class BoundaryGuard(unittest.TestCase):
 
     def test_move_preserves_gn_visibility(self):
         self.check_mapped_mutation("BUILD.gn", lambda s: s.replace('":*"', '"//*"', 1))
+
+    def test_documentation_migration(self):
+        from documentation_migration import documentation_moves
+        for old, original in self.documents.items():
+            target = self.source.parents[1] / original.relative_to(SOURCE.parents[1])
+            before = target.read_bytes()
+            with self.subTest(case="canonical missing"):
+                target.unlink()
+                try:
+                    with self.assertRaisesRegex(ValueError, "Canonical documentation missing"):
+                        documentation_moves(self.source)
+                finally:
+                    target.write_bytes(before)
+            with self.subTest(case="canonical drift"):
+                target.write_bytes(before + b'\nchanged\n')
+                try:
+                    with self.assertRaisesRegex(ValueError, "Canonical documentation digest differs"):
+                        documentation_moves(self.source)
+                finally:
+                    target.write_bytes(before)
+            with self.subTest(case="retired copy restored"):
+                retired = self.source / old
+                retired.write_bytes(before)
+                try:
+                    with self.assertRaisesRegex(ValueError, "Retired documentation copy still exists"):
+                        documentation_moves(self.source)
+                finally:
+                    retired.unlink()
+
+    def test_unregistered_document_is_not_excluded(self):
+        path = self.source / "unregistered.md"
+        path.write_text("Unregistered module documentation\n")
+        try:
+            with self.assertRaisesRegex(ValueError, "Directory map destinations differ"):
+                check_directory_migration(self.source, token_sequence, repo=SOURCE.parents[2])
+        finally:
+            path.unlink()
 
     def test_retired_top_level_directory(self):
         for name in ("common", "support", "integration", "startup", "compatibility", "card_selection"):

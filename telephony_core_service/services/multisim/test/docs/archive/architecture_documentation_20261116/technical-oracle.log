@@ -1,0 +1,20 @@
+test_actual_differences_are_not_ignored (__main__.PrimaryOraclePolicy.test_actual_differences_are_not_ignored) ... ok
+test_complete_observation (__main__.PrimaryOraclePolicy.test_complete_observation) ... ok
+test_different_scenarios_blocked (__main__.PrimaryOraclePolicy.test_different_scenarios_blocked) ... ok
+test_legacy_fail_target_pass_requires_adjudication (__main__.PrimaryOraclePolicy.test_legacy_fail_target_pass_requires_adjudication) ... ok
+test_missing_measurements_fail (__main__.PrimaryOraclePolicy.test_missing_measurements_fail) ... ok
+test_new_regression_fails (__main__.PrimaryOraclePolicy.test_new_regression_fails) ... ok
+test_noncontract_fields_do_not_cause_diff (__main__.PrimaryOraclePolicy.test_noncontract_fields_do_not_cause_diff) ... ok
+test_persistence_hash (__main__.PrimaryOraclePolicy.test_persistence_hash) ... ok
+test_publication_identity (__main__.PrimaryOraclePolicy.test_publication_identity) ... ok
+test_publication_order (__main__.PrimaryOraclePolicy.test_publication_order) ... ok
+test_return_before_publication (__main__.PrimaryOraclePolicy.test_return_before_publication) ... ok
+test_unexpected_device_request (__main__.PrimaryOraclePolicy.test_unexpected_device_request) ... ok
+test_wrong_final_role (__main__.PrimaryOraclePolicy.test_wrong_final_role) ... ok
+test_wrong_return (__main__.PrimaryOraclePolicy.test_wrong_return) ... ok
+test_wrong_target (__main__.PrimaryOraclePolicy.test_wrong_target) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.003s
+
+OK

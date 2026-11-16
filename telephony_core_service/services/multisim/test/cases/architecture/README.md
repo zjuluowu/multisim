@@ -2,6 +2,8 @@
 
 当前物理组织为[五组目录](../../../../../docs/SIM重构代码目录结构设计方案.md)，本批迁移见[映射及验收](../../../../../docs/SIM_Directory_Migration_20261112.md)。以下有日期的B+/G2a记录保留当时路径；当前运行由SOURCE_GROUPS、source_migration的live destinations及directory_migration_20261112.json精确约束。新增校验要求91个输入全部有Owner，88个C++单元和GN仅允许映射路径字节变化；历史输入摘要不重写。目录白名单拒绝重新引入common/support/integration/startup等顶层代码池。
 
+2026-11-16文档归位：`documentation_migration.json`单独记录模块内带空格旧副本→部件`docs/SIM重构代码目录结构设计方案.md`，历史清单及SHA保持原文。检查91项历史输入的去向为90项模块文件及1份权威文档，验证权威文档与原提交字节相同，并拒绝恢复旧副本、权威文档缺失/漂移及未登记模块文档。测试工程冻结快照不改写，工具和本导航的后续摘要由`docs/Test_Architecture_Followups_20261116.json`显式记录；业务、JSON历史清单和证据资产仍保持原校验。
+
 从仓库根目录运行：
 
 ```sh

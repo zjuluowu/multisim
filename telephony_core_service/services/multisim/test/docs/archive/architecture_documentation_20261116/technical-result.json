@@ -1,0 +1,53 @@
+{
+  "commands": [
+    {
+      "suite": "source-tables",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/architecture/test_g2a_source_tables.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "/tmp/sim-guard-fix-20261116/technical/test-s1v4z0va/source-tables.log"
+    },
+    {
+      "suite": "oracle",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_slot/oracle/test_primary_oracle.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "/tmp/sim-guard-fix-20261116/technical/test-s1v4z0va/oracle.log"
+    },
+    {
+      "suite": "classifier",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/infrastructure/test_legacy_primary_contract.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "/tmp/sim-guard-fix-20261116/technical/test-s1v4z0va/classifier.log"
+    },
+    {
+      "suite": "ci-policy",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/infrastructure/test_ci_sim028.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "/tmp/sim-guard-fix-20261116/technical/test-s1v4z0va/ci-policy.log"
+    }
+  ],
+  "counting": "Child reports retain business/GTest/defect and mutation counts; commands are not business cases."
+}

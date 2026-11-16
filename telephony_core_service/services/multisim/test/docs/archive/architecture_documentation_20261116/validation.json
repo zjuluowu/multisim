@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-16",
+  "scope": "Architecture guard reconciliation for canonical docs and removal of the duplicate design copy; no production or business changes.",
+  "workspace_head": "abd07fd85e87eba0f0883599538548bbcc09d8f2",
+  "remote_input": "74e25901ddec1c1714998e4ed1b40488f418b5fc",
+  "workspace_input": {
+    "base": "74e25901ddec1c1714998e4ed1b40488f418b5fc",
+    "different": [],
+    "missing": []
+  },
+  "recovery": {
+    "status": "CHECKPOINT_VERIFIED",
+    "remote_refs_refreshed": true,
+    "g2a_checkpoint": "cc787945792527eeb94bc20a5e955315d6269e83",
+    "g2a_branch_tip": "728ad77ed4c723efbb5cb1baf7b3f10bb9830240",
+    "runtime_test_executed": false
+  },
+  "canonical_document": {
+    "path": "telephony_core_service/docs/SIM重构代码目录结构设计方案.md",
+    "sha256": "28864a01afe3ccff3a6b08eadbd3188fbe3414bb8d92477900402a30ee124562",
+    "retired_copy": "telephony_core_service/services/multisim/SIM 重构代码目录结构设计方案.md"
+  },
+  "before": {
+    "exit_code": 1,
+    "reason": "FileNotFoundError for the retired module design copy, independently reproduced on the remote input commit."
+  },
+  "after": {
+    "workspace_full_architecture_exit_code": 0,
+    "publication_checkout_commands": [
+      {
+        "name": "publication-architecture",
+        "command": [
+          "python3",
+          "-B",
+          "telephony_core_service/services/multisim/test/scripts/run_architecture.py",
+          "--with-gn",
+          "--migration",
+          "--output",
+          "/tmp/sim-guard-fix-20261116/publication-architecture"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "publication-integrity",
+        "command": [
+          "python3",
+          "-B",
+          "telephony_core_service/services/multisim/test/scripts/check_test_integrity.py"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "publication-relocation",
+        "command": [
+          "python3",
+          "-B",
+          "telephony_core_service/services/multisim/test/scripts/check_relocation.py"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "cpp_units": 88,
+    "combined_header_tu": 1,
+    "includes": 157,
+    "logical_targets": 25,
+    "structural_tests": 17,
+    "declaration_compile_negative_controls": 5,
+    "pure_rule_suites": [
+      "topology",
+      "resource",
+      "assignment",
+      "runtime_protocol"
+    ],
+    "gn_check_and_ninja": "PASS",
+    "original_provenance_inputs": 73,
+    "historical_layout_inputs": 88,
+    "directory_inputs": 91,
+    "module_destinations": 90,
+    "canonical_documents": 1,
+    "test_mappings": 943,
+    "immutable_assets": 838,
+    "test_relocation_inputs": 219,
+    "tooling_followups": 5,
+    "tooling_followup_negative_controls": 2,
+    "source_table_tests": 14,
+    "oracle_tests": 15,
+    "classifier_tests": 13,
+    "ci_policy_tests": 13
+  },
+  "unchanged_historical_manifests": [
+    "cases/architecture/source_migration.json",
+    "cases/architecture/directory_migration_20261112.json",
+    "docs/Test_Architecture_Migration.json"
+  ],
+  "not_run": [
+    "Full Host business regression",
+    "G2a business scenarios",
+    "Target business and legacy/target differential",
+    "OHOS product/hb/SO/SA/IPC/HDI/device/eSIM"
+  ],
+  "limits": "Architecture/host tooling evidence does not prove production admission, write ownership migration or business correctness. Existing five Legacy failures and Target blockers remain as recorded in the execution state."
+}

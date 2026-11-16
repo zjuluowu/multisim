@@ -1,0 +1,18 @@
+test_added_assertion_on_known_case_rejects (__main__.AdmissionPolicy.test_added_assertion_on_known_case_rejects) ... ok
+test_crash_cannot_masquerade_as_known_failure (__main__.AdmissionPolicy.test_crash_cannot_masquerade_as_known_failure) ... ok
+test_exact_known_failures_are_still_failures (__main__.AdmissionPolicy.test_exact_known_failures_are_still_failures) ... ok
+test_exit_code_does_not_override_failure_xml (__main__.AdmissionPolicy.test_exit_code_does_not_override_failure_xml) ... ok
+test_known_failure_fix_requires_policy_review (__main__.AdmissionPolicy.test_known_failure_fix_requires_policy_review) ... ok
+test_missing_duplicate_and_skip_reject (__main__.AdmissionPolicy.test_missing_duplicate_and_skip_reject) ... ok
+test_missing_oracle_metadata_rejects (__main__.AdmissionPolicy.test_missing_oracle_metadata_rejects) ... ok
+test_new_case_failure_rejects_admission (__main__.AdmissionPolicy.test_new_case_failure_rejects_admission) ... ok
+test_new_failure_on_existing_pass_case_rejects (__main__.AdmissionPolicy.test_new_failure_on_existing_pass_case_rejects) ... ok
+test_path_normalization_preserves_assertions (__main__.AdmissionPolicy.test_path_normalization_preserves_assertions) ... ok
+test_running_prefix_is_a_real_suite_not_a_banner (__main__.AdmissionPolicy.test_running_prefix_is_a_real_suite_not_a_banner) ... ok
+test_source_root_spaces_normalize (__main__.AdmissionPolicy.test_source_root_spaces_normalize) ... ok
+test_zero_or_malformed_xml_rejects (__main__.AdmissionPolicy.test_zero_or_malformed_xml_rejects) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.016s
+
+OK

@@ -1,0 +1,27 @@
+{
+  "commands": [
+    {
+      "suite": "integrity",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/check_test_integrity.py"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "/tmp/sim-guard-fix-20261116/integrity/test-48qdlm_g/integrity.log"
+    },
+    {
+      "suite": "relocation",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/check_relocation.py"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "/tmp/sim-guard-fix-20261116/integrity/test-48qdlm_g/relocation.log"
+    }
+  ],
+  "counting": "Child reports retain business/GTest/defect and mutation counts; commands are not business cases."
+}

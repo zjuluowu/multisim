@@ -9,6 +9,33 @@ import subprocess
 from _paths import TEST, REPO, CORE
 
 
+def current_output_digests(rows):
+    """Keep the frozen migration snapshot, with explicit tooling-only follow-ups."""
+    followups = json.loads((TEST / 'docs/Test_Architecture_Followups_20261116.json').read_text())
+    allowed = {'cases/architecture/README.md', 'cases/architecture/check_directory_migration.py',
+               'cases/architecture/check_structure.py', 'cases/architecture/test_structure.py',
+               'scripts/check_relocation.py'}
+    updates = followups['files']
+    if followups['schema_version'] != 1 or set(updates) != allowed:
+        raise RuntimeError('Follow-ups must cover exactly the authorized documentation/tooling changes')
+    indexed = {r['new']: r for r in rows}
+    prefix = str(TEST.relative_to(REPO)) + '/'
+    specs = [followups['baseline'] + ':' + prefix + name for name in updates]
+    raw = subprocess.check_output(['git', 'cat-file', '--batch'],
+                                  input=('\n'.join(specs) + '\n').encode(), cwd=REPO)
+    stream = BytesIO(raw)
+    for name, update in updates.items():
+        header = stream.readline().decode().split()
+        if len(header) != 3 or header[1] != 'blob':
+            raise RuntimeError('Missing committed follow-up input: ' + name)
+        before = stream.read(int(header[2]))
+        if (stream.read(1) != b'\n' or not update['reason']
+                or hashlib.sha256(before).hexdigest() != indexed[name]['after_sha256']
+                or update['previous_sha256'] != indexed[name]['after_sha256']):
+            raise RuntimeError('Follow-up input differs from frozen migration output: ' + name)
+    return {name: update['current_sha256'] for name, update in updates.items()}
+
+
 def check():
     manifest = json.loads((TEST / 'docs/Test_Architecture_Migration.json').read_text())
     rows = manifest['files']
@@ -43,10 +70,11 @@ def check():
     if originals['sim_guard/oracle/primary_oracle.py'] != (TEST / 'cases/primary_slot/oracle/primary_oracle.py').read_bytes():
         raise RuntimeError('Primary business Oracle changed')
     immutable = 0
+    current_digests = current_output_digests(rows)
     for row in rows:
         path = TEST / row['new']
         digest = hashlib.sha256(path.read_bytes()).hexdigest()
-        if digest != row['after_sha256']:
+        if digest != current_digests.get(row['new'], row['after_sha256']):
             raise RuntimeError('Output drift: ' + row['new'])
         # Business tests/Fake/Adapter/Golden, all JSON and all evidence keep their bytes.
         frozen = path.suffix in {'.cpp', '.h', '.hpp', '.json'} or row['new'].startswith('docs/archive/')
@@ -65,7 +93,8 @@ def check():
             for line in path.read_text().splitlines():
                 if line.lstrip().startswith('#include') and '/cases/' in line:
                     raise RuntimeError('Framework depends on case: ' + str(path))
-    print(f'integrity: PASS ({len(rows)} input/output mappings; {immutable} immutable assets)')
+    print(f'integrity: PASS ({len(rows)} input/output mappings; {immutable} immutable assets; '
+          f'{len(current_digests)} explicit tooling/documentation follow-ups)')
 
 
 if __name__ == '__main__':

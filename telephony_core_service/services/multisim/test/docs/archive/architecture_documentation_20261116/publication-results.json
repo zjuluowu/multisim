@@ -1,0 +1,33 @@
+[
+  {
+    "name": "publication-architecture",
+    "command": [
+      "python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/run_architecture.py",
+      "--with-gn",
+      "--migration",
+      "--output",
+      "/tmp/sim-guard-fix-20261116/publication-architecture"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "publication-integrity",
+    "command": [
+      "python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/check_test_integrity.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "publication-relocation",
+    "command": [
+      "python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/check_relocation.py"
+    ],
+    "exit_code": 0
+  }
+]

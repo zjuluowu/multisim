@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "files": {
+    "SIM 重构代码目录结构设计方案.md": {
+      "target": "docs/SIM重构代码目录结构设计方案.md",
+      "sha256": "28864a01afe3ccff3a6b08eadbd3188fbe3414bb8d92477900402a30ee124562",
+      "reason": "权威设计保留在部件docs目录，文件名去掉空格；删除services/multisim下的重复副本，历史输入及摘要不变。"
+    }
+  }
+}

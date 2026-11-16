@@ -1,5 +1,7 @@
 # 多 SIM 重构执行状态
 
+2026-11-16目录文档护栏冲突已修复，当前完整架构验证通过，见[§33](#documentation-guard-20261116)；该结果不扩大生产迁移或产品验收范围。
+
 测试工程职责整理与本次前后对照见[§31](#test-architecture-20261113)；生产迁移状态和旧批次结论不变。
 
 本文件集中维护当前实施位置、证据、局部阻塞和下一批任务；当前五组目录实施及本轮实测见[§29](#directory-layout-20261112)，本次发布授权及预检见[§30](#directory-publication-20261112)，以下旧批次按原日期/输入解释；技术决策继续由[目标主设计](SIM_Target_Architecture_Design_v1.2.md)维护，流程由[流程对照](多SIM架构重构_设计说明与业务流程对照.md)维护，历史裁决留在[原评审](SIM_Target_Architecture_Independent_Review_2026-10-29.md)。最近恢复/一致性核对：2026-11-11；SetPrimarySlotId入口及整链阻塞见[§16](#primary-slot-test-20261111)；Windows VS Code + WSL Host工程及本轮实测见[§15](#wsl-host-20261111)；测试工程内聚迁移见[§13](#test-relocation-20261109)，本地开闭源复审增量见[§12](#open-closed-followup-20261109)，历史分支合入main及重验见[§11](#main-integration-20261105)，G2a工作分支复验见[§10](#g2a-revalidation-20261105)，测试防护网首批见[§8](#sim-guard-20261104)，第二轮结果及阻塞见[§9](#sim-guard-round2)。此前G2a记录保留，各历史运行结果仍按其原日期、基线和覆盖范围解释。
@@ -906,3 +908,17 @@ Target实际StartPrimarySwitch、SwitchPrimaryRadio仍仅声明/流程注释，�
 业务结果沿用§31实际前后对照：Host64项59 PASS/5原有FAIL、G2a7/7、两种突变检出及恢复、Target/真实Primary及产品条件阻塞；本次发布不重复声称新的业务或产品验收。原工作区.git只读，使用同基线的仓外独立克隆按逐文件白名单复制内容及删除，保留Git模式和迁址识别；原工作区和其他worktree不变。只对明确成果暂存和常规推送origin/main，不强推、不合并、不变基。保存点通过包含本节的实际Git提交定位，推送后核对远端SHA和祖先包含关系，不在本节自引用提交SHA。
 
 独立发布克隆已由恢复脚本实际fetch并获得CHECKPOINT_VERIFIED：远端main仍为输入SHA，G2a历史检查点cc787945及其728ad77e分支tip来源/证据可达。首次单分支克隆缺少该旁支历史对象，补取固定检查点后，当前迁移检查已到达并复现文档副本缺失的同一FAIL；没有缺省跳过历史输入检查。恢复检查不运行业务测试，完整输出随本轮发布预检归档。
+
+<a id="documentation-guard-20261116"></a>
+
+### 33. 权威目录设计文档归位与完整架构护栏恢复（2026-11-16）
+
+用户明确要求解决目录清单与文档副本删除的冲突并恢复完整架构验证。权威文档为docs/SIM重构代码目录结构设计方案.md，文件名已去掉空格；services/multisim下带空格旧副本不恢复。原工作区main@abd07fd85e87eba0f0883599538548bbcc09d8f2、暂存区为空，既有大量测试迁址差异保留；输入逐项对比已发布origin/main@74e25901ddec1c1714998e4ed1b40488f418b5fc，所有受控文件内容一致，无缺失。恢复工具本轮fetch成功，CHECKPOINT_VERIFIED，历史cc787945及728ad77e可达；工具本身不运行业务测试。原工作区引用和其他worktree不切换、不合并、不变基。
+
+保留source_migration.json、directory_migration_20261112.json及Test_Architecture_Migration.json的历史字节和摘要，新增documentation_migration.json明确登记旧副本→权威docs路径。两条迁移护栏同时核对原提交、原摘要、权威文档实际字节和旧副本缺席，91项历史输入对应90项模块文件及1份权威文档。未按后缀跳过文档或忽略丢失输入；C++成员/token、GN精确路径映射/public/visibility及未登记文件检查继续生效。测试冻结快照不改写，五项工具/导航后续变更由独立清单核实固定提交、原摘要及当前摘要；业务、Fake、Oracle、Golden、历史JSON和证据资产不进入演进白名单。
+
+独立检出远端输入后实际复现旧副本缺失的FileNotFoundError/exit1。修复后原工作区及同基线独立发布副本均实际运行完整run_architecture.py --with-gn --migration，exit0：73项原溯源、88项历史布局、91项目录映射、88个独立编译单元及合并头、157 include/25逻辑target、17项结构测试、5项声明编译负控、四组纯规则、GN gen --check及Ninja全骨架对象构建通过。原成员/visibility负控恢复；新增权威文档缺失/漂移、旧副本恢复、未登记模块文档均拒绝。额外两个工具演进负控（加入业务文件白名单、未登记工具漂移）均检出，独立副本随后逐项恢复原字节。
+
+测试工程完整性943项映射/838项受控资产、原迁址219项、源表14项、Oracle15项、分类器13项及CI策略13项通过；完整性及原迁址也在独立发布副本通过。git diff --check通过。本批仅修改测试护栏、演进清单和导航/执行状态；不改权威设计正文、历史清单、生产C++或GN，不重跑完整Host业务、G2a七场景、Target差分或产品/设备。五个旧缺陷、Target真实写业务/Adapter、SO/生命周期及匹配OHOS产品/hb/SA/IPC/HDI/设备/eSIM门禁继续按原记录保留；本轮架构PASS不能替代其验收。
+
+[本批仓内证据、输入摘要、前后日志及复现入口](../services/multisim/test/docs/archive/architecture_documentation_20261116/README.md)保存完整结果，不依赖临时目录恢复。本批按根AGENTS的持续发布授权，仅逐文件提交本批成果并常规推送origin/main；从已发布74e25901基线的独立副本发布，原工作区既有修改和旧HEAD保留。首次本地克隆未带远端新提交对象，显式fetch main及固定历史旁支后检出同一输入并完成验证；不以缺对象为由跳过历史核查。发布前再核实远端，分歧/保护拒绝即保留成果并报告；实际提交与推送后SHA/包含关系通过Git核实，不在本节自引用提交SHA。

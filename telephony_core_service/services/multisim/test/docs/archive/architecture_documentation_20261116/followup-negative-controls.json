@@ -1,0 +1,14 @@
+[
+  {
+    "name": "business-followup-rejected",
+    "exit_code": 1,
+    "expected_error": "Follow-ups must cover exactly",
+    "detected": true
+  },
+  {
+    "name": "unregistered-tool-drift-rejected",
+    "exit_code": 1,
+    "expected_error": "Output drift: cases/architecture/README.md",
+    "detected": true
+  }
+]

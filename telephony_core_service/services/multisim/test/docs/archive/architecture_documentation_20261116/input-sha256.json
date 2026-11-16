@@ -1,0 +1,15 @@
+{
+  "telephony_core_service/services/multisim/test/cases/architecture/documentation_migration.json": "43a19a329e0502cc3f0ed66430695ba368aaa6104d99cea050342d0402d3112b",
+  "telephony_core_service/services/multisim/test/cases/architecture/documentation_migration.py": "3c2b81bedc1e2bca4f3ceff0b4431c25e0b88a4cb02c1c09167b6b58c2a0739f",
+  "telephony_core_service/services/multisim/test/cases/architecture/check_structure.py": "d5f6ca81c1e706431a072e92618fdfb5c8b4c380d00a0deb89e22f4744e85659",
+  "telephony_core_service/services/multisim/test/cases/architecture/check_directory_migration.py": "0c86740126bfa6e138a493fd17d06578609df6e0de17c5b950d9bfc91fe0c175",
+  "telephony_core_service/services/multisim/test/cases/architecture/test_structure.py": "4672df278b846301ca253c1676c6616c6871666ba02c3c7dc65c0cbdeced0956",
+  "telephony_core_service/services/multisim/test/cases/architecture/README.md": "3916f38d96afd317cf062593fcb01d60a1fb7f523f3550ba6bea38486dee4041",
+  "telephony_core_service/services/multisim/test/scripts/check_test_integrity.py": "284b080d10ad4d58bbd87b81d51a91184a8e4c79d97e58494e8b17cb30f8b034",
+  "telephony_core_service/services/multisim/test/scripts/check_relocation.py": "a3d131113fcf7b50c114b6685d5d3c6a631ddfe614a45eb1afba04c2f585fb22",
+  "telephony_core_service/services/multisim/test/docs/Test_Architecture_Followups_20261116.json": "2ddce047d5c84b9f0ecb015d0727a1cdc9240ad2d3e5aa586a9e9c56e36574f5",
+  "telephony_core_service/docs/SIM重构代码目录结构设计方案.md": "28864a01afe3ccff3a6b08eadbd3188fbe3414bb8d92477900402a30ee124562",
+  "telephony_core_service/services/multisim/test/cases/architecture/source_migration.json": "6c088613586e65e8d6b21bcb0921f23b9b20d2f47cc44509362572cfd17e4176",
+  "telephony_core_service/services/multisim/test/cases/architecture/directory_migration_20261112.json": "033296bd1ca88e354387b78c7270c529a7b18132ff28d99bf329781bcd72943d",
+  "telephony_core_service/services/multisim/test/docs/Test_Architecture_Migration.json": "03b241b5f6c277bfe8ce98e9a040a1ceec753c0000a5458be1f7ad73baf0f039"
+}

@@ -1,0 +1,17 @@
+structure: PASS {"files": 88, "includes": 157, "targets": 25}
+migration: PASS (73 original files, type definitions and implementation token order)
+Traceback (most recent call last):
+  File "/tmp/multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/test/scripts/run_architecture.py", line 92, in <module>
+    main()
+  File "/tmp/multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/test/scripts/run_architecture.py", line 58, in main
+    check_migration()
+  File "/tmp/multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/test/cases/architecture/check_structure.py", line 397, in check_migration
+    hashlib.sha256((SOURCE / entry["target"]).read_bytes()).hexdigest() != entry["sha256"]):
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1021, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1015, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/SIM 重构代码目录结构设计方案.md'

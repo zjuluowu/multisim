@@ -9,6 +9,8 @@ def check():
     manifest = json.loads(locate('relocation_manifest.json').read_text())
     followups = json.loads(locate('relocation_followups.json').read_text())['files']
     migration = json.loads((TEST / 'docs/Test_Architecture_Migration.json').read_text())
+    from check_test_integrity import current_output_digests
+    output_digests = current_output_digests(migration['files'])
     current = {r['old']: r for r in migration['files']}
     known = {entry['new'] for entry in manifest['files']}
     if set(followups) - known:
@@ -29,7 +31,8 @@ def check():
         actual = hashlib.sha256(path.read_bytes()).hexdigest()
         update = followups.get(entry['new'])
         expected = update['current_sha256'] if update else entry['after_sha256']
-        if row['before_sha256'] != expected or actual != row['after_sha256']:
+        current_expected = output_digests.get(row.get('new'), row['after_sha256'])
+        if row['before_sha256'] != expected or actual != current_expected:
             raise RuntimeError('Relocated input differs: ' + entry['new'])
         if update:
             if update['relocation_sha256'] != entry['after_sha256'] or not update['reason']:

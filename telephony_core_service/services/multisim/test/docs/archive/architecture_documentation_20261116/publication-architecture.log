@@ -1,0 +1,72 @@
+structure: PASS {"files": 88, "includes": 157, "targets": 25}
+migration: PASS (73 original files, type definitions and implementation token order)
+layout revision: PASS (88 files; C++ tokens unchanged outside directives)
+directory migration: PASS (91 inputs; 90 module destinations; 1 canonical document; exact mapped C++/GN bytes; no target policy change)
+.................
+----------------------------------------------------------------------
+Ran 17 tests in 0.945s
+
+OK
+open/closed declarations: PASS (enum/type assertions; 5 compiler negative controls; not product ABI)
+syntax: PASS (88 independent units and one combined header TU)
+PASS binding ABA/assembly, independent projections/field reload, discovery replacement, activation cleanup ownership
+topology: PASS (pure rules only)
+resource: PASS (pure rules only)
+assignment / completion / Profile protocol scenarios passed
+assignment: PASS (pure rules only)
+resource / factory publication scenarios passed
+runtime_protocol: PASS (pure rules only)
+Done. Made 27 targets from 4 files in 7ms
+ninja: Entering directory `/tmp/sim-guard-fix-20261116/publication-architecture/gn'
+[1/51] CXX ../../../multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/role_assignment/primary/primary_switch_plan.cpp
+[2/51] CXX ../../../multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/role_assignment/assignment_aggregate.cpp
+[3/51] CXX ../../../multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/role_assignment/assignment_service.cpp
+[4/51] CXX ../../../multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/infrastructure/compatibility/events/legacy_completion.cpp
+[5/51] CXX ../../../multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/infrastructure/compatibility/api/real_sim_count_query.cpp
+[6/51] touch obj/services/multisim/readonly_query.stamp
+[7/51] CXX ../../../multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/infrastructure/compatibility/api/legacy_sim_facade.cpp
+[8/51] CXX ../../../multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/infrastructure/compatibility/events/legacy_output_adapter.cpp
+[9/51] CXX ../../../multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/card/esim/local_card_requests.cpp
+[10/51] CXX ../../../multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp
+[11/51] CXX ../../../multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/card/records/load_session.cpp
+[12/51] CXX ../../../multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/card/runtime/card_runtime.cpp
+[13/51] CXX ../../../multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/device/resource/resource_barrier.cpp
+[14/51] CXX ../../../multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/infrastructure/assembly/slot_catalog.cpp
+[15/51] touch obj/services/multisim/sim_values.stamp
+[16/51] touch obj/services/multisim/assignment_types.stamp
+[17/51] touch obj/services/multisim/assignment_domain.stamp
+[18/51] touch obj/services/multisim/request_protocol.stamp
+[19/51] touch obj/services/multisim/assignment_contracts.stamp
+[20/51] touch obj/services/multisim/assignment_adapters.stamp
+[21/51] touch obj/services/multisim/assignment_protocols.stamp
+[22/51] touch obj/services/multisim/request_mechanism.stamp
+[23/51] touch obj/services/multisim/runtime_contracts.stamp
+[24/51] touch obj/services/multisim/runtime_cases.stamp
+[25/51] CXX ../../../multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/card/state/session_registry.cpp
+[26/51] touch obj/services/multisim/runtime_mechanisms.stamp
+[27/51] CXX ../../../multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/account/account_store_adapter.cpp
+[28/51] CXX ../../../multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/account/activation/activate_sim_use_case.cpp
+[29/51] CXX ../../../multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/account/number/show_number_query.cpp
+[30/51] CXX ../../../multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/account/number/set_show_number_use_case.cpp
+[31/51] CXX ../../../multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/account/topology_service.cpp
+[32/51] CXX ../../../multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/account/binding_index.cpp
+[33/51] CXX ../../../multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/account/activation/activation_progress.cpp
+[34/51] touch obj/services/multisim/topology_types.stamp
+[35/51] touch obj/services/multisim/topology_contracts.stamp
+[36/51] touch obj/services/multisim/assignment_cases.stamp
+[37/51] touch obj/services/multisim/compatibility_contracts.stamp
+[38/51] touch obj/services/multisim/assembly_contracts.stamp
+[39/51] touch obj/services/multisim/compatibility_core.stamp
+[40/51] touch obj/services/multisim/repository_exports.stamp
+[41/51] touch obj/services/multisim/runtime_core.stamp
+[42/51] touch obj/services/multisim/topology_adapters.stamp
+[43/51] CXX ../../../multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/account/discovery/discovery_observation_ledger.cpp
+[44/51] CXX ../../../multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/account/number/show_number_plan.cpp
+[45/51] CXX ../../../multisim-guard-publish-20261116-tzbwcrpq/telephony_core_service/services/multisim/account/account_registry.cpp
+[46/51] touch obj/services/multisim/topology_domain.stamp
+[47/51] touch obj/services/multisim/topology_protocols.stamp
+[48/51] touch obj/services/multisim/topology_cases.stamp
+[49/51] touch obj/services/multisim/assembly_core.stamp
+[50/51] touch obj/services/multisim/skeleton.stamp
+[51/51] touch obj/services/multisim/test/cases/architecture/all.stamp
+GN: PASS (all skeleton objects; no production link or startup)

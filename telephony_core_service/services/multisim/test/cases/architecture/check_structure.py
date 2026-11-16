@@ -388,16 +388,17 @@ def check_migration():
         raise ValueError("Layout revision must map every input file exactly once")
     actual = {p.relative_to(SOURCE).as_posix() for p in module_files(SOURCE)}
     additions = manifest.get("additions", [])
-    # A committed design copy was added after B+; register it with its exact digest,
-    # rather than excluding documentation from the complete-file guard.
+    # Preserve the committed copy's provenance, but check its explicit canonical destination.
     documentation = manifest.get("documentation_additions", [])
+    from documentation_migration import documentation_moves, module_destinations
+    moved_docs = documentation_moves(SOURCE)
     for entry in documentation:
         original = blobs[entry["source_commit"]][entry["source_path"]]
         if (hashlib.sha256(original).hexdigest() != entry["sha256"] or
-                hashlib.sha256((SOURCE / entry["target"]).read_bytes()).hexdigest() != entry["sha256"]):
+                hashlib.sha256(moved_docs[entry["target"]].read_bytes()).hexdigest() != entry["sha256"]):
             raise ValueError("Documentation addition differs: " + entry["target"])
-    if actual != ({entry["target"] for entry in entries} | {entry["target"] for entry in additions}
-                  | {entry["target"] for entry in documentation}):
+    if actual != module_destinations(
+            {entry["target"] for entry in entries + additions + documentation}, moved_docs):
         raise ValueError("Layout revision destinations differ from actual files")
     for entry in entries:
         before = blobs[revision["baseline"]][entry["old"]]

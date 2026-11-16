@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "baseline": "74e25901ddec1c1714998e4ed1b40488f418b5fc",
+  "files": {
+    "cases/architecture/README.md": {
+      "previous_sha256": "b00118db92edb273fb9d183429f7318b7293dc52a14c220390821b073b42d892",
+      "current_sha256": "3916f38d96afd317cf062593fcb01d60a1fb7f523f3550ba6bea38486dee4041",
+      "reason": "2026-11-16: explicitly track canonical docs destination and retired duplicate, retain exact source/GN and immutable business guards."
+    },
+    "cases/architecture/check_directory_migration.py": {
+      "previous_sha256": "f14ffcece76de3e5cedfc4efe2dfdd52ecc48b3ee046afc25546df30a61af6ab",
+      "current_sha256": "0c86740126bfa6e138a493fd17d06578609df6e0de17c5b950d9bfc91fe0c175",
+      "reason": "2026-11-16: explicitly track canonical docs destination and retired duplicate, retain exact source/GN and immutable business guards."
+    },
+    "cases/architecture/check_structure.py": {
+      "previous_sha256": "e0c992e3b85f64c8152346544a673a9e78bdbb68238154054d88e9e6c3b2d1fd",
+      "current_sha256": "d5f6ca81c1e706431a072e92618fdfb5c8b4c380d00a0deb89e22f4744e85659",
+      "reason": "2026-11-16: explicitly track canonical docs destination and retired duplicate, retain exact source/GN and immutable business guards."
+    },
+    "cases/architecture/test_structure.py": {
+      "previous_sha256": "b6a9e150a1ad66a41eaa7e654f25eebce496cf596ea5646bd2fc4b601ddca2db",
+      "current_sha256": "4672df278b846301ca253c1676c6616c6871666ba02c3c7dc65c0cbdeced0956",
+      "reason": "2026-11-16: explicitly track canonical docs destination and retired duplicate, retain exact source/GN and immutable business guards."
+    },
+    "scripts/check_relocation.py": {
+      "previous_sha256": "3d0fc8730f71cfbb5a77042d486e6b0b9b7dbddf20fea7a64e348db6575d1761",
+      "current_sha256": "a3d131113fcf7b50c114b6685d5d3c6a631ddfe614a45eb1afba04c2f585fb22",
+      "reason": "2026-11-16: explicitly track canonical docs destination and retired duplicate, retain exact source/GN and immutable business guards."
+    }
+  }
+}
