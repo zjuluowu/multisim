@@ -23,6 +23,11 @@
         "before": [
           "Build Host"
         ]
+      },
+      "testGrouping": {
+        "groupByExecutable": {
+          "groupBySource": {}
+        }
       }
     },
     {
@@ -40,6 +45,11 @@
         "before": [
           "Build Host"
         ]
+      },
+      "testGrouping": {
+        "groupByExecutable": {
+          "groupBySource": {}
+        }
       }
     }
   ],

@@ -17,3 +17,13 @@
 双击面板中的用例名称或使用“Go to Test”打开 TEST_F 所在文件及行号。在用例体或被调用的生产代码行号左侧设置断点，然后使用该用例的“Debug Test”（虫形图标或右键菜单）。普通运行按钮不启动调试器。TestMate 自动传入该用例的可执行文件、精确过滤参数和环境，不需要手填用例名；运行/调试前均增量构建，保持每例独立进程及独立 profile。宿主构建保留 DWARF 和帧指针；优化代码中的部分行或局部变量可能被优化，优先在实际执行语句处断点。
 
 `test.py editor` 的报告包含 `editor/locations.json` 和七份原始枚举 XML，可用于检查列表数量与定位。该检查不运行业务用例，也不代表 GUI 点击或全部业务断言通过；已知业务和生命周期失败继续保留。
+
+## 随当前 CPP 文件筛选用例
+
+测试树按“可执行程序 → 测试源码文件 → 用例”分组。先完成 Prepare Testing Panel 并刷新，再打开某个测试 CPP，在左侧 Testing 面板的筛选输入框输入 `@doc`，或点击该输入框右侧的漏斗并勾选“Show in Active File Only（仅显示当前文件）”。启用后，切换到另一个测试 CPP，面板会自动显示新文件中的用例，无需重新构建或逐次输入文件名；面板须保持打开。
+
+例如打开 cases/developer_copy_test.cpp 时显示 SimTest.DualSimPinUnlockAfterWrongPin；切换到 cases/pin_failure_isolation_test.cpp 时显示 SimTest.WrongUsimPinDoesNotBlockSimPeer。用例继续支持源码跳转和 Debug Test。
+
+`@doc` 是 VS Code 内置的测试视图筛选状态，不是 settings.json 配置项，仓库配置不能默认替用户打开该开关。需要在实际使用的 VS Code 窗口启用；若重开窗口后筛选清空，再输入 `@doc` 即可。删除 `@doc` 或取消勾选可恢复全部测试。打开不包含已发现用例的生产 CPP/头文件时列表为空是当前文件筛选的预期行为。若测试 CPP 也为空，先移除其他名称/状态筛选，再确认打开的是同一个 WSL 仓库、已构建发现用例，并刷新测试列表。
+
+依据：[VS Code 测试筛选](https://code.visualstudio.com/docs/debugtest/testing)、[TestMate 分组配置](https://github.com/matepek/vscode-catch2-test-adapter/blob/master/documents/configuration/test.advancedExecutables.md#testgrouping)。本批仅核对配置和真实枚举映射，未声称已经在GUI中打开此筛选。

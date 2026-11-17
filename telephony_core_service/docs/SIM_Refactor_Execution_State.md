@@ -1045,3 +1045,9 @@ Device只读路径仅检查查询权限/真实SA/端点，不要求HIL/PIN/双�
 七个Host程序实际构建PASS，113条GoogleTest全部枚举且源码绝对路径/行号可定位；最终产物的测试源码行断点、真实UnlockPin断点/slotId=1及继续单例PASS。技术78项、导航6项、JSON/设置名与diff空白检查PASS。首次公共main更新前产物帮助识别失败已保留，重链接后全部PASS；非过滤/不存在用例仍exit2。完整业务回归和GUI未运行，既有22项失败及产品/设备门禁不变。实测命令及原始证据见[test/docs/archive/vscode_testing_20261117](../services/multisim/test/docs/archive/vscode_testing_20261117/README.md)。§43当时因.git只读未保存；本批按持续授权在当前工作区尝试逐文件提交及常规推送，实际发布以Git可达性核实，不使用副本。
 
 §44发布预检补充：原始LLDB日志包含CRLF及空格/Tab源码指示，完整暂存diff --check为FAIL；排除本批原始证据目录后的配置/源码/文档检查PASS。日志按原字节保存，前述差异空白PASS仅指编辑内容。
+
+### 45. Testing 按当前测试CPP筛选（2026-11-17）
+
+输入main/origin@87d44abca126dcc014a29400e016be649c2f1cfb；暂存区为空，既存三项未跟踪用户文件保持。首次沙箱fetch失败，获准刷新后恢复工具CHECKPOINT_VERIFIED、远端无差异。两组TestMate配置增加可执行程序→源码文件分组；check_editor报告增加按源码文件索引，实际七程序113条枚举位置及developer_copy/pin_failure_isolation两个独立文件选择核对PASS，导航6项和JSON/差异空白检查PASS。结果见[当前文件映射](../services/multisim/test/docs/archive/vscode_testing_20261117/current-file-mapping.json)。default.profraw保持d354…。
+
+自动跟随使用VS Code原生“Show in Active File Only”/@doc筛选，其源码监听活动编辑器并重新筛选；这是视图状态，无settings.json默认启用项，必须由用户在实际窗口启用，不能宣称仓库配置已代为打开。Host_Usage补充启用/恢复全量、无用例文件为空及窗口重开后的操作。未新增扩展、未操作或验收GUI，未重建或重跑业务断言，原22项失败和产品/设备边界保持。仅按持续授权逐文件提交推送本批设置、枚举报告增强、说明及映射证据。

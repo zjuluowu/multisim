@@ -56,7 +56,12 @@ def main():
                 raise ValueError('No tests discovered')
         except (OSError, ValueError, ET.ParseError, subprocess.TimeoutExpired) as error:
             errors.append(dict(target=target, error=str(error)))
-    report = dict(status='FAIL' if errors else 'PASS', cases=cases, errors=errors)
+    by_source_file = {}
+    for case in cases:
+        by_source_file.setdefault(case['file'], []).append(
+            dict(target=case['target'], name=case['name'], line=case['line']))
+    report = dict(status='FAIL' if errors else 'PASS', cases=cases,
+                  by_source_file=by_source_file, errors=errors)
     (output / 'locations.json').write_text(json.dumps(report, indent=2) + '\n')
     print(f"Editor discovery: {report['status']}; {len(cases)} source locations; {errors}")
     return bool(errors)

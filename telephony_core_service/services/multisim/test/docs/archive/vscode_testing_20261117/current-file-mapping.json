@@ -1,0 +1,626 @@
+{
+  "status": "PASS",
+  "case_count": 113,
+  "source_file_count": 25,
+  "by_source_file": {
+    "telephony_core_service/services/multisim/test/cases/developer_copy_test.cpp": [
+      {
+        "target": "sim_test_host",
+        "name": "SimTest.DualSimPinUnlockAfterWrongPin",
+        "line": 4
+      }
+    ],
+    "telephony_core_service/services/multisim/test/cases/pin_failure_isolation_test.cpp": [
+      {
+        "target": "sim_test_host",
+        "name": "SimTest.WrongUsimPinDoesNotBlockSimPeer",
+        "line": 3
+      }
+    ],
+    "telephony_core_service/services/multisim/test/cases/pin_independence_test.cpp": [
+      {
+        "target": "sim_test_host",
+        "name": "SimTest.UnlockingSecondLockedCardLeavesFirstLocked",
+        "line": 3
+      }
+    ],
+    "telephony_core_service/services/multisim/test/cases/puk_test.cpp": [
+      {
+        "target": "sim_test_host",
+        "name": "SimTest.PukUnlockPublishesReadyAndRetainsNewPin",
+        "line": 3
+      }
+    ],
+    "telephony_core_service/services/multisim/test/cases/query_test.cpp": [
+      {
+        "target": "sim_test_host",
+        "name": "SimTest.ExistingCardQueriesAgreeWithoutControlledMutation",
+        "line": 3
+      }
+    ],
+    "telephony_core_service/services/multisim/test/cases/sim_card_test.cpp": [
+      {
+        "target": "sim_test_host",
+        "name": "SimTest.LIFE_001",
+        "line": 4
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SimTest.LIFE_002",
+        "line": 20
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SimTest.PUK_001",
+        "line": 37
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SimTest.DualSimPinUnlock",
+        "line": 47
+      }
+    ],
+    "telephony_core_service/services/multisim/test/cases/lifecycle_test.cpp": [
+      {
+        "target": "sim_test_host",
+        "name": "SessionLifecycle.INIT_001_SingleEnumeration",
+        "line": 36
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SessionLifecycle.INIT_002_MissingRilThenRecreate",
+        "line": 42
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SessionLifecycle.INIT_DUAL_002_ReversedEnumeration",
+        "line": 49
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SessionLifecycle.CALLBACK_002_MalformedThenRecovery",
+        "line": 60
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SessionLifecycle.CALLBACK_003_DroppedThenRecovery",
+        "line": 69
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SessionLifecycle.PUK_002_WrongThenSuccessfulUnlock",
+        "line": 78
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SessionLifecycle.REFRESH_001_ExplicitStatusQuery",
+        "line": 89
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SessionLifecycle.RECREATE_001_DualCardReenumeration",
+        "line": 94
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SessionLifecycle.RECREATE_002_ReplacementWhileStopped",
+        "line": 106
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SessionLifecycle.DUAL_002_PinWhileOtherCardRemoved",
+        "line": 115
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+        "line": 129
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+        "line": 143
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+        "line": 153
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+        "line": 165
+      }
+    ],
+    "telephony_core_service/services/multisim/test/cases/response_test.cpp": [
+      {
+        "target": "sim_test_host",
+        "name": "SimAdvancedTest.PIN_001",
+        "line": 5
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SimAdvancedTest.PIN_002_CommandFailure",
+        "line": 22
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SimAdvancedTest.DUAL_001",
+        "line": 34
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SimAdvancedTest.RIL_001_DuplicateAndError",
+        "line": 48
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SimAdvancedTest.DEFECT_001_StaleReadyAfterRemoval",
+        "line": 62
+      }
+    ],
+    "telephony_core_service/services/multisim/test/cases/internal/protocol/pin_memory_test.cpp": [
+      {
+        "target": "sim_test_host",
+        "name": "PinMemoryContract.PinSuccessUsesOriginalSlotIdentityAndCredential",
+        "line": 21
+      },
+      {
+        "target": "sim_test_host",
+        "name": "PinMemoryContract.PukSuccessUsesNewPinAndPinAlterOperation",
+        "line": 37
+      },
+      {
+        "target": "sim_test_host",
+        "name": "PinMemoryContract.FailedPinDoesNotPublishMemoryHook",
+        "line": 51
+      },
+      {
+        "target": "sim_test_host",
+        "name": "PinMemoryContract.RemovalUsesAbsentResponseIdentityWithoutCredential",
+        "line": 63
+      }
+    ],
+    "telephony_core_service/services/multisim/test/cases/internal/platform/event_adapter_test.cpp": [
+      {
+        "target": "sim_test_host",
+        "name": "EventAdapter.SharedTypeSafety",
+        "line": 5
+      },
+      {
+        "target": "sim_test_host",
+        "name": "EventAdapter.UniqueOwnership",
+        "line": 17
+      },
+      {
+        "target": "sim_test_host",
+        "name": "EventAdapter.WeakLifetimeAndMetadata",
+        "line": 32
+      }
+    ],
+    "telephony_core_service/services/multisim/test/cases/internal/platform/event_transport_test.cpp": [
+      {
+        "target": "sim_test_host",
+        "name": "ProductionEventTransport.DeliversFormalEnvelope",
+        "line": 63
+      },
+      {
+        "target": "sim_test_host",
+        "name": "ProductionEventTransport.CancelsPendingAndReapsWorker",
+        "line": 88
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SchedulerBoundary.RunningTaskCannotBeCancelled",
+        "line": 110
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SchedulerBoundary.ProductionGeneralTaskWaitsAndCleansUp",
+        "line": 137
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SchedulerBoundary.IdleWaitDrainsCascadedQueues",
+        "line": 152
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SchedulerBoundary.IdleWaitDoesNotIgnoreDelayedOrRunningWork",
+        "line": 172
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SchedulerBoundary.IdleWaitExposesTaskFailure",
+        "line": 196
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SchedulerBoundary.ReadyIdleLeavesFutureTimersAndDrainsCascades",
+        "line": 213
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SchedulerBoundary.ReadyIdleDoesNotAcceptRunningInitialization",
+        "line": 233
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SchedulerBoundary.DetachedCallableBarrierIncludesCaptureDestruction",
+        "line": 251
+      },
+      {
+        "target": "sim_test_host",
+        "name": "SchedulerBoundary.JoinablePoolWorkerIsNotAnUnfinishedDetachedActor",
+        "line": 270
+      }
+    ],
+    "telephony_core_service/services/multisim/test/cases/internal/platform/external_services_test.cpp": [
+      {
+        "target": "sim_test_host",
+        "name": "ExternalData.EmptyCursorIsNotQueryFailure",
+        "line": 7
+      },
+      {
+        "target": "sim_test_host",
+        "name": "ExternalData.ExplicitQueryResponses",
+        "line": 24
+      },
+      {
+        "target": "sim_test_host",
+        "name": "ExternalData.OriginalBucketKeepsFirstPut",
+        "line": 62
+      },
+      {
+        "target": "sim_test_host",
+        "name": "ExternalEvents.PublishPreservesEnvelopeAndFailure",
+        "line": 78
+      },
+      {
+        "target": "sim_test_host",
+        "name": "ExternalEvents.MissingProviderAndScopeCleanup",
+        "line": 102
+      }
+    ],
+    "telephony_core_service/services/multisim/test/cases/internal/platform/native_pointer_test.cpp": [
+      {
+        "target": "sim_test_host",
+        "name": "NativePointerSubset.SharedOwnership",
+        "line": 15
+      },
+      {
+        "target": "sim_test_host",
+        "name": "NativePointerSubset.WeakIdentityAndPromotion",
+        "line": 32
+      },
+      {
+        "target": "sim_test_host",
+        "name": "NativePointerSubset.LocalCastRequiresImplementedInterface",
+        "line": 51
+      }
+    ],
+    "telephony_core_service/services/multisim/test/cases/internal/platform/resource_catalog_test.cpp": [
+      {
+        "target": "sim_test_host",
+        "name": "ResourceModel.FourIndependentResourcesDoNotImplyLegacyFourCardSupport",
+        "line": 3
+      }
+    ],
+    "telephony_core_service/services/multisim/test/cases/internal/platform/ril_adapter_test.cpp": [
+      {
+        "target": "sim_test_host",
+        "name": "RilAdapter.FormalStatusResponse",
+        "line": 6
+      }
+    ],
+    "telephony_core_service/services/multisim/test/cases/capacity_test.cpp": [
+      {
+        "target": "sim_component_test",
+        "name": "SimComponent.CapacityReadOnly",
+        "line": 7
+      }
+    ],
+    "telephony_core_service/services/multisim/test/cases/internal/primary_entry_test.cpp": [
+      {
+        "target": "sim_primary_slot_entry_test",
+        "name": "PrimaryEntry.NonSystemCallerPrecedesPermissionAndNullManager",
+        "line": 4
+      },
+      {
+        "target": "sim_primary_slot_entry_test",
+        "name": "PrimaryEntry.PermissionDenialPrecedesNullManager",
+        "line": 11
+      },
+      {
+        "target": "sim_primary_slot_entry_test",
+        "name": "PrimaryEntry.NullManagerPrecedesCapabilityRecheck",
+        "line": 17
+      },
+      {
+        "target": "sim_primary_slot_entry_test",
+        "name": "PrimaryEntry.ChangedExternalSystemAppDecisionRejectsExtendedSlot",
+        "line": 23
+      },
+      {
+        "target": "sim_primary_slot_entry_test",
+        "name": "PrimaryEntry.MissingCardStopsBeforeActiveAndPreference",
+        "line": 32
+      },
+      {
+        "target": "sim_primary_slot_entry_test",
+        "name": "PrimaryEntry.InactiveCardStopsBeforePreferenceAndSwitch",
+        "line": 38
+      },
+      {
+        "target": "sim_primary_slot_entry_test",
+        "name": "PrimaryEntry.ReadyCardWritesPreferenceBeforeDelegatingExactTarget",
+        "line": 46
+      },
+      {
+        "target": "sim_primary_slot_entry_test",
+        "name": "PrimaryEntry.ManagerFailureReturnedUnchangedAfterPreferenceWrite",
+        "line": 54
+      },
+      {
+        "target": "sim_primary_slot_entry_test",
+        "name": "PrimaryEntry.FailedPreferenceWriteStillDelegatesCurrentBehavior",
+        "line": 62
+      },
+      {
+        "target": "sim_primary_slot_entry_test",
+        "name": "PrimaryEntry.PresenceQueryFailureWithFalseOutputReturnsNoCard",
+        "line": 71
+      },
+      {
+        "target": "sim_primary_slot_entry_test",
+        "name": "PrimaryEntry.PresenceQueryFailureWithTrueOutputStillDelegates",
+        "line": 78
+      },
+      {
+        "target": "sim_primary_slot_entry_test",
+        "name": "PrimaryEntry.StableSystemAppPassesExtendedSlotCapability",
+        "line": 87
+      },
+      {
+        "target": "sim_primary_slot_entry_test",
+        "name": "CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/0",
+        "line": 98
+      },
+      {
+        "target": "sim_primary_slot_entry_test",
+        "name": "CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/1",
+        "line": 98
+      }
+    ],
+    "telephony_core_service/services/multisim/test/cases/internal/query/g2a_query_test.cpp": [
+      {
+        "target": "sim_g2a_query_test",
+        "name": "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/single",
+        "line": 9
+      },
+      {
+        "target": "sim_g2a_query_test",
+        "name": "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/dual",
+        "line": 9
+      },
+      {
+        "target": "sim_g2a_query_test",
+        "name": "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/zero",
+        "line": 9
+      },
+      {
+        "target": "sim_g2a_query_test",
+        "name": "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/negative_atoi",
+        "line": 9
+      },
+      {
+        "target": "sim_g2a_query_test",
+        "name": "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/malformed_atoi",
+        "line": 9
+      },
+      {
+        "target": "sim_g2a_query_test",
+        "name": "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/vendor_override",
+        "line": 9
+      },
+      {
+        "target": "sim_g2a_query_test",
+        "name": "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/vendor_result_propagation",
+        "line": 9
+      }
+    ],
+    "telephony_core_service/services/multisim/test/cases/internal/query/g2a_upstream_test.cpp": [
+      {
+        "target": "sim_upstream_query_test",
+        "name": "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/single",
+        "line": 11
+      },
+      {
+        "target": "sim_upstream_query_test",
+        "name": "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/dual",
+        "line": 11
+      },
+      {
+        "target": "sim_upstream_query_test",
+        "name": "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/zero",
+        "line": 11
+      },
+      {
+        "target": "sim_upstream_query_test",
+        "name": "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/negative_atoi",
+        "line": 11
+      },
+      {
+        "target": "sim_upstream_query_test",
+        "name": "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/malformed_atoi",
+        "line": 11
+      },
+      {
+        "target": "sim_upstream_query_test",
+        "name": "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/vendor_override",
+        "line": 11
+      },
+      {
+        "target": "sim_upstream_query_test",
+        "name": "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/vendor_result_propagation",
+        "line": 11
+      }
+    ],
+    "telephony_core_service/services/multisim/test/cases/internal/lifecycle_test.cpp": [
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "RunnerLifetime.NormalCompletionAndRepeatedStop",
+        "line": 22
+      },
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "RunnerLifetime.PendingTaskCancelledAndCapturedOwnerReleased",
+        "line": 32
+      },
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "RunnerLifetime.InFlightStopJoinsAndRejectsCallbackRepost",
+        "line": 45
+      },
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "RunnerLifetime.ConcurrentStopIsIdempotent",
+        "line": 69
+      },
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "RunnerLifetime.CallbackCannotSynchronouslyJoinItself",
+        "line": 81
+      },
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "RealCardLifetime.MissingRilInitializationReleasesState",
+        "line": 91
+      },
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "RealCardLifetime.InitializedStateUnregistersRilAndReleases",
+        "line": 101
+      },
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "RealCardLifetime.PublicDetachReleasesRealStateFileAndRil",
+        "line": 115
+      }
+    ],
+    "telephony_core_service/services/multisim/test/cases/internal/primary_initialization_test.cpp": [
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+        "line": 16
+      }
+    ],
+    "telephony_core_service/services/multisim/test/cases/primary_protocol_test.cpp": [
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+        "line": 6
+      },
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+        "line": 23
+      },
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+        "line": 38
+      },
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+        "line": 79
+      },
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+        "line": 96
+      }
+    ],
+    "telephony_core_service/services/multisim/test/cases/primary_test.cpp": [
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "RealSimPrimary.C0CoreToRealManagerAndController",
+        "line": 4
+      }
+    ],
+    "telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp": [
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "PairingReview.AllThreeSlotsPublicDetach",
+        "line": 8
+      },
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "PairingReview.PartialInitializationAndRepeatedUnregister",
+        "line": 25
+      },
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "PairingReview.DestroyThenReinitializeCardGraph",
+        "line": 42
+      },
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "PairingReview.UnrelatedRuntimeWorkerIsBaseline",
+        "line": 54
+      },
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "ShutdownContract.ANormalPrimaryThenStop",
+        "line": 82
+      },
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "ShutdownContract.BThreeSlotsThenStop",
+        "line": 95
+      },
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "ShutdownContract.CPartialInitializationThenStop",
+        "line": 110
+      },
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "ShutdownContract.DRepeatedStop",
+        "line": 117
+      },
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "ShutdownContract.EInFlightSuccessCompletesBeforeRelease",
+        "line": 155
+      },
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "ShutdownContract.FErrorReplyDuringStoppingKeepsOriginalResult",
+        "line": 157
+      },
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "ShutdownContract.GDelayedDispatchAfterStop",
+        "line": 159
+      },
+      {
+        "target": "sim_primary_slot_real_test",
+        "name": "ShutdownContract.HDestroyAndCreateNewGraph",
+        "line": 174
+      }
+    ],
+    "telephony_core_service/services/multisim/test/cases/internal/bootstrap_test.cpp": [
+      {
+        "target": "sim_bootstrap_characterization",
+        "name": "SimCharacterization.BeforeInitialization",
+        "line": 3
+      }
+    ]
+  },
+  "gui_test_executed": false,
+  "filter": "@doc",
+  "filter_requires_ui_enable": true,
+  "default_profile_sha256": "d35445fd920ef489cfb908b6968c9d3dea874688ea39daa53328c9f76be2d675"
+}
