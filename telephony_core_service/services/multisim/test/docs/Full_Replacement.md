@@ -1,6 +1,63 @@
 # 测试防护网全量重建记录
 
-本批输入：main@877162ff1b2425fee0c9db1aadd7221497fd32db。Linux x86_64 / WSL，Clang 18、GN/Ninja、固定 GoogleTest 1.15.2。**本记录是重建中的阶段交付，不是全量替换验收通过。**
+以下首批历史记录输入为 main@877162ff1b2425fee0c9db1aadd7221497fd32db；当前续建输入及验收见下节。
+
+## 2026-11-17 最终切换及验收边界
+
+输入 main/origin main `807d73fbefdd6d7652a88187ae06211cc98e6de4`，Linux x86_64 / WSL、Clang 18、固定 GoogleTest 1.15.2。开始时仅有未跟踪 default.profraw，已保护；实际 fetch 恢复核对 CHECKPOINT_VERIFIED。生产 C++ 与正式生产 GN 不改。本次完成 Host 全量迁移及活动入口替换；**完整产品编译、设备运行和 VS Code GUI 尚未验收，不宣称 Full Replacement 全平台验收通过。**
+
+### 逐项映射与实测
+
+[逐例覆盖矩阵](Full_Replacement_Coverage.json)含全部 105 项历史运行配置及 3 项新增/此前未运行项；[逐文件处置及退役清单](Full_Replacement_Migration.json)关联输入 SHA、原文件 SHA、迁移目标/退役原因。原始活动树 317 文件逐字节归档，完整性工具通过 Git 对象验证，不依赖旧代码继续运行。原 Golden、历史 XML 和被冻结的查询参考源码保持原字节。
+
+| 范围 | 原基线 | 新框架实测 |
+|---|---|---|
+| 原 Host 64 项 | 59 PASS / 5 FAIL | 59 PASS / 同五个 FAIL |
+| 真实 Primary/生命周期 27 项 | 10 PASS / 17 FAIL | 10 PASS / 同 17 FAIL |
+| G2a 参考查询 7 配置 | 7 PASS | 7 PASS |
+| 原版 Core 查询 7 配置 | 7 PASS | 7 PASS |
+| 双卡 PIN / 复制新增场景 | 首批新增一项 | 两项 PASS |
+| 初始化前状态刻画 | 旧用例未被旧入口执行 | 1 PASS |
+| 合计 | 历史 105 项 | 108 项：86 PASS / 22 FAIL |
+
+新旧比较保留原失败正文、observations、external_calls、pending_responses、创建/销毁计数；最终切换运行 105 项全部 MATCH；较早一次运行 104 项 MATCH、逆序枚举一项仅 external_calls 的 status 请求总顺序不同，保留 DIFFERENT 与原值，另记 contract_equivalent。生产 SimStateManager::Init 为各槽构造处理器，各槽队列独立；FakeRil 的记录互斥只保证单次记录完整，并不建立跨槽调度先后契约。两种次序的请求多重集合相同，逆序响应、最终状态、通知及生命周期观测相同；不删除字段，也不放宽响应及状态断言。
+
+五个 Host 缺陷保持原精确失败签名；完整性检查根据不可变原 XML 认证签名；运行分类仅读取经 SHA 锁定的活动 policy，不依赖历史执行器或证据包。真实 Primary 17 项不在豁免名单，完整门禁 FAIL。C0 业务断言 PASS，真实对象图清理失败（worker/RIL 强引用/观察者未释放、REAL_GRAPH_LIFETIME_NOT_DRAINED），保留原诊断及退出码。没有忽略 Mock 泄漏或移除清理检查。额外以 frozen dual-active-primary0 前态逐进程执行七个 Primary 业务场景，七项富业务契约均 PASS；六条正业务场景仍因清理 FAIL，不能由业务通过替代生命周期验收。
+
+### 唯一活动框架和构建边界
+
+普通 cases 仅使用 sim_test.h + TEST_F；复杂独立切片分别使用 sim_primary_test.h、sim_primary_entry_test.h、sim_capacity_test.h、sim_lifecycle_test.h、sim_query_test.h。PrimaryEnvironment 直接调用真实 CoreServiceSim，无旧 LegacyPrimaryAdapter/Scenario/ContractDriver。底层外部 RIL、参数、安全、事件调度边界复用为一份，业务结果来自真实 SUT。
+
+七个 Host 二进制保留各自真实链接闭包，所有测试由 test.py 发现、逐例进程执行和汇总。bootstrap 已链接真实初始化完整闭包及既有参数/安全外部边界，不新增虚假生产 Stub。framework/component_sources.gni 为 Host/Device 共用生产源定义；source_set 复用同平台对象，GoogleTest 用 static_library，跨平台分别编译。生产库入口、服务启动和测试 main 分离；没有将未获授权的重构实现切入正式产品。
+
+已删除旧 Scenario/Oracle/Adapter 运行层、重复基础设施测试副本、旧 Host/Primary/G2a Runner 和旧 GN 可执行目标。纯 Primary 业务期望与分类函数保留为 cases/primary_expectations.py / scripts/primary_results.py，直接验证真实观测，不再驱动旧执行链。历史 admission 技术测试继续验证纯策略；正式 CI 为 test.py all --ci + ci_gate.py。test.py 全量入口包括架构/GN、技术、完整性、七切片、正执行、迁移比较、变异恢复、profile 防覆盖检查。旧历史脚本仅存在不可变归档，不参与活动导入、GN 或 IDE。仓内没有 GitHub Actions 调度文件，本次切换的是仓内正式 CI 命令及 IDE 入口，不声称外部 CI 服务已运行。
+
+正执行证据：原 SimStateManager/SimStateHandle 11 方法、Primary Core/Manager/Controller 的 SetPrimarySlotId、G2a 六方法和原版查询三方法均要求 LLVM count > 0，并记录实际来源文件。READY 映射与 PUK hook 两种仓外源码变异均被指定测试检出；恢复后两测试 PASS，正常二进制 SHA 恢复，仓内生产源码不变。
+
+### Device Framework：实现与未验收项
+
+原生 test/BUILD.gn 使用真实 //build/test.gni、ohos_unittest 及本地存在的 tel_core_service_api 标签。状态订阅依赖 tel_state_registry_api/part state_registry 已对照实际上游 GN；libsec_shared 对照固定原生依赖声明。没有修改正式生产聚合目标。
+
+* sim_test_device：相同普通 cases，通过真实 CoreServiceClient、SA/IPC、权限及 TelephonyObserverClient 验证运行中服务。
+* sim_test_device_component：同源普通/协议/平台 cases，真实生产组件 + 受控外部环境。容量、Primary入口、真实Primary、bootstrap、查询各有原生组件目标，全部引用同一 cases/sources.gni。该层不证明 SA/IPC 或平台 ABI。
+
+Cases 无 Host/Device 条件编译。设备集成先检查 GET/SET_TELEPHONY_STATE、SA、受控资源，记录初始卡状态/类型/ICCID并订阅真实通知；操作调用真实 UnlockPin，结束要求恢复并查询验证、注销订阅和观察者释放。不具备权限、服务、卡资源或控制器时 BLOCKED/UNSUPPORTED，不能 PASS。
+
+真实硬件状态制造要求外部受控 HIL/厂商测试控制器，本仓未提供实际设备自动化。资源文件私有 0600，键为 SIM_DEVICE_CONTROL_SOCKET、SIM_DEVICE_FIXTURE_TOKEN、SIM_DEVICE_ALLOWED_PINS。Unix socket 协议：`SIM_TEST_V1 RESERVE <token>` 应答 `OK CHANGE PIN RESTORE NOTIFY DUAL`；CHANGE 携业务卡名/技术槽号/类型/状态/锁，成功答 OK；RESTORE 答 OK 后仍须由真实服务查询确认。控制器不能代替生产查询或断言。控制器缺失是明确的设备资源阻塞，不是可运行性声明。
+
+当前可访问 /mnt/e/OpenHarmony 缺匹配完整产品树/build/test.gni、hb、交叉工具链，且无 hdc/设备。原生 GN 语法、共用源清单、API/标签存在性及框架职责静态检查 PASS；八个原生目标编译/执行均 NOT_RUN，实际调度 BLOCKED。未把 Host PASS 当成设备 PASS；产品实际编译仍可能暴露需修正的 SDK 适配问题。
+
+### 开发体验和 profile 防覆盖
+
+cases/developer_copy_test.cpp 从普通双卡场景复制 TEST_F，只改业务步骤与断言；自动清单维护、CLI 列表/独立运行 PASS，LLDB 在真实 SimStateManager::UnlockPin 停下、slotId=1、调用栈/变量可见并继续完成 PASS。无需改 Fixture、Scripts 或手写 GN。VS Code 配置单例进程和统一 Debug 模板已接入；本机无 GUI，Testing 面板点击及独立初级开发人员操作 NOT_RUN。
+
+原 default.profraw 事件保留：原 SHA bbb8d8d54bc9586adf968048bcdf7f08cf72cd1321d4766bafe30b8814ef5f1e 未恢复。本轮开始及结束 SHA 均 d35445fd920ef489cfb908b6968c9d3dea874688ea39daa53328c9f76be2d675，不提交/不删除。所有执行和调试入口设置独立 profile；编译提供绝对路径 %p 回退，ELF preinit 修正不安全环境值，main 再绑定安全路径。仅在 main setenv 的首次防护尝试被私有 sentinel 测试检出失败，失败日志原样保留；修正后 unset、relative、异常信号退出三类直接运行均保持 sentinel 字节不变，LLDB 另有隔离证据。
+
+本轮原始报告、XML、日志、调试、失败防护尝试及修复、变异恢复、设备阻塞与覆盖数据在 [证据索引](archive/full_replacement_20261117/evidence-index.json)，压缩包保存原始字节。路径中的 /tmp 仅说明执行现场，恢复和审阅以仓内归档及源码锁为准。
+
+---
+
+以下为 2026-11-16 原始过程记录；其“尚未完成/未删除”只描述当时阶段，当前状态以上节及逐项处置表为准。
 
 ## 原始基线
 

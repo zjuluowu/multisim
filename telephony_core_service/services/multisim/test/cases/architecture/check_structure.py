@@ -9,7 +9,7 @@ import sys as _sys
 from pathlib import Path as _Path
 _TEST_ROOT = next(p for p in _Path(__file__).resolve().parents if (p / "scripts/_paths.py").is_file())
 _sys.path.insert(0, str(_TEST_ROOT / "scripts"))
-from _paths import TEST as _TEST, CORE as _CORE, REPO as _REPO, locate, guard_asset
+from _paths import TEST as _TEST, CORE as _CORE, REPO as _REPO
 _sys.path.insert(0, str(_TEST / "cases/architecture"))
 import argparse
 from collections import Counter

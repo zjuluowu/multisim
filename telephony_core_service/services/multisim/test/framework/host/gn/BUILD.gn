@@ -1,4 +1,13 @@
 config("host") {
+  include_dirs = [
+    "$gtest_root/googlemock/include",
+    "$gtest_root/googletest/include",
+  ]
+  defines = [
+    "SIM_HAS_LLVM_PROFILE",
+    "SIM_PROFILE_DEFAULT=\"" + get_path_info(root_build_dir, "abspath") +
+        "/profiles/direct-%p.profraw\"",
+  ]
   cflags_cc = [
     "-std=c++17",
     "-flto=full",
@@ -9,7 +18,11 @@ config("host") {
     "-fdata-sections",
   ]
   if (host_debug) {
-    cflags_cc += [ "-O1", "-g", "-fno-omit-frame-pointer" ]
+    cflags_cc += [
+      "-O1",
+      "-g",
+      "-fno-omit-frame-pointer",
+    ]
   } else {
     cflags_cc += [ "-O2" ]
   }
@@ -39,6 +52,15 @@ toolchain("linux") {
     command = "clang++ {{ldflags}} -o {{output}} {{inputs}} {{libs}}"
     outputs = [ "{{root_out_dir}}/{{target_output_name}}" ]
     description = "LINK {{output}}"
+  }
+  tool("solink") {
+    command =
+        "clang++ -shared -fPIC {{ldflags}} -o {{output}} {{inputs}} {{libs}}"
+    outputs = [ "{{root_out_dir}}/lib{{target_output_name}}.so" ]
+    link_output = "{{root_out_dir}}/lib{{target_output_name}}.so"
+    depend_output = "{{root_out_dir}}/lib{{target_output_name}}.so"
+    output_prefix = ""
+    default_output_extension = ".so"
   }
   tool("stamp") {
     command = "touch {{output}}"

@@ -20,10 +20,6 @@ struct StateNotification { int slot; State state; CardKind kind; Lock reason; };
 struct UnlockResult { int error; Unlock result; int remaining; };
 struct StateSnapshot {
     std::vector<CardObservation> cards;
-    // No inferred slot->subscription identity or profile/registration/role state.
-    // These independent business concepts require separate real query bindings.
-    bool profilesObserved = false;
-    bool subscriptionsObserved = false;
-    bool rolesObserved = false;
+
 };
 }

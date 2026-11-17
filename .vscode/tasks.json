@@ -2,92 +2,30 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Configure Host",
       "type": "process",
       "command": "/usr/bin/python3",
-      "args": [
-        "-B",
-        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/host.py",
-        "configure"
-      ],
       "options": {
         "cwd": "${workspaceFolder}"
       },
       "problemMatcher": [
         "$gcc"
-      ]
-    },
-    {
+      ],
       "label": "Build Host",
-      "type": "process",
-      "command": "/usr/bin/python3",
       "args": [
         "-B",
-        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/host.py",
-        "build"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [
-        "$gcc"
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
+        "build",
+        "--target",
+        "sim_test_host",
+        "sim_component_test",
+        "sim_primary_slot_entry_test",
+        "sim_g2a_query_test",
+        "sim_upstream_query_test"
       ],
       "group": {
         "kind": "build",
         "isDefault": true
       }
-    },
-    {
-      "label": "Run All Tests",
-      "type": "process",
-      "command": "/usr/bin/python3",
-      "args": [
-        "-B",
-        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/host.py",
-        "all"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [
-        "$gcc"
-      ]
-    },
-    {
-      "label": "Run Selected Test",
-      "type": "process",
-      "command": "/usr/bin/python3",
-      "args": [
-        "-B",
-        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/host.py",
-        "selected",
-        "--target",
-        "${input:hostTarget}",
-        "--filter",
-        "${input:gtestFilter}"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [
-        "$gcc"
-      ]
-    },
-    {
-      "label": "Clean Host",
-      "type": "process",
-      "command": "/usr/bin/python3",
-      "args": [
-        "-B",
-        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/host.py",
-        "clean"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [
-        "$gcc"
-      ]
     },
     {
       "type": "process",
@@ -101,10 +39,11 @@
       "label": "Build Real SIM Host",
       "args": [
         "-B",
-        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/host.py",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
         "build",
         "--target",
-        "sim_primary_slot_real_test"
+        "sim_primary_slot_real_test",
+        "sim_bootstrap_characterization"
       ]
     },
     {
@@ -116,50 +55,112 @@
       "problemMatcher": [
         "$gcc"
       ],
-      "label": "Run All Tests + Real SIM",
+      "label": "Run All Tests",
       "args": [
         "-B",
-        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/host.py",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
         "all",
-        "--with-real-primary"
+        "--ci"
       ]
     },
     {
-      "label": "Build Replacement Host",
       "type": "process",
       "command": "/usr/bin/python3",
-      "args": [
-        "-B",
-        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/build_replacement.py"
-      ],
       "options": {
         "cwd": "${workspaceFolder}"
       },
       "problemMatcher": [
         "$gcc"
+      ],
+      "label": "Run Selected Test",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
+        "run",
+        "--target",
+        "${input:hostTarget}",
+        "--filter",
+        "${input:gtestFilter}"
       ]
+    },
+    {
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "label": "Debug Selected Test",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
+        "debug",
+        "--target",
+        "${input:hostTarget}",
+        "--filter",
+        "${input:gtestFilter}"
+      ]
+    },
+    {
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "label": "Check Device Wiring",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
+        "device"
+      ]
+    },
+    {
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "label": "Build All SIM Host",
+      "args": [
+        "-B",
+        "telephony_core_service/services/multisim/test/scripts/test.py",
+        "build"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
     }
   ],
   "inputs": [
     {
       "id": "gtestFilter",
       "type": "promptString",
-      "description": "GoogleTest filter (suite.test, supports * and -)",
-      "default": "*LIFE_001*"
+      "description": "Exact GoogleTest case (Testing panel selects it automatically)",
+      "default": "SimTest.DualSimPinUnlockAfterWrongPin"
     },
     {
       "id": "hostTarget",
       "type": "pickString",
-      "description": "Host executable",
+      "description": "Independently linked SUT slice",
       "options": [
-        "sim_guard_legacy",
-        "sim_guard_pin_memory",
-        "platform_adapter_test",
+        "sim_test_host",
         "sim_component_test",
         "sim_primary_slot_entry_test",
-        "sim_primary_slot_real_test"
+        "sim_g2a_query_test",
+        "sim_upstream_query_test",
+        "sim_primary_slot_real_test",
+        "sim_bootstrap_characterization"
       ],
-      "default": "sim_guard_legacy"
+      "default": "sim_test_host"
     }
   ]
 }

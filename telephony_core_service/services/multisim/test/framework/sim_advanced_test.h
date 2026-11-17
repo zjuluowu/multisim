@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 #pragma once
 #include "sim_test.h"
-#include "host/ril_device.h"
-#include "host/ril_fault_controls.h"
+#include "common/ril_device.h"
+#include "common/ril_fault_controls.h"
 
 namespace SimGuard {
 // Explicit transport control for races and protocol failures. Ordinary cases use

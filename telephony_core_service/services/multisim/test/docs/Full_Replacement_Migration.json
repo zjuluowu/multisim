@@ -1,0 +1,942 @@
+{
+  "schema_version": 1,
+  "baseline": "807d73fbefdd6d7652a88187ae06211cc98e6de4",
+  "archive": "docs/archive/full_replacement_20261117/original-active-sources.tar.gz",
+  "archive_sha256": "82883707134007b6efac8149f6c436c7eb6d48fa1c341574aabf99c059885e00",
+  "files": [
+    {
+      "old": "cases/host/capacity_test.cpp",
+      "new": "cases/capacity/capacity_test.cpp",
+      "action": "moved",
+      "before_sha256": "e56abb54c5c5504bd994ec653bba9852df14c830def762a5a4372956fee34fc8"
+    },
+    {
+      "old": "cases/host/bootstrap_test.cpp",
+      "new": "cases/capacity/bootstrap_test.cpp",
+      "action": "moved",
+      "before_sha256": "1011b7d5afacc6732bc27cfe025464909f380d939428613c75655bd7705a328c"
+    },
+    {
+      "old": "cases/host/g2a_query_test.cpp",
+      "new": "cases/query/g2a_query_test.cpp",
+      "action": "moved",
+      "before_sha256": "61bbe8410625be87a8b9aaf52f6d5c13d717cb874280baca1f71749a3a6f7397"
+    },
+    {
+      "old": "cases/host/g2a_upstream_test.cpp",
+      "new": "cases/query/g2a_upstream_test.cpp",
+      "action": "moved",
+      "before_sha256": "15b42170c875b964098107e68ce666635ec81c996574d8bd6f1fd8d6f2cc835e"
+    },
+    {
+      "old": "cases/host/support/bootstrap_probe.cpp",
+      "new": "framework/host/probes/bootstrap_probe.cpp",
+      "action": "moved",
+      "before_sha256": "8382765eded580bab4d05ca2fcaf7d95a117d1f68b19d810f8c3b743030a2cc2"
+    },
+    {
+      "old": "cases/host/support/bootstrap_probe.h",
+      "new": "framework/host/probes/bootstrap_probe.h",
+      "action": "moved",
+      "before_sha256": "16783feadbf24d90a913f8535719e45ffeaff0c28dfa28e34c439535a0c7dc36"
+    },
+    {
+      "old": "cases/host/support/capacity_probe.cpp",
+      "new": "framework/host/probes/capacity_probe.cpp",
+      "action": "moved",
+      "before_sha256": "e77845db20f3f43bc2d7fcc1ae85ca1018294568faf3dd1fe9b2fdef87e2e60f"
+    },
+    {
+      "old": "cases/host/support/capacity_probe.h",
+      "new": "framework/host/probes/capacity_probe.h",
+      "action": "moved",
+      "before_sha256": "1de970d1cb579d3e11cabdf9328d0a3a9aa4bf38833aa2148ef3788fd981b677"
+    },
+    {
+      "old": "cases/host/support/g2a_query_probe.cpp",
+      "new": "framework/host/probes/g2a_query_probe.cpp",
+      "action": "moved",
+      "before_sha256": "b368ef839cc2cf066a4a101b0b53427d4d104f4cb383e5909aa0775161f9f709"
+    },
+    {
+      "old": "cases/host/support/g2a_query_probe.h",
+      "new": "framework/host/probes/g2a_query_probe.h",
+      "action": "moved",
+      "before_sha256": "42cf19c4324102c6e490e6af320157a7f243e044d30a22a410e8090ab2e0dcac"
+    },
+    {
+      "old": "cases/host/support/initialization_link_probe.cpp",
+      "new": "framework/host/probes/initialization_link_probe.cpp",
+      "action": "moved",
+      "before_sha256": "41f4563d40486958dcb8f671e08e38ddad8a2a96701d6e8a6e69216c31a79e24"
+    },
+    {
+      "old": "cases/primary_slot/entry_test.cpp",
+      "new": "cases/primary_entry/primary_entry_test.cpp",
+      "action": "moved",
+      "before_sha256": "cd287b9b7f125ea895c5ee1a6233a22a05b2eeb37520d731166a847b670870e6"
+    },
+    {
+      "old": "cases/primary_slot/real_test.cpp",
+      "new": "cases/primary/primary_test.cpp",
+      "action": "moved",
+      "before_sha256": "288fbfe9e01d285b39c898cf6e2d4ec6d30174a6b852074e0ce427d85f623cda"
+    },
+    {
+      "old": "cases/primary_slot/lifecycle/lifetime_test.cpp",
+      "new": "cases/primary/lifecycle_test.cpp",
+      "action": "moved",
+      "before_sha256": "0535f2c22561a5e8818c7a9c4aeb7b2b1847bd75cf412873f4891708743aa8d2"
+    },
+    {
+      "old": "cases/primary_slot/lifecycle/shutdown_contract_test.cpp",
+      "new": "cases/primary/shutdown_test.cpp",
+      "action": "moved",
+      "before_sha256": "62c9a59116b265ebbaa02341acf38b9d09c2a3d3b487d3232ed50611f2c41b9b"
+    },
+    {
+      "old": "cases/primary_slot/real_scenario.h",
+      "new": "framework/host/primary/real_scenario.h",
+      "action": "moved",
+      "before_sha256": "175a8877e6ca7fe42f924dd3e46e5300cca250f62f5d954a4c63fe24200baa40"
+    },
+    {
+      "old": "cases/primary_slot/real_runtime.cpp",
+      "new": "framework/host/primary/real_runtime.cpp",
+      "action": "moved",
+      "before_sha256": "996fcb2533e5e6c317c2be6202dcce56cd5c974e344fcea657e38e5bcf8a684b"
+    },
+    {
+      "old": "cases/primary_slot/security_boundary.cpp",
+      "new": "framework/host/primary/security_boundary.cpp",
+      "action": "moved",
+      "before_sha256": "06caf0a25551d39b9d36b93d574ad1f638a0cefcec7dbd0dcf0bb23a27976b4e"
+    },
+    {
+      "old": "cases/primary_slot/security_boundary.h",
+      "new": "framework/host/primary/security_boundary.h",
+      "action": "moved",
+      "before_sha256": "8a71b45d8eed45ecb3e694068c2c70f8ea73213911710a6f82e4c2db6ce2e7b2"
+    },
+    {
+      "old": "cases/primary_slot/unscripted_sim_manager.h",
+      "new": "framework/host/primary/unscripted_sim_manager.h",
+      "action": "moved",
+      "before_sha256": "4b17b1a83ea6a8e382a9016c6a26567303ea3d3d61f7efbec281625ea9e8e598"
+    },
+    {
+      "old": "cases/primary_slot/initialization_trace.h",
+      "new": "framework/host/primary/initialization_trace.h",
+      "action": "moved",
+      "before_sha256": "1f07183f3708685dd959278a9c0e2ac246cf328385596d3b9624b392469623f5"
+    },
+    {
+      "old": "cases/primary_slot/include/accesstoken_kit.h",
+      "new": "framework/host/primary/include/accesstoken_kit.h",
+      "action": "moved",
+      "before_sha256": "2fbead19cfd3988c2756894518e82af50656128a6b2e2ee958956fdb2e8d637c"
+    },
+    {
+      "old": "cases/primary_slot/include/bundle_mgr_interface.h",
+      "new": "framework/host/primary/include/bundle_mgr_interface.h",
+      "action": "moved",
+      "before_sha256": "dcb926fd928127c3d52d6bea0d1353ea0f26e4519c95093118ba87e8d15685f7"
+    },
+    {
+      "old": "cases/primary_slot/include/ipc_skeleton.h",
+      "new": "framework/host/primary/include/ipc_skeleton.h",
+      "action": "moved",
+      "before_sha256": "e78680e621df3616761796f8e996535760ca0884d403ab11d1209394c127285d"
+    },
+    {
+      "old": "cases/primary_slot/include/privacy_kit.h",
+      "new": "framework/host/primary/include/privacy_kit.h",
+      "action": "moved",
+      "before_sha256": "522ae277088c3fdc01da39d441263f0707fdf9000597bf2605616767b438a051"
+    },
+    {
+      "old": "cases/primary_slot/include/tokenid_kit.h",
+      "new": "framework/host/primary/include/tokenid_kit.h",
+      "action": "moved",
+      "before_sha256": "37460d97aacf49acc33715c4b66e915e96b2fa3e46295276d33499d2bccc2784"
+    },
+    {
+      "old": "cases/primary_slot/runtime_include/hisysevent.h",
+      "new": "framework/host/primary/runtime_include/hisysevent.h",
+      "action": "moved",
+      "before_sha256": "2e8b4370f5a9a58ad1d28d56f1d7c838b9ac8460b2cfd75f87fc804923df5b81"
+    },
+    {
+      "old": "cases/primary_slot/provider/include/data_storage_errors.h",
+      "new": "framework/host/primary/provider/include/data_storage_errors.h",
+      "action": "moved",
+      "before_sha256": "e20bbd0347175f95f8e6d81bf36356cd3f27d5f3f68cea86df3aeacc7956da9b"
+    },
+    {
+      "old": "cases/primary_slot/provider/include/sim_data.h",
+      "new": "framework/host/primary/provider/include/sim_data.h",
+      "action": "moved",
+      "before_sha256": "f5e1bdb2d0225d76d8117baa01784ce8b28bd8df68812ac0f8607eda07fd62c7"
+    },
+    {
+      "old": "cases/primary_slot/lifecycle/external_runner.h",
+      "new": "framework/host/primary/lifecycle/external_runner.h",
+      "action": "moved",
+      "before_sha256": "540ab2e90747c39d735ea3db88e6946dab3be1610f7d50aaf53da73f043a671a"
+    },
+    {
+      "old": "cases/primary_slot/lifecycle/lifecycle_diagnostics.h",
+      "new": "framework/host/primary/lifecycle/lifecycle_diagnostics.h",
+      "action": "moved",
+      "before_sha256": "bba0c43c5798bda720bb17a70e42bf30dd3d85f8f18bb2c806d89c60e15bbf49"
+    },
+    {
+      "old": "cases/primary_slot/lifecycle/owned_card_graph.h",
+      "new": "framework/host/primary/lifecycle/owned_card_graph.h",
+      "action": "moved",
+      "before_sha256": "b9e669bb08f32a9ea926d202ce591324d4c00fdcebf830109136e2de8e5bf8ef"
+    },
+    {
+      "old": "cases/primary_slot/lifecycle/shutdown_contract.h",
+      "new": "framework/host/primary/lifecycle/shutdown_contract.h",
+      "action": "moved",
+      "before_sha256": "58a1cae3151e627486ac2647ef6c8a482b71c7ed1de0139c788a69a802253bbd"
+    },
+    {
+      "old": "cases/event_adapter_test.cpp",
+      "new": "cases/platform/event_adapter_test.cpp",
+      "action": "moved",
+      "before_sha256": "f659703566a6f006f8b6264da8abfc7c3dbc5ad555bdfdf602039244c4427ef9"
+    },
+    {
+      "old": "cases/event_transport_test.cpp",
+      "new": "cases/platform/event_transport_test.cpp",
+      "action": "moved",
+      "before_sha256": "b0df165f62c0c614e5ef854e4b9b536aa518fd8628ca94e7a4bf5b005a880628"
+    },
+    {
+      "old": "cases/external_services_test.cpp",
+      "new": "cases/platform/external_services_test.cpp",
+      "action": "moved",
+      "before_sha256": "fd88c47af3164d5d4db9cb476a4efc52787041dbfaca87f407c179f048b10f73"
+    },
+    {
+      "old": "cases/native_pointer_test.cpp",
+      "new": "cases/platform/native_pointer_test.cpp",
+      "action": "moved",
+      "before_sha256": "9f6c04944185737ec6c107c9ebb57dc5b013777f216e1ab3c04d553a25c9a2b9"
+    },
+    {
+      "old": "cases/ril_adapter_test.cpp",
+      "new": "cases/platform/ril_adapter_test.cpp",
+      "action": "moved",
+      "before_sha256": "e0d724c7c7a3b96e5a4d44cea8a7a223005e17a7c55755fbb1cfd17cf7422839"
+    },
+    {
+      "old": "cases/lifecycle_test.cpp",
+      "new": "cases/protocol/lifecycle_test.cpp",
+      "action": "moved",
+      "before_sha256": "f7be9bc874b9357ea9db063012e6ba5c8150da62b8bec983e9d991dd82a105ef"
+    },
+    {
+      "old": "cases/pin_and_response_test.cpp",
+      "new": "cases/protocol/pin_and_response_test.cpp",
+      "action": "moved",
+      "before_sha256": "e57bc447353ebda6f81ee0b37e92a0b761994d6efbf111c93d5711d1f43c8502"
+    },
+    {
+      "old": "cases/pin_memory_test.cpp",
+      "new": "cases/protocol/pin_memory_test.cpp",
+      "action": "moved",
+      "before_sha256": "9493c0f26f0db997fe39bc34fe10cc27d3a9579cc7ed58a7db4c6d8cae94dd28"
+    },
+    {
+      "old": "framework/host/ril_device.h",
+      "new": "framework/common/ril_device.h",
+      "action": "moved",
+      "before_sha256": "6262c611d746dd79e9fd74234a5d974e0f1352a90e457fabbd2f8a43386630d8"
+    },
+    {
+      "old": "framework/host/ril_fault_controls.h",
+      "new": "framework/common/ril_fault_controls.h",
+      "action": "moved",
+      "before_sha256": "2a38391c164585c8f7c69c7f6dba80a5db1e594f1da127a1ded11250896b9231"
+    },
+    {
+      "old": "framework/compatibility/contracts/primary_slot.h",
+      "new": "framework/common/primary_observation.h",
+      "action": "moved",
+      "before_sha256": "bcf1eafc52694a817b261da9d3a3df829bd8e52c01c7da5a83f7482ed1475abe"
+    },
+    {
+      "old": "framework/host/primary/real_scenario.h",
+      "new": "framework/host/primary/primary_environment.h",
+      "action": "moved",
+      "before_sha256": "80b5f437bb44a262c25fbcf39fcc9dd327e31cb734c3f94e71253ecfb2ebd9bf"
+    },
+    {
+      "old": "cases/primary_slot/oracle/primary_oracle.py",
+      "new": "cases/primary_expectations.py",
+      "action": "moved",
+      "before_sha256": "df4d2520b71b72f17d0ec2c0ee8ee7f0a1b27c867584478caa859d2151c02906"
+    },
+    {
+      "old": "cases/primary_slot/oracle/test_primary_oracle.py",
+      "new": "cases/infrastructure/test_primary_expectations.py",
+      "action": "moved",
+      "before_sha256": "eae822748e558dcaad1f0205bd9ed376f0405fb88b0ac29f77c43cd5e06d56d0"
+    },
+    {
+      "old": "cases/primary_slot/scenarios/primary_slot.json",
+      "new": "cases/data/primary_inputs.json",
+      "action": "moved",
+      "before_sha256": "d1221b27a0c961d582e1789b4ec9a1d856008c4c771f3e3f58c74c7a8163877e"
+    },
+    {
+      "old": "cases/primary_slot/legacy_contract/golden.json",
+      "new": "cases/data/primary_golden.json",
+      "action": "moved",
+      "before_sha256": "269e558608f92c7c8ee9f8ac482c2073bb6ec93402532fa53b6da286ca22e720"
+    },
+    {
+      "old": "cases/primary_slot/lifecycle/admission/ci_policy.json",
+      "new": "cases/data/admission_policy.json",
+      "action": "moved",
+      "before_sha256": "d7514c7bbd0dad13f840d729a0f58cb106ec71a8e2af71f6f0c9c16b2840586a"
+    },
+    {
+      "old": "cases/compatibility/.gitignore",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "32dae3052f331ee34d628ef535709b301259a45df7c7522c4d35dcf49873f00b",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/compatibility/README.md",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "81e42892f0f6c19b6d7d5fd02491f613b0207edcd33fd9d6601c91ce3e5867aa",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/compatibility/oracle/card_oracle.h",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "9f752b1101c2754ea09fec11d31bb5f8236872a39398701c90d3a49095c6db02",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/compatibility/runner/contract_driver.h",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "9276249fb08c9d90fa3f0e72d55280bd2cb61419364b98b05a4f385cecf67496",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/compatibility/runner/contract_test.cpp",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "4b93a870c3e3e31b678e085607c7a15174e2460eb412e27651ce5f38a48c664b",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/compatibility/runner/lifecycle_extension_test.cpp",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "f2507714d82ad155b01bc3bd37cbbea814db6c402fffda18cbc4de997d7486de",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/compatibility/runner/pin_memory_contract_test.cpp",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "3f87397a9d81886706889bd91683268a5f42df5a9c69aa7685ffcb881085c678",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/compatibility/scenarios/compatibility.h",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "0cc09fcfec1fe53cc00ef99969bed8bf5d0f6611a0db34934cccda4aaacabd7c",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/compatibility/semantic_baseline.json",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "f62ee4faa10b33c413711cf5d45707ee2160cbd85d28bf040f369c7a1e9e888b",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/compatibility/semantic_baseline_v2.json",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "20e298bbfa060019b3decf81d574cfa7b58724a845aad4ed8b854db31fca496a",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/compatibility/traceability/inventory.json",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "87bb8f91367d6376cb6c5dc4d98b071e59fe3a8da3ae820d0c0806aa3d0f4f73",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/compatibility/traceability/provider_contract_round2.json",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "26ff0b26136c45ccf04a31b751010e982ee3dd0431f2c68a04cd7c6ce30cae3c",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/compatibility/traceability/round2_catalog.json",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "b5ec05539a4328e5e55e7dda48162596e7320a3ad4913f89293900280290498e",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/infrastructure/event_adapter_test.cpp",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "be6b2e31029cfda79d37210e626e1f46327a7811ad09ce6695a3a8c3c1a710bb",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/infrastructure/event_transport_test.cpp",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "b0df165f62c0c614e5ef854e4b9b536aa518fd8628ca94e7a4bf5b005a880628",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/infrastructure/external_services_test.cpp",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "fd88c47af3164d5d4db9cb476a4efc52787041dbfaca87f407c179f048b10f73",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/infrastructure/native_pointer_test.cpp",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "9f6c04944185737ec6c107c9ebb57dc5b013777f216e1ab3c04d553a25c9a2b9",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/infrastructure/ril_adapter_test.cpp",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "e0d724c7c7a3b96e5a4d44cea8a7a223005e17a7c55755fbb1cfd17cf7422839",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/primary_slot/README.md",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "eec7f9cab12659f1dbb8a49872d9a3bb0a1241aac7d3d1cc7e1d4b45ac0124d5",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/primary_slot/Shared_Contract.md",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "96ab8fb7af8442d244351f4417080839c94db630c4c13c47805a52019f027bcf",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/primary_slot/baseline/contract-lock.json",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "a72aeb82e5f06d87ef085343b75b6b9f4c7d8bd987d16ba72d704a27faca14f7",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/primary_slot/baseline/frozen-baseline.json",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "26142a83a21846c2ac08e6d040d47a4b02e07b141909cb1d214e88d0cba6ca30",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/primary_slot/baseline/frozen-inputs.tar.gz",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "d5302bb966d5fd09660bf1c3b46cbdc52efb396c381b111f02682b1674fb7224",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/primary_slot/legacy_contract/README.md",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "1a3993d81fcd8ec1a04455da423dd6e4a948c6fac89807418d75ca8893b6a020",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/primary_slot/lifecycle/README.md",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "ea95f117c9b73372846805d78970bd24be95dc52a4f9f82e71988e809224bb31",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/primary_slot/lifecycle/admission/README.md",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "ed8f173d8e9df9a563d6f3285ccef4f1238fe79cdb8a4fe23c47532e9ee9e483",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/primary_slot/lifecycle/admission/patch-manifest.json",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "3cba796ebd072feb9487d7ac5a0ea77bac1e5397e7532aabe9436b4dbc8af24b",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/primary_slot/lifecycle/admission/production-minimal.patch",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "d93c3c2b14bdd2e4e79986678ffdc4965ebfdb13079685b8596bc8a66389ac72",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/primary_slot/lifecycle/admission/review.json",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "3861d6950aec963c2e994657445e002e519ff9830c6694dc252c7d376014692a",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/primary_slot/lifecycle/admission/test-guard.patch",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "3e3209dcf936488c51dc573801abc553f18f8b684a5a0c6b2a73dc54873e64c7",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/primary_slot/lifecycle/pairing_fixes.proposed.patch",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "c1954c84d17fcf8a49262c13754d28d674031b0d8ebdf1f38b67176ba1bb7204",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/primary_slot/lifecycle/shutdown_plan.md",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "f92978e0337c05c1c07150809f0c3c0e5237591eea5c77e0a0202372330c676f",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/primary_slot/lifecycle/subscription_review.json",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "4b06953c500992468eade9821adf17a427000cb24a3f0f431b80edcf77c8eb5c",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/primary_slot/oracle/check_primary_measurements.py",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "a85b89a00ad4b29ac4ddf3c39ecda104fa60a56b7c28622296197b0a3d90d69d",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/primary_slot/provider/LICENSE",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "0cec06e0e55fbc3dc5cee4fca9b607f66cb8f4e4dbcf3b3c013594dd156732e9",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "cases/primary_slot/provider/contract.json",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "d98e92f1f15263b9931f8a98100f57c17585d11a51b1672286579d4456024cae",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "framework/compatibility/adapters/legacy/legacy_primary_adapter.h",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "222b792b6903489ccdf9591e32db82ecf3e19d248eb9947320d99072bddc4cc0",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "framework/compatibility/adapters/legacy/legacy_sim_adapter.cpp",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "66ca6d63cb4c067b90706d8387744c7882a5683e893c0ffb63015912cf43afae",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "framework/compatibility/adapters/legacy/platform_spy.cpp",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "1a28487dc092b57cfc87d367972ec8020b5252b704b91d46161a31938092c7f5",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "framework/compatibility/adapters/legacy/platform_spy.h",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "1ab5487873d21fbe1599ef40005a233ba5c0b29369835bfa218898da87172c99",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "framework/compatibility/adapters/multisim/README.md",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "a7c9c66d937602e00968abe50d34771060c197191a140f27bd2b3048f3251d78",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "framework/compatibility/contracts/sim_session.h",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "19075a3cd587434e8b4661bd53296b85376025e980da6bbb6827f060a3654825",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "framework/compatibility/contracts/sim_sut.h",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "897b7f7766c20a2bead79825d0b00377793b4b42e07c8b5c2a1f418259e445aa",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "framework/compatibility/fakes/ril_device.h",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "9a055ade01080ebbae91d67456b46b427472f77c08f8c2806118c4a92925ae04",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "framework/compatibility/fakes/ril_fault_controls.h",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "5b26e865b69435e23538c02389d886ff6101bc6f2326558679db2d588d2249fa",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "scripts/audit_initialization.py",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "cf173f3b08ba819a84a45c43ec185aaad7c7302ac7da977004cfd06a28c6f279",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "scripts/audit_primary_contract.py",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "ff3dd898541607071785042159a46f959ff4811ceab42564e2207d4437df2ee9",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "scripts/build_clock.py",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "f00451a20b484158512c52e229188390f6b043918f9936fd0df0643d2e955b9f",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "scripts/build_host.sh",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "23597a346a1a54afbca103216b32f328398ccf199fb2448cd14cadc68f24658c",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "scripts/check_relocation.py",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "a3d131113fcf7b50c114b6685d5d3c6a631ddfe614a45eb1afba04c2f585fb22",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "scripts/check_stop_contract.py",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "404651a799b929bfcbf39db7c9831dd1823e9de6f3e73dd2335056b2a43fcb9e",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "scripts/ci_sim028.py",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "5d131f89ab1f5b8f0b8fea8b05b40f2044fb4f4d98810914f5d741c909306fce",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "scripts/compare_layout_results.py",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "b7afcf2891bfdf25bf52583ca9adc05e1e594d39e60c08975ca08ee9d4dc27df",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "scripts/debug_host.sh",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "a1aeda5eaec0bf668e2a52218c9a881a5e2c58514531c65781b870646c770af5",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "scripts/host.py",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "1a87f95b9481b20e17a249e7c2df0fcfe039775939fd8c51f541fa2286e1ac80",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "scripts/reproduce_initialization.py",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "b6c1964e10978c849143d7772a9e8845d44c89f9928269504592b080af6824bb",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "scripts/review_graph.py",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "6f223de87481754405d6206da836e1cff35d60fb53b22dbefe44968dff935bdd",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "scripts/run.py",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "8c3a39cbca40241c7829372b07b233117b7f41e91d494830511eb0b7113b6c4d",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "scripts/run_diagnostics.py",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "1c72f287d90863285508b891fc6610f892532845ad1c6d4051d178dd4776b4ce",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "scripts/run_g2a_query.py",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "bd32c0524b4ee1e70997af5f72bcb40b2f01c1418ce961c1d1b63eba2683ef9d",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "scripts/run_host_tests.sh",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "6e229753049b525bb8aa5e11194c1413306f1d3fd1098b4597685a3d233906ac",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "scripts/run_legacy_primary_contract.py",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "f2d01d96d05debb2f2f42a41773f60711a24463c0d015a3746f1d845a414e1a5",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "scripts/run_pin_memory_contract.py",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "fce10205cceaa27ffed7c290e47dcb4378781c62df880921970517750a780871",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "scripts/run_primary_contract.py",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "1d73dac39916b41ef7832cbe5ac3b90516cddaaa350712bb9cbb781bb19e7b1e",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "scripts/run_primary_real.py",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "ab47a2827fd375ac160a70b16d42b9fcbf713349c93a8cc69a3e9276ca60fbde",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "scripts/run_primary_slot.py",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "1f552070dac99028eb113f1252ee80ab34867902971c6ea2dfe1a7220fc83013",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "scripts/run_sim_guard.py",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "e9e7423027132960da8ee6c8d0e3a0c4682111610ce609e35ee10fcda5c5fe85",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "scripts/summarize_graph.py",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "a438a915cc4dd272973e5660e82293f1dfc79d75f362f06707f2456f1fb7d1cd",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "scripts/trace_graph.py",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "a346690ac59f2aba0e8b46fcd74454d3f6fa3e5e48098e25e6f2f7952fe7c996",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "scripts/validate_patch.py",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "180c7b67804e909ca61c004408e22ad0de568bef0258c9e3cdcdc32cce6ad178",
+      "replacement": "Unified test.py/GTest fixture or immutable original-active-sources archive; case mapping in Full_Replacement_Coverage.json"
+    },
+    {
+      "old": "framework/host/BUILD.gn",
+      "new": "framework/host/BUILD.gn",
+      "action": "rewritten",
+      "before_sha256": "63ee0a40971e4a31ae8e85f9a86e6b996b76b811b3175f448f4be9beb6b818d7"
+    },
+    {
+      "old": "scripts/check_test_integrity.py",
+      "new": "scripts/check_test_integrity.py",
+      "action": "rewritten",
+      "before_sha256": "76dda845b41caf3f4759cb92171ad495d0a653eecd913d3678ececd2e85047ea"
+    },
+    {
+      "old": "scripts/test.py",
+      "new": "scripts/test.py",
+      "action": "rewritten",
+      "before_sha256": "8f37497f200c9e9777beeb15cc690ac6559371fbfc1114413d496769c7d4b5d7"
+    },
+    {
+      "old": "scripts/build_replacement.py",
+      "new": "scripts/build_replacement.py",
+      "action": "rewritten",
+      "before_sha256": "1d0a4093dcfec59e64307a33534af8f49dc1fd32370e1b03febe95168cccb2be"
+    },
+    {
+      "old": "scripts/run_gtest.py",
+      "new": "scripts/run_gtest.py",
+      "action": "rewritten",
+      "before_sha256": "c2c978c328e5461a6b6e2306f8c00143372bd93ce042843e553652b4129fb564"
+    },
+    {
+      "old": "scripts/update_case_sources.py",
+      "new": "scripts/update_case_sources.py",
+      "action": "rewritten",
+      "before_sha256": "73d59e312d4ecb6e814a9fb48d388a7ad530c52553c850accea8fec7710be0e4"
+    },
+    {
+      "old": "framework/host/configs/cases.json",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "2017cfa8af813cd944f7bc01061ad5282ad797ff518ce0ac5a64cfc6441e6935",
+      "replacement": "Exact source archive; inactive historical configuration, not new runtime input"
+    },
+    {
+      "old": "framework/host/configs/environment_probe.json",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "6845bb1f58622781ad3fa96a41f9b58578c2571eae5f340c659809becab47715",
+      "replacement": "Exact source archive; inactive historical configuration, not new runtime input"
+    },
+    {
+      "old": "framework/host/configs/g2a_bplus_evidence.json",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "6d715ae5865a774385181a6ef74ed7a870a172dc300420a20374ca64ff77892b",
+      "replacement": "Exact source archive; inactive historical configuration, not new runtime input"
+    },
+    {
+      "old": "framework/host/configs/g2a_checkpoint_evidence.json",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "1f05c10191b42ae92fa390c61e401e38328eb8fa4f9cbed669e2f64caf59936e",
+      "replacement": "Exact source archive; inactive historical configuration, not new runtime input"
+    },
+    {
+      "old": "framework/host/configs/initialization_gaps.json",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "2cf37d70a6e5d37457e58f275d4c7c420a36c5b35715510e31381dfb48ef2ea3",
+      "replacement": "Exact source archive; inactive historical configuration, not new runtime input"
+    },
+    {
+      "old": "framework/host/configs/oracles.json",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "ccb315798e79cbbf7031a613259656e892cab1d7ce56ecd6ddf18eb2949d5cad",
+      "replacement": "Exact source archive; inactive historical configuration, not new runtime input"
+    },
+    {
+      "old": "framework/host/configs/platform_inventory.json",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "a47db3239b321a2018e28561550caeb7a0323133d26930408c5ccaabcc35610d",
+      "replacement": "Exact source archive; inactive historical configuration, not new runtime input"
+    },
+    {
+      "old": "framework/host/configs/platform_resolution.json",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "c158a1df9fbef96696f7ed09dea6fab273e60f6a6d4a663afafc3f067e837658",
+      "replacement": "Exact source archive; inactive historical configuration, not new runtime input"
+    },
+    {
+      "old": "framework/host/configs/production_sources_candidate.json",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "92716d38fb9079cfe431e60177d46218d6f339a6a7e5fe45dfc79d2d74394692",
+      "replacement": "Exact source archive; inactive historical configuration, not new runtime input"
+    },
+    {
+      "old": "framework/host/configs/source_manifest.json",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "68b98b58c9214affa2e82498f7acbb2c5b01c7f7cd2bb997a33e30bd3bee22e5",
+      "replacement": "Exact source archive; inactive historical configuration, not new runtime input"
+    },
+    {
+      "old": "framework/host/configs/storage_protocol_requirements.json",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "728f754731d0548f68f9d82d71c5ef16ead1b6430f1ab5e2b8997aff0ba24fb8",
+      "replacement": "Exact source archive; inactive historical configuration, not new runtime input"
+    },
+    {
+      "old": "framework/host/configs/upstream_contracts.json",
+      "new": null,
+      "action": "retired",
+      "before_sha256": "c5947631152f08bb493a4d7f09743bb5f983f12a0c768a62e0e072b247427174",
+      "replacement": "Exact source archive; inactive historical configuration, not new runtime input"
+    },
+    {
+      "old": "scripts/capture_replacement_baseline.py",
+      "action": "retired",
+      "before_sha256": "6a7d06d4d86e42ae9abffc5911f5ae429157433f1e966e94ce8c99d83a8c3b3f",
+      "replacement": "scripts/verify_migration.py and immutable original archive; no duplicate active comparison flow"
+    },
+    {
+      "old": "scripts/compare_replacement.py",
+      "action": "retired",
+      "before_sha256": "6ac68953268bb42db8f2c3a1c7d5d1e0221a9cca6151b73a90d1173eb9808a11",
+      "replacement": "scripts/verify_migration.py and immutable original archive; no duplicate active comparison flow"
+    },
+    {
+      "old": "cases/architecture/directory_auxiliary_inventory.json",
+      "action": "retired",
+      "before_sha256": "a3c4f1cf8a0ea888c406c2d99f47459adf5b582ad1e3d35133ef6f9b53bedac8",
+      "replacement": "Immutable original-active-sources.tar.gz; historical directory ledger not referenced by active checks"
+    },
+    {
+      "old": "cases/architecture/directory-relocation-evolution.json",
+      "action": "retired",
+      "before_sha256": "305955a8d809ca8e9489bc1f491621da14aab2e071b07dde7218a0440af5c7d5",
+      "replacement": "Immutable original-active-sources.tar.gz; historical directory ledger not referenced by active checks"
+    }
+  ]
+}

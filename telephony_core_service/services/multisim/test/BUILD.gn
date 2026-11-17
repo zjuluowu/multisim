@@ -1,0 +1,218 @@
+# Native targets are test-only. No production aggregate depends on this file.
+import("//build/ohos.gni")
+import("//build/test.gni")
+import("cases/sources.gni")
+import("framework/component_sources.gni")
+
+config("component_headers") {
+  include_dirs = [
+    "framework",
+    "framework/host",
+    "framework/host/stubs",
+    "framework/host/stubs/include",
+  ]
+  foreach(dir,
+          [
+            "services/sim/include",
+            "interfaces/innerkits/include",
+            "interfaces/innerkits/ims/include",
+            "interfaces/innerkits/satellite",
+            "services/tel_ril/include",
+            "services/network_search/include",
+            "services/core/include",
+            "services/telephony_ext_wrapper/include",
+            "utils/common/include",
+            "utils/log/include",
+            "utils/preferences/include",
+            "common/capability_mgr/include",
+          ]) {
+    include_dirs += [ "$sim_core_root/$dir" ]
+  }
+  defines = [ "LOG_DOMAIN=0xD001F04" ]
+  cflags_cc = [
+    "-std=c++17",
+    "-fexceptions",
+    "-flto=full",
+    "-fwhole-program-vtables",
+    "-fvirtual-function-elimination",
+    "-fvisibility=hidden",
+    "-ffunction-sections",
+    "-fdata-sections",
+  ]
+}
+
+# Isolated in-process component test: real SIM sources + controlled external
+# ports. This is not an SA/IPC/HDI integration test or a platform ABI certificate.
+ohos_unittest("sim_test_device_component") {
+  install_enable = true
+  testonly = true
+  subsystem_name = "telephony"
+  part_name = "core_service"
+  module_out_path = "core_service/multisim"
+  sources =
+      sim_case_sources + sim_protocol_case_sources + sim_platform_case_sources +
+      sim_state_base_sources + sim_event_sources + sim_wrapper_sources +
+      [
+        "framework/common/main.cpp",
+        "framework/host/sim_test.cpp",
+        "framework/host/state_platform_spy.cpp",
+        "framework/host/stubs/detached_threads.cpp",
+        "framework/host/stubs/event_handler_runtime.cpp",
+        "framework/host/stubs/external_services.cpp",
+        "framework/host/stubs/ffrt_runtime.cpp",
+        "framework/host/stubs/parameter_service.cpp",
+        sim_state_handle_source,
+        sim_state_manager_source,
+      ]
+  configs -= [ "//build/config/compiler:no_exceptions" ]
+  configs += [ ":component_headers" ]
+  external_deps = [
+    "googletest:gmock_main",
+    "libxml2:libxml2",
+  ]
+  libs = [ "dl" ]
+  ldflags = [
+    "-flto=full",
+    "-Wl,--gc-sections",
+    "-Wl,--export-dynamic-symbol=pthread_create",
+    "-Wl,--export-dynamic-symbol=pthread_detach",
+  ]
+}
+
+# Live product service integration. Exact same ordinary business case sources.
+# Advanced RIL/race cases belong to the component target above, not this service.
+ohos_unittest("sim_test_device") {
+  install_enable = true
+  testonly = true
+  subsystem_name = "telephony"
+  part_name = "core_service"
+  module_out_path = "core_service/multisim"
+  sources = sim_case_sources + [
+              "framework/common/main.cpp",
+              "framework/device/sim_test.cpp",
+            ]
+  include_dirs = [
+    "framework",
+    "$sim_core_root/interfaces/innerkits/include",
+  ]
+  cflags_cc = [
+    "-std=c++17",
+    "-fexceptions",
+  ]
+  deps = [ "$sim_core_root/interfaces/innerkits:tel_core_service_api" ]
+  external_deps = [
+    "access_token:libaccesstoken_sdk",
+    "access_token:libtoken_setproc",
+    "c_utils:utils",
+    "googletest:gmock_main",
+    "ipc:ipc_core",
+    "samgr:samgr_proxy",
+    "state_registry:tel_state_registry_api",
+  ]
+}
+
+# Other independently linked component slices use the same case arrays and
+# shared production source definitions as Host. No SDK service integration is
+# inferred from these controlled in-process targets.
+template("sim_native_component") {
+  ohos_unittest(target_name) {
+    testonly = true
+    install_enable = true
+    subsystem_name = "telephony"
+    part_name = "core_service"
+    module_out_path = "core_service/multisim"
+    sources = invoker.sources + [ "framework/common/main.cpp" ]
+    configs -= [ "//build/config/compiler:no_exceptions" ]
+    configs += [ ":component_headers" ]
+    include_dirs = [
+      "framework/host/primary/include",
+      "framework/host/primary/provider/include",
+      "framework/host/primary/runtime_include",
+      "framework/host/primary",
+      "framework/host/primary/lifecycle",
+      "framework/host/probes",
+    ]
+    if (defined(invoker.include_dirs)) {
+      include_dirs = invoker.include_dirs + include_dirs
+    }
+    external_deps = [
+      "bounds_checking_function:libsec_shared",
+      "cJSON:cjson",
+      "c_utils:utils",
+      "googletest:gmock_main",
+      "libxml2:libxml2",
+      "openssl:libcrypto_shared",
+    ]
+    libs = [ "dl" ]
+    ldflags = [
+      "-flto=full",
+      "-Wl,--gc-sections",
+      "-Wl,--export-dynamic-symbol=pthread_create",
+      "-Wl,--export-dynamic-symbol=pthread_detach",
+    ]
+    if (defined(invoker.deps)) {
+      deps = invoker.deps
+    }
+  }
+}
+sim_native_common = [
+                      "framework/host/stubs/parameter_service.cpp",
+                      "$sim_core_root/services/sim/src/sim_manager.cpp",
+                    ] + sim_wrapper_sources
+sim_native_full = sim_initialization_sources + sim_primary_support_sources +
+                  sim_event_sources + sim_native_common + [
+                    "$sim_core_root/services/sim/src/multi_sim_controller.cpp",
+                    "$sim_core_root/services/core/src/core_service_sim.cpp",
+                    "$sim_core_root/utils/common/src/telephony_permission.cpp",
+                    "$sim_core_root/common/capability_mgr/src/multi_sims_capability_manager.cpp",
+                    "framework/host/primary/real_runtime.cpp",
+                    "framework/host/primary/security_boundary.cpp",
+                    "framework/host/stubs/external_services.cpp",
+                    "framework/host/stubs/event_handler_runtime.cpp",
+                    "framework/host/stubs/ffrt_runtime.cpp",
+                    "framework/host/stubs/detached_threads.cpp",
+                  ]
+sim_native_component("sim_test_device_capacity") {
+  sources = sim_capacity_case_sources + sim_native_common +
+            [ "framework/host/probes/capacity_probe.cpp" ]
+}
+sim_native_component("sim_test_device_primary_entry") {
+  sources = sim_primary_entry_case_sources + [
+              "$sim_core_root/common/capability_mgr/src/multi_sims_capability_manager.cpp",
+              "$sim_core_root/services/core/src/core_service_sim.cpp",
+              "$sim_core_root/utils/common/src/telephony_permission.cpp",
+              "framework/host/primary/security_boundary.cpp",
+            ]
+}
+sim_native_component("sim_test_device_primary") {
+  sources = sim_primary_case_sources + sim_native_full
+}
+sim_native_component("sim_test_device_bootstrap") {
+  sources = sim_bootstrap_case_sources + sim_native_full +
+            [ "framework/host/probes/bootstrap_probe.cpp" ]
+}
+sim_native_component("sim_test_device_query") {
+  sources = sim_reference_case_sources + sim_native_common + [
+              "$sim_core_root/services/multisim/infrastructure/compatibility/api/real_sim_count_query.cpp",
+              "framework/host/g2a_reference/core_service_sim.cpp",
+              "framework/host/g2a_reference/legacy_sim_query_binding.cpp",
+              "framework/host/probes/g2a_query_probe.cpp",
+            ]
+  include_dirs = [
+    "framework/host/g2a_reference",
+    "$sim_core_root/services/multisim/infrastructure/compatibility/api",
+  ]
+  deps = [ ":sim_test_device_query_vendor" ]
+}
+sim_native_component("sim_test_device_query_upstream") {
+  sources = sim_upstream_case_sources + sim_native_common +
+            [ "$sim_core_root/services/core/src/core_service_sim.cpp" ]
+  deps = [ ":sim_test_device_query_vendor" ]
+}
+ohos_shared_library("sim_test_device_query_vendor") {
+  testonly = true
+  subsystem_name = "telephony"
+  part_name = "core_service"
+  output_name = "telephony_ext_service.z"
+  sources = [ "framework/host/stubs/g2a_vendor_boundary.cpp" ]
+}

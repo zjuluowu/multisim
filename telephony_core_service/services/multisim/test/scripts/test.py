@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
-"""Unified orchestration; child reports and their original exit codes remain authoritative."""
+"""Single build/discovery/process/report entry for all SIM test slices."""
 import argparse
+from datetime import datetime, timezone
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -9,84 +11,103 @@ import sys
 import tempfile
 from _paths import TEST, REPO
 
-SUITES = ('all', 'architecture', 'host', 'compat', 'defect', 'pin', 'g2a',
-          'primary', 'target', 'technical', 'integrity')
-
+HOST = ['sim_test_host', 'sim_component_test', 'sim_primary_slot_entry_test', 'sim_g2a_query_test', 'sim_upstream_query_test']
+REAL = ['sim_primary_slot_real_test', 'sim_bootstrap_characterization']
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--suite', choices=SUITES, default='all')
-    parser.add_argument('--output', required=True, type=Path)
-    parser.add_argument('--gtest-root', default=os.environ.get('SIM_GTEST_ROOT'))
+    parser.add_argument('action', choices=['all','build','run','list','debug','technical','architecture','integrity','mutation','device'], nargs='?', default='all')
+    parser.add_argument('--out', type=Path, default=REPO/'.host-out')
+    parser.add_argument('--output', type=Path, default=REPO/'.host-out/results')
+    parser.add_argument('--target', nargs='+', choices=HOST+REAL)
+    parser.add_argument('--filter', default='*')
+    parser.add_argument('--gtest-root')
     parser.add_argument('--openssl-root')
     parser.add_argument('--runtime-root')
-    parser.add_argument('--mutation-check', action='store_true')
     parser.add_argument('--jobs', default='3')
+    parser.add_argument('--ci', action='store_true')
+    parser.add_argument('--init-model', choices=['single-active','dual-active-primary0'], default='single-active')
+    parser.add_argument('--ohos-root', type=Path)
+    parser.add_argument('--device-binary', type=Path)
+    parser.add_argument('--device-component', action='store_true')
+    parser.add_argument('--resource-file', type=Path)
+    parser.add_argument('--native-target')
+    parser.add_argument('--library', type=Path)
     args = parser.parse_args()
-    output = args.output.resolve()
-    if output == REPO or REPO in output.parents or output in REPO.parents:
-        parser.error('--output must be a dedicated directory outside the repository')
-    output.mkdir(parents=True, exist_ok=True)
-    session = Path(tempfile.mkdtemp(prefix='test-', dir=output))
-    rows = []
-
+    args.output.mkdir(parents=True, exist_ok=True)
+    session = Path(tempfile.mkdtemp(prefix='sim-', dir=args.output.resolve()))
+    protected = REPO/'default.profraw'
+    original = hashlib.sha256(protected.read_bytes()).hexdigest() if protected.is_file() else None
+    result = {'head': subprocess.check_output(['git','rev-parse','HEAD'],cwd=REPO,text=True).strip(),
+              'started_utc':datetime.now(timezone.utc).isoformat(),'commands':[], 'cases':[], 'status':'NOT_RUN'}
+    def save():
+        (session/'result.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
     def run(name, script, options=()):
-        command = [sys.executable, '-B', str(TEST / script), *map(str, options)]
-        env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1',
-                   LLVM_PROFILE_FILE=str(session / (name + '-%p.profraw')))
-        with (session / (name + '.log')).open('w') as log:
-            code = subprocess.run(command, cwd=REPO, env=env,
-                                  stdout=log, stderr=subprocess.STDOUT).returncode
-        row = {'suite': name, 'command': command, 'exit_code': code,
-               'status': 'PASS' if code == 0 else 'BLOCKED' if code == 2 else 'FAIL',
-               'log': str(session / (name + '.log'))}
-        rows.append(row)
-        (session / 'result.json').write_text(json.dumps({'commands': rows,
-            'counting': 'Child reports retain business/GTest/defect and mutation counts; commands are not business cases.'}, indent=2) + '\n')
-        print(f'{name}: {row["status"]} (exit {code}); {row["log"]}', flush=True)
+        cmd=[sys.executable,'-B',str(TEST/'scripts'/script),*map(str,options)]
+        with (session/(name+'.log')).open('w') as log:
+            code=subprocess.run(cmd,cwd=REPO,env=dict(os.environ,LLVM_PROFILE_FILE=str(session/(name+'-%p.profraw'))),stdout=log,stderr=subprocess.STDOUT).returncode
+        row={'name':name,'command':cmd,'exit_code':code,'status':'PASS' if code==0 else 'BLOCKED' if code==2 else 'FAIL','log':name+'.log'}
+        result['commands'].append(row);save();print(name+': '+row['status'],flush=True)
         return code
+    try:
+        if args.action in ['all','technical','integrity','architecture']:
+            if args.action in ['all','integrity']:run('integrity','check_test_integrity.py')
+            if args.action in ['all','architecture']:run('architecture','run_architecture.py',['--with-gn','--migration','--output',session/'architecture'])
+            if args.action in ['all','technical']:run('technical','technical.py',['--output',session/'technical'])
+        if args.action in ['all','build','run','list','debug']:
+            targets=args.target or (HOST+REAL if args.action in ['all','build'] else HOST)
+            for target in targets:
+                build=['--out',args.out,'--target',target,'--jobs',args.jobs]
+                for flag,value in [('--gtest-root',args.gtest_root),('--openssl-root',args.openssl_root),('--runtime-root',args.runtime_root)]:
+                    if value:build += [flag,value]
+                if run(target+'-build','build_replacement.py',build):continue
+                if args.action=='build':continue
+                if args.action=='debug':
+                    run(target+'-debug','debug.py',['--binary',args.out/'build'/target,'--filter',args.filter,'--output',session/target]);continue
+                options=['--binary',args.out/'build'/target,'--output',session/target,'--filter',args.filter]
+                if args.action=='list':options+=['--list']
+                if target in REAL:options += ['--env','SIM_HOST_BOOT_SLOT_COUNT=2','--env','SIM028_INIT_MODEL='+args.init_model]
+                run(target,'run_gtest.py',options)
+                reports=list((session/target).glob('gtest-*/result.json'))
+                if len(reports)!=1:continue
+                child=json.loads(reports[0].read_text())
+                for case in child['cases']:case.update(target=target,report=str(reports[0]),scope='host_component')
+                result['cases'].extend(child['cases']);save()
+                slices={'sim_test_host':'state','sim_primary_slot_real_test':'primary','sim_g2a_query_test':'query','sim_upstream_query_test':'upstream'}
+                if args.action=='all' and target in slices:
+                    run(target+'-execution','audit_replacement_execution.py',['--slice',slices[target],'--binary',args.out/'build'/target,'--profiles',reports[0].parent,'--output',session/(target+'-execution')])
+        if args.action=='all':
+            run('device-static','check_device.py')
+            run('migration-equivalence','verify_migration.py',['--reports',session/'result.json','--output',session/'comparison.json'])
+        if args.action in ['all','mutation']:run('mutation','mutations.py',['--out',args.out,'--output',session/'mutation'])
+        if args.action=='all':
+            run('profile-safety','profile_safety.py',['--binary',args.out/'build/sim_test_host','--output',session/'profile-safety'])
+        if args.action=='device':
+            options=['--output',session/'device','--filter',args.filter]
+            if args.ohos_root:options+=['--ohos-root',args.ohos_root]
+            if args.device_binary:options+=['--binary',args.device_binary]
+            if args.device_component:options+=['--component']
+            if args.resource_file:options+=['--resource-file',args.resource_file]
+            if args.native_target:options+=['--native-target',args.native_target]
+            if args.library:options+=['--library',args.library]
+            run('device','device.py',options)
+        statuses={r['status'] for r in result['commands']}
+        result['status']='FAIL' if 'FAIL' in statuses else 'BLOCKED' if 'BLOCKED' in statuses else 'PASS'
+        if args.ci:
+            from ci_gate import evaluate
+            result['admission']=evaluate(result['cases'],result['commands'])
+        if result['cases']:
+            sys.path.insert(0,str(TEST/'cases'))
+            from validate_primary import validate
+            result['primary_contracts']=validate(result['cases'])
+            if any(row['status']=='FAIL' for row in result['primary_contracts']):result['status']='FAIL'
+        if args.ci:
+            return 1 if result['admission']['status']=='FAIL' or any(r['status']=='FAIL' for r in result.get('primary_contracts',[])) else 0
+        return 1 if result['status']=='FAIL' else 2 if result['status']=='BLOCKED' else 0
+    finally:
+        result['protected_profile_unchanged']=original==(hashlib.sha256(protected.read_bytes()).hexdigest() if protected.is_file() else None)
+        if not result['protected_profile_unchanged']:result['status']='FAIL'
+        result['finished_utc']=datetime.now(timezone.utc).isoformat();save();print('Report: '+str(session/'result.json'),flush=True)
+        if not result['protected_profile_unchanged']: return 1
 
-    selected = ['integrity', 'architecture', 'technical', 'host', 'g2a', 'primary', 'target'] if args.suite == 'all' else [args.suite]
-    if args.suite == 'all' and args.mutation_check:
-        selected += ['compat', 'pin']
-    dependency = ['--gtest-root', args.gtest_root] if args.gtest_root else []
-    mutation = ['--mutation-check'] if args.mutation_check else []
-    for name in selected:
-        dest = session / name
-        if name == 'architecture':
-            run(name, 'scripts/run_architecture.py', ['--with-gn', '--migration', '--output', dest])
-        elif name == 'integrity':
-            run(name, 'scripts/check_test_integrity.py')
-            run('relocation', 'scripts/check_relocation.py')
-        elif name == 'technical':
-            for key, script in [('source-tables', 'cases/architecture/test_g2a_source_tables.py'),
-                                ('oracle', 'cases/primary_slot/oracle/test_primary_oracle.py'),
-                                ('classifier', 'cases/infrastructure/test_legacy_primary_contract.py'),
-                                ('ci-policy', 'cases/infrastructure/test_ci_sim028.py')]:
-                run(key, script, ['-v'])
-        elif name == 'host':
-            run(name, 'scripts/host.py', ['all', '--out', dest, '--jobs', args.jobs, *dependency])
-        elif name in ('compat', 'defect'):
-            run(name, 'scripts/run_sim_guard.py', ['--suite', name, '--output', dest, *dependency, *mutation])
-        elif name == 'pin':
-            run(name, 'scripts/run_pin_memory_contract.py', ['--output', dest, *dependency, *mutation])
-        elif name == 'g2a':
-            run(name, 'scripts/run_g2a_query.py', ['--output', dest, *dependency])
-        elif name == 'target':
-            run(name, 'scripts/run_primary_contract.py', ['--adapter', 'target', '--output', dest])
-        elif name == 'primary':
-            options = ['configure', '--out', dest / 'host', '--target', 'sim_primary_slot_real_test', *dependency]
-            for flag, value in [('--openssl-root', args.openssl_root), ('--runtime-root', args.runtime_root)]:
-                if value:
-                    options += [flag, value]
-            if run('primary-prepare', 'scripts/host.py', options) == 0:
-                run(name, 'scripts/run_primary_contract.py',
-                    ['--adapter', 'legacy', '--host-out', dest / 'host', '--output', dest / 'results'])
-    failed = any(r['status'] == 'FAIL' for r in rows)
-    blocked = any(r['status'] == 'BLOCKED' for r in rows)
-    print('Reports: ' + str(session))
-    return 1 if failed else 2 if blocked else 0
-
-
-if __name__ == '__main__':
-    sys.exit(main())
+if __name__=='__main__':raise SystemExit(main())

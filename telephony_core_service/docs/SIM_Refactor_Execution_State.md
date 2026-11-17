@@ -1,6 +1,6 @@
 # 多 SIM 重构执行状态
 
-当前新增任务：测试防护网全量重建，首批实际代码及失败/阻塞见§38；尚未完成全量替换，不将阶段提交作为整体验收。
+当前新增任务：测试防护网全量重建已完成 Host 全量迁移及旧活动框架替换，续建结果见§39；产品编译/设备及 GUI 尚未验收，不能作为全平台验收通过。
 
 当前任务（2026-11-16）：按用户明确授权撤回原生产重构接入，并同步GitCode主仓master@43ac8ae7df5b9c17c4efb3433415693d925b98c7；当前生产不再接入G2a Query。以下G2a生产附着结论仅为历史检查点，当前测试参考与验证见§37。
 
@@ -987,3 +987,15 @@ GitCode最新源码实际验证：Host64项59 PASS/同样5个既有FAIL，与本
 工作区保护失误：一次手工LLDB未设LLVM_PROFILE_FILE，覆盖既存未跟踪default.profraw；原SHA bbb8d8d54bc9586adf968048bcdf7f08cf72cd1321d4766bafe30b8814ef5f1e，发现时新SHA d35445fd920ef489cfb908b6968c9d3dea874688ea39daa53328c9f76be2d675。已明确告知用户并扫描可访问profile副本，未找到匹配原字节；不称已恢复，不纳入提交。新执行器/IDE/后续命令显式设置独立输出。
 
 [当前架构、完整旧资产处置、实测及后续切换](../services/multisim/test/docs/Full_Replacement.md)与其仓内证据包为本批交付，不依赖/tmp作为唯一证据。原生产源码与正式GN未改；框架引导仅对Host GN、完整性工具及README设置精确演进记录，其他835项受控资产继续原字节核验。逐文件保存本批成果并常规推送origin/main，推送前后核实远端；分歧/保护拒绝不合并、不变基、不强推、不改用副本发布。实际提交由包含本节的Git提交定位，不自引用SHA。
+
+### 39. 测试防护网全量续建与活动入口替换（2026-11-17）
+
+输入本地/远端 main@807d73fbefdd6d7652a88187ae06211cc98e6de4，fetch 恢复 CHECKPOINT_VERIFIED，仅既存未跟踪 default.profraw。完成剩余15项Host、真实Primary/生命周期27项、两套查询各7配置迁移；105历史项逐项对照，最终105完全MATCH；较早运行104项MATCH、逆序枚举一项保留原始总顺序DIFFERENT并按独立异步槽队列契约裁决等价。另两项双卡PIN及旧未执行bootstrap通过。合计108项86 PASS/22 FAIL：原Host五缺陷保持；真实Primary原17 FAIL保持，未豁免，CI仍FAIL。C0业务通过而对象图/线程/RIL/订阅清理失败，不修改生产语义或放宽Mock。补充双活前态七项富业务契约通过，清理结果独立保留。
+
+test.py为唯一构建/发现/逐例进程/架构/技术/变异/报告/CI入口；退役旧Scenario/Oracle执行层、Adapter及Runner/重复GN目标，原317活动文件字节归档。普通TEST_F单头及专用独立生产切片使用公共Fixture；Host/Device共用cases及生产源清单。真实生产方法正执行、两项变异检出及恢复均有原始证据。复制新增用例、CLI单例及LLDB真实UnlockPin/slotId/调用栈/继续完成通过；GUI和独立初级开发人员验收未执行。
+
+实现原生ohos_unittest目标与真实SA/IPC集成、组件层分离及资源/权限/恢复检查；静态检查通过，缺完整产品树/build/test.gni、hb/交叉工具链、hdc/设备和HIL控制器，原生构建及执行NOT_RUN/调度BLOCKED，不继承Host通过。生产C++、正式生产GN与写权未改。
+
+default.profraw原字节仍未恢复（原SHA见§38），本轮保持d35445fd920ef489cfb908b6968c9d3dea874688ea39daa53328c9f76be2d675不变。ELF启动前防护与绝对%p回退覆盖直接/异常/调试入口；私有sentinel检出最初仅main保护无效，修正后三类检查通过，原失败和修复均归档。不提交或删除用户文件。
+
+完整逐例映射、退役表、结果、边界和仓内原始证据统一见[Full_Replacement.md](../services/multisim/test/docs/Full_Replacement.md)。依持续授权当前工作区逐文件提交并常规推送origin/main；完整CI失败、产品阻塞与GUI未验收不因提交而改变。

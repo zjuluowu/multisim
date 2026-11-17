@@ -5,7 +5,7 @@ from pathlib import Path
 import unittest
 TEST = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(TEST / "scripts"))
-from run_g2a_query import CORE, verify_source_tables, is_method
+from source_boundaries import CORE, verify_source_tables, is_method
 class SourceBoundary(unittest.TestCase):
     def setUp(self):
         self.names = ["BUILD.gn", "test/BUILD.gn", "test/core_service_test.gni",

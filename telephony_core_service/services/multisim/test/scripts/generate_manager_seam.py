@@ -5,13 +5,13 @@ import sys as _sys
 from pathlib import Path as _Path
 _TEST_ROOT = next(p for p in _Path(__file__).resolve().parents if (p / "scripts/_paths.py").is_file())
 _sys.path.insert(0, str(_TEST_ROOT / "scripts"))
-from _paths import TEST as _TEST, CORE as _CORE, REPO as _REPO, locate, guard_asset
+from _paths import TEST as _TEST, CORE as _CORE, REPO as _REPO
 import argparse
 import hashlib
 from pathlib import Path
 import re
 
-HERE = (_TEST / 'cases/primary_slot')
+HERE = (_TEST / 'framework/host/primary')
 CORE = _CORE
 
 
@@ -37,7 +37,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--check', action='store_true')
     options = parser.parse_args()
-    destination = (_TEST / 'cases/primary_slot/unscripted_sim_manager.h')
+    destination = (_TEST / 'framework/host/primary/unscripted_sim_manager.h')
     generated = generate()
     if options.check:
         if destination.read_text() != generated:

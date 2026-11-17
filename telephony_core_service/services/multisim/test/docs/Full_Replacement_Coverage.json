@@ -1,0 +1,992 @@
+{
+  "baseline": "807d73fbefdd6d7652a88187ae06211cc98e6de4",
+  "scope": "Historical required cases; ordinary new cases are auto-discovered without editing this file",
+  "cases": [
+    {
+      "origin": "host_baseline",
+      "old_id": "SimComponent.CapacityReadOnly",
+      "new_id": "SimComponent.CapacityReadOnly",
+      "target": "sim_component_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/capacity/capacity_test.cpp",
+      "sut_boundary": "Actual SimManager read-only/pre-init"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "ContractDriver.PIN_001",
+      "new_id": "SimAdvancedTest.PIN_001",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/protocol/pin_and_response_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "ContractDriver.PIN_002_CommandFailure",
+      "new_id": "SimAdvancedTest.PIN_002_CommandFailure",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/protocol/pin_and_response_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "ContractDriver.DUAL_001",
+      "new_id": "SimAdvancedTest.DUAL_001",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/protocol/pin_and_response_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "ContractDriver.RIL_001_DuplicateAndError",
+      "new_id": "SimAdvancedTest.RIL_001_DuplicateAndError",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/protocol/pin_and_response_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "SessionLifecycle.INIT_001_SingleEnumeration",
+      "new_id": "SessionLifecycle.INIT_001_SingleEnumeration",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/protocol/lifecycle_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "SessionLifecycle.INIT_002_MissingRilThenRecreate",
+      "new_id": "SessionLifecycle.INIT_002_MissingRilThenRecreate",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/protocol/lifecycle_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "SessionLifecycle.INIT_DUAL_002_ReversedEnumeration",
+      "new_id": "SessionLifecycle.INIT_DUAL_002_ReversedEnumeration",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/protocol/lifecycle_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "SessionLifecycle.CALLBACK_002_MalformedThenRecovery",
+      "new_id": "SessionLifecycle.CALLBACK_002_MalformedThenRecovery",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/protocol/lifecycle_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "SessionLifecycle.CALLBACK_003_DroppedThenRecovery",
+      "new_id": "SessionLifecycle.CALLBACK_003_DroppedThenRecovery",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/protocol/lifecycle_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "SessionLifecycle.PUK_002_WrongThenSuccessfulUnlock",
+      "new_id": "SessionLifecycle.PUK_002_WrongThenSuccessfulUnlock",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/protocol/lifecycle_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "SessionLifecycle.REFRESH_001_ExplicitStatusQuery",
+      "new_id": "SessionLifecycle.REFRESH_001_ExplicitStatusQuery",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/protocol/lifecycle_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "SessionLifecycle.RECREATE_001_DualCardReenumeration",
+      "new_id": "SessionLifecycle.RECREATE_001_DualCardReenumeration",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/protocol/lifecycle_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "SessionLifecycle.RECREATE_002_ReplacementWhileStopped",
+      "new_id": "SessionLifecycle.RECREATE_002_ReplacementWhileStopped",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/protocol/lifecycle_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "SessionLifecycle.DUAL_002_PinWhileOtherCardRemoved",
+      "new_id": "SessionLifecycle.DUAL_002_PinWhileOtherCardRemoved",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/protocol/lifecycle_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "Compatibility/Lifecycle.PublicCardState/LIFE_001",
+      "new_id": "SimTest.LIFE_001",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/sim_card_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "Compatibility/Lifecycle.PublicCardState/LIFE_002",
+      "new_id": "SimTest.LIFE_002",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/sim_card_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "Compatibility/Lifecycle.PublicCardState/PUK_001",
+      "new_id": "SimTest.PUK_001",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/sim_card_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "EventAdapter.SharedTypeSafety",
+      "new_id": "EventAdapter.SharedTypeSafety",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/platform/event_adapter_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "EventAdapter.UniqueOwnership",
+      "new_id": "EventAdapter.UniqueOwnership",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/platform/event_adapter_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "EventAdapter.WeakLifetimeAndMetadata",
+      "new_id": "EventAdapter.WeakLifetimeAndMetadata",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/platform/event_adapter_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "ProductionEventTransport.DeliversFormalEnvelope",
+      "new_id": "ProductionEventTransport.DeliversFormalEnvelope",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/platform/event_transport_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "ProductionEventTransport.CancelsPendingAndReapsWorker",
+      "new_id": "ProductionEventTransport.CancelsPendingAndReapsWorker",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/platform/event_transport_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "SchedulerBoundary.RunningTaskCannotBeCancelled",
+      "new_id": "SchedulerBoundary.RunningTaskCannotBeCancelled",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/platform/event_transport_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "SchedulerBoundary.ProductionGeneralTaskWaitsAndCleansUp",
+      "new_id": "SchedulerBoundary.ProductionGeneralTaskWaitsAndCleansUp",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/platform/event_transport_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "SchedulerBoundary.IdleWaitDrainsCascadedQueues",
+      "new_id": "SchedulerBoundary.IdleWaitDrainsCascadedQueues",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/platform/event_transport_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "SchedulerBoundary.IdleWaitDoesNotIgnoreDelayedOrRunningWork",
+      "new_id": "SchedulerBoundary.IdleWaitDoesNotIgnoreDelayedOrRunningWork",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/platform/event_transport_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "SchedulerBoundary.IdleWaitExposesTaskFailure",
+      "new_id": "SchedulerBoundary.IdleWaitExposesTaskFailure",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/platform/event_transport_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "SchedulerBoundary.ReadyIdleLeavesFutureTimersAndDrainsCascades",
+      "new_id": "SchedulerBoundary.ReadyIdleLeavesFutureTimersAndDrainsCascades",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/platform/event_transport_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "SchedulerBoundary.ReadyIdleDoesNotAcceptRunningInitialization",
+      "new_id": "SchedulerBoundary.ReadyIdleDoesNotAcceptRunningInitialization",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/platform/event_transport_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "SchedulerBoundary.DetachedCallableBarrierIncludesCaptureDestruction",
+      "new_id": "SchedulerBoundary.DetachedCallableBarrierIncludesCaptureDestruction",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/platform/event_transport_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "SchedulerBoundary.JoinablePoolWorkerIsNotAnUnfinishedDetachedActor",
+      "new_id": "SchedulerBoundary.JoinablePoolWorkerIsNotAnUnfinishedDetachedActor",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/platform/event_transport_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "ExternalData.EmptyCursorIsNotQueryFailure",
+      "new_id": "ExternalData.EmptyCursorIsNotQueryFailure",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/platform/external_services_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "ExternalData.ExplicitQueryResponses",
+      "new_id": "ExternalData.ExplicitQueryResponses",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/platform/external_services_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "ExternalData.OriginalBucketKeepsFirstPut",
+      "new_id": "ExternalData.OriginalBucketKeepsFirstPut",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/platform/external_services_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "ExternalEvents.PublishPreservesEnvelopeAndFailure",
+      "new_id": "ExternalEvents.PublishPreservesEnvelopeAndFailure",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/platform/external_services_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "ExternalEvents.MissingProviderAndScopeCleanup",
+      "new_id": "ExternalEvents.MissingProviderAndScopeCleanup",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/platform/external_services_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "NativePointerSubset.SharedOwnership",
+      "new_id": "NativePointerSubset.SharedOwnership",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/platform/native_pointer_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "NativePointerSubset.WeakIdentityAndPromotion",
+      "new_id": "NativePointerSubset.WeakIdentityAndPromotion",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/platform/native_pointer_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "NativePointerSubset.LocalCastRequiresImplementedInterface",
+      "new_id": "NativePointerSubset.LocalCastRequiresImplementedInterface",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/platform/native_pointer_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "RilAdapter.FormalStatusResponse",
+      "new_id": "RilAdapter.FormalStatusResponse",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/platform/ril_adapter_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "ContractDriver.DEFECT_001_StaleReadyAfterRemoval",
+      "new_id": "SimAdvancedTest.DEFECT_001_StaleReadyAfterRemoval",
+      "target": "sim_test_host",
+      "baseline_status": "FAIL",
+      "case_source": "cases/protocol/pin_and_response_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+      "new_id": "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+      "target": "sim_test_host",
+      "baseline_status": "FAIL",
+      "case_source": "cases/protocol/lifecycle_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+      "new_id": "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+      "target": "sim_test_host",
+      "baseline_status": "FAIL",
+      "case_source": "cases/protocol/lifecycle_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+      "new_id": "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+      "target": "sim_test_host",
+      "baseline_status": "FAIL",
+      "case_source": "cases/protocol/lifecycle_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+      "new_id": "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+      "target": "sim_test_host",
+      "baseline_status": "FAIL",
+      "case_source": "cases/protocol/lifecycle_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "PinMemoryContract.PinSuccessUsesOriginalSlotIdentityAndCredential",
+      "new_id": "PinMemoryContract.PinSuccessUsesOriginalSlotIdentityAndCredential",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/protocol/pin_memory_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "PinMemoryContract.PukSuccessUsesNewPinAndPinAlterOperation",
+      "new_id": "PinMemoryContract.PukSuccessUsesNewPinAndPinAlterOperation",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/protocol/pin_memory_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "PinMemoryContract.FailedPinDoesNotPublishMemoryHook",
+      "new_id": "PinMemoryContract.FailedPinDoesNotPublishMemoryHook",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/protocol/pin_memory_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "PinMemoryContract.RemovalUsesAbsentResponseIdentityWithoutCredential",
+      "new_id": "PinMemoryContract.RemovalUsesAbsentResponseIdentityWithoutCredential",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/protocol/pin_memory_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "PrimaryEntry.NonSystemCallerPrecedesPermissionAndNullManager",
+      "new_id": "PrimaryEntry.NonSystemCallerPrecedesPermissionAndNullManager",
+      "target": "sim_primary_slot_entry_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/primary_entry/primary_entry_test.cpp",
+      "sut_boundary": "Actual Core/permission/capability with internal manager seam"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "PrimaryEntry.PermissionDenialPrecedesNullManager",
+      "new_id": "PrimaryEntry.PermissionDenialPrecedesNullManager",
+      "target": "sim_primary_slot_entry_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/primary_entry/primary_entry_test.cpp",
+      "sut_boundary": "Actual Core/permission/capability with internal manager seam"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "PrimaryEntry.NullManagerPrecedesCapabilityRecheck",
+      "new_id": "PrimaryEntry.NullManagerPrecedesCapabilityRecheck",
+      "target": "sim_primary_slot_entry_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/primary_entry/primary_entry_test.cpp",
+      "sut_boundary": "Actual Core/permission/capability with internal manager seam"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "PrimaryEntry.ChangedExternalSystemAppDecisionRejectsExtendedSlot",
+      "new_id": "PrimaryEntry.ChangedExternalSystemAppDecisionRejectsExtendedSlot",
+      "target": "sim_primary_slot_entry_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/primary_entry/primary_entry_test.cpp",
+      "sut_boundary": "Actual Core/permission/capability with internal manager seam"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "PrimaryEntry.MissingCardStopsBeforeActiveAndPreference",
+      "new_id": "PrimaryEntry.MissingCardStopsBeforeActiveAndPreference",
+      "target": "sim_primary_slot_entry_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/primary_entry/primary_entry_test.cpp",
+      "sut_boundary": "Actual Core/permission/capability with internal manager seam"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "PrimaryEntry.InactiveCardStopsBeforePreferenceAndSwitch",
+      "new_id": "PrimaryEntry.InactiveCardStopsBeforePreferenceAndSwitch",
+      "target": "sim_primary_slot_entry_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/primary_entry/primary_entry_test.cpp",
+      "sut_boundary": "Actual Core/permission/capability with internal manager seam"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "PrimaryEntry.ReadyCardWritesPreferenceBeforeDelegatingExactTarget",
+      "new_id": "PrimaryEntry.ReadyCardWritesPreferenceBeforeDelegatingExactTarget",
+      "target": "sim_primary_slot_entry_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/primary_entry/primary_entry_test.cpp",
+      "sut_boundary": "Actual Core/permission/capability with internal manager seam"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "PrimaryEntry.ManagerFailureReturnedUnchangedAfterPreferenceWrite",
+      "new_id": "PrimaryEntry.ManagerFailureReturnedUnchangedAfterPreferenceWrite",
+      "target": "sim_primary_slot_entry_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/primary_entry/primary_entry_test.cpp",
+      "sut_boundary": "Actual Core/permission/capability with internal manager seam"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "PrimaryEntry.FailedPreferenceWriteStillDelegatesCurrentBehavior",
+      "new_id": "PrimaryEntry.FailedPreferenceWriteStillDelegatesCurrentBehavior",
+      "target": "sim_primary_slot_entry_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/primary_entry/primary_entry_test.cpp",
+      "sut_boundary": "Actual Core/permission/capability with internal manager seam"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "PrimaryEntry.PresenceQueryFailureWithFalseOutputReturnsNoCard",
+      "new_id": "PrimaryEntry.PresenceQueryFailureWithFalseOutputReturnsNoCard",
+      "target": "sim_primary_slot_entry_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/primary_entry/primary_entry_test.cpp",
+      "sut_boundary": "Actual Core/permission/capability with internal manager seam"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "PrimaryEntry.PresenceQueryFailureWithTrueOutputStillDelegates",
+      "new_id": "PrimaryEntry.PresenceQueryFailureWithTrueOutputStillDelegates",
+      "target": "sim_primary_slot_entry_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/primary_entry/primary_entry_test.cpp",
+      "sut_boundary": "Actual Core/permission/capability with internal manager seam"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "PrimaryEntry.StableSystemAppPassesExtendedSlotCapability",
+      "new_id": "PrimaryEntry.StableSystemAppPassesExtendedSlotCapability",
+      "target": "sim_primary_slot_entry_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/primary_entry/primary_entry_test.cpp",
+      "sut_boundary": "Actual Core/permission/capability with internal manager seam"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/0",
+      "new_id": "CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/0",
+      "target": "sim_primary_slot_entry_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/primary_entry/primary_entry_test.cpp",
+      "sut_boundary": "Actual Core/permission/capability with internal manager seam"
+    },
+    {
+      "origin": "host_baseline",
+      "old_id": "CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/1",
+      "new_id": "CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/1",
+      "target": "sim_primary_slot_entry_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/primary_entry/primary_entry_test.cpp",
+      "sut_boundary": "Actual Core/permission/capability with internal manager seam"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+      "new_id": "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/primary/primary_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "RealSimPrimary.C0CoreToRealManagerAndController",
+      "new_id": "RealSimPrimary.C0CoreToRealManagerAndController",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "FAIL",
+      "case_source": "cases/primary/primary_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+      "new_id": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "FAIL",
+      "case_source": "cases/primary/primary_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+      "new_id": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "FAIL",
+      "case_source": "cases/primary/primary_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+      "new_id": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "FAIL",
+      "case_source": "cases/primary/primary_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+      "new_id": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "FAIL",
+      "case_source": "cases/primary/primary_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+      "new_id": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "FAIL",
+      "case_source": "cases/primary/primary_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "RunnerLifetime.NormalCompletionAndRepeatedStop",
+      "new_id": "RunnerLifetime.NormalCompletionAndRepeatedStop",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/primary/lifecycle_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "RunnerLifetime.PendingTaskCancelledAndCapturedOwnerReleased",
+      "new_id": "RunnerLifetime.PendingTaskCancelledAndCapturedOwnerReleased",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/primary/lifecycle_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "RunnerLifetime.InFlightStopJoinsAndRejectsCallbackRepost",
+      "new_id": "RunnerLifetime.InFlightStopJoinsAndRejectsCallbackRepost",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/primary/lifecycle_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "RunnerLifetime.ConcurrentStopIsIdempotent",
+      "new_id": "RunnerLifetime.ConcurrentStopIsIdempotent",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/primary/lifecycle_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "RunnerLifetime.CallbackCannotSynchronouslyJoinItself",
+      "new_id": "RunnerLifetime.CallbackCannotSynchronouslyJoinItself",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/primary/lifecycle_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "RealCardLifetime.MissingRilInitializationReleasesState",
+      "new_id": "RealCardLifetime.MissingRilInitializationReleasesState",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/primary/lifecycle_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "RealCardLifetime.InitializedStateUnregistersRilAndReleases",
+      "new_id": "RealCardLifetime.InitializedStateUnregistersRilAndReleases",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/primary/lifecycle_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "RealCardLifetime.PublicDetachReleasesRealStateFileAndRil",
+      "new_id": "RealCardLifetime.PublicDetachReleasesRealStateFileAndRil",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "FAIL",
+      "case_source": "cases/primary/lifecycle_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "PairingReview.AllThreeSlotsPublicDetach",
+      "new_id": "PairingReview.AllThreeSlotsPublicDetach",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "FAIL",
+      "case_source": "cases/primary/shutdown_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "PairingReview.PartialInitializationAndRepeatedUnregister",
+      "new_id": "PairingReview.PartialInitializationAndRepeatedUnregister",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/primary/shutdown_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "PairingReview.DestroyThenReinitializeCardGraph",
+      "new_id": "PairingReview.DestroyThenReinitializeCardGraph",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "FAIL",
+      "case_source": "cases/primary/shutdown_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "PairingReview.UnrelatedRuntimeWorkerIsBaseline",
+      "new_id": "PairingReview.UnrelatedRuntimeWorkerIsBaseline",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/primary/shutdown_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "ShutdownContract.ANormalPrimaryThenStop",
+      "new_id": "ShutdownContract.ANormalPrimaryThenStop",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "FAIL",
+      "case_source": "cases/primary/shutdown_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "ShutdownContract.BThreeSlotsThenStop",
+      "new_id": "ShutdownContract.BThreeSlotsThenStop",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "FAIL",
+      "case_source": "cases/primary/shutdown_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "ShutdownContract.CPartialInitializationThenStop",
+      "new_id": "ShutdownContract.CPartialInitializationThenStop",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "FAIL",
+      "case_source": "cases/primary/shutdown_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "ShutdownContract.DRepeatedStop",
+      "new_id": "ShutdownContract.DRepeatedStop",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "FAIL",
+      "case_source": "cases/primary/shutdown_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "ShutdownContract.EInFlightSuccessCompletesBeforeRelease",
+      "new_id": "ShutdownContract.EInFlightSuccessCompletesBeforeRelease",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "FAIL",
+      "case_source": "cases/primary/shutdown_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "ShutdownContract.FErrorReplyDuringStoppingKeepsOriginalResult",
+      "new_id": "ShutdownContract.FErrorReplyDuringStoppingKeepsOriginalResult",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "FAIL",
+      "case_source": "cases/primary/shutdown_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "ShutdownContract.GDelayedDispatchAfterStop",
+      "new_id": "ShutdownContract.GDelayedDispatchAfterStop",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "FAIL",
+      "case_source": "cases/primary/shutdown_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "real_primary",
+      "old_id": "ShutdownContract.HDestroyAndCreateNewGraph",
+      "new_id": "ShutdownContract.HDestroyAndCreateNewGraph",
+      "target": "sim_primary_slot_real_test",
+      "baseline_status": "FAIL",
+      "case_source": "cases/primary/shutdown_test.cpp",
+      "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
+    },
+    {
+      "origin": "all_baseline",
+      "old_id": "G2aReadOnlyQuery.OriginalManagerAttachment",
+      "variant": "dual",
+      "new_id": "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/dual",
+      "target": "sim_g2a_query_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/query/g2a_query_test.cpp",
+      "sut_boundary": "Candidate reference Core+binding+query+actual manager (not production attached)"
+    },
+    {
+      "origin": "all_baseline",
+      "old_id": "G2aReadOnlyQuery.OriginalManagerAttachment",
+      "variant": "malformed_atoi",
+      "new_id": "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/malformed_atoi",
+      "target": "sim_g2a_query_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/query/g2a_query_test.cpp",
+      "sut_boundary": "Candidate reference Core+binding+query+actual manager (not production attached)"
+    },
+    {
+      "origin": "all_baseline",
+      "old_id": "G2aReadOnlyQuery.OriginalManagerAttachment",
+      "variant": "negative_atoi",
+      "new_id": "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/negative_atoi",
+      "target": "sim_g2a_query_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/query/g2a_query_test.cpp",
+      "sut_boundary": "Candidate reference Core+binding+query+actual manager (not production attached)"
+    },
+    {
+      "origin": "all_baseline",
+      "old_id": "G2aReadOnlyQuery.OriginalManagerAttachment",
+      "variant": "single",
+      "new_id": "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/single",
+      "target": "sim_g2a_query_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/query/g2a_query_test.cpp",
+      "sut_boundary": "Candidate reference Core+binding+query+actual manager (not production attached)"
+    },
+    {
+      "origin": "all_baseline",
+      "old_id": "G2aReadOnlyQuery.OriginalManagerAttachment",
+      "variant": "vendor_override",
+      "new_id": "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/vendor_override",
+      "target": "sim_g2a_query_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/query/g2a_query_test.cpp",
+      "sut_boundary": "Candidate reference Core+binding+query+actual manager (not production attached)"
+    },
+    {
+      "origin": "all_baseline",
+      "old_id": "G2aReadOnlyQuery.OriginalManagerAttachment",
+      "variant": "vendor_result_propagation",
+      "new_id": "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/vendor_result_propagation",
+      "target": "sim_g2a_query_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/query/g2a_query_test.cpp",
+      "sut_boundary": "Candidate reference Core+binding+query+actual manager (not production attached)"
+    },
+    {
+      "origin": "all_baseline",
+      "old_id": "G2aReadOnlyQuery.OriginalManagerAttachment",
+      "variant": "zero",
+      "new_id": "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/zero",
+      "target": "sim_g2a_query_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/query/g2a_query_test.cpp",
+      "sut_boundary": "Candidate reference Core+binding+query+actual manager (not production attached)"
+    },
+    {
+      "origin": "all_baseline",
+      "old_id": "UpstreamRealSimCount.OriginalCoreAndManager",
+      "variant": "dual",
+      "new_id": "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/dual",
+      "target": "sim_upstream_query_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/query/g2a_upstream_test.cpp",
+      "sut_boundary": "Original production Core+manager query"
+    },
+    {
+      "origin": "all_baseline",
+      "old_id": "UpstreamRealSimCount.OriginalCoreAndManager",
+      "variant": "malformed_atoi",
+      "new_id": "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/malformed_atoi",
+      "target": "sim_upstream_query_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/query/g2a_upstream_test.cpp",
+      "sut_boundary": "Original production Core+manager query"
+    },
+    {
+      "origin": "all_baseline",
+      "old_id": "UpstreamRealSimCount.OriginalCoreAndManager",
+      "variant": "negative_atoi",
+      "new_id": "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/negative_atoi",
+      "target": "sim_upstream_query_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/query/g2a_upstream_test.cpp",
+      "sut_boundary": "Original production Core+manager query"
+    },
+    {
+      "origin": "all_baseline",
+      "old_id": "UpstreamRealSimCount.OriginalCoreAndManager",
+      "variant": "single",
+      "new_id": "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/single",
+      "target": "sim_upstream_query_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/query/g2a_upstream_test.cpp",
+      "sut_boundary": "Original production Core+manager query"
+    },
+    {
+      "origin": "all_baseline",
+      "old_id": "UpstreamRealSimCount.OriginalCoreAndManager",
+      "variant": "vendor_override",
+      "new_id": "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/vendor_override",
+      "target": "sim_upstream_query_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/query/g2a_upstream_test.cpp",
+      "sut_boundary": "Original production Core+manager query"
+    },
+    {
+      "origin": "all_baseline",
+      "old_id": "UpstreamRealSimCount.OriginalCoreAndManager",
+      "variant": "vendor_result_propagation",
+      "new_id": "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/vendor_result_propagation",
+      "target": "sim_upstream_query_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/query/g2a_upstream_test.cpp",
+      "sut_boundary": "Original production Core+manager query"
+    },
+    {
+      "origin": "all_baseline",
+      "old_id": "UpstreamRealSimCount.OriginalCoreAndManager",
+      "variant": "zero",
+      "new_id": "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/zero",
+      "target": "sim_upstream_query_test",
+      "baseline_status": "PASS",
+      "case_source": "cases/query/g2a_upstream_test.cpp",
+      "sut_boundary": "Original production Core+manager query"
+    },
+    {
+      "origin": "807d73fbe",
+      "old_id": null,
+      "new_id": "SimTest.DualSimPinUnlock",
+      "target": "sim_test_host",
+      "baseline_status": "PASS",
+      "case_source": "cases/sim_card_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "developer_copy_acceptance",
+      "old_id": null,
+      "new_id": "SimTest.DualSimPinUnlockAfterWrongPin",
+      "target": "sim_test_host",
+      "baseline_status": "NOT_RUN",
+      "case_source": "cases/developer_copy_test.cpp",
+      "sut_boundary": "Actual state manager/state handle/event transport, or platform boundary self-test as named"
+    },
+    {
+      "origin": "previously_unexecuted_existing_test",
+      "old_id": null,
+      "new_id": "SimCharacterization.BeforeInitialization",
+      "target": "sim_bootstrap_characterization",
+      "baseline_status": "NOT_RUN",
+      "case_source": "cases/capacity/bootstrap_test.cpp",
+      "sut_boundary": "Actual SimManager read-only/pre-init"
+    }
+  ]
+}

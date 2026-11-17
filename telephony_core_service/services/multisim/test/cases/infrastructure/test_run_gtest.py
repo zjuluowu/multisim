@@ -1,3 +1,4 @@
+import sys
 """Result protocol regression tests; no SIM business behavior is implemented here."""
 import importlib.util
 from pathlib import Path
@@ -5,6 +6,7 @@ import tempfile
 import unittest
 
 script = Path(__file__).resolve().parents[2] / 'scripts/run_gtest.py'
+sys.path.insert(0, str(script.parent))
 spec = importlib.util.spec_from_file_location('isolated_gtest', script)
 runner = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(runner)

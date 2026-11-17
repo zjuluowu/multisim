@@ -2,8 +2,8 @@
 #include "sim_advanced_test.h"
 #include "common/state_assertions.h"
 #include <algorithm>
-#include "ril_device.h"
-#include "ril_fault_controls.h"
+#include "common/ril_device.h"
+#include "common/ril_fault_controls.h"
 #include "state_platform_spy.h"
 #include "sim_state_manager.h"
 #include "mock_tel_ril_manager.h"

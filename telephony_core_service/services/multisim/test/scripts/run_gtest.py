@@ -11,6 +11,7 @@ import signal
 import subprocess
 import tempfile
 import xml.etree.ElementTree as ET
+from primary_results import classify as classify_primary
 
 REPO = Path(__file__).resolve().parents[5]
 
@@ -57,7 +58,7 @@ def classify(xml, expected, exit_code):
         return 'NOT_RUN', 'GoogleTest did not execute the selected case'
     skipped = case.find('skipped')
     if skipped is not None:
-        return 'UNSUPPORTED', skipped.text or skipped.get('message', 'Platform capability unavailable')
+        return ('BLOCKED' if 'BLOCKED:' in (skipped.text or skipped.get('message', '')) else 'UNSUPPORTED'), skipped.text or skipped.get('message', 'Platform capability unavailable')
     return 'PASS', ''
 
 
@@ -68,6 +69,7 @@ def main():
     parser.add_argument('--filter', default='*')
     parser.add_argument('--timeout', type=float, default=60)
     parser.add_argument('--list', action='store_true')
+    parser.add_argument('--env', action='append', default=[], metavar='KEY=VALUE')
     parser.add_argument('--input', action='append', default=[], type=Path,
                         help='Additional external input, such as a controlled mutation source')
     args = parser.parse_args()
@@ -77,7 +79,14 @@ def main():
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
     session = Path(tempfile.mkdtemp(prefix='gtest-', dir=output))
-    env = dict(os.environ, LLVM_PROFILE_FILE=str(session / 'coverage-%p.profraw'))
+    env = dict(os.environ, LLVM_PROFILE_FILE=str(session / 'coverage-%p.profraw'),
+               LD_LIBRARY_PATH=str(binary.parent) + ':' + os.environ.get('LD_LIBRARY_PATH', ''))
+    for value in args.env:
+        key, value = value.split('=', 1)
+        if key == 'LLVM_PROFILE_FILE': parser.error('profile isolation cannot be overridden')
+        env[key] = value
+    protected = REPO / 'default.profraw'
+    protected_sha = hashlib.sha256(protected.read_bytes()).hexdigest() if protected.is_file() else None
     if not binary.is_file() or not os.access(binary, os.X_OK):
         report = session / 'result.json'
         report.write_text(json.dumps({'status': 'BLOCKED', 'target': binary.name,
@@ -138,21 +147,37 @@ def main():
                     process.wait()
                     code = 124
             status, reason = classify(xml, case, code)
-            result['cases'].append({'id': case, 'status': status, 'exit_code': code, 'reason': reason,
+            details = {}
+            if xml.is_file():
+                try:
+                    nodes = list(ET.parse(xml).getroot().iter('testcase'))
+                    if len(nodes) == 1 and nodes[0].get('classname', '') + '.' + nodes[0].get('name', '') == case:
+                        details = classify_primary(nodes[0], code, log.read_text())
+                except (ET.ParseError, StopIteration):
+                    pass
+            unsafe = any(marker in log.read_text() for marker in ['AddressSanitizer:', 'ThreadSanitizer:', 'runtime error:', 'Segmentation fault', 'Aborted'])
+            if unsafe:
+                status, reason = 'FAIL', 'Unsafe runtime diagnostic: ' + reason
+            result['cases'].append({'unsafe_runtime': unsafe, 'valid_xml': bool(details), 'details': details, 'id': case, 'status': status, 'exit_code': code, 'reason': reason,
                                     'command': command, 'xml': xml.name, 'log': log.name})
             print(f'{case}: {status} (exit {code})', flush=True)
             save()
         statuses = {row['status'] for row in result['cases']}
-        result['status'] = 'FAIL' if 'FAIL' in statuses else 'UNSUPPORTED' if statuses - {'PASS'} else 'PASS'
+        result['status'] = 'FAIL' if 'FAIL' in statuses else 'BLOCKED' if 'BLOCKED' in statuses else 'UNSUPPORTED' if statuses - {'PASS'} else 'PASS'
         return 1 if result['status'] == 'FAIL' else 2 if result['status'] != 'PASS' else 0
     except (OSError, RuntimeError, subprocess.TimeoutExpired) as error:
         result['status'] = 'FAIL'
         result['reason'] = str(error)
         return 1
     finally:
+        result['protected_profile_unchanged'] = protected_sha == (hashlib.sha256(protected.read_bytes()).hexdigest() if protected.is_file() else None)
+        if not result['protected_profile_unchanged']:
+            result['status'] = 'FAIL'
+            result['reason'] = 'Protected pre-existing profile changed'
         result['finished_utc'] = datetime.now(timezone.utc).isoformat()
         save()
         print('Report: ' + str(report), flush=True)
+        if not result['protected_profile_unchanged']: return 1
 
 
 if __name__ == '__main__':

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Incremental GN/Ninja entry for the replacement fixture; no legacy runner imports."""
 import argparse
+import fcntl
 import hashlib
 import json
 import os
@@ -18,9 +19,9 @@ def main():
     parser.add_argument('--out', type=Path, default=REPO / '.host-out')
     parser.add_argument('--gtest-root', type=Path, default=os.environ.get('SIM_GTEST_ROOT'))
     parser.add_argument('--jobs', type=int, default=3)
-    parser.add_argument('--target', default='sim_test_host', choices=[
+    parser.add_argument('--target', nargs='+', default=['sim_test_host'], choices=[
         'sim_test_host', 'sim_component_test', 'sim_primary_slot_entry_test',
-        'sim_primary_slot_real_test', 'sim_g2a_query_test', 'sim_upstream_query_test'])
+        'sim_primary_slot_real_test', 'sim_g2a_query_test', 'sim_upstream_query_test', 'sim_bootstrap_characterization'])
     parser.add_argument('--openssl-root', type=Path)
     parser.add_argument('--runtime-root', type=Path)
     args = parser.parse_args()
@@ -30,6 +31,8 @@ def main():
     if output == REPO or output in REPO.parents or output == TEST or TEST in output.parents:
         parser.error('Choose a dedicated build directory outside the test source')
     output.mkdir(parents=True, exist_ok=True)
+    build_lock = (output / '.build.lock').open('a')
+    fcntl.flock(build_lock.fileno(), fcntl.LOCK_EX)
     config = output / 'replacement.json'
     previous = json.loads(config.read_text()) if config.exists() else {}
     root = args.gtest_root or previous.get('gtest_root')
@@ -50,7 +53,7 @@ def main():
               'host_debug': True,
               'openssl_root': str(args.openssl_root.resolve()) if args.openssl_root else previous.get('openssl_root', ''),
               'sim028_runtime_root': str(args.runtime_root.resolve()) if args.runtime_root else previous.get('sim028_runtime_root', '')}
-    if args.target == 'sim_primary_slot_real_test':
+    if any(t in args.target for t in ['sim_primary_slot_real_test','sim_bootstrap_characterization']):
         openssl = Path(values['openssl_root'])
         runtime = Path(values['sim028_runtime_root'])
         metadata = openssl / 'sim_dependency.json'
@@ -69,7 +72,7 @@ def main():
     subprocess.run(['gn', 'gen', str(output / 'build'), '--root=' + str(TEST / 'framework/host'),
                     '--export-compile-commands', '--args=' + gnargs], check=True)
     config.write_text(json.dumps(values, indent=2) + '\n')
-    subprocess.run(['ninja', '-C', str(output / 'build'), '-j', str(args.jobs), args.target], check=True)
+    subprocess.run(['ninja', '-C', str(output / 'build'), '-j', str(args.jobs), *args.target], check=True)
 
 
 if __name__ == '__main__':

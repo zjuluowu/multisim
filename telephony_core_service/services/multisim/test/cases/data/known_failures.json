@@ -1,0 +1,39 @@
+{
+  "baseline": "807d73fbefdd6d7652a88187ae06211cc98e6de4",
+  "known_failures": {
+    "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard": {
+      "origin": "807d73fbe original five independent defects",
+      "classifier_failures": [
+        "Expected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: LOCKED\nExpected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: LOCKED",
+        "Expected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <01-00 00-00>\nExpected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <01-00 00-00>"
+      ]
+    },
+    "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword": {
+      "origin": "807d73fbe original five independent defects",
+      "classifier_failures": [
+        "Expected: (actual.error) != (0), actual: 0 vs 0\nExpected: (actual.error) != (0), actual: 0 vs 0",
+        "Expected equality of these values:\n  actual.result\n    Which is: 4-byte object <01-00 00-00>\n  Unlock::Failure\n    Which is: 4-byte object <02-00 00-00>\nExpected equality of these values:\n  actual.result\n    Which is: 4-byte object <01-00 00-00>\n  Unlock::Failure\n    Which is: 4-byte object <02-00 00-00>"
+      ]
+    },
+    "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard": {
+      "origin": "807d73fbe original five independent defects",
+      "classifier_failures": [
+        "Expected equality of these values:\n  actual.state\n    Which is: NOT_READY\n  state\n    Which is: LOCKED\nExpected equality of these values:\n  actual.state\n    Which is: NOT_READY\n  state\n    Which is: LOCKED"
+      ]
+    },
+    "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict": {
+      "origin": "807d73fbe original five independent defects",
+      "classifier_failures": [
+        "Expected equality of these values:\n  RefreshToLocked()\n    Which is: 2\n  0\ncore_service_client.h RefreshSimState @return contract\nExpected equality of these values:\n  RefreshToLocked()\n    Which is: 2\n  0\ncore_service_client.h RefreshSimState @return contract"
+      ]
+    },
+    "SimAdvancedTest.DEFECT_001_StaleReadyAfterRemoval": {
+      "origin": "807d73fbe original five independent defects",
+      "classifier_failures": [
+        "Expected equality of these values:\n  actual.present\n    Which is: true\n  state != State::Absent\n    Which is: false\nExpected equality of these values:\n  actual.present\n    Which is: true\n  state != State::Absent\n    Which is: false",
+        "Expected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: ABSENT\nExpected equality of these values:\n  actual.state\n    Which is: READY\n  state\n    Which is: ABSENT",
+        "Expected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <00-00 00-00>\nExpected equality of these values:\n  actual.kind\n    Which is: 4-byte object <02-00 00-00>\n  kind\n    Which is: 4-byte object <00-00 00-00>"
+      ]
+    }
+  }
+}
