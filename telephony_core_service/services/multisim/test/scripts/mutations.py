@@ -11,7 +11,7 @@ def run(name,cmd,expected=0):
  rows.append({'name':name,'command':list(map(str,cmd)),'exit_code':r.returncode,'expected_exit_code':expected});(a.output/'result.json').write_text(json.dumps({'commands':rows,'status':'RUNNING'},indent=2)+'\n')
  if r.returncode!=expected:raise RuntimeError(name+' unexpected exit '+str(r.returncode))
 def build(name,extra=''):
- run(name+'-gn',['gn','gen',a.out/'build','--root='+str(TEST/'framework/host'),'--args='+gnargs+extra]);run(name+'-build',['ninja','-C',a.out/'build','-j','3','sim_test_host'])
+ run(name+'-gn',['gn','gen',a.out/'build','--root='+str(TEST/'framework/internal/host'),'--args='+gnargs+extra]);run(name+'-build',['ninja','-C',a.out/'build','-j','3','sim_test_host'])
 originals={name:hashlib.sha256((CORE/'services/sim/src'/name).read_bytes()).hexdigest() for name in ['sim_state_handle.cpp','sim_state_manager.cpp']}
 normal=a.out/'build/sim_test_host';before=hashlib.sha256(normal.read_bytes()).hexdigest()
 try:

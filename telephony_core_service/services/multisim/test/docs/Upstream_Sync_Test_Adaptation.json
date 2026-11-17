@@ -47,22 +47,22 @@
     }
   },
   "reference_sources": {
-    "framework/host/g2a_reference/core_service_sim.cpp": {
+    "framework/internal/host/g2a_reference/core_service_sim.cpp": {
       "source": "telephony_core_service/services/core/src/core_service_sim.cpp",
       "commit": "37be229d4816824c7931a1c2050f13012f8d1061",
       "sha256": "6bc4f83b79983b319e41572a6c8683808e4cd485d652eb531fc65a154376df34"
     },
-    "framework/host/g2a_reference/core_service_sim.h": {
+    "framework/internal/host/g2a_reference/core_service_sim.h": {
       "source": "telephony_core_service/services/core/include/core_service_sim.h",
       "commit": "37be229d4816824c7931a1c2050f13012f8d1061",
       "sha256": "d79e21476fee96e15230a1728961229f6e7d52a5a29c9c2010dabf92deff64c3"
     },
-    "framework/host/g2a_reference/legacy_sim_query_binding.cpp": {
+    "framework/internal/host/g2a_reference/legacy_sim_query_binding.cpp": {
       "source": "telephony_core_service/services/core/src/legacy_sim_query_binding.cpp",
       "commit": "37be229d4816824c7931a1c2050f13012f8d1061",
       "sha256": "fb77d07c06d829d5ed33cbf8138e325f78437cc22cf4d30fcc56d4016173b5fe"
     },
-    "framework/host/g2a_reference/legacy_sim_query_binding.h": {
+    "framework/internal/host/g2a_reference/legacy_sim_query_binding.h": {
       "source": "telephony_core_service/services/core/include/legacy_sim_query_binding.h",
       "commit": "37be229d4816824c7931a1c2050f13012f8d1061",
       "sha256": "fcd27f3b774cb047859a53b4de5fb57debad51c607b4570d8683ba2e418fcb17"

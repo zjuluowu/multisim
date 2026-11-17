@@ -21,12 +21,14 @@ def main():
     parser.add_argument('--jobs', type=int, default=3)
     parser.add_argument('--target', nargs='+', default=['sim_test_host'], choices=[
         'sim_test_host', 'sim_component_test', 'sim_primary_slot_entry_test',
-        'sim_primary_slot_real_test', 'sim_g2a_query_test', 'sim_upstream_query_test', 'sim_bootstrap_characterization'])
+        'sim_primary_slot_real_test', 'sim_g2a_query_test', 'sim_upstream_query_test', 'sim_bootstrap_characterization', 'sim_capability_probe'])
     parser.add_argument('--openssl-root', type=Path)
     parser.add_argument('--runtime-root', type=Path)
     args = parser.parse_args()
     if platform.system() != 'Linux' or platform.machine() != 'x86_64' or args.jobs < 1:
         parser.error('Requires Linux x86_64 and a positive --jobs value')
+    if platform.libc_ver()[0] != 'glibc':
+        parser.error('Host profile preinit protection currently requires the verified glibc ABI')
     output = args.out.resolve()
     if output == REPO or output in REPO.parents or output == TEST or TEST in output.parents:
         parser.error('Choose a dedicated build directory outside the test source')
@@ -43,11 +45,11 @@ def main():
     for path in sorted(root.rglob('*')):
         if path.is_file():
             digest.update(str(path.relative_to(root)).encode() + b'\0' + path.read_bytes() + b'\0')
-    lock = json.loads((TEST / 'framework/host/configs/dependency_lock.json').read_text())
+    lock = json.loads((TEST / 'framework/internal/host/configs/dependency_lock.json').read_text())
     if digest.hexdigest() != lock['googletest']['tree_sha256']:
         parser.error('GoogleTest source differs from dependency_lock.json')
     for row in lock['platform_headers']:
-        if hashlib.sha256((TEST / 'framework/host' / row['path']).read_bytes()).hexdigest() != row['sha256']:
+        if hashlib.sha256((TEST / 'framework/internal/host' / row['path']).read_bytes()).hexdigest() != row['sha256']:
             parser.error('Pinned platform declaration changed: ' + row['path'])
     values = {'gtest_root': str(root), 'production_root': str(REPO / 'telephony_core_service'),
               'host_debug': True,
@@ -69,7 +71,7 @@ def main():
                 parser.error('Native archive drift: ' + name)
     subprocess.run([sys.executable, '-B', str(TEST / 'scripts/update_case_sources.py')], check=True)
     gnargs = ' '.join(key + '=' + json.dumps(value) for key, value in values.items())
-    subprocess.run(['gn', 'gen', str(output / 'build'), '--root=' + str(TEST / 'framework/host'),
+    subprocess.run(['gn', 'gen', str(output / 'build'), '--root=' + str(TEST / 'framework/internal/host'),
                     '--export-compile-commands', '--args=' + gnargs], check=True)
     config.write_text(json.dumps(values, indent=2) + '\n')
     subprocess.run(['ninja', '-C', str(output / 'build'), '-j', str(args.jobs), *args.target], check=True)

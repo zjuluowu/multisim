@@ -2,12 +2,70 @@
   "input_head": "ce6441aa1e81cb29954874006236f126c3310388",
   "archives": {
     "input-sources.tar.gz": "05a3b9d5f279cebc43a710fee80f90756464ff53e6d5862141fd7f93ec7c43ff",
-    "baseline-and-primary-pilot.tar.gz": "2e957aec0bf5481cbb7b200ed4537e330e68d41a19d0eb3704dd2d0ee3504e43"
+    "baseline-and-primary-pilot.tar.gz": "2e957aec0bf5481cbb7b200ed4537e330e68d41a19d0eb3704dd2d0ee3504e43",
+    "validation.tar.gz": "ad456bfe6b7430c38c39ecfd7f3a8fbc1ec9e74f7689f8c0a654820371cd1630"
   },
   "pilot": {
     "C0": "business PASS / original cleanup FAIL",
     "C1": "business PASS / original cleanup FAIL",
     "capacity": "PASS"
   },
-  "baseline": "108 cases:86 PASS /22 FAIL; CI FAIL 17 unaccepted"
+  "baseline": "108 cases:86 PASS /22 FAIL; CI FAIL 17 unaccepted",
+  "validation_members_manifest_sha256": "eede9d0caf5ded6fbc394cfc848fe4ae740ba813cb5939affc5bead0ccb857aa",
+  "final_summary": {
+    "input_head": "ce6441aa1e81cb29954874006236f126c3310388",
+    "published_phase1": "a730464929c65d5d8cd41ea7f5c4f116484629b5",
+    "platform": "Linux-6.18.58.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "runtime": {
+      "PASS": 91,
+      "FAIL": 22
+    },
+    "runtime_report": "protocol-regression/sim-kunm0njr/result.json",
+    "comparison": "protocol-regression/sim-kunm0njr/comparison.json",
+    "comparison_counts": {
+      "MATCH": 104,
+      "DIFFERENT": 1,
+      "NEW_OR_PREVIOUSLY_UNEXECUTED": 3
+    },
+    "historical_coverage_percent": 100,
+    "known_host_failures": 5,
+    "unaccepted_primary_lifecycle_failures": 17,
+    "ci": "FAIL",
+    "developer_acceptance": "developer-acceptance.json",
+    "developer_list": "developer-final-list/sim-lfhan3o3/result.json",
+    "developer_debug": "developer-final-debug/sim-5xyig4na/result.json",
+    "framework_scripts_changed_during_authoring": [],
+    "primary_debug_reports": [
+      "debug-c0-verified/debug-lctds71s/result.json",
+      "debug-c1-verified/debug-4v_qa50z/result.json"
+    ],
+    "dual_precondition": "dual-final/sim-v15ydpzk/result.json",
+    "native": "final-device/sim-9chs8ibf/result.json",
+    "native_build": "NOT_RUN",
+    "device_execution": "BLOCKED",
+    "gui": "NOT_RUN",
+    "production_files_verification": "upstream-final.json",
+    "protected_profile_sha256": "d35445fd920ef489cfb908b6968c9d3dea874688ea39daa53328c9f76be2d675",
+    "original_profile_bytes_restored": false,
+    "source_manifest": "final-source-manifest.json",
+    "binary_manifest": "final-binaries.json",
+    "retired": [
+      "framework/sim_advanced_test.h",
+      "framework/sim_primary_test.h",
+      "framework/sim_primary_entry_test.h",
+      "framework/sim_capacity_test.h",
+      "framework/sim_query_test.h",
+      "framework/sim_lifecycle_test.h"
+    ],
+    "active_public_headers": [
+      "framework/sim_test.h",
+      "framework/sim_protocol_test.h"
+    ],
+    "historical_mapping": "../Full_Replacement_Coverage.json",
+    "asset_dispositions": "../Full_Replacement_Migration.json",
+    "final-technical": "final-technical/sim-p9kcl5r8/result.json",
+    "final-architecture": "final-architecture/sim-jt2wwxyk/result.json",
+    "final-integrity": "final-integrity/sim-qfajwtu3/result.json"
+  },
+  "archive_note": "Immutable prior input/pilot archives retained; validation archive includes failed framework attempts plus corrected final reports. Native/GUI status is not inferred from Host results."
 }

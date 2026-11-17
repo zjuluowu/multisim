@@ -2,8 +2,8 @@
 import re
 from _paths import CORE
 SOURCES = [
-    "services/multisim/test/framework/host/g2a_reference/core_service_sim.cpp",
-    "services/multisim/test/framework/host/g2a_reference/legacy_sim_query_binding.cpp",
+    "services/multisim/test/framework/internal/host/g2a_reference/core_service_sim.cpp",
+    "services/multisim/test/framework/internal/host/g2a_reference/legacy_sim_query_binding.cpp",
     "services/multisim/infrastructure/compatibility/api/real_sim_count_query.cpp",
     "services/sim/src/sim_manager.cpp",
     "services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp",
@@ -62,7 +62,7 @@ def verify_source_tables(read_text=None):
         tokens = gn_tokens(read_text(name))
         if any("multisim" in token or "legacy_sim_query_binding" in token for token in tokens):
             raise RuntimeError("Refactor attachment leaked into upstream build: " + name)
-    name = "services/multisim/test/framework/host/BUILD.gn"
+    name = "services/multisim/test/framework/internal/host/BUILD.gn"
     tokens = gn_tokens(read_text(name))
     body = target_body(tokens, ("source_set", "g2a_readonly_production_host"))
     sources = literal_lists(body, "sources")
@@ -74,7 +74,7 @@ def verify_source_tables(read_text=None):
     if len(sources) != 3:
         raise RuntimeError("Unexpected reference source")
     launcher = target_body(tokens, ("source_set", "g2a_query_launcher"))
-    if "$test_root/framework/host/g2a_reference" not in literal_lists(launcher, "include_dirs"):
+    if "$test_root/framework/internal/host/g2a_reference" not in literal_lists(launcher, "include_dirs"):
         raise RuntimeError("Missing reference header boundary")
     leaf = target_body(gn_tokens(read_text("services/multisim/BUILD.gn")), ("source_set", "readonly_query"))
     if (leaf[:3] != ["testonly", "=", "true"] or

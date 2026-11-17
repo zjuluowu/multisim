@@ -937,6 +937,950 @@
       "action": "retired",
       "before_sha256": "305955a8d809ca8e9489bc1f491621da14aab2e071b07dde7218a0440af5c7d5",
       "replacement": "Immutable original-active-sources.tar.gz; historical directory ledger not referenced by active checks"
+    },
+    {
+      "old": "framework/sim_advanced_test.h",
+      "new": "framework/internal/common/state_protocol_test.h",
+      "action": "moved",
+      "before_sha256": "e63936282dff04c6506bd0b4b286205d238ce7b058b65a08b63a33bdffc0a38d"
+    },
+    {
+      "old": "framework/sim_primary_entry_test.h",
+      "new": "framework/internal/host/primary_entry_fixture.h",
+      "action": "moved",
+      "before_sha256": "aa2b85e9b6e6ef82a6c1a0a167d88fe45e9d3a98654b3fa66e1ae62fbea02803"
+    },
+    {
+      "old": "framework/sim_query_test.h",
+      "new": "framework/internal/common/query_fixture.h",
+      "action": "moved",
+      "before_sha256": "44623799ee7f838f600783b18bdf5c9af25008f587d7cdc04995d884086039e6"
+    },
+    {
+      "old": "framework/sim_lifecycle_test.h",
+      "new": "framework/internal/common/lifecycle_fixture.h",
+      "action": "moved",
+      "before_sha256": "7c1149e0c904f895dfa742dc5e8a137f909c23a6c334def98b39c9c6970bbf4e"
+    },
+    {
+      "old": "framework/sim_primary_test.h",
+      "action": "retired",
+      "before_sha256": "c46742ea65f5a8bea36044ab56d78cdfe9b720bf5d8fe5392cfbf0d44adf314e",
+      "replacement": "Opaque real Primary implementation of SimTest; internal lifecycle tests explicitly include their private rig"
+    },
+    {
+      "old": "framework/sim_capacity_test.h",
+      "action": "retired",
+      "replacement": "internal/host/capacity_api.cpp implements SimTest with private parameter boundary",
+      "before_sha256": "b9cd933847dcb702ebee9caaa1facc438a79472bd374148168ab10972ac558c9"
+    },
+    {
+      "old": "framework/common/main.cpp",
+      "new": "framework/internal/common/main.cpp",
+      "action": "moved",
+      "before_sha256": "78f1924b193b78a95556d34b5652197658ede1fc3c71483dbc22ba6cd03f74b0"
+    },
+    {
+      "old": "framework/common/primary_observation.h",
+      "new": "framework/internal/common/primary_observation.h",
+      "action": "moved",
+      "before_sha256": "70dbfc781d365893a3407b048f3c5a0b999fd919f867c701b4fef439d38e139b"
+    },
+    {
+      "old": "framework/common/ril_device.h",
+      "new": "framework/internal/common/ril_device.h",
+      "action": "moved",
+      "before_sha256": "6262c611d746dd79e9fd74234a5d974e0f1352a90e457fabbd2f8a43386630d8"
+    },
+    {
+      "old": "framework/common/ril_fault_controls.h",
+      "new": "framework/internal/common/ril_fault_controls.h",
+      "action": "moved",
+      "before_sha256": "2a38391c164585c8f7c69c7f6dba80a5db1e594f1da127a1ded11250896b9231"
+    },
+    {
+      "old": "framework/common/sim_types.h",
+      "new": "framework/internal/common/sim_types.h",
+      "action": "moved",
+      "before_sha256": "295bdb58a58f5a6b6411aa5d8c5fb82f1fb6651035c0424ecd1672f6bd5e6d9c"
+    },
+    {
+      "old": "framework/common/state_assertions.h",
+      "new": "framework/internal/common/state_assertions.h",
+      "action": "moved",
+      "before_sha256": "001ca5bba163c2904c21b6e1a8b3c34ebc8a186e90f455bfef30b67b1dff1c41"
+    },
+    {
+      "old": "framework/host/.gitignore",
+      "new": "framework/internal/host/.gitignore",
+      "action": "moved",
+      "before_sha256": "288e9f695017bd3f19f6b20f4e54765932b3c06e6e2f28a5b30ea799884468e1"
+    },
+    {
+      "old": "framework/host/.gn",
+      "new": "framework/internal/host/.gn",
+      "action": "moved",
+      "before_sha256": "7d922ea30fd1363eb1512b44379fc0b8da45d24d171e7176659173f70b71c63c"
+    },
+    {
+      "old": "framework/host/BUILD.gn",
+      "new": "framework/internal/host/BUILD.gn",
+      "action": "moved",
+      "before_sha256": "bb9f56de962d06e08ff1d7ac9e1a14c728b3c150799a3a9a88e880ca59250f2c"
+    },
+    {
+      "old": "framework/host/capacity_api.cpp",
+      "new": "framework/internal/host/capacity_api.cpp",
+      "action": "moved",
+      "before_sha256": "dd86b995147ff42ebc420d3ad05668b9b8e4e621ecd1556e18cb534102dd08de"
+    },
+    {
+      "old": "framework/host/configs/dependency_lock.json",
+      "new": "framework/internal/host/configs/dependency_lock.json",
+      "action": "moved",
+      "before_sha256": "fdf71c17dd419ea43f088beaa296cdd05bf90a2a2661acdbd87238e805a70945"
+    },
+    {
+      "old": "framework/host/g2a_reference/core_service_sim.cpp",
+      "new": "framework/internal/host/g2a_reference/core_service_sim.cpp",
+      "action": "moved",
+      "before_sha256": "6bc4f83b79983b319e41572a6c8683808e4cd485d652eb531fc65a154376df34"
+    },
+    {
+      "old": "framework/host/g2a_reference/core_service_sim.h",
+      "new": "framework/internal/host/g2a_reference/core_service_sim.h",
+      "action": "moved",
+      "before_sha256": "d79e21476fee96e15230a1728961229f6e7d52a5a29c9c2010dabf92deff64c3"
+    },
+    {
+      "old": "framework/host/g2a_reference/legacy_sim_query_binding.cpp",
+      "new": "framework/internal/host/g2a_reference/legacy_sim_query_binding.cpp",
+      "action": "moved",
+      "before_sha256": "fb77d07c06d829d5ed33cbf8138e325f78437cc22cf4d30fcc56d4016173b5fe"
+    },
+    {
+      "old": "framework/host/g2a_reference/legacy_sim_query_binding.h",
+      "new": "framework/internal/host/g2a_reference/legacy_sim_query_binding.h",
+      "action": "moved",
+      "before_sha256": "fcd27f3b774cb047859a53b4de5fb57debad51c607b4570d8683ba2e418fcb17"
+    },
+    {
+      "old": "framework/host/gn/BUILD.gn",
+      "new": "framework/internal/host/gn/BUILD.gn",
+      "action": "moved",
+      "before_sha256": "912a50df308f37eeee29dc1c08d10f4843608361d65c7b05456a9bd309566f81"
+    },
+    {
+      "old": "framework/host/gn/BUILDCONFIG.gn",
+      "new": "framework/internal/host/gn/BUILDCONFIG.gn",
+      "action": "moved",
+      "before_sha256": "b0438efebf8edbd92ca3da8a52defa8c425c02b16e52177382b831448379321b"
+    },
+    {
+      "old": "framework/host/pin_memory_spy.h",
+      "new": "framework/internal/host/pin_memory_spy.h",
+      "action": "moved",
+      "before_sha256": "835556a5196e22f93ce44658cfa99047e612f48e4a5ea42637807604d85dd013"
+    },
+    {
+      "old": "framework/host/primary/include/accesstoken_kit.h",
+      "new": "framework/internal/host/primary/include/accesstoken_kit.h",
+      "action": "moved",
+      "before_sha256": "2fbead19cfd3988c2756894518e82af50656128a6b2e2ee958956fdb2e8d637c"
+    },
+    {
+      "old": "framework/host/primary/include/bundle_mgr_interface.h",
+      "new": "framework/internal/host/primary/include/bundle_mgr_interface.h",
+      "action": "moved",
+      "before_sha256": "dcb926fd928127c3d52d6bea0d1353ea0f26e4519c95093118ba87e8d15685f7"
+    },
+    {
+      "old": "framework/host/primary/include/ipc_skeleton.h",
+      "new": "framework/internal/host/primary/include/ipc_skeleton.h",
+      "action": "moved",
+      "before_sha256": "e78680e621df3616761796f8e996535760ca0884d403ab11d1209394c127285d"
+    },
+    {
+      "old": "framework/host/primary/include/privacy_kit.h",
+      "new": "framework/internal/host/primary/include/privacy_kit.h",
+      "action": "moved",
+      "before_sha256": "522ae277088c3fdc01da39d441263f0707fdf9000597bf2605616767b438a051"
+    },
+    {
+      "old": "framework/host/primary/include/tokenid_kit.h",
+      "new": "framework/internal/host/primary/include/tokenid_kit.h",
+      "action": "moved",
+      "before_sha256": "37460d97aacf49acc33715c4b66e915e96b2fa3e46295276d33499d2bccc2784"
+    },
+    {
+      "old": "framework/host/primary/initialization_trace.h",
+      "new": "framework/internal/host/primary/initialization_trace.h",
+      "action": "moved",
+      "before_sha256": "1f07183f3708685dd959278a9c0e2ac246cf328385596d3b9624b392469623f5"
+    },
+    {
+      "old": "framework/host/primary/lifecycle/external_runner.h",
+      "new": "framework/internal/host/primary/lifecycle/external_runner.h",
+      "action": "moved",
+      "before_sha256": "540ab2e90747c39d735ea3db88e6946dab3be1610f7d50aaf53da73f043a671a"
+    },
+    {
+      "old": "framework/host/primary/lifecycle/lifecycle_diagnostics.h",
+      "new": "framework/internal/host/primary/lifecycle/lifecycle_diagnostics.h",
+      "action": "moved",
+      "before_sha256": "bba0c43c5798bda720bb17a70e42bf30dd3d85f8f18bb2c806d89c60e15bbf49"
+    },
+    {
+      "old": "framework/host/primary/lifecycle/owned_card_graph.h",
+      "new": "framework/internal/host/primary/lifecycle/owned_card_graph.h",
+      "action": "moved",
+      "before_sha256": "e2b017e493c08fa8adf3ee3aea5bdfc4afa0789c55fb0d6d9868f1be5dd33d49"
+    },
+    {
+      "old": "framework/host/primary/lifecycle/shutdown_contract.h",
+      "new": "framework/internal/host/primary/lifecycle/shutdown_contract.h",
+      "action": "moved",
+      "before_sha256": "3c6d7e6c2fefdd2a01d056be2ebaaa7e25283245bad6791ef236ed46568ffc9a"
+    },
+    {
+      "old": "framework/host/primary/primary_api.cpp",
+      "new": "framework/internal/host/primary/primary_api.cpp",
+      "action": "moved",
+      "before_sha256": "7f31e71c5c8b0c3ece38985d0b9557e518ae41775ca8a067c1106b19793cea86"
+    },
+    {
+      "old": "framework/host/primary/primary_environment.h",
+      "new": "framework/internal/host/primary/primary_environment.h",
+      "action": "moved",
+      "before_sha256": "75054669f3114b61eed5d19c626f73c8db25d4ee17d302a22b94c0f44bb924ee"
+    },
+    {
+      "old": "framework/host/primary/provider/include/data_storage_errors.h",
+      "new": "framework/internal/host/primary/provider/include/data_storage_errors.h",
+      "action": "moved",
+      "before_sha256": "e20bbd0347175f95f8e6d81bf36356cd3f27d5f3f68cea86df3aeacc7956da9b"
+    },
+    {
+      "old": "framework/host/primary/provider/include/sim_data.h",
+      "new": "framework/internal/host/primary/provider/include/sim_data.h",
+      "action": "moved",
+      "before_sha256": "f5e1bdb2d0225d76d8117baa01784ce8b28bd8df68812ac0f8607eda07fd62c7"
+    },
+    {
+      "old": "framework/host/primary/real_runtime.cpp",
+      "new": "framework/internal/host/primary/real_runtime.cpp",
+      "action": "moved",
+      "before_sha256": "996fcb2533e5e6c317c2be6202dcce56cd5c974e344fcea657e38e5bcf8a684b"
+    },
+    {
+      "old": "framework/host/primary/runtime_include/hisysevent.h",
+      "new": "framework/internal/host/primary/runtime_include/hisysevent.h",
+      "action": "moved",
+      "before_sha256": "a1a85f0e9709ab7ee277068ffb2c981099c8169a780b01823133011249c47ef7"
+    },
+    {
+      "old": "framework/host/primary/security_boundary.cpp",
+      "new": "framework/internal/host/primary/security_boundary.cpp",
+      "action": "moved",
+      "before_sha256": "06caf0a25551d39b9d36b93d574ad1f638a0cefcec7dbd0dcf0bb23a27976b4e"
+    },
+    {
+      "old": "framework/host/primary/security_boundary.h",
+      "new": "framework/internal/host/primary/security_boundary.h",
+      "action": "moved",
+      "before_sha256": "8a71b45d8eed45ecb3e694068c2c70f8ea73213911710a6f82e4c2db6ce2e7b2"
+    },
+    {
+      "old": "framework/host/primary/unscripted_sim_manager.h",
+      "new": "framework/internal/host/primary/unscripted_sim_manager.h",
+      "action": "moved",
+      "before_sha256": "4b17b1a83ea6a8e382a9016c6a26567303ea3d3d61f7efbec281625ea9e8e598"
+    },
+    {
+      "old": "framework/host/probes/bootstrap_probe.cpp",
+      "new": "framework/internal/host/probes/bootstrap_probe.cpp",
+      "action": "moved",
+      "before_sha256": "8382765eded580bab4d05ca2fcaf7d95a117d1f68b19d810f8c3b743030a2cc2"
+    },
+    {
+      "old": "framework/host/probes/bootstrap_probe.h",
+      "new": "framework/internal/host/probes/bootstrap_probe.h",
+      "action": "moved",
+      "before_sha256": "16783feadbf24d90a913f8535719e45ffeaff0c28dfa28e34c439535a0c7dc36"
+    },
+    {
+      "old": "framework/host/probes/capacity_probe.cpp",
+      "new": "framework/internal/host/probes/capacity_probe.cpp",
+      "action": "moved",
+      "before_sha256": "e77845db20f3f43bc2d7fcc1ae85ca1018294568faf3dd1fe9b2fdef87e2e60f"
+    },
+    {
+      "old": "framework/host/probes/capacity_probe.h",
+      "new": "framework/internal/host/probes/capacity_probe.h",
+      "action": "moved",
+      "before_sha256": "1de970d1cb579d3e11cabdf9328d0a3a9aa4bf38833aa2148ef3788fd981b677"
+    },
+    {
+      "old": "framework/host/probes/g2a_query_probe.cpp",
+      "new": "framework/internal/host/probes/g2a_query_probe.cpp",
+      "action": "moved",
+      "before_sha256": "b368ef839cc2cf066a4a101b0b53427d4d104f4cb383e5909aa0775161f9f709"
+    },
+    {
+      "old": "framework/host/probes/g2a_query_probe.h",
+      "new": "framework/internal/host/probes/g2a_query_probe.h",
+      "action": "moved",
+      "before_sha256": "42cf19c4324102c6e490e6af320157a7f243e044d30a22a410e8090ab2e0dcac"
+    },
+    {
+      "old": "framework/host/probes/initialization_link_probe.cpp",
+      "new": "framework/internal/host/probes/initialization_link_probe.cpp",
+      "action": "moved",
+      "before_sha256": "41f4563d40486958dcb8f671e08e38ddad8a2a96701d6e8a6e69216c31a79e24"
+    },
+    {
+      "old": "framework/host/sim_test.cpp",
+      "new": "framework/internal/host/sim_test.cpp",
+      "action": "moved",
+      "before_sha256": "b13aa74d9b2d7cbbea4d0f83ee7e9218e23485d37a55bc4a8ba00bf7d0ad825f"
+    },
+    {
+      "old": "framework/host/state_platform_spy.cpp",
+      "new": "framework/internal/host/state_platform_spy.cpp",
+      "action": "moved",
+      "before_sha256": "456b88d40cd8fc19e3d891241991ae0a9b58c6dc03bb9abb0553333f97498c36"
+    },
+    {
+      "old": "framework/host/state_platform_spy.h",
+      "new": "framework/internal/host/state_platform_spy.h",
+      "action": "moved",
+      "before_sha256": "a3fcab0c4c5eccb86d5d405e78eb6b173060acbbff49e54f41c150e960049b45"
+    },
+    {
+      "old": "framework/host/stubs/detached_threads.cpp",
+      "new": "framework/internal/host/stubs/detached_threads.cpp",
+      "action": "moved",
+      "before_sha256": "9bf3826c6f336cd09ae24729eb9eff5ad23d9a5c8d5d563d385d0cfbb3bafcdf"
+    },
+    {
+      "old": "framework/host/stubs/event_handler_runtime.cpp",
+      "new": "framework/internal/host/stubs/event_handler_runtime.cpp",
+      "action": "moved",
+      "before_sha256": "4c963d526c054b93d2a94919b40e27dcd0ee65f9fbfcea86da0b7740ca2fbf86"
+    },
+    {
+      "old": "framework/host/stubs/external_services.cpp",
+      "new": "framework/internal/host/stubs/external_services.cpp",
+      "action": "moved",
+      "before_sha256": "f3d7b4802b91b7a54f51c6670216754634fb9ab29e8634a5cf31e99c62136469"
+    },
+    {
+      "old": "framework/host/stubs/external_services_mock.h",
+      "new": "framework/internal/host/stubs/external_services_mock.h",
+      "action": "moved",
+      "before_sha256": "6ed427a65476a34fccb5e183cacb3f236619a8405777255bc70359a48e75f59c"
+    },
+    {
+      "old": "framework/host/stubs/ffrt_runtime.cpp",
+      "new": "framework/internal/host/stubs/ffrt_runtime.cpp",
+      "action": "moved",
+      "before_sha256": "58da3fadea5a46d43cdb6150c4a6e1999412e38a870a6c0384a048d7b2babbbd"
+    },
+    {
+      "old": "framework/host/stubs/ffrt_runtime.h",
+      "new": "framework/internal/host/stubs/ffrt_runtime.h",
+      "action": "moved",
+      "before_sha256": "74e4082e23e1022f5079950ab150f36ca2f756124277ca1a0be240bb7711e27e"
+    },
+    {
+      "old": "framework/host/stubs/g2a_vendor_boundary.cpp",
+      "new": "framework/internal/host/stubs/g2a_vendor_boundary.cpp",
+      "action": "moved",
+      "before_sha256": "9931244e65f13f354e0a64d54bee2c0c708165636af7d2802ad76e3c7756b0e6"
+    },
+    {
+      "old": "framework/host/stubs/include/ability_manager_client.h",
+      "new": "framework/internal/host/stubs/include/ability_manager_client.h",
+      "action": "moved",
+      "before_sha256": "ad5e08027ec81c9d63bf2f316af4337ee0b9b2403311cc508509158c6b143592"
+    },
+    {
+      "old": "framework/host/stubs/include/app_mgr_client.h",
+      "new": "framework/internal/host/stubs/include/app_mgr_client.h",
+      "action": "moved",
+      "before_sha256": "6d701634348e80083d633c92b153f55eb785aaf07ee25c5b9ae4de299d09dab8"
+    },
+    {
+      "old": "framework/host/stubs/include/bundle_mgr_proxy.h",
+      "new": "framework/internal/host/stubs/include/bundle_mgr_proxy.h",
+      "action": "moved",
+      "before_sha256": "cb158e29871542f10be66b22fd3f92425b1ceab17767585503facaec6a6258e1"
+    },
+    {
+      "old": "framework/host/stubs/include/cJSON.h",
+      "new": "framework/internal/host/stubs/include/cJSON.h",
+      "action": "moved",
+      "before_sha256": "25b0145150d500498e4d209cec69c18c42cf818bffcc54690be3b895a2a16dee"
+    },
+    {
+      "old": "framework/host/stubs/include/cellular_data_client.h",
+      "new": "framework/internal/host/stubs/include/cellular_data_client.h",
+      "action": "moved",
+      "before_sha256": "523ede5ef2bc9f3c063410afbb6b46474efd254858a3c9e765c3e335323372c9"
+    },
+    {
+      "old": "framework/host/stubs/include/common_event.h",
+      "new": "framework/internal/host/stubs/include/common_event.h",
+      "action": "moved",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "old": "framework/host/stubs/include/common_event_data.h",
+      "new": "framework/internal/host/stubs/include/common_event_data.h",
+      "action": "moved",
+      "before_sha256": "6d701634348e80083d633c92b153f55eb785aaf07ee25c5b9ae4de299d09dab8"
+    },
+    {
+      "old": "framework/host/stubs/include/common_event_manager.h",
+      "new": "framework/internal/host/stubs/include/common_event_manager.h",
+      "action": "moved",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "old": "framework/host/stubs/include/common_event_publish_info.h",
+      "new": "framework/internal/host/stubs/include/common_event_publish_info.h",
+      "action": "moved",
+      "before_sha256": "6d701634348e80083d633c92b153f55eb785aaf07ee25c5b9ae4de299d09dab8"
+    },
+    {
+      "old": "framework/host/stubs/include/common_event_support.h",
+      "new": "framework/internal/host/stubs/include/common_event_support.h",
+      "action": "moved",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "old": "framework/host/stubs/include/compile_declarations.h",
+      "new": "framework/internal/host/stubs/include/compile_declarations.h",
+      "action": "moved",
+      "before_sha256": "c8d07b8e8940ba47a6fd45d355517d3d390ba12b2dbb7f22daae441f98a5da8e"
+    },
+    {
+      "old": "framework/host/stubs/include/config_policy_utils.h",
+      "new": "framework/internal/host/stubs/include/config_policy_utils.h",
+      "action": "moved",
+      "before_sha256": "1e6e53743a3edee84eb30e9b607d73a2fa1e897736baa8a03269b0a8b7db8420"
+    },
+    {
+      "old": "framework/host/stubs/include/configuration.h",
+      "new": "framework/internal/host/stubs/include/configuration.h",
+      "action": "moved",
+      "before_sha256": "6d701634348e80083d633c92b153f55eb785aaf07ee25c5b9ae4de299d09dab8"
+    },
+    {
+      "old": "framework/host/stubs/include/datashare_errno.h",
+      "new": "framework/internal/host/stubs/include/datashare_errno.h",
+      "action": "moved",
+      "before_sha256": "5e4a8e75b043e941ce48c167a04382c95e0b30a30976ffb305fc3e687acf577d"
+    },
+    {
+      "old": "framework/host/stubs/include/datashare_helper.h",
+      "new": "framework/internal/host/stubs/include/datashare_helper.h",
+      "action": "moved",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "old": "framework/host/stubs/include/datashare_predicates.h",
+      "new": "framework/internal/host/stubs/include/datashare_predicates.h",
+      "action": "moved",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "old": "framework/host/stubs/include/datashare_result_set.h",
+      "new": "framework/internal/host/stubs/include/datashare_result_set.h",
+      "action": "moved",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "old": "framework/host/stubs/include/datashare_value_object.h",
+      "new": "framework/internal/host/stubs/include/datashare_value_object.h",
+      "action": "moved",
+      "before_sha256": "60211b05254d2e5b3b80dd2253c909dd8e806ca07b188aea29cf5bdc9dc6a681"
+    },
+    {
+      "old": "framework/host/stubs/include/datashare_values_bucket.h",
+      "new": "framework/internal/host/stubs/include/datashare_values_bucket.h",
+      "action": "moved",
+      "before_sha256": "dde5f37c9f9099cad4846b2013c6f97279d79266fabd33bfc0b2bfb9f3f23eab"
+    },
+    {
+      "old": "framework/host/stubs/include/errors.h",
+      "new": "framework/internal/host/stubs/include/errors.h",
+      "action": "moved",
+      "before_sha256": "df8da91d96d16d2aaca88cb6d07b4124c07624587ce824cdc3ac7a7f0ce5476e"
+    },
+    {
+      "old": "framework/host/stubs/include/event_handler.h",
+      "new": "framework/internal/host/stubs/include/event_handler.h",
+      "action": "moved",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "old": "framework/host/stubs/include/event_runner.h",
+      "new": "framework/internal/host/stubs/include/event_runner.h",
+      "action": "moved",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "old": "framework/host/stubs/include/extension_ability_info.h",
+      "new": "framework/internal/host/stubs/include/extension_ability_info.h",
+      "action": "moved",
+      "before_sha256": "00a4b355b08f44d7ea100909dc309e0b0bd4fe46ba0a150b8aa8826c2bd4b75d"
+    },
+    {
+      "old": "framework/host/stubs/include/ffrt.h",
+      "new": "framework/internal/host/stubs/include/ffrt.h",
+      "action": "moved",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "old": "framework/host/stubs/include/ffrt_inner.h",
+      "new": "framework/internal/host/stubs/include/ffrt_inner.h",
+      "action": "moved",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "old": "framework/host/stubs/include/global_configuration_key.h",
+      "new": "framework/internal/host/stubs/include/global_configuration_key.h",
+      "action": "moved",
+      "before_sha256": "bb14fc0d50377f6951d948ceeb72786e094ddfa9ee55d22f93022762d412e747"
+    },
+    {
+      "old": "framework/host/stubs/include/hilog/log.h",
+      "new": "framework/internal/host/stubs/include/hilog/log.h",
+      "action": "moved",
+      "before_sha256": "e191f5f05f83fdeddce8bb541a6ca49203afc8a720bb548fc62f633523d7368d"
+    },
+    {
+      "old": "framework/host/stubs/include/hisysevent.h",
+      "new": "framework/internal/host/stubs/include/hisysevent.h",
+      "action": "moved",
+      "before_sha256": "d13f55ae0b9aed4aeedf6aebb735676cb7e30ae0695507b17edaea8944d4d8b5"
+    },
+    {
+      "old": "framework/host/stubs/include/hks_api.h",
+      "new": "framework/internal/host/stubs/include/hks_api.h",
+      "action": "moved",
+      "before_sha256": "64101f07d09bcf0c25427313d807ed8f68c3a89de5710f30a07a93ecb72a0fbe"
+    },
+    {
+      "old": "framework/host/stubs/include/hks_error_code.h",
+      "new": "framework/internal/host/stubs/include/hks_error_code.h",
+      "action": "moved",
+      "before_sha256": "3c7108619d8c0d188be0ebac54ca516f2a263f32651ca39d4435b0475eef71b6"
+    },
+    {
+      "old": "framework/host/stubs/include/hks_param.h",
+      "new": "framework/internal/host/stubs/include/hks_param.h",
+      "action": "moved",
+      "before_sha256": "440a7b5abc1236b1c30ee54c6d6e33dc6f3fec5779b83e63356294d181af0ed1"
+    },
+    {
+      "old": "framework/host/stubs/include/hks_tag.h",
+      "new": "framework/internal/host/stubs/include/hks_tag.h",
+      "action": "moved",
+      "before_sha256": "caa589c9208c7d621d9da39fbed419aaaa987e2b1c65f8ba105fcadfb62d9eec"
+    },
+    {
+      "old": "framework/host/stubs/include/hks_type.h",
+      "new": "framework/internal/host/stubs/include/hks_type.h",
+      "action": "moved",
+      "before_sha256": "2ee59b8810d27586373828159db678b9f20519254f519e7bded758155f270c43"
+    },
+    {
+      "old": "framework/host/stubs/include/hks_type_enum.h",
+      "new": "framework/internal/host/stubs/include/hks_type_enum.h",
+      "action": "moved",
+      "before_sha256": "545c38aa20506fa74501ec48ca53092d9c25757f5393f41864adf627ff942f25"
+    },
+    {
+      "old": "framework/host/stubs/include/host_refptr.h",
+      "new": "framework/internal/host/stubs/include/host_refptr.h",
+      "action": "moved",
+      "before_sha256": "20e2e0ff7b5bdaa2d1d17cf85039206ba7d4fdb528f7328f7fd294bace35c348"
+    },
+    {
+      "old": "framework/host/stubs/include/host_standard_prelude.h",
+      "new": "framework/internal/host/stubs/include/host_standard_prelude.h",
+      "action": "moved",
+      "before_sha256": "be651a65f784b2c5a615cf1b18e9f2faa33b29a2499fc4281a731045ce2e6c32"
+    },
+    {
+      "old": "framework/host/stubs/include/if_system_ability_manager.h",
+      "new": "framework/internal/host/stubs/include/if_system_ability_manager.h",
+      "action": "moved",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "old": "framework/host/stubs/include/inner_event.h",
+      "new": "framework/internal/host/stubs/include/inner_event.h",
+      "action": "moved",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "old": "framework/host/stubs/include/iremote_broker.h",
+      "new": "framework/internal/host/stubs/include/iremote_broker.h",
+      "action": "moved",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "old": "framework/host/stubs/include/iremote_object.h",
+      "new": "framework/internal/host/stubs/include/iremote_object.h",
+      "action": "moved",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "old": "framework/host/stubs/include/iremote_proxy.h",
+      "new": "framework/internal/host/stubs/include/iremote_proxy.h",
+      "action": "moved",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "old": "framework/host/stubs/include/iremote_stub.h",
+      "new": "framework/internal/host/stubs/include/iremote_stub.h",
+      "action": "moved",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "old": "framework/host/stubs/include/iservice_registry.h",
+      "new": "framework/internal/host/stubs/include/iservice_registry.h",
+      "action": "moved",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "old": "framework/host/stubs/include/linux_platform_types.h",
+      "new": "framework/internal/host/stubs/include/linux_platform_types.h",
+      "action": "moved",
+      "before_sha256": "e9a7ba3305350265f379d4f888765045d372346bda19006ae9868234a98f9fca"
+    },
+    {
+      "old": "framework/host/stubs/include/matching_skills.h",
+      "new": "framework/internal/host/stubs/include/matching_skills.h",
+      "action": "moved",
+      "before_sha256": "6d701634348e80083d633c92b153f55eb785aaf07ee25c5b9ae4de299d09dab8"
+    },
+    {
+      "old": "framework/host/stubs/include/message_parcel.h",
+      "new": "framework/internal/host/stubs/include/message_parcel.h",
+      "action": "moved",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "old": "framework/host/stubs/include/nocopyable.h",
+      "new": "framework/internal/host/stubs/include/nocopyable.h",
+      "action": "moved",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "old": "framework/host/stubs/include/os_account_manager_wrapper.h",
+      "new": "framework/internal/host/stubs/include/os_account_manager_wrapper.h",
+      "action": "moved",
+      "before_sha256": "18cecba32b2968ec9855504410823c9aadc477d9d6b0e9cf3a79a12fae9a5bcc"
+    },
+    {
+      "old": "framework/host/stubs/include/parameter.h",
+      "new": "framework/internal/host/stubs/include/parameter.h",
+      "action": "moved",
+      "before_sha256": "8e7c48f647ddc38568459feff6fae01c9267476492e41431effb85db6b50c8fa"
+    },
+    {
+      "old": "framework/host/stubs/include/parameters.h",
+      "new": "framework/internal/host/stubs/include/parameters.h",
+      "action": "moved",
+      "before_sha256": "4ab650637a013fccb5fb3caa93b80bbfc9aaac22c98908513a15b049eaa83e67"
+    },
+    {
+      "old": "framework/host/stubs/include/parcel.h",
+      "new": "framework/internal/host/stubs/include/parcel.h",
+      "action": "moved",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "old": "framework/host/stubs/include/refbase.h",
+      "new": "framework/internal/host/stubs/include/refbase.h",
+      "action": "moved",
+      "before_sha256": "7c7868b9543a2f36a3608318ceef50ec7643b95d3f4e7b9afc7e5ae0dec29ef0"
+    },
+    {
+      "old": "framework/host/stubs/include/result_set.h",
+      "new": "framework/internal/host/stubs/include/result_set.h",
+      "action": "moved",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "old": "framework/host/stubs/include/securec.h",
+      "new": "framework/internal/host/stubs/include/securec.h",
+      "action": "moved",
+      "before_sha256": "20b4879509191f5e5d37334fa7f881499d8d856e19ed535677a83e08ff152461"
+    },
+    {
+      "old": "framework/host/stubs/include/securectype.h",
+      "new": "framework/internal/host/stubs/include/securectype.h",
+      "action": "moved",
+      "before_sha256": "3d41284a39f1add75253f9aaa008c24981b18605a12a2e4c5aa927f859789c66"
+    },
+    {
+      "old": "framework/host/stubs/include/sim_data.h",
+      "new": "framework/internal/host/stubs/include/sim_data.h",
+      "action": "moved",
+      "before_sha256": "d38a4ef437ad856795090db909896db16660f8e6e336d2947e777a4ef2284ea7"
+    },
+    {
+      "old": "framework/host/stubs/include/singleton.h",
+      "new": "framework/internal/host/stubs/include/singleton.h",
+      "action": "moved",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "old": "framework/host/stubs/include/string_ex.h",
+      "new": "framework/internal/host/stubs/include/string_ex.h",
+      "action": "moved",
+      "before_sha256": "60f7760ed68802c2690a45d1a6dc590c38e00d739c7e16c806c9351bf3ffa909"
+    },
+    {
+      "old": "framework/host/stubs/include/system_ability_definition.h",
+      "new": "framework/internal/host/stubs/include/system_ability_definition.h",
+      "action": "moved",
+      "before_sha256": "d438840102fb0b9a295aa86a302ce103a6e3dc6b4006e62a23d34d097a6cfc01"
+    },
+    {
+      "old": "framework/host/stubs/include/system_ability_status_change_stub.h",
+      "new": "framework/internal/host/stubs/include/system_ability_status_change_stub.h",
+      "action": "moved",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "old": "framework/host/stubs/include/uri.h",
+      "new": "framework/internal/host/stubs/include/uri.h",
+      "action": "moved",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "old": "framework/host/stubs/include/want.h",
+      "new": "framework/internal/host/stubs/include/want.h",
+      "action": "moved",
+      "before_sha256": "a7407b6641d0ea60f0e8585626fb26ede9e37b8375629a8d6c37da5196f0d9ec"
+    },
+    {
+      "old": "framework/host/stubs/mock_tel_ril_manager.h",
+      "new": "framework/internal/host/stubs/mock_tel_ril_manager.h",
+      "action": "moved",
+      "before_sha256": "431801a6ef782075b5793f78881f8819123fc016678484c11144e43a276a468b"
+    },
+    {
+      "old": "framework/host/stubs/parameter_mock.h",
+      "new": "framework/internal/host/stubs/parameter_mock.h",
+      "action": "moved",
+      "before_sha256": "77ff9e362e1d21288644c29eed57b83c87e4efd9dc91b1a48d57a4bdecab8504"
+    },
+    {
+      "old": "framework/host/stubs/parameter_service.cpp",
+      "new": "framework/internal/host/stubs/parameter_service.cpp",
+      "action": "moved",
+      "before_sha256": "7c9ec5810a76a3175ccccd578392cf06fac5b55d76c2beb3233795104eea56c4"
+    },
+    {
+      "old": "framework/device/sim_test.cpp",
+      "new": "framework/internal/device/sim_test.cpp",
+      "action": "moved",
+      "before_sha256": "490638dccaced408e602d61f16e9c3942a7b702674d26d317b06695e932ce07b"
+    },
+    {
+      "old": "cases/primary/primary_test.cpp",
+      "new": "cases/primary_test.cpp",
+      "action": "moved",
+      "before_sha256": "06453e3add69327ed87499f5d2694414d4e0fc0da3bcd8c4569464c0bf9a01ec"
+    },
+    {
+      "old": "cases/primary/primary_protocol_test.cpp",
+      "new": "cases/internal/primary_protocol_test.cpp",
+      "action": "moved",
+      "before_sha256": "25c814e4ecbbfea95ff6d63e784960558681c3e0b7e603ae8f96134fbcc0db48"
+    },
+    {
+      "old": "cases/primary/initialization_internal_test.cpp",
+      "new": "cases/internal/primary_initialization_test.cpp",
+      "action": "moved",
+      "before_sha256": "4bfe1bbb2d99f40faddfbe6c98315104be2b655796aa0918891a4e404b2091d6"
+    },
+    {
+      "old": "cases/primary/lifecycle_test.cpp",
+      "new": "cases/internal/lifecycle_test.cpp",
+      "action": "moved",
+      "before_sha256": "cf5b61ff32ad8583681a36550bca90d3b6ea94b68d3152455be740d8316f0582"
+    },
+    {
+      "old": "cases/primary/shutdown_test.cpp",
+      "new": "cases/internal/shutdown_test.cpp",
+      "action": "moved",
+      "before_sha256": "485c92b291368a591944791da1ecc81b43ca8fd407d45b7392d7a079e7c75491"
+    },
+    {
+      "old": "cases/capacity/capacity_test.cpp",
+      "new": "cases/capacity_test.cpp",
+      "action": "moved",
+      "before_sha256": "5e6429edd166a5efc226bc54464978c996b41844f7cca917cbcc575a55e70d17"
+    },
+    {
+      "old": "cases/capacity/bootstrap_test.cpp",
+      "new": "cases/internal/bootstrap_test.cpp",
+      "action": "moved",
+      "before_sha256": "c36be076d1a1ca9e36b32fc3266875a0de9c8ec946963cc2d6b591f883e4f298"
+    },
+    {
+      "old": "cases/query/g2a_query_test.cpp",
+      "new": "cases/internal/query/g2a_query_test.cpp",
+      "action": "moved",
+      "before_sha256": "d675d20a4ca5f128a38836204b9225acd55372226bc02d357caa3d31c8c1f723"
+    },
+    {
+      "old": "cases/query/g2a_upstream_test.cpp",
+      "new": "cases/internal/query/g2a_upstream_test.cpp",
+      "action": "moved",
+      "before_sha256": "fcdee7403d194e7793ddd24ca560ac91e36c86bef1f338787546615c0a519edd"
+    },
+    {
+      "old": "cases/query/query_inputs.h",
+      "new": "cases/internal/query/query_inputs.h",
+      "action": "moved",
+      "before_sha256": "e5c430d51b4c9555dda08cbb9f9ee6b999ff3fddf53df3da6792bd8bbd0d9dd0"
+    },
+    {
+      "old": "cases/primary_entry/primary_entry_test.cpp",
+      "new": "cases/internal/primary_entry_test.cpp",
+      "action": "moved",
+      "before_sha256": "6c8658d7f2fc98c03bc426103b0fcf221cbbd2eea7d1ad084fe3bb61574baca8"
+    },
+    {
+      "old": "cases/protocol/lifecycle_test.cpp",
+      "new": "cases/internal/protocol/lifecycle_test.cpp",
+      "action": "moved",
+      "before_sha256": "f7be9bc874b9357ea9db063012e6ba5c8150da62b8bec983e9d991dd82a105ef"
+    },
+    {
+      "old": "cases/protocol/pin_and_response_test.cpp",
+      "new": "cases/internal/protocol/pin_and_response_test.cpp",
+      "action": "moved",
+      "before_sha256": "e57bc447353ebda6f81ee0b37e92a0b761994d6efbf111c93d5711d1f43c8502"
+    },
+    {
+      "old": "cases/protocol/pin_memory_test.cpp",
+      "new": "cases/internal/protocol/pin_memory_test.cpp",
+      "action": "moved",
+      "before_sha256": "9493c0f26f0db997fe39bc34fe10cc27d3a9579cc7ed58a7db4c6d8cae94dd28"
+    },
+    {
+      "old": "cases/platform/event_adapter_test.cpp",
+      "new": "cases/internal/platform/event_adapter_test.cpp",
+      "action": "moved",
+      "before_sha256": "f659703566a6f006f8b6264da8abfc7c3dbc5ad555bdfdf602039244c4427ef9"
+    },
+    {
+      "old": "cases/platform/event_transport_test.cpp",
+      "new": "cases/internal/platform/event_transport_test.cpp",
+      "action": "moved",
+      "before_sha256": "b0df165f62c0c614e5ef854e4b9b536aa518fd8628ca94e7a4bf5b005a880628"
+    },
+    {
+      "old": "cases/platform/external_services_test.cpp",
+      "new": "cases/internal/platform/external_services_test.cpp",
+      "action": "moved",
+      "before_sha256": "fd88c47af3164d5d4db9cb476a4efc52787041dbfaca87f407c179f048b10f73"
+    },
+    {
+      "old": "cases/platform/native_pointer_test.cpp",
+      "new": "cases/internal/platform/native_pointer_test.cpp",
+      "action": "moved",
+      "before_sha256": "9f6c04944185737ec6c107c9ebb57dc5b013777f216e1ab3c04d553a25c9a2b9"
+    },
+    {
+      "old": "cases/platform/ril_adapter_test.cpp",
+      "new": "cases/internal/platform/ril_adapter_test.cpp",
+      "action": "moved",
+      "before_sha256": "e0d724c7c7a3b96e5a4d44cea8a7a223005e17a7c55755fbb1cfd17cf7422839"
+    },
+    {
+      "old": "cases/infrastructure/infrastructure_cases.json",
+      "new": "cases/internal/infrastructure/infrastructure_cases.json",
+      "action": "moved",
+      "before_sha256": "98c94c898da8e7494e012bf35f747f7d27d7fc36fbdeb354a8630c62e47d74b8"
+    },
+    {
+      "old": "cases/infrastructure/test_ci_gate.py",
+      "new": "cases/internal/infrastructure/test_ci_gate.py",
+      "action": "moved",
+      "before_sha256": "1aa96765079de3dd0898eb3072bd761cb335483407229f10ebaa34cc5059bd79"
+    },
+    {
+      "old": "cases/infrastructure/test_ci_sim028.py",
+      "new": "cases/internal/infrastructure/test_ci_sim028.py",
+      "action": "moved",
+      "before_sha256": "1201bd849bf0bc32050aed220fc69321585da60aaef350815d96923a2bd1e1b1"
+    },
+    {
+      "old": "cases/infrastructure/test_legacy_primary_contract.py",
+      "new": "cases/internal/infrastructure/test_legacy_primary_contract.py",
+      "action": "moved",
+      "before_sha256": "a6649fa01bd413f7ae364452a425348b095c8a522ab9585ff6a4163ff853684e"
+    },
+    {
+      "old": "cases/infrastructure/test_primary_expectations.py",
+      "new": "cases/internal/infrastructure/test_primary_expectations.py",
+      "action": "moved",
+      "before_sha256": "60e68e63c3b70e9d15ecc6b1a0fadacb1906187fa630f8e1c41e19bd7b95044c"
+    },
+    {
+      "old": "cases/infrastructure/test_run_gtest.py",
+      "new": "cases/internal/infrastructure/test_run_gtest.py",
+      "action": "moved",
+      "before_sha256": "5adda5b34d7c01db76ef4312f2b1a8419b10c9732f2c929cbff0ce2a49976078"
+    },
+    {
+      "old": "cases/primary_expectations.py",
+      "new": "cases/internal/primary_expectations.py",
+      "action": "moved",
+      "before_sha256": "df4d2520b71b72f17d0ec2c0ee8ee7f0a1b27c867584478caa859d2151c02906"
+    },
+    {
+      "old": "cases/validate_primary.py",
+      "new": "cases/internal/validate_primary.py",
+      "action": "moved",
+      "before_sha256": "038c67b85887706231211acbc93a302a8114739564eaa4e6eb3cc7789871eedb"
+    },
+    {
+      "old": "cases/internal/protocol/pin_and_response_test.cpp",
+      "new": "cases/response_test.cpp",
+      "action": "moved_and_rewritten",
+      "before_sha256": "035c42cad7f87a7113df77610fe4591ba3fac66302547a9a9cf4af9a5f3e54cc"
+    },
+    {
+      "old": "cases/internal/protocol/lifecycle_test.cpp",
+      "new": "cases/lifecycle_test.cpp",
+      "action": "moved_and_rewritten",
+      "before_sha256": "c075b698aaf4eb935cc8763f09f1886d2300fe6423de0c3b49ba535bfd027bda"
+    },
+    {
+      "old": "cases/internal/primary_protocol_test.cpp",
+      "new": "cases/primary_protocol_test.cpp",
+      "action": "moved_and_rewritten",
+      "before_sha256": "df55f2c5766802d0ac78529fca7adc98f8c6aee92c6290fa316e15103ecb7a92"
+    },
+    {
+      "old": "framework/internal/common/state_protocol_test.h",
+      "action": "retired",
+      "before_sha256": "c7e6364437d624a3abff7e0b7a85ab83abaae30ea28dcede998737b037b414f4",
+      "replacement": "StateProtocol directly operates the actual SimTest environment; no old Fixture/driver forwarding"
     }
-  ]
+  ],
+  "convergence_input": "ce6441aa1e81cb29954874006236f126c3310388",
+  "primary_api_checkpoint": "a73046492"
 }

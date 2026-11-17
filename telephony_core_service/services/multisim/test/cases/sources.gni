@@ -2,39 +2,46 @@
 sim_case_root = get_path_info(".", "abspath")
 sim_case_sources = [
   "$sim_case_root/developer_copy_test.cpp",
+  "$sim_case_root/pin_failure_isolation_test.cpp",
+  "$sim_case_root/pin_independence_test.cpp",
+  "$sim_case_root/puk_test.cpp",
+  "$sim_case_root/query_test.cpp",
   "$sim_case_root/sim_card_test.cpp",
 ]
+sim_state_protocol_case_sources = [
+  "$sim_case_root/lifecycle_test.cpp",
+  "$sim_case_root/response_test.cpp",
+]
 sim_protocol_case_sources = [
-  "$sim_case_root/protocol/lifecycle_test.cpp",
-  "$sim_case_root/protocol/pin_and_response_test.cpp",
-  "$sim_case_root/protocol/pin_memory_test.cpp",
+  "$sim_case_root/internal/protocol/pin_memory_test.cpp",
 ]
 sim_platform_case_sources = [
-  "$sim_case_root/platform/event_adapter_test.cpp",
-  "$sim_case_root/platform/event_transport_test.cpp",
-  "$sim_case_root/platform/external_services_test.cpp",
-  "$sim_case_root/platform/native_pointer_test.cpp",
-  "$sim_case_root/platform/ril_adapter_test.cpp",
+  "$sim_case_root/internal/platform/event_adapter_test.cpp",
+  "$sim_case_root/internal/platform/event_transport_test.cpp",
+  "$sim_case_root/internal/platform/external_services_test.cpp",
+  "$sim_case_root/internal/platform/native_pointer_test.cpp",
+  "$sim_case_root/internal/platform/resource_catalog_test.cpp",
+  "$sim_case_root/internal/platform/ril_adapter_test.cpp",
 ]
 sim_capacity_case_sources = [
-  "$sim_case_root/capacity/capacity_test.cpp",
+  "$sim_case_root/capacity_test.cpp",
 ]
 sim_bootstrap_case_sources = [
-  "$sim_case_root/capacity/bootstrap_test.cpp",
+  "$sim_case_root/internal/bootstrap_test.cpp",
 ]
 sim_primary_entry_case_sources = [
-  "$sim_case_root/primary_entry/primary_entry_test.cpp",
+  "$sim_case_root/internal/primary_entry_test.cpp",
 ]
 sim_primary_case_sources = [
-  "$sim_case_root/primary/initialization_internal_test.cpp",
-  "$sim_case_root/primary/lifecycle_test.cpp",
-  "$sim_case_root/primary/primary_protocol_test.cpp",
-  "$sim_case_root/primary/primary_test.cpp",
-  "$sim_case_root/primary/shutdown_test.cpp",
+  "$sim_case_root/internal/lifecycle_test.cpp",
+  "$sim_case_root/internal/primary_initialization_test.cpp",
+  "$sim_case_root/internal/shutdown_test.cpp",
+  "$sim_case_root/primary_protocol_test.cpp",
+  "$sim_case_root/primary_test.cpp",
 ]
 sim_reference_case_sources = [
-  "$sim_case_root/query/g2a_query_test.cpp",
+  "$sim_case_root/internal/query/g2a_query_test.cpp",
 ]
 sim_upstream_case_sources = [
-  "$sim_case_root/query/g2a_upstream_test.cpp",
+  "$sim_case_root/internal/query/g2a_upstream_test.cpp",
 ]

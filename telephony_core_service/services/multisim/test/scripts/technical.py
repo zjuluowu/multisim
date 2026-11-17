@@ -4,7 +4,7 @@ import argparse,json,os,subprocess,sys
 from pathlib import Path
 from _paths import TEST,REPO
 p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
-commands=[[sys.executable,'-B','-m','unittest','discover','-s',str(TEST/'cases/infrastructure'),'-p','test_*.py','-v'],[sys.executable,'-B',str(TEST/'cases/architecture/test_g2a_source_tables.py'),'-v']]
+commands=[[sys.executable,'-B','-m','unittest','discover','-s',str(TEST/'cases/internal/infrastructure'),'-p','test_*.py','-v'],[sys.executable,'-B',str(TEST/'cases/architecture/test_g2a_source_tables.py'),'-v']]
 rows=[]
 for i,cmd in enumerate(commands):
  with (a.output/f'{i}.log').open('w') as stream:r=subprocess.run(cmd,cwd=REPO,stdout=stream,stderr=subprocess.STDOUT,env=dict(os.environ,LLVM_PROFILE_FILE=str(a.output/f'technical-{i}-%p.profraw')))

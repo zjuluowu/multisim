@@ -1,3 +1,3 @@
-普通业务测试参考 sim_card_test.cpp 和 developer_copy_test.cpp，只需 sim_test.h 和 TEST_F。新增 TEST_F 不改注册表；新增根目录 .cpp 由构建自动加入显式源清单。
+普通业务从 sim_card_test.cpp、primary_test.cpp 或 query_test.cpp 复制 TEST_F，只用 sim_test.h。卡的物理绑定由框架处理，新增源文件由构建自动发现。
 
-精确回包/超时参考 lifecycle_test.cpp 的高级接口。primary、primary_entry、capacity、query 为独立真实生产切片，使用对应公开 Fixture 头；所有平台复用相同文件。运行与调试命令见上级 README。
+精确 Primary 时序参考 internal/primary_protocol_test.cpp，额外使用 sim_protocol_test.h。internal 中的协议、接口边界、生命周期对象图和平台替身专项不属于普通开发接口。architecture 保留既有 testonly GN 可见性标签。运行、调试及结果说明见上级 README。

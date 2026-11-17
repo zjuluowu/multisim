@@ -12,7 +12,7 @@ import json
 from pathlib import Path
 import subprocess
 
-SYSTEM = (_TEST / 'framework/host')
+SYSTEM = (_TEST / 'framework/internal/host')
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--archive', required=True)
 parser.add_argument('--destination', required=True)
@@ -21,7 +21,7 @@ archive = Path(args.archive).resolve()
 destination = Path(args.destination).resolve()
 if destination == SYSTEM or SYSTEM in destination.parents:
     parser.error('Dependencies must be outside source directory')
-lock = json.loads(((_TEST / 'framework/host/configs/dependency_lock.json')).read_text())['openssl_headers']
+lock = json.loads(((_TEST / 'framework/internal/host/configs/dependency_lock.json')).read_text())['openssl_headers']
 if hashlib.sha256(archive.read_bytes()).hexdigest() != lock['archive_sha256']:
     raise SystemExit('OpenSSL package checksum mismatch')
 if destination.exists():

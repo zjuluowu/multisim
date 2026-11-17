@@ -37,7 +37,7 @@ def check():
     protected=0
     for old,data in archived.items():
         new=resolve(old)
-        if new and (new.startswith('cases/data/') or new.startswith('framework/host/g2a_reference/') or new=='framework/host/configs/dependency_lock.json'):
+        if new and (new.startswith('cases/data/') or new.startswith('framework/internal/host/g2a_reference/') or new=='framework/internal/host/configs/dependency_lock.json'):
             if (TEST/new).read_bytes()!=data:raise RuntimeError('Immutable expectation/reference changed: '+new)
             protected+=1
     # Previously published historical evidence must remain at the original paths.
@@ -65,6 +65,8 @@ def check():
     verify_source_tables()
     from check_device import check as device_check
     device_check()
+    from check_public_api import check as public_check
+    public_check()
     subprocess.run(['python3','-B',str(TEST/'scripts/update_case_sources.py'),'--check'],check=True)
     print(f'integrity: PASS ({len(active)} exact archived originals; {len(edges)} dispositions; {protected} immutable live contracts/references)')
     return {'status':'PASS','archived_originals':len(active),'dispositions':len(edges),'protected_contracts':protected}

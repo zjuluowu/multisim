@@ -10,7 +10,7 @@ class SourceBoundary(unittest.TestCase):
     def setUp(self):
         self.names = ["BUILD.gn", "test/BUILD.gn", "test/core_service_test.gni",
                       "test/unittest/raw_parcel_core_service_gtest/BUILD.gn",
-                      "services/multisim/test/framework/host/BUILD.gn", "services/multisim/BUILD.gn"]
+                      "services/multisim/test/framework/internal/host/BUILD.gn", "services/multisim/BUILD.gn"]
         self.files = {n: (CORE / n).read_text() for n in self.names}
     def test_current(self):
         self.assertTrue(verify_source_tables(self.files.__getitem__)["production_attachment_absent"])
@@ -26,8 +26,8 @@ class SourceBoundary(unittest.TestCase):
     def test_reference_sources_required_once(self):
         name = self.names[4]
         original = self.files[name]
-        for source in ["$test_root/framework/host/g2a_reference/core_service_sim.cpp",
-                       "$test_root/framework/host/g2a_reference/legacy_sim_query_binding.cpp",
+        for source in ["$test_root/framework/internal/host/g2a_reference/core_service_sim.cpp",
+                       "$test_root/framework/internal/host/g2a_reference/legacy_sim_query_binding.cpp",
                        "$production_root/services/multisim/infrastructure/compatibility/api/real_sim_count_query.cpp"]:
             for replacement in ["", '"' + source + '", "' + source + '"']:
                 with self.subTest(source=source, replacement=replacement):

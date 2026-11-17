@@ -7,9 +7,9 @@ import("framework/component_sources.gni")
 config("component_headers") {
   include_dirs = [
     "framework",
-    "framework/host",
-    "framework/host/stubs",
-    "framework/host/stubs/include",
+    "framework/internal/host",
+    "framework/internal/host/stubs",
+    "framework/internal/host/stubs/include",
   ]
   foreach(dir,
           [
@@ -49,21 +49,18 @@ ohos_unittest("sim_test_device_component") {
   subsystem_name = "telephony"
   part_name = "core_service"
   module_out_path = "core_service/multisim"
-  sources =
-      sim_case_sources + sim_protocol_case_sources + sim_platform_case_sources +
-      sim_state_base_sources + sim_event_sources + sim_wrapper_sources +
-      [
-        "framework/common/main.cpp",
-        "framework/host/sim_test.cpp",
-        "framework/host/state_platform_spy.cpp",
-        "framework/host/stubs/detached_threads.cpp",
-        "framework/host/stubs/event_handler_runtime.cpp",
-        "framework/host/stubs/external_services.cpp",
-        "framework/host/stubs/ffrt_runtime.cpp",
-        "framework/host/stubs/parameter_service.cpp",
-        sim_state_handle_source,
-        sim_state_manager_source,
-      ]
+  sources = sim_case_sources + sim_state_protocol_case_sources +
+            sim_protocol_case_sources + sim_platform_case_sources +
+            sim_state_base_sources + sim_event_sources + sim_wrapper_sources +
+            sim_scheduler_model_sources + sim_parameter_model_sources +
+            sim_external_model_sources +
+            [
+              "framework/internal/common/main.cpp",
+              "framework/internal/host/sim_test.cpp",
+              "framework/internal/host/state_platform_spy.cpp",
+              sim_state_handle_source,
+              sim_state_manager_source,
+            ]
   configs -= [ "//build/config/compiler:no_exceptions" ]
   configs += [ ":component_headers" ]
   external_deps = [
@@ -87,10 +84,12 @@ ohos_unittest("sim_test_device") {
   subsystem_name = "telephony"
   part_name = "core_service"
   module_out_path = "core_service/multisim"
-  sources = sim_case_sources + [
-              "framework/common/main.cpp",
-              "framework/device/sim_test.cpp",
+  sources = sim_case_sources + sim_state_protocol_case_sources + [
+              "framework/internal/common/main.cpp",
+              "framework/internal/common/unsupported_state_protocol.cpp",
+              "framework/internal/device/sim_test.cpp",
             ]
+  configs -= [ "//build/config/compiler:no_exceptions" ]
   include_dirs = [
     "framework",
     "$sim_core_root/interfaces/innerkits/include",
@@ -121,16 +120,16 @@ template("sim_native_component") {
     subsystem_name = "telephony"
     part_name = "core_service"
     module_out_path = "core_service/multisim"
-    sources = invoker.sources + [ "framework/common/main.cpp" ]
+    sources = invoker.sources + [ "framework/internal/common/main.cpp" ]
     configs -= [ "//build/config/compiler:no_exceptions" ]
     configs += [ ":component_headers" ]
     include_dirs = [
-      "framework/host/primary/include",
-      "framework/host/primary/provider/include",
-      "framework/host/primary/runtime_include",
-      "framework/host/primary",
-      "framework/host/primary/lifecycle",
-      "framework/host/probes",
+      "framework/internal/host/primary/include",
+      "framework/internal/host/primary/provider/include",
+      "framework/internal/host/primary/runtime_include",
+      "framework/internal/host/primary",
+      "framework/internal/host/primary/lifecycle",
+      "framework/internal/host/probes",
     ]
     if (defined(invoker.include_dirs)) {
       include_dirs = invoker.include_dirs + include_dirs
@@ -155,52 +154,52 @@ template("sim_native_component") {
     }
   }
 }
-sim_native_common = [
-                      "framework/host/stubs/parameter_service.cpp",
-                      "$sim_core_root/services/sim/src/sim_manager.cpp",
-                    ] + sim_wrapper_sources
-sim_native_full = sim_initialization_sources + sim_primary_support_sources +
+sim_native_common =
+    sim_parameter_model_sources +
+    [ "$sim_core_root/services/sim/src/sim_manager.cpp" ] + sim_wrapper_sources
+sim_native_full = sim_scheduler_model_sources + sim_external_model_sources +
+                  sim_initialization_sources + sim_primary_support_sources +
                   sim_event_sources + sim_native_common + [
                     "$sim_core_root/services/sim/src/multi_sim_controller.cpp",
                     "$sim_core_root/services/core/src/core_service_sim.cpp",
                     "$sim_core_root/utils/common/src/telephony_permission.cpp",
                     "$sim_core_root/common/capability_mgr/src/multi_sims_capability_manager.cpp",
-                    "framework/host/primary/real_runtime.cpp",
-                    "framework/host/primary/security_boundary.cpp",
-                    "framework/host/stubs/external_services.cpp",
-                    "framework/host/stubs/event_handler_runtime.cpp",
-                    "framework/host/stubs/ffrt_runtime.cpp",
-                    "framework/host/stubs/detached_threads.cpp",
+                    "framework/internal/host/primary/real_runtime.cpp",
+                    "framework/internal/host/primary/security_boundary.cpp",
                   ]
 sim_native_component("sim_test_device_capacity") {
-  sources = sim_capacity_case_sources + [ "framework/host/capacity_api.cpp" ] +
-            sim_native_common + [ "framework/host/probes/capacity_probe.cpp" ]
+  sources = sim_capacity_case_sources +
+            [ "framework/internal/common/unsupported_state_protocol.cpp" ] +
+            [ "framework/internal/host/capacity_api.cpp" ] + sim_native_common +
+            [ "framework/internal/host/probes/capacity_probe.cpp" ]
 }
 sim_native_component("sim_test_device_primary_entry") {
   sources = sim_primary_entry_case_sources + [
               "$sim_core_root/common/capability_mgr/src/multi_sims_capability_manager.cpp",
               "$sim_core_root/services/core/src/core_service_sim.cpp",
               "$sim_core_root/utils/common/src/telephony_permission.cpp",
-              "framework/host/primary/security_boundary.cpp",
+              "framework/internal/host/primary/security_boundary.cpp",
             ]
 }
 sim_native_component("sim_test_device_primary") {
-  sources = sim_primary_case_sources + sim_native_full +
-            [ "framework/host/primary/primary_api.cpp" ]
+  sources =
+      sim_primary_case_sources +
+      [ "framework/internal/common/unsupported_state_protocol.cpp" ] +
+      sim_native_full + [ "framework/internal/host/primary/primary_api.cpp" ]
 }
 sim_native_component("sim_test_device_bootstrap") {
   sources = sim_bootstrap_case_sources + sim_native_full +
-            [ "framework/host/probes/bootstrap_probe.cpp" ]
+            [ "framework/internal/host/probes/bootstrap_probe.cpp" ]
 }
 sim_native_component("sim_test_device_query") {
   sources = sim_reference_case_sources + sim_native_common + [
               "$sim_core_root/services/multisim/infrastructure/compatibility/api/real_sim_count_query.cpp",
-              "framework/host/g2a_reference/core_service_sim.cpp",
-              "framework/host/g2a_reference/legacy_sim_query_binding.cpp",
-              "framework/host/probes/g2a_query_probe.cpp",
+              "framework/internal/host/g2a_reference/core_service_sim.cpp",
+              "framework/internal/host/g2a_reference/legacy_sim_query_binding.cpp",
+              "framework/internal/host/probes/g2a_query_probe.cpp",
             ]
   include_dirs = [
-    "framework/host/g2a_reference",
+    "framework/internal/host/g2a_reference",
     "$sim_core_root/services/multisim/infrastructure/compatibility/api",
   ]
   deps = [ ":sim_test_device_query_vendor" ]
@@ -215,5 +214,5 @@ ohos_shared_library("sim_test_device_query_vendor") {
   subsystem_name = "telephony"
   part_name = "core_service"
   output_name = "telephony_ext_service.z"
-  sources = [ "framework/host/stubs/g2a_vendor_boundary.cpp" ]
+  sources = [ "framework/internal/host/stubs/g2a_vendor_boundary.cpp" ]
 }

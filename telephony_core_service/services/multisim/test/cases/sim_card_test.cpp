@@ -3,7 +3,7 @@
 namespace SimGuard {
 TEST_F(SimTest, LIFE_001)
 {
-    auto card = AddCard("A", 0, CardKind::Usim, State::Absent);
+    auto card = AddCard("A", CardKind::Usim, State::Absent);
     Start();
     ExpectCardState(card, State::Absent);
     ExpectStateNotification(card, State::Absent);
@@ -19,7 +19,7 @@ TEST_F(SimTest, LIFE_001)
 }
 TEST_F(SimTest, LIFE_002)
 {
-    auto card = AddCard("B", 0, CardKind::Sim, State::Ready);
+    auto card = AddCard("B", CardKind::Sim, State::Ready);
     Start();
     ExpectCardState(card, State::Ready);
     ExpectStateNotification(card, State::Ready);
@@ -36,7 +36,7 @@ TEST_F(SimTest, LIFE_002)
 }
 TEST_F(SimTest, PUK_001)
 {
-    auto card = AddCard("D", 0, CardKind::Usim, State::Locked, Lock::Puk);
+    auto card = AddCard("D", CardKind::Usim, State::Locked, Lock::Puk);
     Start();
     ExpectCardState(card, State::Locked);
     ExpectStateNotification(card, State::Locked, Lock::Puk);
@@ -46,8 +46,8 @@ TEST_F(SimTest, PUK_001)
 }
 TEST_F(SimTest, DualSimPinUnlock)
 {
-    auto a = AddCard("A", 0, CardKind::Usim, State::Ready);
-    auto b = AddCard("B", 1, CardKind::Usim, State::Locked, Lock::Pin);
+    auto a = AddCard("A", CardKind::Usim, State::Ready);
+    auto b = AddCard("B", CardKind::Usim, State::Locked, Lock::Pin);
     Start();
     ExpectCardState(a, State::Ready);
     ExpectCardState(b, State::Locked);

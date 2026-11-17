@@ -21,7 +21,7 @@ def check(compiler="clang++"):
     tests = (_TEST / 'cases/architecture')
     component = _CORE
     includes = [
-        _TEST / "framework/host/stubs/include",
+        _TEST / "framework/internal/host/stubs/include",
         component / "interfaces/innerkits/include",
         component / "interfaces/innerkits/ims/include",
         component / "interfaces/innerkits/satellite",

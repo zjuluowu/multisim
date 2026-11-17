@@ -1,0 +1,530 @@
+test_root = "$production_root/services/multisim/test"
+import("../../../cases/sources.gni")
+import("../../component_sources.gni")
+config("production_headers") {
+  include_dirs = [ "$test_root/framework/internal/host/stubs/include" ]
+  foreach(dir,
+          [
+            "services/sim/include",
+            "interfaces/innerkits/include",
+            "interfaces/innerkits/ims/include",
+            "interfaces/innerkits/satellite",
+            "services/tel_ril/include",
+            "services/network_search/include",
+            "services/core/include",
+            "services/telephony_ext_wrapper/include",
+            "utils/common/include",
+            "utils/log/include",
+            "utils/preferences/include",
+            "common/capability_mgr/include",
+          ]) {
+    include_dirs += [ "$production_root/$dir" ]
+  }
+  include_dirs += [ libxml2_include_dir ]
+  defines = [ "LOG_DOMAIN=0xD001F04" ]
+}
+config("production_execution_evidence") {
+  cflags_cc = [
+    "-fprofile-instr-generate=" + get_path_info(root_build_dir, "abspath") +
+        "/profiles/direct-%p.profraw",
+    "-fcoverage-mapping",
+  ]
+}
+
+# Primary-slot entry contract. ISimManager is an explicit internal seam here;
+# this target MUST NOT be reported as full Controller/Radio/RIL execution.
+config("primary_slot_headers") {
+  include_dirs = [
+    "$test_root/framework/internal/host/primary/include",
+    "$test_root/framework/internal/host/primary",
+  ]
+}
+source_set("primary_slot_entry_production") {
+  sources = [
+    "$production_root/common/capability_mgr/src/multi_sims_capability_manager.cpp",
+    "$production_root/utils/common/src/telephony_permission.cpp",
+  ]
+  if (primary_slot_core_source == "") {
+    sources += [ "$production_root/services/core/src/core_service_sim.cpp" ]
+  } else {
+    sources += [ primary_slot_core_source ]
+  }
+  configs += [
+    ":primary_slot_headers",
+    ":production_headers",
+    ":production_execution_evidence",
+  ]
+  include_dirs =
+      [ "$production_root/services/multisim/infrastructure/compatibility/api" ]
+}
+executable("sim_primary_slot_entry_test") {
+  sources =
+      sim_primary_entry_case_sources +
+      [ "$test_root/framework/internal/host/primary/security_boundary.cpp" ]
+  configs += [
+    ":primary_slot_headers",
+    ":production_headers",
+  ]
+  include_dirs = [
+    "$test_root/framework",
+    "$gtest_root/googletest/include",
+    "$gtest_root/googlemock/include",
+  ]
+  deps = [
+    ":googlemock",
+    ":primary_slot_entry_production",
+    ":test_entry",
+  ]
+  ldflags = [
+    "-fprofile-instr-generate=" + get_path_info(root_build_dir, "abspath") +
+        "/profiles/direct-%p.profraw",
+    "-Wl,-Map,sim_primary_slot_entry_test.map",
+  ]
+}
+source_set("primary_real_support") {
+  sources = sim_primary_support_sources
+  include_dirs = [
+    "$test_root/framework/internal/host/primary/runtime_include",
+    "$test_root/framework/internal/host/primary/include",
+  ]
+  configs += [
+    ":production_headers",
+    ":production_execution_evidence",
+    ":initialization_standard_headers",
+  ]
+}
+
+# Platform-free shared port/observation format. No Target business implementation is bound.
+executable("sim_primary_slot_real_test") {
+  sources =
+      sim_primary_case_sources + [
+        "$test_root/framework/internal/host/primary/primary_api.cpp",
+        "$test_root/framework/internal/host/primary/real_runtime.cpp",
+        "$test_root/framework/internal/host/primary/security_boundary.cpp",
+      ]
+  include_dirs = [
+    "$test_root/framework",
+    "$test_root/framework/internal/host/primary/runtime_include",
+    "$test_root/framework/internal/host/primary/include",
+    "$test_root/framework/internal/host/primary/provider/include",
+    "$test_root/framework/internal/host/primary",
+    "$test_root/framework/internal/host/primary/lifecycle",
+    "$test_root/framework/internal/host/stubs",
+    "$gtest_root/googletest/include",
+    "$gtest_root/googlemock/include",
+  ]
+  configs += [ ":production_headers" ]
+  deps = [
+    ":event_transport_production_host",
+    ":external_service_boundaries",
+    ":googlemock",
+    ":platform_boundaries",
+    ":primary_real_support",
+    ":primary_slot_entry_production",
+    ":scheduler_boundaries",
+    ":sim_initialization_production_host",
+    ":sim_production_host",
+    ":test_entry",
+    ":unsupported_state_protocol",
+  ]
+  ldflags = [
+    "-fprofile-instr-generate=" + get_path_info(root_build_dir, "abspath") +
+        "/profiles/direct-%p.profraw",
+    "-Wl,-Map,sim_primary_slot_real_test.map",
+  ]
+  if (sim028_runtime_root != "") {
+    libs = [
+      "$sim028_runtime_root/libsim028_strings.a",
+      "$sim028_runtime_root/libsim028_securec.a",
+      "$sim028_runtime_root/libsim028_cjson.a",
+      "/lib/x86_64-linux-gnu/libcrypto.so.3",
+    ]
+  }
+}
+
+# Original implementation sources, not copied and not mixed with fixtures/stubs.
+source_set("sim_wrapper_production_host") {
+  sources = sim_wrapper_sources
+  configs += [
+    ":production_headers",
+    ":production_execution_evidence",
+  ]
+}
+source_set("sim_production_host") {
+  deps = [ ":sim_wrapper_production_host" ]
+  sources = [ "$production_root/services/sim/src/sim_manager.cpp" ]
+  configs += [
+    ":production_headers",
+    ":production_execution_evidence",
+  ]
+}
+source_set("platform_boundaries") {
+  sources = sim_parameter_model_sources
+  include_dirs = [
+    "$test_root/framework/internal/host/stubs/include",
+    "$gtest_root/googletest/include",
+    "$gtest_root/googlemock/include",
+  ]
+}
+source_set("external_service_boundaries") {
+  sources = sim_external_model_sources
+  include_dirs = [
+    "$test_root/framework/internal/host/stubs",
+    "$test_root/framework/internal/host/stubs/include",
+    "$gtest_root/googletest/include",
+    "$gtest_root/googlemock/include",
+  ]
+}
+
+# Preserve the production event transport; only external scheduler/base APIs are adapted.
+source_set("event_transport_production_host") {
+  sources = sim_event_sources
+  configs += [
+    ":production_headers",
+    ":production_execution_evidence",
+  ]
+}
+config("tracked_host_threads") {
+  ldflags = [
+    "-Wl,--export-dynamic-symbol=pthread_create",
+    "-Wl,--export-dynamic-symbol=pthread_detach",
+  ]
+  libs = [ "dl" ]
+}
+source_set("scheduler_boundaries") {
+  sources = sim_scheduler_model_sources
+  include_dirs = [
+    "$test_root/framework/internal/host/stubs",
+    "$test_root/framework/internal/host/stubs/include",
+  ]
+  all_dependent_configs = [ ":tracked_host_threads" ]
+}
+
+source_set("component_launcher") {
+  sources = [ "$test_root/framework/internal/host/probes/capacity_probe.cpp" ]
+  configs += [ ":production_headers" ]
+}
+static_library("googletest") {
+  sources = [ "$gtest_root/googletest/src/gtest-all.cc" ]
+  include_dirs = [
+    "$gtest_root/googletest/include",
+    "$gtest_root/googletest",
+  ]
+}
+static_library("googlemock") {
+  sources = [ "$gtest_root/googlemock/src/gmock-all.cc" ]
+  include_dirs = [
+    "$gtest_root/googlemock/include",
+    "$gtest_root/googlemock",
+    "$gtest_root/googletest/include",
+  ]
+  deps = [ ":googletest" ]
+}
+executable("sim_component_test") {
+  sources = sim_capacity_case_sources +
+            [ "$test_root/framework/internal/host/capacity_api.cpp" ]
+  include_dirs = [
+    "$test_root/framework",
+    "$gtest_root/googletest/include",
+    "$gtest_root/googlemock/include",
+    "$test_root/framework/internal/host/probes",
+    "$test_root/framework/internal/host/stubs",
+  ]
+  deps = [
+    ":component_launcher",
+    ":googlemock",
+    ":platform_boundaries",
+    ":sim_production_host",
+    ":test_entry",
+    ":unsupported_state_protocol",
+  ]
+  ldflags = [
+    "-Wl,-Map,sim_component_test.map",
+    "-fprofile-instr-generate=" + get_path_info(root_build_dir, "abspath") +
+        "/profiles/direct-%p.profraw",
+  ]
+}
+
+config("initialization_standard_headers") {
+  if (openssl_root != "") {
+    include_dirs = [
+      "$openssl_root/usr/include",
+      "$openssl_root/usr/include/x86_64-linux-gnu",
+    ]
+  }
+  cflags_cc = [
+    "-include",
+    rebase_path(
+        "$test_root/framework/internal/host/stubs/include/host_standard_prelude.h",
+        root_build_dir),
+  ]
+}
+
+# Optional initialization closure audit. Not part of the runnable capacity suite.
+source_set("sim_initialization_production_host") {
+  # Exact public header from telephony_telephony_data, pinned in provider/contract.json.
+  # Target-local precedence preserves the old header and historical guard dependencies.
+  include_dirs =
+      [ "$test_root/framework/internal/host/primary/provider/include" ]
+  sources = sim_initialization_sources
+  configs += [
+    ":production_headers",
+    ":production_execution_evidence",
+    ":initialization_standard_headers",
+  ]
+  if (primary_slot_controller_source == "") {
+    sources += [ "$production_root/services/sim/src/multi_sim_controller.cpp" ]
+  } else {
+    sources += [ primary_slot_controller_source ]
+  }
+}
+executable("sim_initialization_link_probe") {
+  sources = [
+    "$test_root/framework/internal/host/probes/initialization_link_probe.cpp",
+  ]
+  configs += [ ":production_headers" ]
+  deps = [
+    ":event_transport_production_host",
+    ":external_service_boundaries",
+    ":googlemock",
+    ":platform_boundaries",
+    ":scheduler_boundaries",
+    ":sim_initialization_production_host",
+    ":sim_production_host",
+  ]
+  ldflags =
+      [ "-fprofile-instr-generate=" + get_path_info(root_build_dir, "abspath") +
+        "/profiles/direct-%p.profraw" ]
+}
+
+# Infrastructure self-checks only: these never count as SIM production scenarios.
+source_set("bootstrap_launcher") {
+  sources = [ "$test_root/framework/internal/host/probes/bootstrap_probe.cpp" ]
+  configs += [ ":production_headers" ]
+}
+executable("sim_bootstrap_characterization") {
+  configs += [
+    ":primary_slot_headers",
+    ":production_headers",
+  ]
+  sources =
+      sim_bootstrap_case_sources + [
+        "$test_root/framework/internal/host/primary/real_runtime.cpp",
+        "$test_root/framework/internal/host/primary/security_boundary.cpp",
+      ]
+  include_dirs = [
+    "$test_root/framework/internal/host/stubs",
+    "$test_root/framework",
+    "$test_root/framework/internal/host/primary",
+    "$test_root/framework/internal/host/primary/include",
+    "$test_root/framework/internal/host/primary/provider/include",
+    "$test_root/framework/internal/host/primary/runtime_include",
+    "$test_root/framework/internal/host/probes",
+    "$gtest_root/googletest/include",
+  ]
+  deps = [
+    ":bootstrap_launcher",
+    ":event_transport_production_host",
+    ":external_service_boundaries",
+    ":googlemock",
+    ":platform_boundaries",
+    ":primary_real_support",
+    ":scheduler_boundaries",
+    ":sim_initialization_production_host",
+    ":sim_production_host",
+    ":test_entry",
+  ]
+  ldflags = [
+    "-Wl,-Map,sim_bootstrap_characterization.map",
+    "-fprofile-instr-generate=" + get_path_info(root_build_dir, "abspath") +
+        "/profiles/direct-%p.profraw",
+  ]
+  if (sim028_runtime_root != "") {
+    libs = [
+      "$sim028_runtime_root/libsim028_strings.a",
+      "$sim028_runtime_root/libsim028_securec.a",
+      "$sim028_runtime_root/libsim028_cjson.a",
+      "/lib/x86_64-linux-gnu/libcrypto.so.3",
+    ]
+  }
+}
+
+# G2a read-only attachment: actual Core entry, Application query and HostPort implementation.
+# Independent from capacity and full Manager::OnInit audit; no card lifecycle is implied.
+source_set("g2a_readonly_production_host") {
+  sources = [
+    "$production_root/services/multisim/infrastructure/compatibility/api/real_sim_count_query.cpp",
+    "$test_root/framework/internal/host/g2a_reference/core_service_sim.cpp",
+    "$test_root/framework/internal/host/g2a_reference/legacy_sim_query_binding.cpp",
+  ]
+  configs += [
+    ":production_headers",
+    ":production_execution_evidence",
+  ]
+  include_dirs =
+      [ "$production_root/services/multisim/infrastructure/compatibility/api" ]
+}
+source_set("g2a_query_launcher") {
+  include_dirs = [ "$test_root/framework/internal/host/g2a_reference" ]
+  sources = [ "$test_root/framework/internal/host/probes/g2a_query_probe.cpp" ]
+  configs += [ ":production_headers" ]
+  include_dirs += [
+    "$production_root/services/multisim/infrastructure/compatibility/api",
+    "$test_root/framework/internal/host/stubs",
+    "$gtest_root/googletest/include",
+    "$gtest_root/googlemock/include",
+  ]
+}
+executable("sim_g2a_query_test") {
+  sources = sim_reference_case_sources
+  include_dirs = [
+    "$test_root/framework",
+    "$test_root/framework/internal/host/probes",
+    "$test_root/framework/internal/host/stubs",
+    "$gtest_root/googletest/include",
+    "$gtest_root/googlemock/include",
+  ]
+  deps = [
+    ":g2a_query_launcher",
+    ":g2a_readonly_production_host",
+    ":googlemock",
+    ":platform_boundaries",
+    ":query_vendor_boundary",
+    ":sim_production_host",
+    ":test_entry",
+  ]
+  ldflags = [
+    "-Wl,-Map,sim_g2a_query_test.map",
+    "-fprofile-instr-generate=" + get_path_info(root_build_dir, "abspath") +
+        "/profiles/direct-%p.profraw",
+  ]
+}
+
+# Shared real state implementation; external ports are supplied by Framework.
+source_set("sim_state_production") {
+  deps = [ ":sim_wrapper_production_host" ]
+  sources = sim_state_base_sources
+  if (sim_manager_source_override == "") {
+    sources += [ sim_state_manager_source ]
+  } else {
+    sources += [ sim_manager_source_override ]
+  }
+  if (sim_state_source_override == "") {
+    sources += [ sim_state_handle_source ]
+  } else {
+    sources += [ sim_state_source_override ]
+  }
+  configs += [
+    ":production_headers",
+    ":production_execution_evidence",
+  ]
+  cflags_cc = [
+    "-include",
+    rebase_path(
+        "$test_root/framework/internal/host/stubs/include/host_standard_prelude.h",
+        root_build_dir),
+  ]
+}
+
+# SIM-OC-013 PIN memory external-hook contract closure.
+# Separate executable: the unmodified upstream Core is never linked with reference Core.
+source_set("upstream_query_core") {
+  sources = [ "$production_root/services/core/src/core_service_sim.cpp" ]
+  configs += [
+    ":production_headers",
+    ":production_execution_evidence",
+  ]
+}
+executable("sim_upstream_query_test") {
+  sources = sim_upstream_case_sources
+  configs += [ ":production_headers" ]
+  include_dirs = [
+    "$test_root/framework",
+    "$test_root/framework/internal/host/stubs",
+    "$gtest_root/googletest/include",
+    "$gtest_root/googlemock/include",
+  ]
+  deps = [
+    ":googlemock",
+    ":platform_boundaries",
+    ":query_vendor_boundary",
+    ":sim_production_host",
+    ":test_entry",
+    ":upstream_query_core",
+  ]
+  ldflags = [
+    "-fprofile-instr-generate=" + get_path_info(root_build_dir, "abspath") +
+        "/profiles/direct-%p.profraw",
+    "-Wl,-Map,sim_upstream_query_test.map",
+  ]
+}
+
+# Replacement state-component suite. It links the same production source_set as
+# the original reference suite, with a direct fixture instead of its adapters.
+executable("sim_test_host") {
+  sources = sim_case_sources + sim_state_protocol_case_sources +
+            sim_protocol_case_sources + sim_platform_case_sources +
+            [
+              "$test_root/framework/internal/host/sim_test.cpp",
+              "$test_root/framework/internal/host/state_platform_spy.cpp",
+            ]
+  configs += [ ":production_headers" ]
+  include_dirs = [
+    "$test_root/framework",
+    "$test_root/framework/internal/host/probes",
+    "$test_root/framework/internal/host",
+    "$test_root/framework/internal/host/stubs",
+    "$gtest_root/googletest/include",
+    "$gtest_root/googlemock/include",
+  ]
+  deps = [
+    ":event_transport_production_host",
+    ":external_service_boundaries",
+    ":googlemock",
+    ":platform_boundaries",
+    ":scheduler_boundaries",
+    ":sim_state_production",
+    ":test_entry",
+  ]
+  ldflags = [
+    "-fprofile-instr-generate=" + get_path_info(root_build_dir, "abspath") +
+        "/profiles/direct-%p.profraw",
+    "-Wl,-Map,sim_test_host.map",
+  ]
+}
+
+shared_library("query_vendor_boundary") {
+  configs -= [ "//gn:host" ]
+  cflags_cc = [
+    "-std=c++17",
+    "-fPIC",
+  ]
+  sources =
+      [ "$test_root/framework/internal/host/stubs/g2a_vendor_boundary.cpp" ]
+  output_name = "telephony_ext_service.z"
+}
+
+# Only used by negative capability-control verification, never a business PASS.
+executable("sim_capability_probe") {
+  sources = [ "$test_root/framework/internal/common/capability_probe.cpp" ]
+  include_dirs = [ "$test_root/framework" ]
+  deps = [
+    ":googlemock",
+    ":test_entry",
+  ]
+}
+
+# One host entry object set: common GoogleTest main + host-only preinit ABI.
+source_set("test_entry") {
+  sources = [
+    "$test_root/framework/internal/common/main.cpp",
+    "$test_root/framework/internal/host/profile_startup.cpp",
+  ]
+  deps = [ ":googlemock" ]
+}
+
+source_set("unsupported_state_protocol") {
+  sources =
+      [ "$test_root/framework/internal/common/unsupported_state_protocol.cpp" ]
+  include_dirs = [ "$test_root/framework" ]
+}

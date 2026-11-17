@@ -16,7 +16,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--archive", required=True)
 parser.add_argument("--destination", required=True)
 args = parser.parse_args()
-lock = json.loads(((_TEST / 'framework/host') / "configs/dependency_lock.json").read_text())["googletest"]
+lock = json.loads(((_TEST / 'framework/internal/host') / "configs/dependency_lock.json").read_text())["googletest"]
 archive = Path(args.archive)
 if hashlib.sha256(archive.read_bytes()).hexdigest() != lock["archive_sha256"]:
     raise SystemExit("Pinned GoogleTest archive SHA256 mismatch")

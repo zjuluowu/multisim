@@ -16,7 +16,7 @@ from primary_results import classify as classify_primary
 REPO = Path(__file__).resolve().parents[5]
 
 
-def discover(binary, pattern, env, timeout):
+def discover(binary, pattern, env, timeout, allow_empty=False):
     completed = subprocess.run([str(binary), '--gtest_list_tests', '--gtest_filter=' + pattern],
                                text=True, capture_output=True, env=env, timeout=timeout)
     if completed.returncode:
@@ -31,7 +31,7 @@ def discover(binary, pattern, env, timeout):
             suite = line
         elif line.startswith('  ') and suite:
             cases.append(suite + line.strip())
-    if not cases or len(cases) != len(set(cases)):
+    if (not cases and not allow_empty) or len(cases) != len(set(cases)):
         raise RuntimeError('No tests matched, or discovery produced duplicate IDs')
     return cases, completed.stdout
 

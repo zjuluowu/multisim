@@ -11,7 +11,7 @@ import hashlib
 from pathlib import Path
 import re
 
-SYSTEM = (_TEST / 'framework/host')
+SYSTEM = (_TEST / 'framework/internal/host')
 CORE = _CORE
 
 def split_params(text):
@@ -58,7 +58,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--check', action='store_true')
     options = parser.parse_args()
-    destination = (_TEST / 'framework/host/stubs/mock_tel_ril_manager.h')
+    destination = (_TEST / 'framework/internal/host/stubs/mock_tel_ril_manager.h')
     content = generate()
     if options.check:
         if not destination.exists() or destination.read_text() != content:

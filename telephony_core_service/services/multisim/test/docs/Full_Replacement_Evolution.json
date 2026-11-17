@@ -35,5 +35,29 @@
     "native_build": "NOT_RUN",
     "device_execution": "BLOCKED",
     "gui": "NOT_RUN"
+  },
+  "api_convergence": {
+    "input_head": "ce6441aa1e81cb29954874006236f126c3310388",
+    "published_primary_api": "a730464929c65d5d8cd41ea7f5c4f116484629b5",
+    "verification": "docs/archive/api_convergence_20261117/index.json",
+    "public_headers": [
+      "sim_test.h",
+      "sim_protocol_test.h"
+    ],
+    "public_host_includes": 0,
+    "public_fixture_count": 1,
+    "runtime": {
+      "PASS": 91,
+      "FAIL": 22
+    },
+    "historical_cases": 105,
+    "comparison": {
+      "MATCH": 104,
+      "DIFFERENT_but_contract_equivalent": 1
+    },
+    "ci": "FAIL: 17 unaccepted original Primary/lifecycle failures",
+    "native_build": "NOT_RUN",
+    "device_execution": "BLOCKED",
+    "gui": "NOT_RUN"
   }
 }

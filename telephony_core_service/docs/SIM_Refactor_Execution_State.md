@@ -1,6 +1,6 @@
 # 多 SIM 重构执行状态
 
-当前新增任务：测试防护网全量重建已完成 Host 全量迁移及旧活动框架替换，续建结果见§39；产品编译/设备及 GUI 尚未验收，不能作为全平台验收通过。
+当前新增任务：测试API架构收敛及当前可执行Host验收完成，结果见§40；产品原生编译/设备及VS Code GUI仍阻塞或未执行，不能作为全平台验收通过。
 
 当前任务（2026-11-16）：按用户明确授权撤回原生产重构接入，并同步GitCode主仓master@43ac8ae7df5b9c17c4efb3433415693d925b98c7；当前生产不再接入G2a Query。以下G2a生产附着结论仅为历史检查点，当前测试参考与验证见§37。
 
@@ -1000,6 +1000,14 @@ default.profraw原字节仍未恢复（原SHA见§38），本轮保持d35445fd92
 
 完整逐例映射、退役表、结果、边界和仓内原始证据统一见[Full_Replacement.md](../services/multisim/test/docs/Full_Replacement.md)。依持续授权当前工作区逐文件提交并常规推送origin/main；完整CI失败、产品阻塞与GUI未验收不因提交而改变。
 
-### 40. 测试 API 收敛（2026-11-17，进行中）
+### 40. 测试 API 收敛（2026-11-17）
 
-输入ce6441aa1，恢复fetch核实检查点；108项基线重跑86 PASS/22 FAIL，CI拒绝原17项Primary/生命周期失败。初审7公开头/8直接Host包含，Primary业务21处Mock操作。已将C0/C1改为SimTest+平台无关PrimaryProtocol，业务断言PASS、原REAL_GRAPH_LIFETIME_NOT_DRAINED保留，容量Mock收进实现并PASS；首次suite混用框架错误修复证据保留。原型阶段发布后继续完整接口、Device按需资源、目录/构建和开发体验收敛；不是最终验收。源码及原始证据统一见test/docs/Full_Replacement.md。生产C++/正式GN未改，default.profraw当前d354…不变，原bbb8…字节仍未恢复。
+输入ce6441aa1，本地/远端核对并fetch恢复检查点；108项基线重跑86 PASS/22 FAIL。第一批Primary不透明API已以a73046492提交推送；本批完成其余公开接口、StateProtocol、Device按需资源、目录/构建及开发验收收敛。仅sim_test.h、sim_protocol_test.h两个公开头，普通Fixture 4→1、直接Host包含8→0、普通及公开协议业务Mock位置40→0；原Entry/查询ABI/对象图专项及其严格断言保留internal，无旧Fixture包装运行链。
+
+最终113项91 PASS/22 FAIL，原105项覆盖100%：104项MATCH，逆序枚举1项保留原始跨槽请求总序DIFFERENT并裁决契约等价。原Host五缺陷精确签名不变；Primary/生命周期27项仍10 PASS/17 FAIL，完整CI仍FAIL，不豁免17项。C0/C1真实Core→Manager→Controller业务断言、协议/参数/通知及LLDB进入Core生产函数均验证，清理仍REAL_GRAPH_LIFETIME_NOT_DRAINED，28 worker/10 RIL引用未释放和Mock泄漏原文保留。双活前态七项富业务契约PASS，六项清理FAIL另计。
+
+七个业务链接闭包及技术探针统一调度，公共main source_set复用；Host专用preinit与产品入口分离，生产源共享清单不复制。四资源技术测试区分物理槽/eSIM Port/Profile/vSIM/Modem且PASS，不称Legacy四卡业务。72项技术、架构/GN/迁移、原始317资产/8项证据完整性、四切片真实方法正执行、两项变异检出/恢复及三项profile负控均PASS。复制新增17行pin_failure_isolation_test.cpp，仅人工改1个CPP/1公开头，CLI发现/单例/真实UnlockPin LLDB通过；故意错误断言FAIL，恢复后PASS，源码/二进制SHA恢复且Framework/Scripts摘要未变。GUI及独立初级开发者试用未执行。
+
+Device只读路径仅检查查询权限/真实SA/端点，不要求HIL/PIN/双卡；变更才按需预留、白名单、备份及恢复，缺能力从辅助函数终止用例并清理，BLOCKED/UNSUPPORTED不作PASS。原生ohos_unittest八目标及同源/本地API静态检查PASS；现有产品目录无build/test.gni及匹配组件挂载，缺hb/hdc/设备/HIL，原生编译NOT_RUN、运行调度BLOCKED；SDK/GTest异常ABI和受控POSIX材质未作产品认证。
+
+生产C++及正式生产GN未改，上游1066文件逐字节验证PASS。default.profraw当前SHA d35445fd920ef489cfb908b6968c9d3dea874688ea39daa53328c9f76be2d675保持，原bbb8…字节仍未恢复。所有入口隔离输出。源码依赖审计、逐项映射、失败原文、变异/调试及最终摘要见[Full_Replacement.md](../services/multisim/test/docs/Full_Replacement.md)与仓内api_convergence_20261117索引。依持续授权逐文件提交、常规推送origin/main并核实；本节不改变产品和生产迁移准入。

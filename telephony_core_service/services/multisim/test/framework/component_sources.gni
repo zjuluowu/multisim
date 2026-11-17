@@ -76,3 +76,17 @@ sim_primary_support_sources = [
   "$sim_core_root/utils/common/src/str_convert.cpp",
   "$sim_core_root/utils/common/src/telephony_common_utils.cpp",
 ]
+
+# Controlled external component model shared by Linux and native component tests.
+# POSIX scheduling/thread accounting + fake SDK/IPC declarations are intentional
+# external boundaries. They do not establish compatibility with product SDK ABI.
+sim_component_root = get_path_info(".", "abspath")
+sim_parameter_model_sources =
+    [ "$sim_component_root/internal/host/stubs/parameter_service.cpp" ]
+sim_external_model_sources =
+    [ "$sim_component_root/internal/host/stubs/external_services.cpp" ]
+sim_scheduler_model_sources = [
+  "$sim_component_root/internal/host/stubs/detached_threads.cpp",
+  "$sim_component_root/internal/host/stubs/event_handler_runtime.cpp",
+  "$sim_component_root/internal/host/stubs/ffrt_runtime.cpp",
+]

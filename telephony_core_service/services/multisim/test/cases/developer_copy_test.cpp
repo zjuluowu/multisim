@@ -3,8 +3,8 @@
 namespace SimGuard {
 TEST_F(SimTest, DualSimPinUnlockAfterWrongPin)
 {
-    auto a = AddCard("A", 0, CardKind::Sim, State::Ready);
-    auto b = AddCard("B", 1, CardKind::Usim, State::Locked, Lock::Pin);
+    auto a = AddCard("A", CardKind::Sim, State::Ready);
+    auto b = AddCard("B", CardKind::Usim, State::Locked, Lock::Pin);
     Start();
     EXPECT_EQ(UnlockPin(b, "0000").result, Unlock::Incorrect);
     ExpectCardState(b, State::Locked);

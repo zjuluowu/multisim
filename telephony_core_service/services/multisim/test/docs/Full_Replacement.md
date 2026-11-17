@@ -2,11 +2,91 @@
 
 以下首批历史记录输入为 main@877162ff1b2425fee0c9db1aadd7221497fd32db；当前续建输入及验收见下节。
 
-## 2026-11-17 API 收敛续建
+## API 收敛与开发验收（2026-11-17 续建）
 
-本轮输入 ce6441aa1，重新审计及重跑108项：86 PASS/22 FAIL、CI仍拒绝17项Primary/生命周期失败。公开头7个、直接Host包含8处、原Primary业务文件21处Mock设置/操作。C0改用SimTest业务接口，C1通过平台无关PrimaryProtocol显式等待/回包；真实Core→Manager→Controller链保持。原型业务均PASS，原对象图清理FAIL保留；容量改为同一SimTest、Mock收进实现。首次TEST/TEST_F suite混用错误已修复并原样归档。此为已验证的接口批次，其他接口/目录/Device及完整回归继续实施。
+本轮输入 main/origin main `ce6441aa1e81cb29954874006236f126c3310388`。重新读取源码、Git/执行约束及归档，重跑输入基线108项：86 PASS/22 FAIL，五个Host缺陷及17项Primary/生命周期失败均在。第一批不透明Primary API提交已保存为 `a73046492`；以下为继续收敛的最终实现，验证数值以本节末尾实测和仓内证据为准。
 
-[本轮输入、基线及原型证据](archive/api_convergence_20261117/index.json)。后续最终结论将更新本节，不沿用上一轮通过代替当前实测。
+### 依赖审计与接口收拢
+
+| 类型 | 重构前实际依赖和作者负担 | 当前开发接口与归属 |
+|---|---|---|
+| Card/PIN业务 | sim_test.h / SimTest，已统一；显式物理槽入参 | sim_test.h / SimTest；AddCard自动绑定，卡的Legacy端点私有；Start/操作/断言，清理由Fixture完成 |
+| 状态竞态/迟到回包/五缺陷 | sim_advanced_test.h，SimAdvancedTest、FakeRil、RilFaultControls、状态断言；作者直接操纵Ril/Faults | sim_protocol_test.h；同一SimTest加StateProtocol，只有中立请求事实、故障枚举和发送/等待/应答控制；业务用例回到cases根目录 |
+| Primary C0 | public sim_primary_test.h直接导出Host PrimaryEnvironment；用例读manager/Mock/参数表/Mutex | sim_test.h；AddCard、Start、SelectPrimary、状态/主卡/持久化/通知断言；无Mock或生产内部类型 |
+| Primary C1/失败/回滚 | 业务文件21处Mock设置/操作，手工future/队列和原始RadioProtocol对象 | sim_protocol_test.h；同一Fixture加PrimaryProtocol，精确session/phase/modem/technology、迟到、超时与应答策略；无Host类型/锁/Mock |
+| Capacity | sim_capacity_test.h直接包含Host参数Mock和Probe，专用SimComponent | sim_test.h / SimTest；真实构造前查询闭包仍独立链接，参数设施在内部，原断言及诊断保持 |
+| Primary Entry | sim_primary_entry_test.h导出身份、权限、ManagerSeam等Mock | 明确为internal接口/权限边界专项，原真实Core入口和严格Mock保留；普通主卡场景使用真实完整Primary接口 |
+| G2a/原Core查询 | QueryTest、query_inputs、参数Mock、真实控制块/装配/厂商ABI细节 | 这些装配/ABI专项保留internal；普通只读业务为query_test.cpp / sim_test.h，不要求HIL |
+| 对象图/停机/订阅 | sim_lifecycle_test.h及Host实现、运行器和图探针 | 对象图专项留internal，普通Fixture统一执行同样严格清理；业务生命周期用例用公开StateProtocol，不把其复杂性仅藏入internal |
+| 架构/平台/技术 | 专项结构规则、Stub及CI策略测试 | internal及既有architecture；architecture的testonly GN可见性标签保留，避免改动生产GN |
+
+公开头从7个收至2个；直接Host包含从8处降至0，递归包含图也无Host/Device私有类型。普通业务公开Fixture从4个收为SimTest一个，旧手工PrimaryEnvironment模式取消。普通/公开协议业务文件中的40处直接Mock设置/操作降为0；原Entry/查询的19处边界检查保留在internal，不能把分类移动当作断言删除。Primary业务自身21处Mock集中为底层一次安装的真实请求捕获。高级测试每种场景只多理解一个Protocol对象；Case-local GoogleTest Fixture和历史suite别名不是新增Framework层。
+
+C0业务体38行收至9行，C1体82行收至40行，数量只作辅助：原RIL调用次数、owner类型、映射和技术、无提前提交、错误码、参数、实际出站Want/通知、重试次数与完整序列均在Case或Framework中继续断言。C0另增加真实主卡/数据查询及卡状态检查。五缺陷仍按不可变原始签名严格判定；新FAIL、SKIP、缺XML或缺用例不能豁免。
+
+```mermaid
+flowchart LR
+  Cases[业务 TEST_F / SimTest] --> API[sim_test.h]
+  Race[精确协议业务] --> Protocol[sim_protocol_test.h]
+  Protocol --> Env[同一Fixture拥有的环境]
+  API --> Env
+  Env --> Component[受控组件材质 / 真实生产源闭包]
+  Env --> IPC[Device SA/IPC / 实际产品服务]
+```
+
+没有新增通用Driver/事件总线/Scenario DSL。Primary保留一份内部资源所有者负责已验证的真实引导和严格清理；新API直接实现业务操作及协议控制，不调用旧Fixture或Runner。StateProtocol直接访问真实环境，旧SimAdvancedTest类和Ril/Faults公开出口已删除。原数据/Golden及接口特征不重新生成；历史富业务期望和分类函数留internal作结果校验，不参与普通用例的编写和注册。
+
+### 平台、材质和构建边界
+
+framework只有两个公开头，实现在internal/common、internal/host、internal/device。生产CPP未复制到测试目录，也没有为链接新增生产Stub。共用component_sources.gni维护原生产源及受控参数/调度/服务模型；Host复用source_set与单份GoogleTest静态库，公共main也改为一个source_set。真实Primary、入口、查询和无初始化Count等七个业务闭包保留独立程序；每例仍独立进程。
+
+公开方法在各材质均有明确实现或UNSUPPORTED终止，不以假业务返回值填补能力，也不让未支持的组合变成链接错误。无初始化Count不假装拥有卡生命周期；Primary当前材质为实际PIN锁USIM目标，额外卡或READY输入不能由该材质制造时明确UNSUPPORTED，不把多个业务卡名绑定成同一对象。Primary可用普通Start并查询真实卡状态；普通Card/PIN/PUK在状态组件及SA/IPC中执行。源发现根据业务API选择闭包，作者不编辑源清单或维护登记表。
+
+Host专用ELF preinit防护已从common main分离，避免把Host启动ABI带入原生产品。已验证Host为Linux x86_64/glibc/WSL；其他libc不伪装兼容。Native组件显式复用受控POSIX调度、线程计数及SDK/IPC替身，它不是产品FFRT/SDK ABI或HDI认证。真正SA/IPC目标不链接这些Host替身，查询和通知访问实际CoreServiceClient/StateRegistry。
+
+| 设备用例需求 | 初始化/前提 |
+|---|---|
+| 只读状态/类型/存在性 | GET_TELEPHONY_STATE、实际SA及可寻址端点；不申请HIL、SET权限、双卡、PIN或ICCID权限 |
+| 状态准备/插拔模拟 | 实际所需端点数量、SET权限、CHANGE与RESTORE；只订阅并备份触及的端点 |
+| PIN / PUK | 分别申请PIN/PUK能力、明确允许凭证及恢复；不要求无关双卡或其他操作能力 |
+| 指定身份替换 | 额外IDENTITY能力和真实ICCID白名单；不能制造的synthetic输入是UNSUPPORTED，不能忽略字段后PASS |
+| 原始RIL故障/时序 | 受控组件材质；SA/IPC目标同源协议用例明确UNSUPPORTED，不把普通服务查询当作注入 |
+| Primary完整链 | 对应受控原生组件目标；SA/IPC当前材质没有RIL/持久化观测，明确UNSUPPORTED |
+
+环境备份按端点动态map处理，完成后通过真实服务独立验证状态、类型、身份，注销通知并检查观察者释放。缺资源会从非void辅助函数中止整个GoogleTest体并执行TearDown；两条负控分别保留原始UNSUPPORTED/BLOCKED和退出码2，技术验证通过不意味着跳过的业务PASS。
+
+控制器仍是尚未提供的外部HIL/厂商自动化。SIM_TEST_V1按能力协商，基础查询完全不连接它；变更要求RESTORE，按操作再检查CHANGE/PIN/PUK/IDENTITY。资源键除SOCKET/TOKEN外包括SIM_DEVICE_ALLOWED_PINS、SIM_DEVICE_ALLOWED_PUKS、SIM_DEVICE_ALLOWED_NEW_PINS、SIM_DEVICE_ALLOWED_ICCIDS；身份变更命令可附`ID <真实ICCID>`，仅在设备声明IDENTITY时使用。没有假硬件结果；原生组件构建/安装、权限、HDC回收及这些控制器行为均须在真实产品环境验收，当前不能声称已运行。
+
+### 三卡/四卡与开发者验收
+
+ResourceCatalog区分物理槽、eSIM Port/Profile、vSIM endpoint及Modem路由；Primary角色由业务操作引用Card，并不变成另一个槽号。四资源技术用例验证slot3不截断、Profile和vSIM键不混用、路由独立及重名拒绝。它只验证测试资源表示，XML明确resource_model_only，不声称Legacy三/四卡业务通过。Legacy数量限制仅在材质/平台实现中。
+
+新增业务验收使用本轮新写的pin_failure_isolation_test.cpp，而非旧developer_copy_test.cpp：两张不同SIM形态均PIN锁定，首卡输错PIN后另一张仍能独立解锁。17行、1个公开头、1个人工修改CPP；自动源清单由构建维护。CLI自动发现、独立执行、LLDB在真实SimStateManager::UnlockPin断点、slotId=0和调用栈及继续执行均PASS。故意将另一张卡解锁前期望改成READY，实际状态断言FAIL/exit1；恢复后PASS/exit0，源码/正常二进制SHA恢复一致，Framework/Scripts冻结摘要无变化。独立初级开发者试用和VS Code GUI点击没有执行，不能由CLI或配置检查代替。
+
+### 本轮失败与实测记录
+
+原始失败尝试随证据保留：suite混用TEST/TEST_F、移动后误写生产include路径、入口source_set遗漏两处inline main导致重复定义、只读UNKNOWN错误推断“有卡”、手动逐回包引入旧重试测试没有的中间等待窗口。它们均是本轮框架问题，不归入五个旧缺陷；修正只读独立查询和即时协议应答后重新验证。旧状态断言、回滚公共返回边界/最终参数、六session×四条请求序列及对象图检查没有删减。
+
+| 验收范围 | 输入实测 | 本轮最终实测 |
+|---|---|---|
+| 全部独立进程运行 | 108项：86 PASS / 22 FAIL | 113项：91 PASS / 22 FAIL；新增5项PASS |
+| 历史105配置 | 原Host64、Primary27、两套查询各7 | 104 MATCH；逆序枚举1项DIFFERENT且contract_equivalent，原始字段完整保留；覆盖100% |
+| 原Host64 | 59 PASS / 5 FAIL | 59 PASS / 相同五个精确签名FAIL |
+| 真实Primary/生命周期27 | 10 PASS / 17 FAIL | 10 PASS / 17 FAIL；CI仍拒绝17项，不自动接受 |
+| 双活前态补充运行 | 七项富业务契约 | 七项契约PASS；原始GoogleTest 1 PASS / 6清理FAIL，单列、不重复计113项 |
+| 生产正执行审计 | 四切片 | state 11、Primary 3、G2a 6、原Core 3个方法计数非零，全部PASS |
+| 变异及恢复 | READY映射/PUK记忆hook | 两项变异均检出；恢复两项PASS，正常二进制SHA一致 |
+| 技术/架构/完整性 | 原有效能力 | 72项技术检查PASS；架构/GN/迁移、原始317资产及8项锁定证据完整性PASS |
+| 资源模型 | Legacy双卡业务边界 | 四资源表示技术测试PASS；不宣称Legacy四卡业务PASS |
+| profile保护 | 用户文件原字节此前未恢复 | unset/relative/异常退出sentinel三项PASS；调试隔离；现有d354…不变 |
+| 原生Device | 未编译/未运行 | GN语法/同源/本地真实API及职责检查PASS；八个目标原生编译NOT_RUN，调度BLOCKED |
+| VS Code | 配置及CLI证据 | CLI发现/运行/LLDB实测PASS；GUI点击及独立初级开发者验收NOT_RUN |
+
+C0、C1通过LLDB进入真实CoreServiceSim::SetPrimarySlotId，slotId=1、调用栈和变量可见；业务断言仍通过，继续后实际SUT exit1，REAL_GRAPH_LIFETIME_NOT_DRAINED及28个worker/10个RIL引用未释放诊断保留。调试验证PASS不等于该测试PASS。产品树目录虽存在，但无build/test.gni、匹配组件挂载、hb、hdc和设备/HIL；原生SDK、GTest异常ABI及受控POSIX材质的产品兼容性未验证。不能以静态检查或Host通过替代这些验收。
+
+最终统一all --ci退出1，原因仍为原17项未豁免生命周期失败。原始22个FAIL未删减；本轮开发中新增框架失败均有原始证据，修复后没有残留新增FAIL。旧公开头、旧SimAdvancedTest实现及公开Host转发入口已删除；只保留两个公开头，专项位于internal，所有运行仍由test.py统一发现、构建和逐例进程执行。cases/architecture的既有GN可见性标签是有意保留的内部规则边界。生产C++和正式生产GN无差异，生产上游1066文件逐字节检查PASS。
+
+本节最终运行、逐项比较、变异、调试、源码摘要和阻塞结果见[本轮证据索引](archive/api_convergence_20261117/index.json)及其中validation.tar.gz。此前阶段数值和失败均按各自代码输入解释，不覆盖最终结果。下节为ce6441aa1对应的上一轮切换记录，其旧公开头及路径描述由本节取代。
 
 ## 2026-11-17 最终切换及验收边界
 

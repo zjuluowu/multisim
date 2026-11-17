@@ -30,7 +30,7 @@ if result["status"] == "COMPARABLE":
         result["review_items"].append({"oracle_id": "O-L06", "classification": "LEGACY_BEHAVIOR", "legacy_capacity": x, "split_capacity": y, "action": "MANUAL_REVIEW_NOT_AUTOMATIC_FAILURE"})
     result["confirmed_contract_result"] = "Both normal GTest runs passed O-C11; no exact-value contract assumed"
 output = Path(args.output).resolve()
-system = (_TEST / 'framework/host')
+system = (_TEST / 'framework/internal/host')
 if output == system or system in output.parents:
     raise SystemExit("Diff output must be outside systemtest sources")
 output.write_text(json.dumps(result, indent=2) + "\n")

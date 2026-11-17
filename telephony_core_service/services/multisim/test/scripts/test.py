@@ -21,6 +21,9 @@ def main():
     parser.add_argument('--output', type=Path, default=REPO/'.host-out/results')
     parser.add_argument('--target', nargs='+', choices=HOST+REAL)
     parser.add_argument('--filter', default='*')
+    parser.add_argument('--breakpoint')
+    parser.add_argument('--slot',type=int)
+    parser.add_argument('--primary-cleanup-diagnostic',action='store_true')
     parser.add_argument('--gtest-root')
     parser.add_argument('--openssl-root')
     parser.add_argument('--runtime-root')
@@ -50,20 +53,34 @@ def main():
         result['commands'].append(row);save();print(name+': '+row['status'],flush=True)
         return code
     try:
+        if args.action in ['all','build','run','list','debug']:
+            if run('case-discovery','update_case_sources.py'):return 1
         if args.action in ['all','technical','integrity','architecture']:
             if args.action in ['all','integrity']:run('integrity','check_test_integrity.py')
             if args.action in ['all','architecture']:run('architecture','run_architecture.py',['--with-gn','--migration','--output',session/'architecture'])
             if args.action in ['all','technical']:run('technical','technical.py',['--output',session/'technical'])
         if args.action in ['all','build','run','list','debug']:
-            targets=args.target or (HOST+REAL if args.action in ['all','build'] else HOST)
+            targets=args.target or (HOST+REAL)
             for target in targets:
                 build=['--out',args.out,'--target',target,'--jobs',args.jobs]
                 for flag,value in [('--gtest-root',args.gtest_root),('--openssl-root',args.openssl_root),('--runtime-root',args.runtime_root)]:
                     if value:build += [flag,value]
                 if run(target+'-build','build_replacement.py',build):continue
                 if args.action=='build':continue
+                if args.action in ['run','list','debug']:
+                    from run_gtest import discover
+                    selected,_=discover((args.out/'build'/target).resolve(),args.filter,dict(os.environ,LLVM_PROFILE_FILE=str(session/'discovery-%p.profraw'),LD_LIBRARY_PATH=str((args.out/'build').resolve())),60,allow_empty=True)
+                    result.setdefault('discovery',{})[target]=selected;save()
+                    if args.action=='list':
+                        for name in selected:print(name,flush=True)
+                    if not selected:
+                        result['commands'].append({'name':target,'status':'NOT_RUN','exit_code':None,'reason':'filter_did_not_select_this_binary'});save();continue
                 if args.action=='debug':
-                    run(target+'-debug','debug.py',['--binary',args.out/'build'/target,'--filter',args.filter,'--output',session/target]);continue
+                    debug=['--binary',args.out/'build'/target,'--filter',args.filter,'--output',session/target]
+                    if args.breakpoint:debug+=['--breakpoint',args.breakpoint]
+                    if args.slot is not None:debug+=['--slot',str(args.slot)]
+                    if args.primary_cleanup_diagnostic:debug+=['--primary-cleanup-diagnostic']
+                    run(target+'-debug','debug.py',debug);continue
                 options=['--binary',args.out/'build'/target,'--output',session/target,'--filter',args.filter]
                 if args.action=='list':options+=['--list']
                 if target in REAL:options += ['--env','SIM_HOST_BOOT_SLOT_COUNT=2','--env','SIM028_INIT_MODEL='+args.init_model]
@@ -77,6 +94,8 @@ def main():
                 if args.action=='all' and target in slices:
                     run(target+'-execution','audit_replacement_execution.py',['--slice',slices[target],'--binary',args.out/'build'/target,'--profiles',reports[0].parent,'--output',session/(target+'-execution')])
         if args.action=='all':
+            if run('capability-probe-build','build_replacement.py',['--out',args.out,'--target','sim_capability_probe'])==0:
+                run('capability-negative-controls','check_capabilities.py',['--binary',args.out/'build/sim_capability_probe','--output',session/'capabilities'])
             run('device-static','check_device.py')
             run('migration-equivalence','verify_migration.py',['--reports',session/'result.json','--output',session/'comparison.json'])
         if args.action in ['all','mutation']:run('mutation','mutations.py',['--out',args.out,'--output',session/'mutation'])
@@ -91,19 +110,26 @@ def main():
             if args.native_target:options+=['--native-target',args.native_target]
             if args.library:options+=['--library',args.library]
             run('device','device.py',options)
+            report=session/'device/result.json'
+            if report.is_file():
+                native=json.loads(report.read_text());result['platform_result']=native
+                expected={'PASS':0,'FAIL':1,'BLOCKED':2,'UNSUPPORTED':2}.get(native['status'])
+                result['commands'][-1]['status']=native['status'] if expected==result['commands'][-1]['exit_code'] else 'FAIL'
+
         statuses={r['status'] for r in result['commands']}
-        result['status']='FAIL' if 'FAIL' in statuses else 'BLOCKED' if 'BLOCKED' in statuses else 'PASS'
+        result['status']='FAIL' if 'FAIL' in statuses else 'BLOCKED' if 'BLOCKED' in statuses else 'UNSUPPORTED' if 'UNSUPPORTED' in statuses or (args.action=='run' and not result['cases']) or (args.action=='debug' and not any(result.get('discovery',{}).values())) else 'PASS'
+        if args.action=='list' and result['status']=='PASS':result['status']='NOT_RUN'
         if args.ci:
             from ci_gate import evaluate
             result['admission']=evaluate(result['cases'],result['commands'])
         if result['cases']:
-            sys.path.insert(0,str(TEST/'cases'))
+            sys.path.insert(0,str(TEST/'cases/internal'))
             from validate_primary import validate
             result['primary_contracts']=validate(result['cases'])
             if any(row['status']=='FAIL' for row in result['primary_contracts']):result['status']='FAIL'
         if args.ci:
             return 1 if result['admission']['status']=='FAIL' or any(r['status']=='FAIL' for r in result.get('primary_contracts',[])) else 0
-        return 1 if result['status']=='FAIL' else 2 if result['status']=='BLOCKED' else 0
+        return 1 if result['status']=='FAIL' else 2 if result['status'] in ['BLOCKED','UNSUPPORTED'] else 0
     finally:
         result['protected_profile_unchanged']=original==(hashlib.sha256(protected.read_bytes()).hexdigest() if protected.is_file() else None)
         if not result['protected_profile_unchanged']:result['status']='FAIL'
