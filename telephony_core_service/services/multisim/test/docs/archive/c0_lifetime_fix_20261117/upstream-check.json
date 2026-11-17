@@ -1,0 +1,4271 @@
+{
+  "upstream": "43ac8ae7df5b9c17c4efb3433415693d925b98c7",
+  "status": "PASS",
+  "files": [
+    {
+      "path": "BUILD.gn",
+      "sha256": "a03fc41184604f332cd77e514e19570616e319d4ad8a171545e9cd4b710ca572"
+    },
+    {
+      "path": "Cargo.toml",
+      "sha256": "228020c0806f78527391915f02c32478214c5a53958c382e3a1910bfe2092c1c"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "0cec06e0e55fbc3dc5cee4fca9b607f66cb8f4e4dbcf3b3c013594dd156732e9"
+    },
+    {
+      "path": "OAT.xml",
+      "sha256": "fae5c8f9dc316b5c949e753d6b4c4f1feb507c342c4fcd98f6b5ed34b9439d93"
+    },
+    {
+      "path": "README.md",
+      "sha256": "7d8482a44bdfdff4ad4ac2d10795625b65f7f9653db0099c599f079ae1260a46"
+    },
+    {
+      "path": "README_zh.md",
+      "sha256": "300fe6cb475c0bf936ad08d2aa39e15fc5e95e01356091439452763b9714024a"
+    },
+    {
+      "path": "bundle.json",
+      "sha256": "608a5b99a007382253eefe1b32634d7dc1618f4c199ded3e0227d658540b8fd4"
+    },
+    {
+      "path": "common/capability_mgr/include/multi_sims_capability_manager.h",
+      "sha256": "29e22052a49359e4d0f13c69078ee4dc65bfe0670cf2d5b9ea3a9717e9bcf932"
+    },
+    {
+      "path": "common/capability_mgr/src/multi_sims_capability_manager.cpp",
+      "sha256": "a0e2f3766fe6717bfc76347d299608d5100144dd737c14f388291365132d0941"
+    },
+    {
+      "path": "figures/en-us_architecture-of-the-core_service-module.png",
+      "sha256": "de7ce3f9aedce5c237b27b61f1de06dbedefe43720211b3d0628b9cf6e7eee6e"
+    },
+    {
+      "path": "figures/zh-cn_architecture-of-the-core_service-module.png",
+      "sha256": "445f5f21c00748cfefc915ee9dd74f2de83397412619ae0d90e7feb4fe84f329"
+    },
+    {
+      "path": "frameworks/cj/telephony_radio/BUILD.gn",
+      "sha256": "ac8d18222cf6fc3938df28524ce79ae572b04940db8befb60bdb6b19cdea8a32"
+    },
+    {
+      "path": "frameworks/cj/telephony_radio/libcj_radio_ffi.map",
+      "sha256": "03fec02742e3523bd4700b1226142276e3e80f8d83b902d28de3e67198a3cb01"
+    },
+    {
+      "path": "frameworks/cj/telephony_radio/src/telephony_radio_callback.cpp",
+      "sha256": "e6db51c339c3ecd8974d17033b6f25f7856e9456fac3f56b7811c0a66b9d7187"
+    },
+    {
+      "path": "frameworks/cj/telephony_radio/src/telephony_radio_callback.h",
+      "sha256": "70eb3d55ea1f2651f22f5ddcdb3a5e074cacef56ae7dd1f4e119378336719b05"
+    },
+    {
+      "path": "frameworks/cj/telephony_radio/src/telephony_radio_ffi.cpp",
+      "sha256": "e632642d853bce042d293dddf0885ea4aeadeac7b8e75323695207d18a490643"
+    },
+    {
+      "path": "frameworks/cj/telephony_radio/src/telephony_radio_ffi.h",
+      "sha256": "931b6a420bf8fec062b2893bd7a448400f0359ca6b37f9835c5e5e1602b721de"
+    },
+    {
+      "path": "frameworks/cj/telephony_radio/src/telephony_radio_impl.cpp",
+      "sha256": "349986db9aced651af498a6e4714cfd55c351dd820c552007ccaecbe54ad02d8"
+    },
+    {
+      "path": "frameworks/cj/telephony_radio/src/telephony_radio_impl.h",
+      "sha256": "ff3d721f9fccf37105363596cb84292cf8e0ceb0e9916468ab47404deb53fcc0"
+    },
+    {
+      "path": "frameworks/cj/telephony_radio/src/telephony_radio_utils.h",
+      "sha256": "456445ea03aeb59fff364a22a58151086211fa0a225c2db4c9e6a8e2607cda42"
+    },
+    {
+      "path": "frameworks/cj/telephony_sim/BUILD.gn",
+      "sha256": "42dcaba4650b42c85c1e6f6b6935ccb9cd6115178658b7044171e0ef3b5fcda8"
+    },
+    {
+      "path": "frameworks/cj/telephony_sim/libcj_sim_ffi.map",
+      "sha256": "03fec02742e3523bd4700b1226142276e3e80f8d83b902d28de3e67198a3cb01"
+    },
+    {
+      "path": "frameworks/cj/telephony_sim/src/telephony_sim_ffi.cpp",
+      "sha256": "e7dad981603193b5f3e20440c0f3675cff4435c37db51c5ae0d62a2a8aaa81ce"
+    },
+    {
+      "path": "frameworks/cj/telephony_sim/src/telephony_sim_ffi.h",
+      "sha256": "737864df68ab72d1398c06627bf4a0b31af2d867dcdfbdc602a68884f021b127"
+    },
+    {
+      "path": "frameworks/cj/telephony_sim/src/telephony_sim_impl.cpp",
+      "sha256": "ba1391b304cc3b4934de4c832002e22b497d5cc8b1d400582103f29b77807ea7"
+    },
+    {
+      "path": "frameworks/cj/telephony_sim/src/telephony_sim_impl.h",
+      "sha256": "b4f3b38d1cdbedc7330454caa7c9b6565891c07aba78693593f49eb494d67c42"
+    },
+    {
+      "path": "frameworks/cj/telephony_sim/src/telephony_sim_utils.h",
+      "sha256": "40be8f629eb82d18f38a8d911dcad195fd11d1b0dc2ab90f372e98cfe9eb6be0"
+    },
+    {
+      "path": "frameworks/ets/ani/esim/BUILD.gn",
+      "sha256": "9be951cb5697b0e26dcbb7d255b6c20a09d6a31655aef1632111aebc7f67ae1e"
+    },
+    {
+      "path": "frameworks/ets/ani/esim/Cargo.toml",
+      "sha256": "b5d5e4997ab6885f290f70730bb63e8297edbe2558db3fbd5f956a0ef9dab525"
+    },
+    {
+      "path": "frameworks/ets/ani/esim/ets/@ohos.telephony.esim.ets",
+      "sha256": "b96847ae02a81a4c7f0ff39d398cd31679d512161f1d7f9ea19775ce1963403d"
+    },
+    {
+      "path": "frameworks/ets/ani/esim/include/ani_esim.h",
+      "sha256": "a3ed2775a6a3085cc3a06ac2891b806e4e5e6555f4feb6a144dd4bc20384cd9f"
+    },
+    {
+      "path": "frameworks/ets/ani/esim/include/ani_esim_service_callback.h",
+      "sha256": "ce08e63c9c0e93a56daaed925b62bb8db7f7d38b20deb2e12e417ed32695c964"
+    },
+    {
+      "path": "frameworks/ets/ani/esim/include/ani_reset_memory_callback.h",
+      "sha256": "d5e089a11123b1c4d87b089766fe81fd24438052358854bd1505edaf323ba62f"
+    },
+    {
+      "path": "frameworks/ets/ani/esim/src/bridge.rs",
+      "sha256": "e0180f4331e84fa10e955e3ee1c9937c662cc82a9e47c864c5e96c88c9b6e74a"
+    },
+    {
+      "path": "frameworks/ets/ani/esim/src/cxx/ani_esim.cpp",
+      "sha256": "d7050408af9bc51612ea9cf96d419f19721f3952a9baa73e3c34968b1b1c706b"
+    },
+    {
+      "path": "frameworks/ets/ani/esim/src/cxx/ani_esim_service_callback.cpp",
+      "sha256": "9fbffefe7763a27a919cf1de74819bc39924559c83805a5ffd345d11b5a9ff3a"
+    },
+    {
+      "path": "frameworks/ets/ani/esim/src/cxx/ani_reset_memory_callback.cpp",
+      "sha256": "d7b58d8cbd1dd36594e48e6afd34a4ac54a5824c2b84c8289c8a7bb15328c822"
+    },
+    {
+      "path": "frameworks/ets/ani/esim/src/esim.rs",
+      "sha256": "6d77963ab1614df20da4474991633d118f99dda8beb977d99bd83b396f097c75"
+    },
+    {
+      "path": "frameworks/ets/ani/esim/src/lib.rs",
+      "sha256": "adc11d4129bf6ed1c3041867b793ede70051e78a2c91fc445d919c9372f4dc9d"
+    },
+    {
+      "path": "frameworks/ets/ani/esim/src/wrapper.rs",
+      "sha256": "e921003d9fcb1f1c5d5b7393060a446912a8a68c908b5eff3546e3756a25d5d3"
+    },
+    {
+      "path": "frameworks/ets/ani/radio/BUILD.gn",
+      "sha256": "059fcbdc07a4a02c1bbe330988ce729706209d31abaaee975dd218b70957697e"
+    },
+    {
+      "path": "frameworks/ets/ani/radio/Cargo.toml",
+      "sha256": "b037c3864077441503f149e558f3a35926c2a796f15baf8fdc1753f32865a6ce"
+    },
+    {
+      "path": "frameworks/ets/ani/radio/ets/@ohos.telephony.radio.ets",
+      "sha256": "663748c5ece37d73231de2b64141eabb211e053afac1afa44e6e3aa5b05e7bb6"
+    },
+    {
+      "path": "frameworks/ets/ani/radio/include/ani_radio.h",
+      "sha256": "aa9b35ddc88c5d912f48e7427852f6088a21df0d1878a9d646072772d8f0a169"
+    },
+    {
+      "path": "frameworks/ets/ani/radio/include/ani_radio_types.h",
+      "sha256": "4d98a1ab980dc24d9831d9542a54ca36fe021a5fa19b12ea448bf0eb6157370c"
+    },
+    {
+      "path": "frameworks/ets/ani/radio/include/network_search_callback.h",
+      "sha256": "f20ccd6d7f751127a1639c1ce1ef6f18669f67bb6c9be210f5342f59bf599a40"
+    },
+    {
+      "path": "frameworks/ets/ani/radio/src/bridge.rs",
+      "sha256": "9ca50c3f12941e0498f992013e810964c26e9c82eaee812cef281726c3056ebe"
+    },
+    {
+      "path": "frameworks/ets/ani/radio/src/cxx/ani_radio.cpp",
+      "sha256": "0dedec5605e7cf3526abe1a78ed7df95cbfcbc1937d3b6a81b7079d0a2ff3f29"
+    },
+    {
+      "path": "frameworks/ets/ani/radio/src/cxx/network_search_callback.cpp",
+      "sha256": "c80dd07fd3aeb2934be7840b661c422a09ea21a4e316db6c781e8c5331bfb80a"
+    },
+    {
+      "path": "frameworks/ets/ani/radio/src/lib.rs",
+      "sha256": "623295a4a51fc6ccc0934e4877157bf32171b1200a7e056f30814e44f82b24f1"
+    },
+    {
+      "path": "frameworks/ets/ani/radio/src/log.rs",
+      "sha256": "05f10572e70c944b54c35c433720265a16f2ce836efdca789776a2bf8b3fad02"
+    },
+    {
+      "path": "frameworks/ets/ani/radio/src/radio.rs",
+      "sha256": "86ef6531195068765e6994180ca1e7fc569318db922c3b8488c07c89c7c68915"
+    },
+    {
+      "path": "frameworks/ets/ani/radio/src/register.rs",
+      "sha256": "19aec66d21f93bebf2793d95ccc23b485f4b57011dc93b947aa1bee6b766cf64"
+    },
+    {
+      "path": "frameworks/ets/ani/radio/src/wrapper.rs",
+      "sha256": "b49a313bc1a018b2e3bd771627868356b1fcc09b9dad8ef4a9d8ed5eb933a563"
+    },
+    {
+      "path": "frameworks/ets/ani/sim/BUILD.gn",
+      "sha256": "7f43bfa0a3d51cd0aab9c06d80174ce04a67adb656dae3567e3145d38f336135"
+    },
+    {
+      "path": "frameworks/ets/ani/sim/Cargo.toml",
+      "sha256": "6f3ff36bc630f100e6b9f67f914091023224ecf06f1b7effc768fa8e5fdd83f7"
+    },
+    {
+      "path": "frameworks/ets/ani/sim/ets/@ohos.telephony.sim.ets",
+      "sha256": "6d2c61478eb604f325a5a02b7c7fcf5c91c46a2fd31a5de5374f7822a422e02c"
+    },
+    {
+      "path": "frameworks/ets/ani/sim/include/ani_sim.h",
+      "sha256": "7a8648fcb85ae450df9729b6bffb5cf793a0bb1ddcc0667b006d532ddc011ba4"
+    },
+    {
+      "path": "frameworks/ets/ani/sim/src/bridge.rs",
+      "sha256": "f8d571a11c2b97fccda415ac3bee8c7ab5704a7ae4a970dc022319c05ea45b05"
+    },
+    {
+      "path": "frameworks/ets/ani/sim/src/cxx/ani_sim.cpp",
+      "sha256": "a35dc8b7989fe6c6b7603b477fd598124787966bd81ad27ebd037dc23a5c6c1c"
+    },
+    {
+      "path": "frameworks/ets/ani/sim/src/lib.rs",
+      "sha256": "284f61f22c942217f3d58f48d42d44586f534c86d6a426496fc720a10e5e6df9"
+    },
+    {
+      "path": "frameworks/ets/ani/sim/src/sim.rs",
+      "sha256": "a6d1b6254abeba9e80e665138fa39c34424aed8f2fb31fcfc4439fbbd829edc4"
+    },
+    {
+      "path": "frameworks/ets/ani/sim/src/wrapper.rs",
+      "sha256": "fb24cb5de7ee817b08cccb4e7139aa46a1bc293c00a5a0523ded1a6195d39ce9"
+    },
+    {
+      "path": "frameworks/ets/ani/vcard/BUILD.gn",
+      "sha256": "b33097c6e1469837058db51b0139c153385d4c7265118957f9a8cc026986e107"
+    },
+    {
+      "path": "frameworks/ets/ani/vcard/Cargo.toml",
+      "sha256": "d20c183d277300096ffa74605681efb74f42db5bf1c6bf01c7000b21911f5c36"
+    },
+    {
+      "path": "frameworks/ets/ani/vcard/ets/@ohos.telephony.vcard.ets",
+      "sha256": "c19eb604417a1c4d5e2fa713d0af8f45c9416a4f22980e618edaa2775776e45f"
+    },
+    {
+      "path": "frameworks/ets/ani/vcard/include/ani_vcard.h",
+      "sha256": "58159bab906128a1af81b456d69f30bd681cb9d073f1bedb81de95d2c3acfae5"
+    },
+    {
+      "path": "frameworks/ets/ani/vcard/src/bridge.rs",
+      "sha256": "404d0476666137c0e55881514b243cf71823fd33f223e876dedc9889545d9e6c"
+    },
+    {
+      "path": "frameworks/ets/ani/vcard/src/context.rs",
+      "sha256": "52e1569fc1f9beee9dcd12fe2cdca2886412cbeabda42c808cf5503a17370333"
+    },
+    {
+      "path": "frameworks/ets/ani/vcard/src/cxx/ani_vcard.cpp",
+      "sha256": "4aaa4957e981e1d05b709df4b4f39972a4ed486b45dc796700bbf954ba5c67a5"
+    },
+    {
+      "path": "frameworks/ets/ani/vcard/src/lib.rs",
+      "sha256": "7a9f0c702df9c95c7084a396adfd592c3b33cb96abaa697276df2bb3115867f0"
+    },
+    {
+      "path": "frameworks/ets/ani/vcard/src/log.rs",
+      "sha256": "ce69183b3199ccec3fa5b969a433733fb5d39fa8cce7abc7d6dd88eaa65c876b"
+    },
+    {
+      "path": "frameworks/ets/ani/vcard/src/vcard.rs",
+      "sha256": "c63150b27cbcdc407e6f7fa3c3ba02cb433b513fd85ac9e0140bb42bfc6e5afc"
+    },
+    {
+      "path": "frameworks/ets/ani/vcard/src/wrapper.rs",
+      "sha256": "05dc7589873759d10ddbe41f74b420160797423f5bf06d0245ac9da52d9028e9"
+    },
+    {
+      "path": "frameworks/js/esim/BUILD.gn",
+      "sha256": "0aab7a2815ac2091bede0a002b82c4c9e89257e701319bf1aa7a5f4396450041"
+    },
+    {
+      "path": "frameworks/js/esim/include/cancel_session_callback.h",
+      "sha256": "3809393faaf7bd1c793f700737d77008cd223e3cb4dca317249882f9cccf7c96"
+    },
+    {
+      "path": "frameworks/js/esim/include/delete_profile_callback.h",
+      "sha256": "fb79a1946ae0e0c080252dc42dd4d412884ce45ab851ff226253db35803ba545"
+    },
+    {
+      "path": "frameworks/js/esim/include/download_profile_callback.h",
+      "sha256": "cb2d2fd5858c967281cd37ff760e0e73f157a217f9ae88f2e911ee12420e6a49"
+    },
+    {
+      "path": "frameworks/js/esim/include/get_contract_info_callback.h",
+      "sha256": "056d81b26032b6b444ba3d2b08dc7209aacd7fb3630541ac72f148ab1a4599a0"
+    },
+    {
+      "path": "frameworks/js/esim/include/get_default_smdp_address_callback.h",
+      "sha256": "0c758363265c250aff2d1e201ded9d578b86b86493fc63b7a98f39f3dab23c0e"
+    },
+    {
+      "path": "frameworks/js/esim/include/get_downloadable_profile_metadata_callback.h",
+      "sha256": "3ef140a64b45180849f8f61f6d7d34c8642aa7777c856ff8371532ead9e3191c"
+    },
+    {
+      "path": "frameworks/js/esim/include/get_downloadable_profiles_callback.h",
+      "sha256": "e0a8d1b7c96942672b9430135ea7dca1b390263c6911a7b7274dbc254bf03e7b"
+    },
+    {
+      "path": "frameworks/js/esim/include/get_eid_callback.h",
+      "sha256": "3b233cc7dc69d713a78d528b2761dd6d4b2863c0681b8bd953929a8f6b052b64"
+    },
+    {
+      "path": "frameworks/js/esim/include/get_euicc_info_callback.h",
+      "sha256": "ab53ae1bbe0a9a60dbf4092f401890a5e28ae5c7c82077da11e82d1e4010c1ee"
+    },
+    {
+      "path": "frameworks/js/esim/include/get_euicc_profile_info_list_callback.h",
+      "sha256": "7ef3d4489ed92a779add4798d0f6f4665a8545972aaf5fffc36f07636ba5f2db"
+    },
+    {
+      "path": "frameworks/js/esim/include/get_supported_pkids_callback.h",
+      "sha256": "171e8351479bf51f465c4540e4dda2b7fec93dc161b4d17a6f397e4ce18a3b40"
+    },
+    {
+      "path": "frameworks/js/esim/include/napi_esim.h",
+      "sha256": "c91473084dd876cca5c40dc222366b8dc0e423bc921e6872e77e88571cac6120"
+    },
+    {
+      "path": "frameworks/js/esim/include/reset_memory_callback.h",
+      "sha256": "69bffc219af5b5d9bf30a8f008970cb22cfce323bf185e09f5f30ed4fdce42e3"
+    },
+    {
+      "path": "frameworks/js/esim/include/set_default_smdp_address_callback.h",
+      "sha256": "195c13a16c273e92ad11cae3a5bbb7309555312acedb07d9749e602de8d3fd87"
+    },
+    {
+      "path": "frameworks/js/esim/include/set_profile_nick_name_callback.h",
+      "sha256": "3b4a2cbf9deb81807db7af287151a7689d8b203b54fa98b390781f2541ddf45e"
+    },
+    {
+      "path": "frameworks/js/esim/include/start_osu_callback.h",
+      "sha256": "293d49d91a21e15986a88a16ede176f66195dcf4b0a66ba5ff8f89555c8d7c3c"
+    },
+    {
+      "path": "frameworks/js/esim/include/switch_to_profile.h",
+      "sha256": "5392b3279d02b209088c4a77d71460da327b1e74e50c19c6ec983d93acb962cd"
+    },
+    {
+      "path": "frameworks/js/esim/src/cancel_session_callback.cpp",
+      "sha256": "29bbd87589872704f6a7ee3c4ef6b826207cf34023d19da679c55049b02cc056"
+    },
+    {
+      "path": "frameworks/js/esim/src/delete_profile_callback.cpp",
+      "sha256": "3b85e04253c18a8939c795dbec48aa0aee8acf4598ec59df379f472a31e02cea"
+    },
+    {
+      "path": "frameworks/js/esim/src/download_profile_callback.cpp",
+      "sha256": "5bcaff927ff01a338f2b12af2f7287af1e42a381f9824cf30f997582980229ef"
+    },
+    {
+      "path": "frameworks/js/esim/src/get_contract_info_callback.cpp",
+      "sha256": "14e584817883032e72661424d4211c83594f678622caf3fd8c5b0ea3c0bccded"
+    },
+    {
+      "path": "frameworks/js/esim/src/get_default_smdp_address_callback.cpp",
+      "sha256": "233dcd09661c6122bfab58929cad543b8b1426f4b640a402b4cd4967f59478f0"
+    },
+    {
+      "path": "frameworks/js/esim/src/get_downloadable_profile_metadata_callback.cpp",
+      "sha256": "f64315998f7f50dd18bb85104b3e825d0885b06a5682e7532020a3752f5522c5"
+    },
+    {
+      "path": "frameworks/js/esim/src/get_downloadable_profiles_callback.cpp",
+      "sha256": "bf87e232f5204eb2130c879ef75a23bfd48c87cb24d4af7161e26ae6eb61f01f"
+    },
+    {
+      "path": "frameworks/js/esim/src/get_eid_callback.cpp",
+      "sha256": "c1811a718a8ac96daccb5f74525ca86d980a0caa7cbd7f7693bfb2be2acf2074"
+    },
+    {
+      "path": "frameworks/js/esim/src/get_euicc_info_callback.cpp",
+      "sha256": "9ffb140bb772b9e16001d17643adc85545e50698ae707cc31901003f7059f327"
+    },
+    {
+      "path": "frameworks/js/esim/src/get_euicc_profile_info_list_callback.cpp",
+      "sha256": "209fcace5dac77a2e60a2773229c42aee80bf2917578cb96c61d2b385a814f02"
+    },
+    {
+      "path": "frameworks/js/esim/src/get_supported_pkids_callback.cpp",
+      "sha256": "b651210a4ac680113fdee086777a33e22d1f1195d5b5e9398c04b3a0ba1d9cd4"
+    },
+    {
+      "path": "frameworks/js/esim/src/napi_esim.cpp",
+      "sha256": "3af5cc847bb6658d72cd98f66e1f77a443fed50e88f56f5624d8c06ff2904d1b"
+    },
+    {
+      "path": "frameworks/js/esim/src/reset_memory_callback.cpp",
+      "sha256": "7a66329f269a6bd616af7b733bdfc5fb89636b27cfb1bffdb51ab9cb33cca9f8"
+    },
+    {
+      "path": "frameworks/js/esim/src/set_default_smdp_address_callback.cpp",
+      "sha256": "9c427d16b888cfce5c87eb410bee8b158cafa0b0feb9e7cdceec16b46e00bb13"
+    },
+    {
+      "path": "frameworks/js/esim/src/set_profile_nick_name_callback.cpp",
+      "sha256": "74be0c7fbb3a80ef7a3a66e365c6601fa257631e11b6c61a669620a3f54c7538"
+    },
+    {
+      "path": "frameworks/js/esim/src/start_osu_callback.cpp",
+      "sha256": "f9a21e1e7b6f530c05c37a1b654fec37ab56e192bfe258be966ab6643ea71d26"
+    },
+    {
+      "path": "frameworks/js/esim/src/switch_to_profile.cpp",
+      "sha256": "fd47e81638f4b18f687d551fb2b24ac7c6a9203b2f4422102b0af143d5520fa8"
+    },
+    {
+      "path": "frameworks/js/napi/base_context.h",
+      "sha256": "82934c855ff615370d44be2e59ec2801258ce27f009a7ed36f415a969e4e7be4"
+    },
+    {
+      "path": "frameworks/js/napi/enum_convert_for_js.h",
+      "sha256": "ec73dbaf62a771d46ed2380fda3d47184e63178e42213600dbeec5024559bf13"
+    },
+    {
+      "path": "frameworks/js/napi/js_error_code.h",
+      "sha256": "8a4edb045f419e3931438e1b5e404049a245c345498df471559c958c4a013525"
+    },
+    {
+      "path": "frameworks/js/napi/napi_parameter_util.h",
+      "sha256": "468e0180ddc010f4fedc57d60be724ede2a3f6ae5d0121015d349563c623eab3"
+    },
+    {
+      "path": "frameworks/js/napi/napi_util.cpp",
+      "sha256": "1b6c59e481686b8453bbe7dd13a40a90641f2033a9482bbd9e428c7ce1b45ff0"
+    },
+    {
+      "path": "frameworks/js/napi/napi_util.h",
+      "sha256": "f65d08051bf38b6b637a3ac89931dddf67484d55b3005b536431ef9b72d161f7"
+    },
+    {
+      "path": "frameworks/js/napi/service_interface_death_recipient.h",
+      "sha256": "9ec7dda7cbad40722acbeb1779792c5293621ece8120edff826edaa6f801ac63"
+    },
+    {
+      "path": "frameworks/js/napi/telephony_napi_common_error.h",
+      "sha256": "3fe0bc8a146c6455621e3424b3ce50baab4e69faaddcd15db5a7759a349e2e3f"
+    },
+    {
+      "path": "frameworks/js/napi/telephony_napi_hril_error_code.h",
+      "sha256": "042dd0e9d467db07ff82e1f239bd8a13925a772ba284304c40d2e487597e22e9"
+    },
+    {
+      "path": "frameworks/js/network_search/BUILD.gn",
+      "sha256": "b1be7824a10d5e5fa008949ef50836df14903496fa916067664c3e042c6e3597"
+    },
+    {
+      "path": "frameworks/js/network_search/include/get_network_search_info_callback.h",
+      "sha256": "0771008265ed4b74e8dc4ecdd23c6471b6c98268dca0537cdd790781e6a93281"
+    },
+    {
+      "path": "frameworks/js/network_search/include/get_network_search_mode_callback.h",
+      "sha256": "2c8f38dd44957f7b8b1e29f4aaa2387fc21b16746eef3aa5393abb9dbab4fadf"
+    },
+    {
+      "path": "frameworks/js/network_search/include/get_nr_option_mode_callback.h",
+      "sha256": "9e35a6a5b8069c37d35f7e62f0c46828d2e948af72735498aeae9b79a2e2eccb"
+    },
+    {
+      "path": "frameworks/js/network_search/include/get_preferred_network_callback.h",
+      "sha256": "5eec34080e5702a6f06f8a83b8919131a6e11c2bd62d8bf600482aadc445efea"
+    },
+    {
+      "path": "frameworks/js/network_search/include/get_radio_state_callback.h",
+      "sha256": "b4ae146a9a06de4fb9ef487eb3974d384ce68d1f6a3fabe5e6bd3e761322c50a"
+    },
+    {
+      "path": "frameworks/js/network_search/include/manual_network_scan_callback.h",
+      "sha256": "aa531e0e2b3f6d5cc422fa94469e68593ab1f7832eb082def408faf23c17cafa"
+    },
+    {
+      "path": "frameworks/js/network_search/include/napi_ims_reg_info_callback.h",
+      "sha256": "bc45be770fd3104989bbb7d1d196483cf1dff6c864a66420f53a367a993170fc"
+    },
+    {
+      "path": "frameworks/js/network_search/include/napi_ims_reg_info_callback_manager.h",
+      "sha256": "4c6bcbfef55c9614f320c5f2b97ccbce6bebfc7ab22447c7d1c46299eba6721b"
+    },
+    {
+      "path": "frameworks/js/network_search/include/napi_radio.h",
+      "sha256": "8520d51a8bb75c79071755a9d7ed55de8684ec4bf4247547ced67e3a98efaa66"
+    },
+    {
+      "path": "frameworks/js/network_search/include/napi_radio_types.h",
+      "sha256": "ccd870b34d5944ca2f8b74f7542340128c7fb1632fbb130b18c16a72c81631c9"
+    },
+    {
+      "path": "frameworks/js/network_search/include/set_network_search_mode_callback.h",
+      "sha256": "26c6b343f45935f462ad129d750dd410b85ee8265eea3c874da185f2f48f9a1f"
+    },
+    {
+      "path": "frameworks/js/network_search/include/set_nr_option_mode_callback.h",
+      "sha256": "e8c1ddda829ea56b950aad411a7c6b2d1e55ac57a89aec167c3362b27b50a8b7"
+    },
+    {
+      "path": "frameworks/js/network_search/include/set_preferred_network_callback.h",
+      "sha256": "c73edf2e56285b28cd89ec7116331c3cae328c6090f50da45da4d4847aecb66e"
+    },
+    {
+      "path": "frameworks/js/network_search/include/set_radio_state_callback.h",
+      "sha256": "2af90237c39ce6cf38d08089701899402d261bd1b4fdaa6310659855386e7870"
+    },
+    {
+      "path": "frameworks/js/network_search/src/get_network_search_info_callback.cpp",
+      "sha256": "a3be4df9dd8ed8b829faabcea815a945be14eb3198fa911de3fe0084b6ac3fc2"
+    },
+    {
+      "path": "frameworks/js/network_search/src/get_network_search_mode_callback.cpp",
+      "sha256": "62e30a28019476b8bdb818240dadfe4d5ef2503bd8aea4bd95e5aa95271c22ea"
+    },
+    {
+      "path": "frameworks/js/network_search/src/get_nr_option_mode_callback.cpp",
+      "sha256": "c6f4ca11d94a625324c0d5975ea3d962cb9773728607f406e174b471d5a11414"
+    },
+    {
+      "path": "frameworks/js/network_search/src/get_preferred_network_callback.cpp",
+      "sha256": "0cf84f507c8cb3b1c0bf2a02e9eef2499c8fe216780faf9bcf04cdc8eec60da7"
+    },
+    {
+      "path": "frameworks/js/network_search/src/get_radio_state_callback.cpp",
+      "sha256": "aeac7b8fca5da4b9626361353ff937361515fc3777716f199f01452430551606"
+    },
+    {
+      "path": "frameworks/js/network_search/src/manual_network_scan_callback.cpp",
+      "sha256": "08bd55e4fa12d306b7587c711b689aeff4b59307d357a9fc52f6522604fbeb28"
+    },
+    {
+      "path": "frameworks/js/network_search/src/napi_ims_reg_info_callback.cpp",
+      "sha256": "d5cbb9117c6328fe298b4e70c5c2a2e9f920f6c4e3d157af2e4a3252818c9b13"
+    },
+    {
+      "path": "frameworks/js/network_search/src/napi_ims_reg_info_callback_manager.cpp",
+      "sha256": "bd378fe720be02437573ac1b6ec3c0ebb854e4055290c52f5f473df03f2f9420"
+    },
+    {
+      "path": "frameworks/js/network_search/src/napi_radio.cpp",
+      "sha256": "8655192359ae8a0e0448e095c329fcfe5ed740b1b65d5862ec98124bb34552da"
+    },
+    {
+      "path": "frameworks/js/network_search/src/set_network_search_mode_callback.cpp",
+      "sha256": "92dd7f6ac5eb50e689349b116b507dcb47825cd0b9331fa4e878efefac5a9595"
+    },
+    {
+      "path": "frameworks/js/network_search/src/set_nr_option_mode_callback.cpp",
+      "sha256": "ae5633c9f11a3584e8e13c02067f4904c06a515bd67dcc9aca2afdfc278f5d38"
+    },
+    {
+      "path": "frameworks/js/network_search/src/set_preferred_network_callback.cpp",
+      "sha256": "015d95a7454f5963662aae2a78fa3bddfd9b7512e5a4f4d09e6f3c09a93d577a"
+    },
+    {
+      "path": "frameworks/js/network_search/src/set_radio_state_callback.cpp",
+      "sha256": "cdfa76e80a40bc2de9a1b853b191e1e92777355d3eec627890f30aef2bae8144"
+    },
+    {
+      "path": "frameworks/js/sense/BUILD.gn",
+      "sha256": "e010a7c17cabf457e54c6ec09da3a7e7a8645614b7651b7e43413e9c6fe2b49f"
+    },
+    {
+      "path": "frameworks/js/sense/include/hidden_camera_detection_callback.h",
+      "sha256": "3640cb3756528cf485e44df36a80318a62cff7892991bee9c9f7410d8e452d55"
+    },
+    {
+      "path": "frameworks/js/sense/include/napi_sense.h",
+      "sha256": "be706baea2d0b564dc7183e9535aa48ada4a572c90924860273b0f329b95bd89"
+    },
+    {
+      "path": "frameworks/js/sense/src/hidden_camera_detection_callback.cpp",
+      "sha256": "43b79ebbc089c845b494a70e053bb020751e7201ce88337afbe49d0375bdf6db"
+    },
+    {
+      "path": "frameworks/js/sense/src/napi_sense.cpp",
+      "sha256": "f6d36a022dfe50775b5b06e275d131c4d23661188fc14b1519d6af48a7ebc406"
+    },
+    {
+      "path": "frameworks/js/sim/BUILD.gn",
+      "sha256": "861acaf0be2455266a6c256e25d141ed36181e2d1c5287739c7f61972c321758"
+    },
+    {
+      "path": "frameworks/js/sim/include/napi_sim.h",
+      "sha256": "a499ec9b466df89beb6944abb7c9e485208d391eb03923eeb34efbd57fd68c6a"
+    },
+    {
+      "path": "frameworks/js/sim/include/napi_sim_type.h",
+      "sha256": "69ea61861ad01a6e690664084eaf562e6d479d2c35ba85d8764c7a2e47223a3a"
+    },
+    {
+      "path": "frameworks/js/sim/src/napi_sim.cpp",
+      "sha256": "d420ddab77645f08327e26e02e88a692276108500f7aa0504be7575b93af437f"
+    },
+    {
+      "path": "frameworks/js/vcard/BUILD.gn",
+      "sha256": "d2be14d75770d17361be113363ae25904aa8b85f909a8361b6d2aad8eaf20eac"
+    },
+    {
+      "path": "frameworks/js/vcard/include/napi_vcard.h",
+      "sha256": "f5dad6a3d1f08f0171f21e10191ab1ee3eede26afedd72210e46cea067421d4c"
+    },
+    {
+      "path": "frameworks/js/vcard/include/napi_vcard_type.h",
+      "sha256": "009b9e38e4de4ac90693fdd679e6ab9d661e6f6c695136872585268b50e6dfe9"
+    },
+    {
+      "path": "frameworks/js/vcard/src/napi_vcard.cpp",
+      "sha256": "f53f050dd990a53038c57e6c3642b38a7fb4748001d6ba0b47883221c87f9a3c"
+    },
+    {
+      "path": "frameworks/native/src/cell_information.cpp",
+      "sha256": "99db2e9040e0fa1592247d8dab24492651584ca0b9689364867437d1ae491290"
+    },
+    {
+      "path": "frameworks/native/src/cell_location.cpp",
+      "sha256": "0a5dbf56e2876f5e386c187729a6fcb38e773eaf7ef7c7c51b148a537ff944b7"
+    },
+    {
+      "path": "frameworks/native/src/contract_request_data_parcel.cpp",
+      "sha256": "d505d9fdc1f54b99888426578318aa160e8e4baf7bc4aebaf7e75b03cd72063d"
+    },
+    {
+      "path": "frameworks/native/src/core_manager_inner.cpp",
+      "sha256": "ff5f5fcb88d352e6e7fce89eb34e2028863dbbe3a0ccad9fdb5afc729c2f6130"
+    },
+    {
+      "path": "frameworks/native/src/core_service_client.cpp",
+      "sha256": "11cf50d8837c612cddbd1f7867c61f1a47bfe787dd23fe94630f469589f02823"
+    },
+    {
+      "path": "frameworks/native/src/core_service_proxy.cpp",
+      "sha256": "d00c122d5fc2a42e786fe65ca9b524e5c11c6c7c0ae12950a3d7b2144022c069"
+    },
+    {
+      "path": "frameworks/native/src/download_profile_config_info_parcel.cpp",
+      "sha256": "885dc4d3fa754351b3c0c9acbf9cb6a1934b3b1792cffcf5217058c6d3f32889"
+    },
+    {
+      "path": "frameworks/native/src/download_profile_result_parcel.cpp",
+      "sha256": "73adacadd1d067538c3e3cb91cdab554966c67d1e57689ab9aa0ffaf6a6cb2f3"
+    },
+    {
+      "path": "frameworks/native/src/downloadable_profile_parcel.cpp",
+      "sha256": "27801890ef1536315e0c56f156957545e37d63b1ff316d3da8c49f2ca64be487"
+    },
+    {
+      "path": "frameworks/native/src/esim_service_client.cpp",
+      "sha256": "d9ae93eebc0e08ccfe98f75e8abf653ded03f850d6df58635e53cad8a6a7a03b"
+    },
+    {
+      "path": "frameworks/native/src/euicc_info_parcel.cpp",
+      "sha256": "24aeea72df864f45a5305d88ed5ab1ffc28bcf49465cd9a0510f9bdef0663409"
+    },
+    {
+      "path": "frameworks/native/src/get_downloadable_profiles_result_parcel.cpp",
+      "sha256": "b863d89539dcd946e886892bff01fcd6c8ef0ecf9ead97aaa9c55e5db5d3b550"
+    },
+    {
+      "path": "frameworks/native/src/hidden_camera_detection_callback_stub.cpp",
+      "sha256": "f5becebe72d0cbc9013f346fe1e0f2f11dea8a9e27844f97e62f4840f8ae74bc"
+    },
+    {
+      "path": "frameworks/native/src/i_network_search_callback_stub.cpp",
+      "sha256": "848e6584f55322954896fd5aadc81e17ad64109c7b41440aa5e85dec5f4019a4"
+    },
+    {
+      "path": "frameworks/native/src/iesim_service_callback_stub.cpp",
+      "sha256": "8ddd8cdefc0520ae4e3f418d218f7b8d662161029f5f3ec5870cb1fcac3071b9"
+    },
+    {
+      "path": "frameworks/native/src/ims_reg_info_callback_stub.cpp",
+      "sha256": "f2b4309c0c889ed9e37233f2129cce7e89c7d94ec52a8867741e105bfeae3e3d"
+    },
+    {
+      "path": "frameworks/native/src/network_information.cpp",
+      "sha256": "e9b1f97e49729a741219899a74ba96aef9117e9d28695bdfd63f26144cbd79f6"
+    },
+    {
+      "path": "frameworks/native/src/network_search_result.cpp",
+      "sha256": "aeda2846138bfd73d26f1d316fad5599c805ff085d7a5a5152f0d0240fc7f08d"
+    },
+    {
+      "path": "frameworks/native/src/network_state.cpp",
+      "sha256": "10665756ade3aff1d5b692c7279ec616f57f451224ea1addfb600b6e7c3cc338"
+    },
+    {
+      "path": "frameworks/native/src/nr_ssb_information.cpp",
+      "sha256": "e0693a95753bea554951dac8d9ea6f9a6f825006e1051bb8bff57c342a565f94"
+    },
+    {
+      "path": "frameworks/native/src/operator_config_types.cpp",
+      "sha256": "891c77eda302d76d7ceb0aee257e2b02c3e81d120a81c9b36432d869255aeedf"
+    },
+    {
+      "path": "frameworks/native/src/profile_info_list_parcel.cpp",
+      "sha256": "502634caafa2cafa42f78491bfb7fed793bb4be80d2aab8d4a99b96e815a6bd4"
+    },
+    {
+      "path": "frameworks/native/src/profile_metadata_result_parcel.cpp",
+      "sha256": "a4efa478aec0006db2d0cfe245eb34739998290608d10a7e7648db4b19394cf8"
+    },
+    {
+      "path": "frameworks/native/src/raw_parcel_callback_stub.cpp",
+      "sha256": "995061d2fe890071f909daa4173b6c8415f5a43a9686389e23f02a510d5e650f"
+    },
+    {
+      "path": "frameworks/native/src/resource_utils.cpp",
+      "sha256": "3dd86764e9c87da78d1c75dcdc4a14eb020c523c21b23308d6615d7db6d167ef"
+    },
+    {
+      "path": "frameworks/native/src/response_esim_result.cpp",
+      "sha256": "c2ad77bded942bb6a5e779ac428250237d4222acc38fca721e781b84cf639878"
+    },
+    {
+      "path": "frameworks/native/src/signal_information.cpp",
+      "sha256": "0ef932eea918395f5ecfe3ae3a51fc7d55289b48bef39afcf9175710f8e34442"
+    },
+    {
+      "path": "frameworks/native/src/tel_ril_base_parcel.cpp",
+      "sha256": "d58605b9317aae209ac5ac75b34a7b864e15039793bba9c7ca2b198aaa08715d"
+    },
+    {
+      "path": "frameworks/native/src/telephony_state_registry_client.cpp",
+      "sha256": "34ef229382dde3442b607c81639e0a2d25aecbf588bd3ecb9881b768d0df24bb"
+    },
+    {
+      "path": "frameworks/native/src/telephony_state_registry_proxy.cpp",
+      "sha256": "670dda0d25bbfb59c52255adad090df95f48f25b084e6ed19dbdfd8efd78befb"
+    },
+    {
+      "path": "hisysevent.yaml",
+      "sha256": "eea30dcc27b383e9d4c4a83c4d0990e58772d19bb33c6e650e9b5b11f8affdce"
+    },
+    {
+      "path": "interfaces/innerkits/BUILD.gn",
+      "sha256": "98e20d579bb25b1403168ef26bf40d12b43b41906aef5cb401dc5b525bc394f0"
+    },
+    {
+      "path": "interfaces/innerkits/IEsimService.idl",
+      "sha256": "e82ae0d9d1c49db689ff21eee8ec68d55e49f06cd6b9d21c7c6f36abd2bacbd1"
+    },
+    {
+      "path": "interfaces/innerkits/ims/include/ims_core_service_callback_interface.h",
+      "sha256": "278342144c11b99d41b09538fade11cd26f2782333ba67aad01b9637d04e4aea"
+    },
+    {
+      "path": "interfaces/innerkits/ims/include/ims_core_service_callback_ipc_interface_code.h",
+      "sha256": "e5a257bd2307355ce3e350c77dac99e4346a071dc76a56c57b131703cf2c23e8"
+    },
+    {
+      "path": "interfaces/innerkits/ims/include/ims_core_service_callback_proxy.h",
+      "sha256": "de98fcea464b2d6e9f6583c54104a793d67fb5ccea26c01e1cddbbdb376a5f90"
+    },
+    {
+      "path": "interfaces/innerkits/ims/include/ims_core_service_callback_stub.h",
+      "sha256": "3e7689847f1588891c7ee1c68bf410d942dfbd86b97611b094c2865c9b2202e2"
+    },
+    {
+      "path": "interfaces/innerkits/ims/include/ims_core_service_client.h",
+      "sha256": "f20ba08687a3a5cb95c0f1a44874e28585039ceba7c496270fb023e3581a30c3"
+    },
+    {
+      "path": "interfaces/innerkits/ims/include/ims_core_service_interface.h",
+      "sha256": "71645fbe73d38868348f056d39c1f16336daa52b8564aa5320b6e08c2a68930c"
+    },
+    {
+      "path": "interfaces/innerkits/ims/include/ims_core_service_ipc_interface_code.h",
+      "sha256": "befb1b7f228cba8606436329f605fd754b42b5cf325a054865878561e3624eaf"
+    },
+    {
+      "path": "interfaces/innerkits/ims/include/ims_core_service_proxy.h",
+      "sha256": "606196463cb7f8e8d4a45ae01c3e52af5a6ee6bef3c75e4170f4f137c6f00603"
+    },
+    {
+      "path": "interfaces/innerkits/ims/include/ims_core_service_types.h",
+      "sha256": "5f1a319ab73e3416c29ac859d1d3e5fd93f250a5af839656411a7c597fe70db8"
+    },
+    {
+      "path": "interfaces/innerkits/include/cell_information.h",
+      "sha256": "b65571ef482eb2ce9643bfa6aa2e50fa52eee6b10e2faa29b15f33883ca84d12"
+    },
+    {
+      "path": "interfaces/innerkits/include/cell_location.h",
+      "sha256": "e1a3675283e255aad8aa588af188fda5769fa38e37d978f120d1893d7c832e8f"
+    },
+    {
+      "path": "interfaces/innerkits/include/contract_request_data_parcel.h",
+      "sha256": "ff463b4d81c73846816a88a310ab5e69ee3161f9cdc239aee237a48f8440f992"
+    },
+    {
+      "path": "interfaces/innerkits/include/core_manager_inner.h",
+      "sha256": "99c7f22dc572b9f45ccd0f666855e490de741b9e9ad7292d72261842aae9a084"
+    },
+    {
+      "path": "interfaces/innerkits/include/core_service_client.h",
+      "sha256": "a23d409ec10eda832e6bb4bad73b99c1fc143e29f5c574330193ecada45ecf03"
+    },
+    {
+      "path": "interfaces/innerkits/include/core_service_common_event_callback.h",
+      "sha256": "6e9bd2d402ab6d1e9d222618c5074ed7500542c651a5ca93837e5c8fa330d8ef"
+    },
+    {
+      "path": "interfaces/innerkits/include/core_service_errors.h",
+      "sha256": "c50e10be20daaa9f81bdcf98ef5e914324b5ca5a150610691c52bead71ec0a5e"
+    },
+    {
+      "path": "interfaces/innerkits/include/core_service_ipc_interface_code.h",
+      "sha256": "0e26a3df7f873a81591b9e74dec600a1daabf96982c518af439baea18d83a62a"
+    },
+    {
+      "path": "interfaces/innerkits/include/core_service_proxy.h",
+      "sha256": "46cfae666e55660523d009b0cf92b4f33989214054b052bcbc6500ba383f0771"
+    },
+    {
+      "path": "interfaces/innerkits/include/desensitize_string_stream.h",
+      "sha256": "e21a4febb9b36ec5a9369c6d75b219117e6ce1482a826d697bbcabdd8187e9a2"
+    },
+    {
+      "path": "interfaces/innerkits/include/dialling_numbers_info.h",
+      "sha256": "69941f072cce935024c6429aed161eecf081dbaa4660bf937bb6157abd5e17bb"
+    },
+    {
+      "path": "interfaces/innerkits/include/download_profile_config_info_parcel.h",
+      "sha256": "d2b11403199b6212305d6247c79ac74301938e96177b0c4cb943cd4810c099f1"
+    },
+    {
+      "path": "interfaces/innerkits/include/download_profile_result_parcel.h",
+      "sha256": "343c84832765ef3532764de9a0c2683834749c13c8620ac9e3e2b9c26daff9a7"
+    },
+    {
+      "path": "interfaces/innerkits/include/downloadable_profile_parcel.h",
+      "sha256": "3f4a30254f484833f355f857b4e3e542f8457a02ddc4a3f5df6d116db92de0f7"
+    },
+    {
+      "path": "interfaces/innerkits/include/esim_service_client.h",
+      "sha256": "c5a9596187df6887524c3193bfe284c3d3b7f21cd365e8d8b63e79480fcaeb7d"
+    },
+    {
+      "path": "interfaces/innerkits/include/esim_state_type.h",
+      "sha256": "6f6602b99d4777cab5b083a96b88bcf242086ff5c9fffe95d82dbfd53fab3b0b"
+    },
+    {
+      "path": "interfaces/innerkits/include/euicc_info_parcel.h",
+      "sha256": "11a504e3c05570c97c86278239f7ed9f38df727413676b86ed2a4e6ae1b67ccd"
+    },
+    {
+      "path": "interfaces/innerkits/include/get_downloadable_profiles_result_parcel.h",
+      "sha256": "940ebd8d28e070da5e1851dcc7303d453facb11504f1ed9a1ad9396f7aa4a76b"
+    },
+    {
+      "path": "interfaces/innerkits/include/hidden_camera_detection_callback_stub.h",
+      "sha256": "e432b8d2d950dd2468a7e6d6b9294f76558bdd69d6701e607c434275c9142bd5"
+    },
+    {
+      "path": "interfaces/innerkits/include/i_core_service.h",
+      "sha256": "3beb3bba9f2d8ecb08d11e926c3761e3d7ce876742825241381edbaacdd51718"
+    },
+    {
+      "path": "interfaces/innerkits/include/i_core_service_common_event_hub.h",
+      "sha256": "cf6855885644f5cc119c4bbcf33e9ac3882753c94701ad4a9940b388d8d2e8ad"
+    },
+    {
+      "path": "interfaces/innerkits/include/i_esim_manager.h",
+      "sha256": "f1abc187c7796fc018ce1d22a91310d5c7aa68ebd680e57311ffef4f394cc6d7"
+    },
+    {
+      "path": "interfaces/innerkits/include/i_hidden_camera_detection_callback.h",
+      "sha256": "a274443fd233273c024860afd7130275de3c4df44a798b792c0e224d731e4cad"
+    },
+    {
+      "path": "interfaces/innerkits/include/i_icc_file.h",
+      "sha256": "7d59c7b8cbad1d23f747b64cbbe1100c27a63aef204a492fb77838f32d47f322"
+    },
+    {
+      "path": "interfaces/innerkits/include/i_network_search.h",
+      "sha256": "22c7ca27bba9993d22d01c7caa52a399cdd6886e154b8d0e931a1f71beac6d1d"
+    },
+    {
+      "path": "interfaces/innerkits/include/i_network_search_callback.h",
+      "sha256": "e69fe2bf1f5554966b8ceb319c27b9204026f12f4fb988bea849672a6abb41b6"
+    },
+    {
+      "path": "interfaces/innerkits/include/i_network_search_callback_stub.h",
+      "sha256": "125806bb5559ffd17b9ab00dba3ee5f55b079a1d1f46a1a2f48a6473d8974a23"
+    },
+    {
+      "path": "interfaces/innerkits/include/i_operator_config_hisysevent.h",
+      "sha256": "416e718e33c04473b73a63e858b0d913244a90e752a5a12493d777411477f16e"
+    },
+    {
+      "path": "interfaces/innerkits/include/i_raw_parcel_callback.h",
+      "sha256": "57756937b64603d7e48b37bbfa42494f5ed1dce82c9a708c4231de322d4821e0"
+    },
+    {
+      "path": "interfaces/innerkits/include/i_sim_manager.h",
+      "sha256": "4fb0c439602a1542b4b5afe42f4400423b20b293d2f7587bc0709f101ee5e398"
+    },
+    {
+      "path": "interfaces/innerkits/include/i_tel_ril_manager.h",
+      "sha256": "e4d6f790e91abf92981ed61460b4a7fd3d876936f67bd6b60878c028b30c60c6"
+    },
+    {
+      "path": "interfaces/innerkits/include/i_telephony_state_notify.h",
+      "sha256": "b4723445d481de8b6ed700d821386a50df29794bb0dd45c52041baefdf45afe2"
+    },
+    {
+      "path": "interfaces/innerkits/include/iesim_service_callback.h",
+      "sha256": "b673fdbd0518eb725ed518213603400443bbc7e859fdeb4034b2499dbb7307e3"
+    },
+    {
+      "path": "interfaces/innerkits/include/iesim_service_callback_stub.h",
+      "sha256": "9697e5ee4523fbf8d2fb96584aea56e2888c19c29c96e70f90b8f37539d30a3e"
+    },
+    {
+      "path": "interfaces/innerkits/include/ims_reg_info_callback.h",
+      "sha256": "4ba755c9cd947eea0cf6e7a76fb06dfd567358b5e26e6f3bffdedd0dc880831e"
+    },
+    {
+      "path": "interfaces/innerkits/include/ims_reg_info_callback_stub.h",
+      "sha256": "cd7e69bb0f8d787d9e73129f45e9d7f04bd499eeac63b8ef07a2e0893d96b157"
+    },
+    {
+      "path": "interfaces/innerkits/include/ims_reg_types.h",
+      "sha256": "7049dcb9abc6beb32b50b1445405f5480541b774c4ad63d7d2341288de965861"
+    },
+    {
+      "path": "interfaces/innerkits/include/network_information.h",
+      "sha256": "4a74547cc14571fa7a2cb33bc15d59ece5649c435b46c3e27d3c9d7f7a307aad"
+    },
+    {
+      "path": "interfaces/innerkits/include/network_search_callback_base.h",
+      "sha256": "2a4aeba32f3bde48b5a3fdccd04677b2dc73f06c176d2121eb014473205a0ecc"
+    },
+    {
+      "path": "interfaces/innerkits/include/network_search_result.h",
+      "sha256": "aea94f017242343824d5bba9230addeb0e19329fc78c1d1bf17cf528b9d66767"
+    },
+    {
+      "path": "interfaces/innerkits/include/network_search_types.h",
+      "sha256": "1b88fa8286f17433f88e1514399c6e93bac82f01423166158ef30779b81b6714"
+    },
+    {
+      "path": "interfaces/innerkits/include/network_state.h",
+      "sha256": "e7778e6d7d38069ad29d24ec2a4c4ca26b714cd07840659de7c1ec5df4c8e7b5"
+    },
+    {
+      "path": "interfaces/innerkits/include/nr_ssb_information.h",
+      "sha256": "ead754dbcadd8479e1b2933ebb8d7574fd18020a3ed975b83121e46d5111e49d"
+    },
+    {
+      "path": "interfaces/innerkits/include/operator_config_types.h",
+      "sha256": "b12c3de8c8672755d53505e247ad4509d5c5357b3d59b0edeaf10b6f0249cc1b"
+    },
+    {
+      "path": "interfaces/innerkits/include/operator_name_params.h",
+      "sha256": "1f35465f2f5e71516e33680c803a9dac844ca1b44616d30ee55843f62b9ebf32"
+    },
+    {
+      "path": "interfaces/innerkits/include/profile_info_list_parcel.h",
+      "sha256": "f567a00d1dfc9b29b771be5e911fb1a8070ce3b5c7ace048ce291702e317230b"
+    },
+    {
+      "path": "interfaces/innerkits/include/profile_metadata_result_parcel.h",
+      "sha256": "d8bc572bdd6baf9bdf17092b786fed0a78c2ade080c137492e5bb19d3c1edc64"
+    },
+    {
+      "path": "interfaces/innerkits/include/radio_event.h",
+      "sha256": "c586ad2a18ad5ce6b084eed957c40ed9e43e80f45acb4fbd56efd13e8b28e3a4"
+    },
+    {
+      "path": "interfaces/innerkits/include/raw_parcel_callback_stub.h",
+      "sha256": "c7fa15489a2ef8b70947760c4ac10981aff3e5d320a9f1118cc76a2759032d42"
+    },
+    {
+      "path": "interfaces/innerkits/include/resource_utils.h",
+      "sha256": "f303fac81beac26a0049c7c3caba2e3a1d994958ba1268ec3a91975f510800fd"
+    },
+    {
+      "path": "interfaces/innerkits/include/response_esim_result.h",
+      "sha256": "b48015615c25de8e670cbbc4f1a7f7d706ab865099bedaec9f7f1b9929da4bcd"
+    },
+    {
+      "path": "interfaces/innerkits/include/signal_information.h",
+      "sha256": "f3a618201ce238116a101e1c54675aff063ca902646044af5a1bbd86152a99c2"
+    },
+    {
+      "path": "interfaces/innerkits/include/sim_account_callback.h",
+      "sha256": "9cfc4f39fe8f8bff2a25ce0d28830f45f9ada5dec71270c656788e23c1c34614"
+    },
+    {
+      "path": "interfaces/innerkits/include/sim_state_type.h",
+      "sha256": "f15b2b632d0aab5bcb2d4ed40d6bb62e610b4dada4e9dd1381f26b47a488def0"
+    },
+    {
+      "path": "interfaces/innerkits/include/state_registry_errors.h",
+      "sha256": "752809f718b692e5046e303e357a0acadfca6aacfd8c97ed5fc6d8d547a49032"
+    },
+    {
+      "path": "interfaces/innerkits/include/state_registry_ipc_interface_code.h",
+      "sha256": "1f1bf470013648b99ddd8f86bf324eddc47959e8addc62110cb16c14c034af6b"
+    },
+    {
+      "path": "interfaces/innerkits/include/tel_ril_base_parcel.h",
+      "sha256": "b627279a4d8efed05f97ee8d581dc63ad43bc860d1d6789fcc47028d00a5450f"
+    },
+    {
+      "path": "interfaces/innerkits/include/tel_ril_call_parcel.h",
+      "sha256": "2426e135b41bd166941b6ae0fb4b7afe4ee6b934a6c54f93e4f2a5acd2a2209f"
+    },
+    {
+      "path": "interfaces/innerkits/include/tel_ril_data_parcel.h",
+      "sha256": "2a871e17746e086d33e0858f868e6be2453d5c6939ad220334f7debb1b18b37b"
+    },
+    {
+      "path": "interfaces/innerkits/include/tel_ril_enum.h",
+      "sha256": "ec6ace593f758fe27d24d678b941ea2b401f0bfb9ce30665d2b4d07e1febab8d"
+    },
+    {
+      "path": "interfaces/innerkits/include/tel_ril_modem_parcel.h",
+      "sha256": "9c77ee53f7a07f5504f1219a733109cf75b91bbebec4949e1a1829d6aecd74ab"
+    },
+    {
+      "path": "interfaces/innerkits/include/tel_ril_network_parcel.h",
+      "sha256": "7016f5311121a73a94b515c25f758b459d528ac12eaaa96350c8d6942dabd7c4"
+    },
+    {
+      "path": "interfaces/innerkits/include/tel_ril_sim_parcel.h",
+      "sha256": "9453b62b05d5445bd5221a781f71aaf9b0031567e828592c3bd3f9e227006ae2"
+    },
+    {
+      "path": "interfaces/innerkits/include/tel_ril_sms_parcel.h",
+      "sha256": "34c7c41a553bc68c224f4ccd98419ac2d539508ee4b7e0f8c2e06fbe9e93895d"
+    },
+    {
+      "path": "interfaces/innerkits/include/tel_ril_types.h",
+      "sha256": "541c120b8b2d16bc0121f05823ca6fe75352cdf52b98095ec2cffe1db85e87a1"
+    },
+    {
+      "path": "interfaces/innerkits/include/telephony_errors.h",
+      "sha256": "1812f61aeb05833c12f234bf8397d3883efbc853be6c1edde1a5e28af9f5d7bc"
+    },
+    {
+      "path": "interfaces/innerkits/include/telephony_observer_broker.h",
+      "sha256": "22071909050603f54520d55e77e8e90962618053c6ecdb09eee92be2466a2b69"
+    },
+    {
+      "path": "interfaces/innerkits/include/telephony_state_registry_client.h",
+      "sha256": "e73f7c5d4999c7b723e8eacd30e2e17454c371f87b4da2cd00512a6f6d5b16ac"
+    },
+    {
+      "path": "interfaces/innerkits/include/telephony_state_registry_proxy.h",
+      "sha256": "7114c7e1089cad5f91600dabb8087586b125f776fd68d86d1bfa2abf27019fe8"
+    },
+    {
+      "path": "interfaces/innerkits/include/telephony_types.h",
+      "sha256": "efe4a0a12dc63f962d839b6c7e1f96a141fff4ee10ff8ac8e42f59b05d6c7d04"
+    },
+    {
+      "path": "interfaces/innerkits/include/voip_call_state_info.h",
+      "sha256": "4ab831b19c5ae6e027391c34111a98f8d88a3fd5b34a096bba4bb424574d2ff3"
+    },
+    {
+      "path": "interfaces/innerkits/libtel_core_service_api.versionscript",
+      "sha256": "5a1be19082b8a4f9e294d2031dfb8fb6c12f96cc507d367741c4eb04a0c7beda"
+    },
+    {
+      "path": "interfaces/innerkits/satellite/i_satellite_core_callback.h",
+      "sha256": "9ec92537beae9d81bd69928e948cdf62c7f06cd3c9f25e2fb66ca45e3b4b1c51"
+    },
+    {
+      "path": "interfaces/innerkits/satellite/i_satellite_service.h",
+      "sha256": "fb05e6a759f93319b84b6ea6d0f3ccb511c0ea318c59039e7c9f6a4d2cd29dbb"
+    },
+    {
+      "path": "interfaces/innerkits/satellite/satellite_core_callback.h",
+      "sha256": "0357d0e42b5b668a6ffbcdf36f68b8fc10611aa0cfb820c35fb5590f433fdb18"
+    },
+    {
+      "path": "interfaces/innerkits/satellite/satellite_core_callback_ipc_interface_code.h",
+      "sha256": "7081e4562b49018b25f76b97ba68cfdd4810235137a0f59fa0f41be560475e44"
+    },
+    {
+      "path": "interfaces/innerkits/satellite/satellite_core_callback_stub.h",
+      "sha256": "bac975853da94dcc377ca3c4235ded2015487c6e5ad5731486625b4fbf4eeea7"
+    },
+    {
+      "path": "interfaces/innerkits/satellite/satellite_service_client.h",
+      "sha256": "7492335674b3ad5ae876051a42cce6bb415a441e3951bc782856f6607bee489d"
+    },
+    {
+      "path": "interfaces/innerkits/satellite/satellite_service_ipc_interface_code.h",
+      "sha256": "3aaf610b7ff1fae7481dea24d7ca7de7bb6c15501e4bfc006e01b5b561f28fff"
+    },
+    {
+      "path": "interfaces/innerkits/satellite/satellite_service_proxy.h",
+      "sha256": "70fcb391cbd94cca6158458af90dc8905e3075242e59f5fe7566d0ac2c85c625"
+    },
+    {
+      "path": "interfaces/kits/c/telephony_radio/BUILD.gn",
+      "sha256": "5f982697b4e50816c371a9ef230efb0a8cdd70fa4ac828400b138bde1b550a2d"
+    },
+    {
+      "path": "interfaces/kits/c/telephony_radio/include/telephony_radio.h",
+      "sha256": "3f6ef3e5c7910bf759a421988f1507418681a249723fef657c8f07eb882abc7d"
+    },
+    {
+      "path": "interfaces/kits/c/telephony_radio/include/telephony_radio_type.h",
+      "sha256": "952cc238f1cf58df1b1418ea2da745ffb8af62966b6ba59548fc203600d6b619"
+    },
+    {
+      "path": "interfaces/kits/c/telephony_radio/src/telephony_radio.cpp",
+      "sha256": "ab1971df4b8e1d3f9f089d5bd66fc46518bf4809981f79980e20184a7459a00c"
+    },
+    {
+      "path": "interfaces/kits/js/@ohos.telephony.esim.d.ts",
+      "sha256": "655f499c3347bcced48d7e5ebcafd380ba1e8c955fa745edc7c9565f13f64507"
+    },
+    {
+      "path": "interfaces/kits/js/@ohos.telephony.radio.d.ts",
+      "sha256": "4b0b4f66175f5b279bd0b0fa1b1f7fa56b2148fa574350f27f07e73f04c16506"
+    },
+    {
+      "path": "interfaces/kits/js/@ohos.telephony.sense.d.ts",
+      "sha256": "e8410f9ebac5b783d71848f16d3133a260efac8cc1e4315e0701f5be4fcb5dae"
+    },
+    {
+      "path": "interfaces/kits/js/@ohos.telephony.sim.d.ts",
+      "sha256": "6b6af6ed1ea5bd97454c7373075eb6fd1e558922960cfd34abbb19612b0a548a"
+    },
+    {
+      "path": "interfaces/kits/js/@ohos.telephony.vcard.d.ts",
+      "sha256": "cc822eaa44e85f6bd6ea91380a1809533f384af791c03f0b9a8263f4b00bbef7"
+    },
+    {
+      "path": "interfaces/kits/js/basic.d.ts",
+      "sha256": "b9092240fd4d957819d897803364b3b5b7edaa48b50a60422ab2157bc431b139"
+    },
+    {
+      "path": "libtel_core_service.versionscript",
+      "sha256": "63f8441cfc7166ba606ee4d2863b9089d4bf17e093b23ea4aa72961a0e1a2f6d"
+    },
+    {
+      "path": "sa_profile/4010.json",
+      "sha256": "0e439981e8d56f4c0bdd04dce79c7302d9fb9626d2186b10319470ca0f45c590"
+    },
+    {
+      "path": "sa_profile/BUILD.gn",
+      "sha256": "edeb033bdaf6178e35a32557229929b20e71f0a3bd8fd946980c541252966585"
+    },
+    {
+      "path": "services/core/include/core_service.h",
+      "sha256": "7fda6817165f57936e4d7f8eacd6523618553e65c2b06b12c6aad0ded9b16edb"
+    },
+    {
+      "path": "services/core/include/core_service_common_event_hub.h",
+      "sha256": "4eb94d8f45fd0758f9873d5f22e730470d0d61c7060c435ed0342c101b2ec2ad"
+    },
+    {
+      "path": "services/core/include/core_service_dump_helper.h",
+      "sha256": "af8b8750001b3b782d7a36253fb87c89bbe30240620d582f47807814d9d0c087"
+    },
+    {
+      "path": "services/core/include/core_service_hisysevent.h",
+      "sha256": "954d8a57afd2890fdf39331ee02eb743b566d4b4522fb3fd914781e91c7e5012"
+    },
+    {
+      "path": "services/core/include/core_service_sim.h",
+      "sha256": "0ae36e5495d879e172c8485b61d6bd486c597486b047b9a70f943c14c78e6559"
+    },
+    {
+      "path": "services/core/include/core_service_stub.h",
+      "sha256": "26a6513734573c81031e1f1e3945d20ec55991ff54fb229cdae2054599dd25b2"
+    },
+    {
+      "path": "services/core/include/raw_parcel_callback_proxy.h",
+      "sha256": "2a50bf7e08d14ae7d4fabf2df60545bb01d572de9d92195df638c4acb35c5916"
+    },
+    {
+      "path": "services/core/src/core_service.cpp",
+      "sha256": "d90d267f873346d00935c84729eb0951d2f2e6fb95f6de2cdb1af06e282fe70c"
+    },
+    {
+      "path": "services/core/src/core_service_common_event_hub.cpp",
+      "sha256": "b0c862a3433c53ea5b9f8c89a44537735898a151a6934694922f4fe612f8082e"
+    },
+    {
+      "path": "services/core/src/core_service_dump_helper.cpp",
+      "sha256": "1eaea37cbbccf23bc791a3571f55e68b020bc629ae09dbca7cdb5fbab8048a68"
+    },
+    {
+      "path": "services/core/src/core_service_hisysevent.cpp",
+      "sha256": "34bf546d96830b4e195a80af754fe0901f517f580276ba1bacc2e134691106af"
+    },
+    {
+      "path": "services/core/src/core_service_sim.cpp",
+      "sha256": "42ca3c8c0ae20584f56ba7d3471011ab64a7988e63ea69e41b5c2bbfef1e3a29"
+    },
+    {
+      "path": "services/core/src/core_service_stub.cpp",
+      "sha256": "463b6405922f48646fee6e28d05317b0a07d026a3d6e08d3fef66fd3bbae9f2a"
+    },
+    {
+      "path": "services/core/src/raw_parcel_callback_proxy.cpp",
+      "sha256": "b0e95518797be4eb0c9ea660f9162ee7f160711607b35662c844bc85bfa5dff6"
+    },
+    {
+      "path": "services/etc/carrier/BUILD.gn",
+      "sha256": "1ca92955cdfb189b7b63350ba9a4c79474b71ce2669c81cc6a8e2ea5bbb975aa"
+    },
+    {
+      "path": "services/etc/carrier/operator_config.json",
+      "sha256": "870626d910fc14af2469d7d7f44755fa8325e90f54f447d6debb5186955d4823"
+    },
+    {
+      "path": "services/etc/init/BUILD.gn",
+      "sha256": "23871685d3181849979f9f94637fcb24d34e3f1ee42c078188a8d93d7f3767af"
+    },
+    {
+      "path": "services/etc/init/telephony.cfg",
+      "sha256": "98e21da5da953b96b0122365b1a7da21b3047155a219336393170a78948831af"
+    },
+    {
+      "path": "services/etc/init/telephony_trust.json",
+      "sha256": "01f3b98c1dcbe3476e568f71c33b25d3c3eba5ef64381ad4ea818ffd1ec93601"
+    },
+    {
+      "path": "services/etc/operatorname/BUILD.gn",
+      "sha256": "42df33106e5854fd6db97ae676e4487240da295216dd3bac742a9d69f7110482"
+    },
+    {
+      "path": "services/etc/operatorname/operator_name.json",
+      "sha256": "23a011ffb3a1bfee3cafcd46299115c7046152569ef54f36b15fdbf57a5986a3"
+    },
+    {
+      "path": "services/etc/param/BUILD.gn",
+      "sha256": "6d5191a274178218bb4c9daac14f71cae0e3d3c725319de77e6fba047d6db464"
+    },
+    {
+      "path": "services/etc/param/telephony.para",
+      "sha256": "86b07bf0dddd586797cdc3ce928fe7247da1e1c312f45b52dcdd65de17eea984"
+    },
+    {
+      "path": "services/etc/param/telephony.para.dac",
+      "sha256": "57ee68260f769d541f73d68386af3d04754d0b6a458bda704ab00d6cb06a3536"
+    },
+    {
+      "path": "services/ims_service_interaction/src/ims_core_service_callback_proxy.cpp",
+      "sha256": "37275f1cf265fd47777ca695f131b0d68cef636a836ae55aba9ef8ab2ab1dd4d"
+    },
+    {
+      "path": "services/ims_service_interaction/src/ims_core_service_callback_stub.cpp",
+      "sha256": "0d7ce5470ce70ecc9cff35a270e4878d32c501d730b9dc58549ecaab51234ee4"
+    },
+    {
+      "path": "services/ims_service_interaction/src/ims_core_service_client.cpp",
+      "sha256": "e39a1a36fc5f353da7f746f54fe36020b2fc5df6c7a8148509461188c0b8699d"
+    },
+    {
+      "path": "services/ims_service_interaction/src/ims_core_service_proxy.cpp",
+      "sha256": "891dc8dac1236560e19b280d34e4d991db12ae30312afbed5904f9730427e37a"
+    },
+    {
+      "path": "services/network_search/include/cell_info.h",
+      "sha256": "ee54f363f51bfd9ec75e8979dd8ca538805752eb14e76d0eade89efc09dda229"
+    },
+    {
+      "path": "services/network_search/include/device_state_handler.h",
+      "sha256": "db91d6924b67d25589656a8878d16c6374ee6db6c636d7a2e27854b8d7edb36e"
+    },
+    {
+      "path": "services/network_search/include/device_state_observer.h",
+      "sha256": "e8c93c522f48d09bcff30ca4e4de4f16089379ec475c8420e85f7f4299044412"
+    },
+    {
+      "path": "services/network_search/include/ims_reg_info_callback_proxy.h",
+      "sha256": "c9e9dc8531356eb96be06f3827cc4d5cd5eb79823202e07efa93b3da8402968c"
+    },
+    {
+      "path": "services/network_search/include/manual_network_scan.h",
+      "sha256": "01d99ba597e8e164f6956738dce0c1ea1599201fe13ba3bf7edf62e06d835150"
+    },
+    {
+      "path": "services/network_search/include/manual_network_scan_callback_death_recipient.h",
+      "sha256": "22b024d9f82659f17739a1450155dceffceb71ed4f28e24729687da1178d55bb"
+    },
+    {
+      "path": "services/network_search/include/network_register.h",
+      "sha256": "c5d79e87bee1c15862d12d9a3f51a72dd97ef2feebbc6cab81886f6a71601939"
+    },
+    {
+      "path": "services/network_search/include/network_search_callback_proxy.h",
+      "sha256": "6009ff283cbc3c4e91f25e1d65eb6a7dcd26a24c82961ca757c1226d97b8ede5"
+    },
+    {
+      "path": "services/network_search/include/network_search_handler.h",
+      "sha256": "5120a0de4bd6d8ebf1d7d731449a1764a2c591ec3bbe7318019d7388e40ed3ae"
+    },
+    {
+      "path": "services/network_search/include/network_search_manager.h",
+      "sha256": "d1f283b1313497632fc83d1ef13b7308de51b4ae135208d673421bb7415a571d"
+    },
+    {
+      "path": "services/network_search/include/network_search_notify.h",
+      "sha256": "1d49302be24f16d318e0efa9196a330c5b7cc1e379b96295d84d1678680a1f7b"
+    },
+    {
+      "path": "services/network_search/include/network_search_state.h",
+      "sha256": "ce588260701e0fa06af5bc874ec358fe0b07d5b92926f903ed5712c0cebd6d0f"
+    },
+    {
+      "path": "services/network_search/include/network_selection.h",
+      "sha256": "3c9c2073b932b525d8e614634b0e0d19b9a706176fb94088c7c5a99d1f083164"
+    },
+    {
+      "path": "services/network_search/include/network_type.h",
+      "sha256": "76d8b65f59a63d590b740109366711ebf74ed798f3a759083e604395b6b54f56"
+    },
+    {
+      "path": "services/network_search/include/network_utils.h",
+      "sha256": "2fdba9fb31c713033d30f5a04d0e646f7c44e6b842d8d9838f3c712c93bf4a93"
+    },
+    {
+      "path": "services/network_search/include/nitz_update.h",
+      "sha256": "e309afb54f5e4717daf54cbeeac7050d82599250bc7bab35639894a95c5c7ac8"
+    },
+    {
+      "path": "services/network_search/include/nr_ssb_info.h",
+      "sha256": "5581c403c5f8a1391ffbd314c7feb894a2cdcf5209e10789ae4510c01796e8be"
+    },
+    {
+      "path": "services/network_search/include/operator_name.h",
+      "sha256": "38d80ef00a80ac8c2ddd90459c799517d0a6e687e61ca09140e502f5cee7a619"
+    },
+    {
+      "path": "services/network_search/include/operator_name_utils.h",
+      "sha256": "815452f19a6b44397ff1d3f8fd16640b5c5829af1cde660f366226fd6f4ea4d9"
+    },
+    {
+      "path": "services/network_search/include/radio_info.h",
+      "sha256": "c0e2a613a7e0c5b4e9524e9a4bf1bfc9e5cf5c7d9ba66d2a6333e85e3d24adf5"
+    },
+    {
+      "path": "services/network_search/include/setting_utils.h",
+      "sha256": "4db7fa271d718790a5e9e3f29fe617ce9d9b8862642af05ff4c7d574cd58fa3a"
+    },
+    {
+      "path": "services/network_search/include/signal_info.h",
+      "sha256": "bf6250b609d4db92cf81b0580077ee733e21bdea51f8c07192386be0729502d1"
+    },
+    {
+      "path": "services/network_search/src/cell_info.cpp",
+      "sha256": "40bde341fce21cf6a8dc9a271c72f5e2ef702775defd0794abfa5b266424f627"
+    },
+    {
+      "path": "services/network_search/src/device_state_handler.cpp",
+      "sha256": "cc7272e8b54c801b9b8dd77b13d0e6bab688605c13379e3972eb0e5934b7fc81"
+    },
+    {
+      "path": "services/network_search/src/device_state_observer.cpp",
+      "sha256": "634286a38bf15aeeef6e84cecb118df48e64c2fce164e7d92224d27df3d3552d"
+    },
+    {
+      "path": "services/network_search/src/ims_reg_info_callback_proxy.cpp",
+      "sha256": "2eb6be36edaec4dace407b88e13cf5a0f2f2274c199aaa7e1f2575c7a09753e0"
+    },
+    {
+      "path": "services/network_search/src/manual_network_scan.cpp",
+      "sha256": "29d2eb7ddb0270286f1afef5b811b657e0c4df65eb2e0a9ef21dd85351e75829"
+    },
+    {
+      "path": "services/network_search/src/manual_network_scan_callback_death_recipient.cpp",
+      "sha256": "3a5e9eef6440e0347689ae737d40b74cf98d22927e53bf7e0892cc707eea9351"
+    },
+    {
+      "path": "services/network_search/src/network_register.cpp",
+      "sha256": "d47c12b5642e6be715a1565e7968fd8632026b18b8a0cc0b5d86ceff6ec2c314"
+    },
+    {
+      "path": "services/network_search/src/network_search_callback_proxy.cpp",
+      "sha256": "63713a61ae63c818e5dd132b0ba52d87b4b697c29de42dd8445a5a587db4746a"
+    },
+    {
+      "path": "services/network_search/src/network_search_handler.cpp",
+      "sha256": "3ec804e2562212645f47e2e9909c6a8fd2d68641a7437f0b520d5b256146456a"
+    },
+    {
+      "path": "services/network_search/src/network_search_manager.cpp",
+      "sha256": "273d7a109081c62c61462ff530e40e81053a57e4a628b8dffe4196e00dcfe779"
+    },
+    {
+      "path": "services/network_search/src/network_search_notify.cpp",
+      "sha256": "e57611b6ecc341b9019584ae9c799ffea78d75011257a588b28912b2295538cf"
+    },
+    {
+      "path": "services/network_search/src/network_search_state.cpp",
+      "sha256": "f888816c90bf8d6cad74309619faa24f39a80b18cca48d026a04c0ee2d34c54e"
+    },
+    {
+      "path": "services/network_search/src/network_selection.cpp",
+      "sha256": "9cfdde330fcc23b4f99e330c995fd40202692e2642e4f26c2a2c013fcaace8ac"
+    },
+    {
+      "path": "services/network_search/src/network_type.cpp",
+      "sha256": "f9cbcebf75d62fe0671555ecfcdc290f0e6a0c2cd41497294bc71fb3b8785b55"
+    },
+    {
+      "path": "services/network_search/src/network_utils.cpp",
+      "sha256": "481bc425eb340004ff3443fbea9819859afc3f668dbf7f45f18cd33ed5441956"
+    },
+    {
+      "path": "services/network_search/src/nitz_update.cpp",
+      "sha256": "4f0450e6f6a120c2009172b7500b25d88286f1168f1bd8157c9bc1b78d0e38c4"
+    },
+    {
+      "path": "services/network_search/src/nr_ssb_info.cpp",
+      "sha256": "15cb81ef4f940ebeebafd06712360512ccabde8c587707d93da42f8b5063c4ea"
+    },
+    {
+      "path": "services/network_search/src/operator_name.cpp",
+      "sha256": "bd5f8abcb0ce88d7e74fb97440f6e6204cee112848a50b4c3c34de4556a5e19c"
+    },
+    {
+      "path": "services/network_search/src/operator_name_utils.cpp",
+      "sha256": "9c264df5c15435142e39b40a676dc24307105d992ac1511aa8208c3b4d954cf3"
+    },
+    {
+      "path": "services/network_search/src/radio_info.cpp",
+      "sha256": "7ceb6c696191d6ead117424ea1e03dbf141075862924d7581dec25d55d465675"
+    },
+    {
+      "path": "services/network_search/src/setting_utils.cpp",
+      "sha256": "34cbc6e3dc32084221b82902734e87d94d20424a5e9b8656563255325ee13c80"
+    },
+    {
+      "path": "services/network_search/src/signal_info.cpp",
+      "sha256": "dd355c7097e41075800a6aea4db644320e991823dad6eec3af38e0d5a0a52dba"
+    },
+    {
+      "path": "services/network_search/test/BUILD.gn",
+      "sha256": "c914227dfb0437fcf995ef5917b11850b20ddc86b50fa8b26dbf94d58c0928f5"
+    },
+    {
+      "path": "services/network_search/test/ims_reg_info_callback_test.cpp",
+      "sha256": "5374460838284894fc2685524a358182101c0324b98dc16d90b7c5c174215b69"
+    },
+    {
+      "path": "services/network_search/test/ims_reg_info_callback_test.h",
+      "sha256": "f8698e19acb342af23f65ffa74d8d13c69bcce8103c63b23330ed70857c84171"
+    },
+    {
+      "path": "services/network_search/test/network_search_test_callback_stub.cpp",
+      "sha256": "6cd2c79aabf9b0bd6c582d7b27ef7b12a5f3d85f500779c99de3423660f9ddfb"
+    },
+    {
+      "path": "services/network_search/test/network_search_test_callback_stub.h",
+      "sha256": "e15e7fdf5b13c853d987c8e6cce79d82fc516e9694854a92e57e55f9fc3fea36"
+    },
+    {
+      "path": "services/network_search/test/test.cpp",
+      "sha256": "16c7dcfb4e9d5667190024e0cbe2b9e545f7345394c80e2ef7caf875cbb74245"
+    },
+    {
+      "path": "services/network_search/test/test.h",
+      "sha256": "158df958114998eb59ee4642952e6c5fe8754a95865399ec5c3c70adcdbf7dc1"
+    },
+    {
+      "path": "services/network_search/test/test_broadcast.cpp",
+      "sha256": "3683e2abfc664c004e2f547e848f1766ba82f14a98f3d44a041210c71bcac5f9"
+    },
+    {
+      "path": "services/network_search/test/test_broadcast.h",
+      "sha256": "814fa9d8342f0bec36dd2188760b32a13e62a7d111ed2d5af9bb2344a1ced570"
+    },
+    {
+      "path": "services/satellite_service_interaction/src/satellite_core_callback.cpp",
+      "sha256": "ac9e1443d95be3542fec2069ad4950233c6ae796779d675cc1eb5c2924f2c3c4"
+    },
+    {
+      "path": "services/satellite_service_interaction/src/satellite_core_callback_stub.cpp",
+      "sha256": "23fb5c908decb51c97cc06988680f30e55c0cdbcf1297494a602c86508429eec"
+    },
+    {
+      "path": "services/satellite_service_interaction/src/satellite_service_client.cpp",
+      "sha256": "4f87f0e9b8035df05228d4db2e1c9fc12559f2b64f0cc20745e1710fc9cf26f3"
+    },
+    {
+      "path": "services/satellite_service_interaction/src/satellite_service_proxy.cpp",
+      "sha256": "b48c1578db76d1640907279cf4bd7a9971c0e0acd0d18b478ccfe7fa1faefe56"
+    },
+    {
+      "path": "services/sense/include/hidden_camera_detection_callback_proxy.h",
+      "sha256": "3965148c857c056378c4ab59c9b51a327a0da3d2c00ad756b558dad999a547a1"
+    },
+    {
+      "path": "services/sense/src/hidden_camera_detection_callback_proxy.cpp",
+      "sha256": "a25b4538a432d927d87d65ac41a952ee0a792622f32e8cfb88b5845ad5c4ec8c"
+    },
+    {
+      "path": "services/sim/include/card_file_detect_manager.h",
+      "sha256": "9796a0ecf3a757c95250e2288c6ee9296139ef1e364be04a4cb4bc0e3554591e"
+    },
+    {
+      "path": "services/sim/include/csim_file_controller.h",
+      "sha256": "2ae9a49d59bb1cf0439637734c2244bc064bc783c1d4096819affafe27df0a3f"
+    },
+    {
+      "path": "services/sim/include/esim_controller.h",
+      "sha256": "f404c69a5b1b25687157da425073d52281431b3c72b34424462b91355d224abb"
+    },
+    {
+      "path": "services/sim/include/esim_file.h",
+      "sha256": "dbeaf949552b4852e987c922e2a66d620698b63cd0d6fe30e8c062b7a5d2b73f"
+    },
+    {
+      "path": "services/sim/include/esim_manager.h",
+      "sha256": "b5b974bb4edaa2f207a57fa49d6c35fc38569c6e57705ffd1c0c3a15b1cf0f6e"
+    },
+    {
+      "path": "services/sim/include/icc_dialling_numbers_cache.h",
+      "sha256": "839f98ca11659bd5b1ca19387f53d05761d0a797dfe5c0c46abfdfec66824b0e"
+    },
+    {
+      "path": "services/sim/include/icc_dialling_numbers_handler.h",
+      "sha256": "e25a85e00b0e8c01f0688d704bb35fa69fb7789ee6ceef74a204c7063e0f5e47"
+    },
+    {
+      "path": "services/sim/include/icc_dialling_numbers_manager.h",
+      "sha256": "ca9a474a7e94c4e10371f660df2f25cb7d2dcce2fc0cbe55cc5b8304f40ea64d"
+    },
+    {
+      "path": "services/sim/include/icc_file.h",
+      "sha256": "e97892738668f2fb56fac5e6ecb60f742012d602f68870f45d2f6cbb713957bd"
+    },
+    {
+      "path": "services/sim/include/icc_file_controller.h",
+      "sha256": "73bafcba0cc87478c1fe8329197b2e63491ec766375adb09c31e629a054752a3"
+    },
+    {
+      "path": "services/sim/include/icc_operator_privilege_controller.h",
+      "sha256": "ce5e9de76a1a5011aea11de107f8b9b094eefcb0aa1f46371c1370ca5f4346e6"
+    },
+    {
+      "path": "services/sim/include/icc_operator_rule.h",
+      "sha256": "7acf16c6ab125bb3a937c5e726f0e51934bb829dba3187a1c3d4661e19380fde"
+    },
+    {
+      "path": "services/sim/include/icc_state.h",
+      "sha256": "7ef055687664f7609d4de641afdad1cb3ffdc95e9b731e76caebe9632f31f701"
+    },
+    {
+      "path": "services/sim/include/isim_file.h",
+      "sha256": "0a4d46f92cf16784d0a2e8a6e7b8d6343544f5781954b1851f2d23b9acb84abd"
+    },
+    {
+      "path": "services/sim/include/isim_file_controller.h",
+      "sha256": "c4d98052522882943cb15102428fed85abdaa28589067d4cb7a89bad1044962f"
+    },
+    {
+      "path": "services/sim/include/mcc_pool.h",
+      "sha256": "b0d536aace1d4a75f0fd991968ed13b2f0fff5dc2c7d8c2c891239c256685159"
+    },
+    {
+      "path": "services/sim/include/multi_sim_controller.h",
+      "sha256": "bc0e1edd8fbb0916bcbdb2f8e82ba9a289cac022ca691e926da817bea3288b8c"
+    },
+    {
+      "path": "services/sim/include/multi_sim_helper.h",
+      "sha256": "932bbdaed8bc01730e43162dd4b49294fb1e3ace5e9a03b26eeb0ba9ecbf5e5e"
+    },
+    {
+      "path": "services/sim/include/multi_sim_monitor.h",
+      "sha256": "81aa95a4ef31acc250fac70cdf457bfc2b6803a136008bd662816562575ca15e"
+    },
+    {
+      "path": "services/sim/include/operator_config_cache.h",
+      "sha256": "f6d7d4f67cd72e69e4153f93c81b268f54eb4d9298eba8ff2f1851d84d8245a9"
+    },
+    {
+      "path": "services/sim/include/operator_config_hisysevent.h",
+      "sha256": "d23a92cc54bbdb8035127adfc880c36d26ca0617da834b26a5ce8be660424a9a"
+    },
+    {
+      "path": "services/sim/include/operator_config_hisysevent_enum.h",
+      "sha256": "e232569ca3464d3ce94e2fc9a1b1d495e86481531fe5052578d74b7f37cea843"
+    },
+    {
+      "path": "services/sim/include/operator_config_loader.h",
+      "sha256": "f0c7a7daf8b1c7e34f38178f92708f472eea434edb7a902f64b2e6abf46d8678"
+    },
+    {
+      "path": "services/sim/include/operator_config_matchsim_info.h",
+      "sha256": "b07197d0de955b9c8780e20169a3b3fbcd60b34e9e813c7f4ab54424fb5c8f80"
+    },
+    {
+      "path": "services/sim/include/operator_file_parser.h",
+      "sha256": "069f994b68d9d629bd6bb3fb9c014fa50d6bbbce898cc346dd1f0c23dc17e066"
+    },
+    {
+      "path": "services/sim/include/operator_matching_rule.h",
+      "sha256": "bff37f552cca58d3bf4d04721daf302503df2ef0a1bc280896014bff538c41bc"
+    },
+    {
+      "path": "services/sim/include/pdp_profile_rdb_helper.h",
+      "sha256": "a4a123a286ca5ecb7b6f4ae9156afcbc43a4fef0d6ce5c6f68e6978cc9caef31"
+    },
+    {
+      "path": "services/sim/include/plmn_file.h",
+      "sha256": "ebced6e316ad006128f0a8c1539a62068b89b76db150a3881d2c93e8de52cd33"
+    },
+    {
+      "path": "services/sim/include/radio_protocol_controller.h",
+      "sha256": "c6674586f472553877cc9edf922a68296c72f769e222c1709481bddec4c5bb81"
+    },
+    {
+      "path": "services/sim/include/ruim_file.h",
+      "sha256": "802d19e78c55122a178385e1d3652a79ece935b12515b16c7941b91322882fd4"
+    },
+    {
+      "path": "services/sim/include/ruim_file_controller.h",
+      "sha256": "eafe54563c966129f5494b4b1424541a6b50da6bd2145e3d7815560850ff4e24"
+    },
+    {
+      "path": "services/sim/include/sim_account_callback_death_recipient.h",
+      "sha256": "43ff58950d1851d510a6d75f6c688738e1589ecdab4605bf86630b3deaabdac9"
+    },
+    {
+      "path": "services/sim/include/sim_account_manager.h",
+      "sha256": "d23c7dde1238b7ad5781dd2393921327fd07dbadd579eaa43413e88054025318"
+    },
+    {
+      "path": "services/sim/include/sim_cache_sync_manager.h",
+      "sha256": "d0853008944cb9b26ce92d66dcd7d3704177c01d02715dad1732aa72005fe6f9"
+    },
+    {
+      "path": "services/sim/include/sim_char_decode.h",
+      "sha256": "31b123fb5e82d97635eb4b517d2c9c7e987cabe3739e3d49438486f95227be24"
+    },
+    {
+      "path": "services/sim/include/sim_constant.h",
+      "sha256": "4d7e83409181add15606fd0e6853ebce7792a7d20643b20b70f93464352ce1ec"
+    },
+    {
+      "path": "services/sim/include/sim_data_type.h",
+      "sha256": "79b5de7b3a3bff6dd0f6cf46282c73069771c17ea78bee3c4731b81755c3f57d"
+    },
+    {
+      "path": "services/sim/include/sim_file.h",
+      "sha256": "20986741e662bdd808c936dfdb43ec34b82029fc07832211a4e86b13bce3cfa9"
+    },
+    {
+      "path": "services/sim/include/sim_file_controller.h",
+      "sha256": "6a925f27165bbd24b412f04441aa089460a209459252cbf94958ccc14a4349f3"
+    },
+    {
+      "path": "services/sim/include/sim_file_init.h",
+      "sha256": "da7ca3975c1c6ca4b2ed93e6eba34171b4e1f9f8c86eb6a59898fe39bb98cd94"
+    },
+    {
+      "path": "services/sim/include/sim_file_manager.h",
+      "sha256": "6e949021392d5086410737735220b44adedd0f153fe8da29ff21c9efc87f6910"
+    },
+    {
+      "path": "services/sim/include/sim_file_parse.h",
+      "sha256": "f2d70f563c7156df8e6f4daa76b74c98114290b66391fb393899a87c191517f3"
+    },
+    {
+      "path": "services/sim/include/sim_manager.h",
+      "sha256": "f92d52e1e6f19a22e228acae9431d568ddf1dffa9af3d775f0bdd6f075973c18"
+    },
+    {
+      "path": "services/sim/include/sim_number_decode.h",
+      "sha256": "9d3d5934200c89e574de4d72fa93b2fd4d85e6704685556f9e4ca63ba7dcf48d"
+    },
+    {
+      "path": "services/sim/include/sim_rdb_helper.h",
+      "sha256": "f49976ffad63473f7915ce37ef0cce76247a1c957f10c06443891d908cdb4555"
+    },
+    {
+      "path": "services/sim/include/sim_rdb_info.h",
+      "sha256": "9f655851f651fe1903a50d44896976d79c78b5000d1950b83585e61486d59277"
+    },
+    {
+      "path": "services/sim/include/sim_sms_controller.h",
+      "sha256": "dc90a2073910ffd591f443a89a98cc80e5cdeb67b0dd8359622e51cccac1d665"
+    },
+    {
+      "path": "services/sim/include/sim_sms_manager.h",
+      "sha256": "ae67af5e95f8bf387a770c4c946c7cc727404b7129e9edb7b897e2dc7479c58b"
+    },
+    {
+      "path": "services/sim/include/sim_state_handle.h",
+      "sha256": "cf13daaa44ad027f8f2d0af8063781dcdd2e9e79b627255cc03d3316901d5227"
+    },
+    {
+      "path": "services/sim/include/sim_state_manager.h",
+      "sha256": "228abcb8d2553958812afb78b01bc1a98e3ef163d03fa432c93d8ec9af2ec9b7"
+    },
+    {
+      "path": "services/sim/include/sim_state_tracker.h",
+      "sha256": "49ae35423ccf9d744825c7948130ecb14d448655ceb9327f2392dadbce642b93"
+    },
+    {
+      "path": "services/sim/include/sim_utils.h",
+      "sha256": "0032f85b6decb284781d4987ab3079c77095052e01d1c4eba7439485051ef67b"
+    },
+    {
+      "path": "services/sim/include/start_osu_result_callback.h",
+      "sha256": "7510919aecc8fa04d3bb40070ead52a7ffabe8c511cd0c0e65167e036c5e41a5"
+    },
+    {
+      "path": "services/sim/include/stk_controller.h",
+      "sha256": "40202ac2201302666d78cbe813cb39c9bd27a8408afd31b4c252b774b699cbd8"
+    },
+    {
+      "path": "services/sim/include/stk_manager.h",
+      "sha256": "30dc50b33332a973601472147c2d5fe98c339f4448235a0b599223976478882e"
+    },
+    {
+      "path": "services/sim/include/tag_service.h",
+      "sha256": "bca35146f0ffe760823c9955f90afdd610c79df6b52342f5704c0c3fa2bb237f"
+    },
+    {
+      "path": "services/sim/include/telephony_data_helper.h",
+      "sha256": "0c07448ff656cf59f68dd11156229df6de6091066c824dbc659ddd4ba49200e0"
+    },
+    {
+      "path": "services/sim/include/usim_dialling_numbers_service.h",
+      "sha256": "6fff614d8531bc46d014a14119690044094172b539a6b70055175eec8ca965f0"
+    },
+    {
+      "path": "services/sim/include/usim_file_controller.h",
+      "sha256": "0955206cb762657b2247d69838c0e30ecd660df86a96097d09c3aebfdfa2447a"
+    },
+    {
+      "path": "services/sim/include/usim_function_handle.h",
+      "sha256": "e5d83b022562737d88409495577d1fe3288661280acf545eb6e68914b1db87ad"
+    },
+    {
+      "path": "services/sim/include/voice_mail_constants.h",
+      "sha256": "4a192b5fba35f2cf1ece3181215c1a88274da4b6c1fd8cadbd244df02fa6c873"
+    },
+    {
+      "path": "services/sim/src/card_file_detect_manager.cpp",
+      "sha256": "2986acdc382f702f0a08ee15d446d68e9a9dec846189a90e322effe762425c41"
+    },
+    {
+      "path": "services/sim/src/csim_file_controller.cpp",
+      "sha256": "75f97ec8e56290ed8e06b130e3a528e937b7cf2b8decf8b8fde5a44deae7b0df"
+    },
+    {
+      "path": "services/sim/src/esim_controller.cpp",
+      "sha256": "a861890109636f5df12579b9a497c78fa2b07eb2b9efc7a72013dcabbe071c05"
+    },
+    {
+      "path": "services/sim/src/esim_file.cpp",
+      "sha256": "55b1216126b8a5c045fcb726f75ed319400e6f203e8314888fcccd399b834046"
+    },
+    {
+      "path": "services/sim/src/esim_manager.cpp",
+      "sha256": "f63cf58eaedbd74c45285a6cdab153bafd1e83cd016e3e838d483fbd47971621"
+    },
+    {
+      "path": "services/sim/src/icc_dialling_numbers_cache.cpp",
+      "sha256": "f150a14d526073d183c0526e05fd17d52c3ee4e7b2da431191517bfa2cbd63ed"
+    },
+    {
+      "path": "services/sim/src/icc_dialling_numbers_handler.cpp",
+      "sha256": "0d3eaf5536f5d2155ae0e5741f6acd734ef9ccb5bf785fee39a4dcc6ad371f1a"
+    },
+    {
+      "path": "services/sim/src/icc_dialling_numbers_manager.cpp",
+      "sha256": "5169424b7d29c86043e513f7b4d9bc4cad183df4eab7177407b1e03e39043c94"
+    },
+    {
+      "path": "services/sim/src/icc_file.cpp",
+      "sha256": "23eaea110b04d9a98e66b1ce1f169ed4fd485c509ae8ee0ced9bf28f508f3aff"
+    },
+    {
+      "path": "services/sim/src/icc_file_controller.cpp",
+      "sha256": "397c7805e3130236c355a0144a868bd8d091ebe7347e6856cb07e995f5fd3471"
+    },
+    {
+      "path": "services/sim/src/icc_operator_privilege_controller.cpp",
+      "sha256": "3c35b4efb01ea59ecd068e2ed0a226aeb3613194a452484bbf6874277999aba8"
+    },
+    {
+      "path": "services/sim/src/icc_operator_rule.cpp",
+      "sha256": "03b27f8ec60614f63d603fa3091ca2d10125fe5881f492f0d3ab387faf2b8ed2"
+    },
+    {
+      "path": "services/sim/src/icc_state.cpp",
+      "sha256": "f44d7f4ba3a3dec16a0edb9ba8b24b6d1bcb66f50fce9d79f936626ba0d9e7cd"
+    },
+    {
+      "path": "services/sim/src/isim_file.cpp",
+      "sha256": "cd6736b9c70517805e8b8810c55ba5a6e9a82b74df7c00f29f7c4c7e3bec7182"
+    },
+    {
+      "path": "services/sim/src/isim_file_controller.cpp",
+      "sha256": "2b71183784bb10d294f1690332efda7754c24a2b614a62d645a28794cb7898f5"
+    },
+    {
+      "path": "services/sim/src/mcc_pool.cpp",
+      "sha256": "88c851816ed00ec5a05fbde3de97652c0e1765b3f9df8683fc7335dd30f6b824"
+    },
+    {
+      "path": "services/sim/src/multi_sim_controller.cpp",
+      "sha256": "55a5e3f7eadd6fc03bc23f6e27a12d9b59767cc2aab8642364c477169cf8d76b"
+    },
+    {
+      "path": "services/sim/src/multi_sim_helper.cpp",
+      "sha256": "0a7110f615cc9d7e18143c0e359de8fccf51113dc141a8dc16ad7fdfcedb18e0"
+    },
+    {
+      "path": "services/sim/src/multi_sim_monitor.cpp",
+      "sha256": "4e0aa67c746d9d8f7d9d3a5a0c15bf5e6bad3966bd422b1bf6837788f6eda722"
+    },
+    {
+      "path": "services/sim/src/operator_config_cache.cpp",
+      "sha256": "aaeb4948aea08376bd86db3277917ecd579e10476a949885719474f25f2948a9"
+    },
+    {
+      "path": "services/sim/src/operator_config_hisysevent.cpp",
+      "sha256": "1d3a868297ab72cb15a57826539bd8bec8a4938d7350420b32537283617c2fe6"
+    },
+    {
+      "path": "services/sim/src/operator_config_loader.cpp",
+      "sha256": "c60bcac6ed36932444beeee10b21107492f2ea55c18d21d28e06d2167e70a42a"
+    },
+    {
+      "path": "services/sim/src/operator_file_parser.cpp",
+      "sha256": "cdef98799826596ff514f2d6212bf50a346c6174c9ff88c4b716768adc415530"
+    },
+    {
+      "path": "services/sim/src/operator_matching_rule.cpp",
+      "sha256": "65066b9aa8f1b824839398f3e21e04f4a883e5e679ac0df06a4935d9f97b919e"
+    },
+    {
+      "path": "services/sim/src/pdp_profile_rdb_helper.cpp",
+      "sha256": "63042264f2b341f4fe30f22bec579a4efb520e33cecf3f05b90bf1ddf2f3930a"
+    },
+    {
+      "path": "services/sim/src/plmn_file.cpp",
+      "sha256": "ce91952f395f202d3ed4212c8495fbf684e1e9aa7bcea0ccde3d1101c7b23c35"
+    },
+    {
+      "path": "services/sim/src/radio_protocol_controller.cpp",
+      "sha256": "7391942fa10b22e4692b1873716d4827be68dbbe85ff63587f243e3096d79102"
+    },
+    {
+      "path": "services/sim/src/ruim_file.cpp",
+      "sha256": "4875748fd6b31b51dcebedb29ab7d13f4d7658c664c02a95b754658f365dfbde"
+    },
+    {
+      "path": "services/sim/src/ruim_file_controller.cpp",
+      "sha256": "e618b025feb8e68da10e70159e33243646bd759e8992d92fa8643536241c1c06"
+    },
+    {
+      "path": "services/sim/src/sim_account_callback_death_recipient.cpp",
+      "sha256": "480adf72c92a5c68285cbfbcf87a7cf15c161eee3bb8c5fc98d11da82eee09c1"
+    },
+    {
+      "path": "services/sim/src/sim_account_manager.cpp",
+      "sha256": "e76d7e9595830bfb36565ee4bc61d1eb83cb4cacc1e0a349323bf8e78b29f108"
+    },
+    {
+      "path": "services/sim/src/sim_cache_sync_manager.cpp",
+      "sha256": "4646d15e621b667134736326d9a629e93cb75bfb93647c8cb4c8ae740eb98e7b"
+    },
+    {
+      "path": "services/sim/src/sim_char_decode.cpp",
+      "sha256": "6d1bd0e24a958ccce41b4c05148b231a3292f95b4075a057be0d18a36657da50"
+    },
+    {
+      "path": "services/sim/src/sim_file.cpp",
+      "sha256": "a6798b25077350f348b461dd025f3699aaa6dd61b52ff9f94a4cd8816bbd6224"
+    },
+    {
+      "path": "services/sim/src/sim_file_controller.cpp",
+      "sha256": "bbd724bc8d20eb154f81dfa4389d81519d14b9cc579c954fa349afc9d30b1570"
+    },
+    {
+      "path": "services/sim/src/sim_file_init.cpp",
+      "sha256": "3e331c90149589fbade06a178a3f808d1ed072521d0473e2878e6e47390af345"
+    },
+    {
+      "path": "services/sim/src/sim_file_manager.cpp",
+      "sha256": "12045e75e5299fda095155cb8aa2358f62a43f936df9d55aadbf4d95fb47752a"
+    },
+    {
+      "path": "services/sim/src/sim_file_parse.cpp",
+      "sha256": "9d91141762124f4211d8e5bf234a3acf98dbe47c2f513c9e6ccc7fcb03dfc57b"
+    },
+    {
+      "path": "services/sim/src/sim_number_decode.cpp",
+      "sha256": "929240de7614c05edb4a79b751870cfafc4973f2f7505af43aa906d224d7f1b8"
+    },
+    {
+      "path": "services/sim/src/sim_rdb_helper.cpp",
+      "sha256": "6e89ff79ba9954ed9fe1097c9ff87b8fb6c5b0029760ed1bc53474acbebb150e"
+    },
+    {
+      "path": "services/sim/src/sim_sms_controller.cpp",
+      "sha256": "044e456c3fd8e5128503a6a9db8f0268fe9c5c5c069e309b34cfba4cf53bd0db"
+    },
+    {
+      "path": "services/sim/src/sim_sms_manager.cpp",
+      "sha256": "044d8947abfd5b422c586aaa624e59951082c9e168325505da58980a9090970e"
+    },
+    {
+      "path": "services/sim/src/sim_state_manager.cpp",
+      "sha256": "aca12b2cd0129d2198c685bdd4bc5a7df00be41ad19d2ea72334a2afd745fa7f"
+    },
+    {
+      "path": "services/sim/src/sim_state_tracker.cpp",
+      "sha256": "0ebadb176c101095d8561c1f7eb55fa108c8757016a4d71e630e8242df44ea4c"
+    },
+    {
+      "path": "services/sim/src/sim_utils.cpp",
+      "sha256": "a8c20f5134a396097b5786751150204fb9c2de77fc390c302e4348798f4604d5"
+    },
+    {
+      "path": "services/sim/src/start_osu_result_callback.cpp",
+      "sha256": "c905245e34a428115fe0a7a012ec52af982a8acee93051759dfad2a2f9813cc8"
+    },
+    {
+      "path": "services/sim/src/stk_controller.cpp",
+      "sha256": "ad0c38518762b4488cd062e99d47dc9ec2954ef1fa2f256da1231edbabd4e591"
+    },
+    {
+      "path": "services/sim/src/stk_manager.cpp",
+      "sha256": "156b43dd965cf5d9af22a5fe0185f5f5b6de4f59c2d7846ec2438eaa8f2b5629"
+    },
+    {
+      "path": "services/sim/src/tag_service.cpp",
+      "sha256": "9ce64e8f84e6cffe0fd68b801005cf54acddaec2131e45fa2258d97ab32f1595"
+    },
+    {
+      "path": "services/sim/src/telephony_data_helper.cpp",
+      "sha256": "38183cec94bde467d7c42c47245ac64c0ea2fb99c9b7a8dd04447606c89e031b"
+    },
+    {
+      "path": "services/sim/src/usim_dialling_numbers_service.cpp",
+      "sha256": "1f08e8f2a1174ba13e24528f4aff20a8e4ee70c2eb7ab3fc92fd90d58d809e2b"
+    },
+    {
+      "path": "services/sim/src/usim_file_controller.cpp",
+      "sha256": "75e66a9550201da634cb2a78975739caa05b0f50c00530dae247b658b141d76d"
+    },
+    {
+      "path": "services/sim/src/voice_mail_constants.cpp",
+      "sha256": "ed4e43caf5e615fc403bf262417909d004e36e867d182f8ca4fd4b8df305a3d9"
+    },
+    {
+      "path": "services/sim/test/BUILD.gn",
+      "sha256": "253f8c68b53846782ad0735b7172dfa8936ee679a88c740e78591aba52f92b77"
+    },
+    {
+      "path": "services/sim/test/common_event_test.h",
+      "sha256": "32101ab79d3f022c0040c5ddb2742c1d23e0f462b41473ca4cef170335b13430"
+    },
+    {
+      "path": "services/sim/test/test.cpp",
+      "sha256": "f9c4af40a6f316a0f99ed0797c7300b811e1cb3382e2af415f8948e6437cc136"
+    },
+    {
+      "path": "services/tel_ril/include/hdf_service_status_listener.h",
+      "sha256": "726bd9050e58f2a45ebe8f10e812e6d0a3bc97e713afed168415457d5aa3f01a"
+    },
+    {
+      "path": "services/tel_ril/include/observer_handler.h",
+      "sha256": "842577fde2a5b2a97a5026d98e3681adb32690095566a9761dc4a815529ee9c4"
+    },
+    {
+      "path": "services/tel_ril/include/tel_ril_base.h",
+      "sha256": "8d31fa118ef9101a2358e08c6519b40fbba6afc2f8db3dc0d8f14328dfb47072"
+    },
+    {
+      "path": "services/tel_ril/include/tel_ril_call.h",
+      "sha256": "e6e41c7011a29ee8885b7106b4b06814f494cda2c2015bd93912208777f84e87"
+    },
+    {
+      "path": "services/tel_ril/include/tel_ril_callback.h",
+      "sha256": "4bd42397a9b7a3c42dea926969536bdf320202d5bd95747f60ef13d7914b47a4"
+    },
+    {
+      "path": "services/tel_ril/include/tel_ril_common.h",
+      "sha256": "c072c65f4c2e208cbc66c6c64be5d548603223288b538bcded7d35bfa2338ead"
+    },
+    {
+      "path": "services/tel_ril/include/tel_ril_data.h",
+      "sha256": "2663263ec1fc76012a70c4cca69105c734446a2c45ca2860c7d48444a6d41972"
+    },
+    {
+      "path": "services/tel_ril/include/tel_ril_handler.h",
+      "sha256": "61f944ff3478507c3ba57f937d3bb676ea1bbdd7500876dfc7ccbc75494a3b26"
+    },
+    {
+      "path": "services/tel_ril/include/tel_ril_manager.h",
+      "sha256": "2fe7ca7a5210251080802185803309c23db699facedd1463380a53d106cdbc66"
+    },
+    {
+      "path": "services/tel_ril/include/tel_ril_modem.h",
+      "sha256": "745a638bb66f0d532c7d09d75d78deb3becb9467651ba88041793805a9442516"
+    },
+    {
+      "path": "services/tel_ril/include/tel_ril_network.h",
+      "sha256": "6422d3636489a6040b6e4754eb59cc927128c86b6b05855cc587c1f9afcbbf8d"
+    },
+    {
+      "path": "services/tel_ril/include/tel_ril_sim.h",
+      "sha256": "85063e936afc7f3955b0867bb8540e27069481f1644769444bfdde536786ed70"
+    },
+    {
+      "path": "services/tel_ril/include/tel_ril_sms.h",
+      "sha256": "096c211515d85ce75d19469f79daea1a36b347ed948e464c126dbc9890871fbf"
+    },
+    {
+      "path": "services/tel_ril/include/tel_ril_utils.h",
+      "sha256": "a839774779cb1c16803fc87c0afefbef86ae8d0bb434e7f7c1a610bca54c7277"
+    },
+    {
+      "path": "services/tel_ril/src/observer_handler.cpp",
+      "sha256": "422b74aeb92ee66367a37dfd88ea47e3878b221ef52597a72c38994748f764e4"
+    },
+    {
+      "path": "services/tel_ril/src/tel_ril_base.cpp",
+      "sha256": "818f9e8e57eb8ee3c4e8c68f7927f8c8dce35ecf932873de7ca50e94da581782"
+    },
+    {
+      "path": "services/tel_ril/src/tel_ril_call.cpp",
+      "sha256": "0b3da15d87eb715b040ff7a3ffddcc65fec11548568f088e4df53e0baa1b02da"
+    },
+    {
+      "path": "services/tel_ril/src/tel_ril_callback.cpp",
+      "sha256": "9e0df2c89a67a064bffa0df59930f3c68e268bb5ec633cc353759554b6fe30cd"
+    },
+    {
+      "path": "services/tel_ril/src/tel_ril_data.cpp",
+      "sha256": "e23e852cea304b477770e7ba494fd4cca73f28fa2da74f3262780a247762b8e0"
+    },
+    {
+      "path": "services/tel_ril/src/tel_ril_handler.cpp",
+      "sha256": "8fa2b7c01eadaad4563e187d2797243b461b4d1a4b869ccb060038f006334166"
+    },
+    {
+      "path": "services/tel_ril/src/tel_ril_manager.cpp",
+      "sha256": "7b00678383cb29aae65066a1dee51a043004480a6c4aec2dce4c43b4626e35ad"
+    },
+    {
+      "path": "services/tel_ril/src/tel_ril_modem.cpp",
+      "sha256": "fb75e41647a917fb4ac7645497f602031c6d1659a1e89896e6d8ce7091c89f00"
+    },
+    {
+      "path": "services/tel_ril/src/tel_ril_network.cpp",
+      "sha256": "0778c7e164de07f8d69bbac765b73ebe25a2b8be3ad44aef1cd0d710370eb908"
+    },
+    {
+      "path": "services/tel_ril/src/tel_ril_sim.cpp",
+      "sha256": "2083518f96fe628d1ab0ec103e917ee5c9ca0e558850c87d55df139ec2c211af"
+    },
+    {
+      "path": "services/tel_ril/src/tel_ril_sms.cpp",
+      "sha256": "9edfe34a06516e16a5c2131395227bcae888242e4ac04f5ffbcdc5254714ffda"
+    },
+    {
+      "path": "services/tel_ril/src/tel_ril_utils.cpp",
+      "sha256": "0a491dce89e24d5b855a004e2a3f5763fd6e769a8ca54edf9a130729b6825ac1"
+    },
+    {
+      "path": "services/tel_ril/test/BUILD.gn",
+      "sha256": "4ead3fdf2085b5ed4fd2a124f6e39a7154625e8e238972f7eb27741f9b07717a"
+    },
+    {
+      "path": "services/tel_ril/test/tel_ril_test.cpp",
+      "sha256": "f4543ce6a857e1c4bd64217122e5158d11d30992ca1e3fd2e50ae1efe4f72aff"
+    },
+    {
+      "path": "services/tel_ril/test/tel_ril_test.h",
+      "sha256": "23c4aa959deaa3b6c9d25dfc840c4d17de469dc5052a2d6501206cecaaa500ef"
+    },
+    {
+      "path": "services/telephony_ext_wrapper/include/telephony_ext_wrapper.h",
+      "sha256": "df7e111e1eade2235a6858cc529bbef1160b836eb2bf7bae7c26bd3223c9570c"
+    },
+    {
+      "path": "services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp",
+      "sha256": "11a90959cefa4ac1349b8dd31d142ecb1e2dc37408743bdebaf62f3f9fe95498"
+    },
+    {
+      "path": "telephony_core_service.gni",
+      "sha256": "e4c861c9fa986c9a2ec1741a374932894ffb26f85dc9499599d35721ef559161"
+    },
+    {
+      "path": "telephonyres/BUILD.gn",
+      "sha256": "05c7ff8efb07bcfd6a1a441b7203ab76f674e3e67b26679210a5b9529cdf3666"
+    },
+    {
+      "path": "telephonyres/TelephonyResources.p7b",
+      "sha256": "3498fba04a399663079315e5964649255b8bf3e5d78728ceec9d9d6d10095975"
+    },
+    {
+      "path": "telephonyres/main/config.json",
+      "sha256": "6314703dd6a7fc0e9433990f38de9677408c13d0319206a2ce1ccf33a07f8554"
+    },
+    {
+      "path": "telephonyres/main/resources/base/element/string.json",
+      "sha256": "7619ba442e6eaa37dd25da752953bf5c287d78c0b07b5fc981e7a25125e07115"
+    },
+    {
+      "path": "telephonyres/main/resources/zh_CN/element/string.json",
+      "sha256": "bd11e5a7275e5da3cbf5b022fb185beaf71c69a0d6dccd396894947de845b743"
+    },
+    {
+      "path": "test/BUILD.gn",
+      "sha256": "651ff1ffcf3ceb0db583862f42951f52636b22b7b541e03cc47127155c1be727"
+    },
+    {
+      "path": "test/core_service_test.gni",
+      "sha256": "38adcfbfa02733fc67b67defef776c714744860afe570e7a1c0346d87a0e67d7"
+    },
+    {
+      "path": "test/fuzztest/BUILD.gn",
+      "sha256": "0da07b81ca4f7c423db5a73244313ba6f7e3d7bb4e60bcc840508383dd81069a"
+    },
+    {
+      "path": "test/fuzztest/addiccdiallingnumbers_fuzzer/BUILD.gn",
+      "sha256": "fb16d93803fb9b9bb5a684d4ae62d24b603ae9f2b3cccd7a940a69f64e9dc993"
+    },
+    {
+      "path": "test/fuzztest/addiccdiallingnumbers_fuzzer/addiccdiallingnumbers_fuzzer.cpp",
+      "sha256": "f39e4232126a7edc2d9d3d7d4bf1361d29a895ca6c865ccac580f99e1716c77d"
+    },
+    {
+      "path": "test/fuzztest/addiccdiallingnumbers_fuzzer/addiccdiallingnumbers_fuzzer.h",
+      "sha256": "b30b3e18d66399f3f7a104daa093250c0c7e4b4c352077bdcf67c99eb35f7da1"
+    },
+    {
+      "path": "test/fuzztest/addiccdiallingnumbers_fuzzer/corpus/init",
+      "sha256": "5918c7f33ab34ac53db14a66329179ad29ded180385855fcdf339f78e5446fd0"
+    },
+    {
+      "path": "test/fuzztest/addiccdiallingnumbers_fuzzer/project.xml",
+      "sha256": "741d4387d118d0f0dc34cb6f683da7b62e00c89da742fc3fb58bccc752b91068"
+    },
+    {
+      "path": "test/fuzztest/autotimezone_fuzzer/BUILD.gn",
+      "sha256": "0d26403d9b8b9a541216849d1b1ab877bc2fa8cab97556c62814c04766383c07"
+    },
+    {
+      "path": "test/fuzztest/common_fuzzer/addcoreservicetoken_fuzzer.cpp",
+      "sha256": "ca7658f1566f9b69d9c0d0ab753219112c7947c51d0b4b0ffdd68a16d3e4ef78"
+    },
+    {
+      "path": "test/fuzztest/common_fuzzer/addcoreservicetoken_fuzzer.h",
+      "sha256": "a037fe68f3584fb7e86b687ed271f67a895e4df0fe9600be7d105435245fb02b"
+    },
+    {
+      "path": "test/fuzztest/coreservice_fuzzer/BUILD.gn",
+      "sha256": "516e517b207095040a75263e7ee8e652a20894ab78a88ed829d15d8406fa14b4"
+    },
+    {
+      "path": "test/fuzztest/coreservice_fuzzer/coreservice_fuzzer.cpp",
+      "sha256": "98515c2dd8cacfd6d3410c0bbc1bbf7ef4a1ed6c63bab569b787f873ab25df12"
+    },
+    {
+      "path": "test/fuzztest/coreservice_fuzzer/coreservice_fuzzer.h",
+      "sha256": "21ac86ab23abdad861d32a6ac22271f0d64ef4458a10530f55cf595464905eed"
+    },
+    {
+      "path": "test/fuzztest/coreservice_fuzzer/coreservice_fuzzer_2.cpp",
+      "sha256": "c908cddbd6eb267ba5c7b65160355563b18f0a4650eb766af1d71fbf611b382d"
+    },
+    {
+      "path": "test/fuzztest/coreservice_fuzzer/coreservice_fuzzer_3.cpp",
+      "sha256": "f353aa9e2344dc6454c6705cc11a4f2978c3e88eb78bafc8a03aefa37f55cb8e"
+    },
+    {
+      "path": "test/fuzztest/coreservice_fuzzer/coreservice_fuzzer_4.cpp",
+      "sha256": "347cefea45649559c8e084a0697e81278350030ac2d6ced4625a2cb3c82377e3"
+    },
+    {
+      "path": "test/fuzztest/coreservice_fuzzer/corpus/init",
+      "sha256": "3d6b8128e10826fd3d08267251d5f01cb48ae8befdbffc3a4c43a8408f43b37a"
+    },
+    {
+      "path": "test/fuzztest/coreservice_fuzzer/project.xml",
+      "sha256": "856267541c25df6ebc6b0ac24a839821166fd961b2e05c7ee195e31db573526f"
+    },
+    {
+      "path": "test/fuzztest/getsimeons_fuzzer/BUILD.gn",
+      "sha256": "3e8d06354a3bfe49241deef7dcf7b70450de4aa49161f264fcee0a6049f65181"
+    },
+    {
+      "path": "test/fuzztest/getsimeons_fuzzer/corpus/init",
+      "sha256": "a267263a068aa7ba837d2d45cd7f6f6cd91a9a3d75b9c984a6b5527acd4fd69e"
+    },
+    {
+      "path": "test/fuzztest/getsimeons_fuzzer/getsimeons_fuzzer.cpp",
+      "sha256": "2e4d4097f95a816130649b049af1575a5d6dd68bb9b4ed537f5ba51280b520b9"
+    },
+    {
+      "path": "test/fuzztest/getsimeons_fuzzer/getsimeons_fuzzer.h",
+      "sha256": "ef9ed2699d5c493f5481231226db1b1cf6063c88969b79552a7628faabd4c534"
+    },
+    {
+      "path": "test/fuzztest/getsimeons_fuzzer/project.xml",
+      "sha256": "741d4387d118d0f0dc34cb6f683da7b62e00c89da742fc3fb58bccc752b91068"
+    },
+    {
+      "path": "test/fuzztest/getsimmessage_fuzzer/BUILD.gn",
+      "sha256": "00b5cdc1d31919843f9a7064a52b1ba001beb5a1025a3ea072616f2d1f9d1ae5"
+    },
+    {
+      "path": "test/fuzztest/getsimmessage_fuzzer/corpus/init",
+      "sha256": "c5342fe7a944da4bcebc443dc93f43a0d2c10a1b799abf9479e552cb482eb62c"
+    },
+    {
+      "path": "test/fuzztest/getsimmessage_fuzzer/getsimmessage_fuzzer.cpp",
+      "sha256": "ca4c9412e5e4131211f687b73e4fad212106a9fa66d562a7e8e0e18e02bdb432"
+    },
+    {
+      "path": "test/fuzztest/getsimmessage_fuzzer/getsimmessage_fuzzer.h",
+      "sha256": "01fcc0d53b30ccef0da42d61fe56160f5214c6d79b7219b7b0d9ed632e7aeec5"
+    },
+    {
+      "path": "test/fuzztest/getsimmessage_fuzzer/project.xml",
+      "sha256": "856267541c25df6ebc6b0ac24a839821166fd961b2e05c7ee195e31db573526f"
+    },
+    {
+      "path": "test/fuzztest/getsimstate_fuzzer/BUILD.gn",
+      "sha256": "5b8a95ccbeb922c1a02f9f647b3dd3e1df7b54c0677c21646ef561f93c866ff0"
+    },
+    {
+      "path": "test/fuzztest/getsimstate_fuzzer/corpus/init",
+      "sha256": "c5342fe7a944da4bcebc443dc93f43a0d2c10a1b799abf9479e552cb482eb62c"
+    },
+    {
+      "path": "test/fuzztest/getsimstate_fuzzer/getsimstate_fuzzer.cpp",
+      "sha256": "003db0a082f0b50900257094f22097ebe0644df92c6d31defb5933cbb8618960"
+    },
+    {
+      "path": "test/fuzztest/getsimstate_fuzzer/getsimstate_fuzzer.h",
+      "sha256": "f9ef34afd5a339fc219ec858a81e6b6381a5f8e43ba4a65c32f3731fae9ca7d2"
+    },
+    {
+      "path": "test/fuzztest/getsimstate_fuzzer/project.xml",
+      "sha256": "856267541c25df6ebc6b0ac24a839821166fd961b2e05c7ee195e31db573526f"
+    },
+    {
+      "path": "test/fuzztest/hexvectohexstr_fuzzer/BUILD.gn",
+      "sha256": "7c6e50044b802802c70b7b920425ab6b8b88a1114d54b8fbe67f7dea401963b7"
+    },
+    {
+      "path": "test/fuzztest/hexvectohexstr_fuzzer/corpus/init",
+      "sha256": "8d302c3b0da3243701c1f0305ef73910a4eb773b5bf03a143a896e92c2f7900b"
+    },
+    {
+      "path": "test/fuzztest/hexvectohexstr_fuzzer/hexvectohexstr_fuzzer.cpp",
+      "sha256": "729b144ca44be87a9fad73221da8df4d5a0541881dc0c9e971502da78414b58b"
+    },
+    {
+      "path": "test/fuzztest/hexvectohexstr_fuzzer/hexvectohexstr_fuzzer.h",
+      "sha256": "08fefb7357e706fa5f0a8727663b3ad5c435472e3950bbc873f12cfb75708b17"
+    },
+    {
+      "path": "test/fuzztest/hexvectohexstr_fuzzer/project.xml",
+      "sha256": "741d4387d118d0f0dc34cb6f683da7b62e00c89da742fc3fb58bccc752b91068"
+    },
+    {
+      "path": "test/fuzztest/imsregcallback_fuzzer/BUILD.gn",
+      "sha256": "4a801ac3058337b5373551805f26dced76350cbfca92002b4fdc1af34f750810"
+    },
+    {
+      "path": "test/fuzztest/imsregcallback_fuzzer/corpus/init",
+      "sha256": "e0e6d03af4323db7efb95909c28ac75336d2c96efab049c9c982b66af3b12cf4"
+    },
+    {
+      "path": "test/fuzztest/imsregcallback_fuzzer/imsregcallback_fuzzer.cpp",
+      "sha256": "953f33bf6e85685cf85f32b668f4fcfa6c3f65e548b92534b308bc5840bb98ca"
+    },
+    {
+      "path": "test/fuzztest/imsregcallback_fuzzer/imsregcallback_fuzzer.h",
+      "sha256": "e715fa95ab34e67b412b5dac5345eb81934b4799d532213d6dcf56f13de5913f"
+    },
+    {
+      "path": "test/fuzztest/imsregcallback_fuzzer/project.xml",
+      "sha256": "5134abc41c0a7de3ad81b2bdc8b1a23e4470cb21616ccceab10ab14d49bc90d1"
+    },
+    {
+      "path": "test/fuzztest/isshowableasciionly_fuzzer/BUILD.gn",
+      "sha256": "7e8582e2e332e32d61884aed46e2e778584f634b4b851f7475b6a25541b3832c"
+    },
+    {
+      "path": "test/fuzztest/isshowableasciionly_fuzzer/corpus/init",
+      "sha256": "8d302c3b0da3243701c1f0305ef73910a4eb773b5bf03a143a896e92c2f7900b"
+    },
+    {
+      "path": "test/fuzztest/isshowableasciionly_fuzzer/isshowableasciionly_fuzzer.cpp",
+      "sha256": "fc8fcf2f7f5b9e63cb3eb01f16eee660fec26ebf1fe9b93e8dbe8c8a40fb4ee9"
+    },
+    {
+      "path": "test/fuzztest/isshowableasciionly_fuzzer/isshowableasciionly_fuzzer.h",
+      "sha256": "4e4933dd0a1c53d7720b27b076dc0275d5ad5cc5e0579750b4a7fa52eea30f9d"
+    },
+    {
+      "path": "test/fuzztest/isshowableasciionly_fuzzer/project.xml",
+      "sha256": "741d4387d118d0f0dc34cb6f683da7b62e00c89da742fc3fb58bccc752b91068"
+    },
+    {
+      "path": "test/fuzztest/isvalidnumberstring_fuzzer/BUILD.gn",
+      "sha256": "4576c663acbfad26e9b6600dc54dcb8c4e1f34b15fe276bfd17a0c5d15b385cd"
+    },
+    {
+      "path": "test/fuzztest/isvalidnumberstring_fuzzer/corpus/init",
+      "sha256": "8d302c3b0da3243701c1f0305ef73910a4eb773b5bf03a143a896e92c2f7900b"
+    },
+    {
+      "path": "test/fuzztest/isvalidnumberstring_fuzzer/isvalidnumberstring_fuzzer.cpp",
+      "sha256": "5ea8d9ae31f5db82d122ba77f342d2d698d230301b6f0a0433f79a8512c275a2"
+    },
+    {
+      "path": "test/fuzztest/isvalidnumberstring_fuzzer/isvalidnumberstring_fuzzer.h",
+      "sha256": "8c4e7c52d7d9ecedfe5e6e9c9ee4b7d72695f26216d083d02b6f85e73f6bad5c"
+    },
+    {
+      "path": "test/fuzztest/isvalidnumberstring_fuzzer/project.xml",
+      "sha256": "741d4387d118d0f0dc34cb6f683da7b62e00c89da742fc3fb58bccc752b91068"
+    },
+    {
+      "path": "test/fuzztest/mcccountrycode_fuzzer/BUILD.gn",
+      "sha256": "db79ab85998f9795f0ae8534d005146f7cb254d4db42bae95bec90c2c7b45459"
+    },
+    {
+      "path": "test/fuzztest/mcccountrycode_fuzzer/corpus/init",
+      "sha256": "11d1ae1d59832ad5ab64c0cec4233808655c964418194d8f7d793292891643fe"
+    },
+    {
+      "path": "test/fuzztest/mcccountrycode_fuzzer/mcccountrycode_fuzzer.cpp",
+      "sha256": "f34d30b35e437205c5a0a0fb6c574397935e8f5388208f544f7f8acb55b8186f"
+    },
+    {
+      "path": "test/fuzztest/mcccountrycode_fuzzer/mcccountrycode_fuzzer.h",
+      "sha256": "44aab26ce1bf7a4c9a5e13689854f91c67bca8ade5838d0212197a477f0edcfd"
+    },
+    {
+      "path": "test/fuzztest/mcccountrycode_fuzzer/project.xml",
+      "sha256": "8dfbf9b0f28ebafd6dfc5dc68e903ce5fa0425c5dc4c0b1d69066c78513468e1"
+    },
+    {
+      "path": "test/fuzztest/networksearch_fuzzer/BUILD.gn",
+      "sha256": "b4d06e0035cf9c8e83d5ce2a29c3afefbd1ffd97f3ed055a350b5ae6f710fa73"
+    },
+    {
+      "path": "test/fuzztest/networksearch_fuzzer/corpus/init",
+      "sha256": "c5342fe7a944da4bcebc443dc93f43a0d2c10a1b799abf9479e552cb482eb62c"
+    },
+    {
+      "path": "test/fuzztest/networksearch_fuzzer/networksearch_fuzzer.cpp",
+      "sha256": "0b21f1f8c8b3f5471fe343567ca26887aa788a379ba3f8eb211ed62157e47db4"
+    },
+    {
+      "path": "test/fuzztest/networksearch_fuzzer/networksearch_fuzzer.h",
+      "sha256": "be67bee12ed8dfa210e29c618c40cf3af2885df43836281f535e1a4a64526ae3"
+    },
+    {
+      "path": "test/fuzztest/networksearch_fuzzer/project.xml",
+      "sha256": "856267541c25df6ebc6b0ac24a839821166fd961b2e05c7ee195e31db573526f"
+    },
+    {
+      "path": "test/fuzztest/operatorconfigcache_fuzzer/BUILD.gn",
+      "sha256": "c5d2a98c5ea11aafcc2e56d823fc310603528fe80edd4743c92a0ee943086123"
+    },
+    {
+      "path": "test/fuzztest/operatorconfigcache_fuzzer/corpus/init",
+      "sha256": "c5342fe7a944da4bcebc443dc93f43a0d2c10a1b799abf9479e552cb482eb62c"
+    },
+    {
+      "path": "test/fuzztest/operatorconfigcache_fuzzer/operatorconfigcache_fuzzer.cpp",
+      "sha256": "783585e49c6cf9212e0d7a3c55b4fa035277e93e5bda8dbe2aa4160ff3b003f5"
+    },
+    {
+      "path": "test/fuzztest/operatorconfigcache_fuzzer/operatorconfigcache_fuzzer.h",
+      "sha256": "58cc36a9e6e8e6d91933e0527fc64d834d2056fdc8c32cdc4640af87bb37025e"
+    },
+    {
+      "path": "test/fuzztest/operatorconfigcache_fuzzer/project.xml",
+      "sha256": "856267541c25df6ebc6b0ac24a839821166fd961b2e05c7ee195e31db573526f"
+    },
+    {
+      "path": "test/fuzztest/satellitecore_fuzzer/BUILD.gn",
+      "sha256": "ec4d78f34f45807d3427dfd664392f34a3c028de0de7ce0f297da66841e6dffb"
+    },
+    {
+      "path": "test/fuzztest/satellitecore_fuzzer/corpus/init",
+      "sha256": "5918c7f33ab34ac53db14a66329179ad29ded180385855fcdf339f78e5446fd0"
+    },
+    {
+      "path": "test/fuzztest/satellitecore_fuzzer/project.xml",
+      "sha256": "5655efaabc6b2bef6e6f957939bde7c20dd0fdbfc20c690ab643faa65af883f0"
+    },
+    {
+      "path": "test/fuzztest/satellitecore_fuzzer/satellitecore_fuzzer.cpp",
+      "sha256": "e865e3e252f96e7cb4783ecca5e4bc0c8f02442a3786d83c73740c32d2da1a2a"
+    },
+    {
+      "path": "test/fuzztest/satellitecore_fuzzer/satellitecore_fuzzer.h",
+      "sha256": "d4753e48cd4d2f84eb3f7d10ba1e445f49908acffc8a8d55621997b27d9ec061"
+    },
+    {
+      "path": "test/fuzztest/satellitestatuschanged_fuzzer/BUILD.gn",
+      "sha256": "1bd3edec799fe30578583b3af2536a8e31562f1f17e7dd32c14b64aaecadbfc3"
+    },
+    {
+      "path": "test/fuzztest/satellitestatuschanged_fuzzer/corpus/init",
+      "sha256": "c5342fe7a944da4bcebc443dc93f43a0d2c10a1b799abf9479e552cb482eb62c"
+    },
+    {
+      "path": "test/fuzztest/satellitestatuschanged_fuzzer/project.xml",
+      "sha256": "856267541c25df6ebc6b0ac24a839821166fd961b2e05c7ee195e31db573526f"
+    },
+    {
+      "path": "test/fuzztest/satellitestatuschanged_fuzzer/satellitestatuschanged_fuzzer.cpp",
+      "sha256": "47fdb2e8db6f736cf3bf983b51610a0be0622a0012b96dfe25b5bd4323c918d5"
+    },
+    {
+      "path": "test/fuzztest/satellitestatuschanged_fuzzer/satellitestatuschanged_fuzzer.h",
+      "sha256": "4e82a64bd29918efe8dc5e647bc60c6104b239414f9ec7f977baa8a3152343d0"
+    },
+    {
+      "path": "test/fuzztest/sendenvelopecmd_fuzzer/BUILD.gn",
+      "sha256": "0310b8108137995b04972c4e0322d11cd3d2c601d0f0c09a9e5dd303b0b1cee0"
+    },
+    {
+      "path": "test/fuzztest/sendenvelopecmd_fuzzer/corpus/init",
+      "sha256": "a267263a068aa7ba837d2d45cd7f6f6cd91a9a3d75b9c984a6b5527acd4fd69e"
+    },
+    {
+      "path": "test/fuzztest/sendenvelopecmd_fuzzer/project.xml",
+      "sha256": "741d4387d118d0f0dc34cb6f683da7b62e00c89da742fc3fb58bccc752b91068"
+    },
+    {
+      "path": "test/fuzztest/sendenvelopecmd_fuzzer/sendenvelopecmd_fuzzer.cpp",
+      "sha256": "ad499fce285004472e3221fe52fc3d33a5a0653bf4cd3f72e19a2d03f74d014d"
+    },
+    {
+      "path": "test/fuzztest/sendenvelopecmd_fuzzer/sendenvelopecmd_fuzzer.h",
+      "sha256": "1cb36b77d815e90f18268e4eef7b1c790b7b2570b44946c2d1037ba34acbf710"
+    },
+    {
+      "path": "test/fuzztest/sendsmsmoremode_fuzzer/BUILD.gn",
+      "sha256": "b0ddc239caad65b695adb6042d395afd1b98b521b1a3ee0660dd904f042e6530"
+    },
+    {
+      "path": "test/fuzztest/sendsmsmoremode_fuzzer/corpus/init",
+      "sha256": "8d302c3b0da3243701c1f0305ef73910a4eb773b5bf03a143a896e92c2f7900b"
+    },
+    {
+      "path": "test/fuzztest/sendsmsmoremode_fuzzer/project.xml",
+      "sha256": "741d4387d118d0f0dc34cb6f683da7b62e00c89da742fc3fb58bccc752b91068"
+    },
+    {
+      "path": "test/fuzztest/sendsmsmoremode_fuzzer/sendsmsmoremode_fuzzer.cpp",
+      "sha256": "6ded4b80d74bfcb118cd74024d25ed6114e0ee3c9e1bc0098a08629a8fff22d7"
+    },
+    {
+      "path": "test/fuzztest/sendsmsmoremode_fuzzer/sendsmsmoremode_fuzzer.h",
+      "sha256": "f4869811ed87ee71edd2a98e9d76240ac4a293c0876a598076ff721420d48a92"
+    },
+    {
+      "path": "test/fuzztest/sendterminalresponsecmd_fuzzer/BUILD.gn",
+      "sha256": "122981f627a37f014d07125778bc64938cee28b69e4fe813387be96bd1db68d3"
+    },
+    {
+      "path": "test/fuzztest/sendterminalresponsecmd_fuzzer/corpus/init",
+      "sha256": "5918c7f33ab34ac53db14a66329179ad29ded180385855fcdf339f78e5446fd0"
+    },
+    {
+      "path": "test/fuzztest/sendterminalresponsecmd_fuzzer/project.xml",
+      "sha256": "741d4387d118d0f0dc34cb6f683da7b62e00c89da742fc3fb58bccc752b91068"
+    },
+    {
+      "path": "test/fuzztest/sendterminalresponsecmd_fuzzer/sendterminalresponsecmd_fuzzer.cpp",
+      "sha256": "f665bf0b274270642b03735a538387be501c2ccbaf32819a4c67b98fa88c6dfd"
+    },
+    {
+      "path": "test/fuzztest/sendterminalresponsecmd_fuzzer/sendterminalresponsecmd_fuzzer.h",
+      "sha256": "babfa15ac48a68259e5b2971e770dd7aedf68f4c028ba9d0ff5fa97726118846"
+    },
+    {
+      "path": "test/fuzztest/setaccesslimit_fuzzer/BUILD.gn",
+      "sha256": "5e940d27445f871adfcba9385020dfe1dabbb73326ba2aa52f6a5262caaaa66f"
+    },
+    {
+      "path": "test/fuzztest/setaccesslimit_fuzzer/corpus/init",
+      "sha256": "8d302c3b0da3243701c1f0305ef73910a4eb773b5bf03a143a896e92c2f7900b"
+    },
+    {
+      "path": "test/fuzztest/setaccesslimit_fuzzer/project.xml",
+      "sha256": "741d4387d118d0f0dc34cb6f683da7b62e00c89da742fc3fb58bccc752b91068"
+    },
+    {
+      "path": "test/fuzztest/setaccesslimit_fuzzer/setaccesslimit_fuzzer.cpp",
+      "sha256": "4ab31cc1a61b5f9fead93c1a369e9c343db3af4d2556b4f4ac85f3a9b3d34167"
+    },
+    {
+      "path": "test/fuzztest/setaccesslimit_fuzzer/setaccesslimit_fuzzer.h",
+      "sha256": "2a94190681fa40195ae383cb5e56a8d0ba6c75db6f9fc840ca95a7be5dd46de5"
+    },
+    {
+      "path": "test/fuzztest/setdefaultslotid_fuzzer/BUILD.gn",
+      "sha256": "1b0bf67c9a11c50179b301fc0b7e31dec0b3a9fcc8c712c6fc747aef30ea21d3"
+    },
+    {
+      "path": "test/fuzztest/setdefaultslotid_fuzzer/corpus/init",
+      "sha256": "c5342fe7a944da4bcebc443dc93f43a0d2c10a1b799abf9479e552cb482eb62c"
+    },
+    {
+      "path": "test/fuzztest/setdefaultslotid_fuzzer/project.xml",
+      "sha256": "856267541c25df6ebc6b0ac24a839821166fd961b2e05c7ee195e31db573526f"
+    },
+    {
+      "path": "test/fuzztest/setdefaultslotid_fuzzer/setdefaultslotid_fuzzer.cpp",
+      "sha256": "5c56ab585eed7aa665ffae4e388ef4f1431f5b8c2af91e3fe1f07a7356000ca1"
+    },
+    {
+      "path": "test/fuzztest/setdefaultslotid_fuzzer/setdefaultslotid_fuzzer.h",
+      "sha256": "adfacbe9d3f0f82165cf336604cb659da014ae90966bb02d844db2b1fd86c833"
+    },
+    {
+      "path": "test/fuzztest/setradiostate_fuzzer/BUILD.gn",
+      "sha256": "ff90d86497352a5d8c5df2d83e44fea3df03301e396997275d76aad0a8e32634"
+    },
+    {
+      "path": "test/fuzztest/setradiostate_fuzzer/corpus/init",
+      "sha256": "1c2863e69e4ef10b760bce705a20fe0c3b3670eb93f97e6538575e6d0bf661c1"
+    },
+    {
+      "path": "test/fuzztest/setradiostate_fuzzer/project.xml",
+      "sha256": "5655efaabc6b2bef6e6f957939bde7c20dd0fdbfc20c690ab643faa65af883f0"
+    },
+    {
+      "path": "test/fuzztest/setradiostate_fuzzer/setradiostate_fuzzer.cpp",
+      "sha256": "869ea1ad5f37eba577e550f19616639e0fb95cdab78e713bee69c06eee286430"
+    },
+    {
+      "path": "test/fuzztest/setradiostate_fuzzer/setradiostate_fuzzer.h",
+      "sha256": "d99ad0988d237d8def16897d88e9af7fb2729de468cff8f9937cce16551ac8d2"
+    },
+    {
+      "path": "test/fuzztest/setshowname_fuzzer/BUILD.gn",
+      "sha256": "31fc29f3c96850186d9300086a0e0be77394e3bf45ce91a94beb135bb2dadfbb"
+    },
+    {
+      "path": "test/fuzztest/setshowname_fuzzer/corpus/init",
+      "sha256": "5918c7f33ab34ac53db14a66329179ad29ded180385855fcdf339f78e5446fd0"
+    },
+    {
+      "path": "test/fuzztest/setshowname_fuzzer/project.xml",
+      "sha256": "741d4387d118d0f0dc34cb6f683da7b62e00c89da742fc3fb58bccc752b91068"
+    },
+    {
+      "path": "test/fuzztest/setshowname_fuzzer/setshowname_fuzzer.cpp",
+      "sha256": "933eab678c3a0eb1ca865032dc07a9659b81237dd300befb0e73e27e24c0ec6d"
+    },
+    {
+      "path": "test/fuzztest/setshowname_fuzzer/setshowname_fuzzer.h",
+      "sha256": "ff2e8f941e1891ad5d4fb42d15ded5837585f09f5a96c9cf227ee16827990b6c"
+    },
+    {
+      "path": "test/fuzztest/setshownumber_fuzzer/BUILD.gn",
+      "sha256": "694bf548a19d794eb28e9ecc4a70cbe6b984d1f6daf38281bd25c6ad6111ea85"
+    },
+    {
+      "path": "test/fuzztest/setshownumber_fuzzer/corpus/init",
+      "sha256": "5918c7f33ab34ac53db14a66329179ad29ded180385855fcdf339f78e5446fd0"
+    },
+    {
+      "path": "test/fuzztest/setshownumber_fuzzer/project.xml",
+      "sha256": "741d4387d118d0f0dc34cb6f683da7b62e00c89da742fc3fb58bccc752b91068"
+    },
+    {
+      "path": "test/fuzztest/setshownumber_fuzzer/setshownumber_fuzzer.cpp",
+      "sha256": "190eecf71ecc49e951b31612d8a8c86db7803e2df1a225b46cac5b4d705368ac"
+    },
+    {
+      "path": "test/fuzztest/setshownumber_fuzzer/setshownumber_fuzzer.h",
+      "sha256": "ffb8b22201fc41c9a2e7a84417642641815c859a6b5d4c0eedb47e9a6dc9f6c0"
+    },
+    {
+      "path": "test/fuzztest/setvoicemailinfo_fuzzer/BUILD.gn",
+      "sha256": "88f20b9e509b5a062dc55d4012a1b3908549c9b68f31899ca0c9d908a58c89c7"
+    },
+    {
+      "path": "test/fuzztest/setvoicemailinfo_fuzzer/corpus/init",
+      "sha256": "5918c7f33ab34ac53db14a66329179ad29ded180385855fcdf339f78e5446fd0"
+    },
+    {
+      "path": "test/fuzztest/setvoicemailinfo_fuzzer/project.xml",
+      "sha256": "741d4387d118d0f0dc34cb6f683da7b62e00c89da742fc3fb58bccc752b91068"
+    },
+    {
+      "path": "test/fuzztest/setvoicemailinfo_fuzzer/setvoicemailinfo_fuzzer.cpp",
+      "sha256": "71bbf8b049935f7aa38300835038f62959ddf7810d55c1ae7c5e2aef386293bf"
+    },
+    {
+      "path": "test/fuzztest/setvoicemailinfo_fuzzer/setvoicemailinfo_fuzzer.h",
+      "sha256": "fe0a4ba6af13a22db927ffc46e1a8c9671500f8323ab051dd0f6db1e4287d22c"
+    },
+    {
+      "path": "test/fuzztest/simauthentication_fuzzer/BUILD.gn",
+      "sha256": "ce503d3dc76b5f3a5e73819dcf3e0b36a07362a542e93e2e9d3a7050fd1fc188"
+    },
+    {
+      "path": "test/fuzztest/simauthentication_fuzzer/corpus/init",
+      "sha256": "a267263a068aa7ba837d2d45cd7f6f6cd91a9a3d75b9c984a6b5527acd4fd69e"
+    },
+    {
+      "path": "test/fuzztest/simauthentication_fuzzer/project.xml",
+      "sha256": "741d4387d118d0f0dc34cb6f683da7b62e00c89da742fc3fb58bccc752b91068"
+    },
+    {
+      "path": "test/fuzztest/simauthentication_fuzzer/simauthentication_fuzzer.cpp",
+      "sha256": "cd936b5348c93c585be554b08e09b8766966f200dc51f8586ffeb89c31ddeeaf"
+    },
+    {
+      "path": "test/fuzztest/simauthentication_fuzzer/simauthentication_fuzzer.h",
+      "sha256": "536b2674e5f695cbc1a66bbbf08e141df0aee989260a4dd82c81f7f973143c30"
+    },
+    {
+      "path": "test/fuzztest/simmanager_fuzzer/BUILD.gn",
+      "sha256": "d2588d2cc9da56ee4363753c9f980d79876d0b9bb98622afa9d41a3b9d58263d"
+    },
+    {
+      "path": "test/fuzztest/simmanager_fuzzer/corpus/init",
+      "sha256": "c5342fe7a944da4bcebc443dc93f43a0d2c10a1b799abf9479e552cb482eb62c"
+    },
+    {
+      "path": "test/fuzztest/simmanager_fuzzer/project.xml",
+      "sha256": "856267541c25df6ebc6b0ac24a839821166fd961b2e05c7ee195e31db573526f"
+    },
+    {
+      "path": "test/fuzztest/simmanager_fuzzer/simmanager_fuzzer.cpp",
+      "sha256": "d80ef51f04a6ae80e3af18404220a77b5ba39abb66155ac75f131b519a4e4cb4"
+    },
+    {
+      "path": "test/fuzztest/simmanager_fuzzer/simmanager_fuzzer.h",
+      "sha256": "3593a51fe6bdf10ec627b0896b52451d524a3e9b2f0cfe5b2a52e1b615fd7a25"
+    },
+    {
+      "path": "test/fuzztest/simoperation_fuzzer/BUILD.gn",
+      "sha256": "309f33c906da61675428fb414b1d2d2f9180da24763e19b49fe56876109eade5"
+    },
+    {
+      "path": "test/fuzztest/simoperation_fuzzer/corpus/init",
+      "sha256": "c5342fe7a944da4bcebc443dc93f43a0d2c10a1b799abf9479e552cb482eb62c"
+    },
+    {
+      "path": "test/fuzztest/simoperation_fuzzer/project.xml",
+      "sha256": "856267541c25df6ebc6b0ac24a839821166fd961b2e05c7ee195e31db573526f"
+    },
+    {
+      "path": "test/fuzztest/simoperation_fuzzer/simoperation_fuzzer.cpp",
+      "sha256": "fd7ec8739de807b7905d55feea91e7da1758bf3b22516ba28b715f39f2c54161"
+    },
+    {
+      "path": "test/fuzztest/simoperation_fuzzer/simoperation_fuzzer.h",
+      "sha256": "c654b92e90ddcb298b3950ae5eb50724663d5591c73041ef4055f74342d821cf"
+    },
+    {
+      "path": "test/fuzztest/unlockpin_fuzzer/BUILD.gn",
+      "sha256": "0310626a732bdf5b5eb47738a585a516f469eeeceb1ba80c0f96d94a908adbcf"
+    },
+    {
+      "path": "test/fuzztest/unlockpin_fuzzer/corpus/init",
+      "sha256": "3a637b503714e753f3ec880ca69a3afef78e5c7e76139c233fb5539ada9075a8"
+    },
+    {
+      "path": "test/fuzztest/unlockpin_fuzzer/project.xml",
+      "sha256": "2da75e0fb341cdac601cb4c3e148167c811ee4a332e7d387a4728ddbda059b56"
+    },
+    {
+      "path": "test/fuzztest/unlockpin_fuzzer/unlockpin_fuzzer.cpp",
+      "sha256": "1baa3a2dbf69e593084b435cae947fcbc064a9daa866aa024607bef02bc3d109"
+    },
+    {
+      "path": "test/fuzztest/unlockpin_fuzzer/unlockpin_fuzzer.h",
+      "sha256": "26236ca6b161956f1d7ddd7793556983dcb5fbb11984b8635f81370d81a470cc"
+    },
+    {
+      "path": "test/fuzztest/unmarshalling_fuzzer/BUILD.gn",
+      "sha256": "6c4a20dd8e15fb217c1002e6050352ecb5080f80e684042e226ce8ce78027adc"
+    },
+    {
+      "path": "test/fuzztest/unmarshalling_fuzzer/corpus/init",
+      "sha256": "8d302c3b0da3243701c1f0305ef73910a4eb773b5bf03a143a896e92c2f7900b"
+    },
+    {
+      "path": "test/fuzztest/unmarshalling_fuzzer/project.xml",
+      "sha256": "741d4387d118d0f0dc34cb6f683da7b62e00c89da742fc3fb58bccc752b91068"
+    },
+    {
+      "path": "test/fuzztest/unmarshalling_fuzzer/unmarshalling_fuzzer.cpp",
+      "sha256": "82aa093cf4b4e2f19470fb8ba1d511168249583ae9ed979ac9640c8c267280f7"
+    },
+    {
+      "path": "test/fuzztest/unmarshalling_fuzzer/unmarshalling_fuzzer.h",
+      "sha256": "10111720cabefc4079d2f6ff5e161a7037ed59b1744e10d828d56c8b6fddb068"
+    },
+    {
+      "path": "test/fuzztest/updateiccdiallingnumbers_fuzzer/BUILD.gn",
+      "sha256": "ff3fb1a106254c500f6d806cabe470fb989ae80b7fae95e2038245fa52adcef2"
+    },
+    {
+      "path": "test/fuzztest/updateiccdiallingnumbers_fuzzer/corpus/init",
+      "sha256": "5918c7f33ab34ac53db14a66329179ad29ded180385855fcdf339f78e5446fd0"
+    },
+    {
+      "path": "test/fuzztest/updateiccdiallingnumbers_fuzzer/project.xml",
+      "sha256": "741d4387d118d0f0dc34cb6f683da7b62e00c89da742fc3fb58bccc752b91068"
+    },
+    {
+      "path": "test/fuzztest/updateiccdiallingnumbers_fuzzer/updateiccdiallingnumbers_fuzzer.cpp",
+      "sha256": "e3a4568ad20071e8c5804f168c6ae184d35cedff735998553c9f86d51364d5a8"
+    },
+    {
+      "path": "test/fuzztest/updateiccdiallingnumbers_fuzzer/updateiccdiallingnumbers_fuzzer.h",
+      "sha256": "26d620333642f68821db59a4ea9bede13972dd027ef7c2b08d5a11d76daf2f30"
+    },
+    {
+      "path": "test/fuzztest/updatesmsicc_fuzzer/BUILD.gn",
+      "sha256": "3abd7a907a99599567b43578812088d19dd4d2ad5ee49f2962e302be1c1522c1"
+    },
+    {
+      "path": "test/fuzztest/updatesmsicc_fuzzer/corpus/init",
+      "sha256": "8d302c3b0da3243701c1f0305ef73910a4eb773b5bf03a143a896e92c2f7900b"
+    },
+    {
+      "path": "test/fuzztest/updatesmsicc_fuzzer/project.xml",
+      "sha256": "741d4387d118d0f0dc34cb6f683da7b62e00c89da742fc3fb58bccc752b91068"
+    },
+    {
+      "path": "test/fuzztest/updatesmsicc_fuzzer/updatesmsicc_fuzzer.cpp",
+      "sha256": "a53ccadb8d45a75163d2f7a2085034db12daa3adb3c82ee09ef950eebde68c03"
+    },
+    {
+      "path": "test/fuzztest/updatesmsicc_fuzzer/updatesmsicc_fuzzer.h",
+      "sha256": "53ed5d59a1d69290a7c15ac44091690fcaa3269d70333ef9008f70ab4a21a674"
+    },
+    {
+      "path": "test/fuzztest/updatevoicemail_fuzzer/BUILD.gn",
+      "sha256": "75fc6c652fba7325d363cf825c7b84095f9853d51cd84ced473a9e499f3ebf13"
+    },
+    {
+      "path": "test/fuzztest/updatevoicemail_fuzzer/corpus/init",
+      "sha256": "8d302c3b0da3243701c1f0305ef73910a4eb773b5bf03a143a896e92c2f7900b"
+    },
+    {
+      "path": "test/fuzztest/updatevoicemail_fuzzer/project.xml",
+      "sha256": "741d4387d118d0f0dc34cb6f683da7b62e00c89da742fc3fb58bccc752b91068"
+    },
+    {
+      "path": "test/fuzztest/updatevoicemail_fuzzer/updatevoicemail_fuzzer.cpp",
+      "sha256": "d368b72a4fa106ce2bb81a4777a7ebe52f11f6f5f0ec641b83e399582c164ae6"
+    },
+    {
+      "path": "test/fuzztest/updatevoicemail_fuzzer/updatevoicemail_fuzzer.h",
+      "sha256": "ae1119ebcae61b166fdde52844aa9a78bccd50dc9bffeff0ef7a02fa9b269cce"
+    },
+    {
+      "path": "test/fuzztest/vcard_fuzzer/BUILD.gn",
+      "sha256": "47eff3dd561542d5ff8df39e1e11a7889c80a2febbeea48ad4d45c74cedc26a8"
+    },
+    {
+      "path": "test/fuzztest/vcard_fuzzer/corpus/init",
+      "sha256": "f38e74496190891af61390a9c0987ef0e747d6edf3ee45a76eaa6edc1c6a92bf"
+    },
+    {
+      "path": "test/fuzztest/vcard_fuzzer/project.xml",
+      "sha256": "5134abc41c0a7de3ad81b2bdc8b1a23e4470cb21616ccceab10ab14d49bc90d1"
+    },
+    {
+      "path": "test/fuzztest/vcard_fuzzer/vcard_fuzzer.cpp",
+      "sha256": "7007adce8c1ca7cd6d84180ad20e9a219f06ca71e950cf765cc1e28e663bfa01"
+    },
+    {
+      "path": "test/fuzztest/vcard_fuzzer/vcard_fuzzer.h",
+      "sha256": "343c1c7371dbf27e897e4c26209935d7ae32dd2e8a52287355bd8c852eac8896"
+    },
+    {
+      "path": "test/fuzztest/voicemailconstants_fuzzer/BUILD.gn",
+      "sha256": "777d7254d96e239ce365e43865d5cd50003c3bb82afe0cafb58b6ebca3e06098"
+    },
+    {
+      "path": "test/fuzztest/voicemailconstants_fuzzer/corpus/init",
+      "sha256": "c5342fe7a944da4bcebc443dc93f43a0d2c10a1b799abf9479e552cb482eb62c"
+    },
+    {
+      "path": "test/fuzztest/voicemailconstants_fuzzer/project.xml",
+      "sha256": "856267541c25df6ebc6b0ac24a839821166fd961b2e05c7ee195e31db573526f"
+    },
+    {
+      "path": "test/fuzztest/voicemailconstants_fuzzer/voicemailconstants_fuzzer.cpp",
+      "sha256": "119b564d2cfc59ffc210c0ba95dad9a161c3169a4df6f06bc154c7dd536f9fa9"
+    },
+    {
+      "path": "test/fuzztest/voicemailconstants_fuzzer/voicemailconstants_fuzzer.h",
+      "sha256": "cb2f22427d38dc76279598b488ca2cc89376a4a438568177811f9994ae8f771c"
+    },
+    {
+      "path": "test/guard/global_guard.cpp",
+      "sha256": "ea47eaaa14839a814436e33e29f21068bce42793b82f1b741a3ff746c262f2dd"
+    },
+    {
+      "path": "test/guard/global_guard.h",
+      "sha256": "547033105a46b68785d64c06f903331fae9312fc3b431b6dfb7e9b65f96e257b"
+    },
+    {
+      "path": "test/guard/global_guard_init.h",
+      "sha256": "e0f8563c65cef93c40dca5f70756b8442207dfdc449bf4a32800e207d2e7b0f7"
+    },
+    {
+      "path": "test/mock/codec/include/apdu_command.h",
+      "sha256": "995c3b8c6596bd5710cd39476196566f1a8bbc9ccde03702357e6568a4322dba"
+    },
+    {
+      "path": "test/mock/codec/include/asn1_builder.h",
+      "sha256": "766b395ea5c39a8b54c8d6f243d350228bac113bfb7431a749360b095b83ec64"
+    },
+    {
+      "path": "test/mock/codec/include/asn1_constants.h",
+      "sha256": "98842386ccccb4bb6dbbf67933568c3ddc425c45c570d47ca1dddfa851156feb"
+    },
+    {
+      "path": "test/mock/codec/include/asn1_decoder.h",
+      "sha256": "fd78cc2fb91c1fc86404a03e76899488dceceb78d928249a26524fbc2ca92439"
+    },
+    {
+      "path": "test/mock/codec/include/asn1_node.h",
+      "sha256": "6eafd34e947b4f136878d65f3be1d4e1dab0e3afeccad95f77b256ffca3f7e9f"
+    },
+    {
+      "path": "test/mock/codec/include/asn1_utils.h",
+      "sha256": "ec6637c764813d1aa0c050165b16d0479ea8d089e263432948b0e2c6ca1e0469"
+    },
+    {
+      "path": "test/mock/codec/include/request_apdu_build.h",
+      "sha256": "8eea9ce74755a6477dd24528334b30acd97fde25f38512ee0bffd7f49bc78f2e"
+    },
+    {
+      "path": "test/mock/codec/include/reset_response.h",
+      "sha256": "548143053c1626f8594531acb86d2c0abe707df27f8f66eb43819c77271588fa"
+    },
+    {
+      "path": "test/mock/codec/src/asn1_builder.cpp",
+      "sha256": "7930d0d7151254ca4ac9ed3a19b8eb157330d7ff0d40c1f92361035f3ec0c4da"
+    },
+    {
+      "path": "test/mock/codec/src/asn1_decoder.cpp",
+      "sha256": "cb15f437bd577b07fa399e1749c1dad95f7ed9a639a08f99f6b26964b981f4b1"
+    },
+    {
+      "path": "test/mock/codec/src/asn1_node.cpp",
+      "sha256": "f09d959ffc0534bd6f4ac5d62bb22931793c80f0f1d989845a32a191c74e6fe1"
+    },
+    {
+      "path": "test/mock/codec/src/asn1_utils.cpp",
+      "sha256": "8c11498faa133379b894f9a5838c295ea3fd5780b7ac1295e325de75644372c3"
+    },
+    {
+      "path": "test/mock/codec/src/request_apdu_build.cpp",
+      "sha256": "43082b2c2c2267cd1165ad64afdad7d46c439a1888102f8cc94ca73234656212"
+    },
+    {
+      "path": "test/mock/codec/src/reset_response.cpp",
+      "sha256": "1f7236027c5986af1d9e96a9afcf0e1d774cd8e145b4a0b593eb39c364d5865a"
+    },
+    {
+      "path": "test/mock/common_event_service/async_common_event_result.h",
+      "sha256": "0b064df1addd24d2322ed81c1acdf6c5893c31658e1628efc98b2db26135046f"
+    },
+    {
+      "path": "test/mock/common_event_service/common_event_constant.h",
+      "sha256": "e6112700a0713a9a2b6a1aa6beb8fcf440ffe2b3956599bf644732818a48c12d"
+    },
+    {
+      "path": "test/mock/common_event_service/common_event_data.h",
+      "sha256": "2d367113f3bbd9230fe7dd4c0c47a73fd6ed748984f5292671a3e5a7566909b9"
+    },
+    {
+      "path": "test/mock/common_event_service/common_event_manager.h",
+      "sha256": "9908de793e28d6f07c49fda412c23599fa454f5612aa740e4e2d2a8ad8286b54"
+    },
+    {
+      "path": "test/mock/common_event_service/common_event_publish_info.h",
+      "sha256": "ef0adb9b8f7b5aa86e12ce1a012d1c3660bc4c188fad56a5e00f6736f65d08f9"
+    },
+    {
+      "path": "test/mock/common_event_service/common_event_subscribe_info.h",
+      "sha256": "607d007ae83cc8e16bccfdd828deb9a191f88d9b5aeb4dd209ced65efcb417e0"
+    },
+    {
+      "path": "test/mock/common_event_service/common_event_subscriber.h",
+      "sha256": "b559105bf63b9c7b8dbee67012daf19b7e22400f3f5021b6a6393066240fc6af"
+    },
+    {
+      "path": "test/mock/common_event_service/common_event_support.h",
+      "sha256": "827a08a4cb556c104625c7cd45ab5c1d141233cec4b53490a9225659bfb20ffe"
+    },
+    {
+      "path": "test/mock/common_event_service/matching_skills.h",
+      "sha256": "f46cc524361944fab9bb9b04963ebdbf1f173b4f7a8bbd9621688c2e1bc1233a"
+    },
+    {
+      "path": "test/mock/ffrt/BUILD.gn",
+      "sha256": "0dba4362a69853c4648d1ff866108f1e7a71ad78f2299265fd8793de60d0add1"
+    },
+    {
+      "path": "test/mock/ffrt/inner_api/c/deadline.h",
+      "sha256": "6dc246802cd8a4af13266424757b7ca4489f48486abd1b10c6415138220e95a5"
+    },
+    {
+      "path": "test/mock/ffrt/inner_api/c/executor_task.h",
+      "sha256": "591f7c0c27306e6a2cb2ffee7f011dbf6ef26fce4f91a7c24711ba252bbc7325"
+    },
+    {
+      "path": "test/mock/ffrt/inner_api/c/ffrt_cpu_boost.h",
+      "sha256": "2f6269ac4c2bc52812da7c220f1d40b020df73b5e56780da1af115cb75ba90a3"
+    },
+    {
+      "path": "test/mock/ffrt/inner_api/c/ffrt_dump.h",
+      "sha256": "4006959e109e7b5317d44ec646df522adc5c1d89fb8f2677ae081e20c480063f"
+    },
+    {
+      "path": "test/mock/ffrt/inner_api/c/ffrt_ipc.h",
+      "sha256": "77f6fb9719813ef5cc4b27b95252409ba448241adccbb851560496dc92169287"
+    },
+    {
+      "path": "test/mock/ffrt/inner_api/c/init.h",
+      "sha256": "3c820dce70f7f24c60779c34ea9addda6696ad1f167bf762aed990f9811668f3"
+    },
+    {
+      "path": "test/mock/ffrt/inner_api/c/queue_ext.h",
+      "sha256": "a290586a56b4de66a07b91c1f763498d5021cf4dfc402df92419aa6ac17691d4"
+    },
+    {
+      "path": "test/mock/ffrt/inner_api/c/task_ext.h",
+      "sha256": "1b075c2b090b91167185509757f46155d7fe7aabb60bab4a33b5f5658ea9a25b"
+    },
+    {
+      "path": "test/mock/ffrt/inner_api/c/thread.h",
+      "sha256": "b19bf661b90897761819b18d7419e348d20b5470a4c1962ddfdac93d7749f6c4"
+    },
+    {
+      "path": "test/mock/ffrt/inner_api/c/type_def_ext.h",
+      "sha256": "2645ceaeb2a2b772ffa76eafce9b733295be1d9319d70b926fa2a68f9bb15c99"
+    },
+    {
+      "path": "test/mock/ffrt/inner_api/cpp/deadline.h",
+      "sha256": "fb078b95bbfa6b961277241f45ccce2d88c4e2580d366d9ea3828df1358eba9c"
+    },
+    {
+      "path": "test/mock/ffrt/inner_api/cpp/future.h",
+      "sha256": "b412688761543897b8022bc8d5e753162c71ef427f3348d27b225c9bf22aeefe"
+    },
+    {
+      "path": "test/mock/ffrt/inner_api/cpp/qos_convert.h",
+      "sha256": "8457d018d2236ac58bd6bec92ab8b2d41f1ecb1ae69c3a2a71682ee036309695"
+    },
+    {
+      "path": "test/mock/ffrt/inner_api/cpp/task_ext.h",
+      "sha256": "2329557c9076ca036447d9f0fc28445dd4d395f3b6ab314cf32c75c9e4224e4f"
+    },
+    {
+      "path": "test/mock/ffrt/inner_api/cpp/thread.h",
+      "sha256": "c0186c48ef74db396ee8e548fa393336149163e81fd0eace928845fbc8c020c9"
+    },
+    {
+      "path": "test/mock/ffrt/inner_api/ffrt_inner.h",
+      "sha256": "ff9373065e09fa12303f91aab6fba4202121cc3b6dc658cc062a3ca56293a415"
+    },
+    {
+      "path": "test/mock/ffrt/kits/c/condition_variable.h",
+      "sha256": "71ad7bda9926383502ef204019c471af33122b3052935102850bba85244adf00"
+    },
+    {
+      "path": "test/mock/ffrt/kits/c/fiber.h",
+      "sha256": "1dcb488345c17095d41f961176cc08d934724b0574d593c8c0498733cbfd36b3"
+    },
+    {
+      "path": "test/mock/ffrt/kits/c/loop.h",
+      "sha256": "e18c28248d0bb120290be75d944dafde7f485ce4185a168db06ddba1dfac85ac"
+    },
+    {
+      "path": "test/mock/ffrt/kits/c/mutex.h",
+      "sha256": "1bcf597d54a20873b62c6ad4df6db6557da529cea7bf43c1f80bef091f132fca"
+    },
+    {
+      "path": "test/mock/ffrt/kits/c/queue.h",
+      "sha256": "1f2f9fc53145735a3a3f9e301ca816058df61fc160b7b79f2658f72f07f0f535"
+    },
+    {
+      "path": "test/mock/ffrt/kits/c/shared_mutex.h",
+      "sha256": "0ef556473df7cb18054ab2b27128e7eee797e8a34d0106385b0d1b70b9ca91d8"
+    },
+    {
+      "path": "test/mock/ffrt/kits/c/sleep.h",
+      "sha256": "e214870500dd75b09814088791539c26ffa3bee99a14990d18e6aa761daf2af0"
+    },
+    {
+      "path": "test/mock/ffrt/kits/c/task.h",
+      "sha256": "4ef985c274750d11b3179c8cacd1d6311ad9712ac83c555dd6c988952bc1105e"
+    },
+    {
+      "path": "test/mock/ffrt/kits/c/timer.h",
+      "sha256": "667ed579e40a90c57ba9240ad9527642182140ff0e1d07a2d773bb8172df0936"
+    },
+    {
+      "path": "test/mock/ffrt/kits/c/type_def.h",
+      "sha256": "60d40ec408b7eb86c8a2ef19552a78c7ad1cfef9d6143485b708eafa68ea25b6"
+    },
+    {
+      "path": "test/mock/ffrt/kits/cpp/condition_variable.h",
+      "sha256": "c128f9051bce64aa73f48f024e746d65d31abf0f7abcac60b4e1a3300660542e"
+    },
+    {
+      "path": "test/mock/ffrt/kits/cpp/mutex.h",
+      "sha256": "924809d972b1a29c9036a99ae9a97a305d749124251f1c7da7b119ff8f6b8efa"
+    },
+    {
+      "path": "test/mock/ffrt/kits/cpp/queue.h",
+      "sha256": "8444e04efb31f02d434f5cbb037a01810baaba4e5605cebce5bb380586e908c2"
+    },
+    {
+      "path": "test/mock/ffrt/kits/cpp/shared_mutex.h",
+      "sha256": "f87a8250a35067bb4c95dcca7456b42cc311a95c89baa86b2ca83a93951bc8d4"
+    },
+    {
+      "path": "test/mock/ffrt/kits/cpp/sleep.h",
+      "sha256": "0e7103a5700aed27ebf393825b60e01714acc6107e6442effe2289f8797af685"
+    },
+    {
+      "path": "test/mock/ffrt/kits/cpp/task.h",
+      "sha256": "768423100034fc7450a3dbc0008d21b4242bb2e47da8519434eea33fa4030ffd"
+    },
+    {
+      "path": "test/mock/ffrt/kits/ffrt.h",
+      "sha256": "93cfa515626b97de32cc0ed7054965e6883384ae399568bfefd4fabf590cd652"
+    },
+    {
+      "path": "test/mock/mock_data_share_result_set.h",
+      "sha256": "706c00621cd6b87193a8bfa4b829e10df41c43ab3567600dcb7cfe0d86fc4050"
+    },
+    {
+      "path": "test/mock/mock_datashare_helper.h",
+      "sha256": "dcf1d62f7821226bdfbf424beadd6bdcdba432a71a138318bf885adf2ddc979a"
+    },
+    {
+      "path": "test/mock/mock_i_core_service.h",
+      "sha256": "76ccd2d680a83c015e06120f1d2ec2777ab0830024cf51f05f946d920f3ade24"
+    },
+    {
+      "path": "test/mock/mock_i_network_search_manager.h",
+      "sha256": "4e59692ac4df8c2d473d6a3f02562a1ee236f198311af6f61cdf3b6c1a6681fb"
+    },
+    {
+      "path": "test/mock/mock_i_raw_parcel_callback.h",
+      "sha256": "49fd7b9be7bcfa2e22798aece7973e4abd3bf526430a68d7b091304bb3851ebf"
+    },
+    {
+      "path": "test/mock/mock_i_system_ability_manager.h",
+      "sha256": "4c45b8e1281282ca3e379ad094c8fb50127ef15f81771343aa8bf14964be06f2"
+    },
+    {
+      "path": "test/mock/mock_multi_sim_controller.h",
+      "sha256": "54af82ef1da0f5ae0fa37d17e58a5a77f5073f199be7d3ba05bce18c4d7c89dd"
+    },
+    {
+      "path": "test/mock/mock_sim_fil_manage.h",
+      "sha256": "c5b24b4b818f4943a862587326565947458cdd2fa1248f99719c1e88cddfe2c8"
+    },
+    {
+      "path": "test/mock/mock_sim_manager.h",
+      "sha256": "17c6cb9b7a42cf570cd6098d8ac8478d2a5e5aaef143bac654e10a5457e91a8d"
+    },
+    {
+      "path": "test/mock/mock_sim_rdb_helper.h",
+      "sha256": "9219d9b7588931f78203169076a5f29426a321156991c11295a908fb738fb224"
+    },
+    {
+      "path": "test/mock/mock_tel_ril_manager.h",
+      "sha256": "544171fdb67033dd1b1e41a2bb355e1da4ff0b8864345fd607b715a959965e94"
+    },
+    {
+      "path": "test/mock/telephony_ext_wrapper/telephony_ext_wrapper.h",
+      "sha256": "99fbf01a0a4f1bc6f95303b0de7e1f2729766b6ba737ebfe0b1197dcf06ad97a"
+    },
+    {
+      "path": "test/unittest/core_service_common_event_gtest/BUILD.gn",
+      "sha256": "289becff19026572712932c016eef1e6842e9a11d151eed6e915523632067323"
+    },
+    {
+      "path": "test/unittest/core_service_common_event_gtest/core_service_common_event_hub_test.cpp",
+      "sha256": "7d7cea1bae3b7131c41f12bf08e569153ab50315c44a91048d3ff66c98b7b897"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/BUILD.gn",
+      "sha256": "c00eefd5e1cafa47177987d9683c1ae2837b95dec1357e1d6da4bad2364216f5"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/core_service_common_test.cpp",
+      "sha256": "c256380f6a1036b9308caadff466b5defa63aadd6d791f0422ee2ac769ce5836"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/core_service_native_branch_test.cpp",
+      "sha256": "07fc6fbc1185846184c69f67dd97624776c083e2cabd14b7e7e18ef95fc865a6"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/core_service_state_registry_proxy_mock_test.cpp",
+      "sha256": "0d02c6e53fe6eb2b94c1a1657aa43984886dc1977b18d1388a10818f9a8f6295"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/core_service_test.cpp",
+      "sha256": "22ba48378ee4f00da7d1b8c57d632cc23c0c7d172f2f94139291b12d55dfb80c"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/core_service_test.h",
+      "sha256": "cead05852853e883eab1466d6d904d021e9d2f483227cd4a9c7a291fe251d69a"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/core_service_test_helper.cpp",
+      "sha256": "e94c29dab72cfe649d6fdcbea6998b587fe437fbcd18a6f5206f3cb574a2e269"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/core_service_test_helper.h",
+      "sha256": "084384f00b34895234ea424227715a5b51bde64794937069f693675b9c520fb1"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/ims_reg_info_callback_gtest.cpp",
+      "sha256": "af935e7a833a47f99872f8de5e7c790d9caa8426b7fbfdff5eaeae67a642a088"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/ims_reg_info_callback_gtest.h",
+      "sha256": "7c8a3957b3153696514d78753f9b57255e870bd71923bfbd373e81522563bc79"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/network_search_branch_test.cpp",
+      "sha256": "c4d8a71e2be762757c52a0dc170d41c61ec12206081bb8f37c5c69748342f416"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/network_search_handler_test.cpp",
+      "sha256": "e80a97227b7e38eb50e47109f74086687764f048d890e9493fd0ca98c797fa0e"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/network_search_manager_test.cpp",
+      "sha256": "64efeb45e525fcf75e612ecaad24a48f365ee205b69c8833d0ede602df3ba713"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/network_search_manager_test.h",
+      "sha256": "f01f0a2ae4e288029eea3fde7d4ce8750a00d74464b438cd0c6ee42001f6ce77"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/network_search_test.cpp",
+      "sha256": "e3830cf3f639542eb1765a07d44036e456d5151bbf0ac22e48a8f228e8dec183"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/network_search_test.h",
+      "sha256": "973028d9bda1d5d741d917a996b7b845a79027ae1d4bc64bfeced1f024db6959"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/network_search_test_callback_stub.cpp",
+      "sha256": "6a94d4d343144fd7bb98e3da0590c41752b2fb3c88c5a08129713af14226e0f1"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/network_search_test_callback_stub.h",
+      "sha256": "921a4393998f5f36ca089a61e78b8dddf34e695c5f0e48a13e8135a0ec6e56e7"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/network_search_test_time_zone.cpp",
+      "sha256": "f69e664691edf527b3ff82f2a0c5695d7c3cc62e88304352f930bed428039d7d"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/satellite_service_test.cpp",
+      "sha256": "c6db5015fee86a6da7b40b911871520a5d521c61e053f73ce8ec7372ce83cd22"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/security_token.cpp",
+      "sha256": "aeac038644eafde75bd77f3d2c3dfa0b18cff04ec2d03f99632bc04b73e84c5a"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/security_token.h",
+      "sha256": "69ddd163fed90fa3a1ec6832af5b5ba8e09d8f853b6430f94b7289782a494537"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/sim_core_service_test.cpp",
+      "sha256": "ada786b83c63ee0871ea21aad97529892ca99fde581a2eccf3f92eb871b83974"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/sim_elementary_file_test.cpp",
+      "sha256": "e5c9bd1d99af9462f5e89454696e2aa885d15c42bc586d24448bac12201c10a1"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/sim_icc_test.cpp",
+      "sha256": "2c0c3dcb6c6ad539fa296e7719f8b2f1fe58ee53a871dc371ec2173ab8e3c08c"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/sim_manager_test.cpp",
+      "sha256": "e5abfecfbae72fa0875ca7f4c17d0816b46bda2a9e9aa4fef9c2be4cbb3f13d1"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/sim_operator_brocast_test.cpp",
+      "sha256": "5e58f5d69eaccbd3b1256660ac8808692de74f5ed0cbd07febb2776a162ed765"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/sim_operator_brocast_test.h",
+      "sha256": "aa9096e47d4019f6ec18d9f77d9389bf6f8c6ec96ebf06aaece0b45251bd2997"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/sim_test.cpp",
+      "sha256": "b4ff1580a422af7f77cf0a814db86a1958a2036303f409e4ef4716ee954ab23a"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/sim_test_util.cpp",
+      "sha256": "d5ce9627077cc1e3834932b8d0a00b013b33f77b2bc78d59564e6f77d131076b"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/sim_test_util.h",
+      "sha256": "856b9f32aa40924f35aeaef737d3d73e9e1e1bb7b70fc985fc8521a5379c046c"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/sim_type_convert_test.cpp",
+      "sha256": "acca795b94346ea07e44ca54ba456d80e08ab3fd29edae4817dea207e5a4348a"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/tel_stk_controller_test.cpp",
+      "sha256": "fc16852a9eeb5b0e6b12a4595232238f0f77902baa9860c7dbe207037106f2cd"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/vcard_test.cpp",
+      "sha256": "7d4ea1fa460336bcce1d4331cbf688c86224dc6b344062aa855c926bff787eb1"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/vsim_test.cpp",
+      "sha256": "8db0e420639284131472bbbd0ecb6b1e6a91dbe5785954a81f4757f167f76ed0"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/zero_branch_test.cpp",
+      "sha256": "686505469a93069d1964fe130094de044f61e6bf93fa7d7a9777d7797602e210"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/zero_branch_test2.cpp",
+      "sha256": "1860d062a5ab9b01408c25db4586c2c9de4b4825288862489a159bf71c722f8c"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/zero_branch_test_core_service.cpp",
+      "sha256": "baf5725322ee3a81400dcd3f05108fbcf8d93fb10cbc3b7e6266bc087bc463e6"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/zero_branch_test_network_search.cpp",
+      "sha256": "d76b5dcbb3cfdfb96a75207ab77d4874890e3b44ba07d9e203c3da4ba2ada447"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/zero_branch_test_sim_ril.cpp",
+      "sha256": "30cd677529f6823995eb11ade10e8c64d3762d3af51e07818048e1f546eeedd0"
+    },
+    {
+      "path": "test/unittest/core_service_gtest/zero_branch_test_sim_ril2.cpp",
+      "sha256": "0ece4b770857f9db7db4dd1d069ad82704f1a14de10af3b6630890998244124f"
+    },
+    {
+      "path": "test/unittest/esim_gtest/BUILD.gn",
+      "sha256": "15a9a3e207ad24af8f23348658ff95b49ca182cec638b13d4ab42fede7c0861e"
+    },
+    {
+      "path": "test/unittest/esim_gtest/core_manager_inner_test.cpp",
+      "sha256": "e3cde74e4b2345461a998ea3754d6c7aa83411f9b7766976edebfc8eedf58ad3"
+    },
+    {
+      "path": "test/unittest/esim_gtest/esim_core_service_client_branch_test.cpp",
+      "sha256": "e3a3dacf82261d8850ca233217e5aea1b1431f3d0b5081283efaadbd1bf05dcf"
+    },
+    {
+      "path": "test/unittest/esim_gtest/esim_core_service_client_test.cpp",
+      "sha256": "4058bcfaf8175a7421c8ba59304ff684532606cf973435b9bfbdca924223d51f"
+    },
+    {
+      "path": "test/unittest/esim_gtest/esim_core_service_proxy_test.cpp",
+      "sha256": "50eb80449c6843865425dbc44f203cc15dec505d895268c6ad75aa5e9786e946"
+    },
+    {
+      "path": "test/unittest/esim_gtest/esim_core_service_stub_test.cpp",
+      "sha256": "15b643e3bd276cc4279ca90d5353468138285822dd4411a317d54397742529a2"
+    },
+    {
+      "path": "test/unittest/esim_gtest/esim_core_service_test.cpp",
+      "sha256": "f1fb87ccf795268e08026550b58de894f52b2d5ef4375def3719b4be5dc17a10"
+    },
+    {
+      "path": "test/unittest/esim_gtest/esim_file_branch_test.cpp",
+      "sha256": "94aa35d81bf6eb7420f2153e424995df793561ed4472d94b1016f2d76758a398"
+    },
+    {
+      "path": "test/unittest/esim_gtest/esim_file_test.cpp",
+      "sha256": "d1eadb8de41f7fb2719ec259001bc78dccd33b33eea3792977804488c5262a5f"
+    },
+    {
+      "path": "test/unittest/esim_gtest/esim_manager_test.cpp",
+      "sha256": "2bf5d695dc8c268a78ffe87c4f9e2e15cc6859a0ef4aa434e82c64abb3169209"
+    },
+    {
+      "path": "test/unittest/esim_gtest/esim_part_one_test.cpp",
+      "sha256": "fc80e7f54f42b6f80b2560eb19ae1be93206de9b64c398c52e41fa3163ba6d1e"
+    },
+    {
+      "path": "test/unittest/esim_gtest/esim_service_client_branch_test.cpp",
+      "sha256": "9fa745589484c1104ad09460ae436de5f5cf1d6370657c7fb87b85c8c05c5b32"
+    },
+    {
+      "path": "test/unittest/esim_gtest/esim_test.cpp",
+      "sha256": "8ce387af12da461bafe94e6ab317d3b0b0fdbca1d51f51e85b8de652d3346f24"
+    },
+    {
+      "path": "test/unittest/esim_gtest/iesim_service_callback_stub_test.cpp",
+      "sha256": "9e84c9e5ab341df347cadae7b02799594f9ce261528ff05d69f16f6ed6a62aee"
+    },
+    {
+      "path": "test/unittest/esim_gtest/libtel_common_esim.versionscript",
+      "sha256": "6931fd0492e2225b3943a8b1ae41165652d4808a57b3b86a8eddf353a296b5bc"
+    },
+    {
+      "path": "test/unittest/esim_gtest/mock/include/esim_core_service_stub_test.h",
+      "sha256": "c1e35fc494062aada882047bc71fa641408a785d0bba4ae6785f204034d59d93"
+    },
+    {
+      "path": "test/unittest/esim_gtest/mock/include/esim_mock_iremote_object.h",
+      "sha256": "bb3e838e20cf934da8a4914467b2344452f5b02a3f198aa3e32a19045f6dd2fa"
+    },
+    {
+      "path": "test/unittest/esim_gtest/mock/include/if_system_ability_manager_mock.h",
+      "sha256": "97cf433c5e3481495838f0d81120460a3c28ffa5e5660b92150a1e867005e492"
+    },
+    {
+      "path": "test/unittest/esim_gtest/mock/include/mock_esim_manager.h",
+      "sha256": "ff2799e33345b8630dd0eb337ff793dd84a37130f2ab2f56f6c0c92b669c0c19"
+    },
+    {
+      "path": "test/unittest/esim_gtest/mock/include/mock_tel_ril_manager.h",
+      "sha256": "677415f49a7a359153fedfc99f40beaeb7324ecff227e0f38b2d2c9da521e58d"
+    },
+    {
+      "path": "test/unittest/esim_gtest/utils/common/include/base64.h",
+      "sha256": "f4bfd7bdef822f4e0a65876b038deb752c23970fcfeec17c65992918d0504449"
+    },
+    {
+      "path": "test/unittest/esim_gtest/utils/common/include/enum_convert.h",
+      "sha256": "5e4f51de9517b99c6802a6cb7e5e5e270c2f605df3c47c40f56cc68602a67601"
+    },
+    {
+      "path": "test/unittest/esim_gtest/utils/common/include/esim_service.h",
+      "sha256": "1510a2232b81fac20f807ff6bbaa8cdf7424dae54b2548921c7f3f9b42ac448f"
+    },
+    {
+      "path": "test/unittest/esim_gtest/utils/common/include/str_convert.h",
+      "sha256": "7eae87e0ca481b6da87bfe40f581588c8624cb6f20061abd1440bfb9012a2f2e"
+    },
+    {
+      "path": "test/unittest/esim_gtest/utils/common/include/tel_aes_crypto_util.h",
+      "sha256": "e5999fe491464b7cd4f600c3b6a8a072b8eef134e2e5d999d743e166d51b2819"
+    },
+    {
+      "path": "test/unittest/esim_gtest/utils/common/include/tel_event_handler.h",
+      "sha256": "23a78d2a7b7bd02f96c4d9ba634ba786c72c94fa5fc63b6471d417bc2c2af2a3"
+    },
+    {
+      "path": "test/unittest/esim_gtest/utils/common/include/tel_event_queue.h",
+      "sha256": "efff1f3b945772c3aee1a55f1c779dc617464b1084661058a907d58594b08ab1"
+    },
+    {
+      "path": "test/unittest/esim_gtest/utils/common/include/telephony_common_utils.h",
+      "sha256": "b600020000098595cde0ff72520e2e74c1384b34b4b752d590405f311cb0bc6c"
+    },
+    {
+      "path": "test/unittest/esim_gtest/utils/common/include/telephony_config.h",
+      "sha256": "5b845848b3822d54dee4c20bde818f725afd57e1f042d3257c8f88deef9d16b1"
+    },
+    {
+      "path": "test/unittest/esim_gtest/utils/common/include/telephony_config_c.h",
+      "sha256": "a6f2f28f1b8bf548dd33f57a1aa6753c4d85a8aaf8ebc65494731d162f48a1ae"
+    },
+    {
+      "path": "test/unittest/esim_gtest/utils/common/include/telephony_ext_utils_wrapper.h",
+      "sha256": "b8988b5fd1da4d613097ded348c78505c43a9508f93106e007bbc1a9552646a0"
+    },
+    {
+      "path": "test/unittest/esim_gtest/utils/common/include/telephony_hisysevent.h",
+      "sha256": "6a54444e89662832e1cb27e41fa429f923629bc11e5b6f5d40aecdbfdb56b60f"
+    },
+    {
+      "path": "test/unittest/esim_gtest/utils/common/include/telephony_permission.h",
+      "sha256": "6ba01ca037549408ad329fee2fc560d14fcc2ee0ce96fbdbc132763b5e5b81b4"
+    },
+    {
+      "path": "test/unittest/esim_gtest/utils/common/include/telephony_tag_def.h",
+      "sha256": "a3093ff6a9a62c019d77384d20282f3aa201e9b5093d63da266c80e2ce355992"
+    },
+    {
+      "path": "test/unittest/esim_gtest/utils/common/src/base64.cpp",
+      "sha256": "2121d8b765632b5377e227ed1db4fa01922347901d71129aa66b12f12cea60cb"
+    },
+    {
+      "path": "test/unittest/esim_gtest/utils/common/src/enum_convert.cpp",
+      "sha256": "f2c7fdbb877e1acb6499b2c1567ab46e25e94a23b73595b8c44f7c40ecf29a49"
+    },
+    {
+      "path": "test/unittest/esim_gtest/utils/common/src/str_convert.cpp",
+      "sha256": "5f5c0bf123d61910c333340dbef0c2b6352a37873d1a7cdc73b88e88ef4f4243"
+    },
+    {
+      "path": "test/unittest/esim_gtest/utils/common/src/tel_aes_crypto_util.cpp",
+      "sha256": "253c70be7a5d528fadaa00efa9e9854b97b69a782f4b97616a594370d677b7d8"
+    },
+    {
+      "path": "test/unittest/esim_gtest/utils/common/src/tel_event_handler.cpp",
+      "sha256": "97def48dfc8dc31431f616f564ce2cbcd3ece7fa4326fd87e2098dfc6fdcbb68"
+    },
+    {
+      "path": "test/unittest/esim_gtest/utils/common/src/tel_event_queue.cpp",
+      "sha256": "ef8597e4a32c429a0135f09eae2fee6250816f09581dfe95107aadddbaebaa78"
+    },
+    {
+      "path": "test/unittest/esim_gtest/utils/common/src/telephony_common_utils.cpp",
+      "sha256": "119d077504b2f4d153e69711dc232b3cad02cc5bfa97fcd61fa35cce482629dd"
+    },
+    {
+      "path": "test/unittest/esim_gtest/utils/common/src/telephony_config.cpp",
+      "sha256": "ad3efd387650bcdcaab62874ea4cb65e70f6edd0d2d1c164468f28700a4fa00d"
+    },
+    {
+      "path": "test/unittest/esim_gtest/utils/common/src/telephony_ext_utils_wrapper.cpp",
+      "sha256": "7ad23487382017eaf43520bbe76546d203d46fcf0c02f3a092e02521f66eb6bc"
+    },
+    {
+      "path": "test/unittest/esim_gtest/utils/common/src/telephony_permission.cpp",
+      "sha256": "f627b7b822faef5702a759800602a2adcc2257cd6e8f7f1ff1cc81dea3077218"
+    },
+    {
+      "path": "test/unittest/esim_parcel_gtest/BUILD.gn",
+      "sha256": "a2ea73ddbea226c0e432dc34343e3906fec67aba913ed5f094359de3154b8198"
+    },
+    {
+      "path": "test/unittest/esim_parcel_gtest/download_profile_config_info_parcel_test.cpp",
+      "sha256": "ddf7db4a2c3a26171606e1e72f316d272bfb93c2a785e5bc27f2d30fbdfe9fd7"
+    },
+    {
+      "path": "test/unittest/esim_parcel_gtest/download_profile_result_parcel_test.cpp",
+      "sha256": "a1358b2f7e1bfe09d2646c5c0fa823105521c97d1a69d83a1c3b6afac7f6cab9"
+    },
+    {
+      "path": "test/unittest/esim_parcel_gtest/downloadable_profile_parcel_test.cpp",
+      "sha256": "9365e6e5fd72ab23752e1501e88d23dd0205dc838ae427090233a9e5d4fac638"
+    },
+    {
+      "path": "test/unittest/esim_parcel_gtest/euicc_info_parcel_test.cpp",
+      "sha256": "a82dbaeaf057d45c0fa93f5a0c4d1793ba51784e8b5d2beb040294f39edcbbd9"
+    },
+    {
+      "path": "test/unittest/esim_parcel_gtest/get_downloadable_profiles_result_parcel_test.cpp",
+      "sha256": "2fef752d54a223cf193f2feeabcafd2014331792c82e8792238a7fda90fb02b1"
+    },
+    {
+      "path": "test/unittest/esim_parcel_gtest/mock/include/parcel.h",
+      "sha256": "dcb95fa8e5aaff9720cae51e3afa354983a52eab6127d19c990124a2091a8bac"
+    },
+    {
+      "path": "test/unittest/esim_parcel_gtest/mock/src/parcel.cpp",
+      "sha256": "73533105239bca4eb30363dffc4fa1ce31bbc806fa34484fde509083fa15cca6"
+    },
+    {
+      "path": "test/unittest/esim_parcel_gtest/profile_info_list_parcel_test.cpp",
+      "sha256": "6f394dcdbf2dc50a493ea3b0cca05b084050033223f02c3c230693a83a9a1509"
+    },
+    {
+      "path": "test/unittest/esim_parcel_gtest/profile_metadata_result_parcel_test.cpp",
+      "sha256": "6f10cdb005a78291386185715ed5ab53015be13681e236c83ddcbb9ae932c8d6"
+    },
+    {
+      "path": "test/unittest/esim_parcel_gtest/response_esim_result_test.cpp",
+      "sha256": "c4ff7808264b8ca002b308a312cba6209ce7b0d50bbced7c293d9ce617c50132"
+    },
+    {
+      "path": "test/unittest/icc_dialling_numbers_handler_gtest/BUILD.gn",
+      "sha256": "ce63c1fa62a48a075546683a103385051f0b52a0e0db32dc8738978431486268"
+    },
+    {
+      "path": "test/unittest/icc_dialling_numbers_handler_gtest/icc_dialling_numbers_handler_gtest.cpp",
+      "sha256": "9db614b631a1f725f18064bdea499c3395c29336993340b78c5326b6a01fe668"
+    },
+    {
+      "path": "test/unittest/icc_file_gtest/BUILD.gn",
+      "sha256": "295f4488f845ee0782bfe2dc08aa143bb4b0a3f70e5e98fe2cc396801724b118"
+    },
+    {
+      "path": "test/unittest/icc_file_gtest/icc_file_gtest.cpp",
+      "sha256": "04d8a8f66faa144443ad572428b99670f725887fc7db2657a4db8a457b9e31ca"
+    },
+    {
+      "path": "test/unittest/mock/include/mock_remote_object.h",
+      "sha256": "d051ec42a6937435d047497d958dacd2af9489517b43c1c1dfb80c0b0e10775a"
+    },
+    {
+      "path": "test/unittest/mock/src/mock_message_parcel.cpp",
+      "sha256": "b966c19a4532984dcb9ad8f09da1d30f3e978a8d7c182ec3af76507f77f5d59f"
+    },
+    {
+      "path": "test/unittest/mock/src/mock_parcel.cpp",
+      "sha256": "5ab7258bdd5db089892d4057aa50161d0707687ca2c852a15f288448abd7ec3b"
+    },
+    {
+      "path": "test/unittest/mock/src/mock_peer_holder.cpp",
+      "sha256": "761df80ded037fef7a2b03f020cc7082dafca05252a00763281bcd747212aa6d"
+    },
+    {
+      "path": "test/unittest/mock/src/mock_remote_object.cpp",
+      "sha256": "0b84fda0f2b0d92c669e71635cc435edbfba7f6817d26b8bd04ed8a81dd261ce"
+    },
+    {
+      "path": "test/unittest/raw_parcel_core_service_gtest/BUILD.gn",
+      "sha256": "0a72820d5426f63eca673799d2eb57d4c5d46d2115a240cacc5aada90a24e85f"
+    },
+    {
+      "path": "test/unittest/raw_parcel_core_service_gtest/core_service_client_test.cpp",
+      "sha256": "7620ce75500bbe1b4dcfc6c82dcf51926e959056ad3364422aaccf8b66d9bc89"
+    },
+    {
+      "path": "test/unittest/raw_parcel_core_service_gtest/core_service_client_test2.cpp",
+      "sha256": "f300a659de526f750319e8e1ce446e81748098528c3064faf25481c45e093647"
+    },
+    {
+      "path": "test/unittest/raw_parcel_core_service_gtest/core_service_test.cpp",
+      "sha256": "7c673c020aa6a9ff825b828b0bd9f451d915d509ea98511de9f45eff7c1afb5a"
+    },
+    {
+      "path": "test/unittest/raw_parcel_core_service_gtest/mock/core_service_dump_helper.cpp",
+      "sha256": "edf1761e1f3716741c261a618ec389af4e8ee83da0df354608b6165fb824fb37"
+    },
+    {
+      "path": "test/unittest/raw_parcel_core_service_gtest/mock/core_service_stub.cpp",
+      "sha256": "ab1cdb907b8eaaf14fe2734a7d02e4c8cee05fefaecd3b6fb071c603c33a915a"
+    },
+    {
+      "path": "test/unittest/raw_parcel_core_service_gtest/mock/network_search_manager.h",
+      "sha256": "6d264bbe8265bb1666c1688b1130b5e3c0bd03b9b642810ac6d4863585bdfdd0"
+    },
+    {
+      "path": "test/unittest/raw_parcel_core_service_gtest/mock/sim_manager.h",
+      "sha256": "e5f4918245fc30fc6dc8082dc9582924730d25ba4f88f1ef516fd913e3ac1a63"
+    },
+    {
+      "path": "test/unittest/raw_parcel_core_service_gtest/mock/tel_event_handler.cpp",
+      "sha256": "eac931fb859c9427214f7e5ffde9fce442322a7ccc0be9cc9db4b18c8290901a"
+    },
+    {
+      "path": "test/unittest/raw_parcel_core_service_gtest/mock/tel_ril_manager.h",
+      "sha256": "dc0c049c243b1c57143fd7414b1fd76a17411642958c312e6e720a598f72a5b6"
+    },
+    {
+      "path": "test/unittest/raw_parcel_core_service_gtest/mock/telephony_permission.cpp",
+      "sha256": "3bba7d3fae6fd44b1f8d6e89d375c9ad776505474a7cd3aebe18b0580f484579"
+    },
+    {
+      "path": "test/unittest/raw_parcel_core_service_gtest/mock/telephony_permission_test_helper.h",
+      "sha256": "4d23109a4a472ce93652d683f6ea96541391d232e8643df8437e0f8c0cbd69c4"
+    },
+    {
+      "path": "test/unittest/sim_gtest/BUILD.gn",
+      "sha256": "ac388fdd5293bb3988b5840e9a4fd276e732db0b61b331e1cfdee5f081ac2b19"
+    },
+    {
+      "path": "test/unittest/sim_gtest/core_manager_inner_gtest.cpp",
+      "sha256": "23625446229c4c0abc6cae5a8f16388c416eb1c7957091b5c82b5f3e79a19cd9"
+    },
+    {
+      "path": "test/unittest/sim_gtest/csim_file_controller_gtest.cpp",
+      "sha256": "36d8871c9b88fcd65f65b45920bdf7fd247983d33dbce1ec7f74e01cce573662"
+    },
+    {
+      "path": "test/unittest/sim_gtest/isim_file_gtest.cpp",
+      "sha256": "6271dfcaadaf785fe9ccb5b72f3061c3cb4a85f409e79efd381fbd72aa0ec7b8"
+    },
+    {
+      "path": "test/unittest/sim_gtest/multi_sim_controller_gtest.cpp",
+      "sha256": "193786633b3edb807520718ec95d1ba5f50e2a40bd08e46949c1401abc4f9204"
+    },
+    {
+      "path": "test/unittest/sim_gtest/operator_config_cache_test.cpp",
+      "sha256": "58016e6e2296de7d3c07a9fa3227fbed0b0f39af9892938b0568e4710e8ea584"
+    },
+    {
+      "path": "test/unittest/sim_gtest/operator_config_loader_gtest.cpp",
+      "sha256": "69c975ee64887c9aaee1b181c8bce6f184174451f6598cfaa608a95fa9bcafe8"
+    },
+    {
+      "path": "test/unittest/sim_gtest/operator_matching_rule_test.cpp",
+      "sha256": "c2ab60675c9f9db2c849fcba34bd4ab1d2122f085ca1657fafa1f77903586131"
+    },
+    {
+      "path": "test/unittest/sim_gtest/pdp_profile_rdb_helper_test.cpp",
+      "sha256": "8516670f275c6259f80a4fa2d0d90e03ca5f9b79580e16389fba3e7d8deb6000"
+    },
+    {
+      "path": "test/unittest/sim_gtest/ruim_file_gtest.cpp",
+      "sha256": "2ed562db277210d779c969280265f11bc17dd84b84a6de2208372222c2256c46"
+    },
+    {
+      "path": "test/unittest/sim_gtest/sim_file_gtest.cpp",
+      "sha256": "fd292a1436cb124d23e9b3463b81d75ddcd1c8e6c6fc6ae437f8cc76b13839a2"
+    },
+    {
+      "path": "test/unittest/sim_gtest/sim_manager_gtest.cpp",
+      "sha256": "acee7b78e13b699a79ff4b342be1ebdcc4d768df5daee08de65497823a76e658"
+    },
+    {
+      "path": "test/unittest/sim_gtest/sim_sms_controller_gtest.cpp",
+      "sha256": "e1b985af4f1c500be23bafef5458823c1751f1212898035e02fc066c6ec2e58e"
+    },
+    {
+      "path": "test/unittest/sim_gtest/sim_test.cpp",
+      "sha256": "d34cf5bc55d442258a880d4cca1bb8d159df0ec5ac4ca4bcf1a9c2c78afdce98"
+    },
+    {
+      "path": "test/unittest/sim_gtest/sim_utils_gtest.cpp",
+      "sha256": "1e6cfff13c1733cdb9b22d09e1aab9bdd93d68719f5b64723cfd5724706b8906"
+    },
+    {
+      "path": "test/unittest/sim_gtest/usim_dialling_numbers_service_gtest.cpp",
+      "sha256": "c4b4ce6fa587f91c5ab1d7d47d948a64380251ef6be9b6ee22007772f0488178"
+    },
+    {
+      "path": "test/unittest/sim_state_handle_gtest/BUILD.gn",
+      "sha256": "ab020c85c3bc8c2c08d0eb38f2bff12d9e1ad5800b85a0a742a72e665d200a05"
+    },
+    {
+      "path": "test/unittest/sim_state_handle_gtest/sim_state_handle_gtest.cpp",
+      "sha256": "05c16823f13f71ab086b6d40f5480254b17241b363e73e6e82415776755ced31"
+    },
+    {
+      "path": "test/unittest/tel_ril_gtest/BUILD.gn",
+      "sha256": "2678e583b2e6ac3720cebaaa8058ad02c0ddb76c248812990bb37670daad74fa"
+    },
+    {
+      "path": "test/unittest/tel_ril_gtest/tel_ril_call_test.cpp",
+      "sha256": "87728a3c979c5d5a86a2331c707dd2e446cfeca1f728ddd34660a11167c5c4fe"
+    },
+    {
+      "path": "test/unittest/tel_ril_gtest/tel_ril_common_test.cpp",
+      "sha256": "ff0af90977245ee70f3ac518bc044290e432824fd88eb9a38444afb15e58e160"
+    },
+    {
+      "path": "test/unittest/tel_ril_gtest/tel_ril_data_test.cpp",
+      "sha256": "4e2dfed57135a7d3ba3fc14df00d85abee512aabbc931f1903fa1aa8b013525f"
+    },
+    {
+      "path": "test/unittest/tel_ril_gtest/tel_ril_handler_test.cpp",
+      "sha256": "36dbc283c567c99ef9279ed95d5e5d3f29e614baa598125195d1f7ac3bcdf71f"
+    },
+    {
+      "path": "test/unittest/tel_ril_gtest/tel_ril_modem_test.cpp",
+      "sha256": "52473023e2c9a962f0c8ac1c3645d4aa9f613af5a06448917440e0a952dd083e"
+    },
+    {
+      "path": "test/unittest/tel_ril_gtest/tel_ril_network_test.cpp",
+      "sha256": "69e2c4b71ba0dd9a3e82021ec69987df5efe43b3806a5365a842c3ae3b1dd297"
+    },
+    {
+      "path": "test/unittest/tel_ril_gtest/tel_ril_sim_test.cpp",
+      "sha256": "906eac904ac3bb3923ffeda2695683d935a1ec14191fda573de48dfdc980f69b"
+    },
+    {
+      "path": "test/unittest/tel_ril_gtest/tel_ril_sms_test.cpp",
+      "sha256": "b0c77f10750e0876929433ab8b4df31a7b302d1ce585d2d793c84a89156ec5cf"
+    },
+    {
+      "path": "test/unittest/tel_ril_gtest/tel_ril_test_util.cpp",
+      "sha256": "700860a62bcb53530acac6d30ff55b48197476689d9bada947f43c4b5b5fab66"
+    },
+    {
+      "path": "test/unittest/tel_ril_gtest/tel_ril_test_util.h",
+      "sha256": "884b64c49ec2e56383de8435e22a47b3dcab050e0c8db098ce3f291f76acef8d"
+    },
+    {
+      "path": "test/unittest/tel_ril_gtest/zero_branch_test_tel_ril.cpp",
+      "sha256": "2db2c4ccdc888b54bd9869a94a4033db7185e8d24924f41ed0d1981e0a2fdee2"
+    },
+    {
+      "path": "test/unittest/ui_client/BUILD.gn",
+      "sha256": "f8a2d0e67c9863010bd159cd6ecfc9db420138f3031707ff9c0e57f15e564d2d"
+    },
+    {
+      "path": "test/unittest/ui_client/core_service_test_code.h",
+      "sha256": "6da6d04486b0405c57f927760a47f114175ae0a4d66b5cdaaba39a2a3b35d93d"
+    },
+    {
+      "path": "test/unittest/ui_client/ims_reg_info_callback_gtest.cpp",
+      "sha256": "29719d04cf6b61390973d1af56668f0a8d00328599f8bc7d6f84b58cb05f104d"
+    },
+    {
+      "path": "test/unittest/ui_client/ims_reg_info_callback_gtest.h",
+      "sha256": "8e988ba9908af6945ccf3c2171e091b531ace9900a0c1f7fcd9826e8d6d471c8"
+    },
+    {
+      "path": "test/unittest/ui_client/state_registry_observer.h",
+      "sha256": "d184a41254cc3a52641b423e23609e6812b2b925b663dfc0a0c6cde615d807f9"
+    },
+    {
+      "path": "test/unittest/ui_client/ui_client_test.cpp",
+      "sha256": "ffbf5c8998c2e830fe6fe4a5f263447034f9401f938224a567e6357a06e4214c"
+    },
+    {
+      "path": "test/unittest/utils_codec_gtest/BUILD.gn",
+      "sha256": "6548007c69f183755e63bfff37e94a7ba0ad7b0a9b41fd2a9ebeeb8f4eab7c88"
+    },
+    {
+      "path": "test/unittest/utils_codec_gtest/asn1_builder_test.cpp",
+      "sha256": "c3139b5c256db9e5fa2a5977758b38acdbf7d613573fe72a841e07504ebea40f"
+    },
+    {
+      "path": "test/unittest/utils_codec_gtest/asn1_decoder_test.cpp",
+      "sha256": "942b605285e3e6669afe6507712280a11f761b2e80ac30152681ffb9d1d8a945"
+    },
+    {
+      "path": "test/unittest/utils_codec_gtest/asn1_node_test.cpp",
+      "sha256": "8aade5862ddaaf8053ab49a8b6af119d8ad423b95aa0f2be25dfd0e0ceaa62de"
+    },
+    {
+      "path": "test/unittest/utils_codec_gtest/asn1_utils_test.cpp",
+      "sha256": "ed91fdabb91cf8247fc44066a337eeb8aa6b37bf11bd348de9225fc3f4b2af0c"
+    },
+    {
+      "path": "test/unittest/utils_codec_gtest/request_apdu_build_test.cpp",
+      "sha256": "54ce9aea280d2926a2cde71c2eef67fbe48af2a3497979592c3c5907513123ad"
+    },
+    {
+      "path": "test/unittest/utils_codec_gtest/reset_reponse_test.cpp",
+      "sha256": "bca1d203b8bdd98e03c80c0ffe1ebeccb0aea9bcf7fd3563393dad25a0d89518"
+    },
+    {
+      "path": "test/unittest/utils_tel_event_gtest/BUILD.gn",
+      "sha256": "288707a799cfa4dc28432e72e431043c3e157061b857651649e96040522cc55f"
+    },
+    {
+      "path": "test/unittest/utils_tel_event_gtest/tel_event_handler_test.cpp",
+      "sha256": "e0d9ce5d773b81083f9f7d292793d8e7bfde28af8583459d55c7290c939b53b4"
+    },
+    {
+      "path": "test/unittest/utils_tel_event_gtest/tel_event_queue_test.cpp",
+      "sha256": "005323834b3355a19e170daeb11f27e71f3e5a206520c5fd8cbb1b0954002156"
+    },
+    {
+      "path": "test/unittest/utils_vcard_gtest/BUILD.gn",
+      "sha256": "1d4e399eaf56cd864ba468cd31ec1101d1cd76bef6ec3098635ad3c0d4f1adc5"
+    },
+    {
+      "path": "test/unittest/utils_vcard_gtest/contact_data_branch_test.cpp",
+      "sha256": "4be1b2558cc3ad1e434a74d80dba4b8788889259a99c3445eaf97af2785b8e39"
+    },
+    {
+      "path": "test/unittest/utils_vcard_gtest/contact_data_test.cpp",
+      "sha256": "e71624aae9a4cf59e57e1a79cbdc6a38c8a805b084d89e0fe2ded87c7f8fa7d9"
+    },
+    {
+      "path": "test/unittest/utils_vcard_gtest/contact_data_test.h",
+      "sha256": "41c5d5fa23f1e0ad295bc4ade8ceda3f6a9dde7e9d9d0e84cf66d2a4d5d32a75"
+    },
+    {
+      "path": "test/unittest/utils_vcard_gtest/vcard_constructor_test.cpp",
+      "sha256": "9e499512389778502667664f77c4eb523567f0201c45e87e8965e307c0d0fdec"
+    },
+    {
+      "path": "test/unittest/utils_vcard_gtest/vcard_manager_test.cpp",
+      "sha256": "239bff8540e59bae26be964dfee4b27b06332966489e80cc8bd061943568a70f"
+    },
+    {
+      "path": "test/unittest/utils_vcard_gtest/vcard_utils_branch_test.cpp",
+      "sha256": "81a0ddb27160717ac9e0a8323cda3c6d8abd528de70a786ac469eea663bb7b9f"
+    },
+    {
+      "path": "utils/BUILD.gn",
+      "sha256": "2ccedb1c5f4a7948c482fb6e9f7b711dd01eb734158a33d4dfffc1352598c8c0"
+    },
+    {
+      "path": "utils/codec/include/apdu_command.h",
+      "sha256": "3e18aba6ef9fe61835106a300fdd16af5c0bcefbe4a86a32e49bbc03b4bc9426"
+    },
+    {
+      "path": "utils/codec/include/asn1_builder.h",
+      "sha256": "850d8b4dbaf0decf3968375d05a51d057e77f00506b956043d0aa4e1388efc02"
+    },
+    {
+      "path": "utils/codec/include/asn1_constants.h",
+      "sha256": "0bb66adefb420e0e6ec6d984c8de7925f25903c2410486f56782cfa11c51458d"
+    },
+    {
+      "path": "utils/codec/include/asn1_decoder.h",
+      "sha256": "54ff9e53fa89d63319d95c7ab75c74c598990b3434a3e890b234996b7f71f118"
+    },
+    {
+      "path": "utils/codec/include/asn1_node.h",
+      "sha256": "bcaff017d88e8a30b8aaac832997b6ca5e0388af49582a1e8faab7a94eacf571"
+    },
+    {
+      "path": "utils/codec/include/asn1_utils.h",
+      "sha256": "ec6637c764813d1aa0c050165b16d0479ea8d089e263432948b0e2c6ca1e0469"
+    },
+    {
+      "path": "utils/codec/include/request_apdu_build.h",
+      "sha256": "2fc541c622f18ebb5bd5057cd96321fd1aa075a1dcc308c4f9e2d2dd27afdf56"
+    },
+    {
+      "path": "utils/codec/include/reset_response.h",
+      "sha256": "8c06252b415d8d47b524beff9274c0cbc9325d678ade00d6a39a551c46b75ed4"
+    },
+    {
+      "path": "utils/codec/src/asn1_builder.cpp",
+      "sha256": "aa9a3a405669aa0ce6eca7badb2492469b6cd94ecb0b3b2e225cbfd71dd1c198"
+    },
+    {
+      "path": "utils/codec/src/asn1_decoder.cpp",
+      "sha256": "4460fff8f1621f6887dfe0825bde362f48b3c93664c7d4991fc860f9b8d787e1"
+    },
+    {
+      "path": "utils/codec/src/asn1_node.cpp",
+      "sha256": "100526b12f5a5f9980e31917f8ac2a4fa41637f763fc12392479828ccc246d25"
+    },
+    {
+      "path": "utils/codec/src/asn1_utils.cpp",
+      "sha256": "aa7b2ea1c4a25ca5153a21ddc2f3069acac212493b055b65ca6fd5ec09820236"
+    },
+    {
+      "path": "utils/codec/src/request_apdu_build.cpp",
+      "sha256": "5182ba16fba3482e649505f45811e50c5e2a6b6022cb3cd8d68f5432e3339761"
+    },
+    {
+      "path": "utils/codec/src/reset_response.cpp",
+      "sha256": "8d75fae6a5cb53c7bc99afb0a5699e3e4b7eb2c679044babaa521ca7ce8b800c"
+    },
+    {
+      "path": "utils/common/include/base64.h",
+      "sha256": "2db7e3800e81fa7e496f473ff12e3cad188d424cb74f9241988c8e0fa1f1d2b7"
+    },
+    {
+      "path": "utils/common/include/enum_convert.h",
+      "sha256": "5e4f51de9517b99c6802a6cb7e5e5e270c2f605df3c47c40f56cc68602a67601"
+    },
+    {
+      "path": "utils/common/include/esim_service.h",
+      "sha256": "1510a2232b81fac20f807ff6bbaa8cdf7424dae54b2548921c7f3f9b42ac448f"
+    },
+    {
+      "path": "utils/common/include/str_convert.h",
+      "sha256": "7eae87e0ca481b6da87bfe40f581588c8624cb6f20061abd1440bfb9012a2f2e"
+    },
+    {
+      "path": "utils/common/include/tel_aes_crypto_util.h",
+      "sha256": "ef7632dbe12ce7a24d87ac44a3a1de3e17d5a5ea625e49baf9508e277cfe7658"
+    },
+    {
+      "path": "utils/common/include/tel_event_handler.h",
+      "sha256": "590cdd39dcc3b28263332c8dce97dfcb088e4534233ad5cf137c652a80dc83bc"
+    },
+    {
+      "path": "utils/common/include/tel_event_queue.h",
+      "sha256": "186ce31138253c3403280f7ad1a858ba1882a2174115449876d12174162d21d4"
+    },
+    {
+      "path": "utils/common/include/telephony_common_utils.h",
+      "sha256": "a9e312ef695f916e40e8f86c4913d9c854f3a17ad7895ca8923d1838aa505360"
+    },
+    {
+      "path": "utils/common/include/telephony_config.h",
+      "sha256": "5b845848b3822d54dee4c20bde818f725afd57e1f042d3257c8f88deef9d16b1"
+    },
+    {
+      "path": "utils/common/include/telephony_config_c.h",
+      "sha256": "0259330c9d6cf4ae3ad1a1bbb15123eb98af24e30cc26bc1298daea716a34663"
+    },
+    {
+      "path": "utils/common/include/telephony_ext_utils_wrapper.h",
+      "sha256": "46320b6f2bdc11b6d5cf5b08ebab970b753910a6546578045e21b34f5fcb1539"
+    },
+    {
+      "path": "utils/common/include/telephony_hisysevent.h",
+      "sha256": "d74a929a9ff9722a9426928c1a6a1e122dc5bb46849ed4babaeb987e16466805"
+    },
+    {
+      "path": "utils/common/include/telephony_permission.h",
+      "sha256": "17822e2726eb13949921822841b70a003991c8a67ed4e6ff71da2b9e80182a39"
+    },
+    {
+      "path": "utils/common/include/telephony_tag_def.h",
+      "sha256": "fa341db2801fd85f9db5f118393f07d0b5ba1e5bd6493ff80c2b388c85872944"
+    },
+    {
+      "path": "utils/common/src/base64.cpp",
+      "sha256": "2cbd14fa4486b16ab7bf1faad07c0d026f02691bc09630a26974dfaffc6d3215"
+    },
+    {
+      "path": "utils/common/src/enum_convert.cpp",
+      "sha256": "f2c7fdbb877e1acb6499b2c1567ab46e25e94a23b73595b8c44f7c40ecf29a49"
+    },
+    {
+      "path": "utils/common/src/str_convert.cpp",
+      "sha256": "20f6f4af091416f04ec8910d2260fb872ce92a379e7f6d867d165ba5a82bf757"
+    },
+    {
+      "path": "utils/common/src/tel_aes_crypto_util.cpp",
+      "sha256": "17c603acbac06774d01ed5fd1d4cc2c37e786e85c060ebcc40e2c711958e49c9"
+    },
+    {
+      "path": "utils/common/src/tel_event_handler.cpp",
+      "sha256": "d6dbc69c03c8c4810cea31d9efaac5e0c0767b569edcc9ce25f3c61269665e63"
+    },
+    {
+      "path": "utils/common/src/tel_event_queue.cpp",
+      "sha256": "cfd417cf54d8f6df5f6aab120de31f711f2f62810afd8c273275b847a02f7a9d"
+    },
+    {
+      "path": "utils/common/src/telephony_common_utils.cpp",
+      "sha256": "4d74a30cf4d1e0963c91948f8942eb646e8291792c0d8c9aceaf26b8527d3e3c"
+    },
+    {
+      "path": "utils/common/src/telephony_config.cpp",
+      "sha256": "ad3efd387650bcdcaab62874ea4cb65e70f6edd0d2d1c164468f28700a4fa00d"
+    },
+    {
+      "path": "utils/common/src/telephony_ext_utils_wrapper.cpp",
+      "sha256": "44bf84070effe92acd936998c81daf1770c197cb08416ca70e2a3945134b472f"
+    },
+    {
+      "path": "utils/common/src/telephony_permission.cpp",
+      "sha256": "3ead60a37b3e50bad9c2175e2dbf6b130b47e5be0574298f786a36d49ea21611"
+    },
+    {
+      "path": "utils/libtel_common.versionscript",
+      "sha256": "f0183bd25f93f5c3e8ba10a382160b54c7f8ef8fb34fed2cf114346b2cf564b6"
+    },
+    {
+      "path": "utils/libtel_common_esim.versionscript",
+      "sha256": "6931fd0492e2225b3943a8b1ae41165652d4808a57b3b86a8eddf353a296b5bc"
+    },
+    {
+      "path": "utils/libtel_vcard.versionscript",
+      "sha256": "9d1e08da3fc6d17577eec054b4234c8c1daafae202b2765d2dcf6dfb97ada997"
+    },
+    {
+      "path": "utils/log/include/telephony_log_c.h",
+      "sha256": "e7adf7b8db99687315ce735fc1d137b68c70a25823cc1b4784dffbd401414298"
+    },
+    {
+      "path": "utils/log/include/telephony_log_wrapper.h",
+      "sha256": "8ccd4a2f8f19fe0543bb15228fab0b9374464f900a94206122589d9f76b1d7c3"
+    },
+    {
+      "path": "utils/log/test/BUILD.gn",
+      "sha256": "f0b88e1b6a6034ddadff8e7eada3bd38c03e5ee20740cf0b2453d93063c05508"
+    },
+    {
+      "path": "utils/log/test/unittest/common_telephony_log_test/BUILD.gn",
+      "sha256": "7df754776bea4a51e3f33033848b1bc275b2079b2a93a900f9d2ed4a81fc9370"
+    },
+    {
+      "path": "utils/preferences/cfg/telephonyProperties.xml",
+      "sha256": "14b65bf754f491f554bab84d5140652933704e96d4e2eed7ced684b932c29ceb"
+    },
+    {
+      "path": "utils/preferences/include/tel_profile_util.h",
+      "sha256": "b90f78e8c6e21cc59648dbba911cb509d95bbecf77ee0e99259fb786d7eb7879"
+    },
+    {
+      "path": "utils/preferences/src/tel_profile_util.cpp",
+      "sha256": "c36461c37d5e5a83a7a230054a8a3eee7e1b2de6e43a7f1ef4317fd3e318abd7"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_anniversary_data.h",
+      "sha256": "1522da7b8d5ff877fdecff461c1b4c3e10629037840f3bc13c8644d792ef47d0"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_birthday_data.h",
+      "sha256": "f1cf6ba094997106cba3afe1bbbc9bec11e6690639cb2916d3103301bc5be295"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_contact_data.h",
+      "sha256": "e2102c9917d11aba6f7d9d62ca7076d8fe289d05629bc8d361ed688193ed0bb9"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_email_data.h",
+      "sha256": "01c5dc8a0095467ee4102f9b9bcab99e8204482f0b94f2eaa5209fbe048dd045"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_event_data.h",
+      "sha256": "55966715986c17c522cab4a4100f6d4743edb90c5f7a0beaa934564a0b5a9671"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_group_data.h",
+      "sha256": "9e03e9be332ef6c0c1a1c765266440e1904e1dc7e362e1b0ace9f21cf49acc78"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_im_data.h",
+      "sha256": "2c609336dc80f7d1aa85969f3b46543a80e0571dd6c8b83ce3f3356a5af1e2ab"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_name_data.h",
+      "sha256": "f070afa1f5b6cab3d47dc9443f686c6b5ead2d392bd0c58f687ddbaae8ff8320"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_nickname_data.h",
+      "sha256": "390006cac3ee82d294eb8dea640313c77acab99618663b26e735952feaf3add1"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_note_data.h",
+      "sha256": "8cd54775c5ac5242afa475beaba9b47f41c87770efe850c90c55031ee86bc60f"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_organization_data.h",
+      "sha256": "1b6a9430aadbca913a090e84020a6689a11f399adcdb24791426682349a37348"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_phone_data.h",
+      "sha256": "b7bcaa69b07b1f69b79d6400ae6a151e883331486e0a4fe1518dbe7a442e0655"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_photo_data.h",
+      "sha256": "4a98b76dc83a90ffbbb25eb6848642e5889a1e696e836f7f700202b335c85fed"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_postal_data.h",
+      "sha256": "7e601892abc7e825753421166c3e102b20012ef4a5cf9238786813a962854258"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_relation_data.h",
+      "sha256": "7f4f88680a901b013e45696880f9ab2f3bc0a526590e2a6ffe7faf08757052f3"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_sip_data.h",
+      "sha256": "419e695d8f69176be71f55b2cf9911caf04685e7ea880c00263dcadeda81ff0d"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_uid_data.h",
+      "sha256": "8555d23ac54b6a300e35d0ed39e5103a1683bf3a3ed9ce757dd7dfca43a6d5a2"
+    },
+    {
+      "path": "utils/vcard/include/contact_data/vcard_website_data.h",
+      "sha256": "d7ba071c5d3b65bf302ca50e319432de28511e4707cf004c0c0965078f8342a1"
+    },
+    {
+      "path": "utils/vcard/include/vcard_configuration.h",
+      "sha256": "dfd16cdbcdebe32ca129889974443f52735f5f74f40b46416151cc83c5c1a207"
+    },
+    {
+      "path": "utils/vcard/include/vcard_constant.h",
+      "sha256": "97244e754e08498c30e5b5af0431aa67f3ca6dde393f608f96b51e4cb2559785"
+    },
+    {
+      "path": "utils/vcard/include/vcard_constructor.h",
+      "sha256": "20e8776a1b6b55958597d642969d2fda263a2eb8103390f6c95ef7494f37eaa8"
+    },
+    {
+      "path": "utils/vcard/include/vcard_contact.h",
+      "sha256": "0bf52188d89432c084913d3e4f7999120169905d8adc9fb72fbe92f123a0f3fb"
+    },
+    {
+      "path": "utils/vcard/include/vcard_decoder.h",
+      "sha256": "15961655c1db1290591ce4e473de9b2ac429509d0d4f422e9360d20f5ed96bb2"
+    },
+    {
+      "path": "utils/vcard/include/vcard_decoder_v21.h",
+      "sha256": "c6bfda0fd044460238245cb2b0e4a33266f291e9a5e3a006db50254225cd063a"
+    },
+    {
+      "path": "utils/vcard/include/vcard_decoder_v30.h",
+      "sha256": "a619ef1c33d88cb5ae0ef690a5195aa2da303a06d8a15c5d073de1bcee97b2ff"
+    },
+    {
+      "path": "utils/vcard/include/vcard_decoder_v40.h",
+      "sha256": "f2385a67fcf2d7c7c6b695f1defc7d8ac2f931f583d0867e4a534bace4c48671"
+    },
+    {
+      "path": "utils/vcard/include/vcard_encoder.h",
+      "sha256": "71389803c4d838eb97ab775aa7cc18429514014331865ab327d4e10468bccb2c"
+    },
+    {
+      "path": "utils/vcard/include/vcard_file_utils.h",
+      "sha256": "e36641ca4178c904a400cf28bae4f90deb94dd9866982013bdba9795b9d82e19"
+    },
+    {
+      "path": "utils/vcard/include/vcard_manager.h",
+      "sha256": "c42cb921a5f1b2a01a8476000a436d26aef0fb991c0a4922b3f8c8b61780bbd1"
+    },
+    {
+      "path": "utils/vcard/include/vcard_raw_data.h",
+      "sha256": "8eab64bcca56bd25b48f60131082dc97b80076914a97f4c5c1e30e637409aab3"
+    },
+    {
+      "path": "utils/vcard/include/vcard_rdb_helper.h",
+      "sha256": "414c50ae20f209b7d75ae318cbd3636a89f17fea8707578ace65c5f01553cf3e"
+    },
+    {
+      "path": "utils/vcard/include/vcard_utils.h",
+      "sha256": "1c1e74cc031967a06292af7a7e116e486246e08365c9a091eb487347955979ca"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_anniversary_data.cpp",
+      "sha256": "63f6a31e9e15d4678f7cf3eb616a2287e83bce9bb8f7cd40fc80c4c9cad5a42c"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_birthday_data.cpp",
+      "sha256": "40feec55046c22afd127073cc783370372240255e756b53fe23adf1814d11f60"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_email_data.cpp",
+      "sha256": "09dd0761863481ce9d483089cce109aa4bc4d54198623a0b24abe2e82fc159d6"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_event_data.cpp",
+      "sha256": "9ee42e80f16fac5f4d35fa3cbf5851bc57cad724185401d335dc3e70aab2bda2"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_group_data.cpp",
+      "sha256": "85299e7fda7ba8d9c219c093ac88a197918d2b333e988eca8e3b52d10e72ef87"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_im_data.cpp",
+      "sha256": "ecbba18ac19f70c36712370b02d492a805e1c35461c259fab9b619242304a153"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_name_data.cpp",
+      "sha256": "4399e890ffec9ac098d4652fc245860037e07b630599d8c72b0f9937d5abf65d"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_nickname_data.cpp",
+      "sha256": "ed67654941e5e3ac51b27fe38f1cffa41559bae82aaf2c11fe06ed054f728de2"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_note_data.cpp",
+      "sha256": "c32371e8fa228fb58f949859a82fcf9f0669e7daf90bb399055a9e40e7a1f421"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_organization_data.cpp",
+      "sha256": "187704f7ad21dedd0a18c9ddd62ab334ad80c5fb68d5e1dd3e09e5dbecd9e4b1"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_phone_data.cpp",
+      "sha256": "ee821db278cef964685e885a5564b30c705d9947638bb691d3addc22e19e7d82"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_photo_data.cpp",
+      "sha256": "b348f0282c57ddc7745b156bf8930456ac640c1dec721b6bcc2e74d0cfcc5b79"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_postal_data.cpp",
+      "sha256": "28f7096e283dfc280ed480c9af620b05a2283d4644715360f4a8a1701565138e"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_relation_data.cpp",
+      "sha256": "27b3ac1394fdbd8739ae3aed4a9ea8847742135a97f32a394be9a79edfe64ab2"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_sip_data.cpp",
+      "sha256": "493b61269ec1fac88d09eda63930d77ed10795c75e40ab2bafebd8e3499513a3"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_uid_data.cpp",
+      "sha256": "daae11041715c7ffc5a069c30bcc5c17abea3ede2356bc42689c1e3945303867"
+    },
+    {
+      "path": "utils/vcard/src/contact_data/vcard_website_data.cpp",
+      "sha256": "1c3780af2b4975c40b1c61f1ac83d4fdb1f113c30ee89e8965fd6a7015f9f77f"
+    },
+    {
+      "path": "utils/vcard/src/vcard_configuration.cpp",
+      "sha256": "ed1a8960b0f6855fea0777f0b5856a429b10b59962fdb13400d555d379d449c1"
+    },
+    {
+      "path": "utils/vcard/src/vcard_constructor.cpp",
+      "sha256": "e59acda83889884ec077fd0ffa93f3fcd946339113e79c25611db25610112b73"
+    },
+    {
+      "path": "utils/vcard/src/vcard_contact.cpp",
+      "sha256": "f88b53a4ceea27762a9f7ba28b6a98a367e9d6df4f286e72532567d97cd30a46"
+    },
+    {
+      "path": "utils/vcard/src/vcard_decoder.cpp",
+      "sha256": "3dd746196777a5d1a1de7eecb083ba02068351aad1aca3b7601e129e318645f0"
+    },
+    {
+      "path": "utils/vcard/src/vcard_decoder_v21.cpp",
+      "sha256": "2c9bd39b6ca644c0fb00dfed41f11e9be1a5f806648363359f1029daa3956c51"
+    },
+    {
+      "path": "utils/vcard/src/vcard_decoder_v30.cpp",
+      "sha256": "3c41c7f78a6150bb98b57f9d2244306d0f9fa8b50cce2cc8411be58b4ed04e5c"
+    },
+    {
+      "path": "utils/vcard/src/vcard_decoder_v40.cpp",
+      "sha256": "badf83a090e2e76eca7075b99b56b2962b1ca93ecdbcbd4c0a02dc0ad8ab4516"
+    },
+    {
+      "path": "utils/vcard/src/vcard_encoder.cpp",
+      "sha256": "f69c2016f28e839aeb1b0d575dfd172f8462d12c1c2f4e9758bde4d0b2a220e2"
+    },
+    {
+      "path": "utils/vcard/src/vcard_file_utils.cpp",
+      "sha256": "93e04a35938d4a3960f0ba1e3ac3416126217816693a07074af05c9ffa38da16"
+    },
+    {
+      "path": "utils/vcard/src/vcard_manager.cpp",
+      "sha256": "75296f0973607544522c01cc80625318124687330ffb8bb7028ffc7a3dc87d6c"
+    },
+    {
+      "path": "utils/vcard/src/vcard_raw_data.cpp",
+      "sha256": "05852393e2bf6aba19b1a204f010f409d170f6bb26e35ed0d7a1bc979dd72680"
+    },
+    {
+      "path": "utils/vcard/src/vcard_rdb_helper.cpp",
+      "sha256": "bf6cd1f112b6a5aaa1632a67467e613910ecd4fb59f7a30d8309f64d6a31fad0"
+    },
+    {
+      "path": "utils/vcard/src/vcard_utils.cpp",
+      "sha256": "76b26758d120a87961c2dc8e06000d00c492dbaf6361bfbaff6dcdbbc45e6cb6"
+    }
+  ],
+  "local_repairs": [
+    "services/sim/src/sim_manager.cpp",
+    "services/sim/src/sim_state_handle.cpp"
+  ],
+  "excluded": [
+    "AGENTS.md",
+    "docs/"
+  ],
+  "scope": "exact upstream bytes except fingerprinted local repairs; excludes local instructions and documentation"
+}

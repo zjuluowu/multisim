@@ -1116,6 +1116,9 @@ void SimStateHandle::UnRegisterCoreNotify(const std::shared_ptr<AppExecFwk::Even
             TELEPHONY_LOGI("SimStateHandle::RegisterCardTypeChange()");
             observerHandler_->Remove(RadioEvent::RADIO_CARD_TYPE_CHANGE, handler);
             break;
+        case RadioEvent::RADIO_SIM_ICCID_LOADED:
+            observerHandler_->Remove(RadioEvent::RADIO_SIM_ICCID_LOADED, handler);
+            break;
         default:
             TELEPHONY_LOGI("SimStateHandle UnRegisterCoreNotify do default");
             break;

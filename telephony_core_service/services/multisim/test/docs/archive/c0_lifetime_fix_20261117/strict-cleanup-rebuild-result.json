@@ -1,0 +1,55 @@
+{
+  "head": "97702ae1fd93fe3a3dd3a7121418a5f2a7ca4bda",
+  "started_utc": "2026-11-17T13:35:27.009996+00:00",
+  "commands": [
+    {
+      "name": "case-discovery",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/update_case_sources.py"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "case-discovery.log"
+    },
+    {
+      "name": "sim_primary_slot_real_test-build",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/build_replacement.py",
+        "--out",
+        "/mnt/e/github/multisim/.host-out",
+        "--target",
+        "sim_primary_slot_real_test",
+        "--jobs",
+        "3"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_primary_slot_real_test-build.log"
+    },
+    {
+      "name": "sim_bootstrap_characterization-build",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/build_replacement.py",
+        "--out",
+        "/mnt/e/github/multisim/.host-out",
+        "--target",
+        "sim_bootstrap_characterization",
+        "--jobs",
+        "3"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_bootstrap_characterization-build.log"
+    }
+  ],
+  "cases": [],
+  "status": "PASS",
+  "protected_profile_unchanged": true,
+  "finished_utc": "2026-11-17T13:39:45.114366+00:00"
+}

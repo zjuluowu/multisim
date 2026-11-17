@@ -22,6 +22,24 @@ TEST(PairingReview, AllThreeSlotsPublicDetach)
     std::lock_guard<std::mutex> lock(environment.mutex);
     EXPECT_TRUE(environment.notifications.empty());
 }
+TEST(PairingReview, IccidObserverUnregisterReleasesSubscriber)
+{
+    PrimaryEnvironment environment;
+    QueueBaseline baseline;
+    auto state = std::make_shared<SimStateManager>(environment.ril);
+    state->Init(0);
+    auto observer = std::make_shared<AccountObserver>([] {});
+    std::weak_ptr<AccountObserver> retiring = observer;
+    state->RegisterCoreNotify(observer, RadioEvent::RADIO_SIM_ICCID_LOADED);
+    state->UnRegisterCoreNotify(observer, RadioEvent::RADIO_SIM_ICCID_LOADED);
+    state->UnRegisterCoreNotify(observer, RadioEvent::RADIO_SIM_ICCID_LOADED);
+    observer.reset();
+    EXPECT_TRUE(retiring.expired());
+    state.reset();
+    baseline.ExpectNoOwnedWork();
+    EXPECT_EQ(environment.ril.use_count(), 1);
+}
+
 TEST(PairingReview, PartialInitializationAndRepeatedUnregister)
 {
     PrimaryEnvironment environment;

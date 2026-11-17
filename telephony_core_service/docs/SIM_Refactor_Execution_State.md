@@ -1,5 +1,7 @@
 # 多 SIM 重构执行状态
 
+当前C0失败修复：2026-11-17旧实现两处退出/注销缺陷及Host清理屏障已修复；C0业务与资源检查PASS，当前114项101 PASS/13 FAIL，详见§46，不继承旧22失败或1066文件原字节一致结论。
+
 当前统一刷新：2026-11-17文档、源码导航、框架/测试入口与VS Code一致性刷新见§42；生产成熟实现和产品验收边界不变。
 
 最新文档维护：2026-11-17审视并合入本地主设计修订稿(5)，新增跨形态约束及证据边界见§41；不改变生产装配或产品验收。
@@ -1051,3 +1053,15 @@ Device只读路径仅检查查询权限/真实SA/端点，不要求HIL/PIN/双�
 输入main/origin@87d44abca126dcc014a29400e016be649c2f1cfb；暂存区为空，既存三项未跟踪用户文件保持。首次沙箱fetch失败，获准刷新后恢复工具CHECKPOINT_VERIFIED、远端无差异。两组TestMate配置增加可执行程序→源码文件分组；check_editor报告增加按源码文件索引，实际七程序113条枚举位置及developer_copy/pin_failure_isolation两个独立文件选择核对PASS，导航6项和JSON/差异空白检查PASS。结果见[当前文件映射](../services/multisim/test/docs/archive/vscode_testing_20261117/current-file-mapping.json)。default.profraw保持d354…。
 
 自动跟随使用VS Code原生“Show in Active File Only”/@doc筛选，其源码监听活动编辑器并重新筛选；这是视图状态，无settings.json默认启用项，必须由用户在实际窗口启用，不能宣称仓库配置已代为打开。Host_Usage补充启用/恢复全量、无用例文件为空及窗口重开后的操作。未新增扩展、未操作或验收GUI，未重建或重跑业务断言，原22项失败和产品/设备边界保持。仅按持续授权逐文件提交推送本批设置、枚举报告增强、说明及映射证据。
+
+### 46. C0 旧实现生命周期失败修复（2026-11-17）
+
+输入main/origin@97702ae1fd93fe3a3dd3a7121418a5f2a7ca4bda，暂存区为空、三个既存未跟踪用户文件保留；恢复fetch后CHECKPOINT_VERIFIED。用户在获知C0业务PASS、清理FAIL后明确要求修复，本批只将该授权落实为旧SimManager析构配对解除所属订阅、现有Records::UnInit，以及SimStateHandle补齐RADIO_SIM_ICCID_LOADED注销；不扩大生产迁移、公共API/ABI或Stop协议范围。其余旧实现只读限制保持。
+
+修复前C0：28 worker/10 RIL引用、账户观察者未释放；仅解除部分订阅后仍15 worker/10引用。补齐ICCID注销后C0 exit0，业务/严格RIL期望/生命周期全部PASS，worker=0/RIL引用=1/观察者已释放。新增真实订阅/重复注销/释放回归；实际删除新增注销分支后回归FAIL，恢复原源码与产物SHA后C0及回归PASS。早先两个无效调试器跳过实验原文保存，不计为变异检出。
+
+另修正Host Primary清理顺序：结果完成不代表生产分离线程捕获引用已释放，根释放前等待已有DetachedThreadsIdle屏障，并将原仅记录的RIL引用/观察者释放条件增加为直接断言。加强后C0、过期协议响应拒绝和五次重试回滚均worker=0/RIL=1/lifetime PASS。只构造未初始化Manager的容量/两查询切片增加被调用即抛错的链接边界，不将其用于真实Primary图；首次三切片链接失败保留，补齐后七程序构建PASS。
+
+最终114项101 PASS/13 FAIL（原113中9个清理失败转PASS并新增1个注销回归），Primary28项20 PASS/8 FAIL；其余五个Host缺陷精确签名保持，八个Stop缺失契约仍FAIL，业务准入门禁仍FAIL，不改变策略/Golden。完整架构/GN/迁移、84技术、317原始资产/299处置/8合同完整性、Primary真实方法正执行及114项IDE位置检查PASS。无GUI实测，无hb/hdc匹配环境，产品构建和设备执行NOT_RUN；不能据Host结果称产品已验收。
+
+上游校验现在为1064个原字节文件+2个显式锁定的本地修复，锁定上游/修复源码/补丁SHA，6项正负控保证未列出或指纹漂移仍失败，不再称1066文件完全未改。生产CRLF保持，差异检查按cr-at-eol执行。default.profraw仍d354…，原稿(5)/lnk保持且不暂存。完整命令、两轮候选、变异恢复、最终XML/压缩原始日志、源码补丁及门禁结果见[本批证据](../services/multisim/test/docs/archive/c0_lifetime_fix_20261117/README.md)。按持续授权在当前工作区逐文件提交并常规推送origin/main，发布前后核对远端；不创建副本、不合并分歧、不强推。

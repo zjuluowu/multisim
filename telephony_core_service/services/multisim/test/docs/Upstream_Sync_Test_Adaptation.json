@@ -67,5 +67,21 @@
       "commit": "37be229d4816824c7931a1c2050f13012f8d1061",
       "sha256": "fcd27f3b774cb047859a53b4de5fb57debad51c607b4570d8683ba2e418fcb17"
     }
+  },
+  "local_repairs": {
+    "services/sim/src/sim_manager.cpp": {
+      "upstream_sha256": "6b18dab55dc8fb48d02b95af6fef9773c3a7759bf44141d60d824531371f44e5",
+      "repaired_sha256": "d4259a960a57982f2fde21b4707ed95fd2fad9bbfda9920c4233135da3a97313",
+      "patch": "docs/archive/c0_lifetime_fix_20261117/sim_manager.cpp.patch",
+      "patch_sha256": "080d873ff4ddc869ad0d4ba71bf0eff373e11168bc2e4f552080f667727de5ca",
+      "reason": "2026-11-17 user-authorized C0 lifecycle failure repair; no public telephony API changes."
+    },
+    "services/sim/src/sim_state_handle.cpp": {
+      "upstream_sha256": "9f27780811181955a1b81bd139d17c76d35b37f64a686b30bd3374134a31ef5c",
+      "repaired_sha256": "88cd7fad13124d3a1024971c9d5023cce3e5076036bc01eabc2a44824c169392",
+      "patch": "docs/archive/c0_lifetime_fix_20261117/sim_state_handle.cpp.patch",
+      "patch_sha256": "7c9554b8c0125e7b1ad96f56617e47332f6420bda97d321f4f435c1d311e7243",
+      "reason": "2026-11-17 user-authorized C0 lifecycle failure repair; no public telephony API changes."
+    }
   }
 }

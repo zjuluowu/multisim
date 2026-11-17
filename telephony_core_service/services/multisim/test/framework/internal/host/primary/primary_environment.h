@@ -546,6 +546,9 @@ public:
             manager->UnRegisterCoreNotify(1, accountObserver, RadioEvent::RADIO_SIM_ACCOUNT_LOADED);
         std::weak_ptr<AccountObserver> retiringObserver = accountObserver;
         accountObserver.reset();
+        // A completed Primary result can precede destruction of detached
+        // production callables and their captured RIL references.
+        EXPECT_TRUE(SimHost::AwaitDetachedThreadsIdle(3s)) << "REAL_DETACHED_CALLABLES_NOT_DRAINED";
         core.SetSimManager(nullptr);
         CoreManagerInner::GetInstance().OnInit(nullptr, nullptr, nullptr);
         ffrt::wait();
@@ -559,6 +562,8 @@ public:
         EXPECT_TRUE(SimHost::AwaitSchedulerStopped(3s)) << "REAL_GRAPH_LIFETIME_NOT_DRAINED";
         testing::Test::RecordProperty("workers_after_cleanup", SimHost::GetSchedulerEvidence().workers);
         testing::Test::RecordProperty("ril_references_after_cleanup", static_cast<int>(ril.use_count()));
+        EXPECT_EQ(ril.use_count(), 1) << "REAL_RIL_REFERENCES_NOT_DRAINED";
+        EXPECT_TRUE(retiringObserver.expired()) << "REAL_ACCOUNT_OBSERVER_NOT_DRAINED";
         testing::Test::RecordProperty("account_observer_expired", retiringObserver.expired() ? "true" : "false");
         testing::Test::RecordProperty("object_lifetime", SimHost::GetSchedulerEvidence().workers == 0 &&
             ril.use_count() == 1 && retiring.expired() && retiringObserver.expired() ? "PASS" : "FAIL");

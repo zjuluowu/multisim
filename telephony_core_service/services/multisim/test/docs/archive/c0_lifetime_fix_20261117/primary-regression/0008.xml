@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="1" failures="0" disabled="0" errors="0" time="0.024" timestamp="2026-11-17T21:20:30.097" name="AllTests">
+  <testsuite name="RealSimPrimary" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.023" timestamp="2026-11-17T21:20:30.097">
+    <testcase name="InitializesRealManagerAndControllerWithoutRil" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/primary_initialization_test.cpp" line="16" status="run" result="completed" time="0.023" timestamp="2026-11-17T21:20:30.097" classname="RealSimPrimary">
+      <properties>
+        <property name="primary_max_sim_count" value="2"/>
+        <property name="primary_direct_no_ril_result" value="83886104"/>
+        <property name="primary_direct_no_ril_symbol" value="TELEPHONY_ERR_NO_SIM_CARD"/>
+        <property name="business_assertions_before_cleanup" value="PASS"/>
+      </properties>
+    </testcase>
+  </testsuite>
+</testsuites>

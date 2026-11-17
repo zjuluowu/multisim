@@ -220,6 +220,12 @@ static_library("googlemock") {
   ]
   deps = [ ":googletest" ]
 }
+# Constructor-only slices cannot execute an initialized SIM lifecycle.
+# Missing graph symbols fail explicitly if reached; real Primary never links this.
+source_set("uninitialized_sim_graph_boundary") {
+  sources = [ "$test_root/framework/internal/host/stubs/uninitialized_sim_graph.cpp" ]
+  configs += [ ":production_headers" ]
+}
 executable("sim_component_test") {
   sources = sim_capacity_case_sources +
             [ "$test_root/framework/internal/host/capacity_api.cpp" ]
@@ -235,6 +241,7 @@ executable("sim_component_test") {
     ":googlemock",
     ":platform_boundaries",
     ":sim_production_host",
+    ":uninitialized_sim_graph_boundary",
     ":test_entry",
     ":unsupported_state_protocol",
   ]
@@ -391,6 +398,7 @@ executable("sim_g2a_query_test") {
     ":platform_boundaries",
     ":query_vendor_boundary",
     ":sim_production_host",
+    ":uninitialized_sim_graph_boundary",
     ":test_entry",
   ]
   ldflags = [
@@ -449,6 +457,7 @@ executable("sim_upstream_query_test") {
     ":platform_boundaries",
     ":query_vendor_boundary",
     ":sim_production_host",
+    ":uninitialized_sim_graph_boundary",
     ":test_entry",
     ":upstream_query_core",
   ]

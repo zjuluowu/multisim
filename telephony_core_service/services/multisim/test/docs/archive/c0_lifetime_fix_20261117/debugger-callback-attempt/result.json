@@ -1,0 +1,23 @@
+{
+  "command": [
+    "lldb",
+    "--batch",
+    "-o",
+    "settings set target.disable-aslr false",
+    "-o",
+    "command script import /tmp/sim-c0-fix-negative-callback/skip_unregister.py",
+    "-o",
+    "breakpoint set -n OHOS::Telephony::SimStateHandle::UnRegisterCoreNotify -c \"what == RadioEvent::RADIO_SIM_ICCID_LOADED\"",
+    "-o",
+    "breakpoint command add -F skip_unregister.skip 1",
+    "-o",
+    "run",
+    "--",
+    "/mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test",
+    "--gtest_filter=PairingReview.IccidObserverUnregisterReleasesSubscriber",
+    "--gtest_output=xml:/tmp/sim-c0-fix-negative-callback/case.xml"
+  ],
+  "status": "FAIL",
+  "meaning": "Debugger bypass of both ICCID unregister calls must fail the subscriber lifetime regression; source unchanged",
+  "lldb_exit": 0
+}

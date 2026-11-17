@@ -1,0 +1,36 @@
+{
+  "scope": "Positive execution of selected primary production methods; not full SIM coverage",
+  "methods": [
+    {
+      "owner": "CoreServiceSim",
+      "method": "SetPrimarySlotId",
+      "count": 6,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_sim.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimManager",
+      "method": "SetPrimarySlotId",
+      "count": 12,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_manager.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "MultiSimController",
+      "method": "SetPrimarySlotId",
+      "count": 12,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

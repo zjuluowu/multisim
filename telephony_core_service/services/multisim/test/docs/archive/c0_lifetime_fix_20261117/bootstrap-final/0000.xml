@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="1" failures="0" disabled="0" errors="0" time="0." timestamp="2026-11-17T21:43:00.054" name="AllTests">
+  <testsuite name="SimCharacterization" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0." timestamp="2026-11-17T21:43:00.054">
+    <testcase name="BeforeInitialization" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/bootstrap_test.cpp" line="3" status="run" result="completed" time="0." timestamp="2026-11-17T21:43:00.054" classname="SimCharacterization">
+      <properties>
+        <property name="case_id" value="SIM-CHAR-001"/>
+        <property name="level" value="C"/>
+        <property name="oracle_id" value="O-Q11,O-H01,O-H02"/>
+        <property name="synthetic_only" value="true"/>
+        <property name="initialization" value="NOT_CALLED"/>
+        <property name="card_state_input" value="NOT_ESTABLISHED"/>
+        <property name="has_card_return" value="83886087"/>
+        <property name="has_card_output" value="true"/>
+        <property name="state_return" value="0"/>
+        <property name="state_output" value="1"/>
+        <property name="accounts_return" value="83886087"/>
+        <property name="accounts_count" value="0"/>
+      </properties>
+    </testcase>
+  </testsuite>
+</testsuites>

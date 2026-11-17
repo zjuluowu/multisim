@@ -1,0 +1,158 @@
+{
+  "baseline": {
+    "status": "FAIL",
+    "passed": 0,
+    "failed": 1,
+    "cases": [
+      {
+        "id": "RealSimPrimary.C0CoreToRealManagerAndController",
+        "status": "FAIL"
+      }
+    ]
+  },
+  "first-candidate": {
+    "status": "FAIL",
+    "passed": 0,
+    "failed": 1,
+    "cases": [
+      {
+        "id": "RealSimPrimary.C0CoreToRealManagerAndController",
+        "status": "FAIL"
+      }
+    ]
+  },
+  "final-single": {
+    "status": "PASS",
+    "passed": 2,
+    "failed": 0,
+    "cases": [
+      {
+        "id": "RealSimPrimary.C0CoreToRealManagerAndController",
+        "status": "PASS"
+      },
+      {
+        "id": "PairingReview.IccidObserverUnregisterReleasesSubscriber",
+        "status": "PASS"
+      }
+    ]
+  },
+  "primary-regression": {
+    "status": "FAIL",
+    "passed": 20,
+    "failed": 8,
+    "cases": [
+      {
+        "id": "RunnerLifetime.NormalCompletionAndRepeatedStop",
+        "status": "PASS"
+      },
+      {
+        "id": "RunnerLifetime.PendingTaskCancelledAndCapturedOwnerReleased",
+        "status": "PASS"
+      },
+      {
+        "id": "RunnerLifetime.InFlightStopJoinsAndRejectsCallbackRepost",
+        "status": "PASS"
+      },
+      {
+        "id": "RunnerLifetime.ConcurrentStopIsIdempotent",
+        "status": "PASS"
+      },
+      {
+        "id": "RunnerLifetime.CallbackCannotSynchronouslyJoinItself",
+        "status": "PASS"
+      },
+      {
+        "id": "RealCardLifetime.MissingRilInitializationReleasesState",
+        "status": "PASS"
+      },
+      {
+        "id": "RealCardLifetime.InitializedStateUnregistersRilAndReleases",
+        "status": "PASS"
+      },
+      {
+        "id": "RealCardLifetime.PublicDetachReleasesRealStateFileAndRil",
+        "status": "PASS"
+      },
+      {
+        "id": "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+        "status": "PASS"
+      },
+      {
+        "id": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+        "status": "PASS"
+      },
+      {
+        "id": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+        "status": "PASS"
+      },
+      {
+        "id": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+        "status": "PASS"
+      },
+      {
+        "id": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+        "status": "PASS"
+      },
+      {
+        "id": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+        "status": "PASS"
+      },
+      {
+        "id": "RealSimPrimary.C0CoreToRealManagerAndController",
+        "status": "PASS"
+      },
+      {
+        "id": "PairingReview.AllThreeSlotsPublicDetach",
+        "status": "PASS"
+      },
+      {
+        "id": "PairingReview.IccidObserverUnregisterReleasesSubscriber",
+        "status": "PASS"
+      },
+      {
+        "id": "PairingReview.PartialInitializationAndRepeatedUnregister",
+        "status": "PASS"
+      },
+      {
+        "id": "PairingReview.DestroyThenReinitializeCardGraph",
+        "status": "PASS"
+      },
+      {
+        "id": "PairingReview.UnrelatedRuntimeWorkerIsBaseline",
+        "status": "PASS"
+      },
+      {
+        "id": "ShutdownContract.ANormalPrimaryThenStop",
+        "status": "FAIL"
+      },
+      {
+        "id": "ShutdownContract.BThreeSlotsThenStop",
+        "status": "FAIL"
+      },
+      {
+        "id": "ShutdownContract.CPartialInitializationThenStop",
+        "status": "FAIL"
+      },
+      {
+        "id": "ShutdownContract.DRepeatedStop",
+        "status": "FAIL"
+      },
+      {
+        "id": "ShutdownContract.EInFlightSuccessCompletesBeforeRelease",
+        "status": "FAIL"
+      },
+      {
+        "id": "ShutdownContract.FErrorReplyDuringStoppingKeepsOriginalResult",
+        "status": "FAIL"
+      },
+      {
+        "id": "ShutdownContract.GDelayedDispatchAfterStop",
+        "status": "FAIL"
+      },
+      {
+        "id": "ShutdownContract.HDestroyAndCreateNewGraph",
+        "status": "FAIL"
+      }
+    ]
+  }
+}

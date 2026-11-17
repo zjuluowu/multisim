@@ -1,0 +1,10 @@
+test_current (__main__.SourceBoundary.test_current) ... ok
+test_leaf_testonly (__main__.SourceBoundary.test_leaf_testonly) ... ok
+test_method_matching (__main__.SourceBoundary.test_method_matching) ... ok
+test_production_leaks (__main__.SourceBoundary.test_production_leaks) ... ok
+test_reference_sources_required_once (__main__.SourceBoundary.test_reference_sources_required_once) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.338s
+
+OK

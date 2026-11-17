@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="1" failures="0" disabled="0" errors="0" time="45.041" timestamp="2026-11-17T21:20:30.679" name="AllTests">
+  <testsuite name="RealSimPrimary" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="45.04" timestamp="2026-11-17T21:20:30.680">
+    <testcase name="BRealTimeoutKeepsPreviousPrimary" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_protocol_test.cpp" line="79" status="run" result="completed" time="45.04" timestamp="2026-11-17T21:20:30.680" classname="RealSimPrimary">
+      <properties>
+        <property name="initialization_order" value="native-arrival"/>
+        <property name="initialization_account_event" value="PASS"/>
+        <property name="initialization_ready_idle" value="PASS"/>
+        <property name="initialization_active" value="PASS"/>
+        <property name="initialization_present" value="PASS"/>
+        <property name="initialization_model" value="single-active"/>
+        <property name="business_assertions_before_cleanup" value="PASS"/>
+        <property name="primary_observation" value="{&quot;schema&quot;:1,&quot;parameters&quot;:{&quot;const.telephony.slotCount&quot;:&quot;2&quot;,&quot;const.vendor.ril.set_primary_slot_support&quot;:&quot;true&quot;,&quot;persist.telephony.MainCellularDataSlotId&quot;:&quot;&quot;,&quot;persist.telephony.MainSlotId&quot;:&quot;0&quot;,&quot;persist.telephony.userPreferPrimarySlot&quot;:&quot;true&quot;,&quot;telephony.sim.opkey0&quot;:&quot;-1&quot;,&quot;telephony.sim.opkey1&quot;:&quot;-1&quot;,&quot;telephony.sim.opkey2&quot;:&quot;-1&quot;},&quot;public&quot;:{&quot;data&quot;:&quot;0&quot;,&quot;primary&quot;:&quot;0&quot;,&quot;primary_result&quot;:&quot;0&quot;,&quot;switching&quot;:&quot;false&quot;},&quot;events&quot;:[{&quot;kind&quot;:&quot;api_input&quot;,&quot;fields&quot;:{&quot;at_us&quot;:&quot;1251&quot;,&quot;slot&quot;:&quot;1&quot;}},{&quot;kind&quot;:&quot;parameter_write&quot;,&quot;fields&quot;:{&quot;at_us&quot;:&quot;1286&quot;,&quot;key&quot;:&quot;persist.telephony.userPreferPrimarySlot&quot;,&quot;value&quot;:&quot;true&quot;}},{&quot;kind&quot;:&quot;publication&quot;,&quot;fields&quot;:{&quot;action&quot;:&quot;usual.event.SET_PRIMARY_SLOT_STATUS&quot;,&quot;at_us&quot;:&quot;1329&quot;,&quot;done&quot;:&quot;false&quot;,&quot;sim&quot;:&quot;-1&quot;,&quot;slot&quot;:&quot;-1&quot;,&quot;user&quot;:&quot;true&quot;}},{&quot;kind&quot;:&quot;ril_primary&quot;,&quot;fields&quot;:{&quot;at_us&quot;:&quot;1341&quot;,&quot;slot&quot;:&quot;1&quot;}},{&quot;kind&quot;:&quot;publication&quot;,&quot;fields&quot;:{&quot;action&quot;:&quot;usual.event.SET_PRIMARY_SLOT_STATUS&quot;,&quot;at_us&quot;:&quot;45001581&quot;,&quot;done&quot;:&quot;true&quot;,&quot;sim&quot;:&quot;-1&quot;,&quot;slot&quot;:&quot;-1&quot;,&quot;user&quot;:&quot;true&quot;}},{&quot;kind&quot;:&quot;api_return&quot;,&quot;fields&quot;:{&quot;at_us&quot;:&quot;45001590&quot;,&quot;result&quot;:&quot;83886087&quot;,&quot;symbol&quot;:&quot;TELEPHONY_ERR_LOCAL_PTR_NULL&quot;}}]}"/>
+        <property name="workers_after_cleanup" value="0"/>
+        <property name="ril_references_after_cleanup" value="1"/>
+        <property name="account_observer_expired" value="true"/>
+        <property name="object_lifetime" value="PASS"/>
+        <property name="strict_ril_expectations_verified" value="PASS"/>
+      </properties>
+    </testcase>
+  </testsuite>
+</testsuites>

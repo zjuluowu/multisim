@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="1" failures="0" disabled="0" errors="0" time="0.045" timestamp="2026-11-17T21:21:20.933" name="AllTests">
+  <testsuite name="RealSimPrimary" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.044" timestamp="2026-11-17T21:21:20.934">
+    <testcase name="C0CoreToRealManagerAndController" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_test.cpp" line="4" status="run" result="completed" time="0.044" timestamp="2026-11-17T21:21:20.934" classname="RealSimPrimary">
+      <properties>
+        <property name="initialization_order" value="native-arrival"/>
+        <property name="initialization_account_event" value="PASS"/>
+        <property name="initialization_ready_idle" value="PASS"/>
+        <property name="initialization_active" value="PASS"/>
+        <property name="initialization_present" value="PASS"/>
+        <property name="initialization_model" value="single-active"/>
+        <property name="business_assertions_before_cleanup" value="PASS"/>
+        <property name="primary_observation" value="{&quot;schema&quot;:1,&quot;parameters&quot;:{&quot;const.telephony.slotCount&quot;:&quot;2&quot;,&quot;const.vendor.ril.set_primary_slot_support&quot;:&quot;false&quot;,&quot;persist.telephony.MainCard.Iccid&quot;:&quot;AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2&quot;,&quot;persist.telephony.MainCellularDataSlotId&quot;:&quot;1&quot;,&quot;persist.telephony.MainSlotId&quot;:&quot;1&quot;,&quot;persist.telephony.userPreferPrimarySlot&quot;:&quot;true&quot;,&quot;telephony.sim.opkey0&quot;:&quot;-1&quot;,&quot;telephony.sim.opkey1&quot;:&quot;-1&quot;,&quot;telephony.sim.opkey2&quot;:&quot;-1&quot;},&quot;public&quot;:{&quot;data&quot;:&quot;1&quot;,&quot;primary&quot;:&quot;1&quot;,&quot;primary_result&quot;:&quot;0&quot;,&quot;switching&quot;:&quot;false&quot;},&quot;events&quot;:[{&quot;kind&quot;:&quot;api_input&quot;,&quot;fields&quot;:{&quot;at_us&quot;:&quot;35&quot;,&quot;slot&quot;:&quot;1&quot;}},{&quot;kind&quot;:&quot;parameter_write&quot;,&quot;fields&quot;:{&quot;at_us&quot;:&quot;51&quot;,&quot;key&quot;:&quot;persist.telephony.userPreferPrimarySlot&quot;,&quot;value&quot;:&quot;true&quot;}},{&quot;kind&quot;:&quot;parameter_write&quot;,&quot;fields&quot;:{&quot;at_us&quot;:&quot;65&quot;,&quot;key&quot;:&quot;persist.telephony.MainSlotId&quot;,&quot;value&quot;:&quot;1&quot;}},{&quot;kind&quot;:&quot;parameter_write&quot;,&quot;fields&quot;:{&quot;at_us&quot;:&quot;111&quot;,&quot;key&quot;:&quot;persist.telephony.MainCard.Iccid&quot;,&quot;value&quot;:&quot;AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2&quot;}},{&quot;kind&quot;:&quot;publication&quot;,&quot;fields&quot;:{&quot;action&quot;:&quot;usual.event.SIM.DEFAULT_MAIN_SUBSCRIPTION_CHANGED&quot;,&quot;at_us&quot;:&quot;127&quot;,&quot;done&quot;:&quot;false&quot;,&quot;sim&quot;:&quot;1&quot;,&quot;slot&quot;:&quot;1&quot;,&quot;user&quot;:&quot;false&quot;}},{&quot;kind&quot;:&quot;parameter_write&quot;,&quot;fields&quot;:{&quot;at_us&quot;:&quot;137&quot;,&quot;key&quot;:&quot;persist.telephony.MainCellularDataSlotId&quot;,&quot;value&quot;:&quot;1&quot;}},{&quot;kind&quot;:&quot;publication&quot;,&quot;fields&quot;:{&quot;action&quot;:&quot;usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED&quot;,&quot;at_us&quot;:&quot;147&quot;,&quot;done&quot;:&quot;false&quot;,&quot;sim&quot;:&quot;1&quot;,&quot;slot&quot;:&quot;-1&quot;,&quot;user&quot;:&quot;false&quot;}},{&quot;kind&quot;:&quot;api_return&quot;,&quot;fields&quot;:{&quot;at_us&quot;:&quot;154&quot;,&quot;result&quot;:&quot;0&quot;,&quot;symbol&quot;:&quot;TELEPHONY_ERR_SUCCESS&quot;}}]}"/>
+        <property name="workers_after_cleanup" value="0"/>
+        <property name="ril_references_after_cleanup" value="1"/>
+        <property name="account_observer_expired" value="true"/>
+        <property name="object_lifetime" value="PASS"/>
+        <property name="strict_ril_expectations_verified" value="PASS"/>
+      </properties>
+    </testcase>
+  </testsuite>
+</testsuites>

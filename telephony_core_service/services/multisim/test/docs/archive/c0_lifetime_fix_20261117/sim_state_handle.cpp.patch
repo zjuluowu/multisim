@@ -1,0 +1,6 @@
+--- a/services/sim/src/sim_state_handle.cpp
++++ b/services/sim/src/sim_state_handle.cpp
+@@ -1118,0 +1119,3 @@
++        case RadioEvent::RADIO_SIM_ICCID_LOADED:
++            observerHandler_->Remove(RadioEvent::RADIO_SIM_ICCID_LOADED, handler);
++            break;

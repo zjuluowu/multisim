@@ -1,0 +1,45 @@
+{
+  "input_head": "97702ae1fd93fe3a3dd3a7121418a5f2a7ca4bda",
+  "architecture": {
+    "command": "python3 -B telephony_core_service/services/multisim/test/scripts/run_architecture.py --with-gn --migration --output /tmp/sim-c0-fix-architecture",
+    "exit_code": 0,
+    "files": 88,
+    "targets": 25,
+    "structural_tests": 17,
+    "compile_negative_controls": 5,
+    "syntax": "88 independent units + combined header TU",
+    "rules": [
+      "topology",
+      "resource",
+      "assignment",
+      "runtime_protocol"
+    ],
+    "migration": "PASS",
+    "gn_ninja": "PASS"
+  },
+  "integrity": {
+    "command": "python3 -B telephony_core_service/services/multisim/test/scripts/check_test_integrity.py",
+    "exit_code": 0,
+    "exact_archived_originals": 317,
+    "dispositions": 299,
+    "immutable_contracts": 8
+  },
+  "technical_tests": 84,
+  "navigation_tests": 6,
+  "native_static": {
+    "status": "PASS",
+    "native_build": "NOT_RUN",
+    "device_execution": "NOT_RUN"
+  },
+  "editor": {
+    "status": "PASS",
+    "cases": 114,
+    "gui_executed": false
+  },
+  "whitespace": {
+    "command": "git -c core.whitespace=cr-at-eol diff --check",
+    "status": "PASS",
+    "reason": "Preserve original CRLF in sim_manager.cpp and exact repair delta"
+  },
+  "note": "Architecture/integrity/native static entries transcribe actual tool output; not raw build logs. Business/technical/mutation raw evidence is archived separately."
+}

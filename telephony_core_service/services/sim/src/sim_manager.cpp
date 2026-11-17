@@ -36,7 +36,36 @@ SimManager::SimManager(std::shared_ptr<ITelRilManager> telRilManager) : telRilMa
     TELEPHONY_LOGI("SimManager::SimManager()");
 }
 
-SimManager::~SimManager() {}
+SimManager::~SimManager()
+{
+    // Break subscriptions while the observed objects and their subscribers are
+    // still alive. ObserverHandler retains subscribers with shared ownership.
+    if (multiSimMonitor_ != nullptr) {
+        multiSimMonitor_->UnRegisterSimNotify();
+    }
+    for (size_t slot = 0; slot < simFileManager_.size(); ++slot) {
+        const auto &files = simFileManager_[slot];
+        if (files == nullptr) {
+            continue;
+        }
+        if (slot < iccDiallingNumbersManager_.size() && iccDiallingNumbersManager_[slot] != nullptr) {
+            files->UnRegisterCoreNotify(iccDiallingNumbersManager_[slot], RadioEvent::RADIO_SIM_STATE_CHANGE);
+        }
+        auto records = files->GetIccFile();
+        if (records != nullptr) {
+            records->UnInit();
+            records->UnRegisterCoreNotify(files, RadioEvent::RADIO_SIM_RECORDS_LOADED);
+        }
+        if (slot < simStateManager_.size() && simStateManager_[slot] != nullptr) {
+            simStateManager_[slot]->UnRegisterCoreNotify(files, RadioEvent::RADIO_CARD_TYPE_CHANGE);
+            simStateManager_[slot]->UnRegisterCoreNotify(files, RadioEvent::RADIO_SIM_ICCID_LOADED);
+        }
+        if (telRilManager_ != nullptr) {
+            telRilManager_->UnRegisterCoreNotify(slot, files, RadioEvent::RADIO_VOICE_TECH_CHANGED);
+            telRilManager_->UnRegisterCoreNotify(slot, files, RadioEvent::RADIO_ICC_REFRESH);
+        }
+    }
+}
 
 bool SimManager::OnInit(int32_t slotCount)
 {
