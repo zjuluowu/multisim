@@ -14,13 +14,7 @@
       "args": [
         "-B",
         "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
-        "build",
-        "--target",
-        "sim_test_host",
-        "sim_component_test",
-        "sim_primary_slot_entry_test",
-        "sim_g2a_query_test",
-        "sim_upstream_query_test"
+        "build"
       ],
       "group": {
         "kind": "build",
@@ -77,8 +71,6 @@
         "-B",
         "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
         "run",
-        "--target",
-        "${input:hostTarget}",
         "--filter",
         "${input:gtestFilter}"
       ]
@@ -97,8 +89,6 @@
         "-B",
         "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
         "debug",
-        "--target",
-        "${input:hostTarget}",
         "--filter",
         "${input:gtestFilter}"
       ]
@@ -133,11 +123,7 @@
         "-B",
         "telephony_core_service/services/multisim/test/scripts/test.py",
         "build"
-      ],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      }
+      ]
     }
   ],
   "inputs": [
@@ -146,21 +132,6 @@
       "type": "promptString",
       "description": "Exact GoogleTest case (Testing panel selects it automatically)",
       "default": "SimTest.DualSimPinUnlockAfterWrongPin"
-    },
-    {
-      "id": "hostTarget",
-      "type": "pickString",
-      "description": "Independently linked SUT slice",
-      "options": [
-        "sim_test_host",
-        "sim_component_test",
-        "sim_primary_slot_entry_test",
-        "sim_g2a_query_test",
-        "sim_upstream_query_test",
-        "sim_primary_slot_real_test",
-        "sim_bootstrap_characterization"
-      ],
-      "default": "sim_test_host"
     }
   ]
 }

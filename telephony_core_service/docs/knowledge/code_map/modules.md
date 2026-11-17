@@ -43,6 +43,6 @@
 
 ## 当前实现与目标设计分开
 
-上表是现有代码定位；数量和行号是历史辅助信息，不作为架构收益指标。目标文档见[统一入口](../../README.md)，采用四Context/三聚合，但当前源目录尚无这些聚合、DomainEventBus或旧文档宣称的Subscription Shadow。
+上表是现有代码定位；数量和行号是历史辅助信息，不作为架构收益指标。目标文档见[统一入口](../../README.md)，采用T/A两个业务上下文，O为用例机制，R/C/I/H分责；services/multisim有testonly骨架，未替代services/sim，不以目录存在宣称生产迁移。
 
-CoreManagerInner包含实际消费侧委托与注入契约，不只是可删除的Service Locator。新增test/systemtest为独立Linux GN/Ninja+GoogleTest/GoogleMock防护网，不依赖旧测试目标；实际仅容量B1 PASS、INFRA16 PASS，原五场景BLOCKED。
+CoreManagerInner包含实际消费侧委托与注入契约，不只是可删除的Service Locator。当前防护网在services/multisim/test，使用TEST_F、sim_test.h及sim_protocol_test.h；平台实现在framework/internal，七个Host业务链接切片由test.py统一调度，原生组件与SA/IPC分开。运行结果与已知FAIL见[唯一执行状态](../../SIM_Refactor_Execution_State.md)和[测试入口](../../../services/multisim/test/README.md)，不继承早期容量/设施计数。

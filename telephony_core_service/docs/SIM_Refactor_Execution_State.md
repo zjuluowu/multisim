@@ -1,5 +1,7 @@
 # 多 SIM 重构执行状态
 
+当前统一刷新：2026-11-17文档、源码导航、框架/测试入口与VS Code一致性刷新见§42；生产成熟实现和产品验收边界不变。
+
 最新文档维护：2026-11-17审视并合入本地主设计修订稿(5)，新增跨形态约束及证据边界见§41；不改变生产装配或产品验收。
 
 当前新增任务：测试API架构收敛及当前可执行Host验收完成，结果见§40；产品原生编译/设备及VS Code GUI仍阻塞或未执行，不能作为全平台验收通过。
@@ -1021,3 +1023,13 @@ Device只读路径仅检查查询权限/真实SA/端点，不要求HIL/PIN/双�
 接受端点/会话/绑定分离、动态失联/重连因果链、域外父开关与Profile任务分层编排、共享参数逐key唯一Owner、能力/可达/可见/角色资格分离及受影响切片迁移矩阵；保持T/A/O/R/C/I/H、五组目录、原公开ABI/SA/schema与draft/pending。三份专项报告在当前仓库不可定位，撤回稿中“本轮六篇交叉核验”的继承性表述；同进程部署、eSIM→vSIM级联、dmodem检测窗口/来源代次和远端角色政策均作为待证输入。将矩阵中的旧Scenario/Contract/Oracle执行依赖修正为当前TEST_F/test.py及原始Golden证据；明确G2a当前仅作testonly参考，旧接入记录按历史解释。逐项裁决、来源SHA及14个增补小节在主设计§1.2.1及相关章节，不另建平行设计文档。
 
 本轮定点读取现有EsimManager::SwitchToProfile、SlotCatalog和sim_identity类型，核对双结果/偏好写入与静态目录边界；没有重新认证全部F01～F51或匹配外仓。文档本地链接全部可定位、围栏配对、原4个显式锚点保留、14个新增小节存在、git diff --check通过。运行python3 -B telephony_core_service/services/multisim/test/scripts/run_architecture.py --output /tmp/sim-design-v5-architecture：结构88文件/157 include/25 targets、17项结构负控、开闭源声明与5项编译负控、topology/resource/assignment/runtime_protocol四组纯规则PASS；无产品构建/设备/业务回归，不据此宣称跨形态矩阵已执行。只发布主设计与本执行状态，不修改生产或测试代码；持续授权下逐文件提交并常规推送origin/main，核对远端SHA。
+
+### 42. 文档、源码与测试入口统一刷新（2026-11-17）
+
+输入本地/远端main@719e8b780f67fbc2ba2441f329daf545981aa88b，fetch恢复CHECKPOINT_VERIFIED。核对实际业务树90文件（88个C++、BUILD/README）、25个testonly源集、共享case/生产源表及两个公开头；公开Host私有包含和普通业务直接Mock均为0。保留CardRuntime过渡边界，不实施生产写权或跨形态新政策。
+
+新增根README导航，刷新docs入口、源码README/详细设计、知识库及Cases/Host使用说明；去掉活动入口的旧脚本/路径、四Context及G2a产品接入误述，目录设计副本已退役不再列作当前第91项。旧测试组织设计加历史标记，历史报告/Golden与归档原文不改。VS Code收为一个默认Build Host并构建全部七个业务切片；单例任务按用例名自动匹配程序，保留Testing每例独立进程与隔离profile。
+
+新增六项导航技术检查并纳入现有technical发现，本轮技术合计78 PASS。统一all --ci重跑113项91 PASS/22 FAIL，与上一验证逐例ID/状态相同；五个Host缺陷精确签名和17项未豁免Primary/生命周期失败保留，CI仍FAIL。架构/GN/独立语法/迁移、317项原始资产/299项处置/8项不可变合同完整性、四切片生产正执行、两项变异检出及恢复、profile三负控PASS。源码上游1066文件逐字节核对PASS；无生产C++/GN或业务用例修改。
+
+原生产品构建NOT_RUN，Device调度仍因完整产品树/工具/设备/HIL缺失BLOCKED，GUI未运行；配置检查不代表GUI或设备通过。既存default.profraw保持d354…，原bbb8…未恢复；原稿(5)保持857459…及未跟踪状态，lnk未改。当前原始报告、对照与覆盖率归档在test/docs/archive/unified_refresh_20261117，唯一验收说明仍为Full_Replacement.md；只逐文件提交本批成果，常规推送origin/main并核对远端，不扩大既有授权。

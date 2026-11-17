@@ -2,6 +2,16 @@
 
 以下首批历史记录输入为 main@877162ff1b2425fee0c9db1aadd7221497fd32db；当前续建输入及验收见下节。
 
+## 统一刷新（2026-11-17）
+
+以719e8b780为输入，重新核对文档、90项业务模块文件（88 C++、BUILD/README）、25个testonly源集、两个公开测试头、共享业务源清单及Host/Device边界。更新仓库/文档/源码/知识库导航和详细设计的当前清单，保留历史报告/Golden及过渡CardRuntime边界；未改生产C++、正式GN、Framework实现或业务用例。
+
+修复旧framework/host与cases/primary路径、已删除脚本入口、四Context旧口径及G2a当前生产接入误述。旧Host_Usage改指唯一README，旧测试组织设计明确为历史。VS Code只保留一个默认构建任务，Build Host覆盖全部七个业务切片；单例运行/调试任务只输入用例名，Testing面板仍逐例进程隔离。新增六项导航技术检查，随统一technical调度：本地链接、实际源码清单、失效链接负控、唯一默认任务及负控、任务/进程/profile与单例入口检查。
+
+本轮all --ci重跑113项91 PASS/22 FAIL；与上轮每条ID及状态相同，原五个Host精确签名和17项未豁免Primary/生命周期失败不变，完整CI仍FAIL。78项技术检查、架构/GN/迁移、历史完整性、四切片正执行审计、两项变异检出/恢复及profile保护通过。Device调度BLOCKED、原生构建NOT_RUN，GUI未实测，不能由配置检查替代。上游1066个文件字节核对通过，用户default.profraw及原稿(5)摘要不变。
+
+[本轮原始报告与索引](archive/unified_refresh_20261117/index.json)保存逐项对照、XML、日志、合并覆盖率及失败原因；既有archive字节不改写。详细API及迁移审计仍在下节，不再另建平行架构说明。
+
 ## API 收敛与开发验收（2026-11-17 续建）
 
 本轮输入 main/origin main `ce6441aa1e81cb29954874006236f126c3310388`。重新读取源码、Git/执行约束及归档，重跑输入基线108项：86 PASS/22 FAIL，五个Host缺陷及17项Primary/生命周期失败均在。第一批不透明Primary API提交已保存为 `a73046492`；以下为继续收敛的最终实现，验证数值以本节末尾实测和仓内证据为准。

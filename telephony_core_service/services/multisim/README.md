@@ -15,7 +15,7 @@ multisim/
 │   ├── assembly/exports/      # 模块装配/发布/生命周期及精确导出
 │   ├── request/               # Owner自用请求/步骤/完成机制
 │   └── sim_identity.h         # 跨业务纯身份类型，无映射服务
-├── test/                      # 既有Scenario/Contract/Oracle/Fake及Host设施
+├── test/                      # TEST_F、两个公开测试头、内部Host/Device实现与证据
 ├── tools/                     # 恢复工具
 ├── BUILD.gn
 └── README.md
@@ -28,7 +28,7 @@ multisim/
 | 号码 | account/number 的查询/用例和窄运行端口 | Account：账户号码；Card：卡缓存及EF效果 |
 | PIN/EF、Profile/Port、会话/加载 | card/security、records、esim、state/SessionRegistry、LoadSession | Card：卡协议、库存、会话代次；Profile绑定归Account、偏好归Role Assignment |
 | Radio/资源结束/恢复 | device/resource/ResourceBarrier；primary/radio_execution_port.h为消费端契约 | Device：真实共享设备域与执行资格；不接管账户绑定或角色事实 |
-| GetRealSimCount | infrastructure/compatibility/api/real_sim_count_query.*；test/framework/host/g2a_reference中的Core/legacy_sim_query_binding.*测试参考 | 旧Manager/EXT读源投影，无新账户缓存 |
+| GetRealSimCount | infrastructure/compatibility/api/real_sim_count_query.*；test/framework/internal/host/g2a_reference中的Core/legacy_sim_query_binding.*测试参考 | 旧Manager/EXT读源投影，无新账户缓存 |
 | 宿主/静态槽描述/发布 | infrastructure/assembly 的SlotCatalog、SimHostPorts、ManagerPublicationSequence、SimModule/Factory | Assembly构建只读描述并注入，同一Core RIL及原对象控制块；不持动态业务事实 |
 | 请求关联及旧结果交付 | infrastructure/request、compatibility/events | 请求由各Owner实例化；完成/回调登记是技术状态，无业务写权 |
 
@@ -42,8 +42,10 @@ CardRuntime仍同时持SessionRegistry、LoadSession与Device ResourceBarrier、
 
 ```sh
 python3 -B telephony_core_service/services/multisim/test/scripts/run_architecture.py --with-gn --migration --output /tmp/multisim-directory-check
-python3 -B telephony_core_service/services/multisim/test/scripts/check_relocation.py
+python3 -B telephony_core_service/services/multisim/test/scripts/test.py integrity
 python3 -B telephony_core_service/services/multisim/test/cases/architecture/test_g2a_source_tables.py
 ```
 
-覆盖迁移摘要/类型与实现token、精确include/GN依赖、循环/反向依赖拒绝、四组纯规则、编译负控和GN/Ninja对象。Host业务与已知缺陷分开统计，入口见[test/README](test/README.md)。不能将结构检查或Host PASS等同产品链接、原生SA/IPC/HDI或设备功能验收。模块根同名带空格设计文档为已提交原文副本，权威依据使用docs下无空格版本。
+覆盖迁移摘要/类型与实现token、精确include/GN依赖、循环/反向依赖拒绝、四组纯规则、编译负控和GN/Ninja对象。Host业务与已知缺陷分开统计，入口见[test/README](test/README.md)。不能将结构检查或Host PASS等同产品链接、原生SA/IPC/HDI或设备功能验收。模块内重复目录设计副本已退役，权威依据使用docs下版本；原副本摘要与迁址记录仍可追溯。
+
+跨形态设计约束见[主设计§3.2.1/10.4/17.4](../../docs/SIM_Target_Architecture_Design_v1.2.md)；端点/会话/绑定、能力/可达/可见/角色资格分别表达。这些新增约束仍为提案，不从目录或类型存在推断动态恢复与三/四卡业务已实现。

@@ -3,17 +3,17 @@
 | 项目 | 内容 |
 | --- | --- |
 | 文档版本 | 0.6，修订B+及G2a工作分支只读增量（整体设计仍PROPOSED） |
-| 更新日期 | 2026-11-05（补G2a工程边界并整理当前/历史基线；未改变架构裁决） |
-| 源码范围 | 当前模块为91文件：88个C++文件（64头/24源）、BUILD.gn、README.md及已提交设计文档副本；首次G2a之前的B+输入为88文件；生产能力来源见§17 |
+| 更新日期 | 2026-11-17（刷新当前清单、测试入口及跨形态设计接缝；历史验证保持原基线） |
+| 源码范围 | 当前模块为90文件：88个C++文件（64头/24源）、BUILD.gn及README.md；重复目录设计副本已退役；首次G2a之前的B+输入为88文件；生产能力来源见§17 |
 | 输入基线 | B+文件移动输入5404aefe、首次G2a源main 9ab1e976及历史实现cc787945均为固定溯源；最新main发布点与实际测试代码点分别见执行状态§0.1/§11；§10保留工作分支复验基线 |
-| 当前状态 | 首次G2a实现/证据已由work/g2a-bplus-integration合入main；最新窄include、执行审计强化及状态整理分支d5f0527c也已按本批授权合入main，实际重验及发布记录见执行状态§11。25个source_set仍全testonly，产品准入未完成，未转移写权 |
+| 当前状态 | 当前生产已回退G2a接入，原成熟SIM继续执行；G2a Core/Binding仅为测试参考，旧合入记录保留为历史。25个source_set全testonly，产品准入和写权迁移未完成，当前状态见执行状态§37～42 |
 | 权威范围 | 落实主设计的源码组织、功能映射与依赖规则；上位边界由SIM-TGT-001维护，公共契约和功能/WU清单仍由原文维护，未增加批准状态 |
 
 **文件存在、语法可检查和有限纯规则通过，均不等于目标业务已经实现。** 原生产仍位于`services/sim/`。本文保留原21个显式导航锚点，区分当前与稳态目录、刷新方法/构造及实现状态；不据源码目录数量建立新的上下文、SO或进程。
 
 当前逐文件输入摘要、去向和职责以[source_migration.json](../services/multisim/test/cases/architecture/source_migration.json)的layout_revision（88项）及additions（G2a两项）为准；原73文件及layout_history中的前轮布局溯源保留。
 
-2026-11-09用户明确调整测试物理位置：重构新增的四个测试工程、独立GN、脚本、Fake/Oracle、设计资料与证据统一置于 `services/multisim/test/`，恢复工具置于 `services/multisim/tools/`。当时90文件指**业务骨架**；当前91文件清单见§3.1，不包含这两个辅助目录；当时业务六组、25个逻辑源集及事实所有权不变；当前物理布局采用五组方案。辅助目录与运行入口见[测试导航](../services/multisim/test/README.md)，测试文件移动由[专属映射](../services/multisim/test/docs/archive/relocation/relocation_manifest.json)记录，不改写业务源迁移清单或历史证据。独立host构建通过显式入口选择；原产品/测试源表本轮不作修改，业务头不得依赖测试文件。
+2026-11-09用户明确调整测试物理位置：重构新增的四个测试工程、独立GN、脚本、Fake/Oracle、设计资料与证据统一置于 `services/multisim/test/`，恢复工具置于 `services/multisim/tools/`。当时90文件指**业务骨架**；当前90文件清单见§3.1，不包含这两个辅助目录；当时业务六组、25个逻辑源集及事实所有权不变；当前物理布局采用五组方案。辅助目录与运行入口见[测试导航](../services/multisim/test/README.md)，测试文件移动由[专属映射](../services/multisim/test/docs/archive/relocation/relocation_manifest.json)记录，不改写业务源迁移清单或历史证据。独立host构建通过显式入口选择；原产品/测试源表本轮不作修改，业务头不得依赖测试文件。
 
 ## 目录
 
@@ -38,6 +38,10 @@
 19. [未实现内容与局部设计缺口](#gaps)
 20. [检查记录与验证限度](#verification)
 21. [附录：逐文件功能及实现状态](#inventory)
+
+当前阅读提示：§3.1是本轮核对的实际文件树；§10/20/21内G2a产品接入与早期数量按其历史日期解释。当前测试开发用[TEST_F与两个公开头](../services/multisim/test/README.md)，平台实现只在framework/internal；原生受控组件与实际SA/IPC为不同验证层次。
+
+跨形态接缝按[主设计](SIM_Target_Architecture_Design_v1.2.md)§3.2.1/7.2.1/10.4/13.5/17.4执行设计约束：H静态端点目录、Card会话与观察、Account绑定、Role Assignment角色、Device实际资源分别负责。来源代次、域外开关/共享参数Owner及检测窗口须有产品证据才实施；不新建EndpointManager、公共ID或空目录，具体端口仍按Owner与真实切片补齐。
 
 <a id="scope"></a>
 
@@ -79,13 +83,12 @@
 
 ### 3.1 当前工作树：已存在的完整业务文件清单
 
-当前物理组织遵循[五组目录设计方案](SIM重构代码目录结构设计方案.md)，替代历史B+六组布局。91个模块文件包含88个C++单元、BUILD/README和已提交设计文档副本；test/tools另列，不计入该数字。25个逻辑source_set及依赖边、public/visibility和testonly状态保持。G2a仍由产品显式源表编译同一query/binding，未接管其他生产能力。CardRuntime/result_sinks暂在card/runtime，设备资源与卡状态尚未拆分；不是Assembly业务运行状态。
+当前物理组织遵循[五组目录设计方案](SIM重构代码目录结构设计方案.md)，替代历史B+六组布局。90个模块文件包含88个C++单元及BUILD/README；test/tools另列，不计入该数字。25个逻辑source_set及依赖边、public/visibility和testonly状态保持。G2a业务查询源仅由testonly目标验证，Core/Binding参考实现在test/framework/internal/host/g2a_reference，不由产品源表接入。CardRuntime/result_sinks暂在card/runtime，设备资源与卡状态尚未拆分；不是Assembly业务运行状态。
 
 ```text
 services/multisim/
 ├── BUILD.gn
 ├── README.md
-├── SIM 重构代码目录结构设计方案.md
 ├── account/
 │   ├── account_registry.cpp
 │   ├── account_registry.h

@@ -2,9 +2,7 @@
 
 当前物理组织依据：[五组目录方案](SIM重构代码目录结构设计方案.md) → [逐文件迁移及验收记录](SIM_Directory_Migration_20261112.md)。历史ADR/固定提交链接/运行证据保留旧路径，当前源码路径查详细设计§3及README。
 
-当前状态整理日期：2026-11-05。最新G2a分支及合入说明已发布到main，代码测试点与文档发布点在[合入记录](SIM_Refactor_Execution_State.md#main-integration-20261105)分别列出；本次只核对发布和证据、更新状态文档，没有重新运行业务或产品测试。最新分支、已完成项、失败/待裁决、产品阻塞及下一批任务统一查[唯一执行状态 §0](SIM_Refactor_Execution_State.md#current-status)，不从本文推断已完成产品替代。
-
-修订B+骨架、G2a只读闭环及SIM Guard两轮已保存到main；最新G2a构建/执行护栏强化及状态整理也已按本批授权合入main，并在干净合入代码点重验。当前生产成熟业务仍由services/sim承担。此前2026-10-23一致性复审起点 `801877c95ab8d37c60cb60dc210e796be6b96599` 是历史审阅基线，不是当前HEAD或最新测试基线。
+当前导航刷新至2026-11-17；实际提交、验证范围和阻塞统一见[执行状态](SIM_Refactor_Execution_State.md)§37～42。成熟生产仍在services/sim；G2a仅作testonly参考，未接入正式生产。测试全量迁移及API收敛已完成当前可执行Host范围，产品原生构建/设备及GUI仍未验收。历史PASS不视为当前HEAD重跑。
 
 ## 现行设计与阅读顺序
 
@@ -13,7 +11,7 @@
 3. [源码详细设计](SIM_Multisim_Source_Architecture_Detailed_Design.md)及[源码导航](../services/multisim/README.md)：当前五组实际/稳态目录、文件与GN映射、日常任务入口。
 4. [SIM 架构重构设计](SIM_Architecture_Refactor_Design.md)及[分层/迁移补充视图](SIM_Architecture_Layering_and_Migration_Design.md)：沿用SIM-001～062、WU-01～09、兼容轨迹与Q项，不另立架构裁决或当前实施台账。
 5. [SIM 管理对外接口说明](SIM管理对外接口说明_源码核实版.md)：接口分层、签名与本仓委托路径；声明存在性不视为外部服务运行保证。
-6. [G2a/Linux主机切片](../services/multisim/test/docs/Host_Overview.md)、[SIM跨架构契约防护网](../services/multisim/test/cases/compatibility/README.md)、[架构规则](../services/multisim/test/cases/architecture/README.md)：分开阅读对应证据，主机/组件与产品/设备验证不互相替代。
+6. [统一测试入口](../services/multisim/test/README.md)、[覆盖、缺陷与证据](../services/multisim/test/docs/Full_Replacement.md)、[架构规则](../services/multisim/test/cases/architecture/README.md)：分开阅读对应证据，主机/组件与产品/设备验证不互相替代。
 
 目标技术裁决由 [SIM 目标架构设计 v1.2](SIM_Target_Architecture_Design_v1.2.md) §4/§6.4 承接；功能/WU 与迁移编号保留在重构设计，分层文档为补充视图，本文为阅读索引。差异处理见主文档[补充设计复审记录 UC-01～09](SIM_Architecture_Refactor_Design.md#supplement-review)。源码决定现在如何实现；用户要求与已确认契约约束目标；提案编号和“已批准”字样不能替代批准证据。
 
@@ -42,5 +40,5 @@
 
 - 改规则先更新主文档的职责、功能/写权、兼容和阶段，再同步补充视图；历史材料通过明确适用版本解释。
 - 新的源码事实提供仓库路径、符号/行号及版本；跨仓缺口保持具体 Q 项，不从类名或部署图补出调用链。
-- 覆盖映射、静态语义复核、主机执行、产品/设备验证分别记录。旧容量1 PASS/设施16 PASS是历史切片；G2a七场景及SIM Guard兼容/缺陷/设施使用各自证据与基线，不与旧统计相加。本批合入重跑G2a、审计与架构/GN检查，SIM Guard仍引用其既有记录；没有运行产品测试。
+- 覆盖映射、静态语义复核、主机执行、产品/设备验证分别记录。旧容量1 PASS/设施16 PASS是历史切片；G2a七场景及SIM Guard兼容/缺陷/设施使用各自证据与基线，不与旧统计相加。各批实际命令和结果见执行状态；当前使用TEST_F/test.py，不再维护旧SIM Guard执行体系；历史报告和Golden原文保留。
 - 链接、图表、编号与证据摘要检查不能证明目标重构已实现。源码、数据、历史执行结果的变更另按用户任务处理。

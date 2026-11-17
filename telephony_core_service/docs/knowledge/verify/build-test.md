@@ -3,7 +3,7 @@
 ## 环境前提
 
 - 本仓是 OHOS 部件（part=core_service），**必须**在完整 OHOS 源码树中构建，挂载路径 `base/telephony/core_service`
-- 本仓无独立 CI（无 .github/.gitee）、无 rust-toolchain、无 .clang-format/.clang-tidy
+- 本仓未配置托管CI工作流（无.github/.gitee）；重构门禁由test.py all --ci执行。无rust-toolchain、.clang-format/.clang-tidy。
 - Rust ANI workspace（Cargo.toml）仅 IDE/本地开发用；正式构建走 GN（ohos_rust_shared_library/rust_cxx）；依赖 ani_rs 为 git 依赖（communication_netmanager_base 分支 OpenHarmony_feature_20250328），脱离 OHOS 环境无法 cargo build
 
 ## 构建
@@ -48,18 +48,22 @@ hb build -T //base/telephony/core_service/test/fuzztest:fuzztest
 1. 改代码前：读 docs/knowledge/ 对应场景文档 + 编辑前声明
 2. 改代码中：同步 18 文件标准集（新增接口时）
 3. 改代码后：`rg` 一致性检查 → hb build（有环境时）→ 对应 gtest → fuzzer（解码类）
-4. 全部通过后由用户决定提交（禁止擅自提交）
+4. 按根/部件AGENTS及用户当前授权逐文件提交、常规推送；失败/阻塞如实记录，不扩大生产改动范围
 
-## 独立Linux组件防护网与文档刷新
+## 独立Linux防护网与产品测试
 
-完整OHOS产品构建仍需上述完整树；test/systemtest有已批准的独立Linux GN适配，不是ohos_unittest，不能将主机测试结果当设备/SA/IPC通过。
+当前唯一重构测试入口为services/multisim/test/scripts/test.py；Host使用GN/Ninja和固定依赖，原生产源码直接参与执行。产品原生ohos_unittest目标在同一测试目录BUILD.gn，受控组件与实际SA/IPC服务集成分开；产品树、权限、设备/HIL和恢复条件按用例检查，缺条件为BLOCKED/UNSUPPORTED。
 
-从Core目录执行的当前入口示例（本次文档刷新未执行）：
+从Git根执行：
 
 ```sh
-python3 services/multisim/test/scripts/run.py --gtest-root <固定版本GoogleTest源码目录> --output <输出目录>
+TEST=telephony_core_service/services/multisim/test
+python3 -B "$TEST/scripts/test.py" build
+python3 -B "$TEST/scripts/test.py" list
+python3 -B "$TEST/scripts/test.py" run --filter SimTest.DualSimPinUnlock
+python3 -B "$TEST/scripts/test.py" debug --filter SimTest.DualSimPinUnlock
+python3 -B "$TEST/scripts/test.py" all --ci
+python3 -B "$TEST/scripts/test.py" device --ohos-root <完整产品树>
 ```
 
-固定依赖、Clang18/gold/C++17、命令及2026-10-08真实结果见[test工程README](../../../services/multisim/test/docs/Host_Overview.md)和[执行记录](../../../services/multisim/test/docs/host/run_record.md)。容量B1 PASS、INFRA16 PASS与原五业务BLOCKED分开。编译45个初始化对象不表示初始化已链接/运行。
-
-文档统一只做来源、链接、代码摘要和一致性静态检查，不宣称hb/gTest/fuzzer已运行。架构Phase0未就绪不妨碍已授权host设施推进，也不授权生产重构。
+环境、固定依赖与新增TEST_F参见[开发指南](../../../services/multisim/test/README.md)。默认输出.host-out，可用--out/--output隔离；所有入口隔离LLVM_PROFILE_FILE，保留用户default.profraw。真实Primary逐例独立进程，五个Host已知缺陷只接受原精确签名，其他FAIL不自动接受。最新实际结果及未完成产品/GUI验收见[执行状态](../../SIM_Refactor_Execution_State.md)和[验收记录](../../../services/multisim/test/docs/Full_Replacement.md)，历史记录不视为当前HEAD重跑。

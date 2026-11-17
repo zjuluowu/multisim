@@ -7,7 +7,7 @@
 3. **禁止** 新增并发代码使用 `std::mutex`——新增同步采用 `ffrt` 原语；当前 SimStateManager 仍有 std::mutex 与 ffrt::mutex 并存，不能声称已全量迁移；按共享状态既有保护关系审查
 4. **禁止** 在条件编译分支（eSIM/卫星/telephony_ext）外使用其类型；分支内改动需验证默认构建不受影响
 5. **禁止** 删除失败的测试用例来"通过"
-6. **禁止** 未明确用户请求时提交代码
+6. 提交/推送遵循根及部件AGENTS：已有持续授权时逐文件提交并常规推送origin/main；保护无关修改，不强推、不自动合并或变基
 7. **禁止** 解码/字符串解析函数改动不跑对应 fuzzer（test/fuzztest/，如 simfileparse_fuzzer、vcard_fuzzer）
 
 ## 架构不变量
@@ -31,7 +31,7 @@
 
 ## SIM重构的现行冻结与目标边界
 
-现行方案见[统一裁决](../../MultiSIM/08_design_unification_decisions.md)和[SAD](../../SIM_Refactored_Software_Architecture_Design_Version3.md)。四Context/三聚合/分类目标属于目标设计，未在当前生产实现中完成。
+现行技术方案见[主设计](../../SIM_Target_Architecture_Design_v1.2.md)，历史裁决与SAD仅作背景。T/A为两个业务上下文，O为用例机制，R/C/I/H分责；五组物理目录不等于五个业务上下文，骨架不代表生产替代。
 
 本阶段不新增公开API/IPC/SA/进程/schema/厂商ABI或运行期实现切换Flag；“接口码只追加”不是本阶段追加授权。保持CoreManagerInner消费侧契约，内部注入端口可以解耦，不整体删除门面或迁入非SIM业务。
 
