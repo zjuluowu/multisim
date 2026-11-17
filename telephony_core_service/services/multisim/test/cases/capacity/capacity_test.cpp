@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
-#include "sim_capacity_test.h"
+#include "sim_test.h"
+using SimComponent=SimGuard::SimTest;
 #include <chrono>
 #include <cstdlib>
 #include <thread>

@@ -294,6 +294,16 @@ Card SimTest::AddCard(std::string name, int slot, CardKind kind, State state, Lo
     environment_->prepared.push_back({card, {state, lock}});
     return card;
 }
+Card SimTest::AddCard(std::string name, CardKind kind, State state, Lock lock)
+{ return AddCard(std::move(name), static_cast<int>(environment_->prepared.size()), kind, state, lock); }
+int SimTest::CardCapacity() { return 2; } // Explicit capacity of this controlled Legacy slice.
+Card SimTest::ExistingCard(int slot) {
+    if(!environment_->started) environment_->Start(CardCapacity());
+    environment_->started=true;
+    const auto value=environment_->Observe().cards.at(slot);
+    return {"existing-"+std::to_string(slot),slot,value.kind,value.iccid};
+}
+State SimTest::ReadCardState(const Card &card) { return environment_->Observe().cards.at(card.physicalSlot).state; }
 void SimTest::Start()
 {
     int slots = 1;

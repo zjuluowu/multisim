@@ -999,3 +999,7 @@ test.py为唯一构建/发现/逐例进程/架构/技术/变异/报告/CI入口�
 default.profraw原字节仍未恢复（原SHA见§38），本轮保持d35445fd920ef489cfb908b6968c9d3dea874688ea39daa53328c9f76be2d675不变。ELF启动前防护与绝对%p回退覆盖直接/异常/调试入口；私有sentinel检出最初仅main保护无效，修正后三类检查通过，原失败和修复均归档。不提交或删除用户文件。
 
 完整逐例映射、退役表、结果、边界和仓内原始证据统一见[Full_Replacement.md](../services/multisim/test/docs/Full_Replacement.md)。依持续授权当前工作区逐文件提交并常规推送origin/main；完整CI失败、产品阻塞与GUI未验收不因提交而改变。
+
+### 40. 测试 API 收敛（2026-11-17，进行中）
+
+输入ce6441aa1，恢复fetch核实检查点；108项基线重跑86 PASS/22 FAIL，CI拒绝原17项Primary/生命周期失败。初审7公开头/8直接Host包含，Primary业务21处Mock操作。已将C0/C1改为SimTest+平台无关PrimaryProtocol，业务断言PASS、原REAL_GRAPH_LIFETIME_NOT_DRAINED保留，容量Mock收进实现并PASS；首次suite混用框架错误修复证据保留。原型阶段发布后继续完整接口、Device按需资源、目录/构建和开发体验收敛；不是最终验收。源码及原始证据统一见test/docs/Full_Replacement.md。生产C++/正式GN未改，default.profraw当前d354…不变，原bbb8…字节仍未恢复。

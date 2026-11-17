@@ -173,8 +173,8 @@ sim_native_full = sim_initialization_sources + sim_primary_support_sources +
                     "framework/host/stubs/detached_threads.cpp",
                   ]
 sim_native_component("sim_test_device_capacity") {
-  sources = sim_capacity_case_sources + sim_native_common +
-            [ "framework/host/probes/capacity_probe.cpp" ]
+  sources = sim_capacity_case_sources + [ "framework/host/capacity_api.cpp" ] +
+            sim_native_common + [ "framework/host/probes/capacity_probe.cpp" ]
 }
 sim_native_component("sim_test_device_primary_entry") {
   sources = sim_primary_entry_case_sources + [
@@ -185,7 +185,8 @@ sim_native_component("sim_test_device_primary_entry") {
             ]
 }
 sim_native_component("sim_test_device_primary") {
-  sources = sim_primary_case_sources + sim_native_full
+  sources = sim_primary_case_sources + sim_native_full +
+            [ "framework/host/primary/primary_api.cpp" ]
 }
 sim_native_component("sim_test_device_bootstrap") {
   sources = sim_bootstrap_case_sources + sim_native_full +

@@ -1,0 +1,13 @@
+{
+  "input_head": "ce6441aa1e81cb29954874006236f126c3310388",
+  "archives": {
+    "input-sources.tar.gz": "05a3b9d5f279cebc43a710fee80f90756464ff53e6d5862141fd7f93ec7c43ff",
+    "baseline-and-primary-pilot.tar.gz": "2e957aec0bf5481cbb7b200ed4537e330e68d41a19d0eb3704dd2d0ee3504e43"
+  },
+  "pilot": {
+    "C0": "business PASS / original cleanup FAIL",
+    "C1": "business PASS / original cleanup FAIL",
+    "capacity": "PASS"
+  },
+  "baseline": "108 cases:86 PASS /22 FAIL; CI FAIL 17 unaccepted"
+}

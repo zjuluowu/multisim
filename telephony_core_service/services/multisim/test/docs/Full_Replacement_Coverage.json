@@ -584,7 +584,7 @@
       "new_id": "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
       "target": "sim_primary_slot_real_test",
       "baseline_status": "PASS",
-      "case_source": "cases/primary/primary_test.cpp",
+      "case_source": "cases/primary/initialization_internal_test.cpp",
       "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
     },
     {
@@ -602,7 +602,7 @@
       "new_id": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
       "target": "sim_primary_slot_real_test",
       "baseline_status": "FAIL",
-      "case_source": "cases/primary/primary_test.cpp",
+      "case_source": "cases/primary/primary_protocol_test.cpp",
       "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
     },
     {
@@ -611,7 +611,7 @@
       "new_id": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
       "target": "sim_primary_slot_real_test",
       "baseline_status": "FAIL",
-      "case_source": "cases/primary/primary_test.cpp",
+      "case_source": "cases/primary/primary_protocol_test.cpp",
       "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
     },
     {
@@ -620,7 +620,7 @@
       "new_id": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
       "target": "sim_primary_slot_real_test",
       "baseline_status": "FAIL",
-      "case_source": "cases/primary/primary_test.cpp",
+      "case_source": "cases/primary/primary_protocol_test.cpp",
       "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
     },
     {
@@ -629,7 +629,7 @@
       "new_id": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
       "target": "sim_primary_slot_real_test",
       "baseline_status": "FAIL",
-      "case_source": "cases/primary/primary_test.cpp",
+      "case_source": "cases/primary/primary_protocol_test.cpp",
       "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
     },
     {
@@ -638,7 +638,7 @@
       "new_id": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
       "target": "sim_primary_slot_real_test",
       "baseline_status": "FAIL",
-      "case_source": "cases/primary/primary_test.cpp",
+      "case_source": "cases/primary/primary_protocol_test.cpp",
       "sut_boundary": "Actual manager/controller/RIL/Provider with strict lifetime checks"
     },
     {

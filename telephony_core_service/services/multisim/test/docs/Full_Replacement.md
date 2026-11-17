@@ -2,6 +2,12 @@
 
 以下首批历史记录输入为 main@877162ff1b2425fee0c9db1aadd7221497fd32db；当前续建输入及验收见下节。
 
+## 2026-11-17 API 收敛续建
+
+本轮输入 ce6441aa1，重新审计及重跑108项：86 PASS/22 FAIL、CI仍拒绝17项Primary/生命周期失败。公开头7个、直接Host包含8处、原Primary业务文件21处Mock设置/操作。C0改用SimTest业务接口，C1通过平台无关PrimaryProtocol显式等待/回包；真实Core→Manager→Controller链保持。原型业务均PASS，原对象图清理FAIL保留；容量改为同一SimTest、Mock收进实现。首次TEST/TEST_F suite混用错误已修复并原样归档。此为已验证的接口批次，其他接口/目录/Device及完整回归继续实施。
+
+[本轮输入、基线及原型证据](archive/api_convergence_20261117/index.json)。后续最终结论将更新本节，不沿用上一轮通过代替当前实测。
+
 ## 2026-11-17 最终切换及验收边界
 
 输入 main/origin main `807d73fbefdd6d7652a88187ae06211cc98e6de4`，Linux x86_64 / WSL、Clang 18、固定 GoogleTest 1.15.2。开始时仅有未跟踪 default.profraw，已保护；实际 fetch 恢复核对 CHECKPOINT_VERIFIED。生产 C++ 与正式生产 GN 不改。本次完成 Host 全量迁移及活动入口替换；**完整产品编译、设备运行和 VS Code GUI 尚未验收，不宣称 Full Replacement 全平台验收通过。**

@@ -1,13 +1,12 @@
-// SPDX-License-Identifier: Apache-2.0
-#pragma once
-#include <gmock/gmock.h>
-#include "host/stubs/parameter_mock.h"
-#include "host/probes/capacity_probe.h"
-#include <memory>
+#include "sim_test.h"
+#include "parameter_mock.h"
+#include "capacity_probe.h"
+namespace SimGuard {
 extern "C" unsigned int SimHostParameterReads();
-class SimComponent : public testing::Test {
-protected:
-    void SetUp() override {
+struct SimTest::Environment {
+    testing::StrictMock<SimHost::MockParameterService> parameters_;
+    std::unique_ptr<SimHost::ScopedParameterService> scope_;
+    Environment() {
     // Exact counts/order are intentionally unconstrained: queries may repeat.
     EXPECT_CALL(parameters_, Read(testing::StrEq("const.telephony.slotCount"), testing::_, testing::_, testing::_))
         .Times(testing::AnyNumber())
@@ -26,9 +25,11 @@ protected:
         });
     scope_ = std::make_unique<SimHost::ScopedParameterService>(parameters_);
     }
-    int ReadCapacity() { return SimHost::ObserveCapacity(); }
-    bool ParameterBoundaryObserved() { return SimHostParameterReads() > 0; }
-private:
-    testing::StrictMock<SimHost::MockParameterService> parameters_;
-    std::unique_ptr<SimHost::ScopedParameterService> scope_;
 };
+SimTest::SimTest()=default;
+SimTest::~SimTest()=default;
+void SimTest::SetUp(){environment_=std::make_unique<Environment>();}
+void SimTest::TearDown(){environment_.reset();}
+int SimTest::ReadCapacity(){return SimHost::ObserveCapacity();}
+bool SimTest::ParameterBoundaryObserved(){return SimHostParameterReads()>0;}
+}

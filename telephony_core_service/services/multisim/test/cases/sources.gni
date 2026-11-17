@@ -26,7 +26,9 @@ sim_primary_entry_case_sources = [
   "$sim_case_root/primary_entry/primary_entry_test.cpp",
 ]
 sim_primary_case_sources = [
+  "$sim_case_root/primary/initialization_internal_test.cpp",
   "$sim_case_root/primary/lifecycle_test.cpp",
+  "$sim_case_root/primary/primary_protocol_test.cpp",
   "$sim_case_root/primary/primary_test.cpp",
   "$sim_case_root/primary/shutdown_test.cpp",
 ]

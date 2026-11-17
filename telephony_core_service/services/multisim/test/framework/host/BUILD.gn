@@ -66,7 +66,8 @@ executable("sim_primary_slot_entry_test") {
     ":primary_slot_headers",
     ":production_headers",
   ]
-  include_dirs = [ "$test_root/framework",
+  include_dirs = [
+    "$test_root/framework",
     "$gtest_root/googletest/include",
     "$gtest_root/googlemock/include",
   ]
@@ -97,6 +98,7 @@ source_set("primary_real_support") {
 executable("sim_primary_slot_real_test") {
   sources = sim_primary_case_sources + [
               "$test_root/framework/common/main.cpp",
+              "$test_root/framework/host/primary/primary_api.cpp",
               "$test_root/framework/host/primary/real_runtime.cpp",
               "$test_root/framework/host/primary/security_boundary.cpp",
             ]
@@ -222,9 +224,12 @@ static_library("googlemock") {
   deps = [ ":googletest" ]
 }
 executable("sim_component_test") {
-  sources =
-      sim_capacity_case_sources + [ "$test_root/framework/common/main.cpp" ]
-  include_dirs = [ "$test_root/framework",
+  sources = sim_capacity_case_sources + [
+              "$test_root/framework/common/main.cpp",
+              "$test_root/framework/host/capacity_api.cpp",
+            ]
+  include_dirs = [
+    "$test_root/framework",
     "$gtest_root/googletest/include",
     "$gtest_root/googlemock/include",
     "$test_root/framework/host/probes",
