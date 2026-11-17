@@ -1,0 +1,197 @@
+{
+  "head": "4e51425096ed5ea7e96c864150e032e6a1486c5e",
+  "started_utc": "2026-11-17T12:13:25.163977+00:00",
+  "commands": [
+    {
+      "name": "case-discovery",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/update_case_sources.py"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "case-discovery.log"
+    },
+    {
+      "name": "sim_test_host-build",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/build_replacement.py",
+        "--out",
+        "/mnt/e/github/multisim/.host-out",
+        "--target",
+        "sim_test_host",
+        "--jobs",
+        "3",
+        "--gtest-root",
+        "/tmp/sim-sync-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59",
+        "--openssl-root",
+        "/tmp/sim-replacement-openssl",
+        "--runtime-root",
+        "/tmp/sim-replacement-runtime"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_test_host-build.log"
+    },
+    {
+      "name": "sim_component_test-build",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/build_replacement.py",
+        "--out",
+        "/mnt/e/github/multisim/.host-out",
+        "--target",
+        "sim_component_test",
+        "--jobs",
+        "3",
+        "--gtest-root",
+        "/tmp/sim-sync-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59",
+        "--openssl-root",
+        "/tmp/sim-replacement-openssl",
+        "--runtime-root",
+        "/tmp/sim-replacement-runtime"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_component_test-build.log"
+    },
+    {
+      "name": "sim_primary_slot_entry_test-build",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/build_replacement.py",
+        "--out",
+        "/mnt/e/github/multisim/.host-out",
+        "--target",
+        "sim_primary_slot_entry_test",
+        "--jobs",
+        "3",
+        "--gtest-root",
+        "/tmp/sim-sync-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59",
+        "--openssl-root",
+        "/tmp/sim-replacement-openssl",
+        "--runtime-root",
+        "/tmp/sim-replacement-runtime"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_primary_slot_entry_test-build.log"
+    },
+    {
+      "name": "sim_g2a_query_test-build",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/build_replacement.py",
+        "--out",
+        "/mnt/e/github/multisim/.host-out",
+        "--target",
+        "sim_g2a_query_test",
+        "--jobs",
+        "3",
+        "--gtest-root",
+        "/tmp/sim-sync-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59",
+        "--openssl-root",
+        "/tmp/sim-replacement-openssl",
+        "--runtime-root",
+        "/tmp/sim-replacement-runtime"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_g2a_query_test-build.log"
+    },
+    {
+      "name": "sim_upstream_query_test-build",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/build_replacement.py",
+        "--out",
+        "/mnt/e/github/multisim/.host-out",
+        "--target",
+        "sim_upstream_query_test",
+        "--jobs",
+        "3",
+        "--gtest-root",
+        "/tmp/sim-sync-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59",
+        "--openssl-root",
+        "/tmp/sim-replacement-openssl",
+        "--runtime-root",
+        "/tmp/sim-replacement-runtime"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_upstream_query_test-build.log"
+    },
+    {
+      "name": "sim_primary_slot_real_test-build",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/build_replacement.py",
+        "--out",
+        "/mnt/e/github/multisim/.host-out",
+        "--target",
+        "sim_primary_slot_real_test",
+        "--jobs",
+        "3",
+        "--gtest-root",
+        "/tmp/sim-sync-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59",
+        "--openssl-root",
+        "/tmp/sim-replacement-openssl",
+        "--runtime-root",
+        "/tmp/sim-replacement-runtime"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_primary_slot_real_test-build.log"
+    },
+    {
+      "name": "sim_bootstrap_characterization-build",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/build_replacement.py",
+        "--out",
+        "/mnt/e/github/multisim/.host-out",
+        "--target",
+        "sim_bootstrap_characterization",
+        "--jobs",
+        "3",
+        "--gtest-root",
+        "/tmp/sim-sync-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59",
+        "--openssl-root",
+        "/tmp/sim-replacement-openssl",
+        "--runtime-root",
+        "/tmp/sim-replacement-runtime"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_bootstrap_characterization-build.log"
+    },
+    {
+      "name": "editor-discovery",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/check_editor.py",
+        "--out",
+        "/mnt/e/github/multisim/.host-out",
+        "--output",
+        "/mnt/e/github/multisim/.host-out/results/sim-abi6z6nk/editor"
+      ],
+      "exit_code": 1,
+      "status": "FAIL",
+      "log": "editor-discovery.log"
+    }
+  ],
+  "cases": [],
+  "status": "FAIL",
+  "protected_profile_unchanged": true,
+  "finished_utc": "2026-11-17T12:26:44.899854+00:00"
+}

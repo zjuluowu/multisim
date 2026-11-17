@@ -41,3 +41,5 @@ VS Code Remote-WSL 打开仓库，执行 **Build Host**，Testing 面板刷新�
 每个结果目录含 result.json、单例 XML、日志及退出码。五个冻结 Host 缺陷保持原始 FAIL；只接受其精确签名。真实 Primary 生命周期失败继续阻止完整 CI，不因业务断言通过而消失。
 
 [完整依赖审计、前后对比、原始证据与设备限制](docs/Full_Replacement.md)。
+
+Testing 面板首次准备使用 `test.py editor`（VS Code 任务 `Prepare Testing Panel`）；源码定位及断点操作见[Host 使用说明](docs/Host_Usage.md#testing-面板源码定位和断点)。

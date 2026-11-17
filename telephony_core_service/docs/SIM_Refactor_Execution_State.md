@@ -1033,3 +1033,15 @@ Device只读路径仅检查查询权限/真实SA/端点，不要求HIL/PIN/双�
 新增六项导航技术检查并纳入现有technical发现，本轮技术合计78 PASS。统一all --ci重跑113项91 PASS/22 FAIL，与上一验证逐例ID/状态相同；五个Host缺陷精确签名和17项未豁免Primary/生命周期失败保留，CI仍FAIL。架构/GN/独立语法/迁移、317项原始资产/299项处置/8项不可变合同完整性、四切片生产正执行、两项变异检出及恢复、profile三负控PASS。源码上游1066文件逐字节核对PASS；无生产C++/GN或业务用例修改。
 
 原生产品构建NOT_RUN，Device调度仍因完整产品树/工具/设备/HIL缺失BLOCKED，GUI未运行；配置检查不代表GUI或设备通过。既存default.profraw保持d354…，原bbb8…未恢复；原稿(5)保持857459…及未跟踪状态，lnk未改。当前原始报告、对照与覆盖率归档在test/docs/archive/unified_refresh_20261117，唯一验收说明仍为Full_Replacement.md；只逐文件提交本批成果，常规推送origin/main并核对远端，不扩大既有授权。
+
+### 43. VS Code TestMate 配置替换（2026-11-17）
+
+输入main@4e51425096ed5ea7e96c864150e032e6a1486c5e；保留用户已有配置意图，将重复advancedExecutables键合并为用户指定的两组唯一配置，保留clangd及调试模板。JSON解析、重复键检查及git diff --check通过；未运行GUI或业务测试。首次恢复fetch失败，显式刷新origin成功后核对远端；其余既存未跟踪文件保持。按持续授权仅提交settings.json和本状态记录。
+
+### 44. VS Code 测试发现、源码定位及调试链路（2026-11-17）
+
+输入main@4e51425096ed5ea7e96c864150e032e6a1486c5e及§43未提交修改；origin刷新后无差异，暂存区为空。修复测试公共main对--help误返回2的问题，保留每进程精确单例限制；增加统一test.py editor、Prepare Testing Panel任务及XML源码位置检查，启用TestMate启动发现、关闭列表缓存并恢复运行/调试前构建及链接库环境。保留clangd等配置及用户profile文件。
+
+七个Host程序实际构建PASS，113条GoogleTest全部枚举且源码绝对路径/行号可定位；最终产物的测试源码行断点、真实UnlockPin断点/slotId=1及继续单例PASS。技术78项、导航6项、JSON/设置名与diff空白检查PASS。首次公共main更新前产物帮助识别失败已保留，重链接后全部PASS；非过滤/不存在用例仍exit2。完整业务回归和GUI未运行，既有22项失败及产品/设备门禁不变。实测命令及原始证据见[test/docs/archive/vscode_testing_20261117](../services/multisim/test/docs/archive/vscode_testing_20261117/README.md)。§43当时因.git只读未保存；本批按持续授权在当前工作区尝试逐文件提交及常规推送，实际发布以Git可达性核实，不使用副本。
+
+§44发布预检补充：原始LLDB日志包含CRLF及空格/Tab源码指示，完整暂存diff --check为FAIL；排除本批原始证据目录后的配置/源码/文档检查PASS。日志按原字节保存，前述差异空白PASS仅指编辑内容。

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="7" name="AllTests">
+  <testsuite name="Configurations/G2aReadOnlyQuery" tests="7">
+    <testcase name="OriginalManagerAttachment/single" value_param="24-byte object &lt;6C-29 2D-FD BC-5D 00-00 C6-6B 2D-FD BC-5D 00-00 00-00 00-00 00-00 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_query_test.cpp" line="9" />
+    <testcase name="OriginalManagerAttachment/dual" value_param="24-byte object &lt;73-29 2D-FD BC-5D 00-00 33-78 2D-FD BC-5D 00-00 00-00 00-00 00-00 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_query_test.cpp" line="9" />
+    <testcase name="OriginalManagerAttachment/zero" value_param="24-byte object &lt;78-29 2D-FD BC-5D 00-00 00-62 2D-FD BC-5D 00-00 00-00 00-00 00-00 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_query_test.cpp" line="9" />
+    <testcase name="OriginalManagerAttachment/negative_atoi" value_param="24-byte object &lt;7D-29 2D-FD BC-5D 00-00 8B-29 2D-FD BC-5D 00-00 00-00 00-00 00-00 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_query_test.cpp" line="9" />
+    <testcase name="OriginalManagerAttachment/malformed_atoi" value_param="24-byte object &lt;8E-29 2D-FD BC-5D 00-00 9D-29 2D-FD BC-5D 00-00 00-00 00-00 00-00 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_query_test.cpp" line="9" />
+    <testcase name="OriginalManagerAttachment/vendor_override" value_param="24-byte object &lt;A5-29 2D-FD BC-5D 00-00 33-78 2D-FD BC-5D 00-00 B5-29 2D-FD BC-5D 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_query_test.cpp" line="9" />
+    <testcase name="OriginalManagerAttachment/vendor_result_propagation" value_param="24-byte object &lt;B7-29 2D-FD BC-5D 00-00 33-78 2D-FD BC-5D 00-00 D1-29 2D-FD BC-5D 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_query_test.cpp" line="9" />
+  </testsuite>
+</testsuites>

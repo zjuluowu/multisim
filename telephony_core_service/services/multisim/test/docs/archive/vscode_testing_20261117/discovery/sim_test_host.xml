@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="56" name="AllTests">
+  <testsuite name="SimTest" tests="9">
+    <testcase name="DualSimPinUnlockAfterWrongPin" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/developer_copy_test.cpp" line="4" />
+    <testcase name="WrongUsimPinDoesNotBlockSimPeer" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/pin_failure_isolation_test.cpp" line="3" />
+    <testcase name="UnlockingSecondLockedCardLeavesFirstLocked" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/pin_independence_test.cpp" line="3" />
+    <testcase name="PukUnlockPublishesReadyAndRetainsNewPin" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/puk_test.cpp" line="3" />
+    <testcase name="ExistingCardQueriesAgreeWithoutControlledMutation" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/query_test.cpp" line="3" />
+    <testcase name="LIFE_001" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/sim_card_test.cpp" line="4" />
+    <testcase name="LIFE_002" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/sim_card_test.cpp" line="20" />
+    <testcase name="PUK_001" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/sim_card_test.cpp" line="37" />
+    <testcase name="DualSimPinUnlock" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/sim_card_test.cpp" line="47" />
+  </testsuite>
+  <testsuite name="SessionLifecycle" tests="14">
+    <testcase name="INIT_001_SingleEnumeration" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/lifecycle_test.cpp" line="36" />
+    <testcase name="INIT_002_MissingRilThenRecreate" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/lifecycle_test.cpp" line="42" />
+    <testcase name="INIT_DUAL_002_ReversedEnumeration" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/lifecycle_test.cpp" line="49" />
+    <testcase name="CALLBACK_002_MalformedThenRecovery" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/lifecycle_test.cpp" line="60" />
+    <testcase name="CALLBACK_003_DroppedThenRecovery" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/lifecycle_test.cpp" line="69" />
+    <testcase name="PUK_002_WrongThenSuccessfulUnlock" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/lifecycle_test.cpp" line="78" />
+    <testcase name="REFRESH_001_ExplicitStatusQuery" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/lifecycle_test.cpp" line="89" />
+    <testcase name="RECREATE_001_DualCardReenumeration" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/lifecycle_test.cpp" line="94" />
+    <testcase name="RECREATE_002_ReplacementWhileStopped" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/lifecycle_test.cpp" line="106" />
+    <testcase name="DUAL_002_PinWhileOtherCardRemoved" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/lifecycle_test.cpp" line="115" />
+    <testcase name="DEFECT_002_ReadyReplyFromReplacedCard" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/lifecycle_test.cpp" line="129" />
+    <testcase name="DEFECT_003_GenericRilErrorIsNotWrongPassword" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/lifecycle_test.cpp" line="143" />
+    <testcase name="DEFECT_004_PinReplyFromReplacedCard" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/lifecycle_test.cpp" line="153" />
+    <testcase name="DEFECT_005_RefreshReturnContractConflict" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/lifecycle_test.cpp" line="165" />
+  </testsuite>
+  <testsuite name="SimAdvancedTest" tests="5">
+    <testcase name="PIN_001" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/response_test.cpp" line="5" />
+    <testcase name="PIN_002_CommandFailure" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/response_test.cpp" line="22" />
+    <testcase name="DUAL_001" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/response_test.cpp" line="34" />
+    <testcase name="RIL_001_DuplicateAndError" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/response_test.cpp" line="48" />
+    <testcase name="DEFECT_001_StaleReadyAfterRemoval" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/response_test.cpp" line="62" />
+  </testsuite>
+  <testsuite name="PinMemoryContract" tests="4">
+    <testcase name="PinSuccessUsesOriginalSlotIdentityAndCredential" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/protocol/pin_memory_test.cpp" line="21" />
+    <testcase name="PukSuccessUsesNewPinAndPinAlterOperation" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/protocol/pin_memory_test.cpp" line="37" />
+    <testcase name="FailedPinDoesNotPublishMemoryHook" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/protocol/pin_memory_test.cpp" line="51" />
+    <testcase name="RemovalUsesAbsentResponseIdentityWithoutCredential" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/protocol/pin_memory_test.cpp" line="63" />
+  </testsuite>
+  <testsuite name="EventAdapter" tests="3">
+    <testcase name="SharedTypeSafety" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/platform/event_adapter_test.cpp" line="5" />
+    <testcase name="UniqueOwnership" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/platform/event_adapter_test.cpp" line="17" />
+    <testcase name="WeakLifetimeAndMetadata" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/platform/event_adapter_test.cpp" line="32" />
+  </testsuite>
+  <testsuite name="ProductionEventTransport" tests="2">
+    <testcase name="DeliversFormalEnvelope" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/platform/event_transport_test.cpp" line="63" />
+    <testcase name="CancelsPendingAndReapsWorker" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/platform/event_transport_test.cpp" line="88" />
+  </testsuite>
+  <testsuite name="SchedulerBoundary" tests="9">
+    <testcase name="RunningTaskCannotBeCancelled" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/platform/event_transport_test.cpp" line="110" />
+    <testcase name="ProductionGeneralTaskWaitsAndCleansUp" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/platform/event_transport_test.cpp" line="137" />
+    <testcase name="IdleWaitDrainsCascadedQueues" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/platform/event_transport_test.cpp" line="152" />
+    <testcase name="IdleWaitDoesNotIgnoreDelayedOrRunningWork" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/platform/event_transport_test.cpp" line="172" />
+    <testcase name="IdleWaitExposesTaskFailure" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/platform/event_transport_test.cpp" line="196" />
+    <testcase name="ReadyIdleLeavesFutureTimersAndDrainsCascades" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/platform/event_transport_test.cpp" line="213" />
+    <testcase name="ReadyIdleDoesNotAcceptRunningInitialization" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/platform/event_transport_test.cpp" line="233" />
+    <testcase name="DetachedCallableBarrierIncludesCaptureDestruction" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/platform/event_transport_test.cpp" line="251" />
+    <testcase name="JoinablePoolWorkerIsNotAnUnfinishedDetachedActor" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/platform/event_transport_test.cpp" line="270" />
+  </testsuite>
+  <testsuite name="ExternalData" tests="3">
+    <testcase name="EmptyCursorIsNotQueryFailure" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/platform/external_services_test.cpp" line="7" />
+    <testcase name="ExplicitQueryResponses" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/platform/external_services_test.cpp" line="24" />
+    <testcase name="OriginalBucketKeepsFirstPut" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/platform/external_services_test.cpp" line="62" />
+  </testsuite>
+  <testsuite name="ExternalEvents" tests="2">
+    <testcase name="PublishPreservesEnvelopeAndFailure" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/platform/external_services_test.cpp" line="78" />
+    <testcase name="MissingProviderAndScopeCleanup" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/platform/external_services_test.cpp" line="102" />
+  </testsuite>
+  <testsuite name="NativePointerSubset" tests="3">
+    <testcase name="SharedOwnership" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/platform/native_pointer_test.cpp" line="15" />
+    <testcase name="WeakIdentityAndPromotion" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/platform/native_pointer_test.cpp" line="32" />
+    <testcase name="LocalCastRequiresImplementedInterface" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/platform/native_pointer_test.cpp" line="51" />
+  </testsuite>
+  <testsuite name="ResourceModel" tests="1">
+    <testcase name="FourIndependentResourcesDoNotImplyLegacyFourCardSupport" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/platform/resource_catalog_test.cpp" line="3" />
+  </testsuite>
+  <testsuite name="RilAdapter" tests="1">
+    <testcase name="FormalStatusResponse" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/platform/ril_adapter_test.cpp" line="6" />
+  </testsuite>
+</testsuites>

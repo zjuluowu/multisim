@@ -1,0 +1,32 @@
+RunnerLifetime.
+  NormalCompletionAndRepeatedStop
+  PendingTaskCancelledAndCapturedOwnerReleased
+  InFlightStopJoinsAndRejectsCallbackRepost
+  ConcurrentStopIsIdempotent
+  CallbackCannotSynchronouslyJoinItself
+RealCardLifetime.
+  MissingRilInitializationReleasesState
+  InitializedStateUnregistersRilAndReleases
+  PublicDetachReleasesRealStateFileAndRil
+RealSimPrimary.
+  InitializesRealManagerAndControllerWithoutRil
+  BDirectRilSuccessCommitsAfterReply
+  BDirectRilFailureKeepsPreviousPrimary
+  C1ThreePhasesWithStaleCheckResponseRejected
+  BRealTimeoutKeepsPreviousPrimary
+  C1CheckFailureRestoresParametersAndExhaustsFiveRetries
+  C0CoreToRealManagerAndController
+PairingReview.
+  AllThreeSlotsPublicDetach
+  PartialInitializationAndRepeatedUnregister
+  DestroyThenReinitializeCardGraph
+  UnrelatedRuntimeWorkerIsBaseline
+ShutdownContract.
+  ANormalPrimaryThenStop
+  BThreeSlotsThenStop
+  CPartialInitializationThenStop
+  DRepeatedStop
+  EInFlightSuccessCompletesBeforeRelease
+  FErrorReplyDuringStoppingKeepsOriginalResult
+  GDelayedDispatchAfterStop
+  HDestroyAndCreateNewGraph

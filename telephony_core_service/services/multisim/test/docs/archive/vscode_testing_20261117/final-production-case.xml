@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="1" failures="0" disabled="0" errors="0" time="0.196" timestamp="2026-11-17T20:28:26.939" name="AllTests">
+  <testsuite name="SimTest" tests="1" failures="0" disabled="0" skipped="0" errors="0" time="0.195" timestamp="2026-11-17T20:28:26.941">
+    <testcase name="DualSimPinUnlockAfterWrongPin" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/developer_copy_test.cpp" line="4" status="run" result="completed" time="0.195" timestamp="2026-11-17T20:28:26.941" classname="SimTest">
+      <properties>
+        <property name="real_instances_created" value="2"/>
+        <property name="observations" value="card-event:slot=0,present=1,state=READY,kind=1;slot=1,present=0,state=UNKNOWN,kind=0;&#x0A;card-event:slot=0,present=1,state=READY,kind=1;slot=1,present=1,state=LOCKED,kind=2;&#x0A;"/>
+        <property name="pending_responses" value="0"/>
+        <property name="external_calls" value="status:0;status:1;pin:1;status:1;pin:1;status:1;"/>
+        <property name="real_instances_destroyed" value="2"/>
+      </properties>
+    </testcase>
+  </testsuite>
+</testsuites>

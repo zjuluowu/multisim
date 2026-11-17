@@ -1,0 +1,35 @@
+{
+  "status": "PASS",
+  "scope": "debugger verification, not business/CI admission",
+  "command": [
+    "lldb",
+    "--batch",
+    "-o",
+    "settings set target.disable-aslr false",
+    "-o",
+    "breakpoint set -n OHOS::Telephony::SimStateManager::UnlockPin",
+    "-o",
+    "run",
+    "-o",
+    "thread backtrace",
+    "-o",
+    "frame variable slotId",
+    "-o",
+    "breakpoint disable 1",
+    "-o",
+    "continue",
+    "--",
+    "/mnt/e/github/multisim/.host-out/build/sim_test_host",
+    "--gtest_filter=SimTest.DualSimPinUnlockAfterWrongPin",
+    "--gtest_output=xml:/tmp/sim-editor-debug-final/debug-asueervn/case.xml"
+  ],
+  "debugger_exit_code": 0,
+  "expected_sut_exit_code": 0,
+  "primary_result": null,
+  "observed_slots": [
+    1
+  ],
+  "profile": "/tmp/sim-editor-debug-final/debug-asueervn/coverage-%p.profraw",
+  "binary_sha256": "dff6635ec60fdb6276ec443ddada75326253e22b39f2e40f2c563f704e818352",
+  "platform": "Linux-6.18.58.1-microsoft-standard-WSL2-x86_64-with-glibc2.39"
+}

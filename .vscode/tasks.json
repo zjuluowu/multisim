@@ -124,6 +124,22 @@
         "telephony_core_service/services/multisim/test/scripts/test.py",
         "build"
       ]
+    },
+    {
+      "label": "Prepare Testing Panel",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
+        "editor"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
     }
   ],
   "inputs": [

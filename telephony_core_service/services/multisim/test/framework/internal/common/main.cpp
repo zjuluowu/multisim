@@ -20,7 +20,15 @@ int main(int argc, char **argv)
     std::filesystem::create_directories(std::filesystem::path(profile).parent_path());
     setenv("LLVM_PROFILE_FILE", profile.c_str(), 1);
     if (__llvm_profile_set_filename) __llvm_profile_set_filename(std::getenv("LLVM_PROFILE_FILE"));
+    // Test adapters identify GoogleTest with --help before enumerating tests.
+    // InitGoogleMock prints help; this path must bypass the exact-case guard.
+    bool help = false;
+    for (int i = 1; i < argc; ++i) {
+        const std::string argument(argv[i]);
+        help = help || argument == "--help";
+    }
     testing::InitGoogleMock(&argc, argv);
+    if (help) return 0;
     const auto filter = testing::GTEST_FLAG(filter);
     if (!testing::GTEST_FLAG(list_tests) && filter.find_first_of("*?:") != std::string::npos) {
         std::cerr << "Run one exact GoogleTest per process; use scripts/test.py for groups.\n";

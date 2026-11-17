@@ -1,0 +1,68 @@
+SimTest.
+  DualSimPinUnlockAfterWrongPin
+  WrongUsimPinDoesNotBlockSimPeer
+  UnlockingSecondLockedCardLeavesFirstLocked
+  PukUnlockPublishesReadyAndRetainsNewPin
+  ExistingCardQueriesAgreeWithoutControlledMutation
+  LIFE_001
+  LIFE_002
+  PUK_001
+  DualSimPinUnlock
+SessionLifecycle.
+  INIT_001_SingleEnumeration
+  INIT_002_MissingRilThenRecreate
+  INIT_DUAL_002_ReversedEnumeration
+  CALLBACK_002_MalformedThenRecovery
+  CALLBACK_003_DroppedThenRecovery
+  PUK_002_WrongThenSuccessfulUnlock
+  REFRESH_001_ExplicitStatusQuery
+  RECREATE_001_DualCardReenumeration
+  RECREATE_002_ReplacementWhileStopped
+  DUAL_002_PinWhileOtherCardRemoved
+  DEFECT_002_ReadyReplyFromReplacedCard
+  DEFECT_003_GenericRilErrorIsNotWrongPassword
+  DEFECT_004_PinReplyFromReplacedCard
+  DEFECT_005_RefreshReturnContractConflict
+SimAdvancedTest.
+  PIN_001
+  PIN_002_CommandFailure
+  DUAL_001
+  RIL_001_DuplicateAndError
+  DEFECT_001_StaleReadyAfterRemoval
+PinMemoryContract.
+  PinSuccessUsesOriginalSlotIdentityAndCredential
+  PukSuccessUsesNewPinAndPinAlterOperation
+  FailedPinDoesNotPublishMemoryHook
+  RemovalUsesAbsentResponseIdentityWithoutCredential
+EventAdapter.
+  SharedTypeSafety
+  UniqueOwnership
+  WeakLifetimeAndMetadata
+ProductionEventTransport.
+  DeliversFormalEnvelope
+  CancelsPendingAndReapsWorker
+SchedulerBoundary.
+  RunningTaskCannotBeCancelled
+  ProductionGeneralTaskWaitsAndCleansUp
+  IdleWaitDrainsCascadedQueues
+  IdleWaitDoesNotIgnoreDelayedOrRunningWork
+  IdleWaitExposesTaskFailure
+  ReadyIdleLeavesFutureTimersAndDrainsCascades
+  ReadyIdleDoesNotAcceptRunningInitialization
+  DetachedCallableBarrierIncludesCaptureDestruction
+  JoinablePoolWorkerIsNotAnUnfinishedDetachedActor
+ExternalData.
+  EmptyCursorIsNotQueryFailure
+  ExplicitQueryResponses
+  OriginalBucketKeepsFirstPut
+ExternalEvents.
+  PublishPreservesEnvelopeAndFailure
+  MissingProviderAndScopeCleanup
+NativePointerSubset.
+  SharedOwnership
+  WeakIdentityAndPromotion
+  LocalCastRequiresImplementedInterface
+ResourceModel.
+  FourIndependentResourcesDoNotImplyLegacyFourCardSupport
+RilAdapter.
+  FormalStatusResponse

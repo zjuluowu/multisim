@@ -1,0 +1,8 @@
+Configurations/G2aReadOnlyQuery.
+  OriginalManagerAttachment/single  # GetParam() = 24-byte object <6C-29 2D-FD BC-5D 00-00 C6-6B 2D-FD BC-5D 00-00 00-00 00-00 00-00 00-00>
+  OriginalManagerAttachment/dual  # GetParam() = 24-byte object <73-29 2D-FD BC-5D 00-00 33-78 2D-FD BC-5D 00-00 00-00 00-00 00-00 00-00>
+  OriginalManagerAttachment/zero  # GetParam() = 24-byte object <78-29 2D-FD BC-5D 00-00 00-62 2D-FD BC-5D 00-00 00-00 00-00 00-00 00-00>
+  OriginalManagerAttachment/negative_atoi  # GetParam() = 24-byte object <7D-29 2D-FD BC-5D 00-00 8B-29 2D-FD BC-5D 00-00 00-00 00-00 00-00 00-00>
+  OriginalManagerAttachment/malformed_atoi  # GetParam() = 24-byte object <8E-29 2D-FD BC-5D 00-00 9D-29 2D-FD BC-5D 00-00 00-00 00-00 00-00 00-00>
+  OriginalManagerAttachment/vendor_override  # GetParam() = 24-byte object <A5-29 2D-FD BC-5D 00-00 33-78 2D-FD BC-5D 00-00 B5-29 2D-FD BC-5D 00-00>
+  OriginalManagerAttachment/vendor_result_propagation  # GetParam() = 24-byte object <B7-29 2D-FD BC-5D 00-00 33-78 2D-FD BC-5D 00-00 D1-29 2D-FD BC-5D 00-00>

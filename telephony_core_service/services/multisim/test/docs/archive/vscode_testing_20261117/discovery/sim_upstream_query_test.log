@@ -1,0 +1,8 @@
+Configurations/UpstreamRealSimCount.
+  OriginalCoreAndManager/single  # GetParam() = 24-byte object <39-F8 76-A4 4C-5F 00-00 2D-37 77-A4 4C-5F 00-00 00-00 00-00 00-00 00-00>
+  OriginalCoreAndManager/dual  # GetParam() = 24-byte object <40-F8 76-A4 4C-5F 00-00 5B-43 77-A4 4C-5F 00-00 00-00 00-00 00-00 00-00>
+  OriginalCoreAndManager/zero  # GetParam() = 24-byte object <45-F8 76-A4 4C-5F 00-00 8A-2D 77-A4 4C-5F 00-00 00-00 00-00 00-00 00-00>
+  OriginalCoreAndManager/negative_atoi  # GetParam() = 24-byte object <4A-F8 76-A4 4C-5F 00-00 58-F8 76-A4 4C-5F 00-00 00-00 00-00 00-00 00-00>
+  OriginalCoreAndManager/malformed_atoi  # GetParam() = 24-byte object <5B-F8 76-A4 4C-5F 00-00 6A-F8 76-A4 4C-5F 00-00 00-00 00-00 00-00 00-00>
+  OriginalCoreAndManager/vendor_override  # GetParam() = 24-byte object <72-F8 76-A4 4C-5F 00-00 5B-43 77-A4 4C-5F 00-00 82-F8 76-A4 4C-5F 00-00>
+  OriginalCoreAndManager/vendor_result_propagation  # GetParam() = 24-byte object <84-F8 76-A4 4C-5F 00-00 5B-43 77-A4 4C-5F 00-00 9E-F8 76-A4 4C-5F 00-00>

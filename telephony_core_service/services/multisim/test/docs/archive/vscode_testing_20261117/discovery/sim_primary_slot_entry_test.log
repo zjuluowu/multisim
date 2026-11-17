@@ -1,0 +1,16 @@
+PrimaryEntry.
+  NonSystemCallerPrecedesPermissionAndNullManager
+  PermissionDenialPrecedesNullManager
+  NullManagerPrecedesCapabilityRecheck
+  ChangedExternalSystemAppDecisionRejectsExtendedSlot
+  MissingCardStopsBeforeActiveAndPreference
+  InactiveCardStopsBeforePreferenceAndSwitch
+  ReadyCardWritesPreferenceBeforeDelegatingExactTarget
+  ManagerFailureReturnedUnchangedAfterPreferenceWrite
+  FailedPreferenceWriteStillDelegatesCurrentBehavior
+  PresenceQueryFailureWithFalseOutputReturnsNoCard
+  PresenceQueryFailureWithTrueOutputStillDelegates
+  StableSystemAppPassesExtendedSlotCapability
+CallerKinds/NativeOrShell.
+  SystemAppAndExtendedCapabilityUseRealTokenRules/0  # GetParam() = 1
+  SystemAppAndExtendedCapabilityUseRealTokenRules/1  # GetParam() = 2

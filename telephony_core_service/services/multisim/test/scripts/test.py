@@ -16,7 +16,7 @@ REAL = ['sim_primary_slot_real_test', 'sim_bootstrap_characterization']
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action', choices=['all','build','run','list','debug','technical','architecture','integrity','mutation','device'], nargs='?', default='all')
+    parser.add_argument('action', choices=['all','build','editor','run','list','debug','technical','architecture','integrity','mutation','device'], nargs='?', default='all')
     parser.add_argument('--out', type=Path, default=REPO/'.host-out')
     parser.add_argument('--output', type=Path, default=REPO/'.host-out/results')
     parser.add_argument('--target', nargs='+', choices=HOST+REAL)
@@ -53,20 +53,20 @@ def main():
         result['commands'].append(row);save();print(name+': '+row['status'],flush=True)
         return code
     try:
-        if args.action in ['all','build','run','list','debug']:
+        if args.action in ['all','build','editor','run','list','debug']:
             if run('case-discovery','update_case_sources.py'):return 1
         if args.action in ['all','technical','integrity','architecture']:
             if args.action in ['all','integrity']:run('integrity','check_test_integrity.py')
             if args.action in ['all','architecture']:run('architecture','run_architecture.py',['--with-gn','--migration','--output',session/'architecture'])
             if args.action in ['all','technical']:run('technical','technical.py',['--output',session/'technical'])
-        if args.action in ['all','build','run','list','debug']:
+        if args.action in ['all','build','editor','run','list','debug']:
             targets=args.target or (HOST+REAL)
             for target in targets:
                 build=['--out',args.out,'--target',target,'--jobs',args.jobs]
                 for flag,value in [('--gtest-root',args.gtest_root),('--openssl-root',args.openssl_root),('--runtime-root',args.runtime_root)]:
                     if value:build += [flag,value]
                 if run(target+'-build','build_replacement.py',build):continue
-                if args.action=='build':continue
+                if args.action in ['build','editor']:continue
                 if args.action in ['run','list','debug']:
                     from run_gtest import discover
                     selected,_=discover((args.out/'build'/target).resolve(),args.filter,dict(os.environ,LLVM_PROFILE_FILE=str(session/'discovery-%p.profraw'),LD_LIBRARY_PATH=str((args.out/'build').resolve())),60,allow_empty=True)
@@ -93,6 +93,8 @@ def main():
                 slices={'sim_test_host':'state','sim_primary_slot_real_test':'primary','sim_g2a_query_test':'query','sim_upstream_query_test':'upstream'}
                 if args.action=='all' and target in slices:
                     run(target+'-execution','audit_replacement_execution.py',['--slice',slices[target],'--binary',args.out/'build'/target,'--profiles',reports[0].parent,'--output',session/(target+'-execution')])
+        if args.action=='editor':
+            run('editor-discovery','check_editor.py',['--out',args.out,'--output',session/'editor'])
         if args.action=='all':
             if run('capability-probe-build','build_replacement.py',['--out',args.out,'--target','sim_capability_probe'])==0:
                 run('capability-negative-controls','check_capabilities.py',['--binary',args.out/'build/sim_capability_probe','--output',session/'capabilities'])

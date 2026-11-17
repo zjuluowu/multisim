@@ -1,0 +1,57 @@
+(lldb) target create "/mnt/e/github/multisim/.host-out/build/sim_test_host"
+Current executable set to '/mnt/e/github/multisim/.host-out/build/sim_test_host' (x86_64).
+(lldb) settings set -- target.run-args  "--gtest_filter=SimTest.DualSimPinUnlockAfterWrongPin" "--gtest_output=xml:/tmp/sim-editor-debug/debug-7ayss8ff/case.xml"
+(lldb) settings set target.disable-aslr false
+(lldb) breakpoint set -n OHOS::Telephony::SimStateManager::UnlockPin
+Breakpoint 1: where = sim_test_host`OHOS::Telephony::SimStateManager::UnlockPin(int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char>> const&, OHOS::Telephony::LockStatusResponse&) + 17 at sim_state_manager.cpp:198:1, address = 0x0000000000149e91
+(lldb) run
+[0;33mNote: Google Test filter = SimTest.DualSimPinUnlockAfterWrongPin
+[m[0;32m[==========] [mRunning 1 test from 1 test suite.
+[0;32m[----------] [mGlobal test environment set-up.
+[0;32m[----------] [m1 test from SimTest
+[0;32m[ RUN      ] [mSimTest.DualSimPinUnlockAfterWrongPin
+Process 49 launched: '/mnt/e/github/multisim/.host-out/build/sim_test_host' (x86_64)
+Process 49 stopped
+* thread #1, name = 'sim_test_host', stop reason = breakpoint 1.1
+    frame #0: 0x000058dae492ce91 sim_test_host`OHOS::Telephony::SimStateManager::UnlockPin(this=0x000058daef748fb0, slotId=1, pin="0000", response=0x00007ffff11f46b8) at sim_state_manager.cpp:198:1
+   195 	}
+   196 	
+   197 	int32_t SimStateManager::UnlockPin(int32_t slotId, const std::string &pin, LockStatusResponse &response)
+-> 198 	{
+    	^
+   199 	    if (simStateHandle_ == nullptr) {
+   200 	        TELEPHONY_LOGE("simStateHandle_ is nullptr");
+   201 	        return TELEPHONY_ERR_LOCAL_PTR_NULL;
+(lldb) thread backtrace
+* thread #1, name = 'sim_test_host', stop reason = breakpoint 1.1
+  * frame #0: 0x000058dae492ce91 sim_test_host`OHOS::Telephony::SimStateManager::UnlockPin(this=0x000058daef748fb0, slotId=1, pin="0000", response=0x00007ffff11f46b8) at sim_state_manager.cpp:198:1
+    frame #1: 0x000058dae491f733 sim_test_host`SimGuard::SimTest::UnlockPin(SimGuard::Card const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char>> const&) [inlined] SimGuard::SimTest::Environment::UnlockPin(this=<unavailable>, slot=<unavailable>, pin=<unavailable>) at sim_test.cpp:239:40
+    frame #2: 0x000058dae491f6fa sim_test_host`SimGuard::SimTest::UnlockPin(this=0x000058daef739990, card=0x00007ffff11f4740, pin=<unavailable>) at sim_test.cpp:332:33
+    frame #3: 0x000058dae480f2ea sim_test_host`SimGuard::SimTest_DualSimPinUnlockAfterWrongPin_Test::TestBody(this=0x000058daef739990) at developer_copy_test.cpp:9:5
+    frame #4: 0x000058dae494feb5 sim_test_host`void testing::internal::HandleExceptionsInMethodIfSupported<testing::Test, void>(testing::Test*, void (testing::Test::*)(), char const*) [inlined] void testing::internal::HandleSehExceptionsInMethodIfSupported<testing::Test, void>(object=0x000058daef739990, method=0x00000000000000000000000000000021, location="the test body") at gtest.cc:2638:10
+    frame #5: 0x000058dae494fea6 sim_test_host`void testing::internal::HandleExceptionsInMethodIfSupported<testing::Test, void>(object=0x000058daef739990, method=0x00000000000000000000000000000021, location="the test body") at gtest.cc:2674:14
+    frame #6: 0x000058dae495ed0e sim_test_host`testing::internal::UnitTestImpl::RunAllTests() [inlined] testing::Test::Run(this=0x000058daef739990) at gtest.cc:2713:5
+    frame #7: 0x000058dae495eb63 sim_test_host`testing::internal::UnitTestImpl::RunAllTests() [inlined] testing::TestInfo::Run(this=0x000058daef72e340) at gtest.cc:2859:11
+    frame #8: 0x000058dae495ea04 sim_test_host`testing::internal::UnitTestImpl::RunAllTests() [inlined] testing::TestSuite::Run(this=0x000058daef72e870) at gtest.cc:3037:30
+    frame #9: 0x000058dae495e629 sim_test_host`testing::internal::UnitTestImpl::RunAllTests(this=0x000058daef72e490) at gtest.cc:5967:44
+    frame #10: 0x000058dae4938a8e sim_test_host`main [inlined] bool testing::internal::HandleSehExceptionsInMethodIfSupported<testing::internal::UnitTestImpl, bool>(object=0x000058daef72e490, method=0x00000000000000000000000000000000, location=<unavailable>) at gtest.cc:2638:10
+    frame #11: 0x000058dae4938a86 sim_test_host`main [inlined] bool testing::internal::HandleExceptionsInMethodIfSupported<testing::internal::UnitTestImpl, bool>(object=0x000058daef72e490, method=0x00000000000000000000000000000000, location=<unavailable>) at gtest.cc:2674:14
+    frame #12: 0x000058dae4938a67 sim_test_host`main [inlined] testing::UnitTest::Run(this=<unavailable>) at gtest.cc:5546:10
+    frame #13: 0x000058dae493899e sim_test_host`main [inlined] RUN_ALL_TESTS() at gtest.h:2334:73
+    frame #14: 0x000058dae493899e sim_test_host`main(argc=<unavailable>, argv=<unavailable>) at main.cpp:39:12
+    frame #15: 0x00007ddbf422a1ca libc.so.6`__libc_start_call_main(main=(sim_test_host`main at main.cpp:10), argc=3, argv=0x00007ffff11f4ef8) at libc_start_call_main.h:58:16
+    frame #16: 0x00007ddbf422a28b libc.so.6`__libc_start_main_impl(main=(sim_test_host`main at main.cpp:10), argc=3, argv=0x00007ffff11f4ef8, init=<unavailable>, fini=<unavailable>, rtld_fini=<unavailable>, stack_end=0x00007ffff11f4ee8) at libc-start.c:360:3
+    frame #17: 0x000058dae480eeb5 sim_test_host`_start + 37
+(lldb) frame variable slotId
+(int32_t) slotId = 1
+(lldb) breakpoint disable 1
+1 breakpoints disabled.
+(lldb) continue
+[0;32m[       OK ] [mSimTest.DualSimPinUnlockAfterWrongPin (328 ms)
+[0;32m[----------] [m1 test from SimTest (328 ms total)
+
+[0;32m[----------] [mGlobal test environment tear-down
+[0;32m[==========] [m1 test from 1 test suite ran. (330 ms total)
+[0;32m[  PASSED  ] [m1 test.
+Process 49 resuming
+Process 49 exited with status = 0 (0x00000000)

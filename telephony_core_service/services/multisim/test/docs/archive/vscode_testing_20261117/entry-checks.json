@@ -1,0 +1,24 @@
+[
+  {
+    "args": [
+      "--help"
+    ],
+    "exit_code": 0,
+    "expected": 0,
+    "stderr": ""
+  },
+  {
+    "args": [],
+    "exit_code": 2,
+    "expected": 2,
+    "stderr": "Run one exact GoogleTest per process; use scripts/test.py for groups.\n"
+  },
+  {
+    "args": [
+      "--gtest_filter=Missing.Case"
+    ],
+    "exit_code": 2,
+    "expected": 2,
+    "stderr": "Selected test does not exist\n"
+  }
+]

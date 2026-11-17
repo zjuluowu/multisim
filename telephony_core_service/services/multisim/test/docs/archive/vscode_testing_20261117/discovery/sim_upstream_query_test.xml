@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="7" name="AllTests">
+  <testsuite name="Configurations/UpstreamRealSimCount" tests="7">
+    <testcase name="OriginalCoreAndManager/single" value_param="24-byte object &lt;39-F8 76-A4 4C-5F 00-00 2D-37 77-A4 4C-5F 00-00 00-00 00-00 00-00 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_upstream_test.cpp" line="11" />
+    <testcase name="OriginalCoreAndManager/dual" value_param="24-byte object &lt;40-F8 76-A4 4C-5F 00-00 5B-43 77-A4 4C-5F 00-00 00-00 00-00 00-00 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_upstream_test.cpp" line="11" />
+    <testcase name="OriginalCoreAndManager/zero" value_param="24-byte object &lt;45-F8 76-A4 4C-5F 00-00 8A-2D 77-A4 4C-5F 00-00 00-00 00-00 00-00 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_upstream_test.cpp" line="11" />
+    <testcase name="OriginalCoreAndManager/negative_atoi" value_param="24-byte object &lt;4A-F8 76-A4 4C-5F 00-00 58-F8 76-A4 4C-5F 00-00 00-00 00-00 00-00 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_upstream_test.cpp" line="11" />
+    <testcase name="OriginalCoreAndManager/malformed_atoi" value_param="24-byte object &lt;5B-F8 76-A4 4C-5F 00-00 6A-F8 76-A4 4C-5F 00-00 00-00 00-00 00-00 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_upstream_test.cpp" line="11" />
+    <testcase name="OriginalCoreAndManager/vendor_override" value_param="24-byte object &lt;72-F8 76-A4 4C-5F 00-00 5B-43 77-A4 4C-5F 00-00 82-F8 76-A4 4C-5F 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_upstream_test.cpp" line="11" />
+    <testcase name="OriginalCoreAndManager/vendor_result_propagation" value_param="24-byte object &lt;84-F8 76-A4 4C-5F 00-00 5B-43 77-A4 4C-5F 00-00 9E-F8 76-A4 4C-5F 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_upstream_test.cpp" line="11" />
+  </testsuite>
+</testsuites>

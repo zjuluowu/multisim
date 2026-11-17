@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="1" name="AllTests">
+  <testsuite name="SimCharacterization" tests="1">
+    <testcase name="BeforeInitialization" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/bootstrap_test.cpp" line="3" />
+  </testsuite>
+</testsuites>

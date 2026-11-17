@@ -218,3 +218,5 @@ Host用显式源清单，update_case_sources自动生成，新建顶层cases/*.c
 ## 工作区保护事件
 
 本批一次手工LLDB调用漏设LLVM_PROFILE_FILE，覆盖了已有未跟踪default.profraw。原摘要bbb8d8d54bc9586adf968048bcdf7f08cf72cd1321d4766bafe30b8814ef5f1e；发现时摘要d35445fd920ef489cfb908b6968c9d3dea874688ea39daa53328c9f76be2d675。已检查475份可访问profraw未找到原摘要匹配副本，不能声称原字节已恢复。该文件不纳入提交。新执行器、VS Code和后续调试显式指定独立profile输出。
+
+VS Code Testing 面板准备与源码定位检查统一使用 `test.py editor`；操作见 [Host 使用说明](Host_Usage.md#testing-面板源码定位和断点)。该入口只构建和枚举，不改变业务断言或既有失败口径。

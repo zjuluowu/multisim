@@ -13,12 +13,12 @@
     {
       "pattern": ".host-out/build/{sim_test_host,sim_component_test,sim_primary_slot_entry_test,sim_g2a_query_test,sim_upstream_query_test}",
       "cwd": "${workspaceFolder}/.host-out",
-      "env": {
-        "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/profiles/testing-%p.profraw",
-        "LD_LIBRARY_PATH": "${workspaceFolder}/.host-out/build"
-      },
       "maxTestsPerExecutable": 1,
       "parallelizationLimit": 1,
+      "env": {
+        "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/testmate-%p.profraw",
+        "LD_LIBRARY_PATH": "${workspaceFolder}/.host-out/build"
+      },
       "runTask": {
         "before": [
           "Build Host"
@@ -28,17 +28,17 @@
     {
       "pattern": ".host-out/build/{sim_primary_slot_real_test,sim_bootstrap_characterization}",
       "cwd": "${workspaceFolder}/.host-out",
-      "env": {
-        "SIM_HOST_BOOT_SLOT_COUNT": "2",
-        "SIM028_INIT_MODEL": "single-active",
-        "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/profiles/primary-%p.profraw",
-        "LD_LIBRARY_PATH": "${workspaceFolder}/.host-out/build"
-      },
       "maxTestsPerExecutable": 1,
       "parallelizationLimit": 1,
+      "env": {
+        "SIM_HOST_BOOT_SLOT_COUNT": "2",
+        "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/real-testmate-%p.profraw",
+        "LD_LIBRARY_PATH": "${workspaceFolder}/.host-out/build",
+        "SIM028_INIT_MODEL": "single-active"
+      },
       "runTask": {
         "before": [
-          "Build Real SIM Host"
+          "Build Host"
         ]
       }
     }
@@ -50,5 +50,8 @@
     "args": "${argsArray}",
     "cwd": "${cwd}",
     "env": "${envObj}"
-  }
+  },
+  "testMate.cpp.discovery.loadOnStartup": true,
+  "testMate.cpp.discovery.testListCaching": false,
+  "testMate.cpp.discovery.runtimeLimit": 30
 }
