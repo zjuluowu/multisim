@@ -1,5 +1,7 @@
 # 多 SIM 重构执行状态
 
+最新文档维护：2026-11-17审视并合入本地主设计修订稿(5)，新增跨形态约束及证据边界见§41；不改变生产装配或产品验收。
+
 当前新增任务：测试API架构收敛及当前可执行Host验收完成，结果见§40；产品原生编译/设备及VS Code GUI仍阻塞或未执行，不能作为全平台验收通过。
 
 当前任务（2026-11-16）：按用户明确授权撤回原生产重构接入，并同步GitCode主仓master@43ac8ae7df5b9c17c4efb3433415693d925b98c7；当前生产不再接入G2a Query。以下G2a生产附着结论仅为历史检查点，当前测试参考与验证见§37。
@@ -1011,3 +1013,11 @@ default.profraw原字节仍未恢复（原SHA见§38），本轮保持d35445fd92
 Device只读路径仅检查查询权限/真实SA/端点，不要求HIL/PIN/双卡；变更才按需预留、白名单、备份及恢复，缺能力从辅助函数终止用例并清理，BLOCKED/UNSUPPORTED不作PASS。原生ohos_unittest八目标及同源/本地API静态检查PASS；现有产品目录无build/test.gni及匹配组件挂载，缺hb/hdc/设备/HIL，原生编译NOT_RUN、运行调度BLOCKED；SDK/GTest异常ABI和受控POSIX材质未作产品认证。
 
 生产C++及正式生产GN未改，上游1066文件逐字节验证PASS。default.profraw当前SHA d35445fd920ef489cfb908b6968c9d3dea874688ea39daa53328c9f76be2d675保持，原bbb8…字节仍未恢复。所有入口隔离输出。源码依赖审计、逐项映射、失败原文、变异/调试及最终摘要见[Full_Replacement.md](../services/multisim/test/docs/Full_Replacement.md)与仓内api_convergence_20261117索引。依持续授权逐文件提交、常规推送origin/main并核实；本节不改变产品和生产迁移准入。
+
+### 41. 主设计修订稿(5)审视合入（2026-11-17）
+
+输入本地/远端main@6ccf0a7b4c98638ee453e0096f22d4ce353ee636，fetch恢复检查CHECKPOINT_VERIFIED。用户要求审视telephony_core_service/SIM_Target_Architecture_Design_v1.2 (5).md并合入唯一主设计；原稿SHA256为857459c226f8519110cd2656df2e19cfbc94606d940b27db08c4eae3f6e3b15e，保留原字节及未跟踪状态。default.profraw及既存telephony_core_service.lnk未改、未暂存。
+
+接受端点/会话/绑定分离、动态失联/重连因果链、域外父开关与Profile任务分层编排、共享参数逐key唯一Owner、能力/可达/可见/角色资格分离及受影响切片迁移矩阵；保持T/A/O/R/C/I/H、五组目录、原公开ABI/SA/schema与draft/pending。三份专项报告在当前仓库不可定位，撤回稿中“本轮六篇交叉核验”的继承性表述；同进程部署、eSIM→vSIM级联、dmodem检测窗口/来源代次和远端角色政策均作为待证输入。将矩阵中的旧Scenario/Contract/Oracle执行依赖修正为当前TEST_F/test.py及原始Golden证据；明确G2a当前仅作testonly参考，旧接入记录按历史解释。逐项裁决、来源SHA及14个增补小节在主设计§1.2.1及相关章节，不另建平行设计文档。
+
+本轮定点读取现有EsimManager::SwitchToProfile、SlotCatalog和sim_identity类型，核对双结果/偏好写入与静态目录边界；没有重新认证全部F01～F51或匹配外仓。文档本地链接全部可定位、围栏配对、原4个显式锚点保留、14个新增小节存在、git diff --check通过。运行python3 -B telephony_core_service/services/multisim/test/scripts/run_architecture.py --output /tmp/sim-design-v5-architecture：结构88文件/157 include/25 targets、17项结构负控、开闭源声明与5项编译负控、topology/resource/assignment/runtime_protocol四组纯规则PASS；无产品构建/设备/业务回归，不据此宣称跨形态矩阵已执行。只发布主设计与本执行状态，不修改生产或测试代码；持续授权下逐文件提交并常规推送origin/main，核对远端SHA。
