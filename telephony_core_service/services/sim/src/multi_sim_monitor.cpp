@@ -163,41 +163,83 @@ void MultiSimMonitor::ProcessEventEx(const AppExecFwk::InnerEvent::Pointer &even
     }
 }
 
-static void RebootDetectCallback(const char *key, const char *value, void *context)
+// WatchParameter carries an opaque context. A never-reused token lets a
+// callback already copied by the service safely discover that its owner stopped.
+struct SimRebootWatcher {
+    uintptr_t token;
+    std::weak_ptr<MultiSimMonitor> owner;
+    std::shared_ptr<TelLifecycle> component;
+    std::shared_ptr<TelLifecycle> fence = std::make_shared<TelLifecycle>();
+    bool registered[2] = {false, false};
+};
+namespace {
+ffrt::mutex rebootWatchersMutex;
+std::map<uintptr_t, std::weak_ptr<SimRebootWatcher>> rebootWatchers;
+std::atomic<uintptr_t> nextRebootWatcher{1};
+void RebootDetectCallback(const char *, const char *, void *context)
 {
-    TELEPHONY_LOGI("reboot detect, key = %{public}s, value = %{public}s", key, value);
-    MultiSimMonitor *service = reinterpret_cast<MultiSimMonitor *>(context);
-    service->CheckSimPresentWhenReboot();
+    std::shared_ptr<SimRebootWatcher> watcher;
+    {
+        std::lock_guard<ffrt::mutex> lock(rebootWatchersMutex);
+        auto it = rebootWatchers.find(reinterpret_cast<uintptr_t>(context));
+        if (it != rebootWatchers.end()) watcher = it->second.lock();
+    }
+    if (!watcher) return;
+    TelLifecycle::Lease own(watcher->fence, TelLifecycle::Kind::Callback); if (!own) return;
+    TelLifecycle::Lease component(watcher->component, TelLifecycle::Kind::Callback); if (!component) return;
+    if (auto owner = watcher->owner.lock()) owner->CheckSimPresentWhenReboot();
 }
-
+}
 void MultiSimMonitor::RegisterRebootDetectCallback()
 {
-    TELEPHONY_LOGI("RegisterRebootDetectCallback");
+    TelLifecycle::Lease admission(Lifecycle(), TelLifecycle::Kind::Registration); if (!admission) return;
+    if (!rebootWatcher_) {
+        rebootWatcher_ = std::make_shared<SimRebootWatcher>();
+        rebootWatcher_->token = nextRebootWatcher.fetch_add(1);
+        rebootWatcher_->owner = std::static_pointer_cast<MultiSimMonitor>(shared_from_this());
+        rebootWatcher_->component = Lifecycle();
+        std::lock_guard<ffrt::mutex> lock(rebootWatchersMutex);
+        rebootWatchers.emplace(rebootWatcher_->token, rebootWatcher_);
+    }
     parameterChgPtr_ = RebootDetectCallback;
-    int32_t ret0 = WatchParameter((PROP_REBOOT_DETECT_SIM + std::to_string(SIM_SLOT_0)).c_str(),
-        parameterChgPtr_, this);
-    int32_t ret1 = WatchParameter((PROP_REBOOT_DETECT_SIM + std::to_string(SIM_SLOT_1)).c_str(),
-        parameterChgPtr_, this);
-    if (ret0 != 0 || ret1 != 0) {
-        TELEPHONY_LOGE("reboot detect WatchParameter fail");
-        return;
+    for (int slot = 0; slot < SLOT_COUNT; ++slot) {
+        if (!rebootWatcher_->registered[slot]) {
+            int result = WatchParameter((PROP_REBOOT_DETECT_SIM + std::to_string(slot)).c_str(),
+                parameterChgPtr_, reinterpret_cast<void *>(rebootWatcher_->token));
+            rebootWatcher_->registered[slot] = result == 0;
+        }
     }
 }
-
-void MultiSimMonitor::UnregisterRebootDetectCallback()
+bool MultiSimMonitor::StopRebootWatcher()
 {
-    TELEPHONY_LOGI("UnregisterRebootDetectCallback");
-    if (parameterChgPtr_ != nullptr) {
-        RemoveParameterWatcher((PROP_REBOOT_DETECT_SIM + std::to_string(SIM_SLOT_0)).c_str(),
-            parameterChgPtr_, this);
-        RemoveParameterWatcher((PROP_REBOOT_DETECT_SIM + std::to_string(SIM_SLOT_1)).c_str(),
-            parameterChgPtr_, this);
+    if (!rebootWatcher_) return true;
+    auto watcher = rebootWatcher_;
+    auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(75);
+    if (!watcher->fence->BeginStop(deadline)) return false;
+    if (!watcher->fence->SealWhenIdle([] {return true;}, deadline)) {
+        watcher->fence->FinishStop(false); return false;
     }
+    bool success = true;
+    for (int slot = 0; slot < SLOT_COUNT; ++slot) {
+        if (!watcher->registered[slot]) continue;
+        int result = RemoveParameterWatcher((PROP_REBOOT_DETECT_SIM + std::to_string(slot)).c_str(),
+            parameterChgPtr_, reinterpret_cast<void *>(watcher->token));
+        if (result == 0) watcher->registered[slot] = false;
+        else success = false;
+    }
+    watcher->fence->FinishStop(success);
+    if (!success) return false; // retain the closed context for an explicit retry
+    {
+        std::lock_guard<ffrt::mutex> lock(rebootWatchersMutex);
+        rebootWatchers.erase(watcher->token);
+    }
+    rebootWatcher_.reset(); parameterChgPtr_ = nullptr; return true;
 }
+void MultiSimMonitor::UnregisterRebootDetectCallback() { (void)StopRebootWatcher(); }
 
 void MultiSimMonitor::CheckOpcNeedUpdata(const bool isDataShareError)
 {
-    TelFFRTUtils::Submit([=]() {
+    Lifecycle()->Submit(shared_from_this(),[=]() {
         bool isOpcVersionUpdated = CheckUpdateOpcVersion() == TELEPHONY_SUCCESS;
         if (isOpcVersionUpdated) {
             OperatorFileParser::ClearFilesCache();
@@ -381,6 +423,7 @@ void MultiSimMonitor::RefreshData(int32_t slotId)
 void MultiSimMonitor::RegisterCoreNotify(
     int32_t slotId, const std::shared_ptr<AppExecFwk::EventHandler> &handler, int what)
 {
+    if(Lifecycle()->GetState()!=TelLifecycle::State::Running)return;
     if (observerHandler_ == nullptr || handler == nullptr) {
         TELEPHONY_LOGE("observerHandler_ or handler is nullptr");
         return;
@@ -393,6 +436,14 @@ void MultiSimMonitor::RegisterCoreNotify(
     if (isSimAccountLoaded_[slotId] || IsVSimSlotId(slotId)) {
         TELEPHONY_LOGI("notify slotId:%{public}d sim account loaded", slotId);
         TelEventHandler::SendTelEvent(handler, RadioEvent::RADIO_SIM_ACCOUNT_LOADED, slotId, 0);
+    }
+}
+
+void MultiSimMonitor::UnRegisterCoreNotify(
+    const std::shared_ptr<AppExecFwk::EventHandler> &handler, int what)
+{
+    if (observerHandler_ != nullptr) {
+        observerHandler_->Remove(what, handler);
     }
 }
 
@@ -431,6 +482,8 @@ void MultiSimMonitor::UnSubscribeListeners()
 
 void MultiSimMonitor::InitListener()
 {
+    TelLifecycle::Lease admission(Lifecycle(),TelLifecycle::Kind::Registration);if(!admission)return;
+    if(Lifecycle()->GetState()!=TelLifecycle::State::Running)return;
     auto samgrProxy = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     statusChangeListener_ = new (std::nothrow) SystemAbilityStatusChangeListener(shared_from_this());
     if (samgrProxy == nullptr || statusChangeListener_ == nullptr) {
@@ -452,6 +505,8 @@ void MultiSimMonitor::SystemAbilityStatusChangeListener::OnAddSystemAbility(int3
         return;
     }
 
+    auto monitor=std::static_pointer_cast<MultiSimMonitor>(handler);
+    TelLifecycle::Lease callback(monitor->Lifecycle(),TelLifecycle::Kind::Callback);if(!callback)return;
     switch (systemAbilityId) {
         case COMMON_EVENT_SERVICE_ID:
             TELEPHONY_LOGI("COMMON_EVENT_SERVICE_ID is running");
@@ -470,6 +525,9 @@ void MultiSimMonitor::SystemAbilityStatusChangeListener::OnAddSystemAbility(int3
 void MultiSimMonitor::SystemAbilityStatusChangeListener::OnRemoveSystemAbility(int32_t systemAbilityId,
     const std::string &deviceId)
 {
+    auto target=handler_.lock();if(!target)return;
+    auto monitor=std::static_pointer_cast<MultiSimMonitor>(target);
+    TelLifecycle::Lease callback(monitor->Lifecycle(),TelLifecycle::Kind::Callback);if(!callback)return;
     switch (systemAbilityId) {
         case COMMON_EVENT_SERVICE_ID: {
             TELEPHONY_LOGI("COMMON_EVENT_SERVICE_ID stopped");
@@ -489,6 +547,7 @@ void MultiSimMonitor::SystemAbilityStatusChangeListener::OnRemoveSystemAbility(i
 
 void MultiSimMonitor::SubscribeDataShareReady()
 {
+    TelLifecycle::Lease admission(Lifecycle(),TelLifecycle::Kind::Registration);if(!admission)return;
     if (dataShareSubscriber_ != nullptr) {
         TELEPHONY_LOGW("datashare ready has Subscribed");
         return;
@@ -501,6 +560,7 @@ void MultiSimMonitor::SubscribeDataShareReady()
 
 void MultiSimMonitor::SubscribeUserSwitch()
 {
+    TelLifecycle::Lease admission(Lifecycle(),TelLifecycle::Kind::Registration);if(!admission)return;
     if (userSwitchSubscriber_ != nullptr) {
         TELEPHONY_LOGW("UserSwitch has Subscribed");
         return;
@@ -512,6 +572,7 @@ void MultiSimMonitor::SubscribeUserSwitch()
 
 void MultiSimMonitor::OnDataShareReady(int32_t userId)
 {
+    TelLifecycle::Lease callback(Lifecycle(), TelLifecycle::Kind::Callback); if (!callback) return;
     isDataShareReady_ = true;
     if (lastUserId_ != -1 || userId == ACTIVE_USER_ID || userId == MAINTENANCE_USER_ID) {
         CheckDataShareError();
@@ -583,6 +644,7 @@ void MultiSimMonitor::UpdateAllSimData(int32_t userId)
 
 void MultiSimMonitor::OnUserSwitched(int32_t userId)
 {
+    TelLifecycle::Lease callback(Lifecycle(), TelLifecycle::Kind::Callback); if (!callback) return;
     if ((userId == ACTIVE_USER_ID || userId == MAINTENANCE_USER_ID) && isDataShareReady_) {
         CheckDataShareError();
         CheckSimNotifyRegister();
@@ -595,6 +657,7 @@ void MultiSimMonitor::OnUserSwitched(int32_t userId)
 
 void MultiSimMonitor::CheckSimPresentWhenReboot()
 {
+    TelLifecycle::Lease callback(Lifecycle(), TelLifecycle::Kind::Callback); if (!callback) return;
     for (int32_t slotId = 0; slotId < SLOT_COUNT; slotId++) {
         if (OHOS::system::GetParameter(PROP_REBOOT_DETECT_SIM + std::to_string(slotId), "0") == "1" &&
             !hasCheckedSimPresent_[slotId]) {
@@ -700,6 +763,7 @@ int32_t MultiSimMonitor::RegisterSimAccountCallback(
 
 int32_t MultiSimMonitor::UnregisterSimAccountCallback(const sptr<SimAccountCallback> &callback)
 {
+    TelLifecycle::Lease callbackAdmission(Lifecycle(),TelLifecycle::Kind::Callback);if(!callbackAdmission){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
     if (callback == nullptr) {
         TELEPHONY_LOGE("callback is nullptr");
         return TELEPHONY_ERR_ARGUMENT_NULL;
@@ -735,6 +799,7 @@ std::list<MultiSimMonitor::SimAccountCallbackRecord> MultiSimMonitor::GetSimAcco
 
 void MultiSimMonitor::NotifySimAccountChanged()
 {
+    TelLifecycle::Lease callbackAdmission(Lifecycle(),TelLifecycle::Kind::Callback);if(!callbackAdmission){return;}
     std::list<SimAccountCallbackRecord> CallbackRecord = GetSimAccountCallbackRecords();
     TELEPHONY_LOGD("CallbackRecord size is %{public}zu", CallbackRecord.size());
     for (auto iter : CallbackRecord) {
@@ -747,6 +812,7 @@ void MultiSimMonitor::NotifySimAccountChanged()
 
 void MultiSimMonitor::RegisterSimNotify()
 {
+    if(Lifecycle()->GetState()!=TelLifecycle::State::Running)return;
     std::shared_lock<ffrt::shared_mutex> lock(forgetAllDataDoneMutex_);
     if (isForgetAllDataDone_) {
         TELEPHONY_LOGI("RegisterSimNotify has done");
@@ -786,6 +852,7 @@ int32_t MultiSimMonitor::ResetSimLoadAccount(int32_t slotId)
 
 void MultiSimMonitor::RegisterSimNotify(int32_t slotId)
 {
+    if(Lifecycle()->GetState()!=TelLifecycle::State::Running)return;
     if (!IsValidSlotId(slotId)) {
         TELEPHONY_LOGE("RegisterSimNotify slotId is invalid");
         return;
@@ -844,3 +911,12 @@ void MultiSimMonitor::NotifySimActiveStateChanged(int32_t slotId, bool enable)
 } // namespace Telephony
 } // namespace OHOS
 // LOCV_EXCL_STOP
+
+namespace OHOS { namespace Telephony {
+bool MultiSimMonitor::Shutdown() {return shutdown_.Run([this] {
+    if(!StopEvents())return false;
+    UnRegisterSimNotify();if(!StopRebootWatcher())return false;UnSubscribeListeners();
+    if(observerHandler_)observerHandler_->RemoveAll();listSimAccountCallbackRecord_.clear();
+    simFileManager_.clear();simStateManager_.clear();controller_.reset();return true;
+ });}
+} }

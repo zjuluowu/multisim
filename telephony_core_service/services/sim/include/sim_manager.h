@@ -23,6 +23,7 @@
 #include "i_operator_config_hisysevent.h"
 #include "multi_sim_controller.h"
 #include "multi_sim_monitor.h"
+#include "tel_lifecycle.h"
 #include "sim_state_manager.h"
 #include "sim_file_manager.h"
 #include "sim_sms_manager.h"
@@ -42,6 +43,10 @@ const int32_t SIM_IO_DATA_P3_OFFSET = 4;
 const int32_t SIM_IO_HEX_SIGN = 16;
 class SimManager : public std::enable_shared_from_this<SimManager>, public ISimManager {
 public:
+    bool Stop();
+    bool IsStopping() const;
+    bool IsStopped() const;
+
     explicit SimManager(std::shared_ptr<ITelRilManager> telRilManager);
     virtual ~SimManager();
     // Init
@@ -193,6 +198,7 @@ public:
 
     inline void SetMatchSimStateTracker(int8_t matchSimStateTracker, int32_t slotId) override
     {
+        TelLifecycle::Lease admission(lifecycle_, TelLifecycle::Kind::Business); if (!admission) return;
         if (operatorConfigHisysevent_ != nullptr) {
             operatorConfigHisysevent_->SetMatchSimStateTracker(matchSimStateTracker, slotId);
         }
@@ -224,6 +230,9 @@ private:
     int32_t slotCount_ = SLOT_ID_ZERO;
     int32_t dsdsMode_ = DSDS_MODE_V2;
     ffrt::shared_mutex mtx_;
+private:
+    std::shared_ptr<TelLifecycle> lifecycle_=std::make_shared<TelLifecycle>();
+
 };
 } // namespace Telephony
 } // namespace OHOS

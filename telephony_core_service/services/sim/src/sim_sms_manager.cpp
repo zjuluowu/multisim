@@ -111,3 +111,10 @@ std::vector<std::string> SimSmsManager::ObtainAllSmsOfIcc()
 }
 } // namespace Telephony
 } // namespace OHOS
+
+namespace OHOS { namespace Telephony {
+bool SimSmsManager::Shutdown() {return shutdown_.Run([this] {
+    if(smsController_ && !smsController_->StopEvents())return false;
+    smsController_.reset();simFileManager_.reset();stateManager_.reset();telRilManager_.reset();return true;
+ });}
+} }

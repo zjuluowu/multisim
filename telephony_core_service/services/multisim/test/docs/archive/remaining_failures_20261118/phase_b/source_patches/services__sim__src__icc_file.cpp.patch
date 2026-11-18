@@ -1,0 +1,15 @@
+--- a/services/sim/src/icc_file.cpp
++++ b/services/sim/src/icc_file.cpp
+@@ -84,0 +85 @@
++    if(Lifecycle()->GetState()!=TelLifecycle::State::Running)return;
+@@ -522,0 +524 @@
++    if(Lifecycle()->GetState()!=TelLifecycle::State::Running)return;
+@@ -1010,0 +1013,8 @@
++
++namespace OHOS { namespace Telephony {
++bool IccFile::Shutdown() {return shutdown_.Run([this] {
++    if(!StopEvents())return false;UnInit();
++    for(auto *p:{filesFetchedObser_.get(),lockedFilesFetchedObser_.get(),networkLockedFilesFetchedObser_.get(),recordsEventsObser_.get(),networkSelectionModeAutomaticObser_.get(),spnUpdatedObser_.get(),recordsOverrideObser_.get()})if(p)p->RemoveAll();
++    fileController_.reset();diallingNumberHandler_.reset();stateManager_.reset();telRilManager_.reset();return true;
++ });}
++} }

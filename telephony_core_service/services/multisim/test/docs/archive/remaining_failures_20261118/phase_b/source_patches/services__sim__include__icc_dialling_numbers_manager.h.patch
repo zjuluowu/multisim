@@ -1,0 +1,9 @@
+--- a/services/sim/include/icc_dialling_numbers_manager.h
++++ b/services/sim/include/icc_dialling_numbers_manager.h
+@@ -39,0 +40,2 @@
++    bool Shutdown();
++
+@@ -86,0 +89,3 @@
++private:
++    TelStopOnce shutdown_;
++

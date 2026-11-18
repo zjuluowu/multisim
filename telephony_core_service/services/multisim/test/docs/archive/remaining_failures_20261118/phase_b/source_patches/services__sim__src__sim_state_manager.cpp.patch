@@ -1,0 +1,23 @@
+--- a/services/sim/src/sim_state_manager.cpp
++++ b/services/sim/src/sim_state_manager.cpp
+@@ -36,0 +37 @@
++    TelLifecycle::Lease lifecycle(lifecycle_,TelLifecycle::Kind::Registration);if(!lifecycle)return;
+@@ -61,0 +63 @@
++    if(lifecycle_->GetState()!=TelLifecycle::State::Running)return;
+@@ -506 +508 @@
+-    int32_t ret = 0;
++    int32_t ret = TELEPHONY_ERR_LOCAL_PTR_NULL;
+@@ -517 +519 @@
+-        ret = static_cast<int32_t>(simStateHandle_->GetSimState());
++        ret = responseReady_ ? simStateHandle_->GetRealtimeStatusResult() : CORE_ERR_SIM_CARD_UPDATE_FAILED;
+@@ -675 +677 @@
+-        simStateHandle_->UnInit();
++        simStateHandle_->Shutdown();
+@@ -707,0 +710,7 @@
++
++namespace OHOS { namespace Telephony {
++bool SimStateManager::Shutdown() {return shutdown_.Run([this] {
++    if(simStateHandle_) {if(!simStateHandle_->Shutdown())return false;simStateHandle_.reset();}
++    telRilManager_.reset();return true;
++ });}
++} }

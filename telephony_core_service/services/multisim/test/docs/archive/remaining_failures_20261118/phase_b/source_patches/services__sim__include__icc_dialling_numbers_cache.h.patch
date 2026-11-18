@@ -1,0 +1,11 @@
+--- a/services/sim/include/icc_dialling_numbers_cache.h
++++ b/services/sim/include/icc_dialling_numbers_cache.h
+@@ -34,0 +35,2 @@
++    bool Shutdown();
++
+@@ -74,0 +77,3 @@
++private:
++    TelStopOnce shutdown_;
++
+@@ -78 +83 @@
+-#endif // OHOS_SIM_DIALLING_NUMBERS_CACHE_H+#endif // OHOS_SIM_DIALLING_NUMBERS_CACHE_H

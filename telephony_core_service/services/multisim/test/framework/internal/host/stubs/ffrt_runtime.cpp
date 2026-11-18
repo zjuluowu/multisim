@@ -23,8 +23,12 @@ void SchedulerChanged()
 }
 
 namespace ffrt {
+static std::atomic<uint64_t> nextTaskId{1};
+static thread_local uint64_t currentTaskId=0;
+namespace this_task { uint64_t get_id() { return currentTaskId; } }
 enum class HostTaskStatus { PENDING, RUNNING, DONE, CANCELLED };
 struct HostTask {
+    uint64_t id=nextTaskId.fetch_add(1);
     mutex lock;
     condition_variable changed;
     std::atomic<HostTaskStatus> status{HostTaskStatus::PENDING};
@@ -77,6 +81,7 @@ static void Worker(const std::shared_ptr<HostQueue> &state)
         state->running = true;
         SchedulerChanged();
         guard.unlock();
+        currentTaskId=task->id;
         try {
             task->action();
         } catch (...) {
@@ -85,10 +90,12 @@ static void Worker(const std::shared_ptr<HostQueue> &state)
             ++schedulerRevision;
             evidenceChanged.notify_all();
         }
+        currentTaskId=0;
+        // DONE includes capture destruction, matching a completed scheduler task.
+        // Destructors run outside the queue lock and may reenter the runtime.
+        task->action = {};
         task->status.store(HostTaskStatus::DONE);
         SignalTask(task);
-        // Release captured owners outside the queue lock; their destructors may stop this queue.
-        task->action = {};
         guard.lock();
         state->running = false;
         state->changed.notify_all();
@@ -212,6 +219,18 @@ static queue &GeneralQueue()
     return *general;
 }
 void submit(std::function<void()> task) { GeneralQueue().submit_h(std::move(task)); }
+task_handle submit_h(std::function<void()> task) {return GeneralQueue().submit_h(std::move(task));}
+void wait(std::initializer_list<task_handle> tasks) {
+    for(const auto &handle:tasks) {
+        if(!handle.task_)continue;
+        if(auto owner=handle.task_->owner.lock()) {
+            std::lock_guard<mutex> lock(owner->lock);
+            if(owner->workerId==std::this_thread::get_id())throw std::logic_error("owned task cannot wait on itself");
+        }
+        std::unique_lock<mutex> lock(handle.task_->lock);
+        handle.task_->changed.wait(lock,[&]{auto state=handle.task_->status.load();return state==HostTaskStatus::DONE || state==HostTaskStatus::CANCELLED;});
+    }
+}
 void wait() { GeneralQueue().wait_idle(); }
 }
 

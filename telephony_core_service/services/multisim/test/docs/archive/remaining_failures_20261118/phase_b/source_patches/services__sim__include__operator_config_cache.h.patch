@@ -1,0 +1,9 @@
+--- a/services/sim/include/operator_config_cache.h
++++ b/services/sim/include/operator_config_cache.h
+@@ -30,0 +31,2 @@
++    bool Shutdown();
++
+@@ -89,0 +92,3 @@
++private:
++    TelStopOnce shutdown_;
++

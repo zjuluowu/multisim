@@ -28,6 +28,8 @@ const std::string KEY_CONST_TELEPHONY_IS_USE_CLOUD_IMS_NV = "const.telephony.is_
 const std::string KEY_PERSIST_TELEPHONY_VOLTE_CAP_IN_CHIP = "persist.telephony.volte_cap_in_chip_slot";
 class OperatorConfigCache : public TelEventHandler {
 public:
+    bool Shutdown();
+
     explicit OperatorConfigCache(
         std::weak_ptr<SimFileManager> simFileManager, std::shared_ptr<SimStateManager> simStateManager, int32_t slotId);
     virtual ~OperatorConfigCache() = default;
@@ -87,6 +89,9 @@ private:
     void RetryBatchInsertApnPostTask();
     std::weak_ptr<IOperatorConfigHisysevent> operatorConfigHisysevent_{};
     bool isOperatorConfigChangeDone_ = false;
+private:
+    TelStopOnce shutdown_;
+
 };
 } // namespace Telephony
 } // namespace OHOS

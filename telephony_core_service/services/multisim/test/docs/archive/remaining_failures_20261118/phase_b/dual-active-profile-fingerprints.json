@@ -1,0 +1,34 @@
+[
+  {
+    "path": "gtest-5vbkhc2i/coverage-105.profraw",
+    "sha256": "3c192c39417e70d9d8036d9c86d2f7ab81cc7a1dbcefc8ab288f7b86474485a2"
+  },
+  {
+    "path": "gtest-5vbkhc2i/coverage-11.profraw",
+    "sha256": "376f8e18212bd6ea356029ff642e2cc5051f8fabddb54ae14d9d960bc5a00ed5"
+  },
+  {
+    "path": "gtest-5vbkhc2i/coverage-12.profraw",
+    "sha256": "35cfd674035ae6109a4ed387b6639c9e2bcbfea36521a3652c347ff94bdda94e"
+  },
+  {
+    "path": "gtest-5vbkhc2i/coverage-152.profraw",
+    "sha256": "e079607983174456c95ae1ceaf932dc482a0346b961dfba453357c3ff55c53ac"
+  },
+  {
+    "path": "gtest-5vbkhc2i/coverage-17.profraw",
+    "sha256": "9616fdec96e518b0e7ab94fb810355b8f1a704ed17f60aa5e98d15809823dcaa"
+  },
+  {
+    "path": "gtest-5vbkhc2i/coverage-196.profraw",
+    "sha256": "402833a956101e4ac29b81766725a583ea74b52450bacc06bdec06a234cd5ae7"
+  },
+  {
+    "path": "gtest-5vbkhc2i/coverage-262.profraw",
+    "sha256": "f56be262ec86778b04693136f3908d08f82d3ad4e317f721a63d834cef76613d"
+  },
+  {
+    "path": "gtest-5vbkhc2i/coverage-61.profraw",
+    "sha256": "cf49f0e93f31d535df4cd6c3870e285007a1c8ff2a218ab32b91c75975fe78ca"
+  }
+]

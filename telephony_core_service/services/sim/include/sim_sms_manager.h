@@ -26,6 +26,8 @@ namespace OHOS {
 namespace Telephony {
 class SimSmsManager {
 public:
+    bool Shutdown();
+
     SimSmsManager(std::shared_ptr<Telephony::ITelRilManager> telRilManager,
         std::shared_ptr<SimFileManager> simFileManager, std::shared_ptr<SimStateManager> simStateManager);
     virtual ~SimSmsManager();
@@ -46,6 +48,9 @@ protected:
     std::shared_ptr<SimStateManager> stateManager_ = nullptr;
     std::shared_ptr<SimSmsController> smsController_ = nullptr;
     HandleRunningState stateSms_ = HandleRunningState::STATE_NOT_START;
+private:
+    TelStopOnce shutdown_;
+
 };
 } // namespace Telephony
 } // namespace OHOS

@@ -16,6 +16,7 @@
 #ifndef OHOS_SIM_FILE_H
 #define OHOS_SIM_FILE_H
 
+#include "tel_parameter_watcher.h"
 #include "icc_file.h"
 
 namespace OHOS {
@@ -38,6 +39,7 @@ public:
         const std::string &alphaTag, const std::string &number);
     void ProcessEvent(const AppExecFwk::InnerEvent::Pointer &event);
     ~SimFile() = default;
+    bool Shutdown() override;
     bool ProcessIccReady(const AppExecFwk::InnerEvent::Pointer &event);
     bool UpdateVoiceMail(const std::string &mailName, const std::string &mailNumber);
     bool SetVoiceMailCount(int32_t voiceMailCount);
@@ -56,6 +58,10 @@ public:
         RELOAD_ICCID_EVENT = 0,
         RELOAD_IMSI_EVENT = 1,
     };
+
+private:
+    std::shared_ptr<TelParameterWatcher<SimFile>> satelliteWatcher_;
+    void ApplySatelliteParameter(const char *key,const char *value);
 
 protected:
     enum SpnStatus {

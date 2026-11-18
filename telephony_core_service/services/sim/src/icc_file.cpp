@@ -82,6 +82,7 @@ IccFile::IccFile(const std::string &name, std::shared_ptr<SimStateManager> simSt
 
 void IccFile::Init()
 {
+    if(Lifecycle()->GetState()!=TelLifecycle::State::Running)return;
     if (stateManager_ != nullptr) {
         stateManager_->RegisterCoreNotify(shared_from_this(), RadioEvent::RADIO_SIM_STATE_READY);
         stateManager_->RegisterCoreNotify(shared_from_this(), RadioEvent::RADIO_SIM_STATE_LOCKED);
@@ -520,6 +521,7 @@ void IccFile::UnregisterOperatorConfigUpdate(const std::shared_ptr<AppExecFwk::E
 
 void IccFile::RegisterCoreNotify(const std::shared_ptr<AppExecFwk::EventHandler> &handler, int what)
 {
+    if(Lifecycle()->GetState()!=TelLifecycle::State::Running)return;
     switch (what) {
         case RadioEvent::RADIO_SIM_RECORDS_LOADED:
             RegisterAllFilesLoaded(handler);
@@ -1008,3 +1010,11 @@ inline void IccFile::SetMatchSimStateTracker(int8_t matchSimStateTracker)
 } // namespace Telephony
 } // namespace OHOS
 // LOCV_EXCL_STOP
+
+namespace OHOS { namespace Telephony {
+bool IccFile::Shutdown() {return shutdown_.Run([this] {
+    if(!StopEvents())return false;UnInit();
+    for(auto *p:{filesFetchedObser_.get(),lockedFilesFetchedObser_.get(),networkLockedFilesFetchedObser_.get(),recordsEventsObser_.get(),networkSelectionModeAutomaticObser_.get(),spnUpdatedObser_.get(),recordsOverrideObser_.get()})if(p)p->RemoveAll();
+    fileController_.reset();diallingNumberHandler_.reset();stateManager_.reset();telRilManager_.reset();return true;
+ });}
+} }

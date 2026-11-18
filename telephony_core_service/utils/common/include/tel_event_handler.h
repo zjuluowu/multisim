@@ -15,6 +15,7 @@
 
 #ifndef TELEPHONY_EVENT_HANDLER_H
 #define TELEPHONY_EVENT_HANDLER_H
+#include "tel_event_queue.h"
 
 #include "event_handler.h"
 #include "telephony_errors.h"
@@ -63,6 +64,9 @@ public:
 
 class TelEventHandler : public AppExecFwk::EventHandler {
 public:
+    bool StopEvents() { return queue_ ? queue_->Stop() : true; }
+    std::shared_ptr<TelLifecycle> Lifecycle() const { return queue_->Lifecycle(); }
+    void KeepContinuation(uint32_t event) { queue_->KeepContinuation(event); }
     explicit TelEventHandler(const std::string &name);
 
     // A solicited response returns the original request's correlation parameter.

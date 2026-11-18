@@ -112,6 +112,8 @@ struct UnlockData {
 
 class SimStateHandle : public TelEventHandler {
 public:
+    bool Shutdown();
+
     using Func = std::function<void(SimStateHandle *, int32_t, const AppExecFwk::InnerEvent::Pointer &)>;
     explicit SimStateHandle(const std::weak_ptr<SimStateManager> &simStateManager);
     ~SimStateHandle() = default;
@@ -243,6 +245,9 @@ private:
     bool isInitPrimarySlotReady = false;
     ffrt::shared_mutex simStateInitMutex_;
     ffrt::shared_mutex specifiedIccidMutex_;
+private:
+    TelStopOnce shutdown_;
+
 };
 } // namespace Telephony
 } // namespace OHOS

@@ -110,6 +110,7 @@ MultiSimController::~MultiSimController()
 // set all data to invalid wait for InitData to rebuild
 void MultiSimController::Init()
 {
+    KeepContinuation(SET_PRIMARY_SLOT_RETRY_EVENT);
     if (simDbHelper_ == nullptr) {
         simDbHelper_ = std::make_unique<SimRdbHelper>();
     }
@@ -922,6 +923,12 @@ int32_t MultiSimController::GetSimId(int32_t slotId)
 
 bool MultiSimController::IsSimActive(int32_t slotId)
 {
+    std::shared_lock<ffrt::shared_mutex> lock(mutex_);
+    return IsSimActiveLocked(slotId);
+}
+
+bool MultiSimController::IsSimActiveLocked(int32_t slotId)
+{
     if (!IsValidData(slotId)) {
         TELEPHONY_LOGE("slotId %{public}d is invalid", slotId);
         return false;
@@ -1098,11 +1105,10 @@ bool MultiSimController::IsNeedSetTargetPrimarySlotId()
 {
     if (targetPrimarySlotId_ > INVALID_VALUE) {
         TELEPHONY_LOGI("targetPrimarySlotId = %{public}d", targetPrimarySlotId_);
-        std::thread initDataTask([targetPrimarySlotId = targetPrimarySlotId_]() {
+        Lifecycle()->Submit(shared_from_this(),[targetPrimarySlotId = targetPrimarySlotId_]() {
             pthread_setname_np(pthread_self(), "SetPrimarySlotId");
             CoreManagerInner::GetInstance().SetPrimarySlotId(targetPrimarySlotId, true);
-        });
-        initDataTask.detach();
+        },true);
         targetPrimarySlotId_ = INVALID_VALUE;
         return true;
     }
@@ -1126,19 +1132,17 @@ void MultiSimController::CheckIfNeedSwitchMainSlotId(bool isUserSet)
         if (IsAllCardsReady()) {
             isUserSet = isRilSetPrimarySlotSupport_ ? true : isUserSet;
             TELEPHONY_LOGI("defaultSlotId changed, need to set slot%{public}d primary", defaultSlotId);
-            std::thread initDataTask([&, defaultSlotId = defaultSlotId, isUserSet = isUserSet]() {
+            Lifecycle()->Submit(shared_from_this(),[&, defaultSlotId = defaultSlotId, isUserSet = isUserSet]() {
                 pthread_setname_np(pthread_self(), "SetPrimarySlotId");
                 CoreManagerInner::GetInstance().SetPrimarySlotId(defaultSlotId, isUserSet);
-            });
-            initDataTask.detach();
+            },true);
         } else if (radioProtocolController_ != nullptr &&
             radioProtocolController_->GetRadioProtocolModemId(defaultSlotId) != MODEM_ID_0) {
             TELEPHONY_LOGI("main slot is different with modemid, need to set slot%{public}d primary", defaultSlotId);
-            std::thread initDataTask([&, defaultSlotId = defaultSlotId, isUserSet  = isUserSet ]() {
+            Lifecycle()->Submit(shared_from_this(),[&, defaultSlotId = defaultSlotId, isUserSet  = isUserSet ]() {
                 pthread_setname_np(pthread_self(), "SetPrimarySlotId");
                 CoreManagerInner::GetInstance().SetPrimarySlotId(defaultSlotId, isUserSet);
-            });
-            initDataTask.detach();
+            },true);
         } else {
             TELEPHONY_LOGI("no need set main slot, defaultslot same main slot");
             SavePrimarySlotIdInfo(defaultSlotId);
@@ -1153,11 +1157,10 @@ void MultiSimController::CheckIfNeedSwitchMainSlotId(bool isUserSet)
             radioProtocolController_->GetRadioProtocolModemId(firstActivedSlotId) == MODEM_ID_0) {
             isUserSet = isRilSetPrimarySlotSupport_ ? true : isUserSet;
         }
-        std::thread initDataTask([&, firstActivedSlotId = firstActivedSlotId, isUserSet = isUserSet]() {
+        Lifecycle()->Submit(shared_from_this(),[&, firstActivedSlotId = firstActivedSlotId, isUserSet = isUserSet]() {
             pthread_setname_np(pthread_self(), "SetPrimarySlotId");
             CoreManagerInner::GetInstance().SetPrimarySlotId(firstActivedSlotId, isUserSet);
-        });
-        initDataTask.detach();
+        },true);
     }
 }
 
@@ -1396,7 +1399,7 @@ int32_t MultiSimController::GetTargetDefaultSimId(int32_t slotId, int &simId)
         TELEPHONY_LOGE("no sim card");
         return TELEPHONY_ERR_NO_SIM_CARD;
     }
-    if (slotId != DEFAULT_SIM_SLOT_ID_REMOVE && !IsSimActive(slotId)) {
+    if (slotId != DEFAULT_SIM_SLOT_ID_REMOVE && !IsSimActiveLocked(slotId)) {
         TELEPHONY_LOGE("slotId is not active!");
         return CORE_SERVICE_SIM_CARD_IS_NOT_ACTIVE;
     }
@@ -1490,6 +1493,7 @@ bool MultiSimController::IsSetPrimarySlotIdAllowed()
 
 int32_t MultiSimController::SetPrimarySlotId(int32_t slotId, bool isUserSet)
 {
+    TelLifecycle::Lease request(Lifecycle(),TelLifecycle::Kind::Business);if(!request)return TELEPHONY_ERR_LOCAL_PTR_NULL;
     TELEPHONY_LOGI("set primary slotId:%{public}d, isUserSet:%{public}d", slotId, isUserSet);
     if (slotId == SIM_SLOT_3) {
         return NeedSwitchSimCard(SIM_SLOT_3);
@@ -1618,11 +1622,10 @@ void MultiSimController::ProcessEvent(const AppExecFwk::InnerEvent::Pointer &eve
     switch (eventCode) {
         case MultiSimController::SET_PRIMARY_SLOT_RETRY_EVENT: {
             auto primarySlotId = event->GetParam();
-            std::thread initDataTask([&, primarySlotId = primarySlotId]() {
+            Lifecycle()->Submit(shared_from_this(),[&, primarySlotId = primarySlotId]() {
                 pthread_setname_np(pthread_self(), "SetPrimarySlotId");
                 CoreManagerInner::GetInstance().SetPrimarySlotId(primarySlotId);
-            });
-            initDataTask.detach();
+            },true);
             break;
         }
         case RADIO_SIM_SET_PRIMARY_SLOT:
@@ -1742,7 +1745,7 @@ int32_t MultiSimController::GetShowNumber(int32_t slotId, std::u16string &showNu
             return TELEPHONY_ERR_NO_SIM_CARD;
         }
         if (showNumber != Str8ToStr16(localCacheInfo_[slotId].phoneNumber)) {
-            TelFFRTUtils::Submit([=]() {
+            Lifecycle()->Submit(shared_from_this(),[=]() {
                 int32_t result = SetShowNumberToDB(slotId, showNumber);
                 TELEPHONY_LOGI("slotId: %{public}d get phone "
                     "number from sim and save result: %{public}d", slotId, result);
@@ -1888,7 +1891,7 @@ int32_t MultiSimController::GetSimTelephoneNumber(int32_t slotId, std::u16string
         return TELEPHONY_ERR_NO_SIM_CARD;
     }
     if (!telephoneNumber.empty() && telephoneNumber != Str8ToStr16(localCacheInfo_[slotId].phoneNumber)) {
-        TelFFRTUtils::Submit([=]() {
+        Lifecycle()->Submit(shared_from_this(),[=]() {
             int32_t ret = SetShowNumberToDB(slotId, telephoneNumber);
             TELEPHONY_LOGI("slotId %{public}d save impu phone number result: %{public}d", slotId, ret);
         });
@@ -2103,14 +2106,16 @@ int32_t MultiSimController::SetPrimarySlotIdWithoutModemReboot(int32_t slotId)
 
 bool MultiSimController::SetPrimarySlotToRil(int32_t slotId)
 {
+    std::unique_lock<ffrt::mutex> setPrimarySlotLock(setPrimarySlotToRilMutex_);
     if (isSettingPrimarySlotToRil_) {
         TELEPHONY_LOGE("SetPrimarySlotToRil is settting, can not set now");
         return false;
     }
-    std::unique_lock<ffrt::mutex> setPrimarySlotLock(setPrimarySlotToRilMutex_);
     isSettingPrimarySlotToRil_ = true;
     setPrimarySlotResponseResult_ = false;
+    setPrimarySlotLock.unlock();
     SendSetPrimarySlotEvent(slotId);
+    setPrimarySlotLock.lock();
     while (isSettingPrimarySlotToRil_) {
         TELEPHONY_LOGI("SetPrimarySlotToRil wait for the setPrimarySlot to finish");
         setPrimarySlotToRilCv_.wait(setPrimarySlotLock);
@@ -2165,8 +2170,11 @@ void MultiSimController::OnRilSetPrimarySlotTimeout(const AppExecFwk::InnerEvent
 
 void MultiSimController::ProcessRilSetPrimarySlotResponse(bool result)
 {
-    isSettingPrimarySlotToRil_ = false;
-    setPrimarySlotResponseResult_ = result;
+    {
+        std::lock_guard<ffrt::mutex> lock(setPrimarySlotToRilMutex_);
+        setPrimarySlotResponseResult_ = result;
+        isSettingPrimarySlotToRil_ = false;
+    }
     setPrimarySlotToRilCv_.notify_all();
 }
 
@@ -2275,3 +2283,12 @@ void MultiSimController::UpdateActiveSimInProgress(int32_t slotId, int32_t enabl
 } // namespace Telephony
 } // namespace OHOS
 // LOCV_EXCL_STOP
+
+namespace OHOS { namespace Telephony {
+bool MultiSimController::Shutdown() {return shutdown_.Run([this] {
+    if(!StopEvents())return false;
+    if(radioProtocolController_) {if(!radioProtocolController_->StopEvents())return false;radioProtocolController_->UnRegisterEvents();radioProtocolController_.reset();}
+    simStateManager_.clear();simFileManager_.clear();multiSimHelper_.reset();simManager_.reset();telRilManager_.reset();return true;
+ });}
+ bool MultiSimController::HasPendingPrimaryContinuation() {return HasInnerEvent(SET_PRIMARY_SLOT_RETRY_EVENT);}
+} }

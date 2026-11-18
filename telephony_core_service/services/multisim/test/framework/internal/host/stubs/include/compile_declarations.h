@@ -61,6 +61,7 @@ public:
     explicit operator bool() const { return task_ != nullptr; }
 private:
     friend class queue;
+    friend void wait(std::initializer_list<task_handle>);
     explicit task_handle(std::shared_ptr<HostTask> task) : task_(std::move(task)) {}
     std::shared_ptr<HostTask> task_;
 };
@@ -79,8 +80,11 @@ private:
     std::thread worker_;
 };
 void submit(std::function<void()> task);
+task_handle submit_h(std::function<void()> task);
+void wait(std::initializer_list<task_handle> tasks);
 void wait();
 namespace this_task {
+uint64_t get_id();
 template<class Rep, class Period> void sleep_for(std::chrono::duration<Rep, Period> delay)
 {
     std::this_thread::sleep_for(delay);

@@ -1,0 +1,49 @@
+--- a/services/sim/src/sim_state_handle.cpp
++++ b/services/sim/src/sim_state_handle.cpp
+@@ -208 +208 @@
+-    auto event = AppExecFwk::InnerEvent::Get(MSG_SIM_UNLOCK_PIN_DONE);
++    auto event = AppExecFwk::InnerEvent::Get(MSG_SIM_UNLOCK_PIN_DONE, cardEpoch_.load());
+@@ -408,0 +409,4 @@
++    if (iccState_.iccid_ != ar.iccid_ ||
++        ((iccState_.simStatus_ == ICC_CARD_ABSENT) != (ar.simStatus_ == ICC_CARD_ABSENT))) {
++        ++cardEpoch_;
++    }
+@@ -541 +545 @@
+-    auto event = AppExecFwk::InnerEvent::Get(MSG_SIM_GET_ICC_STATUS_DONE);
++    auto event = AppExecFwk::InnerEvent::Get(MSG_SIM_GET_ICC_STATUS_DONE, ++statusRequest_);
+@@ -557 +561,2 @@
+-    auto event = AppExecFwk::InnerEvent::Get(MSG_SIM_GET_REALTIME_ICC_STATUS_DONE);
++    realtimeStatusResult_ = TELEPHONY_ERR_RIL_CMD_FAIL;
++    auto event = AppExecFwk::InnerEvent::Get(MSG_SIM_GET_REALTIME_ICC_STATUS_DONE, ++statusRequest_);
+@@ -636,0 +642,4 @@
++    const auto sequence = event->GetParam();
++    if (sequence > 0 && sequence < appliedStatus_) {
++        return;
++    }
+@@ -687,0 +697,4 @@
++    if (sequence > 0) appliedStatus_ = sequence;
++    if (event->GetInnerEventId() == MSG_SIM_GET_REALTIME_ICC_STATUS_DONE) {
++        realtimeStatusResult_ = TELEPHONY_ERR_SUCCESS;
++    }
+@@ -733,0 +747,4 @@
++    if (event->GetParam() > 0 && event->GetParam() != cardEpoch_.load()) {
++        unlockRespon_.result = UNLOCK_OTHER_ERR;
++        return;
++    }
+@@ -748 +765 @@
+-        unlockRespon_.result = static_cast<int32_t>(response->error);
++        unlockRespon_.result = UNLOCK_OTHER_ERR;
+@@ -1044,0 +1062 @@
++    if(Lifecycle()->GetState()!=TelLifecycle::State::Running)return;
+@@ -1117,0 +1136,3 @@
++            break;
++        case RadioEvent::RADIO_SIM_ICCID_LOADED:
++            observerHandler_->Remove(RadioEvent::RADIO_SIM_ICCID_LOADED, handler);
+@@ -1275,0 +1297,7 @@
++
++namespace OHOS { namespace Telephony {
++bool SimStateHandle::Shutdown() {return shutdown_.Run([this] {
++    if(!StopEvents())return false;UnInit();if(observerHandler_)observerHandler_->RemoveAll();
++    telRilManager_.reset();simStateManager_.reset();return true;
++ });}
++} }

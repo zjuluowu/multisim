@@ -35,6 +35,7 @@ TEST_F(RealSimPrimary, InitializesRealManagerAndControllerWithoutRil)
     auto observedNoRil = [&](int result) { testing::Test::RecordProperty("primary_direct_no_ril_result", result); testing::Test::RecordProperty("primary_direct_no_ril_symbol", Sim028Host::PrimaryEnvironment::ErrorSymbol(result)); return result; };
     EXPECT_EQ(observedNoRil(manager->SetPrimarySlotId(1, true)), TELEPHONY_ERR_NO_SIM_CARD);
     EXPECT_FALSE(manager->IsSetPrimarySlotIdInProgress());
+    EXPECT_TRUE(manager->Stop());
     SimHost::StopCallingThreadTasks();
     manager.reset();
     EXPECT_TRUE(SimHost::AwaitSchedulerStopped(3s));

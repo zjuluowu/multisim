@@ -1,0 +1,55 @@
+{
+  "scope": "Positive execution of the seven newly fenced concrete production entries; includes C++ ABI return-type tags; not full method coverage",
+  "methods": [
+    {
+      "method": "GetSimEons",
+      "count": 16,
+      "symbols": [
+        "_ZN4OHOS9Telephony10SimManager10GetSimEonsEiRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEib"
+      ]
+    },
+    {
+      "method": "GetLocaleFromDefaultSim",
+      "count": 16,
+      "symbols": [
+        "_ZN4OHOS9Telephony10SimManager23GetLocaleFromDefaultSimB5cxx11Ei"
+      ]
+    },
+    {
+      "method": "GetSimGid2",
+      "count": 16,
+      "symbols": [
+        "_ZN4OHOS9Telephony10SimManager10GetSimGid2B5cxx11Ei"
+      ]
+    },
+    {
+      "method": "GetSimTeleNumberIdentifier",
+      "count": 16,
+      "symbols": [
+        "_ZN4OHOS9Telephony10SimManager26GetSimTeleNumberIdentifierB5cxx11Ei"
+      ]
+    },
+    {
+      "method": "ObtainAllSmsOfIcc",
+      "count": 16,
+      "symbols": [
+        "_ZN4OHOS9Telephony10SimManager17ObtainAllSmsOfIccB5cxx11Ei"
+      ]
+    },
+    {
+      "method": "GetSimIst",
+      "count": 16,
+      "symbols": [
+        "_ZN4OHOS9Telephony10SimManager9GetSimIstB5cxx11Ei"
+      ]
+    },
+    {
+      "method": "UpdateDBActiveByIccId",
+      "count": 16,
+      "symbols": [
+        "_ZN4OHOS9Telephony10SimManager21UpdateDBActiveByIccIdENSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEi"
+      ]
+    }
+  ],
+  "status": "PASS"
+}

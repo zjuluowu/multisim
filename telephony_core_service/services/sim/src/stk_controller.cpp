@@ -230,6 +230,7 @@ sptr<OHOS::IRemoteObject> StkController::GetBundleMgr()
 
 void StkController::RegisterEvents()
 {
+    if(Lifecycle()->GetState()!=TelLifecycle::State::Running)return;
     std::shared_ptr<ITelRilManager> telRilManager = telRilManager_.lock();
     if (telRilManager == nullptr) {
         TELEPHONY_LOGE("StkController[%{public}d]::RegisterEvents() telRilManager is nullptr", slotId_);

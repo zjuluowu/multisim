@@ -1,0 +1,14 @@
+--- a/services/sim/include/multi_sim_controller.h
++++ b/services/sim/include/multi_sim_controller.h
+@@ -37,0 +38,4 @@
++    bool HasPendingPrimaryContinuation();
++
++    bool Shutdown();
++
+@@ -122,0 +127,2 @@
++    // Caller owns mutex_; preserves the existing validation and active-row rules.
++    bool IsSimActiveLocked(int32_t slotId);
+@@ -234,0 +241,3 @@
++private:
++    TelStopOnce shutdown_;
++

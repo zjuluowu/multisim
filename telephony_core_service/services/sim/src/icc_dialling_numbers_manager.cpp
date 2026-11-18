@@ -86,11 +86,11 @@ void IccDiallingNumbersManager::ProcessEvent(const AppExecFwk::InnerEvent::Point
 
 void IccDiallingNumbersManager::ProcessAdvanceLoadPbr()
 {
-    std::thread t([manager = std::static_pointer_cast<IccDiallingNumbersManager>(shared_from_this())] {
+    auto manager = std::static_pointer_cast<IccDiallingNumbersManager>(shared_from_this());
+    Lifecycle()->Submit(manager, [manager] {
         std::vector<std::shared_ptr<DiallingNumbersInfo>> result;
         manager->QueryIccDiallingNumbers(DiallingNumbersInfo::SIM_ADN, result);
-    });
-    t.detach();
+    }, true);
 }
 
 void IccDiallingNumbersManager::ProcessSimStateChanged()
@@ -429,3 +429,12 @@ IccDiallingNumbersManager::~IccDiallingNumbersManager() {}
 } // namespace Telephony
 } // namespace OHOS
 // LOCV_EXCL_STOP
+
+namespace OHOS { namespace Telephony {
+bool IccDiallingNumbersManager::Shutdown() {return shutdown_.Run([this] {
+    if(!StopEvents())return false;
+    auto file=simFileManager_.lock();if(file)file->UnRegisterCoreNotify(shared_from_this(),RadioEvent::RADIO_SIM_STATE_CHANGE);
+    if(diallingNumbersCache_ && !diallingNumbersCache_->Shutdown())return false;
+    diallingNumbersCache_.reset();simStateManager_.reset();simFileManager_.reset();return true;
+ });}
+} }

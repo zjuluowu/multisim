@@ -35,6 +35,10 @@ class SimManager;
 class MultiSimHelper;
 class MultiSimController : public TelEventHandler {
 public:
+    bool HasPendingPrimaryContinuation();
+
+    bool Shutdown();
+
     MultiSimController(std::shared_ptr<Telephony::ITelRilManager> telRilManager,
         std::vector<std::shared_ptr<Telephony::SimStateManager>> simStateManager,
         std::vector<std::shared_ptr<Telephony::SimFileManager>> simFileManager);
@@ -120,6 +124,8 @@ public:
     std::vector<bool> isSimSlotsMapping_ = {false, false, false, false};
 
 private:
+    // Caller owns mutex_; preserves the existing validation and active-row rules.
+    bool IsSimActiveLocked(int32_t slotId);
     bool IsValidData(int32_t slotId);
     int32_t GetFirstActivedSlotId();
     bool InitShowNumber(int slotId);
@@ -232,6 +238,9 @@ private:
     int refreshLocalCacheRemainCount_ = 0;
     int refreshAllLocalCacheRemainCount_ = 0;
     std::vector<std::string> lastSimIccid_ = {};
+private:
+    TelStopOnce shutdown_;
+
 };
 } // namespace Telephony
 } // namespace OHOS

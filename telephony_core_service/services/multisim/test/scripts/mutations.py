@@ -12,6 +12,8 @@ def run(name,cmd,expected=0):
  if r.returncode!=expected:raise RuntimeError(name+' unexpected exit '+str(r.returncode))
 def build(name,extra=''):
  run(name+'-gn',['gn','gen',a.out/'build','--root='+str(TEST/'framework/internal/host'),'--args='+gnargs+extra]);run(name+'-build',['ninja','-C',a.out/'build','-j','3','sim_test_host'])
+# Establish the normal binary from current source before fingerprinting it.
+build('baseline')
 originals={name:hashlib.sha256((CORE/'services/sim/src'/name).read_bytes()).hexdigest() for name in ['sim_state_handle.cpp','sim_state_manager.cpp']}
 normal=a.out/'build/sim_test_host';before=hashlib.sha256(normal.read_bytes()).hexdigest()
 try:
@@ -26,5 +28,6 @@ try:
 finally:build('restore')
 for name in ['SimTest.LIFE_001','PinMemoryContract.PukSuccessUsesNewPinAndPinAlterOperation']:
  run('recovery-'+name,[normal,'--gtest_filter='+name,'--gtest_output=xml:'+str(a.output.resolve()/('recovery-'+name+'.xml'))])
-unchanged=all(hashlib.sha256((CORE/'services/sim/src'/n).read_bytes()).hexdigest()==v for n,v in originals.items());same=before==hashlib.sha256(normal.read_bytes()).hexdigest();assert unchanged and same
-(a.output/'result.json').write_text(json.dumps({'commands':rows,'status':'PASS','mutations':'DETECTED','production_sources_unchanged':unchanged,'normal_binary_restored':same},indent=2)+'\n')
+unchanged=all(hashlib.sha256((CORE/'services/sim/src'/n).read_bytes()).hexdigest()==v for n,v in originals.items());after=hashlib.sha256(normal.read_bytes()).hexdigest();same=before==after
+(a.output/'result.json').write_text(json.dumps({'commands':rows,'status':'PASS' if unchanged and same else 'FAIL','binary_before_sha256':before,'binary_after_sha256':after,'mutations':'DETECTED','production_sources_unchanged':unchanged,'normal_binary_restored':same},indent=2)+'\n')
+if not unchanged or not same:raise RuntimeError('Mutation recovery changed production source or the baseline binary; see result.json')

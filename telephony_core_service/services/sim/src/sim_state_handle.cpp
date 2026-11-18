@@ -1059,6 +1059,7 @@ void SimStateHandle::CardTypeEscape(int32_t simType, int slotId)
 
 void SimStateHandle::RegisterCoreNotify(const std::shared_ptr<AppExecFwk::EventHandler> &handler, int what)
 {
+    if(Lifecycle()->GetState()!=TelLifecycle::State::Running)return;
     if (observerHandler_ == nullptr) {
         TELEPHONY_LOGE("observerHandler_ is null");
         return;
@@ -1293,3 +1294,10 @@ bool SimStateHandle::IsEsim()
 }
 } // namespace Telephony
 } // namespace OHOS
+
+namespace OHOS { namespace Telephony {
+bool SimStateHandle::Shutdown() {return shutdown_.Run([this] {
+    if(!StopEvents())return false;UnInit();if(observerHandler_)observerHandler_->RemoveAll();
+    telRilManager_.reset();simStateManager_.reset();return true;
+ });}
+} }

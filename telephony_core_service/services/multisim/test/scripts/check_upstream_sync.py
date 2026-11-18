@@ -6,6 +6,7 @@ import io
 import json
 import subprocess
 import tarfile
+from pathlib import Path
 from _paths import CORE, REPO, TEST
 
 def check():
@@ -15,6 +16,7 @@ def check():
         if hashlib.sha256(original).hexdigest() != item['sha256'] or (TEST / name).read_bytes() != original:
             raise RuntimeError('Test reference provenance differs: ' + name)
     raw = subprocess.check_output(['git', 'archive', spec['upstream']], cwd=REPO)
+    upstream_paths = set()
     checked = []
     repairs = spec.get("local_repairs", {})
     verified_repairs = []
@@ -22,6 +24,7 @@ def check():
         for entry in archive:
             if not entry.isfile() or entry.name == 'AGENTS.md' or entry.name.startswith('docs/'):
                 continue
+            upstream_paths.add(entry.name)
             expected = archive.extractfile(entry).read()
             path = CORE / entry.name
             repair = repairs.get(entry.name)
@@ -40,11 +43,17 @@ def check():
             checked.append({'path': entry.name, 'sha256': hashlib.sha256(expected).hexdigest()})
     if set(verified_repairs) != set(repairs):
         raise RuntimeError('Local repair does not name an upstream source')
+    additions = spec.get('local_additions', {})
+    for name, item in additions.items():
+        path = CORE / name
+        if (name in upstream_paths or Path(name).is_absolute() or '..' in Path(name).parts or
+                not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != item['sha256']):
+            raise RuntimeError('Local addition provenance differs: ' + name)
     for name in ['include/legacy_sim_query_binding.h', 'src/legacy_sim_query_binding.cpp']:
         if (CORE / 'services/core' / name).exists():
             raise RuntimeError('Production binding remains: ' + name)
-    return {'upstream': spec['upstream'], 'status': 'PASS', 'files': checked, 'local_repairs': verified_repairs,
-            'excluded': ['AGENTS.md', 'docs/'], 'scope': 'exact upstream bytes except fingerprinted local repairs; excludes local instructions and documentation'}
+    return {'upstream': spec['upstream'], 'status': 'PASS', 'files': checked, 'local_repairs': verified_repairs, 'local_additions': sorted(additions),
+            'excluded': ['AGENTS.md', 'docs/'], 'scope': 'exact upstream bytes except fingerprinted local repairs; additions fingerprinted separately; excludes local instructions and documentation'}
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output')

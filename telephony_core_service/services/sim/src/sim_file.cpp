@@ -2096,19 +2096,23 @@ void SimFile::ClearData()
 
 void SimFile::RegisterParamsListener()
 {
-    int ret = WatchParameter(PROP_SATE_STATUS.c_str(), OnParamChanged, this);
-    TELEPHONY_LOGD("ret is %{public}d", ret);
+    TelLifecycle::Lease admission(Lifecycle(),TelLifecycle::Kind::Registration);if(!admission)return;
+    if(!satelliteWatcher_)satelliteWatcher_=TelParameterWatcher<SimFile>::Create(
+        std::static_pointer_cast<SimFile>(shared_from_this()),Lifecycle(),
+        [](SimFile &owner,const char *key,const char *value){owner.ApplySatelliteParameter(key,value);});
+    satelliteWatcher_->Register(PROP_SATE_STATUS);
 }
- 
-void SimFile::UnRegisterParamsListener()
+void SimFile::UnRegisterParamsListener() {if(satelliteWatcher_ && satelliteWatcher_->Stop())satelliteWatcher_.reset();}
+bool SimFile::Shutdown()
 {
-    int ret = RemoveParameterWatcher(PROP_SATE_STATUS.c_str(), OnParamChanged, this);
-    TELEPHONY_LOGD("ret is %{public}d", ret);
+    if(satelliteWatcher_ && !satelliteWatcher_->Stop())return false;
+    satelliteWatcher_.reset();return IccFile::Shutdown();
 }
- 
-void SimFile::OnParamChanged(const char *key, const char *value, void *context)
+void SimFile::OnParamChanged(const char *key,const char *value,void *context)
+{TelParameterWatcher<SimFile>::Dispatch(key,value,context);}
+void SimFile::ApplySatelliteParameter(const char *key,const char *value)
 {
-    if (key == nullptr || value == nullptr || context == nullptr) {
+    if (key == nullptr || value == nullptr) {
         TELEPHONY_LOGE("invalid param!");
         return;
     }
@@ -2116,7 +2120,7 @@ void SimFile::OnParamChanged(const char *key, const char *value, void *context)
         TELEPHONY_LOGE("key: %{public}s is error!", key);
         return;
     }
-    SimFile* instance = reinterpret_cast<SimFile*>(context);
+    SimFile* instance = this;
     if (instance == nullptr) {
         TELEPHONY_LOGE("invalid instance");
         return;

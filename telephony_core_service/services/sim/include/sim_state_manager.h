@@ -17,6 +17,7 @@
 #define OHOS_SIM_STATE_MANAGER_H
 
 #include <ffrt.h>
+#include "tel_lifecycle.h"
 #include "i_tel_ril_manager.h"
 #include "sim_state_handle.h"
 #include "sim_state_type.h"
@@ -28,6 +29,8 @@ enum SimHandleRun { STATE_NOT_START, STATE_RUNNING };
 
 class SimStateManager : public std::enable_shared_from_this<SimStateManager> {
 public:
+    bool Shutdown();
+
     using HANDLE = const std::shared_ptr<AppExecFwk::EventHandler>;
     explicit SimStateManager(std::shared_ptr<ITelRilManager> telRilManager);
     ~SimStateManager();
@@ -108,7 +111,11 @@ private:
     std::shared_ptr<SimStateHandle> simStateHandle_ = nullptr;
     std::weak_ptr<IOperatorConfigHisysevent> operatorConfigHisysevent_{};
     SimHandleRun simStateRun_ = STATE_NOT_START;
+    std::shared_ptr<TelLifecycle> lifecycle_=TelLifecycle::CurrentOrNew();
     static ffrt::mutex mtx_;
+private:
+    TelStopOnce shutdown_;
+
 };
 } // namespace Telephony
 } // namespace OHOS

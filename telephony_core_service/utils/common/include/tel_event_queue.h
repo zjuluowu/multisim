@@ -18,6 +18,8 @@
 
 #include "event_handler.h"
 #include "ffrt.h"
+#include "tel_lifecycle.h"
+#include <set>
 
 namespace OHOS {
 namespace Telephony {
@@ -25,7 +27,10 @@ class TelEventQueue : public std::enable_shared_from_this<TelEventQueue> {
 public:
     explicit TelEventQueue(const std::string &name);
     ~TelEventQueue();
-    void Submit(AppExecFwk::InnerEvent::Pointer &event, AppExecFwk::EventQueue::Priority priority);
+    bool Submit(AppExecFwk::InnerEvent::Pointer &event, AppExecFwk::EventQueue::Priority priority);
+    bool Stop();
+    std::shared_ptr<TelLifecycle> Lifecycle() const { return lifecycle_; }
+    void KeepContinuation(uint32_t event) { std::lock_guard<ffrt::mutex> lock(taskCtx_);continuations_.insert(event); }
     void RemoveEvent(uint32_t innerEventId);
     bool HasInnerEvent(uint32_t innerEventId);
     void RemoveAllEvents();
@@ -67,6 +72,16 @@ private:
     void SetCurHandleTime(AppExecFwk::InnerEvent::TimePoint handleTime);
 
 private:
+    std::shared_ptr<TelLifecycle> lifecycle_=TelLifecycle::CurrentOrNew();
+    ffrt::mutex admissionMutex_;
+    ffrt::condition_variable admissionChanged_;
+    bool stopping_=false,stopped_=false;
+    TelLifecycle::Key stopOwner_{};
+    std::atomic_bool closed_{false};
+    uint64_t taskToken_=0,currentToken_=0;
+    std::map<uint64_t,ffrt::task_handle> submitted_;
+    std::set<uint32_t> continuations_;
+    void Finished(uint64_t token) {std::lock_guard<ffrt::mutex> lock(taskCtx_);submitted_.erase(token);}
     static const uint32_t EVENT_QUEUE_NUM = 3;
     std::array<EventList, EVENT_QUEUE_NUM> eventLists_;
     AppExecFwk::InnerEvent::TimePoint curHandleTime_ { AppExecFwk::InnerEvent::TimePoint::max() };

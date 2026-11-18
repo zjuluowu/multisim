@@ -37,6 +37,8 @@ namespace OHOS {
 namespace Telephony {
 class SimFileManager : public TelEventHandler {
 public:
+    bool Shutdown();
+
     using HANDLE = std::shared_ptr<AppExecFwk::EventHandler>;
     SimFileManager(std::weak_ptr<Telephony::ITelRilManager> telRilManager,
         std::weak_ptr<Telephony::SimStateManager> state);
@@ -141,6 +143,9 @@ private:
     std::string EncryptImsi(const std::string imsi);
     bool IsEncryptImsiEmpty(const std::string encryptImsi);
     sptr<ISystemAbilityStatusChange> statusChangeListener_ = nullptr;
+private:
+    TelStopOnce shutdown_;
+
 };
 } // namespace Telephony
 } // namespace OHOS

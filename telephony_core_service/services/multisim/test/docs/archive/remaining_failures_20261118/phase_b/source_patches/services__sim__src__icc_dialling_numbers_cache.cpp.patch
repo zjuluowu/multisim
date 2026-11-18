@@ -1,0 +1,12 @@
+--- a/services/sim/src/icc_dialling_numbers_cache.cpp
++++ b/services/sim/src/icc_dialling_numbers_cache.cpp
+@@ -421,0 +422,9 @@
++
++namespace OHOS { namespace Telephony {
++bool IccDiallingNumbersCache::Shutdown() {return shutdown_.Run([this] {
++    if(!StopEvents())return false;
++    if(usimDiallingNumberSrv_ && !usimDiallingNumberSrv_->StopEvents())return false;
++    if(diallingNumbersHandler_ && !diallingNumbersHandler_->StopEvents())return false;
++    usimDiallingNumberSrv_.reset();diallingNumbersHandler_.reset();simFileManager_.reset();diallingNumberFileList_.clear();return true;
++ });}
++} }

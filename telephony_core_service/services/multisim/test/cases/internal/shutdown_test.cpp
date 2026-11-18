@@ -84,12 +84,17 @@ TEST(PairingReview, UnrelatedRuntimeWorkerIsBaseline)
 template<class M = SimManager, class F> void WithRealGraph(F body, bool locked = true)
 {
     if constexpr (HasShutdown<M>::value) {
+        WatchBoundaryScope watchers;
         PrimaryEnvironment s(true);
+        // FFRT's caller executor is runtime-owned; create it before measuring
+        // component queues. Stop is still required to drain all SIM tasks.
+        ffrt::submit([] {}); ffrt::wait();
         QueueBaseline baseline;
         if (locked) ASSERT_TRUE(s.StartLockedCard());
         else {
             s.manager = std::make_shared<M>(nullptr);
             ASSERT_TRUE(s.manager->OnInit(3));
+            s.lifetimeSamples=TelLifetimeEvidence::Live();
         }
         auto manager = std::static_pointer_cast<M>(s.manager);
         body(s, manager, baseline);
@@ -128,6 +133,7 @@ TEST(ShutdownContract, BThreeSlotsThenStop)
 TEST(ShutdownContract, CPartialInitializationThenStop)
 {
     WithRealGraph([](auto &s, auto &manager, const auto &baseline) {
+        EXPECT_EQ(manager->SetPrimarySlotId(1,true),TELEPHONY_ERR_NO_SIM_CARD);
         testing::Test::RecordProperty("business", "NOT_RUN");
         EXPECT_TRUE(manager->Stop()); VerifyStopped(s, manager, baseline);
     }, false);
@@ -179,7 +185,7 @@ TEST(ShutdownContract, GDelayedDispatchAfterStop)
     WithRealGraph([](auto &s, auto &manager, const auto &baseline) {
         // Snapshot the real pending FFRT callbacks, not fabricated SIM results.
         auto delayed = SimHost::CapturePendingActions("SimStateHandle");
-        EXPECT_FALSE(delayed.empty());
+        EXPECT_EQ(delayed.size(),3u);
         EXPECT_TRUE(manager->Stop()); VerifyStopped(s, manager, baseline);
         unsigned writes;
         { std::lock_guard<std::mutex> lock(s.mutex); writes = s.writes.size(); }
@@ -207,5 +213,164 @@ TEST(ShutdownContract, HDestroyAndCreateNewGraph)
         EXPECT_TRUE(replacement->Stop()); VerifyStopped(s, replacement, baseline);
         testing::Test::RecordProperty("business", "NOT_RUN");
     });
+}
+
+TEST(ShutdownExtra, WatcherLateCallbackAfterOwnerDestruction)
+{
+    std::vector<WatchedCallback> callbacks;
+    {
+        WatchBoundaryScope watchers;
+        PrimaryEnvironment s(true); ffrt::submit([]{});ffrt::wait();QueueBaseline baseline;
+        ASSERT_TRUE(s.StartLockedCard());callbacks=WatchCallbacks();ASSERT_EQ(callbacks.size(),5u);
+        for(auto &callback:callbacks)callback.invoke(); // real registered callback while Running
+        EXPECT_TRUE(s.manager->Stop());VerifyStopped(s,s.manager,baseline);
+        EXPECT_EQ(ActiveWatchers(),0u);
+        for(auto &callback:callbacks)callback.invoke(); // closed context while root still alive
+    }
+    for(auto &callback:callbacks)callback.invoke(); // stale service copy after all actors destroyed
+}
+TEST(ShutdownExtra, PartialWatcherRegistration)
+{
+    WatchBoundaryScope watchers;FailWatcherRegistration(1);
+    PrimaryEnvironment s(true);ffrt::submit([]{});ffrt::wait();QueueBaseline baseline;
+    ASSERT_TRUE(s.StartLockedCard());ASSERT_EQ(ActiveWatchers(),4u);
+    EXPECT_TRUE(s.manager->Stop());VerifyStopped(s,s.manager,baseline);
+}
+TEST(ShutdownExtra, FailedWatcherRemovalKeepsStoppingAndRetries)
+{
+    WatchBoundaryScope watchers;
+    PrimaryEnvironment s(true);ffrt::submit([]{});ffrt::wait();QueueBaseline baseline;
+    ASSERT_TRUE(s.StartLockedCard());auto callbacks=WatchCallbacks();ASSERT_EQ(callbacks.size(),5u);
+    FailWatcherRemoval(true);EXPECT_FALSE(s.manager->Stop());
+    EXPECT_TRUE(s.manager->IsStopping());EXPECT_FALSE(s.manager->IsStopped());EXPECT_EQ(ActiveWatchers(),5u);
+    unsigned writes;{std::lock_guard<std::mutex> lock(s.mutex);writes=s.writes.size();}
+    for(auto &callback:callbacks)callback.invoke(); // service still registered, actor access is fenced
+    {std::lock_guard<std::mutex> lock(s.mutex);EXPECT_EQ(s.writes.size(),writes);}
+    FailWatcherRemoval(false);EXPECT_TRUE(s.manager->Stop());VerifyStopped(s,s.manager,baseline);
+}
+TEST(ShutdownExtra, ObserverReleaseOutsideLockAllowsReentrantDestruction)
+{
+    ObserverHandler observers;
+    struct Reentrant final:TelEventHandler {
+        ObserverHandler &owner;bool &destroyed;
+        Reentrant(ObserverHandler &o,bool &d):TelEventHandler("reentrant-subscriber"),owner(o),destroyed(d){}
+        ~Reentrant(){owner.RemoveAll();destroyed=true;}
+    };
+    bool destroyed=false;auto subscriber=std::make_shared<Reentrant>(observers,destroyed);
+    observers.RegObserver(17,subscriber);std::weak_ptr<Reentrant> weak=subscriber;
+    subscriber.reset();observers.RemoveAll();EXPECT_TRUE(destroyed);EXPECT_TRUE(weak.expired());
+}
+void StopC1AtPhase(unsigned stopStage)
+{
+    WatchBoundaryScope watchers;PrimaryEnvironment s;
+    ffrt::submit([]{});ffrt::wait();QueueBaseline baseline;
+    ASSERT_TRUE(s.StartLockedCard());s.ClearObservations();s.Permit();
+    EXPECT_CALL(*s.ril,SetPrimarySlot(testing::_,testing::_)).Times(0);
+    EXPECT_CALL(*s.ril,GetRadioProtocol(testing::_,testing::_)).Times(2).WillRepeatedly([](int slot,const auto &event){
+        auto value=std::make_shared<RadioProtocol>();value->slotId=slot;value->modemId=slot;value->technology=slot?0x22:0x11;
+        PrimaryEnvironment::Reply({slot,event->GetOwner(),event->GetInnerEventId()},value);return 0;
+    });
+    s.manager->GetRadioProtocol(0);s.manager->GetRadioProtocol(1);
+    auto deadline=std::chrono::steady_clock::now()+3s;
+    while(s.manager->GetRadioProtocolSlotIdByModemId(1)!=1 && std::chrono::steady_clock::now()<deadline)std::this_thread::yield();
+    ASSERT_EQ(s.manager->GetRadioProtocolSlotIdByModemId(1),1);
+    struct Request {PrimaryEnvironment::Pending transport;RadioProtocol value;};std::vector<Request> requests;
+    EXPECT_CALL(*s.ril,SetRadioProtocol(testing::_,testing::_,testing::_)).Times(6).WillRepeatedly([&](int slot,RadioProtocol value,const auto &event){
+        EXPECT_EQ(value.slotId,slot);EXPECT_TRUE(std::dynamic_pointer_cast<RadioProtocolController>(event->GetOwner()));
+        std::lock_guard<std::mutex> lock(s.mutex);requests.push_back({{slot,event->GetOwner(),event->GetInnerEventId()},value});s.changed.notify_all();return 0;
+    });
+    auto caller=std::async(std::launch::async,[&]{return s.core.SetPrimarySlotId(1);});std::future<bool> stopper;int session=-1;
+    for(unsigned stage=0;stage<3;++stage){
+        std::vector<Request> pair;
+        {std::unique_lock<std::mutex> lock(s.mutex);
+         ASSERT_TRUE(s.changed.wait_for(lock,3s,[&]{return requests.size()>=(stage+1)*2;}));
+         pair.assign(requests.begin()+stage*2,requests.begin()+stage*2+2);
+         EXPECT_EQ(caller.wait_for(0s),std::future_status::timeout);
+         // C1 saves tentative parameters before CHECK and restores them on failure.
+         // A successful MAIN/DATA broadcast must still wait for COMPLETE.
+         for(const auto &want:s.broadcasts)
+             EXPECT_NE(want.GetAction(),EventFwk::CommonEventSupport::COMMON_EVENT_SIM_CARD_DEFAULT_MAIN_SUBSCRIPTION_CHANGED);}
+        if(stage==stopStage){
+            stopper=std::async(std::launch::async,[&]{return s.manager->Stop();});auto limit=std::chrono::steady_clock::now()+3s;
+            while(!s.manager->IsStopping()&&!s.manager->IsStopped()&&std::chrono::steady_clock::now()<limit)std::this_thread::yield();
+            ASSERT_TRUE(s.manager->IsStopping());EXPECT_EQ(stopper.wait_for(0s),std::future_status::timeout);
+            EXPECT_EQ(s.manager->SetPrimarySlotId(0,true),TELEPHONY_ERR_LOCAL_PTR_NULL)<<"NEW_REQUEST_REJECTED_WHILE_STOPPING";
+        }
+        for(auto &request:pair){
+            auto reply=std::make_shared<RadioProtocol>(request.value);
+            if(session<0)session=reply->sessionId;EXPECT_EQ(reply->sessionId,session);
+            EXPECT_EQ(static_cast<int>(reply->phase),stage==0?1:stage==1?2:4);
+            EXPECT_EQ(reply->modemId,stage==0?request.transport.slot:1-request.transport.slot);
+            std::cout<<"STOP_C1 stage="<<stage<<" session="<<session<<" slot="<<request.transport.slot<<"\n";
+            PrimaryEnvironment::Reply(request.transport,reply);
+            if(stage==1){
+                reply=std::make_shared<RadioProtocol>(*reply);reply->phase=RadioProtocolPhase::RADIO_PROTOCOL_PHASE_NOTIFY;
+                reply->status=RadioProtocolStatus::RADIO_PROTOCOL_STATUS_SUCCESS;
+                std::weak_ptr<AppExecFwk::EventHandler> owner;
+                {std::lock_guard<std::mutex> lock(s.mutex);owner=s.notifications.at({request.transport.slot,RADIO_SIM_RADIO_PROTOCOL_NOTIFY});}
+                PrimaryEnvironment::Reply({request.transport.slot,owner,RADIO_SIM_RADIO_PROTOCOL_NOTIFY},reply);
+            }
+        }
+    }
+    ASSERT_EQ(caller.wait_for(3s),std::future_status::ready);EXPECT_EQ(caller.get(),TELEPHONY_ERR_SUCCESS);
+    ASSERT_EQ(stopper.wait_for(3s),std::future_status::ready);EXPECT_TRUE(stopper.get());
+    {std::lock_guard<std::mutex> lock(s.mutex);EXPECT_EQ(s.parametersDb["persist.telephony.MainSlotId"],"1");s.ExpectNotifications(true,1,false);}
+    testing::Test::RecordProperty("business","PASS");VerifyStopped(s,s.manager,baseline);
+}
+TEST(ShutdownExtra,C1StopAtCheck){StopC1AtPhase(0);}
+TEST(ShutdownExtra,C1StopAtUpdate){StopC1AtPhase(1);}
+TEST(ShutdownExtra,C1StopAtComplete){StopC1AtPhase(2);}
+
+TEST(ShutdownExtra, WatcherInFlightIsDrainedAndSelfStopIsRejected)
+{
+    WatchBoundaryScope watchers;PrimaryEnvironment s(true);ffrt::submit([]{});ffrt::wait();QueueBaseline baseline;
+    std::promise<void> entered,release;auto released=release.get_future().share();std::atomic<bool> intercept{false};
+    // Configure all mock behavior before any production threads start. Only an
+    // atomic latch changes during execution; no concurrent EXPECT_CALL mutation.
+    s.beforeParameterRead=[&](const char *key){
+        if(std::string(key)!="persist.ril.reboot_detect_sim0" || !intercept.exchange(false))return;
+        EXPECT_FALSE(s.manager->Stop())<<"CALLBACK_MUST_NOT_WAIT_FOR_ITSELF";
+        EXPECT_FALSE(s.manager->IsStopping());entered.set_value();released.wait();
+    };
+    ASSERT_TRUE(s.StartLockedCard());auto callbacks=WatchCallbacks();
+    auto it=std::find_if(callbacks.begin(),callbacks.end(),[](const auto &c){return c.key=="persist.ril.reboot_detect_sim0";});ASSERT_NE(it,callbacks.end());
+    intercept=true;
+    auto callback=std::async(std::launch::async,[&]{it->invoke();});
+    ASSERT_EQ(entered.get_future().wait_for(3s),std::future_status::ready);
+    auto stopper=std::async(std::launch::async,[&]{return s.manager->Stop();});auto deadline=std::chrono::steady_clock::now()+3s;
+    while(!s.manager->IsStopping() && std::chrono::steady_clock::now()<deadline)std::this_thread::yield();
+    EXPECT_TRUE(s.manager->IsStopping());EXPECT_EQ(stopper.wait_for(0s),std::future_status::timeout);
+    release.set_value();callback.get();EXPECT_TRUE(stopper.get());VerifyStopped(s,s.manager,baseline);
+    s.beforeParameterRead={};
+}
+
+TEST(ShutdownExtra, OwnedTaskClosureDestructionIsPartOfStopBarrier)
+{
+    for(bool threadMode:{false,true}) {
+        auto group=std::make_shared<TelLifecycle>();
+        std::promise<void> entered,release,start;auto released=release.get_future().share();auto started=start.get_future().share();
+        struct ExitLatch {
+            std::promise<void> &entered;std::shared_future<void> released;
+            ExitLatch(std::promise<void> &e,std::shared_future<void> r):entered(e),released(std::move(r)){}
+            ~ExitLatch(){entered.set_value();released.wait();}
+        };
+        auto latch=std::make_shared<ExitLatch>(entered,released);std::weak_ptr<ExitLatch> weak=latch;
+        auto resource=std::make_shared<int>(17);std::weak_ptr<int> resourceWeak=resource;
+        ASSERT_TRUE(group->Submit(resource,[latch,started]{started.wait();},threadMode));resource.reset();latch.reset();start.set_value();
+        ASSERT_EQ(entered.get_future().wait_for(3s),std::future_status::ready);
+        auto stop=std::async(std::launch::async,[&]{
+            auto deadline=std::chrono::steady_clock::now()+3s;
+            if(!group->BeginStop(deadline))return false;
+            if(!group->SealWhenIdle([]{return true;},deadline)){group->FinishStop(false);return false;}
+            group->JoinOwnedWork();group->FinishStop(true);return true;
+        });
+        auto deadline=std::chrono::steady_clock::now()+3s;
+        while(group->GetState()==TelLifecycle::State::Running && std::chrono::steady_clock::now()<deadline)std::this_thread::yield();
+        EXPECT_EQ(group->GetState(),TelLifecycle::State::Stopping);
+        EXPECT_EQ(stop.wait_for(0s),std::future_status::timeout);
+        release.set_value();EXPECT_TRUE(stop.get());EXPECT_TRUE(weak.expired());EXPECT_TRUE(resourceWeak.expired());
+        EXPECT_EQ(group->GetState(),TelLifecycle::State::Stopped);
+        SimHost::StopCallingThreadTasks();EXPECT_TRUE(SimHost::AwaitSchedulerStopped(3s));
+    }
 }
 } // namespace

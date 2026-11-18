@@ -1,0 +1,4 @@
+--- a/services/sim/src/stk_controller.cpp
++++ b/services/sim/src/stk_controller.cpp
+@@ -232,0 +233 @@
++    if(Lifecycle()->GetState()!=TelLifecycle::State::Running)return;

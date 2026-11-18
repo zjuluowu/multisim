@@ -241,6 +241,7 @@ executable("sim_component_test") {
     ":googlemock",
     ":platform_boundaries",
     ":sim_production_host",
+    ":scheduler_boundaries",
     ":uninitialized_sim_graph_boundary",
     ":test_entry",
     ":unsupported_state_protocol",
@@ -398,6 +399,7 @@ executable("sim_g2a_query_test") {
     ":platform_boundaries",
     ":query_vendor_boundary",
     ":sim_production_host",
+    ":scheduler_boundaries",
     ":uninitialized_sim_graph_boundary",
     ":test_entry",
   ]
@@ -457,6 +459,7 @@ executable("sim_upstream_query_test") {
     ":platform_boundaries",
     ":query_vendor_boundary",
     ":sim_production_host",
+    ":scheduler_boundaries",
     ":uninitialized_sim_graph_boundary",
     ":test_entry",
     ":upstream_query_core",

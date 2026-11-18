@@ -1,5 +1,9 @@
+#include "watcher_boundary.h"
+#include <mutex>
+#include <map>
 // Linux external runtime bridges. SIM/CoreManager/Controller implementations are production sources.
 #include "sim_manager.h"
+#include "network_state.h"
 #include "pdp_profile_rdb_helper.h"
 #include "telephony_data_helper.h"
 #include "tel_event_handler.h"
@@ -71,22 +75,24 @@ struct RunnerRuntime {
     std::condition_variable changed;
     Sim028Host::RunnerState state = Sim028Host::RunnerState::Stopped;
     std::unique_ptr<ffrt::queue> queue;
+    std::map<std::pair<const EventHandler *,std::string>,std::vector<ffrt::task_handle>> namedTasks;
 };
 RunnerRuntime &Runtime() { static RunnerRuntime runtime; return runtime; }
 thread_local bool onExternalRunner = false;
-bool SubmitExternal(std::function<void()> task, int64_t delay)
+bool SubmitExternal(std::function<void()> task, int64_t delay, const EventHandler *owner=nullptr, const std::string &name="")
 {
     auto &runtime = Runtime();
     std::lock_guard<std::mutex> lock(runtime.mutex);
     if (runtime.state != Sim028Host::RunnerState::Running) return false;
     if (!runtime.queue) runtime.queue = std::make_unique<ffrt::queue>("sim028-platform-runner");
-    runtime.queue->submit_h([task = std::move(task)] {
+    auto handle=runtime.queue->submit_h([task = std::move(task)] {
         struct Guard {
             Guard() { onExternalRunner = true; }
             ~Guard() { onExternalRunner = false; }
         } guard;
         task();
     }, ffrt::task_attr().delay(delay * 1000));
+    if(owner)runtime.namedTasks[{owner,name}].push_back(handle);
     return true;
 }
 }
@@ -117,6 +123,7 @@ bool StopSim028ExternalRunner()
         if (runtime.state == Sim028Host::RunnerState::Stopped) return true;
         runtime.state = Sim028Host::RunnerState::Stopping;
         retiring = std::move(runtime.queue);
+        runtime.namedTasks.clear();
     }
     // Cancel queued work and join in-flight work normally. No admission lock
     // is held while callbacks complete, including callbacks attempting a post.
@@ -137,9 +144,14 @@ bool EventHandler::SendEvent(InnerEvent::Pointer &event, int64_t delay, EventQue
     auto envelope = std::make_shared<InnerEvent::Pointer>(std::move(event));
     return SubmitExternal([owner, envelope] { if (auto target = owner.lock()) target->ProcessEvent(*envelope); }, delay);
 }
-bool EventHandler::PostTask(const std::function<void()> &task, const std::string &, int64_t delay)
+bool EventHandler::PostTask(const std::function<void()> &task, const std::string &name, int64_t delay)
+{ return SubmitExternal(task, delay, this, name); }
+void EventHandler::RemoveTask(const std::string &name)
 {
-    return SubmitExternal(task, delay);
+    auto &runtime=Runtime();std::lock_guard<std::mutex> lock(runtime.mutex);
+    auto it=runtime.namedTasks.find({this,name});if(it==runtime.namedTasks.end())return;
+    if(runtime.queue)for(auto &task:it->second)runtime.queue->cancel(task);
+    runtime.namedTasks.erase(it);
 }
 bool Configuration::AddItem(const std::string &, const std::string &) { return false; }
 int32_t AppMgrClient::UpdateConfiguration(const Configuration &) { return -1; }
@@ -191,8 +203,40 @@ int32_t AbilityManagerClient::StartExtensionAbility(const Want &, sptr<IRemoteOb
 }
 extern "C" int32_t GetIntParameter(const char *key, int32_t fallback)
 { return OHOS::system::GetIntParameter<int>(key, fallback); }
-extern "C" int WatchParameter(const char *, ParameterChgPtr, void *) { return -1; }
-extern "C" int RemoveParameterWatcher(const char *, ParameterChgPtr, void *) { return -1; }
+namespace {
+std::mutex watcherMutex;
+bool watcherEnabled = false, watcherRemoveFailure = false;
+int watcherRegisterFailure = -1;
+struct WatchRecord { std::string key; ParameterChgPtr fn; void *context; };
+std::vector<WatchRecord> watcherRecords;
+}
+namespace Sim028Host {
+void EnableWatchBoundary(bool enabled) {
+    std::lock_guard<std::mutex> lock(watcherMutex);
+    if (!enabled && !watcherRecords.empty()) throw std::logic_error("ACTIVE_PARAMETER_WATCHERS");
+    watcherEnabled=enabled; watcherRemoveFailure=false; watcherRegisterFailure=-1;
+}
+void FailWatcherRegistration(int slot) { std::lock_guard<std::mutex> lock(watcherMutex);watcherRegisterFailure=slot; }
+void FailWatcherRemoval(bool fail) {std::lock_guard<std::mutex> lock(watcherMutex);watcherRemoveFailure=fail;}
+unsigned ActiveWatchers() {std::lock_guard<std::mutex> lock(watcherMutex);return watcherRecords.size();}
+std::vector<WatchedCallback> WatchCallbacks() {
+    std::lock_guard<std::mutex> lock(watcherMutex);std::vector<WatchedCallback> result;
+    for(auto r:watcherRecords)result.push_back({r.key,[r]{r.fn(r.key.c_str(),"0",r.context);}});
+    return result;
+}
+}
+extern "C" int WatchParameter(const char *key, ParameterChgPtr fn, void *context) {
+    std::lock_guard<std::mutex> lock(watcherMutex);
+    if(!watcherEnabled || (watcherRegisterFailure>=0 && std::string(key).back()=='0'+watcherRegisterFailure))return -1;
+    watcherRecords.push_back({key,fn,context});return 0;
+}
+extern "C" int RemoveParameterWatcher(const char *key, ParameterChgPtr fn, void *context) {
+    std::lock_guard<std::mutex> lock(watcherMutex);
+    if(!watcherEnabled || watcherRemoveFailure)return -1;
+    auto it=std::find_if(watcherRecords.begin(),watcherRecords.end(),[&](const auto &r){return r.key==key && r.fn==fn && r.context==context;});
+    if(it==watcherRecords.end())return -1;
+    watcherRecords.erase(it);return 0;
+}
 extern "C" CfgFiles *GetCfgFilesEx(const char *, int, const char *) { return nullptr; }
 extern "C" void FreeCfgFiles(CfgFiles *) {}
 // Serialization is not reached by this business slice. Fail explicitly if it is.
@@ -232,5 +276,14 @@ __attribute__((noinline)) void LifecycleCheckpoint(const char *stage,
     OHOS::Telephony::SimManager *manager, OHOS::Telephony::ITelRilManager *ril)
 {
     std::cout << "LIFE_CHECKPOINT stage=" << stage << " manager=" << manager << " ril=" << ril << '\n';
+}
+}
+
+// GetSimEons is linked to test its closed admission path after Stop. Live
+// network-state acquisition is outside this Host slice and must fail closed.
+namespace OHOS::Telephony {
+NrState NetworkState::GetNrState() const
+{
+    throw std::logic_error("Host live network-state query unsupported");
 }
 }

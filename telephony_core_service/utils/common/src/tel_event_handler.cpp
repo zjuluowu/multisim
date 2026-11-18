@@ -74,8 +74,7 @@ bool TelEventHandler::SendEvent(AppExecFwk::InnerEvent::Pointer &event, int64_t 
         TELEPHONY_LOGE("queue is nullptr");
         return false;
     }
-    queue_->Submit(event, priority);
-    return true;
+    return queue_->Submit(event, priority);
 }
 
 bool TelEventHandler::SendExecuteNowEvent(AppExecFwk::InnerEvent::Pointer &event)
@@ -90,8 +89,7 @@ bool TelEventHandler::SendExecuteNowEvent(AppExecFwk::InnerEvent::Pointer &event
         TELEPHONY_LOGE("queue is nullptr");
         return false;
     }
-    queue_->Submit(event, Priority::IMMEDIATE);
-    return true;
+    return queue_->Submit(event, Priority::IMMEDIATE);
 }
 
 void TelEventHandler::RemoveEvent(uint32_t innerEventId)

@@ -1,0 +1,9 @@
+--- a/services/sim/include/icc_file.h
++++ b/services/sim/include/icc_file.h
+@@ -44,0 +45,2 @@
++    virtual bool Shutdown();
++
+@@ -239,0 +242,3 @@
++private:
++    TelStopOnce shutdown_;
++

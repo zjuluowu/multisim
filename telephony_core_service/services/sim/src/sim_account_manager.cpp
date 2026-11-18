@@ -149,3 +149,16 @@ std::string SimAccountManager::GetOverseasCarrierBySimInfo(const SimCardInfo &si
 }
 } // namespace Telephony
 } // namespace OHOS
+
+namespace OHOS { namespace Telephony {
+bool SimAccountManager::Shutdown() {return shutdown_.Run([this] {
+    if(simStateTracker_) {
+        if(!simStateTracker_->StopEvents())return false;
+        simStateTracker_->UnRegisterForIccLoaded();simStateTracker_->UnRegisterOpkeyLoaded();
+        simStateTracker_->UnregisterOperatorCacheDel();simStateTracker_->UnRegisterOperatorConfigUpdate();simStateTracker_.reset();
+    }
+    if(operatorConfigCache_ && !operatorConfigCache_->Shutdown())return false;
+    operatorConfigCache_.reset();privilegeController_.reset();privilegesRunner_.reset();
+    simStateManager_.reset();simFileManager_.reset();telRilManager_.reset();return true;
+ });}
+} }

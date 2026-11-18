@@ -1,0 +1,231 @@
+{
+  "schema_version": 1,
+  "authorization": "User 2026-11-18: complete the remaining FAIL cases; includes the published C0 repair",
+  "repairs": {
+    "SimAdvancedTest.DEFECT_001_StaleReadyAfterRemoval": {
+      "old_id": "ContractDriver.DEFECT_001_StaleReadyAfterRemoval",
+      "origin": "host_baseline",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "allowed_observation_changes": [
+        "observations",
+        "external_calls"
+      ],
+      "reason": "Reviewed old business defect repair"
+    },
+    "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard": {
+      "old_id": "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+      "origin": "host_baseline",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "allowed_observation_changes": [
+        "observations",
+        "external_calls"
+      ],
+      "reason": "Reviewed old business defect repair"
+    },
+    "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword": {
+      "old_id": "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+      "origin": "host_baseline",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "allowed_observation_changes": [
+        "observations",
+        "external_calls"
+      ],
+      "reason": "Reviewed old business defect repair"
+    },
+    "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard": {
+      "old_id": "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+      "origin": "host_baseline",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "allowed_observation_changes": [
+        "observations",
+        "external_calls"
+      ],
+      "reason": "Reviewed old business defect repair"
+    },
+    "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict": {
+      "old_id": "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+      "origin": "host_baseline",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "allowed_observation_changes": [
+        "observations",
+        "external_calls"
+      ],
+      "reason": "Reviewed old business defect repair"
+    },
+    "RealSimPrimary.C0CoreToRealManagerAndController": {
+      "old_id": "RealSimPrimary.C0CoreToRealManagerAndController",
+      "origin": "real_primary",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "allowed_observation_changes": [
+        "real_instances_destroyed"
+      ],
+      "reason": "Reviewed resource cleanup / implemented real Stop contract; business assertions retained"
+    },
+    "RealSimPrimary.BDirectRilSuccessCommitsAfterReply": {
+      "old_id": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+      "origin": "real_primary",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "allowed_observation_changes": [
+        "real_instances_destroyed"
+      ],
+      "reason": "Reviewed resource cleanup / implemented real Stop contract; business assertions retained"
+    },
+    "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary": {
+      "old_id": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+      "origin": "real_primary",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "allowed_observation_changes": [
+        "real_instances_destroyed"
+      ],
+      "reason": "Reviewed resource cleanup / implemented real Stop contract; business assertions retained"
+    },
+    "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected": {
+      "old_id": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+      "origin": "real_primary",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "allowed_observation_changes": [
+        "real_instances_destroyed"
+      ],
+      "reason": "Reviewed resource cleanup / implemented real Stop contract; business assertions retained"
+    },
+    "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary": {
+      "old_id": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+      "origin": "real_primary",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "allowed_observation_changes": [
+        "real_instances_destroyed"
+      ],
+      "reason": "Reviewed resource cleanup / implemented real Stop contract; business assertions retained"
+    },
+    "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries": {
+      "old_id": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+      "origin": "real_primary",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "allowed_observation_changes": [
+        "real_instances_destroyed"
+      ],
+      "reason": "Reviewed resource cleanup / implemented real Stop contract; business assertions retained"
+    },
+    "RealCardLifetime.PublicDetachReleasesRealStateFileAndRil": {
+      "old_id": "RealCardLifetime.PublicDetachReleasesRealStateFileAndRil",
+      "origin": "real_primary",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "allowed_observation_changes": [
+        "real_instances_destroyed"
+      ],
+      "reason": "Reviewed resource cleanup / implemented real Stop contract; business assertions retained"
+    },
+    "PairingReview.AllThreeSlotsPublicDetach": {
+      "old_id": "PairingReview.AllThreeSlotsPublicDetach",
+      "origin": "real_primary",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "allowed_observation_changes": [
+        "real_instances_destroyed"
+      ],
+      "reason": "Reviewed resource cleanup / implemented real Stop contract; business assertions retained"
+    },
+    "PairingReview.DestroyThenReinitializeCardGraph": {
+      "old_id": "PairingReview.DestroyThenReinitializeCardGraph",
+      "origin": "real_primary",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "allowed_observation_changes": [
+        "real_instances_destroyed"
+      ],
+      "reason": "Reviewed resource cleanup / implemented real Stop contract; business assertions retained"
+    },
+    "ShutdownContract.ANormalPrimaryThenStop": {
+      "old_id": "ShutdownContract.ANormalPrimaryThenStop",
+      "origin": "real_primary",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "allowed_observation_changes": [
+        "real_instances_destroyed"
+      ],
+      "reason": "Reviewed resource cleanup / implemented real Stop contract; business assertions retained"
+    },
+    "ShutdownContract.BThreeSlotsThenStop": {
+      "old_id": "ShutdownContract.BThreeSlotsThenStop",
+      "origin": "real_primary",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "allowed_observation_changes": [
+        "real_instances_destroyed"
+      ],
+      "reason": "Reviewed resource cleanup / implemented real Stop contract; business assertions retained"
+    },
+    "ShutdownContract.CPartialInitializationThenStop": {
+      "old_id": "ShutdownContract.CPartialInitializationThenStop",
+      "origin": "real_primary",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "allowed_observation_changes": [
+        "real_instances_destroyed"
+      ],
+      "reason": "Reviewed resource cleanup / implemented real Stop contract; business assertions retained"
+    },
+    "ShutdownContract.DRepeatedStop": {
+      "old_id": "ShutdownContract.DRepeatedStop",
+      "origin": "real_primary",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "allowed_observation_changes": [
+        "real_instances_destroyed"
+      ],
+      "reason": "Reviewed resource cleanup / implemented real Stop contract; business assertions retained"
+    },
+    "ShutdownContract.EInFlightSuccessCompletesBeforeRelease": {
+      "old_id": "ShutdownContract.EInFlightSuccessCompletesBeforeRelease",
+      "origin": "real_primary",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "allowed_observation_changes": [
+        "real_instances_destroyed"
+      ],
+      "reason": "Reviewed resource cleanup / implemented real Stop contract; business assertions retained"
+    },
+    "ShutdownContract.FErrorReplyDuringStoppingKeepsOriginalResult": {
+      "old_id": "ShutdownContract.FErrorReplyDuringStoppingKeepsOriginalResult",
+      "origin": "real_primary",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "allowed_observation_changes": [
+        "real_instances_destroyed"
+      ],
+      "reason": "Reviewed resource cleanup / implemented real Stop contract; business assertions retained"
+    },
+    "ShutdownContract.GDelayedDispatchAfterStop": {
+      "old_id": "ShutdownContract.GDelayedDispatchAfterStop",
+      "origin": "real_primary",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "allowed_observation_changes": [
+        "real_instances_destroyed"
+      ],
+      "reason": "Reviewed resource cleanup / implemented real Stop contract; business assertions retained"
+    },
+    "ShutdownContract.HDestroyAndCreateNewGraph": {
+      "old_id": "ShutdownContract.HDestroyAndCreateNewGraph",
+      "origin": "real_primary",
+      "before_status": "FAIL",
+      "after_status": "PASS",
+      "allowed_observation_changes": [
+        "real_instances_destroyed"
+      ],
+      "reason": "Reviewed resource cleanup / implemented real Stop contract; business assertions retained"
+    }
+  }
+}

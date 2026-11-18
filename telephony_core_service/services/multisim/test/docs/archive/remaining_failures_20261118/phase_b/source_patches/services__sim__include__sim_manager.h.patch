@@ -1,0 +1,17 @@
+--- a/services/sim/include/sim_manager.h
++++ b/services/sim/include/sim_manager.h
+@@ -25,0 +26 @@
++#include "tel_lifecycle.h"
+@@ -44,0 +46,4 @@
++    bool Stop();
++    bool IsStopping() const;
++    bool IsStopped() const;
++
+@@ -195,0 +201 @@
++        TelLifecycle::Lease admission(lifecycle_, TelLifecycle::Kind::Business); if (!admission) return;
+@@ -226,0 +233,3 @@
++private:
++    std::shared_ptr<TelLifecycle> lifecycle_=std::make_shared<TelLifecycle>();
++
+@@ -230 +239 @@
+-#endif // OHOS_SIM_MANAGER_H+#endif // OHOS_SIM_MANAGER_H

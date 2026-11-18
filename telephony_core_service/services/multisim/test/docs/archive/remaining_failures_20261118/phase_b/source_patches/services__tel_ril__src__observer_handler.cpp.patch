@@ -1,0 +1,9 @@
+--- a/services/tel_ril/src/observer_handler.cpp
++++ b/services/tel_ril/src/observer_handler.cpp
+@@ -53,2 +53,2 @@
+-    std::unique_lock<ffrt::mutex> lock(mutex_);
+-    observerHandlerMap_.clear();
++    decltype(observerHandlerMap_) retired;
++    {std::unique_lock<ffrt::mutex> lock(mutex_);retired.swap(observerHandlerMap_);}
+@@ -91 +91 @@
+-} // namespace OHOS+} // namespace OHOS

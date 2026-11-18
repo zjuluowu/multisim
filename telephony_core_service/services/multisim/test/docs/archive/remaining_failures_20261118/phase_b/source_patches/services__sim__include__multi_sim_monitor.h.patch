@@ -1,0 +1,16 @@
+--- a/services/sim/include/multi_sim_monitor.h
++++ b/services/sim/include/multi_sim_monitor.h
+@@ -37,0 +38 @@
++struct SimRebootWatcher;
+@@ -39,0 +41,2 @@
++    bool Shutdown();
++
+@@ -48,0 +52 @@
++    void UnRegisterCoreNotify(const std::shared_ptr<AppExecFwk::EventHandler> &handler, int what);
+@@ -114,0 +119,2 @@
++    bool StopRebootWatcher();
++    std::shared_ptr<SimRebootWatcher> rebootWatcher_;
+@@ -181,0 +188,3 @@
++private:
++    TelStopOnce shutdown_;
++

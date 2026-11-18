@@ -1,0 +1,69 @@
+--- a/utils/common/src/tel_event_queue.cpp
++++ b/utils/common/src/tel_event_queue.cpp
+@@ -66,2 +66,4 @@
+-void TelEventQueue::Submit(AppExecFwk::InnerEvent::Pointer &event, AppExecFwk::EventQueue::Priority priority)
+-{
++bool TelEventQueue::Submit(AppExecFwk::InnerEvent::Pointer &event, AppExecFwk::EventQueue::Priority priority)
++{
++    std::lock_guard<ffrt::mutex> admission(admissionMutex_);
++    if(closed_.load() || lifecycle_->Sealed()) return false;
+@@ -73,0 +76,2 @@
++    lifecycle_->Pulse();
++    return true;
+@@ -115 +119 @@
+-    queue_->cancel(curTask_);
++    if(queue_->cancel(curTask_)==0) submitted_.erase(currentToken_);
+@@ -154 +158 @@
+-    if (queueId != queueId_.load()) {
++    if (closed_.load() || queueId != queueId_.load()) {
+@@ -160,0 +165 @@
++    uint64_t token=++taskToken_;currentToken_=token;
+@@ -162 +167 @@
+-        [weak, queueId = queueId]() {
++        [weak, queueId = queueId, token]() {
+@@ -166,0 +172,3 @@
++            if(thiz->closed_.load()) return;
++            TelLifecycle::Lease callback(thiz->lifecycle_,TelLifecycle::Kind::Callback);
++            if(!callback) return;
+@@ -175,0 +184,3 @@
++            bool continuation=false;
++            if(event) {std::lock_guard<ffrt::mutex> lock(thiz->taskCtx_);continuation=thiz->continuations_.count(event->GetInnerEventId());}
++            TelLifecycle::Context context(thiz->lifecycle_,continuation);
+@@ -181,0 +193 @@
++            thiz->Finished(token);
+@@ -188,0 +201 @@
++    submitted_.emplace(token,curTask_);
+@@ -228,9 +241,7 @@
+-    std::unique_lock<ffrt::mutex> lock(eventCtx_);
+-    uint32_t removeCount = 0;
+-    for (uint32_t i = 0; i < EVENT_QUEUE_NUM; ++i) {
+-        removeCount += eventLists_[i].events.size();
+-        eventLists_[i].events.clear();
+-    }
+-    SetCurHandleTime(AppExecFwk::InnerEvent::TimePoint::max());
+-    eventStats_.CalculationRemovedEvents(removeCount);
+-    TELEPHONY_LOGD("%{public}s RemoveAllEvents finish", name_.c_str());
++    std::array<EventList,EVENT_QUEUE_NUM> retired;
++    {
++        std::unique_lock<ffrt::mutex> lock(eventCtx_);
++        unsigned count=0;for(const auto &list:eventLists_)count+=list.events.size();
++        retired.swap(eventLists_);SetCurHandleTime(AppExecFwk::InnerEvent::TimePoint::max());
++        eventStats_.CalculationRemovedEvents(count);
++    }
+@@ -344 +355,16 @@
+-} // namespace OHOS+} // namespace OHOS
++namespace OHOS { namespace Telephony {
++bool TelEventQueue::Stop()
++{
++    if(lifecycle_->InContext()) return false;
++    {std::unique_lock<ffrt::mutex> lock(admissionMutex_);if(stopping_ && !(TelLifecycle::CurrentKey()<stopOwner_) && !(stopOwner_<TelLifecycle::CurrentKey()))return false;
++    admissionChanged_.wait(lock,[&]{return !stopping_;});if(stopped_)return true;stopping_=true;stopOwner_=TelLifecycle::CurrentKey();closed_=true;}
++    RemoveAllEvents();
++    std::vector<ffrt::task_handle> tasks; std::shared_ptr<ffrt::queue> queue;
++    {std::lock_guard<ffrt::mutex> lock(taskCtx_);queue=queue_;for(auto &p:submitted_)tasks.push_back(p.second);if(curTask_)tasks.push_back(curTask_);}
++    if(queue) {for(auto &task:tasks)queue->cancel(task);for(auto &task:tasks)queue->wait(task);}
++    {std::lock_guard<ffrt::mutex> lock(taskCtx_);submitted_.clear();curTask_=ffrt::task_handle();queue_.reset();}
++    queue.reset();
++    {std::lock_guard<ffrt::mutex> lock(admissionMutex_);stopping_=false;stopped_=true;}admissionChanged_.notify_all();return true;
++}
++} }

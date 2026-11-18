@@ -42,6 +42,8 @@ namespace OHOS {
 namespace Telephony {
 class IccFile : public IIccFileExt, public TelEventHandler {
 public:
+    virtual bool Shutdown();
+
     explicit IccFile(const std::string &name, std::shared_ptr<SimStateManager> simStateManager);
     void Init();
     virtual void StartLoad();
@@ -237,6 +239,9 @@ private:
     bool ObtainEonsExternRules(const std::vector<std::shared_ptr<OperatorPlmnInfo>> oplFiles, bool roaming,
         std::string &eons, bool longNameRequired, const std::string &plmn);
     ffrt::shared_mutex iccFileMutex_;
+private:
+    TelStopOnce shutdown_;
+
 };
 } // namespace Telephony
 } // namespace OHOS

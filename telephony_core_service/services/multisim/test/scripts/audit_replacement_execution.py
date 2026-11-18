@@ -28,7 +28,7 @@ def main():
     (args.output / 'coverage.json').write_bytes(raw)
     functions = [function for data in json.loads(raw)['data'] for function in data['functions']]
     rows = []
-    required = REQUIRED if args.slice == 'state' else ({'CoreServiceSim':['SetPrimarySlotId'], 'SimManager':['SetPrimarySlotId'], 'MultiSimController':['SetPrimarySlotId']} if args.slice == 'primary' else ({'CoreServiceSim':['GetRealSimCount'], 'SimManager':['GetRealSimCount'], 'TelephonyExtWrapper':['GetRealSimCountExt'], 'LegacySimQueryBinding':['Read','ReadLegacyRealSimCount'], 'RealSimCountQuery':['Read']} if args.slice == 'query' else {'CoreServiceSim':['GetRealSimCount'], 'SimManager':['GetRealSimCount'], 'TelephonyExtWrapper':['GetRealSimCountExt']}))
+    required = REQUIRED if args.slice == 'state' else ({'CoreServiceSim':['SetPrimarySlotId'], 'SimManager':['SetPrimarySlotId', 'Stop'], 'MultiSimController':['SetPrimarySlotId']} if args.slice == 'primary' else ({'CoreServiceSim':['GetRealSimCount'], 'SimManager':['GetRealSimCount'], 'TelephonyExtWrapper':['GetRealSimCountExt'], 'LegacySimQueryBinding':['Read','ReadLegacyRealSimCount'], 'RealSimCountQuery':['Read']} if args.slice == 'query' else {'CoreServiceSim':['GetRealSimCount'], 'SimManager':['GetRealSimCount'], 'TelephonyExtWrapper':['GetRealSimCountExt']}))
     for owner, methods in required.items():
         for method in methods:
             needle = str(len(owner)) + owner + str(len(method)) + method + 'E'

@@ -1,0 +1,323 @@
+--- a/services/sim/src/sim_manager.cpp
++++ b/services/sim/src/sim_manager.cpp
+@@ -39 +39,30 @@
+-SimManager::~SimManager() {}
++SimManager::~SimManager()
++{
++    // Break subscriptions while the observed objects and their subscribers are
++    // still alive. ObserverHandler retains subscribers with shared ownership.
++    if (multiSimMonitor_ != nullptr) {
++        multiSimMonitor_->UnRegisterSimNotify();
++    }
++    for (size_t slot = 0; slot < simFileManager_.size(); ++slot) {
++        const auto &files = simFileManager_[slot];
++        if (files == nullptr) {
++            continue;
++        }
++        if (slot < iccDiallingNumbersManager_.size() && iccDiallingNumbersManager_[slot] != nullptr) {
++            files->UnRegisterCoreNotify(iccDiallingNumbersManager_[slot], RadioEvent::RADIO_SIM_STATE_CHANGE);
++        }
++        auto records = files->GetIccFile();
++        if (records != nullptr) {
++            records->UnInit();
++            records->UnRegisterCoreNotify(files, RadioEvent::RADIO_SIM_RECORDS_LOADED);
++        }
++        if (slot < simStateManager_.size() && simStateManager_[slot] != nullptr) {
++            simStateManager_[slot]->UnRegisterCoreNotify(files, RadioEvent::RADIO_CARD_TYPE_CHANGE);
++            simStateManager_[slot]->UnRegisterCoreNotify(files, RadioEvent::RADIO_SIM_ICCID_LOADED);
++        }
++        if (telRilManager_ != nullptr) {
++            telRilManager_->UnRegisterCoreNotify(slot, files, RadioEvent::RADIO_VOICE_TECH_CHANGED);
++            telRilManager_->UnRegisterCoreNotify(slot, files, RadioEvent::RADIO_ICC_REFRESH);
++        }
++    }
++}
+@@ -42,0 +72 @@
++    TelLifecycle::Lease request(lifecycle_, TelLifecycle::Kind::Registration); if (!request) return false;
+@@ -85 +115 @@
+-            ffrt::submit([=]() {
++            lifecycle_->Submit(shared_from_this(),[=]() {
+@@ -93,0 +124 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Registration);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -156,0 +188 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -177,0 +210 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -187,0 +221 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -197,0 +232 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -207,0 +243 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -216,0 +253 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -226,0 +264 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -236,0 +275 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -245,0 +285 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -254,0 +295 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -263,0 +305 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -272,0 +315 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -282,0 +326 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -292,0 +337 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -301,0 +347 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -310,0 +357 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return false;}
+@@ -319,0 +367 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -333,0 +382 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -346,0 +396 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -356,0 +407 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -365,0 +417 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -382,0 +435 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -399,0 +453 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -416,0 +471 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -433,0 +489 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -446,0 +503 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -459,0 +517 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -472,0 +531 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -494,0 +554 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -507,0 +568 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -529,0 +591 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -542,0 +605 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -562,0 +626 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -574,0 +639 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -581,0 +647 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -596,0 +663 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -605,0 +673 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -614,0 +683 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -623,0 +693 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -639,0 +710 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -656,0 +728 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -666,0 +739 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -679,0 +753 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -690,0 +765 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -708,0 +784 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -717,0 +794 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -727,0 +805 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return;}
+@@ -737,0 +816 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -746,0 +826 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -759,0 +840 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -772,0 +854 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -789,0 +872 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -803,0 +887 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -817,0 +902 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -831,0 +917 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return {};}
+@@ -841,0 +928 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -855,0 +943 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -869,0 +958 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -883,0 +973 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -897,0 +988 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return {};}
+@@ -906,0 +998 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -920,0 +1013 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return {};}
+@@ -929,0 +1023 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -944,0 +1039 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -958,0 +1054 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -972,0 +1069 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -981,0 +1079 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return {};}
+@@ -990,0 +1089 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1004,0 +1104 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1018,0 +1119 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1032,0 +1134 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1048,0 +1151 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1064,0 +1168 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1073,0 +1178 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1089,0 +1195 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1103,0 +1210 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1112,0 +1220 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1121,0 +1230 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1130,0 +1240 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return {};}
+@@ -1141,0 +1252 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1151,0 +1263 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1160,0 +1273 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return;}
+@@ -1162 +1275 @@
+-    ffrt::thread t([weakPtr, slotId] {
++    lifecycle_->Submit(shared_from_this(),[weakPtr, slotId] {
+@@ -1168,2 +1281 @@
+-    });
+-    t.detach();
++    },true);
+@@ -1174,0 +1287 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1184,0 +1298 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1193,0 +1308 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Registration);if(!request){return;}
+@@ -1230,0 +1346 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return;}
+@@ -1242,0 +1359,4 @@
++    } else if (what == RadioEvent::RADIO_SIM_ACCOUNT_LOADED) {
++        if (multiSimMonitor_ != nullptr) {
++            multiSimMonitor_->UnRegisterCoreNotify(observerCallBack, what);
++        }
+@@ -1279,0 +1400 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return {};}
+@@ -1288,0 +1410 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1297,0 +1420 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1306,0 +1430 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1315,0 +1440 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1324,0 +1450 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return false;}
+@@ -1333,0 +1460 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return false;}
+@@ -1343,0 +1471 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1370,0 +1499 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1379,0 +1509 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return false;}
+@@ -1388,0 +1519 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return;}
+@@ -1397,0 +1529 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return;}
+@@ -1406,0 +1539 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1415,0 +1549 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1424,0 +1559 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1437,0 +1573 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1454,0 +1591 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1472,0 +1610 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1486,0 +1625 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1495,0 +1635 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return false;}
+@@ -1504,0 +1645 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1513,0 +1655 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1526,0 +1669 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1535,0 +1679 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return;}
+@@ -1544,0 +1689 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1556,0 +1702 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1565,0 +1712 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return false;}
+@@ -1574,0 +1722 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1588,0 +1737 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1594,0 +1744 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1603,0 +1754 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return {};}
+@@ -1612,0 +1764 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1621,0 +1774 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Read);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1630,0 +1784 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return;}
+@@ -1639,0 +1794 @@
++    TelLifecycle::Lease request(lifecycle_,TelLifecycle::Kind::Business);if(!request){return TELEPHONY_ERR_LOCAL_PTR_NULL;}
+@@ -1648 +1803,27 @@
+-// LOCV_EXCL_STOP+// LOCV_EXCL_STOP
++namespace OHOS { namespace Telephony {
++bool SimManager::IsStopping() const {return lifecycle_->GetState()==TelLifecycle::State::Stopping;}
++bool SimManager::IsStopped() const {return lifecycle_->GetState()==TelLifecycle::State::Stopped;}
++bool SimManager::Stop()
++{
++    auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(75);
++    if(!lifecycle_->BeginStop(deadline))return false;
++    if(IsStopped())return true;
++    struct Finish {std::shared_ptr<TelLifecycle> group;bool done=false;~Finish(){if(!done)group->FinishStop(false);}} finish{lifecycle_};
++    if(!lifecycle_->SealWhenIdle([this]{return !multiSimController_ || !multiSimController_->HasPendingPrimaryContinuation();},deadline)) {return false;}
++    lifecycle_->JoinOwnedWork();
++    bool ok=true;
++    if(multiSimMonitor_)ok=multiSimMonitor_->Shutdown() && ok;
++    if(multiSimController_)ok=multiSimController_->Shutdown() && ok;
++    for(auto &p:simAccountManager_)if(p)ok=p->Shutdown() && ok;
++    for(auto &p:simSmsManager_)if(p)ok=p->Shutdown() && ok;
++    for(auto &p:stkManager_)if(p)ok=p->Shutdown() && ok;
++    for(auto &p:iccDiallingNumbersManager_)if(p)ok=p->Shutdown() && ok;
++    for(auto &p:simFileManager_)if(p)ok=p->Shutdown() && ok;
++    for(auto &p:simStateManager_)if(p)ok=p->Shutdown() && ok;
++    if(!ok) {return false;}
++    multiSimMonitor_.reset();multiSimController_.reset();simAccountManager_.clear();simSmsManager_.clear();stkManager_.clear();iccDiallingNumbersManager_.clear();simFileManager_.clear();simStateManager_.clear();
++    cardFileDetectManager_.reset();operatorConfigHisysevent_.reset();controllerRunner_.reset();monitorRunner_.reset();telRilManager_.reset();
++    finish.done=true;lifecycle_->FinishStop(true);return true;
++}
++} }

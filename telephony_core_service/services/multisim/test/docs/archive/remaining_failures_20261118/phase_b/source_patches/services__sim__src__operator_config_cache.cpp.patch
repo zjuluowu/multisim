@@ -1,0 +1,19 @@
+--- a/services/sim/src/operator_config_cache.cpp
++++ b/services/sim/src/operator_config_cache.cpp
+@@ -384 +384 @@
+-    if (batchInsertApnRetryHandler_ == nullptr) {
++    if (Lifecycle()->GetState()!=TelLifecycle::State::Running || batchInsertApnRetryHandler_ == nullptr) {
+@@ -401 +401,3 @@
+-    batchInsertApnRetryTask_ = [weakThis, slotId]() {
++    batchInsertApnRetryTask_ = [weakThis, slotId, group=Lifecycle()]() {
++        TelLifecycle::Lease callback(group,TelLifecycle::Kind::Callback);if(!callback)return;
++        if(weakThis.expired())return;
+@@ -547,0 +550,8 @@
++
++namespace OHOS { namespace Telephony {
++bool OperatorConfigCache::Shutdown() {return shutdown_.Run([this] {
++    if(!StopEvents())return false;
++    UnRegisterForIccChange();if(batchInsertApnRetryHandler_)batchInsertApnRetryHandler_->RemoveTask(TASK_ID);batchInsertApnRetryTask_={};batchInsertApnRetryHandler_.reset();
++    simStateManager_.reset();simFileManager_.reset();return true;
++ });}
++} }

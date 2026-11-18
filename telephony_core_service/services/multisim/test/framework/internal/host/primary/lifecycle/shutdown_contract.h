@@ -38,6 +38,12 @@ template<class Body> void ShutdownContract(Body body)
 template<class Manager> void VerifyStopped(PrimaryEnvironment &s, const Manager &manager, const QueueBaseline &baseline)
 {
     EXPECT_TRUE(manager->IsStopped());
+    EXPECT_EQ(ActiveWatchers(), 0u) << "PARAMETER_WATCHER_NOT_UNREGISTERED";
+    if (s.coreRilAttached) {
+        EXPECT_EQ(s.ril.use_count(), 2) << "SIM_MUST_PRESERVE_CORE_RIL_OWNER";
+        CoreManagerInner::GetInstance().SetTelRilMangerObj(nullptr);
+        s.coreRilAttached = false;
+    }
     EXPECT_EQ(s.ril.use_count(), 1) << "PRODUCTION_RIL_REFERENCES_BEFORE_ROOT_RELEASE";
     {
         std::lock_guard<std::mutex> lock(s.mutex);
@@ -47,9 +53,25 @@ template<class Manager> void VerifyStopped(PrimaryEnvironment &s, const Manager 
             EXPECT_TRUE(r.owner.expired()) << "RIL_OBSERVER_ALIVE slot=" << r.slot << " event=" << r.event;
         }
     }
-    if (s.accountObserver) EXPECT_EQ(s.accountObserver.use_count(), 1);
+    for (const auto &sample : s.lifetimeSamples)
+        EXPECT_TRUE(sample.object.expired()) << "RIL_SUBSCRIBER_ALIVE " << sample.type;
+    if (s.accountObserver) {
+        EXPECT_EQ(s.accountObserver.use_count(), 1);
+        EXPECT_TRUE(s.accountObserver->StopEvents()); // Caller-owned executor, not part of SIM Stop.
+    }
     baseline.ExpectNoOwnedWork();
     EXPECT_FALSE(manager->IsSetPrimarySlotIdInProgress());
+    EXPECT_EQ(manager->SetPrimarySlotId(1, true), TELEPHONY_ERR_LOCAL_PTR_NULL) << "NEW_BUSINESS_AFTER_STOP";
+    EXPECT_FALSE(manager->OnInit(3)) << "REINITIALIZATION_OF_STOPPED_INSTANCE";
+    // These value-returning public entries must not index the retired vectors.
+    EXPECT_TRUE(manager->GetSimEons(0, "00101", 0, true).empty());
+    EXPECT_TRUE(manager->GetLocaleFromDefaultSim(0).empty());
+    EXPECT_TRUE(manager->GetSimGid2(0).empty());
+    EXPECT_TRUE(manager->GetSimTeleNumberIdentifier(0).empty());
+    EXPECT_TRUE(manager->ObtainAllSmsOfIcc(0).empty());
+    EXPECT_TRUE(manager->GetSimIst(0).empty());
+    EXPECT_EQ(manager->UpdateDBActiveByIccId("retired-card", 1), TELEPHONY_ERR_LOCAL_PTR_NULL);
+
     auto observer = std::make_shared<AccountObserver>([] { ADD_FAILURE() << "CALLBACK_AFTER_STOP"; });
     std::weak_ptr<AccountObserver> weak = observer;
     manager->RegisterCoreNotify(1, observer, RadioEvent::RADIO_SIM_ACCOUNT_LOADED);

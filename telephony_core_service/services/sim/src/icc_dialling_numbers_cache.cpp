@@ -419,3 +419,12 @@ void IccDiallingNumbersCache::InitFileTypeMap()
 }
 } // namespace Telephony
 } // namespace OHOS
+
+namespace OHOS { namespace Telephony {
+bool IccDiallingNumbersCache::Shutdown() {return shutdown_.Run([this] {
+    if(!StopEvents())return false;
+    if(usimDiallingNumberSrv_ && !usimDiallingNumberSrv_->StopEvents())return false;
+    if(diallingNumbersHandler_ && !diallingNumbersHandler_->StopEvents())return false;
+    usimDiallingNumberSrv_.reset();diallingNumbersHandler_.reset();simFileManager_.reset();diallingNumberFileList_.clear();return true;
+ });}
+} }

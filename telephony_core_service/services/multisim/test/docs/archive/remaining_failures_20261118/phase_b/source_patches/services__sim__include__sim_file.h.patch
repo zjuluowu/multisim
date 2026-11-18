@@ -1,0 +1,11 @@
+--- a/services/sim/include/sim_file.h
++++ b/services/sim/include/sim_file.h
+@@ -18,0 +19 @@
++#include "tel_parameter_watcher.h"
+@@ -40,0 +42 @@
++    bool Shutdown() override;
+@@ -58,0 +61,4 @@
++
++private:
++    std::shared_ptr<TelParameterWatcher<SimFile>> satelliteWatcher_;
++    void ApplySatelliteParameter(const char *key,const char *value);

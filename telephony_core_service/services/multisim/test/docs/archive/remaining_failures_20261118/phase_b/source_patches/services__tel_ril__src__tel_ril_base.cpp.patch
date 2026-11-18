@@ -1,0 +1,6 @@
+--- a/services/tel_ril/src/tel_ril_base.cpp
++++ b/services/tel_ril/src/tel_ril_base.cpp
+@@ -150 +150,2 @@
+-        TelEventHandler::SendTelEvent(handler, eventId, respInfo);
++        auto response = TelEventHandler::CreateResponseEvent(telRilRequest->pointer_, respInfo);
++        TelEventHandler::SendTelEvent(handler, response);

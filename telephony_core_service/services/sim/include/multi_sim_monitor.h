@@ -35,8 +35,11 @@
 namespace OHOS {
 namespace Telephony {
 typedef void (*ParameterChgPtr)(const char *, const char *, void *);
+struct SimRebootWatcher;
 class MultiSimMonitor : public TelEventHandler {
 public:
+    bool Shutdown();
+
     explicit MultiSimMonitor(const std::shared_ptr<MultiSimController> &controller,
         std::vector<std::shared_ptr<Telephony::SimStateManager>> simStateManager,
         std::vector<std::weak_ptr<Telephony::SimFileManager>> simFileManager);
@@ -46,6 +49,7 @@ public:
     void AddExtraManagers(std::shared_ptr<Telephony::SimStateManager> simStateManager,
         std::shared_ptr<Telephony::SimFileManager> simFileManager);
     void RegisterCoreNotify(int32_t slotId, const std::shared_ptr<AppExecFwk::EventHandler> &handler, int what);
+    void UnRegisterCoreNotify(const std::shared_ptr<AppExecFwk::EventHandler> &handler, int what);
     int32_t RegisterSimAccountCallback(const int32_t tokenId, const sptr<SimAccountCallback> &callback);
     int32_t UnregisterSimAccountCallback(const sptr<SimAccountCallback> &callback);
     void NotifySimAccountChanged();
@@ -112,6 +116,8 @@ private:
     void UpdateSimStateToStateRegistry();
     void RegisterRebootDetectCallback();
     void UnregisterRebootDetectCallback();
+    bool StopRebootWatcher();
+    std::shared_ptr<SimRebootWatcher> rebootWatcher_;
     void SetMatchSimStateTracker(MatchSimState matchSimStateTracker);
 
 private:
@@ -179,6 +185,9 @@ private:
     ffrt::shared_mutex forgetAllDataDoneMutex_;
     std::atomic<int32_t> lastUserId_ = -1;
     int32_t tstsMode_ = 0;
+private:
+    TelStopOnce shutdown_;
+
 };
 } // namespace Telephony
 } // namespace OHOS

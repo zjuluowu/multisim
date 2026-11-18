@@ -28,6 +28,8 @@ namespace OHOS {
 namespace Telephony {
 class SimAccountManager {
 public:
+    bool Shutdown();
+
     SimAccountManager(std::shared_ptr<Telephony::ITelRilManager> telRilManager,
         std::shared_ptr<SimStateManager> simStateManager, std::shared_ptr<SimFileManager> simFileManager);
     ~SimAccountManager();
@@ -57,6 +59,9 @@ private:
     std::shared_ptr<IccOperatorPrivilegeController> privilegeController_ = nullptr;
     std::shared_ptr<AppExecFwk::EventRunner> privilegesRunner_;
     std::weak_ptr<IOperatorConfigHisysevent> operatorConfigHisysevent_{};
+private:
+    TelStopOnce shutdown_;
+
 };
 } // namespace Telephony
 } // namespace OHOS

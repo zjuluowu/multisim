@@ -50,8 +50,8 @@ void ObserverHandler::RegObserver(int32_t what, const std::shared_ptr<AppExecFwk
 
 void ObserverHandler::RemoveAll()
 {
-    std::unique_lock<ffrt::mutex> lock(mutex_);
-    observerHandlerMap_.clear();
+    decltype(observerHandlerMap_) retired;
+    {std::unique_lock<ffrt::mutex> lock(mutex_);retired.swap(observerHandlerMap_);}
 }
 
 void ObserverHandler::Remove(int32_t what, const std::shared_ptr<AppExecFwk::EventHandler> handler)

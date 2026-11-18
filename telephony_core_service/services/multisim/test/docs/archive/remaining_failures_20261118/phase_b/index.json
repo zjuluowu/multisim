@@ -1,0 +1,497 @@
+{
+  "input_head": "4fd8162bc0ea6f6ce57b6d080e52e1d4bc5db23a",
+  "status": "PASS",
+  "admission": {
+    "status": "PASS",
+    "raw_test_status": "PASS",
+    "known_failures": [],
+    "reasons": [],
+    "passed": 124,
+    "failed": 0
+  },
+  "counts": {
+    "PASS": 124
+  },
+  "commands": [
+    {
+      "name": "case-discovery",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/update_case_sources.py"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "case-discovery.log"
+    },
+    {
+      "name": "integrity",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/check_test_integrity.py"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "integrity.log"
+    },
+    {
+      "name": "architecture",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/run_architecture.py",
+        "--with-gn",
+        "--migration",
+        "--output",
+        "/tmp/sim-stop-complete/sim-ta4ftz_u/architecture"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "architecture.log"
+    },
+    {
+      "name": "technical",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/technical.py",
+        "--output",
+        "/tmp/sim-stop-complete/sim-ta4ftz_u/technical"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "technical.log"
+    },
+    {
+      "name": "sim_test_host-build",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/build_replacement.py",
+        "--out",
+        "/mnt/e/github/multisim/.host-out",
+        "--target",
+        "sim_test_host",
+        "--jobs",
+        "3"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_test_host-build.log"
+    },
+    {
+      "name": "sim_test_host",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/run_gtest.py",
+        "--binary",
+        "/mnt/e/github/multisim/.host-out/build/sim_test_host",
+        "--output",
+        "/tmp/sim-stop-complete/sim-ta4ftz_u/sim_test_host",
+        "--filter",
+        "*"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_test_host.log"
+    },
+    {
+      "name": "sim_test_host-execution",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/audit_replacement_execution.py",
+        "--slice",
+        "state",
+        "--binary",
+        "/mnt/e/github/multisim/.host-out/build/sim_test_host",
+        "--profiles",
+        "/tmp/sim-stop-complete/sim-ta4ftz_u/sim_test_host/gtest-yiapd1ao",
+        "--output",
+        "/tmp/sim-stop-complete/sim-ta4ftz_u/sim_test_host-execution"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_test_host-execution.log"
+    },
+    {
+      "name": "sim_component_test-build",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/build_replacement.py",
+        "--out",
+        "/mnt/e/github/multisim/.host-out",
+        "--target",
+        "sim_component_test",
+        "--jobs",
+        "3"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_component_test-build.log"
+    },
+    {
+      "name": "sim_component_test",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/run_gtest.py",
+        "--binary",
+        "/mnt/e/github/multisim/.host-out/build/sim_component_test",
+        "--output",
+        "/tmp/sim-stop-complete/sim-ta4ftz_u/sim_component_test",
+        "--filter",
+        "*"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_component_test.log"
+    },
+    {
+      "name": "sim_primary_slot_entry_test-build",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/build_replacement.py",
+        "--out",
+        "/mnt/e/github/multisim/.host-out",
+        "--target",
+        "sim_primary_slot_entry_test",
+        "--jobs",
+        "3"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_primary_slot_entry_test-build.log"
+    },
+    {
+      "name": "sim_primary_slot_entry_test",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/run_gtest.py",
+        "--binary",
+        "/mnt/e/github/multisim/.host-out/build/sim_primary_slot_entry_test",
+        "--output",
+        "/tmp/sim-stop-complete/sim-ta4ftz_u/sim_primary_slot_entry_test",
+        "--filter",
+        "*"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_primary_slot_entry_test.log"
+    },
+    {
+      "name": "sim_g2a_query_test-build",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/build_replacement.py",
+        "--out",
+        "/mnt/e/github/multisim/.host-out",
+        "--target",
+        "sim_g2a_query_test",
+        "--jobs",
+        "3"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_g2a_query_test-build.log"
+    },
+    {
+      "name": "sim_g2a_query_test",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/run_gtest.py",
+        "--binary",
+        "/mnt/e/github/multisim/.host-out/build/sim_g2a_query_test",
+        "--output",
+        "/tmp/sim-stop-complete/sim-ta4ftz_u/sim_g2a_query_test",
+        "--filter",
+        "*"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_g2a_query_test.log"
+    },
+    {
+      "name": "sim_g2a_query_test-execution",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/audit_replacement_execution.py",
+        "--slice",
+        "query",
+        "--binary",
+        "/mnt/e/github/multisim/.host-out/build/sim_g2a_query_test",
+        "--profiles",
+        "/tmp/sim-stop-complete/sim-ta4ftz_u/sim_g2a_query_test/gtest-hyo97jox",
+        "--output",
+        "/tmp/sim-stop-complete/sim-ta4ftz_u/sim_g2a_query_test-execution"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_g2a_query_test-execution.log"
+    },
+    {
+      "name": "sim_upstream_query_test-build",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/build_replacement.py",
+        "--out",
+        "/mnt/e/github/multisim/.host-out",
+        "--target",
+        "sim_upstream_query_test",
+        "--jobs",
+        "3"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_upstream_query_test-build.log"
+    },
+    {
+      "name": "sim_upstream_query_test",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/run_gtest.py",
+        "--binary",
+        "/mnt/e/github/multisim/.host-out/build/sim_upstream_query_test",
+        "--output",
+        "/tmp/sim-stop-complete/sim-ta4ftz_u/sim_upstream_query_test",
+        "--filter",
+        "*"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_upstream_query_test.log"
+    },
+    {
+      "name": "sim_upstream_query_test-execution",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/audit_replacement_execution.py",
+        "--slice",
+        "upstream",
+        "--binary",
+        "/mnt/e/github/multisim/.host-out/build/sim_upstream_query_test",
+        "--profiles",
+        "/tmp/sim-stop-complete/sim-ta4ftz_u/sim_upstream_query_test/gtest-3a0c37ng",
+        "--output",
+        "/tmp/sim-stop-complete/sim-ta4ftz_u/sim_upstream_query_test-execution"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_upstream_query_test-execution.log"
+    },
+    {
+      "name": "sim_primary_slot_real_test-build",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/build_replacement.py",
+        "--out",
+        "/mnt/e/github/multisim/.host-out",
+        "--target",
+        "sim_primary_slot_real_test",
+        "--jobs",
+        "3"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_primary_slot_real_test-build.log"
+    },
+    {
+      "name": "sim_primary_slot_real_test",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/run_gtest.py",
+        "--binary",
+        "/mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test",
+        "--output",
+        "/tmp/sim-stop-complete/sim-ta4ftz_u/sim_primary_slot_real_test",
+        "--filter",
+        "*",
+        "--env",
+        "SIM_HOST_BOOT_SLOT_COUNT=2",
+        "--env",
+        "SIM028_INIT_MODEL=single-active"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_primary_slot_real_test.log"
+    },
+    {
+      "name": "sim_primary_slot_real_test-execution",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/audit_replacement_execution.py",
+        "--slice",
+        "primary",
+        "--binary",
+        "/mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test",
+        "--profiles",
+        "/tmp/sim-stop-complete/sim-ta4ftz_u/sim_primary_slot_real_test/gtest-i583k4iz",
+        "--output",
+        "/tmp/sim-stop-complete/sim-ta4ftz_u/sim_primary_slot_real_test-execution"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_primary_slot_real_test-execution.log"
+    },
+    {
+      "name": "sim_bootstrap_characterization-build",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/build_replacement.py",
+        "--out",
+        "/mnt/e/github/multisim/.host-out",
+        "--target",
+        "sim_bootstrap_characterization",
+        "--jobs",
+        "3"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_bootstrap_characterization-build.log"
+    },
+    {
+      "name": "sim_bootstrap_characterization",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/run_gtest.py",
+        "--binary",
+        "/mnt/e/github/multisim/.host-out/build/sim_bootstrap_characterization",
+        "--output",
+        "/tmp/sim-stop-complete/sim-ta4ftz_u/sim_bootstrap_characterization",
+        "--filter",
+        "*",
+        "--env",
+        "SIM_HOST_BOOT_SLOT_COUNT=2",
+        "--env",
+        "SIM028_INIT_MODEL=single-active"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "sim_bootstrap_characterization.log"
+    },
+    {
+      "name": "capability-probe-build",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/build_replacement.py",
+        "--out",
+        "/mnt/e/github/multisim/.host-out",
+        "--target",
+        "sim_capability_probe"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "capability-probe-build.log"
+    },
+    {
+      "name": "capability-negative-controls",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/check_capabilities.py",
+        "--binary",
+        "/mnt/e/github/multisim/.host-out/build/sim_capability_probe",
+        "--output",
+        "/tmp/sim-stop-complete/sim-ta4ftz_u/capabilities"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "capability-negative-controls.log"
+    },
+    {
+      "name": "device-static",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/check_device.py"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "device-static.log"
+    },
+    {
+      "name": "migration-equivalence",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/verify_migration.py",
+        "--reports",
+        "/tmp/sim-stop-complete/sim-ta4ftz_u/result.json",
+        "--output",
+        "/tmp/sim-stop-complete/sim-ta4ftz_u/comparison.json"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "migration-equivalence.log"
+    },
+    {
+      "name": "mutation",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/mutations.py",
+        "--out",
+        "/mnt/e/github/multisim/.host-out",
+        "--output",
+        "/tmp/sim-stop-complete/sim-ta4ftz_u/mutation"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "mutation.log"
+    },
+    {
+      "name": "profile-safety",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/profile_safety.py",
+        "--binary",
+        "/mnt/e/github/multisim/.host-out/build/sim_test_host",
+        "--output",
+        "/tmp/sim-stop-complete/sim-ta4ftz_u/profile-safety"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "profile-safety.log"
+    }
+  ],
+  "reproduction": "python3 -B telephony_core_service/services/multisim/test/scripts/test.py all --ci --output /tmp/sim-stop-complete",
+  "strong_model": "SIM_HOST_STRONG_RIL_SUBSCRIPTIONS=1 SIM_HOST_BOOT_SLOT_COUNT=2",
+  "native_product": "NOT_RUN",
+  "device": "NOT_RUN",
+  "gui": "NOT_RUN",
+  "sanitizers": "NOT_RUN",
+  "final_strong_stop": {
+    "status": "PASS",
+    "cases": 17,
+    "archive": "stop-final-strong.tar.gz"
+  },
+  "final_strong_dual_active": {
+    "status": "PASS",
+    "gtest_cases": 7,
+    "frozen_business_contracts": 7,
+    "archive": "dual-final.tar.gz"
+  },
+  "final_editor": {
+    "status": "PASS",
+    "source_locations": 124,
+    "archive": "editor-final.tar.gz"
+  }
+}

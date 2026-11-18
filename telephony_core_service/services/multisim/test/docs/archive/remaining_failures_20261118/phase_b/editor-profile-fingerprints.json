@@ -1,0 +1,58 @@
+[
+  {
+    "path": "discovery-10.profraw",
+    "sha256": "2ef98260b20f8542bf77e69adcf8ab77fe4d0d862b2558a99037003ba7278ac2"
+  },
+  {
+    "path": "discovery-11.profraw",
+    "sha256": "8ed908ab945b1dadca4f20e4fba7b895e0cccc5d1f7d0525c01fba8136ea6a3d"
+  },
+  {
+    "path": "discovery-12.profraw",
+    "sha256": "d82dde69452395dd3915c7015d8bdad9e1aa5ab9f0655a94cb8eb84cbea5bc26"
+  },
+  {
+    "path": "discovery-13.profraw",
+    "sha256": "07061cc86847517255941cdd8b7d5fc9726352649aef3a601e9a39309386ccb5"
+  },
+  {
+    "path": "discovery-14.profraw",
+    "sha256": "6d3d0a8ed3807561677f6bb5e96f381213667b3ecb878942d2fab11f655841a4"
+  },
+  {
+    "path": "discovery-15.profraw",
+    "sha256": "aaca19620ed6970f878f546148c1add71e3cd5b0048ef37a5077f97ef191691f"
+  },
+  {
+    "path": "discovery-16.profraw",
+    "sha256": "cf8c980beb110f6a0eb5b842624e1324242411e6283e61019d8bbbde41ff6210"
+  },
+  {
+    "path": "discovery-17.profraw",
+    "sha256": "31e080ba792581c11cd0955de759c1ee28b8c87ebf4eed50abeb270f7e4c62f3"
+  },
+  {
+    "path": "discovery-4.profraw",
+    "sha256": "13d1b97b4630180c548285b66b4703e281962494b9e1fe9f3faac440e7899e5e"
+  },
+  {
+    "path": "discovery-5.profraw",
+    "sha256": "69cc1627aeb4c73920ffb9d064ba9d60588eb07dfc9959b4dec675a1cb0f0003"
+  },
+  {
+    "path": "discovery-6.profraw",
+    "sha256": "c44e3c4e8613dab82acc401b35f36955b1bf0c5a9916804cce9c2481aa4e4a54"
+  },
+  {
+    "path": "discovery-7.profraw",
+    "sha256": "2b1d47fe4f8916076930e84f35b7dc5c2375f31fc57267cd8771abc66010b696"
+  },
+  {
+    "path": "discovery-8.profraw",
+    "sha256": "69c14cb1dfae2e34d0d32c0b684004ca089cc3f18d1bc02e8d756098c5488301"
+  },
+  {
+    "path": "discovery-9.profraw",
+    "sha256": "4ec914390a241d1ccafa4286f2dbae632bb0e770d4b78d5f4ed27020630831b9"
+  }
+]

@@ -1,0 +1,10 @@
+--- a/services/sim/src/stk_manager.cpp
++++ b/services/sim/src/stk_manager.cpp
+@@ -95,0 +96,7 @@
++
++namespace OHOS { namespace Telephony {
++bool StkManager::Shutdown() {return shutdown_.Run([this] {
++    if(stkController_) {if(!stkController_->StopEvents())return false;stkController_->UnRegisterEvents();stkController_.reset();}
++    stkEventLoop_.reset();simStateManager_.reset();telRilManager_.reset();return true;
++ });}
++} }

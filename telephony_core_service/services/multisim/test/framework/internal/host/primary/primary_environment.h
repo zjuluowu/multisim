@@ -1,5 +1,6 @@
 #pragma once
 #include "sim_manager.h"
+#include "watcher_boundary.h"
 #include "lifecycle/lifecycle_diagnostics.h"
 #include "lifecycle/external_runner.h"
 #include "core_service_sim.h"
@@ -144,6 +145,9 @@ public:
     }
     std::shared_ptr<AccountObserver> accountObserver;
     bool accountLoaded = false;
+    bool coreRilAttached = false;
+    std::function<void(const char *)> beforeParameterRead;
+    std::vector<TelLifetimeSample> lifetimeSamples;
     std::mutex mutex;
     std::condition_variable changed;
     ProviderRow row;
@@ -203,6 +207,7 @@ public:
         int slot, event;
         std::weak_ptr<AppExecFwk::EventHandler> owner;
         bool active;
+        std::shared_ptr<AppExecFwk::EventHandler> strong;
     };
     std::vector<Registration> registrationLedger; // weak only; full multi-owner pairing ledger
     template<class T> static void Reply(const Pending &request, std::shared_ptr<T> response)
@@ -244,6 +249,7 @@ public:
         }
         parametersDb["const.vendor.ril.set_primary_slot_support"] = directRil ? "true" : "false";
         EXPECT_CALL(parameters, Read(_, _, _, _)).WillRepeatedly([this](auto key, auto fallback, auto out, auto size) {
+            if (beforeParameterRead) beforeParameterRead(key);
             std::lock_guard<std::mutex> lock(mutex);
             auto it = parametersDb.find(key);
             return SimHost::CopyParameterValue(it == parametersDb.end() ? fallback : it->second.c_str(), out, size);
@@ -297,21 +303,26 @@ public:
             ++updates; changed.notify_all(); return 0; // verified Provider RdbStore::Update status, not row count
         });
         EXPECT_CALL(*ril, RegisterCoreNotify(_, _, _, _)).WillRepeatedly([this](int slot, const auto &owner, int id, int *) {
+            TelLifetimeEvidence::Remember(typeid(*owner).name(), owner);
             std::lock_guard<std::mutex> lock(mutex);
             bool existing = false;
             std::weak_ptr<AppExecFwk::EventHandler> weak = owner;
             for (const auto &r : registrationLedger)
                 existing |= r.active && r.slot == slot && r.event == id &&
                     !r.owner.owner_before(weak) && !weak.owner_before(r.owner);
-            if (!existing) registrationLedger.push_back({slot, id, weak, true});
+            if (!existing) registrationLedger.push_back({slot, id, weak, true,
+                std::getenv("SIM_HOST_STRONG_RIL_SUBSCRIPTIONS") ? owner : nullptr});
             notifications[{slot, id}] = owner; return 0;
         });
         EXPECT_CALL(*ril, UnRegisterCoreNotify(_, _, _)).WillRepeatedly([this](int slot, const auto &owner, int id) {
+            std::vector<std::shared_ptr<AppExecFwk::EventHandler>> retired;
             std::lock_guard<std::mutex> lock(mutex);
             std::weak_ptr<AppExecFwk::EventHandler> weak = owner;
             for (auto &r : registrationLedger)
                 if (r.active && r.slot == slot && r.event == id &&
-                    !r.owner.owner_before(weak) && !weak.owner_before(r.owner)) r.active = false;
+                    !r.owner.owner_before(weak) && !weak.owner_before(r.owner)) {
+                    r.active = false; retired.push_back(std::move(r.strong));
+                }
             auto it = notifications.find({slot, id});
             if (it != notifications.end() && it->second.lock() == owner) {
                 notifications.erase(it);
@@ -403,6 +414,7 @@ public:
         manager = std::make_shared<SimManager>(ril);
         InitTrace("manager_constructed", -1, manager.get());
         CoreManagerInner::GetInstance().OnInit(nullptr, manager, ril);
+        coreRilAttached = true;
         core.SetSimManager(manager);
         // Same logical slot-vector sizing as real CoreService::Init, including the extra slot.
         if (!manager->OnInit(SIM_SLOT_COUNT_MD + 1)) return false;
@@ -482,6 +494,7 @@ public:
             EXPECT_CALL(*ril, SetRadioProtocol(_, _, _)).Times(0);
             EXPECT_CALL(*ril, GetRadioProtocol(_, _)).Times(0);
         }
+        lifetimeSamples = TelLifetimeEvidence::Live();
         DumpQueues("initialization_admission");
         return legacyWait ? loaded : loaded && drained && active && present && presenceResult == TELEPHONY_ERR_SUCCESS && baseline && !testing::Test::HasFailure();
     }
@@ -540,6 +553,7 @@ public:
     ~PrimaryEnvironment()
     {
         ExportPrimaryObservation();
+        if (manager) EXPECT_TRUE(manager->Stop()) << "REAL_MANAGER_STOP_FAILED";
         if (dual) SetInitializationAccountProbe({});
         LifecycleCheckpoint("before_cleanup", manager.get(), ril.get());
         DumpQueues("before_cleanup");

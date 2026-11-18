@@ -381,7 +381,7 @@ void OperatorConfigCache::SendSimMatchedOperatorInfo(int32_t slotId, int32_t sta
 
 void OperatorConfigCache::RetryBatchInsertApnPostTask()
 {
-    if (batchInsertApnRetryHandler_ == nullptr) {
+    if (Lifecycle()->GetState()!=TelLifecycle::State::Running || batchInsertApnRetryHandler_ == nullptr) {
         return;
     }
     batchInsertApnRetryHandler_->PostTask(batchInsertApnRetryTask_, TASK_ID, BATCH_INSERT_APN_RETRY_DEALY);
@@ -398,7 +398,9 @@ void OperatorConfigCache::notifyInitApnConfigs(int32_t slotId)
     auto runner = AppExecFwk::EventRunner::Create(TASK_ID, AppExecFwk::ThreadMode::FFRT);
     batchInsertApnRetryHandler_ = std::make_shared<AppExecFwk::EventHandler>(runner);
     std::weak_ptr<AppExecFwk::EventHandler> weakThis = shared_from_this();
-    batchInsertApnRetryTask_ = [weakThis, slotId]() {
+    batchInsertApnRetryTask_ = [weakThis, slotId, group=Lifecycle()]() {
+        TelLifecycle::Lease callback(group,TelLifecycle::Kind::Callback);if(!callback)return;
+        if(weakThis.expired())return;
         auto helper = PdpProfileRdbHelper::GetInstance();
         bool notifyRet = helper->notifyInitApnConfigs(slotId);
         auto strongThis = weakThis.lock();
@@ -545,3 +547,11 @@ int OperatorConfigCache::GetSimState(int32_t slotId, SimState &simState)
 } // namespace Telephony
 } // namespace OHOS
 // LOCV_EXCL_STOP
+
+namespace OHOS { namespace Telephony {
+bool OperatorConfigCache::Shutdown() {return shutdown_.Run([this] {
+    if(!StopEvents())return false;
+    UnRegisterForIccChange();if(batchInsertApnRetryHandler_)batchInsertApnRetryHandler_->RemoveTask(TASK_ID);batchInsertApnRetryTask_={};batchInsertApnRetryHandler_.reset();
+    simStateManager_.reset();simFileManager_.reset();return true;
+ });}
+} }

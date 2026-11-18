@@ -1,0 +1,24 @@
+--- a/utils/common/include/tel_event_queue.h
++++ b/utils/common/include/tel_event_queue.h
+@@ -20,0 +21,2 @@
++#include "tel_lifecycle.h"
++#include <set>
+@@ -28 +30,4 @@
+-    void Submit(AppExecFwk::InnerEvent::Pointer &event, AppExecFwk::EventQueue::Priority priority);
++    bool Submit(AppExecFwk::InnerEvent::Pointer &event, AppExecFwk::EventQueue::Priority priority);
++    bool Stop();
++    std::shared_ptr<TelLifecycle> Lifecycle() const { return lifecycle_; }
++    void KeepContinuation(uint32_t event) { std::lock_guard<ffrt::mutex> lock(taskCtx_);continuations_.insert(event); }
+@@ -69,0 +75,10 @@
++    std::shared_ptr<TelLifecycle> lifecycle_=TelLifecycle::CurrentOrNew();
++    ffrt::mutex admissionMutex_;
++    ffrt::condition_variable admissionChanged_;
++    bool stopping_=false,stopped_=false;
++    TelLifecycle::Key stopOwner_{};
++    std::atomic_bool closed_{false};
++    uint64_t taskToken_=0,currentToken_=0;
++    std::map<uint64_t,ffrt::task_handle> submitted_;
++    std::set<uint32_t> continuations_;
++    void Finished(uint64_t token) {std::lock_guard<ffrt::mutex> lock(taskCtx_);submitted_.erase(token);}
+@@ -85 +100 @@
+-#endif // TELEPHONY_EVENT_QUEUE_H+#endif // TELEPHONY_EVENT_QUEUE_H

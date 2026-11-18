@@ -32,6 +32,8 @@ class UsimDiallingNumbersService;
 class IccDiallingNumbersHandler;
 class IccDiallingNumbersCache : public TelEventHandler {
 public:
+    bool Shutdown();
+
     explicit IccDiallingNumbersCache(std::shared_ptr<SimFileManager> simFileManager);
     ~IccDiallingNumbersCache();
     void Init();
@@ -72,6 +74,9 @@ private:
     void SearchIndexByNameAndNumber(const std::shared_ptr<std::vector<std::shared_ptr<DiallingNumbersInfo>>> &list,
         const std::shared_ptr<DiallingNumbersInfo> &info, int &index);
     void InitFileTypeMap();
+private:
+    TelStopOnce shutdown_;
+
 };
 } // namespace Telephony
 } // namespace OHOS

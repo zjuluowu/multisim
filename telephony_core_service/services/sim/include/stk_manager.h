@@ -24,6 +24,8 @@ namespace OHOS {
 namespace Telephony {
 class StkManager {
 public:
+    bool Shutdown();
+
     StkManager(std::shared_ptr<ITelRilManager> telRilManager, std::shared_ptr<SimStateManager> simStateManager);
     virtual ~StkManager();
     void Init(int slotId);
@@ -36,6 +38,9 @@ private:
     std::shared_ptr<SimStateManager> simStateManager_ = nullptr;
     std::shared_ptr<StkController> stkController_ = nullptr;
     std::shared_ptr<AppExecFwk::EventRunner> stkEventLoop_ = nullptr;
+private:
+    TelStopOnce shutdown_;
+
 };
 } // namespace Telephony
 } // namespace OHOS

@@ -93,3 +93,10 @@ int32_t StkManager::SendCallSetupRequestResult(int32_t slotId, bool accept) cons
 }
 } // namespace Telephony
 } // namespace OHOS
+
+namespace OHOS { namespace Telephony {
+bool StkManager::Shutdown() {return shutdown_.Run([this] {
+    if(stkController_) {if(!stkController_->StopEvents())return false;stkController_->UnRegisterEvents();stkController_.reset();}
+    stkEventLoop_.reset();simStateManager_.reset();telRilManager_.reset();return true;
+ });}
+} }

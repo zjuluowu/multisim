@@ -34,6 +34,7 @@ SimStateManager::SimStateManager(std::shared_ptr<ITelRilManager> telRilManager)
 
 void SimStateManager::Init(int32_t slotId)
 {
+    TelLifecycle::Lease lifecycle(lifecycle_,TelLifecycle::Kind::Registration);if(!lifecycle)return;
     std::unique_lock<ffrt::mutex> lck(mtx_);
     TELEPHONY_LOGE("SimStateManager::Init()");
     if (simStateRun_ == STATE_RUNNING) {
@@ -59,6 +60,7 @@ void SimStateManager::Init(int32_t slotId)
 
 void SimStateManager::RegisterCoreNotify(const HANDLE &handler, int what)
 {
+    if(lifecycle_->GetState()!=TelLifecycle::State::Running)return;
     if (simStateHandle_ == nullptr) {
         TELEPHONY_LOGE("RegisterCoreNotify(), simStateHandle_ is nullptr!!!");
         return;
@@ -672,7 +674,7 @@ void SimStateManager::UpdateSimStateToStateRegistry()
 SimStateManager::~SimStateManager()
 {
     if (simStateHandle_ != nullptr) {
-        simStateHandle_->UnInit();
+        simStateHandle_->Shutdown();
     }
 }
 
@@ -705,3 +707,10 @@ void SimStateManager::SetSpecifiedIccidBySlotId(std::string &iccid)
 }
 } // namespace Telephony
 } // namespace OHOS
+
+namespace OHOS { namespace Telephony {
+bool SimStateManager::Shutdown() {return shutdown_.Run([this] {
+    if(simStateHandle_) {if(!simStateHandle_->Shutdown())return false;simStateHandle_.reset();}
+    telRilManager_.reset();return true;
+ });}
+} }

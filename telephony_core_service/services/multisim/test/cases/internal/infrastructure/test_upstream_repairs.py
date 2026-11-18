@@ -72,6 +72,26 @@ class UpstreamRepairProvenance(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'does not name an upstream source'):
             self.check()
 
+    def test_fingerprinted_addition_is_reported(self):
+        (self.root / 'lifecycle.h').write_bytes(b'owned barrier')
+        self.spec['local_additions'] = {'lifecycle.h': {'sha256': hashlib.sha256(b'owned barrier').hexdigest()}}
+        self.assertEqual(self.check()['local_additions'], ['lifecycle.h'])
+
+    def test_addition_drift_is_rejected(self):
+        self.spec['local_additions'] = {'lifecycle.h': {'sha256': 'wrong'}}
+        with self.assertRaisesRegex(RuntimeError, 'Local addition provenance differs'):
+            self.check()
+
+    def test_addition_cannot_override_upstream(self):
+        self.spec['local_additions'] = {'source.cpp': {'sha256': hashlib.sha256(b'repaired').hexdigest()}}
+        with self.assertRaisesRegex(RuntimeError, 'Local addition provenance differs'):
+            self.check()
+
+    def test_addition_cannot_escape_repository(self):
+        self.spec['local_additions'] = {'../escape.h': {'sha256': 'wrong'}}
+        with self.assertRaisesRegex(RuntimeError, 'Local addition provenance differs'):
+            self.check()
+
 
 if __name__ == '__main__':
     unittest.main()

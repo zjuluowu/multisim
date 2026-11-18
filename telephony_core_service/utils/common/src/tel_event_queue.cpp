@@ -63,14 +63,18 @@ void TelEventQueue::SetCurHandleTime(AppExecFwk::InnerEvent::TimePoint handleTim
     curHandleTime_ = handleTime;
 }
 
-void TelEventQueue::Submit(AppExecFwk::InnerEvent::Pointer &event, AppExecFwk::EventQueue::Priority priority)
+bool TelEventQueue::Submit(AppExecFwk::InnerEvent::Pointer &event, AppExecFwk::EventQueue::Priority priority)
 {
+    std::lock_guard<ffrt::mutex> admission(admissionMutex_);
+    if(closed_.load() || lifecycle_->Sealed()) return false;
     InsertEventsInner(event, priority);
     if (GetHandleTime() < GetCurHandleTime()) {
         GetNextQueueId();
         ClearCurrentTask(false);
         SubmitInner(queueId_.load());
     }
+    lifecycle_->Pulse();
+    return true;
 }
 
 uint32_t TelEventQueue::ToTelPriority(AppExecFwk::EventQueue::Priority priority)
@@ -112,7 +116,7 @@ void TelEventQueue::ClearCurrentTask(bool isNeedEnd)
     if (!curTask_ || !queue_) {
         return;
     }
-    queue_->cancel(curTask_);
+    if(queue_->cancel(curTask_)==0) submitted_.erase(currentToken_);
     if (isNeedEnd) {
         GetNextQueueId();
         return;
@@ -151,19 +155,23 @@ int32_t TelEventQueue::GetNextQueueId()
 void TelEventQueue::SubmitToFFRT(int32_t queueId, AppExecFwk::InnerEvent::TimePoint handleTime, int64_t delayTime)
 {
     std::unique_lock<ffrt::mutex> lock(taskCtx_);
-    if (queueId != queueId_.load()) {
+    if (closed_.load() || queueId != queueId_.load()) {
         TELEPHONY_LOGD("%{public}s task no need to submit", name_.c_str());
         SetCurHandleTime(AppExecFwk::InnerEvent::TimePoint::max());
         return;
     }
     SetCurHandleTime(handleTime);
     std::weak_ptr<TelEventQueue> weak = shared_from_this();
+    uint64_t token=++taskToken_;currentToken_=token;
     curTask_ = queue_->submit_h(
-        [weak, queueId = queueId]() {
+        [weak, queueId = queueId, token]() {
             auto thiz = weak.lock();
             if (thiz == nullptr) {
                 return;
             }
+            if(thiz->closed_.load()) return;
+            TelLifecycle::Lease callback(thiz->lifecycle_,TelLifecycle::Kind::Callback);
+            if(!callback) return;
             bool isNeedSubmit = true;
             auto event = thiz->PopEvent(queueId, isNeedSubmit);
             std::shared_ptr<TelEventHandler> handler = nullptr;
@@ -173,12 +181,16 @@ void TelEventQueue::SubmitToFFRT(int32_t queueId, AppExecFwk::InnerEvent::TimePo
                     TELEPHONY_LOGI("RADIO_RIL_DEACTIVATE_DATA_CALL ffrt");
                 }
             }
+            bool continuation=false;
+            if(event) {std::lock_guard<ffrt::mutex> lock(thiz->taskCtx_);continuation=thiz->continuations_.count(event->GetInnerEventId());}
+            TelLifecycle::Context context(thiz->lifecycle_,continuation);
             if (event && handler) {
                 TELEPHONY_LOGD("%{public}s ProcessEvent eventId %{public}d", thiz->name_.c_str(),
                     static_cast<uint32_t>(event->GetInnerEventId()));
                 handler->ProcessEvent(event);
                 thiz->eventStats_.CalculationExecutedEvents();
             }
+            thiz->Finished(token);
             if (!isNeedSubmit) {
                 TELEPHONY_LOGD("%{public}s task no need to submit", thiz->name_.c_str());
                 return;
@@ -186,6 +198,7 @@ void TelEventQueue::SubmitToFFRT(int32_t queueId, AppExecFwk::InnerEvent::TimePo
             thiz->SubmitInner(queueId);
         },
         ffrt::task_attr().delay(delayTime));
+    submitted_.emplace(token,curTask_);
         eventStats_.CalculationSubmitToFFRTEvents();
 }
 
@@ -225,15 +238,13 @@ bool TelEventQueue::HasInnerEvent(uint32_t innerEventId)
 
 void TelEventQueue::RemoveAllEvents()
 {
-    std::unique_lock<ffrt::mutex> lock(eventCtx_);
-    uint32_t removeCount = 0;
-    for (uint32_t i = 0; i < EVENT_QUEUE_NUM; ++i) {
-        removeCount += eventLists_[i].events.size();
-        eventLists_[i].events.clear();
+    std::array<EventList,EVENT_QUEUE_NUM> retired;
+    {
+        std::unique_lock<ffrt::mutex> lock(eventCtx_);
+        unsigned count=0;for(const auto &list:eventLists_)count+=list.events.size();
+        retired.swap(eventLists_);SetCurHandleTime(AppExecFwk::InnerEvent::TimePoint::max());
+        eventStats_.CalculationRemovedEvents(count);
     }
-    SetCurHandleTime(AppExecFwk::InnerEvent::TimePoint::max());
-    eventStats_.CalculationRemovedEvents(removeCount);
-    TELEPHONY_LOGD("%{public}s RemoveAllEvents finish", name_.c_str());
 }
 
 bool TelEventQueue::IsEmpty()
@@ -342,3 +353,18 @@ void TelEventQueue::EventStats::PrintEventStats(std::string &name)
 
 } // namespace Telephony
 } // namespace OHOS
+namespace OHOS { namespace Telephony {
+bool TelEventQueue::Stop()
+{
+    if(lifecycle_->InContext()) return false;
+    {std::unique_lock<ffrt::mutex> lock(admissionMutex_);if(stopping_ && !(TelLifecycle::CurrentKey()<stopOwner_) && !(stopOwner_<TelLifecycle::CurrentKey()))return false;
+    admissionChanged_.wait(lock,[&]{return !stopping_;});if(stopped_)return true;stopping_=true;stopOwner_=TelLifecycle::CurrentKey();closed_=true;}
+    RemoveAllEvents();
+    std::vector<ffrt::task_handle> tasks; std::shared_ptr<ffrt::queue> queue;
+    {std::lock_guard<ffrt::mutex> lock(taskCtx_);queue=queue_;for(auto &p:submitted_)tasks.push_back(p.second);if(curTask_)tasks.push_back(curTask_);}
+    if(queue) {for(auto &task:tasks)queue->cancel(task);for(auto &task:tasks)queue->wait(task);}
+    {std::lock_guard<ffrt::mutex> lock(taskCtx_);submitted_.clear();curTask_=ffrt::task_handle();queue_.reset();}
+    queue.reset();
+    {std::lock_guard<ffrt::mutex> lock(admissionMutex_);stopping_=false;stopped_=true;}admissionChanged_.notify_all();return true;
+}
+} }

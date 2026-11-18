@@ -1,0 +1,83 @@
+--- a/services/sim/src/multi_sim_controller.cpp
++++ b/services/sim/src/multi_sim_controller.cpp
+@@ -112,0 +113 @@
++    KeepContinuation(SET_PRIMARY_SLOT_RETRY_EVENT);
+@@ -924,0 +926,6 @@
++    std::shared_lock<ffrt::shared_mutex> lock(mutex_);
++    return IsSimActiveLocked(slotId);
++}
++
++bool MultiSimController::IsSimActiveLocked(int32_t slotId)
++{
+@@ -1101 +1108 @@
+-        std::thread initDataTask([targetPrimarySlotId = targetPrimarySlotId_]() {
++        Lifecycle()->Submit(shared_from_this(),[targetPrimarySlotId = targetPrimarySlotId_]() {
+@@ -1104,2 +1111 @@
+-        });
+-        initDataTask.detach();
++        },true);
+@@ -1129 +1135 @@
+-            std::thread initDataTask([&, defaultSlotId = defaultSlotId, isUserSet = isUserSet]() {
++            Lifecycle()->Submit(shared_from_this(),[&, defaultSlotId = defaultSlotId, isUserSet = isUserSet]() {
+@@ -1132,2 +1138 @@
+-            });
+-            initDataTask.detach();
++            },true);
+@@ -1137 +1142 @@
+-            std::thread initDataTask([&, defaultSlotId = defaultSlotId, isUserSet  = isUserSet ]() {
++            Lifecycle()->Submit(shared_from_this(),[&, defaultSlotId = defaultSlotId, isUserSet  = isUserSet ]() {
+@@ -1140,2 +1145 @@
+-            });
+-            initDataTask.detach();
++            },true);
+@@ -1156 +1160 @@
+-        std::thread initDataTask([&, firstActivedSlotId = firstActivedSlotId, isUserSet = isUserSet]() {
++        Lifecycle()->Submit(shared_from_this(),[&, firstActivedSlotId = firstActivedSlotId, isUserSet = isUserSet]() {
+@@ -1159,2 +1163 @@
+-        });
+-        initDataTask.detach();
++        },true);
+@@ -1399 +1402 @@
+-    if (slotId != DEFAULT_SIM_SLOT_ID_REMOVE && !IsSimActive(slotId)) {
++    if (slotId != DEFAULT_SIM_SLOT_ID_REMOVE && !IsSimActiveLocked(slotId)) {
+@@ -1492,0 +1496 @@
++    TelLifecycle::Lease request(Lifecycle(),TelLifecycle::Kind::Business);if(!request)return TELEPHONY_ERR_LOCAL_PTR_NULL;
+@@ -1621 +1625 @@
+-            std::thread initDataTask([&, primarySlotId = primarySlotId]() {
++            Lifecycle()->Submit(shared_from_this(),[&, primarySlotId = primarySlotId]() {
+@@ -1624,2 +1628 @@
+-            });
+-            initDataTask.detach();
++            },true);
+@@ -1745 +1748 @@
+-            TelFFRTUtils::Submit([=]() {
++            Lifecycle()->Submit(shared_from_this(),[=]() {
+@@ -1891 +1894 @@
+-        TelFFRTUtils::Submit([=]() {
++        Lifecycle()->Submit(shared_from_this(),[=]() {
+@@ -2105,0 +2109 @@
++    std::unique_lock<ffrt::mutex> setPrimarySlotLock(setPrimarySlotToRilMutex_);
+@@ -2110 +2113,0 @@
+-    std::unique_lock<ffrt::mutex> setPrimarySlotLock(setPrimarySlotToRilMutex_);
+@@ -2112,0 +2116 @@
++    setPrimarySlotLock.unlock();
+@@ -2113,0 +2118 @@
++    setPrimarySlotLock.lock();
+@@ -2168,2 +2173,5 @@
+-    isSettingPrimarySlotToRil_ = false;
+-    setPrimarySlotResponseResult_ = result;
++    {
++        std::lock_guard<ffrt::mutex> lock(setPrimarySlotToRilMutex_);
++        setPrimarySlotResponseResult_ = result;
++        isSettingPrimarySlotToRil_ = false;
++    }
+@@ -2277,0 +2286,9 @@
++
++namespace OHOS { namespace Telephony {
++bool MultiSimController::Shutdown() {return shutdown_.Run([this] {
++    if(!StopEvents())return false;
++    if(radioProtocolController_) {if(!radioProtocolController_->StopEvents())return false;radioProtocolController_->UnRegisterEvents();radioProtocolController_.reset();}
++    simStateManager_.clear();simFileManager_.clear();multiSimHelper_.reset();simManager_.reset();telRilManager_.reset();return true;
++ });}
++ bool MultiSimController::HasPendingPrimaryContinuation() {return HasInnerEvent(SET_PRIMARY_SLOT_RETRY_EVENT);}
++} }

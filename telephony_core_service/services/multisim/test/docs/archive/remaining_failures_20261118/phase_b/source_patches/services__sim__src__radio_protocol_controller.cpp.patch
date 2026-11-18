@@ -1,0 +1,4 @@
+--- a/services/sim/src/radio_protocol_controller.cpp
++++ b/services/sim/src/radio_protocol_controller.cpp
+@@ -33,0 +34 @@
++    if(Lifecycle()->GetState()!=TelLifecycle::State::Running)return;

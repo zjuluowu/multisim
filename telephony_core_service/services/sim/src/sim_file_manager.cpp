@@ -59,6 +59,7 @@ SimFileManager::~SimFileManager()
 
 void SimFileManager::Init(int slotId)
 {
+    if(Lifecycle()->GetState()!=TelLifecycle::State::Running)return;
     TELEPHONY_LOGI("SimFileManager::Init() started slot %{public}d", slotId);
     slotId_ = slotId;
     if (stateRecord_ == HandleRunningState::STATE_RUNNING) {
@@ -1032,3 +1033,23 @@ bool SimFileManager::IsUiccCard()
 } // namespace Telephony
 } // namespace OHOS
 // LOCV_EXCL_STOP
+
+namespace OHOS { namespace Telephony {
+bool SimFileManager::Shutdown() {return shutdown_.Run([this] {
+    if(!StopEvents())return false;
+    auto state=simStateManager_.lock();if(state) {
+        state->UnRegisterCoreNotify(shared_from_this(),RadioEvent::RADIO_CARD_TYPE_CHANGE);
+        state->UnRegisterCoreNotify(shared_from_this(),RadioEvent::RADIO_SIM_ICCID_LOADED);
+    }
+    auto ril=telRilManager_.lock();if(ril) {
+        ril->UnRegisterCoreNotify(slotId_,shared_from_this(),RadioEvent::RADIO_VOICE_TECH_CHANGED);
+        ril->UnRegisterCoreNotify(slotId_,shared_from_this(),RadioEvent::RADIO_ICC_REFRESH);
+    }
+    std::set<std::shared_ptr<IccFile>> files;for(auto &p:iccFileCache_)if(p.second)files.insert(p.second);if(simFile_)files.insert(simFile_);
+    for(auto &file:files) {file->UnRegisterCoreNotify(shared_from_this(),RadioEvent::RADIO_SIM_RECORDS_LOADED);if(!file->Shutdown())return false;}
+    std::set<std::shared_ptr<IccFileController>> controllers;for(auto &p:iccFileControllerCache_)if(p.second)controllers.insert(p.second);if(fileController_)controllers.insert(fileController_);
+    for(auto &controller:controllers) {if(!controller->StopEvents())return false;controller->SetRilManager(nullptr);}
+    if(diallingNumberHandler_ && !diallingNumberHandler_->StopEvents())return false;
+    simFile_.reset();iccFileCache_.clear();fileController_.reset();iccFileControllerCache_.clear();diallingNumberHandler_.reset();simStateManager_.reset();telRilManager_.reset();return true;
+ });}
+} }

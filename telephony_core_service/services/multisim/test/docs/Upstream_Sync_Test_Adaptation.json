@@ -69,54 +69,274 @@
     }
   },
   "local_repairs": {
-    "services/sim/src/sim_manager.cpp": {
-      "upstream_sha256": "6b18dab55dc8fb48d02b95af6fef9773c3a7759bf44141d60d824531371f44e5",
-      "repaired_sha256": "d4259a960a57982f2fde21b4707ed95fd2fad9bbfda9920c4233135da3a97313",
-      "patch": "docs/archive/c0_lifetime_fix_20261117/sim_manager.cpp.patch",
-      "patch_sha256": "080d873ff4ddc869ad0d4ba71bf0eff373e11168bc2e4f552080f667727de5ca",
-      "reason": "2026-11-17 user-authorized C0 lifecycle failure repair; no public telephony API changes."
+    "services/sim/include/icc_dialling_numbers_cache.h": {
+      "upstream_sha256": "839f98ca11659bd5b1ca19387f53d05761d0a797dfe5c0c46abfdfec66824b0e",
+      "repaired_sha256": "0607ae9a64586508bb8f0227fba4f7b3b37399830be4c36e8e7af766c7090ab9",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__include__icc_dialling_numbers_cache.h.patch",
+      "patch_sha256": "bf74486b090780f5ac028aa93a51d87f227ac5a9c880d5399c94951715c442c6",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
     },
-    "services/sim/src/sim_state_handle.cpp": {
-      "upstream_sha256": "9f27780811181955a1b81bd139d17c76d35b37f64a686b30bd3374134a31ef5c",
-      "repaired_sha256": "3c8e3c60bddb423a6951a1cde2d8bd51a76c35c8a92cf981b3c3b5ab7b0afa42",
-      "patch": "docs/archive/remaining_failures_20261118/services__sim__src__sim_state_handle.cpp.patch",
-      "patch_sha256": "83be12af7d860ccc635e2cd16534e69fe53dd81a8a61ee2dc3b05cb86ce22b66",
-      "reason": "2026-11-18 user-authorized remaining FAIL fixes: response correlation, card generation, transport errors and refresh return contract; previous ICCID repair retained."
+    "services/sim/include/icc_dialling_numbers_manager.h": {
+      "upstream_sha256": "ca9a474a7e94c4e10371f660df2f25cb7d2dcce2fc0cbe55cc5b8304f40ea64d",
+      "repaired_sha256": "3451b7ff634146ba209d613b0ad4c3a84b4cff1a2af81fefe1b478424be468a0",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__include__icc_dialling_numbers_manager.h.patch",
+      "patch_sha256": "2fb92a9973e17e8f458ca8c63df197fc612b7f774e2b9c5992e73d147d0d2bbd",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/include/icc_file.h": {
+      "upstream_sha256": "e97892738668f2fb56fac5e6ecb60f742012d602f68870f45d2f6cbb713957bd",
+      "repaired_sha256": "ad275ee9e5e7374ae6ca3a6af255cb2f374139fe4aeff2b6419c871540988a97",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__include__icc_file.h.patch",
+      "patch_sha256": "83365e1c52d9d6662684a305c5dbc79ffeac7a6027e2bd1cc621c084d92e8f35",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/include/multi_sim_controller.h": {
+      "upstream_sha256": "bc0e1edd8fbb0916bcbdb2f8e82ba9a289cac022ca691e926da817bea3288b8c",
+      "repaired_sha256": "bebc8cb5a5ffe3fd510235e63573ca8e4e3cb072a3e82a9bec8f8fd9a098cb0d",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__include__multi_sim_controller.h.patch",
+      "patch_sha256": "d3055d3683c60fa9292aa540a3185605d0df55fc6a2ac3ba57874d47720430c7",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/include/multi_sim_monitor.h": {
+      "upstream_sha256": "81aa95a4ef31acc250fac70cdf457bfc2b6803a136008bd662816562575ca15e",
+      "repaired_sha256": "fc3b7a92a43d7eb10ebed793982fd2d9a23f926d3f0c52103c2af2e4858028e9",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__include__multi_sim_monitor.h.patch",
+      "patch_sha256": "da3901a9523e10aa08479c242a6b105a85302012515e5ddc1111d19ceadc2923",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/include/operator_config_cache.h": {
+      "upstream_sha256": "f6d7d4f67cd72e69e4153f93c81b268f54eb4d9298eba8ff2f1851d84d8245a9",
+      "repaired_sha256": "162e88643c220ba9c7c6bd4da0175123a61533da519d48d2062bd25d798c7711",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__include__operator_config_cache.h.patch",
+      "patch_sha256": "7a5de3b312357824e6ed7b22241fd454cee465797e25ef89c51ff765b8b696ed",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/include/sim_account_manager.h": {
+      "upstream_sha256": "d23c7dde1238b7ad5781dd2393921327fd07dbadd579eaa43413e88054025318",
+      "repaired_sha256": "e0810cb47b5d50fbf77c90b5573a5478737bd0729c7dfa5eb68dcc7ccd78ec9a",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__include__sim_account_manager.h.patch",
+      "patch_sha256": "1041f6062fe5d57ff0cd326797f37f4e90d522f3de85ba281d01f62bce130cc8",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/include/sim_file.h": {
+      "upstream_sha256": "20986741e662bdd808c936dfdb43ec34b82029fc07832211a4e86b13bce3cfa9",
+      "repaired_sha256": "5bf83a108cceafcc00738390bb84dc44a600b8f9d115b6b083a949e53e7a1722",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__include__sim_file.h.patch",
+      "patch_sha256": "20dab76010a58e1ef80b3b9e46e956e3027d06f92d2fddf6edf6f462ce5445ec",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/include/sim_file_manager.h": {
+      "upstream_sha256": "6e949021392d5086410737735220b44adedd0f153fe8da29ff21c9efc87f6910",
+      "repaired_sha256": "5e87634f48cca5affed9edc9db477df1284f319641c50e433ee080726b7a4cd7",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__include__sim_file_manager.h.patch",
+      "patch_sha256": "fec257aa7675c8db79a92a8d8e7dce8a61fc062d184cc50cdd814098c4b233ec",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/include/sim_manager.h": {
+      "upstream_sha256": "f92d52e1e6f19a22e228acae9431d568ddf1dffa9af3d775f0bdd6f075973c18",
+      "repaired_sha256": "a58dffe9f807cc6748a67996311a3de9c23ce02cc4af12c3dfe1107f61d03bdf",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__include__sim_manager.h.patch",
+      "patch_sha256": "4cb00fe662d0da2cb9fd1554c629a01e147bcb493c2ad218b6a85cdf92138592",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/include/sim_sms_manager.h": {
+      "upstream_sha256": "ae67af5e95f8bf387a770c4c946c7cc727404b7129e9edb7b897e2dc7479c58b",
+      "repaired_sha256": "674ea91c5960112e1faac4dde1d5633860f45a2c14da6349cdd290bce99ae76d",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__include__sim_sms_manager.h.patch",
+      "patch_sha256": "bf17698b41646af0dd29c1997b68008342fdcad53a44c4ad431645be72259816",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
     },
     "services/sim/include/sim_state_handle.h": {
       "upstream_sha256": "cf13daaa44ad027f8f2d0af8063781dcdd2e9e79b627255cc03d3316901d5227",
-      "repaired_sha256": "976b01595523a4749b4423d1d38a2fd1eb30f6e11e17499bf07ba73b03cc1a7e",
-      "patch": "docs/archive/remaining_failures_20261118/services__sim__include__sim_state_handle.h.patch",
-      "patch_sha256": "0f55ad6062fdac9dac87fddc738e4d6c81f856211bd7c86366ce1236a9188c9a",
-      "reason": "2026-11-18 user-authorized remaining FAIL fixes: response correlation, card generation, transport errors and refresh return contract; previous ICCID repair retained."
+      "repaired_sha256": "d59b71525b3fcfc3bdf529a7fd67b0d9c0e114f8ae425e7ae1f71d62e5086058",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__include__sim_state_handle.h.patch",
+      "patch_sha256": "4873fefd8a8f489f08daef0a6a5f1ad0faf4c6ea30d54d3c59412591642da18b",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/include/sim_state_manager.h": {
+      "upstream_sha256": "228abcb8d2553958812afb78b01bc1a98e3ef163d03fa432c93d8ec9af2ec9b7",
+      "repaired_sha256": "ed36539710f2a65e1f4b85fb10652c8d296ac109fffa3c30bf8793ed4c565acc",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__include__sim_state_manager.h.patch",
+      "patch_sha256": "a92e309afa7b8d10da1c99fdb85736ecbd7536078e4d146c26d6294b3a24d8ed",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/include/stk_manager.h": {
+      "upstream_sha256": "30dc50b33332a973601472147c2d5fe98c339f4448235a0b599223976478882e",
+      "repaired_sha256": "9b6857b7bea6efdda31d9233f3370233b1e82514ef264d47b4f318be9c149a79",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__include__stk_manager.h.patch",
+      "patch_sha256": "8a72ca0b91bf14aa07a3ea557dd1e0d7afaaaadb47cfe2d890b56be9030d27d2",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/src/icc_dialling_numbers_cache.cpp": {
+      "upstream_sha256": "f150a14d526073d183c0526e05fd17d52c3ee4e7b2da431191517bfa2cbd63ed",
+      "repaired_sha256": "cd5273fb9b56fa8463b5d360dc25dff7214e7887b8c01da3ee4350f1b528ed8d",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__src__icc_dialling_numbers_cache.cpp.patch",
+      "patch_sha256": "555df7c0d8c02c46ffbede6a55d28c6dba421fa033b361b2b1453ae8da0dab80",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/src/icc_dialling_numbers_manager.cpp": {
+      "upstream_sha256": "5169424b7d29c86043e513f7b4d9bc4cad183df4eab7177407b1e03e39043c94",
+      "repaired_sha256": "c09fb729feb1d7c000007b94acd7fdeea5411c7d3146d2b615288c19882fef12",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__src__icc_dialling_numbers_manager.cpp.patch",
+      "patch_sha256": "aadc6bc606b361f28a1407900b9c2f1d997912265ef4ba008c2028957c61f09a",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/src/icc_file.cpp": {
+      "upstream_sha256": "23eaea110b04d9a98e66b1ce1f169ed4fd485c509ae8ee0ced9bf28f508f3aff",
+      "repaired_sha256": "a0eeae62b1ca174bd74f8cf89bc66b549a1bc2f892d4b9d1055aeab657fe4865",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__src__icc_file.cpp.patch",
+      "patch_sha256": "1f4bd209facf8dcbe902900ffadec5f8712eb589c105d62172c9d940b7556dbc",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/src/multi_sim_controller.cpp": {
+      "upstream_sha256": "55a5e3f7eadd6fc03bc23f6e27a12d9b59767cc2aab8642364c477169cf8d76b",
+      "repaired_sha256": "22221eb04b7d291705b1df5cd50abf67f03a6feb4cb06b8d5d39441d531585de",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__src__multi_sim_controller.cpp.patch",
+      "patch_sha256": "bc9a282a059ad8825e8ec94da3c1a2d365c0388ad053f452adee0cbd32b98ae4",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/src/multi_sim_monitor.cpp": {
+      "upstream_sha256": "4e0aa67c746d9d8f7d9d3a5a0c15bf5e6bad3966bd422b1bf6837788f6eda722",
+      "repaired_sha256": "4e787194c12fb28c3f4b61de7d17cea44bee227f6239d727b4ed8d20ddc67826",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__src__multi_sim_monitor.cpp.patch",
+      "patch_sha256": "00c95f7aabc7fa3427c0a65fbd69564ca0068d2044a62bf26cfb3704b989b50c",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/src/operator_config_cache.cpp": {
+      "upstream_sha256": "aaeb4948aea08376bd86db3277917ecd579e10476a949885719474f25f2948a9",
+      "repaired_sha256": "e335ec5ad3949f921dcdf76f51347665cd9977c4268f94273b21aaa9073a9203",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__src__operator_config_cache.cpp.patch",
+      "patch_sha256": "eeeca2b9f1361e5c8e0a92a75adeefb7ad9dcc9ac7d64493614da04caf9ee87a",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/src/radio_protocol_controller.cpp": {
+      "upstream_sha256": "7391942fa10b22e4692b1873716d4827be68dbbe85ff63587f243e3096d79102",
+      "repaired_sha256": "c9fc077a9ca94946f37e2558cc86447482a217be9d9df82bbb8f807ad96094ac",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__src__radio_protocol_controller.cpp.patch",
+      "patch_sha256": "8f8db25b75011f40104f56178edc63c69de5f8d2625bab4f92fe72a42bb737cd",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/src/sim_account_manager.cpp": {
+      "upstream_sha256": "e76d7e9595830bfb36565ee4bc61d1eb83cb4cacc1e0a349323bf8e78b29f108",
+      "repaired_sha256": "bde0b167c42a7d97a97a7cc85293e07dd0e1e9d9cd810f1927ff41efb8fdd95b",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__src__sim_account_manager.cpp.patch",
+      "patch_sha256": "2fda46d1f103e54f0642fcef0501e2fd9d0dddf77aaa471898759117384b131f",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/src/sim_file.cpp": {
+      "upstream_sha256": "a6798b25077350f348b461dd025f3699aaa6dd61b52ff9f94a4cd8816bbd6224",
+      "repaired_sha256": "0cecb53bb80c878558f9667cfab247415882d6487caf4d9725d859e75e81ccbe",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__src__sim_file.cpp.patch.gz",
+      "patch_sha256": "912a7bc7d931879159e6d51a05d06a5beeb65ae07846225261a928946566f8d0",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/src/sim_file_manager.cpp": {
+      "upstream_sha256": "12045e75e5299fda095155cb8aa2358f62a43f936df9d55aadbf4d95fb47752a",
+      "repaired_sha256": "96f7e994a1675b5a5f98d55bee532a4f0f6368c8675c7ce10fa54a4cb92f2bdb",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__src__sim_file_manager.cpp.patch",
+      "patch_sha256": "793cea04b21cf496af8780c7bed811de5a2cee6715c311bc61e191912b83fc68",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/src/sim_manager.cpp": {
+      "upstream_sha256": "6b18dab55dc8fb48d02b95af6fef9773c3a7759bf44141d60d824531371f44e5",
+      "repaired_sha256": "6f163b029068ae180a5a97e322cd8266e4b0a2404c5a0a7371a8442f0099875c",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__src__sim_manager.cpp.patch",
+      "patch_sha256": "c134ca34400446378d8a7de12acb932760a5a5daa0ac2e403e5df4fc201496ae",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/src/sim_sms_manager.cpp": {
+      "upstream_sha256": "044d8947abfd5b422c586aaa624e59951082c9e168325505da58980a9090970e",
+      "repaired_sha256": "1d09402c1dbf7def8491e75f09900b83222372ab20a63a719063b07bb0906deb",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__src__sim_sms_manager.cpp.patch",
+      "patch_sha256": "995868f6362554cf5bddd81a0406b3c09bccf668a2c5e59b90af759e86e528ab",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/src/sim_state_handle.cpp": {
+      "upstream_sha256": "9f27780811181955a1b81bd139d17c76d35b37f64a686b30bd3374134a31ef5c",
+      "repaired_sha256": "523e84081646cf5b07563bcc62d9828bcd93c887c25fa2958aaf3888dcf208fb",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__src__sim_state_handle.cpp.patch",
+      "patch_sha256": "8771a511fb92817233273e7e9fc057680c8601ba4d751ffd1f188b310db3f685",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
     },
     "services/sim/src/sim_state_manager.cpp": {
       "upstream_sha256": "aca12b2cd0129d2198c685bdd4bc5a7df00be41ad19d2ea72334a2afd745fa7f",
-      "repaired_sha256": "e20bf8551417788ce9e9c796a7d2449497691f3dcf395501a816b81a4d7f98ef",
-      "patch": "docs/archive/remaining_failures_20261118/services__sim__src__sim_state_manager.cpp.patch",
-      "patch_sha256": "58e8978c6e0eb6c07cc28d0fe6b722c391af8dd51cd75aab0526a2b8611106c4",
-      "reason": "2026-11-18 user-authorized remaining FAIL fixes: response correlation, card generation, transport errors and refresh return contract; previous ICCID repair retained."
+      "repaired_sha256": "10e55740a65f820cd00b65e969fcabfb21569cf268b15b646587807de48caa31",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__src__sim_state_manager.cpp.patch",
+      "patch_sha256": "4699a9f66453130ff8268554028f8705a43d65415e17948f18dafd9a918951ec",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/src/stk_controller.cpp": {
+      "upstream_sha256": "ad0c38518762b4488cd062e99d47dc9ec2954ef1fa2f256da1231edbabd4e591",
+      "repaired_sha256": "a3adc871035050b55a745d7c26abb72578510f94b7c6758a891bb0df3ca20bcc",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__src__stk_controller.cpp.patch",
+      "patch_sha256": "960991e77f7f677e436610dbec4ebbd30097fce88295b07a35168538893092bd",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/sim/src/stk_manager.cpp": {
+      "upstream_sha256": "156b43dd965cf5d9af22a5fe0185f5f5b6de4f59c2d7846ec2438eaa8f2b5629",
+      "repaired_sha256": "944bff616e7179f5013f3663004a8c0b4739c56b5aaa339dc6f04308b695b49e",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__sim__src__stk_manager.cpp.patch",
+      "patch_sha256": "f67fe54b6b9077187ff1b9bafd014444b518e82ec53a3aca01971838956e4c89",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
     },
     "services/tel_ril/include/tel_ril_base.h": {
       "upstream_sha256": "8d31fa118ef9101a2358e08c6519b40fbba6afc2f8db3dc0d8f14328dfb47072",
       "repaired_sha256": "1b93b939241be045a6686d6cadce5ec3e27259f996f3eaaa92c28198b27ca645",
-      "patch": "docs/archive/remaining_failures_20261118/services__tel_ril__include__tel_ril_base.h.patch",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__tel_ril__include__tel_ril_base.h.patch",
       "patch_sha256": "8e297899a60c8c6d28992842cafc19601332b2e7797cb650ef06fdd304a62608",
-      "reason": "2026-11-18 user-authorized remaining FAIL fixes: response correlation, card generation, transport errors and refresh return contract; previous ICCID repair retained."
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "services/tel_ril/src/observer_handler.cpp": {
+      "upstream_sha256": "422b74aeb92ee66367a37dfd88ea47e3878b221ef52597a72c38994748f764e4",
+      "repaired_sha256": "92fff8065eaaed2ffaaa2954b7118b7dfb2d28a901b83539602beba98a9e0699",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__tel_ril__src__observer_handler.cpp.patch",
+      "patch_sha256": "f7a82221dcb587e83b71d7104bf98fbfc1a86bb646316d24d42f661c21cdb29e",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
     },
     "services/tel_ril/src/tel_ril_base.cpp": {
       "upstream_sha256": "818f9e8e57eb8ee3c4e8c68f7927f8c8dce35ecf932873de7ca50e94da581782",
       "repaired_sha256": "8585a701ac0587d8eaeb56344ebea11c5fdef88e16e7136c6a84cb40089706b2",
-      "patch": "docs/archive/remaining_failures_20261118/services__tel_ril__src__tel_ril_base.cpp.patch",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/services__tel_ril__src__tel_ril_base.cpp.patch",
       "patch_sha256": "2fe28f12ddcf42341f88cbbd7afaaf071f6b28536b962e2a5872bb36cdf85ba8",
-      "reason": "2026-11-18 user-authorized remaining FAIL fixes: response correlation, card generation, transport errors and refresh return contract; previous ICCID repair retained."
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
     },
     "utils/common/include/tel_event_handler.h": {
       "upstream_sha256": "590cdd39dcc3b28263332c8dce97dfcb088e4534233ad5cf137c652a80dc83bc",
-      "repaired_sha256": "9a0a73a86e844cc6c644cf313e54698906d785b8a65e391b85b879c70ca9d564",
-      "patch": "docs/archive/remaining_failures_20261118/utils__common__include__tel_event_handler.h.patch",
-      "patch_sha256": "b59e00a50c3bb4009dc037d6a19e0b43331dc60d6fe8e9f235f91601761b776c",
-      "reason": "2026-11-18 user-authorized remaining FAIL fixes: response correlation, card generation, transport errors and refresh return contract; previous ICCID repair retained."
+      "repaired_sha256": "598e1cd9ad205ee2efa2aafb7f1cad6816853983febff2da4e313805b3696ef8",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/utils__common__include__tel_event_handler.h.patch",
+      "patch_sha256": "ef87dd9097d8252c3bbd6f42354041f64043b9d1992929c5bd33a05d3dbd2645",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "utils/common/include/tel_event_queue.h": {
+      "upstream_sha256": "186ce31138253c3403280f7ad1a858ba1882a2174115449876d12174162d21d4",
+      "repaired_sha256": "d158ccbdb64512eced3463a71df45d43925c8a1764662b298e009973ccf43703",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/utils__common__include__tel_event_queue.h.patch",
+      "patch_sha256": "e2a3e79b8ea7008a6c95cfe011eaac0034a2b42bdf1f2d095ba5c2434c180214",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "utils/common/src/tel_event_handler.cpp": {
+      "upstream_sha256": "d6dbc69c03c8c4810cea31d9efaac5e0c0767b569edcc9ce25f3c61269665e63",
+      "repaired_sha256": "16d7b79cf6f2fc3f8864f24280ef087e1dbc74b3171bc50bf0505e5fc85ddfa3",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/utils__common__src__tel_event_handler.cpp.patch",
+      "patch_sha256": "956c17a7b365071168c6b123bc05bd9fd8c5bb7502582e21fab252f953525e91",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    },
+    "utils/common/src/tel_event_queue.cpp": {
+      "upstream_sha256": "cfd417cf54d8f6df5f6aab120de31f711f2f62810afd8c273275b847a02f7a9d",
+      "repaired_sha256": "81a6a16a5ceb1823140c1bd0eaa80b1115a47f749ddb4bffec35b7ef135d28ae",
+      "patch": "docs/archive/remaining_failures_20261118/phase_b/source_patches/utils__common__src__tel_event_queue.cpp.patch",
+      "patch_sha256": "ca02066f975aa2d056558ab40318ab60089dd56ba6ad9685ee4f7c2ad2c66d71",
+      "reason": "2026-11-18 user-authorized remaining FAIL repair: owned lifecycle Stop barriers and retained response/error fixes; public ISimManager/IDL unchanged."
+    }
+  },
+  "local_additions": {
+    "utils/common/include/tel_lifecycle.h": {
+      "sha256": "9c5925a5a68358b5eabf0a2fed496ef3a569f548ca7657b1fb779b5b01dd0820",
+      "reason": "Owned lifecycle admission/drain and tokenized parameter watcher barriers for reviewed Stop repair."
+    },
+    "utils/common/include/tel_parameter_watcher.h": {
+      "sha256": "cbab7a42742f244c0bd4147d59e93af522b414e69380353b492623e0032f00ee",
+      "reason": "Owned lifecycle admission/drain and tokenized parameter watcher barriers for reviewed Stop repair."
     }
   }
 }

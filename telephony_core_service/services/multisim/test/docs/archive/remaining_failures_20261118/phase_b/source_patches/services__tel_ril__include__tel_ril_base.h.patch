@@ -1,0 +1,10 @@
+--- a/services/tel_ril/include/tel_ril_base.h
++++ b/services/tel_ril/include/tel_ril_base.h
+@@ -224 +224,6 @@
+-    return SendEventData<T>(funcName, telRilRequest->pointer_->GetInnerEventId(), handler, getDataFunc(telRilRequest));
++    // Preserve caller correlation on solicited responses. Unsolicited Notify
++    // remains independent and carries no request parameter.
++    auto data = getDataFunc(telRilRequest);
++    auto response = TelEventHandler::CreateResponseEvent(telRilRequest->pointer_, std::move(data));
++    return TelEventHandler::SendTelEvent(handler, response) ?
++        TELEPHONY_ERR_SUCCESS : TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL;

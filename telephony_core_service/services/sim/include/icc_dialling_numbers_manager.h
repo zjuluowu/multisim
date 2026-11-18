@@ -37,6 +37,8 @@ enum DiallingNumbersMessageType {
 };
 class IccDiallingNumbersManager : public TelEventHandler {
 public:
+    bool Shutdown();
+
     explicit IccDiallingNumbersManager(
         std::weak_ptr<SimFileManager> simFileManager, std::shared_ptr<SimStateManager> simState);
     ~IccDiallingNumbersManager();
@@ -84,6 +86,9 @@ private:
     bool IsValidType(int type);
     bool HasSimCard();
     bool IsValidParam(int type, const std::shared_ptr<DiallingNumbersInfo> &info);
+private:
+    TelStopOnce shutdown_;
+
 };
 } // namespace Telephony
 } // namespace OHOS

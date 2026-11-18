@@ -1,0 +1,20 @@
+--- a/services/sim/src/icc_dialling_numbers_manager.cpp
++++ b/services/sim/src/icc_dialling_numbers_manager.cpp
+@@ -89 +89,2 @@
+-    std::thread t([manager = std::static_pointer_cast<IccDiallingNumbersManager>(shared_from_this())] {
++    auto manager = std::static_pointer_cast<IccDiallingNumbersManager>(shared_from_this());
++    Lifecycle()->Submit(manager, [manager] {
+@@ -92,2 +93 @@
+-    });
+-    t.detach();
++    }, true);
+@@ -431,0 +432,9 @@
++
++namespace OHOS { namespace Telephony {
++bool IccDiallingNumbersManager::Shutdown() {return shutdown_.Run([this] {
++    if(!StopEvents())return false;
++    auto file=simFileManager_.lock();if(file)file->UnRegisterCoreNotify(shared_from_this(),RadioEvent::RADIO_SIM_STATE_CHANGE);
++    if(diallingNumbersCache_ && !diallingNumbersCache_->Shutdown())return false;
++    diallingNumbersCache_.reset();simStateManager_.reset();simFileManager_.reset();return true;
++ });}
++} }

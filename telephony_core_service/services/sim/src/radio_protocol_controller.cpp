@@ -31,6 +31,7 @@ RadioProtocolController::RadioProtocolController(std::weak_ptr<Telephony::ITelRi
 
 void RadioProtocolController::Init()
 {
+    if(Lifecycle()->GetState()!=TelLifecycle::State::Running)return;
     auto telRilManager = telRilManager_.lock();
     if (telRilManager == nullptr) {
         TELEPHONY_LOGE("telRilManager is nullptr");

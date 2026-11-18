@@ -1,0 +1,12 @@
+--- a/utils/common/src/tel_event_handler.cpp
++++ b/utils/common/src/tel_event_handler.cpp
+@@ -77,2 +77 @@
+-    queue_->Submit(event, priority);
+-    return true;
++    return queue_->Submit(event, priority);
+@@ -93,2 +92 @@
+-    queue_->Submit(event, Priority::IMMEDIATE);
+-    return true;
++    return queue_->Submit(event, Priority::IMMEDIATE);
+@@ -129 +127 @@
+-} // namespace OHOS+} // namespace OHOS
