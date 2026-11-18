@@ -1,5 +1,20 @@
 # SIM 业务测试
 
+## Legacy / Target 双后端
+
+统一入口默认执行 Legacy，CLI 覆盖配置。Target 不支持的场景返回 BLOCKED，绝不回退到 Legacy：
+
+```sh
+TEST=telephony_core_service/services/multisim/test
+python3 -B "$TEST/scripts/test.py" run --backend legacy
+python3 -B "$TEST/scripts/test.py" run --backend target \
+  --filter TargetArchitecture.C0PrimaryPlanUsesNoDeviceSwitch
+python3 -B "$TEST/scripts/test.py" run --backend both \
+  --filter RealSimPrimary.C0CoreToRealManagerAndController
+```
+
+配置见 `config/test_backend.json`，支持矩阵见 `config/backend_capabilities.json`。两套实现独立构建/链接/进程：Legacy 使用 `services/sim`，Target 使用 `sim_target_production_host`。当前完整 Target C0 服务仍 BLOCKED；已有真实 `PlanPrimarySwitch` 试点不是完整业务 PASS。详细审计、边界和迁移顺序见 [双后端架构](docs/Backend_Architecture.md)。
+
 从 cases/sim_card_test.cpp 复制一条 `TEST_F`，只改准备、操作和断言：
 
 ```cpp

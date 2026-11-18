@@ -1,0 +1,7 @@
+{
+  "backend": "legacy",
+  "platform": "host",
+  "build_if_missing": true,
+  "compare_with_oracle": true,
+  "output_dir": ".host-out"
+}

@@ -35,6 +35,7 @@
         "sim_primary_slot_entry_test",
         "sim_g2a_query_test",
         "sim_upstream_query_test",
+        "sim_test_target_host",
         "sim_primary_slot_real_test",
         "sim_bootstrap_characterization"
       ],

@@ -1,5 +1,7 @@
 # 多 SIM 重构执行状态
 
+当前双后端测试基础设施（2026-11-18，输入 HEAD `1fd7c9c815f5fe02afb09a89b860f68f873004c9`）：统一入口支持 Legacy/Target/Both 配置切换，Target Host 静态生产库和独立进程已建立；Target 仅链接 `services/multisim/role_assignment/primary/primary_switch_plan.cpp`，无 Legacy 符号。真实 Target 决策试点 `TargetArchitecture.C0PrimaryPlanUsesNoDeviceSwitch` PASS；完整 `SIM028-LEGACY-C0-DUAL-PRIMARY0` Target 为 BLOCKED，因为 AssignmentService、Aggregate、Store/Output/Radio 装配及生命周期未实现，Both 在 Legacy C0 PASS 时整体 BLOCKED。未修改 Legacy 生产实现、历史 Golden/Oracle 或正式产品 GN/SA 接入。架构/GN、技术脚本、Target 独立构建/执行、Legacy C0 单例及 Both 阻塞传播已实际验证；Device/产品构建与 VS Code GUI 仍 NOT_RUN/BLOCKED。详见[双后端架构审计](../services/multisim/test/docs/Backend_Architecture.md)。
+
 当前文档及测试配套刷新（2026-11-18）：现行入口、授权边界与生命周期说明同步至已发布Host修复；默认报告目录的架构检查衔接及修复策略防回退已验证，见§49。此前124项业务证据见§48，本批不重复宣称已重跑业务。
 
 当前剩余FAIL改造（2026-11-18）已完成Host验收：原13项FAIL全部修复，124/124 PASS、CI准入PASS；第一阶段见§47，最终Stop与完整证据见§48。产品原生构建/设备及GUI未验收。

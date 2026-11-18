@@ -7,7 +7,7 @@ from pathlib import Path
 import subprocess
 import xml.etree.ElementTree as ET
 
-from test import HOST, REAL
+from test import HOST, REAL, TARGET
 
 
 def main():
@@ -20,7 +20,7 @@ def main():
     build = args.out.resolve() / 'build'
     cases = []
     errors = []
-    for target in HOST + REAL:
+    for target in HOST + REAL + TARGET:
         xml = output / (target + '.xml')
         env = dict(os.environ, LLVM_PROFILE_FILE=str(output / 'discovery-%p.profraw'),
                    LD_LIBRARY_PATH=str(build), SIM_HOST_BOOT_SLOT_COUNT='2')

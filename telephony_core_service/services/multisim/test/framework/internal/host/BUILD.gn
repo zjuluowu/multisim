@@ -30,6 +30,34 @@ config("production_execution_evidence") {
     "-fcoverage-mapping",
   ]
 }
+config("target_production_headers") {
+  include_dirs = [ "$production_root/services/multisim" ]
+}
+
+# Executable Target slice. It is linked only to Target-owned production code;
+# unimplemented service/persistence/device closure remains explicitly BLOCKED in
+# backend_capabilities.json rather than being supplied by Legacy or a fake SUT.
+static_library("sim_target_production_host") {
+  sources = [
+    "$production_root/services/multisim/role_assignment/primary/primary_switch_plan.cpp",
+  ]
+  configs += [ ":target_production_headers" ]
+}
+executable("sim_test_target_host") {
+  sources = [ "$test_root/cases/target/architecture/primary_plan_test.cpp" ]
+  configs += [ ":target_production_headers" ]
+  include_dirs = [ "$gtest_root/googletest/include" ]
+  deps = [
+    ":googlemock",
+    ":sim_target_production_host",
+    ":test_entry",
+  ]
+  ldflags = [
+    "-fprofile-instr-generate=" + get_path_info(root_build_dir, "abspath") +
+        "/profiles/direct-%p.profraw",
+    "-Wl,-Map,sim_test_target_host.map",
+  ]
+}
 
 # Primary-slot entry contract. ISimManager is an explicit internal seam here;
 # this target MUST NOT be reported as full Controller/Radio/RIL execution.

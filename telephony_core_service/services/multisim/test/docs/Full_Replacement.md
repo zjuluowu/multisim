@@ -1,5 +1,11 @@
 # 测试防护网全量重建记录
 
+## 双后端扩展（2026-11-18）
+
+统一入口增加 `--backend legacy|target|both`、`--platform host|device` 和隔离配置。默认仍为 Legacy；Legacy 目标、用例、Golden、失败签名及准入链没有删除或改写。新增 `sim_target_production_host` 只链接 `services/multisim` 的真实 Primary 计划源码，独立 `sim_test_target_host` 进程验证 C0 无设备切换的决策层。
+
+Target 完整 C0 在能力矩阵中为 BLOCKED：当前 `AssignmentService::StartPrimarySwitch`、Aggregate、持久化/通知及 Radio 闭环未实现，禁止把 Legacy Adapter 或 Fake 结果冒充 Target。Both 会保留 Legacy/Target 独立结果，并将任一 BLOCKED/FAIL 或差分不一致传播为整体非 PASS。完整审计见 [Backend_Architecture.md](Backend_Architecture.md)；Host 决策层 PASS 不代表产品、SA/IPC 或设备业务 PASS。
+
 当前结果（2026-11-18）：剩余13项FAIL已修复，统一Host回归124/124 PASS、CI准入PASS。五项响应/错误/刷新缺陷及八项Stop契约均通过，另有九项Stop安全回归；初轮强RIL模型37项、最终源码Stop场景17项及最终双激活七项富业务契约全部PASS。技术96项、架构/GN/迁移、历史完整性、生产正执行、变异检出/恢复、profile负控及124个IDE源码位置检查通过。证据及原始失败记录见[本批归档](archive/remaining_failures_20261118/phase_b/README.md)。以下旧数量/失败结论按原批次解释。
 
 源码相对固定上游为1029个原字节文件、37个明确指纹修复及2个新增生命周期头。历史Golden/known_failures/coverage不改；修复后必须PASS，原始差异逐项保留并显式裁决。内部布局/虚表改变要求整体重编；产品原生构建、设备、SO卸载、ASan/TSan及GUI未执行，不能由Host通过替代。

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "scenarios": [
+    {
+      "id": "SIM028-LEGACY-C0-DUAL-PRIMARY0",
+      "test": "RealSimPrimary.C0CoreToRealManagerAndController",
+      "legacy": {"host": "SUPPORTED", "device": "BLOCKED", "reason": "Requires controlled modem/RIL and a validated product fixture."},
+      "target": {"host": "BLOCKED", "device": "BLOCKED", "reason": "AssignmentService::StartPrimarySwitch and the persistence/output/radio service closure are not implemented; Target cannot delegate to Legacy."},
+      "differential": "BLOCKED"
+    },
+    {
+      "id": "TARGET-C0-PLAN-NO-DEVICE",
+      "test": "TargetArchitecture.C0PrimaryPlanUsesNoDeviceSwitch",
+      "legacy": {"host": "NOT_APPLICABLE", "device": "NOT_APPLICABLE"},
+      "target": {"host": "SUPPORTED", "device": "NOT_APPLICABLE", "reason": "Pure Host business-decision rule; it is not a device integration test."},
+      "differential": "NOT_APPLICABLE"
+    }
+  ]
+}

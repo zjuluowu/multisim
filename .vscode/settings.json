@@ -11,7 +11,7 @@
   },
   "testMate.cpp.test.advancedExecutables": [
     {
-      "pattern": ".host-out/build/{sim_test_host,sim_component_test,sim_primary_slot_entry_test,sim_g2a_query_test,sim_upstream_query_test}",
+      "pattern": ".host-out/build/{sim_test_host,sim_component_test,sim_primary_slot_entry_test,sim_g2a_query_test,sim_upstream_query_test,sim_test_target_host}",
       "cwd": "${workspaceFolder}/.host-out",
       "maxTestsPerExecutable": 1,
       "parallelizationLimit": 1,

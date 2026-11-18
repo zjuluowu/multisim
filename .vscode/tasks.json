@@ -122,7 +122,9 @@
       "args": [
         "-B",
         "telephony_core_service/services/multisim/test/scripts/test.py",
-        "build"
+        "build",
+        "--backend",
+        "both"
       ]
     },
     {
@@ -132,7 +134,9 @@
       "args": [
         "-B",
         "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
-        "editor"
+        "editor",
+        "--backend",
+        "both"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
@@ -140,6 +144,36 @@
       "problemMatcher": [
         "$gcc"
       ]
+    },
+    {
+      "label": "Build Target Host",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
+        "build",
+        "--backend",
+        "target"
+      ],
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "Run Both Backends",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
+        "run",
+        "--backend",
+        "both",
+        "--filter",
+        "${input:gtestFilter}"
+      ],
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": ["$gcc"]
     }
   ],
   "inputs": [

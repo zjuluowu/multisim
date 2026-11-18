@@ -21,7 +21,8 @@ def main():
     parser.add_argument('--jobs', type=int, default=3)
     parser.add_argument('--target', nargs='+', default=['sim_test_host'], choices=[
         'sim_test_host', 'sim_component_test', 'sim_primary_slot_entry_test',
-        'sim_primary_slot_real_test', 'sim_g2a_query_test', 'sim_upstream_query_test', 'sim_bootstrap_characterization', 'sim_capability_probe'])
+        'sim_primary_slot_real_test', 'sim_g2a_query_test', 'sim_upstream_query_test', 'sim_bootstrap_characterization', 'sim_capability_probe',
+        'sim_test_target_host'])
     parser.add_argument('--openssl-root', type=Path)
     parser.add_argument('--runtime-root', type=Path)
     args = parser.parse_args()
