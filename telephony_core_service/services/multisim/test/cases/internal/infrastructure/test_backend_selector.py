@@ -112,6 +112,7 @@ class BackendSelectorTest(unittest.TestCase):
         end = build.index('# Primary-slot entry contract.', start)
         target = build[start:end]
         self.assertIn('services/multisim/role_assignment/primary/primary_switch_plan.cpp', target)
+        self.assertIn('services/multisim/role_assignment/assignment_store_adapter.cpp', target)
         self.assertNotIn('services/sim', target)
         self.assertNotIn('sim_production_host', target)
 

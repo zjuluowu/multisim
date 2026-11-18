@@ -57,6 +57,23 @@ Host 的 Recording Store、Output、Topology、Radio、Completion 只做两件�
 
 组件测试使用无线程、无外部设备租约的同步端口记录器；作用域结束即销毁，没有遗留 worker、订阅或 RIL 资源。它只证明组件闭环和资源局部销毁，不证明正式产品对象图生命周期。
 
+## 阶段四：真实 Store Adapter Host 集成
+
+Target C0 增加 `AssignmentStoreAdapter` 的真实实现并独立链接 `assignment_store_adapter.cpp`。A 不再由 RecordingStore 替代持久化兼容边界；Adapter Integration 使用真实 `AssignmentService + AssignmentAggregate + PlanPrimarySwitch + AssignmentStoreAdapter`，仅在 `AssignmentParameterPort` 最底层记录系统参数调用和受控结果。
+
+`AssignmentStoreAdapter` 实现的 C0 方法为：
+
+- `WriteUserPrimaryPreference` → `persist.telephony.userPreferPrimarySlot`
+- `WritePrimaryParameters` → `persist.telephony.MainSlotId`，非空 raw ICCID 经 SHA-256/大写 Hex 后写 `persist.telephony.MainCard.Iccid`
+- `WriteDefaultData` → `persist.telephony.MainCellularDataSlotId`
+- `ReadPrimaryParameters` / `RestorePrimaryIfLegacyValid` → 原快照读取与 Legacy 有效槽规则
+
+`WriteDefaultRole` 仍明确返回未确认失败，因为 C0 不使用 SIM 账户数据库；不建立第二套角色数据库，也不绕过 A 调用 Legacy Controller。Host 平台端口只模拟系统参数 API；真实 Provider/SA/IPC 未接入。
+
+`callFinished=false` 的语义不是成功码 0：AssignmentService 不交付 Completion，不提交对应业务投影，并将原请求置为 `NeedsReconciliation`；已发生的平台效果由 Host 端口记录，但聚合保留该请求的进行中/未决状态。`callFinished=true` 的非零参数结果在 C0 按 Legacy 的 void/忽略结果语义保留为外部参数事实，不覆盖原 API 成功；主卡/Data 的内存角色和通知仍按原顺序推进。重复完成由 RuntimeOperationStore 拒绝旧 Step/重复/终态请求。
+
+Adapter Integration 的 `validation_level=adapter_integration` 与 Component C0 独立；C0 Scenario 配对仍只登记原 Component 用例，避免重复 Scenario ID。LLVM 执行审计要求三个 Adapter 写方法正执行。
+
 ## 阶段三真实性与异常覆盖
 
 `Observation()` 不再写入 Primary/Data、参数、通知、设备次数或重试的固定成功值。Primary/Data 来自 `AssignmentView`，参数来自 Recording Store 的实际持久化状态，通知来自 Output 的实际记录，设备/重试次数来自 Radio 记录，返回值来自 Completion 端口。任何实际业务实现变化都会改变归一化观测并被 Oracle 或 Legacy/Target 差分检出。

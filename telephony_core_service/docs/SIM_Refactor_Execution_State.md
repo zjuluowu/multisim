@@ -1,5 +1,7 @@
 # 多 SIM 重构执行状态
 
+当前双后端阶段四（2026-11-18，输入 `e44a7d9c69114b0b47fee008c9eb24f1394e1f8e`）：Target C0 真实 `AssignmentStoreAdapter` 已接入系统参数窄端口，负责 Legacy raw ICCID→SHA256→大写Hex、Primary/Data/用户偏好原键写入及恢复；Adapter Integration 使用真实 Adapter 而非 RecordingStore，并增加完成失败/未完成/部分效果验证。`callFinished=false` 不再返回成功，业务置为 NeedsReconciliation，保留进行中资格；已确认非零参数结果按 Legacy C0 的 void/忽略结果语义只保留外部参数事实，不改变原接口成功。本批 Target 11项 Component/Adapter Integration、Both C0、Adapter 三个写方法正执行审计及 Legacy 124/124 CI 均实际通过，三项既有未跟踪文件及 `default.profraw` 未变化。Adapter 写方法具备正执行审计。正式 OHOS 参数实现、Provider/SA/IPC、Device、Topology/Radio 产品实现及 B/C1 仍未接入。
+
 当前双后端阶段三（2026-11-18，输入 `0769c8c9c9be1011413351f48080fba37671fb6a`）：C0 Target 观察结果已由 AssignmentView、真实 Store/Output/Radio/Completion 观测生成；增加无绑定/未激活/身份变化、Radio 未知失效、三类参数失败及部分效果、冲突请求、失败重启、旧 epoch/Step/重复完成覆盖。Oracle 从冻结 Primary Inputs/Golden 派生，兼容 ICCID 以 raw→SHA256→大写Hex 的 Legacy 边界验证。Target C0 六项组件测试、Both C0、13项差分/配置负控、架构/GN/技术/完整性及 Legacy 124/124 CI 回归均已实际通过；`default.profraw` 未变化。正式 AssignmentStoreAdapter/Provider、真实持久化、产品/SA/IPC/设备及 B/C1 仍未接入。
 
 当前双后端阶段二（2026-11-18，输入 `bcb7ff742ecec719c75bdda5065f1c63e9d0bb76`）：稳定 Scenario ID `SIM028-LEGACY-C0-DUAL-PRIMARY0` 已映射 Legacy/Target 不同 GTest；Both 拒绝零匹配、单边缺失和架构-only，并对真实外部字段执行 Oracle/差分。Target 最小 C0 Host 组件闭环已实现并实际运行 `AssignmentService::StartPrimarySwitch -> PlanPrimarySwitch -> AssignmentAggregate`，完成用户偏好、主卡参数、主卡通知、默认数据参数/通知及完成交付；拓扑/Radio/Store/Output 仅为记录型外部端口。Target C0、Legacy C0、Both C0 均 PASS，差异 0；LLDB 进入真实 AssignmentService。未接入产品调用链，B/C1、真实 Provider、SA/IPC、产品构建、设备和完整生命周期仍未验收。

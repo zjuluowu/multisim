@@ -63,6 +63,7 @@ source_set("assignment_adapters") {
   public_configs = [ ":skeleton_includes" ]
   sources = [
     "role_assignment/assignment_output_adapter.h",
+    "role_assignment/assignment_store_adapter.cpp",
     "role_assignment/assignment_store_adapter.h",
   ]
   public = [

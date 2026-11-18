@@ -4,7 +4,7 @@
 
 统一入口增加 `--backend legacy|target|both`、`--platform host|device` 和隔离配置。默认仍为 Legacy；Legacy 目标、用例、Golden、失败签名及准入链没有删除或改写。新增 `sim_target_production_host` 只链接 `services/multisim` 的真实 Primary 计划源码，独立 `sim_test_target_host` 进程验证 C0 无设备切换的决策层。
 
-Target C0 已执行真实 `AssignmentService::StartPrimarySwitch`、Aggregate 提交、`PlanPrimarySwitch`、记录型 Store/Output/Topology/Radio 端口及完成交付；正常 Both C0 对同一 Scenario ID 获得 Oracle 与业务差分 PASS。阶段三进一步覆盖绑定/激活/Radio/参数失败、部分效果、同域冲突、重启及旧 epoch/Step/重复完成；Observation 全部来自实际端口和聚合状态，不填固定业务成功值。记录型端口仅提供受控外部事实/效果，不做决策或伪造 SUCCESS。完整审计见 [Backend_Architecture.md](Backend_Architecture.md)；Host 组件 PASS 不代表正式产品持久化、SA/IPC、设备或完整生命周期业务 PASS。
+Target C0 已执行真实 `AssignmentService::StartPrimarySwitch`、Aggregate 提交、`PlanPrimarySwitch`、记录型 Store/Output/Topology/Radio 端口及完成交付；正常 Both C0 对同一 Scenario ID 获得 Oracle 与业务差分 PASS。阶段三覆盖绑定/激活/Radio/参数失败、部分效果、同域冲突、重启及旧 epoch/Step/重复完成；Observation 来自实际端口和聚合状态。阶段四进一步链接真实 `AssignmentStoreAdapter`，通过底层系统参数端口验证原键、SHA-256 大写Hex、写序及 `callFinished=false` 的未决完成语义；RecordingStore Component 与 Adapter Integration 分级保留。记录型端口仅提供受控外部事实/效果，不做决策或伪造 SUCCESS。完整审计见 [Backend_Architecture.md](Backend_Architecture.md)；Host 组件 PASS 不代表正式产品持久化、SA/IPC、设备或完整生命周期业务 PASS。
 
 当前结果（2026-11-18）：剩余13项FAIL已修复，统一Host回归124/124 PASS、CI准入PASS。五项响应/错误/刷新缺陷及八项Stop契约均通过，另有九项Stop安全回归；初轮强RIL模型37项、最终源码Stop场景17项及最终双激活七项富业务契约全部PASS。技术96项、架构/GN/迁移、历史完整性、生产正执行、变异检出/恢复、profile负控及124个IDE源码位置检查通过。证据及原始失败记录见[本批归档](archive/remaining_failures_20261118/phase_b/README.md)。以下旧数量/失败结论按原批次解释。
 

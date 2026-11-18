@@ -23,8 +23,8 @@ namespace OHOS::Telephony::MultiSim {
 // 此构造函数只让IDE看清实际类型/注入关系；私有且工厂无定义，无法进入生产。
 SimModule::SimModule(SimHostPorts host, std::shared_ptr<const SlotCatalog> catalog, RuntimeEpoch epoch,
     const ExistingSimBindings &existing)
-    : host_(std::move(host)), catalog_(std::move(catalog)), accountStore_(existing.accountStore),
-      assignmentStore_(existing.accountStore), output_(existing.monitor, host_.callbacks), completion_(output_),
+    : host_(std::move(host)), catalog_(std::move(catalog)), accountStore_(existing.accountStore), // accountStore stays T-only
+      assignmentStore_(existing.assignmentParameters), output_(existing.monitor, host_.callbacks), completion_(output_),
       runtime_(*catalog_, epoch, existing.slots, existing.radio, *host_.sharedRil, existing.euicc),
       topology_(*catalog_, accountStore_, epoch),
       assignment_(*catalog_, assignmentStore_, runtime_, assignmentOutput_, topology_, completion_, epoch),
@@ -34,6 +34,7 @@ SimModule::SimModule(SimHostPorts host, std::shared_ptr<const SlotCatalog> catal
       compatibility_(*catalog_, host_.legacyIngress, host_.callbacks, numbers_, numberQuery_, activation_,
           assignment_, localCards_)
 {
+    (void)&existing.accountStore; // T database binding remains distinct from A system parameters.
     // 附着工厂须先验证catalog/sharedRil与原对象身份非空且唯一；本构造仍无生产调用者。
     topology_.BindRolePlanner(assignment_); // 构造后绑定窄入口，避免A/T构造环；未绑定不得发布。
     runtime_.BindResultSinks(numbers_, activation_, assignment_, topology_);

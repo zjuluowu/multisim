@@ -24,7 +24,10 @@
 
 namespace OHOS::Telephony::MultiSim {
 struct PrimaryParameterSnapshot { std::string slotText; std::string mainIccidText; };
-struct AssignmentParameterResult { int32_t parameterResult; bool callFinished; };
+struct AssignmentParameterResult {
+    int32_t parameterResult;
+    bool callFinished; // false: effect is unknown/unconfirmed; 0 must not be translated to success.
+};
 struct RoleStoreResult { int32_t legacyResult; bool writeConfirmed; bool callFinished; };
 // A 专属字段/参数协议。A专属 AssignmentStoreAdapter 实现，保持原 URI/键，非新 schema。
 class AssignmentStore {

@@ -12,31 +12,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// TARGET ARCHITECTURE SKELETON / PROPOSED: 仅接入 testonly 骨架构建，尚未接入生产，未转移写权。
-// Design: docs/SIM_Target_Architecture_Design_v1.2.md §6.3 WU-03/04、§9.3、§13.2。
-// 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
-
+// TARGET ARCHITECTURE SKELETON / PROPOSED: only the C0 parameter boundary is implemented.
+// Design: docs/SIM_Target_Architecture_Design_v1.2.md §6.3 WU-03/04、§9.3、§13.2.
 #ifndef OHOS_TELEPHONY_MULTISIM_ASSIGNMENT_ADAPTERS_ASSIGNMENT_STORE_ADAPTER_H
 #define OHOS_TELEPHONY_MULTISIM_ASSIGNMENT_ADAPTERS_ASSIGNMENT_STORE_ADAPTER_H
 
+#include <string>
 #include "role_assignment/assignment_store.h"
 
-namespace OHOS::Telephony { class SimRdbHelper; }
 namespace OHOS::Telephony::MultiSim {
+// Narrow platform boundary for the A-owned system-parameter fields. SIM account
+// database responsibilities remain outside this C0 adapter.
+class AssignmentParameterPort {
+public:
+    virtual ~AssignmentParameterPort() = default;
+    virtual AssignmentParameterResult Read(const std::string &key, const std::string &fallback,
+        std::string &value) = 0;
+    virtual AssignmentParameterResult Write(const std::string &key, const std::string &value) = 0;
+};
+
 class AssignmentStoreAdapter final : public AssignmentStore {
 public:
-    explicit AssignmentStoreAdapter(SimRdbHelper &legacyStore) : legacyStore_(legacyStore) {}
+    explicit AssignmentStoreAdapter(AssignmentParameterPort &parameters) : parameters_(parameters) {}
     RoleStoreResult WriteDefaultRole(const SetRoleCommand &command) override;
     PrimaryParameterSnapshot ReadPrimaryParameters() override;
-    AssignmentParameterResult WritePrimaryParameters(SlotId slot, const std::string &encodedIccid) override;
+    AssignmentParameterResult WritePrimaryParameters(SlotId slot, const std::string &rawIccid) override;
     AssignmentParameterResult RestorePrimaryIfLegacyValid(const PrimaryParameterSnapshot &old) override;
     AssignmentParameterResult WriteDefaultData(SlotId slot) override;
     AssignmentParameterResult WriteUserPrimaryPreference(bool userSet) override;
 private:
-    SimRdbHelper &legacyStore_;
-    // T返回raw ICCID；本Adapter负责Legacy兼容的SHA-256大写Hex编码后写MainCard.Iccid。
-    // WriteDefaultRole沿原默认卡URI协议；其余沿SetParameter原键。
-    // ResumePrimaryCardInfo对旧参数空/非法时不恢复的条件保持；不发设备回滚。
+    AssignmentParameterPort &parameters_;
 };
 } // namespace OHOS::Telephony::MultiSim
 

@@ -4,7 +4,7 @@
 | --- | --- |
 | 文档版本 | 0.6，修订B+及G2a工作分支只读增量（整体设计仍PROPOSED） |
 | 更新日期 | 2026-11-17（刷新当前清单、测试入口及跨形态设计接缝；历史验证保持原基线） |
-| 源码范围 | 当前模块为90文件：88个C++文件（64头/24源）、BUILD.gn及README.md；重复目录设计副本已退役；首次G2a之前的B+输入为88文件；生产能力来源见§17 |
+| 源码范围 | 当前模块为91文件：89个C++文件（64头/25源）、BUILD.gn及README.md；重复目录设计副本已退役；首次G2a之前的B+输入为88文件；生产能力来源见§17 |
 | 输入基线 | B+文件移动输入5404aefe、首次G2a源main 9ab1e976及历史实现cc787945均为固定溯源；最新main发布点与实际测试代码点分别见执行状态§0.1/§11；§10保留工作分支复验基线 |
 | 当前状态 | 当前生产已回退G2a接入，原成熟SIM继续执行；G2a Core/Binding仅为测试参考，旧合入记录保留为历史。25个source_set全testonly，产品准入和写权迁移未完成，当前状态见执行状态§37～42 |
 | 权威范围 | 落实主设计的源码组织、功能映射与依赖规则；上位边界由SIM-TGT-001维护，公共契约和功能/WU清单仍由原文维护，未增加批准状态 |
@@ -83,7 +83,7 @@
 
 ### 3.1 当前工作树：已存在的完整业务文件清单
 
-当前物理组织遵循[五组目录设计方案](SIM重构代码目录结构设计方案.md)，替代历史B+六组布局。90个模块文件包含88个C++单元及BUILD/README；test/tools另列，不计入该数字。25个逻辑source_set及依赖边、public/visibility和testonly状态保持。G2a业务查询源仅由testonly目标验证，Core/Binding参考实现在test/framework/internal/host/g2a_reference，不由产品源表接入。CardRuntime/result_sinks暂在card/runtime，设备资源与卡状态尚未拆分；不是Assembly业务运行状态。
+当前物理组织遵循[五组目录设计方案](SIM重构代码目录结构设计方案.md)，替代历史B+六组布局。91个模块文件包含89个C++单元及BUILD/README；`role_assignment/assignment_store_adapter.cpp` 是 C0 系统参数兼容实现的首个已授权新增业务源，不承担 SIM 账户数据库职责；test/tools另列，不计入该数字。25个逻辑source_set及依赖边、public/visibility和testonly状态保持。G2a业务查询源仅由testonly目标验证，Core/Binding参考实现在test/framework/internal/host/g2a_reference，不由产品源表接入。CardRuntime/result_sinks暂在card/runtime，设备资源与卡状态尚未拆分；不是Assembly业务运行状态。
 
 ```text
 services/multisim/

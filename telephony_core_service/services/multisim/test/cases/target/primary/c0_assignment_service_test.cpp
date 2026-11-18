@@ -25,6 +25,9 @@ public:
     int userResult {0};
     int primaryResult {0};
     int dataResult {0};
+    bool userFinished {true};
+    bool primaryFinished {true};
+    bool dataFinished {true};
     bool userPreference {false};
     int primarySlot {0};
     int dataSlot {0};
@@ -40,7 +43,7 @@ public:
         timeline_.events.emplace_back("write:user");
         if (userResult == 0) { userPreference = userSet; }
         if (onFirstUserWrite && userWrites == 1) { auto action = std::move(onFirstUserWrite); action(); }
-        return {userResult, true};
+        return {userResult, userFinished};
     }
     AssignmentParameterResult WritePrimaryParameters(SlotId slot, const std::string &rawIccid) override
     {
@@ -52,14 +55,14 @@ public:
             // Persistence adapter boundary: SHA-256/raw encoding belongs here, not AssignmentService.
             primaryIccid = rawIccid == kRawIccid ? kEncodedIccid : "";
         }
-        return {primaryResult, true};
+        return {primaryResult, primaryFinished};
     }
     AssignmentParameterResult WriteDefaultData(SlotId slot) override
     {
         ++dataWrites;
         timeline_.events.emplace_back("write:data");
         if (dataResult == 0) { dataSlot = slot.legacySlotId; }
-        return {dataResult, true};
+        return {dataResult, dataFinished};
     }
     RoleStoreResult WriteDefaultRole(const SetRoleCommand &) override { return {-1, false, true}; }
     PrimaryParameterSnapshot ReadPrimaryParameters() override
@@ -265,30 +268,34 @@ TEST(TargetPrimary, C0PreservesPartialEffectsWhenStoreWriteFails)
     Fixture preference;
     preference.store.userResult = kUserWriteFailure;
     preference.service.StartPrimarySwitch(C0Command());
-    EXPECT_EQ(preference.completion.results.back(), kUserWriteFailure);
+    EXPECT_EQ(preference.completion.results, (std::vector<int32_t> {0}));
     EXPECT_FALSE(preference.store.userPreference);
-    EXPECT_EQ(preference.store.primaryWrites, 0u);
+    EXPECT_EQ(preference.store.primaryWrites, 1u);
+    EXPECT_TRUE(preference.service.ReadLegacyAssignment().lastPrimary.has_value());
+    EXPECT_TRUE(preference.service.ReadLegacyAssignment().lastData.has_value());
 
     Fixture primary;
     primary.store.primaryResult = kPrimaryWriteFailure;
     primary.service.StartPrimarySwitch(C0Command());
-    EXPECT_EQ(primary.completion.results.back(), kPrimaryWriteFailure);
+    EXPECT_EQ(primary.completion.results, (std::vector<int32_t> {0}));
     EXPECT_TRUE(primary.store.userPreference);
-    EXPECT_EQ(primary.store.primarySlot, 0);
-    EXPECT_TRUE(primary.output.notifications.empty());
-    EXPECT_EQ(primary.store.dataWrites, 0u);
+    EXPECT_EQ(primary.store.primarySlot, 0); // completed system-parameter failure is ignored by Legacy C0
+    EXPECT_EQ(primary.output.notifications, (std::vector<std::string> {"primary:1", "data:1:1"}));
+    EXPECT_EQ(primary.store.dataWrites, 1u);
+    EXPECT_TRUE(primary.service.ReadLegacyAssignment().lastPrimary.has_value());
+    EXPECT_TRUE(primary.service.ReadLegacyAssignment().lastData.has_value());
 
     Fixture data;
     data.store.dataResult = kDataWriteFailure;
     data.service.StartPrimarySwitch(C0Command());
-    EXPECT_EQ(data.completion.results.back(), kDataWriteFailure);
+    EXPECT_EQ(data.completion.results, (std::vector<int32_t> {0}));
     EXPECT_EQ(data.store.primarySlot, 1);
     EXPECT_EQ(data.store.primaryIccid, kEncodedIccid);
-    EXPECT_EQ(data.output.notifications, (std::vector<std::string> {"primary:1"}));
-    EXPECT_EQ(data.store.dataSlot, 0);
+    EXPECT_EQ(data.output.notifications, (std::vector<std::string> {"primary:1", "data:1:1"}));
+    EXPECT_EQ(data.store.dataSlot, 0); // Legacy in-memory role still advances after void parameter write.
     const auto view = data.service.ReadLegacyAssignment();
     ASSERT_TRUE(view.lastPrimary.has_value());
-    EXPECT_FALSE(view.lastData.has_value());
+    EXPECT_TRUE(view.lastData.has_value());
 }
 
 TEST(TargetPrimary, C0RejectsConflictingRequestAndCanRestartAfterFailure)
@@ -308,14 +315,45 @@ TEST(TargetPrimary, C0RejectsConflictingRequestAndCanRestartAfterFailure)
     EXPECT_EQ(f.output.notifications, (std::vector<std::string> {"primary:1", "data:1:1"}));
 
     Fixture retry;
-    retry.store.userResult = kUserWriteFailure;
+    retry.radio.known = false;
     retry.service.StartPrimarySwitch(C0Command());
-    retry.store.userResult = 0;
+    retry.radio.known = true;
     const RequestId second = retry.service.StartPrimarySwitch(C0Command());
     EXPECT_GT(second.value, 1u);
-    EXPECT_EQ(retry.completion.results, (std::vector<int32_t> {kUserWriteFailure, 0}));
+    ASSERT_EQ(retry.completion.results.size(), 2u);
+    EXPECT_NE(retry.completion.results[0], 0);
+    EXPECT_EQ(retry.completion.results[1], 0);
     EXPECT_EQ(retry.store.primarySlot, 1);
     EXPECT_EQ(retry.store.dataSlot, 1);
+}
+
+TEST(TargetPrimary, C0KeepsUnfinishedWritesUncommittedAndQualified)
+{
+    Fixture preference;
+    preference.store.userFinished = false;
+    preference.service.StartPrimarySwitch(C0Command());
+    EXPECT_TRUE(preference.completion.results.empty());
+    EXPECT_TRUE(preference.store.userPreference);
+    EXPECT_EQ(preference.store.primaryWrites, 0u);
+    EXPECT_TRUE(preference.service.ReadLegacyAssignment().primarySwitchInProgress);
+
+    Fixture primary;
+    primary.store.primaryFinished = false;
+    primary.service.StartPrimarySwitch(C0Command());
+    EXPECT_TRUE(primary.completion.results.empty());
+    EXPECT_EQ(primary.store.primarySlot, 1);
+    EXPECT_TRUE(primary.output.notifications.empty());
+    EXPECT_FALSE(primary.service.ReadLegacyAssignment().lastPrimary.has_value());
+    EXPECT_TRUE(primary.service.ReadLegacyAssignment().primarySwitchInProgress);
+
+    Fixture data;
+    data.store.dataFinished = false;
+    data.service.StartPrimarySwitch(C0Command());
+    EXPECT_TRUE(data.completion.results.empty());
+    EXPECT_EQ(data.output.notifications, (std::vector<std::string> {"primary:1"}));
+    EXPECT_TRUE(data.service.ReadLegacyAssignment().lastPrimary.has_value());
+    EXPECT_FALSE(data.service.ReadLegacyAssignment().lastData.has_value());
+    EXPECT_TRUE(data.service.ReadLegacyAssignment().primarySwitchInProgress);
 }
 
 TEST(TargetPrimary, C0OperationAdmissionRejectsOldEpochStepAndDuplicateCompletion)

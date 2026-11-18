@@ -38,6 +38,7 @@
 namespace OHOS::Telephony::MultiSim {
 struct ExistingSimBindings {
     SimRdbHelper &accountStore;
+    AssignmentParameterPort &assignmentParameters; // C0 system-parameter boundary, not account DB.
     MultiSimMonitor &monitor;
     RadioProtocolController &radio;
     std::vector<ProductionSlotBindings> slots;

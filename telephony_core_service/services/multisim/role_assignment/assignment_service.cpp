@@ -79,35 +79,35 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         return request;
     }
 
+    const auto retainUnknownEffect = [&](TransitionPhase expected) {
+        assignment_.AcceptTransitionPhase(*target->radioDomain, request.value, expected,
+            TransitionPhase::Reconciling);
+        operations_.MarkTerminal(request, TerminalState::NeedsReconciliation);
+    };
+
     const auto preference = store_.WriteUserPrimaryPreference(command.userSet);
-    if (!preference.callFinished || preference.parameterResult != 0) {
-        assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
-            TransitionPhase::Admitted, TransitionPhase::Failed);
-        completion_.CompleteLegacyInt(command.completion, preference.parameterResult);
-        operations_.MarkTerminal(request, TerminalState::Failed);
+    if (!preference.callFinished) {
+        retainUnknownEffect(TransitionPhase::Admitted);
         return request;
     }
+    // Legacy Core ignores completed SetParameter failure for this user preference hint.
     const auto primary = store_.WritePrimaryParameters(target->slot, facts->iccid);
-    if (!primary.callFinished || primary.parameterResult != 0) {
-        assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
-            TransitionPhase::Admitted, TransitionPhase::Failed);
-        completion_.CompleteLegacyInt(command.completion, primary.parameterResult);
-        operations_.MarkTerminal(request, TerminalState::Failed);
+    if (!primary.callFinished) {
+        retainUnknownEffect(TransitionPhase::Admitted);
         return request;
     }
+    // Legacy SavePrimaryCardInfo records in-memory/output role despite completed parameter failure.
     assignment_.AcceptPrimaryParameterProjection(target->slot);
     assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
         TransitionPhase::Admitted, TransitionPhase::ParametersWritten);
     output_.PublishMainCardChanged(target->slot);
 
     const auto data = store_.WriteDefaultData(target->slot);
-    if (!data.callFinished || data.parameterResult != 0) {
-        assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
-            TransitionPhase::ParametersWritten, TransitionPhase::Failed);
-        completion_.CompleteLegacyInt(command.completion, data.parameterResult);
-        operations_.MarkTerminal(request, TerminalState::Failed);
+    if (!data.callFinished) {
+        retainUnknownEffect(TransitionPhase::ParametersWritten);
         return request;
     }
+    // Legacy SetDefaultCellularDataSlotId also returns success after a void parameter write.
     assignment_.AcceptDataParameterProjection(target->slot);
     output_.PublishDefaultDataChanged(target->slot, facts->binding.subscription);
     assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,

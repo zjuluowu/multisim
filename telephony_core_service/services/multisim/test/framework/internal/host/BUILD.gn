@@ -42,14 +42,19 @@ static_library("sim_target_production_host") {
     "$production_root/services/multisim/infrastructure/assembly/slot_catalog.cpp",
     "$production_root/services/multisim/role_assignment/assignment_aggregate.cpp",
     "$production_root/services/multisim/role_assignment/assignment_service.cpp",
+    "$production_root/services/multisim/role_assignment/assignment_store_adapter.cpp",
     "$production_root/services/multisim/role_assignment/primary/primary_switch_plan.cpp",
   ]
-  configs += [ ":target_production_headers" ]
+  configs += [
+    ":target_production_headers",
+    ":production_execution_evidence",
+  ]
 }
 executable("sim_test_target_host") {
   sources = [
     "$test_root/cases/target/architecture/primary_plan_test.cpp",
     "$test_root/cases/target/primary/c0_assignment_service_test.cpp",
+    "$test_root/cases/target/primary/c0_store_adapter_integration_test.cpp",
   ]
   configs += [ ":target_production_headers" ]
   include_dirs = [ "$gtest_root/googletest/include" ]

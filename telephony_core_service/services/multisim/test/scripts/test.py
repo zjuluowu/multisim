@@ -159,6 +159,8 @@ def main():
                     slices={'sim_test_host':'state','sim_primary_slot_real_test':'primary','sim_g2a_query_test':'query','sim_upstream_query_test':'upstream'}
                     if args.action=='all' and backend=='legacy' and target in slices:
                         run(backend+'-'+target+'-execution','audit_replacement_execution.py',['--slice',slices[target],'--binary',binary,'--profiles',reports[0].parent,'--output',session/(backend+'-'+target+'-execution')])
+                    if args.action=='all' and backend=='target' and target=='sim_test_target_host':
+                        run(backend+'-'+target+'-execution','audit_replacement_execution.py',['--slice','target-adapter','--binary',binary,'--profiles',reports[0].parent,'--output',session/(backend+'-'+target+'-execution')])
                 if args.action in ['all','run']:
                     blocked_rows=[row for row in capability_report(backend,args.platform,args.filter)
                                   if row['status'] == 'BLOCKED']
