@@ -21,6 +21,7 @@
 
 #include <map>
 #include <optional>
+#include <utility>
 #include "infrastructure/request/request_context.h"
 
 namespace OHOS::Telephony::MultiSim {
@@ -47,6 +48,38 @@ private:
     uint64_t nextId_ {1}; // Begin/Read/Accept均核验epoch+owner；无跨重启恢复。
     // Parent等待不占Owner短提交域；同一冲突集合须在唯一准入处一次登记，不能跨Owner持资格嵌套等。
 };
+
+inline RequestId RuntimeOperationStore::Begin(ResolvedTarget origin, CompletionPlan completion,
+    std::optional<StepRef> parent)
+{
+    const RequestId request {nextId_++, epoch_, owner_};
+    operations_[request.value] = {{StepRef {request, 0, 0}, parent, std::move(origin), std::nullopt,
+        std::move(completion)}, EffectKnowledge::NotSent, WaitState::Waiting, TerminalState::Open};
+    return request;
+}
+
+inline bool RuntimeOperationStore::AdvanceStep(StepRef expected, uint32_t nextStep, uint32_t attempt,
+    std::optional<SessionRef> sentSession)
+{
+    if (expected.request.epoch != epoch_ || expected.request.owner != owner_ || nextStep <= expected.step) {
+        return false;
+    }
+    const auto found = operations_.find(expected.request.value);
+    if (found == operations_.end() || !(found->second.context.step == expected) ||
+        found->second.terminal != TerminalState::Open) {
+        return false;
+    }
+    found->second.context.step = StepRef {expected.request, nextStep, attempt};
+    found->second.context.sentSession = std::move(sentSession);
+    return true;
+}
+
+inline void RuntimeOperationStore::MarkTerminal(RequestId request, TerminalState terminal)
+{
+    if (request.epoch != epoch_ || request.owner != owner_) { return; }
+    const auto found = operations_.find(request.value);
+    if (found != operations_.end()) { found->second.terminal = terminal; }
+}
 } // namespace OHOS::Telephony::MultiSim
 
 #endif // OHOS_TELEPHONY_MULTISIM_FOUNDATION_ORCHESTRATION_RUNTIME_OPERATION_STORE_H

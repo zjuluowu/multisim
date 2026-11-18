@@ -39,12 +39,18 @@ config("target_production_headers") {
 # backend_capabilities.json rather than being supplied by Legacy or a fake SUT.
 static_library("sim_target_production_host") {
   sources = [
+    "$production_root/services/multisim/infrastructure/assembly/slot_catalog.cpp",
+    "$production_root/services/multisim/role_assignment/assignment_aggregate.cpp",
+    "$production_root/services/multisim/role_assignment/assignment_service.cpp",
     "$production_root/services/multisim/role_assignment/primary/primary_switch_plan.cpp",
   ]
   configs += [ ":target_production_headers" ]
 }
 executable("sim_test_target_host") {
-  sources = [ "$test_root/cases/target/architecture/primary_plan_test.cpp" ]
+  sources = [
+    "$test_root/cases/target/architecture/primary_plan_test.cpp",
+    "$test_root/cases/target/primary/c0_assignment_service_test.cpp",
+  ]
   configs += [ ":target_production_headers" ]
   include_dirs = [ "$gtest_root/googletest/include" ]
   deps = [

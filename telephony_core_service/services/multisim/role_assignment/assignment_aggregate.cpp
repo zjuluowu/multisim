@@ -14,7 +14,68 @@
  */
 // TARGET ARCHITECTURE SKELETON / PROPOSED: 仅接入 testonly 骨架构建，尚未接入生产，未转移写权。
 // Design: docs/SIM_Target_Architecture_Design_v1.2.md §4.2、§6.3、§8.2、§9.3。
-// 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
+// C0参数/转换投影已实现；设备切换及业务重试未由本文件执行。
 
 #include "role_assignment/assignment_aggregate.h"
-// Application兼容步骤计划已移到role_assignment/primary/primary_switch_plan.cpp。
+
+namespace OHOS::Telephony::MultiSim {
+bool AssignmentAggregate::AcceptRoleSelection(const RoleSelection &selection, uint64_t expectedAssignmentRevision)
+{
+    if (expectedAssignmentRevision != revision_) { return false; }
+    roles_[selection.role] = selection;
+    ++revision_;
+    return true;
+}
+
+std::optional<RoleSelection> AssignmentAggregate::ReadRoleSelection(DefaultRole role) const
+{
+    const auto found = roles_.find(role);
+    return found == roles_.end() ? std::nullopt : std::make_optional(found->second);
+}
+
+TransitionAdmission AssignmentAggregate::AdmitTransition(const SlotDescriptor &target, uint64_t transitionToken)
+{
+    if (!target.radioDomain) { return TransitionAdmission::UnknownResourceDomain; }
+    const auto found = transitions_.find(*target.radioDomain);
+    if (found != transitions_.end() && found->second.phase != TransitionPhase::Completed &&
+        found->second.phase != TransitionPhase::Failed) {
+        return TransitionAdmission::DomainBusy;
+    }
+    transitions_[*target.radioDomain] = AssignmentTransition {*target.radioDomain, target.slot,
+        transitionToken, TransitionPhase::Admitted, 0};
+    ++revision_;
+    return TransitionAdmission::Admitted;
+}
+
+bool AssignmentAggregate::AcceptTransitionPhase(const RadioDomainId &domain, uint64_t transitionToken,
+    TransitionPhase expected, TransitionPhase next)
+{
+    auto found = transitions_.find(domain);
+    if (found == transitions_.end() || found->second.transitionToken != transitionToken ||
+        found->second.phase != expected) {
+        return false;
+    }
+    found->second.phase = next;
+    ++revision_;
+    return true;
+}
+
+bool AssignmentAggregate::IsSwitchInProgress(const RadioDomainId &domain) const
+{
+    const auto found = transitions_.find(domain);
+    return found != transitions_.end() && found->second.phase != TransitionPhase::Completed &&
+        found->second.phase != TransitionPhase::Failed;
+}
+
+void AssignmentAggregate::AcceptPrimaryParameterProjection(SlotId lastPrimary)
+{
+    lastPrimary_ = lastPrimary;
+    ++revision_;
+}
+
+void AssignmentAggregate::AcceptDataParameterProjection(SlotId lastData)
+{
+    lastData_ = lastData;
+    ++revision_;
+}
+} // namespace OHOS::Telephony::MultiSim

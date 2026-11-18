@@ -7,12 +7,16 @@ p=argparse.ArgumentParser(description=__doc__);p.add_argument('--binary',type=Pa
 a.output.mkdir(parents=True,exist_ok=True);session=Path(tempfile.mkdtemp(prefix='debug-',dir=a.output.resolve()));env=dict(os.environ,LLVM_PROFILE_FILE=str(session/'coverage-%p.profraw'),LD_LIBRARY_PATH=str(a.binary.resolve().parent)+':'+os.environ.get('LD_LIBRARY_PATH',''),SIM_HOST_BOOT_SLOT_COUNT='2',SIM028_INIT_MODEL='single-active')
 cases,_=discover(a.binary.resolve(),a.filter,env,60)
 if len(cases)!=1:raise SystemExit('Debug requires one selected case')
-cmd=['lldb','--batch','-o','settings set target.disable-aslr false','-o','breakpoint set -n '+a.breakpoint,'-o','run','-o','thread backtrace','-o','frame variable slotId','-o','breakpoint disable 1','-o','continue','--',str(a.binary.resolve()),'--gtest_filter='+cases[0],'--gtest_output=xml:'+str(session/'case.xml')]
+slot_required = a.slot is not None or 'SimStateManager' in a.breakpoint or 'CoreServiceSim' in a.breakpoint
+cmd=['lldb','--batch','-o','settings set target.disable-aslr false','-o','breakpoint set -n '+a.breakpoint,'-o','run','-o','thread backtrace']
+if slot_required:cmd += ['-o','frame variable slotId']
+cmd += ['-o','breakpoint disable 1','-o','continue','--',str(a.binary.resolve()),'--gtest_filter='+cases[0],'--gtest_output=xml:'+str(session/'case.xml')]
 with (session/'lldb.log').open('w') as log:r=subprocess.run(cmd,env=env,cwd=session,stdout=log,stderr=subprocess.STDOUT)
 text=(session/'lldb.log').read_text()
 expected=1 if a.primary_cleanup_diagnostic else 0
 slots=[int(n) for n in re.findall(r'\bslotId = (-?\d+)',text)]
-passed=r.returncode==0 and bool(slots) and (a.slot is None or a.slot in slots) and '1 test from 1 test suite ran.' in text and ('exited with status = '+str(expected)) in text
+symbol_hit=a.breakpoint.rsplit('::',1)[-1] in text
+passed=r.returncode==0 and (not slot_required or bool(slots)) and (a.slot is None or a.slot in slots) and symbol_hit and '1 test from 1 test suite ran.' in text and ('exited with status = '+str(expected)) in text
 classification=None
 if a.primary_cleanup_diagnostic:
     from primary_results import classify

@@ -8,12 +8,12 @@
 TEST=telephony_core_service/services/multisim/test
 python3 -B "$TEST/scripts/test.py" run --backend legacy
 python3 -B "$TEST/scripts/test.py" run --backend target \
-  --filter TargetArchitecture.C0PrimaryPlanUsesNoDeviceSwitch
+  --filter SIM028-LEGACY-C0-DUAL-PRIMARY0
 python3 -B "$TEST/scripts/test.py" run --backend both \
-  --filter RealSimPrimary.C0CoreToRealManagerAndController
+  --filter SIM028-LEGACY-C0-DUAL-PRIMARY0
 ```
 
-配置见 `config/test_backend.json`，支持矩阵见 `config/backend_capabilities.json`。两套实现独立构建/链接/进程：Legacy 使用 `services/sim`，Target 使用 `sim_target_production_host`。当前完整 Target C0 服务仍 BLOCKED；已有真实 `PlanPrimarySwitch` 试点不是完整业务 PASS。详细审计、边界和迁移顺序见 [双后端架构](docs/Backend_Architecture.md)。
+配置见 `config/test_backend.json`，支持矩阵见 `config/backend_capabilities.json`。两套实现独立构建/链接/进程：Legacy 使用 `services/sim`，Target 使用 `sim_target_production_host`。Target C0 已真实执行 `AssignmentService`、`AssignmentAggregate` 和 `PlanPrimarySwitch`；仍是 Host 组件闭环，不代表产品持久化、SA/IPC 或设备验收。详细审计、边界和迁移顺序见 [双后端架构](docs/Backend_Architecture.md)。
 
 从 cases/sim_card_test.cpp 复制一条 `TEST_F`，只改准备、操作和断言：
 

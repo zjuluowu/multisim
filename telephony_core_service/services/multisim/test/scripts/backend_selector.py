@@ -56,7 +56,8 @@ def selected_scenarios(test_filter='*'):
     rows = capabilities()
     if not test_filter or test_filter == '*':
         return rows
-    return [row for row in rows if test_filter in row['test'] or test_filter in row['id']]
+    return [row for row in rows if test_filter in row['id'] or
+            any(test_filter in (row[backend].get('test') or '') for backend in ('legacy', 'target'))]
 
 
 def capability_report(backend, platform, test_filter='*'):
@@ -64,8 +65,27 @@ def capability_report(backend, platform, test_filter='*'):
     for row in selected_scenarios(test_filter):
         value = row[backend].get(platform)
         reason = row[backend].get('reason')
-        report.append({'scenario': row['id'], 'test': row['test'], 'status': value, 'reason': reason})
+        report.append({'scenario': row['id'], 'test': row[backend].get('test'),
+                       'status': value, 'reason': reason})
     return report
+
+
+def gtest_filter(backend, test_filter='*', platform='host'):
+    if not test_filter or test_filter == '*':
+        return '*'
+    rows = selected_scenarios(test_filter)
+    if not rows:
+        return test_filter
+    names = [row[backend].get('test') for row in rows
+             if row[backend].get(platform) != 'NOT_APPLICABLE' and row[backend].get('test')]
+    return ':'.join(names) if names else test_filter
+
+
+def scenario_for_test(backend, test_name):
+    for row in capabilities():
+        if row[backend].get('test') == test_name:
+            return row['id']
+    return None
 
 
 def main():

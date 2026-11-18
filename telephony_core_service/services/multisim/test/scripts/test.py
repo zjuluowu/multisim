@@ -11,8 +11,9 @@ import subprocess
 import sys
 import tempfile
 from _paths import TEST, REPO
-from backend_selector import expanded_backends, capability_report, resolve
-from compare_backends import compare
+from backend_selector import (expanded_backends, capability_report, gtest_filter,
+                               resolve, scenario_for_test, selected_scenarios)
+from compare_backends import compare_reports
 
 HOST = ['sim_test_host', 'sim_component_test', 'sim_primary_slot_entry_test', 'sim_g2a_query_test', 'sim_upstream_query_test']
 REAL = ['sim_primary_slot_real_test', 'sim_bootstrap_characterization']
@@ -128,28 +129,31 @@ def main():
                             'reason':'reused_existing_binary'});save()
                     if args.action in ['build','editor']:continue
                     report_dir=session/backend/target
+                    backend_filter=gtest_filter(backend,args.filter,args.platform)
                     if args.action in ['run','list','debug']:
                         from run_gtest import discover
-                        selected,_=discover(binary.resolve(),args.filter,dict(os.environ,LLVM_PROFILE_FILE=str(session/(backend+'-discovery-%p.profraw')),LD_LIBRARY_PATH=str((args.out/'build').resolve())),60,allow_empty=True)
+                        selected,_=discover(binary.resolve(),backend_filter,dict(os.environ,LLVM_PROFILE_FILE=str(session/(backend+'-discovery-%p.profraw')),LD_LIBRARY_PATH=str((args.out/'build').resolve())),60,allow_empty=True)
                         result.setdefault('discovery',{}).setdefault(backend,{})[target]=selected;save()
                         if args.action=='list':
                             for name in selected:print('['+backend+'] '+name,flush=True)
                         if not selected:
                             result['commands'].append({'name':backend+'-'+target,'status':'NOT_RUN','exit_code':None,'reason':'filter_did_not_select_this_binary'});save();continue
                     if args.action=='debug':
-                        debug=['--binary',binary,'--filter',args.filter,'--output',report_dir]
+                        debug=['--binary',binary,'--filter',backend_filter,'--output',report_dir]
                         if args.breakpoint:debug+=['--breakpoint',args.breakpoint]
                         if args.slot is not None:debug+=['--slot',str(args.slot)]
                         if args.primary_cleanup_diagnostic:debug+=['--primary-cleanup-diagnostic']
                         run(backend+'-'+target+'-debug','debug.py',debug);continue
-                    options=['--binary',binary,'--output',report_dir,'--filter',args.filter]
+                    options=['--binary',binary,'--output',report_dir,'--filter',backend_filter]
                     if args.action=='list':options+=['--list']
                     if target in REAL:options += ['--env','SIM_HOST_BOOT_SLOT_COUNT=2','--env','SIM028_INIT_MODEL='+args.init_model]
                     run(backend+'-'+target,'run_gtest.py',options)
                     reports=list(report_dir.glob('gtest-*/result.json'))
                     if len(reports)!=1:continue
                     child=json.loads(reports[0].read_text())
-                    for case in child['cases']:case.update(target=target,backend=backend,report=str(reports[0]),scope='host_component')
+                    for case in child['cases']:
+                        case.update(target=target,backend=backend,report=str(reports[0]),scope='host_component',
+                            scenario=scenario_for_test(backend,case['id']))
                     result.setdefault('backend_reports',{}).setdefault(backend,{'cases':[],'status':'NOT_RUN'})['cases'].extend(child['cases'])
                     result['cases'].extend(child['cases']);save()
                     slices={'sim_test_host':'state','sim_primary_slot_real_test':'primary','sim_g2a_query_test':'query','sim_upstream_query_test':'upstream'}
@@ -204,21 +208,14 @@ def main():
         if args.backend=='both' and args.action in ['all','run']:
             legacy=result.get('backend_reports',{}).get('legacy',{'status':'BLOCKED','cases':[]})
             target=result.get('backend_reports',{}).get('target',{'status':'BLOCKED','cases':[]})
-            scenarios,differences=compare(legacy.get('cases',[]),target.get('cases',[]))
-            backend_statuses=(legacy['status'],target['status'])
-            overall='FAIL' if 'FAIL' in backend_statuses or differences else \
-                'BLOCKED' if any(value in ('BLOCKED','NOT_RUN','UNSUPPORTED') for value in backend_statuses) else 'PASS'
-            comparison_status='FAIL' if differences else \
-                'BLOCKED' if overall != 'PASS' or not scenarios else 'PASS'
-            result['differential']={'legacy':legacy['status'],'target':target['status'],
-                'oracle':'NOT_RUN' if not args.compare_with_oracle else \
-                    ('BLOCKED' if overall != 'PASS' else 'PASS'),
-                'legacy_target':comparison_status,'overall':overall,
-                'scenarios':scenarios,'differences':differences}
+            required=[row['id'] for row in selected_scenarios(args.filter)
+                      if row.get('differential') == 'SUPPORTED']
+            result['differential']=compare_reports(legacy,target,required,args.compare_with_oracle)
             (session/'differential.json').write_text(json.dumps(result['differential'],ensure_ascii=False,indent=2)+'\n')
+            overall=result['differential']['overall']
             if overall not in ('PASS',):
                 result['commands'].append({'name':'both-differential','status':overall,'exit_code':2 if overall=='BLOCKED' else 1,
-                    'reason':'Any backend failure/block makes Both non-PASS; comparison requires overlapping executed scenarios'})
+                    'reason':'Both requires every requested scenario to execute on both backends and match business Oracle'})
         statuses={r['status'] for r in result['commands']}
         result['status']='FAIL' if 'FAIL' in statuses else 'BLOCKED' if 'BLOCKED' in statuses else 'UNSUPPORTED' if 'UNSUPPORTED' in statuses or (args.action=='run' and not result['cases']) or (args.action=='debug' and not any(result.get('discovery',{}).values())) else 'PASS'
         if args.action=='list' and result['status']=='PASS':result['status']='NOT_RUN'

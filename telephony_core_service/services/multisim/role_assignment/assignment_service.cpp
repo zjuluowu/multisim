@@ -14,11 +14,12 @@
  */
 // TARGET ARCHITECTURE SKELETON / PROPOSED: 仅接入 testonly 骨架构建，尚未接入生产，未转移写权。
 // Design: docs/SIM_Target_Architecture_Design_v1.2.md §4.2、§6.3、§8.2、§9.3。
-// 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
+// C0最小组件闭环已实现；非C0异步/激活方法保持显式拒绝，未提供伪成功或设备路径。
 
 #include "role_assignment/assignment_service.h"
 #include "role_assignment/primary/primary_switch_plan.h"
 
+#include <stdexcept>
 #include "role_assignment/legacy_entry.h"
 
 namespace OHOS::Telephony::MultiSim {
@@ -30,6 +31,130 @@ AssignmentService::AssignmentService(const SlotCatalog &catalog, AssignmentStore
     LegacyIntCompletionPort &completion, RuntimeEpoch epoch)
     : catalog_(catalog), operations_(epoch, RequestOwner::Assignment), store_(store), radio_(radio),
       output_(output), topology_(topology), completion_(completion) {}
+
+RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &command)
+{
+    const RequestId request = operations_.Begin(command.target, command.completion, command.parent);
+    (void)nextConflictToken_; // Reserved for non-C0 activation conflict leases.
+    if (!operations_.AdvanceStep({request, 0, 0}, 1, 0, std::nullopt)) {
+        completion_.CompleteLegacyInt(command.completion, -1);
+        operations_.MarkTerminal(request, TerminalState::Failed);
+        return request;
+    }
+    const SlotDescriptor *target = catalog_.Find(command.target.slot);
+    const auto facts = topology_.ReadPrimaryTarget(command.target.slot);
+    if (!target || !target->radioDomain || !facts || !facts->active ||
+        !(facts->binding.slot == command.target.slot) || facts->iccid.empty()) {
+        completion_.CompleteLegacyInt(command.completion, -1);
+        operations_.MarkTerminal(request, TerminalState::Failed);
+        return request;
+    }
+
+    const PrimaryRadioObservation observed = radio_.ReadPrimaryRadioObservation(command.target.slot);
+    const bool validObservation = observed.slot == command.target.slot && observed.observationRevision != 0 &&
+        observed.currentModemId.has_value() && target->rilInstance.has_value();
+    if (!validObservation) {
+        // Unknown is not M0. Other primary paths remain outside this C0 host closure.
+        completion_.CompleteLegacyInt(command.completion, -1);
+        operations_.MarkTerminal(request, TerminalState::Failed);
+        return request;
+    }
+    const bool alreadyOnPrimaryModem = *observed.currentModemId == 0 &&
+        *target->rilInstance == *observed.currentModemId;
+    const auto plan = PlanPrimarySwitch({*target, command.userSet, observed.dedicatedPrimaryRilSupported,
+        alreadyOnPrimaryModem, observed.vendorMappingRequired});
+    if (!plan || plan->mode != PrimarySwitchMode::AlreadyPrimary) {
+        // C0 only. Do not route an unimplemented B/C1 branch through Legacy or a fake success.
+        completion_.CompleteLegacyInt(command.completion, -1);
+        operations_.MarkTerminal(request, TerminalState::Failed);
+        return request;
+    }
+    if (assignment_.AdmitTransition(*target, request.value) != TransitionAdmission::Admitted) {
+        completion_.CompleteLegacyInt(command.completion, -1);
+        operations_.MarkTerminal(request, TerminalState::Failed);
+        return request;
+    }
+
+    const auto preference = store_.WriteUserPrimaryPreference(command.userSet);
+    if (!preference.callFinished || preference.parameterResult != 0) {
+        assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
+            TransitionPhase::Admitted, TransitionPhase::Failed);
+        completion_.CompleteLegacyInt(command.completion, preference.parameterResult);
+        operations_.MarkTerminal(request, TerminalState::Failed);
+        return request;
+    }
+    const auto primary = store_.WritePrimaryParameters(target->slot, facts->iccid);
+    if (!primary.callFinished || primary.parameterResult != 0) {
+        assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
+            TransitionPhase::Admitted, TransitionPhase::Failed);
+        completion_.CompleteLegacyInt(command.completion, primary.parameterResult);
+        operations_.MarkTerminal(request, TerminalState::Failed);
+        return request;
+    }
+    assignment_.AcceptPrimaryParameterProjection(target->slot);
+    assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
+        TransitionPhase::Admitted, TransitionPhase::ParametersWritten);
+    output_.PublishMainCardChanged(target->slot);
+
+    const auto data = store_.WriteDefaultData(target->slot);
+    if (!data.callFinished || data.parameterResult != 0) {
+        assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
+            TransitionPhase::ParametersWritten, TransitionPhase::Failed);
+        completion_.CompleteLegacyInt(command.completion, data.parameterResult);
+        operations_.MarkTerminal(request, TerminalState::Failed);
+        return request;
+    }
+    assignment_.AcceptDataParameterProjection(target->slot);
+    output_.PublishDefaultDataChanged(target->slot, facts->binding.subscription);
+    assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
+        TransitionPhase::ParametersWritten, TransitionPhase::Completed);
+    completion_.CompleteLegacyInt(command.completion, 0);
+    operations_.MarkTerminal(request, TerminalState::Succeeded);
+    return request;
+}
+
+AssignmentView AssignmentService::ReadLegacyAssignment() const
+{
+    AssignmentView view {};
+    const auto &slots = catalog_.Slots();
+    for (const auto &slot : slots) {
+        if (slot.radioDomain && assignment_.IsSwitchInProgress(*slot.radioDomain)) {
+            view.primarySwitchInProgress = true;
+        }
+    }
+    view.lastPrimary = assignment_.ReadLastPrimary();
+    view.lastData = assignment_.ReadLastData();
+    view.assignmentRevision = assignment_.Revision();
+    return view;
+}
+
+int32_t AssignmentService::SetDefaultRole(const SetRoleCommand &command)
+{
+    const auto result = store_.WriteDefaultRole(command);
+    if (result.callFinished && result.writeConfirmed && result.legacyResult == 0) {
+        assignment_.AcceptRoleSelection({command.role, command.subscription, command.subscription},
+            assignment_.Revision());
+    }
+    return result.legacyResult;
+}
+
+void AssignmentService::AcceptRadioStep(const RadioSwitchResult &)
+{ throw std::logic_error("C0 Target component slice does not implement asynchronous radio steps"); }
+void AssignmentService::AcceptLateRadioEvidence(const RadioSwitchResult &)
+{ throw std::logic_error("C0 Target component slice does not implement late radio evidence"); }
+void AssignmentService::RetryPrimaryAfterReconciliation(RequestId)
+{ throw std::logic_error("C0 Target component slice does not schedule retries"); }
+LegacyActivationWaitResult AssignmentService::WaitForLegacyPrimaryBeforeActivation(SlotId)
+{ throw std::logic_error("C0 Target component slice does not implement activation waiting"); }
+std::optional<ActivationConflictLease> AssignmentService::AdmitActivationBeforeDevice(const ActivationConflictRequest &)
+{ throw std::logic_error("C0 Target component slice does not implement activation admission"); }
+bool AssignmentService::ReleaseActivationConflict(const ActivationConflictLease &, const ActivationConflictEndEvidence &)
+{ throw std::logic_error("C0 Target component slice does not implement activation release"); }
+bool AssignmentService::TransferActivationConflictToReconciliation(const ActivationConflictLease &, EffectKnowledge)
+{ throw std::logic_error("C0 Target component slice does not implement activation reconciliation"); }
+void AssignmentService::AcceptEntryPrimaryPreference(bool userSet) { store_.WriteUserPrimaryPreference(userSet); }
+void AssignmentService::RecheckPrimaryAfterAccountChange(const PrimaryRecheck &)
+{ throw std::logic_error("C0 Target component slice does not implement account rechecks"); }
 void AssignmentService::AcceptLocalProfilePreference(const StepRef &, SlotId)
 {
     store_.WriteUserPrimaryPreference(true); // 原File返回后写入；参数失败不覆盖旧双结果。

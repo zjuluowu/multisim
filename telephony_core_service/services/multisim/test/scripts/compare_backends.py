@@ -4,27 +4,137 @@ import argparse
 import json
 from pathlib import Path
 
-DEFAULT_FIELDS = ('status', 'scenario', 'oracle', 'primary_role', 'default_data_role',
-                  'parameters', 'notifications', 'external_calls', 'retries')
+DEFAULT_FIELDS = ('status', 'scenario', 'api_result', 'primary_role', 'default_data_role',
+                  'parameters', 'notifications', 'device_switch_commands', 'retry_count')
+C0 = 'SIM028-LEGACY-C0-DUAL-PRIMARY0'
+C0_ORACLE = {
+    'api_result': 0, 'primary_role': 1, 'default_data_role': 1,
+    'parameters': {'user_preference': True, 'primary_slot': 1,
+                   'primary_iccid': 'AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2',
+                   'default_data_slot': 1},
+    'notifications': ['primary', 'data'], 'device_switch_commands': 0, 'retry_count': 0,
+}
+
+
+def _legacy_observation(case):
+    value = case.get('details', {}).get('properties', {}).get('primary_observation')
+    return json.loads(value) if value else None
+
+
+def _target_observation(case):
+    value = case.get('details', {}).get('properties', {}).get('primary_observation')
+    return json.loads(value) if value else None
 
 
 def normalized(case):
-    return {key: case.get(key) for key in DEFAULT_FIELDS if key in case}
+    if not case:
+        return {}
+    observation = _legacy_observation(case) or _target_observation(case)
+    if observation and 'public' in observation:
+        public = observation['public']
+        parameters = observation.get('parameters', {})
+        events = observation.get('events', [])
+        notifications = []
+        device_calls = 0
+        retries = 0
+        for event in events:
+            if event.get('kind') == 'publication':
+                action = event.get('fields', {}).get('action', '')
+                if 'DEFAULT_MAIN_SUBSCRIPTION_CHANGED' in action:
+                    notifications.append('primary')
+                elif 'DEFAULT_DATA_SUBSCRIPTION_CHANGED' in action:
+                    notifications.append('data')
+            if event.get('kind') in ('ril_primary', 'ril_protocol'):
+                device_calls += 1
+            if event.get('kind') == 'retry':
+                retries += 1
+        return {
+            'status': case.get('status'), 'scenario': case.get('scenario'),
+            'api_result': int(public.get('primary_result', -1)),
+            'primary_role': int(public.get('primary', -1)),
+            'default_data_role': int(public.get('data', -1)),
+            'parameters': {
+                'user_preference': parameters.get('persist.telephony.userPreferPrimarySlot') == 'true',
+                'primary_slot': int(parameters.get('persist.telephony.MainSlotId', -1)),
+                'primary_iccid': parameters.get('persist.telephony.MainCard.Iccid'),
+                'default_data_slot': int(parameters.get('persist.telephony.MainCellularDataSlotId', -1)),
+            },
+            'notifications': notifications, 'device_switch_commands': device_calls,
+            'retry_count': retries,
+        }
+    if observation:
+        result = dict(observation)
+        result['status'] = case.get('status')
+        result['scenario'] = case.get('scenario')
+        return {key: result[key] for key in DEFAULT_FIELDS if key in result}
+    return {key: case[key] for key in DEFAULT_FIELDS if key in case}
 
 
-def compare(left, right):
-    index = lambda cases: {case.get('scenario') or case.get('test') or case.get('name'): normalized(case)
-                           for case in cases}
-    a, b = index(left), index(right)
-    scenarios = sorted(set(a) & set(b))
+def compare(left, right, required_scenarios=None):
+    def index(cases):
+        rows = {}
+        duplicates = set()
+        for case in cases:
+            scenario = case.get('scenario')
+            if not scenario:
+                continue
+            if scenario in rows:
+                duplicates.add(scenario)
+            else:
+                rows[scenario] = normalized(case)
+        return rows, duplicates
+    left_index, left_duplicates = index(left)
+    right_index, right_duplicates = index(right)
+    if required_scenarios is None:
+        required_scenarios = sorted(set(left_index) & set(right_index))
+    scenarios = sorted(set(required_scenarios))
     differences = []
     for scenario in scenarios:
-        if a[scenario] != b[scenario]:
-            fields = sorted(set(a[scenario]) | set(b[scenario]))
+        if scenario in left_duplicates or scenario in right_duplicates:
+            differences.append({'scenario': scenario, 'duplicate': 'legacy' if scenario in left_duplicates else 'target'})
+            continue
+        a, b = left_index.get(scenario), right_index.get(scenario)
+        if not a or not b:
+            differences.append({'scenario': scenario, 'missing': 'legacy' if not a else 'target'})
+            continue
+        if a != b:
+            fields = sorted(set(a) | set(b))
             differences.append({'scenario': scenario, 'fields': [
-                {'field': field, 'legacy': a[scenario].get(field), 'target': b[scenario].get(field)}
-                for field in fields if a[scenario].get(field) != b[scenario].get(field)]})
+                {'field': field, 'legacy': a.get(field), 'target': b.get(field)}
+                for field in fields if a.get(field) != b.get(field)]})
     return scenarios, differences
+
+
+def compare_reports(left, right, required_scenarios, compare_oracle=True):
+    scenarios, differences = compare(left.get('cases', []), right.get('cases', []), required_scenarios)
+    statuses = (left.get('status'), right.get('status'))
+    missing = any(item.get('missing') for item in differences)
+    executed = bool(scenarios) and not missing
+    oracle_differences = []
+    if compare_oracle and executed and C0 in scenarios:
+        indexes = []
+        for report in (left, right):
+            by_scenario = {case.get('scenario'): normalized(case) for case in report.get('cases', [])}
+            indexes.append(by_scenario.get(C0, {}))
+        for backend, value in zip(('legacy', 'target'), indexes):
+            mismatches = {key: {'expected': expected, 'actual': value.get(key)}
+                          for key, expected in C0_ORACLE.items() if value.get(key) != expected}
+            if mismatches:
+                oracle_differences.append({'backend': backend, 'scenario': C0, 'fields': mismatches})
+    if missing or not executed or any(status in ('BLOCKED', 'NOT_RUN', 'UNSUPPORTED') for status in statuses):
+        overall = 'BLOCKED'
+    elif 'FAIL' in statuses or differences or oracle_differences:
+        overall = 'FAIL'
+    else:
+        overall = 'PASS'
+    return {
+        'legacy': statuses[0], 'target': statuses[1],
+        'oracle': 'NOT_RUN' if not compare_oracle else ('BLOCKED' if not executed else
+                  ('FAIL' if oracle_differences else 'PASS')),
+        'oracle_differences': oracle_differences,
+        'legacy_target': 'BLOCKED' if not executed else ('FAIL' if differences else 'PASS'),
+        'overall': overall, 'scenarios': scenarios, 'differences': differences,
+    }
 
 
 def main():
@@ -32,22 +142,15 @@ def main():
     parser.add_argument('--legacy', type=Path, required=True)
     parser.add_argument('--target', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--scenario', action='append', required=True)
+    parser.add_argument('--no-oracle', action='store_true')
     args = parser.parse_args()
     left, right = json.loads(args.legacy.read_text()), json.loads(args.target.read_text())
-    scenarios, differences = compare(left.get('cases', []), right.get('cases', []))
-    statuses = (left.get('status'), right.get('status'))
-    status = 'FAIL' if 'FAIL' in statuses or differences else \
-             'BLOCKED' if any(s in ('BLOCKED', 'NOT_RUN', 'UNSUPPORTED') for s in statuses) else 'PASS'
-    result = {'legacy': left.get('status'), 'target': right.get('status'),
-              'oracle': 'PASS' if status == 'PASS' and left.get('oracle_status', 'PASS') == 'PASS' and
-                                   right.get('oracle_status', 'PASS') == 'PASS' else \
-                        ('FAIL' if status == 'FAIL' else 'BLOCKED'),
-              'legacy_target': 'FAIL' if differences else ('BLOCKED' if status != 'PASS' or not scenarios else 'PASS'),
-              'overall': status, 'scenarios': scenarios, 'differences': differences}
+    result = compare_reports(left, right, args.scenario, not args.no_oracle)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2, ensure_ascii=False) + '\n')
     print(json.dumps(result, indent=2, ensure_ascii=False))
-    return 0 if status == 'PASS' else 2 if status == 'BLOCKED' else 1
+    return 0 if result['overall'] == 'PASS' else 2 if result['overall'] == 'BLOCKED' else 1
 
 
 if __name__ == '__main__':

@@ -44,6 +44,9 @@ public:
     bool IsSwitchInProgress(const RadioDomainId &domain) const;
     void AcceptPrimaryParameterProjection(SlotId lastPrimary);
     void AcceptDataParameterProjection(SlotId lastData);
+    std::optional<SlotId> ReadLastPrimary() const { return lastPrimary_; }
+    std::optional<SlotId> ReadLastData() const { return lastData_; }
+    uint64_t Revision() const { return revision_; }
 private:
     std::map<DefaultRole, RoleSelection> roles_; // 全局角色约束域不随Modem数量复制。
     uint64_t revision_ {0};

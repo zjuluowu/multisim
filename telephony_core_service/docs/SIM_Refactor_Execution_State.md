@@ -1,5 +1,7 @@
 # 多 SIM 重构执行状态
 
+当前双后端阶段二（2026-11-18，输入 `bcb7ff742ecec719c75bdda5065f1c63e9d0bb76`）：稳定 Scenario ID `SIM028-LEGACY-C0-DUAL-PRIMARY0` 已映射 Legacy/Target 不同 GTest；Both 拒绝零匹配、单边缺失和架构-only，并对真实外部字段执行 Oracle/差分。Target 最小 C0 Host 组件闭环已实现并实际运行 `AssignmentService::StartPrimarySwitch -> PlanPrimarySwitch -> AssignmentAggregate`，完成用户偏好、主卡参数、主卡通知、默认数据参数/通知及完成交付；拓扑/Radio/Store/Output 仅为记录型外部端口。Target C0、Legacy C0、Both C0 均 PASS，差异 0；LLDB 进入真实 AssignmentService。未接入产品调用链，B/C1、真实 Provider、SA/IPC、产品构建、设备和完整生命周期仍未验收。
+
 当前双后端测试基础设施（2026-11-18，输入 HEAD `1fd7c9c815f5fe02afb09a89b860f68f873004c9`）：统一入口支持 Legacy/Target/Both 配置切换，Target Host 静态生产库和独立进程已建立；Target 仅链接 `services/multisim/role_assignment/primary/primary_switch_plan.cpp`，无 Legacy 符号。真实 Target 决策试点 `TargetArchitecture.C0PrimaryPlanUsesNoDeviceSwitch` PASS；完整 `SIM028-LEGACY-C0-DUAL-PRIMARY0` Target 为 BLOCKED，因为 AssignmentService、Aggregate、Store/Output/Radio 装配及生命周期未实现，Both 在 Legacy C0 PASS 时整体 BLOCKED。未修改 Legacy 生产实现、历史 Golden/Oracle 或正式产品 GN/SA 接入。架构/GN、技术脚本、Target 独立构建/执行、Legacy C0 单例及 Both 阻塞传播已实际验证；Device/产品构建与 VS Code GUI 仍 NOT_RUN/BLOCKED。详见[双后端架构审计](../services/multisim/test/docs/Backend_Architecture.md)。
 
 当前文档及测试配套刷新（2026-11-18）：现行入口、授权边界与生命周期说明同步至已发布Host修复；默认报告目录的架构检查衔接及修复策略防回退已验证，见§49。此前124项业务证据见§48，本批不重复宣称已重跑业务。
