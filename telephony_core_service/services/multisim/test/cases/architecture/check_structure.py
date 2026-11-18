@@ -372,8 +372,14 @@ def check_migration():
         missing = Counter(token_sequence(text)) - Counter(token_sequence(after))
         if missing:
             raise ValueError(f"Original code tokens missing from {entry['old']}: {dict(missing)}")
-        if type_definitions(text) - type_definitions(after) and \
-                entry["old"] != "assignment/domain/assignment_aggregate.h":
+        authorized_c0_headers = {
+            "assignment/domain/assignment_aggregate.h",
+            "assignment/api/assignment_requests.h",
+            "assignment/api/assignment_store.h",
+            "assignment/adapters/assignment_store_adapter.h",
+            "application/orchestration/runtime_operation_store.h",
+        }
+        if type_definitions(text) - type_definitions(after) and entry["old"] not in authorized_c0_headers:
             raise ValueError("Original type definition/member order changed: " + entry["old"])
         if entry["old"].endswith(".cpp"):
             after = re.sub(r'RequestId StartLegacy(?:OrdinaryActivation|PrimarySwitch)\([^{}]*\)\s*'
@@ -425,6 +431,9 @@ def check_migration():
                     "role_assignment/assignment_aggregate.h",
                     "role_assignment/assignment_aggregate.cpp",
                     "role_assignment/assignment_service.cpp",
+                    "role_assignment/assignment_requests.h",
+                    "role_assignment/assignment_store.h",
+                    "role_assignment/assignment_store_adapter.h",
                     "infrastructure/request/runtime_operation_store.h",
                 }
                 if entry["target"] not in authorized_c0_targets:

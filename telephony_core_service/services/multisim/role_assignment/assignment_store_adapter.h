@@ -34,7 +34,8 @@ public:
     AssignmentParameterResult WriteUserPrimaryPreference(bool userSet) override;
 private:
     SimRdbHelper &legacyStore_;
-    // WriteDefaultRole沿原默认卡URI协议；其余沿SetParameter原键与编码。
+    // T返回raw ICCID；本Adapter负责Legacy兼容的SHA-256大写Hex编码后写MainCard.Iccid。
+    // WriteDefaultRole沿原默认卡URI协议；其余沿SetParameter原键。
     // ResumePrimaryCardInfo对旧参数空/非法时不恢复的条件保持；不发设备回滚。
 };
 } // namespace OHOS::Telephony::MultiSim

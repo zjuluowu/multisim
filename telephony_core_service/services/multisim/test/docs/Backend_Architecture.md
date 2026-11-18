@@ -57,6 +57,18 @@ Host 的 Recording Store、Output、Topology、Radio、Completion 只做两件�
 
 组件测试使用无线程、无外部设备租约的同步端口记录器；作用域结束即销毁，没有遗留 worker、订阅或 RIL 资源。它只证明组件闭环和资源局部销毁，不证明正式产品对象图生命周期。
 
+## 阶段三真实性与异常覆盖
+
+`Observation()` 不再写入 Primary/Data、参数、通知、设备次数或重试的固定成功值。Primary/Data 来自 `AssignmentView`，参数来自 Recording Store 的实际持久化状态，通知来自 Output 的实际记录，设备/重试次数来自 Radio 记录，返回值来自 Completion 端口。任何实际业务实现变化都会改变归一化观测并被 Oracle 或 Legacy/Target 差分检出。
+
+C0 Host 组件覆盖还包括：无绑定、未激活、绑定代次变化、Radio 未知/失效/不同映射、用户偏好失败、Primary 参数失败、Data 参数失败及其部分效果、同域冲突请求、失败后重新请求、旧 epoch、旧 Step、重复完成和终态拒绝。失败测试验证真实聚合投影与每个外部端口的效果；未为未裁决的 Legacy 参数失败顺序新增跨后端兼容码，Legacy 原路径仍以冻结 Golden 作为条件性 Host 基线。
+
+`compare_backends.py` 的 C0 期望从冻结 `primary_inputs.json` / `primary_golden.json` 动态构造，并根据目标账户的 raw ICCID 计算 Legacy 兼容 SHA-256 大写 Hex；历史 Golden 文件保持原字节。比较器不持有第二份手工 C0 期望。
+
+## ICCID 与持久化边界
+
+Legacy 路径是 `SimFileManager::GetSimIccId()` → `SavePrimaryCardInfo(slot)` → SHA-256 → `BytesConvertToHexString` 大写 Hex → `persist.telephony.MainCard.Iccid`。Target 裁决为：`PrimaryTopologyPort` 提供当前绑定和 raw ICCID；`AssignmentService` 不编码、不计算哈希，只把 raw ICCID 传给 `AssignmentStore`；`AssignmentStoreAdapter` 负责 Legacy 兼容编码及原参数写入。当前 Adapter 仅有契约声明，正式实现及 Provider 参数适配尚未接入；Recording Store 的 Host 编码验证不能冒充真实持久化 PASS。
+
 ## 验证结果
 
 - Target C0 单例：PASS

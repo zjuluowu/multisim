@@ -43,8 +43,12 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
     }
     const SlotDescriptor *target = catalog_.Find(command.target.slot);
     const auto facts = topology_.ReadPrimaryTarget(command.target.slot);
+    const bool expectedBindingUnchanged = facts && command.expectedBinding &&
+        command.expectedBinding->subscription == facts->binding.subscription &&
+        command.expectedBinding->slot == facts->binding.slot &&
+        command.expectedBinding->bindingRevision == facts->binding.bindingRevision;
     if (!target || !target->radioDomain || !facts || !facts->active ||
-        !(facts->binding.slot == command.target.slot) || facts->iccid.empty()) {
+        !(facts->binding.slot == command.target.slot) || !expectedBindingUnchanged || facts->iccid.empty()) {
         completion_.CompleteLegacyInt(command.completion, -1);
         operations_.MarkTerminal(request, TerminalState::Failed);
         return request;

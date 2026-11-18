@@ -71,6 +71,9 @@ def check_directory_migration(source, token_sequence, *, repo=None):
                 'card_selection/assignment_aggregate.h',
                 'card_selection/assignment_aggregate.cpp',
                 'card_selection/assignment_service.cpp',
+                'card_selection/assignment_requests.h',
+                'card_selection/assignment_store.h',
+                'card_selection/assignment_store_adapter.h',
                 'support/request/runtime_operation_store.h',
             }
             if expected != current and name not in authorized_c0_targets:

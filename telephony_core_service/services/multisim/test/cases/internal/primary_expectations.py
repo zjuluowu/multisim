@@ -3,6 +3,10 @@
 Input is measured boundary data, never Golden-generated outcomes. Unit-test fixtures
 are technical oracle tests; they cannot confer Target business execution status.
 """
+import hashlib
+import json
+from pathlib import Path
+
 PRIMARY = 'persist.telephony.MainSlotId'
 DATA = 'persist.telephony.MainCellularDataSlotId'
 ICCID = 'persist.telephony.MainCard.Iccid'
@@ -11,6 +15,31 @@ TARGET_ICCID = 'AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2
 MAIN = 'usual.event.SIM.DEFAULT_MAIN_SUBSCRIPTION_CHANGED'
 DATA_EVENT = 'usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED'
 STATUS = 'usual.event.SET_PRIMARY_SLOT_STATUS'
+
+
+def differential_oracle(scenario_id):
+    data = Path(__file__).parents[1] / 'data'
+    inputs = json.loads((data / 'primary_inputs.json').read_text())
+    golden = json.loads((data / 'primary_golden.json').read_text())
+    source = next(row for row in inputs['scenarios'] if row['id'] == scenario_id)
+    evidence = next(row for row in golden['scenarios'] if row['id'] == scenario_id)
+    if evidence.get('api_return') != 'TELEPHONY_ERR_SUCCESS synchronously after persistence and publisher calls':
+        raise ValueError('Frozen C0 API contract is not the supported success boundary')
+    expected = source['expect']
+    target = next(account for account in source['preconditions']['active_accounts']
+                  if account['slot'] == expected['primary'])
+    encoded = hashlib.sha256(target['synthetic_iccid'].encode()).hexdigest().upper()
+    return {
+        'api_result': 0, 'primary_role': expected['primary'], 'default_data_role': expected['data'],
+        'parameters': {'user_preference': source['input']['user_set'],
+                       'primary_slot': expected['primary'], 'primary_iccid': encoded,
+                       'default_data_slot': expected['data']},
+        'notifications': ['primary', 'data'] if expected['success_publications'] else [],
+        'device_switch_commands': expected['ril_primary_count'] +
+            2 * len(expected['protocol_phases']) * len(source['preconditions']['active_accounts']) *
+            expected['protocol_attempts'],
+        'retry_count': expected['attempts'],
+    }
 
 
 def evaluate(scenario, observation):

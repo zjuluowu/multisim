@@ -9,7 +9,7 @@ from types import SimpleNamespace
 SCRIPTS = Path(__file__).resolve().parents[3] / 'scripts'
 sys.path.insert(0, str(SCRIPTS))
 from backend_selector import capability_report, gtest_filter, load_config, resolve
-from compare_backends import compare, compare_reports, C0, C0_ORACLE
+from compare_backends import compare, compare_reports, C0, C0_ORACLE, load_oracle
 
 
 class BackendSelectorTest(unittest.TestCase):
@@ -25,6 +25,12 @@ class BackendSelectorTest(unittest.TestCase):
         self.assertEqual(config['backend'], 'target')
         self.assertFalse(config['build_if_missing'])
         self.assertEqual(config['output_dir'], 'isolated')
+
+    def test_oracle_is_derived_from_frozen_primary_contract(self):
+        oracle = load_oracle(C0)
+        self.assertEqual(oracle['parameters']['primary_iccid'], C0_ORACLE['parameters']['primary_iccid'])
+        self.assertEqual(oracle['notifications'], ['primary', 'data'])
+        self.assertEqual(oracle['device_switch_commands'], 0)
 
     def test_same_scenario_maps_different_gtest_names(self):
         rows = capability_report('target', 'host', 'C0CoreToRealManagerAndController')
@@ -51,7 +57,8 @@ class BackendSelectorTest(unittest.TestCase):
     def _report(backend_fields=None):
         fields = dict(C0_ORACLE)
         fields.update(backend_fields or {})
-        return {'status': 'PASS', 'cases': [{'scenario': C0, 'status': 'PASS', **fields}]}
+        return {'status': 'PASS', 'cases': [{'scenario': C0, 'status': 'PASS',
+            'details': {'properties': {'primary_observation': json.dumps(fields)}}}]}
 
     def test_both_rejects_zero_matches(self):
         result = compare_reports({'status': 'PASS', 'cases': []},
@@ -75,6 +82,23 @@ class BackendSelectorTest(unittest.TestCase):
         self.assertEqual(result['oracle'], 'PASS')
         self.assertEqual(result['legacy_target'], 'PASS')
         self.assertEqual(result['overall'], 'PASS')
+
+    def test_both_rejects_missing_or_fabricated_business_fields(self):
+        incomplete = self._report()
+        observation = json.loads(incomplete['cases'][0]['details']['properties']['primary_observation'])
+        observation.pop('primary_role')
+        incomplete['cases'][0]['details']['properties']['primary_observation'] = json.dumps(observation)
+        result = compare_reports(self._report(), incomplete, [C0])
+        self.assertEqual(result['overall'], 'FAIL')
+        self.assertEqual(result['oracle'], 'FAIL')
+        fabricated_top_level = {'status': 'PASS', 'cases': [{
+            'scenario': C0, 'status': 'PASS', **C0_ORACLE}]}
+        result = compare_reports(self._report(), fabricated_top_level, [C0])
+        self.assertEqual(result['overall'], 'FAIL')
+        fabricated = self._report()
+        fabricated['cases'][0]['status'] = 'BLOCKED'
+        result = compare_reports(fabricated, self._report(), [C0])
+        self.assertEqual(result['overall'], 'FAIL')
 
     def test_architecture_only_cannot_make_both_pass(self):
         result = compare_reports(

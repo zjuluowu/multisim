@@ -32,6 +32,7 @@ struct SwitchPrimaryCommand {
     bool userSet;
     CompletionPlan completion;
     std::optional<StepRef> parent;
+    std::optional<BindingRef> expectedBinding; // C0 requires the T binding accepted at request origin.
 };
 struct RadioAssignmentView {
     SlotId slot;

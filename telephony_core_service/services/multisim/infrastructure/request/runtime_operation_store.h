@@ -80,6 +80,28 @@ inline void RuntimeOperationStore::MarkTerminal(RequestId request, TerminalState
     const auto found = operations_.find(request.value);
     if (found != operations_.end()) { found->second.terminal = terminal; }
 }
+
+inline std::optional<RuntimeOperation> RuntimeOperationStore::Read(RequestId request) const
+{
+    if (request.epoch != epoch_ || request.owner != owner_) { return std::nullopt; }
+    const auto found = operations_.find(request.value);
+    return found == operations_.end() ? std::nullopt : std::make_optional(found->second);
+}
+
+inline RuntimeOperationStore::ResultAdmission RuntimeOperationStore::AcceptResult(
+    StepRef step, EffectKnowledge evidence)
+{
+    if (step.request.epoch != epoch_ || step.request.owner != owner_) {
+        return ResultAdmission::UnknownRequest;
+    }
+    const auto found = operations_.find(step.request.value);
+    if (found == operations_.end()) { return ResultAdmission::UnknownRequest; }
+    if (found->second.terminal != TerminalState::Open) { return ResultAdmission::AlreadyTerminal; }
+    if (!(found->second.context.step == step)) { return ResultAdmission::WrongStep; }
+    if (found->second.deviceEffect != EffectKnowledge::NotSent) { return ResultAdmission::Duplicate; }
+    found->second.deviceEffect = evidence;
+    return ResultAdmission::Accepted;
+}
 } // namespace OHOS::Telephony::MultiSim
 
 #endif // OHOS_TELEPHONY_MULTISIM_FOUNDATION_ORCHESTRATION_RUNTIME_OPERATION_STORE_H

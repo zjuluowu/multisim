@@ -7,13 +7,15 @@ from pathlib import Path
 DEFAULT_FIELDS = ('status', 'scenario', 'api_result', 'primary_role', 'default_data_role',
                   'parameters', 'notifications', 'device_switch_commands', 'retry_count')
 C0 = 'SIM028-LEGACY-C0-DUAL-PRIMARY0'
-C0_ORACLE = {
-    'api_result': 0, 'primary_role': 1, 'default_data_role': 1,
-    'parameters': {'user_preference': True, 'primary_slot': 1,
-                   'primary_iccid': 'AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2',
-                   'default_data_slot': 1},
-    'notifications': ['primary', 'data'], 'device_switch_commands': 0, 'retry_count': 0,
-}
+TEST = Path(__file__).resolve().parents[1]
+import sys
+sys.path.insert(0, str(TEST / 'cases/internal'))
+from primary_expectations import differential_oracle
+
+C0_ORACLE = differential_oracle(C0)
+
+def load_oracle(scenario):
+    return differential_oracle(scenario)
 
 
 def _legacy_observation(case):
@@ -30,6 +32,8 @@ def normalized(case):
     if not case:
         return {}
     observation = _legacy_observation(case) or _target_observation(case)
+    if case.get('scenario') == C0 and observation is None:
+        return {'status': case.get('status'), 'scenario': C0, 'measurement': 'MISSING'}
     if observation and 'public' in observation:
         public = observation['public']
         parameters = observation.get('parameters', {})
