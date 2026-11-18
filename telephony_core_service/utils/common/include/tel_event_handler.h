@@ -65,6 +65,17 @@ class TelEventHandler : public AppExecFwk::EventHandler {
 public:
     explicit TelEventHandler(const std::string &name);
 
+    // A solicited response returns the original request's correlation parameter.
+    // This factory preserves shared and move-only payload ownership alike.
+    template<typename T>
+    static AppExecFwk::InnerEvent::Pointer CreateResponseEvent(
+        const AppExecFwk::InnerEvent::Pointer &request, T &&data)
+    {
+        return AppExecFwk::InnerEvent::Get(request->GetInnerEventId(),
+            std::forward<T>(data), request->GetParam());
+    }
+
+
     /**
      * Send an event.
      *

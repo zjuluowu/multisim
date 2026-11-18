@@ -503,7 +503,7 @@ int32_t SimStateManager::AlterPin2(
 
 int32_t SimStateManager::RefreshSimState(int32_t slotId)
 {
-    int32_t ret = 0;
+    int32_t ret = TELEPHONY_ERR_LOCAL_PTR_NULL;
     if (simStateHandle_ != nullptr) {
         std::unique_lock<ffrt::mutex> lck(ctx_);
         responseReady_ = false;
@@ -514,7 +514,7 @@ int32_t SimStateManager::RefreshSimState(int32_t slotId)
                 break;
             }
         }
-        ret = static_cast<int32_t>(simStateHandle_->GetSimState());
+        ret = responseReady_ ? simStateHandle_->GetRealtimeStatusResult() : CORE_ERR_SIM_CARD_UPDATE_FAILED;
     }
     TELEPHONY_LOGI("SimStateManager::RefreshSimState(), %{public}d", ret);
     return ret;

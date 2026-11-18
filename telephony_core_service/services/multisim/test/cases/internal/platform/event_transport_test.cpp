@@ -11,6 +11,25 @@ using OHOS::AppExecFwk::InnerEvent;
 using OHOS::Telephony::TelEventHandler;
 using namespace std::chrono_literals;
 
+TEST(ProductionEventTransport, SolicitedResponseRetainsCorrelationAndPayloadOwnership)
+{
+    auto request = InnerEvent::Get(71, int64_t{123456});
+    auto shared = std::make_shared<int>(7);
+    auto response = TelEventHandler::CreateResponseEvent(request, shared);
+    EXPECT_EQ(response->GetInnerEventId(), 71u);
+    EXPECT_EQ(response->GetParam(), 123456);
+    EXPECT_EQ(response->GetSharedObject<int>(), shared);
+    auto unique = std::make_unique<int>(9);
+    auto moved = TelEventHandler::CreateResponseEvent(request, std::move(unique));
+    EXPECT_FALSE(unique);
+    EXPECT_EQ(moved->GetParam(), 123456);
+    EXPECT_EQ(*moved->GetUniqueObject<int>(), 9);
+    auto legacy = InnerEvent::Get(72);
+    auto untagged = TelEventHandler::CreateResponseEvent(legacy, shared);
+    EXPECT_EQ(untagged->GetInnerEventId(), 72u);
+    EXPECT_EQ(untagged->GetParam(), 0);
+}
+
 class Completion {
 public:
     void Signal()

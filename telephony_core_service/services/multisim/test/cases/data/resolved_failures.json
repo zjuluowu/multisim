@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "input_head": "55137b4322be686c6b39611020892ff98473a721",
+  "reason": "User authorized fixing the remaining failures; these five historical defects must now pass and any recurrence fails admission.",
+  "resolved": [
+    "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+    "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+    "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+    "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+    "SimAdvancedTest.DEFECT_001_StaleReadyAfterRemoval"
+  ]
+}

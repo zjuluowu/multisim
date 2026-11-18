@@ -205,7 +205,7 @@ std::string SimStateHandle::GetOldIccid()
 void SimStateHandle::UnlockPin(int32_t slotId, const std::string &pin)
 {
     TELEPHONY_LOGI("SimStateHandle::UnlockPin1() slotId = %{public}d", slotId);
-    auto event = AppExecFwk::InnerEvent::Get(MSG_SIM_UNLOCK_PIN_DONE);
+    auto event = AppExecFwk::InnerEvent::Get(MSG_SIM_UNLOCK_PIN_DONE, cardEpoch_.load());
     if (event == nullptr) {
         TELEPHONY_LOGE("event is nullptr!");
         return;
@@ -406,6 +406,10 @@ void SimStateHandle::ProcessIccCardState(IccState &ar, int32_t slotId, bool mode
     LockReason reason = LockReason::SIM_NONE;
     const int32_t newSimType = ar.simType_;
     const int32_t newSimStatus = ar.simStatus_;
+    if (iccState_.iccid_ != ar.iccid_ ||
+        ((iccState_.simStatus_ == ICC_CARD_ABSENT) != (ar.simStatus_ == ICC_CARD_ABSENT))) {
+        ++cardEpoch_;
+    }
     iccState_ = ar;
     auto iter = simIccStatusMap_.find(newSimStatus);
     HILOG_COMM_INFO("ProcessIccCardState slotId:%{public}d, newSimType:%{public}d, newSimStatus:%{public}s(%{public}d),"
@@ -538,7 +542,7 @@ void SimStateHandle::ObtainIccStatus(int32_t slotId)
         return;
     }
 
-    auto event = AppExecFwk::InnerEvent::Get(MSG_SIM_GET_ICC_STATUS_DONE);
+    auto event = AppExecFwk::InnerEvent::Get(MSG_SIM_GET_ICC_STATUS_DONE, ++statusRequest_);
     if (event == nullptr) {
         TELEPHONY_LOGE("event is nullptr!");
         return;
@@ -554,7 +558,8 @@ void SimStateHandle::ObtainIccStatus(int32_t slotId)
 
 void SimStateHandle::ObtainRealtimeIccStatus(int32_t slotId)
 {
-    auto event = AppExecFwk::InnerEvent::Get(MSG_SIM_GET_REALTIME_ICC_STATUS_DONE);
+    realtimeStatusResult_ = TELEPHONY_ERR_RIL_CMD_FAIL;
+    auto event = AppExecFwk::InnerEvent::Get(MSG_SIM_GET_REALTIME_ICC_STATUS_DONE, ++statusRequest_);
     if (event == nullptr) {
         TELEPHONY_LOGE("event is nullptr!");
         return;
@@ -634,6 +639,10 @@ std::string SimStateHandle::GetAidByCardType(CardType type)
 
 void SimStateHandle::GetSimCardData(int32_t slotId, const AppExecFwk::InnerEvent::Pointer &event)
 {
+    const auto sequence = event->GetParam();
+    if (sequence > 0 && sequence < appliedStatus_) {
+        return;
+    }
     if (isInSenseSwitchPhase_) {
         // In sense switching, response data may be fault
         TELEPHONY_LOGI("GetSimCardData slotId: %{public}d inSenseSwitchPhase, return", slotId);
@@ -685,6 +694,10 @@ void SimStateHandle::GetSimCardData(int32_t slotId, const AppExecFwk::InnerEvent
         return;
     }
     lck.unlock();
+    if (sequence > 0) appliedStatus_ = sequence;
+    if (event->GetInnerEventId() == MSG_SIM_GET_REALTIME_ICC_STATUS_DONE) {
+        realtimeStatusResult_ = TELEPHONY_ERR_SUCCESS;
+    }
     ProcessIccCardState(iccState, slotId, modemInitDone);
 }
 
@@ -731,6 +744,10 @@ void SimStateHandle::GetSetLockResult(int32_t slotId, const AppExecFwk::InnerEve
 
 void SimStateHandle::GetUnlockResult(int32_t slotId, const AppExecFwk::InnerEvent::Pointer &event)
 {
+    if (event->GetParam() > 0 && event->GetParam() != cardEpoch_.load()) {
+        unlockRespon_.result = UNLOCK_OTHER_ERR;
+        return;
+    }
     TELEPHONY_LOGI("SimStateHandle::GetUnlockResult slotId = %{public}d", slotId);
     std::shared_ptr<LockStatusResp> param = event->GetSharedObject<LockStatusResp>();
     std::shared_ptr<RadioResponseInfo> response = event->GetSharedObject<RadioResponseInfo>();
@@ -745,7 +762,7 @@ void SimStateHandle::GetUnlockResult(int32_t slotId, const AppExecFwk::InnerEven
             param->result, param->remain);
     } else {
         TELEPHONY_LOGE("SimStateHandle::GetUnlockResult param is null");
-        unlockRespon_.result = static_cast<int32_t>(response->error);
+        unlockRespon_.result = UNLOCK_OTHER_ERR;
     }
     TELEPHONY_LOGI("SimStateHandle::GetSimUnlockResponse(), iccUnlockResponse = %{public}d", unlockRespon_.result);
 }

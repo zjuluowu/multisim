@@ -192,7 +192,8 @@ public:
     std::vector<AAFwk::Want> broadcasts;
     struct Pending {
         int slot; std::weak_ptr<AppExecFwk::EventHandler> owner; uint32_t id;
-        uint64_t request = InitRequestId(); // Host correlation only, never an RIL serial
+        uint64_t request = InitRequestId(); // Host trace correlation, never an RIL serial
+        int64_t correlation = 0; // Original InnerEvent parameter returned by RIL
     };
     std::vector<Pending> statusRequests;
     unsigned updates = 0;
@@ -208,7 +209,7 @@ public:
     {
         auto owner = std::dynamic_pointer_cast<TelEventHandler>(request.owner.lock());
         InitTrace("ril_response_enqueue", request.slot, owner.get(), request.id, request.request);
-        if (!owner || !owner->SendEvent(AppExecFwk::InnerEvent::Get(request.id, response)))
+        if (!owner || !owner->SendEvent(AppExecFwk::InnerEvent::Get(request.id, response, request.correlation)))
             throw std::runtime_error("Real RIL response owner unavailable");
     }
     static auto CardStatus(int slot)
@@ -346,7 +347,7 @@ public:
             Reply(Pending{slot, event->GetOwner(), event->GetInnerEventId()}, response); return 0;
         });
         EXPECT_CALL(*ril, GetSimStatus(_, _)).WillRepeatedly([this](int slot, const auto &event) {
-            Pending request{slot, event->GetOwner(), event->GetInnerEventId()};
+            Pending request{slot, event->GetOwner(), event->GetInnerEventId(), InitRequestId(), event->GetParam()};
             InitTrace("ril_status_request", slot, event->GetOwner().get(), request.id, request.request);
             bool respond;
             {

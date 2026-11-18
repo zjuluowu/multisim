@@ -16,6 +16,7 @@
 #ifndef OHOS_SIM_STATE_HANDLE_H
 #define OHOS_SIM_STATE_HANDLE_H
 
+#include <atomic>
 #include <chrono>
 #include <condition_variable>
 #include <list>
@@ -130,6 +131,7 @@ public:
     void SetLockState(int32_t slotId, const LockInfo &options);
     void GetLockState(int32_t slotId, LockType lockType);
     UnlockData GetUnlockData();
+    int32_t GetRealtimeStatusResult() const { return realtimeStatusResult_.load(); }
     LockStatusResponse GetSimlockResponse();
     bool ConnectService();
     void UnlockPin2(int32_t slotId, const std::string &pin2);
@@ -179,6 +181,10 @@ public:
     int32_t oldSimStatus_ = ICC_CONTENT_UNKNOWN;
 
 private:
+    std::atomic<int64_t> statusRequest_{0};
+    int64_t appliedStatus_ = 0; // Event-queue owned response ordering.
+    std::atomic<int64_t> cardEpoch_{1};
+    std::atomic<int32_t> realtimeStatusResult_{TELEPHONY_ERR_RIL_CMD_FAIL};
     void ObtainIccStatus(int32_t slotId);
     void GetSimCardData(int32_t slotId, const AppExecFwk::InnerEvent::Pointer &event);
     void GetSimLockState(int32_t slotId, const AppExecFwk::InnerEvent::Pointer &event);

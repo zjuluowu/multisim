@@ -147,7 +147,8 @@ int32_t TelRilBase::ErrorResponse(
         respInfo->error = responseInfo.error;
         respInfo->flag = telRilRequest->pointer_->GetParam();
         DfxWriteCallFaultEvent(telRilRequest, static_cast<int32_t>(responseInfo.error));
-        TelEventHandler::SendTelEvent(handler, eventId, respInfo);
+        auto response = TelEventHandler::CreateResponseEvent(telRilRequest->pointer_, respInfo);
+        TelEventHandler::SendTelEvent(handler, response);
         return static_cast<int32_t>(responseInfo.error);
     } else {
         TELEPHONY_LOGE("ERROR : telRilRequest  or telRilRequest->pointer_ is null !!!");

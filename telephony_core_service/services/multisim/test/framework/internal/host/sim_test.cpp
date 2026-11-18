@@ -36,10 +36,10 @@ int WireState(const DeviceCard &card)
         default: throw std::invalid_argument("unsupported device input");
     }
 }
-template<class T> void Deliver(const std::weak_ptr<EventHandler> &owner, uint32_t id, std::shared_ptr<T> payload)
+template<class T> void Deliver(const std::weak_ptr<EventHandler> &owner, uint32_t id, std::shared_ptr<T> payload, int64_t correlation = 0)
 {
     auto handler = std::dynamic_pointer_cast<TelEventHandler>(owner.lock());
-    if (!handler || !handler->SendEvent(InnerEvent::Get(id, payload)))
+    if (!handler || !handler->SendEvent(InnerEvent::Get(id, payload, correlation)))
         throw std::runtime_error("RIL response receiver unavailable");
 }
 }
@@ -74,24 +74,25 @@ public:
         EXPECT_CALL(*ril_, GetSimStatus(_, _)).WillRepeatedly([this](int slot, const auto &event) {
             std::weak_ptr<EventHandler> owner = event->GetOwner();
             auto id = event->GetInnerEventId();
+            const auto correlation = event->GetParam();
             const auto fault = faults_ ? faults_->TakeStatusFault() : StatusFault::None;
-            device_.RequestStatus(slot, [owner, id, fault](const DeviceCard &card, bool error) {
+            device_.RequestStatus(slot, [owner, id, fault, correlation](const DeviceCard &card, bool error) {
                 if (fault == StatusFault::Drop) return;
                 if (fault == StatusFault::Malformed) {
-                    Deliver(owner, id, std::make_shared<std::string>("invalid-status-payload"));
+                    Deliver(owner, id, std::make_shared<std::string>("invalid-status-payload"), correlation);
                     return;
                 }
                 if (error) {
                     auto response = std::make_shared<RadioResponseInfo>();
                     response->error = ErrType::ERR_GENERIC_FAILURE;
-                    Deliver(owner, id, response);
+                    Deliver(owner, id, response, correlation);
                 } else {
                     auto response = std::make_shared<SimCardStatusInfo>();
                     response->simState = WireState(card);
                     response->simType = card.kind == CardKind::Usim ? ICC_USIM_TYPE :
                         card.kind == CardKind::Sim ? ICC_SIM_TYPE : ICC_UNKNOWN_TYPE;
                     response->iccid = card.iccid;
-                    Deliver(owner, id, response);
+                    Deliver(owner, id, response, correlation);
                 }
             });
             if (faults_) faults_->StatusRequested();
@@ -101,10 +102,11 @@ public:
             const auto fault = faults_ ? faults_->TakePinFault() : PinFault::None;
             const std::weak_ptr<EventHandler> owner = event->GetOwner();
             const auto id = event->GetInnerEventId();
+            const auto correlation = event->GetParam();
             if (fault == PinFault::GenericTransportError) {
                 auto error = std::make_shared<RadioResponseInfo>();
                 error->error = ErrType::ERR_GENERIC_FAILURE;
-                Deliver(owner, id, error);
+                Deliver(owner, id, error, correlation);
                 return TELEPHONY_ERR_SUCCESS;
             }
             const auto result = device_.Pin(slot, pin);
@@ -112,7 +114,7 @@ public:
             response->result = result.result == Unlock::Ok ? UNLOCK_SUCCESS :
                 result.result == Unlock::Incorrect ? UNLOCK_PASSWORD_ERR : UNLOCK_OTHER_ERR;
             response->remain = result.remaining;
-            auto reply = [owner, id, response] { Deliver(owner, id, response); };
+            auto reply = [owner, id, response, correlation] { Deliver(owner, id, response, correlation); };
             if (fault == PinFault::Hold) faults_->HoldPin(reply);
             else reply();
             return TELEPHONY_ERR_SUCCESS;

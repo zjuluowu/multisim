@@ -1,7 +1,9 @@
 import copy,json,sys,unittest
 from pathlib import Path
 T=next(p for p in Path(__file__).resolve().parents if (p/"scripts/_paths.py").is_file());sys.path.insert(0,str(T/'scripts'))
-from ci_gate import evaluate
+from ci_gate import evaluate as current_evaluate
+def evaluate(rows,commands):
+ return current_evaluate(rows,commands,resolved=set())
 class Gate(unittest.TestCase):
  def setUp(self):
   known=json.loads((T/'cases/data/known_failures.json').read_text())['known_failures'];self.rows=[]
@@ -27,4 +29,12 @@ class Gate(unittest.TestCase):
   row=next(r for r in self.rows if '.C0Core' in r['id']);row['details']['properties']['object_lifetime']='FAIL';self.assertEqual(evaluate(self.rows,[])['status'],'FAIL')
  def test_duplicate_cases_rejected(self):
   self.rows.append(self.rows[0]);self.assertEqual(evaluate(self.rows,[])['status'],'FAIL')
+ def test_reviewed_fix_requires_pass(self):
+  row=next(r for r in self.rows if r['status']=='FAIL');name=row['id']
+  self.assertEqual(current_evaluate(self.rows,[],resolved={name})['status'],'FAIL')
+  row['status']='PASS';row['exit_code']=0;row['details']['failures']=[]
+  self.assertEqual(current_evaluate(self.rows,[],resolved={name})['status'],'PASS')
+ def test_unreviewed_pass_does_not_erase_known_failure(self):
+  row=next(r for r in self.rows if r['status']=='FAIL');row['status']='PASS';row['exit_code']=0
+  self.assertEqual(evaluate(self.rows,[])['status'],'FAIL')
 if __name__=='__main__':unittest.main()

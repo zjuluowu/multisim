@@ -16,8 +16,16 @@ def load_known():
     if len(actual)!=5:raise RuntimeError('Expected exactly five known signatures')
     return actual
 
-def evaluate(rows,commands):
+def load_resolved():
+    path = TEST/'cases/data/resolved_failures.json'
+    resolved = set(json.loads(path.read_text())['resolved']) if path.is_file() else set()
+    if not resolved <= set(load_known()):
+        raise RuntimeError('Resolved policy names an unknown historical defect')
+    return resolved
+
+def evaluate(rows,commands,resolved=None):
     known=load_known()
+    resolved=load_resolved() if resolved is None else set(resolved)
     reasons=[];observed=[]
     names=[r['id'] for r in rows]
     if len(names)!=len(set(names)):reasons.append('duplicate_cases')
@@ -34,7 +42,10 @@ def evaluate(rows,commands):
             props=row.get('details',{}).get('properties',{})
             if any(props.get(k)!='PASS' for k in ['business_assertions_before_cleanup','strict_ril_expectations_verified','object_lifetime','initialization_ready_idle']):
                 reasons.append('primary_evidence_missing:'+name)
-        if name in known:
+        if name in resolved:
+            if status != "PASS" or row.get("exit_code") != 0 or row.get("details",{}).get("failures"):
+                reasons.append("resolved_defect_regressed:"+name)
+        elif name in known:
             failures=[signature(f) for f in row.get('details',{}).get('failures',[])]
             # Classifier stores message and body; both must match their fixed pair.
             if status!='FAIL' or row.get('exit_code')!=1 or failures!=known[name]['classifier_failures']:

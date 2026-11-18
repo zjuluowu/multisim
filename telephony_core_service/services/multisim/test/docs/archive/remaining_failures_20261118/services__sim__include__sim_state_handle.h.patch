@@ -1,0 +1,11 @@
+--- a/services/sim/include/sim_state_handle.h
++++ b/services/sim/include/sim_state_handle.h
+@@ -18,0 +19 @@
++#include <atomic>
+@@ -132,0 +134 @@
++    int32_t GetRealtimeStatusResult() const { return realtimeStatusResult_.load(); }
+@@ -181,0 +184,4 @@
++    std::atomic<int64_t> statusRequest_{0};
++    int64_t appliedStatus_ = 0; // Event-queue owned response ordering.
++    std::atomic<int64_t> cardEpoch_{1};
++    std::atomic<int32_t> realtimeStatusResult_{TELEPHONY_ERR_RIL_CMD_FAIL};

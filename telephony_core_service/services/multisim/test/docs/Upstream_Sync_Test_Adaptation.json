@@ -78,10 +78,45 @@
     },
     "services/sim/src/sim_state_handle.cpp": {
       "upstream_sha256": "9f27780811181955a1b81bd139d17c76d35b37f64a686b30bd3374134a31ef5c",
-      "repaired_sha256": "88cd7fad13124d3a1024971c9d5023cce3e5076036bc01eabc2a44824c169392",
-      "patch": "docs/archive/c0_lifetime_fix_20261117/sim_state_handle.cpp.patch",
-      "patch_sha256": "7c9554b8c0125e7b1ad96f56617e47332f6420bda97d321f4f435c1d311e7243",
-      "reason": "2026-11-17 user-authorized C0 lifecycle failure repair; no public telephony API changes."
+      "repaired_sha256": "3c8e3c60bddb423a6951a1cde2d8bd51a76c35c8a92cf981b3c3b5ab7b0afa42",
+      "patch": "docs/archive/remaining_failures_20261118/services__sim__src__sim_state_handle.cpp.patch",
+      "patch_sha256": "83be12af7d860ccc635e2cd16534e69fe53dd81a8a61ee2dc3b05cb86ce22b66",
+      "reason": "2026-11-18 user-authorized remaining FAIL fixes: response correlation, card generation, transport errors and refresh return contract; previous ICCID repair retained."
+    },
+    "services/sim/include/sim_state_handle.h": {
+      "upstream_sha256": "cf13daaa44ad027f8f2d0af8063781dcdd2e9e79b627255cc03d3316901d5227",
+      "repaired_sha256": "976b01595523a4749b4423d1d38a2fd1eb30f6e11e17499bf07ba73b03cc1a7e",
+      "patch": "docs/archive/remaining_failures_20261118/services__sim__include__sim_state_handle.h.patch",
+      "patch_sha256": "0f55ad6062fdac9dac87fddc738e4d6c81f856211bd7c86366ce1236a9188c9a",
+      "reason": "2026-11-18 user-authorized remaining FAIL fixes: response correlation, card generation, transport errors and refresh return contract; previous ICCID repair retained."
+    },
+    "services/sim/src/sim_state_manager.cpp": {
+      "upstream_sha256": "aca12b2cd0129d2198c685bdd4bc5a7df00be41ad19d2ea72334a2afd745fa7f",
+      "repaired_sha256": "e20bf8551417788ce9e9c796a7d2449497691f3dcf395501a816b81a4d7f98ef",
+      "patch": "docs/archive/remaining_failures_20261118/services__sim__src__sim_state_manager.cpp.patch",
+      "patch_sha256": "58e8978c6e0eb6c07cc28d0fe6b722c391af8dd51cd75aab0526a2b8611106c4",
+      "reason": "2026-11-18 user-authorized remaining FAIL fixes: response correlation, card generation, transport errors and refresh return contract; previous ICCID repair retained."
+    },
+    "services/tel_ril/include/tel_ril_base.h": {
+      "upstream_sha256": "8d31fa118ef9101a2358e08c6519b40fbba6afc2f8db3dc0d8f14328dfb47072",
+      "repaired_sha256": "1b93b939241be045a6686d6cadce5ec3e27259f996f3eaaa92c28198b27ca645",
+      "patch": "docs/archive/remaining_failures_20261118/services__tel_ril__include__tel_ril_base.h.patch",
+      "patch_sha256": "8e297899a60c8c6d28992842cafc19601332b2e7797cb650ef06fdd304a62608",
+      "reason": "2026-11-18 user-authorized remaining FAIL fixes: response correlation, card generation, transport errors and refresh return contract; previous ICCID repair retained."
+    },
+    "services/tel_ril/src/tel_ril_base.cpp": {
+      "upstream_sha256": "818f9e8e57eb8ee3c4e8c68f7927f8c8dce35ecf932873de7ca50e94da581782",
+      "repaired_sha256": "8585a701ac0587d8eaeb56344ebea11c5fdef88e16e7136c6a84cb40089706b2",
+      "patch": "docs/archive/remaining_failures_20261118/services__tel_ril__src__tel_ril_base.cpp.patch",
+      "patch_sha256": "2fe28f12ddcf42341f88cbbd7afaaf071f6b28536b962e2a5872bb36cdf85ba8",
+      "reason": "2026-11-18 user-authorized remaining FAIL fixes: response correlation, card generation, transport errors and refresh return contract; previous ICCID repair retained."
+    },
+    "utils/common/include/tel_event_handler.h": {
+      "upstream_sha256": "590cdd39dcc3b28263332c8dce97dfcb088e4534233ad5cf137c652a80dc83bc",
+      "repaired_sha256": "9a0a73a86e844cc6c644cf313e54698906d785b8a65e391b85b879c70ca9d564",
+      "patch": "docs/archive/remaining_failures_20261118/utils__common__include__tel_event_handler.h.patch",
+      "patch_sha256": "b59e00a50c3bb4009dc037d6a19e0b43331dc60d6fe8e9f235f91601761b776c",
+      "reason": "2026-11-18 user-authorized remaining FAIL fixes: response correlation, card generation, transport errors and refresh return contract; previous ICCID repair retained."
     }
   }
 }

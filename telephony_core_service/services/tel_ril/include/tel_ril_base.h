@@ -221,7 +221,12 @@ inline int32_t TelRilBase::SendHandlerEvent(const char *funcName, std::shared_pt
         TELEPHONY_LOGE("func %{public}s handler == nullptr !!!", funcName);
         return TELEPHONY_ERR_LOCAL_PTR_NULL;
     }
-    return SendEventData<T>(funcName, telRilRequest->pointer_->GetInnerEventId(), handler, getDataFunc(telRilRequest));
+    // Preserve caller correlation on solicited responses. Unsolicited Notify
+    // remains independent and carries no request parameter.
+    auto data = getDataFunc(telRilRequest);
+    auto response = TelEventHandler::CreateResponseEvent(telRilRequest->pointer_, std::move(data));
+    return TelEventHandler::SendTelEvent(handler, response) ?
+        TELEPHONY_ERR_SUCCESS : TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL;
 }
 
 template<typename T>

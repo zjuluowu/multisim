@@ -88,7 +88,7 @@ TEST_F(SessionLifecycle, PUK_002_WrongThenSuccessfulUnlock)
 }
 TEST_F(SessionLifecycle, REFRESH_001_ExplicitStatusQuery)
 {
-    RefreshToLocked(); // Raw return contract conflict is retained separately in DEFECT_005.
+    RefreshToLocked(); // The return-code contract is checked separately in DEFECT_005.
     ExpectCard(protocol.Observe().cards.at(0), 0, State::Locked, CardKind::Usim);
 }
 TEST_F(SessionLifecycle, RECREATE_001_DualCardReenumeration)
@@ -165,7 +165,7 @@ TEST_F(SessionLifecycle, DEFECT_004_PinReplyFromReplacedCard)
 TEST_F(SessionLifecycle, DEFECT_005_RefreshReturnContractConflict)
 {
     // Client header promises TELEPHONY_SUCCESS; real delegate returns a SimState integer.
-    // Keep the independent assertion red until the public contract is adjudicated.
+    // Regression: refresh returns the documented success code, not a state enum.
     EXPECT_EQ(RefreshToLocked(), 0) << "core_service_client.h RefreshSimState @return contract";
 }
 }
