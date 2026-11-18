@@ -46,6 +46,6 @@ python3 -B telephony_core_service/services/multisim/test/scripts/test.py integri
 python3 -B telephony_core_service/services/multisim/test/cases/architecture/test_g2a_source_tables.py
 ```
 
-覆盖迁移摘要/类型与实现token、精确include/GN依赖、循环/反向依赖拒绝、四组纯规则、编译负控和GN/Ninja对象。Host业务与已知缺陷分开统计，入口见[test/README](test/README.md)。不能将结构检查或Host PASS等同产品链接、原生SA/IPC/HDI或设备功能验收。模块内重复目录设计副本已退役，权威依据使用docs下版本；原副本摘要与迁址记录仍可追溯。
+覆盖迁移摘要/类型与实现token、精确include/GN依赖、循环/反向依赖拒绝、四组纯规则、编译负控和GN/Ninja对象。当前Host业务/生命周期124/124 PASS、CI准入PASS，原缺陷修复和历史原始失败分别保留，入口见[test/README](test/README.md)及执行状态§48。不能将结构检查或Host PASS等同产品链接、原生SA/IPC/HDI或设备功能验收。模块内重复目录设计副本已退役，权威依据使用docs下版本；原副本摘要与迁址记录仍可追溯。
 
 跨形态设计约束见[主设计§3.2.1/10.4/17.4](../../docs/SIM_Target_Architecture_Design_v1.2.md)；端点/会话/绑定、能力/可达/可见/角色资格分别表达。这些新增约束仍为提案，不从目录或类型存在推断动态恢复与三/四卡业务已实现。

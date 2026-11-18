@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 import os
+import shutil
 from pathlib import Path
 import subprocess
 import sys
@@ -13,6 +14,26 @@ from _paths import TEST, REPO
 
 HOST = ['sim_test_host', 'sim_component_test', 'sim_primary_slot_entry_test', 'sim_g2a_query_test', 'sim_upstream_query_test']
 REAL = ['sim_primary_slot_real_test', 'sim_bootstrap_characterization']
+
+
+def run_architecture_stage(session, run):
+    """Run outside the source repository and retain artifacts in this report."""
+    destination = session / 'architecture'
+    options = ['--with-gn', '--migration', '--output']
+    if not destination.resolve().is_relative_to(REPO.resolve()):
+        return run('architecture', 'run_architecture.py', [*options, destination])
+    with tempfile.TemporaryDirectory(prefix='sim-architecture-') as temporary:
+        output = Path(temporary) / 'architecture'
+        try:
+            return run('architecture', 'run_architecture.py', [*options, output])
+        finally:
+            if output.exists():
+                shutil.copytree(output, destination, dirs_exist_ok=True)
+            (session / 'architecture-location.json').write_text(json.dumps({
+                'execution_directory': str(output), 'retained_directory': 'architecture',
+                'execution_directory_temporary': True,
+            }, indent=2) + '\n')
+
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -57,7 +78,7 @@ def main():
             if run('case-discovery','update_case_sources.py'):return 1
         if args.action in ['all','technical','integrity','architecture']:
             if args.action in ['all','integrity']:run('integrity','check_test_integrity.py')
-            if args.action in ['all','architecture']:run('architecture','run_architecture.py',['--with-gn','--migration','--output',session/'architecture'])
+            if args.action in ['all','architecture']:run_architecture_stage(session, run)
             if args.action in ['all','technical']:run('technical','technical.py',['--output',session/'technical'])
         if args.action in ['all','build','editor','run','list','debug']:
             targets=args.target or (HOST+REAL)

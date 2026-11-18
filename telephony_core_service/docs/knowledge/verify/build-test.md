@@ -66,4 +66,4 @@ python3 -B "$TEST/scripts/test.py" all --ci
 python3 -B "$TEST/scripts/test.py" device --ohos-root <完整产品树>
 ```
 
-环境、固定依赖与新增TEST_F参见[开发指南](../../../services/multisim/test/README.md)。默认输出.host-out，可用--out/--output隔离；所有入口隔离LLVM_PROFILE_FILE，保留用户default.profraw。真实Primary逐例独立进程，五个Host已知缺陷只接受原精确签名，其他FAIL不自动接受。最新实际结果及未完成产品/GUI验收见[执行状态](../../SIM_Refactor_Execution_State.md)和[验收记录](../../../services/multisim/test/docs/Full_Replacement.md)，历史记录不视为当前HEAD重跑。
+环境、固定依赖与新增TEST_F参见[开发指南](../../../services/multisim/test/README.md)。默认输出.host-out，可用--out/--output隔离；所有入口隔离LLVM_PROFILE_FILE，保留用户default.profraw。真实Primary逐例独立进程；五项旧Host缺陷已修复，resolved策略要求PASS，原签名保留作历史证据。当前124项Host及CI已通过，任何回归仍拒绝。仓内报告目录下的完整/architecture入口会在仓外执行架构检查并回收产物至本次报告，单独run_architecture.py仍要求仓外--output。最新实际结果及未完成产品/GUI验收见[执行状态](../../SIM_Refactor_Execution_State.md)和[验收记录](../../../services/multisim/test/docs/Full_Replacement.md)，历史记录不视为当前HEAD重跑。

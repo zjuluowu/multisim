@@ -53,7 +53,7 @@ CardRuntime/result_sinks暂在card/runtime；其中设备资源成员尚未拆�
 
 ## 生产迁移与关键不变量
 
-- 当前用户明确要求：旧实现只读，缺陷只记录，不在本任务修复。不得修改 `services/sim/` 或旧 Core/CMI/wrapper/RIL 实现及公共接口，也不得为测试加入 friend、生产探针或改变旧业务路径。文档和新实现/测试优化不得默认为旧代码修复授权；新实现的正确性与旧缺陷兼容分别验收。
+- 旧实现变更以当前任务的明确授权为界：用户已单独授权并完成C0及剩余FAIL所需的局部修复，范围和证据查唯一执行状态；该授权不等于后续任意生产修改或迁移许可。文档及测试配套刷新不继续修改 `services/sim/`、旧Core/CMI/wrapper/RIL业务路径或公共接口，不为测试加入friend或生产探针。新实现正确性、旧缺陷修复、内部ABI变化和产品验收分别报告。
 
 - 成熟SIM能力仍由原`services/sim/`实现；2026-11-16按用户授权回退G2a生产接入并同步GitCode主仓，multisim能力保持testonly骨架；G2a Core/Binding仅保留Host测试参考实现，产品验收未完成。以根GN和Core真实装配判定接入，不以目录或对象声明判定。最终替代前按完整能力/WU退出旧写者、执行者和重试者，无双写/双发令/双重试。
 - 完整WU包含初始化、重载、后台、恢复、厂商入口和查询回写；特别覆盖Carrier Loader及CardFileDetectManager独立账户写入口，不只迁公开setter。同一行可合并T/A字段计划，不赋予技术Store跨Owner写权。

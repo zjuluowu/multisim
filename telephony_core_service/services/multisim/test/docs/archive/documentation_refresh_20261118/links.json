@@ -1,0 +1,122 @@
+{
+  "scope": "New/changed local links plus six live navigation tests; historical indexes are retained by their original versions",
+  "new_missing_links": [],
+  "existing_historical_links_not_rewritten": [
+    {
+      "document": "telephony_core_service/docs/SIM_Architecture_Refactor_Design.md",
+      "target": "../services/multisim/test/framework/host/BUILD.gn"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Architecture_Refactor_Design.md",
+      "target": "../services/multisim/test/framework/host/configs/dependency_lock.json"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Architecture_Refactor_Design.md",
+      "target": "../services/multisim/test/framework/host/configs/platform_resolution.json"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Architecture_Refactor_Design.md",
+      "target": "../services/multisim/test/framework/host/configs/upstream_contracts.json"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Architecture_Refactor_Design.md",
+      "target": "../services/multisim/test/scripts/audit_initialization.py"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Architecture_Refactor_Design.md",
+      "target": "../services/multisim/test/scripts/run.py"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Architecture_Refactor_Design.md",
+      "target": "../services/multisim/test/framework/host/stubs/include/cJSON.h"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Architecture_Refactor_Design.md",
+      "target": "../services/multisim/test/framework/host/stubs/include/compile_declarations.h"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Architecture_Refactor_Design.md",
+      "target": "../services/multisim/test/framework/host/stubs/include/config_policy_utils.h"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Architecture_Refactor_Design.md",
+      "target": "../services/multisim/test/framework/host/stubs/include/hilog/log.h"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Architecture_Refactor_Design.md",
+      "target": "../services/multisim/test/framework/host/stubs/include/host_standard_prelude.h"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Architecture_Refactor_Design.md",
+      "target": "../services/multisim/test/framework/host/stubs/include/linux_platform_types.h"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Architecture_Refactor_Design.md",
+      "target": "../services/multisim/test/framework/host/stubs/include/os_account_manager_wrapper.h"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Architecture_Refactor_Design.md",
+      "target": "../services/multisim/test/framework/host/stubs/include/parameter.h"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Architecture_Refactor_Design.md",
+      "target": "../services/multisim/test/framework/host/stubs/include/parameters.h"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Architecture_Refactor_Design.md",
+      "target": "../services/multisim/test/framework/host/stubs/include/string_ex.h"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Architecture_Refactor_Design.md",
+      "target": "../services/multisim/test/framework/host/stubs/include/system_ability_definition.h"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Refactor_Execution_State.md",
+      "target": "../services/multisim/test/framework/host/configs/g2a_bplus_evidence.json"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Refactor_Execution_State.md",
+      "target": "../services/multisim/test/framework/host/configs/g2a_checkpoint_evidence.json"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Refactor_Execution_State.md",
+      "target": "../services/multisim/test/cases/compatibility/README.md"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Refactor_Execution_State.md",
+      "target": "../services/multisim/test/framework/compatibility/adapters/multisim/README.md"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Refactor_Execution_State.md",
+      "target": "../services/multisim/test/cases/compatibility/traceability/round2_catalog.json"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Refactor_Execution_State.md",
+      "target": "../services/multisim/test/cases/compatibility/traceability/provider_contract_round2.json"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Refactor_Execution_State.md",
+      "target": "../services/multisim/test/scripts/check_relocation.py"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Refactor_Execution_State.md",
+      "target": "../services/multisim/test/cases/primary_slot/README.md"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Refactor_Execution_State.md",
+      "target": "../services/multisim/test/cases/primary_slot/lifecycle/README.md"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Refactor_Execution_State.md",
+      "target": "../services/multisim/test/cases/primary_slot/lifecycle/shutdown_plan.md"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Refactor_Execution_State.md",
+      "target": "../services/multisim/test/cases/primary_slot/lifecycle/admission/README.md"
+    },
+    {
+      "document": "telephony_core_service/docs/SIM_Refactor_Execution_State.md",
+      "target": "../services/multisim/test/cases/primary_slot/legacy_contract/README.md"
+    }
+  ]
+}

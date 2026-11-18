@@ -31,3 +31,9 @@
 依据：[VS Code 测试筛选](https://code.visualstudio.com/docs/debugtest/testing)、[TestMate 分组配置](https://github.com/matepek/vscode-catch2-test-adapter/blob/master/documents/configuration/test.advancedExecutables.md#testgrouping)。本批仅核对配置和真实枚举映射，未声称已经在GUI中打开此筛选。
 
 C0 主卡单例的旧实现析构/ICCID注销问题已修复，资源清理断言保持；修复前后、反向验证及当前其他失败见[本批证据](archive/c0_lifetime_fix_20261117/README.md)。查询切片只构造未初始化Manager，其Host链接边界被调用即报错，不能用这些切片证明完整对象图清理。
+
+## 完整回归报告
+
+VS Code任务 `Run All Tests` 使用 `test.py all --ci`；构建仍在.host-out，报告默认在.host-out/results。本次架构检查会临时在仓外执行，并将产物复制至报告的architecture/；architecture-location.json记录执行位置和保留位置。临时目录完成后移除，排查时使用保留位置及architecture.log。直接调用run_architecture.py仍使用仓外--output。
+
+当前五项已修复缺陷必须PASS；修复策略文件缺失、删项或重复均拒绝准入，不回退到历史失败豁免。历史签名及原始报告保持原字节。

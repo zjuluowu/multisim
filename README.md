@@ -13,6 +13,6 @@
 python3 -B telephony_core_service/services/multisim/test/scripts/test.py all --ci
 ```
 
-依赖准备见测试README。该命令保留已知失败，不能以CI退出或Host结果推定产品通过；产品原生组件和真实SA/IPC测试另行构建执行。
+依赖准备见测试README。已发布Host验收为124/124 PASS、CI准入PASS，修复前的原始失败证据保留。完整入口将架构产物保存在本次报告的architecture/。不能以CI退出或Host结果推定产品通过；产品原生组件和真实SA/IPC测试另行构建执行。
 
 协作及发布遵循[仓库AGENTS](AGENTS.md)和[部件指引](telephony_core_service/AGENTS.md)，保护未提交文件和历史证据。

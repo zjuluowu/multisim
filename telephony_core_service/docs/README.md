@@ -2,7 +2,7 @@
 
 当前物理组织依据：[五组目录方案](SIM重构代码目录结构设计方案.md) → [逐文件迁移及验收记录](SIM_Directory_Migration_20261112.md)。历史ADR/固定提交链接/运行证据保留旧路径，当前源码路径查详细设计§3及README。
 
-当前导航刷新至2026-11-17；实际提交、验证范围和阻塞统一见[执行状态](SIM_Refactor_Execution_State.md)§37～42。成熟生产仍在services/sim；G2a仅作testonly参考，未接入正式生产。测试全量迁移及API收敛已完成当前可执行Host范围，产品原生构建/设备及GUI仍未验收。历史PASS不视为当前HEAD重跑。
+当前导航刷新至2026-11-18；实际提交、验证范围和阻塞统一见[执行状态](SIM_Refactor_Execution_State.md)§46～49。成熟生产仍在services/sim；G2a仅作testonly参考，未接入正式生产。测试全量迁移、API收敛及剩余失败修复已完成Host验收（124/124 PASS、CI准入PASS）；产品原生构建/设备及GUI仍未验收。历史PASS不视为当前HEAD重跑。
 
 ## 现行设计与阅读顺序
 

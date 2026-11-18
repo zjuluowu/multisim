@@ -1,0 +1,52 @@
+{
+  "input_head": "609c709a42c506bbbbab78408ecab5d06f7b2556",
+  "technical_tests": 105,
+  "technical_status": "PASS",
+  "default_architecture": {
+    "command": "python3 -B telephony_core_service/services/multisim/test/scripts/test.py architecture",
+    "exit_code": 0,
+    "result": {
+      "head": "609c709a42c506bbbbab78408ecab5d06f7b2556",
+      "started_utc": "2026-11-18T02:58:54.765925+00:00",
+      "commands": [
+        {
+          "name": "architecture",
+          "command": [
+            "/usr/bin/python3",
+            "-B",
+            "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/run_architecture.py",
+            "--with-gn",
+            "--migration",
+            "--output",
+            "/tmp/sim-architecture-wlzj0koq/architecture"
+          ],
+          "exit_code": 0,
+          "status": "PASS",
+          "log": "architecture.log"
+        }
+      ],
+      "cases": [],
+      "status": "PASS",
+      "protected_profile_unchanged": true,
+      "finished_utc": "2026-11-18T03:01:08.058091+00:00"
+    },
+    "location": {
+      "execution_directory": "/tmp/sim-architecture-wlzj0koq/architecture",
+      "retained_directory": "architecture",
+      "execution_directory_temporary": true
+    },
+    "temporary_directory_removed": true,
+    "retained_artifacts_present": true
+  },
+  "protected_user_files": {
+    "default.profraw": "d35445fd920ef489cfb908b6968c9d3dea874688ea39daa53328c9f76be2d675",
+    "telephony_core_service/SIM_Target_Architecture_Design_v1.2 (5).md": "857459c226f8519110cd2656df2e19cfbc94606d940b27db08c4eae3f6e3b15e"
+  },
+  "absent_at_start": [
+    "telephony_core_service/telephony_core_service.lnk"
+  ],
+  "business_execution_this_batch": "NOT_RUN",
+  "archived_business_admission_reevaluation": "PASS",
+  "production_changes": false,
+  "product_device_gui": "NOT_RUN"
+}

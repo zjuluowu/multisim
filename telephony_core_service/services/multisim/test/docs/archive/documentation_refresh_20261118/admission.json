@@ -1,0 +1,55 @@
+{
+  "scope": "Reevaluate archived raw measurements with current gate; no new business execution",
+  "source_report": "telephony_core_service/services/multisim/test/docs/archive/remaining_failures_20261118/phase_b/final-result.json",
+  "source_sha256": "0d3fd5cd1dc9d52bbdba78249994046705e7aa4a92ed392fba19d3de616dddb7",
+  "admission": {
+    "status": "PASS",
+    "raw_test_status": "PASS",
+    "known_failures": [],
+    "reasons": [],
+    "passed": 124,
+    "failed": 0
+  },
+  "regression_controls": [
+    {
+      "id": "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "reasons": [
+        "resolved_defect_regressed:SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard"
+      ]
+    },
+    {
+      "id": "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "reasons": [
+        "resolved_defect_regressed:SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword"
+      ]
+    },
+    {
+      "id": "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "reasons": [
+        "resolved_defect_regressed:SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard"
+      ]
+    },
+    {
+      "id": "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "reasons": [
+        "resolved_defect_regressed:SessionLifecycle.DEFECT_005_RefreshReturnContractConflict"
+      ]
+    },
+    {
+      "id": "SimAdvancedTest.DEFECT_001_StaleReadyAfterRemoval",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "reasons": [
+        "resolved_defect_regressed:SimAdvancedTest.DEFECT_001_StaleReadyAfterRemoval"
+      ]
+    }
+  ]
+}

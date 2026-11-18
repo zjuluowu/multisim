@@ -1,5 +1,7 @@
 # 测试工程目录重构验收
 
+> 历史记录：保留本批原始基线及当时失败/阻塞，当前工程与修复后的验收见[开发入口](../README.md)和[唯一执行状态](../../../../docs/SIM_Refactor_Execution_State.md)§48。
+
 输入为 main@abd07fd85e87eba0f0883599538548bbcc09d8f2；2026-11-12开始，2026-11-13续办收尾。本批仅在工作树交付，未暂存、提交、推送或合并。开始时唯一已有未跟踪项default.profraw按SHA保护；其他worktree不变。恢复脚本fetch失败，未声称远端ref已刷新；ls-remote核实origin/main与输入同SHA。
 
 ## 交付与结构

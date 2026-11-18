@@ -1,4 +1,4 @@
-"""Accept only exact five known signatures; raw failures never become passes."""
+"""Enforce reviewed repairs as passes while retaining immutable historical signatures."""
 import hashlib,json,re
 from pathlib import Path
 from _paths import TEST
@@ -7,7 +7,8 @@ def signature(text):
     return re.sub(r'^[^\n]*\.(?:h|hpp|cpp|cc):\d+\n','',text,flags=re.M).strip()
 
 def load_known():
-    # Reviewed active policy, extracted from immutable original XML. Runtime
+    # Historical signatures extracted from immutable original XML; resolved
+    # entries are required to pass by the separate active repair policy. Runtime
     # classification must not open a historical runner or evidence archive.
     data=(TEST/'cases/data/known_failures.json').read_bytes()
     if hashlib.sha256(data).hexdigest()!='baeb7f854a119e67d2846f886839cf6b7af78ae8d808e4e92bf3d4d66c54423d':
@@ -18,10 +19,13 @@ def load_known():
 
 def load_resolved():
     path = TEST/'cases/data/resolved_failures.json'
-    resolved = set(json.loads(path.read_text())['resolved']) if path.is_file() else set()
-    if not resolved <= set(load_known()):
-        raise RuntimeError('Resolved policy names an unknown historical defect')
-    return resolved
+    if not path.is_file():
+        raise RuntimeError('Resolved repair policy missing; historical failure acceptance cannot be restored')
+    names = json.loads(path.read_text())['resolved']
+    if (not isinstance(names, list) or not all(isinstance(name, str) for name in names) or
+            len(names) != len(set(names)) or set(names) != set(load_known())):
+        raise RuntimeError('Resolved policy must retain all five reviewed repairs exactly once')
+    return set(names)
 
 def evaluate(rows,commands,resolved=None):
     known=load_known()

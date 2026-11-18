@@ -535,6 +535,8 @@ Core仍创建并拥有共享RIL；最终工厂按原eSIM创建/Init/发布、SIM
 
 原接口没有虚析构时，由生产具体类型控制块或匹配deleter销毁，不追加公开虚表。业务导出为私有创建/匹配销毁，工具链必要符号另列；不宣称绝对只有两个ELF符号。常驻拆分和StopAcceptingAndDrain增强分开，排空失败不卸载，SIM不Stop共享RIL。
 
+当前源码事实补充（2026-11-18）：旧 `services/sim` 的具体 SimManager 已按独立失败修复授权实现 Stop/IsStopping/IsStopped，采用组件自有准入、回调排空、任务/线程join及所属对象Shutdown；参数观察注销失败可重试，Core独立RIL不由SIM停止。公开ISimManager/IDL保持，内部布局/虚表变化要求产品整体重编。该Host修复不实现上表工厂、不接入multisim、不构成G2b/G2c或SO卸载验收，真实证据见[执行状态§48](SIM_Refactor_Execution_State.md)与[修复归档](../services/multisim/test/docs/archive/remaining_failures_20261118/phase_b/README.md)。
+
 CMI实现仍在既有API库，wrapper仍在原共享定义处；H复用原对象及控制块，保留wrapper加载早于Manager全部就绪的窗口，符号存在不等于可立即访问业务。跨SO验收核对唯一定义、两个消费方获得同一注入对象、匹配销毁及在途回调代码寿命。源报告所述扩展SO兼作SA4011与dlopen库须匹配产品/实际装载确认；不得以同进程或L1探针代替L2产物/装载证明。
 
 <a id="set-number"></a>
