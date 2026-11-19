@@ -46,6 +46,8 @@ def main():
     elif args.slice == 'target-primary-b':
         required = {'AssignmentService':['AcceptRadioStep', 'AcceptPrimarySwitchTimeout',
                     'ScheduleC1Retry', 'AcceptScheduledC1Retry', 'StopAcceptingAndCancelScheduledRetries'],
+                    'ResourceRadioRuntime':['SwitchPrimaryRadio', 'AcceptDeviceResult', 'Recover',
+                                            'StopAccepting'],
                     'RuntimeOperationStore':['RecordSent', 'AcceptResult', 'AcceptLateEvidence',
                                              'ClaimCompletion', 'ClaimEarlyCompletion', 'TryMarkTerminal']}
     else:
@@ -55,7 +57,7 @@ def main():
         for method in methods:
             needle = str(len(owner)) + owner + str(len(method)) + method + 'E'
             matched = [f for f in functions if needle in f['name'] and any(
-                ('/services/sim/src/' in name or '/services/core/src/' in name or '/framework/internal/host/g2a_reference/' in name or '/services/multisim/infrastructure/compatibility/api/' in name or '/services/multisim/role_assignment/' in name or '/services/multisim/account/' in name or '/services/multisim/infrastructure/request/' in name or '/services/telephony_ext_wrapper/src/' in name) for name in f['filenames'])]
+                ('/services/sim/src/' in name or '/services/core/src/' in name or '/framework/internal/host/g2a_reference/' in name or '/services/multisim/infrastructure/compatibility/api/' in name or '/services/multisim/role_assignment/' in name or '/services/multisim/account/' in name or '/services/multisim/infrastructure/request/' in name or '/services/multisim/device/resource/' in name or '/services/telephony_ext_wrapper/src/' in name) for name in f['filenames'])]
             count = sum(f['count'] for f in matched)
             rows.append({'owner': owner, 'method': method, 'count': count,
                          'files': sorted({name for f in matched for name in f['filenames']}),

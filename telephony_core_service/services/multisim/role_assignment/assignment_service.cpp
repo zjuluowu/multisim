@@ -198,8 +198,14 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
             nextProtocolSession_++, {}, {}, {}, false, 0, false, false, false, 0, std::nullopt,
             std::nullopt});
         output_.PublishPrimaryPhase(false, command.userSet);
-        radio_.SwitchPrimaryRadio({sentStep, target->slot, *target->radioDomain, plan->mode, facts->binding,
-            pendingPrimary_.at(request.value).protocolSession, 0});
+        const RadioSwitchRequest device {sentStep, target->slot, *target->radioDomain, plan->mode,
+            facts->binding, pendingPrimary_.at(request.value).protocolSession, 0, 1};
+        radio_.SwitchPrimaryRadio(device);
+        if (!radio_.WasLastSubmissionAccepted(device)) {
+            assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
+                TransitionPhase::DevicePending, TransitionPhase::NeedsReconciliation);
+            operations_.MarkTerminal(request, TerminalState::NeedsReconciliation);
+        }
         return request;
     }
     if (plan->mode == PrimarySwitchMode::ThreePhaseProtocol) {
@@ -233,9 +239,17 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         for (const auto &slot : catalog_.Slots()) { pending.members.push_back(slot.slot); }
         pendingPrimary_.emplace(request.value, std::move(pending));
         for (const auto &member : pendingPrimary_.at(request.value).members) {
-            radio_.SwitchPrimaryRadio({sentStep, member, *target->radioDomain, plan->mode,
+            const RadioSwitchRequest device {sentStep, member, *target->radioDomain, plan->mode,
                 member == target->slot ? std::optional<BindingRef>{facts->binding} : std::nullopt,
-                pendingPrimary_.at(request.value).protocolSession, 1});
+                pendingPrimary_.at(request.value).protocolSession, 1,
+                static_cast<uint32_t>(pendingPrimary_.at(request.value).members.size())};
+            radio_.SwitchPrimaryRadio(device);
+            if (!radio_.WasLastSubmissionAccepted(device)) {
+                assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
+                    TransitionPhase::DevicePending, TransitionPhase::NeedsReconciliation);
+                operations_.MarkTerminal(request, TerminalState::NeedsReconciliation);
+                return request;
+            }
         }
         return request;
     }
@@ -366,11 +380,20 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
             if (!operations_.RecordSent(pending->second.step, session)) { return; }
             pending->second.phase = nextPhase;
             for (const auto &member : pending->second.members) {
-                radio_.SwitchPrimaryRadio({pending->second.step, member, pending->second.target.radioDomain.value(),
-                    pending->second.mode,
+                const RadioSwitchRequest device {pending->second.step, member,
+                    pending->second.target.radioDomain.value(), pending->second.mode,
                     member == pending->second.target.slot ?
                         std::optional<BindingRef>{pending->second.facts.binding} : std::nullopt,
-                    pending->second.protocolSession, pending->second.phase});
+                    pending->second.protocolSession, pending->second.phase,
+                    static_cast<uint32_t>(pending->second.members.size())};
+                radio_.SwitchPrimaryRadio(device);
+                if (!radio_.WasLastSubmissionAccepted(device)) {
+                    assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(),
+                        result.step.request.value, TransitionPhase::DevicePending,
+                        TransitionPhase::NeedsReconciliation);
+                    operations_.MarkTerminal(result.step.request, TerminalState::NeedsReconciliation);
+                    return;
+                }
             }
             return;
         }
@@ -569,11 +592,19 @@ bool AssignmentService::AcceptC1RetryDue(RequestId request)
     pending->second.completedMembers.clear();
     output_.PublishPrimaryPhase(false, false);
     for (const auto &member : pending->second.members) {
-        radio_.SwitchPrimaryRadio({pending->second.step, member, pending->second.target.radioDomain.value(),
-            PrimarySwitchMode::ThreePhaseProtocol,
+        const RadioSwitchRequest device {pending->second.step, member,
+            pending->second.target.radioDomain.value(), PrimarySwitchMode::ThreePhaseProtocol,
             member == pending->second.target.slot ?
                 std::optional<BindingRef>{pending->second.facts.binding} : std::nullopt,
-            pending->second.protocolSession, 1});
+            pending->second.protocolSession, 1,
+            static_cast<uint32_t>(pending->second.members.size())};
+        radio_.SwitchPrimaryRadio(device);
+        if (!radio_.WasLastSubmissionAccepted(device)) {
+            assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(), request.value,
+                TransitionPhase::DevicePending, TransitionPhase::NeedsReconciliation);
+            operations_.MarkTerminal(request, TerminalState::NeedsReconciliation);
+            return false;
+        }
     }
     return true;
 }

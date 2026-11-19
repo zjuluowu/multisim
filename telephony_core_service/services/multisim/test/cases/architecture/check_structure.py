@@ -27,6 +27,8 @@ CONTRACTS = {"topology_contracts", "assignment_contracts", "runtime_contracts"}
 TYPES = {"topology_types", "assignment_types"}
 VALUES = {"sim_values", "request_protocol"}
 AUTHORIZED_NEW_FILES = {
+    'device/resource/resource_radio_runtime.cpp',
+    'device/resource/resource_radio_runtime.h',
     'infrastructure/request/runtime_operation_store.cpp',
     'role_assignment/assignment_store_adapter.cpp',
 }
@@ -80,6 +82,8 @@ SOURCE_GROUPS = {'readonly_query': ('infrastructure/compatibility/api/real_sim_c
                         'card/records/load_session.h',
                         'device/resource/resource_barrier.cpp',
                         'device/resource/resource_barrier.h',
+                        'device/resource/resource_radio_runtime.cpp',
+                        'device/resource/resource_radio_runtime.h',
                         'card/state/session_registry.cpp',
                         'card/state/session_registry.h'),
  'sim_values': ('infrastructure/request/request_ref.h',
@@ -492,6 +496,10 @@ def check_migration():
     current_build = (SOURCE / "BUILD.gn").read_text().replace("/test/cases/architecture", "/test/multisim_architecture_rules")
     current_build = current_build.replace('    "role_assignment/assignment_store_adapter.cpp",\n', '')
     current_build = current_build.replace('    "infrastructure/request/runtime_operation_store.cpp",\n', '')
+    current_build = current_build.replace('    "device/resource/resource_radio_runtime.cpp",\n', '')
+    current_build = current_build.replace('    "device/resource/resource_radio_runtime.h",\n', '')
+    current_build = current_build.replace('  public_deps = [\n    ":assignment_contracts",\n    ":sim_values",\n  ]',
+                                          '  public_deps = [ ":sim_values" ]')
     current_build = current_build.replace('  sources = [\n    "infrastructure/request/runtime_operation_store.h",\n  ]',
                                           '  sources = [ "infrastructure/request/runtime_operation_store.h" ]')
     if additions:

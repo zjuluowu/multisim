@@ -77,7 +77,20 @@ M9.1/M9.2 在 A 中按完整角色写集原子登记跨 RadioDomain 资格：Pri
 
 M9.3 Host 调度由 `RetrySchedulerPort` 提供 Schedule/Cancel/CancelAll/Audit/Stop 能力。C1 CHECK 完整失败并结束 COMPLETE 后，A 先恢复旧参数并领取首轮 Completion，再登记 `{RequestId, epoch, owner, scheduleGeneration, attempt}`；到期事件只由 weak 原 Owner 回投，A 再核对绑定、角色资格、当前 Step 和 attempt 后发送新 Session。受控 Host 使用一个 joinable worker 串行执行业务 Owner 任务和到期任务，参数/Radio/通知仍在 scheduler 短提交域外。测试自动推进五轮，保持 6 Session/24 命令/12 状态事件；原手工 `AcceptC1RetryDue` 测试继续作为组件闭包。Stop 拒绝新请求和任务、取消未到期任务，已运行 Owner 任务结束或保留为 DeviceEffectsUnresolved；scheduler 任务和回调排空后才允许销毁 shared AssignmentService。TSan 对自动调度、Stop、绑定变化、Unknown、重复事件及销毁后事件执行。
 
-M9.3 仍不证明真实 R/HDI 命令已结束或资源可复用。生产 Scheduler/SA/IPC 接线、共享 RIL Stop、Core OnStop 和 SO 卸载仍为 BLOCKED；本批只完成 Host 私有生命周期。`dd7ac58f` 中保存的主设计/详细设计/评审稿仅作只读审查输入，公开拒绝/等待/排队错误码和 Stop 后设备恢复策略仍为 PROPOSED。Host 对冲突继续使用现有 `-1` 负控，不表示公共错误码已批准。
+M10 接入 `ResourceRadioRuntime`：每个 B/C1 成员命令先经 `ResourceBarrier` 的完整资源 Acquire；同一 protocolSession+phase 的多成员共用一个 lease/fence，只 MarkSent 一次；真实 Host 平台返回的 opaque transport token 将结果关联回原 Step/member。只有全成员均带独立 `commandEnded/resourceReusable` 的匹配证据才 Complete 并上送正常业务结果；缺证据仅向 A 上送 Unknown/NeedsReconciliation，不把资源标为 Available；超时或 Unknown 隔离，晚回包需额外 `currentStateVerified` 才能 Recovery。C0 不取得 R lease。
+
+M10 设备证据等级与 Legacy 对照：
+
+| 业务 | 请求/关联 | 业务完成观察 | 命令结束/可复用 |
+| --- | --- | --- | --- |
+| B SetPrimarySlot | VERIFIED_SOURCE：`MultiSimController::SendSetPrimarySlotEvent` → `TelRilManager::SetPrimarySlot`，RIL serial/requestMap 关联 InnerEvent owner | VERIFIED_SOURCE：`SetPrimarySlotResponse` 的 `RadioResponseInfo.error` 唤醒等待；VERIFIED_HOST：ResourceRadioRuntime 仅在显式 end/reuse 后转发 | OPEN：HDI response 未包含设备静止或 channel 复用证明 |
+| C1 CHECK | VERIFIED_SOURCE：每个真实 slot 的 `SetRadioProtocol(CHECK)`，共享 controller sessionId | VERIFIED_SOURCE：逐 slot response 按 sessionId；全部成员后决定 UPDATE 或 COMPLETE | OPEN：response 不证明旧命令结束或全资源可复用 |
+| C1 UPDATE | VERIFIED_SOURCE：逐 slot `SetRadioProtocol(UPDATE)`；response handler 不推进 | VERIFIED_SOURCE：只由 `RADIO_SIM_RADIO_PROTOCOL_NOTIFY` 的匹配 sessionId 完成成员计数 | OPEN：NOTIFY 不是独立 ACK，也不含 resource reusable |
+| C1 COMPLETE | VERIFIED_SOURCE：逐 slot COMPLETE，success/fail 载荷及共享 session | VERIFIED_SOURCE：所有响应后结束 controller 通信 | OPEN：业务协议结束不证明 Modem/channel 已静止 |
+
+VERIFIED_HOST：当前 Target 使用一个保守共享 Host 资源键，禁止按 SlotId 推断并发。INFERENCE：Legacy 单一 RadioProtocolController/session 令 C1 成员在 Target Host 逻辑上共享协议资格，但物理 Modem/RIL instance 是否独立仍 OPEN。VERIFIED_DEVICE：无；当前仓/环境未提供 HDI 完成/复用字段、匹配设备；`hb` 亦不在当前 Host 工具链 PATH，故 native 产品编译/链接未运行（OPEN/BLOCKED），不是已验收。产品平台适配必须在 `RadioPlatformPort` 后方把现有 RIL serial 映射到 transport token，并补充 `commandEnded/currentStateVerified/resourceReusable` 的真实来源；缺任一来源仍 Quarantine，不能自动 Available。
+
+M10.1 Host Stop 区分两级：OwnerCallbacksDrained 只说明 scheduler/callback map 已空；DeviceResourcesDrained 还要求所有资源为 Available。Host 测试可证明模拟 end/reuse 状态机，不宣称真实 Device Drain PASS。M9.3 仍不证明真实 R/HDI 命令已结束或资源可复用。生产 Scheduler/SA/IPC 接线、共享 RIL Stop、Core OnStop 和 SO 卸载仍为 BLOCKED。`dd7ac58f` 中保存的主设计/详细设计/评审稿仅作只读审查输入，公开拒绝/等待/排队错误码和 Stop 后设备恢复策略仍为 PROPOSED。Host 对冲突继续使用现有 `-1` 负控，不表示公共错误码已批准。
 
 M8.1 修正 UPDATE 语义：Target 不再等待虚构 RadioResponse ACK，而仅在两个成员的 RadioProtocol NOTIFY 到齐后进入 COMPLETE；状态事件 C1 固定按 Legacy `isUserSet=false` 发布。M8.2 CHECK 失败逐轮发送失败 COMPLETE、恢复 old Primary/ICCID，并由 A 将五次后台重试显式排入原请求；每轮新 Step/attempt/protocolSession，最终 24 条请求/6 session。API 第一轮失败返回一次，后继重试不重复 Completion。
 

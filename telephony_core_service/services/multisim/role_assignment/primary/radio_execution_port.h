@@ -39,6 +39,7 @@ struct RadioSwitchRequest {
     std::optional<BindingRef> expectedBinding;
     uint32_t protocolSession;
     uint32_t phase;
+    uint32_t memberCount {1};
 };
 struct RadioSwitchResult {
     StepRef step;
@@ -49,6 +50,13 @@ struct RadioSwitchResult {
     bool notify; // R translated RadioProtocol NOTIFY; UPDATE has no separate ACK result.
     EffectKnowledge effect;
     int32_t legacyResult;
+};
+struct RadioDeviceResult {
+    uint64_t transportToken;
+    RadioSwitchResult result;
+    bool commandEnded;
+    bool resourceReusable;
+    bool currentStateVerified {false};
 };
 class RadioResultSink {
 public:
@@ -62,6 +70,18 @@ public:
     virtual ~RadioExecutionPort() = default;
     virtual PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const = 0;
     virtual void SwitchPrimaryRadio(const RadioSwitchRequest &request) = 0;
+    virtual bool WasLastSubmissionAccepted(const RadioSwitchRequest &) const { return true; }
+    virtual void EndLegacySenseSwitch(const StepRef &owner, const RadioDomainId &domain) = 0;
+};
+// Narrow platform seam below R. The platform reports an opaque transport token and
+// does not make A/R business decisions. Real RIL serial can be retained by an adapter.
+class RadioPlatformPort {
+public:
+    virtual ~RadioPlatformPort() = default;
+    virtual PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const = 0;
+    // Implementations must not deliver a RadioDeviceResult reentrantly from this
+    // method; MarkSent is committed immediately after a successful submit return.
+    virtual bool SubmitPrimaryRadio(const RadioSwitchRequest &request, uint64_t transportToken) = 0;
     virtual void EndLegacySenseSwitch(const StepRef &owner, const RadioDomainId &domain) = 0;
 };
 class AssignmentOutputPort {

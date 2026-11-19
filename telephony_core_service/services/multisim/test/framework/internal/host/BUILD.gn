@@ -41,6 +41,8 @@ static_library("sim_target_production_host") {
   sources = [
     "$production_root/services/multisim/infrastructure/assembly/slot_catalog.cpp",
     "$production_root/services/multisim/infrastructure/request/runtime_operation_store.cpp",
+    "$production_root/services/multisim/device/resource/resource_barrier.cpp",
+    "$production_root/services/multisim/device/resource/resource_radio_runtime.cpp",
     "$production_root/services/multisim/account/account_registry.cpp",
     "$production_root/services/multisim/account/binding_index.cpp",
     "$production_root/services/multisim/account/discovery/discovery_observation_ledger.cpp",

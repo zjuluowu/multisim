@@ -365,15 +365,21 @@ source_set("runtime_mechanisms") {
     "card/records/load_session.h",
     "device/resource/resource_barrier.cpp",
     "device/resource/resource_barrier.h",
+    "device/resource/resource_radio_runtime.cpp",
+    "device/resource/resource_radio_runtime.h",
     "card/state/session_registry.cpp",
     "card/state/session_registry.h",
   ]
   public = [
     "card/records/load_session.h",
     "device/resource/resource_barrier.h",
+    "device/resource/resource_radio_runtime.h",
     "card/state/session_registry.h",
   ]
-  public_deps = [ ":sim_values" ]
+  public_deps = [
+    ":assignment_contracts",
+    ":sim_values",
+  ]
 }
 
 source_set("sim_values") {

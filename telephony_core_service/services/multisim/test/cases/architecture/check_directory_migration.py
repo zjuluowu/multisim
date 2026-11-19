@@ -47,6 +47,8 @@ def check_directory_migration(source, token_sequence, *, repo=None):
     moved_docs = documentation_moves(source)
     from check_structure import module_files
     actual = {p.relative_to(source).as_posix() for p in module_files(source)} - {
+        'device/resource/resource_radio_runtime.cpp',
+        'device/resource/resource_radio_runtime.h',
         'infrastructure/request/runtime_operation_store.cpp',
         'role_assignment/assignment_store_adapter.cpp'}
     if len(set(outputs)) != len(rows) or module_destinations(outputs, moved_docs) != actual:
@@ -71,6 +73,11 @@ def check_directory_migration(source, token_sequence, *, repo=None):
                 current = current.replace(b"/test/cases/architecture", b"/test/multisim_architecture_rules")
                 current = current.replace(b'    "role_assignment/assignment_store_adapter.cpp",\n', b'')
                 current = current.replace(b'    "infrastructure/request/runtime_operation_store.cpp",\n', b'')
+                current = current.replace(b'    "device/resource/resource_radio_runtime.cpp",\n', b'')
+                current = current.replace(b'    "device/resource/resource_radio_runtime.h",\n', b'')
+                current = current.replace(
+                    b'  public_deps = [\n    ":assignment_contracts",\n    ":sim_values",\n  ]',
+                    b'  public_deps = [ ":sim_values" ]')
                 current = current.replace(
                     b'  sources = [\n    "infrastructure/request/runtime_operation_store.h",\n  ]',
                     b'  sources = [ "infrastructure/request/runtime_operation_store.h" ]')
