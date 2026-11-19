@@ -6,21 +6,9 @@
 
 每批只执行本次授权范围，完成实际修改、构造/使用/构建同步、适用验证、无关修改保护及执行状态更新。明确设计、骨架、主机切片、产品/设备各自的证据；外部条件只阻塞依赖它的切片，继续其他已授权工作。未授权生产切换不由目录实施或文档提交推定。
 
-## 材料职责与冲突处理
+## 任务入口与依据
 
-| 材料 | 唯一维护职责 |
-| --- | --- |
-| [目标主设计 v1.2](docs/SIM_Target_Architecture_Design_v1.2.md) §4～6、§9～14、§22 | 业务边界、唯一写权、异步/资源协议和阶段门禁；整体仍draft/pending，不覆盖已批准契约 |
-| [目录设计方案](docs/SIM重构代码目录结构设计方案.md) | 五组一级组织与Infrastructure职责；物理迁移直接依据 |
-| [源码详细设计](docs/SIM_Multisim_Source_Architecture_Detailed_Design.md) §3/4/17/21 | 在目录设计方案约束下维护当前/稳态路径、全文件归属、具体接口及逻辑GN依赖 |
-| [唯一执行状态](docs/SIM_Refactor_Execution_State.md) | 当前基线、远端检查点、实测证据、局部阻塞及下一批任务；AGENTS不维护动态SHA或PASS数量 |
-| [功能/WU清单](docs/SIM_Architecture_Refactor_Design.md)、[流程对照](docs/多SIM架构重构_设计说明与业务流程对照.md) | 沿用SIM-001～062及子项、WU-01～09、生产入口与迁移闭包；不另建编号或平行台账 |
-| [接口契约](docs/SIM管理对外接口说明_源码核实版.md)、[外仓边界](docs/knowledge/routing/repo-boundary.md) | 外部API、权限、错误、消费者与外仓责任 |
-| [源码README](services/multisim/README.md) | 日常任务→路径→Owner→测试导航；不重复完整架构 |
-| [独立目录ADR](docs/SIM_Multisim_Source_Directory_Architecture_Decision_Independent_2026-10-31.md)、[原ADR](docs/SIM_Multisim_Source_Directory_Architecture_Decision_2026-10-31.md)、[历史实施评审](docs/SIM_Target_Architecture_Independent_Review_2026-10-29.md) | 取舍、反证和历史证据；两份ADR仍Proposed，用户已选修订B+仅作为结构实施基线 |
-| [构建规则](docs/knowledge/verify/build-test.md)、[主机测试入口](services/multisim/test/docs/Host_Overview.md)、[骨架验证](services/multisim/test/cases/architecture/README.md) | 环境、参数、运行范围和验证限制 |
-
-用户当前明确授权决定本批范围；已发布/批准契约约束行为，固定源码/构建证明现状，主设计维护目标语义，详细设计维护物理组织。历史文档中O作为业务Owner、旧目录和旧方法草图不得覆盖主设计当前裁决。冲突以具体证据定位并同步责任文档，不按日期或文件名决定权威，不把旧缺陷默认为永久契约。
+[开发文档入口](docs/README.md)维护文档职责、阅读路径和冲突处理规则。先查[唯一执行状态](docs/SIM_Refactor_Execution_State.md#current-status)，再按本批授权选择工作。实际修改涉及既有行为时，以已发布或批准的契约为约束，按固定代码和证据复验。
 
 ## 恢复与任务选择
 
@@ -34,22 +22,7 @@
 
 当前一级目录由[目录设计方案](docs/SIM重构代码目录结构设计方案.md)确定为五组；历史B+六组不再作为新增代码落点。逐文件归属、临时接缝和GN对照见[本批迁移记录](docs/SIM_Directory_Migration_20261112.md)。
 
-| 目录 | 唯一责任与约束 |
-|---|---|
-| account / T | 账户身份/资料/active、已接纳绑定及激活业务进度；绑定不等于槽号；专属Store/Hook Adapter就近 |
-| role_assignment / A | Primary与默认Voice/SMS/Data的各自角色语义、冲突准入和业务重试；不拥有真实设备租约 |
-| card | 应用会话/代次、Records加载及卡侧安全/EF/APDU/Profile协议；SessionRegistry和LoadSession就近 |
-| device | Radio/Modem执行状态和ResourceBarrier共享设备域资格；不反向写Account或角色事实 |
-| infrastructure/compatibility | 旧API及完成/结果通知适配，无业务规则/业务事实；业务专属适配留原Owner |
-| infrastructure/assembly | 模块创建/初始化/销毁、宿主注入、Manager发布及只读SlotCatalog；不接管Card/Device运行状态 |
-| infrastructure/request | 各用例自有请求/步骤/完成机制，无全局分发、业务流程或重试决策 |
-| infrastructure/sim_identity.h | 纯公共身份/关联类型，无IdentityManager或全局映射状态 |
-
-CardRuntime/result_sinks暂在card/runtime；其中设备资源成员尚未拆分，不能据目录推定写权已移交或继续扩大它。保持原对象/成员/异步回调，本批风险及后续裁决见迁移记录。SlotCatalog由Assembly构建后只读，动态绑定归Account。Profile协议/库存归Card、绑定归Account、偏好归Role Assignment，真实设备资源归Device。
-
-新增文件先确定业务事实Owner，再确定物理落点和逻辑target；禁止重新建立common、utils、startup等无边界一级公共目录。业务专属Adapter不得因复用迁入Infrastructure。T/A仅依赖窄契约，不include另一Owner的Service/聚合/私有Adapter，不持跨Owner可写引用或嵌套同步等待。Domain仅纯规则/状态；I/O/等待/callback在相应外层。
-
-保留25个独立逻辑source_set及精确public/visibility与依赖DAG，不按五目录合并target，不靠宽泛public_deps解决依赖。目录、逻辑层、SO和运行对象非一一对应；禁止CardManager/DeviceManager、中央Request调度、总DTO池或无证据的全局总线。
+新增文件先确定业务事实 Owner，使用目标主设计约束职责与依赖，再按[源码详细设计 §3～4](docs/SIM_Multisim_Source_Architecture_Detailed_Design.md#source-tree)确定文件和逻辑 target。构建依赖使用现有精确 public、visibility 和 DAG，业务适配器跟随所属 Owner。CardRuntime 剩余设备职责及其迁移条件见详细设计。
 
 ## 生产迁移与关键不变量
 

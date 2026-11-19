@@ -1,5 +1,32 @@
 # 多 SIM 重构执行状态
 
+<a id="current-status"></a>
+
+## 当前基线、验收与下一批任务
+
+本页是实施状态的唯一维护来源。[开发文档入口](README.md)按任务指向相应设计和测试资料。本文历史章节中的「当前」指各节记载的输入和日期。
+
+| 范围 | 已核实实施与证据 |
+| --- | --- |
+| 输入基线 | 文档治理开始时，本地和远端 main 均为 `155f9c4c3378f271e5241368bec7616838cb3df1`。恢复工具刷新远端后确认历史 G2a 检查点 `cc787945792527eeb94bc20a5e955315d6269e83` 可从工作分支恢复，它不是 main 的祖先。 |
+| 产品装配 | 根 GN 仍编译 `services/sim/`，multisim 的逻辑目标仍为 testonly。G2a Core/Binding 仅用于 Host 参考测试，生产接入回退及上游基线见[§37](#upstream-sync-20261116)。 |
+| 源码结构 | 五组目录已落地。实际文件、接口和 GN 依赖见[源码详细设计](SIM_Multisim_Source_Architecture_Detailed_Design.md#source-tree)，历史迁址见[§29](#directory-layout-20261112)。 |
+| Target C0 | `155f9c4c3` 引入真实 AssignmentStoreAdapter 及 Host 装配，覆盖原系统参数键、ICCID 散列及失败/部分效果。保留该批记录的 Target 11/11、Both C0 和写方法执行审计，见[阶段四](#target-c0-store-20261118)和[后端范围](../services/multisim/test/docs/Backend_Architecture.md)。 |
+| Legacy Host | 保留[§48](#48-剩余fail第二阶段真实stop与完整host验收2026-11-18)的 124/124 与 CI 准入证据及阶段四的回归记录。本次文档治理没有重新执行业务用例。 |
+| 产品门禁 | 正式 OHOS 参数端口、完整 Provider/Topology/Radio/Device、SA/IPC、原生产品构建和设备验收尚未闭合。旧 SimManager Stop 的 Host 证据仍按 §48 使用。 |
+
+<a id="next-work"></a>
+
+### 下一批任务与依赖
+
+1. 沿 C0 差分继续闭合与真实拓扑事实连接及相应失败路径。以[源码详细设计 §7、§15](SIM_Multisim_Source_Architecture_Detailed_Design.md#assignment)定位端口及装配，以[双后端测试](../services/multisim/test/docs/Backend_Architecture.md)核对可执行范围。B/C1 依赖相应 Radio/设备、前后写入和部分效果证据。
+2. Provider 相关用例先取得匹配产品的 schema、字段、错误、重载和恢复证据。产品路径另按真实 OHOS 树、Feature、SA/IPC 和设备环境验收。
+3. 按[原功能与 WU](SIM_Architecture_Refactor_Design.md#writer-cutover)核对全部旧入口。写权切换、SO 边界、生命周期和 eSIM/MEP 新能力按[主设计 §22](SIM_Target_Architecture_Design_v1.2.md#22-分阶段实施门禁)的独立门禁和本批授权推进。
+
+## 历次双后端与阶段核验记录
+
+<a id="target-c0-store-20261118"></a>
+
 当前双后端阶段四（2026-11-18，输入 `e44a7d9c69114b0b47fee008c9eb24f1394e1f8e`）：Target C0 真实 `AssignmentStoreAdapter` 已接入系统参数窄端口，负责 Legacy raw ICCID→SHA256→大写Hex、Primary/Data/用户偏好原键写入及恢复；Adapter Integration 使用真实 Adapter 而非 RecordingStore，并增加完成失败/未完成/部分效果验证。`callFinished=false` 不再返回成功，业务置为 NeedsReconciliation，保留进行中资格；已确认非零参数结果按 Legacy C0 的 void/忽略结果语义只保留外部参数事实，不改变原接口成功。本批 Target 11项 Component/Adapter Integration、Both C0、Adapter 三个写方法正执行审计及 Legacy 124/124 CI 均实际通过，三项既有未跟踪文件及 `default.profraw` 未变化。Adapter 写方法具备正执行审计。正式 OHOS 参数实现、Provider/SA/IPC、Device、Topology/Radio 产品实现及 B/C1 仍未接入。
 
 当前双后端阶段三（2026-11-18，输入 `0769c8c9c9be1011413351f48080fba37671fb6a`）：C0 Target 观察结果已由 AssignmentView、真实 Store/Output/Radio/Completion 观测生成；增加无绑定/未激活/身份变化、Radio 未知失效、三类参数失败及部分效果、冲突请求、失败重启、旧 epoch/Step/重复完成覆盖。Oracle 从冻结 Primary Inputs/Golden 派生，兼容 ICCID 以 raw→SHA256→大写Hex 的 Legacy 边界验证。Target C0 六项组件测试、Both C0、13项差分/配置负控、架构/GN/技术/完整性及 Legacy 124/124 CI 回归均已实际通过；`default.profraw` 未变化。正式 AssignmentStoreAdapter/Provider、真实持久化、产品/SA/IPC/设备及 B/C1 仍未接入。
@@ -29,8 +56,6 @@
 测试工程职责整理与本次前后对照见[§31](#test-architecture-20261113)；生产迁移状态和旧批次结论不变。
 
 本文件集中维护当前实施位置、证据、局部阻塞和下一批任务；当前五组目录实施及本轮实测见[§29](#directory-layout-20261112)，本次发布授权及预检见[§30](#directory-publication-20261112)，以下旧批次按原日期/输入解释；技术决策继续由[目标主设计](SIM_Target_Architecture_Design_v1.2.md)维护，流程由[流程对照](多SIM架构重构_设计说明与业务流程对照.md)维护，历史裁决留在[原评审](SIM_Target_Architecture_Independent_Review_2026-10-29.md)。最近恢复/一致性核对：2026-11-11；SetPrimarySlotId入口及整链阻塞见[§16](#primary-slot-test-20261111)；Windows VS Code + WSL Host工程及本轮实测见[§15](#wsl-host-20261111)；测试工程内聚迁移见[§13](#test-relocation-20261109)，本地开闭源复审增量见[§12](#open-closed-followup-20261109)，历史分支合入main及重验见[§11](#main-integration-20261105)，G2a工作分支复验见[§10](#g2a-revalidation-20261105)，测试防护网首批见[§8](#sim-guard-20261104)，第二轮结果及阻塞见[§9](#sim-guard-round2)。此前G2a记录保留，各历史运行结果仍按其原日期、基线和覆盖范围解释。
-
-<a id="current-status"></a>
 
 ## 0. 当前核实摘要（2026-11-09增量；历史运行保留原基线）
 
@@ -261,7 +286,11 @@ python3 telephony_core_service/services/multisim/test/systemtest/scripts/audit_i
 | 匹配OHOS树/hb、产品配置及Feature矩阵 | 原SO产品构建/真实Core初始化发布和设备行为 | 不阻塞主机查询；需明确产品/工具链/外仓版本与构建运行结果 |
 | 设备结束/通道静止、厂商/66250及Port/MEP证据 | 依赖它的新隔离/安全重试、G2c/G3/G4切片 | 不作为所有G2a工作的统一前置；逐命令因果/结束与外部契约关闭 |
 
-## 6. 下一批推荐任务
+<a id="6-下一批推荐任务"></a>
+
+## 6. 历史下一批计划（2026-11-05）
+
+现行任务见[页首下一批](#next-work)。以下保留当批计划及当时的失败条件。
 
 以下是当前剩余门禁及依赖顺序，不自动授权新的生产迁移、合并或发布。G2a首次适配、最新主机复验及SIM Guard两轮建设已经完成，不再把这些列为下一批待实现任务。
 

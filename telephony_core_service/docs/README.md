@@ -1,44 +1,35 @@
-# SIM 架构文档入口
+# SIM 多卡重构开发入口
 
-当前物理组织依据：[五组目录方案](SIM重构代码目录结构设计方案.md) → [逐文件迁移及验收记录](SIM_Directory_Migration_20261112.md)。历史ADR/固定提交链接/运行证据保留旧路径，当前源码路径查详细设计§3及README。
+首次阅读只需三处。先读[业务问题与重构目标 §1～2](多SIM架构重构_设计说明与业务流程对照.md#1-设计目标与适用范围)，再读[源码导航的目录职责](../services/multisim/README.md)，最后查[执行状态页首](SIM_Refactor_Execution_State.md#current-status)。现网 SIM 由 `services/sim/` 实现，`services/multisim/` 提供目标实现和 Host 验证。具体已实现切片、生产装配和设备验收分别查执行状态。
 
-当前导航刷新至2026-11-18；实际提交、验证范围和阻塞统一见[执行状态](SIM_Refactor_Execution_State.md)§46～49。成熟生产仍在services/sim；G2a仅作testonly参考，未接入正式生产。测试全量迁移、API收敛及剩余失败修复已完成Host验收（124/124 PASS、CI准入PASS）；产品原生构建/设备及GUI仍未验收。历史PASS不视为当前HEAD重跑。
+## 按开发任务阅读
 
-## 现行设计与阅读顺序
+| 任务 | 阅读顺序与检查点 |
+| --- | --- |
+| A · 初次了解项目 | 按页首顺序理解为何要分开卡应用、账户、默认角色和设备资源，再按五组源码目录定位业务。需要了解事实写权时读[目标架构 §3～4](SIM_Target_Architecture_Design_v1.2.md#3-统一语义与身份规则)。 |
+| B · 开发一个业务功能 | 用 [SIM 功能清单](SIM_Architecture_Refactor_Design.md#feature-mapping)定位旧入口及接管范围，按[业务对象与时序 §4、§7～10](多SIM架构重构_设计说明与业务流程对照.md#4-核心概念及其关联)找对应流程。核对[对外接口及权限](SIM管理对外接口说明_源码核实版.md)与[源码详细设计 §5～17](SIM_Multisim_Source_Architecture_Detailed_Design.md#identity)。在[测试用例导航](../services/multisim/test/cases/README.md)选择对应场景，以 Oracle、Legacy/Target 支持矩阵和实际差分确认验收范围。 |
+| C · 修改架构或源码目录 | 按[目标架构 §3～6、§9～14](SIM_Target_Architecture_Design_v1.2.md#3-统一语义与身份规则)确定业务事实 Owner、分类目标和依赖约束，再查[五组目录方案](SIM重构代码目录结构设计方案.md)和[源码详细设计 §3～4、§21](SIM_Multisim_Source_Architecture_Detailed_Design.md#source-tree)确定文件、接口及独立 GN target。按下方维护表更新对应职责文档，并运行[架构检查](../services/multisim/test/cases/architecture/README.md)。 |
+| D · 测试或定位问题 | 从[统一测试入口](../services/multisim/test/README.md)选命令、后端和用例，按 [Host 使用说明](../services/multisim/test/docs/Host_Usage.md)构建、看日志或断点定位。到 [Full Replacement](../services/multisim/test/docs/Full_Replacement.md)查覆盖、契约、Oracle 和归档证据。 |
+| E · 继续推进迁移 | 先看[阻塞与下一批任务](SIM_Refactor_Execution_State.md#next-work)，用 [WU-01～09](SIM_Architecture_Refactor_Design.md#writer-cutover)确认全量旧入口和验收闭包，再查[源码接入映射 §17](SIM_Multisim_Source_Architecture_Detailed_Design.md)与[测试入口](../services/multisim/test/README.md)。按[阶段门禁 §22](SIM_Target_Architecture_Design_v1.2.md#22-分阶段实施门禁)更新执行状态。 |
 
-1. [执行状态](SIM_Refactor_Execution_State.md)：先区分当前交付、实际测试基线与未完成门禁，再选择下一批任务。
-2. [目标主设计 v1.2](SIM_Target_Architecture_Design_v1.2.md)：业务边界、唯一写权、协议及阶段门禁；整体仍draft/pending，不覆盖已批准业务契约。
-3. [源码详细设计](SIM_Multisim_Source_Architecture_Detailed_Design.md)及[源码导航](../services/multisim/README.md)：当前五组实际/稳态目录、文件与GN映射、日常任务入口。
-4. [SIM 架构重构设计](SIM_Architecture_Refactor_Design.md)及[分层/迁移补充视图](SIM_Architecture_Layering_and_Migration_Design.md)：沿用SIM-001～062、WU-01～09、兼容轨迹与Q项，不另立架构裁决或当前实施台账。
-5. [SIM 管理对外接口说明](SIM管理对外接口说明_源码核实版.md)：接口分层、签名与本仓委托路径；声明存在性不视为外部服务运行保证。
-6. [统一测试入口](../services/multisim/test/README.md)、[覆盖、缺陷与证据](../services/multisim/test/docs/Full_Replacement.md)、[架构规则](../services/multisim/test/cases/architecture/README.md)：分开阅读对应证据，主机/组件与产品/设备验证不互相替代。
+## 维护职责
 
-目标技术裁决由 [SIM 目标架构设计 v1.2](SIM_Target_Architecture_Design_v1.2.md) §4/§6.4 承接；功能/WU 与迁移编号保留在重构设计，分层文档为补充视图，本文为阅读索引。差异处理见主文档[补充设计复审记录 UC-01～09](SIM_Architecture_Refactor_Design.md#supplement-review)。源码决定现在如何实现；用户要求与已确认契约约束目标；提案编号和“已批准”字样不能替代批准证据。
+| 文档 | 唯一维护内容 | 维护角色与更新时机 |
+| --- | --- | --- |
+| [目标架构 v1.2](SIM_Target_Architecture_Design_v1.2.md) | 业务责任、事实写权、异步、资源和实施门禁。整体仍为 `draft/pending`。 | 架构决策负责人记录决策证据和适用范围，涉及接口、物理布局或实施切片时同步对应文档。 |
+| [五组目录方案](SIM重构代码目录结构设计方案.md) | 一级物理职责和 Infrastructure 的内部边界。 | 目录变更负责人在获准的目录决策中更新，并同步详细设计和路径摘要护栏。 |
+| [源码详细设计](SIM_Multisim_Source_Architecture_Detailed_Design.md) | 当前与稳态路径、文件、实现接缝、类、接口及逻辑 GN DAG。 | 模块变更负责人随源表、构造和依赖更新，同步源码导航。 |
+| [功能与 WU](SIM_Architecture_Refactor_Design.md) | SIM-001～062 及子项、WU-01～09、旧入口及接管闭包。 | 迁移负责人随入口、写点或承接范围变化更新，沿用原编号并关联验收。 |
+| [业务流程对照](多SIM架构重构_设计说明与业务流程对照.md) | 显示号码、激活、主卡和 Records 的时序与部分失败对照。 | 用例负责人随流程证据或批准行为变化更新，引用功能清单与实际接口。 |
+| [唯一执行状态](SIM_Refactor_Execution_State.md#current-status) | 代码基线、实测证据、阻塞和下一批任务。 | 批次负责人每次交付后更新，按输入基线链接原始记录。 |
+| [对外接口说明](SIM管理对外接口说明_源码核实版.md) | 对外 API、调用者、权限、错误及已核实的外部依赖。 | 接口变更负责人按源表、契约和受影响消费者更新，跨仓分工查[仓库边界](knowledge/routing/repo-boundary.md)。 |
 
-## 统一口径
+**冲突处理。** 已发布或已批准的业务契约约束行为。源码和构建配置证明当前装配，带基线的日志证明实际验证，目标设计描述计划行为。以具体批准记录和作用范围核定决策状态，再回到上表中负责该问题的文档修订。Host 组件、产品、设备各按对应证据验收。
 
-- 两个业务上下文：T 账户与连接拓扑、A 角色与资源分配；O 为各用例使用的 Application 机制。R 卡运行支撑、C 兼容实现职责、I 技术适配、H 宿主装配另列；Compatibility 不作为第四个业务上下文。
-- T/A 分别拥有自己的业务事实；O 不拥有业务事实或跨模块进行中标志；R 维护卡应用会话、Records 和真实设备资源使用。C 不成为第二业务写者。按 [WU-01～09 及全部旧入口](SIM_Architecture_Refactor_Design.md#writer-cutover)切换写权，遗留用例同步委托。
-- 分类为 SlotTarget、CardApplicationTarget、SubscriptionTarget；空槽、PIN/PUK 和未识别身份的卡操作不强求 simId。simId 保持旧不透明 ID 契约，不承诺跨删除、重装或设备永久稳定。
-- Domain 只含纯规则/值类型；Application 协调用例和受控提交，依赖内层端口；I/R/H 实现端口。R 复用生产协议和解析，尚未纯领域化。
-- 保留公开 Framework/IPC、CoreManagerInner 消费侧及条件 eSIM 入口。SIM 私有 SO 是同进程链接边界，按 G2a 依赖/所有权整理、G2b 链接拆分、G2c 关闭协议分别验收。
-- 卡状态、Records、账户、激活、默认角色、Profile 和网络就绪分别表达。GetShowNumber 等查询保留既有回写/存储访问；[部分失败轨迹](SIM_Architecture_Refactor_Design.md#legacy-visibility)不能被最终快照一致掩盖。
-- 内部领域事件只通知已接受事实，不替换 RadioEvent、Hub、Registry、CES、账户回调或 eSIM 回执，不统一重排旧输出。进程内总线不提供跨进程传输；SA 身份不决定地址空间，66250 保持既有服务契约。
-- 不新增公开 API/IPC/SA/进程、schema、厂商 ABI 或运行期双实现开关。四槽/MEP、NULL 迁移、新身份和恢复政策须满足对应 Q 项；本轮已授权同步修改未接入骨架，仍不表示生产接入或行为增强已完成。
+**文档状态。** Authoritative 表示职责上的维护来源。Supporting 为补充视图和代码证据，Operational 为操作入口，Historical 为时间固定的记录，Superseded 为已替代版本，Generated 为生成或派生材料。Pending 用于待核实材料或待批准决策，设计批准状态以正文和批准证据为准。
 
-## 先前设计与历史资料
+## 参考资料
 
-以下文档保留原基线、推导和历史执行语境；其中“四 Context”、固定事件数、旧阶段摘要或旧 capability 阻塞不得覆盖现行主文档：
-
-- [2026-10-15 冲突裁决](MultiSIM/08_design_unification_decisions.md)、[V3 总体设计](SIM_Refactored_Software_Architecture_Design_Version3.md)、[V3 类设计](SIM_Layered_Architecture_Class_Design_Version3.md)。
-- [旧源码基线](MultiSIM/01_sim_subsystem_baseline.md)、[演进分析](MultiSIM/02_current_architecture_and_evolution.md)、[eSIM 边界分析](MultiSIM/03_esim_slot_and_sa_boundary.md)、[目标导读](MultiSIM/04_ddd_target_architecture.md)、[类/数据映射](MultiSIM/05_detailed_class_and_data_model.md)、[汇报提纲](MultiSIM/06_refactoring_proposal_slides.md)、[进展记录](MultiSIM/07_subscription_refactoring_status.md)。
-- [历史目录](history/pre_unification_20261015/README.md)、V22/V23 等二进制汇报及审阅资料。保留原文和结果，不回写为新方案运行通过。
-
-旧 [design_alignment_manifest.json](MultiSIM/design_alignment_manifest.json) 是生成时的摘要。当前证据及来源在主文档[来源清单](SIM_Architecture_Refactor_Design.md#document-sources)与复审附录维护，不用旧摘要证明当前内容。
-
-## 维护与检查
-
-- 改规则先更新主文档的职责、功能/写权、兼容和阶段，再同步补充视图；历史材料通过明确适用版本解释。
-- 新的源码事实提供仓库路径、符号/行号及版本；跨仓缺口保持具体 Q 项，不从类名或部署图补出调用链。
-- 覆盖映射、静态语义复核、主机执行、产品/设备验证分别记录。旧容量1 PASS/设施16 PASS是历史切片；G2a七场景及SIM Guard兼容/缺陷/设施使用各自证据与基线，不与旧统计相加。各批实际命令和结果见执行状态；当前使用TEST_F/test.py，不再维护旧SIM Guard执行体系；历史报告和Golden原文保留。
-- 链接、图表、编号与证据摘要检查不能证明目标重构已实现。源码、数据、历史执行结果的变更另按用户任务处理。
+- [目录迁移记录](SIM_Directory_Migration_20261112.md)保留旧路径、逐文件去向和当批验收。
+- [构建与测试知识库](knowledge/verify/build-test.md)提供环境和参数，运行指南以测试工程为准。
+- [统一前历史资料](history/pre_unification_20261015/README.md)和[统一裁决](MultiSIM/08_design_unification_decisions.md)用于追溯当时依据。

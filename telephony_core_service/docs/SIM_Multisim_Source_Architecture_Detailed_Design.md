@@ -3,17 +3,17 @@
 | 项目 | 内容 |
 | --- | --- |
 | 文档版本 | 0.6，修订B+及G2a工作分支只读增量（整体设计仍PROPOSED） |
-| 更新日期 | 2026-11-17（刷新当前清单、测试入口及跨形态设计接缝；历史验证保持原基线） |
+| 更新日期 | 2026-11-19（按 155f9c4c3 核对 C0 源码；早期验证沿用各自基线） |
 | 源码范围 | 当前模块为91文件：89个C++文件（64头/25源）、BUILD.gn及README.md；重复目录设计副本已退役；首次G2a之前的B+输入为88文件；生产能力来源见§17 |
-| 输入基线 | B+文件移动输入5404aefe、首次G2a源main 9ab1e976及历史实现cc787945均为固定溯源；最新main发布点与实际测试代码点分别见执行状态§0.1/§11；§10保留工作分支复验基线 |
-| 当前状态 | 当前生产已回退G2a接入，原成熟SIM继续执行；G2a Core/Binding仅为测试参考，旧合入记录保留为历史。25个source_set全testonly，产品准入和写权迁移未完成，当前状态见执行状态§37～42 |
+| 输入基线 | B+文件移动输入5404aefe、首次G2a源main 9ab1e976及历史实现cc787945均为固定溯源；实际代码点和测试证据见[执行状态](SIM_Refactor_Execution_State.md#current-status) |
+| 当前状态 | 当前生产已回退G2a接入，原成熟SIM继续执行；G2a Core/Binding仅为测试参考，旧合入记录保留为历史。25个source_set全testonly，产品准入和写权迁移未完成，当前状态见[执行状态](SIM_Refactor_Execution_State.md#current-status) |
 | 权威范围 | 落实主设计的源码组织、功能映射与依赖规则；上位边界由SIM-TGT-001维护，公共契约和功能/WU清单仍由原文维护，未增加批准状态 |
 
 **文件存在、语法可检查和有限纯规则通过，均不等于目标业务已经实现。** 原生产仍位于`services/sim/`。本文保留原21个显式导航锚点，区分当前与稳态目录、刷新方法/构造及实现状态；不据源码目录数量建立新的上下文、SO或进程。
 
 当前逐文件输入摘要、去向和职责以[source_migration.json](../services/multisim/test/cases/architecture/source_migration.json)的layout_revision（88项）及additions（G2a两项）为准；原73文件及layout_history中的前轮布局溯源保留。
 
-2026-11-09用户明确调整测试物理位置：重构新增的四个测试工程、独立GN、脚本、Fake/Oracle、设计资料与证据统一置于 `services/multisim/test/`，恢复工具置于 `services/multisim/tools/`。当时90文件指**业务骨架**；当前90文件清单见§3.1，不包含这两个辅助目录；当时业务六组、25个逻辑源集及事实所有权不变；当前物理布局采用五组方案。辅助目录与运行入口见[测试导航](../services/multisim/test/README.md)，测试文件移动由[专属映射](../services/multisim/test/docs/archive/relocation/relocation_manifest.json)记录，不改写业务源迁移清单或历史证据。独立host构建通过显式入口选择；原产品/测试源表本轮不作修改，业务头不得依赖测试文件。
+2026-11-09用户明确调整测试物理位置：重构新增的四个测试工程、独立GN、脚本、Fake/Oracle、设计资料与证据统一置于 `services/multisim/test/`，恢复工具置于 `services/multisim/tools/`。当时90文件指**业务骨架**；当前91文件清单见§3.1，不包含这两个辅助目录；当时业务六组、25个逻辑源集及事实所有权不变；当前物理布局采用五组方案。辅助目录与运行入口见[测试导航](../services/multisim/test/README.md)，测试文件移动由[专属映射](../services/multisim/test/docs/archive/relocation/relocation_manifest.json)记录，不改写业务源迁移清单或历史证据。独立host构建通过显式入口选择；原产品/测试源表本轮不作修改，业务头不得依赖测试文件。
 
 ## 目录
 
@@ -416,7 +416,7 @@ TopologyService构造后由H绑定AccountRolePlanningPort；它实现PrimaryTopo
 | AlreadyPrimary | WithoutDevice | 原已为M0分支不执行完整协议，仍保持原保存/Data节点 |
 | VendorRouteMapping | AfterDevice | 经T映射子请求和厂商能力，旧早返回与后续步骤分别保持 |
 
-`PlanPrimarySwitch`有有限纯实现；角色接纳、参数IO、实际切换与重试仍主要是声明/伪代码。`AssignmentService`经PrimaryTopologyPort、RadioExecutionPort、AssignmentStore、LegacyIntCompletionPort协作，并实现T角色规划/激活和本地Profile提示所需窄端口。
+`StartPrimarySwitch` 已实现 Host C0 路径，通过 `PlanPrimarySwitch` 和 `AssignmentAggregate` 接纳角色结果。`SimModuleFactory` 构造真实 `AssignmentStoreAdapter` 并注入参数窄端口。该适配器处理原 Primary/Data/用户偏好键，兼容 raw ICCID → SHA256 → 大写 Hex，保留原参数错误及部分效果语义。B/C1 设备切换、完整回退和重试仍待实现。`AssignmentService`经PrimaryTopologyPort、RadioExecutionPort、AssignmentStore、LegacyIntCompletionPort协作，并实现T角色规划/激活和本地Profile提示所需窄端口。
 
 AccountRolePlanningInput允许existingSubscription为空；A先生成带reservation的字段片段，原Insert返回身份后分别接纳。加载返回StoredAccountRoleFragment原DB载荷，current/historical角色版本独立，不以A当前态反填旧读取。冲突资格覆盖存储调用，不能先读片段后任意整行写。
 
@@ -737,7 +737,7 @@ IDE转到定义只会落到已有定义。业务方法未定义是当前状态�
 
 | 尚未具备的内容 | 不应宣称 | 对应接入条件 |
 | --- | --- | --- |
-| 真实业务IO与原写点准入 | 号码/激活/Primary/Records目标实现已运行 | 按原函数和错误分支闭合，逐WU关闭旧写者 |
+| 产品业务 IO 与原写点准入 | Host C0 已覆盖全部 Primary 分支，或号码/激活/Records 已完成替代 | 按原函数和错误分支闭合，逐WU关闭旧写者 |
 | 工厂/匹配销毁/真实宿主完成 | 构造可读即已可初始化或安全卸载 | 原对象身份、发布时点、失败路径及代码寿命验收 |
 | 匹配provider、外部写者与可重入协议 | 本地Store或锁等于全局CAS/事务 | 匹配fork命令/schema、默认角色及外部写者证据 |
 | 厂商命令结束/通道静止、细分并发域 | bool证据、超时或本地清零证明硬件结束 | 命令级因果、结束/可靠失效、资源可重用及预算 |
@@ -753,7 +753,7 @@ IDE转到定义只会落到已有定义。业务方法未定义是当前状态�
 
 ### 20.1 历史记录与本轮验证
 
-2026-10-30的设计与源码落地记录按原执行状态§3.1保留，不继承为当前工作树PASS。本轮命令为`python3 telephony_core_service/services/multisim/test/multisim_architecture_rules/run.py --with-gn --migration`，结果记录在[唯一执行状态](SIM_Refactor_Execution_State.md)。GN只构建testonly骨架对象，纯规则单独链接运行；不证明完整产品链接、行为等价、并发/设备或provider验证。
+2026-10-30的设计与源码落地记录按原执行状态§3.1保留，不继承为当前工作树PASS。现行命令见[架构规则](../services/multisim/test/cases/architecture/README.md)，各次实际结果记录在[唯一执行状态](SIM_Refactor_Execution_State.md#current-status)。GN只构建testonly骨架对象，纯规则单独链接运行；不证明完整产品链接、行为等价、并发/设备或provider验证。
 
 <a id="inventory"></a>
 

@@ -2,8 +2,8 @@
 
 本仓包含telephony_core_service fork。成熟生产业务仍在services/sim；services/multisim是testonly目标骨架，尚未替代生产。设计、代码、Host测试及产品设备验收分别判断。
 
-- [执行状态](telephony_core_service/docs/SIM_Refactor_Execution_State.md)：当前基线、成果、已知失败及阻塞。
-- [文档入口](telephony_core_service/docs/README.md)：主设计、功能/WU清单、详细设计及历史资料的职责。
+- [开发文档入口](telephony_core_service/docs/README.md) 汇集业务开发、源码定位、测试和迁移的阅读路径。
+- [唯一执行状态](telephony_core_service/docs/SIM_Refactor_Execution_State.md#current-status) 记录当前基线、验证、阻塞与下一批任务。
 - [源码导航](telephony_core_service/services/multisim/README.md)：五组物理目录、Owner及GN边界。
 - [测试开发](telephony_core_service/services/multisim/test/README.md)：复制TEST_F、构建、单例运行与调试。
 
