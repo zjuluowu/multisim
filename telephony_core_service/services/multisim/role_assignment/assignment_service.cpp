@@ -36,6 +36,11 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
 {
     const RequestId request = operations_.Begin(command.target, command.completion, command.parent);
     (void)nextConflictToken_; // Reserved for non-C0 activation conflict leases.
+    if (command.parent && command.parent->request.epoch != request.epoch) {
+        completion_.CompleteLegacyInt(command.completion, -1);
+        operations_.MarkTerminal(request, TerminalState::Failed);
+        return request;
+    }
     if (!operations_.AdvanceStep({request, 0, 0}, 1, 0, std::nullopt)) {
         completion_.CompleteLegacyInt(command.completion, -1);
         operations_.MarkTerminal(request, TerminalState::Failed);
@@ -55,6 +60,15 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
     }
 
     const PrimaryRadioObservation observed = radio_.ReadPrimaryRadioObservation(command.target.slot);
+    const auto refreshedFacts = topology_.ReadPrimaryTarget(command.target.slot);
+    if (!refreshedFacts || !(refreshedFacts->binding.subscription == facts->binding.subscription) ||
+        !(refreshedFacts->binding.slot == facts->binding.slot) ||
+        refreshedFacts->binding.bindingRevision != facts->binding.bindingRevision ||
+        refreshedFacts->iccid != facts->iccid || refreshedFacts->active != facts->active) {
+        completion_.CompleteLegacyInt(command.completion, -1);
+        operations_.MarkTerminal(request, TerminalState::Failed);
+        return request;
+    }
     const bool validObservation = observed.slot == command.target.slot && observed.observationRevision != 0 &&
         observed.currentModemId.has_value() && target->rilInstance.has_value();
     if (!validObservation) {

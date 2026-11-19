@@ -49,6 +49,7 @@ class TopologyService final : public CardObservationSink, public PrimaryTopology
 public:
     TopologyService(const SlotCatalog &catalog, AccountStore &store, RuntimeEpoch epoch);
     void BindRolePlanner(AccountRolePlanningPort &roles); // H在A创建后、发布前绑定，未绑定即初始化失败。
+    bool AcceptSlotAssembly(SlotId slot, bool assembled); // H/R assembly fact; no account fact mutation.
     std::optional<BindingRef> FindBinding(SlotId slot) const;
     std::optional<AccountView> ReadAccount(SubscriptionId subscription,
         AccountReadView view = AccountReadView::Current) const;
@@ -64,6 +65,10 @@ public:
     void AcceptAccountReload(const ReloadRequest &request, const AccountLoadResult &loaded);
     void AcceptCardDiscoveryObservation(const CardDiscoveryObservation &observation) override;
     void AcceptCardSessionInvalidation(const CardSessionInvalidation &invalidation) override;
+    // Application ingress after the original provider write is confirmed. It does not
+    // allocate identities or expose the private registries.
+    std::optional<BindingRef> AcceptStoredDiscovery(const CardDiscoveryObservation &observation,
+        const AccountRecord &account, const AccountDiscoveryStoreResult &stored);
     void AcceptCardRemoval(const BindingRef &expected);
     std::optional<ActivationTransition> PrepareActivationProgress(const ActivationTransition &transition);
     bool BeginActivationProgress(const ActivationTransition &transition);

@@ -50,6 +50,14 @@ std::optional<AccountRecord> AccountRegistry::Read(SubscriptionId subscription) 
     return account == accounts_.end() ? std::nullopt : std::optional<AccountRecord>(account->second);
 }
 
+std::optional<SubscriptionId> AccountRegistry::FindByIccid(const std::string &iccid) const
+{
+    for (const auto &[subscription, account] : accounts_) {
+        if (account.iccid == iccid) { return subscription; }
+    }
+    return std::nullopt;
+}
+
 std::optional<AccountProjection> &AccountRegistry::Projection(AccountRecord &record, AccountReadView view)
 {
     return view == AccountReadView::Current ? record.current : record.historical;

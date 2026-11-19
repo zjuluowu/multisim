@@ -384,6 +384,8 @@ def check_migration():
             "assignment/api/assignment_store.h",
             "assignment/adapters/assignment_store_adapter.h",
             "infrastructure/assignment_store_adapter.h",
+            "topology/application/topology_service.h",
+            "topology/domain/account_registry.h",
             "assembly/sim_module.h",
             "assembly/sim_module_factory.h",
             "application/orchestration/runtime_operation_store.h",
@@ -396,6 +398,8 @@ def check_migration():
             authorized_c0_evolution = {
                 "assignment/application/assignment_service.cpp",
                 "assignment/domain/assignment_aggregate.cpp",
+                "topology/application/topology_service.cpp",
+                "topology/domain/account_registry.cpp",
                 "assembly/sim_module_factory.cpp",
             }
             original, current = token_sequence(text), token_sequence(after)
@@ -446,6 +450,10 @@ def check_migration():
                     "role_assignment/assignment_requests.h",
                     "role_assignment/assignment_store.h",
                     "role_assignment/assignment_store_adapter.h",
+                    "account/topology_service.cpp",
+                    "account/topology_service.h",
+                    "account/account_registry.cpp",
+                    "account/account_registry.h",
                     "infrastructure/request/runtime_operation_store.h",
                     "infrastructure/assembly/sim_module.h",
                     "infrastructure/assembly/sim_module_factory.cpp",
@@ -454,7 +462,8 @@ def check_migration():
                     raise ValueError("Layout changed code tokens: " + entry["old"])
                 original, current = token_sequence(before.decode()), token_sequence(after)
                 if entry["target"] not in {"role_assignment/assignment_store_adapter.h",
-                                           "infrastructure/assembly/sim_module_factory.cpp"}:
+                                           "infrastructure/assembly/sim_module_factory.cpp",
+                                           "account/topology_service.cpp"}:
                     cursor = 0
                     for token in original:
                         try:

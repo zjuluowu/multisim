@@ -17,6 +17,7 @@
 // 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
 
 #include "account/topology_service.h"
+#include <stdexcept>
 
 namespace OHOS::Telephony::MultiSim {
 TopologyService::TopologyService(const SlotCatalog &catalog, AccountStore &store, RuntimeEpoch epoch)
@@ -26,6 +27,8 @@ void TopologyService::BindRolePlanner(AccountRolePlanningPort &roles)
 {
     roles_ = &roles; // H仅在发布前绑定一次；它和TopologyService不互相拥有生命周期。
 }
+bool TopologyService::AcceptSlotAssembly(SlotId slot, bool assembled)
+{ return bindings_.AcceptAssemblyState(slot, assembled); }
 
 std::optional<ActivationTransition> TopologyService::PrepareActivationProgress(const ActivationTransition &transition)
 { return activationProgress_.Prepare(transition); }
@@ -35,6 +38,74 @@ bool TopologyService::AcceptActivationProgress(const StepRef &owner, const Sessi
 { return activationProgress_.Accept(owner, session, inProgress); }
 bool TopologyService::ReadLegacyActivationProgress(SlotId slot) const
 { return activationProgress_.ReadLegacy(slot); }
+
+RequestId TopologyService::BeginRouteMapping(const StepRef &, SlotTarget)
+{ throw std::logic_error("third-card route mapping is outside the Target C0 topology closure"); }
+
+std::optional<PrimaryTargetFacts> TopologyService::ReadPrimaryTarget(SlotId slot) const
+{
+    const auto binding = bindings_.Find(slot);
+    if (!binding || !bindings_.StillMatches(*binding)) { return std::nullopt; }
+    const auto account = accounts_.Read(binding->subscription);
+    if (!account || !(account->subscription == binding->subscription) || account->iccid.empty() ||
+        !account->current) {
+        return std::nullopt;
+    }
+    return PrimaryTargetFacts {*binding, account->iccid, account->current->active};
+}
+
+void TopologyService::AcceptCardDiscoveryObservation(const CardDiscoveryObservation &observation)
+{
+    observations_.AcceptDiscovery(observation);
+}
+void TopologyService::AcceptCardSessionInvalidation(const CardSessionInvalidation &invalidation)
+{
+    observations_.AcceptInvalidation(invalidation);
+}
+void TopologyService::AcceptCardRemoval(const BindingRef &expected)
+{
+    bindings_.RemoveBinding(expected);
+}
+
+std::optional<BindingRef> TopologyService::FindBinding(SlotId slot) const
+{ return bindings_.Find(slot); }
+std::optional<AccountView> TopologyService::ReadAccount(SubscriptionId subscription, AccountReadView view) const
+{
+    const auto record = accounts_.Read(subscription);
+    const auto projection = accounts_.ReadProjection(subscription, view);
+    if (!record || !projection) { return std::nullopt; }
+    return AccountView {subscription, view, projection->displayName, projection->displayNumber,
+        projection->active, record->identityRevision, projection->revisions};
+}
+
+AccountAcceptance TopologyService::AcceptActivationProjection(SubscriptionId subscription,
+    AccountReadView view, uint64_t expectedActiveRevision, bool active)
+{ return accounts_.AcceptActiveProjection(subscription, view, expectedActiveRevision, active); }
+
+std::optional<BindingRef> TopologyService::AcceptStoredDiscovery(const CardDiscoveryObservation &observation,
+    const AccountRecord &account, const AccountDiscoveryStoreResult &stored)
+{
+    const auto existingIdentity = accounts_.FindByIccid(observation.iccid);
+    if ((existingIdentity && !(*existingIdentity == account.subscription)) ||
+        !stored.callFinished || !stored.writeConfirmed || stored.effect != EffectKnowledge::ConfirmedApplied ||
+        !stored.assignedSubscription || !(*stored.assignedSubscription == account.subscription) ||
+        account.iccid != observation.iccid || account.identityRevision == 0) {
+        return std::nullopt;
+    }
+    AcceptCardDiscoveryObservation(observation);
+    const auto ticket = observations_.BeginStore(observation, bindings_);
+    if (!ticket) { return std::nullopt; }
+    const auto existing = accounts_.Read(account.subscription);
+    if (!existing) {
+        if (accounts_.AcceptDiscoveredAccount(account) != AccountAcceptance::Accepted) { return std::nullopt; }
+    } else if (existing->iccid != account.iccid || existing->identityRevision != account.identityRevision) {
+        return std::nullopt;
+    }
+    const auto accepted = observations_.CompleteStored(*ticket, stored.effect, stored.assignedSubscription,
+        stored.callFinished, bindings_);
+    if (!accepted.bindingAccepted) { return std::nullopt; }
+    return bindings_.Find(observation.session.application.slot);
+}
 
 /* 业务方法仅声明，以下是锁外I/O与最终接纳的协议，不是可调用实现：
  *

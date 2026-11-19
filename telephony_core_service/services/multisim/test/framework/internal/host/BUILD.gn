@@ -40,6 +40,11 @@ config("target_production_headers") {
 static_library("sim_target_production_host") {
   sources = [
     "$production_root/services/multisim/infrastructure/assembly/slot_catalog.cpp",
+    "$production_root/services/multisim/account/account_registry.cpp",
+    "$production_root/services/multisim/account/binding_index.cpp",
+    "$production_root/services/multisim/account/discovery/discovery_observation_ledger.cpp",
+    "$production_root/services/multisim/account/activation/activation_progress.cpp",
+    "$production_root/services/multisim/account/topology_service.cpp",
     "$production_root/services/multisim/role_assignment/assignment_aggregate.cpp",
     "$production_root/services/multisim/role_assignment/assignment_service.cpp",
     "$production_root/services/multisim/role_assignment/assignment_store_adapter.cpp",
@@ -55,6 +60,7 @@ executable("sim_test_target_host") {
     "$test_root/cases/target/architecture/primary_plan_test.cpp",
     "$test_root/cases/target/primary/c0_assignment_service_test.cpp",
     "$test_root/cases/target/primary/c0_store_adapter_integration_test.cpp",
+    "$test_root/cases/target/primary/c0_topology_integration_test.cpp",
   ]
   configs += [ ":target_production_headers" ]
   include_dirs = [ "$gtest_root/googletest/include" ]

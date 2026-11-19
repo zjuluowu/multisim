@@ -57,6 +57,29 @@ Host 的 Recording Store、Output、Topology、Radio、Completion 只做两件�
 
 组件测试使用无线程、无外部设备租约的同步端口记录器；作用域结束即销毁，没有遗留 worker、订阅或 RIL 资源。它只证明组件闭环和资源局部销毁，不证明正式产品对象图生命周期。
 
+## 阶段五：真实 T/A 业务对象集成
+
+C0 的 Target 前置事实现在来自真实 `TopologyService::ReadPrimaryTarget`：`BindingIndex::Find` 取得当前已接受 `BindingRef`，`AccountRegistry::ReadProjection(Current)` 提供 raw ICCID 和 active；Historical 投影仅供历史查询，不能授权 C0。`AcceptStoredDiscovery` 是已确认 provider 写入后的合法 T 接纳入口，复用 DiscoveryObservationLedger、AccountRegistry 和 BindingIndex；测试不再通过 Fake Topology 直接返回 `PrimaryTargetFacts`。
+
+调用链：
+
+```text
+controlled R session/account-store-confirmed result
+  -> TopologyService::AcceptStoredDiscovery
+  -> DiscoveryObservationLedger::BeginStore / CompleteStored
+  -> AccountRegistry::AcceptDiscoveredAccount
+  -> BindingIndex::AcceptBinding
+  -> AssignmentService::StartPrimarySwitch
+  -> TopologyService::ReadPrimaryTarget
+  -> AccountRegistry::Read + ReadProjection(Current)
+  -> BindingIndex::Find/StillMatches
+  -> PlanPrimarySwitch / AssignmentAggregate / AssignmentStoreAdapter
+```
+
+双卡 Topology Integration 覆盖同槽换卡、解除重绑、同卡再插、旧 BindingRef、失效 Subscription、inactive/historical 不一致、错误 Subscription、旧 epoch 和绑定在 Radio 观察间更新。A 再次读取 T 事实后才提交参数；旧请求不能穿越新绑定。绑定代次由 BindingIndex 单调推进，不增加全局身份表或重复缓存。
+
+执行审计新增 `AccountRegistry::Read`、`BindingIndex::Find`、`TopologyService::ReadPrimaryTarget/AcceptStoredDiscovery` 正执行要求。SHA-256 保持独立无外部平台依赖的 Host 实现，已通过固定 Legacy 向量；产品参数/Provider 仍未接入。
+
 ## 阶段四：真实 Store Adapter Host 集成
 
 Target C0 增加 `AssignmentStoreAdapter` 的真实实现并独立链接 `assignment_store_adapter.cpp`。A 不再由 RecordingStore 替代持久化兼容边界；Adapter Integration 使用真实 `AssignmentService + AssignmentAggregate + PlanPrimarySwitch + AssignmentStoreAdapter`，仅在 `AssignmentParameterPort` 最底层记录系统参数调用和受控结果。

@@ -66,6 +66,7 @@ struct AccountReloadResult { bool acceptedAttempt; size_t acceptedFields; size_t
 class AccountRegistry final {
 public:
     std::optional<AccountRecord> Read(SubscriptionId subscription) const;
+    std::optional<SubscriptionId> FindByIccid(const std::string &iccid) const;
     AccountReloadTicket BeginReload(AccountReadView view);
     AccountReloadResult AcceptReload(const AccountReloadTicket &ticket, bool replaceable,
         const std::vector<AccountRecord> &loaded);

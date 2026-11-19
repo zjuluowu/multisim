@@ -78,6 +78,10 @@ def check_directory_migration(source, token_sequence, *, repo=None):
                 'card_selection/assignment_store_adapter.h',
                 'integration/lifecycle/sim_module.h',
                 'integration/lifecycle/sim_module_factory.cpp',
+                'account/topology_service.cpp',
+                'account/topology_service.h',
+                'account/account_registry.cpp',
+                'account/account_registry.h',
                 'support/request/runtime_operation_store.h',
             }
             if expected != current and name not in authorized_c0_targets:
@@ -88,7 +92,9 @@ def check_directory_migration(source, token_sequence, *, repo=None):
                 original_tokens, current_tokens = token_sequence(original.decode()), token_sequence(current.decode())
                 cursor = 0
                 if name not in {'card_selection/assignment_store_adapter.h',
-                                'integration/lifecycle/sim_module_factory.cpp'}:
+                                'integration/lifecycle/sim_module_factory.cpp',
+                                'account/topology_service.cpp',
+                                'account/account_registry.cpp'}:
                     for token in original_tokens:
                         try:
                             cursor = current_tokens.index(token, cursor) + 1
