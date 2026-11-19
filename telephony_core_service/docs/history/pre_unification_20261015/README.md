@@ -4,7 +4,7 @@
 
 本目录完整保留刷新前的十一份正文（九份旧文档、两份上传的Version3 v0.3输入），仅增加历史提示。旧代码基线、六聚合/四业务上下文、数据库迁移、Feature Flag、公共Subscription接口及另一分支Shadow完成记录不得继续用作当前规范。
 
-现行入口为[docs/README](../../README.md)，方案取舍见[统一裁决](../../MultiSIM/08_design_unification_decisions.md)。保留历史是为了审计设计理由，不是同时维持两套实施方案。
+现行入口为[docs/README](../../README.md)，方案取舍见[统一裁决](../MultiSIM/08_design_unification_decisions.md)。保留历史是为了审计设计理由，不是同时维持两套实施方案。
 
 - SIM_Refactored_Software_Architecture_Design_Version3.md / SIM_Layered_Architecture_Class_Design_Version3.md：上传时v0.3原稿，不用其未提供的决策引用证明批准。
 - openharmony_telephony_core_service_SIM_software_design.md：旧完整功能/设计资料。

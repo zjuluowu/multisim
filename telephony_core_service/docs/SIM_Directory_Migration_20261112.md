@@ -1,5 +1,7 @@
 # SIM 目录迁移映射与实施记录
 
+> **Supporting · 2026-11-12 迁址及验收记录。** 逐文件表、GN 落点与原命令按当时基线追溯。现行布局见[五组目录方案](SIM重构代码目录结构设计方案.md)，当前源码及进展见[详细设计](SIM_Multisim_Source_Architecture_Detailed_Design.md#source-tree)与[执行状态](SIM_Refactor_Execution_State.md#current-status)。
+
 输入：`b283ad2f633686f4d829c5b005e08680f86695a7`，main。映射在移动前由实际文件、声明和GN源表生成；测试/tools保持原位。全量机器清单见 `services/multisim/test/multisim_architecture_rules/directory_migration_20261112.json`。本批不提交、不推送。
 
 | 当前路径（multisim相对） | 目标路径 | 当前职责 | Owner | GN target | 方式 | 风险 |
@@ -125,7 +127,7 @@ Profile专属 `card/esim/legacy_profile_result.h` 仅投影双结果，保持原
 
 五组一级源码目录已落地，旧card_selection/integration/support目录已移空并移除；common/startup/顶层compatibility在输入中不存在，也未新增。完整业务树见[详细设计§3.1](SIM_Multisim_Source_Architecture_Detailed_Design.md#source-tree)，包含全部测试、工具与证据的完整实际交付树见[complete-tree.txt](../services/multisim/test/docs/archive/multisim_architecture_rules/evidence/directory_20261112/complete-tree.txt)。该树由Git已跟踪与非忽略新文件的实际存在路径生成，排除本次清理的生成bytecode。
 
-输入模块树共1023项：上述91项业务/构建/导航文件及932项test/tools文件。辅助文件逐项原路径、当前路径、Owner、Git blob及演进结论见[directory_auxiliary_inventory.json](../services/multisim/test/cases/architecture/directory_auxiliary_inventory.json)；所有932项保留原路径，919项字节相同，13项只涉及路径、护栏、导航或精确溯源元数据。无业务Golden/Scenario/Contract/Oracle/Fake断言改写。
+输入模块树共1023项：上述91项业务/构建/导航文件及932项test/tools文件。辅助文件逐项原路径、当前路径、Owner、Git blob及演进结论见[directory_auxiliary_inventory.json](https://github.com/zjuluowu/multisim/blob/74e25901ddec1c1714998e4ed1b40488f418b5fc/telephony_core_service/services/multisim/test/cases/architecture/directory_auxiliary_inventory.json)；所有932项保留原路径，919项字节相同，13项只涉及路径、护栏、导航或精确溯源元数据。无业务Golden/Scenario/Contract/Oracle/Fake断言改写。
 
 | 统计口径 | 实测数量 |
 |---|---:|

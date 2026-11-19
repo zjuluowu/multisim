@@ -1,6 +1,6 @@
 # 多 SIM 源码导航
 
-当前按[目录设计方案](../../docs/SIM重构代码目录结构设计方案.md)组织为四个业务目录与一个基础支撑目录。完整逐文件迁移、风险、GN对照及实测结果见[本批实施记录](../../docs/SIM_Directory_Migration_20261112.md)，唯一阶段状态见[执行状态](../../docs/SIM_Refactor_Execution_State.md#directory-layout-20261112)。2026-11-16已回退G2a生产接入并同步GitCode主仓；当前均为testonly骨架；成熟业务由 services/sim 执行，产品构建和新业务写权尚未验收。
+从[开发文档入口](../../docs/README.md)找到设计和迁移路径。下图按[五组目录方案](../../docs/SIM重构代码目录结构设计方案.md)导航。逐文件与 GN 归属见[源码详细设计](../../docs/SIM_Multisim_Source_Architecture_Detailed_Design.md#source-tree)，实施和产品门禁见[执行状态](../../docs/SIM_Refactor_Execution_State.md#current-status)。
 
 ```text
 multisim/
@@ -24,7 +24,7 @@ multisim/
 | 修改任务 | 首查路径及核心类/接口 | 唯一事实Owner |
 |---|---|---|
 | 插卡/账户发现、绑定、激活 | account/discovery、activation、AccountRegistry、BindingIndex、TopologyService、AccountStore | Account：身份、已接纳绑定、资料、active及激活业务进度；SubscriptionId不等于SlotId |
-| 主卡/默认角色/业务重试 | role_assignment/assignment_service.*、AssignmentAggregate、RoleSelection、primary/PrimarySwitchPlan | Role Assignment：角色意图/分配、冲突准入和业务重试；Primary槽/Radio语义不与Voice/SMS/Data的订阅标识强行合并 |
+| 主卡/默认角色/业务重试 | role_assignment/assignment_service.*、AssignmentAggregate、AssignmentStoreAdapter、RoleSelection、primary/PrimarySwitchPlan | Role Assignment：角色意图/分配、冲突准入和业务重试；Primary槽/Radio语义不与Voice/SMS/Data的订阅标识强行合并 |
 | 号码 | account/number 的查询/用例和窄运行端口 | Account：账户号码；Card：卡缓存及EF效果 |
 | PIN/EF、Profile/Port、会话/加载 | card/security、records、esim、state/SessionRegistry、LoadSession | Card：卡协议、库存、会话代次；Profile绑定归Account、偏好归Role Assignment |
 | Radio/资源结束/恢复 | device/resource/ResourceBarrier；primary/radio_execution_port.h为消费端契约 | Device：真实共享设备域与执行资格；不接管账户绑定或角色事实 |
@@ -46,6 +46,6 @@ python3 -B telephony_core_service/services/multisim/test/scripts/test.py integri
 python3 -B telephony_core_service/services/multisim/test/cases/architecture/test_g2a_source_tables.py
 ```
 
-覆盖迁移摘要/类型与实现token、精确include/GN依赖、循环/反向依赖拒绝、四组纯规则、编译负控和GN/Ninja对象。当前Host业务/生命周期124/124 PASS、CI准入PASS，原缺陷修复和历史原始失败分别保留，入口见[test/README](test/README.md)及执行状态§48。不能将结构检查或Host PASS等同产品链接、原生SA/IPC/HDI或设备功能验收。模块内重复目录设计副本已退役，权威依据使用docs下版本；原副本摘要与迁址记录仍可追溯。
+构建和验证入口、可执行场景及 Oracle 索引见[测试导航](test/README.md)。各批测试范围与证据见[执行状态](../../docs/SIM_Refactor_Execution_State.md#current-status)。
 
 跨形态设计约束见[主设计§3.2.1/10.4/17.4](../../docs/SIM_Target_Architecture_Design_v1.2.md)；端点/会话/绑定、能力/可达/可见/角色资格分别表达。这些新增约束仍为提案，不从目录或类型存在推断动态恢复与三/四卡业务已实现。

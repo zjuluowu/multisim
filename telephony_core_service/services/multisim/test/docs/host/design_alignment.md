@@ -1,6 +1,6 @@
 # Linux防护网与统一架构设计的关系
 
-日期：2026-10-15。当前目标见[文档入口](../../../../../docs/README.md)、[统一裁决](../../../../../docs/MultiSIM/08_design_unification_decisions.md)、[SAD](../../../../../docs/SIM_Refactored_Software_Architecture_Design_Version3.md)。
+日期：2026-10-15。当前目标见[文档入口](../../../../../docs/README.md)、[统一裁决](../../../../../docs/history/MultiSIM/08_design_unification_decisions.md)、[SAD](../../../../../docs/history/superseded/SIM_Refactored_Software_Architecture_Design_Version3.md)。
 
 ## 1. 目标设计不替换当前被测逻辑
 

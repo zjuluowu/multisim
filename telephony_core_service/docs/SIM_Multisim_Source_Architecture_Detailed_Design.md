@@ -49,9 +49,9 @@
 
 生产仍使用[`services/sim/`](../services/sim/)；目标源码位于[`services/multisim/`](../services/multisim/)。本轮按已提交五组目录方案组织既有骨架（历史B+六组路径只作追溯），同步GN/include/测试及导航；不转移活动写权、不变更公开API/ABI/IDL/schema。既有纯规则不因此成为新生产实现。最终multisim完整替代sim；Attach/旧实现桥仅供迁移，稳态不保留两套生产执行路径。
 
-依据为[目标主设计](SIM_Target_Architecture_Design_v1.2.md)、[流程对照](多SIM架构重构_设计说明与业务流程对照.md)及[独立评审记录](SIM_Target_Architecture_Independent_Review_2026-10-29.md)。[功能/WU清单](SIM_Architecture_Refactor_Design.md)继续维护SIM-001～062及子项和WU-01～09；本文解释当前源码，不另建目标主规范。
+依据为[目标主设计](SIM_Target_Architecture_Design_v1.2.md)、[流程对照](business/多SIM架构重构_设计说明与业务流程对照.md)及[独立评审记录](history/reviews/SIM_Target_Architecture_Independent_Review_2026-10-29.md)。[功能/WU清单](migration/SIM_Architecture_Refactor_Design.md)继续维护SIM-001～062及子项和WU-01～09；本文解释当前源码，不另建目标主规范。
 
-主设计§4.1/§4.2与§6.5的T/A事实Owner、O机制及安全裁决继续有效；本文§3.2/§4落实主设计§6.6。目录实施依据[原A/B+/C决策](SIM_Multisim_Source_Directory_Architecture_Decision_2026-10-31.md)及[独立决策](SIM_Multisim_Source_Directory_Architecture_Decision_Independent_2026-10-31.md)，本轮用户授权采用局部修订B+；两份历史ADR保持Proposed，整体架构及运行政策审批不因此改变。历史Opus/Gemini意见保留在§4.3，不再提供竞争的当前树。
+主设计§4.1/§4.2与§6.5的T/A事实Owner、O机制及安全裁决继续有效；本文§3.2/§4落实主设计§6.6。目录实施依据[原A/B+/C决策](history/reviews/SIM_Multisim_Source_Directory_Architecture_Decision_2026-10-31.md)及[独立决策](history/reviews/SIM_Multisim_Source_Directory_Architecture_Decision_Independent_2026-10-31.md)，本轮用户授权采用局部修订B+；两份历史ADR保持Proposed，整体架构及运行政策审批不因此改变。历史Opus/Gemini意见保留在§4.3，不再提供竞争的当前树。
 
 | 状态 | 本文含义 |
 | --- | --- |

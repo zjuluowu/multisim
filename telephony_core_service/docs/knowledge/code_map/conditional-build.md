@@ -27,4 +27,4 @@
 
 ## 部署与新设计口径
 
-telephony_trust.json配置4010与66250共宿主于telephony。独立SA不等于独立进程或故障隔离；Core卡侧Runtime与66250任务接口分别保留。四槽/eSIM N是条件产品目标，不表示全部构建已支持；Linux受控B套件也不验证真实设备Feature矩阵。见[专项说明](../../MultiSIM/03_esim_slot_and_sa_boundary.md)。
+telephony_trust.json配置4010与66250共宿主于telephony。独立SA不等于独立进程或故障隔离；Core卡侧Runtime与66250任务接口分别保留。四槽/eSIM N是条件产品目标，不表示全部构建已支持；Linux受控B套件也不验证真实设备Feature矩阵。见[专项说明](../../history/MultiSIM/03_esim_slot_and_sa_boundary.md)。

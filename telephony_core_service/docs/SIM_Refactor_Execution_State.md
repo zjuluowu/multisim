@@ -21,11 +21,13 @@
 
 1. 沿 C0 差分继续闭合与真实拓扑事实连接及相应失败路径。以[源码详细设计 §7、§15](SIM_Multisim_Source_Architecture_Detailed_Design.md#assignment)定位端口及装配，以[双后端测试](../services/multisim/test/docs/Backend_Architecture.md)核对可执行范围。B/C1 依赖相应 Radio/设备、前后写入和部分效果证据。
 2. Provider 相关用例先取得匹配产品的 schema、字段、错误、重载和恢复证据。产品路径另按真实 OHOS 树、Feature、SA/IPC 和设备环境验收。
-3. 按[原功能与 WU](SIM_Architecture_Refactor_Design.md#writer-cutover)核对全部旧入口。写权切换、SO 边界、生命周期和 eSIM/MEP 新能力按[主设计 §22](SIM_Target_Architecture_Design_v1.2.md#22-分阶段实施门禁)的独立门禁和本批授权推进。
+3. 按[原功能与 WU](migration/SIM_Architecture_Refactor_Design.md#writer-cutover)核对全部旧入口。写权切换、SO 边界、生命周期和 eSIM/MEP 新能力按[主设计 §22](SIM_Target_Architecture_Design_v1.2.md#22-分阶段实施门禁)的独立门禁和本批授权推进。
 
 ## 历次双后端与阶段核验记录
 
 <a id="target-c0-store-20261118"></a>
+
+当前双后端阶段五（基准 `155f9c4c3`）：Target C0 前置事实已由真实 `TopologyService::ReadPrimaryTarget` 从 `BindingIndex` 和 `AccountRegistry` Current 投影组合；双卡 Topology Integration 使用真实账户/绑定接纳入口，覆盖换卡/重插/解绑/ABA/current-historical 分歧/旧 epoch/请求间绑定变化。A 仅经 PrimaryTopologyPort 读取 T，并在 Radio 观察后复核 BindingRef 与 ICCID，旧请求不能穿越新绑定。产品 Provider/SA/IPC/Device、Radio 业务及完整生命周期未接入。
 
 当前双后端阶段四（2026-11-18，输入 `e44a7d9c69114b0b47fee008c9eb24f1394e1f8e`）：Target C0 真实 `AssignmentStoreAdapter` 已接入系统参数窄端口，负责 Legacy raw ICCID→SHA256→大写Hex、Primary/Data/用户偏好原键写入及恢复；Adapter Integration 使用真实 Adapter 而非 RecordingStore，并增加完成失败/未完成/部分效果验证。`callFinished=false` 不再返回成功，业务置为 NeedsReconciliation，保留进行中资格；已确认非零参数结果按 Legacy C0 的 void/忽略结果语义只保留外部参数事实，不改变原接口成功。本批 Target 11项 Component/Adapter Integration、Both C0、Adapter 三个写方法正执行审计及 Legacy 124/124 CI 均实际通过，三项既有未跟踪文件及 `default.profraw` 未变化。Adapter 写方法具备正执行审计。正式 OHOS 参数实现、Provider/SA/IPC、Device、Topology/Radio 产品实现及 B/C1 仍未接入。
 
@@ -55,13 +57,13 @@
 
 测试工程职责整理与本次前后对照见[§31](#test-architecture-20261113)；生产迁移状态和旧批次结论不变。
 
-本文件集中维护当前实施位置、证据、局部阻塞和下一批任务；当前五组目录实施及本轮实测见[§29](#directory-layout-20261112)，本次发布授权及预检见[§30](#directory-publication-20261112)，以下旧批次按原日期/输入解释；技术决策继续由[目标主设计](SIM_Target_Architecture_Design_v1.2.md)维护，流程由[流程对照](多SIM架构重构_设计说明与业务流程对照.md)维护，历史裁决留在[原评审](SIM_Target_Architecture_Independent_Review_2026-10-29.md)。最近恢复/一致性核对：2026-11-11；SetPrimarySlotId入口及整链阻塞见[§16](#primary-slot-test-20261111)；Windows VS Code + WSL Host工程及本轮实测见[§15](#wsl-host-20261111)；测试工程内聚迁移见[§13](#test-relocation-20261109)，本地开闭源复审增量见[§12](#open-closed-followup-20261109)，历史分支合入main及重验见[§11](#main-integration-20261105)，G2a工作分支复验见[§10](#g2a-revalidation-20261105)，测试防护网首批见[§8](#sim-guard-20261104)，第二轮结果及阻塞见[§9](#sim-guard-round2)。此前G2a记录保留，各历史运行结果仍按其原日期、基线和覆盖范围解释。
+本文件集中维护当前实施位置、证据、局部阻塞和下一批任务；当前五组目录实施及本轮实测见[§29](#directory-layout-20261112)，本次发布授权及预检见[§30](#directory-publication-20261112)，以下旧批次按原日期/输入解释；技术决策继续由[目标主设计](SIM_Target_Architecture_Design_v1.2.md)维护，流程由[流程对照](business/多SIM架构重构_设计说明与业务流程对照.md)维护，历史裁决留在[原评审](history/reviews/SIM_Target_Architecture_Independent_Review_2026-10-29.md)。最近恢复/一致性核对：2026-11-11；SetPrimarySlotId入口及整链阻塞见[§16](#primary-slot-test-20261111)；Windows VS Code + WSL Host工程及本轮实测见[§15](#wsl-host-20261111)；测试工程内聚迁移见[§13](#test-relocation-20261109)，本地开闭源复审增量见[§12](#open-closed-followup-20261109)，历史分支合入main及重验见[§11](#main-integration-20261105)，G2a工作分支复验见[§10](#g2a-revalidation-20261105)，测试防护网首批见[§8](#sim-guard-20261104)，第二轮结果及阻塞见[§9](#sim-guard-round2)。此前G2a记录保留，各历史运行结果仍按其原日期、基线和覆盖范围解释。
 
 ## 0. 当前核实摘要（2026-11-09增量；历史运行保留原基线）
 
 **当前结论：已发布B+基线上，已完成五组目录安全迁址，验收与遗留见§29，后续发布授权及核验口径见§30；G2a保持 `G2a_BPLUS_HOST_VERIFIED`。完整产品准入、生产写权迁移及新能力均未完成。** 成熟业务仍由 `services/sim/` 承担。下面按交付位置和实际测试基线汇总；§3.1～3.5、§8～10保留各批历史过程，不把旧PASS改写为当前HEAD重跑。
 
-2026-11-09用户授权基于[开闭源交叉审视](SIM_Architecture_Cross_Review_OpenClosed_Boundary.md)优化现有文档和代码；该批输入为本地/远端main `a7d3af8b8809513e7b8e73196a94551a8ecff97d`加工作树变更；复审与测试内聚迁移已按后续授权保存并推送，代码点及核验见[§14](#main-publication-20261109)。账户注销修复已按用户要求撤回；保留旧缺陷记录、独立契约护栏及重新验证，统一见[§12](#open-closed-followup-20261109)。下表2026-11-05记录仍按原日期解释，不把后续工作混入原历史证据。
+2026-11-09用户授权基于[开闭源交叉审视](history/reviews/SIM_Architecture_Cross_Review_OpenClosed_Boundary.md)优化现有文档和代码；该批输入为本地/远端main `a7d3af8b8809513e7b8e73196a94551a8ecff97d`加工作树变更；复审与测试内聚迁移已按后续授权保存并推送，代码点及核验见[§14](#main-publication-20261109)。账户注销修复已按用户要求撤回；保留旧缺陷记录、独立契约护栏及重新验证，统一见[§12](#open-closed-followup-20261109)。下表2026-11-05记录仍按原日期解释，不把后续工作混入原历史证据。
 
 ### 0.1 代码保存与分支关系
 
@@ -197,7 +199,7 @@
 - 保留历史全部断言，新增失败重附着清旧绑定、重复附着引用稳定、非空Manager替换释放旧对象及替换RIL释放负例。仅测试fixture创建替换对象；生产没有新增Manager/RIL实例。get地址及双向owner_before共同验证控制块，不以裸地址一致代替生命周期检查。
 - 本轮完整架构命令`run.py --with-gn --migration`实际PASS：88个C++单元/合并头、四套纯规则、12项护栏（含Query非法跨层include反例）、157 include/25 target、原73溯源/88布局与新增2项历史token、GN gen --check及全部24cpp对象。历史布局和原规则保持，不把目录位置解释为已完成业务解耦。
 - 完整初始化重新审计：**BLOCKED/executed=false**，GN成功、Ninja exit1、45对象、43诊断、14缺SimData字段、无缺头；未链接/运行，不猜字段或伪造Provider。当前PATH无hb，所选worktree不是完整产品树（祖先无.repo，仓根无build/ohos.gni），未提供匹配产品环境；产品构建、Feature矩阵、原SO/Core初始化发布、只读冒烟为BLOCKED/NOT RUN，不声明G2a_PRODUCT_ADMISSION_VERIFIED。
-- 新机器可读证据：[g2a_bplus_evidence.json](../services/multisim/test/framework/host/configs/g2a_bplus_evidence.json)。历史[g2a_checkpoint_evidence.json](../services/multisim/test/framework/host/configs/g2a_checkpoint_evidence.json)保持原字节。大型XML/profile/map/二进制和日志留仓外；最终文档/证据提交通过记录的生产/测试输入摘要与被测代码提交关联，不把文档HEAD当成重新执行业务测试。
+- 新机器可读证据：[g2a_bplus_evidence.json](https://github.com/zjuluowu/multisim/blob/74e25901ddec1c1714998e4ed1b40488f418b5fc/telephony_core_service/services/multisim/test/framework/host/configs/g2a_bplus_evidence.json)。历史[g2a_checkpoint_evidence.json](https://github.com/zjuluowu/multisim/blob/74e25901ddec1c1714998e4ed1b40488f418b5fc/telephony_core_service/services/multisim/test/framework/host/configs/g2a_checkpoint_evidence.json)保持原字节。大型XML/profile/map/二进制和日志留仓外；最终文档/证据提交通过记录的生产/测试输入摘要与被测代码提交关联，不把文档HEAD当成重新执行业务测试。
 - 本轮只达到**G2a_BPLUS_HOST_VERIFIED**；M2产品准入未完成，M3写业务未开展。已正常推送代码ff1c6ef2至origin/work/g2a-bplus-integration，并以ls-remote核实一致；凭据工具在Linux临时worktree不可识别时，从原仓库路径推送同一显式工作分支，未修改main。原main仍为输入基线且工作区干净；远端保存不等于合入/部署批准。
 
 ### 3.5 用户授权保存至main（2026-11-02）
@@ -305,7 +307,7 @@ G2a最新强化及状态整理已按本批明确授权合入main（§11）；其
 
 以下记录2026-10-30历史整合，不表示当前HEAD或最近验证；当前状态以§0及对应证据章节§9/§10为准。
 
-2026-10-30本地整合：原工作区内容先保存为提交`26d81e540243375ea9873e6e7e26b4bbb3eb4028`；以`origin/main@9f72e7ff94a924caafff291444414bf4e7bd0037`为整合基线。针对该旧工作树的P1/P2协议，按[原评审§10](SIM_Target_Architecture_Independent_Review_2026-10-29.md)已有整合裁决保留main现行接口及规则测试；被替代的旧接口和旧测试保留在上述父提交，不重复放入活动源码。未合入G2a工作分支或切换生产写权。
+2026-10-30本地整合：原工作区内容先保存为提交`26d81e540243375ea9873e6e7e26b4bbb3eb4028`；以`origin/main@9f72e7ff94a924caafff291444414bf4e7bd0037`为整合基线。针对该旧工作树的P1/P2协议，按[原评审§10](history/reviews/SIM_Target_Architecture_Independent_Review_2026-10-29.md)已有整合裁决保留main现行接口及规则测试；被替代的旧接口和旧测试保留在上述父提交，不重复放入活动源码。未合入G2a工作分支或切换生产写权。
 
 按用户授权将整合提交`eb112578a88dd8ddd35f172f3b04facddb968887`正常推送至`origin/main`；推送后通过`git ls-remote`确认远端指向该提交，并核实其包含上述本地历史提交。此记录不改变G2a仍在独立工作分支的状态。
 
@@ -321,7 +323,7 @@ G2a最新强化及状态整理已按本批明确授权合入main（§11）；其
 
 初始工程任务授权实际测试建设及本地提交，当时未授权推送或合并main；后续远端保存授权见本节末。开始于干净 `main/origin/main@01a86b9f073b20f408d9f8e67da35192aacac439`；恢复工具 `--remote origin --fetch` 实际返回 CHECKPOINT_VERIFIED，初始远端差异0/0，已有worktree保留。新建本地分支 `work/sim-guard-contract-20261104`，最终代码检查点 `2c5364a3dcf9f1487d759b6bedcbf780ba16663e`。未修改任何生产源码、公开接口、生产根GN或既有业务策略。
 
-交付位于 [services/multisim/test/sim_guard](../services/multisim/test/cases/compatibility/README.md)：最小ISimSutAdapter、Legacy绑定、有状态Fake RIL、公开查询快照、StateRegistry通知Spy、Contract Driver/Oracle、七条Compatibility、一条独立Defect、版本化共同资产摘要、结构化取证/规则/缺口，以及真正可用的GN/命令入口。Fake只维护外设事实、PIN设备应答、请求和回包调度；场景/Oracle不include旧新内部类。只有Adapter接触具体状态实现，真实CMI/EXT未用业务桩替换，CMI的账户路由未装配。
+交付位于 [services/multisim/test/sim_guard](https://github.com/zjuluowu/multisim/blob/74e25901ddec1c1714998e4ed1b40488f418b5fc/telephony_core_service/services/multisim/test/cases/compatibility/README.md)：最小ISimSutAdapter、Legacy绑定、有状态Fake RIL、公开查询快照、StateRegistry通知Spy、Contract Driver/Oracle、七条Compatibility、一条独立Defect、版本化共同资产摘要、结构化取证/规则/缺口，以及真正可用的GN/命令入口。Fake只维护外设事实、PIN设备应答、请求和回包调度；场景/Oracle不include旧新内部类。只有Adapter接触具体状态实现，真实CMI/EXT未用业务桩替换，CMI的账户路由未装配。
 
 真实链路为 `SimStateManager::Init` → 注册RIL通知 → `RADIO_SIM_STATE_CHANGE` → 真实 `GetSimStatus` 请求 → RIL正式响应事件 → `SimStateHandle::GetSimCardData/ProcessIccCardState` → 真实查询和外服务通知。真实TelEventHandler/TelEventQueue、ObserverHandler及状态/PIN代码均链接运行；新增有界host排空控制，未改生产调度或用私有setter构造状态。这是状态组件切片，不能升格为完整SimManager/Core初始化、公开ISimManager参数校验、账户或产品验收。
 
@@ -334,7 +336,7 @@ G2a最新强化及状态整理已按本批明确授权合入main（§11）；其
 | 架构设施 | **PASS** | 四套纯规则、结构检查和12项护栏；不作为SIM业务/产品验收 |
 | 防伪通过负控 | **按预期拒绝** | 场景摘要漂移、即使重算摘要的内部include、零例/Skip XML均被拒；缺依赖、multisim、target/nezha入口均BLOCKED、executed=false |
 
-实际命令与结果/源码摘要见仓内 [evidence.json](../services/multisim/test/docs/archive/sim_guard/evidence.json)，包括失败轨迹、突变/恢复、八条执行审计、host输入摘要和eSIM编译诊断。完整XML/profile/coverage/map/日志放在当前机器仓外；恢复不依赖这些路径。参数化重跑命令见 [README](../services/multisim/test/cases/compatibility/README.md)。核心实际入口为：
+实际命令与结果/源码摘要见仓内 [evidence.json](../services/multisim/test/docs/archive/sim_guard/evidence.json)，包括失败轨迹、突变/恢复、八条执行审计、host输入摘要和eSIM编译诊断。完整XML/profile/coverage/map/日志放在当前机器仓外；恢复不依赖这些路径。参数化重跑命令见 [README](https://github.com/zjuluowu/multisim/blob/74e25901ddec1c1714998e4ed1b40488f418b5fc/telephony_core_service/services/multisim/test/cases/compatibility/README.md)。核心实际入口为：
 
 ```sh
 python3 -B telephony_core_service/services/multisim/test/sim_guard/run_sim_guard.py --sut=legacy --suite=compat --gtest-root "$SIM_GTEST_ROOT" --output "$SIM_GUARD_OUTPUT/compat" --repeat=5 --mutation-check
@@ -347,7 +349,7 @@ python3 -B telephony_core_service/services/multisim/test/sim_guard/run_sim_guard
 
 eSIM额外取证已实际尝试真实 `esim_file.cpp` 的Clang18语法编译，exit1首错为 `core_service.h` 所需 `system_ability.h` 缺失；还需要普通EventHandler/EventRunner合法投递及真实codec/源表闭合。诊断性屏蔽两个具体头后，发现仓内 `EsimProfile::portIndex` 为u16string、实现却按int32/ASN.1整数使用的类型冲突；该诊断不是产品构建结果，完整未解析依赖尚未知，不擅改公开类型。完整DownloadProfile属于SA66250，本仓只含协作/代理契约，不能用Fake补写后计为真实SIM下载通过。
 
-下一最小切片：先取得匹配Provider字段/URI/schema/错误协议，推进真实账户/角色和重启恢复；eSIM另核实portIndex正式类型，补平台EventRunner/头及真实APDU/Profile绑定后运行。已复现迟到问题保留红灯并裁决修复政策。未来业务迁入multisim后只替换 [Adapter及GN/执行审计绑定](../services/multisim/test/framework/compatibility/adapters/multisim/README.md)，共同场景、输入、Oracle和Fake按v2基线五份摘要保持；没有真实接入时继续BLOCKED。不得从本轮测试建设推定G2a产品、写权迁移或新能力批准。
+下一最小切片：先取得匹配Provider字段/URI/schema/错误协议，推进真实账户/角色和重启恢复；eSIM另核实portIndex正式类型，补平台EventRunner/头及真实APDU/Profile绑定后运行。已复现迟到问题保留红灯并裁决修复政策。未来业务迁入multisim后只替换 [Adapter及GN/执行审计绑定](https://github.com/zjuluowu/multisim/blob/74e25901ddec1c1714998e4ed1b40488f418b5fc/telephony_core_service/services/multisim/test/framework/compatibility/adapters/multisim/README.md)，共同场景、输入、Oracle和Fake按v2基线五份摘要保持；没有真实接入时继续BLOCKED。不得从本轮测试建设推定G2a产品、写权迁移或新能力批准。
 
 本批v2基线评审：移除Driver对精确RIL请求次数/队列下标的假设，按外部槽及设备事实批量交付、有界排空；正式PIN失败使用 `UNLOCK_OTHER_ERR`。统一契约、场景数据和业务Oracle相对507b6115逐文件无差异，版本/原因记入semantic_baseline；上述35 PASS、突变检出及恢复7 PASS已在干净2c5364a3上重新构建运行。独立迟到缺陷复现需要两个在途响应的故障调度，未来实现若串行化导致该前置条件不可达，不视为兼容性违约；七条Compatibility不要求该拓扑。
 
@@ -363,7 +365,7 @@ eSIM额外取证已实际尝试真实 `esim_file.cpp` 的Clang18语法编译，e
 
 用户本轮指定以e99caba3为已报告基线，禁止未经授权推送/合并main。实测起始工作区干净、HEAD为 `01db5ce64fc5fdb8d80c585bf35d4c260c817b86`；e99caba3是其祖先，两者仅发布记录不同。恢复工具fetch及ls-remote确认远端工作分支实际为01db5ce6，main仍为01a86b9f，分支远端差异0/0；没有根据历史报告假定发布状态。新建本地 `work/sim-guard-round2` 开发，未改用户已有worktree或任何生产源码/公共接口/根产品GN。
 
-本轮测试执行时源码为父提交01db5ce6上的工作区修改（当时未提交、未推送、未合并main）；本轮runner如实记录dirty=true及全部相关输入摘要，不把父提交冒充已含新代码的检查点。源/测试/命令/结果证据保存于仓内 [evidence_round2.json](../services/multisim/test/docs/archive/sim_guard/evidence_round2.json)，新增场景和规则映射见 [round2_catalog.json](../services/multisim/test/cases/compatibility/traceability/round2_catalog.json)。旧evidence.json、原v2业务契约/场景/Oracle/Fake及七条测试代码块保留；仅把原ContractDriver原样提到共享头供新场景复用，v3基线另外强制核对v2原摘要和测试代码块摘要。负控实测：即使重算当前摘要，改动旧断言或Oracle仍被拒。
+本轮测试执行时源码为父提交01db5ce6上的工作区修改（当时未提交、未推送、未合并main）；本轮runner如实记录dirty=true及全部相关输入摘要，不把父提交冒充已含新代码的检查点。源/测试/命令/结果证据保存于仓内 [evidence_round2.json](../services/multisim/test/docs/archive/sim_guard/evidence_round2.json)，新增场景和规则映射见 [round2_catalog.json](https://github.com/zjuluowu/multisim/blob/74e25901ddec1c1714998e4ed1b40488f418b5fc/telephony_core_service/services/multisim/test/cases/compatibility/traceability/round2_catalog.json)。旧evidence.json、原v2业务契约/场景/Oracle/Fake及七条测试代码块保留；仅把原ContractDriver原样提到共享头供新场景复用，v3基线另外强制核对v2原摘要和测试代码块摘要。负控实测：即使重算当前摘要，改动旧断言或Oracle仍被拒。
 
 | 当前实际验证 | 结果 | 覆盖边界 |
 | --- | --- | --- |
@@ -388,7 +390,7 @@ python3 -B telephony_core_service/services/multisim/test/sim_guard/run_sim_guard
 python3 -B telephony_core_service/services/multisim/test/systemtest/scripts/audit_initialization.py --gtest-root "$SIM_GTEST_ROOT" --openssl-root "$SIM_OPENSSL_ROOT" --output "$SIM_GUARD_OUTPUT/full-init"
 ```
 
-**任务C/D尚未闭合**：重新准备锁定OpenSSL头并实际重跑完整初始化审计，仍exit1、BLOCKED/executed=false：45对象、43诊断、无缺头、14个未匹配SimData字段。实际核对当前可用官方Provider `843a8be7f8d1dc304870a3999b754a03c6cce57d` 头及Git内容，不能提供此fork所需扩展字段；未猜字段值或把Fake Store当账户业务。映射、默认Voice/Data、无效账户、角色失效及DB保存/恢复/失败均NOT_IMPLEMENTED，正式Provider字段/URI/schema/错误协议和部分产品策略是当前具体前置。证据和真实调用路径见 [Provider契约记录](../services/multisim/test/cases/compatibility/traceability/provider_contract_round2.json)。本机无hb/匹配产品树，完整Core/SA/IPC/设备未验证。
+**任务C/D尚未闭合**：重新准备锁定OpenSSL头并实际重跑完整初始化审计，仍exit1、BLOCKED/executed=false：45对象、43诊断、无缺头、14个未匹配SimData字段。实际核对当前可用官方Provider `843a8be7f8d1dc304870a3999b754a03c6cce57d` 头及Git内容，不能提供此fork所需扩展字段；未猜字段值或把Fake Store当账户业务。映射、默认Voice/Data、无效账户、角色失效及DB保存/恢复/失败均NOT_IMPLEMENTED，正式Provider字段/URI/schema/错误协议和部分产品策略是当前具体前置。证据和真实调用路径见 [Provider契约记录](https://github.com/zjuluowu/multisim/blob/74e25901ddec1c1714998e4ed1b40488f418b5fc/telephony_core_service/services/multisim/test/cases/compatibility/traceability/provider_contract_round2.json)。本机无hb/匹配产品树，完整Core/SA/IPC/设备未验证。
 
 **任务E完成本轮契约准备，未运行eSIM业务**：再次用当前host参数编译真实esim_file.cpp，exit1首错仍为system_ability.h缺失。核对IEsimManager实际Profile/APDU及AuthenticateServer/PrepareDownload/LoadBoundProfilePackage协作面，DownloadProfile属于外部SA66250；最小接入还需合法EventRunner、真实codec/源表和匹配portIndex类型。本轮没有补写LPA下载决策或Profile生命周期Fake来制造通过。
 
@@ -553,11 +555,11 @@ python3 -B telephony_core_service/services/multisim/test/multisim_architecture_r
 | 仓根 telephony_core_service_linux_sim_ddd_test_design.md | services/multisim/test/docs | 历史Linux设计输入原字节保留，不升级为当前有效验收基线 |
 | tools/check_sim_refactor_recovery.py | services/multisim/tools/check_sim_refactor_recovery.py | 仍通过Git定位仓根、读取固定历史提交，不执行当前业务测试 |
 
-共迁移219个文件，194个原字节一致；其中全部136个C++/头文件及JSON保持原摘要。其余为脚本路径、GN标签和Markdown导航调整；前后路径与摘要在[迁移映射](../services/multisim/test/docs/archive/relocation/relocation_manifest.json)，用[核验脚本](../services/multisim/test/scripts/check_relocation.py)复查。新建[统一测试入口](../services/multisim/test/README.md)，不保留旧目录的转发脚本或构建副本。
+共迁移219个文件，194个原字节一致；其中全部136个C++/头文件及JSON保持原摘要。其余为脚本路径、GN标签和Markdown导航调整；前后路径与摘要在[迁移映射](../services/multisim/test/docs/archive/relocation/relocation_manifest.json)，用[核验脚本](https://github.com/zjuluowu/multisim/blob/74e25901ddec1c1714998e4ed1b40488f418b5fc/telephony_core_service/services/multisim/test/scripts/check_relocation.py)复查。新建[统一测试入口](../services/multisim/test/README.md)，不保留旧目录的转发脚本或构建副本。
 
 业务骨架的90文件/88个C++统计仅指业务文件，新增顶层test/tools不计入其中；业务源扫描只排除这两个顶层辅助目录，仍检查业务源码全集、依赖DAG和禁止引用测试头的边界。GN只替换原骨架对架构测试入口的精确visibility标签，独立host源表指向新测试位置。原产品BUILD、原test/BUILD、gni及原单测源表本批均未修改。未将旧测试整体搬走或把测试文件加入生产源表。
 
-本文及导航中的当前命令已改为新路径；历史JSON、摘要及§1恢复工具JSON块中的路径保留原值，必须按其固定提交解释。历史命令文字可作当前路径的等价运行入口，原实际运行命令以对应历史证据为准，不能因此声称历史提交已存在新目录。既有5条缺陷/待裁决中央记录现在位于[round2_catalog.json](../services/multisim/test/cases/compatibility/traceability/round2_catalog.json)；CR-07仍见§12.2，旧实现未修复。
+本文及导航中的当前命令已改为新路径；历史JSON、摘要及§1恢复工具JSON块中的路径保留原值，必须按其固定提交解释。历史命令文字可作当前路径的等价运行入口，原实际运行命令以对应历史证据为准，不能因此声称历史提交已存在新目录。既有5条缺陷/待裁决中央记录现在位于[round2_catalog.json](https://github.com/zjuluowu/multisim/blob/74e25901ddec1c1714998e4ed1b40488f418b5fc/telephony_core_service/services/multisim/test/cases/compatibility/traceability/round2_catalog.json)；CR-07仍见§12.2，旧实现未修复。
 
 ### 13.2 新路径实际验证
 
@@ -634,11 +636,11 @@ python3 -B telephony_core_service/services/multisim/test/multisim_architecture_r
 
 ## 16. SetPrimarySlotId入口用例与整部件阻塞（2026-11-11）
 
-用户新增[重构前后对比说明](SetPrimarySlotId_重构前后实现对比说明.md)，要求补充用例，保证调用链在core_service包含的部分完整执行。本批按整个telephony_core_service部件理解：Stub→CoreService→CoreServiceSim→SimManager→MultiSimController→RadioProtocol/TelRil，仓外HDI/Provider另作边界。**当前整条链的要求尚未达成，状态BLOCKED；仅真实入口方法的完整分支覆盖已完成。** 没有把ISimManager测试接缝称为整个部件的外部Mock，也没有将目标multisim骨架当作生产主卡实现。
+用户新增[重构前后对比说明](business/SetPrimarySlotId_重构前后实现对比说明.md)，要求补充用例，保证调用链在core_service包含的部分完整执行。本批按整个telephony_core_service部件理解：Stub→CoreService→CoreServiceSim→SimManager→MultiSimController→RadioProtocol/TelRil，仓外HDI/Provider另作边界。**当前整条链的要求尚未达成，状态BLOCKED；仅真实入口方法的完整分支覆盖已完成。** 没有把ISimManager测试接缝称为整个部件的外部Mock，也没有将目标multisim骨架当作生产主卡实现。
 
 输入为 `main@02765fa38627fb0ebd13ac80214f2480b9c76992` 加已有98份tracked修改及新增说明文件；差分忽略行尾后原tracked文件无实质代码差异。已记录并逐字节复核99份用户输入摘要，均保持原状；暂存区原为空，11个既有worktree未切换。恢复工具实际fetch核实检查点，远端差异按Git结果解释，不作为业务PASS。本次只新增/修改测试、Host构建、IDE配置和进展说明，未提交/推送，未修改生产代码、公共接口或用户新增说明。
 
-新增 `sim_primary_slot_entry_test` 及 [primary_slot](../services/multisim/test/cases/primary_slot/README.md) 场景/外部身份边界，原始CoreServiceSim、TelephonyPermission和MultiSimsCapabilityMgr三份生产cpp直接编译。通过既有公开SetSimManager安装严格的内部ISimManager替身；未使用私有宏、friend、偏移注入、生产探针或拷贝业务逻辑。接缝基类按真实ISimManager的122个纯虚接口声明生成，仅3个方法脚本化，其他调用一律抛错。AccessToken、调用者身份、系统参数为外部Mock，头覆盖仅作用于新目标，原公共平台头未改。新目标接入Host全量、筛选、调试及TestMate配置；GUI仍MANUAL。
+新增 `sim_primary_slot_entry_test` 及 [primary_slot](https://github.com/zjuluowu/multisim/blob/74e25901ddec1c1714998e4ed1b40488f418b5fc/telephony_core_service/services/multisim/test/cases/primary_slot/README.md) 场景/外部身份边界，原始CoreServiceSim、TelephonyPermission和MultiSimsCapabilityMgr三份生产cpp直接编译。通过既有公开SetSimManager安装严格的内部ISimManager替身；未使用私有宏、friend、偏移注入、生产探针或拷贝业务逻辑。接缝基类按真实ISimManager的122个纯虚接口声明生成，仅3个方法脚本化，其他调用一律抛错。AccessToken、调用者身份、系统参数为外部Mock，头覆盖仅作用于新目标，原公共平台头未改。新目标接入Host全量、筛选、调试及TestMate配置；GUI仍MANUAL。
 
 | 本轮验证 | 实际结果与范围 |
 | --- | --- |
@@ -688,7 +690,7 @@ Provider根因已闭合：生产bundle/GN实际依赖telephony_data，Host此前
 
 本轮达到**单请求真实业务切片的因果验证**，包括无需设备切换的C0终点、B原请求应答/超时、C1协议终点；完整CoreService/Stub/IPC/HDI部件整链仍BLOCKED，当前总体验收未通过。C1 UPDATE/COMPLETE异常及C1超时、任意乱序/重复、在途销毁重建、真实持久化恢复/eSIM仍NOT_RUN。后续产品集成需要匹配OHOS完整树、生成HDI接口、SA/IPC运行时及设备，不扩建成功平台假桩。
 
-本轮可复现命令及边界见 [primary_slot/README.md](../services/multisim/test/cases/primary_slot/README.md)，所有分层状态、源码/二进制/依赖摘要、命令、XML、关键日志、负控和文件清单集中在 [sim028_real_chain_validation_20261111.json](../services/multisim/test/docs/archive/systemtest/configs/sim028_real_chain_validation_20261111.json)及同名证据目录。仓外目录仅为可再生成产物，不作为唯一交付依据。
+本轮可复现命令及边界见 [primary_slot/README.md](https://github.com/zjuluowu/multisim/blob/74e25901ddec1c1714998e4ed1b40488f418b5fc/telephony_core_service/services/multisim/test/cases/primary_slot/README.md)，所有分层状态、源码/二进制/依赖摘要、命令、XML、关键日志、负控和文件清单集中在 [sim028_real_chain_validation_20261111.json](../services/multisim/test/docs/archive/systemtest/configs/sim028_real_chain_validation_20261111.json)及同名证据目录。仓外目录仅为可再生成产物，不作为唯一交付依据。
 
 
 ### 17.1 阶段发布及持续授权（2026-11-11）
@@ -728,7 +730,7 @@ Provider根因已闭合：生产bundle/GN实际依赖telephony_data，Host此前
 | 迁移资产/骨架/接缝 | PASS；219资产、130份C++/JSON原字节、11项显式后续变更；架构规则及既有接缝生成核对通过 |
 | 完整生产Stop在途/重复/迟到回调验收 | BLOCKED；真实Manager没有Stop/Drain入口，Runner验收不替代生产生命周期验收 |
 
-[独立本轮记录](../services/multisim/test/docs/archive/systemtest/configs/sim028_lifecycle_validation_20261111.json)及同名证据目录保存构建/全量日志、逐例XML、控制块与对象地址、9条闭环/9条RIL持有边证明、逐层结果、源码/二进制/输入摘要和本批文件清单。复现和逐边源码说明查 [生命周期诊断](../services/multisim/test/cases/primary_slot/lifecycle/README.md)。没有新增生产探针、私有清理、AllowLeak或等待时间延长，没有降低业务断言。
+[独立本轮记录](../services/multisim/test/docs/archive/systemtest/configs/sim028_lifecycle_validation_20261111.json)及同名证据目录保存构建/全量日志、逐例XML、控制块与对象地址、9条闭环/9条RIL持有边证明、逐层结果、源码/二进制/输入摘要和本批文件清单。复现和逐边源码说明查 [生命周期诊断](https://github.com/zjuluowu/multisim/blob/74e25901ddec1c1714998e4ed1b40488f418b5fc/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/README.md)。没有新增生产探针、私有清理、AllowLeak或等待时间延长，没有降低业务断言。
 
 最小后续需单独授权生产生命周期修复：先修复两处注销配对（已交付未应用的4文件建议patch），再由有效共享所有权的组合根显式停止Manager/Monitor/File/State及后台任务，补准入/代次/在途屏障，注销全部缓存订阅后按依赖排空释放；Core在共享RIL停止前协调SIM关闭，SIM不停止宿主共享RIL。RemoveAllEvents不是排空屏障，析构里shared_from_this不是合法替代。保留Running时主卡语义，停止中原B/C1请求仍应按已批准规则完成；停止超时不得释放/宣称SO可卸载。完整停止方案及OpenHarmony常驻服务/重启风险已具体列入诊断说明，未将配对patch单独宣称为完整修复。本轮原C1生命周期目标尚未达成，保持FAIL。
 
@@ -761,7 +763,7 @@ Provider根因已闭合：生产bundle/GN实际依赖telephony_data，Host此前
 
 新增A～H测试只在真实SimManager具备Stop/IsStopping/IsStopped时进入生产执行分支；当前接口缺失时明确FAIL/BLOCKED，不提供Fake Stop或GTest跳过。声明式仓外头探针对八条未来分支完整实例化并clang语法验证PASS，但未链接/执行任何Stop实现，运行部分仍NOT_RUN。新增队列所有权基线及无关worker用例通过，避免把共享运行时线程数为0当作通用退出证明；原隔离进程断言未弱化。弱RIL登记ledger按slot/event/所有权控制块记录所有订阅者，修正单弱指针对File/STK同事件的覆盖；它不增加生产强引用。仅真实SimStateHandle待调度closure可用于未来迟到调度验证，不伪造SIM结果。
 
-[正式停止方案](../services/multisim/test/cases/primary_slot/lifecycle/shutdown_plan.md)取代旧伪Stop草图，明确三槽/缓存去重、四类环、16组源码配对、Running→Stopping→Stopped、已接纳B/C1及原重试终点、对象私有任务组、队列准入/排空和锁外销毁。Core经同一控制块的私有weak生命周期hook协调，不能对ISimManager直接调用不存在的Stop或停止共享RIL。完整生产文件职责集合、每项GTest映射和Watcher/FFRT/SA/HDI边界均已列出，仍需另行生产授权及native契约/产品验证；不存在已批准可直接合入的完整Stop补丁。
+[正式停止方案](https://github.com/zjuluowu/multisim/blob/74e25901ddec1c1714998e4ed1b40488f418b5fc/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/shutdown_plan.md)取代旧伪Stop草图，明确三槽/缓存去重、四类环、16组源码配对、Running→Stopping→Stopped、已接纳B/C1及原重试终点、对象私有任务组、队列准入/排空和锁外销毁。Core经同一控制块的私有weak生命周期hook协调，不能对ISimManager直接调用不存在的Stop或停止共享RIL。完整生产文件职责集合、每项GTest映射和Watcher/FFRT/SA/HDI边界均已列出，仍需另行生产授权及native契约/产品验证；不存在已批准可直接合入的完整Stop补丁。
 
 新独立证据 [sim028_shutdown_review_20261111.json](../services/multisim/test/docs/archive/systemtest/configs/sim028_shutdown_review_20261111.json)及同名目录保存两套全量日志/XML、真实编译命令、源码/二进制摘要、四文件隔离差异、当前12环与历史重算的独立来源、声明探针及各层状态。原7条全绿和完整停止安全目标尚未达到；生产Stop在途/重复/迟到/重建验收仍BLOCKED。既有业务行为未在本工作区修改，不把配对副本验证或声明式编译当作生产修复完成。
 
@@ -798,7 +800,7 @@ M1通过；M2在当前Host执行边界通过，M3原生集成仍BLOCKED。原Hos
 
 生产准入BLOCKED，重复性准入FAIL。除新失败外，Core原OnStop未接入Manager Stop、SA/CES注销错误/屏障、隐式组归属/同任务业务重入、完整停止预算、Watcher并发、内部ABI及异常初始化矩阵仍需裁决与原生验证。原生计划明确替换Host驱动/观察层、使用真实FFRT（现有原生gtest含ffrt_mocked不能作为证据）、真实SA/IPC及RIL/HDI分层；APN成功配置/延迟重试和长C1无应答/预算失败重试仍NOT_RUN，原生平台运行BLOCKED。本轮未重跑历史216/57次专项，不继承为本轮结果。
 
-[审查、最小补丁与原生计划](../services/multisim/test/cases/primary_slot/lifecycle/admission/README.md)、[实际验证与三轮独立归档](../services/multisim/test/docs/archive/systemtest/configs/sim028_ci_admission_20261112/validation.json)保存精确命令、输入/源码/二进制SHA、原始失败与XML、当前环境、49份应用核验及用户输入保护。下一最小项为另行授权的externalState_访问同步修复及C1进度追踪，不通过过滤、等待延长或抑制sanitizer获取准入。
+[审查、最小补丁与原生计划](https://github.com/zjuluowu/multisim/blob/74e25901ddec1c1714998e4ed1b40488f418b5fc/telephony_core_service/services/multisim/test/cases/primary_slot/lifecycle/admission/README.md)、[实际验证与三轮独立归档](../services/multisim/test/docs/archive/systemtest/configs/sim028_ci_admission_20261112/validation.json)保存精确命令、输入/源码/二进制SHA、原始失败与XML、当前环境、49份应用核验及用户输入保护。下一最小项为另行授权的externalState_访问同步修复及C1进度追踪，不通过过滤、等待延长或抑制sanitizer获取准入。
 
 
 ### 22. SIM-028 状态竞争/C1进度隔离修复与CI准入复验（2026-11-12）
@@ -832,7 +834,7 @@ M1通过；M2在当前Host执行边界通过，M3原生集成仍BLOCKED。原Hos
 
 已明确Host边界不具权威性之处：RIL弱订阅/单目标通知与真实多强订阅不同；C1夹具额外UPDATE应答不见于参考AT实现；参数仅内存成功路径；发布成功不等于消费者接收；StateRegistry固定返回不等于真实观察者通知；身份、SA、Watcher、FFRT、serial/HDI及物理Modem未真实运行。共享Golden记录七例和A阻塞场景的输入/应答/返回/最终状态/副作用/偏序/证据/可信度/变更策略，只是有条件的characterization，不将旧缺陷自动批准为规范。Target Adapter尚未实现，不以Fake或回调旧SIM冒充迁移。
 
-[使用、审计及裁决边界](../services/multisim/test/cases/primary_slot/legacy_contract/README.md)、[实际逐例验证](../services/multisim/test/docs/archive/systemtest/configs/sim028_legacy_contract_20261112/validation.json)保存本轮证据。原始探索XML/日志压缩归档，最终单轮与Host回归直接归档；生产字节保护、二进制/构建命令、Mock差异、准备失败、原生补证与差分规则可复核。当前结论为Host业务条件基线可复现，但重复性与析构后回调安全未达标；OHOS原生Golden、厂商A及产品兼容验收仍BLOCKED，不启动生产迁移。
+[使用、审计及裁决边界](https://github.com/zjuluowu/multisim/blob/74e25901ddec1c1714998e4ed1b40488f418b5fc/telephony_core_service/services/multisim/test/cases/primary_slot/legacy_contract/README.md)、[实际逐例验证](../services/multisim/test/docs/archive/systemtest/configs/sim028_legacy_contract_20261112/validation.json)保存本轮证据。原始探索XML/日志压缩归档，最终单轮与Host回归直接归档；生产字节保护、二进制/构建命令、Mock差异、准备失败、原生补证与差分规则可复核。当前结论为Host业务条件基线可复现，但重复性与析构后回调安全未达标；OHOS原生Golden、厂商A及产品兼容验收仍BLOCKED，不启动生产迁移。
 
 ### 24. SIM-028 初始化假阴性因果复现与50轮基线复验（2026-11-12）
 
@@ -848,7 +850,7 @@ P0根因已通过受控真实执行确认：账户事件到达后，MultiSimMoni
 
 本轮原Host60条仍55 PASS/5既有FAIL，含入口14/14；加两条屏障测试为62条57 PASS/5 FAIL，分类器13项通过。新增负控确保绕过屏障的NOT_RUN不能成为业务PASS，全部350份原始XML在新分类器下复算结果不变。未执行新的ASan/TSan或OHOS设备集成。本地manifest@7be88f1的清单只跟踪master，superproject关键SIM源码与当前fork不符；匹配产品manifest、build fingerprint及厂商RIL仍UNKNOWN。弱引用单目标RIL、内存Provider/参数、发布成功与真实消费者交付、原生FFRT等继续分级，未把其他版本的同名接口拼成产品契约。
 
-[初始化复验说明](../services/multisim/test/cases/primary_slot/legacy_contract/README.md)及[逐例/分层证据](../services/multisim/test/docs/archive/systemtest/configs/sim028_initialization_stability_20261112/validation.json)保存最小测试补丁、50轮全部日志/XML压缩归档、350条前态观测、负控/正控/调试失败、版本核对及最终标记复核。下一最小项是初始primary/data/自动请求契约裁决及匹配产品原生轨迹补证，不擅自修复旧生产代码或开始multisim迁移。
+[初始化复验说明](https://github.com/zjuluowu/multisim/blob/74e25901ddec1c1714998e4ed1b40488f418b5fc/telephony_core_service/services/multisim/test/cases/primary_slot/legacy_contract/README.md)及[逐例/分层证据](../services/multisim/test/docs/archive/systemtest/configs/sim028_initialization_stability_20261112/validation.json)保存最小测试补丁、50轮全部日志/XML压缩归档、350条前态观测、负控/正控/调试失败、版本核对及最终标记复核。下一最小项是初始primary/data/自动请求契约裁决及匹配产品原生轨迹补证，不擅自修复旧生产代码或开始multisim迁移。
 
 
 ### 25. SIM-028 双卡前态显式化与未修复旧实现业务基线稳定（2026-11-12）
@@ -863,7 +865,7 @@ HEAD仍为39d63590cfb6be5b813ecbed346252573442e0ac。用户明确选择“双卡
 
 按用户答复扫描六个根9294目录及两处父目录1087目录，未发现可用.repo工作区；四处repo manifest -r实际尝试因CLI缺失BLOCKED，未安装工具。manifest@7be88f147200cdf60a6f542dc758ac5f1d54e036仅跟踪master，superproject关键SIM源码不同，无目标产品构建关联证据，产品版本UNKNOWN。外仓接口分源记录，不拼接为统一产品版本。RIL弱引用单目标/即时订阅差异、参数/Provider内存成功路径、消费者交付及原生FFRT仍CONDITIONAL/UNKNOWN。
 
-[最终双卡基线及全部中间失败](../services/multisim/test/docs/archive/systemtest/configs/sim028_dual_prestate_20261112/validation.json)、[使用与契约分级](../services/multisim/test/cases/primary_slot/legacy_contract/README.md)保存最小测试增量补丁、精确命令/工具/生产及二进制SHA、350份XML/日志、已知缺陷签名、注册元数据修正和输入保护。Golden仅冻结明确双卡前态下的条件性Host业务结果；原单卡反例、旧缓存/生命周期缺陷保留。下一项是锁定产品Manifest后的版本对齐、真实RIL多订阅/持久化/通知消费者轨迹补证，未经授权不进行旧代码修复或新业务迁移。
+[最终双卡基线及全部中间失败](../services/multisim/test/docs/archive/systemtest/configs/sim028_dual_prestate_20261112/validation.json)、[使用与契约分级](https://github.com/zjuluowu/multisim/blob/74e25901ddec1c1714998e4ed1b40488f418b5fc/telephony_core_service/services/multisim/test/cases/primary_slot/legacy_contract/README.md)保存最小测试增量补丁、精确命令/工具/生产及二进制SHA、350份XML/日志、已知缺陷签名、注册元数据修正和输入保护。Golden仅冻结明确双卡前态下的条件性Host业务结果；原单卡反例、旧缓存/生命周期缺陷保留。下一项是锁定产品Manifest后的版本对齐、真实RIL多订阅/持久化/通知消费者轨迹补证，未经授权不进行旧代码修复或新业务迁移。
 
 ### 26. SIM-028 Legacy冻结及新旧共用业务契约接缝（2026-11-12）
 
@@ -877,7 +879,7 @@ Target实际StartPrimarySwitch、SwitchPrimaryRadio仍仅声明/流程注释，�
 
 输入保护发现一项生成文件例外：原执行脚本用例发现覆盖了上批遗留根default.profraw；原字节未预备份，无法从SHA恢复。已记录前后SHA及实际影响，修改脚本将发现profile写入指定运行目录；最终复验根profile保持不变。该文件不属于冻结业务证据，所有生产/Golden/历史记录及其他既有修改保护独立核对，不将此例外隐藏为全部输入未变。
 
-[冻结及本轮实际证据](../services/multisim/test/docs/archive/systemtest/configs/sim028_shared_primary_20261112/README.md)、[共用资产/七例矩阵/边界与判定规则](../services/multisim/test/cases/compatibility/README.md)记录完整交付。下一步仍需真实Target写业务、独立装配与外部事件绑定获授权后才能做真实新旧差分；原生设备版本和消费者轨迹未具备，不由Host兼容性代替产品准入。
+[冻结及本轮实际证据](../services/multisim/test/docs/archive/systemtest/configs/sim028_shared_primary_20261112/README.md)、[共用资产/七例矩阵/边界与判定规则](https://github.com/zjuluowu/multisim/blob/74e25901ddec1c1714998e4ed1b40488f418b5fc/telephony_core_service/services/multisim/test/cases/compatibility/README.md)记录完整交付。下一步仍需真实Target写业务、独立装配与外部事件绑定获授权后才能做真实新旧差分；原生设备版本和消费者轨迹未具备，不由Host兼容性代替产品准入。
 
 ### 27. 本地成果发布准备（2026-11-12）
 
@@ -1138,3 +1140,11 @@ Device只读路径仅检查查询权限/真实SA/端点，不要求HIL/PIN/双�
 本批105项技术检查、默认命令test.py architecture（含结构/独立语法/迁移/编译负控/四规则/GN）实际exit0；仓外执行目录已移除，报告architecture/产物及位置记录可读。历史完整性317原始资产/299处置/8合同PASS；生产来源1029原字节+37修复+2新增头的锁定检查PASS，生产源码无修改。使用当前门禁复核已归档124例原始报告PASS，逐项注入五个旧精确失败签名全部拒绝；这是门禁复核，不是本批重新执行业务。上一批124/124 PASS、强RIL Stop17项和双激活七项证据仍指§48。
 
 原生产品、设备、SO、GUI未执行，未改变对应验收状态。完整命令、原始日志和范围见[本批证据](../services/multisim/test/docs/archive/documentation_refresh_20261118/README.md)。默认只逐文件提交本批文档、两项配套脚本、技术回归及证据，常规推送origin/main并核对远端；保护用户文件，不强推、不合并分歧。
+
+<a id="documentation-reorganization-20261119"></a>
+
+### 50. 工程文档治理（2026-11-19）
+
+代码输入为已核实的 main/origin@155f9c4c3378f271e5241368bec7616838cb3df1。按 [开发入口](README.md) 划分文档职责，更新源码说明和导航，盘点 69 个原文件并归位其中 42 个，保留原设计批准状态及 SIM/WU 编号。[历史索引与迁移清单](history/README.md)保存前后统计、逐文件来源、证据限制和链接核验。
+
+恢复检查为 CHECKPOINT_VERIFIED，现有导航测试 6 项通过。相对路径、锚点和附件未新增失效引用。冻结测试归档的 3 个既有引用问题保留原字节，清单提供固定 Git 入口。只调整文档，未执行新的业务或产品验收。真实 Store 及 Legacy Host 结果按页首对应批次引用。工作区另有 Topology 及测试相关修改，保持原归属，其结果待相应实现批次核验。
