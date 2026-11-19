@@ -12,6 +12,8 @@
 
 2026-11-19 的[独立架构审查](reviews/SIM_Architecture_Independent_Review_20261119.md)记录对象生命周期、14 个场景、三种方案及按切片签收的条件。
 
+[角色并发与异步协议专项审查](reviews/SIM_Role_Concurrency_and_Async_Request_Review_20261119.md)记录单 M0 的 C1/C0 交错、步骤消费与晚效果、两组三案比较及可复核的 Host 见证。
+
 ## 整理前后
 
 以 [整理输入 main@155f9c4c3](https://github.com/zjuluowu/multisim/tree/155f9c4c3378f271e5241368bec7616838cb3df1/telephony_core_service/docs) 为原路径和原始 Markdown 的固定来源。下表覆盖该提交的全部 69 个 docs 文件，含 Markdown、TXT、PPTX、PDF 和 JSON。已有的原稿归档保持原相对结构，文件名沿用原名。四个一级目录为 business、migration、knowledge、history，根部保留开发入口及稳定设计、状态、迁址引用。汇报附件和 JSON 以原字节归档，历史 Markdown 的链接重定位到现行路径或包含原证据的 Git 版本。

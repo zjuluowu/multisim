@@ -27,6 +27,8 @@
 
 2026-11-19 独立设计审查以 `0e4004bef` 为源码输入，形成[历史评审](history/reviews/SIM_Architecture_Independent_Review_20261119.md)。评审先独立发布于 `d8fcbba40`，随后将分责、共享输出和异步资格同步至主设计与源码详细设计。产品装配、设备与业务执行仍按原批次记录；当前设计验收见[第二轮复审](history/reviews/SIM_Architecture_Independent_Review_20261119.md#第二轮复审--对修改后的设计提出反例)。
 
+2026-11-19 [角色与请求专项审查](history/reviews/SIM_Role_Concurrency_and_Async_Request_Review_20261119.md)先在 `eea678d67` 重建标准 Both C0（差异 0）及 Target 16/16，后在 `ba95cf2c0` 的 B/C1 源码重新取得 6/6 定点 Host 观察，确认单 M0 的跨域 C1/C0 输出交错。纯规则模型检出 2/2 个有意变异。生产调度、真实设备结束及新业务策略待签收。
+
 ## 历次双后端与阶段核验记录
 
 当前双后端阶段七（基准 `bd7dbef77`）：M7.1 收紧 B 的换卡、Unknown、效果/错误冲突与迟到关联，保留 NeedsReconciliation 资格；M7.2 首次实现 C1 CHECK/UPDATE/COMPLETE 成功业务链，旧 session/重复成员不推进，Target C1 与 Legacy Oracle/差分通过。C1 五次重试、完整失败恢复、真实 Radio/HDI、产品 SA/IPC/Device 未实施。
