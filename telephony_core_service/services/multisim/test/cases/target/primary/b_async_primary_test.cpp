@@ -93,7 +93,7 @@ CardDiscoveryObservation Discovery(int slot,uint64_t generation,const std::strin
 AccountDiscoveryStoreResult Stored(SubscriptionId id)
 { return {0,id,true,true,EffectKnowledge::ConfirmedApplied}; }
 
-class ControlledRetryScheduler final : public RetrySchedulerPort {
+class ControlledRetryScheduler final : public RetrySchedulerPort, public RadioOwnerDispatchPort {
 public:
     ControlledRetryScheduler() { worker_ = std::thread([this] { Worker(); }); }
     ~ControlledRetryScheduler() { StopAndJoin(); }
@@ -156,6 +156,12 @@ public:
         std::lock_guard<std::mutex> guard(lock_);
         return audit_;
     }
+    bool PostRadioOwnerTask(std::function<void()> task) override { return PostOwner(std::move(task)); }
+    bool RadioOwnerCallbacksDrained() const override
+    {
+        std::lock_guard<std::mutex> guard(lock_);
+        return ownerTasks_.empty() && runningOwner_ == 0;
+    }
     bool PostOwner(std::function<void()> action)
     {
         std::lock_guard<std::mutex> guard(lock_);
@@ -199,6 +205,13 @@ public:
         std::unique_lock<std::mutex> guard(lock_);
         return changed_.wait_for(guard, timeout, [&] {
             return audit_.pending == 0 && audit_.running == 0;
+        });
+    }
+    bool WaitOwnerIdle(std::chrono::milliseconds timeout = std::chrono::seconds(3))
+    {
+        std::unique_lock<std::mutex> guard(lock_);
+        return changed_.wait_for(guard, timeout, [&] {
+            return ownerTasks_.empty() && runningOwner_ == 0;
         });
     }
     void StopAndJoin()
@@ -245,8 +258,8 @@ private:
             std::function<void()> owner;
             if (!ownerTasks_.empty()) {
                 owner = std::move(ownerTasks_.front()); ownerTasks_.pop_front(); --audit_.pending;
-                ++audit_.running; changed_.notify_all(); guard.unlock();
-                owner(); guard.lock(); --audit_.running; changed_.notify_all(); continue;
+                ++audit_.running; ++runningOwner_; changed_.notify_all(); guard.unlock();
+                owner(); guard.lock(); --audit_.running; --runningOwner_; changed_.notify_all(); continue;
             }
             auto found = std::find_if(tasks_.begin(), tasks_.end(), [&](const Task &task) {
                 return task.due <= clock_;
@@ -270,6 +283,7 @@ private:
     uint64_t nextTask_ {1};
     bool accepting_ {true};
     bool stopping_ {false};
+    size_t runningOwner_ {0};
     RetrySchedulerAudit audit_;
     std::optional<ScheduledRetryEvent> lastDelivered_;
 };
@@ -318,11 +332,17 @@ public:
     std::vector<std::pair<uint64_t, RadioSwitchRequest>> requests;
     PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const override
     { return {slot, alreadyPrimary ? 0 : (slot.legacySlotId == 0 ? 0 : 1), directSupported, false, 9}; }
-    bool SubmitPrimaryRadio(const RadioSwitchRequest &request, uint64_t token) override
+    RadioSubmitDisposition disposition {RadioSubmitDisposition::HandoffAccepted};
+    std::function<void(uint64_t,const RadioSwitchRequest &)> onSynchronousResponse;
+    RadioSubmitResult SubmitPrimaryRadio(const RadioSwitchRequest &request, uint64_t token) override
     {
-        if (!submitAllowed) { return false; }
+        if (onSynchronousResponse) { onSynchronousResponse(token, request); }
+        if (disposition == RadioSubmitDisposition::ConfirmedNotSent) {
+            return {RadioSubmitDisposition::ConfirmedNotSent, std::nullopt};
+        }
+        if (!submitAllowed) { return {RadioSubmitDisposition::HandoffUnknown, std::nullopt}; }
         requests.emplace_back(token, request);
-        return true;
+        return {disposition, static_cast<int32_t>(token)};
     }
     void EndLegacySenseSwitch(const StepRef &, const RadioDomainId &) override { ++ended; }
     unsigned ended {0};
@@ -349,7 +369,8 @@ struct ResourceFixture {
     ResourceFixture()
     {
         EXPECT_TRUE(radio.Initialize(key, {{6,2}, true, true}));
-        radio.BindResultSink(*service);
+        radio.BindResultSink(service);
+        radio.BindOwnerDispatch(scheduler);
         service->BindRetryScheduler(schedulerOwner);
     }
     ~ResourceFixture() { scheduler.StopAndJoin(); }
@@ -385,8 +406,10 @@ struct ResourceFixture {
         bool ended=true, bool reusable=true, bool verified=false)
     {
         const auto &sent=platform.requests[index];
-        return radio.AcceptDeviceResult({sent.first,
+        const bool accepted=radio.AcceptDeviceResult({sent.first,
             Result(sent.second,effect,legacyResult,notify),ended,reusable,verified});
+        EXPECT_TRUE(scheduler.WaitOwnerIdle());
+        return accepted;
     }
 };
 
@@ -517,7 +540,8 @@ TEST(TargetPrimaryB,ResourceBarrierCheckingBlocksSendUntilInitialRecovery)
     public:
         void AcceptRadioStep(const RadioSwitchResult &) override {}
         void AcceptLateRadioEvidence(const RadioSwitchResult &) override {}
-    } sink;
+    };
+    auto sink=std::make_shared<Sink>();
     radio.BindResultSink(sink);
     const RadioSwitchRequest request {{RequestId{1,{6,2},RequestOwner::Assignment},2,0},
         {1},{"m1"},PrimarySwitchMode::WithoutModemRestart,std::nullopt,1,0,1};
@@ -527,6 +551,43 @@ TEST(TargetPrimaryB,ResourceBarrierCheckingBlocksSendUntilInitialRecovery)
     EXPECT_FALSE(radio.Initialize(key,{{6,2},false,true}));
     EXPECT_TRUE(radio.Initialize(key,{{6,2},true,true}));
     EXPECT_EQ(radio.ReadResourceState(key),ResourceState::Available);
+}
+
+TEST(TargetPrimaryB,ResourceSubmitUnknownQuarantinesInsteadOfConfirmedCancel)
+{
+    ResourceFixture f;
+    f.platform.submitAllowed=false;
+    f.Start(false);
+    EXPECT_EQ(f.platform.requests.size(),0u);
+    EXPECT_EQ(f.radio.ReadResourceState(f.key),ResourceState::Quarantined);
+    EXPECT_TRUE(f.completion.results.empty());
+}
+
+TEST(TargetPrimaryB,ResourceSubmitResponseBeforeReturnIsBufferedUntilHandoffClassified)
+{
+    ResourceFixture f;
+    f.platform.onSynchronousResponse=[&](uint64_t token,const RadioSwitchRequest &request) {
+        EXPECT_TRUE(f.radio.AcceptDeviceResult({token,
+            Result(request,EffectKnowledge::ConfirmedApplied,0),true,true}));
+    };
+    f.Start(false);
+    ASSERT_TRUE(f.scheduler.WaitOwnerIdle());
+    EXPECT_EQ(f.platform.requests.size(),1u);
+    EXPECT_EQ(f.radio.ReadResourceState(f.key),ResourceState::Available);
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{0}));
+}
+
+TEST(TargetPrimaryB,ResourceSubmitConfirmedNotSentRejectsContradictoryCallback)
+{
+    ResourceFixture f;
+    f.platform.disposition=RadioSubmitDisposition::ConfirmedNotSent;
+    f.platform.onSynchronousResponse=[&](uint64_t token,const RadioSwitchRequest &request) {
+        EXPECT_TRUE(f.radio.AcceptDeviceResult({token,
+            Result(request,EffectKnowledge::ConfirmedApplied,0),true,true}));
+    };
+    f.Start(false);
+    EXPECT_EQ(f.radio.ReadResourceState(f.key),ResourceState::Quarantined);
+    EXPECT_TRUE(f.completion.results.empty());
 }
 
 TEST(TargetPrimaryB,ResourceBarrierIsNotAcquiredForC0)
@@ -542,7 +603,7 @@ TEST(TargetPrimaryB,ResourceBarrierIsNotAcquiredForC0)
 TEST(TargetPrimaryB,ResourceBarrierConfirmedNotSentReturnsAvailable)
 {
     ResourceFixture f;
-    f.platform.submitAllowed=false;
+    f.platform.disposition=RadioSubmitDisposition::ConfirmedNotSent;
     f.Start(false);
     EXPECT_TRUE(f.platform.requests.empty());
     EXPECT_EQ(f.radio.ReadResourceState(f.key),ResourceState::Available);
@@ -554,6 +615,8 @@ TEST(TargetPrimaryB,ResourceBarrierBEndsBeforeResultIsDelivered)
     ResourceFixture f;
     f.Start(false);
     ASSERT_EQ(f.platform.requests.size(),1u);
+    EXPECT_EQ(f.radio.ReadTransportSerial(f.platform.requests[0].first),
+        std::make_optional(static_cast<int32_t>(f.platform.requests[0].first)));
     EXPECT_EQ(f.radio.ReadResourceState(f.key),ResourceState::InFlight);
     EXPECT_TRUE(f.completion.results.empty());
     EXPECT_TRUE(f.ResultAt(0,EffectKnowledge::ConfirmedApplied,0));
@@ -578,6 +641,19 @@ TEST(TargetPrimaryB,ResourceBarrierRejectsWrongBindingWithoutReleasingLease)
     EXPECT_TRUE(f.ResultAt(0,EffectKnowledge::ConfirmedApplied,0));
     EXPECT_EQ(f.radio.ReadResourceState(f.key),ResourceState::Available);
     EXPECT_EQ(f.completion.results,(std::vector<int32_t>{0}));
+}
+
+TEST(TargetPrimaryB,ResourceRejectsOldSerialOnCurrentTransportToken)
+{
+    ResourceFixture f;
+    f.Start(true);
+    ASSERT_EQ(f.platform.requests.size(),2u);
+    const auto &sent=f.platform.requests[1];
+    auto response=Result(sent.second,EffectKnowledge::ConfirmedApplied,0);
+    EXPECT_FALSE(f.radio.AcceptDeviceResult({sent.first,response,true,true,false,
+        std::make_optional(static_cast<int32_t>(f.platform.requests[0].first))}));
+    EXPECT_EQ(f.radio.ReadResourceState(f.key),ResourceState::InFlight);
+    EXPECT_EQ(f.radio.RejectedStaleResults(),1u);
 }
 
 TEST(TargetPrimaryB,ResourceBarrierRejectsDuplicateMemberSubmission)
@@ -622,6 +698,27 @@ TEST(TargetPrimaryB,ResourceBarrierLateBResultRecoversOnlyWithCurrentStateProof)
     EXPECT_EQ(f.radio.ReadResourceState(f.key),ResourceState::Available);
     EXPECT_EQ(f.completion.results,(std::vector<int32_t>{kLegacyLocalPointerNull}));
     EXPECT_FALSE(f.service->ReadLegacyAssignment().lastPrimary.has_value());
+}
+
+TEST(TargetPrimaryB,ResourceC1ConcurrentMemberCallbacksStayOwnerSerialized)
+{
+    ResourceFixture f;
+    f.Start(true);
+    ASSERT_EQ(f.platform.requests.size(),2u);
+    auto first=std::async(std::launch::async,[&] {
+        const auto &sent=f.platform.requests[0];
+        return f.radio.AcceptDeviceResult({sent.first,
+            Result(sent.second,EffectKnowledge::ConfirmedApplied,0),true,true});
+    });
+    auto second=std::async(std::launch::async,[&] {
+        const auto &sent=f.platform.requests[1];
+        return f.radio.AcceptDeviceResult({sent.first,
+            Result(sent.second,EffectKnowledge::ConfirmedApplied,0),true,true});
+    });
+    EXPECT_TRUE(first.get()); EXPECT_TRUE(second.get());
+    ASSERT_TRUE(f.scheduler.WaitOwnerIdle());
+    EXPECT_EQ(f.platform.requests.size(),4u);
+    EXPECT_TRUE(f.radio.ReadResourceState(f.key)==ResourceState::InFlight);
 }
 
 TEST(TargetPrimaryB,ResourceBarrierC1AutomaticallyRetriesOnlyAfterEachPhaseEnded)
@@ -690,6 +787,19 @@ TEST(TargetPrimaryB,ResourceBarrierDoesNotScheduleRetryBeforeCompleteMembersEnd)
     EXPECT_FALSE(f.scheduler.OwnerCall([&] { return f.service->AcceptC1RetryDue(request); }));
     EXPECT_TRUE(f.ResultAt(3,EffectKnowledge::ConfirmedApplied,0));
     EXPECT_EQ(f.scheduler.Audit().scheduled,1u);
+    EXPECT_EQ(f.radio.ReadResourceState(f.key),ResourceState::Available);
+}
+
+TEST(TargetPrimaryB,ResourceCallbackAfterOwnerDestructionCannotAccessDanglingSink)
+{
+    ResourceFixture f;
+    f.Start(false);
+    ASSERT_EQ(f.platform.requests.size(),1u);
+    const auto weak=std::weak_ptr<AssignmentService>(f.service);
+    f.service.reset();
+    EXPECT_TRUE(weak.expired());
+    EXPECT_TRUE(f.ResultAt(0,EffectKnowledge::ConfirmedApplied,0));
+    EXPECT_EQ(f.completion.results.size(),0u);
     EXPECT_EQ(f.radio.ReadResourceState(f.key),ResourceState::Available);
 }
 

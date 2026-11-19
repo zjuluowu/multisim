@@ -19,6 +19,7 @@
 #ifndef OHOS_TELEPHONY_MULTISIM_ASSIGNMENT_API_RADIO_EXECUTION_PORT_H
 #define OHOS_TELEPHONY_MULTISIM_ASSIGNMENT_API_RADIO_EXECUTION_PORT_H
 
+#include <functional>
 #include <optional>
 #include "infrastructure/request/request_ref.h"
 #include "role_assignment/primary/primary_execution.h"
@@ -57,6 +58,7 @@ struct RadioDeviceResult {
     bool commandEnded;
     bool resourceReusable;
     bool currentStateVerified {false};
+    std::optional<int32_t> transportSerial {std::nullopt};
 };
 class RadioResultSink {
 public:
@@ -75,13 +77,27 @@ public:
 };
 // Narrow platform seam below R. The platform reports an opaque transport token and
 // does not make A/R business decisions. Real RIL serial can be retained by an adapter.
+enum class RadioSubmitDisposition {
+    ConfirmedNotSent, // strict proof that the platform handoff boundary was not crossed
+    HandoffAccepted,   // request+token entered the transport association table
+    HandoffUnknown,    // return failed/ended without proof that the handoff did not occur
+};
+struct RadioSubmitResult {
+    RadioSubmitDisposition disposition;
+    std::optional<int32_t> transportSerial;
+};
+class RadioOwnerDispatchPort {
+public:
+    virtual ~RadioOwnerDispatchPort() = default;
+    virtual bool PostRadioOwnerTask(std::function<void()> task) = 0;
+    virtual bool RadioOwnerCallbacksDrained() const = 0;
+};
 class RadioPlatformPort {
 public:
     virtual ~RadioPlatformPort() = default;
     virtual PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const = 0;
-    // Implementations must not deliver a RadioDeviceResult reentrantly from this
-    // method; MarkSent is committed immediately after a successful submit return.
-    virtual bool SubmitPrimaryRadio(const RadioSwitchRequest &request, uint64_t transportToken) = 0;
+    virtual RadioSubmitResult SubmitPrimaryRadio(const RadioSwitchRequest &request,
+        uint64_t transportToken) = 0;
     virtual void EndLegacySenseSwitch(const StepRef &owner, const RadioDomainId &domain) = 0;
 };
 class AssignmentOutputPort {

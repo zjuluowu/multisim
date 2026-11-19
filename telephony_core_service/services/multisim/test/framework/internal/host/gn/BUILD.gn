@@ -18,7 +18,11 @@ config("host") {
     "-fdata-sections",
   ]
   if (host_tsan) {
+    assert(!host_asan, "Host TSan and ASan builds are mutually exclusive")
     cflags_cc += [ "-fsanitize=thread" ]
+  }
+  if (host_asan) {
+    cflags_cc += [ "-fsanitize=address" ]
   }
   if (host_debug) {
     cflags_cc += [
@@ -37,6 +41,9 @@ config("host") {
   ]
   if (host_tsan) {
     ldflags += [ "-fsanitize=thread" ]
+  }
+  if (host_asan) {
+    ldflags += [ "-fsanitize=address" ]
   }
 }
 toolchain("linux") {

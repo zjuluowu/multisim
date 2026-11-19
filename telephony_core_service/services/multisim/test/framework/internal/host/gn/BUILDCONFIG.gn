@@ -1,6 +1,7 @@
 declare_args() {
   host_debug = false  # IDE host builds keep DWARF; legacy runners retain their profile.
   host_tsan = false   # Optional Host-only ThreadSanitizer execution; no product ABI claim.
+  host_asan = false   # Optional Host-only AddressSanitizer execution; no product ABI claim.
   primary_slot_core_source = ""  # Optional negative-control copy outside the source tree.
   primary_slot_controller_source = ""  # Outside-source negative control only.
   sim028_runtime_root = ""  # Explicit prepared native C dependencies, no implicit downloads.
