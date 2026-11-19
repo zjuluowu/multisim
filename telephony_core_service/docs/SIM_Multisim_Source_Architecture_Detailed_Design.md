@@ -2,9 +2,9 @@
 
 | 项目 | 内容 |
 | --- | --- |
-| 文档版本 | 0.7，真实 C0 拓扑及参数适配的静态复核（整体设计仍PROPOSED） |
-| 更新日期 | 2026-11-19（按 0e4004bef 核对 C0 源码；早期验证沿用各自基线） |
-| 源码范围 | 当前模块为91文件：89个C++文件（64头/25源）、BUILD.gn及README.md；重复目录设计副本已退役；首次G2a之前的B+输入为88文件；生产能力来源见§17 |
+| 文档版本 | 0.8，角色写集合和异步步骤的源码映射（整体设计仍PROPOSED） |
+| 更新日期 | 2026-11-19（按 bcc1614fd 复核共享准入和完成领取，历史验证沿用各自输入） |
+| 源码范围 | bcc1614fd 模块为 91 文件（64 头、25 源、BUILD.gn、README.md），M9.3 工作树新增一个请求机制源文件；重复目录设计副本已退役；首次G2a之前的B+输入为88文件；生产能力来源见§17 |
 | 输入基线 | B+文件移动输入5404aefe、首次G2a源main 9ab1e976及历史实现cc787945均为固定溯源；实际代码点和测试证据见[执行状态](SIM_Refactor_Execution_State.md#current-status) |
 | 当前状态 | 当前生产已回退G2a接入，原成熟SIM继续执行；G2a Core/Binding仅为测试参考，旧合入记录保留为历史。25个source_set全testonly，产品准入和写权迁移未完成，当前状态见[执行状态](SIM_Refactor_Execution_State.md#current-status) |
 | 权威范围 | 落实主设计的源码组织、功能映射与依赖规则；上位边界由SIM-TGT-001维护，公共契约和功能/WU清单仍由原文维护，未增加批准状态 |
@@ -13,7 +13,7 @@
 
 当前逐文件输入摘要、去向和职责以[source_migration.json](../services/multisim/test/cases/architecture/source_migration.json)的layout_revision（88项）及additions（G2a两项）为准；原73文件及layout_history中的前轮布局溯源保留。
 
-2026-11-09用户明确调整测试物理位置：重构新增的四个测试工程、独立GN、脚本、Fake/Oracle、设计资料与证据统一置于 `services/multisim/test/`，恢复工具置于 `services/multisim/tools/`。当时90文件指**业务骨架**；当前91文件清单见§3.1，不包含这两个辅助目录；当时业务六组、25个逻辑源集及事实所有权不变；当前物理布局采用五组方案。辅助目录与运行入口见[测试导航](../services/multisim/test/README.md)，测试文件移动由[专属映射](../services/multisim/test/docs/archive/relocation/relocation_manifest.json)记录，不改写业务源迁移清单或历史证据。独立host构建通过显式入口选择；原产品/测试源表本轮不作修改，业务头不得依赖测试文件。
+2026-11-09用户明确调整测试物理位置：重构新增的四个测试工程、独立GN、脚本、Fake/Oracle、设计资料与证据统一置于 `services/multisim/test/`，恢复工具置于 `services/multisim/tools/`。当时90文件指**业务骨架**；基线清单及 M9.3 增量见§3.1，不包含这两个辅助目录；当时业务六组、25个逻辑源集及事实所有权不变；当前物理布局采用五组方案。辅助目录与运行入口见[测试导航](../services/multisim/test/README.md)，测试文件移动由[专属映射](../services/multisim/test/docs/archive/relocation/relocation_manifest.json)记录，不改写业务源迁移清单或历史证据。独立host构建通过显式入口选择；原产品/测试源表本轮不作修改，业务头不得依赖测试文件。
 
 ## 目录
 
@@ -83,7 +83,7 @@
 
 ### 3.1 当前工作树：已存在的完整业务文件清单
 
-当前物理组织遵循[五组目录设计方案](SIM重构代码目录结构设计方案.md)，替代历史B+六组布局。91个模块文件包含89个C++单元及BUILD/README；`role_assignment/assignment_store_adapter.cpp` 是 C0 系统参数兼容实现的首个已授权新增业务源，不承担 SIM 账户数据库职责；test/tools另列，不计入该数字。25个逻辑source_set及依赖边、public/visibility和testonly状态保持。G2a业务查询源仅由testonly目标验证，Core/Binding参考实现在test/framework/internal/host/g2a_reference，不由产品源表接入。CardRuntime/result_sinks暂在card/runtime，设备资源与卡状态尚未拆分；不是Assembly业务运行状态。
+当前物理组织遵循[五组目录设计方案](SIM重构代码目录结构设计方案.md)，替代历史B+六组布局。bcc1614fd 的 91 个模块文件包含 89 个 C++ 单元及 BUILD/README。M9.3 工作树将 AcceptResult 的定义由 assignment_service.cpp 移至原 request_mechanism 逻辑目标，变为 90 个 C++ 单元（共 92 文件）；`role_assignment/assignment_store_adapter.cpp` 是 C0 系统参数兼容实现的首个已授权新增业务源，不承担 SIM 账户数据库职责；test/tools另列，不计入该数字。25个逻辑source_set及依赖边、public/visibility和testonly状态保持。G2a业务查询源仅由testonly目标验证，Core/Binding参考实现在test/framework/internal/host/g2a_reference，不由产品源表接入。CardRuntime/result_sinks暂在card/runtime，设备资源与卡状态尚未拆分；不是Assembly业务运行状态。
 
 ```text
 services/multisim/
@@ -176,6 +176,7 @@ services/multisim/
 │   ├── request/
 │   │   ├── request_context.h
 │   │   ├── request_ref.h
+│   │   ├── runtime_operation_store.cpp   # M9.3 请求机制增量
 │   │   └── runtime_operation_store.h
 │   └── sim_identity.h
 ├── role_assignment/
@@ -419,9 +420,9 @@ TopologyService构造后由H绑定AccountRolePlanningPort；它实现PrimaryTopo
 | AlreadyPrimary | WithoutDevice | 原已为M0分支不执行完整协议，仍保持原保存/Data节点 |
 | VendorRouteMapping | AfterDevice | 经T映射子请求和厂商能力，旧早返回与后续步骤分别保持 |
 
-**C0 的真实调用链（0e4004bef）。** [AssignmentService::StartPrimarySwitch](../services/multisim/role_assignment/assignment_service.cpp) 使用 A 自有 operations，按目录找到目标，经 PrimaryTopologyPort 两次读取 T，中间调用 RadioExecutionPort。T 从 BindingIndex 取得 BindingRef，再从 AccountRegistry::Read 的账户上核验订阅、ICCID 和 current 是否存在；它返回 current 的 active 值，inactive 由 A 拒绝。二读核对原订阅、位置、绑定版本、ICCID 与 active；Host 集成用例在 Radio 观察中换绑，覆盖这一窗口。随后进入 PlanPrimarySwitch 的 AlreadyPrimary 和 AssignmentAggregate。未实现的 B/C1 明确拒绝。
+**当前入口。** StartPrimarySwitch 在 A 自有 operations 登记原目标与完成出口。SlotCatalog 提供静态域；经 PrimaryTopologyPort 两读 BindingIndex 和 AccountRegistry 的 current 投影，中间读取 Radio 观察。A 对照原订阅、槽、绑定版本、ICCID 及 active 后选择分支，再经 AssignmentAggregate 的 AdmitTransitionWithRoleWriteSet 同时检查目标 radioDomain 和全部 Primary 写成员。C0 直接走参数与通知。B 登记 pending 后发一次专用命令。C1 先写 Primary 参数，再按目录成员发 CHECK、UPDATE、COMPLETE 三阶段（1、2、4）。VendorRouteMapping 尚未接入该入口。[用例源码](../services/multisim/role_assignment/assignment_service.cpp) · [分支计划](../services/multisim/role_assignment/primary/primary_switch_plan.cpp)
 
-[AssignmentStoreAdapter](../services/multisim/role_assignment/assignment_store_adapter.cpp)在 Host 由测试夹具显式构造，处理偏好、Primary、Data 原参数及 ICCID 散列；产品参数端口仍待接入。A 当前按 radioDomain 登记 transition，共享 lastPrimary/lastData 与全局参数键。在 A 所有的共享输出间怎样仲裁、哪些结果允许重入，须按[目标协议 §4.1](SIM_Target_Architecture_Design_v1.2.md#41-从问题推导边界并裁决上下文)签收。角色参数接纳和实际设备状态分开读取。
+AssignmentStoreAdapter 在 Host 处理偏好、Primary 两键与 ICCID 散列、Data 原参数。AssignmentAggregate 的 roleWriteOwners_ 已按请求 token 登记 kPrimaryRoleWriteSet（偏好、Primary 参数/通知、Data 参数/通知）；SetDefaultRole 复用 Data 或独立 Voice/SMS 成员。A 内的这些检查以 Owner 串行执行为条件。AcceptEntryPrimaryPreference 仍可直接经 Store 写偏好，完整接管须逐个核对调用者及其授权时点。T 复核原绑定，R 判定实际命令资格。逐键已发前缀与失败恢复仍按分支补足。[参数适配](../services/multisim/role_assignment/assignment_store_adapter.cpp) · [角色准入设计](SIM_Target_Architecture_Design_v1.2.md#41-从问题推导边界并裁决上下文)
 
 AccountRolePlanningInput允许existingSubscription为空；A先生成带reservation的字段片段，原Insert返回身份后分别接纳。加载返回StoredAccountRoleFragment原DB载荷，current/historical角色版本独立，不以A当前态反填旧读取。冲突资格覆盖存储调用，不能先读片段后任意整行写。
 
@@ -439,9 +440,9 @@ AccountRolePlanningInput允许existingSubscription为空；A先生成带reservat
 
 PIN短请求落`card/security`，EF读写短请求落`card/records`，本地Profile用例/期望登记落`card/esim`；各能力入口由各自逻辑contracts target精确导出，不新建统一access路由。`ProfilePreferencePort`作为A入站能力移`role_assignment`由A实现，R的Profile用例依赖窄契约，不获取AssignmentService实现；T标签提示也经T入口，不由R直接写。纯PIN/EF无跨Owner效果时不用多加T/A跳转。
 
-当前 [RuntimeOperationStore](../services/multisim/infrastructure/request/runtime_operation_store.h) 以 Owner/epoch 生成本地 RequestId，StepRef 加 step/attempt。Begin、Read、AdvanceStep、MarkTerminal、AcceptResult 有内联实现；RecordSent、EndWait、RetireAfterEvidenceRetention 在该基线只有声明。C0 使用 Begin、AdvanceStep 和 MarkTerminal，无法据此证明多步重试或记录回收。
+RuntimeOperationStore 以 Owner/epoch 签发局部序号，StepRef 携 step/attempt。记录包含原目标、完成路由、发送会话、wait、terminal、deviceEffect。Begin、Read、AdvanceStep、RecordSent、AcceptResult、EndWait、MarkTerminal、RetireAfterEvidenceRetention 均有定义。AdvanceStep 要求步号递增，并为新步复位 deviceEffect；现有接口不能表示同一步仅递增 attempt。RecordSent 安装原会话，设备收件需另有证据。[运行容器](../services/multisim/infrastructure/request/runtime_operation_store.h)
 
-落实[目标异步协议 §11](SIM_Target_Architecture_Design_v1.2.md#11-回调准入关联与幂等)时，当前实现有三个明确差距。AcceptResult 的重复判断依赖 deviceEffect；NotSent 作为结果时无法标记已消费。AdvanceStep 未清上一步 effect，可能拒绝下一步的合法响应。MarkTerminal 没有限制终态改写。首个真实异步切片应以不同 step/attempt 的成功、错误、重复及待核对效果证明逐步接纳；同步入口仍需保留原完成查询和部分效果证据。
+**已实现与待接线。** RuntimeOperationStore 已用 stepConsumed_ 判重，AdvanceStep 为新步复位，NotSent 只消费一次。TryMarkTerminal 拒绝跨终态覆写。AssignmentService::CompleteOnce 先封存再 ClaimCompletion，C1 首轮失败可 ClaimEarlyCompletion 并让原请求继续预算内恢复。A 以 pendingPrimary_ 核原步骤、角色资格、协议会话及成员；NeedsReconciliation 的匹配结果走 AcceptLateEvidence，可留在原记录供读回。EndWait 仍是等待状态赋值。完整设备隔离、回收、原始外部因果及跨线程执行域须另外验证。M9.3 工作树的 RetrySchedulerPort 向原 Owner 投递带调度代次的事件，AcceptLateEvidence 只保留首个有资格的非 Unknown 证据。受控 Host 的任务排空与设备可复用分别取证。共用守卫归 request_mechanism，分支与分阶段成员归 A。[目标协议 §11.2](SIM_Target_Architecture_Design_v1.2.md#112-最终准入与状态转换同一受控边界)
 
 `CompletionPlan.route`使用CallbackCompletionRoute、SynchronousCompletionRoute、InternalCompletionRoute。LegacyIntCompletionPort向原出口交付int结果，不提供等待或万能Execute。等待只在C/Core适配层，不占据产生完成所需的T/A短提交域。
 
@@ -592,7 +593,7 @@ ActivationProgress以epoch、请求Owner、step、原session和slot控制开始/
 
 从[拓扑集成用例](../services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp)读 C0。夹具从受控卡观察与已确认存储结果建立真实 T 的账户/绑定；A 二次复核后写偏好及 Primary 两键，发布主卡事件，再写 Data、发其事件，最后交付原出口。参数调用已完成但返回错误，按既有 Legacy 轨迹继续；调用未完成则进入待核对。二读后失效、第一键完成后另一键未知和不同设备域重入均需分别观察。阶段转换的返回值在 C0 写路径未被用于拒绝后续输出，不能推导所有交错都已受保护。
 
-普通预写、免重启后写、已为M0无完整协议、第三卡映射子请求分别沿原返回节点。参数恢复不证明硬件回滚，Primary广播后Data保存不表示数据连接/驻网完成；旧忽略参数/广播错误的语义不统一改成失败。
+在 B/C1 受控入口，AcceptRadioStep 按原 StepRef 和 protocolSession 定位 pending。C1 还按 phase/member 汇集回执，全齐才推进。在 ba95cf2c0 的单 M0 双卡 Host，C1 对槽 0 的预写和阶段 1 发令后，可以插入 C0 选槽 1，再给 C1 送齐各阶段回执。两请求都返回 0，Primary 参数留在 1，Data 参数及 A 两个投影落在 0。在 bcc1614fd 重放相同时序，C0 返回 -1 并且没有写入，C1 返回 0 且参数、两个投影均指槽 0。该切片的内部冲突返回尚需与各公开入口分别签收。第三卡映射另有返回节点；参数恢复与硬件回滚分别取证。[B/C1 组件夹具](../services/multisim/test/cases/target/primary/b_async_primary_test.cpp) · [固定输入、步骤及见证](history/reviews/SIM_Role_Concurrency_and_Async_Request_Review_20261119.md#单-m0-的-c1-与-c0)
 
 PrimaryTopologyPort 提供具名映射契约。该基线中 TopologyService::BeginRouteMapping 已定义为抛出 logic_error，第三卡映射未实现。后续实现保留A父request/step/attempt及受影响Binding，T子步骤不重复申请父资格、不递归再发Primary；I执行原vendor调用，结果分别交T接纳绑定/active及A接纳分配，R保存路由与结束观察。旧返回、DB结果、部分效果和设备结束须分开交付，不以void Hook或返回目标槽完成父请求。当前`GetResetActiveFlag→UpdateDBActiveByIccId`、`SwapM0M2SimCards→SetTargetPrimarySlotId`和普通激活成功后`SetActiveSimFunc`分别采集失败/通知/重启轨迹；不存在于本基线的方法不据报告补造同名API。窄厂商端口随真实切片补，具体结束/结果协议仍待vendor与Owner确认。
 
@@ -770,6 +771,6 @@ IDE转到定义只会落到已有定义。业务方法未定义是当前状态�
 
 ## 21. 附录：逐文件功能及实现状态
 
-全部B+输入文件的逐文件映射见[source_migration.json](../services/multisim/test/cases/architecture/source_migration.json)的layout_revision（输入5404aefe，88项，含old/target、SHA256、动作、logical_owner及依赖/测试影响、remaining_work）。本分支G2a两个新增文件由同一清单的additions记录，含历史源码路径/提交/摘要和readonly_query逻辑target；两历史集合合计90文件；后加设计副本按documentation_additions精确摘要追溯。当前91项输入/目标、风险与Owner见directory_migration_20261112.json及本批迁移映射；历史输入摘要与layout_history不改写。§3.1列出全部实际业务文件。
+全部B+输入文件的逐文件映射见[source_migration.json](../services/multisim/test/cases/architecture/source_migration.json)的layout_revision（输入5404aefe，88项，含old/target、SHA256、动作、logical_owner及依赖/测试影响、remaining_work）。本分支G2a两个新增文件由同一清单的additions记录，含历史源码路径/提交/摘要和readonly_query逻辑target；两历史集合合计90文件；后加设计副本按documentation_additions精确摘要追溯。目录迁移时的91项输入/目标、风险与Owner见directory_migration_20261112.json及本批迁移映射；历史输入摘要与layout_history不改写。§3.1列出全部实际业务文件。
 
 原73文件的destinations继续指向当前落点，并保留原摘要和拆分来源；layout_history保存上一轮layout_revision，当前记录不可用前轮PASS代替。每个C++输入除预处理指令外的token顺序必须与本轮输入一致；include另由边界检查与GN验证。未实现的方法不补成功桩。

@@ -6,11 +6,11 @@
 
 建议请求机制只保留原请求、当前步骤/尝试、发送关联与一次性完成资格。逐步消费与外部效果认知独立，进入终态后由原效果核对者接收晚证据。同步 C0 可保留可查询请求与部分写入前缀，省略没有异步响应的空步骤。每个用例继续自己编排。目标约束由[架构主文档](../../SIM_Target_Architecture_Design_v1.2.md)维护，本文是固定输入的论证与实验记录。
 
-**新证据。** 在合成双域 Host 配置中，真实 AssignmentService、TopologyService、AssignmentAggregate 与 AssignmentStoreAdapter 可以完成两个 C0，产生任何完整串行顺序均得不到的最终角色对。在最初的 eea678d67，换回仓内阶段五目录后，第二个请求在计划选择处被拒绝。C1 发布后，相同拓扑可以经另一分支访问这些共享输出。另有真实 Legacy Data 写入口可与 Primary 写同一键，它只需一个可用的 M0。是否在某个产品上发生交错，仍须验证装配、线程、路由和同版外仓。
+**同一反例的前后对照。** 标准单 M0 双卡上，旧 Target 的 C1 为槽 0 预写 Primary，C0 成功选槽 1，C1 随后也成功。持久 Primary=1、Data=0、内存 lastPrimary=lastData=0，与两种完整串行顺序均不符。在 `bcc1614fd` 运行同一调度，C0 在写入前返回 -1，原 C1 成功，最终 Primary、Data、两个投影均为 0。该 Host 切片已覆盖最初反例。产品上能否并发进入、公开 Busy 语义及设备资源能否复用仍需签收。[单 M0 见证](#单-m0-的-c1-与-c0)
 
 ## 固定输入与证据口径
 
-开始时本地/远端 main 均为 `eea678d6746abc48e799afc9560dc8c55b82ba9e`。执行期间其他批次发布 B 异步与 C1 三阶段，复核提交为 `ee32ed917`、`9c4c82fef`（状态提交 `ba95cf2c0`）。下文注明早期反例的输入；最新可达路径另见“单 M0 的 C1 与 C0”。最初输入与[上一轮审查](SIM_Architecture_Independent_Review_20261119.md)的 `0e4004bef` 相比，差异仅在文档。产品仍从原 Core 装配 services/sim，Target 为 testonly。对照了[功能与 WU](../../migration/SIM_Architecture_Refactor_Design.md#writer-cutover)、[业务流程](../../business/多SIM架构重构_设计说明与业务流程对照.md)、[五组目录](../../SIM重构代码目录结构设计方案.md)、[测试入口](../../../services/multisim/test/README.md)和[执行状态](../../SIM_Refactor_Execution_State.md#current-status)。
+开始时本地/远端 main 均为 `eea678d6746abc48e799afc9560dc8c55b82ba9e`。执行期间其他批次发布 B 异步与 C1 三阶段，复核提交为 `ee32ed917`、`9c4c82fef`（状态提交 `ba95cf2c0`），随后发布 C1 错误/重试 `3c5a974c0` 和共享写集/完成保护 `bcc1614fd`。“单 M0 的 C1 与 C0”记录旧反例；“阶段九复验”记录同一输入在新保护下的可达性。最初输入与[上一轮审查](SIM_Architecture_Independent_Review_20261119.md)的 `0e4004bef` 相比，差异仅在文档。产品仍从原 Core 装配 services/sim，Target 为 testonly。对照了[功能与 WU](../../migration/SIM_Architecture_Refactor_Design.md#writer-cutover)、[业务流程](../../business/多SIM架构重构_设计说明与业务流程对照.md)、[五组目录](../../SIM重构代码目录结构设计方案.md)、[测试入口](../../../services/multisim/test/README.md)和[执行状态](../../SIM_Refactor_Execution_State.md#current-status)。
 
 事实类型与可达性分别记录。FACT 为源码或本轮运行事实，CONFIRMED 约束只继承有依据的既有契约，INFERENCE 是从证据推导，PROPOSED 为建议，OPEN 为待签收/缺证，HISTORICAL 保留原批次。下表中的可达性 CONFIRMED 特指在**所列环境**同时有代码和运行见证，REACHABLE 为已知条件下的静态路径，CONDITIONAL 依赖外部条件，HYPOTHETICAL 尚无调用证据，NOT_REACHABLE 仅限明确的配置和路径。冻结 Legacy 的外部观察与内部新协议分别验收。
 
@@ -78,7 +78,21 @@ Legacy 的 Data 独立写者有跨仓源码证据：telephony_cellular_data@`29d
 
 [当前业务入口](../../../services/multisim/role_assignment/assignment_service.cpp) · [B/C1 现有用例](../../../services/multisim/test/cases/target/primary/b_async_primary_test.cpp)
 
-B 和 C1 还使三个协议问题具体化。① B 在发设备前登记 pending，成功时后写参数；C1 按阶段/成员集接纳，阶段全齐才推进。两者不能共用一种参数写入时点。② 以 `9c4c82fef` 静态核验，AcceptLateRadioEvidence 要求 NeedsReconciliation，但随后调用的 AcceptResult 拒绝非 Open；不能从函数名或注释推出晚证据已保存。③ EndWait/MarkTerminal 并未原子领取 route，多处锁外端口在 MarkTerminal 之前。应按现有出口做两种顺序测试，不能据代码顺序宣称产品已经重复交付。构造 SessionRef 使用固定应用键与绑定版本，产品接入还需 R 的真实会话/设备证据。
+B 和 C1 的回调还揭示三处边界。① B 在发设备前登记 pending，成功时后写参数；C1 按阶段/成员集接纳，阶段全齐才推进。两者不能共用一种参数写入时点。② 以 `9c4c82fef` 静态核验，AcceptLateRadioEvidence 要求 NeedsReconciliation，但随后调用的 AcceptResult 拒绝非 Open；不能从函数名或注释推出晚证据已保存。③ C1 在完整收到一个阶段的成员回包后会 EndWait(Delivered)，即使它随后还要发下一阶段；此时不能把 wait 当作客户端已交付的证据。EndWait/MarkTerminal 各自赋值，多处完成端口调用位于 MarkTerminal 之前。应按现有出口做两种顺序测试，不能据代码顺序宣称产品已经重复交付。当时的成功回包路径复核 subscription、slot、bindingRevision 和 ICCID，未在 bindingCurrent 表达式中复核 active。若产品允许只变更 active 且绑定仍相同，需分别确认原请求应如何交付、谁负责已发命令。构造 SessionRef 使用固定应用键与绑定版本，产品接入还需 R 的真实会话/设备证据。
+
+### 阶段九复验 · 同样的输入与事件顺序
+
+| 观察 | ba95cf2c0 | bcc1614fd 的同一受控 Host |
+| --- | --- | --- |
+| 槽 0 的 C1 预写后发槽 1 的 C0，再交齐原 C1 消息 | 两个返回均为 0，Primary=1 而 Data 与 lastPrimary 为 0 | C0 返回 -1，未写参数、未发通知；C1 返回 0，仅一组 Primary/Data 通知。Primary 参数及 ICCID 指槽 0，Data 和两个投影均为 0。 |
+| 同一 NotSent 回执两次、执行下一步、尝试改写终态 | NotSent 两次 Accepted；合法下一步已恢复；后写 Failed 覆盖 Succeeded | Accepted→Duplicate，两步各接纳一次；再次写 Failed 保持 Succeeded；ClaimCompletion 只取到一次。 |
+| 请求已 NeedsReconciliation，交入迟到证据 | AcceptResult 拒绝非 Open，无法补记 | 错 StepRef 被拒，原步的 ConfirmedApplied 可独立读回，终态保持。该观察只证明原记录有归宿。 |
+
+**FACT。** `AdmitTransitionWithRoleWriteSet` 把设备域的转换登记和 `kPrimaryRoleWriteSet` 的成员检查放在一个聚合方法中。Data setter 复用 Data 成员，Voice/SMS 各用自己的成员；同槽同请求的多次外部 IPC 没有公共幂等键。C1 在已确认失败并完成该轮后可恢复原参数，第一次失败经 ClaimEarlyCompletion 交付，后续受限轮仍属原内部请求。CompleteOnce 在通知完成端口前尝试封存并领取出口。角色映射和请求记录均是 Owner 私有容器，其正确性以执行域串行化为前提；上述确定性见证全程单线程。[聚合](../../../services/multisim/role_assignment/assignment_aggregate.cpp) · [C0 保护用例](../../../services/multisim/test/cases/target/primary/c0_assignment_service_test.cpp) · [B/C1 保护用例](../../../services/multisim/test/cases/target/primary/b_async_primary_test.cpp)
+
+**仍需验证。** ① AcceptEntryPrimaryPreference 直接调用 Store。选择共享偏好前须清点 Core、激活、Profile 与域外旧写入口；当前 Primary/SetDefaultRole 的保护不能扩展到所有写者。② 该版 AdvanceStep 校验旧 StepRef 和递增步号，不要求前一步已消费；C1 的业务门禁要由 A 验证。重试采用新步号加 attemptCount。只在确有同一步重发的用例需要时再扩展机制。③ 在 bcc1614fd，EndWait 仍可再次赋值，AcceptLateEvidence 会覆盖同请求的既有晚记录；需要显式区分兼容等待状态、首个有效证据和后续矛盾证据。④ 业务准入与完成领取在 Owner 顺序内有效。真实并发线程接入、跨服务写者与外部命令结束仍需产品证据。Host 内部 -1 的取值不能批准新的公开拒绝策略。另一个 API 边界是同一 owner 再次 AdmitRoleWriteSet 时传入已持集合的严格子集：当前实现把已持位图赋为传入位图。现有 Primary 固定传入完整集合，未发现该子集重入调用。建议重复准入只返回原记录，部分释放必须显式验权；以“持 P+D→同 owner 重入 D→其他 owner 申请 P”作纯规则负控。
+
+**并行开发中的 M9.3 输入。** 在 bcc1614fd 之后的工作树再次检查到 AcceptResult 已移入 request_mechanism 的 runtime_operation_store.cpp，AcceptLateEvidence 拒绝 Unknown 和已有记录的再次覆盖。受控 RetrySchedulerPort 经 weak sink 将原 request、attempt 和调度代次交回 Owner，Stop 可取消/排空 Host 定时任务。调度代次只区别同一原操作的旧定时事件，无需加到所有同步请求。实跑该工作树 Target 38/38、Both C0 各一例差异 0。独立的产品写者、真实 Radio 的结束/可复用、Core OnStop 与共享 RIL 仍缺产品验收。设备释放不能由 Host scheduler 的 drain 代替。
 
 ## A · 角色准入、提交与恢复
 
@@ -95,7 +109,7 @@ B 和 C1 还使三个协议问题具体化。① B 在发设备前登记 pending
 | 时点 | 守卫、动作及保证（PROPOSED） |
 | --- | --- |
 | 准入 | 按实际入口/分支列举将共同排序的成员，在 A 短提交域原子试取全部；同一已受理身份返回已有状态，新旧两个无关联的 IPC 调用不能凭相同参数合并。冲突先返回内部 Busy 及原持有者。由方法级签收决定拒绝/等待/有界排队及原错误；通知/回调线程不能等待其调用栈上的前任。 |
-| 执行 | T 窄读验证原订阅/位置/版本及 active；A 只操作自己的资格，R 只操作硬件资格。界定**首次不可撤销调用**为资格观察的截止点，尽量在该点前复核；最后校验至外部调用之间仍有窗口。中途换卡不会把同槽新订阅替换进旧请求。提前发生的 Legacy 偏好写保留在原入口原时点，整批迁移前盘点所有旧写者。 |
+| 执行 | T 窄读验证原订阅/位置/版本及 active；A 只操作自己的资格，R 只操作硬件资格。在**首次不可撤销调用**前尽量复核；长时设备步骤返回后还要复核当前资格；最后校验至外部调用之间仍有窗口。中途换卡不会把同槽新订阅替换进旧请求。提前发生的 Legacy 偏好写保留在原入口原时点，整批迁移前盘点所有旧写者。 |
 | 提交 | 准入登记、本地投影接纳及完成出口领取在各自受控域内有线性化点。P 两个参数独立写，通知提交与消费者接收也是两件事；不存在整个请求横跨参数系统、广播及 Radio 的线性化点。以原分支偏序约束已发前缀。先记待执行节点，出锁执行，带 token 回到域内核验。 |
 | 部分失败 | 每个不可合并的输出记节点、是否已调用及可证明的结果；至少分 U、P 槽、P 散列、P 通知、D 键、D 通知。不引入持久事件日志。返回错误只证明接口报告的结果，实际副作用需独立证据；已知投递不重播，送达未知不推定成功或安全重放。旧分支允许忽略的完成错误仍按旧规则投影。 |
 | 结束 | 已确定后续不会再发有冲突的旧动作、所需通知已按序提交且后继无法被旧效果覆盖，才能释放相应资格。未知交 A 核对并保留仍受影响的成员；不能证明成员独立时保留完整集合。相同 token 校验后才可释放。超时只结束等待。补偿须满足原分支条件、当前仍有写资格且确认旧效果，不以旧快照覆盖新选择。 |
@@ -108,13 +122,15 @@ B 和 C1 还使三个协议问题具体化。① B 在发设备前登记 pending
 
 ### 已有实现和实测反例（FACT，分基线）
 
+下表还原 eea678d67→ba95cf2c0 的问题形成过程；bcc1614fd 的实现与复测见[阶段九复验](#阶段九复验--同样的输入与事件顺序)。
+
 | 载体 | 已有字段或实现 | 由此能够证明的范围 |
 | --- | --- | --- |
 | RequestId、StepRef | RequestId={value, epoch, owner}；StepRef={request, step, attempt} | 同一本地序号可出现在不同 Owner/实例。C0 每次 Begin 都分配新号，重复客户端调用不自动去重 |
 | RequestContext、RuntimeOperation | 原 target、可选 parent、可选 sentSession、CompletionPlan；另有 deviceEffect、wait、terminal | 回调、同步等待和内部回复是三种 route；wait 有 Waiting/Delivered/TimedOut/CancelledWait/CallerDied，terminal 有 Open/Succeeded/Failed/NeedsReconciliation |
 | Begin、Read、AdvanceStep | Begin 初始化 step0/attempt0、NotSent、Waiting、Open。AdvanceStep 只许 nextStep 大于原 step，改 step/attempt/sentSession | 现版本无法用同 step 的 attempt+1 表达重试；eea678d67 推进时不复位 deviceEffect，ee32ed917 起 AdvanceStep 复位为 NotSent，让下一步可正常接纳 |
 | AcceptResult、MarkTerminal | 核 epoch、Owner、请求存在、Open、原 StepRef；用 deviceEffect 是否为 NotSent 判重。MarkTerminal 直接覆盖 | 仓外实测 NotSent 两次均 Accepted；第 1 步 ConfirmedApplied 后合法第 2 步在旧输入被判 Duplicate，在修订输入已恢复；Succeeded 再写 Failed 得到 Failed，wait 仍为 Waiting。实测对象是容器，不能据此推断生产回调已交付两次 |
-| 尚缺的接入 | 旧输入三者仅声明。新容器 RecordSent 核原 step、Open 和 sentSession 唯一性；EndWait 给 wait 赋值；RetireAfterEvidenceRetention 可移除终态且 effect 非 Unknown 的记录。B、C1 已有 pendingPrimary_，可按协议会话/成员接纳受控回包 | C0 只 Begin→AdvanceStep→本地同步流程→MarkTerminal。声明的 assignmentConflicts_ 与 nextConflictToken_ 没有实现 C0 的写集登记 |
+| 方法接入范围 | eea678d67 的 RecordSent、EndWait、RetireAfterEvidenceRetention 仅有声明。新容器 RecordSent 核原 step、Open 和 sentSession 唯一性；EndWait 给 wait 赋值；RetireAfterEvidenceRetention 可移除终态且 effect 非 Unknown 的记录。B、C1 已有 pendingPrimary_，可按协议会话/成员接纳受控回包 | C0 只 Begin→AdvanceStep→本地同步流程→MarkTerminal。声明的 assignmentConflicts_ 与 nextConflictToken_ 没有实现 C0 的写集登记 |
 
 [请求值](../../../services/multisim/infrastructure/request/request_ref.h) · [上下文与出口](../../../services/multisim/infrastructure/request/request_context.h) · [可执行容器](../../../services/multisim/infrastructure/request/runtime_operation_store.h) · [A 的接口与成员](../../../services/multisim/role_assignment/assignment_service.h)
 
@@ -181,7 +197,8 @@ bool ReleaseOrTransfer(RequestId owner, RoleWriteSet members, EndEvidence proof)
 // AssignmentService 中调用；绑定资格与已确认写入的节点分别记录
 auto facts = topology.ReadPrimaryTarget(command.target.slot);
 auto grant = InAssignmentDomain([&] { return roles.TryAdmit(id, PlanWrites(mode)); });
-if (!grant.canRun()) return MapByMethodContract(grant);
+if (grant.sameOwner()) return ReadOriginalRequest(id); // 重复提交不再次执行输出
+if (grant.busy()) return MapByMethodContract(grant);  // 公开行为按方法签收
 if (!StillEligible(facts, topology.ReadPrimaryTarget(command.target.slot))) {
     return FinishBeforeNewOutput(id);   // 原入口此前可能已写偏好
 }
@@ -192,6 +209,11 @@ for (auto node : OrderedLegacyOutputs(mode)) {
     auto next = InAssignmentDomain([&] { return AcceptNodeAndProjection(id, node, evidence); });
     if (!next.mayContinue()) return FinishOrReconcile(id, next);
 }
+auto reply = InAssignmentDomain([&] {
+    // 已发前缀归属明确、旧动作不能再改变后继；否则移交仍受影响的成员。
+    return SealAndClaimOriginalRouteAndSettleGrant(id);
+});
+DeliverOutsideDomain(reply);
 ```
 
 ```cpp
@@ -203,7 +225,8 @@ AcceptDispatchEvidence(issued, receipt);     // 同域合并，不覆盖先行�
 
 void OnResult(OriginalKey key, Evidence evidence)
 {
-    RecordOriginalExternalEvidence(key, evidence); // 归原 A/R，幂等；承载者需活到移交
+    if (!HasOriginalDispatchEvidence(key)) return;  // 含发送时的成员和传输/会话关联
+    RecordOriginalExternalEvidence(key, evidence);   // 幂等，归原 A/R；先核原关联再记录
     auto action = InOwnerDomain([&] {
         if (!MatchesOriginalAndMayCommit(key)) return NoAction();
         if (!ConsumeCurrentAttemptOnce(key, evidence)) return NoAction();
@@ -213,14 +236,16 @@ void OnResult(OriginalKey key, Evidence evidence)
 }
 ```
 
-超时/取消/Stop 与正常结果使用同一完成领取入口。只有证实本方法应结束时才封存终态；仅停止等待时关闭该 route，稍后业务终结不会二次交付。已领取但尚未投递的回调在 Stop 排空中计为在途；若发送尚未进入传输系统，取消与发起的最后交接需要同一资格检查，无法证明未交接就保留 Unknown。
+上述角色循环描述 C0；C1 在设备阶段间返回，继续持同一业务资格，恢复时先验原资格。B 在设备确认后才写 Primary。PrepareIfOwner 在域内领取单个输出节点；再次进入已发未返回的节点只能观察，不能重发。每键错误及通知失败依原方法解释。
+
+超时/取消/Stop 与正常结果使用同一完成领取入口。端口发送前已证明未移交的错误可在原 Owner 本地消费 NotSent，无需制造设备回包。只有证实本方法应结束时才封存终态；仅停止等待时关闭该 route，稍后业务终结不会二次交付。已领取但尚未投递的回调在 Stop 排空中计为在途；若发送尚未进入传输系统，取消与发起的最后交接需要同一资格检查，无法证明未交接就保留 Unknown。
 
 | 现有位置 | 下一阶段改动的责任 |
 | --- | --- |
-| role_assignment/assignment_service 与 assignment_aggregate | 从具名业务分支生成写集，登记、逐节点接纳、释放或移交；收敛已有 transitions_ 与预留 assignmentConflicts_ 的重复职责。phase 检查失败后不可继续输出 |
+| role_assignment/assignment_service 与 assignment_aggregate | 从具名业务分支生成写集，登记、逐节点接纳、释放或移交；复用已接入的 roleWriteOwners_，与 transitions_、预留 assignmentConflicts_ 明确各自用途。phase 检查失败后不可继续输出 |
 | role_assignment/assignment_store_adapter、输出端口 | 保留原每键操作、散列、返回码和顺序。按需要在现有专用返回载荷提供已尝试节点及可信结果，不增加另一底层写者；void 通知最多证明返回 |
 | account/topology_service、binding_index | 提供当前资格及失效原因。按原目标复核；T 不获取 A 资格，也不把账户锁跨越参数/Radio I/O |
-| infrastructure/request、infrastructure/compatibility | 原容器就地分离本步消费/累计效果，终态与 route 领取单向；C 使用原三种出口。无需多层完成转发，C0 无设备步骤可直接执行具名分支 |
+| infrastructure/request、infrastructure/compatibility | 已有原步骤消费位、终态守卫、一次领取与晚记录，继续验证逐步推进及核对后的回收；C 使用原三种出口。无需多层完成转发，C0 无设备步骤可直接执行具名分支 |
 | card/state、card/records、device/resource | 验发送时 session、scope/member 与原资源键；R 核对设备结束和可复用证据。迟到只交原债务，Stop 封入口和保活以宿主协议为界 |
 
 ## 不变量与可执行验收
@@ -236,9 +261,9 @@ void OnResult(OriginalKey key, Evidence evidence)
 | I5 安全重试：同一层有且只有一个授权重试方 | 确认无效果、旧设备动作已结束、原目标/资格仍有效才增 attempt | 旧操作可能已应用，因本地清零再次发命令；或把旧 attempt 回包当作新步骤 | 检查效果、幂等/去重合同、结束或隔离、有效绑定、资格及预算；模型拒绝 Unknown 重发与旧尝试 |
 | I6 资源独立：设备可复用须由原 lease 的结束证据决定 | 业务超时，资源隔离；核对后第二请求取得新资格 | 完成/Stop 直接清设备占用；旧释放动作错误释放后继租约 | R 原键/fence、实际结束/可复用及相应效果条件；模型持旧租约跨超时，拒绝错释放 |
 
-**测试层与定位。** 以下用例以 `SIM028-LEGACY-C0-DUAL-PRIMARY0` 为差分基准。表中的后缀是排程标签，供实现者参数化已有案例；超出 C0 的设备步骤放到 WU-07，绑定/会话复用已有 T/R 规则。L1 纯规则；L2 真实类+受控端口；L3 确定性屏障/锁外回调；L4 Legacy/Target 同一冻结 Oracle；L5 匹配产品。前四层允许 Host；“设备”列表示哪部分结论必须由 L5 给出。新增策略的断言只用于待批准 Target，不能反写 Legacy Golden。
+**测试层与定位。** 表中“早期观察或未知”记录最初两个输入的观察，已修复项按[阶段九复验](#阶段九复验--同样的输入与事件顺序)解释；目标断言贯穿修复前后的同一调度。以下用例以 `SIM028-LEGACY-C0-DUAL-PRIMARY0` 为差分基准。表中的后缀是排程标签，供实现者参数化已有案例；超出 C0 的设备步骤放到 WU-07，绑定/会话复用已有 T/R 规则。L1 纯规则；L2 真实类+受控端口；L3 确定性屏障/锁外回调；L4 Legacy/Target 同一冻结 Oracle；L5 匹配产品。前四层允许 Host；“设备”列表示哪部分结论必须由 L5 给出。新增策略的断言只用于待批准 Target，不能反写 Legacy Golden。
 
-| 调度标签 / 不变量 | 输入与确定性顺序 | 当前观察或未知 | 推荐断言及失败定位 | 后端/设备 |
+| 调度标签 / 不变量 | 输入与确定性顺序 | 早期观察或未知 | 推荐断言及失败定位 | 后端/设备 |
 | --- | --- | --- | --- | --- |
 | single / I1 | C0 已 M0，正常参数返回 | 真实 C0 可正常完成，无设备切换 | 逐键、主卡→Data→完成及返回与既有 Oracle 比较；差异定位 A/C | L2、L4 Both；产品参数行为 L5 |
 | multi / I2 | Open，步 1 已应用→推进→步 2 合法响应 | 旧容器判 Duplicate，修订后已复位，可接纳步 2 | 两步分别消费，第二次同一步无效；定位 O | L1、L2 Target；无需设备 |
@@ -258,7 +283,7 @@ void OnResult(OriginalKey key, Evidence evidence)
 
 **五层放行顺序。** 先用附录在仓外复核反例与纯规则；用现有 TargetTopologyIntegration、TargetPrimary 及 TargetAdapterIntegration 接入可控参数/通知关口；在写前、两键之间、通知内、完成领取后暂停，分别运行两个顺序，禁止 sleep。按测试入口执行 `test.py run --backend both --filter SIM028-LEGACY-C0-DUAL-PRIMARY0` 比较冻结参数、事件、公开视图、调用结果与设备命令计数。最后在匹配产品记录同一原始请求、域/路由、写者、每键调用结果、通知提交、设备 commandEnded/resourceReusable 证据。缺产品证据时只可放行已测 Host 切片。
 
-**实施与签收。** ① WU-04 先枚举所有旧写者及能同时到达的分支，复核标准/合成/同域三种排程。② A 在既有聚合原子登记实际成员，先验证不相关角色可并行，已发前缀可核对。③ WU-07 用现有 B 和 C1 的多步、错误、重试路径验统一守卫及单次出口。④ 在 R 的隔离与原操作结束证据上联验“超时→后继→晚回包”。⑤ 同一 WU 全部旧写者可退出、Both 差分通过、所涉产品证据闭合才能切生产。宿主 Stop 排空/共享 RIL/卸载与硬件可复用仍是独立 P0。
+**实施与签收。** ① WU-04 先枚举所有旧写者及能同时到达的分支，复核标准/合成/同域三种排程。② A 在既有聚合原子登记实际成员，先验证不相关角色可并行，已发前缀可核对。其中最小 Host 路径已在 bcc1614fd 验证，其他真实写入口仍需清点。③ WU-07 用现有 B 和 C1 的多步、错误、重试路径验统一守卫及单次出口。④ 在 R 的隔离与原操作结束证据上联验“超时→后继→晚回包”。⑤ 同一 WU 全部旧写者可退出、Both 差分通过、所涉产品证据闭合才能切生产。宿主 Stop 排空/共享 RIL/卸载与硬件可复用仍是独立 P0。
 
 | 待批准的用户可见选择 | 需要的证据与签收方 |
 | --- | --- |
@@ -268,33 +293,54 @@ void OnResult(OriginalKey key, Evidence evidence)
 | 自动重试、补偿、跨重启恢复、设备何时可再次分配 | 命令幂等/可靠失效、原设备终止及可复用、恢复预算；R、设备、产品签收 |
 
 
+## 第二轮反向审查
+
+以标准双卡 C1/C0 而非合成双 M0 再推导一次设计。串行化最后的投影赋值仍会留下旧预写参数；把所有 SIM 业务放入一个队列则会无故挡住独立角色。以下限制已写回推荐协议。它们适用于受影响的切片，尚待产品签收。
+
+| 对推荐方案的质疑 | 反例、裁决与验收办法 |
+| --- | --- |
+| ① 会演变成全局互斥吗？ | C1 预写 P 后等待期间，独立 Voice 字段仍应能提交；独立 Data 会与此次 D 共同输出冲突。一次原子登记经核实的成员，字段隔离未知的 Provider 先取证。运行 role_checks 验独立与冲突两个方向。 |
+| ② 四种寿命是否被重新合并？ | 已交付请求失败后，旧契约若仍要求后台恢复，保留原设备操作和 A 的恢复资格。重试后可以更新效果或收尾，不能重开已交付的出口。多成员步骤收到第一个 ACK 也不能结束全请求。 |
+| ③ 每层是否都要一个版本和一把锁？ | 同一 Owner 的短提交域可复用，私有同步调用可隐含身份。传输已带原 StepRef 时不再签发关联号。只有设备或会话确有独立寿命时才携 session/fence。 |
+| ④ “已写前缀”能否证明参数原子可见？ | 第一键已改、第二键写入未知，或订阅者尚未收件，都属于合法观察。A 按原调用分别记录并复核。单次读回相同值无法证明旧命令已停止，也不赋予覆盖新选择的资格。 |
+| ⑤ 通知或完成重入会重发、死锁吗？ | 同一 id 再受理只查询原状态；每个输出在调用端口前声明已在途。完成先领取后出锁，重入不同 id 只尝试完整写集；同步等待前任在同一调用栈上不可行。 |
+| ⑥ 请求超时是否错误地让设备可复用？ | 反排“超时→后继同资源→原操作结束”。R 验原关联、命令结束和可复用；A 在能证明没有旧写动作后才释放相应成员。旧结果可进核对，不能恢复业务终态。 |
+| ⑦ 是否暗中改变拒绝、等待、通知或重试？ | 技术 Busy 不直接映射新增错误码，通知按原分支偏序；超时返回、后台恢复、排队和自动重试分别签收。差分中一个已批准出口对应一次交付。 |
+| ⑧ 更简单的实现何时足够？ | 单成员、本地且不会重入的 setter 在 A 内一次提交即可。C0 有外部参数和通知，需保留已发节点；它没有步骤响应，不建 R 租约。B/C1 才保留真正异步的原步骤。 |
+| ⑨ 普通 C++ 开发者能否安全实现？ | A 只编排具名分支，O 负责一次消费和出口领取，R 保管原租约。返回锁外动作前复制所需数据并保活，禁止把 map 迭代器或可失效引用带过可重入端口。 |
+| ⑩ 能否测出错误实现？ | 固定暂停点复现 C1/C0，分别检查参数、投影和两次返回；模型分别移除终态守卫、带入前步已消费位，两个请求变异均失败。另枚举保持 C1/C0 内部顺序的 20 种三节点排程；移除写集守卫后有 13 种得到混合输出，加回守卫时能完整执行的两种顺序均一致。被拦截的调度如何映射到客户端仍取决于契约。模型只检验 Owner 域中的顺序，跨线程排空与设备证据保留在产品门禁。 |
+
 ## 实验记录与复核方法
 
 | 输入 | 方法 | 实际结果/限度 |
 | --- | --- | --- |
 | eea678d67 | 宿主 g++/GoogleTest，从当前 GN 的 sim_target_production_host 清单编译十个业务源，复用原拓扑夹具，增加锁外记录端口 | 原 4 项加定点观察 5 项，9/9。观察程序以已知问题为预期；通过表示复现成功。 |
-| eea678d67 | 官方 `test.py run --backend both --filter SIM028-LEGACY-C0-DUAL-PRIMARY0`，指定两个相关 target，在仓外用依赖锁匹配的 GoogleTest、OpenSSL/native 重新构建 | Legacy 与 Target 各执行 1 项，Oracle、两侧差分均 PASS，差异 0。Target 同一新二进制经官方逐用例进程运行 16/16。一开始复用旧工作机二进制因 Target 零匹配返回 BLOCKED，改用源码重建后取得上述结果。 |
+| eea678d67 | 官方 `test.py run --backend both --filter SIM028-LEGACY-C0-DUAL-PRIMARY0`，指定两个相关 target，在仓外用依赖锁匹配的 GoogleTest、OpenSSL/native 重新构建 | Legacy 与 Target 各执行 1 项，差分 Oracle 与两侧比较 PASS，差异 0。该次使用默认 single-active，单列的双激活扩展契约显示 BLOCKED。后续明确传入双激活初态重跑。Target 同一新二进制经官方逐用例进程运行 16/16。一开始复用旧工作机二进制因 Target 零匹配返回 BLOCKED，改用源码重建后取得上述结果。 |
 | eea678d67 | `run_architecture.py --with-gn --migration`；检查点恢复工具加 `--remote origin --fetch` | 结构/迁移/目录、声明负控、语法、四组纯规则、GN 骨架通过；CHECKPOINT_VERIFIED。 |
 | ba95cf2c0（与 9c4c82fef 同业务源码） | 按提交对象核实 10 个编译单元及所用模块头文件；用编译器输入覆盖正在由其他任务修改的少数文件，仅作仓外验证 | 原拓扑 4 项及“单 M0 的 C1/C0”“修订容器”2 项共 6/6；P 参数=1、D 参数=0、lastPrimary=lastData=0。两步均可接纳，NotSent 双消费、终态覆写仍可观察。该输入的设备和全量回归未在本实验运行。 |
-| 设计模型 | 附录 Python，按 owner 提交顺序穷举成功、超时、取消、Stop 四事件的排列 | 24 种顺序，各出口最多领取一次；不同写集可并行、部分移交、步骤隔离、拒绝无据重试和原租约使用通过；故意携带前步消费位或允许重写终态，2/2 变异被命中。属于有限模型，未验证所有 C++ 线程/设备行为。 |
+| bcc1614fd | 相同实际业务类、目录及回包顺序，固定提交的 GN 输入，附录开启已修复断言 | 4 个原夹具＋2 个协议探针共 6/6；旧混合输出不可达，两个完成时点、逐步消费和晚证据分别可观测。 |
+| 两个工作批次间的架构检查 | 首次从含未提交 RadioSwitchResult.notify 变更的工作区执行架构脚本 | runtime_protocol_rules.cpp 的旧聚合初始化未传 notify，编译失败。固定 ba95cf2c0 的业务编译输入复查通过；随后 3c5a974c0 同步了初始化。M9.3 工作区再次运行 `run_architecture.py --with-gn --migration`，90 个 C++ 单元、17 项结构测试、4 组纯规则与 25 个 testonly 目标通过。 |
+| M9.3 工作树（启动时 HEAD=bcc1614fd） | 官方入口源码构建 Both C0，以同一二进制运行 Target 全套 | Target 38/38。显式传入 `--init-model dual-active-primary0`，对 C0、C1 SUCCESS-STALE、C1 CHECK-ERROR-RETRY 分别执行 Both；三例各一项 Legacy 与 Target，扩展业务契约、Oracle、双侧比较均 PASS，差异 0。此行使用含调度器的工作树，区别于上一行按 Git 对象固定的 6/6。 |
+| 设计模型 | 附录 Python，按 owner 提交顺序穷举成功、超时、取消、Stop 四事件的排列 | 24 种顺序，各出口最多领取一次；不同写集可并行、部分移交、步骤隔离、拒绝无据重试和原租约使用通过；故意携带前步消费位或允许重写终态，2/2 请求变异被命中。另将每次角色写缩为三个保持原顺序的节点；完整共享资格下两种串行顺序均一致，移除资格则 20 种排程中有 13 种得到混合结果。此计数不表示产品发生概率。属于有限模型，未验证所有 C++ 线程/设备行为。 |
 
-下列附录保留原始见证和最小规则模型，便于在相同提交、带 C++17 及 GoogleTest 的 Linux 上复核。编译读取当前工作区，输出放在仓外；`old` 选择 eea678d67 的见证，`current` 选择 B/C1 源码的见证。它们只使用合成卡身份和受控设备端口。
+下列附录保留原始见证和最小规则模型，便于在相同提交、带 C++17 及 GoogleTest 的 Linux 上复核。编译读取被检工作区，输出放在仓外。若目标源码早于本文，可从包含本轮修订的 Git 提交导出本文到仓外，在下列命令中将 review 指向该文件。`old` 选择 eea678d67 的见证，`current` 检验 ba95cf2c0 的 B/C1 见证，`fixed` 检验 bcc1614fd 之后的保护。它们只使用合成卡身份和受控设备端口。
 
 ```sh
-# 在仓库根执行。可将 current 改为 old 来复核相应基线。
+# 在仓库根执行。fixed、current、old 分别对应上表的三个源码输入。
 out=$(mktemp -d)
-python3 - "$out" current <<'PYTHON'
+review=telephony_core_service/docs/history/reviews/SIM_Role_Concurrency_and_Async_Request_Review_20261119.md
+variant=fixed
+python3 - "$out" "$variant" "$review" <<'PYTHON'
 from pathlib import Path
 import re, sys
-p=Path('telephony_core_service/docs/history/reviews/SIM_Role_Concurrency_and_Async_Request_Review_20261119.md')
-s=p.read_text()
+s=Path(sys.argv[3]).read_text()
 out=Path(sys.argv[1])
-for name, tag, lang in [('observe.cpp',sys.argv[2],'cpp'),('build.py','build','python'),('rules.py','model','python')]:
+for name, tag, lang in [('observe.cpp','current' if sys.argv[2]=='fixed' else sys.argv[2],'cpp'),('build.py','build','python'),('rules.py','model','python')]:
     marker='<!-- source '+tag+' -->'
     block=s.split(marker+'\n```'+lang+'\n',1)[1].split('\n```',1)[0]
     (out/name).write_text(block+'\n')
 PYTHON
-python3 "$out/build.py" "$out"
+python3 "$out/build.py" "$out" "$variant"
 python3 "$out/rules.py"
 ```
 
@@ -328,8 +374,13 @@ TEST(ReviewCurrent, C1AndC0ShareOutputWithOneM0)
     ASSERT_EQ(radio.sent.size(),2u);
     EXPECT_TRUE(f.completion.results.empty());
     a.StartPrimarySwitch(c0);
+#ifdef VERIFY_SHARED_ROLE_GUARDS
+    ASSERT_EQ(f.completion.results,(std::vector<int32_t>{-1}));
+    EXPECT_EQ(f.parameters.values[kPrimary],"0");
+#else
     ASSERT_EQ(f.completion.results,(std::vector<int32_t>{0}));
     EXPECT_EQ(f.parameters.values[kPrimary],"1");
+#endif
     for (size_t n=0;n<6;++n) {
         ASSERT_LT(n,radio.sent.size());
         const auto command=radio.sent[n];
@@ -345,6 +396,15 @@ TEST(ReviewCurrent, C1AndC0ShareOutputWithOneM0)
         a.AcceptRadioStep(reply);
     }
     ASSERT_EQ(radio.sent.size(),6u);
+#ifdef VERIFY_SHARED_ROLE_GUARDS
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{-1,0}));
+    EXPECT_EQ(f.parameters.values[kPrimary],"0");
+    EXPECT_EQ(f.parameters.values[kIccid],"5BC332BC693934EB3D0DEAED37C106D2DEFD6F9767721BFE2B1AC6E209D6B67D");
+    EXPECT_EQ(f.parameters.values[kData],"0");
+    EXPECT_EQ(a.ReadLegacyAssignment().lastPrimary,(SlotId{0}));
+    EXPECT_EQ(a.ReadLegacyAssignment().lastData,(SlotId{0}));
+    EXPECT_EQ(f.output.events,(std::vector<std::string>{"primary","data"}));
+#else
     EXPECT_EQ(f.completion.results,(std::vector<int32_t>{0,0}));
     EXPECT_EQ(f.parameters.values[kPrimary],"1");
     EXPECT_EQ(f.parameters.values[kIccid],kEncoded1);
@@ -352,6 +412,7 @@ TEST(ReviewCurrent, C1AndC0ShareOutputWithOneM0)
     EXPECT_EQ(a.ReadLegacyAssignment().lastPrimary,(SlotId{0}));
     EXPECT_EQ(a.ReadLegacyAssignment().lastData,(SlotId{0}));
     EXPECT_EQ(f.output.events,(std::vector<std::string>{"primary","data","primary","data"}));
+#endif
 }
 TEST(ReviewCurrent, Container)
 {
@@ -359,7 +420,11 @@ TEST(ReviewCurrent, Container)
     auto id=r.Begin(SlotTarget{SlotId{0}},{SynchronousCompletionRoute{SynchronousWaitRef{7}},false});
     using R=RuntimeOperationStore::ResultAdmission;
     EXPECT_EQ(r.AcceptResult({id,0,0},EffectKnowledge::NotSent),R::Accepted);
+#ifdef VERIFY_SHARED_ROLE_GUARDS
+    EXPECT_EQ(r.AcceptResult({id,0,0},EffectKnowledge::NotSent),R::Duplicate);
+#else
     EXPECT_EQ(r.AcceptResult({id,0,0},EffectKnowledge::NotSent),R::Accepted);
+#endif
     ASSERT_TRUE(r.AdvanceStep({id,0,0},1,0,std::nullopt));
     EXPECT_EQ(r.AcceptResult({id,1,0},EffectKnowledge::ConfirmedApplied),R::Accepted);
     EXPECT_FALSE(r.AdvanceStep({id,1,0},1,1,std::nullopt));
@@ -367,7 +432,21 @@ TEST(ReviewCurrent, Container)
     EXPECT_EQ(r.AcceptResult({id,2,0},EffectKnowledge::ConfirmedApplied),R::Accepted);
     r.MarkTerminal(id,TerminalState::Succeeded);
     r.MarkTerminal(id,TerminalState::Failed);
+#ifdef VERIFY_SHARED_ROLE_GUARDS
+    EXPECT_EQ(r.Read(id)->terminal,TerminalState::Succeeded);
+    EXPECT_TRUE(r.ClaimCompletion(id));
+    EXPECT_FALSE(r.ClaimCompletion(id));
+    auto late=r.Begin(SlotTarget{SlotId{1}},{SynchronousCompletionRoute{SynchronousWaitRef{8}},false});
+    const StepRef original{late,0,0};
+    ASSERT_EQ(r.AcceptResult(original,EffectKnowledge::Unknown),R::Accepted);
+    ASSERT_TRUE(r.TryMarkTerminal(late,TerminalState::NeedsReconciliation));
+    EXPECT_FALSE(r.AcceptLateEvidence({late,1,0},EffectKnowledge::ConfirmedApplied));
+    EXPECT_TRUE(r.AcceptLateEvidence(original,EffectKnowledge::ConfirmedApplied));
+    EXPECT_EQ(r.ReadLateEvidence(late),EffectKnowledge::ConfirmedApplied);
+    EXPECT_EQ(r.Read(late)->terminal,TerminalState::NeedsReconciliation);
+#else
     EXPECT_EQ(r.Read(id)->terminal,TerminalState::Failed);
+#endif
 }
 }
 ```
@@ -467,9 +546,10 @@ import re,subprocess,os,sys
 m=Path('telephony_core_service/services/multisim')
 gn=(m/'test/framework/internal/host/BUILD.gn').read_text()
 units=re.findall(r'"\$production_root/services/multisim/([^"]+\.cpp)"',gn.split('static_library("sim_target_production_host") {')[1].split('\n}')[0])
-assert len(units)==10
+assert units and len(units)==len(set(units))
 out=Path(sys.argv[1])
-subprocess.run(['g++','-std=c++17','-O0','-I'+str(m),str(out/'observe.cpp'),*(str(m/u) for u in units),'-pthread','-lgtest_main','-lgtest','-o',str(out/'observe')], check=True)
+flags=['-DVERIFY_SHARED_ROLE_GUARDS'] if sys.argv[2]=='fixed' else []
+subprocess.run(['g++','-std=c++17','-O0',*flags,'-I'+str(m),str(out/'observe.cpp'),*(str(m/u) for u in units),'-pthread','-lgtest_main','-lgtest','-o',str(out/'observe')], check=True)
 subprocess.run([str(out/'observe')],check=True)
 ```
 
@@ -588,6 +668,7 @@ def role_checks():
                 del owners[unit]
     group = {'preference', 'primary pair', 'data'}
     assert admit('one', group) and admit('one', group)
+    assert admit('one', {'data'}) and owners['primary pair'] == 'one'
     assert not admit('two', {'data', 'sms'}) and 'sms' not in owners
     assert admit('voice-writer', {'voice'}) and admit('sms-writer', {'sms'})
     retire('one', group, {'data'})
@@ -606,7 +687,42 @@ for mutation, expected in [('carry_consumed','step isolation'), ('overwrite_term
         assert str(failure) == expected
     else:
         raise AssertionError('mutant survived: ' + mutation)
-print('24 exit races; step, effect, retry and lease checks; 2/2 mutants detected')
+print('24 exit races; step, effect, retry and lease checks; 2/2 request mutants detected')
+
+from itertools import combinations
+
+def output_schedules(guarded):
+    # C1: prewrite -> observe phase completion -> commit the linked Data.
+    # C0: save Primary -> publish Primary -> commit its linked Data.
+    serial_results = {(0, 0, 0), (1, 1, 1)}
+    completed = mixed = 0
+    for c1_turns in combinations(range(6), 3):
+        steps = [0, 0]
+        primary = data = last_primary = None
+        owner = None
+        for turn in range(6):
+            slot = 0 if turn in c1_turns else 1
+            if guarded and owner not in (None, slot):
+                break  # conflicting action cannot execute now; external Busy policy is unspecified
+            owner = slot
+            step = steps[slot]
+            if step == 0:
+                primary = last_primary = slot
+            if step == 2:
+                data = slot
+                if slot == 0:  # only C1 accepts its prewritten Primary again at completion
+                    last_primary = slot
+                owner = None
+            steps[slot] += 1
+        else:
+            completed += 1
+            mixed += (primary, data, last_primary) not in serial_results
+    return completed, mixed
+
+assert output_schedules(True) == (2, 0)
+total, mixed = output_schedules(False)
+assert (total, mixed) == (20, 13)
+print(f'role output schedules: 2 complete legal orders; removing the grant yields {mixed}/{total} mixed results')
 ```
 
 </details>

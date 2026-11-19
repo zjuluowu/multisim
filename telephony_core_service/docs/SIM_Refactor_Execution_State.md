@@ -9,12 +9,12 @@
 | 范围 | 已核实实施与证据 |
 | --- | --- |
 | Stage 9 Host | M9.1/M9.2 已落 Host 最小实现：Primary/Data/Preference 写集跨域原子准入，R 设备租约独立；独立 Data setter 共享 Data 位，Voice/SMS 可独立推进；步骤消费独立于 deviceEffect，Completion 一次领取，终态不可覆写，Late Evidence 只回填原请求。Target 29/29、架构/GN/技术/完整性及 production execution audit PASS；Legacy 124/124、CI admission/mutation/profile safety PASS；Both 153/153，六个既有 C0/B/C1 场景 Oracle 与 Legacy/Target 差分均 PASS。C0×C0、C1×C0、通知重入、独立 Data、NotSent 重复、终态竞争、绑定变化恢复均有负控。C1 `AcceptC1RetryDue` 仍只是 Host 到期入口；生产任务注册、Stop/Drain、换卡/销毁及 R 结束证据仍 BLOCKED，未宣称 M9.3 生产接入。三份用户未提交设计/评审文档继续作为工作区输入，不参与本批提交。 |
-| 输入基线 | 本次专项核验的 B/C1 业务源码为 `9c4c82fef`（状态提交 `ba95cf2c0`）；首轮独立评审源码为 `0e4004bef8362b0e5721afbeddd663831573a3c2`；此前文档治理输入为 `155f9c4c3378f271e5241368bec7616838cb3df1`。恢复工具刷新远端后确认历史 G2a 检查点 `cc787945792527eeb94bc20a5e955315d6269e83` 可从工作分支恢复，它不是 main 的祖先。 |
+| 输入基线 | 本次专项以 `9c4c82fef`（状态提交 `ba95cf2c0`）复现，再用 `bcc1614fd` 对相同交错及步骤规则复验；首轮独立评审源码为 `0e4004bef8362b0e5721afbeddd663831573a3c2`；此前文档治理输入为 `155f9c4c3378f271e5241368bec7616838cb3df1`。恢复工具刷新远端后确认历史 G2a 检查点 `cc787945792527eeb94bc20a5e955315d6269e83` 可从工作分支恢复，它不是 main 的祖先。 |
 | 产品装配 | 根 GN 仍编译 `services/sim/`，multisim 的逻辑目标仍为 testonly。G2a Core/Binding 仅用于 Host 参考测试，生产接入回退及上游基线见[§37](#upstream-sync-20261116)。 |
 | 源码结构 | 五组目录已落地。实际文件、接口和 GN 依赖见[源码详细设计](SIM_Multisim_Source_Architecture_Detailed_Design.md#source-tree)，历史迁址见[§29](#directory-layout-20261112)。 |
 | Target C0 | `155f9c4c3` 引入真实 AssignmentStoreAdapter 及 Host 装配，覆盖原系统参数键、ICCID 散列及失败/部分效果。保留该批记录的 Target 11/11、Both C0 和写方法执行审计，见[阶段四](#target-c0-store-20261118)和[后端范围](../services/multisim/test/docs/Backend_Architecture.md)。 |
 | Target Primary B | 当前实现 WithoutModemRestart 异步请求、严格响应关联、45000ms 超时和迟到拒绝；B 成功/错误/超时分别与 Legacy Scenario 差分。真实 Radio/HDI 及产品超时调度未验收。 |
-| Target Primary C1 | `9c4c82fef` 已有 Host 三阶段成功路径。与 C0 跨域交错可以使持久参数和内存投影分离，见下方专项审查；各分支放行按 WU 验证。 |
+| Target Primary C1 | `9c4c82fef` 已有 Host 三阶段成功路径。该版与 C0 交错可使参数和投影分离；bcc1614fd 的共享资格已阻止同一交错，见下方专项审查；各分支放行按 WU 验证。 |
 | Target C0 拓扑 | `0e4004bef` 已接入真实 T 的当前账户与绑定读取，在 Radio 观察后复核原资格。Host 测试构造确认的存储输入；执行批次及范围见[阶段五说明](../services/multisim/test/docs/Backend_Architecture.md#阶段五真实-ta-业务对象集成)。 |
 | Legacy Host | 保留[§48](#48-剩余fail第二阶段真实stop与完整host验收2026-11-18)的 124/124 与 CI 准入证据及阶段四的回归记录。专项审查在 `eea678d67` 重跑标准 Both C0 对应的 Legacy 单例，未重跑 124 项全量。 |
 | 产品门禁 | 正式 OHOS 参数端口、完整 Provider/Topology/Radio/Device、SA/IPC、原生产品构建和设备验收尚未闭合。旧 SimManager Stop 的 Host 证据仍按 §48 使用。 |
@@ -23,13 +23,13 @@
 
 ### 下一批任务与依赖
 
-1. 先以已复现的单 M0 双卡 C1/C0 交错验证共享写集，再核对独立 Data、通知重入和逐键部分效果。以[源码详细设计 §7、§15](SIM_Multisim_Source_Architecture_Detailed_Design.md#assignment)定位端口及装配，以[双后端测试](../services/multisim/test/docs/Backend_Architecture.md)核对可执行范围。B/C1 依赖相应 Radio/设备、前后写入和部分效果证据。
+1. 保留单 M0 双卡 C1/C0 交错作为回归，再核对独立 Data、通知重入和逐键部分效果。以[源码详细设计 §7、§15](SIM_Multisim_Source_Architecture_Detailed_Design.md#assignment)定位端口及装配，以[双后端测试](../services/multisim/test/docs/Backend_Architecture.md)核对可执行范围。B/C1 依赖相应 Radio/设备、前后写入和部分效果证据。
 2. Provider 相关用例先取得匹配产品的 schema、字段、错误、重载和恢复证据。产品路径另按真实 OHOS 树、Feature、SA/IPC 和设备环境验收。
 3. 按[原功能与 WU](migration/SIM_Architecture_Refactor_Design.md#writer-cutover)核对全部旧入口。写权切换、SO 边界、生命周期和 eSIM/MEP 新能力按[主设计 §22](SIM_Target_Architecture_Design_v1.2.md#22-分阶段实施门禁)的独立门禁和本批授权推进。
 
 2026-11-19 独立设计审查以 `0e4004bef` 为源码输入，形成[历史评审](history/reviews/SIM_Architecture_Independent_Review_20261119.md)。评审先独立发布于 `d8fcbba40`，随后将分责、共享输出和异步资格同步至主设计与源码详细设计。产品装配、设备与业务执行仍按原批次记录；当前设计验收见[第二轮复审](history/reviews/SIM_Architecture_Independent_Review_20261119.md#第二轮复审--对修改后的设计提出反例)。
 
-2026-11-19 [角色与请求专项审查](history/reviews/SIM_Role_Concurrency_and_Async_Request_Review_20261119.md)先在 `eea678d67` 重建标准 Both C0（差异 0）及 Target 16/16，后在 `ba95cf2c0` 的 B/C1 源码重新取得 6/6 定点 Host 观察，确认单 M0 的跨域 C1/C0 输出交错。纯规则模型检出两个请求变异；移除角色资格后，20 种排程中有 13 种出现混合输出。审查证据提交为 `a909d3df6`。已将共享角色准入、步骤一次消费和终态/设备分离同步至主设计 §4.1、§11.2、§22.2 及源码详细设计 §7、§8、§15。生产调度、真实设备结束及新业务策略待签收。
+2026-11-19 [角色与请求专项审查](history/reviews/SIM_Role_Concurrency_and_Async_Request_Review_20261119.md)先在 `eea678d67` 重建标准 Both C0（差异 0）及 Target 16/16，后在 `ba95cf2c0` 的 B/C1 源码重新取得 6/6 定点 Host 观察，确认单 M0 的跨域 C1/C0 输出交错。随后以 `bcc1614fd` 的提交输入独立重跑 6/6：相同 C0 在写前被拒、C1 成功，NotSent 去重、终态单向、单次领取及原步晚证据均得到定点验证。纯规则模型检出两个请求变异；移除角色资格后，20 种排程中有 13 种出现混合输出。审查证据提交为 `a909d3df6`。已将共享角色准入、步骤一次消费和终态/设备分离同步至主设计 §4.1、§11.2、§22.2 及源码详细设计 §7、§8、§15。另按 M9.3 工作树运行 Target 38/38；显式双激活初态下，Both 的 C0、C1 成功与 C1 失败重试三组扩展契约和差分均通过，差异 0。架构脚本核验 90 个 C++ 单元、4 组纯规则及 testonly GN。生产调度、真实设备结束及新业务策略待签收。
 
 ## 历次双后端与阶段核验记录
 
