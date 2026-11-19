@@ -1,0 +1,219 @@
+#include <gtest/gtest.h>
+
+#include <map>
+#include <optional>
+#include <string>
+#include <vector>
+#include "account/topology_service.h"
+#include "role_assignment/assignment_service.h"
+#include "role_assignment/assignment_store_adapter.h"
+
+using namespace OHOS::Telephony::MultiSim;
+namespace {
+constexpr int32_t kLegacyLocalPointerNull = 83886087;
+constexpr auto kRaw1 = "8900000000000000001";
+constexpr auto kEncoded0 = "5BC332BC693934EB3D0DEAED37C106D2DEFD6F9767721BFE2B1AC6E209D6B67D";
+constexpr auto kEncoded1 = "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2";
+constexpr auto kPrimary = "persist.telephony.MainSlotId";
+constexpr auto kIccid = "persist.telephony.MainCard.Iccid";
+constexpr auto kData = "persist.telephony.MainCellularDataSlotId";
+constexpr auto kPreference = "persist.telephony.userPreferPrimarySlot";
+
+class AccountStorePort final : public AccountStore {
+public:
+    AccountStoreWriteResult WriteDisplayNumber(const AccountNumberPatch &) override { return {-1,false,true}; }
+    AccountStoreWriteResult WriteActiveProjection(const AccountActivePatch &) override { return {-1,false,true}; }
+    AccountStoreWriteResult WriteDisplayName(const AccountNamePatch &) override { return {-1,false,true}; }
+    AccountStoreWriteResult WriteLabel(const AccountLabelPatch &) override { return {-1,false,true}; }
+    AccountStoreWriteResult WriteImsPreference(const AccountImsPreferencePatch &) override { return {-1,false,true}; }
+    AccountLoadResult LoadAccounts(const AccountLoadRequest &r) override { return {r,-1,false,false,{}, {}}; }
+    AccountIdentityMatch MatchAccountByIccid(const std::string &) override { return {-1,true,std::nullopt}; }
+    AccountDiscoveryStoreResult WriteDiscoveredAccount(const AccountDiscoveryWritePlan &) override
+    { return {-1,std::nullopt,false,true,EffectKnowledge::Rejected}; }
+    AccountStoreWriteResult WriteRemoval(const AccountRemovalPatch &) override { return {-1,false,true}; }
+    int32_t QueryImsPreferenceByIccid(const std::string &, int32_t &) override { return -1; }
+};
+class Parameters final : public AssignmentParameterPort {
+public:
+    std::map<std::string,std::string> values {{kPrimary,"0"},{kData,"0"},{kIccid,kEncoded0},{kPreference,"false"}};
+    std::vector<std::pair<std::string,std::string>> writes;
+    AssignmentParameterResult Read(const std::string &key,const std::string &fallback,std::string &value) override
+    { value=values.count(key)?values[key]:fallback; return {0,true}; }
+    AssignmentParameterResult Write(const std::string &key,const std::string &value) override
+    { writes.emplace_back(key,value); values[key]=value; return {0,true}; }
+};
+class Radio final : public RadioExecutionPort {
+public:
+    PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const override
+    { return {slot, 1, true, false, 9}; }
+    void SwitchPrimaryRadio(const RadioSwitchRequest &request) override { requests.push_back(request); }
+    void EndLegacySenseSwitch(const StepRef &, const RadioDomainId &) override { ++ended; }
+    std::vector<RadioSwitchRequest> requests;
+    unsigned ended {0};
+};
+class Output final : public AssignmentOutputPort {
+public:
+    std::vector<std::pair<std::string,bool>> phases;
+    std::vector<std::string> roles;
+    void PublishPrimaryPhase(bool done,bool user) override { phases.emplace_back(done?"done":"start",user); }
+    void PublishMainCardChanged(SlotId) override { roles.emplace_back("primary"); }
+    void PublishDefaultDataChanged(SlotId,SubscriptionId) override { roles.emplace_back("data"); }
+};
+class Completion final : public LegacyIntCompletionPort {
+public:
+    std::vector<int32_t> results;
+    void CompleteLegacyInt(const CompletionPlan &,int32_t result) override { results.push_back(result); }
+};
+
+AccountRecord Account(SubscriptionId id,const std::string &iccid,SlotId slot)
+{
+    AccountProjection current; current.active=true; current.legacyPosition=slot;
+    return {id,iccid,1,current,current};
+}
+CardDiscoveryObservation Discovery(int slot,uint64_t generation,const std::string &iccid)
+{ return {{RuntimeEpoch {6,2},CardApplicationTarget {SlotId {slot},"USIM"},generation},generation,iccid}; }
+AccountDiscoveryStoreResult Stored(SubscriptionId id)
+{ return {0,id,true,true,EffectKnowledge::ConfirmedApplied}; }
+
+struct Fixture {
+    SlotCatalog catalog {{
+        {SlotId{0},EndpointKind::Physical,0,RadioDomainId{"m0"},VisibilityClass::Ordinary,false},
+        {SlotId{1},EndpointKind::Physical,1,RadioDomainId{"m1"},VisibilityClass::Ordinary,false}}, {2,2,2,2,2}};
+    AccountStorePort accountStore;
+    TopologyService topology {catalog,accountStore,RuntimeEpoch{6,2}};
+    Parameters parameters;
+    AssignmentStoreAdapter store {parameters};
+    Radio radio;
+    Output output;
+    Completion completion;
+    AssignmentService service {catalog,store,radio,output,topology,completion,RuntimeEpoch{6,2}};
+    BindingRef target;
+    BindingRef Seed()
+    {
+        EXPECT_TRUE(topology.AcceptSlotAssembly({0},true));
+        EXPECT_TRUE(topology.AcceptSlotAssembly({1},true));
+        EXPECT_TRUE(topology.AcceptStoredDiscovery(Discovery(0,1,"8900000000000000000"),
+            Account({2},"8900000000000000000",{0}),Stored({2})).has_value());
+        auto targetValue=topology.AcceptStoredDiscovery(Discovery(1,2,kRaw1),
+            Account({1},kRaw1,{1}),Stored({1}));
+        EXPECT_TRUE(targetValue.has_value());
+        return targetValue.value_or(BindingRef{});
+    }
+    RequestId Start()
+    {
+        target=Seed();
+        return service.StartPrimarySwitch({SlotTarget{SlotId{1}},true,
+            {SynchronousCompletionRoute{SynchronousWaitRef{44}},false},std::nullopt,target});
+    }
+};
+
+RadioSwitchResult Result(const RadioSwitchRequest &request, EffectKnowledge effect, int32_t legacyResult)
+{ return {request.step,request.target,request.expectedBinding,request.protocolSession,0,effect,legacyResult}; }
+std::string Observation(const Fixture &f,int api)
+{
+    std::string roles="[";
+    for(size_t i=0;i<f.output.roles.size();++i){roles+=(i?",":"");roles+="\""+f.output.roles[i]+"\"";}
+    roles+="]";
+    return "{\"api_result\":"+std::to_string(api)+
+        ",\"primary_role\":"+f.parameters.values.at(kPrimary)+
+        ",\"default_data_role\":"+f.parameters.values.at(kData)+
+        ",\"parameters\":{\"user_preference\":"+(f.parameters.values.at(kPreference)=="true"?"true":"false")+
+        ",\"primary_slot\":"+f.parameters.values.at(kPrimary)+",\"primary_iccid\":\""+f.parameters.values.at(kIccid)+
+        "\",\"default_data_slot\":"+f.parameters.values.at(kData)+"},\"notifications\":"+roles+
+        ",\"device_switch_commands\":"+std::to_string(f.radio.requests.size())+
+        ",\"retry_count\":0,\"switching\":"+(f.service.ReadLegacyAssignment().primarySwitchInProgress?"true":"false")+"}";
+}
+void VerifyBRequest(const Fixture &f)
+{
+    ASSERT_EQ(f.radio.requests.size(),1u);
+    EXPECT_EQ(f.radio.requests[0].mode,PrimarySwitchMode::WithoutModemRestart);
+    EXPECT_EQ(f.radio.requests[0].target.legacySlotId,1);
+    EXPECT_TRUE(f.output.roles.empty());
+    EXPECT_EQ(f.output.phases.front(),std::make_pair(std::string("start"),true));
+    EXPECT_EQ(f.parameters.values.at(kPrimary),"0");
+    EXPECT_TRUE(f.completion.results.empty());
+}
+} // namespace
+
+TEST(TargetPrimaryB,BSuccessCommitsOnlyAfterMatchingReply)
+{
+    Fixture f; const auto request=f.Start(); VerifyBRequest(f);
+    f.service.AcceptRadioStep(Result(f.radio.requests[0],EffectKnowledge::ConfirmedApplied,0));
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{0}));
+    EXPECT_EQ(f.parameters.values.at(kPrimary),"1");
+    EXPECT_EQ(f.parameters.values.at(kData),"1");
+    EXPECT_EQ(f.parameters.values.at(kIccid),kEncoded1);
+    EXPECT_EQ(f.output.roles,(std::vector<std::string>{"primary","data"}));
+    EXPECT_EQ(f.output.phases.back(),std::make_pair(std::string("done"),true));
+    EXPECT_EQ(f.radio.ended,1u);
+    EXPECT_FALSE(f.service.ReadLegacyAssignment().primarySwitchInProgress);
+    RecordProperty("scenario_id","SIM028-LEGACY-B-SUCCESS-DUAL-PRIMARY0");
+    RecordProperty("primary_observation",Observation(f,0));
+    RecordProperty("validation_level","async_business");
+}
+
+TEST(TargetPrimaryB,BErrorKeepsPreviousRolesAndCompletesOriginalFailure)
+{
+    Fixture f; const auto request=f.Start(); VerifyBRequest(f);
+    f.service.AcceptRadioStep(Result(f.radio.requests[0],EffectKnowledge::ConfirmedNotApplied,
+        kLegacyLocalPointerNull));
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{kLegacyLocalPointerNull}));
+    EXPECT_EQ(f.parameters.values.at(kPrimary),"0");
+    EXPECT_EQ(f.parameters.values.at(kData),"0");
+    EXPECT_TRUE(f.output.roles.empty());
+    EXPECT_EQ(f.output.phases.back(),std::make_pair(std::string("done"),true));
+    EXPECT_FALSE(f.service.ReadLegacyAssignment().primarySwitchInProgress);
+    RecordProperty("scenario_id","SIM028-LEGACY-B-ERROR-DUAL-PRIMARY0");
+    RecordProperty("primary_observation",Observation(f,kLegacyLocalPointerNull));
+}
+
+TEST(TargetPrimaryB,BTimeoutAt45000KeepsRolesAndRejectsLateReply)
+{
+    Fixture f; const auto request=f.Start(); VerifyBRequest(f);
+    EXPECT_FALSE(f.service.AcceptPrimarySwitchTimeout(request,44999));
+    EXPECT_TRUE(f.service.AcceptPrimarySwitchTimeout(request,45000));
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{kLegacyLocalPointerNull}));
+    EXPECT_EQ(f.parameters.values.at(kPrimary),"0");
+    EXPECT_EQ(f.parameters.values.at(kData),"0");
+    EXPECT_TRUE(f.output.roles.empty());
+    const auto late=Result(f.radio.requests[0],EffectKnowledge::ConfirmedApplied,0);
+    f.service.AcceptRadioStep(late);
+    f.service.AcceptLateRadioEvidence(late);
+    EXPECT_EQ(f.completion.results.size(),1u);
+    EXPECT_EQ(f.parameters.values.at(kPrimary),"0");
+    EXPECT_FALSE(f.service.ReadLegacyAssignment().primarySwitchInProgress);
+    RecordProperty("scenario_id","SIM028-LEGACY-B-TIMEOUT-DUAL-PRIMARY0");
+    RecordProperty("primary_observation", Observation(f,kLegacyLocalPointerNull));
+    RecordProperty("timeout_clock","controlled_ms; production deadline=45000");
+    f.service.StartPrimarySwitch({SlotTarget{{1}},true,
+        {SynchronousCompletionRoute{SynchronousWaitRef{46}},false},std::nullopt,f.target});
+    EXPECT_EQ(f.completion.results.size(),2u);
+    EXPECT_NE(f.completion.results.back(),0);
+    EXPECT_EQ(f.radio.requests.size(),1u);
+}
+
+TEST(TargetPrimaryB,RejectsWrongAssociationAndDoesNotAdvanceNewRequest)
+{
+    Fixture f; const auto first=f.Start(); ASSERT_EQ(f.radio.requests.size(),1u);
+    auto wrong=f.radio.requests[0]; wrong.step.step++;
+    f.service.AcceptRadioStep(Result(wrong,EffectKnowledge::ConfirmedApplied,0));
+    auto old=f.radio.requests[0];
+    f.service.AcceptRadioStep(Result(old,EffectKnowledge::ConfirmedNotApplied,kLegacyLocalPointerNull));
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{kLegacyLocalPointerNull}));
+    const auto second=f.service.StartPrimarySwitch({SlotTarget{{1}},true,
+        {SynchronousCompletionRoute{SynchronousWaitRef{45}},false},std::nullopt,f.target});
+    ASSERT_EQ(f.radio.requests.size(),2u);
+    f.service.AcceptRadioStep(Result(old,EffectKnowledge::ConfirmedApplied,0));
+    EXPECT_EQ(f.completion.results.size(),1u);
+    EXPECT_EQ(f.parameters.values.at(kPrimary),"0");
+    auto wrongBinding=f.radio.requests[1]; wrongBinding.expectedBinding=BindingRef{{9},{1},1};
+    f.service.AcceptRadioStep(Result(wrongBinding,EffectKnowledge::ConfirmedApplied,0));
+    EXPECT_EQ(f.completion.results.size(),1u);
+    auto wrongSession=Result(f.radio.requests[1],EffectKnowledge::ConfirmedApplied,0);
+    ++wrongSession.protocolSession;
+    f.service.AcceptRadioStep(wrongSession);
+    EXPECT_EQ(f.completion.results.size(),1u);
+    f.service.AcceptRadioStep(Result(f.radio.requests[1],EffectKnowledge::ConfirmedApplied,0));
+    EXPECT_EQ(f.completion.results.back(),0);
+    EXPECT_NE(first.value,second.value);
+}

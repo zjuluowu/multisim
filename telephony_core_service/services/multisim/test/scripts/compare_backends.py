@@ -54,14 +54,18 @@ def normalized(case):
                 retries += 1
         return {
             'status': case.get('status'), 'scenario': case.get('scenario'),
-            'api_result': int(public.get('primary_result', -1)),
+            'api_result': int(next((event.get('fields', {}).get('result')
+                for event in events if event.get('kind') == 'api_return'),
+                public.get('primary_result', -1))),
             'primary_role': int(public.get('primary', -1)),
             'default_data_role': int(public.get('data', -1)),
             'parameters': {
+                **({'primary_iccid': parameters.get('persist.telephony.MainCard.Iccid')}
+                   if int(public.get('primary', -1)) != 0 and
+                      parameters.get('persist.telephony.MainCard.Iccid') is not None else {}),
                 'user_preference': parameters.get('persist.telephony.userPreferPrimarySlot') == 'true',
-                'primary_slot': int(parameters.get('persist.telephony.MainSlotId', -1)),
-                'primary_iccid': parameters.get('persist.telephony.MainCard.Iccid'),
-                'default_data_slot': int(parameters.get('persist.telephony.MainCellularDataSlotId', -1)),
+                'primary_slot': int(parameters.get('persist.telephony.MainSlotId') or public.get('primary', -1)),
+                'default_data_slot': int(parameters.get('persist.telephony.MainCellularDataSlotId') or public.get('data', -1)),
             },
             'notifications': notifications, 'device_switch_commands': device_calls,
             'retry_count': retries,
@@ -70,6 +74,9 @@ def normalized(case):
         result = dict(observation)
         result['status'] = case.get('status')
         result['scenario'] = case.get('scenario')
+        if result.get('primary_role') == 0 and isinstance(result.get('parameters'), dict):
+            result['parameters'] = dict(result['parameters'])
+            result['parameters'].pop('primary_iccid', None)
         return {key: result[key] for key in DEFAULT_FIELDS if key in result}
     return {key: case[key] for key in DEFAULT_FIELDS if key in case}
 
@@ -115,16 +122,18 @@ def compare_reports(left, right, required_scenarios, compare_oracle=True):
     missing = any(item.get('missing') for item in differences)
     executed = bool(scenarios) and not missing
     oracle_differences = []
-    if compare_oracle and executed and C0 in scenarios:
-        indexes = []
-        for report in (left, right):
-            by_scenario = {case.get('scenario'): normalized(case) for case in report.get('cases', [])}
-            indexes.append(by_scenario.get(C0, {}))
-        for backend, value in zip(('legacy', 'target'), indexes):
-            mismatches = {key: {'expected': expected, 'actual': value.get(key)}
-                          for key, expected in C0_ORACLE.items() if value.get(key) != expected}
-            if mismatches:
-                oracle_differences.append({'backend': backend, 'scenario': C0, 'fields': mismatches})
+    if compare_oracle and executed:
+        for scenario in scenarios:
+            oracle = load_oracle(scenario)
+            indexes = []
+            for report in (left, right):
+                by_scenario = {case.get('scenario'): normalized(case) for case in report.get('cases', [])}
+                indexes.append(by_scenario.get(scenario, {}))
+            for backend, value in zip(('legacy', 'target'), indexes):
+                mismatches = {key: {'expected': expected, 'actual': value.get(key)}
+                              for key, expected in oracle.items() if value.get(key) != expected}
+                if mismatches:
+                    oracle_differences.append({'backend': backend, 'scenario': scenario, 'fields': mismatches})
     if missing or not executed or any(status in ('BLOCKED', 'NOT_RUN', 'UNSUPPORTED') for status in statuses):
         overall = 'BLOCKED'
     elif 'FAIL' in statuses or differences or oracle_differences:

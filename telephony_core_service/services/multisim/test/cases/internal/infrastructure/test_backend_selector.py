@@ -31,6 +31,13 @@ class BackendSelectorTest(unittest.TestCase):
         self.assertEqual(oracle['parameters']['primary_iccid'], C0_ORACLE['parameters']['primary_iccid'])
         self.assertEqual(oracle['notifications'], ['primary', 'data'])
         self.assertEqual(oracle['device_switch_commands'], 0)
+        success = load_oracle('SIM028-LEGACY-B-SUCCESS-DUAL-PRIMARY0')
+        error = load_oracle('SIM028-LEGACY-B-ERROR-DUAL-PRIMARY0')
+        timeout = load_oracle('SIM028-LEGACY-B-TIMEOUT-DUAL-PRIMARY0')
+        self.assertEqual(success['device_switch_commands'], 1)
+        self.assertEqual(success['retry_count'], 0)
+        self.assertEqual(error['api_result'], 83886087)
+        self.assertEqual(timeout['api_result'], 83886087)
 
     def test_same_scenario_maps_different_gtest_names(self):
         rows = capability_report('target', 'host', 'C0CoreToRealManagerAndController')

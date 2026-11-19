@@ -58,6 +58,7 @@ static_library("sim_target_production_host") {
 executable("sim_test_target_host") {
   sources = [
     "$test_root/cases/target/architecture/primary_plan_test.cpp",
+    "$test_root/cases/target/primary/b_async_primary_test.cpp",
     "$test_root/cases/target/primary/c0_assignment_service_test.cpp",
     "$test_root/cases/target/primary/c0_store_adapter_integration_test.cpp",
     "$test_root/cases/target/primary/c0_topology_integration_test.cpp",

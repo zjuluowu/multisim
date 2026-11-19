@@ -18,6 +18,24 @@
       "differential": "SUPPORTED"
     },
     {
+      "id": "SIM028-LEGACY-B-SUCCESS-DUAL-PRIMARY0",
+      "legacy": {"test": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply", "host": "SUPPORTED", "device": "BLOCKED", "reason": "Requires controlled product RIL."},
+      "target": {"test": "TargetPrimaryB.BSuccessCommitsOnlyAfterMatchingReply", "host": "SUPPORTED", "device": "BLOCKED", "reason": "Host controlled Radio port only; HDI/device remain unverified."},
+      "differential": "SUPPORTED"
+    },
+    {
+      "id": "SIM028-LEGACY-B-ERROR-DUAL-PRIMARY0",
+      "legacy": {"test": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary", "host": "SUPPORTED", "device": "BLOCKED", "reason": "Requires controlled product RIL."},
+      "target": {"test": "TargetPrimaryB.BErrorKeepsPreviousRolesAndCompletesOriginalFailure", "host": "SUPPORTED", "device": "BLOCKED", "reason": "Host controlled Radio port only; HDI/device remain unverified."},
+      "differential": "SUPPORTED"
+    },
+    {
+      "id": "SIM028-LEGACY-B-TIMEOUT-DUAL-PRIMARY0",
+      "legacy": {"test": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary", "host": "SUPPORTED", "device": "BLOCKED", "reason": "Uses real 45s production timeout in Legacy Host."},
+      "target": {"test": "TargetPrimaryB.BTimeoutAt45000KeepsRolesAndRejectsLateReply", "host": "SUPPORTED", "device": "BLOCKED", "reason": "Host controlled clock drives the production 45000ms deadline; HDI/device remain unverified."},
+      "differential": "SUPPORTED"
+    },
+    {
       "id": "TARGET-C0-PLAN-NO-DEVICE",
       "legacy": {
         "test": null,

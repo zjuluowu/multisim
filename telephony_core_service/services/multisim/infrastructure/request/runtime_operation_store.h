@@ -34,12 +34,35 @@ public:
     RequestId Begin(ResolvedTarget origin, CompletionPlan completion, std::optional<StepRef> parent = std::nullopt);
     bool AdvanceStep(StepRef expected, uint32_t nextStep, uint32_t attempt,
         std::optional<SessionRef> sentSession); // 同域推进，禁止外部直接改Context。
-    bool RecordSent(StepRef expected, const SessionRef &sentSession);
+    bool RecordSent(StepRef expected, const SessionRef &sentSession)
+    {
+        const auto found = operations_.find(expected.request.value);
+        if (expected.request.epoch != epoch_ || expected.request.owner != owner_ || found == operations_.end() ||
+            !(found->second.context.step == expected) || found->second.terminal != TerminalState::Open ||
+            found->second.context.sentSession) {
+            return false;
+        }
+        found->second.context.sentSession = sentSession;
+        return true;
+    }
     std::optional<RuntimeOperation> Read(RequestId request) const;
     ResultAdmission AcceptResult(StepRef step, EffectKnowledge evidence);
-    void EndWait(RequestId request, WaitState reason);
+    void EndWait(RequestId request, WaitState reason)
+    {
+        if (request.epoch != epoch_ || request.owner != owner_) { return; }
+        const auto found = operations_.find(request.value);
+        if (found != operations_.end()) { found->second.wait = reason; }
+    }
     void MarkTerminal(RequestId request, TerminalState terminal);
-    void RetireAfterEvidenceRetention(RequestId request);
+    void RetireAfterEvidenceRetention(RequestId request)
+    {
+        if (request.epoch != epoch_ || request.owner != owner_) { return; }
+        const auto found = operations_.find(request.value);
+        if (found != operations_.end() && found->second.terminal != TerminalState::Open &&
+            found->second.deviceEffect != EffectKnowledge::Unknown) {
+            operations_.erase(found);
+        }
+    }
 private:
     // 由所属 Owner 的短提交域保护；未来实现使用 FFRT，不持锁跨 I/O。
     RuntimeEpoch epoch_;

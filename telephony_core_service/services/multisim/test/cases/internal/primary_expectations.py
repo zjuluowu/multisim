@@ -23,22 +23,30 @@ def differential_oracle(scenario_id):
     golden = json.loads((data / 'primary_golden.json').read_text())
     source = next(row for row in inputs['scenarios'] if row['id'] == scenario_id)
     evidence = next(row for row in golden['scenarios'] if row['id'] == scenario_id)
-    if evidence.get('api_return') != 'TELEPHONY_ERR_SUCCESS synchronously after persistence and publisher calls':
-        raise ValueError('Frozen C0 API contract is not the supported success boundary')
     expected = source['expect']
-    target = next(account for account in source['preconditions']['active_accounts']
-                  if account['slot'] == expected['primary'])
-    encoded = hashlib.sha256(target['synthetic_iccid'].encode()).hexdigest().upper()
+    supported = {
+        'TELEPHONY_ERR_SUCCESS synchronously after persistence and publisher calls': 0,
+        'TELEPHONY_ERR_SUCCESS after response; caller remains blocked before reply': 0,
+        'TELEPHONY_ERR_LOCAL_PTR_NULL (characterized device-error mapping)': 83886087,
+        'TELEPHONY_ERR_LOCAL_PTR_NULL after real timeout': 83886087,
+    }
+    if evidence.get('api_return') not in supported:
+        raise ValueError('Frozen C0/B API contract is not supported by differential Oracle')
+    target_id = next(account for account in source['preconditions']['active_accounts']
+                     if account['slot'] == (expected['primary'] if expected['success_publications'] else 0))
+    encoded = hashlib.sha256(target_id['synthetic_iccid'].encode()).hexdigest().upper()
+    parameters = {'user_preference': source['input']['user_set'],
+                  'primary_slot': expected['primary'], 'default_data_slot': expected['data']}
+    if expected['success_publications']:
+        parameters['primary_iccid'] = encoded
     return {
-        'api_result': 0, 'primary_role': expected['primary'], 'default_data_role': expected['data'],
-        'parameters': {'user_preference': source['input']['user_set'],
-                       'primary_slot': expected['primary'], 'primary_iccid': encoded,
-                       'default_data_slot': expected['data']},
+        'api_result': supported[evidence['api_return']], 'primary_role': expected['primary'], 'default_data_role': expected['data'],
+        'parameters': parameters,
         'notifications': ['primary', 'data'] if expected['success_publications'] else [],
         'device_switch_commands': expected['ril_primary_count'] +
             2 * len(expected['protocol_phases']) * len(source['preconditions']['active_accounts']) *
             expected['protocol_attempts'],
-        'retry_count': expected['attempts'],
+        'retry_count': max(0, expected['attempts'] - 1),
     }
 
 

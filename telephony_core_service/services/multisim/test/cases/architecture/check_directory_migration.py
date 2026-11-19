@@ -82,6 +82,8 @@ def check_directory_migration(source, token_sequence, *, repo=None):
                 'account/topology_service.h',
                 'account/account_registry.cpp',
                 'account/account_registry.h',
+                'card_selection/assignment_service.h',
+                'card_selection/primary/radio_execution_port.h',
                 'support/request/runtime_operation_store.h',
             }
             if expected != current and name not in authorized_c0_targets:

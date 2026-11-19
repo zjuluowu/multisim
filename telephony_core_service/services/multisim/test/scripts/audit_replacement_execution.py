@@ -13,7 +13,7 @@ REQUIRED = {
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--slice', choices=['state','primary','query','upstream','target-adapter','target-topology'], default='state')
+    parser.add_argument('--slice', choices=['state','primary','query','upstream','target-adapter','target-topology','target-primary-b'], default='state')
     parser.add_argument('--binary', required=True, type=Path)
     parser.add_argument('--profiles', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
@@ -43,6 +43,9 @@ def main():
     elif args.slice == 'target-topology':
         required = {'AccountRegistry':['Read'], 'BindingIndex':['Find'],
                     'TopologyService':['ReadPrimaryTarget', 'AcceptStoredDiscovery']}
+    elif args.slice == 'target-primary-b':
+        required = {'AssignmentService':['AcceptRadioStep', 'AcceptPrimarySwitchTimeout'],
+                    'RuntimeOperationStore':['RecordSent', 'AcceptResult']}
     else:
         required = {'CoreServiceSim':['GetRealSimCount'], 'SimManager':['GetRealSimCount'],
                     'TelephonyExtWrapper':['GetRealSimCountExt']}
@@ -50,7 +53,7 @@ def main():
         for method in methods:
             needle = str(len(owner)) + owner + str(len(method)) + method + 'E'
             matched = [f for f in functions if needle in f['name'] and any(
-                ('/services/sim/src/' in name or '/services/core/src/' in name or '/framework/internal/host/g2a_reference/' in name or '/services/multisim/infrastructure/compatibility/api/' in name or '/services/multisim/role_assignment/' in name or '/services/multisim/account/' in name or '/services/telephony_ext_wrapper/src/' in name) for name in f['filenames'])]
+                ('/services/sim/src/' in name or '/services/core/src/' in name or '/framework/internal/host/g2a_reference/' in name or '/services/multisim/infrastructure/compatibility/api/' in name or '/services/multisim/role_assignment/' in name or '/services/multisim/account/' in name or '/services/multisim/infrastructure/request/' in name or '/services/telephony_ext_wrapper/src/' in name) for name in f['filenames'])]
             count = sum(f['count'] for f in matched)
             rows.append({'owner': owner, 'method': method, 'count': count,
                          'files': sorted({name for f in matched for name in f['filenames']}),

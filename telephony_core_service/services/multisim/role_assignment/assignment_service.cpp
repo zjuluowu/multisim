@@ -81,8 +81,8 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         *target->rilInstance == *observed.currentModemId;
     const auto plan = PlanPrimarySwitch({*target, command.userSet, observed.dedicatedPrimaryRilSupported,
         alreadyOnPrimaryModem, observed.vendorMappingRequired});
-    if (!plan || plan->mode != PrimarySwitchMode::AlreadyPrimary) {
-        // C0 only. Do not route an unimplemented B/C1 branch through Legacy or a fake success.
+    if (!plan || (plan->mode != PrimarySwitchMode::AlreadyPrimary &&
+        plan->mode != PrimarySwitchMode::WithoutModemRestart)) {
         completion_.CompleteLegacyInt(command.completion, -1);
         operations_.MarkTerminal(request, TerminalState::Failed);
         return request;
@@ -90,6 +90,32 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
     if (assignment_.AdmitTransition(*target, request.value) != TransitionAdmission::Admitted) {
         completion_.CompleteLegacyInt(command.completion, -1);
         operations_.MarkTerminal(request, TerminalState::Failed);
+        return request;
+    }
+    if (plan->mode == PrimarySwitchMode::WithoutModemRestart) {
+        const auto preference = store_.WriteUserPrimaryPreference(command.userSet);
+        if (!preference.callFinished) {
+            assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
+                TransitionPhase::Admitted, TransitionPhase::Reconciling);
+            operations_.MarkTerminal(request, TerminalState::NeedsReconciliation);
+            return request;
+        }
+        const SessionRef session {request.epoch,
+            CardApplicationTarget {target->slot, "USIM"}, facts->binding.bindingRevision};
+        const StepRef sentStep {request, 2, 0};
+        if (!operations_.AdvanceStep({request, 1, 0}, 2, 0, std::nullopt) ||
+            !operations_.RecordSent(sentStep, session) ||
+            !assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
+                TransitionPhase::Admitted, TransitionPhase::DevicePending)) {
+            completion_.CompleteLegacyInt(command.completion, -1);
+            operations_.MarkTerminal(request, TerminalState::Failed);
+            return request;
+        }
+        pendingPrimary_.emplace(request.value, PendingPrimarySwitch {sentStep, *facts, *target,
+            facts->iccid, command.userSet, command.completion});
+        output_.PublishPrimaryPhase(false, command.userSet);
+        radio_.SwitchPrimaryRadio({sentStep, target->slot, *target->radioDomain, plan->mode, facts->binding,
+            static_cast<uint32_t>(request.value)});
         return request;
     }
 
@@ -156,10 +182,96 @@ int32_t AssignmentService::SetDefaultRole(const SetRoleCommand &command)
     return result.legacyResult;
 }
 
-void AssignmentService::AcceptRadioStep(const RadioSwitchResult &)
-{ throw std::logic_error("C0 Target component slice does not implement asynchronous radio steps"); }
-void AssignmentService::AcceptLateRadioEvidence(const RadioSwitchResult &)
-{ throw std::logic_error("C0 Target component slice does not implement late radio evidence"); }
+void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
+{
+    const auto pending = pendingPrimary_.find(result.step.request.value);
+    if (pending == pendingPrimary_.end()) { return; }
+    const auto operation = operations_.Read(result.step.request);
+    if (!operation || operation->terminal != TerminalState::Open ||
+        !(pending->second.step == result.step) || !operation->context.sentSession ||
+        result.protocolSession != result.step.request.value ||
+        !(result.memberSlot == pending->second.target.slot) ||
+        !result.expectedBinding ||
+        !(result.expectedBinding->subscription == pending->second.facts.binding.subscription) ||
+        result.expectedBinding->bindingRevision != pending->second.facts.binding.bindingRevision) {
+        return;
+    }
+    const auto admission = operations_.AcceptResult(result.step, result.effect);
+    if (admission != RuntimeOperationStore::ResultAdmission::Accepted) { return; }
+    operations_.EndWait(result.step.request, WaitState::Delivered);
+    radio_.EndLegacySenseSwitch(pending->second.step, pending->second.target.radioDomain.value());
+    if (result.effect == EffectKnowledge::ConfirmedApplied && result.legacyResult == 0) {
+        const auto primary = store_.WritePrimaryParameters(pending->second.target.slot, pending->second.iccid);
+        if (!primary.callFinished) {
+            assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(),
+                result.step.request.value, TransitionPhase::DevicePending, TransitionPhase::Reconciling);
+            operations_.MarkTerminal(result.step.request, TerminalState::NeedsReconciliation);
+            pendingPrimary_.erase(pending);
+            return;
+        }
+        assignment_.AcceptPrimaryParameterProjection(pending->second.target.slot);
+        output_.PublishMainCardChanged(pending->second.target.slot);
+        const auto data = store_.WriteDefaultData(pending->second.target.slot);
+        if (!data.callFinished) {
+            assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(),
+                result.step.request.value, TransitionPhase::DevicePending, TransitionPhase::Reconciling);
+            operations_.MarkTerminal(result.step.request, TerminalState::NeedsReconciliation);
+            pendingPrimary_.erase(pending);
+            return;
+        }
+        assignment_.AcceptDataParameterProjection(pending->second.target.slot);
+        output_.PublishDefaultDataChanged(pending->second.target.slot,
+            pending->second.facts.binding.subscription);
+        assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(),
+            result.step.request.value, TransitionPhase::DevicePending, TransitionPhase::Completed);
+        output_.PublishPrimaryPhase(true, pending->second.userSet);
+        completion_.CompleteLegacyInt(pending->second.completion, 0);
+        operations_.MarkTerminal(result.step.request, TerminalState::Succeeded);
+        pendingPrimary_.erase(pending);
+        operations_.RetireAfterEvidenceRetention(result.step.request);
+        return;
+    }
+    assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(), result.step.request.value,
+        TransitionPhase::DevicePending, TransitionPhase::Failed);
+    output_.PublishPrimaryPhase(true, pending->second.userSet);
+    const int32_t legacyResult = result.effect == EffectKnowledge::Unknown ? 83886087 : result.legacyResult;
+    completion_.CompleteLegacyInt(pending->second.completion, legacyResult);
+    operations_.MarkTerminal(result.step.request, TerminalState::Failed);
+    pendingPrimary_.erase(pending);
+    operations_.RetireAfterEvidenceRetention(result.step.request);
+}
+
+void AssignmentService::AcceptLateRadioEvidence(const RadioSwitchResult &result)
+{
+    const auto pending = pendingPrimary_.find(result.step.request.value);
+    if (pending != pendingPrimary_.end() && pending->second.step == result.step) {
+        return; // still owned by AcceptRadioStep, not an unrelated late request
+    }
+    // Evidence for a retired or different request is retained only in the external
+    // runtime; it must never find a current request through value/reuse heuristics.
+    (void)result;
+}
+
+bool AssignmentService::AcceptPrimarySwitchTimeout(RequestId request, uint64_t elapsedMilliseconds)
+{
+    static constexpr uint64_t kLegacyPrimaryTimeoutMs = 45000;
+    if (elapsedMilliseconds < kLegacyPrimaryTimeoutMs) { return false; }
+    const auto pending = pendingPrimary_.find(request.value);
+    if (pending == pendingPrimary_.end()) { return false; }
+    const auto operation = operations_.Read(request);
+    if (!operation || operation->terminal != TerminalState::Open ||
+        !(pending->second.step.request == request)) { return false; }
+    operations_.EndWait(request, WaitState::TimedOut);
+    operations_.AcceptResult(pending->second.step, EffectKnowledge::Unknown);
+    assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(), request.value,
+        TransitionPhase::DevicePending, TransitionPhase::NeedsReconciliation);
+    radio_.EndLegacySenseSwitch(pending->second.step, pending->second.target.radioDomain.value());
+    output_.PublishPrimaryPhase(true, pending->second.userSet);
+    completion_.CompleteLegacyInt(pending->second.completion, 83886087);
+    operations_.MarkTerminal(request, TerminalState::NeedsReconciliation);
+    pendingPrimary_.erase(pending);
+    return true;
+}
 void AssignmentService::RetryPrimaryAfterReconciliation(RequestId)
 { throw std::logic_error("C0 Target component slice does not schedule retries"); }
 LegacyActivationWaitResult AssignmentService::WaitForLegacyPrimaryBeforeActivation(SlotId)

@@ -162,6 +162,7 @@ def main():
                     if args.action=='all' and backend=='target' and target=='sim_test_target_host':
                         run(backend+'-'+target+'-execution','audit_replacement_execution.py',['--slice','target-adapter','--binary',binary,'--profiles',reports[0].parent,'--output',session/(backend+'-'+target+'-execution')])
                         run(backend+'-'+target+'-topology-execution','audit_replacement_execution.py',['--slice','target-topology','--binary',binary,'--profiles',reports[0].parent,'--output',session/(backend+'-'+target+'-topology-execution')])
+                        run(backend+'-'+target+'-primary-b-execution','audit_replacement_execution.py',['--slice','target-primary-b','--binary',binary,'--profiles',reports[0].parent,'--output',session/(backend+'-'+target+'-primary-b-execution')])
                 if args.action in ['all','run']:
                     blocked_rows=[row for row in capability_report(backend,args.platform,args.filter)
                                   if row['status'] == 'BLOCKED']

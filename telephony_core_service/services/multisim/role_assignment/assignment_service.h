@@ -42,6 +42,7 @@ public:
     RequestId StartPrimarySwitch(const SwitchPrimaryCommand &command);
     void AcceptRadioStep(const RadioSwitchResult &result) override;
     void AcceptLateRadioEvidence(const RadioSwitchResult &result) override;
+    bool AcceptPrimarySwitchTimeout(RequestId request, uint64_t elapsedMilliseconds);
     void RetryPrimaryAfterReconciliation(RequestId request);
     AssignmentView ReadLegacyAssignment() const;
     LegacyActivationWaitResult WaitForLegacyPrimaryBeforeActivation(SlotId slot) override;
@@ -86,6 +87,15 @@ private:
     // Primary与Activation在这一个A准入登记处核验完整冲突集合并一次预留，不先后持域嵌套等。
     // Release/Transfer核验epoch/owner/request/step、domain和token；旧完成不清新登记。
     std::map<uint64_t, AssignmentConflictRegistration> assignmentConflicts_;
+    struct PendingPrimarySwitch {
+        StepRef step;
+        PrimaryTargetFacts facts;
+        SlotDescriptor target;
+        std::string iccid;
+        bool userSet;
+        CompletionPlan completion;
+    };
+    std::map<uint64_t, PendingPrimarySwitch> pendingPrimary_;
     uint64_t nextConflictToken_ {1};
 };
 } // namespace OHOS::Telephony::MultiSim

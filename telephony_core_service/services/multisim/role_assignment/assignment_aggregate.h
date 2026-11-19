@@ -25,7 +25,8 @@
 #include "role_assignment/role_selection.h"
 
 namespace OHOS::Telephony::MultiSim {
-enum class TransitionPhase { Admitted, ParametersWritten, DevicePending, Reconciling, Completed, Failed };
+enum class TransitionPhase { Admitted, ParametersWritten, DevicePending, Reconciling,
+    NeedsReconciliation, Completed, Failed };
 struct AssignmentTransition {
     RadioDomainId domain;
     SlotId target;

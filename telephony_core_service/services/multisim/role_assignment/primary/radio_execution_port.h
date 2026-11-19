@@ -37,10 +37,12 @@ struct RadioSwitchRequest {
     RadioDomainId domain;
     PrimarySwitchMode mode;
     std::optional<BindingRef> expectedBinding;
+    uint32_t protocolSession;
 };
 struct RadioSwitchResult {
     StepRef step;
     SlotId memberSlot;
+    std::optional<BindingRef> expectedBinding;
     uint32_t protocolSession;
     uint32_t phase;
     EffectKnowledge effect;

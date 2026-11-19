@@ -57,6 +57,20 @@ Host 的 Recording Store、Output、Topology、Radio、Completion 只做两件�
 
 组件测试使用无线程、无外部设备租约的同步端口记录器；作用域结束即销毁，没有遗留 worker、订阅或 RIL 资源。它只证明组件闭环和资源局部销毁，不证明正式产品对象图生命周期。
 
+## 阶段六：Primary B 异步闭环
+
+WithoutModemRestart 不复用 C0 同步提交路径。`AssignmentService` 读取真实 T 目标和 R 能力后登记 DevicePending，创建业务 RequestId/Step/attempt，并向 `RadioExecutionPort` 发送一次专用请求。请求携带 `expectedBinding` 和独立 `protocolSession`；`RuntimeOperationStore` 保存已发送 SessionRef。
+
+`AcceptRadioStep` 仅在 epoch/owner/request/step/attempt、目标槽、BindingRef 和 protocolSession 全部匹配时推进。ConfirmedApplied 才写 Primary/ICCID、发布主卡、联动 Data 并交付 SUCCESS；ConfirmedNotApplied 或设备错误只发送结束状态并返回 Legacy 的 LOCAL_PTR_NULL，保留旧角色。Unknown、未完成参数写入进入 `NeedsReconciliation`，不制造完成结果。
+
+`AcceptPrimarySwitchTimeout(RequestId, elapsedMilliseconds)` 使用 Legacy 的 45000ms 截止，Host 通过受控时钟输入模拟时间。超时在聚合中转为 Reconciling（不暴露 Legacy 的进行中标志），业务 Completion 返回原错误；新请求仍受该 Radio 域冲突阻塞，迟到响应不能清除新状态或提交角色。该模型保留真实生产超时语义，但不宣称物理 Modem/HDI 已取消。
+
+B 场景结果：`SIM028-LEGACY-B-SUCCESS-DUAL-PRIMARY0`、`SIM028-LEGACY-B-ERROR-DUAL-PRIMARY0`、`SIM028-LEGACY-B-TIMEOUT-DUAL-PRIMARY0` 均使用稳定 Scenario ID，分别与 Legacy GTest 差分。Compatibility 不比较内部 RequestId、Session、线程或调度耗时；专项关联测试验证这些字段的拒绝规则。
+
+`AcceptStoredDiscovery` 仍只是“已确认 Provider 写入结果进入 T”的 Host/未来调用入口：它要求 callFinished、writeConfirmed、ConfirmedApplied、assigned identity、账户 ICCID 和观察一致，并通过 DiscoveryObservationLedger 建立票据后才调用 AccountRegistry/BindingIndex。它不代表完整“写前票据→锁外 I/O→写后复核”生产流程，不能被生产 Host 直接用作绕过资格的建行接口。
+
+正执行审计要求 `AssignmentService::AcceptRadioStep/AcceptPrimarySwitchTimeout` 和 `RuntimeOperationStore::RecordSent/AcceptResult` 在真实 Target 二进制中非零计数。真实 Radio/HDI、产品 SA/IPC、Device 仍未验收。
+
 ## 阶段五：真实 T/A 业务对象集成
 
 C0 的 Target 前置事实现在来自真实 `TopologyService::ReadPrimaryTarget`：`BindingIndex::Find` 取得当前已接受 `BindingRef`，`AccountRegistry::ReadProjection(Current)` 提供 raw ICCID 和 active；Historical 投影仅供历史查询，不能授权 C0。`AcceptStoredDiscovery` 是已确认 provider 写入后的合法 T 接纳入口，复用 DiscoveryObservationLedger、AccountRegistry 和 BindingIndex；测试不再通过 Fake Topology 直接返回 `PrimaryTargetFacts`。

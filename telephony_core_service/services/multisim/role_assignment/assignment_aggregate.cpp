@@ -64,7 +64,7 @@ bool AssignmentAggregate::IsSwitchInProgress(const RadioDomainId &domain) const
 {
     const auto found = transitions_.find(domain);
     return found != transitions_.end() && found->second.phase != TransitionPhase::Completed &&
-        found->second.phase != TransitionPhase::Failed;
+        found->second.phase != TransitionPhase::Failed && found->second.phase != TransitionPhase::NeedsReconciliation;
 }
 
 void AssignmentAggregate::AcceptPrimaryParameterProjection(SlotId lastPrimary)
