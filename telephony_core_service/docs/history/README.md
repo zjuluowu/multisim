@@ -10,6 +10,8 @@
 | [汇报及其派生材料](presentations/) | V22、V23、V24、开发讨论稿、配套备注、PDF 和生成清单。V23 审查说明在 reviews。 |
 | [测试工程原始证据](../../services/multisim/test/docs/archive/) | 由测试工程维护，按各批基线、结果和环境解释。 |
 
+2026-11-19 的[独立架构审查](reviews/SIM_Architecture_Independent_Review_20261119.md)记录对象生命周期、14 个场景、三种方案及按切片签收的条件。
+
 ## 整理前后
 
 以 [整理输入 main@155f9c4c3](https://github.com/zjuluowu/multisim/tree/155f9c4c3378f271e5241368bec7616838cb3df1/telephony_core_service/docs) 为原路径和原始 Markdown 的固定来源。下表覆盖该提交的全部 69 个 docs 文件，含 Markdown、TXT、PPTX、PDF 和 JSON。已有的原稿归档保持原相对结构，文件名沿用原名。四个一级目录为 business、migration、knowledge、history，根部保留开发入口及稳定设计、状态、迁址引用。汇报附件和 JSON 以原字节归档，历史 Markdown 的链接重定位到现行路径或包含原证据的 Git 版本。
