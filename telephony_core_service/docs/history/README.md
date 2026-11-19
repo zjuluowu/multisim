@@ -33,7 +33,7 @@
 
 | 检查项 | 结论与处理 |
 | --- | --- |
-| 目标架构与决策状态 | v1.2 的修订为 `2026-11-17-reviewed-cross-capability-impact-09`，输入 `964dc5693badc08ce4abafd70d22f1dcd47cf727`。v1.16 的 `2026-10-23-review` 基线为 `6017003eff50c1bc8c5dfa72336a4bfe42e948b0`。v1.17 无 revision 字段，列出 `00b3faa6b02ac0f1adf77fb47f4a111cd95e665d`，仍缺该稿所需的基线核验。三稿均为 SIM-TGT-001、version 1.2、draft/pending。旧稿的 O 业务责任、持久化和跨 SA 提案按原稿追溯。 |
+| 目标架构与决策状态 | 本表记录文档整理当时的版本；后续独立审查见本页首。整理时 v1.2 的修订为 `2026-11-17-reviewed-cross-capability-impact-09`，输入 `964dc5693badc08ce4abafd70d22f1dcd47cf727`。v1.16 的 `2026-10-23-review` 基线为 `6017003eff50c1bc8c5dfa72336a4bfe42e948b0`。v1.17 无 revision 字段，列出 `00b3faa6b02ac0f1adf77fb47f4a111cd95e665d`，仍缺该稿所需的基线核验。三稿均为 SIM-TGT-001、version 1.2、draft/pending。旧稿的 O 业务责任、持久化和跨 SA 提案按原稿追溯。 |
 | 身份与写权 | 核对主设计 §3～6、§9～14、§22。由用例选择 SlotTarget、CardApplicationTarget、SubscriptionTarget，以业务对象和关联表达事实。T/A 各持唯一业务写权，O 提供请求机制，R 承担会话、Records 和设备运行支撑，C/I/H 分别负责兼容、技术适配和宿主装配。跨 Owner 依赖使用窄契约，避免中央转发和重复写权。 |
 | 目录与源码 | 确认 account、role_assignment、card、device、infrastructure 的当前树，Infrastructure 内 compatibility、assembly、request 和纯身份类型按目录方案定位。两份目录 ADR 保持 Proposed，修订 B+ 属历史实施阶段；后续五组目录依据目录方案。保留目录方案字节校验及详细设计导航测试的固定路径。 |
 | 流程与迁移 | 流程文档 §5～6 改为引用功能/WU 和源码图。功能文档 §4.4 引用目录、详细设计与部署章，原方法、写点、功能编号、WU 和静态证据均可追溯。评审提案及专项分析保留原证据。 |

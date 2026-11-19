@@ -2,8 +2,8 @@
 
 | 项目 | 内容 |
 | --- | --- |
-| 文档版本 | 0.6，修订B+及G2a工作分支只读增量（整体设计仍PROPOSED） |
-| 更新日期 | 2026-11-19（按 155f9c4c3 核对 C0 源码；早期验证沿用各自基线） |
+| 文档版本 | 0.7，真实 C0 拓扑及参数适配的静态复核（整体设计仍PROPOSED） |
+| 更新日期 | 2026-11-19（按 0e4004bef 核对 C0 源码；早期验证沿用各自基线） |
 | 源码范围 | 当前模块为91文件：89个C++文件（64头/25源）、BUILD.gn及README.md；重复目录设计副本已退役；首次G2a之前的B+输入为88文件；生产能力来源见§17 |
 | 输入基线 | B+文件移动输入5404aefe、首次G2a源main 9ab1e976及历史实现cc787945均为固定溯源；实际代码点和测试证据见[执行状态](SIM_Refactor_Execution_State.md#current-status) |
 | 当前状态 | 当前生产已回退G2a接入，原成熟SIM继续执行；G2a Core/Binding仅为测试参考，旧合入记录保留为历史。25个source_set全testonly，产品准入和写权迁移未完成，当前状态见[执行状态](SIM_Refactor_Execution_State.md#current-status) |
@@ -322,6 +322,8 @@ Domain只包含纯模型/值/规则。Application存在于T/A场景包、R能力
 
 Runtime成熟能力存在真实内部互调，先可保持一个有界实现target（纯codec/表格与条件源另列），不因目录分包就宣称能力target已独立。后续拆target按实际头/回调依赖收口，例如carrier消费records快照，records的配置/语音信箱查询经窄消费端口反向注入，不为打破环制造新业务层。eSIM off/on条件矩阵不能简单把整个card/esim目录排除，原EsimManager有disabled实现分支。
 
+当前 [BUILD.gn](../services/multisim/BUILD.gn) 的 assignment_cases 直接 public_deps 为 assignment_contracts、assignment_domain、assignment_protocols、request_mechanism、topology_contracts。assignment_adapters 只公开依赖 assignment_contracts；assembly_core 汇合具体实现。跨域运行时窄读口的方向不要求两侧互相 include 实现。验证时分别检查 GN 传递依赖与构造注入。
+
 ### 4.2 跨Owner调用、契约与注入
 
 
@@ -329,7 +331,7 @@ Runtime成熟能力存在真实内部互调，先可保持一个有界实现targ
 | --- | --- | --- |
 | T发现与重载 | AccountRolePlanningPort | A实现；H在A构造后、发布前BindRolePlanner，避免构造环 |
 | T激活 | ActivationAssignmentPort | A实现旧有界等待、带owner/session/domain/token的新准入、正式释放/转交、偏好和复核；T不依赖AssignmentService |
-| A主卡 | PrimaryTopologyPort | T实现绑定读取及映射子请求，A不依赖TopologyService |
+| A主卡 | PrimaryTopologyPort | T 已实现 C0 绑定读取；第三卡映射入口显式拒绝。A 只依赖端口 |
 | T号码/激活、A切换 | 运行端口及各自结果sink | R实现运行，应用实现sink，H绑定 |
 | 本地Profile短请求 | LocalCardPort、ProfilePreferencePort | R执行、A接纳提示，H注入 |
 | C完成 | CallbackHostPort、LegacyOutputPort | Core宿主/I执行，C解释旧出口 |
@@ -369,13 +371,14 @@ Runtime成熟能力存在真实内部互调，先可保持一个有界实现targ
 
 ## 5. 身份、目标与槽目录
 
-当前身份定义位于`infrastructure/sim_identity.h`；其保留SubscriptionId、SlotId、RadioDomainId、分类目标、RuntimeEpoch、SessionRef和BindingRef。SubscriptionId仅包装旧simId；空槽/PIN/EF不强求账户，不从slot或标签生成身份。
+[身份值定义](../services/multisim/infrastructure/sim_identity.h)按调用意图区分三个 Target。开发时从需要改变或读取的事实选择落点。
 
-SessionRef由R维护epoch、应用和bindingGeneration；BindingRef为T已接受位置绑定。BindingIndex空位置也有独立revision，移除不归零。同一卡再插必须使旧引用失效，未知槽不回退槽0。
-
-SlotCatalog只表达配置端点、允许连接、可见性、容量及可运行期加入属性。条目的rilInstance/radioDomain是配置解释，不是当前Radio分配；当前绑定归T；设备原始Radio观察由R提供，A拥有接纳后的角色/分配视图。目录不证明对象已装配或支持更多并发。
-
-Port映射到不同逻辑槽时，一槽一当前账户不必然要求新schema；确需一槽多当前绑定时再核对键、旧投影、provider与产品契约。旧GetEsimPortIndex是请求暂存，不作为可靠绑定证据。机械拆SO不强制先引入目录。
+| 操作 | 已有类型及代码入口 | 边界与尚待补齐的能力 |
+| --- | --- | --- |
+| 读空槽/静态允许路由 | SlotTarget，assembly/SlotCatalog::Find | 缺项返回空；rilInstance 与 radioDomain 是配置。动态 Radio 观测从执行端口获取 |
+| PIN、EF、应用安全与 Records | CardApplicationTarget 携槽与应用键，SessionRef 加 epoch、bindingGeneration；见[会话注册](../services/multisim/card/state/session_registry.cpp)及[加载成员](../services/multisim/card/records/load_session.cpp) | 用原应用与成员接纳结果。受影响读被失效后旧回调不能完成新读；PIN 不要求账户先建成 |
+| 查账户、切换关联到某个订阅的角色 | SubscriptionId 包装旧 simId。T 的 [BindingIndex](../services/multisim/account/binding_index.cpp)返回 BindingRef，含订阅、位置与该位置版本 | 空位置也有版本，同槽解绑再绑原订阅仍使旧引用失效。历史账户可查，当前写资格取 current |
+| 库存 Profile 与动态来源 | card/esim 的本地请求保留 legacyPortIndex、可选验证路由与卡结果；当前三个 Target 中没有独立库存 ID 或远端全局 ID | eUICC/库存项身份与当前使用的端口分别核实。仅有请求暂存的端口值不足以接纳绑定；产品确认多绑定后再评估键及 schema |
 
 <a id="topology"></a>
 
@@ -391,7 +394,7 @@ Port映射到不同逻辑槽时，一槽一当前账户不必然要求新schema�
 | BindingIndex / SlotRuntimeEntry | 已装配事实、当前BindingRef及空位置也持续的revision；同身份不隐式跨键双绑定 |
 | DiscoveryObservationLedger | 固定模块epoch、每应用观察序列、发现与失效资格；R校验不替代T最终复核 |
 | ActivationProgress | 独立slot/request/session进度，旧完成不能清新请求；不作为账户属性或资源空闲证明 |
-| TopologyService | 唯一事实入口、资料/发现/重载/映射接口；业务IO仍声明/伪代码 |
+| TopologyService | ReadPrimaryTarget 读取真实绑定与当前账户。AcceptStoredDiscovery 接纳已确认的发现结果；Provider 调用及第三卡映射另验 |
 
 AccountStore的LoadAccounts接AccountLoadRequest(view,attempt)，分别返回原读取的T行和StoredAccountRoleFragment。PrepareAccountReload保存相关身份、各字段及A角色投影版本；一个view失败保留该view旧值，另一个view仍可成功。纯AcceptReloadProjection对字段分别核对，无关改名不拒绝号码，旧重载不覆盖新字段。
 
@@ -416,7 +419,9 @@ TopologyService构造后由H绑定AccountRolePlanningPort；它实现PrimaryTopo
 | AlreadyPrimary | WithoutDevice | 原已为M0分支不执行完整协议，仍保持原保存/Data节点 |
 | VendorRouteMapping | AfterDevice | 经T映射子请求和厂商能力，旧早返回与后续步骤分别保持 |
 
-`StartPrimarySwitch` 已实现 Host C0 路径，通过 `PlanPrimarySwitch` 和 `AssignmentAggregate` 接纳角色结果。`SimModuleFactory` 构造真实 `AssignmentStoreAdapter` 并注入参数窄端口。该适配器处理原 Primary/Data/用户偏好键，兼容 raw ICCID → SHA256 → 大写 Hex，保留原参数错误及部分效果语义。B/C1 设备切换、完整回退和重试仍待实现。`AssignmentService`经PrimaryTopologyPort、RadioExecutionPort、AssignmentStore、LegacyIntCompletionPort协作，并实现T角色规划/激活和本地Profile提示所需窄端口。
+**C0 的真实调用链（0e4004bef）。** [AssignmentService::StartPrimarySwitch](../services/multisim/role_assignment/assignment_service.cpp) 使用 A 自有 operations，按目录找到目标，经 PrimaryTopologyPort 两次读取 T，中间调用 RadioExecutionPort。T 从 BindingIndex 取得 BindingRef，再从 AccountRegistry::Read 的账户上核验订阅、ICCID 和 current 是否存在；它返回 current 的 active 值，inactive 由 A 拒绝。二读核对原订阅、位置、绑定版本、ICCID 与 active；Host 集成用例在 Radio 观察中换绑，覆盖这一窗口。随后进入 PlanPrimarySwitch 的 AlreadyPrimary 和 AssignmentAggregate。未实现的 B/C1 明确拒绝。
+
+[AssignmentStoreAdapter](../services/multisim/role_assignment/assignment_store_adapter.cpp)在 Host 由测试夹具显式构造，处理偏好、Primary、Data 原参数及 ICCID 散列；产品参数端口仍待接入。A 当前按 radioDomain 登记 transition，共享 lastPrimary/lastData 与全局参数键。在 A 所有的共享输出间怎样仲裁、哪些结果允许重入，须按[目标协议 §4.1](SIM_Target_Architecture_Design_v1.2.md#41-从问题推导边界并裁决上下文)签收。角色参数接纳和实际设备状态分开读取。
 
 AccountRolePlanningInput允许existingSubscription为空；A先生成带reservation的字段片段，原Insert返回身份后分别接纳。加载返回StoredAccountRoleFragment原DB载荷，current/historical角色版本独立，不以A当前态反填旧读取。冲突资格覆盖存储调用，不能先读片段后任意整行写。
 
@@ -434,7 +439,9 @@ AccountRolePlanningInput允许existingSubscription为空；A先生成带reservat
 
 PIN短请求落`card/security`，EF读写短请求落`card/records`，本地Profile用例/期望登记落`card/esim`；各能力入口由各自逻辑contracts target精确导出，不新建统一access路由。`ProfilePreferencePort`作为A入站能力移`role_assignment`由A实现，R的Profile用例依赖窄契约，不获取AssignmentService实现；T标签提示也经T入口，不由R直接写。纯PIN/EF无跨Owner效果时不用多加T/A跳转。
 
-RequestId现含`value + epoch + RequestOwner`，StepRef另含step/attempt；共享R资源不能只比较一个局部序号。RuntimeOperationStore按epoch与Owner构造，Begin可携parent，AdvanceStep/RecordSent/AcceptResult声明受控推进，不允许外部改公共Context来绕过资格。
+当前 [RuntimeOperationStore](../services/multisim/infrastructure/request/runtime_operation_store.h) 以 Owner/epoch 生成本地 RequestId，StepRef 加 step/attempt。Begin、Read、AdvanceStep、MarkTerminal、AcceptResult 有内联实现；RecordSent、EndWait、RetireAfterEvidenceRetention 在该基线只有声明。C0 使用 Begin、AdvanceStep 和 MarkTerminal，无法据此证明多步重试或记录回收。
+
+落实[目标异步协议 §11](SIM_Target_Architecture_Design_v1.2.md#11-回调准入关联与幂等)时，当前实现有三个明确差距。AcceptResult 的重复判断依赖 deviceEffect；NotSent 作为结果时无法标记已消费。AdvanceStep 未清上一步 effect，可能拒绝下一步的合法响应。MarkTerminal 没有限制终态改写。首个真实异步切片应以不同 step/attempt 的成功、错误、重复及待核对效果证明逐步接纳；同步入口仍需保留原完成查询和部分效果证据。
 
 `CompletionPlan.route`使用CallbackCompletionRoute、SynchronousCompletionRoute、InternalCompletionRoute。LegacyIntCompletionPort向原出口交付int结果，不提供等待或万能Execute。等待只在C/Core适配层，不占据产生完成所需的T/A短提交域。
 
@@ -529,13 +536,15 @@ C monitor保留原登记、首帧、死亡清理、重连及预算，把账户/�
 | AttachSimModuleToExisting | 同SO迁移附着；借用既有store/monitor/radio/slots和单一euicc；使用H的catalog与epoch | 工厂/deleter仅声明；私有构造仅表达注入，不旁路双装配 |
 | CreateOwnedSimServices | G2b最终SIM侧创建原对象；只收host、LegacySimStartup、SimServicePublicationPort，返回原ISimManager/IEsimManager句柄及匹配拥有者 | 工厂/销毁仅声明，不要求Core取得内部Controller/store，也不强制先建目录 |
 
-SimModule构造次序为I/C出口→R→T→A→号码/查询/激活/短请求→Facade。A仅依赖T窄端口；构造后BindRolePlanner(A)，随后R BindResultSinks(号码、激活、A、T)，未完成必要绑定不得发布。不能靠双向强引用弥补构造环。
+在 [sim_module_factory.cpp](../services/multisim/infrastructure/assembly/sim_module_factory.cpp) 中实际定义的是私有 SimModule 构造函数。它的构造次序为I/C出口→R→T→A→号码/查询/激活/短请求→Facade。A仅依赖T窄端口；构造后BindRolePlanner(A)，随后R BindResultSinks(号码、激活、A、T)，未完成必要绑定不得发布。不能靠双向强引用弥补构造环。
 
 Core仍创建并拥有共享RIL；最终工厂按原eSIM创建/Init/发布、SIM创建/Init/发布时点回交Core，搜网/CMI仍留Core。原OnInit false未传播的地方不因Stage诊断就新增失败出口。
 
 原接口没有虚析构时，由生产具体类型控制块或匹配deleter销毁，不追加公开虚表。业务导出为私有创建/匹配销毁，工具链必要符号另列；不宣称绝对只有两个ELF符号。常驻拆分和StopAcceptingAndDrain增强分开，排空失败不卸载，SIM不Stop共享RIL。
 
 当前源码事实补充（2026-11-18）：旧 `services/sim` 的具体 SimManager 已按独立失败修复授权实现 Stop/IsStopping/IsStopped，采用组件自有准入、回调排空、任务/线程join及所属对象Shutdown；参数观察注销失败可重试，Core独立RIL不由SIM停止。公开ISimManager/IDL保持，内部布局/虚表变化要求产品整体重编。该Host修复不实现上表工厂、不接入multisim、不构成G2b/G2c或SO卸载验收，真实证据见[执行状态§48](SIM_Refactor_Execution_State.md)与[修复归档](../services/multisim/test/docs/archive/remaining_failures_20261118/phase_b/README.md)。
+
+生命周期对读时，从 [CoreService::Init / OnStop](../services/core/src/core_service.cpp) 与 [SimManager::Stop](../services/sim/src/sim_manager.cpp) 分别追踪。前者创建共享 RIL、装配 Manager，OnStop 调用搜网/RIL 的 DeInit；该路径没有显式调用 SimManager::Stop。后者先封闭/等待本组件、join、逐个 Shutdown，失败保留未完成状态。产品接入前须验证退订句柄、在途回调、RIL 的其他消费者及 SO 代码寿命；组件 Host 退出记录只覆盖当时的入口。
 
 CMI实现仍在既有API库，wrapper仍在原共享定义处；H复用原对象及控制块，保留wrapper加载早于Manager全部就绪的窗口，符号存在不等于可立即访问业务。跨SO验收核对唯一定义、两个消费方获得同一注入对象、匹配销毁及在途回调代码寿命。源报告所述扩展SO兼作SA4011与dlopen库须匹配产品/实际装载确认；不得以同进程或L1探针代替L2产物/装载证明。
 
@@ -581,9 +590,11 @@ ActivationProgress以epoch、请求Owner、step、原session和slot控制开始/
 
 稳态`role_assignment/primary/`内聚兼容计划、步骤/参数恢复及唯一业务重试；default_roles承接Data保存，T具名映射子请求与R radio执行经窄api注入，A专属Adapter处理参数/输出。A读取PrimaryTopologyPort的绑定/ICCID/active和R的PrimaryRadioObservation，按PrimaryDecisionFacts生成模式计划。SlotCatalog只提供静态允许连接，当前Modem观察由R提供并由A接纳。
 
+从[拓扑集成用例](../services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp)读 C0。夹具从受控卡观察与已确认存储结果建立真实 T 的账户/绑定；A 二次复核后写偏好及 Primary 两键，发布主卡事件，再写 Data、发其事件，最后交付原出口。参数调用已完成但返回错误，按既有 Legacy 轨迹继续；调用未完成则进入待核对。二读后失效、第一键完成后另一键未知和不同设备域重入均需分别观察。阶段转换的返回值在 C0 写路径未被用于拒绝后续输出，不能推导所有交错都已受保护。
+
 普通预写、免重启后写、已为M0无完整协议、第三卡映射子请求分别沿原返回节点。参数恢复不证明硬件回滚，Primary广播后Data保存不表示数据连接/驻网完成；旧忽略参数/广播错误的语义不统一改成失败。
 
-`PrimaryTopologyPort::BeginRouteMapping`当前仅声明。后续实现保留A父request/step/attempt及受影响Binding，T子步骤不重复申请父资格、不递归再发Primary；I执行原vendor调用，结果分别交T接纳绑定/active及A接纳分配，R保存路由与结束观察。旧返回、DB结果、部分效果和设备结束须分开交付，不以void Hook或返回目标槽完成父请求。当前`GetResetActiveFlag→UpdateDBActiveByIccId`、`SwapM0M2SimCards→SetTargetPrimarySlotId`和普通激活成功后`SetActiveSimFunc`分别采集失败/通知/重启轨迹；不存在于本基线的方法不据报告补造同名API。窄厂商端口随真实切片补，具体结束/结果协议仍待vendor与Owner确认。
+PrimaryTopologyPort 提供具名映射契约。该基线中 TopologyService::BeginRouteMapping 已定义为抛出 logic_error，第三卡映射未实现。后续实现保留A父request/step/attempt及受影响Binding，T子步骤不重复申请父资格、不递归再发Primary；I执行原vendor调用，结果分别交T接纳绑定/active及A接纳分配，R保存路由与结束观察。旧返回、DB结果、部分效果和设备结束须分开交付，不以void Hook或返回目标槽完成父请求。当前`GetResetActiveFlag→UpdateDBActiveByIccId`、`SwapM0M2SimCards→SetTargetPrimarySlotId`和普通激活成功后`SetActiveSimFunc`分别采集失败/通知/重启轨迹；不存在于本基线的方法不据报告补造同名API。窄厂商端口随真实切片补，具体结束/结果协议仍待vendor与Owner确认。
 
 AssignmentTransition带token，结束须匹配原资格；R错误和成功均先核对session/phase/member/step。A唯一授权同层业务重试，Unknown先核对，关闭旧Controller重试和detached CMI自调用后才启用新发令。
 

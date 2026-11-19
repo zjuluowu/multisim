@@ -8,7 +8,7 @@
 
 | 范围 | 已核实实施与证据 |
 | --- | --- |
-| 输入基线 | 文档治理开始时，本地和远端 main 均为 `155f9c4c3378f271e5241368bec7616838cb3df1`。恢复工具刷新远端后确认历史 G2a 检查点 `cc787945792527eeb94bc20a5e955315d6269e83` 可从工作分支恢复，它不是 main 的祖先。 |
+| 输入基线 | 本轮最新业务源码为 `0e4004bef8362b0e5721afbeddd663831573a3c2`，独立评审采用该提交；此前文档治理输入为 `155f9c4c3378f271e5241368bec7616838cb3df1`。恢复工具刷新远端后确认历史 G2a 检查点 `cc787945792527eeb94bc20a5e955315d6269e83` 可从工作分支恢复，它不是 main 的祖先。 |
 | 产品装配 | 根 GN 仍编译 `services/sim/`，multisim 的逻辑目标仍为 testonly。G2a Core/Binding 仅用于 Host 参考测试，生产接入回退及上游基线见[§37](#upstream-sync-20261116)。 |
 | 源码结构 | 五组目录已落地。实际文件、接口和 GN 依赖见[源码详细设计](SIM_Multisim_Source_Architecture_Detailed_Design.md#source-tree)，历史迁址见[§29](#directory-layout-20261112)。 |
 | Target C0 | `155f9c4c3` 引入真实 AssignmentStoreAdapter 及 Host 装配，覆盖原系统参数键、ICCID 散列及失败/部分效果。保留该批记录的 Target 11/11、Both C0 和写方法执行审计，见[阶段四](#target-c0-store-20261118)和[后端范围](../services/multisim/test/docs/Backend_Architecture.md)。 |
@@ -24,13 +24,15 @@
 2. Provider 相关用例先取得匹配产品的 schema、字段、错误、重载和恢复证据。产品路径另按真实 OHOS 树、Feature、SA/IPC 和设备环境验收。
 3. 按[原功能与 WU](migration/SIM_Architecture_Refactor_Design.md#writer-cutover)核对全部旧入口。写权切换、SO 边界、生命周期和 eSIM/MEP 新能力按[主设计 §22](SIM_Target_Architecture_Design_v1.2.md#22-分阶段实施门禁)的独立门禁和本批授权推进。
 
-2026-11-19 独立设计审查以 `0e4004bef` 为源码输入，形成[历史评审](history/reviews/SIM_Architecture_Independent_Review_20261119.md)。本次仅静态核对设计、源码、构建和跨仓消费者，业务与设备执行记录仍按原批次解释。
+2026-11-19 独立设计审查以 `0e4004bef` 为源码输入，形成[历史评审](history/reviews/SIM_Architecture_Independent_Review_20261119.md)。评审先独立发布于 `d8fcbba40`，随后将分责、共享输出和异步资格同步至主设计与源码详细设计。产品装配、设备与业务执行仍按原批次记录；当前设计验收见[第二轮复审](history/reviews/SIM_Architecture_Independent_Review_20261119.md#第二轮复审--对修改后的设计提出反例)。
 
 ## 历次双后端与阶段核验记录
 
-<a id="target-c0-store-20261118"></a>
+<a id="target-c0-topology-20261119"></a>
 
-当前双后端阶段五（基准 `155f9c4c3`）：Target C0 前置事实已由真实 `TopologyService::ReadPrimaryTarget` 从 `BindingIndex` 和 `AccountRegistry` Current 投影组合；双卡 Topology Integration 使用真实账户/绑定接纳入口，覆盖换卡/重插/解绑/ABA/current-historical 分歧/旧 epoch/请求间绑定变化。A 仅经 PrimaryTopologyPort 读取 T，并在 Radio 观察后复核 BindingRef 与 ICCID，旧请求不能穿越新绑定。产品 Provider/SA/IPC/Device、Radio 业务及完整生命周期未接入。
+当前双后端阶段五（基准 `155f9c4c3`）：Target C0 前置事实已由真实 `TopologyService::ReadPrimaryTarget` 从 `BindingIndex` 和 `AccountRegistry` Current 投影组合；双卡 Topology Integration 使用真实账户/绑定接纳入口，覆盖换卡/重插/解绑/ABA/current-historical 分歧/旧 epoch/请求间绑定变化。A 仅经 PrimaryTopologyPort 读取 T，并在 Radio 观察后复核 BindingRef 与 ICCID，已覆盖在两次读取之间换绑的受控交错。第二次读取之后与外部写入之间的窗口仍需单独验收。产品 Provider/SA/IPC/Device、Radio 业务及完整生命周期未接入。
+
+<a id="target-c0-store-20261118"></a>
 
 当前双后端阶段四（2026-11-18，输入 `e44a7d9c69114b0b47fee008c9eb24f1394e1f8e`）：Target C0 真实 `AssignmentStoreAdapter` 已接入系统参数窄端口，负责 Legacy raw ICCID→SHA256→大写Hex、Primary/Data/用户偏好原键写入及恢复；Adapter Integration 使用真实 Adapter 而非 RecordingStore，并增加完成失败/未完成/部分效果验证。`callFinished=false` 不再返回成功，业务置为 NeedsReconciliation，保留进行中资格；已确认非零参数结果按 Legacy C0 的 void/忽略结果语义只保留外部参数事实，不改变原接口成功。本批 Target 11项 Component/Adapter Integration、Both C0、Adapter 三个写方法正执行审计及 Legacy 124/124 CI 均实际通过，三项既有未跟踪文件及 `default.profraw` 未变化。Adapter 写方法具备正执行审计。正式 OHOS 参数实现、Provider/SA/IPC、Device、Topology/Radio 产品实现及 B/C1 仍未接入。
 

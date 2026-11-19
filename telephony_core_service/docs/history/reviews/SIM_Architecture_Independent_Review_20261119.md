@@ -153,14 +153,18 @@ sequenceDiagram
     A->>T: 取当前绑定和账户资格
     A->>R: 读当前分配
     A->>T: 再验原绑定与资格
-    alt C0 且准入成功
-        A->>I: 偏好及 Primary 两键
-        A->>I: 主卡通知
-        A->>I: Data 参数及通知
-        A-->>C: 原返回点交付
-    else 外部调用未完成
-        Note over A,I: 保留已知前缀和未知效果，进入核对
+    Note over A: 仅展示已准入的 C0
+    A->>I: 偏好及 Primary 参数调用
+    break 参数调用未完成
+        A->>A: 保留原资格与已知前缀，待核对
     end
+    A->>I: 主卡通知
+    A->>I: 写 Data 参数
+    break Data 调用未完成
+        A->>A: 保留已发主卡通知，待核对
+    end
+    A->>I: Data 通知
+    A-->>C: 原返回点交付
 ```
 
 这是 C0 的偏序图。未知效果分支可发生在任一参数调用处；C0 无设备发令。B/C1 的异步协作另需如下运行协议。
@@ -206,7 +210,7 @@ sequenceDiagram
 
 | 优先级与问题 | 证据和根因 | 影响、建议、方案风险 | 批准或放行条件 |
 | --- | --- | --- | --- |
-| P0 · 角色资格只按设备域取得 | A 聚合以 radioDomain 建表，lastPrimary/lastData 和参数键全局；在第一次主卡通知中重入另一域即可构造顺序交错，无需假定线程实现 | 在 A 短提交域一次取得重叠输出资格，投影/阶段按 token 接纳。避免全设备锁；新拒绝/等待可能改变外部行为。此为可达设计反例，产品发生频率未知 | 两个域、两组绑定、相同全局键，分别在参数调用与通知处重入；观测两请求输出前缀、返回点和最终选择。既有合法偏序与旧等待政策需由业务负责人签收 |
+| P0 · 角色资格只按设备域取得 | A 聚合以 radioDomain 建表，lastPrimary/lastData 和参数键全局；若另一域也具备写同组键的资格，在首次通知中重入即可构造顺序交错，无需假定线程实现 | 在 A 短提交域一次取得重叠输出资格，投影/阶段按 token 接纳。避免全设备锁；新拒绝/等待可能改变外部行为。此为可达设计反例，产品发生频率未知 | 先证明该产品两个请求均合法，或在聚合层分别授予两域同组写资格；在参数调用与通知处重入；观测两请求输出前缀、返回点和最终选择。既有合法偏序与旧等待政策需由业务负责人签收 |
 | P0 · Stop 与真实设备租约无统一结束证明 | Legacy Stop/OnStop 路径不同，R 的 Complete 检查命令结束与可复用；Host 的受控结果无法证明驱动停机 | 在切设备写权/允许卸载前，把发起者、退订者、排空责任和设备证据逐项配对。仅到期就解锁会串用资源；永久隔离也有可用性成本 | 记录在途/超时/断链、重启前后回调、重复 Stop、各子组件停止失败、共享 RIL 仍被使用的轨迹。无证明域保持不可复用；由产品规定恢复入口 |
 | P1 · 多步异步结果和终态未闭合 | RuntimeOperationStore::AcceptResult 以 deviceEffect 判断重复，NotSent 无法标记已消费；AdvanceStep 未清前步 effect。MarkTerminal 未检查原终态；RetireAfterEvidenceRetention 只有声明 | 分开每步消费和累计效果，终态只允许一次完成，核对有独立的后续归宿。同步 C0 保留最小记录。每步无界建表会增加内存 | 多步连续正例、NotSent 重复、旧 attempt、终态重写、超时后晚证据、证据保留后回收及其上界。按相应用例证明后再提取公共实现 |
 | P1 · 绑定与逐键效果的观察窗口 | C0 二读能拦截 Radio 观察内的换卡，二读后仍有外部 I/O。WritePrimaryParameters 连写两键，组合返回与实际每键结果含义不同 | 用原 BindingRef 明确资格生效点，失效前未发的可拒绝；失效后已发的核对原对象。保留实际副作用前缀，不做跨 Owner 锁或通用事务日志 | 交错点覆盖二读前后、第一键后、主卡通知后及重插，分别核对账户归属、键、广播和完成次数；改变可见错误需独立批准 |
@@ -259,6 +263,33 @@ B 在这个用例上最短；它不能消除 Provider 写入和角色输出的�
 | 五个代码组和就近端口 | 保留现状。A/B/C 对照未找到为了更换目录而能消除的业务协议 | 无目录变更。目录原稿有摘要校验，历史迁移仍可复核 |
 | 把趋势、构造示意及历史验证写在多篇设计里 | 现行主设计只描述技术协议，源码设计标清实际入口，进度只在执行状态 | 本次获授权的是文档修订。上述生产变更均另行授权 |
 
-先在已有 SIM-028/WU 范围给全局输出重入及逐键中断建立验收，再扩展 B/C1 的多步/重试/设备证据；依赖厂商/设备的终止和可复用证明随首个相应切片签收。可独立推进的工作包括代码导航、同步路径简化走查、界定各查询实际返回的投影。任何更改默认角色联动、远端可见性或失败语义的决定，均需业务签收和版本化差分。
+在既有 SIM-028 的 WU-04（Primary/Data 参数和 last）先验收全局输出重入及逐键中断，再按 WU-07 扩展 B/C1 的多步/重试/设备证据。Voice/SMS 字段接 WU-03，卡缓存失效接 WU-06，eUICC 通道接 WU-08，平台订阅与死亡清理接 WU-09。依赖厂商/设备的终止和可复用证明随首个相应切片签收。可独立推进的工作包括代码导航、同步路径简化走查、界定各查询实际返回的投影。任何更改默认角色联动、远端可见性或失败语义的决定，均需业务签收和版本化差分。
+
+## 第二轮复审 · 对修改后的设计提出反例
+
+| 复核点 | 反例、判定及本轮修订 |
+| --- | --- |
+| 冲突是否已经在产品发生 | 阶段五夹具中两个槽的 rilInstance 分别为 1 和 0，只有后一项满足该 C0 的 M0 条件。两域各自 AdmitTransition 的事实能证明聚合规则只检查域；现有夹具不能证明两条成功 C0 在同一产品并发发生。收紧了 P0 的表述，要求先证明入口可达；也要审视未来 B/C1 或其他同键写者。 |
+| 缩短请求是否牺牲故障可查性 | C0 即使没有 RIL 动作，参数也可能未完成；去掉所有请求记录会丢失责任。只提出省无业务效果的空步骤，保留原请求身份、等待/核对和冻结完成出口；实际降本有待同轨迹验证。同步读无需通用记录即可完成时优先直接返回。 |
+| 谁能写、何时接纳 | 阶段五集成同时包含真实 TopologyService、BindingIndex、AccountRegistry、AssignmentService 和 AssignmentStoreAdapter；Radio/参数/存储结果受控。二次取 T 事实与第一次参数写之间仍有窗口；收紧了切片说明。未知效果的 sequenceDiagram 在发生未完成的具体节点退出，保留已发通知。 |
+| 运行图是否引入反向依赖 | A 运行时经端口读取 T；编译 target 的 public_deps 逐项与 BUILD.gn 对读，装配只在 H 汇合实现。T 构造后绑定角色规划窄入口，R 的 result sinks 独立绑定；两种运行方向不要求两个实现 target 相互依赖。更新了详细设计的 GN 导航与工厂状态。 |
+| 生命周期是否误诊 | IccDiallingNumbersManager 持 weak SimFileManager，注册的 RADIO_SIM_STATE_CHANGE 在 Shutdown 中显式注销；MultiSimMonitor 的 Shutdown 处理 watcher 和订阅。另有 CardFileDetectManager 在 SimManager 创建 MultiSimController 前接收其 weak 引用，持有人后续赋值不会重定向旧 weak 引用。其 SaveCardFileDetectData 在数据库成功后仅在 lock 成功时启动列表重载；具体产品入口及用户可见影响仍需验证。更新主设计中的构造风险，保留原 Host 修复。 |
+| 四卡/MEP 与外部兼容 | 多个 Profile 可在库存独立存在，未启用项不能被迫创建订阅。外部 Data 仍消费旧槽，HRIL 仍需 serial/slot。优先保留原参数，在涉及该来源的用例校验 eUICC、端口或连接。没有新增公共 ID、schema 或跨仓写者。 |
+| 普通开发者能否找到落点 | 从“换卡使哪个关系失效”能直接走到账户绑定、卡会话或设备租约的源文件。检查五组目录在三种候选下的代价后，保持既有文件原文及迁移摘要，修改目标文档 §3 和源码文档 §5 的开发定位。 |
+| 验收范围 | 本轮检查现有架构规则、GN、文档导航、内部链接和图语法。跨域写权政策、产品 Stop 与硬件可复用仍需实测。架构与代码回退、外部契约变更以及设备门禁各自签收。 |
+
+### 本批验证记录
+
+由仓库根目录运行下列检查，文档输入为本次工作树，业务源码输入为 `0e4004bef`。复核只使用此工作区，GN 输出在仓外。
+
+| 检查 | 实际结果 |
+| --- | --- |
+| `python3 -B telephony_core_service/services/multisim/tools/check_sim_refactor_recovery.py --remote origin --fetch` | CHECKPOINT_VERIFIED；验证了远端与历史检查点可达性。 |
+| `python3 -B telephony_core_service/services/multisim/test/scripts/run_architecture.py --with-gn --migration --output /tmp/multisim-chief-review19-architecture` | 89 个 C++ 单元、158 条 include、25 个逻辑 target 的结构检查通过。迁移和目录摘要、声明负控、独立语法、四组纯规则及 GN 骨架对象构建通过。 |
+| `python3 -B telephony_core_service/services/multisim/test/cases/internal/infrastructure/test_navigation.py` | 6 项导航检查通过。 |
+| Markdown 链接、显式/标题锚点、代码围栏、Mermaid 语法与 GN 图 | 逐个解析跟踪的 Markdown，比较输入提交与交付树。活动文档无新增断链，冻结测试归档仍有原来的 3 处。保留两篇设计原锚点。新增固定提交链接同时核对 Git 对象与目标章节。Mermaid 使用 11.4.1 解析，GN 依赖图逐边比对 public_deps。 |
+| `git diff --check` 及暂存区检查 | 检查本批文档差异。目录原稿 SHA-256 与迁移清单均为 `28864a01afe3ccff3a6b08eadbd3188fbe3414bb8d92477900402a30ee124562`。 |
+
+没有执行完整 Legacy/Target/Both 业务回归、产品原生编译、SA/IPC 或真机验收。报告中的场景是设计反例、已有证据或待执行的验收条件，各自按上述来源解释。
 
 [开发入口](../../README.md) · [当前目录职责](../../SIM重构代码目录结构设计方案.md) · [测试入口](../../../services/multisim/test/README.md)
