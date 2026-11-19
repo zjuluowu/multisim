@@ -47,19 +47,27 @@ public:
     }
     std::optional<RuntimeOperation> Read(RequestId request) const;
     ResultAdmission AcceptResult(StepRef step, EffectKnowledge evidence);
+    bool AcceptLateEvidence(StepRef step, EffectKnowledge evidence);
+    std::optional<EffectKnowledge> ReadLateEvidence(RequestId request) const;
+    bool ClaimCompletion(RequestId request);
+    bool ClaimEarlyCompletion(RequestId request);
     void EndWait(RequestId request, WaitState reason)
     {
         if (request.epoch != epoch_ || request.owner != owner_) { return; }
         const auto found = operations_.find(request.value);
         if (found != operations_.end()) { found->second.wait = reason; }
     }
-    void MarkTerminal(RequestId request, TerminalState terminal);
+    void MarkTerminal(RequestId request, TerminalState terminal) { (void)TryMarkTerminal(request, terminal); }
+    bool TryMarkTerminal(RequestId request, TerminalState terminal);
     void RetireAfterEvidenceRetention(RequestId request)
     {
         if (request.epoch != epoch_ || request.owner != owner_) { return; }
         const auto found = operations_.find(request.value);
         if (found != operations_.end() && found->second.terminal != TerminalState::Open &&
             found->second.deviceEffect != EffectKnowledge::Unknown) {
+            stepConsumed_.erase(request.value);
+            completionClaimed_.erase(request.value);
+            lateEffects_.erase(request.value);
             operations_.erase(found);
         }
     }
@@ -68,6 +76,9 @@ private:
     RuntimeEpoch epoch_;
     RequestOwner owner_;
     std::map<uint64_t, RuntimeOperation> operations_;
+    std::map<uint64_t, bool> stepConsumed_;
+    std::map<uint64_t, bool> completionClaimed_;
+    std::map<uint64_t, EffectKnowledge> lateEffects_;
     uint64_t nextId_ {1}; // Begin/Read/Accept均核验epoch+owner；无跨重启恢复。
     // Parent等待不占Owner短提交域；同一冲突集合须在唯一准入处一次登记，不能跨Owner持资格嵌套等。
 };
@@ -95,14 +106,20 @@ inline bool RuntimeOperationStore::AdvanceStep(StepRef expected, uint32_t nextSt
     found->second.context.step = StepRef {expected.request, nextStep, attempt};
     found->second.context.sentSession = std::move(sentSession);
     found->second.deviceEffect = EffectKnowledge::NotSent;
+    stepConsumed_[expected.request.value] = false;
     return true;
 }
 
-inline void RuntimeOperationStore::MarkTerminal(RequestId request, TerminalState terminal)
+inline bool RuntimeOperationStore::TryMarkTerminal(RequestId request, TerminalState terminal)
 {
-    if (request.epoch != epoch_ || request.owner != owner_) { return; }
+    if (request.epoch != epoch_ || request.owner != owner_) { return false; }
     const auto found = operations_.find(request.value);
-    if (found != operations_.end()) { found->second.terminal = terminal; }
+    if (found == operations_.end()) { return false; }
+    const auto current = found->second.terminal;
+    if (terminal == TerminalState::Open) { return current == TerminalState::Open; }
+    if (current != TerminalState::Open) { return current == terminal; }
+    found->second.terminal = terminal;
+    return true;
 }
 
 inline std::optional<RuntimeOperation> RuntimeOperationStore::Read(RequestId request) const
@@ -112,19 +129,47 @@ inline std::optional<RuntimeOperation> RuntimeOperationStore::Read(RequestId req
     return found == operations_.end() ? std::nullopt : std::make_optional(found->second);
 }
 
-inline RuntimeOperationStore::ResultAdmission RuntimeOperationStore::AcceptResult(
-    StepRef step, EffectKnowledge evidence)
+inline bool RuntimeOperationStore::AcceptLateEvidence(StepRef step, EffectKnowledge evidence)
 {
-    if (step.request.epoch != epoch_ || step.request.owner != owner_) {
-        return ResultAdmission::UnknownRequest;
-    }
+    if (step.request.epoch != epoch_ || step.request.owner != owner_) { return false; }
     const auto found = operations_.find(step.request.value);
-    if (found == operations_.end()) { return ResultAdmission::UnknownRequest; }
-    if (found->second.terminal != TerminalState::Open) { return ResultAdmission::AlreadyTerminal; }
-    if (!(found->second.context.step == step)) { return ResultAdmission::WrongStep; }
-    if (found->second.deviceEffect != EffectKnowledge::NotSent) { return ResultAdmission::Duplicate; }
-    found->second.deviceEffect = evidence;
-    return ResultAdmission::Accepted;
+    if (found == operations_.end() || !(found->second.context.step == step) ||
+        found->second.terminal != TerminalState::NeedsReconciliation) {
+        return false;
+    }
+    lateEffects_[step.request.value] = evidence;
+    return true;
+}
+
+inline std::optional<EffectKnowledge> RuntimeOperationStore::ReadLateEvidence(RequestId request) const
+{
+    if (request.epoch != epoch_ || request.owner != owner_) { return std::nullopt; }
+    const auto found = lateEffects_.find(request.value);
+    return found == lateEffects_.end() ? std::nullopt : std::make_optional(found->second);
+}
+
+inline bool RuntimeOperationStore::ClaimCompletion(RequestId request)
+{
+    if (request.epoch != epoch_ || request.owner != owner_) { return false; }
+    const auto found = operations_.find(request.value);
+    if (found == operations_.end() || found->second.terminal == TerminalState::Open ||
+        completionClaimed_[request.value]) {
+        return false;
+    }
+    completionClaimed_[request.value] = true;
+    return true;
+}
+
+inline bool RuntimeOperationStore::ClaimEarlyCompletion(RequestId request)
+{
+    if (request.epoch != epoch_ || request.owner != owner_) { return false; }
+    const auto found = operations_.find(request.value);
+    if (found == operations_.end() || found->second.terminal != TerminalState::Open ||
+        completionClaimed_[request.value]) {
+        return false;
+    }
+    completionClaimed_[request.value] = true;
+    return true;
 }
 } // namespace OHOS::Telephony::MultiSim
 

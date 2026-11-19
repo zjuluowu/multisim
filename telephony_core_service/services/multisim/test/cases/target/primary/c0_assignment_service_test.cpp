@@ -36,6 +36,7 @@ public:
     unsigned userWrites {0};
     unsigned primaryWrites {0};
     unsigned dataWrites {0};
+    unsigned roleWrites {0};
     std::function<void()> onFirstUserWrite;
     AssignmentParameterResult WriteUserPrimaryPreference(bool userSet) override
     {
@@ -64,7 +65,8 @@ public:
         if (dataResult == 0) { dataSlot = slot.legacySlotId; }
         return {dataResult, dataFinished};
     }
-    RoleStoreResult WriteDefaultRole(const SetRoleCommand &) override { return {-1, false, true}; }
+    RoleStoreResult WriteDefaultRole(const SetRoleCommand &) override
+    { ++roleWrites; return {-1, false, true}; }
     PrimaryParameterSnapshot ReadPrimaryParameters() override
     { return {std::to_string(primarySlot), primaryIccid}; }
     AssignmentParameterResult RestorePrimaryIfLegacyValid(const PrimaryParameterSnapshot &) override
@@ -327,6 +329,49 @@ TEST(TargetPrimary, C0RejectsConflictingRequestAndCanRestartAfterFailure)
     EXPECT_EQ(retry.store.dataSlot, 1);
 }
 
+TEST(TargetPrimary, C0DifferentDomainsRejectNestedSharedRoleWrite)
+{
+    class BothTopology final : public PrimaryTopologyPort {
+    public:
+        std::optional<PrimaryTargetFacts> ReadPrimaryTarget(SlotId slot) const override
+        {
+            if (slot.legacySlotId > 1) { return std::nullopt; }
+            return PrimaryTargetFacts {BindingRef {{slot.legacySlotId + 1}, slot, 4}, kRawIccid, true};
+        }
+        RequestId BeginRouteMapping(const StepRef &, SlotTarget) override { return {}; }
+    };
+    Timeline timeline;
+    RecordingStore store {timeline};
+    RecordingOutput output {timeline};
+    ControlledRadio radio;
+    RecordingCompletion completion {timeline};
+    BothTopology topology;
+    const SlotCatalog catalog({
+        {SlotId {0}, EndpointKind::Physical, 0, RadioDomainId {"c0-0"}, VisibilityClass::Ordinary, false},
+        {SlotId {1}, EndpointKind::Physical, 0, RadioDomainId {"c0-1"}, VisibilityClass::Ordinary, false}},
+        {2, 2, 2, 2, 2});
+    AssignmentService service(catalog, store, radio, output, topology, completion, RuntimeEpoch {8, 3});
+    int nestedData {-99}; int nestedVoice {-99}; int nestedSms {-99};
+    store.onFirstUserWrite = [&] {
+        service.StartPrimarySwitch(C0Command(BindingRef {{2}, {1}, 4}));
+        nestedData = service.SetDefaultRole({DefaultRole::Data, SubscriptionId {2}, SlotId {1}});
+        nestedVoice = service.SetDefaultRole({DefaultRole::Voice, SubscriptionId {2}, SlotId {1}});
+        nestedSms = service.SetDefaultRole({DefaultRole::Sms, SubscriptionId {2}, SlotId {1}});
+    };
+    service.StartPrimarySwitch({SlotTarget {SlotId {0}}, true,
+        {SynchronousCompletionRoute {SynchronousWaitRef {16}}, false}, std::nullopt,
+        BindingRef {{1}, {0}, 4}});
+    EXPECT_EQ(completion.results, (std::vector<int32_t> {-1, 0}));
+    EXPECT_EQ(nestedData, -1);
+    EXPECT_EQ(nestedVoice, -1);
+    EXPECT_EQ(nestedSms, -1);
+    EXPECT_EQ(store.roleWrites, 2u);
+    EXPECT_EQ(store.primarySlot, 0);
+    EXPECT_EQ(store.dataSlot, 0);
+    EXPECT_EQ(radio.switches, 0u);
+    EXPECT_EQ(output.notifications, (std::vector<std::string> {"primary:0", "data:0:1"}));
+}
+
 TEST(TargetPrimary, C0KeepsUnfinishedWritesUncommittedAndQualified)
 {
     Fixture preference;
@@ -336,6 +381,9 @@ TEST(TargetPrimary, C0KeepsUnfinishedWritesUncommittedAndQualified)
     EXPECT_TRUE(preference.store.userPreference);
     EXPECT_EQ(preference.store.primaryWrites, 0u);
     EXPECT_TRUE(preference.service.ReadLegacyAssignment().primarySwitchInProgress);
+    preference.service.StartPrimarySwitch(C0Command());
+    EXPECT_EQ(preference.completion.results, (std::vector<int32_t> {-1}));
+    EXPECT_EQ(preference.store.userWrites, 1u);
 
     Fixture primary;
     primary.store.primaryFinished = false;
@@ -374,7 +422,47 @@ TEST(TargetPrimary, C0OperationAdmissionRejectsOldEpochStepAndDuplicateCompletio
     store.MarkTerminal(request, TerminalState::Succeeded);
     EXPECT_EQ(store.AcceptResult({request, 1, 0}, EffectKnowledge::ConfirmedApplied),
         RuntimeOperationStore::ResultAdmission::AlreadyTerminal);
+    EXPECT_FALSE(store.TryMarkTerminal(request, TerminalState::Failed));
+    EXPECT_TRUE(store.ClaimCompletion(request));
+    EXPECT_FALSE(store.ClaimCompletion(request));
+    EXPECT_FALSE(store.AcceptLateEvidence({request, 1, 0}, EffectKnowledge::ConfirmedNotApplied));
     const auto operation = store.Read(request);
     ASSERT_TRUE(operation.has_value());
     EXPECT_EQ(operation->terminal, TerminalState::Succeeded);
+}
+
+TEST(TargetPrimary, C0OperationConsumesNotSentAndKeepsLateEvidenceSeparate)
+{
+    RuntimeOperationStore store({8, 3}, RequestOwner::Assignment);
+    const auto plan = CompletionPlan {SynchronousCompletionRoute {SynchronousWaitRef {2}}, false};
+    const RequestId request = store.Begin(SlotTarget {SlotId {1}}, plan);
+    ASSERT_TRUE(store.AdvanceStep({request, 0, 0}, 1, 0, std::nullopt));
+    EXPECT_EQ(store.AcceptResult({request, 1, 0}, EffectKnowledge::NotSent),
+        RuntimeOperationStore::ResultAdmission::Accepted);
+    EXPECT_EQ(store.AcceptResult({request, 1, 0}, EffectKnowledge::ConfirmedApplied),
+        RuntimeOperationStore::ResultAdmission::Duplicate);
+    ASSERT_TRUE(store.AdvanceStep({request, 1, 0}, 2, 0, std::nullopt));
+    EXPECT_EQ(store.AcceptResult({request, 2, 0}, EffectKnowledge::ConfirmedNotApplied),
+        RuntimeOperationStore::ResultAdmission::Accepted);
+    EXPECT_FALSE(store.ClaimCompletion(request));
+    ASSERT_TRUE(store.TryMarkTerminal(request, TerminalState::NeedsReconciliation));
+    EXPECT_FALSE(store.TryMarkTerminal(request, TerminalState::Succeeded));
+    EXPECT_TRUE(store.AcceptLateEvidence({request, 2, 0}, EffectKnowledge::ConfirmedApplied));
+    EXPECT_EQ(store.ReadLateEvidence(request), EffectKnowledge::ConfirmedApplied);
+    EXPECT_TRUE(store.ClaimCompletion(request));
+    EXPECT_FALSE(store.ClaimCompletion(request));
+}
+
+TEST(TargetPrimary, SharedWriteSetRejectsDifferentDomainButDisjointRoleAdvances)
+{
+    AssignmentAggregate assignment;
+    const auto &slots = Catalog().Slots();
+    ASSERT_TRUE(assignment.AdmitRoleWriteSet(10, kPrimaryRoleWriteSet));
+    ASSERT_EQ(assignment.AdmitTransition(slots[0], 10), TransitionAdmission::Admitted);
+    EXPECT_FALSE(assignment.AdmitRoleWriteSet(11, kDefaultDataWriteSet));
+    EXPECT_TRUE(assignment.AdmitRoleWriteSet(12, kVoiceParameters | kSmsParameters));
+    EXPECT_EQ(assignment.AdmitTransition(slots[1], 12), TransitionAdmission::Admitted);
+    EXPECT_TRUE(assignment.ReleaseRoleWriteSet(12, kVoiceParameters | kSmsParameters));
+    EXPECT_TRUE(assignment.ReleaseRoleWriteSet(10, kPrimaryRoleWriteSet));
+    EXPECT_TRUE(assignment.AdmitRoleWriteSet(11, kDefaultDataWriteSet));
 }

@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <functional>
 #include <map>
 #include <optional>
 #include <set>
@@ -47,7 +48,7 @@ class Radio final : public RadioExecutionPort {
 public:
     bool directSupported {true};
     PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const override
-    { return {slot, 1, directSupported, false, 9}; }
+    { return {slot, slot.legacySlotId == 0 ? 0 : 1, directSupported, false, 9}; }
     void SwitchPrimaryRadio(const RadioSwitchRequest &request) override { requests.push_back(request); }
     void EndLegacySenseSwitch(const StepRef &, const RadioDomainId &) override { ++ended; }
     std::vector<RadioSwitchRequest> requests;
@@ -57,8 +58,13 @@ class Output final : public AssignmentOutputPort {
 public:
     std::vector<std::pair<std::string,bool>> phases;
     std::vector<std::string> roles;
+    std::function<void()> onPrimaryRole;
     void PublishPrimaryPhase(bool done,bool user) override { phases.emplace_back(done?"done":"start",user); }
-    void PublishMainCardChanged(SlotId) override { roles.emplace_back("primary"); }
+    void PublishMainCardChanged(SlotId) override
+    {
+        roles.emplace_back("primary");
+        if (onPrimaryRole) { auto action = std::move(onPrimaryRole); action(); }
+    }
     void PublishDefaultDataChanged(SlotId,SubscriptionId) override { roles.emplace_back("data"); }
 };
 class Completion final : public LegacyIntCompletionPort {
@@ -147,6 +153,7 @@ TEST(TargetPrimaryB,BSuccessCommitsOnlyAfterMatchingReply)
 {
     Fixture f; const auto request=f.Start(); VerifyBRequest(f);
     f.service.AcceptRadioStep(Result(f.radio.requests[0],EffectKnowledge::ConfirmedApplied,0));
+    EXPECT_FALSE(f.service.AcceptPrimarySwitchTimeout(request,90000));
     EXPECT_EQ(f.completion.results,(std::vector<int32_t>{0}));
     EXPECT_EQ(f.parameters.values.at(kPrimary),"1");
     EXPECT_EQ(f.parameters.values.at(kData),"1");
@@ -280,6 +287,70 @@ TEST(TargetPrimaryB,C1ThreePhaseSuccessRejectsStaleSession)
     RecordProperty("primary_observation",Observation(f,0));
 }
 
+TEST(TargetPrimaryB,C1SharedWriteQualificationBlocksC0InDifferentDomainUntilRelease)
+{
+    Fixture f; f.Start(true);
+    ASSERT_EQ(f.radio.requests.size(),2u);
+    const auto slot0=f.topology.ReadPrimaryTarget({0}); ASSERT_TRUE(slot0.has_value());
+    const auto command=SwitchPrimaryCommand{SlotTarget{{0}},true,
+        {SynchronousCompletionRoute{SynchronousWaitRef{45}},false},std::nullopt,slot0->binding};
+    f.service.StartPrimarySwitch(command);
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{-1}));
+    EXPECT_EQ(f.radio.requests.size(),2u);
+    EXPECT_EQ(f.parameters.values.at(kPrimary),"1");
+
+    for (size_t i=0;i<2;++i) { f.service.AcceptRadioStep(Result(f.radio.requests[i],
+        EffectKnowledge::ConfirmedApplied,0)); }
+    for (size_t i=2;i<4;++i) { f.service.AcceptRadioStep(Result(f.radio.requests[i],
+        EffectKnowledge::ConfirmedApplied,0,true)); }
+    for (size_t i=4;i<6;++i) { f.service.AcceptRadioStep(Result(f.radio.requests[i],
+        EffectKnowledge::ConfirmedApplied,0)); }
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{-1,0}));
+
+    f.service.StartPrimarySwitch(command);
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{-1,0,0}));
+    EXPECT_EQ(f.parameters.values.at(kPrimary),"0");
+    EXPECT_EQ(f.parameters.values.at(kData),"0");
+}
+
+TEST(TargetPrimaryB,C0ReentrantPrimaryNotificationCannotAdmitConflictingRequest)
+{
+    Fixture f; f.target=f.Seed(); f.radio.directSupported=false;
+    const auto slot0=f.topology.ReadPrimaryTarget({0}); ASSERT_TRUE(slot0.has_value());
+    f.output.onPrimaryRole=[&] {
+        f.service.StartPrimarySwitch({SlotTarget{{1}},true,
+            {SynchronousCompletionRoute{SynchronousWaitRef{46}},false},std::nullopt,f.target});
+    };
+    f.service.StartPrimarySwitch({SlotTarget{{0}},true,
+        {SynchronousCompletionRoute{SynchronousWaitRef{47}},false},std::nullopt,slot0->binding});
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{-1,0}));
+    EXPECT_EQ(f.radio.requests.size(),0u);
+    EXPECT_EQ(f.parameters.values.at(kPrimary),"0");
+    EXPECT_EQ(f.parameters.values.at(kData),"0");
+    EXPECT_EQ(f.output.roles,(std::vector<std::string>{"primary","data"}));
+}
+
+TEST(TargetPrimaryB,C1BindingChangeRestoresPrewrittenPrimaryParameters)
+{
+    Fixture f; f.Start(true);
+    ASSERT_EQ(f.radio.requests.size(),2u);
+    EXPECT_EQ(f.parameters.values.at(kPrimary),"1");
+    f.topology.AcceptCardRemoval(f.target);
+    for (size_t i=0;i<2;++i) { f.service.AcceptRadioStep(Result(f.radio.requests[i],
+        EffectKnowledge::ConfirmedApplied,0)); }
+    for (size_t i=2;i<4;++i) { f.service.AcceptRadioStep(Result(f.radio.requests[i],
+        EffectKnowledge::ConfirmedApplied,0,true)); }
+    for (size_t i=4;i<6;++i) { f.service.AcceptRadioStep(Result(f.radio.requests[i],
+        EffectKnowledge::ConfirmedApplied,0)); }
+    EXPECT_EQ(f.parameters.values.at(kPrimary),"0");
+    EXPECT_EQ(f.parameters.values.at(kIccid),kEncoded0);
+    EXPECT_EQ(f.parameters.values.at(kData),"0");
+    EXPECT_EQ(f.service.ReadLegacyAssignment().lastPrimary, std::make_optional(SlotId {0}));
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{0}));
+    EXPECT_FALSE(f.service.ReadLegacyAssignment().primarySwitchInProgress);
+    EXPECT_TRUE(f.output.roles.empty());
+}
+
 TEST(TargetPrimaryB,C1CheckFailureRestoresAndExhaustsFiveRetries)
 {
     Fixture f; const auto request=f.Start(true);
@@ -311,6 +382,7 @@ TEST(TargetPrimaryB,C1CheckFailureRestoresAndExhaustsFiveRetries)
     std::set<uint32_t> sessions;
     for (const auto &request : f.radio.requests) { sessions.insert(request.protocolSession); }
     EXPECT_EQ(sessions.size(), 6u);
+    EXPECT_EQ(f.service.ReadLegacyAssignment().lastPrimary, std::make_optional(SlotId {0}));
     EXPECT_EQ(f.output.phases.size(),12u);
     for (const auto &phase : f.output.phases) { EXPECT_FALSE(phase.second); }
     EXPECT_TRUE(f.output.roles.empty());

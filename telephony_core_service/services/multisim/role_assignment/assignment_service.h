@@ -68,6 +68,8 @@ public:
     bool AcceptReloadedRoleProjection(const StoredAccountRoleFragment &loaded, uint64_t loadAttempt,
         uint64_t expectedAssignmentRevision, bool historicalView) override;
 private:
+    void CompleteOnce(RequestId request, const CompletionPlan &plan, int32_t result,
+        TerminalState terminal);
     const SlotCatalog &catalog_;
     AssignmentAggregate assignment_;
     RuntimeOperationStore operations_;

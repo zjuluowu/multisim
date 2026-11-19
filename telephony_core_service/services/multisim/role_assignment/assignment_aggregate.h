@@ -35,11 +35,29 @@ struct AssignmentTransition {
     uint32_t businessAttempt;
 };
 enum class TransitionAdmission { Admitted, DomainBusy, UnknownResourceDomain };
+enum RoleWriteMember : uint32_t {
+    kUserPreference = 1u << 0,
+    kPrimaryParameters = 1u << 1,
+    kPrimaryNotification = 1u << 2,
+    kDataParameters = 1u << 3,
+    kDataNotification = 1u << 4,
+    kVoiceParameters = 1u << 5,
+    kSmsParameters = 1u << 6,
+};
+inline constexpr uint32_t kPrimaryWriteSet = kPrimaryParameters | kPrimaryNotification;
+inline constexpr uint32_t kDefaultDataWriteSet = kDataParameters | kDataNotification;
+inline constexpr uint32_t kPrimaryRoleWriteSet = kUserPreference | kPrimaryParameters | kPrimaryNotification |
+    kDataParameters | kDataNotification;
 class AssignmentAggregate final {
 public:
     bool AcceptRoleSelection(const RoleSelection &selection, uint64_t expectedAssignmentRevision);
     std::optional<RoleSelection> ReadRoleSelection(DefaultRole role) const;
     TransitionAdmission AdmitTransition(const SlotDescriptor &target, uint64_t transitionToken);
+    TransitionAdmission AdmitTransitionWithRoleWriteSet(const SlotDescriptor &target, uint64_t transitionToken,
+        uint32_t members);
+    bool AdmitRoleWriteSet(uint64_t ownerToken, uint32_t members);
+    bool ReleaseRoleWriteSet(uint64_t ownerToken, uint32_t members);
+    bool OwnsRoleWriteSet(uint64_t ownerToken, uint32_t members) const;
     bool AcceptTransitionPhase(const RadioDomainId &domain, uint64_t transitionToken,
         TransitionPhase expected, TransitionPhase next);
     bool IsSwitchInProgress(const RadioDomainId &domain) const;
@@ -57,6 +75,7 @@ private:
     std::map<DefaultRole, RoleSelection> roles_; // 全局角色约束域不随Modem数量复制。
     uint64_t revision_ {0};
     std::map<RadioDomainId, AssignmentTransition> transitions_;
+    std::map<uint64_t, uint32_t> roleWriteOwners_;
     std::optional<SlotId> lastPrimary_;
     std::optional<SlotId> lastData_;
     // current/all角色列按各自旧节点接纳，重载版本分别保存，不交T整行覆盖。

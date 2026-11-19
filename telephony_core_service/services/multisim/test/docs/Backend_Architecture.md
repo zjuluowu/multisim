@@ -73,6 +73,8 @@ B 场景结果：`SIM028-LEGACY-B-SUCCESS-DUAL-PRIMARY0`、`SIM028-LEGACY-B-ERRO
 
 M7.1 增加换卡、Unknown、ConfirmedApplied+非零结果及错误/迟到关联负控。已发命令后绑定变化或 Unknown/效果冲突不提交角色；外层 Completion 可按 Legacy 语义结束，但 transition 与 RuntimeOperationStore 留在 NeedsReconciliation，复用同域 `AdmitTransition` 仍会拒绝新请求。只有显式晚证据可记录到原请求，不能重播完成或通知。
 
+M9 在 A 中按完整角色写集原子登记跨 RadioDomain 资格：Primary 参数/通知、Data 参数/通知与用户偏好共同排序；Voice/SMS 未包含在 Primary 操作写集中，可独立推进；独立 Data setter 使用同一 Data 写集，未完成 Provider 写入保留高位同步资格。A/R 设备租约仍分离。`RuntimeOperationStore` 将 Step 消费、终态、Completion 一次领取与晚设备效果分开；C1 首次 API 失败使用受控 early claim，但终态保留 Open 供预算内后台重试。晚证据仅由 AssignmentService 按原 Step/epoch/owner/session/binding 接纳。C1 `AcceptC1RetryDue` 仅是 A 的到期入口，实际重试任务注册、Stop/销毁/Drain 和设备结束屏障尚无生产 Scheduler/Radio 证据，标记 BLOCKED。本阶段以工作区未提交主设计/详细设计/评审稿为审查输入；其中仍为 PROPOSED 的拒绝、等待、排队与 Stop 策略未视为批准，且未纳入本批发布。Host 对共享写集冲突复用既有 DomainBusy 的立即 `-1` 结果，仅作负控实现证据，公开错误码/等待/排队仍待业务签收；独立 Default Role 的未完成 Provider 结果只保留其写资格，原效果 Owner 的恢复/释放入口仍未接入。
+
 M8.1 修正 UPDATE 语义：Target 不再等待虚构 RadioResponse ACK，而仅在两个成员的 RadioProtocol NOTIFY 到齐后进入 COMPLETE；状态事件 C1 固定按 Legacy `isUserSet=false` 发布。M8.2 CHECK 失败逐轮发送失败 COMPLETE、恢复 old Primary/ICCID，并由 A 将五次后台重试显式排入原请求；每轮新 Step/attempt/protocolSession，最终 24 条请求/6 session。API 第一轮失败返回一次，后继重试不重复 Completion。
 
 M7.2 C1 通过真实 `PlanPrimarySwitch(ThreePhaseProtocol)`，先按 Legacy 顺序预写 P、发布开始状态，再为两个成员发送 CHECK(1)、UPDATE(2)、COMPLETE(4)。每阶段都要求原 StepRef、protocolSession、成员和目标 Binding；只在该阶段全部成员完成后才推进下一步。旧 session、重复成员和错误成员不推进。当前只实现成功链；五次重试/完整 C1 失败恢复仍未实现。

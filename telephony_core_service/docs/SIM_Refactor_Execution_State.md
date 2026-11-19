@@ -8,6 +8,7 @@
 
 | 范围 | 已核实实施与证据 |
 | --- | --- |
+| Stage 9 Host | M9.1/M9.2 已落 Host 最小实现：Primary/Data/Preference 写集跨域原子准入，R 设备租约独立；独立 Data setter 共享 Data 位，Voice/SMS 可独立推进；步骤消费独立于 deviceEffect，Completion 一次领取，终态不可覆写，Late Evidence 只回填原请求。Target 29/29、架构/GN/技术/完整性及 production execution audit PASS；Legacy 124/124、CI admission/mutation/profile safety PASS；Both 153/153，六个既有 C0/B/C1 场景 Oracle 与 Legacy/Target 差分均 PASS。C0×C0、C1×C0、通知重入、独立 Data、NotSent 重复、终态竞争、绑定变化恢复均有负控。C1 `AcceptC1RetryDue` 仍只是 Host 到期入口；生产任务注册、Stop/Drain、换卡/销毁及 R 结束证据仍 BLOCKED，未宣称 M9.3 生产接入。三份用户未提交设计/评审文档继续作为工作区输入，不参与本批提交。 |
 | 输入基线 | 本次专项核验的 B/C1 业务源码为 `9c4c82fef`（状态提交 `ba95cf2c0`）；首轮独立评审源码为 `0e4004bef8362b0e5721afbeddd663831573a3c2`；此前文档治理输入为 `155f9c4c3378f271e5241368bec7616838cb3df1`。恢复工具刷新远端后确认历史 G2a 检查点 `cc787945792527eeb94bc20a5e955315d6269e83` 可从工作分支恢复，它不是 main 的祖先。 |
 | 产品装配 | 根 GN 仍编译 `services/sim/`，multisim 的逻辑目标仍为 testonly。G2a Core/Binding 仅用于 Host 参考测试，生产接入回退及上游基线见[§37](#upstream-sync-20261116)。 |
 | 源码结构 | 五组目录已落地。实际文件、接口和 GN 依赖见[源码详细设计](SIM_Multisim_Source_Architecture_Detailed_Design.md#source-tree)，历史迁址见[§29](#directory-layout-20261112)。 |

@@ -33,6 +33,49 @@ std::optional<RoleSelection> AssignmentAggregate::ReadRoleSelection(DefaultRole 
     return found == roles_.end() ? std::nullopt : std::make_optional(found->second);
 }
 
+bool AssignmentAggregate::AdmitRoleWriteSet(uint64_t ownerToken, uint32_t members)
+{
+    if (members == 0) { return false; }
+    for (const auto &[owner, held] : roleWriteOwners_) {
+        if (owner != ownerToken && (held & members) != 0) { return false; }
+    }
+    auto found = roleWriteOwners_.find(ownerToken);
+    if (found != roleWriteOwners_.end() && (found->second & members) != members) { return false; }
+    roleWriteOwners_[ownerToken] = members;
+    return true;
+}
+
+bool AssignmentAggregate::ReleaseRoleWriteSet(uint64_t ownerToken, uint32_t members)
+{
+    const auto found = roleWriteOwners_.find(ownerToken);
+    if (found == roleWriteOwners_.end() || (found->second & members) != members) { return false; }
+    found->second &= ~members;
+    if (found->second == 0) { roleWriteOwners_.erase(found); }
+    return true;
+}
+
+bool AssignmentAggregate::OwnsRoleWriteSet(uint64_t ownerToken, uint32_t members) const
+{
+    const auto found = roleWriteOwners_.find(ownerToken);
+    return found != roleWriteOwners_.end() && (found->second & members) == members;
+}
+
+TransitionAdmission AssignmentAggregate::AdmitTransitionWithRoleWriteSet(const SlotDescriptor &target,
+    uint64_t transitionToken, uint32_t members)
+{
+    if (!target.radioDomain) { return TransitionAdmission::UnknownResourceDomain; }
+    const auto found = transitions_.find(*target.radioDomain);
+    if (found != transitions_.end() && found->second.phase != TransitionPhase::Completed &&
+        found->second.phase != TransitionPhase::Failed) {
+        return TransitionAdmission::DomainBusy;
+    }
+    if (!AdmitRoleWriteSet(transitionToken, members)) { return TransitionAdmission::DomainBusy; }
+    transitions_[*target.radioDomain] = AssignmentTransition {*target.radioDomain, target.slot,
+        transitionToken, TransitionPhase::Admitted, 0};
+    ++revision_;
+    return TransitionAdmission::Admitted;
+}
+
 TransitionAdmission AssignmentAggregate::AdmitTransition(const SlotDescriptor &target, uint64_t transitionToken)
 {
     if (!target.radioDomain) { return TransitionAdmission::UnknownResourceDomain; }
