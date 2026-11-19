@@ -12,6 +12,7 @@
 | 产品装配 | 根 GN 仍编译 `services/sim/`，multisim 的逻辑目标仍为 testonly。G2a Core/Binding 仅用于 Host 参考测试，生产接入回退及上游基线见[§37](#upstream-sync-20261116)。 |
 | 源码结构 | 五组目录已落地。实际文件、接口和 GN 依赖见[源码详细设计](SIM_Multisim_Source_Architecture_Detailed_Design.md#source-tree)，历史迁址见[§29](#directory-layout-20261112)。 |
 | Target C0 | `155f9c4c3` 引入真实 AssignmentStoreAdapter 及 Host 装配，覆盖原系统参数键、ICCID 散列及失败/部分效果。保留该批记录的 Target 11/11、Both C0 和写方法执行审计，见[阶段四](#target-c0-store-20261118)和[后端范围](../services/multisim/test/docs/Backend_Architecture.md)。 |
+| Target Primary B | 当前实现 WithoutModemRestart 异步请求、严格响应关联、45000ms 超时和迟到拒绝；B 成功/错误/超时分别与 Legacy Scenario 差分。真实 Radio/HDI 及产品超时调度未验收。 |
 | Target C0 拓扑 | `0e4004bef` 已接入真实 T 的当前账户与绑定读取，在 Radio 观察后复核原资格。Host 测试构造确认的存储输入；执行批次及范围见[阶段五说明](../services/multisim/test/docs/Backend_Architecture.md#阶段五真实-ta-业务对象集成)。 |
 | Legacy Host | 保留[§48](#48-剩余fail第二阶段真实stop与完整host验收2026-11-18)的 124/124 与 CI 准入证据及阶段四的回归记录。本次文档治理及后续独立架构审查均未重新执行业务用例。 |
 | 产品门禁 | 正式 OHOS 参数端口、完整 Provider/Topology/Radio/Device、SA/IPC、原生产品构建和设备验收尚未闭合。旧 SimManager Stop 的 Host 证据仍按 §48 使用。 |
@@ -27,6 +28,8 @@
 2026-11-19 独立设计审查以 `0e4004bef` 为源码输入，形成[历史评审](history/reviews/SIM_Architecture_Independent_Review_20261119.md)。评审先独立发布于 `d8fcbba40`，随后将分责、共享输出和异步资格同步至主设计与源码详细设计。产品装配、设备与业务执行仍按原批次记录；当前设计验收见[第二轮复审](history/reviews/SIM_Architecture_Independent_Review_20261119.md#第二轮复审--对修改后的设计提出反例)。
 
 ## 历次双后端与阶段核验记录
+
+当前双后端阶段六（基准 `eea678d6`）：Target 实现 Primary WithoutModemRestart 异步请求资格、严格 Step/Binding/Session 关联、45000ms 业务超时、确认成功提交与 Legacy 错误映射。三条 B 场景分别与 Legacy 差分 PASS，RuntimeOperationStore/AssignmentService/B timeout 正执行审计 PASS；迟到响应与旧请求不能修改新状态。受控 Host Radio/时钟不是 HDI/Device 验收，C1/Provider/SA/IPC/产品仍未实施。
 
 <a id="target-c0-topology-20261119"></a>
 
