@@ -29,6 +29,7 @@ def differential_oracle(scenario_id):
         'TELEPHONY_ERR_SUCCESS after response; caller remains blocked before reply': 0,
         'TELEPHONY_ERR_LOCAL_PTR_NULL (characterized device-error mapping)': 83886087,
         'TELEPHONY_ERR_LOCAL_PTR_NULL after real timeout': 83886087,
+        'TELEPHONY_ERR_SUCCESS after protocol completion': 0,
     }
     if evidence.get('api_return') not in supported:
         raise ValueError('Frozen C0/B API contract is not supported by differential Oracle')
@@ -44,8 +45,7 @@ def differential_oracle(scenario_id):
         'parameters': parameters,
         'notifications': ['primary', 'data'] if expected['success_publications'] else [],
         'device_switch_commands': expected['ril_primary_count'] +
-            2 * len(expected['protocol_phases']) * len(source['preconditions']['active_accounts']) *
-            expected['protocol_attempts'],
+            2 * len(expected['protocol_phases']) * expected['protocol_attempts'],
         'retry_count': max(0, expected['attempts'] - 1),
     }
 

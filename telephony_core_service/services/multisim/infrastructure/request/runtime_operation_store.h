@@ -94,6 +94,7 @@ inline bool RuntimeOperationStore::AdvanceStep(StepRef expected, uint32_t nextSt
     }
     found->second.context.step = StepRef {expected.request, nextStep, attempt};
     found->second.context.sentSession = std::move(sentSession);
+    found->second.deviceEffect = EffectKnowledge::NotSent;
     return true;
 }
 

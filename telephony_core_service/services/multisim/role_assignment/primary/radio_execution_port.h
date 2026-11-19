@@ -38,6 +38,7 @@ struct RadioSwitchRequest {
     PrimarySwitchMode mode;
     std::optional<BindingRef> expectedBinding;
     uint32_t protocolSession;
+    uint32_t phase;
 };
 struct RadioSwitchResult {
     StepRef step;

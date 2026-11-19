@@ -47,6 +47,11 @@ public:
     void AcceptDataParameterProjection(SlotId lastData);
     std::optional<SlotId> ReadLastPrimary() const { return lastPrimary_; }
     std::optional<SlotId> ReadLastData() const { return lastData_; }
+    std::optional<AssignmentTransition> ReadTransition(const RadioDomainId &domain) const
+    {
+        const auto found = transitions_.find(domain);
+        return found == transitions_.end() ? std::nullopt : std::make_optional(found->second);
+    }
     uint64_t Revision() const { return revision_; }
 private:
     std::map<DefaultRole, RoleSelection> roles_; // 全局角色约束域不随Modem数量复制。

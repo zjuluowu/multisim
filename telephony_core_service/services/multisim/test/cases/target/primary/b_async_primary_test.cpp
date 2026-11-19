@@ -44,8 +44,9 @@ public:
 };
 class Radio final : public RadioExecutionPort {
 public:
+    bool directSupported {true};
     PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const override
-    { return {slot, 1, true, false, 9}; }
+    { return {slot, 1, directSupported, false, 9}; }
     void SwitchPrimaryRadio(const RadioSwitchRequest &request) override { requests.push_back(request); }
     void EndLegacySenseSwitch(const StepRef &, const RadioDomainId &) override { ++ended; }
     std::vector<RadioSwitchRequest> requests;
@@ -99,8 +100,9 @@ struct Fixture {
         EXPECT_TRUE(targetValue.has_value());
         return targetValue.value_or(BindingRef{});
     }
-    RequestId Start()
+    RequestId Start(bool threePhase = false)
     {
+        if (threePhase) { radio.directSupported = false; }
         target=Seed();
         return service.StartPrimarySwitch({SlotTarget{SlotId{1}},true,
             {SynchronousCompletionRoute{SynchronousWaitRef{44}},false},std::nullopt,target});
@@ -108,7 +110,7 @@ struct Fixture {
 };
 
 RadioSwitchResult Result(const RadioSwitchRequest &request, EffectKnowledge effect, int32_t legacyResult)
-{ return {request.step,request.target,request.expectedBinding,request.protocolSession,0,effect,legacyResult}; }
+{ return {request.step,request.target,request.expectedBinding,request.protocolSession,request.phase,effect,legacyResult}; }
 std::string Observation(const Fixture &f,int api)
 {
     std::string roles="[";
@@ -190,6 +192,82 @@ TEST(TargetPrimaryB,BTimeoutAt45000KeepsRolesAndRejectsLateReply)
     EXPECT_EQ(f.completion.results.size(),2u);
     EXPECT_NE(f.completion.results.back(),0);
     EXPECT_EQ(f.radio.requests.size(),1u);
+}
+
+TEST(TargetPrimaryB,BindingChangeAndUnknownEffectsPreserveIsolation)
+{
+    Fixture changed; const auto request=changed.Start(); ASSERT_EQ(changed.radio.requests.size(),1u);
+    changed.topology.AcceptCardRemoval(changed.target);
+    EXPECT_FALSE(changed.topology.ReadPrimaryTarget({1}).has_value());
+    const auto replacement=changed.topology.AcceptStoredDiscovery(Discovery(1,3,"replacement-card"),
+        Account({9},"replacement-card",{1}),Stored({9}));
+    ASSERT_TRUE(replacement.has_value());
+    changed.service.AcceptRadioStep(Result(changed.radio.requests[0],EffectKnowledge::ConfirmedApplied,0));
+    EXPECT_EQ(changed.completion.results,(std::vector<int32_t>{0}));
+    EXPECT_EQ(changed.parameters.values.at(kPrimary),"0");
+    EXPECT_EQ(changed.parameters.values.at(kData),"0");
+    EXPECT_TRUE(changed.output.roles.empty());
+    changed.service.StartPrimarySwitch({SlotTarget{{1}},true,
+        {SynchronousCompletionRoute{SynchronousWaitRef{47}},false},std::nullopt,*replacement});
+    EXPECT_EQ(changed.radio.requests.size(),1u);
+
+    Fixture unknown; unknown.Start(); ASSERT_EQ(unknown.radio.requests.size(),1u);
+    unknown.service.AcceptRadioStep(Result(unknown.radio.requests[0],EffectKnowledge::Unknown,-1));
+    EXPECT_TRUE(unknown.output.roles.empty());
+    EXPECT_EQ(unknown.parameters.values.at(kPrimary),"0");
+    EXPECT_EQ(unknown.completion.results.size(),1u);
+    unknown.service.StartPrimarySwitch({SlotTarget{{1}},true,
+        {SynchronousCompletionRoute{SynchronousWaitRef{48}},false},std::nullopt,unknown.target});
+    EXPECT_EQ(unknown.radio.requests.size(),1u);
+
+    Fixture conflict; conflict.Start();
+    conflict.service.AcceptRadioStep(Result(conflict.radio.requests[0],EffectKnowledge::ConfirmedApplied,
+        kLegacyLocalPointerNull));
+    EXPECT_EQ(conflict.parameters.values.at(kPrimary),"0");
+    EXPECT_TRUE(conflict.output.roles.empty());
+    conflict.service.StartPrimarySwitch({SlotTarget{{1}},true,
+        {SynchronousCompletionRoute{SynchronousWaitRef{49}},false},std::nullopt,conflict.target});
+    EXPECT_EQ(conflict.radio.requests.size(),1u);
+    ASSERT_EQ(conflict.completion.results.size(),2u);
+    conflict.service.AcceptLateRadioEvidence(Result(conflict.radio.requests[0],
+        EffectKnowledge::ConfirmedNotApplied,kLegacyLocalPointerNull));
+    EXPECT_EQ(conflict.completion.results.size(),2u);
+}
+
+TEST(TargetPrimaryB,C1ThreePhaseSuccessRejectsStaleSession)
+{
+    Fixture f; f.Start(true);
+    ASSERT_EQ(f.radio.requests.size(),2u);
+    EXPECT_EQ(f.radio.requests[0].mode,PrimarySwitchMode::ThreePhaseProtocol);
+    EXPECT_EQ(f.radio.requests[0].phase,1u);
+    EXPECT_EQ(f.parameters.values.at(kPrimary),"1");
+    EXPECT_TRUE(f.output.roles.empty());
+
+    auto stale=Result(f.radio.requests[0],EffectKnowledge::ConfirmedApplied,0); ++stale.protocolSession;
+    f.service.AcceptRadioStep(stale);
+    EXPECT_TRUE(f.completion.results.empty());
+    const auto check = f.radio.requests;
+    for (const auto &request : check) {
+        f.service.AcceptRadioStep(Result(request,EffectKnowledge::ConfirmedApplied,0));
+    }
+    ASSERT_EQ(f.radio.requests.size(),4u);
+    EXPECT_EQ(f.radio.requests[2].phase,2u);
+    for (size_t i=2;i<4;++i) {
+        f.service.AcceptRadioStep(Result(f.radio.requests[i],EffectKnowledge::ConfirmedApplied,0));
+    }
+    ASSERT_EQ(f.radio.requests.size(),6u);
+    EXPECT_EQ(f.radio.requests[4].phase,4u);
+    for (size_t i=4;i<6;++i) {
+        f.service.AcceptRadioStep(Result(f.radio.requests[i],EffectKnowledge::ConfirmedApplied,0));
+    }
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{0}));
+    EXPECT_EQ(f.parameters.values.at(kPrimary),"1");
+    EXPECT_EQ(f.parameters.values.at(kData),"1");
+    EXPECT_EQ(f.output.roles,(std::vector<std::string>{"primary","data"}));
+    EXPECT_EQ(f.radio.ended,1u);
+    RecordProperty("scenario_id","SIM028-LEGACY-C1-SUCCESS-STALE-DUAL-PRIMARY0");
+    RecordProperty("validation_level","three_phase_business");
+    RecordProperty("primary_observation",Observation(f,0));
 }
 
 TEST(TargetPrimaryB,RejectsWrongAssociationAndDoesNotAdvanceNewRequest)

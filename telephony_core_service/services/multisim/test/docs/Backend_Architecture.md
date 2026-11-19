@@ -71,6 +71,10 @@ B 场景结果：`SIM028-LEGACY-B-SUCCESS-DUAL-PRIMARY0`、`SIM028-LEGACY-B-ERRO
 
 正执行审计要求 `AssignmentService::AcceptRadioStep/AcceptPrimarySwitchTimeout` 和 `RuntimeOperationStore::RecordSent/AcceptResult` 在真实 Target 二进制中非零计数。真实 Radio/HDI、产品 SA/IPC、Device 仍未验收。
 
+M7.1 增加换卡、Unknown、ConfirmedApplied+非零结果及错误/迟到关联负控。已发命令后绑定变化或 Unknown/效果冲突不提交角色；外层 Completion 可按 Legacy 语义结束，但 transition 与 RuntimeOperationStore 留在 NeedsReconciliation，复用同域 `AdmitTransition` 仍会拒绝新请求。只有显式晚证据可记录到原请求，不能重播完成或通知。
+
+M7.2 C1 通过真实 `PlanPrimarySwitch(ThreePhaseProtocol)`，先按 Legacy 顺序预写 P、发布开始状态，再为两个成员发送 CHECK(1)、UPDATE(2)、COMPLETE(4)。每阶段都要求原 StepRef、protocolSession、成员和目标 Binding；只在该阶段全部成员完成后才推进下一步。旧 session、重复成员和错误成员不推进。当前只实现成功链；五次重试/完整 C1 失败恢复仍未实现。
+
 ## 阶段五：真实 T/A 业务对象集成
 
 C0 的 Target 前置事实现在来自真实 `TopologyService::ReadPrimaryTarget`：`BindingIndex::Find` 取得当前已接受 `BindingRef`，`AccountRegistry::ReadProjection(Current)` 提供 raw ICCID 和 active；Historical 投影仅供历史查询，不能授权 C0。`AcceptStoredDiscovery` 是已确认 provider 写入后的合法 T 接纳入口，复用 DiscoveryObservationLedger、AccountRegistry 和 BindingIndex；测试不再通过 Fake Topology 直接返回 `PrimaryTargetFacts`。

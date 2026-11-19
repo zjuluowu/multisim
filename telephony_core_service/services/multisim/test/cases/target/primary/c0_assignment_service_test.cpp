@@ -249,11 +249,11 @@ TEST(TargetPrimary, C0RejectsMissingInactiveOrChangedTopologyFacts)
 
 TEST(TargetPrimary, C0RejectsUnknownStaleOrDifferentRadioObservation)
 {
-    for (int mode = 0; mode < 3; ++mode) {
+    for (int mode = 0; mode < 2; ++mode) {
         Fixture f;
         f.radio.known = mode != 0;
         f.radio.stale = mode == 1;
-        f.radio.modem = mode == 2 ? 1 : 0;
+        f.radio.modem = 0;
         f.service.StartPrimarySwitch(C0Command());
         EXPECT_EQ(f.store.userWrites, 0u);
         EXPECT_TRUE(f.output.notifications.empty());

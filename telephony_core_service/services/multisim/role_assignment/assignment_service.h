@@ -20,6 +20,7 @@
 #define OHOS_TELEPHONY_MULTISIM_ASSIGNMENT_ASSIGNMENT_SERVICE_H
 
 #include "infrastructure/request/runtime_operation_store.h"
+#include <vector>
 #include "role_assignment/assignment_requests.h"
 #include "role_assignment/assignment_aggregate.h"
 #include "role_assignment/account_role_protocol.h"
@@ -94,8 +95,14 @@ private:
         std::string iccid;
         bool userSet;
         CompletionPlan completion;
+        PrimarySwitchMode mode;
+        uint32_t phase {0};
+        uint32_t protocolSession {0};
+        std::vector<SlotId> members;
+        std::vector<SlotId> completedMembers;
     };
     std::map<uint64_t, PendingPrimarySwitch> pendingPrimary_;
+    uint32_t nextProtocolSession_ {1};
     uint64_t nextConflictToken_ {1};
 };
 } // namespace OHOS::Telephony::MultiSim

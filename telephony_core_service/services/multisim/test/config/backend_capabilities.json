@@ -36,6 +36,12 @@
       "differential": "SUPPORTED"
     },
     {
+      "id": "SIM028-LEGACY-C1-SUCCESS-STALE-DUAL-PRIMARY0",
+      "legacy": {"test": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected", "host": "SUPPORTED", "device": "BLOCKED", "reason": "Requires controlled real Radio protocol fixture."},
+      "target": {"test": "TargetPrimaryB.C1ThreePhaseSuccessRejectsStaleSession", "host": "SUPPORTED", "device": "BLOCKED", "reason": "Host controlled Radio protocol port; HDI/device remain unverified."},
+      "differential": "SUPPORTED"
+    },
+    {
       "id": "TARGET-C0-PLAN-NO-DEVICE",
       "legacy": {
         "test": null,
