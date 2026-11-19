@@ -29,6 +29,8 @@
 
 ## 历次双后端与阶段核验记录
 
+当前双后端阶段七（基准 `bd7dbef77`）：M7.1 收紧 B 的换卡、Unknown、效果/错误冲突与迟到关联，保留 NeedsReconciliation 资格；M7.2 首次实现 C1 CHECK/UPDATE/COMPLETE 成功业务链，旧 session/重复成员不推进，Target C1 与 Legacy Oracle/差分通过。C1 五次重试、完整失败恢复、真实 Radio/HDI、产品 SA/IPC/Device 未实施。
+
 当前双后端阶段六（基准 `eea678d6`）：Target 实现 Primary WithoutModemRestart 异步请求资格、严格 Step/Binding/Session 关联、45000ms 业务超时、确认成功提交与 Legacy 错误映射。三条 B 场景分别与 Legacy 差分 PASS，RuntimeOperationStore/AssignmentService/B timeout 正执行审计 PASS；迟到响应与旧请求不能修改新状态。受控 Host Radio/时钟不是 HDI/Device 验收，C1/Provider/SA/IPC/产品仍未实施。
 
 <a id="target-c0-topology-20261119"></a>
