@@ -44,6 +44,7 @@ public:
     void AcceptRadioStep(const RadioSwitchResult &result) override;
     void AcceptLateRadioEvidence(const RadioSwitchResult &result) override;
     bool AcceptPrimarySwitchTimeout(RequestId request, uint64_t elapsedMilliseconds);
+    bool AcceptC1RetryDue(RequestId request);
     void RetryPrimaryAfterReconciliation(RequestId request);
     AssignmentView ReadLegacyAssignment() const;
     LegacyActivationWaitResult WaitForLegacyPrimaryBeforeActivation(SlotId slot) override;
@@ -100,6 +101,11 @@ private:
         uint32_t protocolSession {0};
         std::vector<SlotId> members;
         std::vector<SlotId> completedMembers;
+        PrimaryParameterSnapshot oldParameters;
+        bool roundFailed {false};
+        uint32_t attemptCount {0};
+        bool completionDelivered {false};
+        bool retryReady {false};
     };
     std::map<uint64_t, PendingPrimarySwitch> pendingPrimary_;
     uint32_t nextProtocolSession_ {1};

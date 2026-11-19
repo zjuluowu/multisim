@@ -115,13 +115,14 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         }
         pendingPrimary_.emplace(request.value, PendingPrimarySwitch {sentStep, *facts, *target,
             facts->iccid, command.userSet, command.completion, plan->mode, 0,
-            nextProtocolSession_++, {}, {}});
+            nextProtocolSession_++, {}, {}, {}, false, 0, false, false});
         output_.PublishPrimaryPhase(false, command.userSet);
         radio_.SwitchPrimaryRadio({sentStep, target->slot, *target->radioDomain, plan->mode, facts->binding,
             pendingPrimary_.at(request.value).protocolSession, 0});
         return request;
     }
     if (plan->mode == PrimarySwitchMode::ThreePhaseProtocol) {
+        const PrimaryParameterSnapshot oldParameters = store_.ReadPrimaryParameters();
         const auto preference = store_.WriteUserPrimaryPreference(command.userSet);
         const auto primary = store_.WritePrimaryParameters(target->slot, facts->iccid);
         if (!preference.callFinished || !primary.callFinished) {
@@ -133,7 +134,7 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         assignment_.AcceptPrimaryParameterProjection(target->slot);
         assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
             TransitionPhase::Admitted, TransitionPhase::ParametersWritten);
-        output_.PublishPrimaryPhase(false, command.userSet);
+        output_.PublishPrimaryPhase(false, false); // Legacy C1 status event ignores the public input flag.
         const SessionRef session {request.epoch,
             CardApplicationTarget {target->slot, "USIM"}, facts->binding.bindingRevision};
         const StepRef sentStep {request, 2, 0};
@@ -146,7 +147,8 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
             return request;
         }
         PendingPrimarySwitch pending {sentStep, *facts, *target, facts->iccid, command.userSet,
-            command.completion, plan->mode, 1, nextProtocolSession_++, {}, {}};
+            command.completion, plan->mode, 1, nextProtocolSession_++, {}, {}, oldParameters,
+            false, 0, false, false};
         for (const auto &slot : catalog_.Slots()) { pending.members.push_back(slot.slot); }
         pendingPrimary_.emplace(request.value, std::move(pending));
         for (const auto &member : pendingPrimary_.at(request.value).members) {
@@ -237,6 +239,7 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
             return;
         }
     } else if (result.phase != pending->second.phase ||
+        (pending->second.phase == 2 && !result.notify) ||
         (result.expectedBinding &&
          (!(result.expectedBinding->subscription == pending->second.facts.binding.subscription) ||
           result.expectedBinding->bindingRevision != pending->second.facts.binding.bindingRevision)) ||
@@ -247,32 +250,28 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
         return;
     }
     if (pending->second.mode == PrimarySwitchMode::ThreePhaseProtocol) {
-        if (result.effect != EffectKnowledge::ConfirmedApplied || result.legacyResult != 0) {
+        if (result.effect == EffectKnowledge::Unknown) {
             operations_.AcceptResult(result.step, result.effect);
             operations_.EndWait(result.step.request, WaitState::Delivered);
-            const bool unknown = result.effect == EffectKnowledge::Unknown;
             assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(), result.step.request.value,
-                TransitionPhase::DevicePending, unknown ? TransitionPhase::NeedsReconciliation : TransitionPhase::Failed);
-            output_.PublishPrimaryPhase(true, pending->second.userSet);
-            completion_.CompleteLegacyInt(pending->second.completion,
-                unknown ? 83886087 : result.legacyResult);
-            operations_.MarkTerminal(result.step.request, unknown ?
-                TerminalState::NeedsReconciliation : TerminalState::Failed);
-            if (!unknown) { pendingPrimary_.erase(pending); }
+                TransitionPhase::DevicePending, TransitionPhase::NeedsReconciliation);
+            output_.PublishPrimaryPhase(true, false);
+            completion_.CompleteLegacyInt(pending->second.completion, 83886087);
+            operations_.MarkTerminal(result.step.request, TerminalState::NeedsReconciliation);
             return;
         }
+        pending->second.roundFailed |= result.effect != EffectKnowledge::ConfirmedApplied || result.legacyResult != 0;
         pending->second.completedMembers.push_back(result.memberSlot);
         if (pending->second.completedMembers.size() != pending->second.members.size()) { return; }
     }
-    const auto admission = operations_.AcceptResult(result.step, result.effect);
-    if (admission != RuntimeOperationStore::ResultAdmission::Accepted) { return; }
-    operations_.EndWait(result.step.request, WaitState::Delivered);
     if (pending->second.mode == PrimarySwitchMode::ThreePhaseProtocol) {
         pending->second.completedMembers.clear();
         if (pending->second.phase != 4) {
-            const uint32_t nextPhase = pending->second.phase == 1 ? 2 : 4;
+            const uint32_t nextPhase = pending->second.roundFailed ? 4 :
+                pending->second.phase == 1 ? 2 : 4;
             const uint32_t nextStep = pending->second.step.step + 1;
-            if (!operations_.AdvanceStep(pending->second.step, nextStep, 0, std::nullopt)) { return; }
+            if (!operations_.AdvanceStep(pending->second.step, nextStep,
+                pending->second.step.attempt, std::nullopt)) { return; }
             pending->second.step.step = nextStep;
             const SessionRef session {pending->second.step.request.epoch,
                 CardApplicationTarget {pending->second.target.slot, "USIM"},
@@ -289,7 +288,38 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
             return;
         }
     }
+    const auto admission = operations_.AcceptResult(result.step, result.effect);
+    if (admission != RuntimeOperationStore::ResultAdmission::Accepted) { return; }
+    operations_.EndWait(result.step.request, WaitState::Delivered);
     radio_.EndLegacySenseSwitch(pending->second.step, pending->second.target.radioDomain.value());
+    if (pending->second.mode == PrimarySwitchMode::ThreePhaseProtocol && pending->second.roundFailed) {
+        const auto restored = store_.RestorePrimaryIfLegacyValid(pending->second.oldParameters);
+        if (!restored.callFinished) {
+            assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(), result.step.request.value,
+                TransitionPhase::DevicePending, TransitionPhase::NeedsReconciliation);
+            operations_.MarkTerminal(result.step.request, TerminalState::NeedsReconciliation);
+            return;
+        }
+        output_.PublishPrimaryPhase(true, false);
+        if (pending->second.attemptCount == 0) {
+            completion_.CompleteLegacyInt(pending->second.completion, 83886087);
+            pending->second.completionDelivered = true;
+            operations_.EndWait(result.step.request, WaitState::Delivered);
+        }
+        if (pending->second.attemptCount < 5) {
+            ++pending->second.attemptCount;
+            pending->second.retryReady = true;
+            assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(), result.step.request.value,
+                TransitionPhase::DevicePending, TransitionPhase::Reconciling);
+            operations_.MarkTerminal(result.step.request, TerminalState::Open);
+            return;
+        }
+        assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(), result.step.request.value,
+            TransitionPhase::DevicePending, TransitionPhase::Failed);
+        operations_.MarkTerminal(result.step.request, TerminalState::Failed);
+        pendingPrimary_.erase(pending);
+        return;
+    }
     const auto currentFacts = topology_.ReadPrimaryTarget(pending->second.target.slot);
     const bool bindingCurrent = currentFacts &&
         currentFacts->binding.subscription == pending->second.facts.binding.subscription &&
@@ -322,7 +352,8 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
             pending->second.facts.binding.subscription);
         assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(),
             result.step.request.value, TransitionPhase::DevicePending, TransitionPhase::Completed);
-        output_.PublishPrimaryPhase(true, pending->second.userSet);
+        output_.PublishPrimaryPhase(true,
+            pending->second.mode == PrimarySwitchMode::ThreePhaseProtocol ? false : pending->second.userSet);
         completion_.CompleteLegacyInt(pending->second.completion, 0);
         operations_.MarkTerminal(result.step.request, TerminalState::Succeeded);
         pendingPrimary_.erase(pending);
@@ -365,6 +396,61 @@ void AssignmentService::AcceptLateRadioEvidence(const RadioSwitchResult &result)
     // Late evidence is recorded in the original request context only. It does not
     // replay completion, role submission, notification, or device commands.
     operations_.AcceptResult(result.step, result.effect);
+}
+
+bool AssignmentService::AcceptC1RetryDue(RequestId request)
+{
+    const auto pending = pendingPrimary_.find(request.value);
+    if (pending == pendingPrimary_.end() || !pending->second.retryReady || pending->second.phase != 4 ||
+        pending->second.mode != PrimarySwitchMode::ThreePhaseProtocol) {
+        return false;
+    }
+    const auto operation = operations_.Read(request);
+    if (!operation || operation->terminal != TerminalState::Open || pending->second.attemptCount > 5) {
+        return false;
+    }
+    pending->second.retryReady = false;
+    const auto current = topology_.ReadPrimaryTarget(pending->second.target.slot);
+    if (!current || current->binding.bindingRevision != pending->second.facts.binding.bindingRevision ||
+        current->iccid != pending->second.facts.iccid || !current->active) {
+        assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(), request.value,
+            TransitionPhase::Reconciling, TransitionPhase::NeedsReconciliation);
+        operations_.MarkTerminal(request, TerminalState::NeedsReconciliation);
+        return true;
+    }
+    const auto primary = store_.WritePrimaryParameters(pending->second.target.slot, pending->second.facts.iccid);
+    if (!primary.callFinished) {
+        assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(), request.value,
+            TransitionPhase::Reconciling, TransitionPhase::NeedsReconciliation);
+        operations_.MarkTerminal(request, TerminalState::NeedsReconciliation);
+        return true;
+    }
+    const uint32_t nextStep = pending->second.step.step + 1;
+    if (!operations_.AdvanceStep(pending->second.step, nextStep, pending->second.attemptCount, std::nullopt)) {
+        return false;
+    }
+    pending->second.step.step = nextStep;
+    pending->second.step.attempt = pending->second.attemptCount;
+    pending->second.protocolSession = nextProtocolSession_++;
+    const SessionRef session {request.epoch, CardApplicationTarget {pending->second.target.slot, "USIM"},
+        pending->second.facts.binding.bindingRevision};
+    if (!operations_.RecordSent(pending->second.step, session) ||
+        !assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(), request.value,
+            TransitionPhase::Reconciling, TransitionPhase::DevicePending)) {
+        return false;
+    }
+    pending->second.phase = 1;
+    pending->second.roundFailed = false;
+    pending->second.completedMembers.clear();
+    output_.PublishPrimaryPhase(false, false);
+    for (const auto &member : pending->second.members) {
+        radio_.SwitchPrimaryRadio({pending->second.step, member, pending->second.target.radioDomain.value(),
+            PrimarySwitchMode::ThreePhaseProtocol,
+            member == pending->second.target.slot ?
+                std::optional<BindingRef>{pending->second.facts.binding} : std::nullopt,
+            pending->second.protocolSession, 1});
+    }
+    return true;
 }
 
 bool AssignmentService::AcceptPrimarySwitchTimeout(RequestId request, uint64_t elapsedMilliseconds)

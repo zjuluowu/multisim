@@ -2,6 +2,7 @@
 
 #include <map>
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 #include "account/topology_service.h"
@@ -109,10 +110,14 @@ struct Fixture {
     }
 };
 
-RadioSwitchResult Result(const RadioSwitchRequest &request, EffectKnowledge effect, int32_t legacyResult)
-{ return {request.step,request.target,request.expectedBinding,request.protocolSession,request.phase,effect,legacyResult}; }
+RadioSwitchResult Result(const RadioSwitchRequest &request, EffectKnowledge effect, int32_t legacyResult,
+    bool notify = false)
+{ return {request.step,request.target,request.expectedBinding,request.protocolSession,request.phase,notify,effect,legacyResult}; }
 std::string Observation(const Fixture &f,int api)
 {
+    std::set<uint32_t> sessions;
+    for (const auto &request : f.radio.requests) { sessions.insert(request.protocolSession); }
+    const int retries = std::max(0, static_cast<int>(sessions.size()) - 1);
     std::string roles="[";
     for(size_t i=0;i<f.output.roles.size();++i){roles+=(i?",":"");roles+="\""+f.output.roles[i]+"\"";}
     roles+="]";
@@ -123,7 +128,8 @@ std::string Observation(const Fixture &f,int api)
         ",\"primary_slot\":"+f.parameters.values.at(kPrimary)+",\"primary_iccid\":\""+f.parameters.values.at(kIccid)+
         "\",\"default_data_slot\":"+f.parameters.values.at(kData)+"},\"notifications\":"+roles+
         ",\"device_switch_commands\":"+std::to_string(f.radio.requests.size())+
-        ",\"retry_count\":0,\"switching\":"+(f.service.ReadLegacyAssignment().primarySwitchInProgress?"true":"false")+"}";
+        ",\"retry_count\":"+std::to_string(retries)+
+        ",\"switching\":"+(f.service.ReadLegacyAssignment().primarySwitchInProgress?"true":"false")+"}";
 }
 void VerifyBRequest(const Fixture &f)
 {
@@ -252,8 +258,11 @@ TEST(TargetPrimaryB,C1ThreePhaseSuccessRejectsStaleSession)
     }
     ASSERT_EQ(f.radio.requests.size(),4u);
     EXPECT_EQ(f.radio.requests[2].phase,2u);
+    ASSERT_EQ(f.radio.requests.size(),4u);
+    // Legacy UPDATE completion is driven by each RIL NOTIFY, not by RadioResponseInfo ACKs.
     for (size_t i=2;i<4;++i) {
-        f.service.AcceptRadioStep(Result(f.radio.requests[i],EffectKnowledge::ConfirmedApplied,0));
+        auto notify=Result(f.radio.requests[i],EffectKnowledge::ConfirmedApplied,0,true);
+        f.service.AcceptRadioStep(notify);
     }
     ASSERT_EQ(f.radio.requests.size(),6u);
     EXPECT_EQ(f.radio.requests[4].phase,4u);
@@ -264,10 +273,50 @@ TEST(TargetPrimaryB,C1ThreePhaseSuccessRejectsStaleSession)
     EXPECT_EQ(f.parameters.values.at(kPrimary),"1");
     EXPECT_EQ(f.parameters.values.at(kData),"1");
     EXPECT_EQ(f.output.roles,(std::vector<std::string>{"primary","data"}));
+    EXPECT_EQ(f.output.phases,(std::vector<std::pair<std::string,bool>>{{"start",false},{"done",false}}));
     EXPECT_EQ(f.radio.ended,1u);
     RecordProperty("scenario_id","SIM028-LEGACY-C1-SUCCESS-STALE-DUAL-PRIMARY0");
     RecordProperty("validation_level","three_phase_business");
     RecordProperty("primary_observation",Observation(f,0));
+}
+
+TEST(TargetPrimaryB,C1CheckFailureRestoresAndExhaustsFiveRetries)
+{
+    Fixture f; const auto request=f.Start(true);
+    ASSERT_EQ(f.radio.requests.size(),2u);
+    const auto originalIccid=kEncoded0;
+    for (uint32_t round=0; round<6; ++round) {
+        const size_t begin=round*4;
+        ASSERT_EQ(f.radio.requests.size(),begin+2);
+        EXPECT_EQ(f.radio.requests[begin].phase,1u);
+        for (size_t i=begin;i<begin+2;++i) {
+            f.service.AcceptRadioStep(Result(f.radio.requests[i],
+                EffectKnowledge::ConfirmedNotApplied, kLegacyLocalPointerNull));
+        }
+        ASSERT_EQ(f.radio.requests.size(),begin+4);
+        EXPECT_EQ(f.radio.requests[begin+2].phase,4u);
+        for (size_t i=begin+2;i<begin+4;++i) {
+            f.service.AcceptRadioStep(Result(f.radio.requests[i],EffectKnowledge::ConfirmedApplied,0));
+        }
+        EXPECT_EQ(f.parameters.values.at(kPrimary),"0");
+        EXPECT_EQ(f.parameters.values.at(kData),"0");
+        EXPECT_EQ(f.parameters.values.at(kIccid),originalIccid);
+        if (round==0) {
+            EXPECT_EQ(f.completion.results,(std::vector<int32_t>{kLegacyLocalPointerNull}));
+        }
+        if (round<5) { ASSERT_TRUE(f.service.AcceptC1RetryDue(request)) << "round=" << round; }
+    }
+    EXPECT_FALSE(f.service.AcceptC1RetryDue(request));
+    EXPECT_EQ(f.radio.requests.size(),24u);
+    std::set<uint32_t> sessions;
+    for (const auto &request : f.radio.requests) { sessions.insert(request.protocolSession); }
+    EXPECT_EQ(sessions.size(), 6u);
+    EXPECT_EQ(f.output.phases.size(),12u);
+    for (const auto &phase : f.output.phases) { EXPECT_FALSE(phase.second); }
+    EXPECT_TRUE(f.output.roles.empty());
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{kLegacyLocalPointerNull}));
+    RecordProperty("scenario_id","SIM028-LEGACY-C1-CHECK-ERROR-RETRY-DUAL-PRIMARY0");
+    RecordProperty("primary_observation",Observation(f,kLegacyLocalPointerNull));
 }
 
 TEST(TargetPrimaryB,RejectsWrongAssociationAndDoesNotAdvanceNewRequest)

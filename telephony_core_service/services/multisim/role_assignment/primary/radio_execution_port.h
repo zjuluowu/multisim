@@ -46,6 +46,7 @@ struct RadioSwitchResult {
     std::optional<BindingRef> expectedBinding;
     uint32_t protocolSession;
     uint32_t phase;
+    bool notify; // R translated RadioProtocol NOTIFY; UPDATE has no separate ACK result.
     EffectKnowledge effect;
     int32_t legacyResult;
 };

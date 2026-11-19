@@ -42,6 +42,12 @@
       "differential": "SUPPORTED"
     },
     {
+      "id": "SIM028-LEGACY-C1-CHECK-ERROR-RETRY-DUAL-PRIMARY0",
+      "legacy": {"test": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries", "host": "SUPPORTED", "device": "BLOCKED", "reason": "Requires controlled full C1 Radio protocol fixture."},
+      "target": {"test": "TargetPrimaryB.C1CheckFailureRestoresAndExhaustsFiveRetries", "host": "SUPPORTED", "device": "BLOCKED", "reason": "Host controlled Radio protocol; five retries are advanced by production A retry method."},
+      "differential": "SUPPORTED"
+    },
+    {
       "id": "TARGET-C0-PLAN-NO-DEVICE",
       "legacy": {
         "test": null,

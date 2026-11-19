@@ -30,6 +30,7 @@ def differential_oracle(scenario_id):
         'TELEPHONY_ERR_LOCAL_PTR_NULL (characterized device-error mapping)': 83886087,
         'TELEPHONY_ERR_LOCAL_PTR_NULL after real timeout': 83886087,
         'TELEPHONY_ERR_SUCCESS after protocol completion': 0,
+        'TELEPHONY_ERR_LOCAL_PTR_NULL after first attempt, before all background retries finish': 83886087,
     }
     if evidence.get('api_return') not in supported:
         raise ValueError('Frozen C0/B API contract is not supported by differential Oracle')

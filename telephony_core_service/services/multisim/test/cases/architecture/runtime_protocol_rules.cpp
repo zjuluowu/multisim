@@ -108,7 +108,7 @@ void ResultSinkScenarios()
     assert(consumer.number->step.request.value == 11 && consumer.number->sentSession.bindingGeneration == 3);
     assert(consumer.number->effect == EffectKnowledge::Unknown && !consumer.number->legacyWaitSucceeded);
     route.DeliverActivation({Step(12), session, EffectKnowledge::ConfirmedNotApplied, -8});
-    route.DeliverRadio({Step(13), {1}, std::nullopt, 17, 2, EffectKnowledge::Unknown, -9}, true);
+    route.DeliverRadio({Step(13), {1}, std::nullopt, 17, 2, false, EffectKnowledge::Unknown, -9}, true);
     assert(consumer.active->step.request.value == 12 && consumer.active->legacyResult == -8);
     assert(consumer.radio->step.request.value == 13 && consumer.radio->protocolSession == 17);
     assert(consumer.radio->phase == 2 && consumer.radio->legacyResult == -9);

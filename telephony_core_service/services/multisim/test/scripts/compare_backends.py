@@ -68,7 +68,9 @@ def normalized(case):
                 'default_data_slot': int(parameters.get('persist.telephony.MainCellularDataSlotId') or public.get('data', -1)),
             },
             'notifications': notifications, 'device_switch_commands': device_calls,
-            'retry_count': retries,
+            'retry_count': max(0, len({event.get('fields', {}).get('session')
+                                       for event in events if event.get('kind') == 'ril_protocol' and
+                                       event.get('fields', {}).get('session') is not None}) - 1),
         }
     if observation:
         result = dict(observation)
