@@ -20,17 +20,49 @@
 #define OHOS_TELEPHONY_MULTISIM_FOUNDATION_ORCHESTRATION_RUNTIME_OPERATION_STORE_H
 
 #include <map>
+#include <memory>
 #include <optional>
 #include <utility>
 #include "infrastructure/request/request_context.h"
 
 namespace OHOS::Telephony::MultiSim {
+struct ScheduledRetryEvent {
+    RequestId request;
+    uint64_t scheduleGeneration;
+    uint32_t attempt;
+};
+struct RetrySchedulerAudit {
+    uint64_t scheduled {0};
+    uint64_t delivered {0};
+    uint64_t cancelled {0};
+    uint64_t rejected {0};
+    size_t pending {0};
+    size_t running {0};
+    bool accepting {true};
+};
+class ScheduledRetrySink {
+public:
+    virtual ~ScheduledRetrySink() = default;
+    virtual bool AcceptScheduledC1Retry(const ScheduledRetryEvent &event) = 0;
+};
+// H owns queue/thread/cancel/drain. A supplies immutable business identity and policy decision.
+class RetrySchedulerPort {
+public:
+    virtual ~RetrySchedulerPort() = default;
+    virtual std::optional<uint64_t> ScheduleRetry(const ScheduledRetryEvent &event,
+        uint64_t delayMilliseconds, const std::weak_ptr<ScheduledRetrySink> &sink) = 0;
+    virtual bool CancelRetry(uint64_t schedulerTask) = 0;
+    virtual size_t CancelAllForOwner(RuntimeEpoch epoch, RequestOwner owner) = 0;
+    virtual void StopAcceptingAndCancel() = 0;
+    virtual RetrySchedulerAudit Audit() const = 0;
+};
 // 消费方：T SetShowNumber/ActivateSim，A AssignmentService。每个 Owner 自有容器。
 // 不是业务聚合/持久日志，不存账户、角色、进行中标志，不安排重试或调用端口。
 class RuntimeOperationStore final {
 public:
     enum class ResultAdmission { Accepted, Duplicate, WrongStep, AlreadyTerminal, UnknownRequest };
     RuntimeOperationStore(RuntimeEpoch epoch, RequestOwner owner) : epoch_(epoch), owner_(owner) {}
+    RuntimeEpoch ReadRuntimeEpoch() const { return epoch_; }
     RequestId Begin(ResolvedTarget origin, CompletionPlan completion, std::optional<StepRef> parent = std::nullopt);
     bool AdvanceStep(StepRef expected, uint32_t nextStep, uint32_t attempt,
         std::optional<SessionRef> sentSession); // 同域推进，禁止外部直接改Context。
@@ -64,7 +96,8 @@ public:
         if (request.epoch != epoch_ || request.owner != owner_) { return; }
         const auto found = operations_.find(request.value);
         if (found != operations_.end() && found->second.terminal != TerminalState::Open &&
-            found->second.deviceEffect != EffectKnowledge::Unknown) {
+            (found->second.deviceEffect != EffectKnowledge::Unknown ||
+             lateEffects_.find(request.value) != lateEffects_.end())) {
             stepConsumed_.erase(request.value);
             completionClaimed_.erase(request.value);
             lateEffects_.erase(request.value);
@@ -129,48 +162,6 @@ inline std::optional<RuntimeOperation> RuntimeOperationStore::Read(RequestId req
     return found == operations_.end() ? std::nullopt : std::make_optional(found->second);
 }
 
-inline bool RuntimeOperationStore::AcceptLateEvidence(StepRef step, EffectKnowledge evidence)
-{
-    if (step.request.epoch != epoch_ || step.request.owner != owner_) { return false; }
-    const auto found = operations_.find(step.request.value);
-    if (found == operations_.end() || !(found->second.context.step == step) ||
-        found->second.terminal != TerminalState::NeedsReconciliation) {
-        return false;
-    }
-    lateEffects_[step.request.value] = evidence;
-    return true;
-}
-
-inline std::optional<EffectKnowledge> RuntimeOperationStore::ReadLateEvidence(RequestId request) const
-{
-    if (request.epoch != epoch_ || request.owner != owner_) { return std::nullopt; }
-    const auto found = lateEffects_.find(request.value);
-    return found == lateEffects_.end() ? std::nullopt : std::make_optional(found->second);
-}
-
-inline bool RuntimeOperationStore::ClaimCompletion(RequestId request)
-{
-    if (request.epoch != epoch_ || request.owner != owner_) { return false; }
-    const auto found = operations_.find(request.value);
-    if (found == operations_.end() || found->second.terminal == TerminalState::Open ||
-        completionClaimed_[request.value]) {
-        return false;
-    }
-    completionClaimed_[request.value] = true;
-    return true;
-}
-
-inline bool RuntimeOperationStore::ClaimEarlyCompletion(RequestId request)
-{
-    if (request.epoch != epoch_ || request.owner != owner_) { return false; }
-    const auto found = operations_.find(request.value);
-    if (found == operations_.end() || found->second.terminal != TerminalState::Open ||
-        completionClaimed_[request.value]) {
-        return false;
-    }
-    completionClaimed_[request.value] = true;
-    return true;
-}
 } // namespace OHOS::Telephony::MultiSim
 
 #endif // OHOS_TELEPHONY_MULTISIM_FOUNDATION_ORCHESTRATION_RUNTIME_OPERATION_STORE_H

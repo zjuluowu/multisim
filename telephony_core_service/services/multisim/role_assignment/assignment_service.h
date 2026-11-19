@@ -34,7 +34,8 @@
 namespace OHOS::Telephony::MultiSim {
 // A唯一应用写入口；跨Owner只依消费方所需窄端口，不认识T具体Service。
 class AssignmentService final : public RadioResultSink, public ProfilePreferencePort,
-    public AccountRolePlanningPort, public ActivationAssignmentPort {
+    public AccountRolePlanningPort, public ActivationAssignmentPort, public ScheduledRetrySink,
+    public std::enable_shared_from_this<AssignmentService> {
 public:
     AssignmentService(const SlotCatalog &catalog, AssignmentStore &store, RadioExecutionPort &radio,
         AssignmentOutputPort &output, PrimaryTopologyPort &topology, LegacyIntCompletionPort &completion,
@@ -45,6 +46,10 @@ public:
     void AcceptLateRadioEvidence(const RadioSwitchResult &result) override;
     bool AcceptPrimarySwitchTimeout(RequestId request, uint64_t elapsedMilliseconds);
     bool AcceptC1RetryDue(RequestId request);
+    void BindRetryScheduler(const std::shared_ptr<RetrySchedulerPort> &scheduler);
+    bool AcceptScheduledC1Retry(const ScheduledRetryEvent &event) override;
+    bool StopAcceptingAndCancelScheduledRetries();
+    bool HasPendingDeviceEffects() const;
     void RetryPrimaryAfterReconciliation(RequestId request);
     AssignmentView ReadLegacyAssignment() const;
     LegacyActivationWaitResult WaitForLegacyPrimaryBeforeActivation(SlotId slot) override;
@@ -70,6 +75,7 @@ public:
 private:
     void CompleteOnce(RequestId request, const CompletionPlan &plan, int32_t result,
         TerminalState terminal);
+    bool ScheduleC1Retry(RequestId request, uint32_t attempt);
     const SlotCatalog &catalog_;
     AssignmentAggregate assignment_;
     RuntimeOperationStore operations_;
@@ -108,8 +114,16 @@ private:
         uint32_t attemptCount {0};
         bool completionDelivered {false};
         bool retryReady {false};
+        bool retryScheduled {false};
+        uint64_t retryScheduleGeneration {0};
+        std::optional<uint64_t> retrySchedulerTask;
+        std::optional<EffectKnowledge> lateDeviceEffect;
     };
     std::map<uint64_t, PendingPrimarySwitch> pendingPrimary_;
+    std::weak_ptr<RetrySchedulerPort> retryScheduler_;
+    bool retrySchedulerBound_ {false};
+    bool stopping_ {false};
+    uint64_t nextRetryScheduleGeneration_ {1};
     uint32_t nextProtocolSession_ {1};
     uint64_t nextConflictToken_ {1};
 };

@@ -17,6 +17,9 @@ config("host") {
     "-ffunction-sections",
     "-fdata-sections",
   ]
+  if (host_tsan) {
+    cflags_cc += [ "-fsanitize=thread" ]
+  }
   if (host_debug) {
     cflags_cc += [
       "-O1",
@@ -32,6 +35,9 @@ config("host") {
     "-Wl,--gc-sections",
     "-pthread",
   ]
+  if (host_tsan) {
+    ldflags += [ "-fsanitize=thread" ]
+  }
 }
 toolchain("linux") {
   tool("cxx") {

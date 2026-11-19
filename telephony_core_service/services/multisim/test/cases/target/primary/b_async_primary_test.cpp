@@ -1,10 +1,19 @@
 #include <gtest/gtest.h>
 
+#include <algorithm>
+#include <chrono>
+#include <condition_variable>
+#include <deque>
 #include <functional>
+#include <future>
 #include <map>
+#include <mutex>
 #include <optional>
 #include <set>
+#include <stdexcept>
 #include <string>
+#include <thread>
+#include <type_traits>
 #include <vector>
 #include "account/topology_service.h"
 #include "role_assignment/assignment_service.h"
@@ -83,6 +92,187 @@ CardDiscoveryObservation Discovery(int slot,uint64_t generation,const std::strin
 AccountDiscoveryStoreResult Stored(SubscriptionId id)
 { return {0,id,true,true,EffectKnowledge::ConfirmedApplied}; }
 
+class ControlledRetryScheduler final : public RetrySchedulerPort {
+public:
+    ControlledRetryScheduler() { worker_ = std::thread([this] { Worker(); }); }
+    ~ControlledRetryScheduler() { StopAndJoin(); }
+
+    std::optional<uint64_t> ScheduleRetry(const ScheduledRetryEvent &event, uint64_t delayMilliseconds,
+        const std::weak_ptr<ScheduledRetrySink> &sink) override
+    {
+        std::lock_guard<std::mutex> guard(lock_);
+        if (!accepting_) { ++audit_.rejected; return std::nullopt; }
+        const uint64_t id = nextTask_++;
+        tasks_.push_back({id, clock_ + delayMilliseconds, event, sink});
+        ++audit_.scheduled;
+        ++audit_.pending;
+        changed_.notify_all();
+        return id;
+    }
+    bool CancelRetry(uint64_t schedulerTask) override
+    {
+        std::lock_guard<std::mutex> guard(lock_);
+        for (auto found = tasks_.begin(); found != tasks_.end(); ++found) {
+            if (found->id != schedulerTask) { continue; }
+            tasks_.erase(found);
+            --audit_.pending;
+            ++audit_.cancelled;
+            return true;
+        }
+        return false;
+    }
+    size_t CancelAllForOwner(RuntimeEpoch epoch, RequestOwner owner) override
+    {
+        std::lock_guard<std::mutex> guard(lock_);
+        size_t cancelled = 0;
+        for (auto found = tasks_.begin(); found != tasks_.end();) {
+            if (found->event.request.epoch == epoch && found->event.request.owner == owner) {
+                found = tasks_.erase(found);
+                --audit_.pending;
+                ++cancelled;
+            } else {
+                ++found;
+            }
+        }
+        audit_.cancelled += cancelled;
+        changed_.notify_all();
+        return cancelled;
+    }
+    void StopAcceptingAndCancel() override
+    {
+        std::lock_guard<std::mutex> guard(lock_);
+        if (!accepting_) { return; }
+        accepting_ = false;
+        audit_.accepting = false;
+        audit_.cancelled += audit_.pending;
+        audit_.pending = 0;
+        tasks_.clear();
+        ownerTasks_.clear();
+        changed_.notify_all();
+    }
+    RetrySchedulerAudit Audit() const override
+    {
+        std::lock_guard<std::mutex> guard(lock_);
+        return audit_;
+    }
+    bool PostOwner(std::function<void()> action)
+    {
+        std::lock_guard<std::mutex> guard(lock_);
+        if (!accepting_) { return false; }
+        ownerTasks_.push_back(std::move(action));
+        ++audit_.pending;
+        changed_.notify_all();
+        return true;
+    }
+    template<class F> auto OwnerCall(F action) -> decltype(action())
+    {
+        std::promise<decltype(action())> ready;
+        auto future = ready.get_future();
+        if (!PostOwner([&] {
+            if constexpr (std::is_void_v<decltype(action())>) {
+                action(); ready.set_value();
+            } else {
+                ready.set_value(action());
+            }
+        })) {
+            throw std::runtime_error("scheduler stopped");
+        }
+        return future.get();
+    }
+    void Advance(uint64_t milliseconds)
+    {
+        std::lock_guard<std::mutex> guard(lock_);
+        clock_ += milliseconds;
+        changed_.notify_all();
+    }
+    bool WaitUntil(size_t delivered, uint64_t executedAtLeast,
+        std::chrono::milliseconds timeout = std::chrono::seconds(3))
+    {
+        std::unique_lock<std::mutex> guard(lock_);
+        return changed_.wait_for(guard, timeout, [&] {
+            return audit_.delivered >= delivered && audit_.scheduled >= executedAtLeast;
+        });
+    }
+    bool WaitIdle(std::chrono::milliseconds timeout = std::chrono::seconds(3))
+    {
+        std::unique_lock<std::mutex> guard(lock_);
+        return changed_.wait_for(guard, timeout, [&] {
+            return audit_.pending == 0 && audit_.running == 0;
+        });
+    }
+    void StopAndJoin()
+    {
+        StopAcceptingAndCancel();
+        std::thread worker;
+        {
+            std::lock_guard<std::mutex> guard(lock_);
+            stopping_ = true;
+            worker.swap(worker_);
+            changed_.notify_all();
+        }
+        if (worker.joinable()) { worker.join(); }
+    }
+    bool RedeliverLastOnOwner(const std::shared_ptr<AssignmentService> &service)
+    {
+        ScheduledRetryEvent event;
+        {
+            std::lock_guard<std::mutex> guard(lock_);
+            if (!lastDelivered_) { return false; }
+            event = *lastDelivered_;
+        }
+        return OwnerCall([service, event] { return service->AcceptScheduledC1Retry(event); });
+    }
+private:
+    struct Task {
+        uint64_t id;
+        uint64_t due;
+        ScheduledRetryEvent event;
+        std::weak_ptr<ScheduledRetrySink> sink;
+    };
+    void Worker()
+    {
+        std::unique_lock<std::mutex> guard(lock_);
+        for (;;) {
+            changed_.wait(guard, [&] {
+                if (stopping_) { return true; }
+                if (!ownerTasks_.empty()) { return true; }
+                return std::any_of(tasks_.begin(), tasks_.end(), [&](const Task &task) {
+                    return task.due <= clock_;
+                });
+            });
+            if (stopping_) { return; }
+            std::function<void()> owner;
+            if (!ownerTasks_.empty()) {
+                owner = std::move(ownerTasks_.front()); ownerTasks_.pop_front(); --audit_.pending;
+                ++audit_.running; changed_.notify_all(); guard.unlock();
+                owner(); guard.lock(); --audit_.running; changed_.notify_all(); continue;
+            }
+            auto found = std::find_if(tasks_.begin(), tasks_.end(), [&](const Task &task) {
+                return task.due <= clock_;
+            });
+            Task task = *found; tasks_.erase(found); --audit_.pending; ++audit_.running;
+            changed_.notify_all(); guard.unlock();
+            bool accepted = false;
+            if (auto sink = task.sink.lock()) { accepted = sink->AcceptScheduledC1Retry(task.event); }
+            guard.lock(); --audit_.running;
+            if (accepted) { ++audit_.delivered; lastDelivered_ = task.event; }
+            else { ++audit_.rejected; }
+            changed_.notify_all();
+        }
+    }
+    mutable std::mutex lock_;
+    std::condition_variable changed_;
+    std::thread worker_;
+    std::deque<Task> tasks_;
+    std::deque<std::function<void()>> ownerTasks_;
+    uint64_t clock_ {0};
+    uint64_t nextTask_ {1};
+    bool accepting_ {true};
+    bool stopping_ {false};
+    RetrySchedulerAudit audit_;
+    std::optional<ScheduledRetryEvent> lastDelivered_;
+};
+
 struct Fixture {
     SlotCatalog catalog {{
         {SlotId{0},EndpointKind::Physical,0,RadioDomainId{"m0"},VisibilityClass::Ordinary,false},
@@ -117,7 +307,74 @@ struct Fixture {
 };
 
 RadioSwitchResult Result(const RadioSwitchRequest &request, EffectKnowledge effect, int32_t legacyResult,
-    bool notify = false)
+    bool notify = false);
+
+struct AsyncFixture {
+    SlotCatalog catalog {{
+        {SlotId{0},EndpointKind::Physical,0,RadioDomainId{"m0"},VisibilityClass::Ordinary,false},
+        {SlotId{1},EndpointKind::Physical,1,RadioDomainId{"m1"},VisibilityClass::Ordinary,false}}, {2,2,2,2,2}};
+    AccountStorePort accountStore;
+    TopologyService topology {catalog,accountStore,RuntimeEpoch{6,2}};
+    Parameters parameters;
+    AssignmentStoreAdapter store {parameters};
+    Radio radio;
+    Output output;
+    Completion completion;
+    std::shared_ptr<AssignmentService> service = std::make_shared<AssignmentService>(catalog, store, radio,
+        output, topology, completion, RuntimeEpoch{6,2});
+    std::shared_ptr<ControlledRetryScheduler> schedulerOwner=std::make_shared<ControlledRetryScheduler>();
+    ControlledRetryScheduler &scheduler=*schedulerOwner;
+    BindingRef target;
+    AsyncFixture() { service->BindRetryScheduler(schedulerOwner); }
+    ~AsyncFixture()
+    {
+        scheduler.StopAndJoin();
+        service.reset();
+    }
+    bool StopAndDrain()
+    {
+        scheduler.StopAndJoin();
+        return service && service->StopAcceptingAndCancelScheduledRetries();
+    }
+    void Seed()
+    {
+        EXPECT_TRUE(topology.AcceptSlotAssembly({0},true));
+        EXPECT_TRUE(topology.AcceptSlotAssembly({1},true));
+        EXPECT_TRUE(topology.AcceptStoredDiscovery(Discovery(0,1,"8900000000000000000"),
+            Account({2},"8900000000000000000",{0}),Stored({2})).has_value());
+        const auto found=topology.AcceptStoredDiscovery(Discovery(1,2,kRaw1),
+            Account({1},kRaw1,{1}),Stored({1}));
+        ASSERT_TRUE(found.has_value());
+        target=found.value_or(BindingRef{});
+    }
+    RequestId StartC1()
+    {
+        radio.directSupported=false;
+        Seed();
+        return scheduler.OwnerCall([this, service=service] {
+            return service->StartPrimarySwitch({SlotTarget{{1}},true,
+                {SynchronousCompletionRoute{SynchronousWaitRef{51}},false},std::nullopt,target});
+        });
+    }
+    void DeliverRound(size_t begin, bool failCheck=true)
+    {
+        for (size_t i=begin;i<begin+2;++i) {
+            scheduler.OwnerCall([this, request=radio.requests[i], failCheck, service=service] {
+                service->AcceptRadioStep(Result(request,
+                    failCheck ? EffectKnowledge::ConfirmedNotApplied : EffectKnowledge::ConfirmedApplied,
+                    failCheck ? kLegacyLocalPointerNull : 0));
+            });
+        }
+        for (size_t i=begin+2;i<begin+4;++i) {
+            scheduler.OwnerCall([this, request=radio.requests[i], service=service] {
+                service->AcceptRadioStep(Result(request,EffectKnowledge::ConfirmedApplied,0));
+            });
+        }
+    }
+};
+
+RadioSwitchResult Result(const RadioSwitchRequest &request, EffectKnowledge effect, int32_t legacyResult,
+    bool notify)
 { return {request.step,request.target,request.expectedBinding,request.protocolSession,request.phase,notify,effect,legacyResult}; }
 std::string Observation(const Fixture &f,int api)
 {
@@ -349,6 +606,191 @@ TEST(TargetPrimaryB,C1BindingChangeRestoresPrewrittenPrimaryParameters)
     EXPECT_EQ(f.completion.results,(std::vector<int32_t>{0}));
     EXPECT_FALSE(f.service.ReadLegacyAssignment().primarySwitchInProgress);
     EXPECT_TRUE(f.output.roles.empty());
+}
+
+TEST(TargetPrimaryB,C1BackgroundRetryUsesControlledAsyncScheduler)
+{
+    AsyncFixture f;
+    const auto request=f.StartC1();
+    ASSERT_EQ(f.radio.requests.size(),2u);
+    for (uint32_t round=0;round<6;++round) {
+        const size_t begin=round*4;
+        ASSERT_EQ(f.radio.requests.size(),begin+2u);
+        f.DeliverRound(begin);
+        ASSERT_EQ(f.radio.requests.size(),begin+4u);
+        EXPECT_EQ(f.completion.results,(std::vector<int32_t>{kLegacyLocalPointerNull}));
+        if (round<5) {
+            const auto scheduled=f.scheduler.Audit().scheduled;
+            EXPECT_EQ(scheduled, static_cast<uint64_t>(round + 1));
+            f.scheduler.Advance(1);
+            ASSERT_TRUE(f.scheduler.WaitUntil(round+1, round+1));
+            ASSERT_TRUE(f.scheduler.WaitIdle());
+            ASSERT_EQ(f.radio.requests.size(),begin+6u);
+            EXPECT_EQ(f.radio.requests.back().step.request, request);
+            EXPECT_EQ(f.radio.requests.back().step.attempt, round+1);
+        }
+    }
+    EXPECT_EQ(f.radio.requests.size(),24u);
+    std::set<uint32_t> sessions;
+    for (const auto &radio : f.radio.requests) { sessions.insert(radio.protocolSession); }
+    EXPECT_EQ(sessions.size(),6u);
+    EXPECT_EQ(f.output.phases.size(),12u);
+    EXPECT_EQ(f.completion.results.size(),1u);
+    EXPECT_EQ(f.parameters.values.at(kPrimary),"0");
+    EXPECT_EQ(f.parameters.values.at(kIccid),kEncoded0);
+    EXPECT_EQ(f.parameters.values.at(kData),"0");
+    const auto audit=f.scheduler.Audit();
+    EXPECT_EQ(audit.scheduled,5u);
+    EXPECT_EQ(audit.delivered,5u);
+    EXPECT_TRUE(f.scheduler.RedeliverLastOnOwner(f.service)==false);
+    EXPECT_EQ(audit.pending,0u);
+}
+
+TEST(TargetPrimaryB,C1RetrySchedulerRejectsDuplicateAndBindingChange)
+{
+    AsyncFixture f;
+    f.StartC1();
+    f.DeliverRound(0);
+    EXPECT_EQ(f.scheduler.Audit().scheduled,1u);
+    f.topology.AcceptCardRemoval(f.target);
+    f.scheduler.Advance(1);
+    ASSERT_TRUE(f.scheduler.WaitUntil(0,1));
+    EXPECT_TRUE(f.scheduler.WaitIdle());
+    EXPECT_EQ(f.radio.requests.size(),4u);
+    EXPECT_EQ(f.completion.results.size(),1u);
+    EXPECT_TRUE(f.service->HasPendingDeviceEffects());
+    EXPECT_FALSE(f.scheduler.RedeliverLastOnOwner(f.service));
+}
+
+TEST(TargetPrimaryB,C1RetrySchedulerStopCancelsAndOldEpochCannotRun)
+{
+    AsyncFixture f;
+    f.StartC1();
+    f.DeliverRound(0);
+    EXPECT_EQ(f.scheduler.Audit().scheduled,1u);
+    EXPECT_TRUE(f.StopAndDrain());
+    EXPECT_FALSE(f.service->HasPendingDeviceEffects());
+    EXPECT_FALSE(f.scheduler.PostOwner([&] { ADD_FAILURE(); }));
+    f.scheduler.Advance(100);
+    EXPECT_EQ(f.radio.requests.size(),4u);
+    EXPECT_EQ(f.completion.results.size(),1u);
+    EXPECT_FALSE(f.scheduler.Audit().accepting);
+    EXPECT_EQ(f.scheduler.Audit().cancelled,1u);
+    f.service->StartPrimarySwitch({SlotTarget{{1}},true,
+        {SynchronousCompletionRoute{SynchronousWaitRef{52}},false},std::nullopt,f.target});
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{kLegacyLocalPointerNull,-1}));
+    EXPECT_EQ(f.radio.requests.size(),4u);
+    const auto oldRequest=f.radio.requests.front().step.request;
+    EXPECT_FALSE(f.service->AcceptScheduledC1Retry({oldRequest,1,1}));
+    const RequestId staleEpoch {oldRequest.value, {6,1}, RequestOwner::Assignment};
+    EXPECT_FALSE(f.service->AcceptScheduledC1Retry({staleEpoch,1,1}));
+}
+
+TEST(TargetPrimaryB,C1RetryDueAndStopRaceDrainsCallbackBeforeResultDecision)
+{
+    AsyncFixture f;
+    f.StartC1();
+    f.DeliverRound(0);
+    f.scheduler.Advance(1);
+    const bool drained=f.StopAndDrain();
+    const bool activeRound=f.radio.requests.size()==6u;
+    EXPECT_TRUE(f.radio.requests.size()==4u || activeRound);
+    EXPECT_EQ(drained,!activeRound);
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{kLegacyLocalPointerNull}));
+    EXPECT_EQ(f.service->HasPendingDeviceEffects(),activeRound);
+    EXPECT_TRUE(f.service->StopAcceptingAndCancelScheduledRetries() == drained);
+}
+
+TEST(TargetPrimaryB,C1DestroyedOwnerRejectsQueuedRetryWithoutUaf)
+{
+    AsyncFixture f;
+    f.StartC1();
+    f.DeliverRound(0);
+    ASSERT_EQ(f.scheduler.Audit().scheduled,1u);
+    const std::weak_ptr<AssignmentService> expired=f.service;
+    f.service.reset();
+    EXPECT_TRUE(expired.expired());
+    f.scheduler.Advance(1);
+    EXPECT_TRUE(f.scheduler.WaitIdle());
+    EXPECT_EQ(f.radio.requests.size(),4u);
+    EXPECT_EQ(f.completion.results.size(),1u);
+    EXPECT_EQ(f.scheduler.Audit().rejected,1u);
+}
+
+TEST(TargetPrimaryB,C1StopReportsDrainFailureUntilActiveDeviceResultEnds)
+{
+    AsyncFixture f;
+    f.StartC1();
+    EXPECT_FALSE(f.StopAndDrain());
+    EXPECT_TRUE(f.service->HasPendingDeviceEffects());
+    for (size_t i=0;i<2;++i) { f.service->AcceptRadioStep(Result(f.radio.requests[i],
+        EffectKnowledge::ConfirmedApplied,0)); }
+    for (size_t i=2;i<4;++i) { f.service->AcceptRadioStep(Result(f.radio.requests[i],
+        EffectKnowledge::ConfirmedApplied,0,true)); }
+    for (size_t i=4;i<6;++i) { f.service->AcceptRadioStep(Result(f.radio.requests[i],
+        EffectKnowledge::ConfirmedApplied,0)); }
+    EXPECT_FALSE(f.service->HasPendingDeviceEffects());
+    EXPECT_TRUE(f.service->StopAcceptingAndCancelScheduledRetries());
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{0}));
+    EXPECT_FALSE(f.scheduler.PostOwner([&] { ADD_FAILURE(); }));
+}
+
+TEST(TargetPrimaryB,C1StopDuringActiveRoundCancelsRetryAfterConfirmedComplete)
+{
+    AsyncFixture f;
+    f.StartC1();
+    EXPECT_FALSE(f.service->StopAcceptingAndCancelScheduledRetries());
+    f.DeliverRound(0);
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{kLegacyLocalPointerNull}));
+    EXPECT_EQ(f.scheduler.Audit().scheduled,0u);
+    EXPECT_FALSE(f.service->HasPendingDeviceEffects());
+    EXPECT_TRUE(f.service->StopAcceptingAndCancelScheduledRetries());
+    EXPECT_EQ(f.radio.requests.size(),4u);
+}
+
+TEST(TargetPrimaryB,C1StopAndQueuedRadioCallbacksRemainOwnerSerialized)
+{
+    AsyncFixture f;
+    f.StartC1();
+    ASSERT_TRUE(f.scheduler.PostOwner([service=f.service] {
+        EXPECT_FALSE(service->StopAcceptingAndCancelScheduledRetries());
+    }));
+    for (size_t i=0;i<2;++i) {
+        ASSERT_TRUE(f.scheduler.PostOwner([&, request=f.radio.requests[i], service=f.service] {
+            service->AcceptRadioStep(Result(request,EffectKnowledge::ConfirmedApplied,0));
+        }));
+    }
+    ASSERT_TRUE(f.scheduler.WaitIdle());
+    for (size_t i=2;i<4;++i) {
+        f.scheduler.OwnerCall([&, request=f.radio.requests[i], service=f.service] {
+            service->AcceptRadioStep(Result(request,EffectKnowledge::ConfirmedApplied,0,true));
+        });
+    }
+    for (size_t i=4;i<6;++i) {
+        f.scheduler.OwnerCall([&, request=f.radio.requests[i], service=f.service] {
+            service->AcceptRadioStep(Result(request,EffectKnowledge::ConfirmedApplied,0));
+        });
+    }
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{0}));
+    EXPECT_FALSE(f.service->HasPendingDeviceEffects());
+}
+
+TEST(TargetPrimaryB,C1UnknownDoesNotScheduleRetry)
+{
+    AsyncFixture f;
+    f.StartC1();
+    ASSERT_EQ(f.radio.requests.size(),2u);
+    f.scheduler.OwnerCall([&] {
+        f.service->AcceptRadioStep(Result(f.radio.requests[0],EffectKnowledge::Unknown,-1));
+    });
+    EXPECT_EQ(f.scheduler.Audit().scheduled,0u);
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{kLegacyLocalPointerNull}));
+    f.scheduler.OwnerCall([&] {
+        f.service->AcceptLateRadioEvidence(Result(f.radio.requests[0],
+            EffectKnowledge::ConfirmedApplied,0));
+    });
+    EXPECT_EQ(f.completion.results.size(),1u);
+    EXPECT_TRUE(f.service->HasPendingDeviceEffects());
 }
 
 TEST(TargetPrimaryB,C1CheckFailureRestoresAndExhaustsFiveRetries)

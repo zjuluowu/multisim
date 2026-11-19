@@ -26,7 +26,10 @@ SUFFIXES = {".h", ".hpp", ".cpp", ".cc", ".cxx"}
 CONTRACTS = {"topology_contracts", "assignment_contracts", "runtime_contracts"}
 TYPES = {"topology_types", "assignment_types"}
 VALUES = {"sim_values", "request_protocol"}
-C0_AUTHORIZED_NEW_FILES = {'role_assignment/assignment_store_adapter.cpp'}
+AUTHORIZED_NEW_FILES = {
+    'infrastructure/request/runtime_operation_store.cpp',
+    'role_assignment/assignment_store_adapter.cpp',
+}
 
 # Explicit semantic boundaries: physical groups do not define layers.
 SOURCE_GROUPS = {'readonly_query': ('infrastructure/compatibility/api/real_sim_count_query.cpp', 'infrastructure/compatibility/api/real_sim_count_query.h'),
@@ -62,7 +65,8 @@ SOURCE_GROUPS = {'readonly_query': ('infrastructure/compatibility/api/real_sim_c
                         'card/esim/legacy_profile_result.h'),
  'repository_exports': ('infrastructure/assembly/exports/sim_host_ports.h',
                         'infrastructure/assembly/exports/sim_module_factory.h'),
- 'request_mechanism': ('infrastructure/request/runtime_operation_store.h',),
+ 'request_mechanism': ('infrastructure/request/runtime_operation_store.cpp',
+                       'infrastructure/request/runtime_operation_store.h'),
  'request_protocol': ('infrastructure/request/request_context.h',),
  'runtime_cases': ('card/esim/local_card_requests.cpp',),
  'runtime_contracts': ('card/esim/local_card_requests.h',
@@ -423,7 +427,7 @@ def check_migration():
     entries = revision["files"]
     if inputs != {entry["old"] for entry in entries} or len(inputs) != len(entries):
         raise ValueError("Layout revision must map every input file exactly once")
-    actual = {p.relative_to(SOURCE).as_posix() for p in module_files(SOURCE)} - C0_AUTHORIZED_NEW_FILES
+    actual = {p.relative_to(SOURCE).as_posix() for p in module_files(SOURCE)} - AUTHORIZED_NEW_FILES
     additions = manifest.get("additions", [])
     # Preserve the committed copy's provenance, but check its explicit canonical destination.
     documentation = manifest.get("documentation_additions", [])
@@ -487,6 +491,9 @@ def check_migration():
     before_build = before_build.replace("//test/multisim_architecture_rules", "//services/multisim/test/multisim_architecture_rules")
     current_build = (SOURCE / "BUILD.gn").read_text().replace("/test/cases/architecture", "/test/multisim_architecture_rules")
     current_build = current_build.replace('    "role_assignment/assignment_store_adapter.cpp",\n', '')
+    current_build = current_build.replace('    "infrastructure/request/runtime_operation_store.cpp",\n', '')
+    current_build = current_build.replace('  sources = [\n    "infrastructure/request/runtime_operation_store.h",\n  ]',
+                                          '  sources = [ "infrastructure/request/runtime_operation_store.h" ]')
     if additions:
         query_block = 'source_set("readonly_query") {\n  testonly = true\n  visibility = [ ":*", "//services/multisim/test/multisim_architecture_rules:*" ]\n  check_includes = true\n  sources = [\n    "infrastructure/compatibility/api/real_sim_count_query.cpp",\n    "infrastructure/compatibility/api/real_sim_count_query.h",\n  ]\n  public = [ "infrastructure/compatibility/api/real_sim_count_query.h" ]\n}\n\n'
         if current_build.count(query_block) != 1:

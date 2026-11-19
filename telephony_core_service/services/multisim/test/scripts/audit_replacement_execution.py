@@ -44,8 +44,10 @@ def main():
         required = {'AccountRegistry':['Read'], 'BindingIndex':['Find'],
                     'TopologyService':['ReadPrimaryTarget', 'AcceptStoredDiscovery']}
     elif args.slice == 'target-primary-b':
-        required = {'AssignmentService':['AcceptRadioStep', 'AcceptPrimarySwitchTimeout'],
-                    'RuntimeOperationStore':['RecordSent', 'AcceptResult']}
+        required = {'AssignmentService':['AcceptRadioStep', 'AcceptPrimarySwitchTimeout',
+                    'ScheduleC1Retry', 'AcceptScheduledC1Retry', 'StopAcceptingAndCancelScheduledRetries'],
+                    'RuntimeOperationStore':['RecordSent', 'AcceptResult', 'AcceptLateEvidence',
+                                             'ClaimCompletion', 'ClaimEarlyCompletion', 'TryMarkTerminal']}
     else:
         required = {'CoreServiceSim':['GetRealSimCount'], 'SimManager':['GetRealSimCount'],
                     'TelephonyExtWrapper':['GetRealSimCountExt']}

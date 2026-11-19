@@ -447,10 +447,17 @@ TEST(TargetPrimary, C0OperationConsumesNotSentAndKeepsLateEvidenceSeparate)
     EXPECT_FALSE(store.ClaimCompletion(request));
     ASSERT_TRUE(store.TryMarkTerminal(request, TerminalState::NeedsReconciliation));
     EXPECT_FALSE(store.TryMarkTerminal(request, TerminalState::Succeeded));
+    EXPECT_FALSE(store.AcceptLateEvidence({request, 2, 0}, EffectKnowledge::Unknown));
     EXPECT_TRUE(store.AcceptLateEvidence({request, 2, 0}, EffectKnowledge::ConfirmedApplied));
+    EXPECT_EQ(store.ReadLateEvidence(request), EffectKnowledge::ConfirmedApplied);
+    EXPECT_FALSE(store.AcceptLateEvidence({request, 2, 0}, EffectKnowledge::ConfirmedApplied));
+    EXPECT_FALSE(store.AcceptLateEvidence({request, 2, 0}, EffectKnowledge::ConfirmedNotApplied));
     EXPECT_EQ(store.ReadLateEvidence(request), EffectKnowledge::ConfirmedApplied);
     EXPECT_TRUE(store.ClaimCompletion(request));
     EXPECT_FALSE(store.ClaimCompletion(request));
+    store.RetireAfterEvidenceRetention(request);
+    EXPECT_FALSE(store.Read(request).has_value());
+    EXPECT_FALSE(store.ReadLateEvidence(request).has_value());
 }
 
 TEST(TargetPrimary, SharedWriteSetRejectsDifferentDomainButDisjointRoleAdvances)

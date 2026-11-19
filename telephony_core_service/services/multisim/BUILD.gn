@@ -266,7 +266,10 @@ source_set("request_mechanism") {
   ]
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
-  sources = [ "infrastructure/request/runtime_operation_store.h" ]
+  sources = [
+    "infrastructure/request/runtime_operation_store.cpp",
+    "infrastructure/request/runtime_operation_store.h",
+  ]
   public = [ "infrastructure/request/runtime_operation_store.h" ]
   public_deps = [ ":request_protocol" ]
 }

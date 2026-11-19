@@ -33,22 +33,6 @@ AssignmentService::AssignmentService(const SlotCatalog &catalog, AssignmentStore
     : catalog_(catalog), operations_(epoch, RequestOwner::Assignment), store_(store), radio_(radio),
       output_(output), topology_(topology), completion_(completion) {}
 
-RuntimeOperationStore::ResultAdmission RuntimeOperationStore::AcceptResult(
-    StepRef step, EffectKnowledge evidence)
-{
-    if (step.request.epoch != epoch_ || step.request.owner != owner_) {
-        return ResultAdmission::UnknownRequest;
-    }
-    const auto found = operations_.find(step.request.value);
-    if (found == operations_.end()) { return ResultAdmission::UnknownRequest; }
-    if (found->second.terminal != TerminalState::Open) { return ResultAdmission::AlreadyTerminal; }
-    if (!(found->second.context.step == step)) { return ResultAdmission::WrongStep; }
-    if (stepConsumed_[step.request.value]) { return ResultAdmission::Duplicate; }
-    stepConsumed_[step.request.value] = true;
-    found->second.deviceEffect = evidence;
-    return ResultAdmission::Accepted;
-}
-
 void AssignmentService::CompleteOnce(RequestId request, const CompletionPlan &plan, int32_t result,
     TerminalState terminal)
 {
@@ -58,9 +42,87 @@ void AssignmentService::CompleteOnce(RequestId request, const CompletionPlan &pl
     if (claimed) { completion_.CompleteLegacyInt(plan, result); }
 }
 
+void AssignmentService::BindRetryScheduler(const std::shared_ptr<RetrySchedulerPort> &scheduler)
+{
+    retryScheduler_ = scheduler;
+    retrySchedulerBound_ = static_cast<bool>(scheduler);
+}
+
+bool AssignmentService::ScheduleC1Retry(RequestId request, uint32_t attempt)
+{
+    auto pending = pendingPrimary_.find(request.value);
+    if (pending == pendingPrimary_.end() || pending->second.retryScheduled || stopping_) { return false; }
+    if (!retrySchedulerBound_) {
+        pending->second.retryReady = true;
+        return true;
+    }
+    const auto scheduler = retryScheduler_.lock();
+    const std::weak_ptr<AssignmentService> self = weak_from_this();
+    const std::weak_ptr<ScheduledRetrySink> sink(self);
+    if (!scheduler || sink.expired()) { return false; }
+    const uint64_t generation = nextRetryScheduleGeneration_++;
+    const ScheduledRetryEvent event {request, generation, attempt};
+    pending->second.retryReady = true;
+    pending->second.retryScheduled = true;
+    pending->second.retryScheduleGeneration = generation;
+    const auto task = scheduler->ScheduleRetry(event, 1, sink);
+    if (!task) {
+        pending->second.retryReady = false;
+        pending->second.retryScheduled = false;
+        pending->second.retryScheduleGeneration = 0;
+        return false;
+    }
+    pending->second.retrySchedulerTask = task;
+    return true;
+}
+
+bool AssignmentService::AcceptScheduledC1Retry(const ScheduledRetryEvent &event)
+{
+    if (stopping_) { return false; }
+    const auto pending = pendingPrimary_.find(event.request.value);
+    if (pending == pendingPrimary_.end() || !pending->second.retryScheduled ||
+        pending->second.retryScheduleGeneration != event.scheduleGeneration ||
+        pending->second.attemptCount != event.attempt || !(pending->second.step.request == event.request)) {
+        return false;
+    }
+    pending->second.retryScheduled = false;
+    pending->second.retrySchedulerTask.reset();
+    return AcceptC1RetryDue(event.request);
+}
+
+bool AssignmentService::StopAcceptingAndCancelScheduledRetries()
+{
+    stopping_ = true;
+    if (const auto scheduler = retryScheduler_.lock()) {
+        scheduler->CancelAllForOwner(operations_.ReadRuntimeEpoch(), RequestOwner::Assignment);
+    }
+    for (auto pending = pendingPrimary_.begin(); pending != pendingPrimary_.end();) {
+        const auto operation = operations_.Read(pending->second.step.request);
+        const bool cancellableRetry = pending->second.retryReady && pending->second.phase == 4 && operation &&
+            operation->terminal == TerminalState::Open;
+        if (!cancellableRetry) { ++pending; continue; }
+        assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(),
+            pending->second.step.request.value, TransitionPhase::Reconciling, TransitionPhase::Failed);
+        operations_.MarkTerminal(pending->second.step.request, TerminalState::Failed);
+        assignment_.ReleaseRoleWriteSet(pending->second.step.request.value, kPrimaryRoleWriteSet);
+        operations_.RetireAfterEvidenceRetention(pending->second.step.request);
+        pending = pendingPrimary_.erase(pending);
+    }
+    return pendingPrimary_.empty();
+}
+
+bool AssignmentService::HasPendingDeviceEffects() const
+{
+    return !pendingPrimary_.empty();
+}
+
 RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &command)
 {
     const RequestId request = operations_.Begin(command.target, command.completion, command.parent);
+    if (stopping_) {
+        CompleteOnce(request, command.completion, -1, TerminalState::Failed);
+        return request;
+    }
     if (command.parent && command.parent->request.epoch != request.epoch) {
         CompleteOnce(request, command.completion, -1, TerminalState::Failed);
         return request;
@@ -133,7 +195,8 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         }
         pendingPrimary_.emplace(request.value, PendingPrimarySwitch {sentStep, *facts, *target,
             facts->iccid, command.userSet, command.completion, plan->mode, 0,
-            nextProtocolSession_++, {}, {}, {}, false, 0, false, false});
+            nextProtocolSession_++, {}, {}, {}, false, 0, false, false, false, 0, std::nullopt,
+            std::nullopt});
         output_.PublishPrimaryPhase(false, command.userSet);
         radio_.SwitchPrimaryRadio({sentStep, target->slot, *target->radioDomain, plan->mode, facts->binding,
             pendingPrimary_.at(request.value).protocolSession, 0});
@@ -166,7 +229,7 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         }
         PendingPrimarySwitch pending {sentStep, *facts, *target, facts->iccid, command.userSet,
             command.completion, plan->mode, 1, nextProtocolSession_++, {}, {}, oldParameters,
-            false, 0, false, false};
+            false, 0, false, false, false, 0, std::nullopt, std::nullopt};
         for (const auto &slot : catalog_.Slots()) { pending.members.push_back(slot.slot); }
         pendingPrimary_.emplace(request.value, std::move(pending));
         for (const auto &member : pendingPrimary_.at(request.value).members) {
@@ -338,10 +401,22 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
         }
         if (pending->second.attemptCount < 5) {
             ++pending->second.attemptCount;
-            pending->second.retryReady = true;
             assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(), result.step.request.value,
                 TransitionPhase::DevicePending, TransitionPhase::Reconciling);
             operations_.MarkTerminal(result.step.request, TerminalState::Open);
+            if (!ScheduleC1Retry(result.step.request, pending->second.attemptCount)) {
+                const bool stopCancelled = stopping_;
+                assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(),
+                    result.step.request.value, TransitionPhase::Reconciling,
+                    stopCancelled ? TransitionPhase::Failed : TransitionPhase::NeedsReconciliation);
+                operations_.MarkTerminal(result.step.request,
+                    stopCancelled ? TerminalState::Failed : TerminalState::NeedsReconciliation);
+                if (stopCancelled) {
+                    assignment_.ReleaseRoleWriteSet(result.step.request.value, kPrimaryRoleWriteSet);
+                    operations_.RetireAfterEvidenceRetention(result.step.request);
+                    pendingPrimary_.erase(pending);
+                }
+            }
             return;
         }
         assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(), result.step.request.value,
@@ -439,7 +514,11 @@ void AssignmentService::AcceptLateRadioEvidence(const RadioSwitchResult &result)
     }
     // Late evidence is recorded separately from the original completion/step.
     // It does not replay completion, role submission, notification, or commands.
-    operations_.AcceptLateEvidence(result.step, result.effect);
+    if (!pending->second.lateDeviceEffect.has_value() &&
+        operations_.AcceptLateEvidence(result.step, result.effect)) {
+        pending->second.lateDeviceEffect = result.effect;
+        operations_.RetireAfterEvidenceRetention(result.step.request);
+    }
 }
 
 bool AssignmentService::AcceptC1RetryDue(RequestId request)
@@ -454,6 +533,7 @@ bool AssignmentService::AcceptC1RetryDue(RequestId request)
         !operation || operation->terminal != TerminalState::Open || pending->second.attemptCount > 5) {
         return false;
     }
+    if (retrySchedulerBound_ && pending->second.retryScheduled) { return false; }
     pending->second.retryReady = false;
     const auto current = topology_.ReadPrimaryTarget(pending->second.target.slot);
     if (!current || current->binding.bindingRevision != pending->second.facts.binding.bindingRevision ||
