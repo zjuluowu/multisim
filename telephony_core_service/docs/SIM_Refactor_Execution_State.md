@@ -20,6 +20,8 @@
 | Legacy Host | 保留[§48](#48-剩余fail第二阶段真实stop与完整host验收2026-11-18)的 124/124 与 CI 准入证据及阶段四的回归记录。专项审查在 `eea678d67` 重跑标准 Both C0 对应的 Legacy 单例，未重跑 124 项全量。 |
 | 产品门禁 | 正式 OHOS 参数端口、完整 Provider/Topology/Radio/Device、SA/IPC、原生产品构建和设备验收尚未闭合。旧 SimManager Stop 的 Host 证据仍按 §48 使用。 |
 
+2026-11-20 [宿主关闭与 Device/RIL 专项审查](history/reviews/SIM_Host_Stop_Async_Drain_Device_RIL_Lifecycle_Review_20261120.md)以已提交源码 `82a76db12` 核对 Core、Legacy Stop、Target B/C1、共享 RIL 与配套三仓。已完成调用链、十条不变量、LIFE-01～20 及六项负控设计。两个有限顺序模型各检出一个弱化守卫的反例。工作树架构/迁移、四组纯规则、testonly GN 及开发导航检查通过。本批未运行完整业务回归、SA、设备或真实卸载。产品接入仍需在保留原请求出口的前提下证明宿主封口、其他 RIL 消费者连续性、设备域结束与实际代码驻留。
+
 <a id="next-work"></a>
 
 ### 下一批任务与依赖

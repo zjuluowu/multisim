@@ -14,6 +14,8 @@
 
 [角色并发与异步协议专项审查](reviews/SIM_Role_Concurrency_and_Async_Request_Review_20261119.md)记录单 M0 的 C1/C0 交错、步骤消费与晚效果、两组三案比较及可复核的 Host 见证。
 
+[宿主关闭与 Device/RIL 生命周期专项审查](reviews/SIM_Host_Stop_Async_Drain_Device_RIL_Lifecycle_Review_20261120.md)追踪 Core、SIM、搜网、通话及数据对共享 RIL 的使用，给出排空条件、设备复用证据和 LIFE-01～20 的确定性验收设计。
+
 ## 整理前后
 
 以 [整理输入 main@155f9c4c3](https://github.com/zjuluowu/multisim/tree/155f9c4c3378f271e5241368bec7616838cb3df1/telephony_core_service/docs) 为原路径和原始 Markdown 的固定来源。下表覆盖该提交的全部 69 个 docs 文件，含 Markdown、TXT、PPTX、PDF 和 JSON。已有的原稿归档保持原相对结构，文件名沿用原名。四个一级目录为 business、migration、knowledge、history，根部保留开发入口及稳定设计、状态、迁址引用。汇报附件和 JSON 以原字节归档，历史 Markdown 的链接重定位到现行路径或包含原证据的 Git 版本。
