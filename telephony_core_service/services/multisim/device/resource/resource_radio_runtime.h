@@ -5,6 +5,7 @@
 #ifndef OHOS_TELEPHONY_MULTISIM_DEVICE_RESOURCE_RESOURCE_RADIO_RUNTIME_H
 #define OHOS_TELEPHONY_MULTISIM_DEVICE_RESOURCE_RESOURCE_RADIO_RUNTIME_H
 
+#include <atomic>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -23,7 +24,7 @@ public:
     ResourceRadioRuntime(RuntimeEpoch epoch, RadioPlatformPort &platform,
         std::vector<ResourceKey> primaryResources);
     void BindResultSink(const std::shared_ptr<RadioResultSink> &sink) { sink_ = sink; }
-    void BindOwnerDispatch(RadioOwnerDispatchPort &dispatch) { dispatch_ = &dispatch; }
+    void BindOwnerDispatch(const std::shared_ptr<RadioOwnerDispatchPort> &dispatch) { dispatch_ = dispatch; }
     bool Initialize(const ResourceKey &key, const InitialRecoveryEvidence &evidence);
     PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const override;
     void SwitchPrimaryRadio(const RadioSwitchRequest &request) override;
@@ -32,10 +33,11 @@ public:
     bool Recover(const StepRef &original, const RecoveryEvidence &evidence);
     bool StopAccepting();
     bool OwnerCallbacksDrained() const;
+    bool FlushOwnerDeliveries();
     bool DeviceResourcesDrained() const;
     std::optional<ResourceState> ReadResourceState(const ResourceKey &key) const;
-    size_t SubmittedCommands() const { return submittedCommands_; }
-    size_t RejectedStaleResults() const { return rejectedStaleResults_; }
+    size_t SubmittedCommands() const;
+    size_t RejectedStaleResults() const;
     std::optional<int32_t> ReadTransportSerial(uint64_t token) const;
     bool WasLastSubmissionAccepted(const RadioSwitchRequest &request) const override;
 private:
@@ -57,6 +59,15 @@ private:
         RadioSwitchRequest request;
         std::optional<int32_t> transportSerial;
     };
+    struct BufferedSubmissionEvidence {
+        RadioDeviceResult first;
+        bool conflict {false};
+    };
+    struct OwnerDeliveryReceipt {
+        RadioSwitchResult result;
+        bool late {false};
+        std::atomic<bool> delivered {false};
+    };
     Group *FindGroup(const RadioSwitchRequest &request);
     static bool SameGroup(const RadioSwitchRequest &left, const RadioSwitchRequest &right);
     static bool SameBinding(const RadioSwitchRequest &request, const RadioSwitchResult &result);
@@ -69,7 +80,7 @@ private:
     std::vector<ResourceKey> resources_;
     ResourceBarrier barrier_;
     std::weak_ptr<RadioResultSink> sink_;
-    RadioOwnerDispatchPort *dispatch_ {nullptr};
+    std::weak_ptr<RadioOwnerDispatchPort> dispatch_;
     bool stopping_ {false};
     uint64_t nextTransportToken_ {1};
     size_t submittedCommands_ {0};
@@ -77,7 +88,10 @@ private:
     std::map<uint64_t, Group> groups_;
     std::map<uint64_t, Transmission> transmissions_;
     std::set<uint64_t> submittingTransmissions_;
-    std::map<uint64_t, RadioDeviceResult> pendingSubmissionResults_;
+    std::map<uint64_t, BufferedSubmissionEvidence> pendingSubmissionResults_;
+    std::vector<RadioSwitchResult> pendingNormalDeliveries_;
+    std::vector<RadioSwitchResult> pendingLateDeliveries_;
+    mutable std::vector<std::shared_ptr<OwnerDeliveryReceipt>> ownerDeliveryReceipts_;
     std::optional<RadioSwitchRequest> lastSubmission_;
     bool lastSubmissionAccepted_ {false};
 };
