@@ -47,6 +47,8 @@ def check_directory_migration(source, token_sequence, *, repo=None):
     moved_docs = documentation_moves(source)
     from check_structure import module_files
     actual = {p.relative_to(source).as_posix() for p in module_files(source)} - {
+        'infrastructure/assembly/primary_host_lifecycle.cpp',
+        'infrastructure/assembly/primary_host_lifecycle.h',
         'device/resource/resource_radio_runtime.cpp',
         'device/resource/resource_radio_runtime.h',
         'infrastructure/request/runtime_operation_store.cpp',
@@ -74,6 +76,11 @@ def check_directory_migration(source, token_sequence, *, repo=None):
                 current = current.replace(b'    "role_assignment/assignment_store_adapter.cpp",\n', b'')
                 current = current.replace(b'    "infrastructure/request/runtime_operation_store.cpp",\n', b'')
                 current = current.replace(b'    "device/resource/resource_radio_runtime.cpp",\n', b'')
+                current = current.replace(b'    "infrastructure/assembly/primary_host_lifecycle.cpp",\n', b'')
+                current = current.replace(b'    "infrastructure/assembly/primary_host_lifecycle.h",\n', b'')
+                current = current.replace(
+                    b'  public = [\n    "infrastructure/assembly/sim_module.h",\n  ]',
+                    b'  public = [ "infrastructure/assembly/sim_module.h" ]')
                 current = current.replace(b'    "device/resource/resource_radio_runtime.h",\n', b'')
                 current = current.replace(
                     b'  public_deps = [\n    ":assignment_contracts",\n    ":sim_values",\n  ]',

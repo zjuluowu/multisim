@@ -49,6 +49,7 @@ public:
     void BindRetryScheduler(const std::shared_ptr<RetrySchedulerPort> &scheduler);
     bool AcceptScheduledC1Retry(const ScheduledRetryEvent &event) override;
     bool StopAcceptingAndCancelScheduledRetries();
+    bool IsStoppingPrimaryRequests() const { return stopping_; }
     bool HasPendingDeviceEffects() const;
     void RetryPrimaryAfterReconciliation(RequestId request);
     AssignmentView ReadLegacyAssignment() const;

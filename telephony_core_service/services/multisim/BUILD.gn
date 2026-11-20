@@ -38,10 +38,15 @@ source_set("assembly_core") {
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
   sources = [
+    "infrastructure/assembly/primary_host_lifecycle.cpp",
+    "infrastructure/assembly/primary_host_lifecycle.h",
     "infrastructure/assembly/sim_module.h",
     "infrastructure/assembly/sim_module_factory.cpp",
   ]
-  public = [ "infrastructure/assembly/sim_module.h" ]
+  public = [
+    "infrastructure/assembly/primary_host_lifecycle.h",
+    "infrastructure/assembly/sim_module.h",
+  ]
   public_deps = [
     ":assembly_contracts",
     ":assignment_adapters",

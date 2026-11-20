@@ -1,0 +1,33 @@
+/*
+ * Copyright (c) 2026 multisim contributors.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ */
+#ifndef OHOS_TELEPHONY_MULTISIM_ASSEMBLY_PRIMARY_HOST_LIFECYCLE_H
+#define OHOS_TELEPHONY_MULTISIM_ASSEMBLY_PRIMARY_HOST_LIFECYCLE_H
+
+#include <mutex>
+#include "device/resource/resource_radio_runtime.h"
+#include "infrastructure/request/runtime_operation_store.h"
+#include "role_assignment/assignment_service.h"
+
+namespace OHOS::Telephony::MultiSim {
+// Narrow H-side Host coordinator for the already-implemented Primary A/R slice.
+// It does not own Core, shared RIL, public Manager API, or device shutdown.
+class PrimaryHostLifecycle final {
+public:
+    enum class DrainResult { Drained, CallbacksStillInFlight, DeviceEffectsUnresolved };
+    PrimaryHostLifecycle(AssignmentService &assignment, ResourceRadioRuntime &radio,
+        RetrySchedulerPort &scheduler);
+    DrainResult StopAcceptingAndDrain();
+    bool IsStopped() const;
+private:
+    AssignmentService &assignment_;
+    ResourceRadioRuntime &radio_;
+    RetrySchedulerPort &scheduler_;
+    mutable std::mutex mutex_;
+    bool stopping_ {false};
+    bool stopped_ {false};
+};
+} // namespace OHOS::Telephony::MultiSim
+
+#endif // OHOS_TELEPHONY_MULTISIM_ASSEMBLY_PRIMARY_HOST_LIFECYCLE_H

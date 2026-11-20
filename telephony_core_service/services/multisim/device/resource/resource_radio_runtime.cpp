@@ -27,9 +27,8 @@ bool ResourceRadioRuntime::OwnerCallbacksDrained() const
         [](const auto &receipt) { return receipt->delivered.load(std::memory_order_acquire); }),
         ownerDeliveryReceipts_.end());
     const auto dispatch = dispatch_.lock();
-    return groups_.empty() && transmissions_.empty() && submittingTransmissions_.empty() &&
-        pendingSubmissionResults_.empty() && pendingNormalDeliveries_.empty() && pendingLateDeliveries_.empty() &&
-        ownerDeliveryReceipts_.empty() && dispatch && dispatch->RadioOwnerCallbacksDrained();
+    return pendingNormalDeliveries_.empty() && pendingLateDeliveries_.empty() && ownerDeliveryReceipts_.empty() &&
+        dispatch && dispatch->RadioOwnerCallbacksDrained();
 }
 
 PrimaryRadioObservation ResourceRadioRuntime::ReadPrimaryRadioObservation(SlotId slot) const

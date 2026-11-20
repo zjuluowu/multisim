@@ -27,6 +27,8 @@ CONTRACTS = {"topology_contracts", "assignment_contracts", "runtime_contracts"}
 TYPES = {"topology_types", "assignment_types"}
 VALUES = {"sim_values", "request_protocol"}
 AUTHORIZED_NEW_FILES = {
+    'infrastructure/assembly/primary_host_lifecycle.cpp',
+    'infrastructure/assembly/primary_host_lifecycle.h',
     'device/resource/resource_radio_runtime.cpp',
     'device/resource/resource_radio_runtime.h',
     'infrastructure/request/runtime_operation_store.cpp',
@@ -38,7 +40,10 @@ SOURCE_GROUPS = {'readonly_query': ('infrastructure/compatibility/api/real_sim_c
  'assembly_contracts': ('infrastructure/assembly/host_ports.h',
                         'infrastructure/assembly/manager_publication.h',
                         'infrastructure/assembly/sim_module_factory.h'),
- 'assembly_core': ('infrastructure/assembly/sim_module.h', 'infrastructure/assembly/sim_module_factory.cpp'),
+ 'assembly_core': ('infrastructure/assembly/primary_host_lifecycle.cpp',
+                   'infrastructure/assembly/primary_host_lifecycle.h',
+                   'infrastructure/assembly/sim_module.h',
+                   'infrastructure/assembly/sim_module_factory.cpp'),
  'assignment_adapters': ('role_assignment/assignment_output_adapter.h',
                          'role_assignment/assignment_store_adapter.cpp',
                          'role_assignment/assignment_store_adapter.h'),
@@ -497,7 +502,11 @@ def check_migration():
     current_build = current_build.replace('    "role_assignment/assignment_store_adapter.cpp",\n', '')
     current_build = current_build.replace('    "infrastructure/request/runtime_operation_store.cpp",\n', '')
     current_build = current_build.replace('    "device/resource/resource_radio_runtime.cpp",\n', '')
+    current_build = current_build.replace('    "infrastructure/assembly/primary_host_lifecycle.cpp",\n', '')
+    current_build = current_build.replace('    "infrastructure/assembly/primary_host_lifecycle.h",\n', '')
     current_build = current_build.replace('    "device/resource/resource_radio_runtime.h",\n', '')
+    current_build = current_build.replace('  public = [\n    "infrastructure/assembly/sim_module.h",\n  ]',
+                                          '  public = [ "infrastructure/assembly/sim_module.h" ]')
     current_build = current_build.replace('  public_deps = [\n    ":assignment_contracts",\n    ":sim_values",\n  ]',
                                           '  public_deps = [ ":sim_values" ]')
     current_build = current_build.replace('  sources = [\n    "infrastructure/request/runtime_operation_store.h",\n  ]',

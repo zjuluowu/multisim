@@ -17,6 +17,7 @@
 #include <vector>
 #include "account/topology_service.h"
 #include "device/resource/resource_radio_runtime.h"
+#include "infrastructure/assembly/primary_host_lifecycle.h"
 #include "role_assignment/assignment_service.h"
 #include "role_assignment/assignment_store_adapter.h"
 
@@ -158,7 +159,15 @@ public:
     }
     bool rejectOwnerDispatch {false};
     bool PostRadioOwnerTask(std::function<void()> task) override
-    { return !rejectOwnerDispatch && PostOwner(std::move(task)); }
+    {
+        if (rejectOwnerDispatch) { return false; }
+        std::lock_guard<std::mutex> guard(lock_);
+        if (stopping_) { return false; }
+        ownerTasks_.push_back(std::move(task));
+        ++audit_.pending;
+        changed_.notify_all();
+        return true;
+    }
     bool RadioOwnerCallbacksDrained() const override
     {
         std::lock_guard<std::mutex> guard(lock_);
@@ -333,6 +342,8 @@ public:
     bool directSupported {true};
     bool alreadyPrimary {false};
     std::vector<std::pair<uint64_t, RadioSwitchRequest>> requests;
+    unsigned unrelatedRilRequests {0};
+    bool SubmitUnrelatedRilRequest() { ++unrelatedRilRequests; return true; }
     PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const override
     { return {slot, alreadyPrimary ? 0 : (slot.legacySlotId == 0 ? 0 : 1), directSupported, false, 9}; }
     RadioSubmitDisposition disposition {RadioSubmitDisposition::HandoffAccepted};
@@ -405,6 +416,16 @@ struct ResourceFixture {
         return scheduler.OwnerCall([this, service=service, slot0] { return service->StartPrimarySwitch(
             {SlotTarget{{0}},true,{SynchronousCompletionRoute{SynchronousWaitRef{63}},false},
              std::nullopt,slot0 ? std::optional<BindingRef>{slot0->binding} : std::nullopt}); });
+    }
+    void DeliverRound(size_t begin, bool failCheck=true)
+    {
+        for (size_t i=begin;i<begin+2;++i) {
+            EXPECT_TRUE(ResultAt(i, failCheck ? EffectKnowledge::ConfirmedNotApplied :
+                EffectKnowledge::ConfirmedApplied, failCheck ? kLegacyLocalPointerNull : 0));
+        }
+        for (size_t i=begin+2;i<begin+4;++i) {
+            EXPECT_TRUE(ResultAt(i,EffectKnowledge::ConfirmedApplied,0));
+        }
     }
     bool ResultAt(size_t index, EffectKnowledge effect, int32_t legacyResult, bool notify=false,
         bool ended=true, bool reusable=true, bool verified=false)
@@ -556,6 +577,112 @@ TEST(TargetPrimaryB,ResourceBarrierCheckingBlocksSendUntilInitialRecovery)
     EXPECT_FALSE(radio.Initialize(key,{{6,2},false,true}));
     EXPECT_TRUE(radio.Initialize(key,{{6,2},true,true}));
     EXPECT_EQ(radio.ReadResourceState(key),ResourceState::Available);
+}
+
+TEST(TargetPrimaryB,HostLifecycleOldHandleRejectedAndAcceptedRequestCompletes)
+{
+    ResourceFixture f;
+    const auto request=f.Start(false);
+    ASSERT_EQ(f.platform.requests.size(),1u);
+    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler);
+    EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),
+        PrimaryHostLifecycle::DrainResult::DeviceEffectsUnresolved);
+    EXPECT_TRUE(f.service->IsStoppingPrimaryRequests());
+    f.service->StartPrimarySwitch({SlotTarget{{1}},true,
+        {SynchronousCompletionRoute{SynchronousWaitRef{65}},false},std::nullopt,f.target});
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{-1}));
+    EXPECT_TRUE(f.ResultAt(0,EffectKnowledge::ConfirmedApplied,0));
+    ASSERT_TRUE(f.scheduler.WaitOwnerIdle());
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{-1,0}));
+    EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),PrimaryHostLifecycle::DrainResult::Drained);
+    EXPECT_TRUE(lifecycle.IsStopped());
+    EXPECT_EQ(f.radio.ReadResourceState(f.key),ResourceState::Available);
+    EXPECT_EQ(f.platform.requests.front().second.step.request,request);
+}
+
+TEST(TargetPrimaryB,HostLifecycleConcurrentStopHasOneCleaner)
+{
+    ResourceFixture f;
+    f.Start(false);
+    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler);
+    auto first=std::async(std::launch::async,[&] { return lifecycle.StopAcceptingAndDrain(); });
+    auto second=std::async(std::launch::async,[&] { return lifecycle.StopAcceptingAndDrain(); });
+    EXPECT_EQ(first.get(),PrimaryHostLifecycle::DrainResult::DeviceEffectsUnresolved);
+    EXPECT_EQ(second.get(),PrimaryHostLifecycle::DrainResult::DeviceEffectsUnresolved);
+    EXPECT_TRUE(f.service->IsStoppingPrimaryRequests());
+    EXPECT_TRUE(f.ResultAt(0,EffectKnowledge::ConfirmedApplied,0));
+    ASSERT_TRUE(f.scheduler.WaitOwnerIdle());
+    EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),PrimaryHostLifecycle::DrainResult::Drained);
+}
+
+TEST(TargetPrimaryB,HostLifecycleOwnerDispatchFailureIsNotDeviceDrain)
+{
+    ResourceFixture f;
+    f.Start(false);
+    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler);
+    f.scheduler.rejectOwnerDispatch=true;
+    EXPECT_FALSE(f.ResultAt(0,EffectKnowledge::ConfirmedApplied,0));
+    EXPECT_TRUE(f.radio.DeviceResourcesDrained());
+    EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),
+        PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight);
+    f.scheduler.rejectOwnerDispatch=false;
+    EXPECT_TRUE(f.radio.FlushOwnerDeliveries());
+    ASSERT_TRUE(f.scheduler.WaitOwnerIdle());
+    EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),PrimaryHostLifecycle::DrainResult::Drained);
+}
+
+TEST(TargetPrimaryB,HostLifecycleStopOnEmptyHostIsIdempotent)
+{
+    ResourceFixture f;
+    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler);
+    EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),PrimaryHostLifecycle::DrainResult::Drained);
+    EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),PrimaryHostLifecycle::DrainResult::Drained);
+    EXPECT_TRUE(lifecycle.IsStopped());
+    EXPECT_TRUE(f.radio.DeviceResourcesDrained());
+}
+
+TEST(TargetPrimaryB,HostLifecycleCancelsQueuedRetryAndOldEpochCannotRun)
+{
+    ResourceFixture f;
+    const auto request=f.Start(true);
+    f.DeliverRound(0);
+    EXPECT_EQ(f.scheduler.Audit().scheduled,1u);
+    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler);
+    EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),PrimaryHostLifecycle::DrainResult::Drained);
+    EXPECT_FALSE(f.scheduler.PostOwner([&] { ADD_FAILURE(); }));
+    EXPECT_FALSE(f.service->AcceptScheduledC1Retry({request,1,1}));
+    EXPECT_EQ(f.platform.requests.size(),4u);
+}
+
+TEST(TargetPrimaryB,HostLifecycleStopRequestedFromOwnerCallbackDoesNotJoinSelf)
+{
+    ResourceFixture f;
+    f.Start(false);
+    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler);
+    std::promise<PrimaryHostLifecycle::DrainResult> result;
+    ASSERT_TRUE(f.scheduler.PostRadioOwnerTask([&] {
+        result.set_value(lifecycle.StopAcceptingAndDrain());
+    }));
+    auto future=result.get_future();
+    ASSERT_EQ(future.wait_for(std::chrono::seconds(3)),std::future_status::ready);
+    EXPECT_EQ(future.get(),PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight);
+    EXPECT_TRUE(f.service->IsStoppingPrimaryRequests());
+    EXPECT_TRUE(f.ResultAt(0,EffectKnowledge::ConfirmedApplied,0));
+    EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),PrimaryHostLifecycle::DrainResult::Drained);
+}
+
+TEST(TargetPrimaryB,HostLifecycleDoesNotStopUnrelatedSharedRilConsumer)
+{
+    ResourceFixture f;
+    const auto request=f.Start(false);
+    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler);
+    EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),
+        PrimaryHostLifecycle::DrainResult::DeviceEffectsUnresolved);
+    f.platform.onSynchronousResponse={};
+    EXPECT_TRUE(f.platform.SubmitUnrelatedRilRequest());
+    EXPECT_EQ(f.platform.unrelatedRilRequests,1u);
+    EXPECT_EQ(request.epoch,RuntimeEpoch({6,2}));
+    EXPECT_EQ(f.platform.requests.size(),1u);
 }
 
 TEST(TargetPrimaryB,ResourceHandoffAcceptedRequiresExpectedSerial)

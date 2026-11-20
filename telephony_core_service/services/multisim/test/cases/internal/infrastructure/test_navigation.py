@@ -44,6 +44,8 @@ class LiveNavigation(unittest.TestCase):
         # inventory remains protected. Keep the documented baseline comparison and
         # require the single authorized implementation addition explicitly.
         authorized_additions = {
+            module/'infrastructure/assembly/primary_host_lifecycle.cpp',
+            module/'infrastructure/assembly/primary_host_lifecycle.h',
             module/'device/resource/resource_radio_runtime.cpp',
             module/'device/resource/resource_radio_runtime.h',
             module/'infrastructure/request/runtime_operation_store.cpp',

@@ -40,6 +40,7 @@ config("target_production_headers") {
 static_library("sim_target_production_host") {
   sources = [
     "$production_root/services/multisim/infrastructure/assembly/slot_catalog.cpp",
+    "$production_root/services/multisim/infrastructure/assembly/primary_host_lifecycle.cpp",
     "$production_root/services/multisim/infrastructure/request/runtime_operation_store.cpp",
     "$production_root/services/multisim/device/resource/resource_barrier.cpp",
     "$production_root/services/multisim/device/resource/resource_radio_runtime.cpp",
