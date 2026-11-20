@@ -142,14 +142,18 @@ public:
     }
     void StopAcceptingAndCancel() override
     {
-        std::lock_guard<std::mutex> guard(lock_);
+        std::unique_lock<std::mutex> guard(lock_);
+        if (blockStop_) {
+            stopEntered_ = true;
+            changed_.notify_all();
+            changed_.wait(guard, [&] { return !blockStop_; });
+        }
         if (!accepting_) { return; }
         accepting_ = false;
         audit_.accepting = false;
-        audit_.cancelled += audit_.pending;
-        audit_.pending = 0;
+        audit_.cancelled += tasks_.size();
+        audit_.pending -= tasks_.size();
         tasks_.clear();
-        ownerTasks_.clear();
         changed_.notify_all();
     }
     RetrySchedulerAudit Audit() const override
@@ -158,6 +162,33 @@ public:
         return audit_;
     }
     bool rejectOwnerDispatch {false};
+    void BlockStopGate()
+    {
+        std::lock_guard<std::mutex> guard(lock_);
+        blockStop_ = true;
+    }
+    bool WaitStopEntered(std::chrono::milliseconds timeout=std::chrono::seconds(3))
+    {
+        std::unique_lock<std::mutex> guard(lock_);
+        return changed_.wait_for(guard,timeout,[&] { return stopEntered_; });
+    }
+    void ReleaseStopGate()
+    {
+        std::lock_guard<std::mutex> guard(lock_);
+        blockStop_ = false;
+        changed_.notify_all();
+    }
+    void BlockOwnerQueue()
+    {
+        std::lock_guard<std::mutex> guard(lock_);
+        blockOwner_=true;
+    }
+    void ReleaseOwnerQueue()
+    {
+        std::lock_guard<std::mutex> guard(lock_);
+        blockOwner_=false;
+        changed_.notify_all();
+    }
     bool PostRadioOwnerTask(std::function<void()> task) override
     {
         if (rejectOwnerDispatch) { return false; }
@@ -260,7 +291,7 @@ private:
         for (;;) {
             changed_.wait(guard, [&] {
                 if (stopping_) { return true; }
-                if (!ownerTasks_.empty()) { return true; }
+                if (!blockOwner_ && !ownerTasks_.empty()) { return true; }
                 return std::any_of(tasks_.begin(), tasks_.end(), [&](const Task &task) {
                     return task.due <= clock_;
                 });
@@ -294,6 +325,9 @@ private:
     uint64_t nextTask_ {1};
     bool accepting_ {true};
     bool stopping_ {false};
+    bool blockOwner_ {false};
+    bool blockStop_ {false};
+    bool stopEntered_ {false};
     size_t runningOwner_ {0};
     RetrySchedulerAudit audit_;
     std::optional<ScheduledRetryEvent> lastDelivered_;
@@ -584,9 +618,10 @@ TEST(TargetPrimaryB,HostLifecycleOldHandleRejectedAndAcceptedRequestCompletes)
     ResourceFixture f;
     const auto request=f.Start(false);
     ASSERT_EQ(f.platform.requests.size(),1u);
-    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler);
+    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler,f.schedulerOwner);
     EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),
-        PrimaryHostLifecycle::DrainResult::DeviceEffectsUnresolved);
+        PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight);
+    EXPECT_TRUE(f.scheduler.WaitOwnerIdle());
     EXPECT_TRUE(f.service->IsStoppingPrimaryRequests());
     f.service->StartPrimarySwitch({SlotTarget{{1}},true,
         {SynchronousCompletionRoute{SynchronousWaitRef{65}},false},std::nullopt,f.target});
@@ -600,15 +635,57 @@ TEST(TargetPrimaryB,HostLifecycleOldHandleRejectedAndAcceptedRequestCompletes)
     EXPECT_EQ(f.platform.requests.front().second.step.request,request);
 }
 
+TEST(TargetPrimaryB,HostLifecycleCloseIntentRejectsStartBeforeOwnerSeal)
+{
+    ResourceFixture f;
+    const auto request=f.Start(false);
+    f.scheduler.BlockOwnerQueue();
+    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler,f.schedulerOwner);
+    auto close=std::async(std::launch::async,[&] { return lifecycle.StopAcceptingAndDrain(); });
+    EXPECT_EQ(close.get(),PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight);
+    EXPECT_TRUE(f.service->IsStoppingPrimaryRequests());
+    const auto rejected=f.service->StartPrimarySwitch({SlotTarget{{1}},true,
+        {SynchronousCompletionRoute{SynchronousWaitRef{71}},false},std::nullopt,f.target});
+    EXPECT_NE(rejected.value,request.value);
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{-1}));
+    const auto &sent=f.platform.requests[0];
+    EXPECT_TRUE(f.radio.AcceptDeviceResult({sent.first,
+        Result(sent.second,EffectKnowledge::ConfirmedApplied,0),true,true,false,
+        std::make_optional(static_cast<int32_t>(sent.first))}));
+    f.scheduler.ReleaseOwnerQueue();
+    ASSERT_TRUE(f.scheduler.WaitOwnerIdle());
+    EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),PrimaryHostLifecycle::DrainResult::Drained);
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{-1,0}));
+}
+
+TEST(TargetPrimaryB,HostLifecycleConcurrentStopCannotDrainBeforeSeals)
+{
+    ResourceFixture f;
+    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler,f.schedulerOwner);
+    f.scheduler.BlockStopGate();
+    auto first=std::async(std::launch::async,[&] { return lifecycle.StopAcceptingAndDrain(); });
+    ASSERT_TRUE(f.scheduler.WaitStopEntered());
+    auto second=std::async(std::launch::async,[&] { return lifecycle.StopAcceptingAndDrain(); });
+    EXPECT_EQ(second.get(),PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight);
+    f.scheduler.ReleaseStopGate();
+    EXPECT_EQ(first.get(),PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight);
+    ASSERT_TRUE(f.scheduler.WaitOwnerIdle());
+    EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),PrimaryHostLifecycle::DrainResult::Drained);
+}
+
 TEST(TargetPrimaryB,HostLifecycleConcurrentStopHasOneCleaner)
 {
     ResourceFixture f;
     f.Start(false);
-    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler);
+    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler,f.schedulerOwner);
+    f.scheduler.BlockOwnerQueue();
     auto first=std::async(std::launch::async,[&] { return lifecycle.StopAcceptingAndDrain(); });
     auto second=std::async(std::launch::async,[&] { return lifecycle.StopAcceptingAndDrain(); });
-    EXPECT_EQ(first.get(),PrimaryHostLifecycle::DrainResult::DeviceEffectsUnresolved);
-    EXPECT_EQ(second.get(),PrimaryHostLifecycle::DrainResult::DeviceEffectsUnresolved);
+    EXPECT_EQ(first.get(),PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight);
+    EXPECT_EQ(second.get(),PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight);
+    EXPECT_TRUE(f.service->IsStoppingPrimaryRequests());
+    f.scheduler.ReleaseOwnerQueue();
+    ASSERT_TRUE(f.scheduler.WaitOwnerIdle());
     EXPECT_TRUE(f.service->IsStoppingPrimaryRequests());
     EXPECT_TRUE(f.ResultAt(0,EffectKnowledge::ConfirmedApplied,0));
     ASSERT_TRUE(f.scheduler.WaitOwnerIdle());
@@ -619,22 +696,29 @@ TEST(TargetPrimaryB,HostLifecycleOwnerDispatchFailureIsNotDeviceDrain)
 {
     ResourceFixture f;
     f.Start(false);
-    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler);
+    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler,f.schedulerOwner);
     f.scheduler.rejectOwnerDispatch=true;
     EXPECT_FALSE(f.ResultAt(0,EffectKnowledge::ConfirmedApplied,0));
     EXPECT_TRUE(f.radio.DeviceResourcesDrained());
+    f.scheduler.rejectOwnerDispatch=false;
     EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),
         PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight);
+    ASSERT_TRUE(f.scheduler.WaitOwnerIdle());
     f.scheduler.rejectOwnerDispatch=false;
     EXPECT_TRUE(f.radio.FlushOwnerDeliveries());
     ASSERT_TRUE(f.scheduler.WaitOwnerIdle());
+    EXPECT_TRUE(f.radio.OwnerCallbacksDrained());
+    EXPECT_EQ(f.scheduler.Audit().pending,0u);
+    EXPECT_EQ(f.scheduler.Audit().running,0u);
     EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),PrimaryHostLifecycle::DrainResult::Drained);
 }
 
 TEST(TargetPrimaryB,HostLifecycleStopOnEmptyHostIsIdempotent)
 {
     ResourceFixture f;
-    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler);
+    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler,f.schedulerOwner);
+    EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight);
+    ASSERT_TRUE(f.scheduler.WaitOwnerIdle());
     EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),PrimaryHostLifecycle::DrainResult::Drained);
     EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),PrimaryHostLifecycle::DrainResult::Drained);
     EXPECT_TRUE(lifecycle.IsStopped());
@@ -647,7 +731,9 @@ TEST(TargetPrimaryB,HostLifecycleCancelsQueuedRetryAndOldEpochCannotRun)
     const auto request=f.Start(true);
     f.DeliverRound(0);
     EXPECT_EQ(f.scheduler.Audit().scheduled,1u);
-    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler);
+    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler,f.schedulerOwner);
+    EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight);
+    ASSERT_TRUE(f.scheduler.WaitOwnerIdle());
     EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),PrimaryHostLifecycle::DrainResult::Drained);
     EXPECT_FALSE(f.scheduler.PostOwner([&] { ADD_FAILURE(); }));
     EXPECT_FALSE(f.service->AcceptScheduledC1Retry({request,1,1}));
@@ -658,7 +744,7 @@ TEST(TargetPrimaryB,HostLifecycleStopRequestedFromOwnerCallbackDoesNotJoinSelf)
 {
     ResourceFixture f;
     f.Start(false);
-    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler);
+    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler,f.schedulerOwner);
     std::promise<PrimaryHostLifecycle::DrainResult> result;
     ASSERT_TRUE(f.scheduler.PostRadioOwnerTask([&] {
         result.set_value(lifecycle.StopAcceptingAndDrain());
@@ -666,6 +752,7 @@ TEST(TargetPrimaryB,HostLifecycleStopRequestedFromOwnerCallbackDoesNotJoinSelf)
     auto future=result.get_future();
     ASSERT_EQ(future.wait_for(std::chrono::seconds(3)),std::future_status::ready);
     EXPECT_EQ(future.get(),PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight);
+    ASSERT_TRUE(f.scheduler.WaitOwnerIdle());
     EXPECT_TRUE(f.service->IsStoppingPrimaryRequests());
     EXPECT_TRUE(f.ResultAt(0,EffectKnowledge::ConfirmedApplied,0));
     EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),PrimaryHostLifecycle::DrainResult::Drained);
@@ -675,7 +762,10 @@ TEST(TargetPrimaryB,HostLifecycleDoesNotStopUnrelatedSharedRilConsumer)
 {
     ResourceFixture f;
     const auto request=f.Start(false);
-    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler);
+    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler,f.schedulerOwner);
+    EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),
+        PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight);
+    ASSERT_TRUE(f.scheduler.WaitOwnerIdle());
     EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),
         PrimaryHostLifecycle::DrainResult::DeviceEffectsUnresolved);
     f.platform.onSynchronousResponse={};
@@ -683,6 +773,123 @@ TEST(TargetPrimaryB,HostLifecycleDoesNotStopUnrelatedSharedRilConsumer)
     EXPECT_EQ(f.platform.unrelatedRilRequests,1u);
     EXPECT_EQ(request.epoch,RuntimeEpoch({6,2}));
     EXPECT_EQ(f.platform.requests.size(),1u);
+}
+
+TEST(TargetPrimaryB,HostLifecycleOldAndNewInstancesRemainIsolated)
+{
+    ResourceFixture oldHost;
+    oldHost.Start(false);
+    PrimaryHostLifecycle oldLifecycle(*oldHost.service,oldHost.radio,
+        oldHost.scheduler,oldHost.schedulerOwner);
+    EXPECT_EQ(oldLifecycle.StopAcceptingAndDrain(),
+        PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight);
+    ASSERT_TRUE(oldHost.scheduler.WaitOwnerIdle());
+    EXPECT_TRUE(oldHost.ResultAt(0,EffectKnowledge::ConfirmedApplied,0));
+    EXPECT_EQ(oldLifecycle.StopAcceptingAndDrain(),PrimaryHostLifecycle::DrainResult::Drained);
+
+    ResourceFixture newHost;
+    newHost.Start(false);
+    ASSERT_EQ(newHost.platform.requests.size(),1u);
+    EXPECT_TRUE(newHost.ResultAt(0,EffectKnowledge::ConfirmedApplied,0));
+    EXPECT_EQ(newHost.completion.results,(std::vector<int32_t>{0}));
+    EXPECT_FALSE(newHost.service->IsStoppingPrimaryRequests());
+}
+
+TEST(TargetPrimaryB,HostLifecycleStopDuringC1CheckPreservesMemberResponsibility)
+{
+    ResourceFixture f;
+    f.Start(true);
+    ASSERT_EQ(f.platform.requests.size(),2u);
+    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler,f.schedulerOwner);
+    EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),
+        PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight);
+    ASSERT_TRUE(f.scheduler.WaitOwnerIdle());
+    EXPECT_TRUE(f.ResultAt(0,EffectKnowledge::ConfirmedApplied,0));
+    EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),
+        PrimaryHostLifecycle::DrainResult::DeviceEffectsUnresolved);
+    EXPECT_TRUE(f.ResultAt(1,EffectKnowledge::ConfirmedApplied,0));
+    EXPECT_TRUE(f.service->HasPendingDeviceEffects());
+}
+
+TEST(TargetPrimaryB,HostLifecycleStopAndExternalResultRaceCompletesOnce)
+{
+    ResourceFixture f;
+    f.Start(false);
+    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler,f.schedulerOwner);
+    f.scheduler.BlockStopGate();
+    auto stop=std::async(std::launch::async,[&] { return lifecycle.StopAcceptingAndDrain(); });
+    ASSERT_TRUE(f.scheduler.WaitStopEntered());
+    ASSERT_TRUE(f.service->IsStoppingPrimaryRequests());
+    const auto result=Result(f.platform.requests[0].second,
+        EffectKnowledge::ConfirmedApplied,0);
+    auto ownerResult=std::async(std::launch::async,[&, service=f.service] {
+        service->AcceptRadioStep(result);
+        service->AcceptRadioStep(result);
+    });
+    auto timeout=std::async(std::launch::async,[&, service=f.service] {
+        EXPECT_FALSE(service->AcceptPrimarySwitchTimeout(result.step.request,0));
+    });
+    ownerResult.get(); timeout.get();
+    f.scheduler.ReleaseStopGate();
+    EXPECT_EQ(stop.get(),PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight);
+    ASSERT_TRUE(f.scheduler.WaitOwnerIdle());
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{0}));
+    EXPECT_FALSE(f.service->HasPendingDeviceEffects());
+}
+
+TEST(TargetPrimaryB,HostLifecycleStopAndLateEvidencePreserveOriginalCompletion)
+{
+    ResourceFixture f;
+    f.Start(false);
+    const auto unknown=Result(f.platform.requests[0].second,EffectKnowledge::Unknown,83886087);
+    f.service->AcceptRadioStep(unknown);
+    ASSERT_EQ(f.completion.results,(std::vector<int32_t>{83886087}));
+    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler,f.schedulerOwner);
+    f.scheduler.BlockStopGate();
+    auto stop=std::async(std::launch::async,[&] { return lifecycle.StopAcceptingAndDrain(); });
+    ASSERT_TRUE(f.scheduler.WaitStopEntered());
+    auto late=std::async(std::launch::async,[&, service=f.service] {
+        service->AcceptLateRadioEvidence(Result(f.platform.requests[0].second,
+            EffectKnowledge::ConfirmedApplied,0));
+    });
+    late.get();
+    f.scheduler.ReleaseStopGate();
+    EXPECT_EQ(stop.get(),PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight);
+    ASSERT_TRUE(f.scheduler.WaitOwnerIdle());
+    EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),
+        PrimaryHostLifecycle::DrainResult::DeviceEffectsUnresolved);
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{83886087}));
+    EXPECT_TRUE(f.service->HasPendingDeviceEffects());
+}
+
+TEST(TargetPrimaryB,HostLifecycleHandoffUnknownKeepsDeviceResponsibility)
+{
+    ResourceFixture f;
+    f.platform.submitAllowed=false;
+    f.Start(false);
+    EXPECT_EQ(f.radio.ReadResourceState(f.key),ResourceState::Quarantined);
+    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler,f.schedulerOwner);
+    EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),
+        PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight);
+    ASSERT_TRUE(f.scheduler.WaitOwnerIdle());
+    EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),
+        PrimaryHostLifecycle::DrainResult::DeviceEffectsUnresolved);
+    EXPECT_TRUE(f.service->HasPendingDeviceEffects());
+    EXPECT_TRUE(f.radio.ReadResourceState(f.key));
+}
+
+TEST(TargetPrimaryB,HostLifecycleQuarantinedResultIsNotDrained)
+{
+    ResourceFixture f;
+    f.Start(false);
+    PrimaryHostLifecycle lifecycle(*f.service,f.radio,f.scheduler,f.schedulerOwner);
+    EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),
+        PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight);
+    ASSERT_TRUE(f.scheduler.WaitOwnerIdle());
+    EXPECT_FALSE(f.ResultAt(0,EffectKnowledge::ConfirmedApplied,0,false,false,false));
+    EXPECT_EQ(f.radio.ReadResourceState(f.key),ResourceState::Quarantined);
+    EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),
+        PrimaryHostLifecycle::DrainResult::DeviceEffectsUnresolved);
 }
 
 TEST(TargetPrimaryB,ResourceHandoffAcceptedRequiresExpectedSerial)

@@ -20,6 +20,8 @@
 #define OHOS_TELEPHONY_MULTISIM_ASSIGNMENT_ASSIGNMENT_SERVICE_H
 
 #include "infrastructure/request/runtime_operation_store.h"
+#include <atomic>
+#include <mutex>
 #include <vector>
 #include "role_assignment/assignment_requests.h"
 #include "role_assignment/assignment_aggregate.h"
@@ -48,8 +50,9 @@ public:
     bool AcceptC1RetryDue(RequestId request);
     void BindRetryScheduler(const std::shared_ptr<RetrySchedulerPort> &scheduler);
     bool AcceptScheduledC1Retry(const ScheduledRetryEvent &event) override;
+    void RequestStopAccepting();
     bool StopAcceptingAndCancelScheduledRetries();
-    bool IsStoppingPrimaryRequests() const { return stopping_; }
+    bool IsStoppingPrimaryRequests() const;
     bool HasPendingDeviceEffects() const;
     void RetryPrimaryAfterReconciliation(RequestId request);
     AssignmentView ReadLegacyAssignment() const;
@@ -74,6 +77,7 @@ public:
     bool AcceptReloadedRoleProjection(const StoredAccountRoleFragment &loaded, uint64_t loadAttempt,
         uint64_t expectedAssignmentRevision, bool historicalView) override;
 private:
+    mutable std::recursive_mutex primaryCommitLock_;
     void CompleteOnce(RequestId request, const CompletionPlan &plan, int32_t result,
         TerminalState terminal);
     bool ScheduleC1Retry(RequestId request, uint32_t attempt);
@@ -123,7 +127,7 @@ private:
     std::map<uint64_t, PendingPrimarySwitch> pendingPrimary_;
     std::weak_ptr<RetrySchedulerPort> retryScheduler_;
     bool retrySchedulerBound_ {false};
-    bool stopping_ {false};
+    std::atomic<bool> stopping_ {false};
     uint64_t nextRetryScheduleGeneration_ {1};
     uint32_t nextProtocolSession_ {1};
     uint64_t nextConflictToken_ {1};

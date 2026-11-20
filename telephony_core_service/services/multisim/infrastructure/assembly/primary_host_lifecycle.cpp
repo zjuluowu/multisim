@@ -6,28 +6,51 @@
 
 namespace OHOS::Telephony::MultiSim {
 PrimaryHostLifecycle::PrimaryHostLifecycle(AssignmentService &assignment, ResourceRadioRuntime &radio,
-    RetrySchedulerPort &scheduler)
-    : assignment_(assignment), radio_(radio), scheduler_(scheduler)
+    RetrySchedulerPort &scheduler, const std::shared_ptr<RadioOwnerDispatchPort> &ownerDispatch)
+    : assignment_(assignment), radio_(radio), scheduler_(scheduler), ownerDispatch_(ownerDispatch)
 {}
 
 PrimaryHostLifecycle::DrainResult PrimaryHostLifecycle::StopAcceptingAndDrain()
 {
-    bool initiate = false;
+    bool sealGates = false;
+    bool postClose = false;
     {
         std::lock_guard<std::mutex> guard(mutex_);
         if (stopped_) { return DrainResult::Drained; }
-        if (!stopping_) { stopping_ = true; initiate = true; }
+        stopping_ = true;
+        if (!closePosted_) { closePosted_ = true; postClose = true; }
+        if (!gateSealStarted_ && !gatesSealed_) { gateSealStarted_ = true; sealGates = true; }
     }
-    if (initiate) {
-        // H closes every producer in a fixed order; no external callback is invoked
-        // while this gate holds its own mutex.
-        (void)assignment_.StopAcceptingAndCancelScheduledRetries();
+    if (sealGates) {
+        // New admission is closed on caller-safe gates before any Owner mutation
+        // is posted. The Owner task below is only the serial A commit/cancel step.
+        assignment_.RequestStopAccepting();
         scheduler_.StopAcceptingAndCancel();
         (void)radio_.StopAccepting();
+        std::lock_guard<std::mutex> guard(mutex_);
+        gatesSealed_ = true;
     }
-
+    if (postClose) {
+        const auto dispatch = ownerDispatch_.lock();
+        if (!dispatch || !dispatch->PostRadioOwnerTask([this] {
+            (void)assignment_.StopAcceptingAndCancelScheduledRetries();
+            std::lock_guard<std::mutex> guard(mutex_);
+            sealsComplete_ = true;
+        })) {
+            std::lock_guard<std::mutex> guard(mutex_);
+            closePosted_ = false;
+            return DrainResult::CallbacksStillInFlight;
+        }
+    }
+    {
+        std::lock_guard<std::mutex> guard(mutex_);
+        if (!gatesSealed_ || !sealsComplete_) { return DrainResult::CallbacksStillInFlight; }
+    }
+    if (!radio_.OwnerCallbacksDrained()) {
+        return DrainResult::CallbacksStillInFlight;
+    }
     const auto scheduler = scheduler_.Audit();
-    if (scheduler.pending != 0 || scheduler.running != 0 || !radio_.OwnerCallbacksDrained()) {
+    if (scheduler.pending != 0 || scheduler.running != 0) {
         return DrainResult::CallbacksStillInFlight;
     }
     if (!radio_.DeviceResourcesDrained() || assignment_.HasPendingDeviceEffects()) {

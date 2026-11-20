@@ -78,6 +78,7 @@ bool AssignmentService::ScheduleC1Retry(RequestId request, uint32_t attempt)
 
 bool AssignmentService::AcceptScheduledC1Retry(const ScheduledRetryEvent &event)
 {
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
     if (stopping_) { return false; }
     const auto pending = pendingPrimary_.find(event.request.value);
     if (pending == pendingPrimary_.end() || !pending->second.retryScheduled ||
@@ -90,8 +91,14 @@ bool AssignmentService::AcceptScheduledC1Retry(const ScheduledRetryEvent &event)
     return AcceptC1RetryDue(event.request);
 }
 
+void AssignmentService::RequestStopAccepting()
+{
+    stopping_.store(true, std::memory_order_release);
+}
+
 bool AssignmentService::StopAcceptingAndCancelScheduledRetries()
 {
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
     stopping_ = true;
     if (const auto scheduler = retryScheduler_.lock()) {
         scheduler->CancelAllForOwner(operations_.ReadRuntimeEpoch(), RequestOwner::Assignment);
@@ -111,13 +118,20 @@ bool AssignmentService::StopAcceptingAndCancelScheduledRetries()
     return pendingPrimary_.empty();
 }
 
+bool AssignmentService::IsStoppingPrimaryRequests() const
+{
+    return stopping_.load(std::memory_order_acquire);
+}
+
 bool AssignmentService::HasPendingDeviceEffects() const
 {
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
     return !pendingPrimary_.empty();
 }
 
 RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &command)
 {
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
     const RequestId request = operations_.Begin(command.target, command.completion, command.parent);
     if (stopping_) {
         CompleteOnce(request, command.completion, -1, TerminalState::Failed);
@@ -324,6 +338,7 @@ int32_t AssignmentService::SetDefaultRole(const SetRoleCommand &command)
 
 void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
 {
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
     const auto pending = pendingPrimary_.find(result.step.request.value);
     if (pending == pendingPrimary_.end()) { return; }
     const auto operation = operations_.Read(result.step.request);
@@ -523,6 +538,7 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
 
 void AssignmentService::AcceptLateRadioEvidence(const RadioSwitchResult &result)
 {
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
     const auto pending = pendingPrimary_.find(result.step.request.value);
     if (pending == pendingPrimary_.end() || !(pending->second.step == result.step)) { return; }
     const auto operation = operations_.Read(result.step.request);
@@ -546,6 +562,7 @@ void AssignmentService::AcceptLateRadioEvidence(const RadioSwitchResult &result)
 
 bool AssignmentService::AcceptC1RetryDue(RequestId request)
 {
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
     const auto pending = pendingPrimary_.find(request.value);
     if (pending == pendingPrimary_.end() || !pending->second.retryReady || pending->second.phase != 4 ||
         pending->second.mode != PrimarySwitchMode::ThreePhaseProtocol) {
@@ -611,6 +628,7 @@ bool AssignmentService::AcceptC1RetryDue(RequestId request)
 
 bool AssignmentService::AcceptPrimarySwitchTimeout(RequestId request, uint64_t elapsedMilliseconds)
 {
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
     static constexpr uint64_t kLegacyPrimaryTimeoutMs = 45000;
     if (elapsedMilliseconds < kLegacyPrimaryTimeoutMs) { return false; }
     const auto pending = pendingPrimary_.find(request.value);
