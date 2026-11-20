@@ -4,16 +4,16 @@ title: SIM 目标架构设计
 version: "1.2"
 status: draft
 authority: 本轮维护的目标技术架构主文档；不覆盖已发布或已批准业务契约；与既有功能/迁移/测试文档的职责见 §1.2
-baseline_commit: bcc1614fd3119298b1fe0c45ca73a10977ab3738
+baseline_commit: 82a76db12ea36e372fadc00b5c082878a9730b0e
 previous_design_baseline: 964dc5693badc08ce4abafd70d22f1dcd47cf727
 baseline_branch: main
-revision: "2026-11-19-role-and-request-protocol-11"
+revision: "2026-11-20-host-and-device-lifecycle-12"
 document_input_commit: 964dc5693badc08ce4abafd70d22f1dcd47cf727
 consolidated_branch_input: 2448b42e8976ffb75e2bfcd45b27c86eb1e3965d
 claude_revision_commit: 1afffa4e0e48874b91edbc96430b722a267650eb
 source_evidence_commit: 6017003eff50c1bc8c5dfa72336a4bfe42e948b0
 previous_baseline_unresolved: 00b3faa6b02ac0f1adf77fb47f4a111cd95e665d
-revision_date: 2026-11-19
+revision_date: 2026-11-20
 owner: OPEN
 approval_status: pending
 upstream:
@@ -33,8 +33,8 @@ supersedes:
   - SIM-TGT-001 v1.0
 supersession_note: 原对缺失 SIM-IDEAL-001 章节的替代/保留声明未核实，已撤回；不据本文宣称上游批准失效
 last_verified: 2026-10-31
-content_review_date: 2026-11-19
-content_review_scope: 独立业务建模、主卡写入范围、卡会话与设备生命周期、三份跨形态原稿、跨仓消费者静态核验
+content_review_date: 2026-11-20
+content_review_scope: 本次复核宿主关闭、回调排空、共享 RIL、设备复用与 SO 驻留。此前业务建模、主卡写集及跨形态原稿按各自输入保留。
 review_input_commit: 6ccf0a7b4c98638ee453e0096f22d4ce353ee636
 review_input_sha256: 857459c226f8519110cd2656df2e19cfbc94606d940b27db08c4eae3f6e3b15e
 verification_scope: 固定源码与构建图走查，设计文档和架构静态检查；产品运行、外仓匹配与设备行为仍按原证据分别核定
@@ -119,7 +119,7 @@ verification_note: 2026-10-31目录基线为main@5404aefe66decde4e5c5f03a01f355f
 
 ### 1.4 本次可信基线与核验限度
 
-本轮协议审查从 C0 输入 `eea678d67` 经 B/C1 实现 `9c4c82fef`（复核点 `ba95cf2c0`），再以 `bcc1614fd` 重验角色准入、步骤消费和出口领取。baseline_commit 指最近核验的实现，F01～F51 各自保留原始输入。产品仍经 Core/SimManager 执行成熟 SIM 业务。同一单 M0 交错在早期 Host 产生混合输出，加入共享资格的 Target 拒绝竞争写入。M9.3 工作树另有 Host 重试调度器；产品装配、平台参数端口及设备结束仍须独立取证。[专项反例](history/reviews/SIM_Role_Concurrency_and_Async_Request_Review_20261119.md#单-m0-的-c1-与-c0) · [执行状态](SIM_Refactor_Execution_State.md#current-status)
+角色及请求协议审查从 C0 输入 `eea678d67` 经 B/C1 实现 `9c4c82fef`（复核点 `ba95cf2c0`），再以 `bcc1614fd` 重验角色准入、步骤消费和出口领取。本次生命周期取证以 `82a76db12` 为已提交源码基线。F01～F51 及历史 Host 结果各自保留原始输入。产品仍经 Core/SimManager 执行成熟 SIM 业务。同一单 M0 交错在早期 Host 产生混合输出，加入共享资格的 Target 拒绝竞争写入。已提交的 M9.3 和 M10 在 Host 分别接入重试调度及 B/C1 资源屏障；真实 Core 装配、平台参数和设备结束仍须独立取证。[专项反例](history/reviews/SIM_Role_Concurrency_and_Async_Request_Review_20261119.md#单-m0-的-c1-与-c0) · [执行状态](SIM_Refactor_Execution_State.md#current-status)
 
 10 月至 11 月 17 日的分支、构建、上游与产品取证逐项见 §20、§23 以及[历次静态核查与证据范围原文](https://github.com/zjuluowu/multisim/blob/0e4004bef8362b0e5721afbeddd663831573a3c2/telephony_core_service/docs/SIM_Target_Architecture_Design_v1.2.md#14-本次可信基线与核验限度)。本轮定位到跨形态分析原稿；可用的开源消费者与 HRIL 只能证明所读版本的边界，厂商实现、66250 和设备匹配仍待证。
 
@@ -1116,7 +1116,16 @@ Core 拥有共享 RIL 生命周期，SIM 仅释放自身注册和引用，不可
 
 ### 14.3 新增 StopAndDrain 协议与机械拆分分开
 
-当前 CoreService::OnStop 只见 IMS、搜网、RIL 和 EXT 清理，未证明完整 SIM/eSIM 排空。[F01](#src-01) 目标私有关闭协议为：停止新受理 → 失效实例准入 → 反注册外部订阅 → 结束等待但保留未知设备效果 → 排空已排队/在途回调和 Hook → 确认代码不再执行 → 匹配销毁。排空失败不得卸载 SO；设备隔离记录与对象安全分开处理。
+**源码事实。** Core 在 Publish 后逐个创建和发布服务。OnStop 置宿主状态，调用 IMS.UnInit、搜网.DeInit、RIL.DeInit 和可选扩展；RIL 这一步只注销 HDF 服务状态监听。可见链没有进入 Legacy SimManager::Stop，也没有撤回 CMI 等持有者或等待全部已投递回调。Legacy 的显式 Stop 有局部工作组、退订及 join；析构只做部分清理。局部 75 秒等待不能作为宿主全程关闭上限。[F01](#src-01) · [专项审查与配套消费者取证](history/reviews/SIM_Host_Stop_Async_Drain_Device_RIL_Lifecycle_Review_20261120.md)
+
+**PROPOSED · 私有关闭协议。** H 在旧发布句柄和组件的实际受理点封住新业务，按成功创建和登记的子集处理半初始化。每个实例只有 Running、Closing、Stopped。Closing 中，停止自主重试，保留已接纳步骤的原完成路径；常驻接收者确认接管后方可撤走原入口。注册者配对退订，入队前登记工作，等到执行体及捕获析构退出。不能从注销成功推定已投递的回调静止。回调内可请求关闭；阻塞等待、调用外部 dispatcher 及释放最后引用在业务锁外，由能让完成路径继续运行的执行域承担。并发关闭只产生一个清理者。超时、退订失败或交接不明时保留所需实例与依赖，回报未完成原因。
+
+| 结束条件 | 有权确认的责任方与证据 |
+|---|---|
+| L1 客户完成／L2 请求终止 | 原入口按已批准契约交付。Owner/O 单独封存步骤和一次完成出口。迟到结果只能归原设备操作核对 |
+| L3 组件安全关闭 | H 收各注册者和工作组的收据。新入口已封、旧调用已退出或有可证明安全的常驻隔离、已接纳业务有可核对归属。T 保留历史账户，A 处理角色资格，Card 处理会话和 Records；SIM 只释放本组件的 RIL 观察和引用 |
+| L4 具体设备域可复用 | Device 核对原命令、完整物理范围和已验证的结束/复用证据。未确认时保留 Checking/Quarantined 等实际状态。L3 先于 L4 只在仍有驻留的设备证据接收者且新图不能绕过隔离时成立 |
+| L5 指定 SO 可卸载 | 宿主逐库核销外部函数入口、队列、执行帧、跨库对象及最后一个 deleter。只有产品确需卸载才前置这项验证；其它共享 RIL 使用者仍由 Core 负责 |
 
 常驻 SO 的 G2b 可保持旧生命周期并如实列出限制，不要求先实现所有长期关闭增强；产品有动态卸载、模块重建或初始化失败回收要求时，相关 G2c 能力必须先验收。跨 SO 还需导出符号/版本脚本、C++ 类型布局/RTTI、分配释放、跨 DSO CFI、PAC、LTO、Feature 宏和依赖安装验证。[F02](#src-02) 编译成功不能替代生命周期或行为兼容证明。
 
@@ -1578,7 +1587,7 @@ PlantUML 1.2025.2 / JRE 21 的 4 幅图语法检查及 SVG 渲染通过，修改
 | G0/G1 基线与护栏 | 固定代码/产品配置、文档来源、原接口轨迹、依赖清单及 host 设施 | 区分契约/静态候选/运行记录；受影响功能有明确边界与 Oracle | 远端日志/新身份未定不妨碍只读核查、纯规则测试或设施建设 |
 | G2a 原 SO 内依赖/所有权收口 | 私有 HostPorts、委托、工厂/deleter 设计；保持原 writer 和原协议；盘点 SIM 对 Core 内进程级单例（EXT、HiSysEvent、IMS/卫星客户端）与 CMI 自调用的依赖并裁决唯一定义处；可选以旧函数等值方式引入 SlotCatalog | 消费侧 ABI、初始化/失败清理、共享 RIL 所有权明确；单例归属表与跨边界符号清单完成；若引入目录，逐产品参数与旧容量函数等值；定向差分 | 不要求先迁所有聚合或新增持久日志 |
 | G2b 机械链接拆分 | Core→SIM→API/utils；同进程常驻 SO | 产物级检查：Core 不新增业务导出、SIM 业务导出仅私有工厂/匹配销毁；工具链必需符号单列；NEEDED 与安装路径正确；进程级单例和静态状态无重复定义；SA 全局构造注册与初始化顺序不变；CFI/PAC/LTO/Feature 组合构建；两种容量推导可能不同的产品（虚拟 Modem 开关为真且配置槽数小于 8，§14.2）另做各容量调用点/首次调用时点/初始化次序差分，其余产品只记录两推导等值，均不以 SlotCatalog 为前提。行为差分用同一产品镜像拆分前后的启动与冒烟矩阵（无卡/单卡/双卡、PIN、激活、默认 Data、Primary、eSIM 开/关，以及该产品启用的三卡/VSIM/卫星分支）及已可运行的 host 切片；单测由源码静态库构建，不证明打包 | 不把全部长期恢复/原子存储增强当必备；Linux 初始化闭包未打通不阻塞本阶段，但不得宣称业务全量差分；编译本身不足验收 |
-| G2c 生命周期增强 | 私有 StopAndDrain、重建/卸载/半初始化回收 | 新任务停止、注销、迟到准入、排空、匹配销毁和不可排空时不卸载 | 按产品需要前置；有动态卸载/重建需求的产品不能跳过，常驻拆分不假装已增强 |
+| G2c 生命周期增强 | 私有 StopAndDrain、重建/卸载/半初始化回收 | 分别验证旧句柄封口、已接纳业务完成、半初始化回收、注销与执行排空、共享 RIL 的其它消费者、超时保留和重新建图。需卸载时另验 L5 | 按产品需要前置；有动态卸载/重建需求的产品不能跳过，常驻拆分不假装已增强 |
 | G3a 账户/字段写权 | WU-01/02/03/05、WU-04 的角色片段及 WU-09 的 T loaded 按 §6.3 同步切换；A 旧策略桥提供角色片段 | 所有初始化/重载/后台/恢复/分支 writer 收口；冲突写资格覆盖锁外 I/O，字段互不覆盖，角色域唯一；重入仍保留原查询源，§9 旧可见性；稀疏/越界 simId 的旧可见行为已采集并裁决（F42） | 严格 provider 原子性未证可保留旧协议；不能声称已获得全局一致性 |
 | G3b 会话与加载 | WU-06 与 WU-09 的 R loaded，runtimeEpoch/局部 LoadScope/ExpectedTransition；号码固定回写目标独立验收 | 换卡、局部 Refresh 的在途读/写、合法新会话与后台迟到；G3c 未迁用例的 ExpectedTransition 桥须闭合；行为差异独立确认 | 无关 eSIM 任务日志不阻塞有完整证据的卡型 |
 | G3c Owner 用例编排与角色 | WU-04 参数/last/偏好/去重值、WU-07 的进行中标志/重试/自调用；A 的切换用例与 T 的激活用例成为唯一进程所有者，部分失败与资源核对 | 关闭旧同层重复重试发起及 detached 线程自调用；成功/错误先校验再更新阶段/槽计数；独立同参调用不合并；并发 Primary 请求与迟到激活回包的准入收紧作为单列行为变化获批并差分（F44/F45）；跨 Owner 不嵌套等待/重复准入、角色与资源联合冲突集合、请求/进行中投影/租约归属按 §4.2/12.1 验收；运行期和重启丢关联后的效果/静止判据、预算和原错误映射明确；保留 Data/Primary 各自错误及完成含义 | 无证据资源保留旧构建，其余已闭合用例独立推进 |
@@ -1589,7 +1598,7 @@ PlantUML 1.2025.2 / JRE 21 的 4 幅图语法检查及 SVG 渲染通过，修改
 
 确认受影响 SIM 功能、WU 字段与调用者；正常、部分失败、超时、迟到、重连/重启分别说明可保证范围。结构检查和 Legacy/Split 运行差分分别出证据，保持未覆盖/不可比较状态，不通过改测试期望掩盖行为变化。
 
-SIM-028/WU-04 的角色门禁同时覆盖标准单 M0 双卡 C1 预写→另一域 C0 完成→C1 完成、合成双 C0、同域拒绝和无关角色并行。验证每键/事件顺序、最终持久值、投影及完成次数；独立 Data 允许与 Primary 指向不同槽。T 绑定分别在 Radio 观察中、二读后及首写后失效，核对原目标与已发前缀。WU-07 在受影响的设备路径上测同一步重复与 NotSent、下一步合法响应、旧 attempt、四方完成竞争、超时后旧设备效果与后继准入。Host 允许确定性制造这些交错。放开产品写权前，另须证明全部真实写者、设备命令结束及资源可复用；Stop/排空仍单独验收。[测试调度及签收](history/reviews/SIM_Role_Concurrency_and_Async_Request_Review_20261119.md#不变量与可执行验收)
+SIM-028/WU-04 的角色门禁同时覆盖标准单 M0 双卡 C1 预写→另一域 C0 完成→C1 完成、合成双 C0、同域拒绝和无关角色并行。验证每键/事件顺序、最终持久值、投影及完成次数；独立 Data 允许与 Primary 指向不同槽。T 绑定分别在 Radio 观察中、二读后及首写后失效，核对原目标与已发前缀。WU-07 在受影响的设备路径上测同一步重复与 NotSent、下一步合法响应、旧 attempt、四方完成竞争、超时后旧设备效果与后继准入。Host 允许确定性制造这些交错。放开产品写权前，另须证明全部真实写者、设备命令结束及资源可复用；宿主关闭按 §14.3 分别验证 L1～L5，设备域未解的重建、回调自等待及卸载残留作为反例。[测试调度及签收](history/reviews/SIM_Role_Concurrency_and_Async_Request_Review_20261119.md#不变量与可执行验收)
 
 回退不是只执行 git revert：先停止相关受理，确认在途设备效果及代码/回调生命周期，核对旧产物可读的数据/参数，再切回；未知效果保持隔离，不将旧快照强写为现实。无 schema 变化的切片不发明数据迁移，确有新格式的 G4 必须有配对迁移/回退方案。长期增强缺口只能阻塞它实际依赖的功能和产品组合。
 

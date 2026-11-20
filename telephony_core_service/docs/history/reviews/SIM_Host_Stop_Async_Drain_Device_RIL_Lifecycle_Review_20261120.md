@@ -72,6 +72,12 @@ flowchart TD
 
 **INFERENCE**　只在三处顺序上调换两步就会失去证明。若在成功 Primary 的最后回包前先退掉唯一结果接收者，原等待可能永无可消费结果。若先 reset 卡图，再信任已入队的通知，旧任务可能仍需对象及其代码。若工作回调在同一队列内同步等自己的退出，进入互等。已有同组自等待守卫应保留；跨队列的等待环和仍能投递的外部生产者需由宿主证明。以上是协议反例，未判定线上已发生内存错误。
 
+**FACT / INFERENCE　两处可定位的交接缺口。** 在带 eSIM 的 STK 路径，OnSendRilProactiveCommand 提交 CA 工作，同时安排 CLOSE_CA_ESIM_EVENT。ProcessCommandByCa 持 caMutex_ 调 dlopen/dlsym 并执行厂商函数；处理延时事件的 CloseCaEsim 调 dlclose，没有取得同一把锁，也没有等待已提交工作结束。可确认关闭缺少共同的完成凭据。是否实际卸载最后一个 ELF 引用、厂商函数是否仍在运行属于产品证据缺口。建议句柄归实际调用所有，最后使用者退出后再释放；若厂商接受后还会异步反调，须厂商交还注册或继续驻留。LIFE-20 在该 Feature 上还有独立于未来 SIM 拆库的适用性。[STK 入口及延时事件](../../../services/sim/src/stk_controller.cpp) · [CA 使用及关闭](../../../services/sim/src/esim_controller.cpp)
+
+在 82a76db12 的 ResourceRadioRuntime::AcceptDeviceResult，完成路径在 R 锁内消耗最后一个 group，在锁外调用 PostRadioOwnerTask。期间 OwnerCallbacksDrained 可能已看到空表和空 dispatcher；若 post 拒绝，函数返回 false，该组 normal/late 局部结果也没有留在待交付表。这是固定 Host 源码的交接缺口。该版还在 R 锁内查询借用的 dispatcher；是否重入取决于具体实现。审查时另有未提交的投递收据改动，须按其自己的 SHA 和测试复核。原先的资源结束证明仍应保留。审查既有工作树不会把这些改动发布为本专题成果。
+
+**FACT / OPEN　清单边界。** OperatorConfigCache 延时体在检查 weakThis 及访问 helper 前已取得组 Callback lease；此处应保留该防护。SimFileManager::Shutdown 对 File、Controller 和电话簿 handler 分别 StopEvents，不能只统计一个 File。TelRilModem::RadioStateUpdated 的 FFRT 广播闭包还会读成员 slotId_，由 RIL 侧保证驻留。对 SIM/Core/RIL 这些已追踪源码用 `rg -n 'ffrt::submit|ffrt::thread|std::(thread|async|promise|future)|PostTask|SendEvent|Register.*(Notify|Watcher)|dlclose'` 可复核工作来源；这条路径未发现需要单独关闭的 std::promise/future 执行器。外部 SA 框架、闭源回调及驱动内部工作不在可枚举范围。异常杀进程无法执行普通析构/退订协议；下次启动仍要从设备取证，内存票据不能跨进程继承。[文件关闭](../../../services/sim/src/sim_file_manager.cpp) · [RIL 广播](../../../services/tel_ril/src/tel_ril_modem.cpp)
+
 ## 五种结束条件与不变量
 
 **PROPOSED**　一次操作要分别回答“交付给谁、谁还能运行、谁还能改动设备”。图中箭头是证据条件的合取输入。L2 的“封存”可以先于回调执行，L1 按原入口同步返回、异步回调或投递契约观察；仅当方法约定送达时才要求送达回执。
@@ -206,7 +212,7 @@ return retireLocalOwnersOutsideLocks();  // L4 与 L5 各有独立判据
 
 **PROPOSED 负控**　保留相同初态与屏障，逐项在独立规则模型或以后获准的实验构建中变异。① 去掉本组件一次观察注销，LIFE-06/13 检查配对表和旧入口访问；② 去掉旧发布句柄的封口，LIFE-05 发现新增业务写；③ 在客户端超时处标资源可用，LIFE-10/12 发现同域二次外发；④ 发布开始后提前归零工作票，LIFE-08/16 发现销毁先于执行体退休；⑤ SIM Stop 中关闭共享 RIL，LIFE-13 的对方原 serial 无法按契约交付或发生多余 DeInit；⑥ 去掉原实例/步骤关联，LIFE-11/19 发现新图写入或重复完成。退订变异同时检查次数，避免“晚回调被门拦住”掩盖资源泄漏。
 
-**PROPOSED 取证**　Host 在发布前、队列取出、取得 owner 资格、回调结束、注销返回及最后闭包析构处登记事件序号，不采线程总数作断言。两线程用 barrier、虚拟时钟和显式调度选择上述顺序。GTest/GMock 可复用已存在的 shutdown_test、B/C1 组件和 Full Replacement 差分。ASan/TSan/UBSan 用于补充对象、竞争及未定义行为观察，不能代替生产者全集与退出条件的证明。产品记录脱敏的 instance、原 serial/协议 session、phase/member、完整设备域、submit/晚包/实际结束/可用及退出观察点；对正常、失败、超时、重连、重启和回调注销逐一核对。
+**PROPOSED 取证**　Host 在发布前、队列取出、取得 owner 资格、回调结束、注销返回及最后闭包析构处登记事件序号，不采线程总数作断言。两线程用 barrier、虚拟时钟和显式调度选择上述顺序。GTest/GMock 可复用已存在的 shutdown_test、B/C1 组件和 Full Replacement 差分。运行入口见[Host 使用说明](../../../services/multisim/test/docs/Host_Usage.md)及[双后端操作说明](../../../services/multisim/test/docs/Full_Replacement.md)。ASan/TSan/UBSan 用于补充对象、竞争及未定义行为观察，不能代替生产者全集与退出条件的证明。产品记录脱敏的 instance、原 serial/协议 session、phase/member、完整设备域、submit/晚包/实际结束/可用及退出观察点；对正常、失败、超时、重连、重启和回调注销逐一核对。
 
 ### 可复算的有限顺序检查
 
@@ -250,6 +256,8 @@ for alphabet, check in [("APFSD", premature_destroy), ("CEN", premature_reuse)]:
 | M6 生产接入 | [测试工程](../../../services/multisim/test/README.md)、历史 Host 关闭及替代测试 | 分别签 Host 规则/组件、原接口差分、真实 CoreService/SA、产品原生链接、真实 RIL/HDI/设备、适用时 SO。时限、取消、强制退出及通知改变由产品/架构按公开方法批准，再讨论写权 |
 
 **OPEN**　产品须提供 SA 的退出预算及保活能力、各 Feature 的注册/注销同步保证、HDI 回包及所有共用物理范围的结束和重置语义、可驻留的晚证据所有者、实际 ELF 与卸载需求。没有这些证据时，不能把借用引用失效、静态架构检查或历史 Host 验收升级为生产关闭承诺。
+
+**本轮实际验证（FACT）。** 从仓根运行恢复检查 `python3 -B telephony_core_service/services/multisim/tools/check_sim_refactor_recovery.py --remote origin --fetch`，得到 CHECKPOINT_VERIFIED。以 `git ls-tree -r -z` 核对固定输入排除 test/tools 的 94 个文件（92 个 C++ 单元），并对读 Core 退出顺序、CA 入口和资源屏障。工作树的 `python3 -B telephony_core_service/services/multisim/test/scripts/run_architecture.py --with-gn --migration --output /tmp/sim-life20-check` 通过结构、迁址、四组纯规则及 testonly GN 构建；该次检查含已有未提交的工程改动。运行 `python3 -B -m unittest discover -s telephony_core_service/services/multisim/test/cases/internal/infrastructure -p test_navigation.py`，6 项通过。另解析本批文档路径、锚点、围栏和 Mermaid 语法，执行上文两组顺序枚举及 `git diff --check`。本次未运行 Legacy/Target 完整回归、消毒器、原生产品构建、SA/IPC、真实 RIL/HDI 或卸载实验。
 
 ## 第二轮反向审查
 

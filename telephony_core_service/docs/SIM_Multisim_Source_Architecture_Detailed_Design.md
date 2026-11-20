@@ -83,7 +83,7 @@
 
 ### 3.1 当前工作树：已存在的完整业务文件清单
 
-当前物理组织遵循[五组目录设计方案](SIM重构代码目录结构设计方案.md)，替代历史B+六组布局。bcc1614fd 的 91 个模块文件包含 89 个 C++ 单元及 BUILD/README。M9.3 工作树将 AcceptResult 的定义由 assignment_service.cpp 移至原 request_mechanism 逻辑目标，变为 90 个 C++ 单元（共 92 文件）；`role_assignment/assignment_store_adapter.cpp` 是 C0 系统参数兼容实现的首个已授权新增业务源，不承担 SIM 账户数据库职责；test/tools另列，不计入该数字。25个逻辑source_set及依赖边、public/visibility和testonly状态保持。G2a业务查询源仅由testonly目标验证，Core/Binding参考实现在test/framework/internal/host/g2a_reference，不由产品源表接入。CardRuntime/result_sinks暂在card/runtime，设备资源与卡状态尚未拆分；不是Assembly业务运行状态。
+当前物理组织遵循[五组目录设计方案](SIM重构代码目录结构设计方案.md)，替代历史B+六组布局。bcc1614fd 的 91 个模块文件包含 89 个 C++ 单元及 BUILD/README。M9.3 将 AcceptResult 的定义由 assignment_service.cpp 移至原 request_mechanism 逻辑目标，变为 90 个 C++ 单元（共 92 文件）。至 `82a76db12`，B/C1 在 device/resource 增加 ResourceRadioRuntime 的头和实现，计 92 个 C++ 单元，共 94 文件；`role_assignment/assignment_store_adapter.cpp` 是 C0 系统参数兼容实现的首个已授权新增业务源，不承担 SIM 账户数据库职责；test/tools另列，不计入该数字。25个逻辑source_set及依赖边、public/visibility和testonly状态保持。G2a业务查询源仅由testonly目标验证，Core/Binding参考实现在test/framework/internal/host/g2a_reference，不由产品源表接入。CardRuntime/result_sinks暂在card/runtime，设备资源与卡状态尚未拆分；不是Assembly业务运行状态。
 
 ```text
 services/multisim/
@@ -147,7 +147,9 @@ services/multisim/
 ├── device/
 │   └── resource/
 │       ├── resource_barrier.cpp
-│       └── resource_barrier.h
+│       ├── resource_barrier.h
+│       ├── resource_radio_runtime.cpp
+│       └── resource_radio_runtime.h
 ├── infrastructure/
 │   ├── assembly/
 │   │   ├── exports/
@@ -461,7 +463,7 @@ CardRuntime借同一ITelRilManager，普通Radio三阶段用原控制器，专�
 | BindResultSinks | 四类窄结果/观察出口；不认识具体T/A用例 | 模块内绑定可见；真实事件关联、weak owner/epoch/排空仍待接入 |
 | SessionRegistry | Current/失效、代次水位、ExpectedTransition、可信接续、NotSent撤销/等待结束/到期 | 当前session_registry.cpp已有有限纯规则；无真实卡事件接入；G3b须桥接旧用例，任意READY不足以接续 |
 | LoadSession | 父子/必需可选/读写成员，一次消费，受影响读失效 | 有限纯规则；实际各卡型字段及LOADED写点仍在生产 |
-| ResourceBarrier | 初始Checking、完整资源Acquire、MarkSent、NotSent撤销、Complete、Quarantine/Recovery | 有限纯状态转移，不证明设备结束能力，当前未启用 |
+| ResourceBarrier | 初始Checking、完整资源Acquire、MarkSent、NotSent撤销、Complete、Quarantine/Recovery | ec6b09c4c 起 ResourceRadioRuntime 在 Target B/C1 Host 使用；真实产品命令结束、物理域和通道可复用语义待验 |
 | 发现观察流 | 每应用发现/失效共observationSequence，送T同一接纳序列 | 发送前在原写点准入；跨T的DB返回还须再次复核 |
 
 资源租约核对epoch、完整资源集、fence及完整StepRef。未发不能伪完成，已发不能伪NotSent；写Unknown不释放。只读查询在证明结束和可复用后可释放资源，但仍保留原失败结果；开通道Get也不能绕过冲突域。
@@ -545,7 +547,15 @@ Core仍创建并拥有共享RIL；最终工厂按原eSIM创建/Init/发布、SIM
 
 当前源码事实补充（2026-11-18）：旧 `services/sim` 的具体 SimManager 已按独立失败修复授权实现 Stop/IsStopping/IsStopped，采用组件自有准入、回调排空、任务/线程join及所属对象Shutdown；参数观察注销失败可重试，Core独立RIL不由SIM停止。公开ISimManager/IDL保持，内部布局/虚表变化要求产品整体重编。该Host修复不实现上表工厂、不接入multisim、不构成G2b/G2c或SO卸载验收，真实证据见[执行状态§48](SIM_Refactor_Execution_State.md)与[修复归档](../services/multisim/test/docs/archive/remaining_failures_20261118/phase_b/README.md)。
 
-生命周期对读时，从 [CoreService::Init / OnStop](../services/core/src/core_service.cpp) 与 [SimManager::Stop](../services/sim/src/sim_manager.cpp) 分别追踪。前者创建共享 RIL、装配 Manager，OnStop 调用搜网/RIL 的 DeInit；该路径没有显式调用 SimManager::Stop。后者先封闭/等待本组件、join、逐个 Shutdown，失败保留未完成状态。产品接入前须验证退订句柄、在途回调、RIL 的其他消费者及 SO 代码寿命；组件 Host 退出记录只覆盖当时的入口。
+**宿主调用与引用（82a76db12）。** [CoreService::OnStart / Init / OnStop](../services/core/src/core_service.cpp) 在 Init 前 Publish。Hub、共享 RIL、可选 eSIM 依次发布，SIM 注入 CoreServiceSim，随后创建 IMS/搜网并完成 CMI.OnInit。搜网初始化失败时已有发布项。OnStop 的 IMS.UnInit、搜网.DeInit、RIL.DeInit、可选扩展清理未显式或经仓内可见调用进入 [SimManager::Stop](../services/sim/src/sim_manager.cpp)。CoreServiceSim、搜网及 CMI 有各自的 Manager 引用。RIL 的 HDI callback 持 Manager，serial 请求表属于 TelRilBase；SIM 不能清空其它使用者的表项。参考 [专项所有权审计](history/reviews/SIM_Host_Stop_Async_Drain_Device_RIL_Lifecycle_Review_20261120.md)。
+
+| 已有实现 | PROPOSED 私有接入点及验证 |
+|---|---|
+| H 的 [SimModule](../services/multisim/infrastructure/assembly/sim_module.h) 声明 StopAcceptingAndDrain 及三个返回值，工厂不是产品关闭入口 | 在原发布/取用点封口，记录已取得的发布项、订阅与在途调用。回调只请求关闭，独立宿主执行域等待。将本地可销毁、未撤回入口、未解设备域分别返回或查询；重复 Stop 观察原实例 |
+| [TelLifecycle](../utils/common/include/tel_lifecycle.h) 的 Lease、Reserve、Submit、JoinOwnedWork 与 [TelEventQueue](../utils/common/src/tel_event_queue.cpp) 管所属工作；Legacy Stop 按组件逐项 Shutdown，失败保留状态 | 从 Core 通用/PIN 队列、Hub FFRT 投递、STK→EsimController 的 CA 工作及 CLOSE_CA_ESIM_EVENT，到普通/低优先级 EsimFile，逐项核销生产者、回调执行和代码驻留。CA 的延时 dlclose 须有最后使用者退出的证据。取得执行票早于发布，退票晚于捕获析构。原回复先完成或已确认移交才可退订 |
+| AssignmentService 取消已安排的 C1 retry；O 维护原 StepRef 和一次交付，Card 按原会话失效 Records | A 在自身执行域关新业务；保留已接纳请求的结果归属及仍需对账的角色资格。T 保留历史账户；停卡会话不删除历史事实。沿用旧完成出口和通知次序 |
+| [ResourceRadioRuntime](../services/multisim/device/resource/resource_radio_runtime.cpp) 与 ResourceBarrier 在 testonly 的 runtime_mechanisms 中。固定输入的 platform_ 与 dispatch_ 均为借用（后者是指针），sink_ 为弱引用；查询 OwnerCallbacksDrained 与 DeviceResourcesDrained 的条件不同 | 在跨域外调前登记待交付结果，正常和晚证据都要核销，dispatcher 在锁外调用。入队被拒保留结果，已入队须核对是否执行；同步回调和弱引用失效均单测。设备 Unknown 保留原资源与原实例关联，匹配恢复后才放行 |
+| Core/CMI 和调用方可能比本组件活得久，EsimController 的 CA 插件及 wrapper 有动态装载接缝 | H 持有外部端口和匹配 deleter 至最后执行/析构结束。独立 SIM SO 卸载能力须有真实产品 ELF、装载器及外部注册核销；平台或厂商无法提供结束证据时保持驻留 |
 
 CMI实现仍在既有API库，wrapper仍在原共享定义处；H复用原对象及控制块，保留wrapper加载早于Manager全部就绪的窗口，符号存在不等于可立即访问业务。跨SO验收核对唯一定义、两个消费方获得同一注入对象、匹配销毁及在途回调代码寿命。源报告所述扩展SO兼作SA4011与dlopen库须匹配产品/实际装载确认；不得以同进程或L1探针代替L2产物/装载证明。
 
