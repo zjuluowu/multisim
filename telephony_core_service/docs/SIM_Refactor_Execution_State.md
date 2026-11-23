@@ -6,6 +6,8 @@
 
 本页是实施状态的唯一维护来源。[开发文档入口](README.md)按任务指向相应设计和测试资料。本文历史章节中的「当前」指各节记载的输入和日期。
 
+2026-11-23 的[三项签收决策与四文档复核](history/reviews/SIM_Core_Architecture_Signoff_Convergence_20261123.md)记录关闭责任、Radio 参与者和字段写权的设计依据。输入为 `bd4fbe833`，历史实验绑定 `befd76d4e`。生产装配、写权移交和设备验收仍按下表各自取证。
+
 | 范围 | 已核实实施与证据 |
 | --- | --- |
 | Stage 10 Host / Device evidence | M10.1 已将 `ResourceRadioRuntime` 接入 Target B/C1 Host 执行（Target 50/50；M10 TSan 12/12）：A 仍持角色写资格，R 持 ResourceBarrier lease/fence、transport token、发送/完成/隔离及恢复证据；C1 phase 成员共用一次完整 Acquire/MarkSent，只有全成员 commandEnded+resourceReusable 后才向 A 提交，C1 五轮调度重试受旧资源资格阻挡。Host 覆盖 Checking 初始化、ConfirmedNotSent、错误绑定/重复成员、B 成功/超时/晚证据、C1 24 命令六轮、UPDATE 缺复用证据隔离、Stop 的 Owner/Device Drain 区分。源码取证确认 Legacy B 使用 SetPrimarySlot + RIL response，C1 CHECK/COMPLETE 使用逐 slot response、UPDATE 使用匹配 sessionId 的 NOTIFY；这些都不携带设备静止/资源复用证明。M10.2 将 Submit 收紧为 ConfirmedNotSent/HandoffAccepted/HandoffUnknown，Host 覆盖提交前回包和并发成员回包，并用窄 OwnerDispatchPort 串行 R→A 投递。Target 67/67、Legacy 124/124、Both 191/191；六个冻结场景 Both/Oracle/Legacy-Target 差分均为 0；M10.2b TSan 12/12、ASan 8/8；M10.2 TSan 12/12、ASan 8/8 与 M10.1 TSan 12/12 保持；CI/mutation/profile safety、架构/GN/技术/执行审计均 PASS。Host 用保守共享资源键，产品物理资源关系、RIL/HDI end/reuse/currState 适配及真实设备验证仍 BLOCKED；`hb` 实际不可用（127 command not found），产品构建为 PRODUCT_BUILD_BLOCKED，M10.2b 进一步封口 Submit 前冲突/重复回包、缺失或错误 Serial、Owner 投递失败保留、Dispatcher weak 生命周期及 R/A Drain 分离；[Host 报告](../services/multisim/test/docs/M10_2b_Host_Contract_Closure.md)与[产品证据报告](../services/multisim/test/docs/M10_3_Product_Device_Evidence_Readiness.md)记录边界。M10.2b Host 可验收，但未声明 VERIFIED_DEVICE 或 M11 产品接入就绪。 |
