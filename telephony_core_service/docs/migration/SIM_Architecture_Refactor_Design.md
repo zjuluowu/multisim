@@ -426,18 +426,18 @@ R 内 `ResourceArbiter/ResourceBarrier` 维护真实共享域的独占资格；O
 | <a id="sim-017"></a>SIM-017 | 语音信箱配置、标识、号码与未读计数 | IccFile/SimFile、VoiceMailConstants；SimManager 入口 | [E12](#e12)、[E13](#e13) | R | 运行支撑 | `R/telephony_records` | 保留卡 EF/运营商配置联动；业务通话/语音信箱服务不搬入。 |
 | <a id="sim-018"></a>SIM-018 | 卡内呼叫转移标志与号码 | SimManager::SetVoiceCallForwarding；IccFile/SimFile/Ruim/Isim | [E12](#e12)、[E13](#e13) | R | 应用/运行支撑 | `R/telephony_records` | 保留 CFIS/CFF 路径和指示；网络补充业务仍在原模块。 |
 | <a id="sim-019"></a>SIM-019 | SPN/EONS/国家/运营商名称及显示规则 | IccFile、PlmnFile、MccPool；SimManager::GetSimEons/ObtainSpnCondition | [E12](#e12)、[E18](#e18) | R | 规则/查询 | `R/operator_identity` | 保留卡侧规则；搜网的驻网/运营商显示最终决策保留在搜网。 |
-| <a id="sim-020"></a>SIM-020 | 发现卡身份、账户建立及初始化后续 | MultiSimController::InitIccId/InsertData/InitData/InitActive；Monitor::InitData | [E19](#e19)、[E30](#e30)、[E55](#e55)、[E83](#e83)、[E84](#e84) | T账户/激活主编排；A初始角色/主卡；R执行 | 应用/领域/运行支撑 | `T/account + A/roles + T/application/activation + R/execution` | 身份匹配入 T；初始化中的 force 激活与主卡后续分别委托原用例；建行角色字段由 A 提供，不把全部 InitData 搬入 T。ID 分配保持。 |
+| <a id="sim-020"></a>SIM-020 | 发现卡身份、账户建立及初始化后续 | MultiSimController::InitIccId/InsertData/InitData/InitActive；Monitor::InitData | [E19](#e19)、[E30](#e30)、[E55](#e55)、[E83](#e83)、[E84](#e84) | T账户/激活主编排；A初始角色/主卡；R执行 | 应用/领域/运行支撑 | `T/account + A/roles + T/application/activation + R/execution` | 身份匹配入 T；初始化中的 force 激活与主卡后续分别委托原用例；建行角色字段由 A 提供，不把全部 InitData 搬入 T。ID 分配保持。 [逐键写点与退出](#sc03-ledger) |
 | <a id="sim-021"></a>SIM-021 | 当前/历史账户缓存、列表、缺卡失效 | MultiSimController::GetListFromDataBase/GetAllListFromDataBase/SortCache/ForgetAllData | [E19](#e19)、[E21](#e21)、[E31](#e31) | T | 应用/查询 | `T/account_view` | 合并本仓账户缓存写权；当前绑定与历史记录区分，缺卡不擅自物理删除历史账户。 |
 | <a id="sim-022"></a>SIM-022 | simId↔slot 查询与目标解析 | MultiSimController::GetSlotId/GetSimId/GetTargetSimId | [E20](#e20)、[E21](#e21) | T | 领域/查询 | `T/binding` | 迁移映射规则；旧查询保留 active 筛选/先命中行为；新写决策遇歧义停止并核对，不自行改变旧查询输出。 |
-| <a id="sim-023"></a>SIM-023 | 显示名称、MSISDN 写卡与号码资料同步 | MultiSimController::SetShowName/SetShowNumber/SetShowNumberToDB/GetShowNumber；SimFile::UpdateMsisdnNumber | [E22](#e22)、[E55](#e55)、[E78](#e78)～[E80](#e80) | T 资料及号码用例；R 写卡 | 应用/领域/运行支撑 | `T/account_profile + T/application/number_update + R/telephony_records` | 拆为 SIM-023.a～c（5.1.1）；保留写卡→DB→缓存→成功账户通知及查询异步回写，不改变卡/存储部分失败语义。 |
-| <a id="sim-024"></a>SIM-024 | 卡激活/停用、卫星激活与进度 | MultiSimController::SetActiveSim/SetActiveSimSatellite/SetActiveCommonSim | [E23](#e23)、[E28](#e28) | T 激活主编排及事实；A 准入 | 应用/领域/适配 | `T/application/activation + R/execution` | 拆分资格(T/A)、步骤(T用例)、设备(R)、已接受账户状态(T)；保留参数/缓存/通知既有时序。 |
+| <a id="sim-023"></a>SIM-023 | 显示名称、MSISDN 写卡与号码资料同步 | MultiSimController::SetShowName/SetShowNumber/SetShowNumberToDB/GetShowNumber；SimFile::UpdateMsisdnNumber | [E22](#e22)、[E55](#e55)、[E78](#e78)～[E80](#e80) | T 资料及号码用例；R 写卡 | 应用/领域/运行支撑 | `T/account_profile + T/application/number_update + R/telephony_records` | 拆为 SIM-023.a～c（5.1.1）；保留写卡→DB→缓存→成功账户通知及查询异步回写，不改变卡/存储部分失败语义。 [逐键写点与退出](#sc03-ledger) |
+| <a id="sim-024"></a>SIM-024 | 卡激活/停用、卫星激活与进度 | MultiSimController::SetActiveSim/SetActiveSimSatellite/SetActiveCommonSim | [E23](#e23)、[E28](#e28) | T 激活主编排及事实；A 准入 | 应用/领域/适配 | `T/application/activation + R/execution` | 拆分资格(T/A)、步骤(T用例)、设备(R)、已接受账户状态(T)；保留参数/缓存/通知既有时序。 [逐键写点与退出](#sc03-ledger) |
 | <a id="sim-025"></a>SIM-025 | 默认 Voice 选择、simId 与回退 | MultiSimController::Get/SetDefaultVoiceSlotId/GetDefaultVoiceSimId | [E24](#e24)、[E55](#e55) | A | 应用/领域 | `A/roles` | 迁移角色规则；存储字段由 A 规划，T 只投影读取；不重复在账户模块维护默认规则。 |
 | <a id="sim-026"></a>SIM-026 | 默认 SMS 选择、simId 与回退 | MultiSimController::Get/SetDefaultSmsSlotId/GetDefaultSmsSimId | [E25](#e25)、[E55](#e55) | A | 应用/领域 | `A/roles` | 同一 RolePolicy 维护类型差异，不强行统一默认 Voice/SMS 的边界值。 |
-| <a id="sim-027"></a>SIM-027 | 默认 Data、参数缓存与广播 | MultiSimController::SetDefaultCellularDataSlotId/SaveDefaultCellularDataSlotIdInfo | [E26](#e26) | A | 应用/领域 | `A/roles + I/parameter` | 迁移唯一 writer；保留参数键、last 值与事件，不改用数据库布尔字段作运行真值。 |
-| <a id="sim-028"></a>SIM-028 | 主卡意图、策略、保存/回滚与重试 | MultiSimController::SetPrimarySlotId/SavePrimarySlotIdInfo/CheckIfNeedSwitchMainSlotId | [E27](#e27)、[E29](#e29) | A 决策及主编排 | 领域/应用 | `A/primary + A/application/primary_switch` | 拆分策略、持久投影与执行；保留主卡成功/保存路径的默认 Data 联动与 EXT 分支。 |
+| <a id="sim-027"></a>SIM-027 | 默认 Data、参数缓存与广播 | MultiSimController::SetDefaultCellularDataSlotId/SaveDefaultCellularDataSlotIdInfo | [E26](#e26) | A | 应用/领域 | `A/roles + I/parameter` | 迁移唯一 writer；保留参数键、last 值与事件，不改用数据库布尔字段作运行真值。 [逐键写点与退出](#sc03-ledger) |
+| <a id="sim-028"></a>SIM-028 | 主卡意图、策略、保存/回滚与重试 | MultiSimController::SetPrimarySlotId/SavePrimarySlotIdInfo/CheckIfNeedSwitchMainSlotId | [E27](#e27)、[E29](#e29) | A 决策及主编排 | 领域/应用 | `A/primary + A/application/primary_switch` | 拆分策略、持久投影与执行；保留主卡成功/保存路径的默认 Data 联动与 EXT 分支。 [逐键写点与退出](#sc03-ledger) |
 | <a id="sim-029"></a>SIM-029 | RadioProtocol/Modem 观察、三阶段切换 | RadioProtocolController::Get/SetRadioProtocol/Process*Communication | [E28](#e28)、[E29](#e29)、[E62](#e62) | A 主编排；R 执行 | 领域/应用/适配 | `A/resources + A/application/radio_switch + R/radio_executor` | 拆分期望分配与设备观察；保留已有 session 检查，绝不由角色设置推断驻网或数据成功。 |
 | <a id="sim-030"></a>SIM-030 | DSDS、M0/M2 互换、特殊槽路由 | MultiSimController/MultiSimHelper；SimManager::SetDsdsMode/SwapM0M2SimCards | [E28](#e28)、[E77](#e77) | T/A 各自事实用例 | 应用/领域/适配 | `T/routing + A/resources + T/application/remap` | 保留产品 EXT/VSIM 门禁；特殊槽含义只在边界解释，不固化为通用硬件模型。 |
-| <a id="sim-031"></a>SIM-031 | SIM 标签、Profile/在位展示资料及映射开始的状态处理 | MultiSimController::SetSimLabelIndex/InsertEsimData/UpdateSimPresent/IsEsim；SimManager/StateManager::NotifySimSlotsMapping | [E19](#e19)、[E21](#e21)、[E77](#e77)、[E81](#e81)、[E82](#e82) | T 资料/标志与主编排；R 状态；C 输出 | 应用/领域/运行支撑/接口适配 | `T/binding + T/account_profile + T/application/remap + R/state + C/output` | 拆为 SIM-031.a～c（5.1.1）；映射开始需人工缺失处理及旧清理条件，不能当成已完成重映射或物理拔卡证明。 |
+| <a id="sim-031"></a>SIM-031 | SIM 标签、Profile/在位展示资料及映射开始的状态处理 | MultiSimController::SetSimLabelIndex/InsertEsimData/UpdateSimPresent/IsEsim；SimManager/StateManager::NotifySimSlotsMapping | [E19](#e19)、[E21](#e21)、[E77](#e77)、[E81](#e81)、[E82](#e82) | T 资料/标志与主编排；R 状态；C 输出 | 应用/领域/运行支撑/接口适配 | `T/binding + T/account_profile + T/application/remap + R/state + C/output` | 拆为 SIM-031.a～c（5.1.1）；映射开始需人工缺失处理及旧清理条件，不能当成已完成重映射或物理拔卡证明。 [逐键写点与退出](#sc03-ledger) |
 | <a id="sim-032"></a>SIM-032 | 卡状态/Records/账户等内部订阅和注销 | SimManager::RegisterCoreNotify；File/Handle/Monitor Observer | [E06](#e06)、[E12](#e12)、[E30](#e30)、[E61](#e61) | R/T/A及发起用例各自消费 | 应用/适配 | `I/events + R/observation` | 保留 RadioEvent 编号、订阅条件和既有首帧；领域事件另行建目录，不替换旧机制。 |
 | <a id="sim-033"></a>SIM-033 | 账户回调、token、死亡清理与 Registry 更新 | MultiSimMonitor::Register/UnregisterSimAccountCallback/NotifySimAccountChanged；DeathRecipient | [E32](#e32) | C | 接口适配/生命周期 | `C/output/account_callbacks` | 保留调用次数与通知路径，不从新快照去重；回调锁外执行、死亡后注销按旧契约。 |
 | <a id="sim-034"></a>SIM-034 | DataShare/CES/Registry 就绪、服务重连与重查 | MultiSimMonitor::InitListener/SubscribeDataShareReady/OnDataShareReady；SimStateTracker | [E30](#e30)、[E37](#e37)、[E56](#e56) | 横切恢复 | 应用/技术 | `I/service_watch + T/reconcile` | 拆分服务可用性与业务事实；重试读取不等同卡重新插入。 |
@@ -447,22 +447,22 @@ R 内 `ResourceArbiter/ResourceBarrier` 维护真实共享域的独占资格；O
 | <a id="sim-038"></a>SIM-038 | USIM PBR/ANR/IAP 多文件电话簿合并 | UsimDiallingNumbersService | [E42](#e42) | R | 运行支撑 | `R/phonebook/usim` | 保留多阶段关联与合并顺序；新加载代次同时覆盖辅助请求。 |
 | <a id="sim-039"></a>SIM-039 | STK Envelope/Terminal Response/Call Setup | StkManager/StkController | [E43](#e43) | R | 应用/运行支撑 | `R/stk` | 保留命令格式与 EXT 特殊分支；STK 会话不以账户事务替换。 |
 | <a id="sim-040"></a>SIM-040 | STK 主动命令、会话结束、卡变化事件 | StkController::ProcessEvent/OnSendRilSessionEnd/OnIccStateChanged | [E44](#e44) | R；C 输出 | 运行支撑/接口适配 | `R/stk + C/output/stk` | 转为专用输出适配；保留 action、权限、卡状态载荷和首帧/重复语义。 |
-| <a id="sim-041"></a>SIM-041 | 运营商配置读取/更新/缓存及 IMS 能力输入 | SimAccountManager；OperatorConfigCache | [E34](#e34)、[E35](#e35)、[E72](#e72) | R | 应用/运行支撑 | `R/carrier/config` | 按真实职责迁移；不因 AccountManager 名称归到 T 账户领域。 |
-| <a id="sim-042"></a>SIM-042 | OpKey 匹配、规则加载、海外运营商识别 | SimStateTracker、OperatorConfigLoader、OperatorMatchingRule、OperatorFileParser | [E36](#e36)、[E37](#e37) | R | 规则/运行支撑 | `R/carrier/matching` | 合并规则维护入口；文件/提供方访问为适配，匹配规则保持。 |
+| <a id="sim-041"></a>SIM-041 | 运营商配置读取/更新/缓存及 IMS 能力输入 | SimAccountManager；OperatorConfigCache | [E34](#e34)、[E35](#e35)、[E72](#e72) | R | 应用/运行支撑 | `R/carrier/config` | 按真实职责迁移；不因 AccountManager 名称归到 T 账户领域。 [逐键写点与退出](#sc03-ledger) |
+| <a id="sim-042"></a>SIM-042 | OpKey 匹配、规则加载、海外运营商识别 | SimStateTracker、OperatorConfigLoader、OperatorMatchingRule、OperatorFileParser | [E36](#e36)、[E37](#e37) | R | 规则/运行支撑 | `R/carrier/matching` | 合并规则维护入口；文件/提供方访问为适配，匹配规则保持。 [逐键写点与退出](#sc03-ledger) |
 | <a id="sim-043"></a>SIM-043 | 运营商权限、卡内规则与证书判断 | IccOperatorPrivilegeController/Rule | [E38](#e38) | R；C 权限桥 | 规则/技术适配 | `R/operator_privilege` | 保留调用者权限判断位置和安全上下文；规则读取共用会话通道而非复制。 |
 | <a id="sim-044"></a>SIM-044 | APN 配置初始化通知与失败重试 | OperatorConfigCache::notifyInitApnConfigs；PdpProfileRdbHelper | [E39](#e39)、[E72](#e72) | R 发起协作 | 应用/技术 | `R/carrier + I/datashare_apn` | 转为适配；既有 URI/BatchInsert 语义保留，数据连接与 APN 提供方留外部。 |
-| <a id="sim-045"></a>SIM-045 | IMS 开关持久化、芯片能力输入 | MultiSimController::SaveImsSwitch/QueryImsSwitch；SimAccountManager::UpdateImsCapFromChip | [E34](#e34)、[E55](#e55) | T 属性；R 配置 | 应用/适配 | `T/account_profile + R/carrier` | 拆分存储偏好和配置观察；IMS 注册和通话事实不迁入。 |
+| <a id="sim-045"></a>SIM-045 | IMS 开关持久化、芯片能力输入 | MultiSimController::SaveImsSwitch/QueryImsSwitch；SimAccountManager::UpdateImsCapFromChip | [E34](#e34)、[E55](#e55) | T 属性；R 配置 | 应用/适配 | `T/account_profile + R/carrier` | 拆分存储偏好和配置观察；IMS 注册和通话事实不迁入。 [逐键写点与退出](#sc03-ledger) |
 | <a id="sim-046"></a>SIM-046 | eSIM 下载/OSU 等既有服务任务入口 | NAPI/ANI→EsimServiceClient→IEsimService listener | [E53](#e53)、[E54](#e54) | 外围既有 eSIM 服务 | 接口适配 | `原 Framework/66250；I/esim_service 协作` | 保留服务身份/任务入口；Core 不复制远端主流程。实现与唯一编排验证缺口见 Q-03。 |
 | <a id="sim-047"></a>SIM-047 | eUICC EID/库存/能力/Port/合约查询 | EsimManager→EsimFile；GetEuiccInfo2/GetEsimPortIndex/GetContractInfo | [E45](#e45)、[E71](#e71) | R | 应用/运行支撑 | `R/euicc/query` | 保留普通/低优先级执行对象；不将缓存 PortIndex 直接推导持久账户绑定。 |
 | <a id="sim-048"></a>SIM-048 | eUICC 通道、APDU 分片、关闭和同 AID 复用 | EsimFile::ObtainChannelSuccessExclusive/SendApduData/SyncCloseChannel | [E46](#e46)、[E62](#e62) | R | 运行支撑/技术 | `R/euicc/channel` | 迁移资源租约/串行规则；两个 EsimFile 仍需共享设备级互斥，不能只按对象锁隔离。 |
 | <a id="sim-049"></a>SIM-049 | eUICC 卡侧认证与下载准备 | EsimManager/EsimFile::AuthenticateServer/PrepareDownload | [E47](#e47) | R；O 本地步骤 | 应用/运行支撑 | `R/euicc/provisioning` | 保留编码、错误与设备能力输入；SM-DP+ 网络与远端任务不迁入。 |
 | <a id="sim-050"></a>SIM-050 | BPP 解码、分片装载与安装结果 | EsimFile::ProcessLoadBoundProfilePackage/RealProcessLoadBoundProfilePackageDone | [E48](#e48) | R | 运行支撑 | `R/euicc/provisioning` | 保留卡安装原语；传输成功、卡返回、Profile 可用分开。 |
-| <a id="sim-051"></a>SIM-051 | 卡侧 Profile 禁用/删除/切换/改名 | EsimManager/EsimFile::DisableProfile/DeleteProfile/SwitchToProfile/SetProfileNickname | [E49](#e49)、[E50](#e50) | 具名本地短请求；R 执行；T 接受绑定 | 应用/领域/运行支撑 | `application/card_access + R/euicc/profile` | 拆分本地步骤与事实接纳；保留外层 int 与 enumResult 双结果、偏好参数和既有服务回调。 |
+| <a id="sim-051"></a>SIM-051 | 卡侧 Profile 禁用/删除/切换/改名 | EsimManager/EsimFile::DisableProfile/DeleteProfile/SwitchToProfile/SetProfileNickname | [E49](#e49)、[E50](#e50) | 具名本地短请求；R 执行；T 接受绑定 | 应用/领域/运行支撑 | `application/card_access + R/euicc/profile` | 拆分本地步骤与事实接纳；保留外层 int 与 enumResult 双结果、偏好参数和既有服务回调。 [逐键写点与退出](#sc03-ledger) |
 | <a id="sim-052"></a>SIM-052 | eUICC 通知清单/读取/取回/移除 | EsimManager 低优先级组→EsimFile::*Notifications | [E45](#e45)、[E51](#e51) | R | 运行支撑 | `R/euicc/notifications` | 保留卡通知序号和错误；不混作内部领域事件或普通 CES。 |
 | <a id="sim-053"></a>SIM-053 | SM-DP/SM-DS 地址、会话取消、卡内 ResetMemory | EsimManager/EsimFile；CancelSession/ResetMemory/SetDefaultSmdpAddress | [E45](#e45)、[E46](#e46)、[E54](#e54) | 具名本地短请求；R | 应用/运行支撑 | `application/card_access + R/euicc/admin` | 保留业务命令；CancelSession 原语与取消本地等待严格区分；不联动 Core FactoryReset。 |
 | <a id="sim-054"></a>SIM-054 | CA 验证、Profile 数量与 Profile 事件 | EsimController；EsimManager::PublishEsimProfileChange；TelProfileUtil；StartOsuResultCallback | [E52](#e52)、[E76](#e76) | R；C 输出 | 运行支撑/适配 | `R/euicc/ca + C/output/esim` | 保留 CA 结果/偏好与事件；空 OnStartOsu 回调不充当 OSU 编排完成证据。 |
 | <a id="sim-055"></a>SIM-055 | 账户 DataShare CRUD、连接/游标关闭、错误 | SimRdbHelper/TelephonyDataHelper；Insert/Query/Update/Delete | [E55](#e55)、[E56](#e56) | T/A 规划；I 执行 | 技术适配 | `I/store` | 转为各 Owner 的存储端口实现；无新 schema/直写连接/跨系统事务。 |
-| <a id="sim-056"></a>SIM-056 | 卡文件探测结果存取与账户缓存刷新 | CardFileDetectManager::SaveCardFileDetectData/GetAllSimCardInfo | [E57](#e57)、[E04](#e04) | T 接受资料；R 产出 | 应用/技术 | `T/card_metadata + I/store` | 拆分探测事实与存取；现有装配 weak_ptr 时点风险 R-05 另测，不在本次悄然修复。 |
+| <a id="sim-056"></a>SIM-056 | 卡文件探测结果存取与账户缓存刷新 | CardFileDetectManager::SaveCardFileDetectData/GetAllSimCardInfo | [E57](#e57)、[E04](#e04) | T 接受资料；R 产出 | 应用/技术 | `T/card_metadata + I/store` | 拆分探测事实与存取；现有装配 weak_ptr 时点风险 R-05 另测，不在本次悄然修复。 [逐键写点与退出](#sc03-ledger) |
 | <a id="sim-057"></a>SIM-057 | EXT/VSIM/分布式/卫星策略与执行钩子 | TelephonyExtWrapper；MultiSimHelper；各 Manager Hook | [E27](#e27)、[E43](#e43)、[E67](#e67)、[E77](#e77) | 所属业务上下文 | 技术适配 | `I/vendor + H 外围模块` | 转为私有端口适配现有函数指针；不改厂商ABI，不吞默认/失败分支。SIM-OC-003/004/012～016按当前符号与Feature核对；PIN记忆随R安全/状态，拓扑结果分别归T/A/R，旁路准入另证。 |
 | <a id="sim-058"></a>SIM-058 | serial/事件/同步等待/超时/进度关联 | TelRilBase requestMap；SimStateHandle/Manager；RadioProtocolController | [E08](#e08)、[E09](#e09)、[E29](#e29)、[E62](#e62) | 用例请求机制；R 传输关联 | 应用/运行支撑 | `application/orchestration + R/request_bridge` | 合并业务完成门控，保留 RIL serial 与协议 session；不以全局 revision 拒绝合法新会话。 |
 | <a id="sim-059"></a>SIM-059 | 共宿主 Hub、直接调用及源代码反向依赖 | CoreManagerInner；SIM 对门面反查；CoreServiceCommonEventHub | [E02](#e02)、[E61](#e61) | H；C 委托 | 组合根/接口适配 | `H + C/direct + 私有 HostPorts` | 保留外部签名与调用语义；消除SIM→Core具体实现链接，将非SIM端口由宿主实现并注入。SIM-OC-002/005/006/010/011保持原CMI/API定义、注入对象和控制块，注册/注销实际效果单独验收。 |
@@ -489,7 +489,7 @@ R 内 `ResourceArbiter/ResourceBarrier` 维护真实共享域的独占资格；O
 
 | 关联功能 | 当前维护位置/对象 | 目标唯一写者与只读副本 | 切换、失效及兼容要求 |
 |---|---|---|---|
-| SIM-004、022、031 | slot 参数、各 Manager vector、标签/映射标志 | T 管配置/已接受绑定；R 管实例清单，C 生成旧容量结果 | G2 原样装配；G3 每条绑定一次切写；标签不作身份，参数静态缓存必须在启动测试前固定 |
+| SIM-004、022、031 | slot 参数、各 Manager vector、标签/映射标志 | H 提供静态允许目录，R 提供原始实例与协议路由，T 管已接纳的运行清单和绑定，C 生成旧容量结果 | G2 原样装配；G3 每条绑定一次切写；标签不作身份，参数静态缓存必须在启动测试前固定 |
 | SIM-005～009、015 | Handle 状态/ICCID/锁因、Manager 和 File 回写 | R 维护原始卡事实/会话与状态转换；T 持带来源版本的绑定观察；C 不写第二份 SimState | 单次切换状态写入口；文件完成通过 R 接收器回写，禁止 File 与新 T 各自推导公开状态 |
 | SIM-012～019、037～038 | File/Controller、iccFileCache_、EF 内容/计数/电话簿缓存 | R 的 application/records/phonebook；LoadSession 保护同应用数据 | 换卡/应用切换失效整个旧 session；同卡 Refresh 仅失效受影响 LoadScope，未受影响在途请求仍可完成；失败保留原接口缺省/错误规则 |
 | SIM-020～023、031、056 | Controller 当前/全量缓存，DataShare sim 记录，卡探测资料 | T 账户资料/绑定写者；I 是执行者；A 规划并接受其角色字段；T 中角色值仅为有版本的只读投影 | 写权与全部入口同时切换，见 5.2.1；异步读回写、初始化、重试、旧激活也必须委托。DB 重载不能整体覆盖其他 Owner 新状态 |
@@ -504,19 +504,48 @@ R 内 `ResourceArbiter/ResourceBarrier` 维护真实共享域的独占资格；O
 
 2026-11-02职责口径复核：本节保留功能/WU编号及迁移闭包，不另立业务架构。以[目标主设计§4.2/§22](../SIM_Target_Architecture_Design_v1.2.md)及[源码详细设计](../SIM_Multisim_Source_Architecture_Detailed_Design.md)约束Owner与当前修订B+路径；O仅是各用例使用的关联/等待机制。表内目标入口名是设计草图，不表示当前骨架已有同名生产实现；固定目标、迟到拒绝等行为增强仍需独立验收。
 
-切换单元是下面的 WU 写权，功能编号是业务交付视角。`LegacyMutationBridge` 放在 application 私有集成层，将尚未迁移的 Controller/Monitor 调用接入 Owner，不复制策略、不直接持有可写缓存。G3a 接管 T 时即安装 A 的旧实现适配写入口：A 的规则仍可执行原算法，但角色字段写入只有一个入口；G3c 替换策略和编排，不再次产生新 writer。直接字段访问须在切换提交中收口，不能约定以后再删。
+切换单元是下面的 WU 写权，功能编号是业务交付视角。尚未迁移的 Controller/Monitor 在原写入节点委托所属 Owner 的私有入站契约。C 保持兼容交付，各业务适配随 Owner 归位，不设统一写桥。G3a 接管 T 时即安装 A 的旧实现适配写入口：A 的规则仍可执行原算法，但角色字段写入只有一个入口；G3c 替换策略和编排，不再次产生新 writer。直接字段访问须在切换提交中收口，不能约定以后再删。
 
 | 写权单元/功能 | 状态及本仓旧写入口清单 | 新入口与过渡委托 | 切换/删除条件 |
 |---|---|---|---|
 | WU-01；SIM-020～022、034～035、056 | 当前/全量账户容器；GetListFromDataBase/GetAllListFromDataBase、SortCache/SortAllCache；初始化、Monitor RefreshData/UpdateAllSimData、Controller 重查事件、卡探测触发这些入口 [E85](#e85) | T::AcceptAccountSnapshot；A::AcceptRoleSnapshot 接收同一读取中角色片段；应用生成旧布局只读投影 | 全量重载不再直接赋值旧容器；排序/空槽缺省仍按旧规则；旧调用者统一委托后删除旧缓存写权 |
 | WU-02；SIM-020、024、031 | isActive 账户字段；SimDataBuilder/InitActive、UpdataCacheSetActiveState、SetActiveCommonSim、SetActiveSimSatellite、UpdateDBActiveByIccId、ForgetAllData 的 DB 分支及重载 [E83](#e83)、[E86](#e86)、[E55](#e55) | T::ApplyLegacyActiveStep 分别接受“缓存可见”“持久化结果”；原激活/R执行路径先保留，所有缓存/DB 写请求委托 T | G3a 必须接管仍留在 G3c 的激活写入口；force 分支不新增 DB/缓存写；设备/缓存/存储三者不合为一个 active |
 | WU-03；SIM-020、025～028 | Voice/SMS 角色字段、default*SimId；SetDefaultVoiceSlotId/SetDefaultSmsSlotId、SimDataBuilder/UpdateDataByIccId 的初始角色字段，以及数据库重载 [E24](#e24)、[E25](#e25)、[E84](#e84) | A::ApplyLegacyRoleStep/BuildInitialRoleFields；T 只接收 A 发出的版本化角色投影；I 执行既有字段写 | 建行不能绕过 A 规则；旧默认设置、重载都改委托；投影在原通知节点前可见后，删旧字段赋值与第二份默认规则 |
-| WU-04；SIM-027～030 | Primary/Data 参数与 last 缓存、primarySimId_/defaultCellularSimId_；InitMainCardSlotId、SavePrimaryCardInfo/ResumePrimaryCardInfo、SavePrimarySlotIdInfo、SaveDefaultCellularDataSlotIdInfo、SendMainCardBroadCast/SendDefaultCellularDataBroadCast | A 管旧可见角色投影和已核实资源观察的分离字段；I 参数适配；A用例使用O机制关联并接纳原步骤结果 | G3c 接管全部保存/恢复/初始化/通知去重值写入；保留失败路径 lastPrimary 恢复及 Primary→Data 偏序，不把参数成功当硬件成功 |
-| WU-05；SIM-023、031、045、056 | 名称/号码/标签/运营商资料/IMS/探测资料；SetShowName、SetShowNumberToDB（含 GetShowNumber/GetSimTelephoneNumber 异步及 InitShowNumber）、SetSimLabelIndexByIccId、InsertEsimData、UpdateSimPresent/ClearSimLabel/UpdateEsimOpName、SaveImsSwitch、CardFileDetectManager、OperatorConfigLoader::InsertOpkeyToSimDb（OPKEY/MCC/MNC/IMSI）及重载 | T 对应属性入口；R 的 MSISDN 与配置观察另有写权；旧调用者只提交属性补丁及固定目标 | 资料补丁不可覆盖角色；异步任务固定原目标，旧 task 返回不重解析为新卡；切换后旧容器不再被这些调用直接修改 |
+| WU-04；SIM-020、024、027～030、051 | CoreServiceSim 的 SetPrimarySlotId、SetActiveSim 和 EsimManager::SwitchToProfile 同写偏好。入站与原节点见[键台账](#sc03-ledger)。另含 Primary/Data 参数与 last 缓存、primarySimId_/defaultCellularSimId_；InitMainCardSlotId、SavePrimaryCardInfo/ResumePrimaryCardInfo、SavePrimarySlotIdInfo、SaveDefaultCellularDataSlotIdInfo、SendMainCardBroadCast/SendDefaultCellularDataBroadCast | A 管旧可见角色投影和已核实资源观察的分离字段；I 参数适配；A用例使用O机制关联并接纳原步骤结果 | G3a 接管建行/重载中的角色列片段，G3c 接管参数保存、偏好、恢复、初始化投影和通知去重；保留失败路径 lastPrimary 恢复及 Primary→Data 偏序，不把参数成功当硬件成功 |
+| WU-05；SIM-020、023、031、041～042、045、051、056 | EsimFile/EsimManager::DisableProfile 的两个槽位恢复键、一个无后缀兼容输出及其读者见[键台账](#sc03-ledger)。 名称/号码/标签/运营商资料/IMS/探测资料；SetShowName、SetShowNumberToDB（含 GetShowNumber/GetSimTelephoneNumber 异步及 InitShowNumber）、SetSimLabelIndexByIccId、InsertEsimData、UpdateSimPresent/ClearSimLabel/UpdateEsimOpName、SaveImsSwitch、CardFileDetectManager、OperatorConfigLoader::InsertOpkeyToSimDb（OPKEY/MCC/MNC/IMSI）及重载 | T 对应属性入口；R 的 MSISDN 与配置观察另有写权；旧调用者只提交属性补丁及固定目标 | 资料补丁不可覆盖角色；异步任务固定原目标，旧 task 返回不重解析为新卡；切换后旧容器不再被这些调用直接修改 |
 | WU-06；SIM-005～019、031.c、032、037～038、058 | 卡状态/ICCID/锁因/loaded、应用/EF/电话簿；Handle 设备及 SetIccCardState 输入、Manager/文件回写、Refresh/ClearData/解析完成 | R::AcceptCardInput/AcceptFileResult；T 只持引用来源的绑定；MappingTransition 为显式软件原因 | G3b 一次接管该状态的设备/软件/文件写入口；验收局部刷新及重复 ABSENT 后再删除直接回写 |
 | WU-07；SIM-024、028～030、058 | 操作进度、重试、同步等待与协议 session | T/A对应应用用例拥有业务步骤、进行中事实和唯一业务重试；O仅提供请求机制；R保留底层serial/session及真实资源，旧Controller恢复事件委托对应Owner | 新操作启用前关闭同用例旧重试发命令分支；只允许一个执行方，等待结束不清资源屏障 |
 | WU-08；SIM-047～054 | eUICC 通道、Profile 缓存、普通/低优先级对象及关闭结果 | R卡能力持eUICC协议/缓存，Device持真实资源资格；具名卡请求用O机制关联本地步骤，T接纳绑定，A接纳偏好，不以库存代替绑定 | G3d 同时接入两组对象及已有清理路径；必须完成资源判据与 Q-03/Q-05，再删除对象各自“设备独占”的假设 |
 | WU-09；SIM-032～035、059 | 对外账户回调登记/死亡清理、平台订阅、loaded 标志与重试计数 | C 回调生命周期；I 平台 token；T 账户加载状态；R 卡状态 | 注销、排队事件及重连恢复均有唯一维护者；旧 Monitor 未迁编排通过入口消费，不持第二份可写标志 |
+
+<a id="sc03-ledger"></a>
+
+**SC-03 字段级写权迁移台账。** 保存此表的唯一位置为 D。 下表按 `bd4fbe833` 的生产源表和调用体反查。每行是一个键或一组同 Owner、同写入语句的具名列；相邻行共享的列按同一行身份与列准入。DB 列名对照仓内固定 Host Provider 头，正式产品 schema、触发器及域外 writer 仍须在对应产品复核。对整表更新或默认角色跨行改选，资格须覆盖全部受影响行/角色。原方法保留兼容入口，退出的是直接写入能力。
+
+为便于从字段查到文件，表内 Core、Manager、File、Controller、Helper、Rdb 分别指 [CoreServiceSim](../../services/core/src/core_service_sim.cpp)、[EsimManager](../../services/sim/src/esim_manager.cpp)、[EsimFile](../../services/sim/src/esim_file.cpp)、[MultiSimController](../../services/sim/src/multi_sim_controller.cpp)、[MultiSimHelper](../../services/sim/src/multi_sim_helper.cpp)、[SimRdbHelper](../../services/sim/src/sim_rdb_helper.cpp)。其他证据有[运营商 Loader](../../services/sim/src/operator_config_loader.cpp)、[配置缓存](../../services/sim/src/operator_config_cache.cpp)、[卡文件探测](../../services/sim/src/card_file_detect_manager.cpp)、[Host 列定义](../../services/multisim/test/framework/internal/host/primary/provider/include/sim_data.h)及[Provider URI](../../services/sim/include/sim_rdb_info.h)。
+
+| 实际存储 Key / DB 字段 | 旧写入入口 | 业务触发场景 | 原返回、通知和副作用 | 唯一新 Owner | 写权准入 | 首次迁移阶段 / WU、SIM | 旧入口退出条件 | 验收证据 |
+|---|---|---|---|---|---|---|---|---|
+| `persist.telephony.userPreferPrimarySlot` | Core::SetPrimarySlotId | 设置主卡，经权限、Manager、槽能力、在卡及 active 检查，调用 Manager 前 | 前检失败零写；偏好写返回不替代 Manager 结果；保留下游失败时已写的前缀 | A | 同键与 C1 相交，父调用复用已持资格 | G3c / 04，028 | Core 原 SetParameter 改为一次 A 委托，与下两行同时切换 | 源码按常量和字面量扫描；Host 前检、下游失败及写次数；产品参数服务 |
+| 同一 `persist.telephony.userPreferPrimarySlot` | Core::SetActiveSim | 检查系统应用、权限、Manager、槽能力后，普通激活前写 true，卫星入口另核 | 保留激活的原返回和通知，不能附加主卡入口的在卡/active 前检 | A | 仅偏好与 C1 相交，T 的激活资格独立 | G3c / 04，024；G3a 只先接 T 的 active 列 | Core 偏好写改委托，T/R 不再代写。保留激活执行一次 | Host 原检查顺序、同键冲突、激活失败 |
+| 同一 `persist.telephony.userPreferPrimarySlot` | Manager::SwitchToProfile；Target 的 AcceptEntryPrimaryPreference、AcceptLocalProfilePreference、StartPrimarySwitch | 有效 File 返回后写 true，包括卡枚举失败。Target 的各原节点另比次数 | 无效 File 早退零写。有效时 enumResult 保留卡结果，内层失败仍提示，外层返回 SUCCESS。提示不产生主卡成功通知 | A | 独立 LocalCard 提示登记同键，不借 C1 资格；父用例只复用自身预留 | G3c / 04，051 | 同时撤 Core 两个旧写点及 Manager 直接写。Target 适配按原节点计数，不替每次自动切换新增偏好写 | C1×Profile、返回双层及成功/失败次数；产品含 66250/厂商写者扫描 |
+| `persist.telephony.MainSlotId` | Controller::SavePrimaryCardInfo、ResumePrimaryCardInfo、SavePrimarySlotIdInfo | 主卡保存、失败恢复；初始化/重试/专用 RIL 成功可进入保存分支 | lastPrimarySlotId 与键逐步可见。C0 保存、B 后写、C1 预写/条件恢复。InitMainCardSlotId 仅读键恢复内存 | A | 所属请求的 Primary 写集，含对应输出 | G3c / 04、07，028～030 | 原保存、补偿及定时再入都委托，已发请求归原执行方 | 双卡差分、空旧值、部分写及重启读回 |
+| `persist.telephony.MainCard.Iccid` | Controller::SavePrimaryCardInfo、ResumePrimaryCardInfo | 前者在有效槽及非空卡号时写散列；后者按旧主槽有效性恢复原值 | 与上一键无原子提交保证。已返回写失败按原分支，结束未明确则保留核对责任 | A | 与主槽共享父资格，单列本键效果收据 | G3c / 04，028 | 保存及恢复无旧直接写；未知前缀仍有 Owner | C0 两种未定前态与重复 Stop；产品可达读回或常驻接手 |
+| `persist.telephony.MainCellularDataSlotId` | Controller::SetDefaultCellularDataSlotId → SaveDefaultCellularDataSlotIdInfo | 独立选择默认 Data，或在对应 Primary 节点联动 | 写键→lastCellularDataSlotId→原条件广播，保留行为事件及原成功返回。InitMainCardSlotId 为读 | A | Data 与 Primary 联动相交，独立 Voice/SMS 另行准入 | G3c / 04，027～028 | 独立 Data、联动、恢复投影与通知去重均收口 | 独立设置后查询、主卡广播先于联动、重复通知及写失败 |
+| `persist.telephony.last_deactive_profile_slot0` | File::DisableProfile；Controller::GetSimLabelIdxFromAllLocalCache 为读者 | 仅 slot0，卡命令前取当时 simId 并提示标签恢复 | 早于开通道，卡失败仍可能已有提示，写结果不改卡枚举 | T | 槽 0 的标签恢复键 | G3a / 05，031、051 | File 改为原节点委托 T，核对成功/失败各一次 | 比对失败前缀、历史标签读回及实际平台键 |
+| `persist.telephony.last_deactive_profile_slot1` | File::DisableProfile；Controller::GetSimLabelIdxFromAllLocalCache 为读者 | 仅 slot1，在卡命令前取当时 simId | 同上，其他槽不自行拼后缀 | T | 槽 1 独立键，不与槽 0 合并 | G3a / 05，031、051 | 两个现有槽键分别核销 | 双槽交错、第三槽零后缀写 |
+| `persist.telephony.last_deactive_profile` | Manager::DisableProfile | 有效 File 返回后重新取 simId，写无后缀键 | 无效入口早退；有效时保留 enumResult 和外层 SUCCESS，不能合并到调用前的槽键 | 具名 DisableProfile 用例持唯一输出责任 | 此键独立准入，C 唯一交付，I 落键，T 提供当时 simId。外部业务语义 OPEN | G3a / 05，051 | Manager 直接写改为一次旧输出交付，域外读写者另验，保留该键 | 卡失败仍核对两次取值时点、写顺序；域外消费者 OPEN |
+| `sim_info.is_voice_card`、`is_message_card`；`is_main_card`、`is_cellular_data_card` | Controller/Helper::SimDataBuilder、Controller::UpdateDataByIccId、Helper::BuildSimPresentValues；Controller 默认 Voice/SMS setter → Rdb::SetDefaultVoiceCard/SetDefaultMessageCard | 发现建行、占位、单槽恢复及显式改选。默认 URI sim_info/set_card 提交 sim_id、card_type | 建行沿用一次原 Insert/Update。默认角色路径保留 Provider 结果、跨行缓存更新、去重与广播错误。后两列的建行初值与运行时 Primary/Data 参数分开 | A | 每类全局角色独立资格；T 联合建行只消费 A 片段 | G3a / 03、04，020、025～028 | 建行、占位、重载及两个 setter 均委托。核实 Rdb 的 Main/Data 辅助方法有无产品调用 | Host 单卡/双卡初值与重载、默认路由；产品 set_card 的内部写域 |
+| `sim_info.slot_index,icc_id,card_id,is_esim,sim_label_index,is_active` | Controller::InitIccId/InsertData/UpdateDataByIccId/InsertEsimData、SimDataBuilder、UpdateSimPresent、InitActive/UpdateDBSetActiveResult/SetActiveSimSatellite/UpdateDBActiveByIccId、SetSimLabelIndexByIccId，Rdb::ForgetAllData/ClearSimLabel 及探测 | 发现/插拔、占位、普通/卫星激活、CMI 直接改 active、清标签。非 eSIM 清标签可同时写 active | 保留行匹配、空槽缺省、条件字段、原缓存/DB/设备分步结果、force 与 vSIM 分支。非 active 更新不得覆盖 active | T | 按行/列。多行更新覆盖所有受影响行，建行角色先取 A 的片段 | G3a / 01、02、05，020～024、031、056 | 初始化/拔卡/探测/直接 InnerKit 写均委托；Monitor 重读按版本更新投影，不重写参数 | 判定每分支实际列、同槽换卡、数据库失败、稀疏 simId 及 Provider |
+| `sim_info.phone_number` | Controller::SetShowNumber、SetShowNumberToDB、InitShowNumber、GetShowNumber、GetSimTelephoneNumber | 显式写卡后同步 DB、初始化同步，或读到新号码/回退时由 Lifecycle 提交后台写 | 显式 setter 保留卡→库→当前/历史缓存→适用通知。读不等待回写，不补发 setter 成功通知。卡写成功后 DB 仍可能失败 | T | 原行号码字段，卡侧 MSISDN 仍归 R | G3a / 05，023.b/c。目标固定差异单验 G3b | 所有任务、初始化与 setter 委托同一字段；旧已入队任务排空或确认接手 | 卡成功/DB 失败、读已返仍有写、换卡、无重复通知 |
+| `sim_info.show_name,operator_name,ims_switch` | Controller::SetShowName、InsertEsimData/UpdateEsimOpName、SaveImsSwitch | 改名、eSIM 建行/运营商名更新、按 ICCID 保存 IMS 偏好 | 名称保留 DB 后缓存/通知；运营商名保留重读；IMS 保留原返回与查询读源；无整行覆盖 | T | 按原目标与列独立接受，保持原 simId/ICCID 选择器 | G3a / 05，023、031、045 | 三类原写改委托，重载不得用旧值覆盖新字段 | 各字段失败回包与无关字段并行；产品 schema |
+| `sim_info.opkey,mcc,mnc,imsi` | OperatorConfigLoader::GetOpKey → InsertOpkeyToSimDb；探测另有 imsi 写点 | 运营商规则匹配后按 ICCID 查询，有行时更新 | 保留空参/空 helper 错误、无行不写、原返回和匹配流程；不新增 Insert | T | 同一账户 imsi 与探测共享资格，其余列各按原计划 | G3a / 05，041～042、056 | 关闭 Loader 直接 DataShare 更新，保留 R 的匹配规则 | Loader 与探测反序、未找到行、外仓 Provider |
+| `sim_info.phy_card,lsi,sim_label_index,is_esim,mnc_len,icc_id,card_id,efust,imsi,gid1,gid2,spn,ehplmn` | CardFileDetectManager::SaveCardFileDetectData → InsertCardFileDetectData/UpdateCardFileDetectData，两者用 BuildDataShareValues | 按探测 ICCID 和已存在记录选择插入或更新，PSIM/eSIM 按各自条件构造字段 | 按 ICCID 判存在，空串/零值按原字段条件省略。成功后在 Controller 存活时触发全量重读，返回原结果 | T | 与建行、标签、Loader 重叠的行/列统一准入 | G3a / 01、05，020、031、056 | 两条直接写均委托，保留一次原插入或更新及后续重读 | 有/无行、失败零重读、插入/更新标签差异及缺省列 |
+| `telephony.sim.opkey` + 原十进制 slotId | OperatorConfigCache 构造、ClearOperatorValue，OperatorConfigLoader::SetMatchResultToSimFileManager | 初始化、缓存复位/清除、运营商匹配更新 | 参数初始化、清除或匹配后还更新原卡侧 OpKey/名称等。该键与账户表 opkey 独立 | R 的运营商配置 | 按槽 OpKey 参数；账户 DB 的 opkey 是另一字段 | G3b 迁卡侧 Hook 时先委托原 writer；G3d / WU-06、SIM-041～042 收齐匹配与缓存清理后首次整键切权 | 缓存初始化/清理与 Loader 必须同时失去独立写权 | 源码拼接键和 Feature 扫描、卡切换与缓存复位、产品属性 |
+
+**反查与退出方法。** 以本节物理键、别名、拼接前缀、SimData 常量及 URI 反查 SetParameter、Put/Insert/Update 和提供方特例，再从物理写点回溯初始化、Monitor、Core/InnerKit、File、生命周期任务、条件编译和厂商回调。建行同时检查生产 Helper 与占位行，单独登记未入根源表的 SIM-062。对每个待启用的产品保留源表/Feature、命中与排除理由、所有在途执行者和重试者；未找到域外 writer 的仓内扫描只能关闭本仓清点。5796fce68 相对文档输入已经为 Core 两入口添加关闭准入，处于关闭期时按其已实现的错误在写偏好前退出。正常路径和 eSIM 写点仍应逐键核销；入口生命周期票并不授予键资格。T1 发现 Host 接通原 Provider 调用不使所有 DB writer 自动退出。
+
+每行执行切换前须有源码反查、Host 原轨迹与必要的产品读写证据。未满足时旧实现继续实际写，新方只作无副作用比较。
 
 **开闭源契约的WU落点补充（2026-11-09静态复核）。** SIM/WU编号及写权不变。SIM-OC-007～009的文件扩展、原IO回退和Opkey偏序归WU-06/R，账户OPKEY等字段仍随WU-05由T接纳；SIM-OC-013的PIN/PUK/改PIN/锁/缺卡Hook随R安全/状态用例，资产留vendor，成功条件、原身份及安全行为按[主设计§17.2](../SIM_Target_Architecture_Design_v1.2.md#172-%E5%8E%82%E5%95%86%E8%B0%83%E7%94%A8%E4%B8%8E%E5%91%BD%E4%BB%A4%E5%85%A5%E5%8F%A3)单列。SIM-OC-014/015的本仓`GetResetActiveFlag→UpdateDBActiveByIccId`写入纳入WU-02，T映射子步骤、A主卡/重试和R路由/结束分别随WU-01/04/07接管；读取vendor结果不证明vendor直接物理写库。源报告的`RetrieveSimActiveState`、双Modem交换及PIN2记忆触点与当前基线不符，未经匹配源码不列为已实现入口。SIM-OC-002/005/006/010/011的对象、订阅、在途注销与排空随WU-09及G2b/c验证；本仓未接共同准入的vendor RIL旁路仍为局部外部缺口，不由WU表宣称已控制。这里只补迁移责任，不记录测试通过或批准新的产品/安全政策。
 
@@ -543,7 +572,7 @@ R 内 `ResourceArbiter/ResourceBarrier` 维护真实共享域的独占资格；O
 | 旧模块/类族 | 新模块与去向 | 关联功能 |
 |---|---|---|
 | SimManager | C 门面 + H 装配 + R 卡查询，T 负责映射 | SIM-001～005、016、022、059 |
-| MultiSimController | T 账户/绑定/资料，A 角色/资源策略，O 激活/Primary/号码修改/重映射，R 承接卡执行，I 存取/Hook | SIM-019～031、045、055、057～058 |
+| MultiSimController | T 账户/绑定/资料，A 角色/资源策略，T 编排激活/号码/重映射，A 编排 Primary，O 提供原请求关联，R 承接卡执行，I 存取/Hook | SIM-019～031、045、055、057～058 |
 | MultiSimMonitor | T 观察/恢复入口，I service watch，C 账户通知/生命周期，R 配置重载 | SIM-020～021、032～035 |
 | SimStateManager/Handle | R 状态/安全/IO，O 每请求门控，C 输出桥 | SIM-005～011、032、058 |
 | FileManager/IccFile/各卡型 File/Controller | R/application、records、io、telephony_records、operator_identity | SIM-012～019 |
@@ -613,21 +642,21 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
   participant C as 旧入口/C
-  participant O as O 激活用例
+  participant T as T 激活用例（使用 O 关联）
   participant R as R 设备执行
-  participant TA as T/A 事实维护
-  C->>O: 原参数 + ResolvedTarget + 原完成计划
-  O->>R: 唯一激活步骤(token/lease)
+  participant A as A 角色准入
+  C->>T: 原参数、目标与原完成计划
+  T->>A: 登记与角色相交的资格
+  T->>R: 唯一激活步骤
   alt 明确设备结果
-    R-->>O: 旧结果 + 原请求关联
-    O->>TA: 核实后接受事实 / 保留旧写入与输出轨迹
-    O-->>C: 原完成出口
+    R-->>T: 原结果和步骤关联
+    T->>T: 按原节点接纳账户事实及输出
+    T-->>C: 原完成出口
   else 超时或连接丢失
-    O->>O: effect=Unknown；等待完成语义按旧契约
-    O->>R: 使用已有状态查询核对
-    R-->>O: 已应用 / 未应用 / 仍未知
-    O->>TA: 只提交已证实事实
-    Note over O,R: 未证实前不重复执行或盲目补偿
+    T->>T: 保存未知效果与原等待结果
+    T->>R: 使用已有状态查询核对
+    R-->>T: 原设备效果及可确认范围
+    Note over T,R: 未证实前不重复发令或盲目补偿
   end
 ```
 
@@ -747,24 +776,34 @@ T/A 各有受控写执行域；R 按卡应用/实际共享设备划分执行与�
 <a id="so-lifecycle"></a>
 ### 7.4 跨 SO 对象、装配与关闭协议
 
+**SC-01 验收。** C0 先完成主槽写，分别令 ICCID 实际写入/未写入，而存储入口均未返回完成证明。保持原出口未交付、角色仍进行中、R 命令数为零。首次 Stop 与重复 Stop 均须非 Drained，核对无重复写、无伪完成、原接收者仍存活。分别恢复证据、拒绝移交、确认有效移交，并使回调在执行中暂停。拒收须继续持有责任。确认移交才可让旧实例退出，接手者必须完成核对并按原契约交付一次。无移交时待原出口实际返回和效果核销后再判 Drained。重复 Stop 不能再调度、再执行或补发通知。[收据契约](../SIM_Multisim_Source_Architecture_Detailed_Design.md#sc01-receipts)
+
 保留 `ISimManager`/`IEsimManager` 公共布局；它们当前无虚析构。现有由具体类型创建的 shared_ptr 控制块并非因此错误；新工厂必须由 SIM 创建并提供匹配销毁方式，不通过接口裸指针 delete。跨 SO shared_ptr/容器仍要求同编译链/标准库/分配器/Feature 宏，发布按同产品全量重建，不宣称跨版本 ABI 稳定。
 
 内部生命周期建议：`Constructed→Starting→Running→Stopping→Draining→Stopped→Destroyed`。Starting 的部分就绪保持旧入口错误与查询行为。工厂返回兼容门面及私有生命周期句柄；Core 创建 HostPorts（RIL、搜网查询、Hub、外围协作），再装配 R 与用例，最后按原时点公开就绪。
 
-G2c 关闭顺序：停止新写请求→标记旧会话失效→注销平台和业务订阅→取消本地等待并隔离晚到回调→按 deadline 排空设备/Hook/队列→关闭通道、游标/helper 等资源→撤除宿主引用→匹配 deleter 销毁。恢复接收器保留旧 token/fence 到资源核对结束，不能先销毁它再要求旧设备结果帮助排空。不能先销毁宿主回调对象再等待 SIM 回调；不能先卸载 SO 再排空持有代码地址的任务。无法证明排空时保留库驻留及所需接收器，报告停止不完整；设备隔离不等于任务代码已排空。当前 CoreService::OnStop 未实现上述组件/SO完整关闭协议，不能将其结果纳入 G2b“机械等价”断言。2026-11-18已单独完成旧SimManager组件自有对象图Stop的Host修复（[执行状态§48](../SIM_Refactor_Execution_State.md)），但Core的OnStop尚未接入该Stop，设备结束及产品/SO卸载也未验收，两者不能合并宣称通过。
+G2c 先封新入口并停止自主重试，撤回会产生新任务的订阅，保留旧调用、已发设备和存储结果的接收路径。按 §7.4 收据分别确认交付、核对、排空或移交，随后才释放相应资源和宿主引用并匹配销毁。恢复接收器保留旧 token/fence 到资源核对结束，不能先销毁它再要求旧设备结果帮助排空。不能先销毁宿主回调对象再等待 SIM 回调；不能先卸载 SO 再排空持有代码地址的任务。无法证明排空时保留库驻留及所需接收器，报告停止不完整；设备隔离不等于任务代码已排空。当前 CoreService::OnStop 未实现上述组件/SO完整关闭协议，不能将其结果纳入 G2b“机械等价”断言。2026-11-18已单独完成旧SimManager组件自有对象图Stop的Host修复（[执行状态§48](../SIM_Refactor_Execution_State.md)），但Core的OnStop尚未接入该Stop，设备结束及产品/SO卸载也未验收，两者不能合并宣称通过。
 
 G2a/G2b 前置条件是创建/销毁配对、HostPorts 寿命覆盖回调、既有对象持有关系可跨 SO 保持，以及库在仍有对象/任务时保持驻留；这不要求新增公开卸载能力。G2b 原样保持生产寿命和关闭行为，仅可在这些前置条件满足后验证链接拆分。G2c 才引入新的受理关闭、取消等待和排空行为，并单独核对原接口关闭期间的错误/回调。若产品要求拆分后立即缩短对象寿命、重启模块或卸载库，G2c 成为该产品交付的前置验收，不能先上线再补。
 
 ### 7.5 新旧实现共存、切换与清理
+
+<a id="sc-acceptance"></a>
+
+| 决策 / 受影响 WU | 同时记录的输入与验收断言 | 旧路径退出或回退 |
+|---|---|---|
+| SC-01 / G2c、WU-04/07 | 执行 §7.4 两种未定前缀。另测 B 超时交付后 R 取得晚证据可复用，A 尚待核对仍有收据 | 旧图若无接手证明则驻留。新图不能绕过旧资格，平台资源仍归 Core。产品按 L3/L4/L5 分验。 |
+| SC-02 / WU-04/07 | 双卡核 C0/B/C1 的六个旧 Oracle。另设四端点两栈：冻结原生栈 0、1，每阶段只向它们发令，端点 2、3 零命令且不参与等待。重复、错轮、错成员及 UPDATE 的旧 NOTIFY 不推进。必需栈缺路由时检查副作用前的既有拒绝/单旧执行路径。 | 原执行器、Controller 定时重试及 CMI 自调用先封新发起，旧轮结果按原出口结算，随后才启新执行器。路由中途变化不得改组或并行发新轮。无多栈/厂商协议证据维持原路径。 |
+| SC-03 / WU-01～05、07 | 对每一台账行反查两端。C1 持偏好资格时触发独立 Profile 内层失败，观察原写节点、外层 SUCCESS、内层枚举、偏好写次数和通知。再交错独立 Data、Voice/SMS。验收只允许同键一位写者，仍应交付的提示不丢，独立字段保持原行为。 | 先封本批旧独立写/发令/重试入口，已排队请求仍有原归属。同一构建按键启唯一委托，观察写次数/序列后退旧分支。已发生外部效果先核对，不能通过回滚代码重放。 |
 
 | 阶段/功能 | 共存方式 | 唯一写者/执行者与切换点 | 清理/回退条件 |
 |---|---|---|---|
 | G1 全部 | 当前生产 + 单独主机测试设施 | 原实现；未迁移 writer | 不引入目标代码来制造测试 PASS |
 | G2a/G2b 全部 | Legacy、原 SO 注入版、Split 独立构建；同边界输入分别执行 | 原 writer/执行方；G2b 只重定位已解耦实现并保持原寿命 | 分别通过行为与符号/Feature/ABI 差分；不加运行期 Flag，不夹带新门控/超时 |
 | G2c 生命周期 | 在 Split 上单独提交 Stop/drain 协议 | 每次运行只有一套生命周期维护者，资源接收器按 7.4 保留 | 关闭中返回/回调/任务排空独立验收；无法证明安全则不销毁/卸载 |
-| G3a SIM-004、020～023、031、035、055～056 | 只读 Shadow 可提前存在；WU-01～05 写入口先收口，A 先用旧策略适配 | Shadow 无写/设备/通知权；按状态写权连同尚未迁移的激活、初始化、重试等入口一次切换，见 5.2.1 | 覆盖异常/读取轨迹后删重复 writer；不得因 G3c 尚未迁移而保留直接改账户缓存的旁路 |
+| G3a SIM-004、020～023、031、035、055～056 | 只读 Shadow 可提前存在；WU-01～03、05 及 04 的建行/重载角色片段先收口，04 的运行期偏好/Primary/Data 参数在 G3c 一次切换 | Shadow 无写/设备/通知权；按状态写权连同尚未迁移的激活、初始化、重试等入口一次切换，见 5.2.1 | 覆盖异常/读取轨迹后删重复 writer；不得因 G3c 尚未迁移而保留直接改账户缓存的旁路 |
 | G3b SIM-005～019、023.c、031.c、032、058 | R 先封装旧逻辑，逐加载/安全用例增加门控 | 原卡协议只执行一次；一次切换该状态/加载的入口 | 新旧会话不共用可写数据；门控改变旧行为的场景经裁决再启用 |
-| G3c SIM-023.b、024～030 | A 先只读计划比对；O 再接管单用例步骤 | A 决策 + O 一次发出；旧 Controller 退为委托 | 取消旧重试/参数 writer 的同功能分支，防止两个恢复器同时补偿 |
+| G3c SIM-023.b、024～030 | A 先只读计划比对，按用例接管步骤 | T 编排激活、A 编排 Primary，R 唯一发令，O 保留原关联；旧 Controller 退为委托 | 取消旧重试/参数 writer 的同功能分支，防止两个恢复器同时补偿 |
 | G3d SIM-036～054 | 各支撑能力保持生产实现并按族搬迁/适配 | R 执行；eSIM 高层服务仍是原任务执行方 | 独立验证短信/电话簿/STK/配置/通道；不以账户测试替代 |
 | G4 产品扩展 | 另产品配置/协议切片 | 依据批准范围选择唯一实现 | 四槽/MEP/NULL/持久化扩展均须独立验收，不靠桩卡数证明 |
 
@@ -782,9 +821,9 @@ Git revert/恢复旧产物只回退软件。执行前停止受理并核实在途
 | G2a 依赖/所有权整理 | 原 Core SO 内注入 HostPorts，明确工厂/匹配 deleter/回调持有者，保持旧 writer/线程/寿命 | 无新增具体反向依赖；直接调用与生产初始化闭包通过，构造失败/宿主寿命/原关闭行为一致 | SIM + 构建；先于 G2b |
 | G2b SO 机械拆分 | 按 4.4 移动已经解耦的生产源，库保持原需要的驻留期 | Core→SIM 链接单向；同产品 eSIM 开/关、EXT/VSIM、卫星构建；CFI/导出/vtable/跨 SO 销毁与行为差分；不启用新停止/资源策略 | 构建/ABI + SIM；不得以容量测试证明整套通过 |
 | G2c 关闭协议 | 单独实现 7.4 的停止受理/注销/取消等待/排空/资源接收器寿命 | 旧错误出口、重复停止、晚到回调、Hook 未返回、关闭超时和同进程重建验证；不完整停止不卸载 | SIM + 宿主；有动态重建/卸载要求的产品必须先完成 |
-| G3a 拓扑/账户写权 | SIM-004、020～023、031、035、055～056；WU-01～05 收口，包括旧激活/角色/重试和号码查询回写；先视图后唯一写者 | ID/账户/权限及 B-A/B-N 轨迹保持；每个状态全部旧入口均委托；同槽换卡/存储失败/用户切换通过后删旧 writer | SIM 账户 + A 旧策略适配 + 提供方 Q-04 |
+| G3a 拓扑/账户写权 | SIM-004、020～023、031、035、055～056；WU-01～03、05 及 04 的角色 DB 片段收口，包括旧激活和号码查询回写；04 的运行期参数见 G3c；先视图后唯一写者 | ID/账户/权限及 B-A/B-N 轨迹保持；每个状态全部旧入口均委托；同槽换卡/存储失败/用户切换通过后删旧 writer | SIM 账户 + A 旧策略适配 + 提供方 Q-04 |
 | G3b 卡会话/门控 | SIM-005～019、023.c、031.c、032、058；按 4.6 实现会话/LoadScope，保留生产解析 | S2、PIN、局部 Refresh 未受影响请求、人工 ABSENT 重复、查询回写跨会话、关闭晚到均通过；门控修正差异单列裁决；解析改动跑 fuzz | SIM 卡运行/测试；需合法原协议注入 |
-| G3c 角色/操作 | SIM-023.b、024～030；A 纯策略、O 一次执行、R 资源屏障；WU-07 接管原重试 | S3/S4 与 B-N，超时/丢回包/重启/资源隔离后准入、部分失败；逐命令恢复判据完成，旧恢复器关闭 | SIM + Modem/业务方 Q-06；缺判据只阻塞相关用例 |
+| G3c 角色/操作 | SIM-023.b、024～030；A 持角色策略与 WU-04 运行期参数，T/A 分别驱动其用例，R 唯一执行并管资源，WU-07 接管原重试 | S3/S4 与 B-N，超时/丢回包/重启/资源隔离后准入、部分失败；逐命令恢复判据完成，旧恢复器关闭 | SIM + Modem/业务方 Q-06；缺判据只阻塞相关用例 |
 | G3d 支撑/eSIM | SIM-036～054、057、059～061；按族单独切片 | S5 与短信/电话簿/STK/运营商全部既有边界；66250 唯一主编排与回调完成核实后迁相关本地步骤 | 对应业务维护者；Q-03/Q-05 |
 | G4 新能力 | Q-01/02/04/06 批准后独立产品/数据方案 | 真实协议、权限可见性、Port 绑定、并发/性能/恢复分别验收 | 产品 + 依赖仓；不阻塞既有拓扑 G2/G3 |
 
@@ -1016,7 +1055,7 @@ CoreServiceSim 的 70 个定义中，66 个业务方法名可对应下列 SIM/�
 
 以下逐方法列表只承担覆盖检查；现状行为依据仍是实现体及主表证据，不能用声明或测试名称代替。入口方法保留原契约，不表示它们全部成为新模块公共接口。
 
-**`i_sim_manager.h`：122 个入口，全部映射。**
+**B1/W1 历史表含 122 个不同方法名。** 在本批输入 `bd4fbe833` 的接口中反查到 123 个。增量入口 [UpdateDBActiveByIccId](../../interfaces/innerkits/include/i_sim_manager.h) 由 [CoreManagerInner](../../frameworks/native/src/core_manager_inner.cpp) → [SimManager](../../services/sim/src/sim_manager.cpp) → MultiSimController 同名方法按 ICCID 写 is_active。归 [SIM-024](#sim-024)、WU-02 和[字段台账](#sc03-ledger)。该直接入口与发现/初始化的内部调用都须移交 T，保留空 Manager、空 DB 及写失败的原返回。以下保留原 122 项反查。
 
 | 当前入口与实现锚点（B1/W1） | 功能ID |
 |---|---|

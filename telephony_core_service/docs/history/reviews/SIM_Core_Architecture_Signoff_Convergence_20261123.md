@@ -32,5 +32,64 @@
 
 - **现状与发现。** C1 持有包含偏好键的写集时，独立的 Profile 提示仍能把 false 写成 true。Core 两入口与 eSIM 切换落同一个旧参数。Disable 的有槽后缀和无后缀参数、探测和运营商直接写库、号码查询后台回写属于另外的字段及触发点。
 - **决定与分责。** 每个物理参数键或 DB 行身份与列由一个业务 Owner 管写入准入。A 管角色与偏好，T 管账户资料和恢复提示，R 管卡及设备效果，I 执行原存储操作。相交写集由同一 Owner 在首次写前串行准入，父请求复用已有资格，独立提示不能借另一请求的身份。联合建行由各 Owner 给出字段计划，沿用一次原写。初始化读取、投影、真实参数写和恢复写分开追溯。
-- **兼容与禁止。** 保留 Core 各自前置检查、有效 Profile File 调用返回后的偏好提示（包括内层失败）、Disable 前后置时点、getter 后台回写和原通知。禁止静默丢提示、改变外层返回、以新旧各写一次过渡或用全局写锁串行化独立角色。遇冲突若原契约无法观察等价，保留原路径并单列行为裁决。
+- **兼容与禁止。** 保留 Core 各自前置检查、有效 Profile File 调用返回后的偏好提示（包括内层失败）、Disable 中两个按槽恢复提示与一个无后缀兼容输出各自的写入时点、getter 后台回写和原通知。禁止静默丢提示、改变外层返回、以新旧各写一次过渡或用全局写锁串行化独立角色。遇冲突若原契约无法观察等价，保留原路径并单列行为裁决。
 - **验收与依赖。** 先扫描键别名、Provider 写、事件/重试、初始化与后台入口，再比对参数序列、两层返回、通知和次数；用 C1×Profile、独立 Data 与无交集 Voice/SMS 验证互斥范围。外仓 writer、Provider 实际列、产品 Feature 与冲突时延尚待取证。
+
+<a id="sc-matrix"></a>
+
+## 三项决策收敛矩阵
+
+“已明确”指责任、输入及退出条件有唯一维护位置。“已同步”指调用方、提供方和验收方对同一个反例给出相容的结果。“不适用”表示该文档无该层裁决权。“尚待产品证据”按下一节逐项保留。
+
+| 决策 | A 架构约束 | B 源码契约 | C 目录责任 | D 迁移与验收 |
+|---|---|---|---|---|
+| SC-01 | 已明确。原调用、存储前缀与设备各自有责任人，重复 Stop 复用同轮收据。[A §14.3](../../SIM_Target_Architecture_Design_v1.2.md#sc01-close) | 已同步。A 关闭视图包含 C0，O 的领取与回调返回分开，H 联合 Scheduler、R 的投递/设备收据。移交失败仍由原图负责。[B §11](../../SIM_Multisim_Source_Architecture_Detailed_Design.md#sc01-receipts) | 已同步。H 在 assembly 聚合，业务、交付及物理域各留原位置；返回码细节不适用。[C §5.3](../../SIM重构代码目录结构设计方案.md#sc01-assembly-dir) | 已同步。已写/未写两种未确认前态均执行两次 Stop，并核对最终交付。跨消费者关闭及真实设备尚待产品证据。[D §7.4～7.5](../../migration/SIM_Architecture_Refactor_Design.md#sc-acceptance) |
+| SC-02 | 已明确。业务绑定、卡应用、协议成员、协议轮次及单次传输各有作用域。无路由端点不会凭目录入组。[A §10.1](../../SIM_Target_Architecture_Design_v1.2.md#sc02-identity) | 已同步。R 提供已验证参与集合，A 冻结，R 登记发送、判原生回包，A 以原集合推进。应用访问仍凭卡会话。[B §8～9](../../SIM_Multisim_Source_Architecture_Detailed_Design.md#sc02-radio) | 已同步。device 提供协议适配，role_assignment 消费计划，card 签会话。产品栈策略不适用。[C §4.4](../../SIM重构代码目录结构设计方案.md#sc02-device-dir) | 已同步。保留既有双卡轨迹，四端点两栈只等两个确证成员，缺必需路由不可半途改执行器。新增产品栈策略尚待产品证据。[D §7.5](../../migration/SIM_Architecture_Refactor_Design.md#sc-acceptance) |
+| SC-03 | 已明确。同键同准入，T/A 各持业务字段，独立兼容输出保留原触发与交付责任。[A §13.2](../../SIM_Target_Architecture_Design_v1.2.md#sc03-key) | 已同步。两个偏好入站均受 A 的键资格约束，独立提示不借 C1 token，已有父资格可复用。A 在锁外调用存储并核对结果。[B §7](../../SIM_Multisim_Source_Architecture_Detailed_Design.md#sc03-admission) | 已同步。角色准入在 role_assignment，按槽标签归 account，兼容输出由 compatibility 交付；逐键清单不适用。[C §4.3、§5.2](../../SIM重构代码目录结构设计方案.md#sc03-role-dir) | 已同步。由键追到文件/入口、SIM、WU、阶段、原行为及退出证据；从功能表返回同一台账。外仓写者、Provider 和冲突时延尚待产品证据。[D §5.2.1](../../migration/SIM_Architecture_Refactor_Design.md#sc03-ledger) |
+
+## 四文档一致性审查
+
+| 反向核查 | 对同一输入应得到的结果 | 当前源码和判定 |
+|---|---|---|
+| H 收到空设备队列，A 的 C0 原调用仍在 | B 必须产生业务收据，C 给它实际归属，D 的第一次及第二次 Stop 都应是未完成。若只加一项日志，反例仍失败。 | 在 befd76d4e 观察到假 Drained。5796fce68 的 H 仍通过 A.HasPendingDeviceEffects() 检查 pendingPrimary_。新增 Core 入口票和 Owner 封口任务保活分别解决其他关闭窗口。本次仅复核源码，新提交上的该交错尚待重跑。 |
+| 订阅不变但卡应用已替换，或静态目录有两个无路由端点 | PIN 必须用 R 的新会话，纯 Radio 步骤可用自身关联。非协议端点的 CHECK 次数为零，所需栈缺路由时不得先预写再重新选另一执行器。 | 对照原 RadioProtocolController 的双栈范围、Target 的 catalog 遍历、RecordSent 所需的 SessionRef 及资源端口。冻结成员和专用登记是待实施契约。旧协议的响应/NOTIFY 与物理复用证据分开。 |
+| Core 调用失败、Profile 内层失败、后台 Getter 先返回 | 分别观察在原校验后保留的前置偏好、File 返回后的提示及不等待回写的 getter。C1 与独立 Profile 争同一物理键，Voice/SMS 无交集时不受阻。 | 源码反查得到同一偏好键三个 Legacy 直接写点。Disable 则有三个不同键，其中无后缀键由具名关闭用例触发一次、C 交付，不能推定为 T 的历史账户字段。Host 正常路径与产品竞争策略分开签。 |
+
+**并行进入 main 的证据。** 文档修订输入仍为 bd4fbe833。随后 be63ae124 发布 Core/Legacy Host 封口与票据，5796fce68 接通账户发现的 Host Provider 路径并调整 Core 已受理任务的票据传递。这两笔提交均未改变四篇输入设计、产品根 GN 或 Legacy SIM 源码。CoreServiceSim 的正常偏好写仍在，关闭准入先于该写点。5796fce68 的报告记载 Legacy 137/137、Target 90/90、六场景差异为零。它们覆盖其报告的 Host 场景，正式 Provider、全量字段写者、CoreService::OnStop、真实 RIL/HDI 与设备均未据此放行。[T1 验证报告](../../../services/multisim/test/docs/T1_Account_Discovery_Host_Report_20261123.md) · [Host 关闭报告](../../../services/multisim/test/docs/Host_Lifecycle_L3_Report_20261120.md)
+
+<a id="sc-open"></a>
+
+## 尚未关闭的 OPEN 项
+
+| 项目 / 适用范围 | 所需责任方与关闭证据 | 缺证时的处理 |
+|---|---|---|
+| O1 原出口与逐键核对，C0/Core 关闭 | 角色、宿主与参数服务负责人证明原 I/O 返回/失效、可达读回、回调实际退出，或常驻方确认接手并最终交付。注入写已发生/未发生、投递失败及重入。 | 保留原图与资格，返回未完成。只阻止依赖销毁、热重建或该存储手段的切片。 |
+| O2 产品级共享 RIL、设备与 SO | Core、RIL/HDI 和产品证明旧句柄封口、其它消费者连续性、每命令结束及真实复用条件。若要卸载，再核销代码执行帧、跨库对象与匹配 deleter。 | L3/L4/L5 分验。隔离域与原接收者保持驻留。 |
+| O3 成员来源、原生关联与特殊槽 | 协议/厂商给出可验证的版本与成员路由，确认 CHECK/COMPLETE 与 UPDATE NOTIFY 的对应规则，以及多栈、缺路由、在途换路的兼容出口。 | 使用已有双栈行为；未具备证据的扩展不切换。不能根据目录容量增加命令。 |
+| O4 同键跨服务及冲突行为 | SIM 接口、eSIM 服务及参数服务核签每个产品 Feature 的 writer/reader、Core/Profile 同步返回期限、相交写集的等待或既有拒绝。无后缀 Disable 键的域外语义及消费者须单独确定。 | 保留各原提示及错误顺序。冲突等价性未证时保留该组旧路径。 |
+| O5 Provider、建行及后台写 | Provider/账户/运营商负责人以匹配 schema、URI/默认角色 handler、触发器、写者清单及恢复演练核实字段。真实订阅重载、Loader/Detect 直写、后台查询与跨行改选须有观察。 | Host bridge 用于验证调用协议。生产写权仍在旧实现，保护未迁入口与已入队工作。 |
+| O6 目录迁移校验兼容活动设计文档修订 | 测试维护者分别校验固定历史提交的字节摘要、当前权威文档路径及已授权修订。另核实固定 5796fce68 的 Adapter 源码与历史 token 规则。应保留路径替换、丢失历史来源和未授权代码漂移的负控。 | 文档与结构审查可以独立完成；完整迁移检查在规则与输入对齐前保持失败。 |
+
+<a id="sc-work"></a>
+
+## 后续代码实施建议
+
+| 次序 / 责任 | 最小实施切片 | 判定完成的证据 |
+|---|---|---|
+| 1 · A/O、兼容交付、H | 先为 C0 保留未定存储前缀和原交付责任，完善已有 Stop 的联合收据。对 B 的迟到核对使用相同的业务收尾条件。 | 两种 C0 前态、两次 Stop、回调重入及失败移交均可确定复现；原调用依契约完成一次，R 为空时仍可识别 A 未完。 |
+| 2 · R、A、平台协议适配 | 分开卡访问与纯 Radio 的发送登记。为已有 Radio 端口补验证过的参与者/路由输入，冻结每轮计划。 | 原双卡六项差分、两栈四端点、必需路由缺失、错阶段/旧轮回包、在途换路均检查实际命令与回调。设备门禁另取证。 |
+| 3 · A、Core、eSIM | 将 Core 两个偏好入口及 Profile 提示在原节点委托同一准入。把已有父资格与独立提示分开，并保全旧返回。 | Writer 扫描和运行序列一致；C1×Profile、激活失败、卡内层失败、独立 Data/Voice/SMS 均符合 D。冲突行为差异有明确裁决才切权。 |
+| 4 · T、R、迁移与 Provider | 按 D 的各行移交 Disable 输出、资料直接写及后台工作，退出旧 timer、executor 和 writer。先核来源与分支，再按 G3a/G3b/G3c/G3d 的对应切片交付。 | 每键的实际效果可回读、每个旧写点有去向、异常/重启轨迹可比。域外未证项目保留 OPEN。 |
+
+完整架构校验的后续改动按 O6 单列测试工程任务。
+
+以上任务可按依赖分别实施。只有同时覆盖同一键或同一真实执行域的入口必须一起切换；本次文档发布未授权代码接管。
+
+
+## 本轮验证范围与签收结论
+
+- **版本复核。** 逐文件比对 befd76d4e、bd4fbe833 和 5796fce68，四份原设计的 Git blob 均相同。追加提交保留原入口、设备执行器与目标适配的分工。原始 Host 实验与新 Host 报告均沿用各自基线。本轮没有执行业务回归或产品试验。
+- **文档验证。** 逐项核对矩阵中的 A/B/C/D 段落、SC 的触发与反例、字段台账的项目与调用点、SIM/WU 反查、链接锚点、表格、围栏及差异空白。目录文档保留原有 CRLF。静态结构检查得到 94 个 C++ 单元、166 条 include、25 个 target。
+- **完整迁移检查未通过。** 在 5796fce68 的仓外固定快照做对照。原 C 通过历史文档摘要核对，随后在旧布局的 topology/adapters/account_store_adapter.cpp 代码 token 检查失败。仅换为本批 C 后，校验提前在 documentation_moves 报 Canonical documentation digest differs。脚本将当前活动设计逐字节与历史搬迁摘要绑定。共享工作树运行还曾提前在 account_role_protocol.h 的 token 检查失败，未将其归因于本批文档。两组输入均未改校验规则或历史摘要。[路径和摘要检查](../../../services/multisim/test/cases/architecture/documentation_migration.py) · [历史源码检查](../../../services/multisim/test/cases/architecture/check_structure.py)
+
+三项条件在**设计层已收敛，可提交架构负责人签收**。落实时以矩阵所列正文和 D 的唯一字段台账为准。剩余的实现、工具和产品证据有分别可失败的断言；项目签名、生产切写、设备释放及 SO 卸载仍按相应切片签收。

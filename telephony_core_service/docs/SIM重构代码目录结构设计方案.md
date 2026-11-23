@@ -217,6 +217,10 @@ Card 主要关注卡应用及其运行实例，不负责账户身份的唯一管
 
 ### 4.3 Role Assignment：业务角色与分配关系
 
+<a id="sc03-role-dir"></a>
+
+SC-03 的角色偏好写资格与参数适配在 `role_assignment/`。Core 兼容入口、card/esim 的 Profile 提示依赖 A 的窄入站契约。账户标签恢复提示交 `account/`，按物理键的完整清单只查[D §5.2.1](migration/SIM_Architecture_Refactor_Design.md#sc03-ledger)。
+
 **核心职责：管理 SIM 业务角色及其分配关系。**
 
 主要包括：
@@ -251,6 +255,10 @@ Card 主要关注卡应用及其运行实例，不负责账户身份的唯一管
 两者具有不同的业务语义，不能强行统一成一种标识类型。
 
 ### 4.4 Device：设备与硬件资源管理
+
+<a id="sc02-device-dir"></a>
+
+SC-02 的真实协议成员、设备路由、传输匹配和物理域证据由 `device/` 的 R 适配负责。A 在 `role_assignment/primary/` 消费窄协议并持本用例冻结的成员计划。卡应用 Session 由 `card/state/` 签发，账户绑定版本来自 `account/`。Assembly 的只读目录不给协议扩充成员。[端口与依赖](SIM_Multisim_Source_Architecture_Detailed_Design.md#sc02-radio)
 
 **核心职责：管理 SIM 管理所依赖的设备能力、硬件资源及其实际运行状态。**
 
@@ -303,6 +311,8 @@ Device 负责实际设备状态和执行能力，不负责账户身份、默认�
 
 ### 5.2 Compatibility：原有接口兼容
 
+SC-03 的入口校验、旧返回与回调仍在兼容侧，涉及物理键的提示在原位置委托字段 Owner。无后缀 Profile Disable 旧外部输出在此经窄端口交付，触发与键资格仍归具名关闭用例。此目录不保存偏好、角色写集或账户资料副本。
+
 **核心职责：保持新架构与原有系统接口、调用方式和结果交付语义的兼容。**
 
 建议目录：
@@ -343,6 +353,10 @@ infrastructure/
 - `LegacyOutputAdapter`：原有结果和通知交付适配。
 
 ### 5.3 Assembly：模块创建与装配
+
+<a id="sc01-assembly-dir"></a>
+
+SC-01 的 `primary_host_lifecycle.*` 在此汇总已装配对象的关闭收据。业务效果与资格留在 `role_assignment/`，原出口关联留在 Owner 使用的 `infrastructure/request/` 与兼容交付侧，调度器报告队列及执行退出，设备域收据来自 `device/`。宿主借用 Core 的共享 RIL。[接口与收据](SIM_Multisim_Source_Architecture_Detailed_Design.md#sc01-receipts)
 
 **核心职责：将各业务模块组织起来，接入现有 CoreService，并管理整个 SIM 模块的对象创建、依赖连接和生命周期。**
 
@@ -386,7 +400,7 @@ infrastructure/
 
 Assembly 管理的是整个 SIM 模块的生命周期，而不是某个业务对象的生命周期。
 
-特别是当前 `CardRuntime`、`result_sinks` 中仍然存在部分 R 运行责任，不能因为它们暂时位于生命周期目录，就认定它们属于 Assembly。
+过渡的 `CardRuntime`、`result_sinks` 位于 `card/runtime/`，其中仍有 R 的运行责任。Assembly 仅接线。
 
 后续需要按照实际运行状态所有权，将卡应用会话、加载状态和设备资源管理等能力收敛到 Card、Device 或对应的业务边界。
 
