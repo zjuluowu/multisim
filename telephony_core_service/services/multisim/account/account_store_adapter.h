@@ -14,7 +14,7 @@
  */
 // TARGET ARCHITECTURE SKELETON / PROPOSED: 仅接入 testonly 骨架构建，尚未接入生产，未转移写权。
 // Design: docs/SIM_Target_Architecture_Design_v1.2.md §6.3、§9.2、§13.1～13.2。
-// 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
+// Match/Write discovery 已定义；其余方法保持显式失败，不提供伪成功或可执行设备路径。
 
 #ifndef OHOS_TELEPHONY_MULTISIM_TOPOLOGY_ADAPTERS_ACCOUNT_STORE_ADAPTER_H
 #define OHOS_TELEPHONY_MULTISIM_TOPOLOGY_ADAPTERS_ACCOUNT_STORE_ADAPTER_H
@@ -23,6 +23,12 @@
 
 namespace OHOS::Telephony { class SimRdbHelper; }
 namespace OHOS::Telephony::MultiSim {
+// Narrow legacy-provider bridge. The production implementation calls the existing
+// SimRdbHelper; it is linked by the future owning assembly, not by the closed skeleton.
+AccountIdentityMatch MatchLegacyAccountByIccid(OHOS::Telephony::SimRdbHelper &store,
+    const std::string &iccid);
+AccountDiscoveryStoreResult WriteLegacyDiscoveredAccount(OHOS::Telephony::SimRdbHelper &store,
+    const AccountDiscoveryWritePlan &plan);
 // T专属Adapter实现字段级端口，借用现有helper，不直连新RDB，不保存业务缓存。
 class AccountStoreAdapter final : public AccountStore {
 public:

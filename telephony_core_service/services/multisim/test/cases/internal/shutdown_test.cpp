@@ -1,10 +1,21 @@
 #include "internal/common/lifecycle_fixture.h"
 #include "internal/host/primary/core_legacy_host.h"
+#include "account/account_store_adapter.h"
+#include "sim_rdb_info.h"
+#include "sim_data.h"
 #include <future>
 #include <optional>
 namespace {
 using namespace Sim028Host;
+using namespace OHOS::Telephony::MultiSim;
 using namespace std::chrono_literals;
+
+class ControlledSimRdb final : public SimRdbHelper {
+public:
+    MOCK_METHOD(int32_t, QueryDataByIccId, (std::string, SimRdbInfo &), (override));
+    MOCK_METHOD(int32_t, InsertData, (int64_t &, const DataShare::DataShareValuesBucket &), (override));
+    MOCK_METHOD(int32_t, UpdateDataByIccId, (std::string, const DataShare::DataShareValuesBucket &), (override));
+};
 
 class BlockingRawCallback final : public OHOS::Telephony::IRawParcelCallback {
 public:
@@ -27,6 +38,79 @@ public:
 private:
     bool requestStopFromCallback_;
 };
+
+TEST(AccountProviderHost, AdapterMatchDistinguishesFailureFromConfirmedNoRow)
+{
+    using namespace testing;
+    ControlledSimRdb failureRdb;
+    EXPECT_CALL(failureRdb,QueryDataByIccId("failure",_)).WillOnce(Return(-1));
+    AccountStoreAdapter failureAdapter(failureRdb);
+    const auto failed=failureAdapter.MatchAccountByIccid("failure");
+    EXPECT_FALSE(failed.callFinished);
+    EXPECT_EQ(failed.legacyResult,-1);
+
+    ControlledSimRdb emptyRdb;
+    EXPECT_CALL(emptyRdb,QueryDataByIccId("empty",_)).WillOnce(Return(TELEPHONY_ERR_SUCCESS));
+    AccountStoreAdapter emptyAdapter(emptyRdb);
+    const auto empty=emptyAdapter.MatchAccountByIccid("empty");
+    EXPECT_TRUE(empty.callFinished);
+    EXPECT_FALSE(empty.existing.has_value());
+
+    ControlledSimRdb knownRdb;
+    EXPECT_CALL(knownRdb,QueryDataByIccId("known",_)).WillOnce(Invoke(
+        [](const std::string &, SimRdbInfo &row) {
+            row.simId=7;row.iccId="known";row.slotIndex=1;row.isActive=1;return TELEPHONY_ERR_SUCCESS;
+        }));
+    AccountStoreAdapter knownAdapter(knownRdb);
+    const auto known=knownAdapter.MatchAccountByIccid("known");
+    EXPECT_TRUE(known.callFinished);
+    ASSERT_TRUE(known.existing.has_value());
+    EXPECT_EQ(known.existing->subscription.legacySimId,7);
+}
+
+TEST(AccountProviderHost, AdapterUsesOneInsertThenReadBackIdentity)
+{
+    using namespace testing;
+    ControlledSimRdb rdb;
+    EXPECT_CALL(rdb,InsertData(_,Truly([](const DataShare::DataShareValuesBucket &values) {
+        bool valid=false; auto iccid=values.Get(SimData::ICC_ID,valid); return valid &&
+            std::get<std::string>(iccid.value)=="new-iccid";
+    }))).WillOnce([](int64_t &id, const auto &) { id=41; return 41; });
+    AccountStoreAdapter adapter(rdb);
+    const AccountDiscoveryWritePlan plan {
+        {{RuntimeEpoch{5,9},{SlotId{1},"USIM"},4},1,"new-iccid"}, 0,
+        std::nullopt, {{1},"new-iccid",std::nullopt,true,false},
+        {std::nullopt, {1,0}, false,false,false,false,true}};
+    AccountDiscoveryStoreResult result;
+    EXPECT_CALL(rdb,QueryDataByIccId("new-iccid",_)).WillOnce(Invoke(
+        [&](const std::string &, SimRdbInfo &row) {
+            row.simId=41;row.iccId="new-iccid";row.slotIndex=1;row.isActive=1;row.isEsim=0;
+            return TELEPHONY_ERR_SUCCESS;
+        }));
+    result=adapter.WriteDiscoveredAccount(plan);
+    EXPECT_TRUE(result.writeConfirmed);
+    EXPECT_EQ(result.effect,EffectKnowledge::ConfirmedApplied);
+    ASSERT_TRUE(result.assignedSubscription.has_value());
+    EXPECT_EQ(result.assignedSubscription->legacySimId,41);
+}
+
+TEST(AccountProviderHost, AdapterDoesNotTurnUnknownReadBackIntoSuccess)
+{
+    using namespace testing;
+    ControlledSimRdb rdb;
+    EXPECT_CALL(rdb,UpdateDataByIccId("known-iccid",_)).WillOnce(Return(TELEPHONY_ERR_SUCCESS));
+    EXPECT_CALL(rdb,QueryDataByIccId("known-iccid",_)).WillOnce(Return(-1));
+    AccountStoreAdapter adapter(rdb);
+    const AccountDiscoveryWritePlan plan {
+        {{RuntimeEpoch{5,9},{SlotId{1},"USIM"},4},1,"known-iccid"}, 0,
+        SubscriptionId{7}, {{1},"known-iccid",std::nullopt,true,false},
+        {SubscriptionId{7}, {1,0}, false,false,false,false,false}};
+    const auto result=adapter.WriteDiscoveredAccount(plan);
+    EXPECT_TRUE(result.callFinished);
+    EXPECT_FALSE(result.writeConfirmed);
+    EXPECT_FALSE(result.assignedSubscription.has_value());
+    EXPECT_EQ(result.effect,EffectKnowledge::Unknown);
+}
 
 TEST(PairingReview, AllThreeSlotsPublicDetach)
 {

@@ -148,6 +148,8 @@ source_set("primary_real_support") {
 executable("sim_primary_slot_real_test") {
   sources =
       sim_primary_case_sources + [
+        "$production_root/services/multisim/account/account_store_adapter.cpp",
+        "$test_root/framework/internal/host/primary/legacy_account_store_provider.cpp",
         "$test_root/framework/internal/host/primary/primary_api.cpp",
         "$test_root/framework/internal/host/primary/real_runtime.cpp",
         "$test_root/framework/internal/host/primary/security_boundary.cpp",
@@ -160,10 +162,14 @@ executable("sim_primary_slot_real_test") {
     "$test_root/framework/internal/host/primary",
     "$test_root/framework/internal/host/primary/lifecycle",
     "$test_root/framework/internal/host/stubs",
+    "$production_root/services/multisim",
     "$gtest_root/googletest/include",
     "$gtest_root/googlemock/include",
   ]
-  configs += [ ":production_headers" ]
+  configs += [
+    ":production_headers",
+    ":production_execution_evidence",
+  ]
   deps = [
     ":event_transport_production_host",
     ":external_service_boundaries",

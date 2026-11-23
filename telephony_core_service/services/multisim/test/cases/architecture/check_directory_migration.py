@@ -97,6 +97,11 @@ def check_directory_migration(source, token_sequence, *, repo=None):
                 'card_selection/assignment_store_adapter.h',
                 'integration/lifecycle/sim_module.h',
                 'integration/lifecycle/sim_module_factory.cpp',
+                'infrastructure/account_store_adapter.cpp',
+                'infrastructure/account_store_adapter.h',
+                'account/topology_requests.h',
+                'account/discovery/discovery_observation_ledger.cpp',
+                'account/discovery/discovery_observation_ledger.h',
                 'account/topology_service.cpp',
                 'account/topology_service.h',
                 'account/account_registry.cpp',
@@ -114,6 +119,7 @@ def check_directory_migration(source, token_sequence, *, repo=None):
                 cursor = 0
                 if name not in {'card_selection/assignment_store_adapter.h',
                                 'integration/lifecycle/sim_module_factory.cpp',
+                                'infrastructure/account_store_adapter.cpp',
                                 'account/topology_service.cpp',
                                 'account/account_registry.cpp'}:
                     for token in original_tokens:

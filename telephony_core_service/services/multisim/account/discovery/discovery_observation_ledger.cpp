@@ -115,7 +115,8 @@ std::optional<DiscoveryStoreTicket> DiscoveryObservationLedger::RetryAfterKnownN
     return DiscoveryStoreTicket {ticket.observation, entry.admission, ticket.bindingRevision};
 }
 DiscoveryStoreAcceptance DiscoveryObservationLedger::CompleteStored(const DiscoveryStoreTicket &ticket,
-    EffectKnowledge effect, std::optional<SubscriptionId> identity, bool callFinished, BindingIndex &bindings)
+    EffectKnowledge effect, std::optional<SubscriptionId> identity, bool callFinished, BindingIndex &bindings,
+    bool allowBinding)
 {
     const Key key {ticket.observation.session.application.slot, ticket.observation.session.application.applicationKey};
     const auto found = accepted_.find(key);
@@ -128,7 +129,9 @@ DiscoveryStoreAcceptance DiscoveryObservationLedger::CompleteStored(const Discov
     entry.pending = false;
     entry.effect = effect;
     entry.callFinished = callFinished;
-    if (effect != EffectKnowledge::ConfirmedApplied || !identity) { return {false, mayHaveWritten, false}; }
+    if (!allowBinding || effect != EffectKnowledge::ConfirmedApplied || !identity) {
+        return {false, mayHaveWritten, false};
+    }
     const bool accepted = bindings.AcceptBinding(ticket.observation.session.application.slot, *identity,
         ticket.bindingRevision);
     return {accepted, !accepted, false};

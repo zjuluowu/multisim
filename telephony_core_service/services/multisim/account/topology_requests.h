@@ -20,6 +20,7 @@
 #define OHOS_TELEPHONY_MULTISIM_TOPOLOGY_API_TOPOLOGY_REQUESTS_H
 
 #include <string>
+#include <utility>
 #include "infrastructure/request/request_context.h"
 #include "account/account_types.h"
 
@@ -72,9 +73,14 @@ struct NumberAcceptance {
 };
 // 同一R应用观察流按序进入T；R已校验不替代T跨Owner/锁外I/O后的最终接纳。
 struct CardDiscoveryObservation {
+    CardDiscoveryObservation(SessionRef source, uint64_t sequence, std::string identifier)
+        : session(std::move(source)), observationSequence(sequence), iccid(std::move(identifier)) {}
     SessionRef session;
     uint64_t observationSequence;
     std::string iccid;
+    std::optional<int32_t> legacyLabel;
+    bool active {true};
+    bool isEsim {false};
 };
 struct CardSessionInvalidation {
     SessionRef invalidatedSession;

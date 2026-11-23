@@ -399,7 +399,9 @@ def check_migration():
             "assignment/adapters/assignment_store_adapter.h",
             "assignment/ports/radio_execution_port.h",
             "infrastructure/assignment_store_adapter.h",
+            "topology/api/topology_requests.h",
             "topology/application/topology_service.h",
+            "topology/application/discovery_observation_ledger.h",
             "topology/domain/account_registry.h",
             "assembly/sim_module.h",
             "assembly/sim_module_factory.h",
@@ -414,6 +416,8 @@ def check_migration():
                 "assignment/application/assignment_service.cpp",
                 "assignment/domain/assignment_aggregate.cpp",
                 "topology/application/topology_service.cpp",
+                "topology/application/discovery_observation_ledger.cpp",
+                "infrastructure/account_store_adapter.cpp",
                 "topology/domain/account_registry.cpp",
                 "assembly/sim_module_factory.cpp",
             }

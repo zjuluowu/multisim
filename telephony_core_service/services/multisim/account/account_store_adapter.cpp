@@ -19,7 +19,34 @@
 #include "account/account_store_adapter.h"
 
 namespace OHOS::Telephony::MultiSim {
-/* 方法仅声明；WriteDisplayNumber的计划复用位置：
+namespace {
+AccountStoreWriteResult NotImplemented()
+{ return {-1, false, false}; }
+}
+
+AccountStoreWriteResult AccountStoreAdapter::WriteDisplayNumber(const AccountNumberPatch &) { return NotImplemented(); }
+AccountStoreWriteResult AccountStoreAdapter::WriteActiveProjection(const AccountActivePatch &) { return NotImplemented(); }
+AccountStoreWriteResult AccountStoreAdapter::WriteDisplayName(const AccountNamePatch &) { return NotImplemented(); }
+AccountStoreWriteResult AccountStoreAdapter::WriteLabel(const AccountLabelPatch &) { return NotImplemented(); }
+AccountStoreWriteResult AccountStoreAdapter::WriteImsPreference(const AccountImsPreferencePatch &) { return NotImplemented(); }
+AccountLoadResult AccountStoreAdapter::LoadAccounts(const AccountLoadRequest &request)
+{ return {request, -1, false, false, {}, {}}; }
+AccountStoreWriteResult AccountStoreAdapter::WriteRemoval(const AccountRemovalPatch &) { return NotImplemented(); }
+int32_t AccountStoreAdapter::QueryImsPreferenceByIccid(const std::string &, int32_t &)
+{ return -1; }
+
+AccountIdentityMatch AccountStoreAdapter::MatchAccountByIccid(const std::string &iccid)
+{
+    return MatchLegacyAccountByIccid(legacyStore_, iccid);
+}
+
+AccountDiscoveryStoreResult AccountStoreAdapter::WriteDiscoveredAccount(const AccountDiscoveryWritePlan &plan)
+{
+    return WriteLegacyDiscoveredAccount(legacyStore_, plan);
+}
+
+/* MatchAccountByIccid/WriteDiscoveredAccount委托同一Legacy Provider bridge；其余方法仍保持显式失败。
+ * WriteDisplayNumber的计划复用位置：
  * 与 MultiSimController::SetShowNumberToDB 相同，转换number到原编码；
  * DataShareValuesBucket只Put SimData::PHONE_NUMBER，调用
  * legacyStore_.UpdateDataBySimId(patch.subscription.legacySimId, values)。

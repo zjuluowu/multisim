@@ -40,7 +40,8 @@ public:
     std::optional<DiscoveryStoreTicket> RetryAfterKnownNoEffect(const DiscoveryStoreTicket &ticket,
         const BindingIndex &bindings);
     DiscoveryStoreAcceptance CompleteStored(const DiscoveryStoreTicket &ticket, EffectKnowledge effect,
-        std::optional<SubscriptionId> identity, bool callFinished, BindingIndex &bindings);
+        std::optional<SubscriptionId> identity, bool callFinished, BindingIndex &bindings,
+        bool allowBinding = true);
 private:
     struct Entry {
         SessionRef session;

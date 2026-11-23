@@ -25,6 +25,10 @@
 namespace OHOS {
 namespace Telephony {
 CoreServiceSim::Admission::Admission(CoreServiceSim &owner) : owner_(owner), accepted_(owner_.TryBeginCall()) {}
+CoreServiceSim::Admission::Admission(Admission &&other) noexcept : owner_(other.owner_), accepted_(other.accepted_)
+{
+    other.accepted_ = false;
+}
 CoreServiceSim::Admission::~Admission()
 {
     if (accepted_) { owner_.EndCall(); }
@@ -49,6 +53,7 @@ void CoreServiceSim::StopAccepting()
 {
     std::lock_guard<ffrt::mutex> lock(admissionMutex_);
     accepting_ = false;
+    ++stopRevision_;
 }
 
 bool CoreServiceSim::AcceptedCallsDrained() const
@@ -75,8 +80,7 @@ bool CoreServiceSim::AsyncSimGeneralExecute(const std::function<void()> task)
             simGeneralHandler_ = std::make_shared<AppExecFwk::EventHandler>(simManagerRunner);
         }
     }
-    auto completion = std::shared_ptr<Admission>(new Admission(*this));
-    if (!*completion) { return false; }
+    auto completion = std::shared_ptr<Admission>(new Admission(std::move(admission)));
     if (!simGeneralHandler_->PostTask([task, completion] { task(); })) { return false; }
     return true;
 }
@@ -93,20 +97,22 @@ bool CoreServiceSim::AsyncSimPinExecute(const std::function<void()> task)
             simPinHandler_ = std::make_shared<AppExecFwk::EventHandler>(simManagerRunner);
         }
     }
-    auto completion = std::shared_ptr<Admission>(new Admission(*this));
-    if (!*completion) { return false; }
+    auto completion = std::shared_ptr<Admission>(new Admission(std::move(admission)));
     if (!simPinHandler_->PostTask([task, completion] { task(); })) { return false; }
     return true;
 }
 
 void CoreServiceSim::SetSimManager(const std::shared_ptr<ISimManager> &simManager)
 {
-    std::lock_guard<ffrt::mutex> admission(admissionMutex_);
+    std::unique_lock<ffrt::mutex> admission(admissionMutex_);
+    const uint64_t observedStopRevision = stopRevision_;
+    accepting_ = false;
+    admissionChanged_.wait(admission, [this] { return acceptedCalls_ == 0; });
     simManager_ = simManager;
-    accepting_ = true;
+    accepting_ = stopRevision_ == observedStopRevision;
 }
 
-const std::shared_ptr<ISimManager> &CoreServiceSim::GetSimManager() const
+std::shared_ptr<ISimManager> CoreServiceSim::GetSimManager() const
 {
     std::lock_guard<ffrt::mutex> admission(admissionMutex_);
     return simManager_;

@@ -31,6 +31,56 @@ TEST_F(PrimaryEntry, StopDoesNotCrossAlreadyAcceptedParameterWrite)
     EXPECT_TRUE(core.WaitForAcceptedCallsDrained(std::chrono::seconds(3)));
 }
 
+TEST_F(PrimaryEntry, ManagerReplacementWaitsForAcceptedCallAndGetReturnsSnapshot)
+{
+    Permit();
+    EXPECT_CALL(*manager, HasSimCard(1, _)).WillOnce(DoAll(SetArgReferee<1>(true), Return(0)));
+    std::promise<void> entered, release;
+    auto released=release.get_future().share();
+    EXPECT_CALL(*manager, IsSimActive(1)).WillOnce([&] {
+        entered.set_value(); released.wait(); return true;
+    });
+    EXPECT_CALL(identity, WriteParameter(USER_PREFER_PRIMARY_SLOT, "true")).WillOnce(Return(0));
+    EXPECT_CALL(*manager, SetPrimarySlotId(1,true)).WillOnce(Return(TELEPHONY_ERR_SUCCESS));
+    auto accepted=std::async(std::launch::async,[&] { return core.SetPrimarySlotId(1); });
+    ASSERT_EQ(entered.get_future().wait_for(std::chrono::seconds(3)),std::future_status::ready);
+    auto replacement=std::make_shared<testing::StrictMock<ManagerSeam>>();
+    auto replace=std::async(std::launch::async,[&] { core.SetSimManager(replacement); });
+    EXPECT_EQ(replace.wait_for(std::chrono::milliseconds(20)),std::future_status::timeout);
+    const auto oldSnapshot=core.GetSimManager();
+    EXPECT_EQ(oldSnapshot.get(),manager.get());
+    release.set_value();
+    EXPECT_EQ(accepted.get(),TELEPHONY_ERR_SUCCESS);
+    replace.get();
+    const auto newSnapshot=core.GetSimManager();
+    EXPECT_EQ(newSnapshot.get(),replacement.get());
+    EXPECT_EQ(oldSnapshot.get(),manager.get());
+}
+
+TEST_F(PrimaryEntry, StopDuringReplacementDoesNotReopenOldCloseGeneration)
+{
+    Permit();
+    EXPECT_CALL(*manager, HasSimCard(1, _)).WillOnce(DoAll(SetArgReferee<1>(true), Return(0)));
+    std::promise<void> entered, release;
+    auto released=release.get_future().share();
+    EXPECT_CALL(*manager, IsSimActive(1)).WillOnce([&] {
+        entered.set_value(); released.wait(); return true;
+    });
+    EXPECT_CALL(identity, WriteParameter(USER_PREFER_PRIMARY_SLOT, "true")).WillOnce(Return(0));
+    EXPECT_CALL(*manager, SetPrimarySlotId(1,true)).WillOnce(Return(TELEPHONY_ERR_SUCCESS));
+    auto accepted=std::async(std::launch::async,[&] { return core.SetPrimarySlotId(1); });
+    ASSERT_EQ(entered.get_future().wait_for(std::chrono::seconds(3)),std::future_status::ready);
+    auto replacement=std::make_shared<testing::StrictMock<ManagerSeam>>();
+    auto replace=std::async(std::launch::async,[&] { core.SetSimManager(replacement); });
+    EXPECT_EQ(replace.wait_for(std::chrono::milliseconds(20)),std::future_status::timeout);
+    core.StopAccepting();
+    release.set_value();
+    EXPECT_EQ(accepted.get(),TELEPHONY_ERR_SUCCESS);
+    replace.get();
+    EXPECT_EQ(core.GetSimManager().get(),replacement.get());
+    EXPECT_EQ(core.SetPrimarySlotId(1),TELEPHONY_ERR_LOCAL_PTR_NULL);
+}
+
 TEST_F(PrimaryEntry, StopReopensOnlyOnNewManagerGeneration)
 {
     core.StopAccepting();

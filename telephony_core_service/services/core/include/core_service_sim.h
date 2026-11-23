@@ -32,7 +32,7 @@ public:
     virtual ~CoreServiceSim() = default;
 
     void SetSimManager(const std::shared_ptr<ISimManager> &simManager);
-    const std::shared_ptr<ISimManager> &GetSimManager() const;
+    std::shared_ptr<ISimManager> GetSimManager() const;
 
     // Internal host lifecycle seam; this is not an IPC/IDL contract. Closing rejects
     // new work while accepted synchronous and posted callback work retires through
@@ -147,6 +147,10 @@ private:
     class Admission final {
     public:
         explicit Admission(CoreServiceSim &owner);
+        Admission(Admission &&other) noexcept;
+        Admission(const Admission &) = delete;
+        Admission &operator=(const Admission &) = delete;
+        Admission &operator=(Admission &&) = delete;
         ~Admission();
         explicit operator bool() const { return accepted_; }
     private:
@@ -165,6 +169,7 @@ private:
     mutable ffrt::mutex admissionMutex_;
     mutable ffrt::condition_variable admissionChanged_;
     bool accepting_ {true};
+    uint64_t stopRevision_ {0};
     size_t acceptedCalls_ {0};
 };
 

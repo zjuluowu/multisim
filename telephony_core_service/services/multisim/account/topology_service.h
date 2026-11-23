@@ -20,6 +20,7 @@
 #define OHOS_TELEPHONY_MULTISIM_TOPOLOGY_TOPOLOGY_SERVICE_H
 
 #include <map>
+#include <mutex>
 #include <optional>
 #include "account/topology_requests.h"
 #include "account/account_registry.h"
@@ -64,6 +65,7 @@ public:
     ReloadRequest PrepareAccountReload(AccountReadView view, uint64_t loadAttempt);
     void AcceptAccountReload(const ReloadRequest &request, const AccountLoadResult &loaded);
     void AcceptCardDiscoveryObservation(const CardDiscoveryObservation &observation) override;
+    DiscoveryAcceptance DiscoverAccount(const CardDiscoveryObservation &observation);
     void AcceptCardSessionInvalidation(const CardSessionInvalidation &invalidation) override;
     // Application ingress after the original provider write is confirmed. It does not
     // allocate identities or expose the private registries.
@@ -87,6 +89,8 @@ private:
     DiscoveryObservationLedger observations_;
     AccountStore &store_;
     AccountRolePlanningPort *roles_ {nullptr}; // H借用，无强环；只在发布前绑定。
+    bool useLegacySingleSlotRoles_ {false};
+    mutable std::recursive_mutex commitLock_;
     ActivationProgress activationProgress_;
     // 发现：R顺序观察进入observations_；预留旧/新键；Match→A角色预留→一次原Insert/Update。
     // 返回后复核observations_/绑定键/角色资格，分别接纳；已写但失效进入核对。
