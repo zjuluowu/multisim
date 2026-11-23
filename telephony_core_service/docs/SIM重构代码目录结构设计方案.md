@@ -284,6 +284,16 @@ SC-02 的真实协议成员、设备路由、传输匹配和物理域证据由 `
 
 Device 负责实际设备状态和执行能力，不负责账户身份、默认业务角色或账户绑定关系。
 
+<a id="af1-device-dir"></a>
+
+**AF-1 补充（PROPOSED，待架构负责人签收）：**
+
+- `device/resource/` 的 `ResourceBarrier` 是同一模块实例内唯一的设备资源准入对象。Radio 执行适配和需要占用设备的卡侧命令都向它申请，`card/` 不再另持屏障。唯一性限于同一模块实例内接入它的发令路径，不构成产品级全局独占。
+- `RadioDomainId` 是 Role Assignment 使用的业务冲突范围，`ResourceKey` 是 Device 内部的物理资源域，二者的对应关系只在 Device 内维护。
+- 上面列出的 `RadioAssignmentView` 当前定义在 `role_assignment/assignment_requests.h`，是 Role Assignment 对外视图的组成部分，Device 目录下没有同名类型。本条仅更正归属描述，不移动代码。
+
+规则与证明边界见[目标架构 §12.3](SIM_Target_Architecture_Design_v1.2.md#af1-resource-admission)。
+
 ---
 
 ## 5. Infrastructure：基础支撑目录职责
@@ -399,6 +409,17 @@ infrastructure/
 需要明确：
 
 Assembly 管理的是整个 SIM 模块的生命周期，而不是某个业务对象的生命周期。
+
+<a id="af1-assembly-dir"></a>
+
+**AF-1 补充（PROPOSED，待架构负责人签收）：**
+
+- `sim_module.*` 是唯一的组合根和关闭入口。`primary_host_lifecycle.*` 位于本目录，作为它的成员部件复用，不是并列的模块入口。
+- Assembly 创建并持有唯一的 `ResourceBarrier` 对象，只管理其寿命和注入；资源状态与租约的事实仍属 Device。
+- Assembly 把 `device/` 的 Radio 执行适配注入 Role Assignment。`card/runtime/` 的 `CardRuntime` 不实现 Radio 执行端口。
+- 用于核心框架验证的 Host 装配函数为 testonly，与同 SO 附着工厂、最终产品创建工厂分开；后两者不因 Host 装配而提前实现。
+
+对象持有图与关闭收据见[源码详细设计 §11](SIM_Multisim_Source_Architecture_Detailed_Design.md#af1-sim-module)。
 
 过渡的 `CardRuntime`、`result_sinks` 位于 `card/runtime/`，其中仍有 R 的运行责任。Assembly 仅接线。
 

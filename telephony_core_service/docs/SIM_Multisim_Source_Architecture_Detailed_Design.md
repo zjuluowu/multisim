@@ -3,7 +3,7 @@
 | 项目 | 内容 |
 | --- | --- |
 | 文档版本 | 0.8，角色写集合和异步步骤的源码映射（整体设计仍PROPOSED） |
-| 更新日期 | 2026-11-19（按 bcc1614fd 复核共享准入和完成领取，历史验证沿用各自输入） |
+| 更新日期 | 2026-11-19（按 bcc1614fd 复核共享准入和完成领取，历史验证沿用各自输入）；2026-11-23 在 §3.2、§7～9、§11、§19 追加 AF-1 补充契约，均为 PROPOSED，输入 08d6e6f77，源码事实取自 632f6a2a8 |
 | 源码范围 | bcc1614fd 模块为 91 文件（64 头、25 源、BUILD.gn、README.md），M9.3 工作树新增一个请求机制源文件；重复目录设计副本已退役；首次G2a之前的B+输入为88文件；生产能力来源见§17 |
 | 输入基线 | B+文件移动输入5404aefe、首次G2a源main 9ab1e976及历史实现cc787945均为固定溯源；实际代码点和测试证据见[执行状态](SIM_Refactor_Execution_State.md#current-status) |
 | 当前状态 | 当前生产已回退G2a接入，原成熟SIM继续执行；G2a Core/Binding仅为测试参考，旧合入记录保留为历史。25个source_set全testonly，产品准入和写权迁移未完成，当前状态见[执行状态](SIM_Refactor_Execution_State.md#current-status) |
@@ -258,6 +258,8 @@ services/multisim/
 
 稳态不设device/session：现SessionRegistry是卡应用代次/期望Owner，Radio协议会话就近属于device/radio。未来确有独立设备会话实现，再凭状态/失效责任裁决，不预建抽象。card/runtime中的CardRuntime是过渡接缝，稳态逐步退化为有限绑定接口；其Session/Load/Resource等成员尚未完成能力拆分，目录搬迁不构成解耦完成。
 
+**AF-1 补充（PROPOSED，待架构负责人签收）。** CardRuntime 不实现 RadioExecutionPort，也不持有资源屏障；A 的 Radio 执行端口由 device 的执行适配实现并经 H 注入，见[§11](#af1-sim-module)。632f6a2a8 的 CardRuntime 仍声明该端口并持一个未使用的 ResourceBarrier 成员，属于待退的过渡状态。
+
 ### 3.3 历史B+输入到六组布局（非当前路径）
 
 | 输入目录/文件族 | 本轮落点 | 保持的责任及约束 |
@@ -419,6 +421,18 @@ TopologyService构造后由H绑定AccountRolePlanningPort；它实现PrimaryTopo
 
 父用例已持有写集时核对实例、请求、键及有效期并复用，单独的提示按独立请求登记，保留其原调用返回节点。可信 StepRef 可追溯来源，本身不授予写权。写前在 Owner 短提交域登记，在锁外执行原 I/O、通知与完成，再凭同一资格接受每键结果。已知失败走原轨迹，结果未知保留资格和核对者。不得在持锁状态等待冲突方、向调用者引入隐式忙错误或吞并一次原有写入。原同步返回要求无法同时满足时暂缓该组切换。具体调用者、键、合法前缀与首次切写只在[D 的字段台账](migration/SIM_Architecture_Refactor_Design.md#sc03-ledger)维护。
 
+<a id="af1-preference-entry"></a>
+
+**AF-1 补充 · 两个偏好入口的准入步骤（PROPOSED，待架构负责人签收）。** AcceptEntryPrimaryPreference 与 AcceptLocalProfilePreference 的签名不变，实现改为三步：
+
+1. 在 A 的提交域内判定资格。来源 StepRef 属于一个已持有偏好成员的 A 请求时沿用；否则以独立请求向 AssignmentAggregate 登记偏好成员。
+2. 离开提交域后调用 AssignmentStore 写偏好。
+3. 返回后凭同一资格接纳并释放；结果未知时保留资格并由 A 核对。
+
+632f6a2a8 中这两个方法直接调用 Store，后者未使用来源 StepRef。SetDefaultRole 目前不在 A 的提交域内访问聚合，须纳入同一提交域。存储写、Radio 提交、输出发布和完成回调都不在提交域内执行，见[主设计 §14.1](SIM_Target_Architecture_Design_v1.2.md#af1-lock-order)。632f6a2a8 的 StartPrimarySwitch、AcceptRadioStep、AcceptC1RetryDue 与 CompleteOnce 在持 primaryCommitLock_ 时执行这些调用，待改。
+
+与另一请求写集相交时的处置未定，见[主设计 §13.2](SIM_Target_Architecture_Design_v1.2.md#af1-preference-admission)。处置确定之前，实现只保证不旁路写入：该提示作为 A 的未了事项保留并可由关闭收据出具，不引入等待，不丢弃，不改变原调用的返回节点和返回值。
+
 **当前位置纠正：** `PlanPrimarySwitch`与PrimarySwitchPlan在`role_assignment/primary/primary_switch_plan.*`，模式/参数位置/输入值在`role_assignment/primary/primary_execution.h`，AccountRole协议在`role_assignment/account_role_protocol.h`；`assignment_aggregate.cpp`目前没有Primary计划实现。聚合、纯角色规则和AccountRole契约在role_assignment根，但保留独立逻辑target；Default角色用例未来位于default_roles。保留逻辑Application/Domain，不把兼容步骤计划只因无I/O就移到Domain。
 
 `AssignmentAggregate`区分角色约束、带transitionToken的切换事实和参数投影。纯PrimaryDecisionFacts显式输入userSet、专用Primary能力、当前主Modem观察及厂商换路需求，不从目录推断动态事实。
@@ -441,6 +455,20 @@ AccountRolePlanningInput允许existingSubscription为空；A先生成带reservat
 ## 8. 应用编排机制与短请求
 
 **SC-02 · RecordSent 的调用契约（待实现）。** 保留现有卡用重载，R 提供真实 SessionRef，PIN/EF 等消费。为纯 Radio 步骤提供按原 StepRef 登记发送的专用形式，A 的 pending 保留目标 BindingRef 及下节的冻结计划，R 持每次传输映射。无需让通用请求库依赖具体 Radio 实现。接受结果与迟到核对也按同类原发送记录校验。登记发送意图和 R 确认平台交接分别记账；旧卡重载不能接受虚构应用。
+
+<a id="af1-radio-sent"></a>
+
+**AF-1 补充 · 纯 Radio 发送登记与完成在途（PROPOSED，待架构负责人签收）。**
+
+```cpp
+// infrastructure/request/runtime_operation_store.h
+bool RecordRadioSent(StepRef expected, uint32_t localRound); // 与卡用 RecordSent(StepRef, SessionRef) 并列
+// RequestContext 增加 std::optional<uint32_t> sentRadioRound
+```
+
+A 接纳 Radio 结果时核对 sentRadioRound，不再要求 sentSession 非空。632f6a2a8 的 A 在四处以 bindingRevision 和字面值 USIM 构造 SessionRef 以满足现有 RecordSent，实施本契约后删除。
+
+完成出口须能区分“已领取”和“原回调已返回或同步等待已交还”。发起 Owner 在调用 C 的完成端口之前登记在途，返回之后核销，该调用在提交域之外进行。ClaimCompletion 的一次领取语义不变。RetrySchedulerPort 与 ScheduledRetrySink 保留在本目录，当前只服务 C1 重试，出现第二个使用者之前不泛化。
 
 历史位于`application/{orchestration,card_access}`，现已分布在infrastructure/request与card能力目录，下述协议不因搬迁重定义。稳态基础身份/StepRef/EffectKnowledge抽到`infrastructure/request/request_ref.h`纯值target；Context/CompletionPlan在`infrastructure/request`的request_protocol，RuntimeOperationStore在同目录另一个request_mechanism target；两者逻辑均为Application，后者依赖前者，纯Domain不依赖二者；C负责解释旧完成路由，真实等待设施由C/Core宿主实现，不进入纯值或Domain。
 
@@ -476,6 +504,35 @@ LocalCardRequests是具名短请求，不是新的业务上下文。SwitchProfil
 
 `bd4fbe833` 的 StartPrimarySwitch 及续步/重试用 T 的 bindingRevision 和字面值 USIM 构造 SessionRef，C1 从 catalog_.Slots() 建 members。RadioSwitchRequest 的 memberCount、RadioSwitchResult 的 memberSlot/phase/protocolSession、R 的 token/serial 检查可复用。上面的成员授权及 Radio 专用登记仍待实现。[现有 Radio 端口](../services/multisim/role_assignment/primary/radio_execution_port.h) · [现有发送与匹配](../services/multisim/role_assignment/assignment_service.cpp)
 
+<a id="af1-radio-plan"></a>
+
+**AF-1 补充 · 参与者规划接口与资源键映射（PROPOSED，待架构负责人签收）。** 对现有 RadioExecutionPort 做窄扩展，其余方法沿用：
+
+```cpp
+// role_assignment/primary/radio_execution_port.h
+struct RadioRoundPlan {
+    std::vector<SlotId> members; // R 已验证、可路由、互不重复的原生协议成员，可以不含某些目录槽
+    uint64_t routeRevision;      // R 的路由观察版本
+};
+virtual std::optional<RadioRoundPlan> PlanPrimaryRound(
+    SlotId target, const RadioDomainId &domain, PrimarySwitchMode mode) const = 0; // 无可用路由返回空
+virtual RadioSubmitDisposition SwitchPrimaryRadio(const RadioSwitchRequest &request) = 0;
+// 沿用本头文件已有的三值枚举：ConfirmedNotSent、HandoffAccepted、HandoffUnknown
+// RadioSwitchRequest 增加 routeRevision；protocolSession 字段更名为 localRound，调用点改为具名赋值
+```
+
+A 在预写、首个阶段通知和发令之前调用 PlanPrimaryRound 并冻结结果，成员数取自该结果。提交返回本次交接结果，用以取代依赖“上一次提交”的 WasLastSubmissionAccepted，三种语义不得合并为布尔值：
+
+| 返回值 | 含义 | A 的处理 |
+|---|---|---|
+| ConfirmedNotSent | 有确证没有越过平台交接边界。R 在交接前拒绝（未取得租约、已封口、路由观察版本已变）也归入此值 | 该成员未发。本步骤尚无其他成员交接时可按原失败出口结束并释放资格；同一轮已有成员交接时，该轮仍按已发成员核对 |
+| HandoffAccepted | 请求与传输 token 已进入传输关联 | 等待结果 |
+| HandoffUnknown | 调用失败或结束，但不能证明交接没有发生 | 不得当作未发送。转入待核对，保留原步骤、角色资格和 R 的隔离，不重发、不释放 |
+
+R 在首次提交时依据宿主注入的已验证路由表，把本轮成员映射为资源键集并一次申请；该映射不出现在 A 可见的头文件中。路由表缺项时使用保守共享键。传输 token、fence 和原生协议会话号留在 R 内部，不增加包装类型。
+
+632f6a2a8 的资源集是 ResourceRadioRuntime 构造时固定的全集，C1 成员取自 catalog_.Slots()，均待改。产品的真实成员来源与路由证据仍按签收矩阵 O3。
+
 R整体完整承接原State/File/Controller、安全、MSISDN、Records、SIM短信存储、电话簿、STK、运营商配置/APN/权限及eUICC能力；不能把这些能力都解释为稳态CardRuntime的成员和实现。当前ProductionSlotBindings显式借用原对象，CardRuntime仍集中持会话、资源、加载、MSISDN关联和观察序列；本轮与result_sinks暂移至card/runtime过渡运行位置，仍属R逻辑target，H不取得这些状态写权。类尚未薄化，不能把物理搬迁宣称为运行责任拆分完成。稳态CardRuntime可仅作能力分派/结果绑定；协议/缓存和请求关联由对应能力组件拥有，session/resource按真实生命周期注入，不机械复制成熟类。原单一EsimManager内部已有普通/低优先级两套EsimFile，不创建第二Manager。
 
 CardRuntime借同一ITelRilManager，普通Radio三阶段用原控制器，专用Primary路径沿共享RIL。激活旧串行主要来自activeSimMutex_跨等待及PrimaryDone同锁，ctx_在cv.wait期间释放，不能恢复为“全程持有静态ctx_”。
@@ -489,6 +546,17 @@ CardRuntime借同一ITelRilManager，普通Radio三阶段用原控制器，专�
 | 发现观察流 | 每应用发现/失效共observationSequence，送T同一接纳序列 | 发送前在原写点准入；跨T的DB返回还须再次复核 |
 
 资源租约核对epoch、完整资源集、fence及完整StepRef。未发不能伪完成，已发不能伪NotSent；写Unknown不释放。只读查询在证明结束和可复用后可释放资源，但仍保留原失败结果；开通道Get也不能绕过冲突域。
+
+<a id="af1-barrier"></a>
+
+**AF-1 补充 · 唯一屏障实例的契约（PROPOSED，待架构负责人签收）。** ResourceBarrier 的公开方法沿用，自身保证每个方法的原子性，内部不调用外部代码。一个模块实例内只构造一个，由 H 在装配时构造、登记资源键并以引用交给执行适配：
+
+```cpp
+// device/resource/resource_radio_runtime.h
+ResourceRadioRuntime(ResourceBarrier &barrier, RadioPlatformPort &platform /*, 已验证路由表 */);
+```
+
+ResourceRadioRuntime 与卡侧需要占用设备的命令各自保存自己提交命令的租约。获取顺序为执行适配的状态保护在外、屏障在内；执行适配不在自身状态保护下调用平台，也不在其下查询或回调 Owner 的投递端口。632f6a2a8 的 ResourceBarrier 没有内部同步，由 ResourceRadioRuntime 的 lock_ 保护，且存在第二个未使用的实例。新实例登记的资源键从 Checking 起步，沿用现有 InitialRecoveryEvidence 的 noPriorExecutionCanContinue 与 resourceReusable 两项作为放行条件，不新增进程级注册表。范围与证明边界见[主设计 §12.3](SIM_Target_Architecture_Design_v1.2.md#af1-resource-admission)。
 
 ### 9.1 稳态能力与治理的接口边界
 
@@ -561,6 +629,48 @@ C monitor保留原登记、首帧、死亡清理、重连及预算，把账户/�
 H 在入口封好、Owner 封口任务生效后查询 A（包括 O/完成侧）、RetrySchedulerPort::Audit、R 的 OwnerCallbacksDrained 与 DeviceResourcesDrained，核对本地执行帧与接手收据。收据按原 epoch 固定；封口后每个旧请求从原 Owner 到完成/移交的转换不可出现短暂“无人持有”。在途投递先登记再交接。查询跨 Owner 时若不能得到稳定收据，保留未完成并可重复查询。缺少原出口/业务效果收据时返回非 Drained，并通过内部结果或原因字段区分“业务待完成/核对”、在途回调和设备待核对，保持公开 ABI。
 
 有效接手方须持强寿命或等价驻留保证，在释放原方前确认接到原请求、出口、写资格及未定键前缀/设备隔离，能接收晚证据并最终交付。bd4fbe833 没有验证这样的接手机制，默认原图留存。Scheduler 的取消和 R 的空闲均不能代 A 出具收据。重复 Stop 读同轮，回调线程只请求关闭不等待自己。不得为获得 Drained 而 Retire 或销毁接收方。[现有 Host 关闭入口](../services/multisim/infrastructure/assembly/primary_host_lifecycle.cpp) · [业务约束](SIM_Target_Architecture_Design_v1.2.md#sc01-close)
+
+<a id="af1-sim-module"></a>
+
+**AF-1 补充 · SimModule 核心装配与关闭（PROPOSED，待架构负责人签收）。** SimModule 是唯一的组合根和关闭入口。核心图只依赖端口，旧生产对象的借用留在附着工厂内。
+
+| 次序 | 对象 | 持有方式与说明 |
+|---|---|---|
+| 0 | SimHostPorts、SlotCatalog、RuntimeEpoch | 宿主提供。SimHostPorts 窄扩展：重试调度器、Owner 投递端口、Radio 平台端口、已验证资源路由 |
+| 1 | 各 Owner 的存储与输出端口 | 工厂按变体创建后交 SimModule 持有。Host 变体注入测试实现或 Provider bridge，附着变体由 ExistingSimBindings 构造原 Adapter |
+| 2 | C 的完成出口 | 成员 |
+| 3 | ResourceBarrier | 成员，先于所有执行适配构造、晚于它们析构 |
+| 4 | device 的 Radio 执行适配（现为 ResourceRadioRuntime） | 成员，借用屏障与平台端口 |
+| 5 | 卡运行能力 | 按能力切片装配，见下 |
+| 6 | TopologyService | 成员 |
+| 7 | AssignmentService | 共享持有；其 Radio 端口接第 4 项。执行适配与调度器对它只持弱引用 |
+| 8 | 号码、激活、本地 Profile 等用例 | 按能力切片装配 |
+| 9 | PrimaryHostLifecycle | 成员部件，负责 A、调度器与 Radio 的封口和排空，不作为并列的模块入口 |
+| 10 | 兼容入口 | 最后构造，最先析构 |
+
+构造之后依次绑定：T 的角色规划端口；卡观察到 T 的结果出口；Radio 执行适配的结果出口与 Owner 投递端口；A 的重试调度器；各资源键的初始恢复证据。任一步未完成则不对外提供入口。
+
+**能力切片。** 只装配其全部虚方法已有定义的能力，没有实现的能力不装配，其兼容入口不提供，不为可构建性补拒绝桩或成功桩。一个类同时承载已实现和未实现的端口时，按端口分出已实现部分。632f6a2a8 中 CardRuntime、SetShowNumberUseCase、ActivateSimUseCase、LegacyCompletion 都含只声明未定义的虚方法，按语言规则推断不能进入可执行目标，此推断尚未以构建验证。
+
+**关闭。** SimModule::StopAcceptingAndDrain 先封兼容入口并登记在途调用，令 T、用例和卡运行停止受理，再调用 PrimaryHostLifecycle，随后汇合各出具者的收据和屏障状态。私有 DrainResult 增加“业务责任未了”一值。得到 Drained 之后才允许按成员反序析构，析构时 AssignmentService 不得另有强持有者。未 Drained 时保留原图。
+
+关闭收据的最小形态如下，要求见[主设计 §14.3](SIM_Target_Architecture_Design_v1.2.md#af1-close-receipts)。字段的具体类型在实施时确定，但必须能逐项定位：
+
+```cpp
+// infrastructure/request 的协议头，纯值
+struct CloseObligation {
+    enum class Kind { RequestOpen, CompletionNotReturned, EffectUnknown, QualificationHeld };
+    Kind kind;
+    std::optional<RequestId> request; // 原请求；发现、重载等非请求工作留空并填 subject
+    std::string subject;              // 原工作项，以及 EffectUnknown / QualificationHeld 所指的键、行列或资格成员
+    bool handedOff;                   // 仅当常驻接手者对这一项给出确认
+};
+struct OwnerCloseReceipt { RuntimeEpoch epoch; std::vector<CloseObligation> outstanding; };
+```
+
+A、T、各用例和卡运行各增加一个只读的出具方法，内容来自各自已有的状态：A 的 pendingPrimary_、角色写集、未终态切换和未交还的完成；T 的 pendingDiscoveries_、观察台账中未结束的存储票据、已签发未接纳的重载尝试、激活进度；卡运行未结束的会话期望。632f6a2a8 的 A 在 C0 参数效果未知时不留 pendingPrimary_，在设备成功后的参数写未知时删除 pendingPrimary_，两处都须改为保留可出具的记录。
+
+**工厂范围。** Host 装配函数为 testonly，用于核心框架验证。AttachSimModuleToExisting 与 CreateOwnedSimServices 维持下表的声明状态，不因 Host 装配而提前实现。
 
 当前两种工厂用途已明确分开，稳态仍由infrastructure/assembly创建/拥有单套生产对象，仓内创建/HostPorts入口按exports白名单导出；Attach是过渡契约，不成为长期依赖旧sim的边界：
 
@@ -804,6 +914,7 @@ IDE转到定义只会落到已有定义。业务方法未定义是当前状态�
 | 文件双向桥与PIN记忆 | VerifyPinRequest/LoadSession存在即覆盖全部安全/booster业务 | 原File关联/回退/Opkey偏序；真实五类Hook、身份/敏感寿命与安全Owner裁决 |
 | 厂商映射父子结果及外部准入 | BeginRouteMapping声明或本仓屏障控制所有vendor旁路 | 原返回/部分效果→T/A接纳→R结束证据；共同协议及产品轨迹 |
 | 66250完整任务、产品Port/MEP能力 | Core复制下载/补偿或目录容量代表设备能力 | 匹配服务/产品/设备证据，只阻塞相关切片 |
+| AF-1 补充契约（唯一屏障注入、SimModule 核心装配与关闭收据、Radio 参与者规划、偏好入口准入） | 文档中出现接口形态即已实现或已批准 | 架构负责人签收后按 AF-2 实施；偏好冲突处置另需产品证据 |
 
 本批已修正的接口表达不等于这些生产条件已关闭；保留草案/未接入标记。报告记录继续保留历史输入，不回写为本批设备成果。
 
