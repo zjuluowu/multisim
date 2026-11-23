@@ -133,10 +133,71 @@ Host 无关消费者测试只能证明 Target 局部 Stop 没有触碰平台端�
 
 ## 7. 验收分级
 
-- **HOST_L3_PASS**：本 Target Primary B/C1 Host 切片的准入封口、旧请求保全、Owner callback 排空、retry cancel、R gate 分离及异步交错通过实际测试/TSan/ASan。
+- **CORE_LEGACY_HOST_L3_PASS**：真实 CoreServiceSim/Legacy SimManager + Handler Host bridge 已验证入口封口、原 IPC task/callback drain、真实 Stop、失败保留及共享 RIL 非所有权。它不等于产品 Core OnStop。
+- **PRIMARY_HOST_L3_PASS**：本 Target Primary B/C1 Host 切片的准入封口、旧请求保全、Owner callback 排空、retry cancel、R gate 分离及异步交错通过实际测试/TSan/ASan。
 - **PRODUCT_L3_BLOCKED**：CoreService::OnStop 未接线 SimManager::Stop，CMI/SA/共享 RIL/真实 handler 生命周期未产品验证。
 - **DEVICE_L4_BLOCKED**：真实 Modem/RIL command end、状态验证及资源复用未证实。
 - **SO_L5_BLOCKED / NOT_APPLICABLE**：是否动态卸载属于产品需求；当前宿主代码不具备足够证据。
+
+## 6.1 L3.2 真实关闭关系与 Host 接线
+
+基线为 `befd76d4eba73ade9552248c303e3d6f8427c8ce`。
+
+```text
+SA/CoreService::OnStop（产品尚未接线）
+  └─ 候选 CoreLegacyHostStop（test-only Host，调用真实源码）
+      ├─ CoreServiceSim::StopAccepting
+      ├─ Accepted/queued/running IPC task drain
+      └─ SimManager::Stop
+          ├─ TelLifecycle admission seal / SealWhenIdle
+          ├─ owned-work join
+          └─ Monitor/Controller/逐槽 components Shutdown
+
+CoreServiceSim 的 weak ISimManager task ----> 原 Manager（由 Core 持有）
+CoreServiceSim handler ----> IRawParcelCallback::Transfer（任务退出前保留 admission）
+Core / NetworkSearch / eSIM / Call / Data / CMI ----> 共享 TelRilManager
+SIM Stop 仅释放 SIM 自有观察/引用；不调用 TelRilManager::DeInit。
+```
+
+源码事实分级：
+
+- **VERIFIED_SOURCE**：Core Init 建立共享 RIL、eSIM、SimManager、CoreServiceSim、NetworkSearch；Core OnStop 仍只做 IMS/NetworkSearch/RIL HDF/extension，未接 SimManager Stop。
+- **VERIFIED_HOST**：真实 `CoreServiceSim`、真实 `SimManager::Stop`、真实 EventHandler submit path、Legacy manager graph 在 Host 一起执行。
+- **SIMULATED_HOST**：首入口 mock 仅用于精确卡住 Core 验证/参数写窗口；不作为 Legacy Manager 成功证据。
+- **BLOCKED**：实际 Core SA、Binder/FFRT product runner、共享 RIL 全消费者和产品 `OnStop`。
+
+## 6.2 CoreServiceSim 入口封口与 IPC 交接
+
+`CoreServiceSim` 增加内部 admission 票据：
+
+- 调用在权限/manager 前已取得票据的，Stop 后旧句柄不能进入；同步写到 `SetParameter`、Manager 调用前均在同一票据有效期内。
+- `AsyncSimGeneralExecute` / `AsyncSimPinExecute` 返回真实 PostTask bool。成功后票据转移到 posted closure，直到 Manager 调用和 `IRawParcelCallback::Transfer` 返回才退休；失败立即退票并返回既有 `LOCAL_PTR_NULL`。
+- `IRawParcelCallback::Transfer` 为 void，Host 只能证明 Transfer 被调用/返回，不能把远端 Binder 实际消费成功推导为已回包。
+- `StopAccepting()` 只关闭新票据；`WaitForAcceptedCallsDrained()` 读取真实 active ticket，不统计空队列或线程数。
+- `SetSimManager()` 代表新 Host generation，只有显式 replacement 才重开 admission；旧 queued task 捕获旧 weak Manager，不接触 replacement。
+- Stop 后同步只读入口仍保持既有查询兼容语义，但不授予写权；所有本类写/异步业务由 admission 封口。
+
+M1 确认两个 Core 前置用户偏好写点：`SetPrimarySlotId` 与 `SetActiveSim`。两者均在 Stop admission 下；其他同步写入口和所有 async Core 入口也使用同一票据或 PostTask 收据。只读查询仍不宣称 Manager 业务完成。
+
+## 6.3 Legacy Stop Host 执行
+
+窄 Host bridge 的顺序为 Core seal → Core posted/sync call drain → 原 `SimManager::Stop()`。它不拥有 RIL。失败时保持 Core/Manager/handler 对象，第二次调用重试；半初始化和 watcher removal 失败沿用真实 Legacy Stop 机制。
+
+Host 覆盖已接纳 IPC 正在 Transfer、PostTask 成功/失败、callback 内请求关闭、Core seal 与 manager Stop、重复 Stop、并发 Stop observer、Manager Stop 失败重试、共享 RIL 对象保留和旧/新 manager generation。统计为真实源码 Host 5/5、Core 入口 controlled seam 3/3；两类不合并。真实 Legacy owned-work/watcher/component Shutdown 由 `SimManager::Stop` 和既有 Legacy 测试执行，不用模拟器重写。
+
+L3.2 完整 fresh 回归：Target 76/76、Legacy 132/132、Both 208/208；六个冻结场景
+Oracle/Legacy-Target 差异为 0；architecture/GN/technical/integrity/CI/mutation/profile
+safety/production execution audit 均 PASS。
+
+Sanitizer 分级：PrimaryHostLifecycle 16/16 TSan、16/16 ASan；CoreServiceSim
+admission/side-effect seam 3/3 TSan、3/3 ASan。真实 Legacy graph 的完整 TSan
+尝试在 Host FFRT stub 中于测试初始化阶段以 `SEGV zero page` 退出；ASan
+尝试以 `Joining already joined thread` 退出，两者均发生在新增 Stop 断言之前，
+因此不报告 real graph sanitizer PASS。普通真实源码 Host 5/5 仍可执行。
+
+## 6.4 PrimaryHostLifecycle M4 修复
+
+Owner seal callback 不再捕获协调对象 `this`。它捕获共享 State 和 posted task 持有的 `AssignmentService` strong reference；因此协调对象可在投稿后销毁，A seal task 仍可执行和回填收据。Radio/Coordinator/scheduler 的调用顺序仍要求宿主保持 R/A/dispatcher 到任务释放，不能凭 callback receipt 提前销毁底层 Owner。
 
 ## 8. 真实 Core 接线准备（仅审查，不修改产品）
 

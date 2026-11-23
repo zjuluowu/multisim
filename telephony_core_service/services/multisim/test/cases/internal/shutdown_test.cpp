@@ -1,9 +1,32 @@
 #include "internal/common/lifecycle_fixture.h"
+#include "internal/host/primary/core_legacy_host.h"
 #include <future>
 #include <optional>
 namespace {
 using namespace Sim028Host;
 using namespace std::chrono_literals;
+
+class BlockingRawCallback final : public OHOS::Telephony::IRawParcelCallback {
+public:
+    explicit BlockingRawCallback(bool requestStopFromCallback=false)
+        : requestStopFromCallback_(requestStopFromCallback) {}
+    CoreServiceSim *core {nullptr};
+    void Transfer(std::function<void(MessageParcel &)> writer, MessageParcel &data) override
+    {
+        entered.set_value();
+        ++transfers;
+        try { writer(data); } catch (...) { ++transferErrors; }
+        if (requestStopFromCallback_ && core) { core->StopAccepting(); }
+        release.wait();
+    }
+    std::atomic<unsigned> transfers {0};
+    std::atomic<unsigned> transferErrors {0};
+    std::promise<void> entered;
+    std::promise<void> go;
+    std::shared_future<void> release=go.get_future().share();
+private:
+    bool requestStopFromCallback_;
+};
 
 TEST(PairingReview, AllThreeSlotsPublicDetach)
 {
@@ -212,6 +235,88 @@ TEST(ShutdownContract, HDestroyAndCreateNewGraph)
         auto replacement = std::static_pointer_cast<typename std::decay_t<decltype(manager)>::element_type>(s.manager);
         EXPECT_TRUE(replacement->Stop()); VerifyStopped(s, replacement, baseline);
         testing::Test::RecordProperty("business", "NOT_RUN");
+    });
+}
+
+TEST(ShutdownExtra, CoreLegacyHostCoordinatesRealManagerStop)
+{
+    WithRealGraph([](auto &s, auto &manager, const auto &baseline) {
+        auto unrelatedRilConsumer=s.ril;
+        CoreLegacyHostStop host(s.core,manager);
+        EXPECT_EQ(host.StopAndDrain(),CoreLegacyHostStop::Result::Drained);
+        EXPECT_EQ(host.StopAndDrain(),CoreLegacyHostStop::Result::Drained);
+        EXPECT_EQ(unrelatedRilConsumer.get(),s.ril.get());
+        EXPECT_TRUE(unrelatedRilConsumer);
+        unrelatedRilConsumer.reset();
+        VerifyStopped(s,manager,baseline);
+    });
+}
+
+TEST(ShutdownExtra, CoreLegacyHostRetainsManagerAfterStopFailureAndRetries)
+{
+    WatchBoundaryScope watchers;
+    PrimaryEnvironment s(true);ffrt::submit([]{});ffrt::wait();QueueBaseline baseline;
+    ASSERT_TRUE(s.StartLockedCard());
+    CoreLegacyHostStop host(s.core,std::static_pointer_cast<SimManager>(s.manager));
+    FailWatcherRemoval(true);
+    EXPECT_EQ(host.StopAndDrain(),CoreLegacyHostStop::Result::ManagerStopFailed);
+    EXPECT_TRUE(std::static_pointer_cast<SimManager>(s.manager)->IsStopping());
+    EXPECT_EQ(s.core.AcceptedCallsDrained(),true);
+    FailWatcherRemoval(false);
+    EXPECT_EQ(host.StopAndDrain(),CoreLegacyHostStop::Result::Drained);
+    VerifyStopped(s,s.manager,baseline);
+}
+
+TEST(ShutdownExtra, CoreEntrySealDrainsAcceptedIpcBeforeLegacyStop)
+{
+    WithRealGraph([](auto &s, auto &manager, const auto &baseline) {
+        auto callback=sptr<BlockingRawCallback>(new BlockingRawCallback());
+        EXPECT_EQ(s.core.HasSimCard(0,callback),TELEPHONY_ERR_SUCCESS);
+        ASSERT_EQ(callback->entered.get_future().wait_for(3s),std::future_status::ready);
+        CoreLegacyHostStop host(s.core,manager);
+        s.core.StopAccepting();
+        auto drain=std::async(std::launch::async,[&] { return host.StopAndDrain(); });
+        ASSERT_TRUE(host.WaitUntilStopping());
+        EXPECT_EQ(host.StopAndDrain(),CoreLegacyHostStop::Result::AlreadyStopping);
+        EXPECT_FALSE(s.core.AcceptedCallsDrained());
+        EXPECT_EQ(s.core.SetPrimarySlotId(1),TELEPHONY_ERR_LOCAL_PTR_NULL);
+        callback->go.set_value();
+        EXPECT_EQ(drain.get(),CoreLegacyHostStop::Result::Drained);
+        EXPECT_EQ(callback->transfers.load(),1u);
+        EXPECT_EQ(callback->transferErrors.load(),1u);
+        EXPECT_TRUE(StopExternalRunner());
+        VerifyStopped(s,manager,baseline);
+    });
+}
+
+TEST(ShutdownExtra, CoreCallbackMayRequestSealWithoutWaitingForSelf)
+{
+    WithRealGraph([](auto &s, auto &manager, const auto &baseline) {
+        auto callback=sptr<BlockingRawCallback>(new BlockingRawCallback(true));
+        callback->core=&s.core;
+        EXPECT_EQ(s.core.HasSimCard(0,callback),TELEPHONY_ERR_SUCCESS);
+        ASSERT_EQ(callback->entered.get_future().wait_for(3s),std::future_status::ready);
+        EXPECT_FALSE(s.core.AcceptedCallsDrained());
+        callback->go.set_value();
+        EXPECT_TRUE(s.core.WaitForAcceptedCallsDrained(3s));
+        EXPECT_TRUE(manager->Stop());
+        EXPECT_EQ(callback->transferErrors.load(),1u);
+        EXPECT_TRUE(StopExternalRunner());
+        VerifyStopped(s,manager,baseline);
+    });
+}
+
+TEST(ShutdownExtra, CorePostTaskFailureReturnsNoCompletionOwnership)
+{
+    WithRealGraph([](auto &s, auto &manager, const auto &baseline) {
+        EXPECT_TRUE(StopExternalRunner());
+        auto callback=sptr<BlockingRawCallback>(new BlockingRawCallback());
+        EXPECT_EQ(s.core.HasSimCard(0,callback),TELEPHONY_ERR_LOCAL_PTR_NULL);
+        EXPECT_EQ(callback->transfers.load(),0u);
+        EXPECT_TRUE(s.core.AcceptedCallsDrained());
+        EXPECT_TRUE(StartExternalRunner());
+        EXPECT_TRUE(manager->Stop());
+        VerifyStopped(s,manager,baseline);
     });
 }
 

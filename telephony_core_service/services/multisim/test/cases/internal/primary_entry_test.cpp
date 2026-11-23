@@ -1,6 +1,49 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "internal/host/primary_entry_fixture.h"
+#include <future>
 namespace PrimarySlotHost {
+TEST_F(PrimaryEntry, StopSealsOldHandleBeforeParameterAndManagerWrite)
+{
+    core.StopAccepting();
+    EXPECT_EQ(core.SetPrimarySlotId(1), TELEPHONY_ERR_LOCAL_PTR_NULL);
+    EXPECT_EQ(core.SetActiveSim(1,1), TELEPHONY_ERR_LOCAL_PTR_NULL);
+    EXPECT_TRUE(core.AcceptedCallsDrained());
+}
+
+TEST_F(PrimaryEntry, StopDoesNotCrossAlreadyAcceptedParameterWrite)
+{
+    Permit();
+    EXPECT_CALL(*manager, HasSimCard(1, _)).WillOnce(DoAll(SetArgReferee<1>(true), Return(0)));
+    std::promise<void> entered, release;
+    auto released=release.get_future().share();
+    EXPECT_CALL(*manager, IsSimActive(1)).WillOnce([&] {
+        entered.set_value(); released.wait(); return true;
+    });
+    EXPECT_CALL(identity, WriteParameter(USER_PREFER_PRIMARY_SLOT, "true")).WillOnce(Return(0));
+    EXPECT_CALL(*manager, SetPrimarySlotId(1,true)).WillOnce(Return(TELEPHONY_ERR_SUCCESS));
+    auto accepted=std::async(std::launch::async,[&] { return core.SetPrimarySlotId(1); });
+    ASSERT_EQ(entered.get_future().wait_for(std::chrono::seconds(3)),std::future_status::ready);
+    core.StopAccepting();
+    EXPECT_FALSE(core.AcceptedCallsDrained());
+    EXPECT_EQ(accepted.wait_for(std::chrono::milliseconds(0)),std::future_status::timeout);
+    release.set_value();
+    EXPECT_EQ(accepted.get(),TELEPHONY_ERR_SUCCESS);
+    EXPECT_TRUE(core.WaitForAcceptedCallsDrained(std::chrono::seconds(3)));
+}
+
+TEST_F(PrimaryEntry, StopReopensOnlyOnNewManagerGeneration)
+{
+    core.StopAccepting();
+    EXPECT_EQ(core.SetPrimarySlotId(1),TELEPHONY_ERR_LOCAL_PTR_NULL);
+    auto replacement=std::make_shared<testing::StrictMock<ManagerSeam>>();
+    manager=replacement;
+    core.SetSimManager(manager);
+    Permit();
+    Ready(1);
+    Delegate(1,TELEPHONY_ERR_SUCCESS);
+    EXPECT_EQ(core.SetPrimarySlotId(1),TELEPHONY_ERR_SUCCESS);
+}
+
 TEST_F(PrimaryEntry, NonSystemCallerPrecedesPermissionAndNullManager)
 {
     core.SetSimManager(nullptr);

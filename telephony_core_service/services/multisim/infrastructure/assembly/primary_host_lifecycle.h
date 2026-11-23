@@ -16,22 +16,25 @@ namespace OHOS::Telephony::MultiSim {
 class PrimaryHostLifecycle final {
 public:
     enum class DrainResult { Drained, CallbacksStillInFlight, DeviceEffectsUnresolved };
-    PrimaryHostLifecycle(AssignmentService &assignment, ResourceRadioRuntime &radio,
+    PrimaryHostLifecycle(const std::shared_ptr<AssignmentService> &assignment, ResourceRadioRuntime &radio,
         RetrySchedulerPort &scheduler, const std::shared_ptr<RadioOwnerDispatchPort> &ownerDispatch);
     DrainResult StopAcceptingAndDrain();
     bool IsStopped() const;
 private:
-    AssignmentService &assignment_;
+    std::weak_ptr<AssignmentService> assignment_;
     ResourceRadioRuntime &radio_;
     RetrySchedulerPort &scheduler_;
     std::weak_ptr<RadioOwnerDispatchPort> ownerDispatch_;
-    mutable std::mutex mutex_;
-    bool stopping_ {false};
-    bool sealsComplete_ {false};
-    bool closePosted_ {false};
-    bool gateSealStarted_ {false};
-    bool gatesSealed_ {false};
-    bool stopped_ {false};
+    struct State {
+        std::mutex mutex;
+        bool stopping {false};
+        bool sealsComplete {false};
+        bool closePosted {false};
+        bool gateSealStarted {false};
+        bool gatesSealed {false};
+        bool stopped {false};
+    };
+    std::shared_ptr<State> state_;
 };
 } // namespace OHOS::Telephony::MultiSim
 

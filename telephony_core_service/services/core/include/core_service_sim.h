@@ -20,6 +20,7 @@
 #include "i_raw_parcel_callback.h"
 #include "i_sim_manager.h"
 #include "event_handler.h"
+#include <chrono>
 
 namespace OHOS {
 namespace Telephony {
@@ -32,6 +33,13 @@ public:
 
     void SetSimManager(const std::shared_ptr<ISimManager> &simManager);
     const std::shared_ptr<ISimManager> &GetSimManager() const;
+
+    // Internal host lifecycle seam; this is not an IPC/IDL contract. Closing rejects
+    // new work while accepted synchronous and posted callback work retires through
+    // its original CoreServiceSim/Completion route.
+    void StopAccepting();
+    bool AcceptedCallsDrained() const;
+    bool WaitForAcceptedCallsDrained(std::chrono::milliseconds timeout);
 
     int32_t HasSimCard(int32_t slotId, const sptr<IRawParcelCallback> &callback);
     int32_t GetSimState(int32_t slotId, const sptr<IRawParcelCallback> &callback);
@@ -136,13 +144,28 @@ public:
     int32_t SetSimLabelIndex(int32_t simId, int32_t simLabelIndex, const sptr<IRawParcelCallback> &callback);
 
 private:
-    virtual void AsyncSimGeneralExecute(const std::function<void()> task);
-    virtual void AsyncSimPinExecute(const std::function<void()> task);
+    class Admission final {
+    public:
+        explicit Admission(CoreServiceSim &owner);
+        ~Admission();
+        explicit operator bool() const { return accepted_; }
+    private:
+        CoreServiceSim &owner_;
+        bool accepted_ {false};
+    };
+    bool TryBeginCall();
+    void EndCall();
+    virtual bool AsyncSimGeneralExecute(const std::function<void()> task);
+    virtual bool AsyncSimPinExecute(const std::function<void()> task);
 private:
     std::shared_ptr<ISimManager> simManager_;
     std::shared_ptr<AppExecFwk::EventHandler> simGeneralHandler_;
     std::shared_ptr<AppExecFwk::EventHandler> simPinHandler_;
     ffrt::mutex handlerInitMutex_;
+    mutable ffrt::mutex admissionMutex_;
+    mutable ffrt::condition_variable admissionChanged_;
+    bool accepting_ {true};
+    size_t acceptedCalls_ {0};
 };
 
 } // namespace Telephony

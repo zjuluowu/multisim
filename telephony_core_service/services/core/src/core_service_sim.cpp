@@ -24,8 +24,49 @@
 
 namespace OHOS {
 namespace Telephony {
-void CoreServiceSim::AsyncSimGeneralExecute(const std::function<void()> task)
+CoreServiceSim::Admission::Admission(CoreServiceSim &owner) : owner_(owner), accepted_(owner_.TryBeginCall()) {}
+CoreServiceSim::Admission::~Admission()
 {
+    if (accepted_) { owner_.EndCall(); }
+}
+
+bool CoreServiceSim::TryBeginCall()
+{
+    std::lock_guard<ffrt::mutex> lock(admissionMutex_);
+    if (!accepting_) { return false; }
+    ++acceptedCalls_;
+    return true;
+}
+
+void CoreServiceSim::EndCall()
+{
+    std::lock_guard<ffrt::mutex> lock(admissionMutex_);
+    if (acceptedCalls_ != 0) { --acceptedCalls_; }
+    if (acceptedCalls_ == 0) { admissionChanged_.notify_all(); }
+}
+
+void CoreServiceSim::StopAccepting()
+{
+    std::lock_guard<ffrt::mutex> lock(admissionMutex_);
+    accepting_ = false;
+}
+
+bool CoreServiceSim::AcceptedCallsDrained() const
+{
+    std::lock_guard<ffrt::mutex> lock(admissionMutex_);
+    return acceptedCalls_ == 0;
+}
+
+bool CoreServiceSim::WaitForAcceptedCallsDrained(std::chrono::milliseconds timeout)
+{
+    std::unique_lock<ffrt::mutex> lock(admissionMutex_);
+    return admissionChanged_.wait_for(lock, timeout, [this] { return acceptedCalls_ == 0; });
+}
+
+bool CoreServiceSim::AsyncSimGeneralExecute(const std::function<void()> task)
+{
+    Admission admission(*this);
+    if (!admission) { return false; }
     if (simGeneralHandler_ == nullptr) {
         std::unique_lock<ffrt::mutex> lock(handlerInitMutex_);
         if (simGeneralHandler_ == nullptr) {
@@ -34,11 +75,16 @@ void CoreServiceSim::AsyncSimGeneralExecute(const std::function<void()> task)
             simGeneralHandler_ = std::make_shared<AppExecFwk::EventHandler>(simManagerRunner);
         }
     }
-    simGeneralHandler_->PostTask(task);
+    auto completion = std::shared_ptr<Admission>(new Admission(*this));
+    if (!*completion) { return false; }
+    if (!simGeneralHandler_->PostTask([task, completion] { task(); })) { return false; }
+    return true;
 }
 
-void CoreServiceSim::AsyncSimPinExecute(const std::function<void()> task)
+bool CoreServiceSim::AsyncSimPinExecute(const std::function<void()> task)
 {
+    Admission admission(*this);
+    if (!admission) { return false; }
     if (simPinHandler_ == nullptr) {
         std::unique_lock<ffrt::mutex> lock(handlerInitMutex_);
         if (simPinHandler_ == nullptr) {
@@ -47,16 +93,22 @@ void CoreServiceSim::AsyncSimPinExecute(const std::function<void()> task)
             simPinHandler_ = std::make_shared<AppExecFwk::EventHandler>(simManagerRunner);
         }
     }
-    simPinHandler_->PostTask(task);
+    auto completion = std::shared_ptr<Admission>(new Admission(*this));
+    if (!*completion) { return false; }
+    if (!simPinHandler_->PostTask([task, completion] { task(); })) { return false; }
+    return true;
 }
 
 void CoreServiceSim::SetSimManager(const std::shared_ptr<ISimManager> &simManager)
 {
+    std::lock_guard<ffrt::mutex> admission(admissionMutex_);
     simManager_ = simManager;
+    accepting_ = true;
 }
 
 const std::shared_ptr<ISimManager> &CoreServiceSim::GetSimManager() const
 {
+    std::lock_guard<ffrt::mutex> admission(admissionMutex_);
     return simManager_;
 }
 
@@ -70,7 +122,7 @@ int32_t CoreServiceSim::HasSimCard(int32_t slotId, const sptr<IRawParcelCallback
         TELEPHONY_LOGE("HasSimCard slotId %{public}d is not supported", slotId);
         return TELEPHONY_ERR_SLOTID_INVALID;
     }
-    AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, callback]() {
+    if (!AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, callback]() {
         bool hasSimCard = false;
         MessageParcel dataTmp;
         auto simManager = wp.lock();
@@ -84,7 +136,7 @@ int32_t CoreServiceSim::HasSimCard(int32_t slotId, const sptr<IRawParcelCallback
                 data.WriteBool(hasSimCard);
             }
             }, dataTmp);
-    });
+    })) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     return TELEPHONY_ERR_SUCCESS;
 }
 
@@ -98,7 +150,7 @@ int32_t CoreServiceSim::GetSimState(int32_t slotId, const sptr<IRawParcelCallbac
         TELEPHONY_LOGE("GetSimState slotId %{public}d is not supported", slotId);
         return TELEPHONY_ERR_SLOTID_INVALID;
     }
-    AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, callback]() {
+    if (!AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, callback]() {
         SimState simState = SimState::SIM_STATE_UNKNOWN;
         MessageParcel dataTmp;
         auto simManager = wp.lock();
@@ -112,7 +164,7 @@ int32_t CoreServiceSim::GetSimState(int32_t slotId, const sptr<IRawParcelCallbac
                 data.WriteInt32(static_cast<int32_t>(simState));
             }
             }, dataTmp);
-    });
+    })) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     return TELEPHONY_ERR_SUCCESS;
 }
 
@@ -244,7 +296,7 @@ int32_t CoreServiceSim::IsCTSimCard(int32_t slotId, const sptr<IRawParcelCallbac
         TELEPHONY_LOGE("IsCTSimCard slotId %{public}d is not supported", slotId);
         return TELEPHONY_ERR_SLOTID_INVALID;
     }
-    AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, callback]() {
+    if (!AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, callback]() {
         bool isCTSimCard = false;
         MessageParcel dataTmp;
         auto simManager = wp.lock();
@@ -258,7 +310,7 @@ int32_t CoreServiceSim::IsCTSimCard(int32_t slotId, const sptr<IRawParcelCallbac
                 data.WriteBool(isCTSimCard);
             }
             }, dataTmp);
-    });
+    })) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     return TELEPHONY_ERR_SUCCESS;
 }
 
@@ -272,7 +324,7 @@ bool CoreServiceSim::IsSimActive(int32_t slotId, const sptr<IRawParcelCallback> 
         TELEPHONY_LOGE("IsSimActive slotId %{public}d is not supported", slotId);
         return TELEPHONY_ERR_SLOTID_INVALID;
     }
-    AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, callback]() {
+    if (!AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, callback]() {
         bool isSimActive = false;
         MessageParcel dataTmp;
         auto simManager = wp.lock();
@@ -282,7 +334,7 @@ bool CoreServiceSim::IsSimActive(int32_t slotId, const sptr<IRawParcelCallback> 
         callback->Transfer([=](MessageParcel &data) {
             data.WriteBool(isSimActive);
             }, dataTmp);
-    });
+    })) { return false; }
     return true;
 }
 
@@ -393,6 +445,8 @@ int32_t CoreServiceSim::GetSimAccountInfo(int32_t slotId, IccAccountInfo &info)
 
 int32_t CoreServiceSim::SetDefaultVoiceSlotId(int32_t slotId)
 {
+    Admission admission(*this);
+    if (!admission) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     if (!TelephonyPermission::CheckCallerIsSystemApp()) {
         TELEPHONY_LOGE("Non-system applications use system APIs!");
         return TELEPHONY_ERR_ILLEGAL_USE_OF_SYSTEM_API;
@@ -435,7 +489,7 @@ int32_t CoreServiceSim::GetDefaultVoiceSimId(const sptr<IRawParcelCallback> &cal
         TELEPHONY_LOGE("simManager_ is null or GetDefaultVoiceSimId no callback");
         return TELEPHONY_ERR_LOCAL_PTR_NULL;
     }
-    AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), callback]() {
+    if (!AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), callback]() {
         int32_t simId = 0;
         MessageParcel dataTmp;
         auto simManager = wp.lock();
@@ -449,12 +503,14 @@ int32_t CoreServiceSim::GetDefaultVoiceSimId(const sptr<IRawParcelCallback> &cal
                 data.WriteInt32(simId);
             }
             }, dataTmp);
-    });
+    })) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     return TELEPHONY_ERR_SUCCESS;
 }
 
 int32_t CoreServiceSim::SetPrimarySlotId(int32_t slotId)
 {
+    Admission admission(*this);
+    if (!admission) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     if (!TelephonyPermission::CheckCallerIsSystemApp()) {
         TELEPHONY_LOGE("Non-system applications use system APIs!");
         return TELEPHONY_ERR_ILLEGAL_USE_OF_SYSTEM_API;
@@ -518,7 +574,7 @@ int32_t CoreServiceSim::SetShowNumber(int32_t slotId, const std::u16string &numb
         TELEPHONY_LOGE("SetShowNumber slotId %{public}d is not supported", slotId);
         return TELEPHONY_ERR_SLOTID_INVALID;
     }
-    AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, number, callback]() {
+    if (!AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, number, callback]() {
         MessageParcel dataTmp;
         auto simManager = wp.lock();
         int32_t ret = TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL;
@@ -528,7 +584,7 @@ int32_t CoreServiceSim::SetShowNumber(int32_t slotId, const std::u16string &numb
         callback->Transfer([=](MessageParcel &data) {
             data.WriteInt32(ret);
             }, dataTmp);
-    });
+    })) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     return TELEPHONY_ERR_SUCCESS;
 }
 
@@ -550,7 +606,7 @@ int32_t CoreServiceSim::GetShowNumber(int32_t slotId, const sptr<IRawParcelCallb
         TELEPHONY_LOGE("GetShowNumber slotId %{public}d is not supported", slotId);
         return TELEPHONY_ERR_SLOTID_INVALID;
     }
-    AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, callback]() {
+    if (!AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, callback]() {
         std::u16string showNumber = u"";
         MessageParcel dataTmp;
         auto simManager = wp.lock();
@@ -564,7 +620,7 @@ int32_t CoreServiceSim::GetShowNumber(int32_t slotId, const sptr<IRawParcelCallb
                 data.WriteString16(showNumber);
             }
             }, dataTmp);
-    });
+    })) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     return TELEPHONY_ERR_SUCCESS;
 }
 
@@ -587,7 +643,7 @@ int32_t CoreServiceSim::SetShowName(int32_t slotId, const std::u16string &name,
         TELEPHONY_LOGE("SetShowName slotId %{public}d is not supported", slotId);
         return TELEPHONY_ERR_SLOTID_INVALID;
     }
-    AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, name, callback]() {
+    if (!AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, name, callback]() {
         MessageParcel dataTmp;
         auto simManager = wp.lock();
         int32_t ret = TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL;
@@ -597,7 +653,7 @@ int32_t CoreServiceSim::SetShowName(int32_t slotId, const std::u16string &name,
         callback->Transfer([=](MessageParcel &data) {
             data.WriteInt32(ret);
             }, dataTmp);
-    });
+    })) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     return TELEPHONY_ERR_SUCCESS;
 }
 
@@ -623,7 +679,7 @@ int32_t CoreServiceSim::GetShowName(int32_t slotId, const sptr<IRawParcelCallbac
         TELEPHONY_LOGE("GetShowName slotId %{public}d is not supported", slotId);
         return TELEPHONY_ERR_SLOTID_INVALID;
     }
-    AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, callback]() {
+    if (!AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, callback]() {
         std::u16string showName = u"";
         MessageParcel dataTmp;
         auto simManager = wp.lock();
@@ -637,7 +693,7 @@ int32_t CoreServiceSim::GetShowName(int32_t slotId, const sptr<IRawParcelCallbac
                 data.WriteString16(showName);
             }
             }, dataTmp);
-    });
+    })) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     return TELEPHONY_ERR_SUCCESS;
 }
 
@@ -708,7 +764,7 @@ int32_t CoreServiceSim::UnlockPin(const int32_t slotId, const std::u16string &pi
         TELEPHONY_LOGE("UnlockPin slotId %{public}d is not supported", slotId);
         return TELEPHONY_ERR_SLOTID_INVALID;
     }
-    AsyncSimPinExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, pin, callback]() {
+    if (!AsyncSimPinExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, pin, callback]() {
         LockStatusResponse response = { UNLOCK_FAIL, TELEPHONY_ERROR };
         MessageParcel dataTmp;
         auto simManager = wp.lock();
@@ -723,7 +779,7 @@ int32_t CoreServiceSim::UnlockPin(const int32_t slotId, const std::u16string &pi
                 data.WriteInt32(response.remain);
             }
             }, dataTmp);
-    });
+    })) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     return TELEPHONY_ERR_SUCCESS;
 }
 
@@ -752,7 +808,7 @@ int32_t CoreServiceSim::UnlockPuk(const int slotId, const std::u16string &newPin
         TELEPHONY_LOGE("UnlockPuk slotId %{public}d is not supported", slotId);
         return TELEPHONY_ERR_SLOTID_INVALID;
     }
-    AsyncSimPinExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, newPin, puk, callback]() {
+    if (!AsyncSimPinExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, newPin, puk, callback]() {
         LockStatusResponse response = { UNLOCK_FAIL, TELEPHONY_ERROR };
         MessageParcel dataTmp;
         auto simManager = wp.lock();
@@ -767,7 +823,7 @@ int32_t CoreServiceSim::UnlockPuk(const int slotId, const std::u16string &newPin
                 data.WriteInt32(response.remain);
             }
             }, dataTmp);
-    });
+    })) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     return TELEPHONY_ERR_SUCCESS;
 }
 
@@ -796,7 +852,7 @@ int32_t CoreServiceSim::AlterPin(const int slotId, const std::u16string &newPin,
         TELEPHONY_LOGE("AlterPin slotId %{public}d is not supported", slotId);
         return TELEPHONY_ERR_SLOTID_INVALID;
     }
-    AsyncSimPinExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, newPin, oldPin, callback]() {
+    if (!AsyncSimPinExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, newPin, oldPin, callback]() {
         LockStatusResponse response = { UNLOCK_FAIL, TELEPHONY_ERROR };
         MessageParcel dataTmp;
         auto simManager = wp.lock();
@@ -811,7 +867,7 @@ int32_t CoreServiceSim::AlterPin(const int slotId, const std::u16string &newPin,
                 data.WriteInt32(response.remain);
             }
             }, dataTmp);
-    });
+    })) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     return TELEPHONY_ERR_SUCCESS;
 }
 
@@ -840,7 +896,7 @@ int32_t CoreServiceSim::UnlockPin2(const int32_t slotId, const std::u16string &p
         TELEPHONY_LOGE("UnlockPin2 slotId %{public}d is not supported", slotId);
         return TELEPHONY_ERR_SLOTID_INVALID;
     }
-    AsyncSimPinExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, pin2, callback]() {
+    if (!AsyncSimPinExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, pin2, callback]() {
         LockStatusResponse response = { UNLOCK_FAIL, TELEPHONY_ERROR };
         MessageParcel dataTmp;
         auto simManager = wp.lock();
@@ -855,7 +911,7 @@ int32_t CoreServiceSim::UnlockPin2(const int32_t slotId, const std::u16string &p
                 data.WriteInt32(response.remain);
             }
             }, dataTmp);
-    });
+    })) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     return TELEPHONY_ERR_SUCCESS;
 }
 
@@ -884,7 +940,7 @@ int32_t CoreServiceSim::UnlockPuk2(const int slotId, const std::u16string &newPi
         TELEPHONY_LOGE("UnlockPuk2 slotId %{public}d is not supported", slotId);
         return TELEPHONY_ERR_SLOTID_INVALID;
     }
-    AsyncSimPinExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, newPin2, puk2, callback]() {
+    if (!AsyncSimPinExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, newPin2, puk2, callback]() {
         LockStatusResponse response = { UNLOCK_FAIL, TELEPHONY_ERROR };
         MessageParcel dataTmp;
         auto simManager = wp.lock();
@@ -899,7 +955,7 @@ int32_t CoreServiceSim::UnlockPuk2(const int slotId, const std::u16string &newPi
                 data.WriteInt32(response.remain);
             }
             }, dataTmp);
-    });
+    })) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     return TELEPHONY_ERR_SUCCESS;
 }
 
@@ -928,7 +984,7 @@ int32_t CoreServiceSim::AlterPin2(const int slotId, const std::u16string &newPin
         TELEPHONY_LOGE("AlterPin2 slotId %{public}d is not supported", slotId);
         return TELEPHONY_ERR_SLOTID_INVALID;
     }
-    AsyncSimPinExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, newPin2, oldPin2, callback]() {
+    if (!AsyncSimPinExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, newPin2, oldPin2, callback]() {
         LockStatusResponse response = { UNLOCK_FAIL, TELEPHONY_ERROR };
         MessageParcel dataTmp;
         auto simManager = wp.lock();
@@ -943,7 +999,7 @@ int32_t CoreServiceSim::AlterPin2(const int slotId, const std::u16string &newPin
                 data.WriteInt32(response.remain);
             }
             }, dataTmp);
-    });
+    })) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     return TELEPHONY_ERR_SUCCESS;
 }
 
@@ -975,7 +1031,7 @@ int32_t CoreServiceSim::SetLockState(int32_t slotId, const LockInfo &options, co
         TELEPHONY_LOGE("SetLockState slotId %{public}d is not supported", slotId);
         return TELEPHONY_ERR_SLOTID_INVALID;
     }
-    AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, options, callback]() {
+    if (!AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, options, callback]() {
         LockStatusResponse response = { UNLOCK_FAIL, TELEPHONY_ERROR };
         MessageParcel dataTmp;
         auto simManager = wp.lock();
@@ -990,7 +1046,7 @@ int32_t CoreServiceSim::SetLockState(int32_t slotId, const LockInfo &options, co
                 data.WriteInt32(response.remain);
             }
             }, dataTmp);
-    });
+    })) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     return TELEPHONY_ERR_SUCCESS;
 }
 
@@ -1017,7 +1073,7 @@ int32_t CoreServiceSim::GetLockState(int32_t slotId, LockType lockType, const sp
         TELEPHONY_LOGE("GetLockState slotId %{public}d is not supported", slotId);
         return TELEPHONY_ERR_SLOTID_INVALID;
     }
-    AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, lockType, callback]() {
+    if (!AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, lockType, callback]() {
         LockState lockState = LockState::LOCK_ERROR;
         MessageParcel dataTmp;
         auto simManager = wp.lock();
@@ -1031,12 +1087,14 @@ int32_t CoreServiceSim::GetLockState(int32_t slotId, LockType lockType, const sp
                 data.WriteInt32(static_cast<int32_t>(lockState));
             }
             }, dataTmp);
-    });
+    })) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     return TELEPHONY_ERR_SUCCESS;
 }
 
 int32_t CoreServiceSim::RefreshSimState(int32_t slotId)
 {
+    Admission admission(*this);
+    if (!admission) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     if (!TelephonyPermission::CheckCallerIsSystemApp()) {
         TELEPHONY_LOGE("Non-system applications use system APIs!");
         return TELEPHONY_ERR_ILLEGAL_USE_OF_SYSTEM_API;
@@ -1050,6 +1108,8 @@ int32_t CoreServiceSim::RefreshSimState(int32_t slotId)
 
 int32_t CoreServiceSim::SetActiveSim(int32_t slotId, int32_t enable)
 {
+    Admission admission(*this);
+    if (!admission) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     if (!TelephonyPermission::CheckCallerIsSystemApp()) {
         TELEPHONY_LOGE("Non-system applications use system APIs!");
         return TELEPHONY_ERR_ILLEGAL_USE_OF_SYSTEM_API;
@@ -1072,6 +1132,8 @@ int32_t CoreServiceSim::SetActiveSim(int32_t slotId, int32_t enable)
 
 int32_t CoreServiceSim::SetActiveSimSatellite(int32_t slotId, int32_t enable)
 {
+    Admission admission(*this);
+    if (!admission) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     if (!TelephonyPermission::CheckCallerIsSystemApp()) {
         TELEPHONY_LOGE("Non-system applications use system APIs!");
         return TELEPHONY_ERR_ILLEGAL_USE_OF_SYSTEM_API;
@@ -1188,6 +1250,8 @@ int32_t CoreServiceSim::GetVoiceMailCount(int32_t slotId, int32_t &voiceMailCoun
 
 int32_t CoreServiceSim::SetVoiceMailCount(int32_t slotId, int32_t voiceMailCount)
 {
+    Admission admission(*this);
+    if (!admission) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     if (!TelephonyPermission::CheckPermission(Permission::SET_TELEPHONY_STATE)) {
         TELEPHONY_LOGE("permission denied!");
         return TELEPHONY_ERR_PERMISSION_ERR;
@@ -1202,6 +1266,8 @@ int32_t CoreServiceSim::SetVoiceMailCount(int32_t slotId, int32_t voiceMailCount
 
 int32_t CoreServiceSim::SetVoiceCallForwarding(int32_t slotId, bool enable, const std::string &number)
 {
+    Admission admission(*this);
+    if (!admission) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     if (!TelephonyPermission::CheckPermission(Permission::SET_TELEPHONY_STATE)) {
         TELEPHONY_LOGE("permission denied!");
         return TELEPHONY_ERR_PERMISSION_ERR;
@@ -1239,6 +1305,8 @@ int32_t CoreServiceSim::QueryIccDiallingNumbers(
 int32_t CoreServiceSim::AddIccDiallingNumbers(
     int slotId, int type, const std::shared_ptr<DiallingNumbersInfo> &diallingNumber)
 {
+    Admission admission(*this);
+    if (!admission) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     if (!TelephonyPermission::CheckCallerIsSystemApp()) {
         TELEPHONY_LOGE("Non-system applications use system APIs!");
         return TELEPHONY_ERR_ILLEGAL_USE_OF_SYSTEM_API;
@@ -1261,6 +1329,8 @@ int32_t CoreServiceSim::AddIccDiallingNumbers(
 int32_t CoreServiceSim::DelIccDiallingNumbers(
     int slotId, int type, const std::shared_ptr<DiallingNumbersInfo> &diallingNumber)
 {
+    Admission admission(*this);
+    if (!admission) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     if (!TelephonyPermission::CheckCallerIsSystemApp()) {
         TELEPHONY_LOGE("Non-system applications use system APIs!");
         return TELEPHONY_ERR_ILLEGAL_USE_OF_SYSTEM_API;
@@ -1283,6 +1353,8 @@ int32_t CoreServiceSim::DelIccDiallingNumbers(
 int32_t CoreServiceSim::UpdateIccDiallingNumbers(
     int slotId, int type, const std::shared_ptr<DiallingNumbersInfo> &diallingNumber)
 {
+    Admission admission(*this);
+    if (!admission) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     if (!TelephonyPermission::CheckCallerIsSystemApp()) {
         TELEPHONY_LOGE("Non-system applications use system APIs!");
         return TELEPHONY_ERR_ILLEGAL_USE_OF_SYSTEM_API;
@@ -1305,6 +1377,8 @@ int32_t CoreServiceSim::UpdateIccDiallingNumbers(
 int32_t CoreServiceSim::SetVoiceMailInfo(
     const int32_t slotId, const std::u16string &mailName, const std::u16string &mailNumber)
 {
+    Admission admission(*this);
+    if (!admission) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     if (!TelephonyPermission::CheckCallerIsSystemApp()) {
         TELEPHONY_LOGE("Non-system applications use system APIs!");
         return TELEPHONY_ERR_ILLEGAL_USE_OF_SYSTEM_API;
@@ -1361,6 +1435,8 @@ int32_t CoreServiceSim::GetOpName(int32_t slotId, std::u16string &opname)
 
 int32_t CoreServiceSim::SendEnvelopeCmd(int32_t slotId, const std::string &cmd)
 {
+    Admission admission(*this);
+    if (!admission) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     if (!TelephonyPermission::CheckCallerIsSystemApp()) {
         TELEPHONY_LOGE("Non-system applications use system APIs!");
         return TELEPHONY_ERR_ILLEGAL_USE_OF_SYSTEM_API;
@@ -1382,6 +1458,8 @@ int32_t CoreServiceSim::SendEnvelopeCmd(int32_t slotId, const std::string &cmd)
 
 int32_t CoreServiceSim::SendTerminalResponseCmd(int32_t slotId, const std::string &cmd)
 {
+    Admission admission(*this);
+    if (!admission) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     if (!TelephonyPermission::CheckCallerIsSystemApp()) {
         TELEPHONY_LOGE("Non-system applications use system APIs!");
         return TELEPHONY_ERR_ILLEGAL_USE_OF_SYSTEM_API;
@@ -1403,6 +1481,8 @@ int32_t CoreServiceSim::SendTerminalResponseCmd(int32_t slotId, const std::strin
 
 int32_t CoreServiceSim::SendCallSetupRequestResult(int32_t slotId, bool accept)
 {
+    Admission admission(*this);
+    if (!admission) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     if (!TelephonyPermission::CheckCallerIsSystemApp()) {
         TELEPHONY_LOGE("Non-system applications use system APIs!");
         return TELEPHONY_ERR_ILLEGAL_USE_OF_SYSTEM_API;
@@ -1424,6 +1504,8 @@ int32_t CoreServiceSim::SendCallSetupRequestResult(int32_t slotId, bool accept)
 
 int32_t CoreServiceSim::UnlockSimLock(int32_t slotId, const PersoLockInfo &lockInfo, LockStatusResponse &response)
 {
+    Admission admission(*this);
+    if (!admission) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     if (!TelephonyPermission::CheckCallerIsSystemApp()) {
         TELEPHONY_LOGE("Non-system applications use system APIs!");
         return TELEPHONY_ERR_ILLEGAL_USE_OF_SYSTEM_API;
@@ -1459,7 +1541,7 @@ int32_t CoreServiceSim::HasOperatorPrivileges(const int32_t slotId, const sptr<I
         TELEPHONY_LOGE("HasOperatorPrivileges slotId %{public}d is not supported", slotId);
         return TELEPHONY_ERR_SLOTID_INVALID;
     }
-    AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, callback]() {
+    if (!AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, callback]() {
         bool hasOperatorPrivileges = false;
         MessageParcel dataTmp;
         auto simManager = wp.lock();
@@ -1473,13 +1555,15 @@ int32_t CoreServiceSim::HasOperatorPrivileges(const int32_t slotId, const sptr<I
                 data.WriteBool(hasOperatorPrivileges);
             }
             }, dataTmp);
-    });
+    })) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     return TELEPHONY_ERR_SUCCESS;
 }
 
 int32_t CoreServiceSim::SimAuthentication(
     int32_t slotId, AuthType authType, const std::string &authData, SimAuthenticationResponse &response)
 {
+    Admission admission(*this);
+    if (!admission) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     if (!TelephonyPermission::CheckPermission(Permission::GET_TELEPHONY_STATE)) {
         TELEPHONY_LOGE("Failed because no permission:GET_TELEPHONY_STATE");
         return TELEPHONY_ERR_PERMISSION_ERR;
@@ -1498,6 +1582,8 @@ int32_t CoreServiceSim::SimAuthentication(
 int32_t CoreServiceSim::GetSimIO(int32_t slotId, int32_t command,
     int32_t fileId, const std::string &data, const std::string &path, SimAuthenticationResponse &response)
 {
+    Admission admission(*this);
+    if (!admission) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     if (!TelephonyPermission::CheckPermission(Permission::GET_TELEPHONY_STATE)) {
         TELEPHONY_LOGE("Failed because no permission:GET_TELEPHONY_STATE");
         return TELEPHONY_ERR_PERMISSION_ERR;
@@ -1542,7 +1628,7 @@ int32_t CoreServiceSim::GetSimLabel(int32_t slotId, SimLabel &simLabel, const sp
         TELEPHONY_LOGE("GetSimLabel slotId %{public}d is not supported", slotId);
         return TELEPHONY_ERR_SLOTID_INVALID;
     }
-    AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, callback]() {
+    if (!AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), slotId, callback]() {
         SimLabel simLabel;
         MessageParcel dataTmp;
         auto simManager = wp.lock();
@@ -1557,7 +1643,7 @@ int32_t CoreServiceSim::GetSimLabel(int32_t slotId, SimLabel &simLabel, const sp
                 data.WriteInt32(simLabel.index);
             }
             }, dataTmp);
-    });
+    })) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     return TELEPHONY_ERR_SUCCESS;
 }
 
@@ -1572,6 +1658,8 @@ int32_t CoreServiceSim::GetRealSimCount()
 
 int32_t CoreServiceSim::SetSimLabelIndex(int32_t simId, int32_t simLabelIndex, const sptr<IRawParcelCallback> &callback)
 {
+    Admission admission(*this);
+    if (!admission) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     if (!TelephonyPermission::CheckCallerIsSystemApp()) {
         TELEPHONY_LOGE("Non-system applications use system APIs!");
         return TELEPHONY_ERR_ILLEGAL_USE_OF_SYSTEM_API;
@@ -1584,7 +1672,7 @@ int32_t CoreServiceSim::SetSimLabelIndex(int32_t simId, int32_t simLabelIndex, c
         TELEPHONY_LOGE("simManager_ is null || SetSimLabelIndex no callback");
         return TELEPHONY_ERR_LOCAL_PTR_NULL;
     }
-    AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), simId, simLabelIndex, callback]() {
+    if (!AsyncSimGeneralExecute([wp = std::weak_ptr<ISimManager>(simManager_), simId, simLabelIndex, callback]() {
         MessageParcel dataTmp;
         auto simManager = wp.lock();
         int32_t ret = TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL;
@@ -1594,7 +1682,7 @@ int32_t CoreServiceSim::SetSimLabelIndex(int32_t simId, int32_t simLabelIndex, c
         callback->Transfer([=](MessageParcel &data) {
             data.WriteInt32(ret);
             }, dataTmp);
-    });
+    })) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
     return TELEPHONY_ERR_SUCCESS;
 }
 } // namespace Telephony

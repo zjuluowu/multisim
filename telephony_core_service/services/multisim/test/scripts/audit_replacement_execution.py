@@ -31,7 +31,9 @@ def main():
     if args.slice == 'state':
         required = REQUIRED
     elif args.slice == 'primary':
-        required = {'CoreServiceSim':['SetPrimarySlotId'], 'SimManager':['SetPrimarySlotId', 'Stop'],
+        required = {'CoreServiceSim':['SetPrimarySlotId', 'StopAccepting',
+                        'WaitForAcceptedCallsDrained', 'AsyncSimGeneralExecute'],
+                    'SimManager':['SetPrimarySlotId', 'Stop'],
                     'MultiSimController':['SetPrimarySlotId']}
     elif args.slice == 'query':
         required = {'CoreServiceSim':['GetRealSimCount'], 'SimManager':['GetRealSimCount'],
