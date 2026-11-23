@@ -25,6 +25,8 @@ namespace OHOS::Telephony { class SimRdbHelper; }
 namespace OHOS::Telephony::MultiSim {
 // Narrow legacy-provider bridge. The production implementation calls the existing
 // SimRdbHelper; it is linked by the future owning assembly, not by the closed skeleton.
+AccountLoadResult LoadLegacyAccounts(OHOS::Telephony::SimRdbHelper &store,
+    const AccountLoadRequest &request);
 AccountIdentityMatch MatchLegacyAccountByIccid(OHOS::Telephony::SimRdbHelper &store,
     const std::string &iccid);
 AccountDiscoveryStoreResult WriteLegacyDiscoveredAccount(OHOS::Telephony::SimRdbHelper &store,

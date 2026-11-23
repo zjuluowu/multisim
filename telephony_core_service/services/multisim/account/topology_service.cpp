@@ -93,6 +93,7 @@ DiscoveryAcceptance TopologyService::DiscoverAccount(const CardDiscoveryObservat
             }
         }
     }
+    // Do not call A while holding T's commit domain. A owns this reservation with its own short lock.
     const auto rolePlan = roles_->PrepareAccountRoleFragment(
         {existingSubscription, observation.session.application.slot, useLegacySingleSlotRoles_});
     const auto preparationValid = rolePlan && roles_->StillOwnsInitialRoleReservation(*rolePlan);
@@ -121,25 +122,24 @@ DiscoveryAcceptance TopologyService::DiscoverAccount(const CardDiscoveryObservat
          observation.active, observation.isEsim}, *rolePlan};
     const auto stored = store_.WriteDiscoveredAccount(plan);
 
-    std::lock_guard<std::recursive_mutex> guard(commitLock_);
-    const bool stillValid = observations_.StillCurrent(observation) &&
+    const bool roleOwned = roles_->StillOwnsInitialRoleReservation(*rolePlan);
+    std::unique_lock<std::recursive_mutex> guard(commitLock_);
+    const bool stillValidFinal = observations_.StillCurrent(observation) &&
         bindings_.ReadPositionRevision(observation.session.application.slot).value_or(0) == ticket->bindingRevision;
     const bool storageKnown = stored.callFinished && stored.writeConfirmed &&
         stored.effect == EffectKnowledge::ConfirmedApplied && stored.assignedSubscription;
-    const bool roleOwned = roles_->StillOwnsInitialRoleReservation(*rolePlan);
     const bool identityMatches = !existingSubscription ||
         (stored.assignedSubscription && *stored.assignedSubscription == *existingSubscription);
-    if (storageKnown && identityMatches && stillValid && roleOwned && stored.assignedSubscription) {
+    if (storageKnown && identityMatches && stillValidFinal && roleOwned && stored.assignedSubscription) {
+        guard.unlock();
+        const bool roleAccepted = roles_->AcceptDiscoveredRoleProjection(*rolePlan, *stored.assignedSubscription);
+        std::unique_lock<std::recursive_mutex> finalGuard(commitLock_);
         const auto account = accounts_.Read(*stored.assignedSubscription);
-        if (account && (account->iccid != observation.iccid)) {
+        if (!roleAccepted || (account && account->iccid != observation.iccid)) {
             (void)observations_.CompleteStored(*ticket, stored.effect, stored.assignedSubscription,
                 stored.callFinished, bindings_, false);
-            return {stored.legacyResult, false, stored.assignedSubscription,
-                {stored.legacyResult, stored.writeConfirmed, stored.callFinished}};
-        }
-        if (!roles_->AcceptDiscoveredRoleProjection(*rolePlan, *stored.assignedSubscription)) {
-            (void)observations_.CompleteStored(*ticket, stored.effect, stored.assignedSubscription,
-                stored.callFinished, bindings_, false);
+            pendingDiscoveries_.insert_or_assign({observation.session.application.slot,
+                observation.session.application.applicationKey}, PendingDiscovery{*ticket, *rolePlan, stored});
             return {stored.legacyResult, false, stored.assignedSubscription,
                 {stored.legacyResult, stored.writeConfirmed, stored.callFinished}};
         }
@@ -153,12 +153,15 @@ DiscoveryAcceptance TopologyService::DiscoverAccount(const CardDiscoveryObservat
             if (accounts_.AcceptDiscoveredAccount(discovered) != AccountAcceptance::Accepted) {
                 (void)observations_.CompleteStored(*ticket, stored.effect, stored.assignedSubscription,
                     stored.callFinished, bindings_, false);
+                pendingDiscoveries_.insert_or_assign({observation.session.application.slot,
+                    observation.session.application.applicationKey}, PendingDiscovery{*ticket, *rolePlan, stored});
                 return {stored.legacyResult, false, stored.assignedSubscription,
                     {stored.legacyResult, stored.writeConfirmed, stored.callFinished}};
             }
         }
         const auto accepted = observations_.CompleteStored(*ticket, stored.effect, stored.assignedSubscription,
             stored.callFinished, bindings_);
+        finalGuard.unlock();
         (void)roles_->FinalizeInitialRoleReservation(*rolePlan,
             {stored.callFinished, stored.effect, accepted.bindingAccepted});
         return {stored.legacyResult, accepted.bindingAccepted, stored.assignedSubscription,
@@ -167,12 +170,74 @@ DiscoveryAcceptance TopologyService::DiscoverAccount(const CardDiscoveryObservat
 
     (void)observations_.CompleteStored(*ticket, stored.effect, stored.assignedSubscription,
         stored.callFinished, bindings_, false);
+    guard.unlock();
     const bool reconciledNoEffect = stored.callFinished && stored.effect != EffectKnowledge::ConfirmedApplied &&
         stored.effect != EffectKnowledge::Unknown;
+    if (stored.effect == EffectKnowledge::Unknown ||
+        (stored.effect == EffectKnowledge::ConfirmedApplied && stored.assignedSubscription)) {
+        std::lock_guard<std::recursive_mutex> recoveryGuard(commitLock_);
+        pendingDiscoveries_.insert_or_assign({observation.session.application.slot,
+            observation.session.application.applicationKey}, PendingDiscovery{*ticket, *rolePlan, stored});
+    }
     (void)roles_->FinalizeInitialRoleReservation(*rolePlan,
         {stored.callFinished, stored.effect, reconciledNoEffect});
     return {stored.legacyResult, false, stored.assignedSubscription,
         {stored.legacyResult, stored.writeConfirmed, stored.callFinished}};
+}
+
+bool TopologyService::ReconcileDiscovery(const CardDiscoveryObservation &observation)
+{
+    std::optional<PendingDiscovery> pending;
+    {
+        std::lock_guard<std::recursive_mutex> guard(commitLock_);
+        const auto found = pendingDiscoveries_.find({observation.session.application.slot,
+            observation.session.application.applicationKey});
+        if (found == pendingDiscoveries_.end() ||
+            !(found->second.ticket.observation.session.epoch == observation.session.epoch &&
+              found->second.ticket.observation.session.application.slot == observation.session.application.slot &&
+              found->second.ticket.observation.session.application.applicationKey == observation.session.application.applicationKey &&
+              found->second.ticket.observation.session.bindingGeneration == observation.session.bindingGeneration) ||
+            found->second.ticket.observation.iccid != observation.iccid) {
+            return false;
+        }
+        pending.emplace(found->second);
+    }
+    const auto matched = store_.MatchAccountByIccid(observation.iccid);
+    if (!matched.callFinished || !matched.existing ||
+        (pending->stored.assignedSubscription &&
+         !(matched.existing->subscription == *pending->stored.assignedSubscription))) {
+        return false;
+    }
+    const bool roleOwned = roles_ && roles_->StillOwnsInitialRoleReservation(pending->rolePlan);
+    if (!roleOwned || (pending->rolePlan.subscription &&
+        !(*pending->rolePlan.subscription == matched.existing->subscription))) {
+        return false;
+    }
+    if (!roles_->AcceptDiscoveredRoleProjection(pending->rolePlan, matched.existing->subscription)) {
+        return false;
+    }
+    {
+        std::lock_guard<std::recursive_mutex> guard(commitLock_);
+        const auto existing = accounts_.Read(matched.existing->subscription);
+        if (existing && existing->iccid != observation.iccid) { return false; }
+        if (!existing) {
+            const AccountProjection projection {matched.existing->name, matched.existing->number,
+                matched.existing->legacyLabel, matched.existing->imsPreference, matched.existing->active,
+                {}, matched.existing->legacyPosition};
+            const AccountRecord record {matched.existing->subscription, matched.existing->iccid, 1,
+                projection, projection};
+            if (accounts_.AcceptDiscoveredAccount(record) != AccountAcceptance::Accepted) { return false; }
+        }
+        (void)observations_.ReconcileStored(pending->ticket, EffectKnowledge::ConfirmedApplied,
+            matched.existing->subscription, true);
+    }
+    const bool finalized = roles_->FinalizeInitialRoleReservation(pending->rolePlan,
+        {true, EffectKnowledge::ConfirmedApplied, true});
+    if (!finalized) { return false; }
+    std::lock_guard<std::recursive_mutex> guard(commitLock_);
+    pendingDiscoveries_.erase({observation.session.application.slot,
+        observation.session.application.applicationKey});
+    return true;
 }
 void TopologyService::AcceptCardSessionInvalidation(const CardSessionInvalidation &invalidation)
 {
@@ -202,7 +267,52 @@ std::optional<AccountView> TopologyService::ReadAccount(SubscriptionId subscript
 
 AccountAcceptance TopologyService::AcceptActivationProjection(SubscriptionId subscription,
     AccountReadView view, uint64_t expectedActiveRevision, bool active)
-{ return accounts_.AcceptActiveProjection(subscription, view, expectedActiveRevision, active); }
+{
+    std::lock_guard<std::recursive_mutex> guard(commitLock_);
+    return accounts_.AcceptActiveProjection(subscription, view, expectedActiveRevision, active);
+}
+
+ReloadRequest TopologyService::PrepareAccountReload(AccountReadView view, uint64_t loadAttempt)
+{
+    const uint64_t expectedRoleRevision = roles_ ? roles_->ReadRoleProjectionRevision(
+        view == AccountReadView::Historical) : 0;
+    std::lock_guard<std::recursive_mutex> guard(commitLock_);
+    const auto ticket = accounts_.BeginReload(view);
+    (void)loadAttempt; // Existing caller hint; T's per-view ticket is the write authority.
+    std::vector<ReloadAccountInput> affected;
+    for (const auto &[subscription, expected] : ticket.expected) {
+        affected.push_back({subscription, expected.identityRevision, expected.fields});
+    }
+    return {{view, ticket.attempt}, ticket, expectedRoleRevision, std::move(affected)};
+}
+
+void TopologyService::AcceptAccountReload(const ReloadRequest &request, const AccountLoadResult &loaded)
+{
+    if (!(loaded.request.view == request.storeRequest.view) ||
+        loaded.request.loadAttempt != request.storeRequest.loadAttempt ||
+        loaded.rows.size() != loaded.storedRoles.size()) {
+        return;
+    }
+    std::vector<AccountRecord> records;
+    records.reserve(loaded.rows.size());
+    for (const auto &row : loaded.rows) {
+        const AccountProjection projection {row.name, row.number, row.legacyLabel, row.imsPreference,
+            row.active, {}, row.legacyPosition};
+        records.push_back({row.subscription, row.iccid, 1,
+            request.storeRequest.view == AccountReadView::Current ? std::make_optional(projection) : std::nullopt,
+            request.storeRequest.view == AccountReadView::Historical ? std::make_optional(projection) : std::nullopt});
+    }
+    AccountReloadResult accepted;
+    {
+        std::lock_guard<std::recursive_mutex> guard(commitLock_);
+        accepted = accounts_.AcceptReload(request.acceptance, loaded.complete, records);
+    }
+    if (loaded.complete && accepted.acceptedAttempt && roles_) {
+        (void)roles_->AcceptReloadedRoleProjectionSet(loaded.storedRoles,
+            request.storeRequest.loadAttempt, request.expectedRoleProjectionRevision,
+            request.storeRequest.view == AccountReadView::Historical);
+    }
+}
 
 std::optional<BindingRef> TopologyService::AcceptStoredDiscovery(const CardDiscoveryObservation &observation,
     const AccountRecord &account, const AccountDiscoveryStoreResult &stored)

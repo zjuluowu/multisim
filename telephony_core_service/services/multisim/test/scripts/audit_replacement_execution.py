@@ -35,7 +35,7 @@ def main():
                         'WaitForAcceptedCallsDrained', 'AsyncSimGeneralExecute'],
                     'SimManager':['SetPrimarySlotId', 'Stop'],
                     'MultiSimController':['SetPrimarySlotId'],
-                    'AccountStoreAdapter':['MatchAccountByIccid', 'WriteDiscoveredAccount']}
+                    'AccountStoreAdapter':['LoadAccounts', 'MatchAccountByIccid', 'WriteDiscoveredAccount']}
     elif args.slice == 'query':
         required = {'CoreServiceSim':['GetRealSimCount'], 'SimManager':['GetRealSimCount'],
                     'TelephonyExtWrapper':['GetRealSimCountExt'], 'LegacySimQueryBinding':['Read','ReadLegacyRealSimCount'],
@@ -45,9 +45,12 @@ def main():
                                               'WriteUserPrimaryPreference']}
     elif args.slice == 'target-topology':
         required = {'AccountRegistry':['Read', 'AcceptDiscoveredAccount'], 'BindingIndex':['Find'],
-                    'TopologyService':['ReadPrimaryTarget', 'AcceptStoredDiscovery', 'DiscoverAccount'],
+                    'TopologyService':['ReadPrimaryTarget', 'AcceptStoredDiscovery', 'DiscoverAccount',
+                                      'ReconcileDiscovery', 'PrepareAccountReload', 'AcceptAccountReload'],
                     'DiscoveryObservationLedger':['BeginStore', 'CompleteStored'],
-                    'AccountRoleProtocol':['Prepare', 'AcceptDiscovered', 'StillOwns', 'Finalize']}
+                    'AssignmentService':['PrepareAccountRoleFragment', 'AcceptDiscoveredRoleProjection',
+                                        'StillOwnsInitialRoleReservation', 'FinalizeInitialRoleReservation',
+                                        'AcceptReloadedRoleProjectionSet']}
     elif args.slice == 'target-primary-b':
         required = {'AssignmentService':['AcceptRadioStep', 'AcceptPrimarySwitchTimeout',
                     'ScheduleC1Retry', 'AcceptScheduledC1Retry', 'StopAcceptingAndCancelScheduledRetries'],

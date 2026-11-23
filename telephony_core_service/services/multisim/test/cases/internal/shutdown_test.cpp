@@ -15,6 +15,8 @@ public:
     MOCK_METHOD(int32_t, QueryDataByIccId, (std::string, SimRdbInfo &), (override));
     MOCK_METHOD(int32_t, InsertData, (int64_t &, const DataShare::DataShareValuesBucket &), (override));
     MOCK_METHOD(int32_t, UpdateDataByIccId, (std::string, const DataShare::DataShareValuesBucket &), (override));
+    MOCK_METHOD(int32_t, QueryAllData, (std::vector<SimRdbInfo> &), (override));
+    MOCK_METHOD(int32_t, QueryAllValidData, (std::vector<SimRdbInfo> &), (override));
 };
 
 class BlockingRawCallback final : public OHOS::Telephony::IRawParcelCallback {
@@ -68,6 +70,42 @@ TEST(AccountProviderHost, AdapterMatchDistinguishesFailureFromConfirmedNoRow)
     EXPECT_EQ(known.existing->subscription.legacySimId,7);
 }
 
+TEST(AccountProviderHost, LoadAccountsMapsCurrentAndHistoricalSourceSeparately)
+{
+    using namespace testing;
+    ControlledSimRdb rdb;
+    SimRdbInfo row {}; row.simId=41;row.iccId="known";row.slotIndex=1;row.isVoiceCard=1;
+    EXPECT_CALL(rdb,QueryAllValidData(_)).WillOnce(Invoke([&](std::vector<SimRdbInfo> &rows) {
+        rows.push_back(row); return TELEPHONY_ERR_SUCCESS;
+    }));
+    EXPECT_CALL(rdb,QueryAllData(_)).WillOnce(Invoke([&](std::vector<SimRdbInfo> &rows) {
+        rows.push_back(row); return TELEPHONY_ERR_SUCCESS;
+    }));
+    AccountStoreAdapter adapter(rdb);
+    const auto current=adapter.LoadAccounts({AccountReadView::Current,3});
+    const auto historical=adapter.LoadAccounts({AccountReadView::Historical,4});
+    ASSERT_TRUE(current.complete); ASSERT_EQ(current.rows.size(),1u);
+    ASSERT_EQ(current.storedRoles.size(),1u);
+    EXPECT_TRUE(current.storedRoles.front().voice);
+    EXPECT_EQ(current.request.loadAttempt,3u);
+    ASSERT_TRUE(historical.complete); EXPECT_EQ(historical.request.loadAttempt,4u);
+}
+
+TEST(AccountProviderHost, LoadAccountsFailureIsNotReplaceableEmptySuccess)
+{
+    using namespace testing;
+    ControlledSimRdb rdb;
+    EXPECT_CALL(rdb,QueryAllValidData(_)).WillOnce(Return(-1));
+    EXPECT_CALL(rdb,QueryAllData(_)).WillOnce(Invoke([](std::vector<SimRdbInfo> &) {
+        return TELEPHONY_ERR_SUCCESS;
+    }));
+    AccountStoreAdapter adapter(rdb);
+    const auto failed=adapter.LoadAccounts({AccountReadView::Current,1});
+    const auto empty=adapter.LoadAccounts({AccountReadView::Historical,1});
+    EXPECT_FALSE(failed.complete); EXPECT_FALSE(failed.legacyReturn);
+    EXPECT_TRUE(empty.complete); EXPECT_TRUE(empty.rows.empty());
+}
+
 TEST(AccountProviderHost, AdapterUsesOneInsertThenReadBackIdentity)
 {
     using namespace testing;
@@ -92,6 +130,28 @@ TEST(AccountProviderHost, AdapterUsesOneInsertThenReadBackIdentity)
     EXPECT_EQ(result.effect,EffectKnowledge::ConfirmedApplied);
     ASSERT_TRUE(result.assignedSubscription.has_value());
     EXPECT_EQ(result.assignedSubscription->legacySimId,41);
+}
+
+TEST(AccountProviderHost, AdapterFailedWriteWithMatchingReadBackStaysUnknown)
+{
+    using namespace testing;
+    ControlledSimRdb rdb;
+    EXPECT_CALL(rdb,UpdateDataByIccId("known-iccid",_)).WillOnce(Return(0));
+    EXPECT_CALL(rdb,QueryDataByIccId("known-iccid",_)).WillOnce(Invoke(
+        [](const std::string &, SimRdbInfo &row) {
+            row.simId=7;row.iccId="known-iccid";row.slotIndex=1;row.isActive=1;row.isEsim=0;
+            return TELEPHONY_ERR_SUCCESS;
+        }));
+    AccountStoreAdapter adapter(rdb);
+    const AccountDiscoveryWritePlan plan {
+        {{RuntimeEpoch{5,9},{SlotId{1},"USIM"},4},1,"known-iccid"}, 0,
+        SubscriptionId{7}, {{1},"known-iccid",std::nullopt,true,false},
+        {SubscriptionId{7}, {1,0}, false,false,false,false,false}};
+    const auto result=adapter.WriteDiscoveredAccount(plan);
+    EXPECT_EQ(result.legacyResult,0);
+    EXPECT_TRUE(result.assignedSubscription.has_value());
+    EXPECT_FALSE(result.writeConfirmed);
+    EXPECT_EQ(result.effect,EffectKnowledge::Unknown);
 }
 
 TEST(AccountProviderHost, AdapterDoesNotTurnUnknownReadBackIntoSuccess)

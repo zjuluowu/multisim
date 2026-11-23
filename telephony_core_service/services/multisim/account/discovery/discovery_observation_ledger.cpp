@@ -82,6 +82,10 @@ std::optional<DiscoveryStoreTicket> DiscoveryObservationLedger::BeginStore(
     if (!revision || !StillCurrent(observation)) { return std::nullopt; }
     auto &entry = accepted_.at({observation.session.application.slot, observation.session.application.applicationKey});
     if (entry.admission != 0) { return std::nullopt; } // 重复观察不自动重放建行。
+    const Key reserveKey {observation.session.application.slot, observation.session.application.applicationKey};
+    const auto owner = activeIccids_.find(observation.iccid);
+    if (owner != activeIccids_.end() && owner->second != reserveKey) { return std::nullopt; }
+    activeIccids_.insert_or_assign(observation.iccid, reserveKey);
     entry.admission = ++nextAdmission_;
     entry.pending = true;
     return DiscoveryStoreTicket {observation, entry.admission, *revision};
@@ -89,13 +93,14 @@ std::optional<DiscoveryStoreTicket> DiscoveryObservationLedger::BeginStore(
 bool DiscoveryObservationLedger::EndPreparationFailure(const DiscoveryStoreTicket &ticket, bool callFinished,
     const BindingIndex &bindings)
 {
-    if (!callFinished || !MatchesStore(ticket, bindings)) { return false; }
+    if (!MatchesStore(ticket, bindings)) { return false; }
     auto &entry = accepted_.at({ticket.observation.session.application.slot,
         ticket.observation.session.application.applicationKey});
     if (!entry.pending) { return false; }
     entry.pending = false;
     entry.effect = EffectKnowledge::NotSent; // 仅匹配读取/角色规划失败，尚未发出建行写。
-    entry.callFinished = true;
+    entry.callFinished = callFinished;
+    activeIccids_.erase(ticket.observation.iccid);
     return true;
 }
 std::optional<DiscoveryStoreTicket> DiscoveryObservationLedger::RetryAfterKnownNoEffect(
@@ -112,6 +117,8 @@ std::optional<DiscoveryStoreTicket> DiscoveryObservationLedger::RetryAfterKnownN
     entry.pending = true;
     entry.effect = EffectKnowledge::NotSent;
     entry.callFinished = false;
+    activeIccids_.insert_or_assign(ticket.observation.iccid,
+        Key{ticket.observation.session.application.slot, ticket.observation.session.application.applicationKey});
     return DiscoveryStoreTicket {ticket.observation, entry.admission, ticket.bindingRevision};
 }
 DiscoveryStoreAcceptance DiscoveryObservationLedger::CompleteStored(const DiscoveryStoreTicket &ticket,
@@ -130,10 +137,30 @@ DiscoveryStoreAcceptance DiscoveryObservationLedger::CompleteStored(const Discov
     entry.effect = effect;
     entry.callFinished = callFinished;
     if (!allowBinding || effect != EffectKnowledge::ConfirmedApplied || !identity) {
+        if (!mayHaveWritten) { activeIccids_.erase(ticket.observation.iccid); }
         return {false, mayHaveWritten, false};
     }
     const bool accepted = bindings.AcceptBinding(ticket.observation.session.application.slot, *identity,
         ticket.bindingRevision);
+    if (accepted) { activeIccids_.erase(ticket.observation.iccid); }
     return {accepted, !accepted, false};
+}
+
+DiscoveryStoreAcceptance DiscoveryObservationLedger::ReconcileStored(const DiscoveryStoreTicket &ticket,
+    EffectKnowledge effect, std::optional<SubscriptionId> identity, bool callFinished)
+{
+    const Key key {ticket.observation.session.application.slot, ticket.observation.session.application.applicationKey};
+    const auto found = accepted_.find(key);
+    if (found == accepted_.end() || found->second.admission != ticket.admission) {
+        return {false, false, true};
+    }
+    if (!callFinished) { return {false, effect == EffectKnowledge::Unknown, false}; }
+    found->second.pending = false;
+    found->second.effect = effect;
+    found->second.callFinished = true;
+    if (identity && effect == EffectKnowledge::ConfirmedApplied) {
+        activeIccids_.erase(ticket.observation.iccid);
+    }
+    return {false, !identity || effect == EffectKnowledge::Unknown, false};
 }
 } // namespace OHOS::Telephony::MultiSim

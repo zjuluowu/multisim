@@ -107,6 +107,7 @@ def check_directory_migration(source, token_sequence, *, repo=None):
                 'account/account_registry.cpp',
                 'account/account_registry.h',
                 'card_selection/assignment_service.h',
+                'card_selection/account_role_protocol.h',
                 'card_selection/primary/radio_execution_port.h',
                 'support/request/runtime_operation_store.h',
             }
@@ -121,6 +122,7 @@ def check_directory_migration(source, token_sequence, *, repo=None):
                                 'integration/lifecycle/sim_module_factory.cpp',
                                 'infrastructure/account_store_adapter.cpp',
                                 'account/topology_service.cpp',
+                                'account/discovery/discovery_observation_ledger.cpp',
                                 'account/account_registry.cpp'}:
                     for token in original_tokens:
                         try:

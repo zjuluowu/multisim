@@ -70,7 +70,7 @@ struct AccountDiscoveryWritePlan {
     AccountRoleFragment roleFields; // A规划并预留；T专属Adapter执行一次原Insert/Update，不另定角色。
 };
 struct AccountDiscoveryStoreResult {
-    int32_t legacyResult;
+    int32_t legacyResult; // 原 Insert/Update 返回；不由 read-back 改写。
     std::optional<SubscriptionId> assignedSubscription; // 原provider的返回身份，不从slot推导。
     bool writeConfirmed;
     bool callFinished;

@@ -664,22 +664,43 @@ void AssignmentService::AcceptLocalProfilePreference(const StepRef &, SlotId)
     store_.WriteUserPrimaryPreference(true); // 原File返回后写入；参数失败不覆盖旧双结果。
 }
 std::optional<AccountRoleFragment> AssignmentService::PrepareAccountRoleFragment(const AccountRolePlanningInput &input)
-{ return accountRoles_.Prepare(input); }
+{
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
+    return accountRoles_.Prepare(input);
+}
 bool AssignmentService::AcceptDiscoveredRoleProjection(const AccountRoleFragment &planned, SubscriptionId assigned)
-{ return accountRoles_.AcceptDiscovered(planned, assigned); }
+{
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
+    return accountRoles_.AcceptDiscovered(planned, assigned);
+}
 bool AssignmentService::StillOwnsInitialRoleReservation(const AccountRoleFragment &planned) const
-{ return accountRoles_.StillOwns(planned); }
+{
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
+    return accountRoles_.StillOwns(planned);
+}
 bool AssignmentService::FinalizeInitialRoleReservation(const AccountRoleFragment &planned,
     const InitialRoleFinalizationEvidence &evidence)
-{ return accountRoles_.Finalize(planned, evidence); }
+{
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
+    return accountRoles_.Finalize(planned, evidence);
+}
 uint64_t AssignmentService::ReadRoleProjectionRevision(bool historicalView) const
-{ return accountRoles_.Revision(historicalView); }
+{
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
+    return accountRoles_.Revision(historicalView);
+}
 bool AssignmentService::AcceptReloadedRoleProjectionSet(const std::vector<StoredAccountRoleFragment> &loaded,
     uint64_t loadAttempt, uint64_t expectedRevision, bool historicalView)
-{ return accountRoles_.AcceptReloadSet(loaded, loadAttempt, expectedRevision, historicalView); }
+{
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
+    return accountRoles_.AcceptReloadSet(loaded, loadAttempt, expectedRevision, historicalView);
+}
 bool AssignmentService::AcceptReloadedRoleProjection(const StoredAccountRoleFragment &loaded,
     uint64_t, uint64_t expectedRevision, bool historicalView)
-{ return accountRoles_.AcceptSingleProjection(loaded, expectedRevision, historicalView); }
+{
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
+    return accountRoles_.AcceptSingleProjection(loaded, expectedRevision, historicalView);
+}
 /* 仅声明方法的流程契约：
  * StartPrimarySwitch在原执行点读取T窄事实与R动态PrimaryRadioObservation，不从目录推断当前分配。
  * 同一请求的全局角色/Primary参数域与真实Radio冲突集在唯一准入处一次登记；跨Owner子请求带parent。

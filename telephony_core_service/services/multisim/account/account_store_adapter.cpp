@@ -30,7 +30,7 @@ AccountStoreWriteResult AccountStoreAdapter::WriteDisplayName(const AccountNameP
 AccountStoreWriteResult AccountStoreAdapter::WriteLabel(const AccountLabelPatch &) { return NotImplemented(); }
 AccountStoreWriteResult AccountStoreAdapter::WriteImsPreference(const AccountImsPreferencePatch &) { return NotImplemented(); }
 AccountLoadResult AccountStoreAdapter::LoadAccounts(const AccountLoadRequest &request)
-{ return {request, -1, false, false, {}, {}}; }
+{ return LoadLegacyAccounts(legacyStore_, request); }
 AccountStoreWriteResult AccountStoreAdapter::WriteRemoval(const AccountRemovalPatch &) { return NotImplemented(); }
 int32_t AccountStoreAdapter::QueryImsPreferenceByIccid(const std::string &, int32_t &)
 { return -1; }

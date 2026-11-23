@@ -19,6 +19,7 @@
 #ifndef OHOS_TELEPHONY_MULTISIM_ASSIGNMENT_ACCOUNT_ROLES_ACCOUNT_ROLE_PROTOCOL_H
 #define OHOS_TELEPHONY_MULTISIM_ASSIGNMENT_ACCOUNT_ROLES_ACCOUNT_ROLE_PROTOCOL_H
 #include <map>
+#include <set>
 #include "role_assignment/assignment_requests.h"
 namespace OHOS::Telephony::MultiSim {
 // A受控域内的唯一建行资格及角色投影；不是provider CAS，未知效果不释放资格。
@@ -26,18 +27,25 @@ class AccountRoleProtocol final {
 public:
     std::optional<AccountRoleFragment> Prepare(const AccountRolePlanningInput &input)
     {
-        if (!reservations_.empty()) { return std::nullopt; }
+        if (input.existingSubscription) {
+            if (reservedIdentities_.count(*input.existingSubscription) != 0) { return std::nullopt; }
+        } else if (reservedSlots_.count(input.discoveredSlot) != 0) {
+            return std::nullopt;
+        }
         const bool main = input.useLegacySingleSlotRoles;
         AccountRoleFragment plan {input.existingSubscription, {++nextToken_, roleRevision_},
             main, main, main, main, !input.existingSubscription || main};
-        reservations_.emplace(plan.reservation.token, ReservedPlan {plan, std::nullopt});
+        reservations_.emplace(plan.reservation.token, ReservedPlan {plan, std::nullopt, input.discoveredSlot});
+        if (input.existingSubscription) { reservedIdentities_.insert(*input.existingSubscription); }
+        else { reservedSlots_.insert(input.discoveredSlot); }
         return plan;
     }
     bool StillOwns(const AccountRoleFragment &plan) const
     {
         const auto found = reservations_.find(plan.reservation.token);
         return found != reservations_.end() && SamePlan(found->second.plan, plan) &&
-            plan.reservation.assignmentRevision == roleRevision_;
+            (found->second.resolvedIdentity.has_value() ||
+             plan.reservation.assignmentRevision == roleRevision_);
     }
     bool AcceptDiscovered(const AccountRoleFragment &plan, SubscriptionId identity)
     {
@@ -51,6 +59,8 @@ public:
         if (found == reservations_.end() || !SamePlan(found->second.plan, plan) || !MayFinalizeInitialRoles(evidence)) {
             return false;
         }
+        if (found->second.plan.subscription) { reservedIdentities_.erase(*found->second.plan.subscription); }
+        else { reservedSlots_.erase(found->second.discoveredSlot); }
         reservations_.erase(found); // 旧计划仅在已接纳/核对后结束，不必强求仍是当前角色版本。
         return true;
     }
@@ -94,7 +104,11 @@ private:
             a.sms == b.sms && a.mainCardColumn == b.mainCardColumn && a.dataCardColumn == b.dataCardColumn &&
             a.includeInStorage == b.includeInStorage;
     }
-    struct ReservedPlan { AccountRoleFragment plan; std::optional<SubscriptionId> resolvedIdentity; };
+    struct ReservedPlan {
+        AccountRoleFragment plan;
+        std::optional<SubscriptionId> resolvedIdentity;
+        SlotId discoveredSlot;
+    };
     struct RoleProjection {
         std::map<SubscriptionId, StoredAccountRoleFragment> rows;
         uint64_t revision {0};
@@ -105,6 +119,8 @@ private:
     uint64_t nextToken_ {0};
     uint64_t roleRevision_ {0};
     std::map<uint64_t, ReservedPlan> reservations_;
+    std::set<SlotId> reservedSlots_;
+    std::set<SubscriptionId> reservedIdentities_;
 };
 } // namespace OHOS::Telephony::MultiSim
 #endif

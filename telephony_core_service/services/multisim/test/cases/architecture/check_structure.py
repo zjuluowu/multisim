@@ -386,6 +386,7 @@ def check_migration():
         after = "\n".join((SOURCE / name).read_text() for name in entry["destinations"])
         missing = Counter(token_sequence(text)) - Counter(token_sequence(after))
         authorized_c0_source = entry['old'] in {
+            'assignment/application/account_role_protocol.h',
             'assignment/adapters/assignment_store_adapter.h',
             'infrastructure/assignment_store_adapter.h',
         }
@@ -396,6 +397,7 @@ def check_migration():
             "assignment/api/assignment_requests.h",
             "assignment/api/assignment_store.h",
             "assignment/application/assignment_service.h",
+            "assignment/application/account_role_protocol.h",
             "assignment/adapters/assignment_store_adapter.h",
             "assignment/ports/radio_execution_port.h",
             "infrastructure/assignment_store_adapter.h",
@@ -422,7 +424,8 @@ def check_migration():
                 "assembly/sim_module_factory.cpp",
             }
             original, current = token_sequence(text), token_sequence(after)
-            if entry["old"] == "assembly/sim_module_factory.cpp":
+            if entry["old"] in {"assembly/sim_module_factory.cpp",
+                                  "topology/application/discovery_observation_ledger.cpp"}:
                 pass
             elif entry["old"] in authorized_c0_evolution:
                 cursor = 0

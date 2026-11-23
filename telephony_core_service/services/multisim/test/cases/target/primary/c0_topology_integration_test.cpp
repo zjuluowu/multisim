@@ -41,15 +41,22 @@ public:
     bool matchFinished {true};
     AccountDiscoveryStoreResult stored {0, SubscriptionId{41}, true, true, EffectKnowledge::ConfirmedApplied};
     std::function<void(const AccountDiscoveryWritePlan &)> beforeStoreReturn;
+    std::function<AccountDiscoveryStoreResult(const AccountDiscoveryWritePlan &)> produceStore;
     unsigned matches {0};
     unsigned writes {0};
+    std::function<AccountLoadResult(const AccountLoadRequest &)> load;
+    unsigned loads {0};
     std::optional<AccountDiscoveryWritePlan> lastPlan;
     AccountStoreWriteResult WriteDisplayNumber(const AccountNumberPatch &) override { return {-1,false,true}; }
     AccountStoreWriteResult WriteActiveProjection(const AccountActivePatch &) override { return {-1,false,true}; }
     AccountStoreWriteResult WriteDisplayName(const AccountNamePatch &) override { return {-1,false,true}; }
     AccountStoreWriteResult WriteLabel(const AccountLabelPatch &) override { return {-1,false,true}; }
     AccountStoreWriteResult WriteImsPreference(const AccountImsPreferencePatch &) override { return {-1,false,true}; }
-    AccountLoadResult LoadAccounts(const AccountLoadRequest &r) override { return {r,-1,false,false,{}, {}}; }
+    AccountLoadResult LoadAccounts(const AccountLoadRequest &r) override
+    {
+        ++loads;
+        return load ? load(r) : AccountLoadResult{r,-1,false,false,{}, {}};
+    }
     AccountIdentityMatch MatchAccountByIccid(const std::string &) override
     { ++matches; return {matchResult,matchFinished,matched}; }
     AccountDiscoveryStoreResult WriteDiscoveredAccount(const AccountDiscoveryWritePlan &plan) override
@@ -57,7 +64,7 @@ public:
         ++writes;
         lastPlan=plan;
         if (beforeStoreReturn) { beforeStoreReturn(plan); }
-        return stored;
+        return produceStore ? produceStore(plan) : stored;
     }
     AccountStoreWriteResult WriteRemoval(const AccountRemovalPatch &) override { return {-1,false,true}; }
     int32_t QueryImsPreferenceByIccid(const std::string &, int32_t &) override { return -1; }
@@ -187,6 +194,23 @@ TEST(TargetTopologyIntegration, T1NewDiscoveryExecutesOneProviderWriteAndAccepts
     EXPECT_EQ(f.topology.ReadPrimaryTarget({1})->iccid,kRaw1);
 }
 
+TEST(TargetTopologyIntegration, T1ProviderIoDoesNotHoldTLockAcrossAReadWrite)
+{
+    DiscoveryFixture f;
+    EXPECT_TRUE(f.topology.AcceptSlotAssembly({0},true));
+    auto zero=f.topology.AcceptStoredDiscovery(Discovery(0,1,kRaw0),
+        Account({2},kRaw0),Stored({2}));
+    ASSERT_TRUE(zero.has_value());
+    f.accountStore.beforeStoreReturn=[&](const AccountDiscoveryWritePlan &) {
+        auto primary=std::async(std::launch::async,[&] {
+            return f.service.StartPrimarySwitch(Command(*zero));
+        });
+        ASSERT_EQ(primary.wait_for(std::chrono::seconds(3)),std::future_status::ready);
+        (void)primary.get(); // C1 may remain in device pending; readiness proves no T/A lock cycle.
+    };
+    EXPECT_TRUE(f.topology.DiscoverAccount(Discovery(1,2,kRaw1)).bindingAccepted);
+}
+
 TEST(TargetTopologyIntegration, T1KnownIccidReusesIdentityWithoutNewInsertSemantics)
 {
     DiscoveryFixture f;
@@ -310,6 +334,43 @@ TEST(TargetTopologyIntegration, T1MatchFailureBeforeWriteDoesNotReserveProviderE
     EXPECT_EQ(f.accountStore.writes,0u);
 }
 
+TEST(TargetTopologyIntegration, T2AcceptedRoleReservationSurvivesLaterUnrelatedRoleMutation)
+{
+    AccountRoleProtocol roles;
+    const auto planned=roles.Prepare({std::nullopt,{1},false});
+    ASSERT_TRUE(planned.has_value());
+    ASSERT_TRUE(roles.AcceptDiscovered(*planned,{41}));
+    roles.NoteLocalRoleMutation();
+    EXPECT_TRUE(roles.StillOwns(*planned));
+    EXPECT_TRUE(roles.Finalize(*planned,{true,EffectKnowledge::ConfirmedApplied,true}));
+}
+
+TEST(TargetTopologyIntegration, T2StaleAppliedCanReconcileWithoutRestoringOldBinding)
+{
+    DiscoveryFixture f;
+    auto observation=Discovery(1,1,kRaw1);
+    f.accountStore.beforeStoreReturn=[&](const AccountDiscoveryWritePlan &) {
+        f.topology.AcceptCardSessionInvalidation({observation.session,observation.observationSequence+1});
+    };
+    EXPECT_FALSE(f.topology.DiscoverAccount(observation).bindingAccepted);
+    f.accountStore.matched=AccountStorageRow{{41},kRaw1,SlotId{1},u"",u"",true,std::nullopt,0};
+    EXPECT_TRUE(f.topology.ReconcileDiscovery(observation));
+    EXPECT_FALSE(f.topology.FindBinding({1}).has_value());
+    EXPECT_TRUE(f.topology.ReadAccount({41},AccountReadView::Current).has_value());
+    EXPECT_TRUE(f.topology.ReconcileDiscovery(observation)==false);
+}
+
+TEST(TargetTopologyIntegration, T2RecoveryDoesNotReleaseRoleForMissingProviderRow)
+{
+    DiscoveryFixture f;
+    f.accountStore.stored={-1,SubscriptionId{41},false,true,EffectKnowledge::Unknown};
+    const auto observation=Discovery(1,1,kRaw1);
+    EXPECT_FALSE(f.topology.DiscoverAccount(observation).bindingAccepted);
+    EXPECT_FALSE(f.topology.ReconcileDiscovery(observation));
+    f.accountStore.matched=AccountStorageRow{{41},kRaw1,SlotId{1},u"",u"",true,std::nullopt,0};
+    EXPECT_TRUE(f.topology.ReconcileDiscovery(observation));
+}
+
 TEST(TargetTopologyIntegration, T1ProviderReconnectRequiresFreshObservationNotCachedRetry)
 {
     DiscoveryFixture f;
@@ -338,6 +399,146 @@ TEST(TargetTopologyIntegration, T1SameSlotNewCardRejectsOldCompletedWrite)
     EXPECT_FALSE(f.topology.DiscoverAccount(Discovery(1,2,"new-card")).bindingAccepted);
     EXPECT_FALSE(f.topology.FindBinding({1}).has_value());
     EXPECT_FALSE(f.topology.ReadAccount({41},AccountReadView::Current).has_value());
+}
+
+TEST(TargetTopologyIntegration, T2SameIccidDifferentSlotIsRejectedBeforeProviderWrite)
+{
+    DiscoveryFixture f;
+    EXPECT_TRUE(f.topology.AcceptSlotAssembly({0},true));
+    std::promise<void> entered,release;
+    auto released=release.get_future().share();
+    f.accountStore.beforeStoreReturn=[&](const AccountDiscoveryWritePlan &plan) {
+        if (plan.accountFields.legacyPosition.legacySlotId==1) {
+            entered.set_value(); released.wait();
+        }
+    };
+    auto first=std::async(std::launch::async,[&] { return f.topology.DiscoverAccount(Discovery(1,1,kRaw1)); });
+    ASSERT_EQ(entered.get_future().wait_for(std::chrono::seconds(3)),std::future_status::ready);
+    EXPECT_FALSE(f.topology.DiscoverAccount(Discovery(0,2,kRaw1)).bindingAccepted);
+    EXPECT_EQ(f.accountStore.writes,1u);
+    release.set_value();
+    EXPECT_TRUE(first.get().bindingAccepted);
+}
+
+TEST(TargetTopologyIntegration, T2C1InFlightDoesNotBlockUnrelatedDiscoveryReservation)
+{
+    DiscoveryFixture f;
+    EXPECT_TRUE(f.topology.AcceptSlotAssembly({0},true));
+    const auto zero=f.topology.AcceptStoredDiscovery(Discovery(0,1,kRaw0),
+        Account({2},kRaw0),Stored({2}));
+    ASSERT_TRUE(zero.has_value());
+    f.service.StartPrimarySwitch(Command(*zero));
+    EXPECT_GT(f.radio.switches,0u);
+    EXPECT_TRUE(f.topology.DiscoverAccount(Discovery(1,2,kRaw1)).bindingAccepted);
+    EXPECT_TRUE(f.topology.FindBinding({0}).has_value());
+    EXPECT_TRUE(f.topology.FindBinding({1}).has_value());
+}
+
+TEST(TargetTopologyIntegration, T2UnrelatedDiscoveryDoesNotSharePendingRoleReservation)
+{
+    DiscoveryFixture f;
+    EXPECT_TRUE(f.topology.AcceptSlotAssembly({0},true));
+    std::promise<void> entered,release;
+    auto released=release.get_future().share();
+    f.accountStore.beforeStoreReturn=[&](const AccountDiscoveryWritePlan &plan) {
+        if (plan.accountFields.legacyPosition.legacySlotId==1) {
+            entered.set_value(); released.wait();
+        }
+    };
+    auto first=std::async(std::launch::async,[&] { return f.topology.DiscoverAccount(Discovery(1,1,kRaw1)); });
+    ASSERT_EQ(entered.get_future().wait_for(std::chrono::seconds(3)),std::future_status::ready);
+    f.accountStore.produceStore=[](const AccountDiscoveryWritePlan &plan) {
+        return AccountDiscoveryStoreResult{0,
+            SubscriptionId{plan.accountFields.legacyPosition.legacySlotId==0 ? 42 : 41},
+            true,true,EffectKnowledge::ConfirmedApplied};
+    };
+    auto second=f.topology.DiscoverAccount(Discovery(0,2,"other-card"));
+    EXPECT_TRUE(second.bindingAccepted);
+    release.set_value();
+    EXPECT_TRUE(first.get().bindingAccepted);
+}
+
+TEST(TargetTopologyIntegration, T2ReloadCurrentAndHistoricalAcceptIndependentAttempts)
+{
+    DiscoveryFixture f;
+    f.accountStore.stored={0,SubscriptionId{41},true,true,EffectKnowledge::ConfirmedApplied};
+    ASSERT_TRUE(f.topology.DiscoverAccount(Discovery(1,1,kRaw1)).bindingAccepted);
+    const auto current=f.topology.PrepareAccountReload(AccountReadView::Current,91);
+    const auto historical=f.topology.PrepareAccountReload(AccountReadView::Historical,92);
+    const AccountStorageRow row {{41},kRaw1,SlotId{1},u"loaded",u"100",true,2,0};
+    f.accountStore.load=[&](const AccountLoadRequest &r) {
+        return AccountLoadResult{r,0,true,r.view==AccountReadView::Current,{row},
+            {{ {41}, true,false,true,true }}};
+    };
+    const auto historicalLoad=f.accountStore.LoadAccounts(historical.storeRequest);
+    const auto currentLoad=f.accountStore.LoadAccounts(current.storeRequest);
+    f.topology.AcceptAccountReload(historical,historicalLoad);
+    f.topology.AcceptAccountReload(current,currentLoad);
+    EXPECT_EQ(f.topology.ReadAccount({41},AccountReadView::Current)->displayName,u"loaded");
+    EXPECT_EQ(f.topology.ReadAccount({41},AccountReadView::Historical)->displayName,u"loaded");
+}
+
+TEST(TargetTopologyIntegration, T2FailedViewDoesNotClearOtherOrSameView)
+{
+    DiscoveryFixture f;
+    f.accountStore.stored={0,SubscriptionId{41},true,true,EffectKnowledge::ConfirmedApplied};
+    ASSERT_TRUE(f.topology.DiscoverAccount(Discovery(1,1,kRaw1)).bindingAccepted);
+    const auto original=f.topology.ReadAccount({41},AccountReadView::Current);
+    const auto current=f.topology.PrepareAccountReload(AccountReadView::Current,1);
+    f.topology.AcceptAccountReload(current,{current.storeRequest,-1,false,false,{}, {}});
+    ASSERT_TRUE(f.topology.ReadAccount({41},AccountReadView::Current).has_value());
+    EXPECT_EQ(f.topology.ReadAccount({41},AccountReadView::Current)->identityRevision,
+        original->identityRevision);
+    const auto historical=f.topology.PrepareAccountReload(AccountReadView::Historical,2);
+    const AccountStorageRow row {{41},kRaw1,SlotId{1},u"history",u"200",true,2,0};
+    f.topology.AcceptAccountReload(historical,{historical.storeRequest,0,true,true,{row},
+        {{{41},false,false,false,false}}});
+    EXPECT_EQ(f.topology.ReadAccount({41},AccountReadView::Historical)->displayName,u"history");
+}
+
+TEST(TargetTopologyIntegration, T2OlderReloadCannotOverwriteFieldUpdatedAfterAttempt)
+{
+    DiscoveryFixture f;
+    f.accountStore.stored={0,SubscriptionId{41},true,true,EffectKnowledge::ConfirmedApplied};
+    ASSERT_TRUE(f.topology.DiscoverAccount(Discovery(1,1,kRaw1)).bindingAccepted);
+    auto before=f.topology.ReadAccount({41},AccountReadView::Current);
+    const auto reload=f.topology.PrepareAccountReload(AccountReadView::Current,1);
+    EXPECT_EQ(f.topology.AcceptActivationProjection({41},AccountReadView::Current,
+        before->fields.active,false),AccountAcceptance::Accepted);
+    const AccountStorageRow oldRow {{41},kRaw1,SlotId{1},u"name",u"old",true,2,0};
+    f.topology.AcceptAccountReload(reload,{reload.storeRequest,0,true,true,{oldRow},
+        {{{41},false,false,false,false}}});
+    EXPECT_FALSE(f.topology.ReadAccount({41},AccountReadView::Current)->activeProjection);
+}
+
+TEST(TargetTopologyIntegration, T2OutOfOrderAttemptsUseLatestOnly)
+{
+    DiscoveryFixture f;
+    f.accountStore.stored={0,SubscriptionId{41},true,true,EffectKnowledge::ConfirmedApplied};
+    ASSERT_TRUE(f.topology.DiscoverAccount(Discovery(1,1,kRaw1)).bindingAccepted);
+    auto first=f.topology.PrepareAccountReload(AccountReadView::Current,1);
+    auto second=f.topology.PrepareAccountReload(AccountReadView::Current,2);
+    const AccountStorageRow row {{41},kRaw1,SlotId{1},u"latest",u"1",true,2,0};
+    f.topology.AcceptAccountReload(second,{second.storeRequest,0,true,true,{row},
+        {{{41},false,false,false,false}}});
+    f.topology.AcceptAccountReload(first,{first.storeRequest,0,true,true,{row},
+        {{{41},false,false,false,false}}});
+    EXPECT_EQ(f.topology.ReadAccount({41},AccountReadView::Current)->displayName,u"latest");
+}
+
+TEST(TargetTopologyIntegration, T2ReloadDoesNotRemovePostAttemptNewAccount)
+{
+    DiscoveryFixture f;
+    f.accountStore.stored={0,SubscriptionId{41},true,true,EffectKnowledge::ConfirmedApplied};
+    ASSERT_TRUE(f.topology.DiscoverAccount(Discovery(1,1,kRaw1)).bindingAccepted);
+    const auto reload=f.topology.PrepareAccountReload(AccountReadView::Current,1);
+    EXPECT_TRUE(f.topology.AcceptSlotAssembly({0},true));
+    f.accountStore.stored={0,SubscriptionId{42},true,true,EffectKnowledge::ConfirmedApplied};
+    ASSERT_TRUE(f.topology.DiscoverAccount(Discovery(0,2,"second-card")).bindingAccepted);
+    const AccountStorageRow oldOnly {{41},kRaw1,SlotId{1},u"old",u"",true,2,0};
+    f.topology.AcceptAccountReload(reload,{reload.storeRequest,0,true,true,{oldOnly},
+        {{{41},false,false,false,false}}});
+    EXPECT_TRUE(f.topology.ReadAccount({42},AccountReadView::Current).has_value());
 }
 
 TEST(TargetTopologyIntegration, T1OldEpochCannotEnterNewTopology)

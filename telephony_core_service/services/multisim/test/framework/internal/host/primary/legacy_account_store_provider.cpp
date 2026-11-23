@@ -38,6 +38,23 @@ bool Confirmed(const SimRdbInfo &row, const AccountDiscoveryWritePlan &plan,
 }
 } // namespace
 
+AccountLoadResult LoadLegacyAccounts(SimRdbHelper &store, const AccountLoadRequest &request)
+{
+    std::vector<SimRdbInfo> legacyRows;
+    const int32_t result = request.view == AccountReadView::Current ?
+        store.QueryAllValidData(legacyRows) : store.QueryAllData(legacyRows);
+    AccountLoadResult loaded {request, result, result == TELEPHONY_ERR_SUCCESS,
+        result != kInvalid, {}, {}};
+    if (!loaded.complete) { return loaded; }
+    for (const auto &row : legacyRows) {
+        loaded.rows.push_back(FromLegacy(row));
+        loaded.storedRoles.push_back({{row.simId}, static_cast<bool>(row.isVoiceCard),
+            static_cast<bool>(row.isMessageCard), static_cast<bool>(row.isMainCard),
+            static_cast<bool>(row.isCellularDataCard)});
+    }
+    return loaded;
+}
+
 AccountIdentityMatch MatchLegacyAccountByIccid(SimRdbHelper &store, const std::string &iccid)
 {
     SimRdbInfo row {};
@@ -79,7 +96,10 @@ AccountDiscoveryStoreResult WriteLegacyDiscoveredAccount(SimRdbHelper &store,
     if (plan.existingSubscription && assigned && !(*assigned == *plan.existingSubscription)) {
         assigned.reset();
     }
-    const bool confirmed = Confirmed(row, plan, assigned);
+    const bool stateMatches = Confirmed(row, plan, assigned);
+    const bool confirmed = result > 0 && stateMatches;
+    // A matching row alone may have come from another writer. Keep it as reconciliation evidence,
+    // never as causal confirmation for a failed original Insert/Update.
     return {result, assigned, confirmed, true,
         confirmed ? EffectKnowledge::ConfirmedApplied : EffectKnowledge::Unknown};
 }
