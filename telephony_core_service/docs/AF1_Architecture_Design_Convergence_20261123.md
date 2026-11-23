@@ -1654,3 +1654,460 @@ SOURCE account/topology_service.cpp:118–185 DiscoverAccount、:188–240 Recon
 |模块关闭与各 Owner 的逐项收据（提案）|infrastructure/assembly/sim_module.h 的 SimModule；infrastructure/assembly/sim_module_factory.cpp 的构造函数；infrastructure/assembly/primary_host_lifecycle.cpp:15；DESIGN B §11、A §14.3|如何将未决发现、已领取仍未返回、设备隔离分别关联回原 Owner，何时才允许销毁？|
 
 本轮仅为工作区文档及源码静态审查。未重跑 Host、未执行产品构建或设备试验。H3～H6 及 AF-2 均未开始。
+
+## Part 20：B1/M1/M2 定向设计收敛
+
+本轮读取了当前文件的 Part 16～19。输入为本地 main 与远端 main 的同一提交 `7a414c4e3c536ee67361095b5076614fa9444685`；开始时跟踪文件及暂存区无差异，两个未跟踪文件为 default.profraw、opencode.json。沿用 Part 16 的相对源码路径和 §2.1 的文档代号。以下是 **PROPOSED** 设计修订与待执行的 Host 验收设计。架构状态为 `AF1_HARDENING_H1_H2_PARTIAL`。
+
+### 20.1 B1：当前观察可替换，每笔已交出的存储效果须可单独结清
+
+**根因与边界。** SOURCE `account/topology_service.cpp:118–185` 的 DiscoverAccount 在锁外调用 WriteDiscoveredAccount，返回后才在部分分支保存 PendingDiscovery；`account/topology_service.h:95–100` 以位置和应用为唯一键。旧调用阻塞时已有关闭可见性窗口，两次 Unknown 又可覆盖同一键。`account/discovery/discovery_observation_ledger.cpp:31–89,124–164` 的 AcceptDiscovery/AcceptInvalidation 替换当前 Entry，CompleteStored/ReconcileStored 仍按当前 Entry 判断旧 admission。`role_assignment/account_role_protocol.h:28–65` 的 Prepare 对已有账户按身份预留，故同位置不同已匹配订阅可同时持有 A 资格。ReconcileDiscovery（topology_service.cpp:188–240）只凭位置取票，查询 ICCID 后可能写两个账户视图，忽略 ReconcileStored 返回，最后按位置删除。单把 map 的键改大仍会遗漏锁外调用、错误读回及清理竞态。
+
+DESIGN A §6.5.2、§14.3 和 B §5、§11 已要求逐项保留失效后的效果与原角色资格。**DESIGN_DEFECT** 是 B §11 指定的收据来源容不下所有已发工作；**IMPLEMENTATION_GAP** 是写前未登记、旧票依赖当前台账、锁外返回未按原票消费。**EXTERNAL_EVIDENCE** 只影响 provider 能否证明某笔效果；证据不足的项可以继续列为 Unknown，这不妨碍设计裁决。
+
+|比较面|方案 A：保留观察索引，TopologyService 按完整票据管理效果|方案 B：DiscoveryObservationLedger 内另设多笔效果记录|
+|---|---|---|
+|所有权|T 持两种事实：ledger 管最新观察，service 持每笔写的计划、效果及收尾；A 仍拥有角色预留|仍归 T；ledger 同时持观察及效果，service 编排 A/Store。原 pending 容器必须退出，避免两个效果写者|
+|改动|沿用 PendingDiscovery、角色端口、现有 T 锁；改签发/返回/核对/回收及按票释放索引。ledger 保留观察资格和冲突索引，效果真值只在 service|移动 PendingDiscovery 的载荷及枚举、结清逻辑；ledger 需理解角色预留引用和 Store 结果，涉及现有纯观察接口与测试调用方|
+|锁序|T 内登记/认领/结清；锁外 Store 和 A；回锁比较原票和所认领阶段|同一 T 锁下可连贯变更两组记录；跨 Owner 调用仍须由 service 在锁外执行。增加 ledger 自有锁无助于收尾|
+|回收|service 按票等待 A 的精确释放确认；当前位置淘汰仅影响观察。索引按持票者解除|ledger 提供按票结束和收据快照，A 的确认仍需 service 送回；对调用方多一层接口|
+|Host 判据|从 T 正常发现入口观察两笔 Store 调用、两份 T/A 责任与关闭结果|可单测 ledger 双记录；仍须通过相同的跨 T/A/Stop 反例才能验收|
+
+**推荐 A，PROPOSED。** 所需效果与角色预留的关联已经在 TopologyService 汇合。保留模块内存中的未结工作即可；适用寿命到原图排空或有逐项确认的驻留移交。跨进程恢复能力另需 provider 证据。
+
+|时点|T 的状态与不变量|A、I、H 的责任|
+|---|---|---|
+|准备及发出|每次尝试沿用原 DiscoveryStoreTicket；以 (RuntimeEpoch, admission) 唯一寻址，admission 在 T 实例内只发一次、不得回绕复用。不可变载荷绑定原 SessionRef、sequence、bindingRevision、ICCID、已知订阅、原写入计划/字段及 A reservation token。遇键重复或登记失败不得发出。在 T 短提交域内通过最终准备检查并登记“即将交出/在途”，随后锁外调用；失效与 Stop 均能按原票查到它。准备期已领的 T/A 资格也可被收据枚举|A 按原 token 保留角色资格；I 返回原调用的完成、效果及实际身份。Stop 封新准入，在途调用本身也须排空|
+|观察替换、返回乱序|当前位置只更新观察及水位。每个返回只推进本票，分别记录 callFinished、效果、assignedSubscription（可未知）、哪些字段仍待核对。Unknown、部分生效、无身份或未结束都可表示；不得以新观察清除。ICCID 冲突索引解除时比对持有票；后继尝试不得覆盖前票仍持有的同一冲突资格|两个订阅可持不同预留；一次低层返回不能替另一笔确认。不因超时或新卡出现重试 Unknown|
+|当前业务接纳|仅仍当前的观察、原位置版本、身份及角色资格均匹配时，按原用例接纳；T 在实际写点复核后才发布 current/Binding。若其间观察变化，转为原效果核对|A 对角色字段独立接纳，保留原部分效果；T 不以 A 的成功代替自身资格|
+|历史效果核对|入口携原票。T 锁内认领该票的一次核对，锁外逐项读原身份/字段，返回按同票、同认领、同阶段比较更新。仅查到相同 ICCID、相同行甚至相同值，如不能排除已有值或后继写入，仍记 Unknown。已失效票只记录原效果，不能恢复当前 Account、Binding、A 角色或触发补写。无需当前观察仍占据原索引|I 提供可归因于原写的证据；A 可按原 plan/token 结清历史责任，无须重新取得当前业务写权。不得把角色预留释放接口当作发布入口|
+|终结及关闭|原调用已结束，逐项确认未生效或已生效且投影已按原节点接纳/效果已核对，方可请求 A 释放；保留“待 A 确认”直至收到同票同 token 的确认。并发核对只允许一个终结者；重复/迟到确认幂等，不能清后继票。确认、相关在途交付结束后才按精确票回收；未确认项继续出具 M19。移交必须逐项确认效果、资格和接收者，仍在本图执行的调用必须返回|按 account/account_role_planning_port.h:37–42、role_assignment/assignment_requests.h 的 MayFinalizeInitialRoles 分别核验。T 收据 subject 可定位 epoch/admission 与原字段，A 收据定位关联 token；H 汇总，不以数量相等、调用返回或仅 T 空表判 Drained|
+
+**最小 Host 反例与验收设计。** 同 slot/applicationKey 的 X、Y 取不同 ICCID，预置两个已匹配订阅。以受控 Store 闸点先拦 X 的写，再从 R 入口交付 X 失效与 Y 发现，确认 Y 写也已登记。两次写均返回 Unknown。分别运行“X 先返回 / Y 先返回”与“先核对 X / 先核对 Y”的四个组合。每个组合按以下截面取证，固定 Suspend 点，不以 sleep 排序。
+
+1. 两次均在途、再到两次均 Unknown：可枚举不同的 X/Y ticket、A token、原目标及各自字段；Stop 封新入口，已有票仍可处理返回/核对，始终不能 Drained。
+2. 对第一笔给可归因的原调用结束及字段效果证据，另注入一次只有 ICCID 命中的无效读回。无效读回不结项；充分证据只能消费指定票。让 A 的释放确认延迟，此时该票仍在收据；确认返回才从两项变一项。
+3. 重放第一笔返回及释放确认，核对第二项仍存在且 token 不变。结清第二笔后才允许两笔从收据消失；其他责任也全部排空时才可 Drained。断言原 Store 写总数为二，X 的核对导致的 current/Binding/角色发布次数为零。另以“X 的慢核对返回时 Y 已登记”验证 compare-and-erase 的对象确为 X。
+
+**签收条件与下一步。** B1 为 `READY_FOR_ARCHITECT_DECISION`，BLOCKER 仍待裁决。架构负责人先决定方案 A/B 及写前登记、精确释放、不可归因则保留的三项约束；T/A 负责人据此提请修订 A §6.5.2、§14.3，B §5、§11，D #af1-acceptance 的 SC-01 用例。批准设计所需的是上述四种交错都有唯一收据答案；以后宣称实现关闭还须实际通过该 Host 用例。
+
+### 20.2 M1：按受影响的来源撤销绑定资格
+
+**根因与已有覆盖。** SOURCE `card/runtime/card_runtime.cpp:34–54`：InvalidateVerifiedCardSession 对仍当前的原 Session 签发序号；PublishAcceptedCardDiscovery 在代次变化时先发失效，再发布新发现。`account/topology_requests.h:75–88` 的 CardSessionInvalidation 只有原 SessionRef、sequence，无法表达失效原因及影响范围。`account/topology_service.cpp:242–251` 的 AcceptCardSessionInvalidation 只改观察台账，AcceptCardRemoval 则另需原 BindingRef；ReadPrimaryTarget（:46–56）不读观察来源。`account/binding_index.cpp:59–94` 的 AcceptBinding 对同位置同订阅幂等，显式 RemoveBinding 后才保留递增的空位版本。由此，同一条应用失效消息既不足以证明拔卡，也不足以从已接纳关系中找回该撤哪一版。
+
+DESIGN A §6.5.2、§10.1 已区分应用和位置寿命，且明确同卡再插不得复用旧 Binding；B §5 规定同序接纳。**DESIGN_DEFECT** 是来源关联、事件强度和待确认期间 Primary 资格没有落实到这一对端口；**IMPLEMENTATION_GAP** 是失效入口与 BindingIndex 之间缺少匹配的撤权路径。**EXTERNAL_EVIDENCE** 涉及产品实际拔卡/软件 ABSENT、Profile 生效与 Port 路由来源；失败的 APDU、暂时不可达、相同 ICCID 都不足以独自证明这些事件。
+
+**最小提案，PROPOSED。** T 在原绑定条目内随接纳记录“哪次可信来源证明了此关系”：原 BindingRef、模块 epoch、来源应用/端点作用域、原 Session 代次与观察序号；只有已证实才附 Profile/Port 路由。与该关系有关的来源暂失确证时，T 保留绑定与最后来源，标明相关操作资格待复核。R 只报告经验证的原因、作用域、原来源及顺序；T 在同一短提交域比较来源与当前绑定，再改变资格或调用 RemoveBinding(expected)。较弱证据之后可以收到同一来源更高序号的确证；已属于另一实例/绑定的迟到撤销不能命中新绑定。正常发现入口和 AcceptStoredDiscovery 的接纳都必须留下相同来源凭据。所有这些是 T 私有状态，不改变公开 simId 或让 Radio 伪造卡 Session。
+
+|事件与前置条件|R 提供的证据|T 的转换|BindingRevision|Primary 新业务资格|已发历史操作|
+|---|---|---|---|---|---|
+|临时 Session 失效、局部刷新|原应用、epoch、序号及仅应用范围的原因；局部 EF 刷新只列受影响范围|失效原观察/读取。无关应用不影响绑定；若唯一支撑原目标的来源暂不可证，则保留绑定、暂停该目标的业务准入|不变|有独立有效目标依据时可取；否则待可信重观察。同一载体及关系已验证连续时可恢复新步骤资格|旧卡回调按原 Session 拦截；已发设备/Store 责任继续列账|
+|已验证卡应用替换|旧/新应用实例与影响范围；区分同载体应用更新和证明原订阅接入关系终止|同载体连续可更换来源凭据；未证明连续则待确认。若已证明关系被替换，精确撤原绑定，再走新发现|仅换应用不增；确证撤旧 +1，新建另 +1|待确认期间不给依赖该来源的新步骤；恢复后仍须 active 及 A 写资格|只允许原已登记期望按证据接续适用观察；旧写权不跨应用继承|
+|已验证拔卡|与原绑定来源相符的载体移除，覆盖其应用；保留原实现的状态过滤|受影响观察失效；同序撤原 Binding。历史资料保留按原策略；角色复核由 A 接纳|撤销一次 +1，重复事件不再加|从该转换起无；ReadPrimaryTarget 不得返回可用旧关系|不能据拔卡判原 Modem 命令结束或存储未写|
+|同卡重新插入|新来源实例、新 Session、新发现序号；ICCID 可与旧值相同|先保留已撤销水位，再按可信匹配接纳可复用的订阅与新绑定|由空位再 +1；若原为 r，则新为 r+2|可为新请求签发资格；原 r 永久不匹配本次接纳|旧票只能核对自身，不得借本次匹配发布 current|
+|Profile 禁用/切换|已生效观察、原 Profile 与已验证路由；仅请求参数、返回或未证实的 Port 时标记不确定|确证影响当前来源才撤旧；切换后的新 Profile 独立发现；无关 Port 不变。无法归因时只暂停相关不确定资格|确证撤/建各 +1；请求或无关 Port 为 0|旧目标无；新目标须完成绑定、有效来源和 active 判定|卡通道结束、外部任务、Store、角色各按原责任核对|
+|业务 Binding 显式撤销|可无新 R 事件；若由设备触发则须携上列相应证据|T 验同一实例及原 BindingRef、业务撤销依据，执行 RemoveBinding；陈旧/重复输入为空操作|匹配才 +1|撤销后无；无须等待外部回调才阻止新准入|不自动删账户、清角色或取消设备协议|
+|迟到的 X 失效，位置已由 Y 接纳|旧来源、旧代次及序号；即使 slot 相同也可识别|仅处理 X 的旧责任；当前来源/绑定不匹配，Y 的资料和绑定不动|0|Y 自行取资格|按 B1/M2 回原票、原请求|
+
+**不变量与最小 Host 反例。** 以 R 观察入口建立 X 的绑定 r，保持一笔原请求在途。先让同载体另一应用刷新，再让支撑 X 的来源暂失确证；验证 r 和历史资料均保留，前者不阻断无关 Primary，后者不提供未经证实的新资格。送可信连续观察，验证只有新步骤可重新取资格。接着从 R 入口送已验证拔卡及重复消息，观察空位 r+1；原 ICCID 重插后应为同订阅、新会话、绑定 r+2。重放旧失效和旧结果，断言 r+2 不变、旧 r 请求无业务提交，原效果未结仍在收据。以 X→Y Profile 切换再运行，分别注入“只有请求返回”和“已验证原路由失效”；两次应得不同撤权结论。不得由测试先手调 AcceptCardRemoval 代替事件路径。
+
+**签收条件与下一步。** M1 为 `READY_FOR_ARCHITECT_DECISION`。T/R·card 先对上表逐行确认哪些来源足以判“关系终止”，并核定“保留绑定、暂缓相关资格”的兼容影响；未知来源留在待确认分支。提请修订 A §6.5.2、§10.1 和 B §5、§9 的观察协议，在 D #af1-acceptance 补同卡重插/另一应用刷新对照。设计签收要求拒绝旧资格与保留无关账户两项同时成立；对具体产品宣称拔卡或 Profile 生效还须取得对应事件证据。
+
+### 20.3 M2：Primary 按阶段取得业务资格，独立结清原协议
+
+**源码与根因。** SOURCE `role_assignment/primary/primary_switch_plan.cpp:21` 的 PlanPrimarySwitch 区分 C0（已在主 Modem，无设备写）、B（专用 RIL 成功后写主卡参数）、C1（三阶段前预写），计划描述动作顺序。`role_assignment/primary/primary_topology_port.h:27` 的 PrimaryTargetFacts 仅返回 Binding、ICCID、active 快照。`role_assignment/assignment_service.cpp:132–306` 的 StartPrimarySwitch 先两读目标再取 A 写资格，快照返回后 T 仍可改变。AcceptRadioStep（:339–419）按原步、成员及阶段推进下一轮；:420 起可恢复旧参数；:467–501 成功分支比 Binding/ICCID，未比 active，也未为后续各键保持 T 的资格。AcceptC1RetryDue（:563–625）重查 active、绑定版本、ICCID，仍沿用旧 members。StopAcceptingAndCancelScheduledRetries 与 HasPendingDeviceEffects（:99–129）不能仅据 pending 容器证明所有键已结清。RuntimeOperationStore（`infrastructure/request/runtime_operation_store.h:67–92`、同名 .cpp:18–76）控制步骤消费、迟到证据与一次领取，无法证明目标仍可选或设备已经结束。
+
+两个实际写点决定验收粒度。SOURCE `role_assignment/assignment_store_adapter.cpp:105–123` 的 WritePrimaryParameters 和 RestorePrimaryIfLegacyValid 均分 slot、ICCID 两次外部写，返回一个汇总结果；不能用一个成功位推定两键的效果。SOURCE `services/sim/src/radio_protocol_controller.cpp:179–247,292–301` 的 ProcessCheckRadioProtocol 在 CHECK 失败后进入 COMPLETE；UPDATE 的普通响应不推进成员完成，匹配 sessionId 的 NOTIFY 收齐后进入 COMPLETE。原协议确有收尾动作；在换绑、路由变化、部分交接、Stop 后哪种动作仍由原设备安全承接，源码不足以证明。
+
+**归类与最小提案（PROPOSED）。** DESIGN A §10.1、§11.2、§14.1/14.3 及 B §7～9、§15 已要求实际写点准入、原步骤收据及单键核对。**DESIGN_DEFECT** 是未逐阶段说明身份失效时哪一步还可授权、何处判定与 T 失效的先后，以及原 COMPLETE 的独立条件。**IMPLEMENTATION_GAP** 包括阶段推进只看旧 pending、合成卡 Session、参数逐键效果和关闭记录不足。**EXTERNAL_EVIDENCE** 包括目标产品在身份变化/Stop 时对原生会话、成功/失败 COMPLETE、实际路由及硬件复用的约定，以及改变业务继续条件对旧等待/返回节点的影响。
+
+沿用 A 的一次请求和冻结计划。在同一 pending 内分别记录业务步骤是否还可继续、R 已交接哪些原生命令、哪些原参数键/通知/完成仍待核对。这些事实可同时存在：例如业务资格已撤、旧 UPDATE 已发、仍欠原 COMPLETE、偏好键已写而 ICCID 键未知。O 只保存原步骤和完成；R 判定协议与设备资格，A 管参数/角色及原出口，T 只提供当前目标证据。无需新增协调器。
+
+**准入的精确时点。** 对每个可能产生新业务效果的步骤，A 在自己的短提交域核对完整 request/step/attempt、分支、写集与停止状态，同时只读 T 的原目标资格（实例、Binding 三元组、current 身份及 active 字段版本、M1 的来源资格）。建议在 A 已排他且 T 的窄只读访问仍受 T 短提交域保护的区间内，登记本步意图及不可变目标，或接纳本步的本地角色投影；登记/接纳即排序点。T 的撤权与该点必有先后。只读范围不泄露 registry，不持 T 锁回调 A；按 A→T 顺序退出后才执行 Store、平台交接、通知或完成。一个返回即解锁的 ReadPrimaryTarget 拷贝或再读一次，达不到这个条件。这里提请裁决的是受保护区间与排序语义，具体端口签名留待批准。
+
+若先撤权，该步不得登记；若先登记再撤权，该步即为原 X 的在途责任。交接前若确认可以撤回则记未发；已经交出或不能证明未发则只按 X 核对，不能重新按 slot 寻址到 Y。R 在真实交接边界核对冻结路由与资源，无法确认仍指向原协议时不得开始新的目标动作。对旧参数适配中一次调用内的两个写点，A 须能逐键授权和收取结果，或明确哪一组已作为不可撤回的前缀登记并逐键报告；本提案推荐逐键授权，保留旧顺序与已完成参数错误的原返回语义。已授权外部调用与设备实际生效之间没有原子保证。每次后续业务提交必须重新准入；曾经失活而又恢复 active 时，原请求不能只靠相同布尔值恢复资格。该连续性约束属于待裁决的行为增强。
+
+|阶段及路径|必须验证的资格|已经发生、需要归责的效果|资格失效后的处理|
+|---|---|---|---|
+|Admission 前，C0/B/C1|原 epoch、受理状态、完整目标、当前有效 Binding/来源/current.active；A 写集和业务域无冲突。原入口的独立偏好提示按 SC-03 自有资格处理|可有入口已写提示；此次切换尚无设备效果|拒绝新切换；独立入口效果仍按原节点归责，不能把其改写成未发生|
+|第一次偏好或参数写前，三路径|在每个目标业务写的准入点复核冻结目标、资格版本及原写成员。C1 在预写前另取 R 已验证成员/路由计划与旧参数快照|C0 顺序为提示、Primary 参数及事件、Data；B 此处仅有提示，Primary 参数在设备后；C1 可已预写部分参数|保留已写前缀和已投递事件；停止尚无资格的新写，逐键区分未发/已知/未知|
+|B 专用发令；C1 CHECK 前|原业务步骤仍有效；R 判原成员、路由版本、资源键集与发令资格。每成员登记 ConfirmedNotSent / HandoffAccepted / HandoffUnknown|B 可已写提示，C1 可已预写及发布开始；同阶段其他成员可能已交接|确认全未发时只结清业务前缀；部分已交/未知则只追原成员、token 和 fence；无自动重发|
+|C1 UPDATE 前|原 CHECK 匹配的成员结果齐全且允许推进；业务继续资格仍在，原路由及新阶段设备准入成立|已发 CHECK；预写仍在，可能已经取得部分设备效果|禁止把 UPDATE 发向替换目标。转判原协议收尾条件；缺证据时隔离原域，保留原会话|
+|C1 COMPLETE 前|若属正常推进，须核对原轮、冻结成员、阶段，UPDATE 仅认匹配原 NOTIFY。若业务已失格或 CHECK 失败，另验原协议确需哪种 COMPLETE、原路由仍可寻址、收尾命令可在原域安全执行；由 R 准入，A 只保留原轮收尾责任|设备可能已改变，亦可能只有部分成员接收；参数可能已预写|证据充分才对原轮发规定的收尾，禁止切换到新成员或报告新业务成功。若安全收尾不能证明，保留隔离和未了收据。不得把 COMPLETE 响应直接作为可复用证明|
+|设备结果返回，B/C1|R 先核原步骤/轮次、成员、phase、路由、token/可用 serial、原租约及结束证据；A/O 核原步一次消费|B 单发或 C1 分阶段效果；调用返回、设备结束、可复用分别记录|身份已变仍可接纳原效果。终态后只走迟到证据，不触发下一步业务、第二次通知或完成|
+|角色/参数最终接纳前，C0/B/C1|每个业务投影和后续键按上述排序点复核 current.active、连续资格、原 Binding 及写成员。C0 不等待设备，B 在设备成功后才写 Primary，C1 区分预写与最终 Data/通知|C0/B 可能只写完 slot 键；C1 参数可能已落地而设备仍未知；通知、回调也有独立交付状态|不将 X 的结果记作 Y。设备失败时仅在旧恢复分支、原写资格和逐键归属仍能证明且不会覆盖后继写时恢复；不能归因或 Unknown 则逐键核对。参数恢复不证明 Modem 回滚|
+|C1 Retry 前|原请求尚允许重试，未 Stop，原调度代次、预算、写资格、完整目标和 active 均有效；上轮已结束可复用。本次重新取得 R 的有效成员/路由并签新 attempt/round；目标或映射已不等价不得借重试重定向|可能已交付早期失败出口，预写、恢复及上一轮命令各自有结果|无资格不预写、不发 CHECK。收尾或关账不能消耗新尝试；已领完成不再交付|
+|Stop 期间，三路径|H 封新入口，A 封新的业务发起/重试，按原资格排空已接纳步骤和出口；R 仍须能接收已发证据。任何专属原轮的收尾还须符合上列 COMPLETE 条件与关闭期平台契约|已交未返、效果 Unknown、未释放角色写集和未结束设备域都可能存在|不能处理必需收尾时留原图或逐项确认移交；受理关闭不能清票。未完成、无接手时非 Drained；仅所有本地责任结清/逐项接手且在途执行返回后才可 Drained|
+
+**最小 Host 反例与签收判据。** 使用可控闸点及逐键 Store 轨迹，不以额外调用实物设备证明设计。正常 C0/B/C1 保持原参数、事件和完成偏序，再作以下负控。
+
+- C0：第一次取 T 事实后、第一业务写登记前撤销 Binding，期望该写零次。另在 slot 参数已写后撤销，ICCID 后续写/新角色成功通知不得按新卡执行；记录精确已发键及效果。调换“登记/撤销”先后，允许先登记的原项成为在途，验其返回与后续资格分开。
+- B：发出专用命令后仅把 active 改 false，BindingRevision 保持不动，再送原 token 的成功；原设备效果可记，新的 Primary/Data 提交为零。重复及超时后送回均不能完成两次。将 active 改回 true 也不能复活原步骤。
+- C1：预写后在 CHECK 与 UPDATE 之间换卡，断言旧计划无新业务 UPDATE；对“已证需且可安全发原 COMPLETE”和“交接/路由未知”各跑一例。前者只出现规定的原轮收尾，后者无猜测命令并保持隔离。另在 UPDATE 已交出后撤销，普通响应、错轮 NOTIFY、重复成员均不推进；准确的原证据也只清原责任。
+- C1 失败与 Stop：分别注入“预写成功＋设备确认失败”“一键 Unknown＋平台交接未知”“重试到期前换卡/Stop”。检查逐键恢复证据或待核对收据、平台提交次数、写资格及完成次数。已被后继写入的键不得用旧快照覆盖；未结作用仍在时 Stop 不得 Drained。原已交付早期结果的场景不能再次调用原出口。
+
+**签收条件与下一步。** M2 为 `NEEDS_MORE_EVIDENCE`。阶段准入、逐键效果与无证据时的隔离已有可裁决提案。产品/协议负责人下一步须对同一产品的 CHECK 失败、UPDATE 已交且换绑、Stop 中待 COMPLETE 三条轨迹，给出原生会话与成员、路由是否仍指向原设备、必需收尾类型、结束/可复用判据，并由 SIM 接口负责人核对失活时的原出口及通知时序。若不能证明某种收尾安全，该分支只批准保留未决责任，不能签为可执行的产品动作。A/T/R 负责人据此提请修订 A §10.1、§11.2、§14.1/14.3，B §7～9、§11、§15，D #af1-acceptance 的 SC-01/02/03 差分条件。本轮未裁决新的公开返回值、等待预算或自动重试。
+
+### 20.4 联合反例与本轮结论
+
+以下为一个连续的 T/A/R Host 验收脚本设计。X 的账户和主卡请求已合法接纳；令 Y 为同槽的另一订阅。将 Y 的发现写暂停在 I/O 返回前，使 X 的旧回包必定落在“Y 已被观察、尚未建立 Binding”的窗口。
+
+|截面|交付或注入|必须同时观察到的结果|
+|---|---|---|
+|1|A 对 X 启动 C1，记录原写集，预写 Primary 参数，CHECK 已交给 R|A 可逐键列出前缀；R 可按原轮与实际交接成员列出传输责任。两者都关联 X 的原请求|
+|2|R 送可信 X 移除；随后发现同槽 Y，T 登记 Y 的 Store ticket 后暂停|T 撤 X，空位 revision 递增，Y 有独立 Session 和票据。X 的 A/R 责任与 Y 的 T/A 发现责任均能列出；Y 尚无当前业务绑定|
+|3|送错轮或缺原成员关联的旧回包，再送可匹配的 X 原回包|错包不推进任何轮；可匹配包仅更新 X 的效果/原协议收尾。无针对 Y 的 UPDATE、参数接纳、成功通知或第二次完成。X 的参数前缀仍由 A 核对，设备未证结束仍由 R 持有|
+|4|释放 Y 的写返回，给 Y 的当前观察、原位置水位与角色预留充分证据；送重复 X 失效/迟到回包|只接纳 Y 的新 Binding，版本高于空位；X 的 request/Session/Binding/轮次不能通过。Y 可被发现和绑定，是否能另发 Primary 仍受 A 写集及 R 物理域准入|
+|5|取 M19，调用 Stop；延迟 X 某一参数或设备结束证据，再逐项结清|Y 成功不消去 X 的条目。无接手时只要 X 的键、设备、交付任一未结就非 Drained；全部结清且在途返回后才可排空。重复证据不再改 Y|
+
+另以独立重复运行在截面 2、3 提前 Stop，检验当时的在途收据与拒绝新入口；不在同一条已封口的轨迹中假设仍能受理一个全新请求。B1 的双 Unknown 四组排列在 §20.1 单独检验。
+
+|问题|本轮状态|架构签收尚需|
+|---|---|---|
+|B1（BLOCKER）|`READY_FOR_ARCHITECT_DECISION`|裁决多笔效果归属、逐票关账及判据；无正式批准及实现验收|
+|M1（MAJOR）|`READY_FOR_ARCHITECT_DECISION`|裁决分级撤权和绑定来源；产品证据逐来源验收|
+|M2（MAJOR）|`NEEDS_MORE_EVIDENCE`|原协议收尾与路由/复用、原出口的产品差分证据|
+
+三项均为设计提案。上述 Host 反例尚未执行；本轮没有产品或设备实测。AF-1 继续暂缓签收，状态为 `AF1_HARDENING_H1_H2_PARTIAL`。本轮到此停止。
+
+## Part 21：H3 核心接口契约加固（待独立复核）
+
+本轮基于 main/origin/main `7a414c4e3c536ee67361095b5076614fa9444685` 和工作区已有的 Part 20。§8 的接口编号用于追踪；三态交接、逐项 M19 以 §15.3 及既有 §16.2 的修订为准。以下矩阵只补受 B1/M1/M2/N1 影响的行。源码路径以 `telephony_core_service/services/multisim/` 为根，文档代号沿用 §2.1。矩阵中的源码是 SOURCE，目标契约及 Host 断言是 PROPOSED；签名变化限模块私有边界。
+
+### 21.1 H3-1：发现票据至关闭收据（B1，方案 A）
+
+以一笔已发存储调用为归责单位。T 签发的 DiscoveryStoreTicket 已有原观察、admission、bindingRevision，以 (观察的 epoch, admission) 唯一寻址；同一次观察的获准重试也取得新 admission。原票必须能复原来源 Session、序号、期望位置版本、ICCID、预期/返回的订阅、逐字段计划和 A 预留。当前观察可以被替换，未结效果保存在 TopologyService 的模块内存中。
+
+|接口（提供者 → 调用者）及 Owner|输入 → 输出；身份与版本条件|调用、错误与 Unknown|Stop、回收及最小 Host 断言|SOURCE 定位|
+|---|---|---|---|---|
+|BeginStore（T 的 DiscoveryObservationLedger → TopologyService）；T|已接纳观察和 BindingIndex → 可空原票。匹配 epoch、应用、代次、sequence、ICCID、位置水位；同一实例 admission 不复用|T 短提交域同步签发并登记准备项；重复/陈旧、冲突、序号耗尽或封口均不签发。准备失败按原票解除资格|封口前已签发的准备/匹配读取有在途责任。让旧观察进入匹配后被替换，断言其返回不能清新票的冲突索引|account/discovery/discovery_observation_ledger.h:29；同名 .cpp:31–123；account/topology_service.cpp:64–106 DiscoverAccount|
+|Prepare/StillOwns/FinalizeInitialRoleReservation（A → T，M03）；A 拥有预留，T 拥有票→预留关联|原位置、可空既有订阅、角色政策 → 含 token/revision 的不可变片段；T 在原票下一次绑定该片段。Finalize 输入原片段及调用结束、明确效果、投影接纳或历史核对证据 → 本预留是否已结清|T 锁外同步调用 A；回到 T 只更新同票。准备返回时资格失效则不发 Store，转为本票的未发清理；历史结清允许释放原预留，不授予当前角色写权|准备入口在途跨越两个域。A 收据按原 token，T 收据引用该 token；保留到确认。夹住 A 返回或释放确认，断言不同已匹配订阅的 token 独立可见|account/account_role_planning_port.h:37–42；role_assignment/account_role_protocol.h:28–65；role_assignment/assignment_requests.h:97|
+|DiscoverAccount → WriteDiscoveredAccount（T 编排、AccountStore 适配器 → T）；T 对效果负责，I 执行|票、复核后的原目标、账户字段与已绑定的角色片段 → 一次原 Insert/Update 的 legacyResult、assignedSubscription?、writeConfirmed、callFinished、effect。同步调用上下文携原票，不要求 provider 回显内部 ID|T 锁内先将该票置为可枚举的“提交在途”，再锁外进 I；返回时按原票归档。登记失败不发。部分、身份缺失或交出后无明确结果，保留待核对；不因返回顺序匹配当前 slot|阻塞在 Store 入口时读取 T 收据必须已见本票；栈返回不能代替 callFinished/效果证明。闸住两次写并倒序返回，写次数各一|account/account_store.h:65–77、:94–95；account/account_store_adapter.cpp:38–46；account/topology_service.cpp:118–185|
+|CompleteStored（T ledger → TopologyService）；T 接纳当前关系|同票的存储结果、确认的实际身份、原观察、原位置版本、仍持有的计划资格 → 当前绑定接纳或转核对|T 域内比较并接纳；锁外 A 调用返回后要在实际 current/Binding 写点再校验。重复只读回已经确定的处置；历史票不从此入口重新发现或创建 current|存储已生效而接纳失败仍保留票及释放责任。令失效事件发生在 A 返回与 T 提交之间，断言旧票新增 current/Binding 次数为零|account/topology_service.cpp:125–168、:317–340；account/discovery/discovery_observation_ledger.cpp:124–147|
+|ReconcileDiscovery（T → T 的核对调度/在途返回）；T|改按原票寻址 → 本票待证、待释放、已结清或陈旧。锁内认领一次核对阶段，锁外按原字段查证；回锁按票和认领代次更新。对已失效票只处理原效果|同票核对单一执行者；另一认领不得覆盖。匹配 ICCID 或读到期望值不足以排除前值/后写时仍为 Unknown。只在与原 token 配对的 A 确认后按票删除。重复确认空操作，绝不按位置 erase|Stop 允许原项返回/核对；待确认仍在收据。交错执行“X 慢读回 → Y 登记 → X 返回”，断言 Y 的记录和 token 均未动|account/topology_service.h:95–100、.cpp:188–240；account/discovery/discovery_observation_ledger.cpp:149–164|
+|OwnerCloseReceipt（T/A → H，M19，设计类型）；出具者拥有各自义务|输入关闭轮所涉实例 → epoch、逐项 kind/subject、原请求（发现可空）及逐项移交确认。发现 subject 唯一定位票和原字段/未返调用，资格项引用原 token|在 Owner 短域取只读快照；无稳定快照按未完成。准备、交出未返、效果未知、等 A 确认均可见；可由同一票导出多项，原效果与资格不互相抵消|没有接手者时，只要有一笔未结或有执行未返回就保留原图。夹住 X/Y 两笔，检查收据集合按原身份从两笔变一笔，再变空|设计 B §11 CloseObligation/OwnerCloseReceipt；源码映射 account/topology_service.h:95–100、role_assignment/account_role_protocol.h:56；现无整图收据实现|
+
+**B1 未决效果关联图。** 每条水平链表示一笔存储尝试。A 的预留在发出 Store 前取得，在结清该笔之后才释放；效果箭头表达数据关联。
+
+```mermaid
+flowchart LR
+    O["T 当前观察索引"] -->|签发| X["X 原票"]
+    O -->|后继观察签发| Y["Y 原票"]
+    X --> SX["T 登记在途并调用 Store X"] --> EX["X 原字段效果"]
+    Y --> SY["T 登记在途并调用 Store Y"] --> EY["Y 原字段效果"]
+    X --> AX["A 预留 X"]
+    Y --> AY["A 预留 Y"]
+    EX --> RX["按 X 票核对"]
+    AX --> RX
+    EY --> RY["按 Y 票核对"]
+    AY --> RY
+    SX --> CX["M19 原票 X 的未了项"]
+    RX --> CX
+    SY --> CY["M19 原票 Y 的未了项"]
+    RY --> CY
+```
+
+**必要的接口变化。** 将现有按观察核对的 ReconcileDiscovery 改为按票核对；在 T 内将 PendingDiscovery 的登记提前，按票组织。ledger 的按票冲突索引按所有者比较解除，保留当前位置的观察序列。A 的同步预留和 Store 现有实参/结果可复用：同一调用栈保存原票与原 plan 即可关联，异步转投时必须值捕获该票。不得仅凭“预留已不存在”的 false 返回断言释放成功；由 T 单一终结者记录已收到的精确同步确认，无确认则继续列项。无须新增数据库字段、跨模块全局日志或第二个 Store。B1 仍待架构裁决。
+
+### 21.2 H3-2：可信观察、来源失效与 Binding（M1）
+
+|接口（提供者 → 调用者）及 Owner|输入 → 输出；身份与版本条件|调用、错误与 Unknown|Stop、销毁及最小 Host 断言|SOURCE 定位|
+|---|---|---|---|---|
+|SessionRegistry 的 PublishVerifiedSession/InvalidateForVerifiedReplacement（R·card → CardRuntime）；R 管应用访问|已验证来源的 SessionRef → 签入或拒绝；撤销原 Session。比较 epoch、slot/applicationKey、generation，保留已撤代次水位|卡侧实际写点同步校验；当前完全相同可幂等。失去卡应用访问证据只影响其作用域|封新工作后原消息仍按原代次分类；排空观察出口后才销毁。重放旧代次不能使 StillCurrent 为真|card/state/session_registry.cpp:36–75；card/runtime/card_runtime.cpp:34–54|
+|CardObservationSink（T → R·card，M01）；R 管来源，T 管接纳|发现携可信 Session、序号、ICCID；失效携原来源、严格递增序号，加上可验证的原因及作用域（应用/载体/特定 Profile 路由）。T 接纳或丢弃；无须向 R 返回账户/角色数据|同一来源按序进入 T，失效短同步排序；发现的慢 I/O 移出该短域并持 B1 票。无来源依据、仅有命令返回或过期事件均不能证明关系终止|已接纳投递计入在途，Stop 后处理原资格撤销/效果。由源事件入口送不同应用及过期 epoch 的失效，期望当前绑定不动|account/discovery/card_observation_port.h 的 CardObservationSink；account/topology_requests.h:75–88；card/runtime/card_runtime.cpp:34–54；account/topology_service.cpp:59、:242|
+|AcceptBinding/RemoveBinding（T 私有 BindingIndex → TopologyService）；T|匹配的当前发现、已证实订阅、预期位置版本 → BindingRef；撤销时输入 T 保存的原 BindingRef 及与其匹配的来源证据 → 是否移除。受当前模块 epoch 约束|T 同一短提交域内更新绑定及来源凭据。部分验证不能走 RemoveBinding；同订阅重复发现只有在原关系连续时才幂等；版本溢出拒绝复用并停止以该目标授予新资格|原关系的消失不回收 B1/M2 票。空位水位保留到实例排空。拔卡后同 ICCID 重插再放旧撤销，期望新绑定仍在|account/binding_index.cpp:42、:59–94；account/topology_service.cpp:242–251、:317–340|
+|PrimaryTopologyPort（T → A，M04）；T 管资格事实，A 管本步决策|查询 slot → 可空 PrimaryTargetFacts，用于规划；在副作用排序点按原 epoch/Binding、身份、active 字段版本及相关来源连续性取得短时只读资格 → 匹配或拒绝|建议保留普通快照，增加仅用于步骤登记/投影接纳的**词法作用域只读访问**：A 持自己的短域取得 T 只读保护，完成纯内存登记后立即释放 T 再释放 A。句柄不可缓存、跨线程或进入外部 I/O。读不到、资格暂停或版本不符时不登记新效果|Stop 不产生新业务资格；原历史效果核对不要求重新取得当前目标。分别在撤权前后登记一个步骤，检查有且仅有先登记的原项可能在途|role_assignment/primary/primary_topology_port.h:27–33；account/topology_service.cpp:46–56、:268；account/account_registry.h:30–44；设计 A §14.1|
+
+**Binding 生命周期图。** 图中的“可用”仅指 T 能提供当前关系依据；active 和 A 写集仍须单独满足。
+
+```mermaid
+stateDiagram-v2
+    state "空位（保留版本）" as Empty
+    state "已绑定，来源可用" as Bound
+    state "已绑定，相关资格待证" as Pending
+    [*] --> Empty
+    Empty --> Bound : 当前发现获接纳，版本加一
+    Bound --> Pending : 支撑此关系的来源暂失确证
+    Pending --> Bound : 同一关系连续性获证
+    Bound --> Empty : 验证原关系终止，版本加一
+    Pending --> Empty : 后续可信证据确认原关系终止，版本加一
+    Bound --> Bound : 重复观察或无关应用刷新
+```
+
+|事件|匹配依据及 T 转换|版本与反向断言|
+|---|---|---|
+|局部刷新、普通 Session 中断|同 epoch 的相关原应用；仅撤原访问，独立来源仍可证明关系；唯一依据暂失时保留来源凭据并暂停资格|位置版本不变；无账户删除或角色重置；重新确证只授权合格的新步骤|
+|应用换代或端点重连|连续性有证时更新受影响来源；仅同槽同 ICCID 而缺载体连续性时保持待证。确证接入关系替换时先撤旧再接纳新|单纯换应用不加位置版本；不得以恢复后同一布尔状态复活已经失去连续资格的旧步骤|
+|已验证拔卡或显式业务撤销|可信移除匹配原载体、已接纳来源和原 Binding；业务显式撤销须有原 Binding 及独立撤销依据|r→空位 r+1；重复或旧实例消息不再增加。原请求、历史账户仍可存在|
+|同 ICCID 重插|新 Session/发现序号，按既有身份政策可复用订阅；从空位接纳|r+1→新绑定 r+2；任何携 r 的旧请求均不得提交当前事实|
+|Profile 禁用/切换|验证生效的原 Profile/Port 路由只作用于相应关系，切换后按新发现接纳；请求所填 portIndex 不构成移除证据|确认撤/建各加一；无关 Port 的版本不变，未证明影响时只保留待证责任|
+|陈旧发现/移除、加强证据|旧 epoch、旧序号、旧来源与当前关系不匹配则拒。先收到“暂失确证”，再收到同一原来源更高序号的可信移除时，允许按保存的原绑定撤销一次|迟到 X 不得按 slot 撤 Y；曾丢失会话也不能使真实拔卡永久无法处理|
+
+**必要变化。** CardSessionInvalidation 的现有两字段无法区分暂时失效和可信终止，应扩充原消息；在 T 的绑定接纳点一并保存来源及资格连续性的水位。该水位只在支撑该资格的依据中断时失效，不随无关观察序号变化。较晚的可信移除可依据 T 留存的来源匹配，R 必须有独立可信的原载体事件，不能因 SessionRegistry 已删旧会话而重新签发旧 Session。M04 的窄只读访问解决“二读返回后换绑”的窗口；T 不向 A 暴露索引或写入口。M1 的方案仍待裁决，产品事件强度另需证据。
+
+### 21.3 H3-3：Primary 的步骤登记、设备收尾与角色提交（M2）
+
+|接口（提供者 → 调用者）及 Owner|输入 → 输出；身份与版本条件|调用、错误与 Unknown|Stop、销毁及最小 Host 断言|SOURCE 定位|
+|---|---|---|---|---|
+|StartPrimarySwitch / PlanPrimarySwitch（A → 兼容入口/内部用例；计划为 A 内部纯规则）；A|带原目标、expectedBinding、父步和完成路由的 command → RequestId 与冻结分支。以 §21.2 的 T 资格、A 业务域/写集、R 真实观察判 C0/B/C1|发起返回请求身份；实际副作用须单独获准。缺目标/分支输入不猜 Modem。同步旧等待由原出口维持|封口拒新请求；已在途请求的每个参数、设备和交付效果继续可查。撤权刚好发生在首写登记前/后，分别期望零写/仅已登记原写可能在途|role_assignment/assignment_service.cpp:132–306；role_assignment/primary/primary_switch_plan.cpp:21–48|
+|AssignmentStore 参数写/恢复（I 的 A 专属适配器 → A，M12）；A 管写权|经准入的原 StepRef、写成员、原键和值/快照 → 单键 legacyResult、callFinished、效果。slot、ICCID、Data、入口偏好分别归责；保持原编码与外部返回节点|A 域内登记一键，锁外同步 I/O，按原步骤回 A 接纳；下一键重新登记。复用已有参数端口，拆细复合写/恢复的内部契约。已完成但按旧契约忽略的返回错误仍如实记载；未确认效果不得从零返回值推演|Stop 列已发未返、已知前缀和未知键。拦在 slot 写后使 ICCID 写失败/未知，检查无法以一条总返回值消除两项责任|role_assignment/assignment_store.h 的 AssignmentStore；role_assignment/assignment_store_adapter.cpp:105–130|
+|AcceptRadioStep / AcceptLateRadioEvidence（A → R 的结果出口，M07）；R 管原设备证据，A 管业务接纳|已关联的 StepRef、原轮、阶段、成员、来源类型、原目标/效果 → 原步骤消费或仅记晚到；A 不从回包重查当前 slot 补目标|R 锁外异步投递；每轮每成员只消费一次。UPDATE 普通响应不计成员完成；错轮/重复不推进。设备成功仍须独立取得当前角色提交资格|原回包/投递/完成分别排空。B 已超时并完成一次后再给准确证据，断言仅更新原效果、通知及原完成不重复|role_assignment/primary/radio_execution_port.h:45–69；role_assignment/assignment_service.cpp:339–419、:467–560|
+|AcceptC1RetryDue（A → 原 Owner 调度入口，M17）；A|原 RequestId、受理过的调度代次 → 是否消费该次到期；重新核对原目标、active 版本、写集、预算、R 当前成员映射和上轮资源结束；生成新 attempt/round|到期异步投回 A，单次接纳；不按到期即发送。资格失效、交接未知、前轮未解不预写或重试|Stop 撤未执行重试并排空已投递任务，不取消仍欠的协议收尾。旧到期在换绑/封口后交付，预期平台新增命令数为零|role_assignment/assignment_service.cpp:99–118、:563–625；infrastructure/request/runtime_operation_store.h 的 RetrySchedulerPort|
+
+**阶段资格矩阵。** 下表的“业务资格”均包含实例、原请求/步骤、A 写集及 M04 的目标连续性。首次规划成功只覆盖一次决策。A 只在 §21.2 的短读区间内登记下一项原目标意图或接纳本地事实；锁外动作先登记、后取回执。业务步骤是否可登记、原设备是否已经生效和用户出口是否已经完成，分别取证。
+
+|阶段／适用路径|当前业务继续资格|已发生的参数或设备效果|原协议收尾责任|当前角色事实提交资格|须保留的 M19 项|
+|---|---|---|---|---|---|
+|Admission，三路径|原入口条件、未封口、T 的有效来源/current.active 与 A 域/完整写成员；C1 冻结 R 真实成员与路由|独立入口可能已写偏好|尚无设备交接|只能登记计划|原请求、已持写集、已发生提示|
+|参数，C0|按原顺序逐键登记偏好、Primary、Data；每项只绑定原 X|每一键、每次旧通知各有可见节点|无 Radio|每次向 A 投影或发布下一业务事件时检查原步资格；Data 不由主卡参数写成功自动推出|键、已授权输出、待返回的完成|
+|发令前，B|独立偏好按原节点；专用命令验证目标、R 路由与设备准入|可有提示，无成功后的 Primary/Data 写|一旦交接由 R 追原单发|此时无成功角色提交|偏好、单发交接状态、角色写集|
+|预写，C1|取得原参数快照，按原成员计划、目标和写成员逐键准入|偏好、Primary 两键、起始阶段通知可能已出|尚未发 CHECK 时无设备责任|仅原节点的预写投影；无最终成功|各键实际前缀、快照、待核对值|
+|CHECK，C1|每个实际成员使用冻结计划，R 验证路由/资源，记录其交接状态|已有预写；该轮可能仅部分成员已交接|失败或部分交接交原协议核对|CHECK 响应无当前角色提交权|逐成员状态、fence、未返投递|
+|UPDATE，C1|原 CHECK 齐备且可推进；下一步仍满足业务资格|原轮、成员的设备效果可异步抵达|只认对应原生会话的成员 NOTIFY；业务失效时保留已交部分|不得因错轮、普通 ACK 或槽复用推进角色|原轮未齐成员、未知效果/隔离|
+|COMPLETE，C1|正常目标步骤验原计划；换绑/Stop 后仅剩原协议收尾判定，业务资格不能代替它|CHECK/UPDATE 可已改变真实设备|协议方需证明成功/失败收尾、原路由和停止期可执行性。证据不足留原会话与隔离，不向平台猜发|收尾本身无权提交新目标|原成员及交接、待定收尾、结束/复用证据|
+|Radio Result，B/C1|可取原证据不要求 X 仍当前；继续业务须独立复核|B 单发结果；C1 分阶段结果，交接与结束分别证明|R 对原 token/轮/成员负责，迟到不转给 Y|原 Binding 相同但 active 已中断也不签当前成功|原效果、Owner 投递及已领取未返出口|
+|最终提交与恢复，三路径|C0 随原步骤；B 确认后写 Primary/Data；C1 最终 Data/输出。恢复另验原失败分支、仍持的具体键、快照及未被后继写覆盖|预写、后写和已发事件均不可凭失败假定撤回|参数恢复不能释放设备；Unknown 留原域|X 失格则不作当前成功接纳。允许的旧键恢复单独登记，不能用旧位置恢复 Y 的 Assignment|逐键效果、冲突资格、通知/完成，仅对已证项结清|
+|Retry，C1|上轮可结束、预算及调度代次有效、原目标连续、R 新轮可准入；C0/B 不因 Unknown 新增此机制|早期失败出口可能已交付|完成上一轮收尾不等于批准新一轮|重试也不继承旧提交资格|旧效果、已排任务、下一 attempt 原步|
+|Stop，三路径|封新发起/重试；已接纳步骤按原资格排空|未返 I/O、部分参数、迟到 Radio、出口在途可并存|允许收证；换绑或停止期 COMPLETE 保持 OPEN|封口或认领完成均不授予新的角色决定|未解项逐项留图或取得明确驻留接手确认；本地执行须返回|
+
+**产品门禁。** 旧 RadioProtocolController 在 CHECK 失败时走 COMPLETE，且 ExecuteCompleteCommunication 根据失败标志选择旧或新协议成员数据（`telephony_core_service/services/sim/src/radio_protocol_controller.cpp:178–194、:208–231、:292–301`）。它证明特定旧分支存在，不能证明换绑/Stop 后两条路由仍等价。产品/协议方须给原 session、成员、路由、可用执行者、收尾类型、命令结束和资源复用证据；SIM 接口方另核原返回/通知轨迹。未取得这些证据时，接口仅承诺保留原轮、隔离并继续接收可信证据。H3 不裁决换绑或 Stop 后是否发送 COMPLETE。M2 保持 OPEN / NEEDS_MORE_EVIDENCE。
+
+### 21.4 H3-4：相邻接口的一致性、四个反例与 H4 交接
+
+|接口（提供者 → 调用者）及 Owner|输入 → 输出；身份与版本条件|调用、错误与 Unknown|Stop、销毁及最小 Host 断言|SOURCE / DESIGN 定位|
+|---|---|---|---|---|
+|PlanPrimaryRound、SwitchPrimaryRadio（R → A，M06）；SubmitPrimaryRadio（平台 → R，M09）|目标、业务域、mode → 已验证成员及 routeRevision。每次提交带 StepRef、localRound、phase、member、routeRevision 和适用的目标 Binding；R 私有 token 关联平台交接 → **该次** RadioSubmitDisposition|同步返回交接三态、结果异步。ConfirmedNotSent 只否定该成员该次交接；HandoffAccepted 登记并等待；HandoffUnknown 保留关联、隔离、禁重发。serial 缺失要按原消息种类判断，不能伪造，也不能把可匹配的原生 NOTIFY 当作另一发送的 ACK|已送成员不因另一成员未发而解绑。Host 令一个成员已交、另一个确认未发；另测冲突的内联早回包及交接未知，断言只归原 token，不能据“最后一次提交”推断本次成功|role_assignment/primary/radio_execution_port.h:70–102（现为 void 和单独查询）；device/resource/resource_radio_runtime.cpp:82–163、:190；B #af1-radio-plan|
+|RuntimeOperationStore（O 提供给发起 Owner，M02/M10）|Begin → RequestId(epoch, owner, value)；AdvanceStep 以原 StepRef 验 step/attempt。卡发送借 R·card 的 SessionRef；Radio 拟用 RecordRadioSent(expected, localRound) 关联本步；目标使用 T 的 BindingRef，绑定三元组需在原实例解释|Owner 同域登记发送尝试和消费；确切交接状态来自 M06/M09。结果按原步骤处理，迟到证据只入原效果；登记、终态、领取、原出口返回四个不同节点|ClaimCompletion/早期领取后仍列“未返回”；不能先清上下文再等回包。Host 重用 request 数值换 epoch/owner，再重放旧 step/attempt；均不消费，纯 Radio 路径生成 SessionRef 次数为零|infrastructure/request/request_ref.h:27–49、runtime_operation_store.h:67–93、同名 .cpp:18–76；infrastructure/sim_identity.h:53–62；B #af1-radio-sent|
+|ResourceBarrier（R·device → 执行适配，M08）|对完整键集、原 StepRef、效果要求一次 Acquire → lease(epoch, keys, holder, fence, requirement)。MarkSent、Complete/Recovery 必须匹配原登记；物理键由 R 映射|短域原子准入，平台调用锁外。未发且有确证才可撤销；已发需原命令结束、可复用及满足该命令的效果要求。恢复还需核实当前状态。写效果未知或部分成员仍未解则持有/隔离|Stop 继续收原证据；新实例同键从 Checking 开始。Host 替换 fence、替换一个键或仅给“业务已完成”均不能释放，补齐原证据后仅原键集可复用|device/resource/resource_barrier.h:31–60、.cpp:39–100、:128–186；device/resource/resource_radio_runtime.cpp:422 Recover；AF1-01/18 仍受 §15.3/15.4 约束|
+|StopAcceptingAndDrain / ReadCloseReceipt（H → 宿主；各 Owner → H，M14/M16/M19）|宿主请求 Stop → 私有排空结果。按同一关闭实例封入口，汇合 T 票、A 键/角色、R 租约/投递、卡期望、调度与原出口返回；OwnerCloseReceipt 按原 epoch、kind、subject、原请求及接手确认定位|重复 Stop 同一关闭轮；未知子项或不稳定快照可再次查询。原调用向下一阶段交责时，直到后继登记并确认前保留前项；先排空可产生新责任的投递，再汇总稳定快照，不能靠跨 Owner 的两次空读判断全空|回调内请求关闭不等待自己。未解时保留原图，真实在途返回、各项结清或逐项移交后才可销毁；H 不停共享 RIL。Host 让 T 的调用返回而 A 释放确认暂缓，再令完成已领取但未返回，两截面都非 Drained|infrastructure/assembly/sim_module.h:53（仅声明）；primary_host_lifecycle.cpp:15–74（Primary 子图）；A §14.3、B §11|
+|SetDefaultRole；ReadRoleProjectionRevision/AcceptReloadedRoleProjectionSet（A → setter 调用方/T，M03/N1）；A|setter 的角色、订阅及成员资格 → 旧结果；reload(view, attempt, expectedRoleRevision, rows) → 是否接纳。Current/Historical 版本各自比较；角色规划版本标识 A 内角色变化|锁外 Store；成功且 A 真正接纳本地角色时，在同一 A 提交域完成聚合更新与 NoteLocalRoleMutation（roleRevision_、current_.revision 各推进一次），Historical 不受此 setter 影响。失败/重复不虚增；已写而未接纳或未知保留核对，不能把该返回当成功发布|Stop 透明列出未了写/加载。Host 用可控成功的 Store 经真实 SetDefaultRole；令旧 Current 重载在 setter 后返回，应因版本失效被拒；同一时间独立 Historical 合法读取可接纳|role_assignment/assignment_service.cpp:324–336、:687–697；role_assignment/account_role_protocol.h:68–96；account/topology_service.cpp:275–315；具体 assignment_store_adapter.cpp:91 目前返回失败|
+
+**四个关键反例（预期断言，未运行）。** 采用确定性的调用/返回闸点，记录原票、域内版本、逐键写、逐成员提交、原出口次数及按身份列出的收据。历史 Host 报告不充当本轮证据。
+
+|反例|注入与顺序|正向、反向及关闭断言|
+|---|---|---|
+|1．同槽双 Unknown|X、Y 为不同既有订阅、同 slot/applicationKey。两笔写先后登记，逐一排列 X/Y 两种返回顺序 × 两种核对顺序；暂停首个释放确认，再送重复确认|Store 恰各一次；在途、Unknown 截面均能区分两张票。仅 ICCID 匹配不足以结项；充分证据使指定项从效果未决转为等待其 A 确认，再只消去本票。X 不建立 Y 的绑定；任何未结项都阻止 Drained|
+|2．同卡 ABA 与无关应用|R 入口送无关应用刷新、唯一来源短暂失效、可信拔卡与重复拔卡、同 ICCID 新代次发现；最后重放旧观察/移除|分别得到“无关资格可用、相关资格待证、空位 r+1、新绑定 r+2”。旧请求、Session 或撤销均不能写新关系；历史账户仍可查。对照只给 Profile 请求返回，不得推定可信移除|
+|3．X 的 Primary 跨越 Y 发现|C1 预写并部分交接后移除 X，暂停 Y 的 Store。送旧轮 ACK、错轮 NOTIFY、正确的原证据，再完成 Y 绑定。分支对照 B 仅失活后收到成功、C0 在两参数键之间撤权；另在原轮待收尾时 Stop|错证据零推进，准确证据只归 X。Y 可独立绑定，不继承 X 的角色/轮次；B 不因旧成功写 Data，C0 仅保留已登记前缀。无产品收尾证据时无猜测发令，M19 留 X 的参数/设备项。借用 Host 的“需原 COMPLETE”输入只验条件分支，不签产品行为|
+|4．Current 重载与角色写交错|记录 Current 票 (attempt=c, revision=v) 和独立 Historical 票。完成成功 setter 后返回旧 Current、再返回 Historical；对照失败 setter 及重复提交|成功接纳一次，Current 版本前进一次，旧读取不覆盖新选择；合法 Historical 只写该 view。确认未生效的失败不推进任何 setter 版本；不确定写留下核对。单测直接调用 NoteLocalRoleMutation 不能替代经 setter 的断言|
+
+**接口必要性与缺口裁定。**
+
+|事项|确需改变的契约|可复用部分、分类与余项|
+|---|---|---|
+|B1|按原票寻址的 Reconcile、写前登记及 M19 的逐项来源；沿用方案 A|同步 Store 与 A 预留端口可复用。现有票/效果基数属 DESIGN_DEFECT，按位置覆盖及按位置 erase 属 IMPLEMENTATION_GAP。不可归因的 provider 读回属 EXTERNAL_EVIDENCE|
+|M1|在原失效载荷表达可信原因与作用域，绑定接纳点保存来源；M04 在排序点提供受保护的资格读取|复用 SessionRegistry 和 BindingIndex 的代次/空位水位。来源和暂停语义属 DESIGN_DEFECT；现有失效仅改观察台账属 IMPLEMENTATION_GAP；特定产品的载体/Port 证据属 EXTERNAL_EVIDENCE|
+|M2|按原请求/成员返回三态、窄规划、Radio 专用步骤登记与逐键参数结果；足以分开业务提交和原轮收尾|沿用既有端口及 pending，不引入通用操作管理器。阶段排序与收尾资格属 DESIGN_DEFECT；合成 USIM 会话、单个汇总参数结果属 IMPLEMENTATION_GAP；换绑/Stop 后原轮收尾属 EXTERNAL_EVIDENCE，保持 OPEN|
+|N1、M08、M19|N1 使用现有版本方法配合成功提交；M08 重用原证据方法；M19 沿用 B §11 的单一只读收据形态|N1 成功 setter 缺版本联动为 IMPLEMENTATION_GAP。按命令的全资源集、唯一屏障及全图收据尚待实现/批准。全图关闭不可用 Primary 子图历史排空记录替代|
+
+**H4 交接（待独立复核与另行授权）。**
+
+|须验证的数据流|从何处追到何处|应交付的证据与拒收条件|
+|---|---|---|
+|发现 → Store → 恢复 → Stop|account/topology_service.cpp:64、:188；account/discovery/discovery_observation_ledger.cpp:78；role_assignment/account_role_protocol.h:28、:56；B §11|第一步先列出反例 1 四种顺序的票、存储结果、A token、T/A 收据和最终消费项。任何截面只剩 slot 或只剩计数，即退回 B1|
+|卡观察 → T 资格 → A 登记|card/runtime/card_runtime.cpp:34、:44 → account/topology_service.cpp:242、:46 → role_assignment/assignment_service.cpp:132；对照 test/cases/target/primary/c0_topology_integration_test.cpp|保留 R 原入口与 T 的排序点，画出反例 2 的空位水位与来源。夹具直接先解绑不足以验证该流|
+|Primary → 参数/设备 → 迟到/关闭|role_assignment/assignment_store_adapter.cpp:105；role_assignment/assignment_service.cpp:339、:539、:563；device/resource/resource_radio_runtime.cpp:82、:190；infrastructure/assembly/primary_host_lifecycle.cpp:15|分别列 C0/B/C1 的每键、每成员、原出口与 Stop 截面，再与 Y 的发现交错。产品方补原轮、路由、收尾类型、结束及可复用证据；缺任一项不认定安全 COMPLETE|
+|角色写 → Current/Historical 重载|account/topology_service.cpp:275、:289 → role_assignment/assignment_service.cpp:324、:692 → role_assignment/account_role_protocol.h:68、:92|同一成功 setter 的写集、聚合与两个 view 版本前后值；补失败/未知和独立 Historical 对照。只验证协议类的直接调用不能关 N1|
+
+**H3 已完成，待独立复核。** B1、M1 的接口形态仍为 PROPOSED，M2 的产品协议门禁仍 OPEN，N1 只登记实现缺口。AF-1 状态维持 `AF1_HARDENING_H1_H2_PARTIAL`。本轮结果限于静态契约与反例设计。
+
+## Part 22：H4 入口 Gate — H3 独立契约复核
+
+**Gate 结论：`H3_REVIEW_BLOCKED`。** B1 方案 A 已能区分同位置的多笔存储责任。阻塞点出现在其中一笔由 Unknown 转为可确认生效之后：若 Y 仍是当前观察，H3 没有把“本票的当前绑定接纳已有明确处置”列为释放 Y 的 A 预留和删除 T 票据的必要条件。因而即使给齐存储证据，也推不出 Flow-1 要求的最终 Binding。M2 的产品协议缺证单独保留 OPEN。
+
+**输入。** 实查本地 main 与远端 main 均为 `7a414c4e3c536ee67361095b5076614fa9444685`。审查使用本地 §15.3、Part 18～21，包含本轮开始前未暂存的 256 行；原检查点 259575 字节，SHA-256 为 `b2c75d47770434fc83f063fc338353f6c72b66525e1978195449600fcad9d9b7`。暂存区为空，另有 default.profraw、opencode.json 两个未跟踪文件。以下源码路径相对 `telephony_core_service/services/multisim/`。结论等级为 DESIGN/SOURCE，未执行 Host 场景。
+
+### 22.1 四项 Gate 判读
+
+|审查点|反例与契约判读|证据与边界|
+|---|---|---|
+|Gate-1 B1：签发、在途、同位多票（问题 1～4）|同一位置先给 X、Y 两个不同已匹配订阅签票，Y 开始时 X 的 Store 仍阻塞。按提案，每次写前 T 已按 epoch/admission 登记，票内各自固定 Session、sequence、位置水位、计划与 token。此时 Stop 可同时枚举两项；Y 改变当前观察不替换 X 的票。|DESIGN §20.1、§21.1。SOURCE account/topology_service.cpp:118–123、:171–182 及 account/topology_service.h:95–100 仍是锁外调用、返回后按位置记部分结果，属于已登记的 IMPLEMENTATION_GAP。|
+|Gate-1 B1：核对、释放与历史接纳（问题 5～8）|方案按原票及核对代次认领、比较更新；A 按原 plan/token 确认后才可精确删除。两种返回顺序都不能让 X 删除 Y；失效 X 只能补原效果，无当前发布权。但对**仍当前**的 Y，原 token 身份正确不代表释放时机正确。详见 §22.2。|DESIGN §21.1 的 CompleteStored、ReconcileDiscovery、M19 三行；SOURCE role_assignment/account_role_protocol.h:43–65 的 StillOwns/Finalize、role_assignment/assignment_requests.h:97–105 的 MayFinalizeInitialRoles。|
+|Gate-1 B1：收据与 Drained（问题 9～10）|两票均 Unknown 或调用未返回时，M19 可按两个 subject 列项；无驻留接手者时任一未解均不允许 Drained。反例发生在效果**已经查明**之后：若仍欠 Y 的业务接纳却已清票，H 读到的空收据将无法说明这项义务。|DESIGN §20.1、§21.4；SOURCE infrastructure/assembly/sim_module.h:53 为模块级关闭声明，infrastructure/assembly/primary_host_lifecycle.cpp:59–74 只判断 Primary 切片。未声称观测到整图误报。|
+|Gate-2 M1：应用失效与绑定撤销|无关应用刷新保留当前绑定；唯一来源暂失确证则暂停相关操作。对同一原来源，可信连续性证明可恢复新步骤资格，可信关系终止可精确撤销；证据持续不足则保持待证。可信移除再插入时，位置水位依次 r、r+1（空）、r+2，旧 epoch/来源/版本不能撤 Y，历史账户不因刷新被删。此范围有可判定的目标契约。|DESIGN §21.2；SOURCE card/runtime/card_runtime.cpp:34–54、account/binding_index.cpp:59–94。现有 account/topology_requests.h:85–88 只有原 Session 和序号，account/topology_service.cpp:242–251 的失效与解绑仍是两个入口。|
+|Gate-3 M2：继续执行、效果及收尾|C0 首键已写后撤权，只留下已登记前缀及原出口责任；B 已交接后 active 改变，准确响应可更新原设备效果，不能据此提交当前 Primary/Data。C1 对 CHECK、UPDATE NOTIFY、COMPLETE 区分原成员、轮次及业务/收尾资格；部分交接、恢复参数和 Retry 均不能清除未知设备效果。换绑或 Stop 后保留隔离、证据接收和收据。是否及如何发原 COMPLETE，仍须产品/协议证据。|DESIGN §21.3、§21.4；SOURCE role_assignment/assignment_service.cpp:225–267、:339–419、:467–501、:563–625；telephony_core_service/services/sim/src/radio_protocol_controller.cpp:178–194、:208–231、:292–301。旧 CHECK 失败路径可调用 COMPLETE，仅能证明该旧分支存在。|
+|Gate-4 N1：角色版本|成功 setter 经 A 接纳时，同一 A 提交域内更新聚合及 Current 版本。旧 Current reload 的 expectedRevision 失配，Historical 仍按自己的读源、attempt、版本接纳。确认失败的 setter 不推进成功版本，未知效果另留核对。此反例在 H3 中已有明确断言。|DESIGN §21.4；SOURCE role_assignment/account_role_protocol.h:68–96 的 AcceptReloadSet/NoteLocalRoleMutation。role_assignment/assignment_service.cpp:324–336 的 SetDefaultRole 当前未调用后者；account/topology_service.cpp:275–315 保存并交还原 view/attempt/version。|
+
+### 22.2 BLOCKER：Y 的写效果已核实，谁负责完成当前绑定？
+
+取最小输入：位置已装配、当前无绑定，水位为 r。Y 的原票 t、预留 a、Session、订阅与观察序号始终匹配；期间不换卡、不重载、不 Stop，也不消费第二笔存储写。这样可排除产品路由、关闭顺序及 X/Y 键冲突的影响。引入已失效 X 的第二张票只会增加一项历史核对，不改变本反例。
+
+|截面|输入与可见状态|独立复核结果|
+|---|---|---|
+|写入前|T 持 t，A 持 a；原 Store 调用已登记|两侧责任可见，符合 §21.1。|
+|第一次返回|callFinished=true，effect=Unknown；Binding 仍空，T 留 t、A 留 a|正确保留原效果，无需重写。|
+|按 t 核对|给予**可确切归因于本次写**的 ConfirmedApplied、实际订阅及全部必要字段证据；Y 的原位置水位、来源、A 资格仍有效|§21.1 的 CompleteStored 给出当前接纳所需的资格；ReconcileDiscovery 给出待释放/已结清结果。两者之间没有规定此时必须转入一次当前接纳，或由已登记的另一项接手。|
+|释放前|依 §20.1 的“投影已接纳/效果已核对”及 §21.4 反例 1，单凭原效果已核对即可满足该反例的释放断言|两种终态都能通过原断言：一是先接纳 Binding(Y,r+1) 再释放；二是确认 a 并删 t，而 Binding 仍空且无人负责继续接纳。后者既不复活 X，也不发生重复写，却无法交付 Y 的当前绑定。|
+
+**源码交叉检查。** DiscoverAccount 对 Unknown 调用 `CompleteStored(..., false)`（account/topology_service.cpp:171–182）。DiscoveryObservationLedger::CompleteStored 在同票首次处理时将 pending 置 false；再次持同 admission 进入会走 duplicate 返回（account/discovery/discovery_observation_ledger.cpp:124–146）。ReconcileStored 自身不接收 BindingIndex，返回的 bindingAccepted 为 false（:149–164）。TopologyService::ReconcileDiscovery 可以接纳 AccountRecord、调用 ReconcileStored，再以 `projectionsAcceptedOrReconciled=true` 结束 A 资格并删项，没有调用 AcceptBinding（account/topology_service.cpp:216–240）。因此不能用“重调一次 CompleteStored”或“当前 AccountRecord 已存在”补证。
+
+对应的测试源码也能区分这两个结果：`test/cases/target/primary/c0_topology_integration_test.cpp:363–372` 的 T2RecoveryDoesNotReleaseRoleForMissingProviderRow 在 Unknown 后只断言 ReconcileDiscovery 返回 true，没有检查 FindBinding。相邻的 :348–360 则是**已失效**观察，显式期望 Binding 为空。两例不能证明仍当前 Y 的正向接纳。本轮仅检查断言。
+
+**分类与复核出口。** 既有按位置覆盖问题属于 IMPLEMENTATION_GAP；本次新增的 **DESIGN_DEFECT** 是即使采纳原票精确寻址，H3 的关账后置条件仍允许丢掉当前接纳义务。这里已假设有充分的原效果证据；继续收集设备证据无法消除这两个允许的终态。
+
+由 T/A 负责人提交修订，明确“效果已核实”之后，T 在哪个排序点决定**当前接纳已完成、原观察已失格而仅结历史效果、或接纳仍待负责**。最后一种处置须可由原票或精确接手项持续出具收据。释放 A 的原预留、回收 T 票据和 Stop 封口与上述处置的先后应能逐项判断；不得靠下一次偶然到来的发现重写 Store。重新过 Gate 至少需要以下成对断言：
+
+- **Y 持续有效：** 一次 Store 写，Unknown 后给本票充分成功证据；能沿已指定的接口得到同一 Y 的当前 Binding，位置版本恰增一次，重复核对不再增加。若先延迟业务接纳或其接手确认，Stop 可列出未了责任，不能提前 Drained。
+- **Y 在核对期间失效：** 对同一张票给相同的存储证据，但在当前提交前交付可信移除；只结原效果，当前 Binding 不从旧票复活。X 的重复确认不能结束 Y 的项。另在核对前封口，明确已受理发现可继续到哪一节点、由谁记录其最终处置。
+
+本轮止于 Gate。H4 的四条数据流、四张时序图、联合反例及 H5 交接均未展开。AF-1 维持 `AF1_HARDENING_H1_H2_PARTIAL`，§15.3 的 PROPOSED 方案保留原审批状态。
+
+## Part 23：Gate-B1 业务接纳闭环修订
+
+**修订范围与基线。** 本节是 §22.2 的定向答复，采用 §20.1 方案 A 和 §21.1 的原票登记方式，所有新增后置条件均为 **PROPOSED**。本地 main 与 origin/main 同为 `7a414c4e3c536ee67361095b5076614fa9444685`。已读取本地 §18.2、§20.1、§21.1、§22.1–22.2。以下源码路径相对 `telephony_core_service/services/multisim/`，证据等级为 DESIGN / SOURCE；四个场景是待验断言。
+
+### 23.1 责任断点与证据
+
+|证据|可从本地输入推出的事实|签收影响|
+|---|---|---|
+|SOURCE `account/topology_service.cpp:118–168`，TopologyService::DiscoverAccount|直接成功路径在锁外调用 A，再在 T 域内尝试插入 AccountRecord，调用 CompleteStored 接纳 Binding。随后把实际 bindingAccepted 传入 Finalize，却忽略其返回。A 调用后的 Account 插入也先于最终的 Binding 检查。|T 可能只完成 Account 前缀，或已有 Binding 却仍欠 A 的释放确认。同步成功与 Unknown 后恢复必须共用结清条件。|
+|SOURCE `account/discovery/discovery_observation_ledger.cpp:124–164`，CompleteStored / ReconcileStored|前者在匹配的 Unknown 上也清 pending；同 admission 再来可直接得到 duplicate。后者只核对当前位置的 admission、记录效果及解除 ICCID 占用，返回的 bindingAccepted 恒为 false。|位置台账既不能接手历史票，也不能证明当前接纳已完成。|
+|SOURCE `account/topology_service.cpp:188–240`，TopologyService::ReconcileDiscovery|按位置取项，读 ICCID，调 A 接纳，可能用同一行生成 Current/Historical；忽略 ReconcileStored 的结果。随后传 `{true, ConfirmedApplied, true}`，Finalize 成功即按位置 erase。|第三个值实际叫 projectionsAcceptedOrReconciled。对仍有效且 Binding 为空的 Y，这个 true 缺少 T 的接纳证明；另一张票还可能成为被删对象。|
+|SOURCE `account/account_registry.cpp:47–92`，Read / ReadProjection / AcceptDiscoveredAccount；`account/binding_index.cpp:30–46,59–94`，Find / AcceptBinding / RemoveBinding|已有订阅会使插入返回 ChangedInputs；同一记录的两个读视图均可缺席。绑定须槽已装配、期望水位匹配；空槽新建升版，同槽同订阅可返回 true 而不升版，跨槽占用及水位耗尽会拒绝。解绑后保留递增水位。|账户存在、订阅相同、调用返回 true 各自都不足以证明本票要求的来源与关系。|
+|SOURCE `role_assignment/account_role_protocol.h:28–65,68–89`，Prepare / StillOwns / AcceptDiscovered / Finalize；`role_assignment/assignment_requests.h:97–105`，MayFinalizeInitialRoles|AcceptDiscovered 将实际身份写入原 token 的 resolvedIdentity；角色缓存另有 reload 接纳点。Finalize 比对原 plan 后以三个字段判断可释放，删除 token。|A 的肯定答复可以证明身份片段已接纳，不能证明 T 的 Binding，也不能当作一次角色变更通知。|
+|DESIGN A §6.5.2、§14.3，B §11，检查点 §21.1、§22.2；SOURCE `test/cases/target/primary/c0_topology_integration_test.cpp:348–372`|设计要求按 Owner 逐项交账；测试源码的失效例断言无 Binding 且能读到 Current，持续有效例在补给存储行后仅断言 ReconcileDiscovery 返回 true。|失效例对 Current 的旧期望要单独作兼容差分；它不能授权旧票生成新的 Current。持续有效例漏检 FindBinding。两例均未在本轮执行。|
+
+**分类。** DESIGN_DEFECT 是 §21.1 缺少从已知效果到“已接纳当前关系 / 有证据只结历史 / 尚欠接纳”三者的强制选择和释放见证。IMPLEMENTATION_GAP 包括按位置登记或删除、Unknown 后不能续行当前接纳、未经证实的 true、忽略释放失败，以及 M19 尚无整图实现。EXTERNAL_EVIDENCE 涉及 provider 能否把行、实际身份及各计划字段归因于原调用；缺证时保留 Unknown。§22.2 已给予充分效果证据，故该设计缺口可以独立裁决。
+
+### 23.2 一张票的两个判断与 M19
+
+T 的责任起于写前登记。下文 t = (RuntimeEpoch, admission)，关联不可变的来源 SessionRef、观察序号、ICCID、slot/application、期望 BindingRevision、原写计划与 A 的 plan/token。每次锁外返回携 t 和本阶段认领代次。T 持有一份贯穿各阶段的原项；A 持自己的预留。效果证据逐字段保存，包含调用是否已结束、实际持久化身份以及归因依据。仅凭相同 ICCID 或相同行值不能从 Unknown 前进。业务处置另记在同一票内；下表是可观察语义，可用现有字段、可选见证及阶段表示。
+
+|原票处境|允许推进的条件与动作|M19 逐项表现（发现的 RequestId 可空）|
+|---|---|---|
+|外部效果未决，含写调用未返、部分字段不明|只吸收本票结束及效果证据。尚未交回执行体仍占在途；不得重写。|T 列 t 的在途调用或 EffectUnknown 及原行列；A 列关联 token 的 QualificationHeld。|
+|确认已写，业务接纳待完成|锁内在 t 记实际订阅及证据，同一更新留下待接纳工作。缺业务来源证明或 A/T 子步失败均留在此处，注明卡在哪一步及已接纳前缀。|T 以 RequestOpen、subject=t/待接纳步骤出具；已知字段可退出 EffectUnknown，整票持续可见。A 仍列原资格。|
+|当前接纳完成|T 已记录下述 Account/Binding 见证及 A 已解析身份。只准按这个既成处置结束原 token。|T 仍列 t/待释放确认或未返交付；A 在实际释放前仍列原资格。|
+|原资格已终止，仅结历史效果|T 记可信终止原因、来源及排序位置；逐字段效果已定，所有已发生内部前缀均已归责。保留原有历史，不据此生成 Current 或赋予旧角色写权。|与当前完成使用不同的待释放 subject；若只暂停、失效未证实或有前缀待处置，仍列待接纳/待证。|
+|确认未写|原调用结束，逐字段确认无效果且无待处理内部前缀；记录未写处置。|已领预留仍须等待精确释放；未返执行体仍在途。|
+|全部完成|原调用结束、效果全明、业务处置有见证、同票同 token 释放已确认、关联在途交付已返回，T 在短提交域按 t 精确回收。|仅此时本票可从 T 清单消失。A 实际释放后可撤资格项；其仍在途的调用/交付继续计入。H 还须检查其他所有项。|
+
+M19 的种类沿用 B §11 的 CloseObligation / OwnerCloseReceipt；subject 指向原票、字段或内部步骤。效果、内部接纳与释放确认之间不得出现空收据窗口。没有获准的驻留接手者时，Closing 保留原图；超时、当前索引换人以及只剩一份空的 A 清单均不能结清 t。
+
+### 23.3 T/A 排序点、部分成功及最小接口调整（PROPOSED）
+
+1. **T 登记并解析 Store 效果。** DiscoverAccount 在发出唯一一次 WriteDiscoveredAccount 前登记 t 与原 plan/token。在直接返回与 ReconcileDiscovery(t) 两条入口中，以同票、同认领代次推进同一记录；冲突的身份或证据进入待核对。确认写入只解开业务接纳的前置条件。T 在收到充分证据时主动续行，A 资格或 T 的可恢复条件变化时唤醒原项，也可显式按 t 续行。每票至多一个内部步骤在执行；暂时失败可在条件满足时重试该步，不依赖新卡发现，不进行无条件轮询。
+2. **A 先接纳原角色片段的实际身份。** T 锁外沿 AccountRolePlanningPort 调 AcceptDiscoveredRoleProjection。A 在自己的域内验证原票与 token 的一次性配对、原计划/版本资格及实际订阅。首次成功时只固定这份预留的 resolvedIdentity；相同输入重放返原结果，已固定后试图改为另一订阅必须拒绝。A 对此身份的认可持续至原票给出业务处置，期间独立角色 reload 可以前进，原计划不能覆盖较新的角色投影。由此 T 拿到的是稳定的原片段证据，避免把一次锁外 StillOwns 的瞬时读当成持续保证。
+3. **T 在真正写点选择处置。** 回到 T 的短提交域，同时对照 t、认领代次、A 的同票肯定答复、实际订阅与可信 ICCID 映射、Account 身份和 Current 读源、原观察的 epoch/Session/sequence、来源连续性、装配及原槽水位。按 §21.2 与失效输入在同一域排序。先验证 Account 和 Binding 两侧可接受，再在该域内完成 T 的本地提交：接纳或验证原 Account 的对应视图，调用 BindingIndex 接纳或验证关系，连同本票见证一起对读者可见。见证含账户身份/版本、合格来源、slot、原水位、结果 BindingRef、首次创建或确认既存。应在对外可见前准备所需空间/记录；可失败的准备留在本票，避免只发布一半。兼容既有部分接纳的处置见下表。**对 T 的不可逆接纳点是关系和见证生效的这次本地提交**，此后即使发生真实解绑，原票仍可凭当时见证结清，不能用旧票补回关系。此前任何成功的 Store 写和已发布的 Account 前缀也须如实保留。
+4. **T 提交处置，A 精确释放。** T 先在 t 留下终局见证，再锁外调用 FinalizeInitialRoleReservation。提交给 A 的处置只允许“当前已接纳（含结果 BindingRef 与角色片段确认）”“仅历史（含原资格终止及前缀处置证据）”“确认未写”。后两种均没有 bindingAccepted=true。若业务仍待证或内部拒绝，禁止发起释放。历史结清核验原 plan/token 与效果，不要求重新获得当前角色写权。A 在同一短域释放资格并留下可重读的原确认；同 t/token/处置可返回同一确认，异票、异 token 或不同处置拒绝。T 记录此确认且在途均已交还后才删 t。A 的确认值只需在原实例内保留至 T 已消费且该票不会再有在途释放；在此之前丢失答复可按原票重取。确认已消费后的陈旧投递只返回陈旧，不再发起业务。不把“未找到 token”解释为释放成功。
+5. **关闭与交付。** Stop 封新票和新的 Store 写；保留已受理票的原调用、可信失效投递、按票取证、内部续行及 Finalize 的返回通道。原实例仍可证明当前来源时，封口前已受理且未提交的 t 可沿原接纳路径完成；来源监视已撤、失效输入尚未排序或原 epoch 不可证明时只能待证，不能以 Stop 本身签发“仅历史”。T 在来源与业务提交的共同排序域决定先后；不得在卡侧已失去连续性证明后继续用旧快照提交。重复 Stop 只读本关闭轮的收据，不驱动重写或重复通知。短域之外的 Store、A 调用和等待均无 T 锁，不需要跨 Owner 锁。
+
+|T 写点或跨 Owner 的截面|本票可执行的最小恢复动作与禁止越过的条件|
+|---|---|
+|原槽空、水位 r 未变，订阅未占其他槽|通过所有资格检查才创建 Binding(s,slot,r+1)，记录来源并回读同一关系；只产生一次逻辑接纳。|
+|原有 Binding 恰好相同|若原水位仍为 r、来源连续且相同、账户和 A 片段符合要求，则确认既存 Binding(s,slot,r)，不升版、不声称本票创建。若本票已提交，用已保存的结果见证重放；其 r+1 来自本票的第一次创建。仅有相同 slot/订阅不足以处理 ABA。|
+|水位改变、其他账户占槽、同订阅占其他槽、版本耗尽|不采用新水位重试，不抢占也不迁移。可信撤销/替换已证明原资格永久终止时可只结历史；仅有不匹配、暂时冲突、来源暂停或证据矛盾，则 T 保留待处置及原 token。可恢复冲突消除后仅在**原准入条件仍成立**时续行；无法恢复须由 T 明确证明终止或修复冲突，不能静默清票。|
+|A 的身份片段已成功，T 的 Binding 拒绝|保留 A 的固定身份与预留，T 留存失败原因。内部续行只补 T 检查/接纳；若其间已可信换卡则转历史。已知 Store 效果保持已知，不做第二次 Store 或角色发布。|
+|T Account 前缀已接纳，A 拒绝|新路径将 A 确认排在新 Current/Binding 发布之前。若已有 Account 或旧路径已发布前缀，T 记其身份、视图、版本及出处；由原视图真实读源决定保留、更新或失效。可恢复时只续原 A 步，再验证该 Account 的当前资格；不能重插、凭旧行复写新字段、删除其他来源的账户，或把已有 Account 当作 Binding。前缀来源未明继续列项。|
+|T Binding 已成功，A 最终释放失败、延迟或答复重复|T 只补原释放及确认，不再调用 AcceptBinding。若随后 X 被移除、Y 已绑定，沿 X 已完成的见证结 X；A 既不会二次释放，也不会重复投影。已确认但迟到的业务输入不能再触发通知。|
+|A 返回期间到达新观察，或 Y 已取得 Binding、旧 X 才返回|若可信替换排在 T 提交之前，仅结 X 的历史；临时刷新按 §21.2 暂停待证。若排在提交之后，以新事实撤旧关系，X 仅完成原收尾。不同认领代次的旧答复不能推进新的步骤，同位置 Y 的票、预留及 Binding 均不被 X 修改。|
+
+**接口变化的限度。** 复用 `account/topology_service.h/.cpp` 的 PendingDiscovery 和现有提交域，按 §21.1 令 ReconcileDiscovery 精确接收原票；内部返回至少可区分待证/待接纳、当前已接纳、仅历史及陈旧，另由票记录释放确认。兼容调用如仍需 bool，只能按其约定映射，不能作为 M19 或当前 Binding 的证据。CompleteStored 的首次返回和 ReconcileStored 的效果更新共同进入同一 T 内部接纳步骤；现有“首次完成即 duplicate”的位置索引不足以驱动这一步。BindingIndex 保留唯一写者与原水位比较，以 T 内同域的来源记录及结果见证补足其 bool；AccountRegistry 按视图/身份验证既存记录。只有 Historical 的记录需要可信 Current 输入才可补 Current，原字段和视图版本须受保护。
+
+沿用 `account/account_role_planning_port.h:37–42` 的 Prepare / Accept / Finalize 和原实现 `role_assignment/account_role_protocol.h:28–65`。提请把原票引用与原 plan/token 固定关联，细化 `InitialRoleFinalizationEvidence` 的第三个 bool 为上述带证据的处置，使“内部待接纳”无法构造有效释放输入；提供可重复确认同一释放的结果。同步接口可以回传相同肯定答复，不要求新增远程入口。原用例若有对外投递，只能由相应 Owner 在首次有该出口资格时按票认领一次、交还后记完成；若已交出而返回不明，保留在途核对，不重投。AcceptDiscovered 和 Finalize 自身的角色发布与通知次数均应为零。所有记录附在现有 T/A 的原工作项或短期确认上。
+
+**按原票的时序（PROPOSED；接口名对应已有职责，见证和收据是设计契约）。**
+
+```mermaid
+sequenceDiagram
+    participant T as T TopologyService
+    participant I as I AccountStore
+    participant A as A AccountRoleProtocol
+    participant B as T AccountRegistry / BindingIndex
+    participant H as H SimModule
+    T->>A: Prepare 原计划并绑定 t 与 token
+    T->>T: 原票 t 登记在途及原位置水位
+    T->>I: WriteDiscoveredAccount 原计划 一次
+    I-->>T: Unknown 仍持 t
+    T->>I: ReconcileDiscovery(t) 取原写证据
+    I-->>T: 可归因的实际订阅及字段效果
+    T->>T: t 已确认写入 业务待接纳
+    opt 原来源尚具当前资格
+        T->>A: AcceptDiscoveredRoleProjection 原 token 与实际身份
+        A-->>T: 原片段解析结果
+    end
+    alt 当前有效且两侧可接纳
+        T->>B: 同域验证 Account 并接纳或确认 Binding
+        B-->>T: 原来源及结果 BindingRef
+        T->>T: 在本地提交点保留当前接纳见证
+        T->>A: Finalize(t,token,当前见证)
+    else 原来源在提交前已可信终止
+        T->>T: 记录仅历史处置和已有前缀
+        T->>A: Finalize(t,token,历史见证)
+    else 接纳失败或资格待证
+        T->>T: 保留 t 与下一内部步骤
+        T-->>H: CloseReceipt(t,待接纳)
+        A-->>H: CloseReceipt(token,资格未释放)
+    end
+    opt 已送达有终局见证的 Finalize
+        A-->>T: 精确释放确认 可按原票重取
+        T->>T: 仅在确认且交付已返回后回收 t
+    end
+    H->>T: 读取本轮 OwnerCloseReceipt
+    H->>A: 读取同轮资格与在途收据
+```
+
+图中的 ReconcileDiscovery(t) 由 T 发起并持有；T → I 的跨域箭头只表示其内部取证读取。当前的 I 读口是 `account/account_store.h:94` 的 MatchAccountByIccid，读到一行能否证明原写，由 §23.2 的归因条件判断。
+
+### 23.4 四组 Gate 反例的状态变化与预期断言
+
+以下均为 DESIGN 演算。Host 验收时使用受控 Store、可暂停返回的原角色端口和 Owner 的逐项收据，在确定的调用截面交错输入。次数取自端口的实际调用与可见结果；T 的读面使用 `TopologyService::FindBinding`（`account/topology_service.cpp:253`）和按视图 ReadAccount。用 r 表示位置原水位，sY 表示 Store 已证明属于 Y 的 SubscriptionId；aY 是绑定 tY 的原角色预留。收据中未写出的其他 Owner 项仍按 M19 单独检查。
+
+**Case 1 · Y 始终有效，初始槽空且已装配。**
+
+|事件|T 的效果与接纳状态|A / M19 / 可观察断言|
+|---|---|---|
+|发出写，随后返回 Unknown|tY 在写前可枚举，返回后留 tY；FindBinding 为空，水位 r。|aY 持有，Store 写数 1。阻塞在返回前取 Stop 快照可见原调用。|
+|按 tY 得原写成功证据，暂缓内部接纳|tY 已确认 sY 及字段，仍欠当前关系；FindBinding 为空。|A 仍持 aY，T 报 tY/待接纳。此时结束原票、返回完整业务成功或 Drained 均为失败。|
+|A 固定 sY；T 在同域接纳 Account 与 Binding|Current 有合格 Y 身份，FindBinding(Y.slot) = (sY,slot,r+1)，同票记结果。|T 报待确认，原角色片段固定一次。直接成功与 Unknown 后确认在此汇合。|
+|重放效果、延迟一次释放答复，随后交还|只读原业务见证；结果仍是 sY、r+1。|A 实际释放一次；T 获精确确认、交付返回后才清票。Store 写数仍 1，逻辑建绑定 1 次，重复发布/通知 0 次。另置同来源、同版本的既存绑定，期望确认既存且版本增量 0。|
+
+**Case 2 · 核对期间 Y 失效。**
+
+|事件|T 的效果与当前关系|A / M19 / 可观察断言|
+|---|---|---|
+|Y 写返回 Unknown，锁外开始查证|tY 等归因，原位置 r。|aY 保留；Stop 封口也允许本票接收证据。|
+|T 先接纳指向原来源的可信移除/替换，后收到本票的成功证据|tY 记 sY 和终止来源；若后继关系已建立，记录其 BindingRef 作为对照。|即便 A 已在锁外解析 sY，恢复时仍走仅历史。普通应用刷新且连续性未定的变体停在待证。|
+|按历史处置 Finalize(tY,aY)，释放确认返回|不产生 Y 的新 Current、Binding 或角色资格；不改后继的身份、版本、投影。原记录已存在的字段按各自来源保留。|不需重取当前角色写权。未确认时 T 仍有 tY；确认且在途结束才清项。历史效果已核实，当前接纳结果为否。|
+|重复历史读回和确认|FindBinding 与可信移除/后继接纳后的结果一致。|旧票对当前关系的写、角色发布及通知均为 0；不能重复释放。|
+
+**Case 3 · 效果已明，Binding 接纳失败。**
+
+|事件|T 的效果与当前关系|A / M19 / 精确恢复|
+|---|---|---|
+|Y 来源有效，已证实 sY，A 固定身份|tY 的效果已知。让 sY 暂被另一槽占用，原目标槽空且水位 r 不变；或在本地提交准备点注入暂时失败。|原 aY 已解析、仍持有。记录当时两个槽的关系。|
+|BindingIndex 拒绝或本地准备失败|不提交目标 Binding，不返回完整成功；新设计准备失败不发布单侧前缀。若已存在可确认的 Account，保留其原版本。|T 报 tY/待 Binding 及原因，A 报 aY。重复核对不写 Store；Stop 此时不能 Drained。|
+|另一槽正式释放 sY，原目标仍为 r；按 tY 续行|只恢复欠缺的 T 内部步，复核原观察和原水位，得到 (sY,slot,r+1)。|使用原片段；可进一步注入 A 已释放但答复延迟，T 保留 tY/待确认，再取同票确认。|
+|分叉：原槽已换版且发生可信替换；或只有无法解释的版本差|前者只结原历史；后者挂 tY/冲突待证，不偷用新版建绑定，也不把内部失败归为外部 Unknown。|前者凭终止证据释放；后者保留 aY 及 M19。任何一条都不能凭“已查到行”删除 tY。|
+
+**Case 4 · X/Y 双票交错。** 沿 §18.2 预置不同 ICCID 和两个已匹配的不同订阅，使 A 能分别预留；两次发现同槽、同应用。夹住原写返回，再交付可信替换。这样可以独立排列写返回和核对完成顺序。
+
+|事件或排列|T 的工作项与 Binding|A / M19 / 计数|
+|---|---|---|
+|X 发写；X 的来源被替换；Y 发写，二者均未返回|当前位置指 Y，tX 与 tY 的 epoch/admission、原来源、原目标和字段各可还原。|两个不同 token。此处启动 Stop 的变体应同时看见两笔在途和各自预留，不再受理第三票。|
+|两笔各返回 Unknown，按 X→Y 或 Y→X 交付|两个 EffectUnknown 均留下；可先启动 X 慢核对，中途让 Y 返回。|A 保留 aX/aY。含糊读回只追加证据，不结束任一票。|
+|核对顺序 X→Y|确认 X 后只留历史处置，等 aX 确认再去掉 tX；tY 仍待接纳。确认 Y 后经 A 和 T 接纳 (sY,slot,r+1)。|只释放对应 token。暂停 Y 接纳时关闭清单中仍有 tY/aY。|
+|核对顺序 Y→X|可先得到 Y 的同一 Binding；迟到的 X 结果、X 的重复核对和释放确认不改变 Y 的版本，也不能用当前位置删除 tY。|令 Y 的释放答复延迟：即使 X 全部结清，T 仍列 tY/待确认；A 的 Y 资格按其实际释放时点列项。|
+|两种返回顺序分别配两种核对顺序，共四组；两票所有交付均返回|四组最终均只有 Y 的合格 Binding；X 的效果结清且无当前接纳。复验 tX 不得重启旧发现。|Store 写总数 2，每票实际释放 1 次。各票按自己的终局与确认从收据消失；只有全图其余责任也为空或有获准的逐项移交时才能 Drained。|
+
+四组均可在同一截面注入两次相同结果：第一份由持有效认领代次者推进；并发副本不得调用下一 Owner 两次。若第二份在原票已回收后到达，只返回陈旧。为覆盖发布边界，另在 T 提交刚完成、A 释放尚未确认时真实移除 Y：正常撤销推进位置水位，重放原见证只用于结原票，不能使 Y 再次绑定。
+
+### 23.5 权威文档落点与独立 Gate 复核条件
+
+以下为提请负责人裁决的修订位置，路径相对 `telephony_core_service/docs/`。
+
+|权威文档|批准后需同步的位置与内容|
+|---|---|
+|A · `SIM_Target_Architecture_Design_v1.2.md`|§6.5.2“发现、联合建行与跨Owner接纳”写入效果与当前接纳两个判断、原观察失效及本地提交见证；§14.3（af1-close-receipts）写入“效果已明，内部接纳或 A 确认尚欠”仍须逐项出据。|
+|B · `SIM_Multisim_Source_Architecture_Detailed_Design.md`|§4.2 的 T/A 窄端口补带证据的 Finalize；§5–6 的票、位置版本和 T 写点补原票续行与来源验证；§7 标明 A 的身份固定及精确释放；§11 的 CloseObligation 示例补 t/待接纳与待确认两项。|
+|C · `SIM重构代码目录结构设计方案.md`|§4.1 Account 对应 TopologyService 的逐票责任、DiscoveryObservationLedger 的当前索引及 BindingIndex 的唯一写点；§4.3 Role Assignment 对应 token 与可重读的释放确认；§5.3 Assembly 只引用 Owner 收据。保留既有物理目录。|
+|D · `migration/SIM_Architecture_Refactor_Design.md`|§7.4 关闭协议及 af1-acceptance 的 SC-01 / G2c、WU-04/07 行，加入 §23.4 的持续有效、可信失效、内部失败及双票四组顺序；用真实 BindingRef、原资格与 M19 明细作成对断言。|
+
+**下一次独立复核的判据。** 从本地 §22.2 的“充分效果证据、空槽 r、Y 始终有效”开始，在确认效果、A 解析、T 提交、A 释放及确认返回前后分别暂停，再逐次改变一个输入。独立复核者须逐项能回答：
+
+1. 当前接纳已完成时，能否沿原 t 找到 T 的来源、Account 与结果 BindingRef，以及 A 对同一身份的确认？空槽须由 r 变 r+1 一次；原有同关系和同票重放均不得升版。持续有效、证据到达且内部步骤最终可执行时，须有 T 主动续行到该提交点；尚未成功的每个截面必须能点名未了项。
+2. 只把可信移除放到同一 T 提交点之前，是否改为仅结历史？放在提交点之后，是否只沿原见证结束释放，并由新事件正常撤旧？仅暂停、版本冲突或身份不明时，不得偷选任何一种终局。
+3. 令 A 接纳成功而 T 失败、已有 Account 而 A 拒绝、T 成功而 A 的释放或确认失败。每个截面是否都能指出原 token、已生效的前缀、唯一允许的下一内部步骤和关闭项？禁用第二次 Store、位置 erase、猜测成功的 false→true 和无来源的回滚。
+4. 对 §23.4 Case 4 的四种排列，在先结清票的确认前后分别重放结果，在第二笔未完时 Stop。必须逐票查到在途、未知效果、待业务接纳或待释放的实际原因；X 不能变更 Y 的关系和角色投影，Y 仍有效时必须可绑定。任一未履行责任导致空收据、提前 Drained 或重复副作用，即驳回本提案。
+
+**本轮判断：`B1_DESIGN_READY_FOR_GATE_REVIEW`（PROPOSED，DESIGN/SOURCE）。** 持续有效的票有唯一 T 提交点和按票续行入口；已失效的票有单独的历史处置；两条路径及其间所有内部失败都由同一票负责到 A 的精确确认和最后交付返回。无充分 provider 证据、内部冲突持续或无法确认释放时，该票仍可阻止排空。这三个性质给出可反驳的设计判据，实际实现必须另取 Host 证据。H3 仍为 `H3_REVIEW_BLOCKED`，AF-1 仍为 `AF1_HARDENING_H1_H2_PARTIAL`。下一步仅为独立复核本提案。
