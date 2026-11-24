@@ -101,6 +101,8 @@
 
 ### M1 首批代码任务
 
+现行实现以执行状态为准。M1 的正式入口使用 `CreateCoreSimModule`、启动期已确认账户及 C0 观察计划；现场变量、单例运行与 M2 接线方法见[Host 单步](../services/multisim/test/docs/Host_Usage.md#af2-m1-debug)。
+
 1. **建立真实 Host 组合根。** 在 `infrastructure/assembly/sim_module_factory.{h,cpp}` 和 `sim_module.h` 增加可链接的 testonly 装配入口，沿用 `host_ports.h` 的窄端口。用同一 epoch 和 SlotCatalog 装配真实 T、共享持有的 A、设备适配及 PrimaryHostLifecycle。校验实际角色规划、卡观察、投递、完成接线及所需初始证据后发布。逐阶段注入缺依赖，断言失败阶段、发布次数及已构造对象配对销毁。
 2. **接入唯一屏障。** H 构造、登记一个 ResourceBarrier，给 ResourceRadioRuntime 和已接通的卡侧执行适配注入同一权威，收回旧独立拥有。缺初始证据时资源保持 Checking。沿用 §1 两命令族同键争用与多键分配失败用例，断言零提前发令、无部分租约，独立键可并行。
 3. **接通最小寿命闭环。** 复用 PrimaryHostLifecycle，先封本次发布能力的新业务，再收回已接纳的回调与投递。提交、完成、外部查询按 §1 先登记、锁外调用、凭原关联返回。测一次封口、旧句柄拒绝、回调重入 Stop 返回在途、实际退出后才销毁。整图 M19 和跨实例证明按 §4 后续验收。

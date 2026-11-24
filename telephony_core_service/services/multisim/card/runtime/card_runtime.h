@@ -30,7 +30,6 @@
 #include "card/state/session_registry.h"
 #include "card/runtime/result_sinks.h"
 #include "card/records/load_session.h"
-#include "device/resource/resource_barrier.h"
 #include "infrastructure/assembly/slot_catalog.h"
 
 namespace OHOS::Telephony {
@@ -101,7 +100,6 @@ private:
     ITelRilManager &sharedRil_; // 同一Core宿主实例；SIM不Init/Stop该共享资源。
     EsimManager *euicc_; // 原单一Manager内部已拥有普通/低优先级两套EsimFile，不重复创建Manager。
     SessionRegistry sessions_;
-    ResourceBarrier resources_;
     std::map<std::string, LoadSession> loads_; // 仅在完整R写权切换后接管，不与旧加载计数并行写。
     std::map<uint64_t, MsisdnWriteRequest> msisdnAssociations_; // 原请求输入元数据，非另一份RIL requestMap。
     std::map<std::pair<int32_t, std::string>, uint64_t> observationSequences_; // 每应用发现/失效共序。

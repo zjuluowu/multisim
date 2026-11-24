@@ -681,6 +681,8 @@ H 在入口封好、Owner 封口任务生效后查询 A（包括 O/完成侧）�
 
 **能力切片。** 只装配其全部虚方法已有定义的能力，没有实现的能力不装配，其兼容入口不提供，不为可构建性补拒绝桩或成功桩。一个类同时承载已实现和未实现的端口时，按端口分出已实现部分。632f6a2a8 中 CardRuntime、SetShowNumberUseCase、ActivateSimUseCase、LegacyCompletion 都含只声明未定义的虚方法，按语言规则推断不能进入可执行目标，此推断尚未以构建验证。
 
+**M1 实际落点。** `CreateCoreSimModule` 通过 `CoreSimModulePorts` 装配已实现端口。H 给 T/A/R 注入同一 epoch，R·card 使用 `SessionRegistry` 接纳启动期已确认会话；T 通过 `AcceptStoredDiscovery` 接纳账户和 Binding。设备侧在共享屏障上以 `ObserveOnly` 装配，A 以 `C0Only` 限定可发起的计划。H 的窄 C0 入口登记实际执行帧；A 记录该请求的当前参数／输出／完成责任。H 排空当前帧、A、Scheduler 和 R 且无业务未了项后才允许销毁。现行代码使用范围及调试路径见[Host 单步](../services/multisim/test/docs/Host_Usage.md#af2-m1-debug)。
+
 **关闭。** SimModule::StopAcceptingAndDrain 先封兼容入口并登记在途调用，令 T、用例和卡运行停止受理，再调用 PrimaryHostLifecycle，随后汇合各出具者的收据和屏障状态。私有 DrainResult 增加“业务责任未了”一值。得到 Drained 之后才允许按成员反序析构，析构时 AssignmentService 不得另有强持有者。未 Drained 时保留原图。
 
 关闭收据的最小形态如下，要求见[主设计 §14.3](SIM_Target_Architecture_Design_v1.2.md#af1-close-receipts)。字段的具体类型在实施时确定，但必须能逐项定位：

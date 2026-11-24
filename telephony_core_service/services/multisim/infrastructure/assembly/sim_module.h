@@ -14,65 +14,82 @@
  */
 // TARGET ARCHITECTURE SKELETON / PROPOSED: 仅接入 testonly 骨架构建，尚未接入生产，未转移写权。
 // Design: docs/SIM_Target_Architecture_Design_v1.2.md §5.2、§7.1、§14.2～14.3、§22.1。
-// 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
+// M1 core assembly; Legacy attachment and product startup remain separate.
 
 #ifndef OHOS_TELEPHONY_MULTISIM_ASSEMBLY_SIM_MODULE_H
 #define OHOS_TELEPHONY_MULTISIM_ASSEMBLY_SIM_MODULE_H
 
 #include "infrastructure/assembly/sim_module_factory.h"
-#include "card/runtime/card_runtime.h"
-#include "account/account_store_adapter.h"
-#include "role_assignment/assignment_store_adapter.h"
-#include "infrastructure/compatibility/events/legacy_output_adapter.h"
-#include "infrastructure/compatibility/events/legacy_completion.h"
-#include "infrastructure/compatibility/api/legacy_sim_facade.h"
-
-#include "role_assignment/assignment_output_adapter.h"
-#include "account/activation/activation_hook_adapter.h"
+#include "infrastructure/assembly/primary_host_lifecycle.h"
 #include "account/topology_service.h"
-#include "role_assignment/assignment_service.h"
-#include "account/number/set_show_number_use_case.h"
-#include "account/number/show_number_query.h"
-#include "account/activation/activate_sim_use_case.h"
+#include "card/state/session_registry.h"
 
 namespace OHOS::Telephony::MultiSim {
-struct ExistingSimBindings {
-    SimRdbHelper &accountStore;
-    AssignmentParameterPort &assignmentParameters; // C0 system-parameter boundary, not account DB.
-    MultiSimMonitor &monitor;
-    RadioProtocolController &radio;
-    std::vector<ProductionSlotBindings> slots;
-    EsimManager *euicc; // 一个原Manager内部拥有普通/低优先级两组EsimFile。
+// Startup adapters are dedicated to this instance, except for the borrowed platform service.
+struct CoreSimModulePorts {
+    std::shared_ptr<AccountStore> accountStore;
+    std::shared_ptr<AssignmentStore> assignmentStore;
+    std::shared_ptr<AssignmentOutputPort> output;
+    std::shared_ptr<LegacyIntCompletionPort> completion;
+    std::shared_ptr<RadioPlatformPort> radio;
+    std::shared_ptr<RetrySchedulerPort> scheduler;
+    std::shared_ptr<RadioOwnerDispatchPort> ownerDispatch;
+    std::function<std::optional<InitialRecoveryEvidence>(const ResourceKey &, RuntimeEpoch)> initialEvidence;
 };
-// 目标SIM侧装配图；所有引用由Core/原生产对象持有，需逐WU停止旧writer后才能接管。
-// 声明顺序=依赖创建顺序；反序销毁，但反序本身不等于已排空异步回调。
-class SimModule final {
+
+// Account and card facts confirmed by the startup source. M2 adds live observation and provider writes.
+struct ConfirmedSlotAccount {
+    CardApplicationTarget application;
+    uint64_t generation;
+    AccountRecord account;
+    AccountDiscoveryStoreResult stored;
+};
+
+class SimModule final : public std::enable_shared_from_this<SimModule> {
 public:
-    LegacySimFacade &LegacyEntry() { return compatibility_; }
-    enum class DrainResult { Drained, CallbacksStillInFlight, DeviceEffectsUnresolved };
-    DrainResult StopAcceptingAndDrain(); // G2c新增协议，仅声明，机械拆分不默认具备。
+    enum class DrainResult { Drained, CallbacksStillInFlight, DeviceEffectsUnresolved, BusinessEffectsUnresolved };
+    RuntimeEpoch Epoch() const { return epoch_; }
+    const SlotCatalog &Catalog() const { return *catalog_; }
+    std::optional<BindingRef> FindBinding(SlotId slot) const;
+    std::optional<AccountView> ReadAccount(SubscriptionId subscription) const;
+    AssignmentView ReadAssignment() const;
+    std::optional<AssignmentService::C0Receipt> ReadC0Receipt() const;
+    // A disengaged result means the module rejected a new call before entering A.
+    std::optional<RequestId> StartPrimarySwitch(const SwitchPrimaryCommand &command);
+    DrainResult StopAcceptingAndDrain();
+    std::optional<ResourceState> ReadPrimaryResourceState() const;
 private:
-    friend struct SimModuleFactoryAccess;
+    friend CoreSimModuleCreationResult CreateCoreSimModule(CoreSimModulePorts ports,
+        std::shared_ptr<const SlotCatalog> catalog, const std::vector<ConfirmedSlotAccount> &accounts);
     friend struct SimModuleDeleter;
-    SimModule(SimHostPorts host, std::shared_ptr<const SlotCatalog> catalog, RuntimeEpoch epoch,
-        const ExistingSimBindings &existing);
+    SimModule(CoreSimModulePorts ports, std::shared_ptr<const SlotCatalog> catalog, RuntimeEpoch epoch);
     ~SimModule() = default;
-    SimHostPorts host_;
-    std::shared_ptr<const SlotCatalog> catalog_;
-    AccountStoreAdapter accountStore_;
-    AssignmentStoreAdapter assignmentStore_;
-    LegacyOutputAdapter output_;
-    AssignmentOutputAdapter assignmentOutput_;
-    ActivationHookAdapter activationHooks_;
-    LegacyCompletion completion_;
-    CardRuntime runtime_;
+    bool InitializeResources();
+    bool SeedAccount(const ConfirmedSlotAccount &confirmed);
+    void ReturnPrimaryCall();
+
+    struct PrimaryCall {
+        CoreSimModuleHandle module;
+        ~PrimaryCall() { module->ReturnPrimaryCall(); }
+    };
+
+    CoreSimModulePorts ports_;
+    const std::shared_ptr<const SlotCatalog> catalog_;
+    const RuntimeEpoch epoch_;
+    const ResourceKey primaryResource_ {"primary-shared"};
+    ResourceBarrier resources_;
+    ResourceRadioRuntime radio_;
+    SessionRegistry sessions_;
     TopologyService topology_;
-    AssignmentService assignment_;
-    SetShowNumberUseCase numbers_;
-    ShowNumberQuery numberQuery_;
-    ActivateSimUseCase activation_;
-    LocalCardRequests localCards_;
-    LegacySimFacade compatibility_;
+    std::shared_ptr<AssignmentService> assignment_;
+    PrimaryHostLifecycle lifecycle_;
+    std::mutex admissionMutex_;
+    bool accepting_ {true};
+    bool primaryCallActive_ {false};
+    bool joining_ {false};
+    bool drained_ {false};
+    // A non-drained graph and its external ports stay alive until a subsequent accurate drain result.
+    CoreSimModuleHandle closeHold_;
 };
 } // namespace OHOS::Telephony::MultiSim
 

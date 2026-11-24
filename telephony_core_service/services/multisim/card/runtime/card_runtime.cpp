@@ -23,7 +23,7 @@ namespace OHOS::Telephony::MultiSim {
 CardRuntime::CardRuntime(const SlotCatalog &catalog, RuntimeEpoch epoch, std::vector<ProductionSlotBindings> slots,
     RadioProtocolController &radio, ITelRilManager &sharedRil, EsimManager *euicc)
     : catalog_(catalog), slots_(std::move(slots)), radio_(radio), sharedRil_(sharedRil), euicc_(euicc),
-      sessions_(epoch), resources_(epoch) {}
+      sessions_(epoch) {}
 
 void CardRuntime::BindResultSinks(MsisdnResultSink &numbers, ActivationResultSink &activation,
     RadioResultSink &assignment, CardObservationSink &observations)

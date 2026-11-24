@@ -4,7 +4,12 @@
     "SIM 重构代码目录结构设计方案.md": {
       "target": "docs/SIM重构代码目录结构设计方案.md",
       "sha256": "28864a01afe3ccff3a6b08eadbd3188fbe3414bb8d92477900402a30ee124562",
-      "reason": "权威设计保留在部件docs目录，文件名去掉空格；删除services/multisim下的重复副本，历史输入及摘要不变。"
+      "reason": "权威设计保留在部件docs目录，文件名去掉空格；删除services/multisim下的重复副本，历史输入及摘要不变。",
+      "canonical_revision": {
+        "commit": "199920c6f056d61889e103e15de35519910d164f",
+        "sha256": "f80c83ac6238cb5f6d899e8777984d30566aaeabbb73a761f284f8f51310cade",
+        "reason": "AF-1 正式签收的 C 文档；原副本 SHA 仍核验历史迁移。"
+      }
     }
   }
 }

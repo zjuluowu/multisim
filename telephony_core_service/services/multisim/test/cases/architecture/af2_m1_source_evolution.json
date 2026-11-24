@@ -1,0 +1,17 @@
+{
+  "baseline": "199920c6f056d61889e103e15de35519910d164f",
+  "files": {
+    "BUILD.gn": "b5747760a25aa055f5854e1f00d21fb52cd1d586649f67c2e74096cc7477c298",
+    "card/runtime/card_runtime.cpp": "b17d305da3de64df6d40ae5824b0f9f900750dcefe827bcc83b83249e88e4a22",
+    "card/runtime/card_runtime.h": "fde97e57939e21e3cd6859c633e05d2e95001743c596274b5a32d75b7efecfb8",
+    "device/resource/resource_barrier.cpp": "f27b7a2840f6b135985fad36d90a28fc15b09438422f3e58be4406adf6f179bb",
+    "device/resource/resource_barrier.h": "b653db97fd31ebba7d0004f045b569501ad8a8a9b3eb2f049c47612dd988a7e8",
+    "device/resource/resource_radio_runtime.cpp": "8d573a9a1235472acda9b8a53be05863e0ac9fb5af5510a4bf7d70e8d64a29d8",
+    "device/resource/resource_radio_runtime.h": "ce3b937e6f11e1e230d042d7dff9d3466ca99883004ee343eaa3f6b052d3e312",
+    "infrastructure/assembly/sim_module.h": "01b9d14649ce121ff34058401f2094bbae722ef52a594e604a3459338a6d8552",
+    "infrastructure/assembly/sim_module_factory.cpp": "0a0d432b537b8ec0f0ad12bdef89e1b8505b4c3ac06ea2e725b01f3ca0b89559",
+    "infrastructure/assembly/sim_module_factory.h": "5711e4d4d85bd48ead9d3725aeb98aa86295ce428f4a053381ff4e3a108e455a",
+    "role_assignment/assignment_service.cpp": "e39b353480186aa93d8a18733cdb6ec4c7660912dadb6c894359e273e0492482",
+    "role_assignment/assignment_service.h": "3a19fd7a89cfcf9d458efb27156258414e76a7726c2cc87bda1294b7c659e5a1"
+  }
+}

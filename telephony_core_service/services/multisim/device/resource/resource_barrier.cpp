@@ -12,11 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// TARGET ARCHITECTURE SKELETON / PROPOSED: 仅纯状态转移示例，未启用生产设备屏障。
 
 #include "device/resource/resource_barrier.h"
 #include <algorithm>
 #include <limits>
+#include <new>
+#include <type_traits>
 
 namespace OHOS::Telephony::MultiSim {
 namespace {
@@ -29,16 +30,18 @@ bool EffectAllowsRelease(EffectRequirement requirement, EffectKnowledge effect)
 
 bool ResourceBarrier::RegisterForInitialCheck(const ResourceKey &key)
 {
+    std::lock_guard<std::mutex> guard(mutex_);
     if (key.verifiedPhysicalDomain.empty()) {
         return false;
     }
     return resources_.emplace(key,
-        ResourceRecord {ResourceState::Checking, 0, std::nullopt, EffectKnowledge::Unknown, false}).second;
+        ResourceRecord {ResourceState::Checking, 0, nullptr, EffectKnowledge::Unknown, false}).second;
 }
 
 bool ResourceBarrier::AcceptInitialRecoveryEvidence(const ResourceKey &key,
     const InitialRecoveryEvidence &evidence)
 {
+    std::lock_guard<std::mutex> guard(mutex_);
     auto record = resources_.find(key);
     if (record == resources_.end() || record->second.state != ResourceState::Checking ||
         evidence.epoch != epoch_ || !evidence.noPriorExecutionCanContinue || !evidence.resourceReusable) {
@@ -51,27 +54,39 @@ bool ResourceBarrier::AcceptInitialRecoveryEvidence(const ResourceKey &key,
 std::optional<ResourceLease> ResourceBarrier::Acquire(const std::vector<ResourceKey> &keys, StepRef requester,
     EffectRequirement requirement)
 {
+    std::lock_guard<std::mutex> guard(mutex_);
     if (keys.empty() || requester.request.value == 0 || requester.request.owner == RequestOwner::Unspecified ||
         requester.request.epoch != epoch_ || nextFence_ == std::numeric_limits<uint64_t>::max()) {
         return std::nullopt;
     }
-    std::vector<ResourceKey> ordered = keys;
-    std::sort(ordered.begin(), ordered.end());
-    for (size_t i = 0; i < ordered.size(); ++i) {
-        if (i > 0 && ordered[i - 1].verifiedPhysicalDomain == ordered[i].verifiedPhysicalDomain) {
-            return std::nullopt;
+    static_assert(std::is_nothrow_move_constructible_v<std::optional<ResourceLease>>);
+    try {
+        std::optional<ResourceLease> lease {ResourceLease {epoch_, keys, requester, nextFence_, requirement}};
+        auto &ordered = lease->resources;
+        std::sort(ordered.begin(), ordered.end());
+        std::vector<ResourceRecord *> records;
+        records.reserve(ordered.size());
+        for (size_t i = 0; i < ordered.size(); ++i) {
+            const auto &key = ordered[i];
+            if (i > 0 && ordered[i - 1].verifiedPhysicalDomain == key.verifiedPhysicalDomain) {
+                return std::nullopt;
+            }
+            auto record = resources_.find(key);
+            if (record == resources_.end() || record->second.state != ResourceState::Available) {
+                return std::nullopt;
+            }
+            records.push_back(&record->second);
         }
-        auto record = resources_.find(ordered[i]);
-        if (record == resources_.end() || record->second.state != ResourceState::Available) {
-            return std::nullopt; // 一项不合格不预留其他项，不逐把持锁等待。
+        // The return value and the one immutable record shared by all keys are ready before publication.
+        const auto registration = std::make_shared<const ResourceLease>(*lease);
+        for (auto *record : records) {
+            *record = {ResourceState::InFlight, nextFence_, registration, EffectKnowledge::NotSent, false};
         }
+        ++nextFence_;
+        return lease;
+    } catch (const std::bad_alloc &) {
+        return std::nullopt;
     }
-    ResourceLease lease {epoch_, ordered, requester, nextFence_++, requirement};
-    for (const auto &key : ordered) {
-        auto &record = resources_.at(key);
-        record = {ResourceState::InFlight, lease.fence, lease, EffectKnowledge::NotSent, false};
-    }
-    return lease;
 }
 
 bool ResourceBarrier::MatchesAll(const ResourceLease &lease, ResourceState state) const
@@ -99,6 +114,7 @@ bool ResourceBarrier::MatchesAll(const ResourceLease &lease, ResourceState state
 
 bool ResourceBarrier::MarkSent(const ResourceLease &lease)
 {
+    std::lock_guard<std::mutex> guard(mutex_);
     if (!MatchesAll(lease, ResourceState::InFlight)) {
         return false;
     }
@@ -127,6 +143,7 @@ void ResourceBarrier::Release(const ResourceLease &lease, EffectKnowledge effect
 
 bool ResourceBarrier::CancelConfirmedNotSent(const ResourceLease &lease)
 {
+    std::lock_guard<std::mutex> guard(mutex_);
     if (!MatchesAll(lease, ResourceState::InFlight)) {
         return false;
     }
@@ -141,6 +158,7 @@ bool ResourceBarrier::CancelConfirmedNotSent(const ResourceLease &lease)
 
 bool ResourceBarrier::Complete(const ResourceLease &lease, const CompletionEvidence &evidence)
 {
+    std::lock_guard<std::mutex> guard(mutex_);
     if (!MatchesAll(lease, ResourceState::InFlight) || !(evidence.original == lease.holder) ||
         !evidence.commandEnded || !evidence.resourceReusable || evidence.effect == EffectKnowledge::NotSent ||
         !EffectAllowsRelease(lease.effectRequirement, evidence.effect)) {
@@ -157,6 +175,7 @@ bool ResourceBarrier::Complete(const ResourceLease &lease, const CompletionEvide
 
 bool ResourceBarrier::Quarantine(const ResourceLease &lease, EffectKnowledge effect)
 {
+    std::lock_guard<std::mutex> guard(mutex_);
     if (!MatchesAll(lease, ResourceState::InFlight)) {
         return false;
     }
@@ -170,6 +189,7 @@ bool ResourceBarrier::Quarantine(const ResourceLease &lease, EffectKnowledge eff
 
 bool ResourceBarrier::AcceptRecoveryEvidence(const ResourceLease &lease, const RecoveryEvidence &evidence)
 {
+    std::lock_guard<std::mutex> guard(mutex_);
     if (!MatchesAll(lease, ResourceState::Quarantined) || !(evidence.original == lease.holder) ||
         !evidence.oldCommandEnded || !evidence.currentStateVerified || !evidence.resourceReusable ||
         !EffectAllowsRelease(lease.effectRequirement, evidence.effect)) {
@@ -186,6 +206,7 @@ bool ResourceBarrier::AcceptRecoveryEvidence(const ResourceLease &lease, const R
 
 std::optional<ResourceState> ResourceBarrier::ReadState(const ResourceKey &key) const
 {
+    std::lock_guard<std::mutex> guard(mutex_);
     auto record = resources_.find(key);
     return record == resources_.end() ? std::nullopt : std::optional<ResourceState>(record->second.state);
 }

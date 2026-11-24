@@ -20,6 +20,8 @@
 #define OHOS_TELEPHONY_MULTISIM_RUNTIME_RESOURCE_RESOURCE_BARRIER_H
 
 #include <map>
+#include <memory>
+#include <mutex>
 #include <optional>
 #include <string>
 #include <vector>
@@ -60,12 +62,12 @@ struct RecoveryEvidence {
 struct ResourceRecord {
     ResourceState state;
     uint64_t fence;
-    std::optional<ResourceLease> lease;
+    std::shared_ptr<const ResourceLease> lease;
     EffectKnowledge effect;
     bool sent;
 };
 // R CardRuntime 使用，R 统一维护真实资源租约，A 的仲裁规则不替代设备屏障。
-// 尚未启用。需证明资源键、成功/错误/投递失败关联及可达恢复证据后才实施。
+// H 拥有实例，各设备适配共享。每次操作在短域原子执行。
 class ResourceBarrier final {
 public:
     explicit ResourceBarrier(RuntimeEpoch epoch) : epoch_(epoch) {}
@@ -82,10 +84,11 @@ public:
 private:
     bool MatchesAll(const ResourceLease &lease, ResourceState state) const;
     void Release(const ResourceLease &lease, EffectKnowledge effect);
-    RuntimeEpoch epoch_;
+    mutable std::mutex mutex_;
+    const RuntimeEpoch epoch_;
     uint64_t nextFence_ {1}; // 本R实例内唯一；模块重建还须匹配epoch。
     std::map<ResourceKey, ResourceRecord> resources_; // 新实例先Checking；超时不自动Available。
-    // 纯转移示例；调用方须在同一R短提交域中执行，锁外才可发设备请求。
+    // 不调用平台；适配器在实际交接处维护原步骤与 transport 关联。
     // 证据由命令适配提供；这些bool本身不证明硬件能力，未闭合命令不得启用屏障。
 };
 } // namespace OHOS::Telephony::MultiSim

@@ -26,7 +26,7 @@ class BoundaryGuard(unittest.TestCase):
         shutil.copytree(SOURCE, cls.source, ignore=shutil.ignore_patterns("test", "tools"))
         from documentation_migration import documentation_moves
         cls.documents = documentation_moves(SOURCE)
-        for path in cls.documents.values():
+        for path, _ in cls.documents.values():
             target = cls.source.parents[1] / path.relative_to(SOURCE.parents[1])
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(path, target)
@@ -102,12 +102,12 @@ class BoundaryGuard(unittest.TestCase):
         self.mutate("infrastructure/sim_identity.h", lambda s: s + "\nstruct RequestId { int duplicate; };\n",
                     "Expected one definition of RequestId")
 
-    def check_mapped_mutation(self, name, transform):
+    def check_mapped_mutation(self, name, transform, expected="changed bytes beyond mapped paths"):
         path = self.source / name
         before = path.read_text()
         try:
             path.write_text(transform(before))
-            with self.assertRaisesRegex(ValueError, "changed bytes beyond mapped paths"):
+            with self.assertRaisesRegex(ValueError, expected):
                 check_directory_migration(self.source, token_sequence, repo=SOURCE.parents[2])
         finally:
             path.write_text(before)
@@ -117,11 +117,12 @@ class BoundaryGuard(unittest.TestCase):
                                   lambda s: s.replace("struct SlotId {", "struct SlotId { int extra;", 1))
 
     def test_move_preserves_gn_visibility(self):
-        self.check_mapped_mutation("BUILD.gn", lambda s: s.replace('":*"', '"//*"', 1))
+        self.check_mapped_mutation("BUILD.gn", lambda s: s.replace('":*"', '"//*"', 1),
+                                  "AF2 M1 source input differs: BUILD.gn")
 
     def test_documentation_migration(self):
         from documentation_migration import documentation_moves
-        for old, original in self.documents.items():
+        for old, (original, _) in self.documents.items():
             target = self.source.parents[1] / original.relative_to(SOURCE.parents[1])
             before = target.read_bytes()
             with self.subTest(case="canonical missing"):

@@ -293,8 +293,8 @@ def check(source=SOURCE):
             if delimiter == "<":
                 # The closed skeleton has only standard-library angle includes.
                 if include not in {"algorithm", "array", "atomic", "cassert", "cstddef", "cstdint", "functional",
-                                   "iomanip", "limits", "map", "memory", "mutex", "optional", "set", "sstream", "stdexcept", "string", "tuple",
-                                   "utility", "variant", "vector"}:
+                                   "iomanip", "limits", "map", "memory", "mutex", "new", "optional", "set", "sstream", "stdexcept", "string", "tuple",
+                                   "type_traits", "utility", "variant", "vector"}:
                     raise ValueError(f"Unverified platform/angle include: {name}: {include}")
                 continue
             candidates = [(path.parent / include).resolve(), (source / include).resolve()]
@@ -351,6 +351,12 @@ def type_definitions(text):
 def check_migration():
     manifest = json.loads(((_TEST / 'cases/architecture') / "source_migration.json").read_text())
     repo = ROOT.parent
+    from source_evolution import migration_inputs
+    inputs_before_m1 = migration_inputs(SOURCE, repo)
+
+    def migration_text(name):
+        return (inputs_before_m1[name].decode() if name in inputs_before_m1 else (SOURCE / name).read_text())
+
     baseline, prefix = manifest["baseline"], manifest["source_root"] + "/"
     # Read committed blobs in batches; keep the same fixed revision/digest checks.
     # This avoids hundreds of Git processes on mounted workspaces.
@@ -383,7 +389,7 @@ def check_migration():
                                 "StartLegacyPrimarySwitch(assignment_, issued)")
             text = text.replace("activation_.StartOrdinaryActivation(issued)",
                                 "StartLegacyOrdinaryActivation(activation_, issued)")
-        after = "\n".join((SOURCE / name).read_text() for name in entry["destinations"])
+        after = "\n".join(migration_text(name) for name in entry["destinations"])
         missing = Counter(token_sequence(text)) - Counter(token_sequence(after))
         authorized_c0_source = entry['old'] in {
             'assignment/application/account_role_protocol.h',
@@ -452,7 +458,7 @@ def check_migration():
     for entry in documentation:
         original = blobs[entry["source_commit"]][entry["source_path"]]
         if (hashlib.sha256(original).hexdigest() != entry["sha256"] or
-                hashlib.sha256(moved_docs[entry["target"]].read_bytes()).hexdigest() != entry["sha256"]):
+                moved_docs[entry["target"]].historical_sha256 != entry["sha256"]):
             raise ValueError("Documentation addition differs: " + entry["target"])
     if actual != module_destinations(
             {entry["target"] for entry in entries + additions + documentation}, moved_docs):
@@ -462,7 +468,7 @@ def check_migration():
         if hashlib.sha256(before).hexdigest() != entry["sha256"]:
             raise ValueError("Layout input digest mismatch: " + entry["old"])
         if Path(entry["old"]).suffix in SUFFIXES:
-            after = (SOURCE / entry["target"]).read_text()
+            after = migration_text(entry["target"])
             # Includes are checked separately; preserve all remaining tokens, including header bodies.
             if token_sequence(before.decode()) != token_sequence(after):
                 authorized_c0_targets = {
@@ -505,7 +511,7 @@ def check_migration():
     for entry in sorted(entries, key=lambda e: -len(e["old"])):
         before_build = before_build.replace(entry["old"], entry["target"])
     before_build = before_build.replace("//test/multisim_architecture_rules", "//services/multisim/test/multisim_architecture_rules")
-    current_build = (SOURCE / "BUILD.gn").read_text().replace("/test/cases/architecture", "/test/multisim_architecture_rules")
+    current_build = migration_text("BUILD.gn").replace("/test/cases/architecture", "/test/multisim_architecture_rules")
     current_build = current_build.replace('    "role_assignment/assignment_store_adapter.cpp",\n', '')
     current_build = current_build.replace('    "infrastructure/request/runtime_operation_store.cpp",\n', '')
     current_build = current_build.replace('    "device/resource/resource_radio_runtime.cpp",\n', '')

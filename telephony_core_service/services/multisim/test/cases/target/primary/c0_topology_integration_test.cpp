@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include "account/topology_service.h"
+#include "infrastructure/assembly/sim_module.h"
 #include "role_assignment/assignment_service.h"
 #include "role_assignment/assignment_store_adapter.h"
 
@@ -75,11 +76,17 @@ public:
     std::map<std::string, std::string> values {{kPrimary, "0"}, {kData, "0"},
         {kIccid, "previous"}, {kPreference, "false"}};
     std::vector<std::pair<std::string, std::string>> writes;
+    std::function<AssignmentParameterResult(const std::string &)> writeResult;
     AssignmentParameterResult Read(const std::string &key, const std::string &fallback,
         std::string &value) override
     { value = values.count(key) ? values[key] : fallback; return {0, true}; }
     AssignmentParameterResult Write(const std::string &key, const std::string &value) override
-    { writes.emplace_back(key, value); values[key] = value; return {0, true}; }
+    {
+        writes.emplace_back(key, value);
+        const auto result = writeResult ? writeResult(key) : AssignmentParameterResult {0, true};
+        if (result.callFinished && result.parameterResult == 0) { values[key] = value; }
+        return result;
+    }
 };
 class Radio final : public RadioExecutionPort {
 public:
@@ -103,7 +110,12 @@ public:
 class Completion final : public LegacyIntCompletionPort {
 public:
     std::vector<int32_t> results;
-    void CompleteLegacyInt(const CompletionPlan &, int32_t result) override { results.push_back(result); }
+    std::function<void()> callback;
+    void CompleteLegacyInt(const CompletionPlan &, int32_t result) override
+    {
+        results.push_back(result);
+        if (callback) { callback(); }
+    }
 };
 
 AccountRecord Account(SubscriptionId subscription, const std::string &iccid, bool active = true)
@@ -647,4 +659,242 @@ TEST(TargetTopologyIntegration, BindingChangeDuringAssignmentReadRejectsOldReque
     EXPECT_TRUE(f.parameters.values[kPrimary] == "0");
     EXPECT_TRUE(f.output.events.empty());
     EXPECT_EQ(f.radio.switches, 0u);
+}
+
+namespace {
+class ModuleRadio final : public RadioPlatformPort {
+public:
+    bool requiresDevice {false};
+    unsigned commands {0};
+    PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const override
+    { return {slot, requiresDevice ? 1 : 0, requiresDevice, false, 7}; }
+    RadioSubmitResult SubmitPrimaryRadio(const RadioSwitchRequest &, uint64_t) override
+    {
+        ++commands;
+        return {RadioSubmitDisposition::ConfirmedNotSent, std::nullopt};
+    }
+    void EndLegacySenseSwitch(const StepRef &, const RadioDomainId &) override { ++commands; }
+};
+
+class ModuleDispatch final : public RetrySchedulerPort, public RadioOwnerDispatchPort {
+public:
+    bool defer {false};
+    std::function<void()> pending;
+    unsigned seals {0};
+    unsigned cancels {0};
+    std::optional<uint64_t> ScheduleRetry(const ScheduledRetryEvent &, uint64_t,
+        const std::weak_ptr<ScheduledRetrySink> &) override { return std::nullopt; }
+    bool CancelRetry(uint64_t) override { return false; }
+    size_t CancelAllForOwner(RuntimeEpoch, RequestOwner) override { ++cancels; return 0; }
+    void StopAcceptingAndCancel() override { ++seals; }
+    RetrySchedulerAudit Audit() const override { return {}; }
+    bool PostRadioOwnerTask(std::function<void()> task) override
+    {
+        if (defer) { pending = std::move(task); } else { task(); }
+        return true;
+    }
+    bool RadioOwnerCallbacksDrained() const override { return !pending; }
+};
+
+struct ModuleInputs {
+    std::shared_ptr<SlotCatalog> catalog = std::make_shared<SlotCatalog>(std::vector<SlotDescriptor> {
+        {{0}, EndpointKind::Physical, 1, RadioDomainId {"m1"}, VisibilityClass::Ordinary, false},
+        {{1}, EndpointKind::Physical, 0, RadioDomainId {"m0"}, VisibilityClass::Ordinary, false}},
+        LegacyCapacityMeasures {2, 2, 2, 2, 2});
+    std::shared_ptr<Parameters> parameters = std::make_shared<Parameters>();
+    std::shared_ptr<ModuleRadio> radio = std::make_shared<ModuleRadio>();
+    std::shared_ptr<Output> output = std::make_shared<Output>();
+    std::shared_ptr<Completion> completion = std::make_shared<Completion>();
+    std::shared_ptr<ModuleDispatch> dispatch = std::make_shared<ModuleDispatch>();
+    CoreSimModulePorts Ports()
+    {
+        // The adapter borrows the parameter port; keep the pair in one shared control block.
+        struct ParameterAdapter {
+            explicit ParameterAdapter(std::shared_ptr<Parameters> port) : parameters(std::move(port)), store(*parameters)
+            {}
+            std::shared_ptr<Parameters> parameters;
+            AssignmentStoreAdapter store;
+        };
+        const auto adapter = std::make_shared<ParameterAdapter>(parameters);
+        return {std::make_shared<UnsupportedAccountStore>(), std::shared_ptr<AssignmentStore>(adapter, &adapter->store),
+            output, completion, radio, dispatch, dispatch, [](const ResourceKey &key, RuntimeEpoch epoch) {
+                EXPECT_EQ(key.verifiedPhysicalDomain, "primary-shared");
+                return InitialRecoveryEvidence {epoch, true, true};
+            }};
+    }
+    const std::vector<ConfirmedSlotAccount> accounts {
+        {{{0}, "USIM"}, 1, Account({40}, kRaw0), Stored({40})},
+        {{{1}, "USIM"}, 1, Account({41}, kRaw1), Stored({41})}};
+};
+} // namespace
+
+TEST(AF2Module, FactoryPublishesRealTopologyAndRunsC0)
+{
+    ModuleInputs input;
+    auto result = CreateCoreSimModule(input.Ports(), input.catalog, input.accounts);
+    ASSERT_TRUE(std::holds_alternative<CoreSimModuleHandle>(result));
+    auto module = std::get<CoreSimModuleHandle>(std::move(result));
+    const auto binding = module->FindBinding({1});
+    ASSERT_TRUE(binding);
+    EXPECT_EQ(binding->subscription.legacySimId, 41);
+    ASSERT_TRUE(module->ReadAccount({41}));
+    EXPECT_EQ(module->Catalog().Slots().size(), 2u);
+    EXPECT_EQ(module->ReadPrimaryResourceState(), ResourceState::Available);
+    const auto request = module->StartPrimarySwitch(Command(*binding));
+    ASSERT_TRUE(request);
+    EXPECT_EQ(request->epoch, module->Epoch());
+    EXPECT_EQ(module->ReadAssignment().lastPrimary, SlotId {1});
+    EXPECT_EQ(module->ReadAssignment().lastData, SlotId {1});
+    EXPECT_EQ(input.parameters->values.at(kIccid), kEncoded1);
+    EXPECT_EQ(input.output->events, (std::vector<std::string> {"primary", "data"}));
+    EXPECT_EQ(input.completion->results, std::vector<int32_t> {0});
+    EXPECT_EQ(input.radio->commands, 0u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+    const std::weak_ptr<SimModule> weak = module;
+    module.reset();
+    EXPECT_TRUE(weak.expired());
+}
+
+TEST(AF2Module, MissingPortAndBadEvidenceNeverPublishAndReleasePartialGraph)
+{
+    using Stage = SimModuleInitFailure::Stage;
+    ModuleInputs input;
+    auto ports = input.Ports();
+    ports.output.reset();
+    EXPECT_EQ(std::get<SimModuleInitFailure>(CreateCoreSimModule(std::move(ports), input.catalog, {})).stage,
+        Stage::BindHostPorts);
+    ports = input.Ports();
+    const std::weak_ptr<AccountStore> released = ports.accountStore;
+    ports.initialEvidence = [](const ResourceKey &, RuntimeEpoch epoch) {
+        ++epoch[1];
+        return InitialRecoveryEvidence {epoch, true, true};
+    };
+    EXPECT_EQ(std::get<SimModuleInitFailure>(CreateCoreSimModule(std::move(ports), input.catalog, {})).stage,
+        Stage::InitializeResources);
+    EXPECT_TRUE(released.expired());
+
+    ports = input.Ports();
+    const std::weak_ptr<AccountStore> seedFailed = ports.accountStore;
+    auto accounts = input.accounts;
+    accounts.back().stored.writeConfirmed = false;
+    EXPECT_EQ(std::get<SimModuleInitFailure>(CreateCoreSimModule(std::move(ports), input.catalog, accounts)).stage,
+        Stage::SeedAccount);
+    EXPECT_TRUE(seedFailed.expired());
+    EXPECT_TRUE(input.parameters->writes.empty());
+}
+
+TEST(AF2Module, DeviceBranchesAreRejectedBeforeAnyWriteOrCommand)
+{
+    ModuleInputs input;
+    input.radio->requiresDevice = true;
+    auto module = std::get<CoreSimModuleHandle>(CreateCoreSimModule(input.Ports(), input.catalog, input.accounts));
+    const auto binding = module->FindBinding({1});
+    ASSERT_TRUE(binding);
+    ASSERT_TRUE(module->StartPrimarySwitch(Command(*binding)));
+    EXPECT_TRUE(input.parameters->writes.empty());
+    EXPECT_TRUE(input.output->events.empty());
+    EXPECT_EQ(input.radio->commands, 0u);
+    EXPECT_EQ(input.completion->results, std::vector<int32_t> {-1});
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+    ModuleInputs nextInput;
+    auto next = std::get<CoreSimModuleHandle>(CreateCoreSimModule(nextInput.Ports(), nextInput.catalog, {}));
+    EXPECT_NE(next->Epoch(), module->Epoch());
+    EXPECT_EQ(next->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Module, ConcurrentStopDuringCompletionSealsOldEntryAndKeepsOriginalFrame)
+{
+    ModuleInputs input;
+    auto module = std::get<CoreSimModuleHandle>(CreateCoreSimModule(input.Ports(), input.catalog, input.accounts));
+    const auto binding = module->FindBinding({1});
+    ASSERT_TRUE(binding);
+    const auto command = Command(*binding);
+    std::promise<void> entered;
+    auto notification = entered.get_future();
+    std::promise<void> release;
+    auto released = release.get_future();
+    input.completion->callback = [&] {
+        EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
+        const auto receipt = module->ReadC0Receipt();
+        EXPECT_TRUE(receipt && receipt->outstanding == AssignmentService::C0Stage::Completion);
+        entered.set_value();
+        released.wait();
+    };
+    auto running = std::async(std::launch::async, [&] { return module->StartPrimarySwitch(command); });
+    notification.wait();
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
+    EXPECT_FALSE(module->StartPrimarySwitch(command));
+    EXPECT_EQ(input.dispatch->seals, 0u);
+    release.set_value();
+    EXPECT_TRUE(running.get());
+    EXPECT_FALSE(module->ReadC0Receipt());
+    input.dispatch->defer = true;
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
+    auto pending = std::move(input.dispatch->pending);
+    ASSERT_TRUE(pending);
+    pending();
+    pending = {};
+    input.dispatch->pending = {};
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+    EXPECT_EQ(input.dispatch->seals, 1u);
+    EXPECT_EQ(input.dispatch->cancels, 1u);
+    EXPECT_EQ(input.completion->results, std::vector<int32_t> {0});
+}
+
+TEST(AF2Module, UnknownParameterEffectRetainsOriginalResponsibility)
+{
+    ModuleInputs input;
+    input.parameters->writeResult = [](const std::string &key) {
+        return key == kData ? AssignmentParameterResult {-1, false} : AssignmentParameterResult {0, true};
+    };
+    auto module = std::get<CoreSimModuleHandle>(CreateCoreSimModule(input.Ports(), input.catalog, input.accounts));
+    const auto binding = module->FindBinding({1});
+    ASSERT_TRUE(binding);
+    const auto request = module->StartPrimarySwitch(Command(*binding));
+    ASSERT_TRUE(request);
+    const auto receipt = module->ReadC0Receipt();
+    ASSERT_TRUE(receipt);
+    EXPECT_EQ(receipt->request, *request);
+    EXPECT_EQ(receipt->outstanding, AssignmentService::C0Stage::DataParameters);
+    EXPECT_TRUE(input.completion->results.empty());
+    EXPECT_EQ(input.output->events, std::vector<std::string> {"primary"});
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::BusinessEffectsUnresolved);
+    EXPECT_FALSE(module->StartPrimarySwitch(Command(*binding)));
+    const std::weak_ptr<SimModule> weak = module;
+    module.reset();
+    EXPECT_FALSE(weak.expired());
+    // A process-lifetime host holds the deliberately unresolved graph for the test process.
+    static const auto *const retained = new CoreSimModuleHandle(weak.lock());
+    EXPECT_TRUE(*retained);
+}
+
+TEST(AF2Module, SharedResourceAllowsOnlyOneCompetingOwner)
+{
+    const RuntimeEpoch epoch {9, 3};
+    const ResourceKey shared {"shared"};
+    const ResourceKey independent {"independent"};
+    ResourceBarrier barrier(epoch);
+    ASSERT_TRUE(barrier.RegisterForInitialCheck(shared));
+    ASSERT_TRUE(barrier.RegisterForInitialCheck(independent));
+    ASSERT_TRUE(barrier.AcceptInitialRecoveryEvidence(shared, {epoch, true, true}));
+    ASSERT_TRUE(barrier.AcceptInitialRecoveryEvidence(independent, {epoch, true, true}));
+    const StepRef first {{1, epoch, RequestOwner::Assignment}, 1, 0};
+    const StepRef second {{1, epoch, RequestOwner::ShowNumber}, 1, 0};
+    std::promise<void> start;
+    auto begin = start.get_future().share();
+    auto caller = [&](StepRef owner) {
+        begin.wait();
+        return barrier.Acquire({shared}, owner);
+    };
+    auto radio = std::async(std::launch::async, caller, first);
+    auto card = std::async(std::launch::async, caller, second);
+    start.set_value();
+    auto radioLease = radio.get();
+    auto cardLease = card.get();
+    ASSERT_NE(radioLease.has_value(), cardLease.has_value());
+    const auto other = barrier.Acquire({independent}, radioLease ? second : first);
+    ASSERT_TRUE(other);
+    EXPECT_TRUE(barrier.CancelConfirmedNotSent(*other));
+    EXPECT_TRUE(barrier.CancelConfirmedNotSent(radioLease ? *radioLease : *cardLease));
 }

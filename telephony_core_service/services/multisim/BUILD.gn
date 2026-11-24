@@ -49,11 +49,8 @@ source_set("assembly_core") {
   ]
   public_deps = [
     ":assembly_contracts",
-    ":assignment_adapters",
     ":assignment_cases",
-    ":compatibility_core",
-    ":runtime_core",
-    ":topology_adapters",
+    ":runtime_mechanisms",
     ":topology_cases",
   ]
 }

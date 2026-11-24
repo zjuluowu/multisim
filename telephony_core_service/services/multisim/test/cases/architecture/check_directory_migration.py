@@ -45,6 +45,8 @@ def check_directory_migration(source, token_sequence, *, repo=None):
     outputs = [r['target'] for r in rows]
     from documentation_migration import documentation_moves, module_destinations
     moved_docs = documentation_moves(source)
+    from source_evolution import migration_inputs
+    inputs_before_m1 = migration_inputs(source, repo)
     from check_structure import module_files
     actual = {p.relative_to(source).as_posix() for p in module_files(source)} - {
         'infrastructure/assembly/primary_host_lifecycle.cpp',
@@ -64,13 +66,13 @@ def check_directory_migration(source, token_sequence, *, repo=None):
         original = before[name]
         if hashlib.sha256(original).hexdigest() != row['sha256']:
             raise ValueError('Directory input digest mismatch: ' + name)
-        if target in moved_docs and moved_docs[target].read_bytes() != original:
+        if target in moved_docs and moved_docs[target].historical_sha256 != row['sha256']:
             raise ValueError('Canonical documentation differs from directory input: ' + name)
         if Path(name).suffix in {'.h', '.cpp'} or name == 'BUILD.gn':
             expected = original
             for old, new in sorted(moves.items(), key=lambda pair: -len(pair[0])):
                 expected = expected.replace(old.encode(), new.encode())
-            current = (source / target).read_bytes()
+            current = inputs_before_m1[target] if target in inputs_before_m1 else (source / target).read_bytes()
             if name == "BUILD.gn":
                 current = current.replace(b"/test/cases/architecture", b"/test/multisim_architecture_rules")
                 current = current.replace(b'    "role_assignment/assignment_store_adapter.cpp",\n', b'')

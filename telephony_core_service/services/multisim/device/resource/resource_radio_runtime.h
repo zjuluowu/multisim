@@ -21,8 +21,9 @@ namespace OHOS::Telephony::MultiSim {
 // device end/reuse evidence before forwarding a business result.
 class ResourceRadioRuntime final : public RadioExecutionPort {
 public:
-    ResourceRadioRuntime(RuntimeEpoch epoch, RadioPlatformPort &platform,
-        std::vector<ResourceKey> primaryResources);
+    enum class Mode { ObserveOnly, Execute };
+    ResourceRadioRuntime(ResourceBarrier &barrier, RadioPlatformPort &platform,
+        std::vector<ResourceKey> primaryResources, Mode mode);
     void BindResultSink(const std::shared_ptr<RadioResultSink> &sink) { sink_ = sink; }
     void BindOwnerDispatch(const std::shared_ptr<RadioOwnerDispatchPort> &dispatch) { dispatch_ = dispatch; }
     bool Initialize(const ResourceKey &key, const InitialRecoveryEvidence &evidence);
@@ -78,7 +79,8 @@ private:
     mutable std::mutex lock_;
     RadioPlatformPort &platform_;
     std::vector<ResourceKey> resources_;
-    ResourceBarrier barrier_;
+    ResourceBarrier &barrier_;
+    const Mode mode_;
     std::weak_ptr<RadioResultSink> sink_;
     std::weak_ptr<RadioOwnerDispatchPort> dispatch_;
     bool stopping_ {false};

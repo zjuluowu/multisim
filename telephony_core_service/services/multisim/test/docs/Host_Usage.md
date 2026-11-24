@@ -37,3 +37,30 @@ C0 主卡单例的旧实现析构/ICCID注销问题已修复，资源清理断�
 VS Code任务 `Run All Tests` 使用 `test.py all --ci`；构建仍在.host-out，报告默认在.host-out/results。本次架构检查会临时在仓外执行，并将产物复制至报告的architecture/；architecture-location.json记录执行位置和保留位置。临时目录完成后移除，排查时使用保留位置及architecture.log。直接调用run_architecture.py仍使用仓外--output。
 
 当前五项已修复缺陷必须PASS；修复策略文件缺失、删项或重复均拒绝准入，不回退到历史失败豁免。历史签名及原始报告保持原字节。
+
+
+<a id="af2-m1-debug"></a>
+
+## AF-2 M1 从真实对象图单步
+
+从仓库根执行，首次构建按[测试入口](../README.md)指定固定依赖。M1 用例与既有 C0/B/C1 用例一起链接在 `sim_test_target_host`。
+
+```sh
+TEST=telephony_core_service/services/multisim/test
+python3 -B "$TEST/scripts/test.py" run --backend target \
+  --filter AF2Module.FactoryPublishesRealTopologyAndRunsC0 --out /tmp/af2-m1/host
+lldb /tmp/af2-m1/host/build/sim_test_target_host
+```
+
+在 LLDB 中用 `settings set target.disable-aslr false` 及 `settings set target.env-vars LLVM_PROFILE_FILE=/tmp/af2-m1/lldb-%p.profraw`，设断点后执行 `run --gtest_filter=AF2Module.FactoryPublishesRealTopologyAndRunsC0`。在 VS Code Remote-WSL Testing 中可选中同一单例运行 Debug，再按下表设置源码断点。
+
+| 文件与断点 | 现场观察 |
+| --- | --- |
+| `infrastructure/assembly/sim_module_factory.cpp` 的 `CreateCoreSimModule`、`SimModule::SeedAccount` | 工厂签发 `epoch_`、接纳只读 `catalog_`，构造唯一的 `resources_`、`sessions_`、`topology_` 和共享的 `assignment_`。看 `confirmed.application`、`generation`、两条账户证明和 `radio_` 借用的同一屏障。 |
+| `account/topology_service.cpp` 的 `AcceptStoredDiscovery` | 核对 `observation.session.epoch` 与 H、`account.subscription`、原 Store 证明和实际 Binding。M1 的输入是启动时已确认的卡及账户。 |
+| `role_assignment/assignment_service.cpp` 的 `StartPrimarySwitch` 与 `role_assignment/assignment_store_adapter.cpp` 的 `WritePrimaryParameters` | `command.expectedBinding` 固定原订阅、槽和版本，`request` 带实例 epoch。观察 C0 的 `c0Receipt_`、参数调用、Primary/Data 投影及原完成。平台观察来自 R，设备提交次数为零。 |
+| `SimModule::StopAcceptingAndDrain` 与 `SimModuleDeleter::operator()` | 查看 `primaryCallActive_`、A 业务收据和 `lifecycle_`。宿主在返回未排空时保留操作入口供核对／重读，Drain 成功后释放最后一个句柄。普通单例走匹配 deleter。 |
+
+M1 的共享资源只登记 `primary-shared`。宿主提供的该键初始证据必须匹配本次 epoch。持有同一物理域的另一个执行实例、未排空的旧命令和真实硬件复用仍按产品门禁取证。工厂在 M1 只开放观察及 C0，B/C1 的旧组件夹具继续单独回归。Store 效果未确认时，原请求和写权留在 A，图保留，后继写拒绝，后续切片负责凭原操作证据收回。
+
+M2 从同一 H、R 会话与 T 实例继续接线。将真实 `CardObservationSink` 的投递与关闭责任接入 H，再从可信会话、原观察序列进入 `TopologyService::DiscoverAccount`。使用已接入的 `AccountStore` 和 A 规划端口，完成原写、T 发布及 A 原回执。首批验证一次真实写、换卡和 Unknown 原票，依赖与断言见[实施交接](../../../../docs/AF1_AF2_Implementation_Handoff_20261124.md#af2-first-batch)。

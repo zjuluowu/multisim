@@ -29,17 +29,21 @@ RequestId StartLegacyPrimarySwitch(AssignmentService &entry, const SwitchPrimary
 
 AssignmentService::AssignmentService(const SlotCatalog &catalog, AssignmentStore &store,
     RadioExecutionPort &radio, AssignmentOutputPort &output, PrimaryTopologyPort &topology,
-    LegacyIntCompletionPort &completion, RuntimeEpoch epoch)
-    : catalog_(catalog), operations_(epoch, RequestOwner::Assignment), store_(store), radio_(radio),
+    LegacyIntCompletionPort &completion, RuntimeEpoch epoch, PrimaryScope primaryScope)
+    : catalog_(catalog), primaryScope_(primaryScope), operations_(epoch, RequestOwner::Assignment), store_(store), radio_(radio),
       output_(output), topology_(topology), completion_(completion) {}
 
 void AssignmentService::CompleteOnce(RequestId request, const CompletionPlan &plan, int32_t result,
-    TerminalState terminal)
+    TerminalState terminal, std::unique_lock<std::recursive_mutex> *commit)
 {
     if (!operations_.TryMarkTerminal(request, terminal)) { return; }
     const bool claimed = terminal == TerminalState::Open ? operations_.ClaimEarlyCompletion(request) :
         operations_.ClaimCompletion(request);
-    if (claimed) { completion_.CompleteLegacyInt(plan, result); }
+    if (claimed) {
+        if (commit) { commit->unlock(); }
+        completion_.CompleteLegacyInt(plan, result);
+        if (commit) { commit->lock(); }
+    }
 }
 
 void AssignmentService::BindRetryScheduler(const std::shared_ptr<RetrySchedulerPort> &scheduler)
@@ -98,11 +102,11 @@ void AssignmentService::RequestStopAccepting()
 
 bool AssignmentService::StopAcceptingAndCancelScheduledRetries()
 {
-    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
-    stopping_ = true;
+    RequestStopAccepting();
     if (const auto scheduler = retryScheduler_.lock()) {
         scheduler->CancelAllForOwner(operations_.ReadRuntimeEpoch(), RequestOwner::Assignment);
     }
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
     for (auto pending = pendingPrimary_.begin(); pending != pendingPrimary_.end();) {
         const auto operation = operations_.Read(pending->second.step.request);
         const bool cancellableRetry = pending->second.retryReady && pending->second.phase == 4 && operation &&
@@ -129,20 +133,31 @@ bool AssignmentService::HasPendingDeviceEffects() const
     return !pendingPrimary_.empty();
 }
 
-RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &command)
+std::optional<AssignmentService::C0Receipt> AssignmentService::ReadC0Receipt() const
 {
     std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
+    return c0Receipt_;
+}
+
+RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &command)
+{
+    std::unique_lock<std::recursive_mutex> guard(primaryCommitLock_);
+    const bool c0Only = primaryScope_ == PrimaryScope::C0Only;
     const RequestId request = operations_.Begin(command.target, command.completion, command.parent);
-    if (stopping_) {
-        CompleteOnce(request, command.completion, -1, TerminalState::Failed);
+    const auto fail = [&] {
+        CompleteOnce(request, command.completion, -1, TerminalState::Failed, c0Only ? &guard : nullptr);
+        if (c0Only) { operations_.RetireAfterEvidenceRetention(request); }
+    };
+    if (stopping_ || c0Receipt_) {
+        fail();
         return request;
     }
     if (command.parent && command.parent->request.epoch != request.epoch) {
-        CompleteOnce(request, command.completion, -1, TerminalState::Failed);
+        fail();
         return request;
     }
     if (!operations_.AdvanceStep({request, 0, 0}, 1, 0, std::nullopt)) {
-        CompleteOnce(request, command.completion, -1, TerminalState::Failed);
+        fail();
         return request;
     }
     const SlotDescriptor *target = catalog_.Find(command.target.slot);
@@ -153,7 +168,7 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         command.expectedBinding->bindingRevision == facts->binding.bindingRevision;
     if (!target || !target->radioDomain || !facts || !facts->active ||
         !(facts->binding.slot == command.target.slot) || !expectedBindingUnchanged || facts->iccid.empty()) {
-        CompleteOnce(request, command.completion, -1, TerminalState::Failed);
+        fail();
         return request;
     }
 
@@ -163,29 +178,29 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         !(refreshedFacts->binding.slot == facts->binding.slot) ||
         refreshedFacts->binding.bindingRevision != facts->binding.bindingRevision ||
         refreshedFacts->iccid != facts->iccid || refreshedFacts->active != facts->active) {
-        CompleteOnce(request, command.completion, -1, TerminalState::Failed);
+        fail();
         return request;
     }
     const bool validObservation = observed.slot == command.target.slot && observed.observationRevision != 0 &&
         observed.currentModemId.has_value() && target->rilInstance.has_value();
     if (!validObservation) {
         // Unknown is not M0. Other primary paths remain outside this C0 host closure.
-        CompleteOnce(request, command.completion, -1, TerminalState::Failed);
+        fail();
         return request;
     }
     const bool alreadyOnPrimaryModem = *observed.currentModemId == 0 &&
         *target->rilInstance == *observed.currentModemId;
     const auto plan = PlanPrimarySwitch({*target, command.userSet, observed.dedicatedPrimaryRilSupported,
         alreadyOnPrimaryModem, observed.vendorMappingRequired});
-    if (!plan || (plan->mode != PrimarySwitchMode::AlreadyPrimary &&
+    if (!plan || (c0Only && plan->mode != PrimarySwitchMode::AlreadyPrimary) || (plan->mode != PrimarySwitchMode::AlreadyPrimary &&
         plan->mode != PrimarySwitchMode::WithoutModemRestart &&
         plan->mode != PrimarySwitchMode::ThreePhaseProtocol)) {
-        CompleteOnce(request, command.completion, -1, TerminalState::Failed);
+        fail();
         return request;
     }
     if (assignment_.AdmitTransitionWithRoleWriteSet(*target, request.value, kPrimaryRoleWriteSet) !=
         TransitionAdmission::Admitted) {
-        CompleteOnce(request, command.completion, -1, TerminalState::Failed);
+        fail();
         return request;
     }
     if (plan->mode == PrimarySwitchMode::WithoutModemRestart) {
@@ -203,7 +218,7 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
             !operations_.RecordSent(sentStep, session) ||
             !assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
                 TransitionPhase::Admitted, TransitionPhase::DevicePending)) {
-            CompleteOnce(request, command.completion, -1, TerminalState::Failed);
+            fail();
             assignment_.ReleaseRoleWriteSet(request.value, kPrimaryRoleWriteSet);
             return request;
         }
@@ -243,7 +258,7 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
             !operations_.RecordSent(sentStep, session) ||
             !assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
                 TransitionPhase::ParametersWritten, TransitionPhase::DevicePending)) {
-            CompleteOnce(request, command.completion, -1, TerminalState::Failed);
+            fail();
             assignment_.ReleaseRoleWriteSet(request.value, kPrimaryRoleWriteSet);
             return request;
         }
@@ -274,13 +289,27 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         operations_.MarkTerminal(request, TerminalState::NeedsReconciliation);
     };
 
+    const auto beginEffect = [&](C0Stage stage) {
+        if (c0Only) {
+            c0Receipt_ = C0Receipt {request, stage};
+            guard.unlock();
+        }
+    };
+    const auto effectReturned = [&] {
+        if (c0Only) { guard.lock(); }
+    };
+
+    beginEffect(C0Stage::Preference);
     const auto preference = store_.WriteUserPrimaryPreference(command.userSet);
+    effectReturned();
     if (!preference.callFinished) {
         retainUnknownEffect(TransitionPhase::Admitted);
         return request;
     }
     // Legacy Core ignores completed SetParameter failure for this user preference hint.
+    beginEffect(C0Stage::PrimaryParameters);
     const auto primary = store_.WritePrimaryParameters(target->slot, facts->iccid);
+    effectReturned();
     if (!primary.callFinished) {
         retainUnknownEffect(TransitionPhase::Admitted);
         return request;
@@ -289,25 +318,37 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
     assignment_.AcceptPrimaryParameterProjection(target->slot);
     assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
         TransitionPhase::Admitted, TransitionPhase::ParametersWritten);
+    beginEffect(C0Stage::MainNotification);
     output_.PublishMainCardChanged(target->slot);
+    effectReturned();
 
+    beginEffect(C0Stage::DataParameters);
     const auto data = store_.WriteDefaultData(target->slot);
+    effectReturned();
     if (!data.callFinished) {
         retainUnknownEffect(TransitionPhase::ParametersWritten);
         return request;
     }
     // Legacy SetDefaultCellularDataSlotId also returns success after a void parameter write.
     assignment_.AcceptDataParameterProjection(target->slot);
+    beginEffect(C0Stage::DataNotification);
     output_.PublishDefaultDataChanged(target->slot, facts->binding.subscription);
+    effectReturned();
     assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
         TransitionPhase::ParametersWritten, TransitionPhase::Completed);
-    CompleteOnce(request, command.completion, 0, TerminalState::Succeeded);
+    if (c0Only) { c0Receipt_ = C0Receipt {request, C0Stage::Completion}; }
+    CompleteOnce(request, command.completion, 0, TerminalState::Succeeded, c0Only ? &guard : nullptr);
+    if (c0Only) {
+        c0Receipt_.reset();
+        operations_.RetireAfterEvidenceRetention(request);
+    }
     assignment_.ReleaseRoleWriteSet(request.value, kPrimaryRoleWriteSet);
     return request;
 }
 
 AssignmentView AssignmentService::ReadLegacyAssignment() const
 {
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
     AssignmentView view {};
     const auto &slots = catalog_.Slots();
     for (const auto &slot : slots) {

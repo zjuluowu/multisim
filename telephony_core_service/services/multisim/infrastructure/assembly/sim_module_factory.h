@@ -27,17 +27,27 @@
 namespace OHOS::Telephony::MultiSim {
 class SimModule;
 struct ExistingSimBindings;
+struct CoreSimModulePorts;
+struct ConfirmedSlotAccount;
+
+using CoreSimModuleHandle = std::shared_ptr<SimModule>;
 
 struct SimModuleDeleter { void operator()(SimModule *module) const; };
 using SimModuleHandle = std::unique_ptr<SimModule, SimModuleDeleter>;
 struct SimModuleInitFailure {
     enum class Stage {
         ValidateCatalog, BindExistingRuntime, BindHostPorts, RegisterCallbacks,
-        CreateLegacyObjects, InitializeEuicc, PublishEuicc, InitializeSim, PublishSim
+        CreateLegacyObjects, InitializeEuicc, PublishEuicc, InitializeSim, PublishSim,
+        AllocateCore, InitializeResources, SeedAccount
     };
     Stage stage;
     int32_t legacyResult;
 };
+using CoreSimModuleCreationResult = std::variant<CoreSimModuleHandle, SimModuleInitFailure>;
+// Returns the first usable handle only after all required bindings and evidence are in place.
+CoreSimModuleCreationResult CreateCoreSimModule(CoreSimModulePorts ports,
+    std::shared_ptr<const SlotCatalog> catalog, const std::vector<ConfirmedSlotAccount> &accounts);
+
 using SimModuleCreationResult = std::variant<SimModuleHandle, SimModuleInitFailure>;
 // 同SO迁移附着契约，无工厂/销毁定义、无生产调用者，不创建第二套活动对象。
 // H未来构建并校验SlotCatalog、提供新epoch、沿原初始化发布时点创建模块；

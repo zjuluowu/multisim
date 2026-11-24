@@ -7,12 +7,10 @@
 #include <algorithm>
 
 namespace OHOS::Telephony::MultiSim {
-ResourceRadioRuntime::ResourceRadioRuntime(RuntimeEpoch epoch, RadioPlatformPort &platform,
-    std::vector<ResourceKey> primaryResources)
-    : platform_(platform), resources_(std::move(primaryResources)), barrier_(epoch)
-{
-    for (const auto &resource : resources_) { (void)barrier_.RegisterForInitialCheck(resource); }
-}
+ResourceRadioRuntime::ResourceRadioRuntime(ResourceBarrier &barrier, RadioPlatformPort &platform,
+    std::vector<ResourceKey> primaryResources, Mode mode)
+    : platform_(platform), resources_(std::move(primaryResources)), barrier_(barrier), mode_(mode)
+{}
 
 bool ResourceRadioRuntime::Initialize(const ResourceKey &key, const InitialRecoveryEvidence &evidence)
 {
@@ -22,13 +20,17 @@ bool ResourceRadioRuntime::Initialize(const ResourceKey &key, const InitialRecov
 
 bool ResourceRadioRuntime::OwnerCallbacksDrained() const
 {
-    std::lock_guard<std::mutex> guard(lock_);
+    std::unique_lock<std::mutex> guard(lock_);
     ownerDeliveryReceipts_.erase(std::remove_if(ownerDeliveryReceipts_.begin(), ownerDeliveryReceipts_.end(),
         [](const auto &receipt) { return receipt->delivered.load(std::memory_order_acquire); }),
         ownerDeliveryReceipts_.end());
+    if (!pendingNormalDeliveries_.empty() || !pendingLateDeliveries_.empty() || !ownerDeliveryReceipts_.empty()) {
+        return false;
+    }
     const auto dispatch = dispatch_.lock();
-    return pendingNormalDeliveries_.empty() && pendingLateDeliveries_.empty() && ownerDeliveryReceipts_.empty() &&
-        dispatch && dispatch->RadioOwnerCallbacksDrained();
+    // ObserveOnly cannot produce a new Radio delivery after this check.
+    if (mode_ == Mode::ObserveOnly) { guard.unlock(); }
+    return dispatch && dispatch->RadioOwnerCallbacksDrained();
 }
 
 PrimaryRadioObservation ResourceRadioRuntime::ReadPrimaryRadioObservation(SlotId slot) const
@@ -87,7 +89,7 @@ void ResourceRadioRuntime::SwitchPrimaryRadio(const RadioSwitchRequest &request)
         std::lock_guard<std::mutex> guard(lock_);
         lastSubmission_ = request;
         lastSubmissionAccepted_ = false;
-        if (stopping_ || sink_.expired() || dispatch_.expired()) { return; }
+        if (mode_ != Mode::Execute || stopping_ || sink_.expired() || dispatch_.expired()) { return; }
         Group *group = FindGroup(request);
         if (!group) {
             const auto lease = barrier_.Acquire(resources_, request.step);
@@ -168,6 +170,7 @@ bool ResourceRadioRuntime::WasLastSubmissionAccepted(const RadioSwitchRequest &r
 
 void ResourceRadioRuntime::EndLegacySenseSwitch(const StepRef &owner, const RadioDomainId &domain)
 {
+    if (mode_ == Mode::ObserveOnly) { return; }
     {
         std::lock_guard<std::mutex> guard(lock_);
         if (!stopping_) {
@@ -440,7 +443,7 @@ bool ResourceRadioRuntime::Recover(const StepRef &original, const RecoveryEviden
 
 bool ResourceRadioRuntime::StopAccepting()
 {
-    std::lock_guard<std::mutex> guard(lock_);
+    std::unique_lock<std::mutex> guard(lock_);
     stopping_ = true;
     ownerDeliveryReceipts_.erase(std::remove_if(ownerDeliveryReceipts_.begin(), ownerDeliveryReceipts_.end(),
         [](const auto &receipt) { return receipt->delivered.load(std::memory_order_acquire); }),
@@ -453,6 +456,7 @@ bool ResourceRadioRuntime::StopAccepting()
         if (!state || *state != ResourceState::Available) { return false; }
     }
     const auto dispatch = dispatch_.lock();
+    if (mode_ == Mode::ObserveOnly) { guard.unlock(); }
     return dispatch && dispatch->RadioOwnerCallbacksDrained();
 }
 

@@ -8,7 +8,15 @@
 
 **2026-11-24 · `AF1_ARCHITECTURE_DESIGN_SIGNED_OFF`。** 架构负责人书面批准核心职责、私有接口、原票与读覆盖、角色接纳、资源准入及关闭契约，授权启动 AF-2 Target Host 基础框架。最终独立 Gate 原始结论为 `AF1_REVIEW_READY_FOR_ARCHITECT_DECISION`。[主设计签收记录](SIM_Target_Architecture_Design_v1.2.md#af1-architecture-design-signoff) · [签收包](AF1_Architecture_Final_Signoff_Package_20261124.md) · [最终 Gate](history/reviews/AF1_Final_Independent_Gate_20261124.md)
 
-Gate 工作树为 `d9c2d23dce7148df1fc474ce598fb1cff55b839d`，签收前 main/origin 为 `12ce1bf96b2df2d98bb18db9366b9034b4a0ba18`，目标源码 `632f6a2a888cfbbc3c9387edc89732364e12a10e`、树 `e7986b29585d50da05198e773bf6a2e3eb0f9828`。签收包、补丁及交接稿的原始审查字节可从签收前提交恢复。A/B/C/D 已同步。AF-2 已启动，首批 M1～M3 待实现与验收。生产装配、原有写权、Golden、归档结果及产品／设备／SO 门禁沿用原证据。
+Gate 工作树为 `d9c2d23dce7148df1fc474ce598fb1cff55b839d`，签收前 main/origin 为 `12ce1bf96b2df2d98bb18db9366b9034b4a0ba18`，目标源码 `632f6a2a888cfbbc3c9387edc89732364e12a10e`、树 `e7986b29585d50da05198e773bf6a2e3eb0f9828`。签收包、补丁及交接稿的原始审查字节可从签收前提交恢复。A/B/C/D 已同步。AF-2 已启动，M1 实施及验收状态见下。生产装配、原有写权、Golden、归档结果及产品／设备／SO 门禁沿用原证据。
+
+<a id="af2-m1-status"></a>
+
+### AF-2 M1 基础框架（2026-11-24）
+
+**`AF2_M1_PARTIAL`。** 输入 main/origin `199920c6f`，目标源码签收基线 `632f6a2a8`。已实现 `CreateCoreSimModule`，同一 epoch 下装配真实 T/A、卡会话、设备观察与唯一共享屏障。从启动期已确认账户建立 Binding，再通过 H 的业务入口执行 C0；B/C1 设备提交在新图中禁用。关闭先封 H 入口，同步调用实际返回后收回 Owner 任务及资源，原参数/通知/完成未了时保留图。源码已实际链接；首轮 Target 108/108，M1 定点及资源故障注入通过。最终交付验证正在复跑。[Host 单步和 M2 接线](../services/multisim/test/docs/Host_Usage.md#af2-m1-debug)
+
+AF1-19 的签收目录已以 `199920c6f` 的 Git 对象与 SHA 建立独立比较输入，历史 SHA 保留并验证。目录摘要负控通过；完整迁移随后报出已在签收基线复核的 `assignment/account_roles/account_role_protocol.h` 历史布局差异。最小纯规则入口仍复现签收前 Topology 行 182 断言，其路径用于 M2 发现准备失败，M1 的已确认启动接纳不走该处理。
 
 <a id="af1-signoff-validation"></a>
 

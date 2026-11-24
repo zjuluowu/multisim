@@ -2,6 +2,15 @@
 import hashlib
 import json
 from pathlib import Path
+from typing import NamedTuple
+import subprocess
+
+from _paths import REPO
+
+
+class DocumentMove(NamedTuple):
+    canonical: Path
+    historical_sha256: str
 
 
 def documentation_moves(source):
@@ -26,9 +35,17 @@ def documentation_moves(source):
         current = component / target
         if not current.resolve().is_relative_to(component / 'docs') or not current.is_file():
             raise ValueError('Canonical documentation missing or outside docs: ' + str(target))
-        if hashlib.sha256(current.read_bytes()).hexdigest() != update['sha256']:
+        expected = update['sha256']
+        if 'canonical_revision' in update:
+            signed = update['canonical_revision']
+            path = (Path('telephony_core_service') / target).as_posix()
+            committed = subprocess.check_output(['git', 'show', f"{signed['commit']}:{path}"], cwd=REPO)
+            if not signed['reason'] or hashlib.sha256(committed).hexdigest() != signed['sha256']:
+                raise ValueError('Signed documentation input differs: ' + str(target))
+            expected = signed['sha256']
+        if hashlib.sha256(current.read_bytes()).hexdigest() != expected:
             raise ValueError('Canonical documentation digest differs: ' + str(target))
-        resolved[old] = current
+        resolved[old] = DocumentMove(current, update['sha256'])
     return resolved
 
 

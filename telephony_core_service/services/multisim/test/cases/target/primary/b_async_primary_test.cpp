@@ -409,7 +409,8 @@ struct ResourceFixture {
     Output output;
     Completion completion;
     const ResourceKey key {"host-primary-radio:conservative-shared"};
-    ResourceRadioRuntime radio {{6,2}, platform, {key}};
+    ResourceBarrier barrier {{6,2}};
+    ResourceRadioRuntime radio {barrier, platform, {key}, ResourceRadioRuntime::Mode::Execute};
     std::shared_ptr<AssignmentService> service=std::make_shared<AssignmentService>(catalog,store,radio,
         output,topology,completion,RuntimeEpoch{6,2});
     std::shared_ptr<ControlledRetryScheduler> schedulerOwner=std::make_shared<ControlledRetryScheduler>();
@@ -417,6 +418,7 @@ struct ResourceFixture {
     BindingRef target;
     ResourceFixture()
     {
+        EXPECT_TRUE(barrier.RegisterForInitialCheck(key));
         EXPECT_TRUE(radio.Initialize(key, {{6,2}, true, true}));
         radio.BindResultSink(service);
         radio.BindOwnerDispatch(schedulerOwner);
@@ -595,7 +597,9 @@ TEST(TargetPrimaryB,ResourceBarrierCheckingBlocksSendUntilInitialRecovery)
         {SlotId{1},EndpointKind::Physical,1,RadioDomainId{"m1"},VisibilityClass::Ordinary,false}}, {2,2,2,2,2}};
     ResourcePlatform platform;
     const ResourceKey key {"host-primary-radio:checking"};
-    ResourceRadioRuntime radio({6,2},platform,{key});
+    ResourceBarrier barrier({6,2});
+    ASSERT_TRUE(barrier.RegisterForInitialCheck(key));
+    ResourceRadioRuntime radio(barrier,platform,{key},ResourceRadioRuntime::Mode::Execute);
     class Sink final : public RadioResultSink {
     public:
         void AcceptRadioStep(const RadioSwitchResult &) override {}

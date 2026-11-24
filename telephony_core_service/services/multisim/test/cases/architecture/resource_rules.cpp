@@ -15,7 +15,21 @@
 // Host-only pure rule checks. No production objects, I/O, or device capability proof.
 
 #include <cassert>
+#include <cstdlib>
+#include <new>
 #include "device/resource/resource_barrier.h"
+namespace {
+thread_local int failAfter = -1;
+}
+void *operator new(std::size_t size)
+{
+    if (failAfter >= 0 && failAfter-- == 0) { throw std::bad_alloc {}; }
+    if (auto *memory = std::malloc(size == 0 ? 1 : size)) { return memory; }
+    throw std::bad_alloc {};
+}
+void operator delete(void *memory) noexcept { std::free(memory); }
+void operator delete(void *memory, std::size_t) noexcept { std::free(memory); }
+
 using namespace OHOS::Telephony::MultiSim;
 static StepRef Step(uint64_t id, RuntimeEpoch epoch, RequestOwner owner = RequestOwner::ShowNumber)
 {
@@ -84,6 +98,37 @@ int main()
     assert(barrier.RegisterForInitialCheck(second));
     assert(barrier.AcceptInitialRecoveryEvidence(second, {epoch, true, true}));
     assert(!barrier.Acquire({first, first}, Step(5, epoch)));
+    const std::vector<ResourceKey> pair {first, second};
+    int failures = 0;
+    for (int position = 0; position < 32; ++position) {
+        failAfter = position;
+        const auto attempted = barrier.Acquire(pair, Step(5, epoch));
+        failAfter = -1;
+        if (attempted) {
+            assert(attempted->resources.size() == 2);
+            assert(barrier.CancelConfirmedNotSent(*attempted));
+            break;
+        }
+        ++failures;
+        assert(barrier.ReadState(first) == ResourceState::Available);
+        assert(barrier.ReadState(second) == ResourceState::Available);
+    }
+    assert(failures >= 4 && failures < 32);
+    const auto independent = barrier.Acquire({first}, Step(5, epoch));
+    assert(independent);
+    assert(!barrier.Acquire(pair, Step(6, epoch, RequestOwner::Assignment)));
+    const auto other = barrier.Acquire({second}, Step(6, epoch, RequestOwner::Assignment));
+    assert(other && barrier.CancelConfirmedNotSent(*other));
+    auto wrong = *independent;
+    ++wrong.fence;
+    assert(!barrier.CancelConfirmedNotSent(wrong));
+    wrong = *independent;
+    wrong.holder.request.owner = RequestOwner::Assignment;
+    assert(!barrier.CancelConfirmedNotSent(wrong));
+    wrong = *independent;
+    wrong.epoch = otherEpoch;
+    assert(!barrier.CancelConfirmedNotSent(wrong));
+    assert(barrier.CancelConfirmedNotSent(*independent));
     auto combined = barrier.Acquire({first, second}, Step(5, epoch));
     assert(combined);
     auto forged = *combined;

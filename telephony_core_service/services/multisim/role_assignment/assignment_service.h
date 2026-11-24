@@ -39,9 +39,16 @@ class AssignmentService final : public RadioResultSink, public ProfilePreference
     public AccountRolePlanningPort, public ActivationAssignmentPort, public ScheduledRetrySink,
     public std::enable_shared_from_this<AssignmentService> {
 public:
+    enum class PrimaryScope { ExistingBranches, C0Only };
+    enum class C0Stage { Preference, PrimaryParameters, MainNotification, DataParameters, DataNotification, Completion };
+    struct C0Receipt {
+        RequestId request;
+        C0Stage outstanding;
+    };
+
     AssignmentService(const SlotCatalog &catalog, AssignmentStore &store, RadioExecutionPort &radio,
         AssignmentOutputPort &output, PrimaryTopologyPort &topology, LegacyIntCompletionPort &completion,
-        RuntimeEpoch epoch);
+        RuntimeEpoch epoch, PrimaryScope primaryScope = PrimaryScope::ExistingBranches);
     int32_t SetDefaultRole(const SetRoleCommand &command);
     RequestId StartPrimarySwitch(const SwitchPrimaryCommand &command);
     void AcceptRadioStep(const RadioSwitchResult &result) override;
@@ -54,6 +61,7 @@ public:
     bool StopAcceptingAndCancelScheduledRetries();
     bool IsStoppingPrimaryRequests() const;
     bool HasPendingDeviceEffects() const;
+    std::optional<C0Receipt> ReadC0Receipt() const;
     void RetryPrimaryAfterReconciliation(RequestId request);
     AssignmentView ReadLegacyAssignment() const;
     LegacyActivationWaitResult WaitForLegacyPrimaryBeforeActivation(SlotId slot) override;
@@ -79,9 +87,11 @@ public:
 private:
     mutable std::recursive_mutex primaryCommitLock_;
     void CompleteOnce(RequestId request, const CompletionPlan &plan, int32_t result,
-        TerminalState terminal);
+        TerminalState terminal, std::unique_lock<std::recursive_mutex> *commit = nullptr);
     bool ScheduleC1Retry(RequestId request, uint32_t attempt);
     const SlotCatalog &catalog_;
+    const PrimaryScope primaryScope_;
+    std::optional<C0Receipt> c0Receipt_;
     AssignmentAggregate assignment_;
     RuntimeOperationStore operations_;
     AssignmentStore &store_;
