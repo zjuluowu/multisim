@@ -1,6 +1,6 @@
 # AF-1 向 AF-2、AF-3 的实施交接（2026-11-24）
 
-本文给出 **Target Host 基础框架**的施工顺序、可观察断言及后续生产切片的入口条件。源码核对基线为 `main@d9c2d23dce7148df1fc474ce598fb1cff55b839d`。根 GN 使用旧 SIM，目标逻辑 target 为 testonly。下表的方法名分为“现有落点”和“拟增加的契约”，测试均为待执行验收。架构负责人签收相关契约、实施范围获授权后，实施者才可启用相应切片。当前结论和门禁以[唯一执行状态](SIM_Refactor_Execution_State.md#current-status)为准。
+2026-11-24 架构负责人签收 AF-1 并启动 **AF-2 Target Host 基础框架**。签收输入为 `main@12ce1bf96b2df2d98bb18db9366b9034b4a0ba18`，源码基线为 `632f6a2a888cfbbc3c9387edc89732364e12a10e`。根 GN 使用旧 SIM，AF-2 使用 testonly 目标。本批完成文档与任务初始化，代码验收从[首批任务](#af2-first-batch)开始。批准范围与门禁见[签收记录](SIM_Target_Architecture_Design_v1.2.md#af1-architecture-design-signoff)和[唯一执行状态](SIM_Refactor_Execution_State.md#current-status)。
 
 本交接采用检查点 §13 的 AF2-01～08 编号与 §15 的职责，按 §18～23 的反例收紧。B1 另依次应用 Part 24 原操作归因／关闭轮、Part 25 成员重申／重放、Part 26 读取覆盖／跨 Owner 交付。后文“AF-3”表示以 AF-2 接口承接随后获批的业务验证和迁移切片；具体生产切换仍逐 WU 按既有阶段签收。[架构检查点](AF1_Architecture_Design_Convergence_20261123.md) · [Part 24](AF1_Part24_B1_P0_Design_Revision_20261123.md) · [Part 25](AF1_Part25_P0_2_Membership_Reaffirmation_Design_20261123.md) · [Part 26](AF1_Part26_Reload_Causal_Coverage_Design_20261124.md)
 
@@ -71,10 +71,10 @@
 
 |交付界面|交付证据／责任人|缺证时的范围|
 |---|---|---|
-|AF-2 可启动的最小 Host 图|H/A/R 完成 §1 的装配、锁外调用和单屏障；能从正常 Host 入口跑 C0/B/C1 与卡发现，并产生明确的装配失败阶段。结构规则、GN、实际链接、受控执行及回归分别出具。|架构负责人签收相应 PROPOSED 契约；目录或单测可编译不能替代可构造可销毁。|
-|代表性发现、恢复与关闭|T/A/I/H 完成 §2～4，从卡观察、原 setter、平台回包及真实 Stop 进入；记录输入 SHA、注入点与顺序、身份/键/视图、原输出、实际收据、失败与 sanitizer 范围。|业务接口仍有内部设计反例时，依赖该接口的实施/签收按独立 Gate 处置；无关项按各自依赖推进。真实常驻接手者、SO 部署和生产写权归后续。|
+|AF-2 可启动的最小 Host 图|H/A/R 完成 §1 的装配、锁外调用和单屏障；能从正常 Host 入口跑 C0/B/C1 与卡发现，并产生明确的装配失败阶段。结构规则、GN、实际链接、受控执行及回归分别出具。|按已签收契约提交真实构造和销毁证据。|
+|代表性发现、恢复与关闭|T/A/I/H 完成 §2～4，从卡观察、原 setter、平台回包及真实 Stop 进入；记录输入 SHA、注入点与顺序、身份/键/视图、原输出、实际收据、失败与 sanitizer 范围。|以真实入口复现签收包的正反场景，按依赖交付实现证据。真实常驻接手者、SO 部署和生产写权归后续。|
 |AF-3 账户／角色 WU|T/A/Provider 对指定版本、库/用户、两种读源与重连验证原写逐列效果、读图像覆盖或独立合法业务后继、角色集合来源，以及旧“查询成功整体替换”的可见时点。核对初始化、重载、恢复、Carrier Loader、CardFileDetectManager、厂商入口、查询回写和实际旧 writer 退出。|若外部变化只靠缺覆盖的 Reload，安全保留会失去刷新活性；对应 WU 保留旧路径。AF1-13 偏好冲突须由 SIM/eSIM/参数服务确认原返回与时序；AF1-10 Port/Profile 基数及动态端点归 G4。|
-|AF-3 Radio／卡执行及热重建|R、宿主、协议方、厂商列出真实成员/路由、全部共享 K 的执行者与域边界，出具原轮收尾、命令结束、状态核实及复用证据；含旧 SIM、其他 RIL 消费者、eSIM 普通/低优先级和 ARA-M 确有共享的通道。|M2 在换绑／Stop 后是否可发送 COMPLETE 待产品协议证明；AF1-18 保留 G2c。外部接手者/跨实例驻留、Core 共享 RIL 连续性、设备静止和 SO 卸载逐项验证。|
+|AF-3 Radio／卡执行及热重建|R、宿主、协议方、厂商列出真实成员/路由、全部共享 K 的执行者与域边界，出具原轮收尾、命令结束、状态核实及复用证据；含旧 SIM、其他 RIL 消费者、eSIM 普通/低优先级和 ARA-M 确有共享的通道。|AF-1 的 M2 阶段准入中，换绑／Stop 后是否可发送 COMPLETE 待产品协议证明；AF1-18 保留 G2c。外部接手者/跨实例驻留、Core 共享 RIL 连续性、设备静止和 SO 卸载逐项验证。|
 |生产工程与行为验收|按批准的 WU 搭接 Core/CMI、原 Manager 控制块及销毁，核对根 GN、Feature 与旧初始化发布顺序；同基线 Oracle/Legacy/Target 差分、匹配 OHOS 树产品构建、SA/IPC/Provider 与真实设备证据齐备。|AF2 保持 testonly。AttachSimModuleToExisting 与 CreateOwnedSimServices、号码/激活/PIN/EF/Profile 生产迁移及旧 writer/executor/retry 退出各自另行授权。|
 
 ## 6. 可复用的历史基线
@@ -86,3 +86,30 @@
 |L3.2 输入 `befd76d4eba73ade9552248c303e3d6f8427c8ce`，报告记录 Primary 子图 TSan/ASan 各 16/16，真实 Legacy graph 的 sanitizer 有 FFRT stub 限制。[Host L3 报告](../services/multisim/test/docs/Host_Lifecycle_L3_Report_20261120.md)|复用 b_async_primary_test 的封口执行者、早回包、错关联、重入、Unknown、受控调度及共享消费者。AF2 须另建整图两实例和逐项 M19 场景。|
 
 实施时按[测试入口](../services/multisim/test/README.md)构建并定点执行，使用仓外输出目录。保留每步 C0/B/C1、正常发现与恢复、架构/GN、确定性交错及适用差分/ASan/TSan 的本次日志。本文只完成源码与设计交接；本次业务 Host、sanitizer、产品和设备测试均未运行。
+
+<a id="af2-first-batch"></a>
+
+## 7. AF-2 首批开发与验收
+
+此处 M1～M3 为 AF-2 里程碑。§3 沿用 AF-1 的 M1/M2，分别指来源撤权与阶段准入。现有 AF2-01～08 和方法编号继续用于定位接口和验收点。
+
+| 里程碑 | 施工范围 | 完成时的 Host 证据 |
+| --- | --- | --- |
+| M1 · 最小 H 装配 | 先做下述四项，落地 §1 的 AF2-01、AF2-02 装配部分及 AF2-07(a)(b) 的装配前置工作。 | 正常 Host 入口可构造、发布最小图并关闭。缺端口、缺初始证据、半初始化及旧入口重复使用均有确定性断言。 |
+| M2 · SIM 发现与账户绑定 | 从 R·card 会话及观察，经 T 原票、A 原预留、I 原写，到 T Account/Binding/W 发布与 A 精确回执。按 §2 先做发现和同票核对。 | 有证观察产生正确订阅与绑定，原写一次。Store 阻塞时换卡、旧来源重放、Unknown／部分效果、错票和丢回执均只作用于原票。 |
+| M3 · C0 主卡分配 | 用 M2 的绑定从 H 兼容入口接 A 的无重启 C0、T 目标资格、参数端口、角色投影和原通知／完成。 | 双卡走真实 A，读回 Primary/Data 和参数，核对原返回、通知、完成次数及零 Radio 发令。失活或换绑拒绝旧资格，逐键部分效果可核对。同现有 Both C0 和 Oracle 对照。 |
+
+### M1 首批代码任务
+
+1. **建立真实 Host 组合根。** 在 `infrastructure/assembly/sim_module_factory.{h,cpp}` 和 `sim_module.h` 增加可链接的 testonly 装配入口，沿用 `host_ports.h` 的窄端口。用同一 epoch 和 SlotCatalog 装配真实 T、共享持有的 A、设备适配及 PrimaryHostLifecycle。校验实际角色规划、卡观察、投递、完成接线及所需初始证据后发布。逐阶段注入缺依赖，断言失败阶段、发布次数及已构造对象配对销毁。
+2. **接入唯一屏障。** H 构造、登记一个 ResourceBarrier，给 ResourceRadioRuntime 和已接通的卡侧执行适配注入同一权威，收回旧独立拥有。缺初始证据时资源保持 Checking。沿用 §1 两命令族同键争用与多键分配失败用例，断言零提前发令、无部分租约，独立键可并行。
+3. **接通最小寿命闭环。** 复用 PrimaryHostLifecycle，先封本次发布能力的新业务，再收回已接纳的回调与投递。提交、完成、外部查询按 §1 先登记、锁外调用、凭原关联返回。测一次封口、旧句柄拒绝、回调重入 Stop 返回在途、实际退出后才销毁。整图 M19 和跨实例证明按 §4 后续验收。
+4. **从工厂跑 Host 用例。** 复用 `test/cases/target/primary/c0_topology_integration_test.cpp` 和同目录 `b_async_primary_test.cpp` 的夹具，测试替身留在平台端口。同步 Host 实际源表、GN 与迁移映射。交付实际链接、最小图单例、逐阶段失败、资源与寿命交错、适用的 C0/B/C1 回归和架构检查结果。
+
+### 数据流与单步调试
+
+- **M1 装配／关闭**：Host 用例 → 工厂校验 → T/A/R 绑定 → 屏障初始证据 → H 发布 → 根封口 → PrimaryHostLifecycle → 执行归还与析构。观察 epoch、共享屏障地址、封口执行者、回调在途数和发布／销毁次数。
+- **M2 发现**：`CardRuntime::PublishAcceptedCardDiscovery` → `TopologyService::DiscoverAccount` → A Prepare → `WriteDiscoveredAccount` → T 统一发布 → A Finalize。观察 Session、t/call/token、绑定水位 r、写次数及 `FindBinding`。
+- **M3 C0**：兼容主卡入口 → `AssignmentService::StartPrimarySwitch` → T 目标资格 → AssignmentStore 参数写 → Primary/Data 投影 → `CompleteOnce`。观察 request/step、订阅及绑定版本、逐键效果、通知顺序和完成领取次数。
+
+从仓库根按[测试入口](../services/multisim/test/README.md)准备固定依赖，用 `test.py build --backend target`、`test.py list --backend target` 确认用例，按 `test.py run --backend target --filter <完整用例名>` 执行。单步在 VS Code Remote-WSL Testing 选择该单例 Debug，或按 Host 指南定位实际二进制并用 LLDB 运行精确过滤。保存输入 SHA、断点顺序、写／发令／完成计数和退出状态。C0 差分用 `test.py run --backend both --filter SIM028-LEGACY-C0-DUAL-PRIMARY0`。[Host 调试操作](../services/multisim/test/docs/Host_Usage.md#testing-面板源码定位和断点)

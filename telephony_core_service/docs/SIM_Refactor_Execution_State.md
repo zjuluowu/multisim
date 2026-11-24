@@ -6,7 +6,27 @@
 
 本页是实施状态的唯一维护来源。[开发文档入口](README.md)按任务指向相应设计和测试资料。本文历史章节中的「当前」指各节记载的输入和日期。
 
-2026-11-23 的[三项签收决策与四文档复核](history/reviews/SIM_Core_Architecture_Signoff_Convergence_20261123.md)记录关闭责任、Radio 参与者和字段写权的设计依据。输入为 `bd4fbe833`，历史实验绑定 `befd76d4e`。A/B/C/D 已同步，台账与正反场景见矩阵。5796fce68 已有 Core/Legacy 与账户发现的 Host 增量。当前目录文档修订触发历史摘要守卫，完整迁移检查未通过，详见报告的对照验证。生产装配、写权移交和设备验收仍按下表各自取证。
+**2026-11-24 · `AF1_ARCHITECTURE_DESIGN_SIGNED_OFF`。** 架构负责人书面批准核心职责、私有接口、原票与读覆盖、角色接纳、资源准入及关闭契约，授权启动 AF-2 Target Host 基础框架。最终独立 Gate 原始结论为 `AF1_REVIEW_READY_FOR_ARCHITECT_DECISION`。[主设计签收记录](SIM_Target_Architecture_Design_v1.2.md#af1-architecture-design-signoff) · [签收包](AF1_Architecture_Final_Signoff_Package_20261124.md) · [最终 Gate](history/reviews/AF1_Final_Independent_Gate_20261124.md)
+
+Gate 工作树为 `d9c2d23dce7148df1fc474ce598fb1cff55b839d`，签收前 main/origin 为 `12ce1bf96b2df2d98bb18db9366b9034b4a0ba18`，目标源码 `632f6a2a888cfbbc3c9387edc89732364e12a10e`、树 `e7986b29585d50da05198e773bf6a2e3eb0f9828`。签收包、补丁及交接稿的原始审查字节可从签收前提交恢复。A/B/C/D 已同步。AF-2 已启动，首批 M1～M3 待实现与验收。生产装配、原有写权、Golden、归档结果及产品／设备／SO 门禁沿用原证据。
+
+<a id="af1-signoff-validation"></a>
+
+### 签收同步检查（2026-11-24）
+
+| 检查 | 本批结果 |
+| --- | --- |
+| 输入及变更边界 | 恢复 `CHECKPOINT_VERIFIED`，签收前 HEAD 与 origin/main 差异 0/0；签收包、补丁、原交接稿 SHA-256 与最终 Gate 一致，`git apply --check` 与四文档补丁应用通过。新增 22 个本地链接的路径与锚点、七篇围栏、`git -c core.whitespace=cr-at-eol diff --check` 通过。目录方案保留 CRLF。 |
+| 导航与历史完整性 | `test_navigation.py` 6/6；`check_test_integrity.py` 通过（317 份历史资产、299 项去向、8 项不可变合同／参考项）。 |
+| 架构入口 | `run_architecture.py` 和 `run_architecture.py --with-gn --migration` 均退出 1。结构检查通过（94 文件、166 include、25 targets），后一入口的 73 项历史源码 token 检查通过。两入口均因 `Canonical documentation digest differs: docs/SIM重构代码目录结构设计方案.md` 停止。边界负控在 setUpClass 被阻断，0 项执行。 |
+| 独立组件检查 | 单独运行同一脚本的声明检查、独立语法和 GN 辅助函数均通过（5 项编译负控，94 单元及组合头，GN/Ninja 全部骨架对象）。独立编译并运行四组纯规则，resource、assignment、runtime_protocol 通过；topology 在 `topology_rules.cpp:182` 的 `EndPreparationFailure(preparation, false, storedBindings)` 否定断言失败。该断言和实现均来自本批未修改的源码树。 |
+| 实施验收 | 本批未执行业务 Host 回归、sanitizer、原生产品构建、设备或 SO 验收。 |
+
+**AF1-19 受控比较基线登记，待测试维护者复核。** `documentation_migration.json` 锁定的历史 SHA-256 为 `28864a01afe3ccff3a6b08eadbd3188fbe3414bb8d92477900402a30ee124562`。签收前 HEAD 的目录方案为 `c88aed46f2e5bf03683a90b279da40238610dc178da1fe3771da41a62c29854c`，用原校验器及 Git 原字节独立复现同一失败。签收后候选比较输入为 `f80c83ac6238cb5f6d899e8777984d30566aaeabbb73a761f284f8f51310cade`，对应本批 C 文档的目录职责与签收状态差异。
+
+按签收包 §14/15，将上述路径、Git 输入、摘要和差异交 AF2-08 测试维护者复核。现有清单和两条迁移校验均要求权威文档与冻结历史副本同字节，仅替换期望摘要无法登记演进。待维护者批准后，保留原 Git 对象和历史摘要校验，为已签收权威文档新增独立的精确比较输入，再执行缺失、漂移、旧副本复现负控与完整架构入口。当前完整门禁保留 FAIL。Topology 断言作为独立 AF2-08 回归项记录。
+
+历史 SC-01～03 的依据与测试输入见[三项签收决策与四文档复核](history/reviews/SIM_Core_Architecture_Signoff_Convergence_20261123.md)。
 
 | 范围 | 已核实实施与证据 |
 | --- | --- |
@@ -33,9 +53,10 @@
 
 ### 下一批任务与依赖
 
-1. 保留单 M0 双卡 C1/C0 交错作为回归，再核对独立 Data、通知重入和逐键部分效果。以[源码详细设计 §7、§15](SIM_Multisim_Source_Architecture_Detailed_Design.md#assignment)定位端口及装配，以[双后端测试](../services/multisim/test/docs/Backend_Architecture.md)核对可执行范围。B/C1 依赖相应 Radio/设备、前后写入和部分效果证据。
-2. Provider 相关用例先取得匹配产品的 schema、字段、错误、重载和恢复证据。产品路径另按真实 OHOS 树、Feature、SA/IPC 和设备环境验收。
-3. 按[原功能与 WU](migration/SIM_Architecture_Refactor_Design.md#writer-cutover)核对全部旧入口。写权切换、SO 边界、生命周期和 eSIM/MEP 新能力按[主设计 §22](SIM_Target_Architecture_Design_v1.2.md#22-分阶段实施门禁)的独立门禁和本批授权推进。
+1. **AF-2 M1 最小 H 装配**。使 testonly 工厂可实际链接并构造 T/A/R 与唯一屏障，完成端口校验、发布和最小关闭。验收缺依赖、半初始化、同键互斥及回调在途。[四项代码任务与调试路线](AF1_AF2_Implementation_Handoff_20261124.md#af2-first-batch)
+2. **AF-2 M2 SIM 发现与账户绑定**。从真实卡观察经原 t/call、A 预留和一次 Provider 写到 Binding/W，覆盖换卡、Unknown、重复和精确回执。
+3. **AF-2 M3 C0 主卡分配**。从 H 的兼容入口经 M2 绑定进入 A，核对原参数、Primary/Data、通知和一次完成，执行 Target 专项与 Both C0 差分。
+4. Provider、Radio、关闭／重建、生产接入及新能力按[签收包 §16](AF1_Architecture_Final_Signoff_Package_20261124.md#16-外部产品门禁)、[原功能与 WU](migration/SIM_Architecture_Refactor_Design.md#writer-cutover)及[主设计 §22](SIM_Target_Architecture_Design_v1.2.md#22-分阶段实施门禁)取证。
 
 2026-11-19 独立设计审查以 `0e4004bef` 为源码输入，形成[历史评审](history/reviews/SIM_Architecture_Independent_Review_20261119.md)。评审先独立发布于 `d8fcbba40`，随后将分责、共享输出和异步资格同步至主设计与源码详细设计。产品装配、设备与业务执行仍按原批次记录；当前设计验收见[第二轮复审](history/reviews/SIM_Architecture_Independent_Review_20261119.md#第二轮复审--对修改后的设计提出反例)。
 

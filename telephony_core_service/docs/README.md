@@ -11,12 +11,13 @@
 | C · 修改架构或源码目录 | 按[目标架构 §3～6、§9～14](SIM_Target_Architecture_Design_v1.2.md#3-统一语义与身份规则)确定业务事实 Owner、分类目标和依赖约束，业务专属 Adapter 的落点查[目录方案 §6.1](SIM重构代码目录结构设计方案.md#61-业务专属-adapter-不进入-infrastructure)，公共请求、装配与兼容查[§5](SIM重构代码目录结构设计方案.md#5-infrastructure基础支撑目录职责)，再查[源码详细设计 §3～4、§21](SIM_Multisim_Source_Architecture_Detailed_Design.md#source-tree)确定文件、接口及独立 GN target。按下方维护表更新对应职责文档，并运行[架构检查](../services/multisim/test/cases/architecture/README.md)。 |
 | D · 测试或定位问题 | 从[统一测试入口](../services/multisim/test/README.md)选命令、后端和用例，按 [Host 使用说明](../services/multisim/test/docs/Host_Usage.md)构建、看日志或断点定位。到 [Full Replacement](../services/multisim/test/docs/Full_Replacement.md)查覆盖、契约、Oracle 和归档证据。 |
 | E · 继续推进迁移 | 先看[阻塞与下一批任务](SIM_Refactor_Execution_State.md#next-work)，用 [WU-01～09](migration/SIM_Architecture_Refactor_Design.md#writer-cutover)确认全量旧入口和验收闭包，再查[源码接入映射 §17](SIM_Multisim_Source_Architecture_Detailed_Design.md)与[测试入口](../services/multisim/test/README.md)。按[阶段门禁 §22](SIM_Target_Architecture_Design_v1.2.md#22-分阶段实施门禁)更新执行状态。 |
+| F · 开发 AF-2 基础框架 | 从[首批里程碑与 M1 验收](AF1_AF2_Implementation_Handoff_20261124.md#af2-first-batch)进入。 |
 
 ## 维护职责
 
 | 文档 | 唯一维护内容 | 维护角色与更新时机 |
 | --- | --- | --- |
-| [目标架构 v1.2](SIM_Target_Architecture_Design_v1.2.md) | 业务责任、事实写权、异步、资源和实施门禁。整体仍为 `draft/pending`。 | 架构决策负责人记录决策证据和适用范围，涉及接口、物理布局或实施切片时同步对应文档。 |
+| [目标架构 v1.2](SIM_Target_Architecture_Design_v1.2.md) | 业务责任、事实写权、异步、资源和实施门禁。AF-1 核心架构已签收，其他目标按各自批准范围。 | 架构决策负责人记录决策证据和适用范围，涉及接口、物理布局或实施切片时同步对应文档。 |
 | [五组目录方案](SIM重构代码目录结构设计方案.md) | 一级物理职责和 Infrastructure 的内部边界。 | 目录变更负责人在获准的目录决策中更新，并同步详细设计和路径摘要护栏。 |
 | [源码详细设计](SIM_Multisim_Source_Architecture_Detailed_Design.md) | 当前与稳态路径、文件、实现接缝、类、接口及逻辑 GN DAG。 | 模块变更负责人随源表、构造和依赖更新，同步源码导航。 |
 | [功能与 WU](migration/SIM_Architecture_Refactor_Design.md) | SIM-001～062 及子项、WU-01～09、旧入口及接管闭包。 | 迁移负责人随入口、写点或承接范围变化更新，沿用原编号并关联验收。 |

@@ -5,6 +5,8 @@
 **设计基线：** 四个业务目录 + 一个基础支撑目录  
 **核心原则：** 以业务职责组织代码，以业务对象及关系组织数据，以明确的职责和依赖边界保障架构。
 
+2026-11-24 同步[AF-1 签收记录](SIM_Target_Architecture_Design_v1.2.md#af1-architecture-design-signoff)中的目录职责。
+
 ---
 
 ## 1. 设计背景与目标
@@ -187,6 +189,10 @@ Account 管理的是逻辑订阅身份，而不是 SIM 卡硬件或卡应用运�
 
 账户的绑定事实由 Account 负责维护，其他模块通过接口和关联引用获取必要信息，不直接修改 Account 内部状态。
 
+<a id="af1-final-account-dir"></a>
+
+**AF-1 目录映射（AF-1 已签收）。** `account/` 的 TopologyService 持逐票发现、发送资格和在途处置，`account/discovery/` 中的观察台账维护当前来源/水位。AccountRegistry 持本域两视图的成员、字段保护和墓碑，BindingIndex 是关系的唯一写点。AccountStore 及所属 Adapter 提供原 I/O 证据；角色端口使用契约依赖，不导入角色实现。R·card 的来源/会话及加载成员留在 `card/`，R·device 的协议路由与全域屏障留在 `device/`。[接口位置](SIM_Multisim_Source_Architecture_Detailed_Design.md#af1-final-topology)
+
 ### 4.2 Card：SIM 卡应用与操作
 
 **核心职责：管理 SIM 卡应用的运行状态及其卡侧操作能力。**
@@ -220,6 +226,8 @@ Card 主要关注卡应用及其运行实例，不负责账户身份的唯一管
 <a id="sc03-role-dir"></a>
 
 SC-03 的角色偏好写资格与参数适配在 `role_assignment/`。Core 兼容入口、card/esim 的 Profile 提示依赖 A 的窄入站契约。账户标签恢复提示交 `account/`，按物理键的完整清单只查[D §5.2.1](migration/SIM_Architecture_Refactor_Design.md#sc03-ledger)。
+
+**AF-1 目录映射（AF-1 已签收）。** `role_assignment/` 持角色片段 token、合写列保护、逐 view 角色集合与原释放/投递回执；Primary 阶段与业务重试归 `role_assignment/primary/`。读取只经 T 的窄端口，发令依赖 Radio 契约。C 兼容出口和 O 私有使用的机制位于 Infrastructure，不在此复制共享状态。[角色接口](SIM_Multisim_Source_Architecture_Detailed_Design.md#af1-final-roles)
 
 **核心职责：管理 SIM 业务角色及其分配关系。**
 
@@ -286,7 +294,7 @@ Device 负责实际设备状态和执行能力，不负责账户身份、默认�
 
 <a id="af1-device-dir"></a>
 
-**AF-1 补充（PROPOSED，待架构负责人签收）：**
+**AF-1 补充（AF-1 已签收）：**
 
 - `device/resource/` 的 `ResourceBarrier` 是同一模块实例内唯一的设备资源准入对象。Radio 执行适配和需要占用设备的卡侧命令都向它申请，`card/` 不再另持屏障。唯一性限于同一模块实例内接入它的发令路径，不构成产品级全局独占。
 - `RadioDomainId` 是 Role Assignment 使用的业务冲突范围，`ResourceKey` 是 Device 内部的物理资源域，二者的对应关系只在 Device 内维护。
@@ -366,7 +374,7 @@ infrastructure/
 
 <a id="sc01-assembly-dir"></a>
 
-SC-01 的 `primary_host_lifecycle.*` 在此汇总已装配对象的关闭收据。业务效果与资格留在 `role_assignment/`，原出口关联留在 Owner 使用的 `infrastructure/request/` 与兼容交付侧，调度器报告队列及执行退出，设备域收据来自 `device/`。宿主借用 Core 的共享 RIL。[接口与收据](SIM_Multisim_Source_Architecture_Detailed_Design.md#sc01-receipts)
+**SC-01 目录映射（AF-1 已签收）。** `infrastructure/assembly/sim_module.*` 汇合实际装配 Owner 的同轮收据。`primary_host_lifecycle.*` 承接 A、调度器及 Radio 子图；T、卡侧、原出口及其投递各有原 Owner。`infrastructure/request/` 提供由使用者实例化的请求与领取机制。Assembly 只管理寿命、接线与收据读取，宿主借用 Core 的共享 RIL。[接口与收据](SIM_Multisim_Source_Architecture_Detailed_Design.md#sc01-receipts)
 
 **核心职责：将各业务模块组织起来，接入现有 CoreService，并管理整个 SIM 模块的对象创建、依赖连接和生命周期。**
 
@@ -412,7 +420,7 @@ Assembly 管理的是整个 SIM 模块的生命周期，而不是某个业务对
 
 <a id="af1-assembly-dir"></a>
 
-**AF-1 补充（PROPOSED，待架构负责人签收）：**
+**AF-1 补充（AF-1 已签收）：**
 
 - `sim_module.*` 是唯一的组合根和关闭入口。`primary_host_lifecycle.*` 位于本目录，作为它的成员部件复用，不是并列的模块入口。
 - Assembly 创建并持有唯一的 `ResourceBarrier` 对象，只管理其寿命和注入；资源状态与租约的事实仍属 Device。
