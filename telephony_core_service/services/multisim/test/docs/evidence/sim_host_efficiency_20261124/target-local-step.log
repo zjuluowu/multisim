@@ -1,0 +1,204 @@
+(lldb) settings set symbols.enable-external-lookup false
+(lldb) target create "/tmp/af2-m1/host/debug/build/sim_test_target_host"
+Current executable set to '/tmp/af2-m1/host/debug/build/sim_test_target_host' (x86_64).
+(lldb) settings set -- target.run-args  "--gtest_filter=AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry"
+(lldb) settings set target.disable-aslr false
+(lldb) breakpoint set -n OHOS::Telephony::MultiSim::SimModule::SetPrimarySlotId
+Breakpoint 1: where = sim_test_target_host`OHOS::Telephony::MultiSim::SimModule::SetPrimarySlotId(int, OHOS::Telephony::MultiSim::LegacyCallerRef) + 33 at sim_module_factory.cpp:124:1, address = 0x000000000018ff41
+(lldb) run
+Note: Google Test filter = AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry
+Process 48 launched: '/tmp/af2-m1/host/debug/build/sim_test_target_host' (x86_64)
+Process 48 stopped
+* thread #1, name = 'sim_test_target', stop reason = breakpoint 1.1
+    frame #0: 0x00005ea3fa422f41 sim_test_target_host`OHOS::Telephony::MultiSim::SimModule::SetPrimarySlotId(this=0x00005ea4243e4900, slot=1, caller=(token = 7)) at sim_module_factory.cpp:124:1
+   121  }
+   122
+   123  int32_t SimModule::SetPrimarySlotId(int32_t slot, LegacyCallerRef caller)
+-> 124  {
+        ^
+   125      if (!ports_.primaryHost) { return -1; }
+   126      if (!AdmitPrimaryCall()) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
+   127      const PrimaryCall call {shared_from_this()};
+(lldb) frame variable slot
+(int32_t) slot = 1
+(lldb) thread step-over
+Process 48 stopped
+* thread #1, name = 'sim_test_target', stop reason = step over
+    frame #0: 0x00005ea3fa422f53 sim_test_target_host`OHOS::Telephony::MultiSim::SimModule::SetPrimarySlotId(this=0x00005ea4243e4900, slot=1, caller=(token = 7)) at sim_module_factory.cpp:125:10
+   122
+   123  int32_t SimModule::SetPrimarySlotId(int32_t slot, LegacyCallerRef caller)
+   124  {
+-> 125      if (!ports_.primaryHost) { return -1; }
+                 ^
+   126      if (!AdmitPrimaryCall()) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
+   127      const PrimaryCall call {shared_from_this()};
+   128      return LegacySimFacade::SetPrimarySlotId({slot}, caller, *catalog_, *ports_.primaryHost, topology_, completion_,
+(lldb) breakpoint set -n OHOS::Telephony::MultiSim::AssignmentService::RunTrackedC0
+Breakpoint 2: where = sim_test_target_host`OHOS::Telephony::MultiSim::AssignmentService::RunTrackedC0(OHOS::Telephony::MultiSim::RequestId, OHOS::Telephony::MultiSim::SwitchPrimaryCommand const&, OHOS::Telephony::MultiSim::SlotDescriptor const&, OHOS::Telephony::MultiSim::PrimaryTargetFacts const&, std::unique_lock<std::recursive_mutex>&) + 53 at assignment_service.cpp:373:1, address = 0x00005ea3fa473a25
+(lldb) breakpoint set -n OHOS::Telephony::MultiSim::AssignmentStoreAdapter::WriteC0Parameter
+Breakpoint 3: where = sim_test_target_host`OHOS::Telephony::MultiSim::AssignmentStoreAdapter::WriteC0Parameter(OHOS::Telephony::MultiSim::C0ParameterOperation const&, OHOS::Telephony::MultiSim::SlotId, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char>> const&, bool) + 63 at assignment_store_adapter.cpp:101:1, address = 0x00005ea3fa48327f
+(lldb) breakpoint set -n OHOS::Telephony::MultiSim::LegacyCompletion::CompleteLegacyInt
+Breakpoint 4: where = sim_test_target_host`OHOS::Telephony::MultiSim::LegacyCompletion::CompleteLegacyInt(OHOS::Telephony::MultiSim::CompletionPlan const&, int) + 27 at legacy_completion.cpp:45:1, address = 0x00005ea3fa42c02b
+(lldb) continue
+Process 48 resuming
+Process 48 stopped
+* thread #1, name = 'sim_test_target', stop reason = breakpoint 2.1
+    frame #0: 0x00005ea3fa473a25 sim_test_target_host`OHOS::Telephony::MultiSim::AssignmentService::RunTrackedC0(this=0x00005ea4243e5240, request=RequestId @ 0x00007ffe2d7c12e0, command=0x00007ffe2d7c2400, target=0x00005ea4243e35f0, facts=0x00007ffe2d7c2050, guard=0x00007ffe2d7c21f0) at assignment_service.cpp:373:1
+   370
+   371  void AssignmentService::RunTrackedC0(RequestId request, const SwitchPrimaryCommand &command,
+   372      const SlotDescriptor &target, const PrimaryTargetFacts &facts, std::unique_lock<std::recursive_mutex> &guard)
+-> 373  {
+        ^
+   374      c0Receipt_.emplace(C0Receipt {request, C0Stage::Preference, facts.binding});
+   375      auto &receipt = *c0Receipt_;
+   376      auto phase = TransitionPhase::Admitted;
+(lldb) frame variable command.expectedBinding
+(std::optional<OHOS::Telephony::MultiSim::BindingRef>) command.expectedBinding =  Has Value=true  {
+  Value = {
+    subscription = (legacySimId = 41)
+    slot = (legacySlotId = 1)
+    bindingRevision = 1
+  }
+}
+(lldb) continue
+Process 48 resuming
+Process 48 stopped
+* thread #1, name = 'sim_test_target', stop reason = breakpoint 3.1
+    frame #0: 0x00005ea3fa48327f sim_test_target_host`OHOS::Telephony::MultiSim::AssignmentStoreAdapter::WriteC0Parameter(this=0x00005ea4243e3760, operation=0x00005ea4243e52e8, slot=(legacySlotId = 1), rawIccid=error: summary string parsing error, userSet=true) at assignment_store_adapter.cpp:101:1
+   98
+   99   C0ParameterOutcome AssignmentStoreAdapter::WriteC0Parameter(const C0ParameterOperation &operation, SlotId slot,
+   100      const std::string &rawIccid, bool userSet)
+-> 101  {
+        ^
+   102      switch (operation.key) {
+   103          case C0ParameterKey::Preference:
+   104              return parameters_.WriteC0Parameter(operation, kUserPreference, userSet ? "true" : "false");
+(lldb) frame variable operation
+(const OHOS::Telephony::MultiSim::C0ParameterOperation &) operation = 0x00005ea4243e52e8: {
+  original = {
+    request = {
+      value = 1
+      epoch = {
+        _M_elems = ([0] = 0, [1] = 1)
+      }
+      owner = Assignment
+    }
+    step = 2
+    attempt = 0
+  }
+  key = Preference
+}
+(lldb) continue
+Process 48 resuming
+Process 48 stopped
+* thread #1, name = 'sim_test_target', stop reason = breakpoint 3.1
+    frame #0: 0x00005ea3fa48327f sim_test_target_host`OHOS::Telephony::MultiSim::AssignmentStoreAdapter::WriteC0Parameter(this=0x00005ea4243e3760, operation=0x00005ea4243e5330, slot=(legacySlotId = 1), rawIccid=error: summary string parsing error, userSet=true) at assignment_store_adapter.cpp:101:1
+   98
+   99   C0ParameterOutcome AssignmentStoreAdapter::WriteC0Parameter(const C0ParameterOperation &operation, SlotId slot,
+   100      const std::string &rawIccid, bool userSet)
+-> 101  {
+        ^
+   102      switch (operation.key) {
+   103          case C0ParameterKey::Preference:
+   104              return parameters_.WriteC0Parameter(operation, kUserPreference, userSet ? "true" : "false");
+(lldb) frame variable operation
+(const OHOS::Telephony::MultiSim::C0ParameterOperation &) operation = 0x00005ea4243e5330: {
+  original = {
+    request = {
+      value = 1
+      epoch = {
+        _M_elems = ([0] = 0, [1] = 1)
+      }
+      owner = Assignment
+    }
+    step = 3
+    attempt = 0
+  }
+  key = PrimarySlot
+}
+(lldb) continue
+Process 48 resuming
+Process 48 stopped
+* thread #1, name = 'sim_test_target', stop reason = breakpoint 3.1
+    frame #0: 0x00005ea3fa48327f sim_test_target_host`OHOS::Telephony::MultiSim::AssignmentStoreAdapter::WriteC0Parameter(this=0x00005ea4243e3760, operation=0x00005ea4243e5378, slot=(legacySlotId = 1), rawIccid=error: summary string parsing error, userSet=true) at assignment_store_adapter.cpp:101:1
+   98
+   99   C0ParameterOutcome AssignmentStoreAdapter::WriteC0Parameter(const C0ParameterOperation &operation, SlotId slot,
+   100      const std::string &rawIccid, bool userSet)
+-> 101  {
+        ^
+   102      switch (operation.key) {
+   103          case C0ParameterKey::Preference:
+   104              return parameters_.WriteC0Parameter(operation, kUserPreference, userSet ? "true" : "false");
+(lldb) frame variable operation
+(const OHOS::Telephony::MultiSim::C0ParameterOperation &) operation = 0x00005ea4243e5378: {
+  original = {
+    request = {
+      value = 1
+      epoch = {
+        _M_elems = ([0] = 0, [1] = 1)
+      }
+      owner = Assignment
+    }
+    step = 4
+    attempt = 0
+  }
+  key = PrimaryIccid
+}
+(lldb) continue
+Process 48 resuming
+Process 48 stopped
+* thread #1, name = 'sim_test_target', stop reason = breakpoint 3.1
+    frame #0: 0x00005ea3fa48327f sim_test_target_host`OHOS::Telephony::MultiSim::AssignmentStoreAdapter::WriteC0Parameter(this=0x00005ea4243e3760, operation=0x00005ea4243e53c0, slot=(legacySlotId = 1), rawIccid=error: summary string parsing error, userSet=true) at assignment_store_adapter.cpp:101:1
+   98
+   99   C0ParameterOutcome AssignmentStoreAdapter::WriteC0Parameter(const C0ParameterOperation &operation, SlotId slot,
+   100      const std::string &rawIccid, bool userSet)
+-> 101  {
+        ^
+   102      switch (operation.key) {
+   103          case C0ParameterKey::Preference:
+   104              return parameters_.WriteC0Parameter(operation, kUserPreference, userSet ? "true" : "false");
+(lldb) frame variable operation
+(const OHOS::Telephony::MultiSim::C0ParameterOperation &) operation = 0x00005ea4243e53c0: {
+  original = {
+    request = {
+      value = 1
+      epoch = {
+        _M_elems = ([0] = 0, [1] = 1)
+      }
+      owner = Assignment
+    }
+    step = 5
+    attempt = 0
+  }
+  key = DefaultData
+}
+(lldb) continue
+Process 48 resuming
+Process 48 stopped
+* thread #1, name = 'sim_test_target', stop reason = breakpoint 4.1
+    frame #0: 0x00005ea3fa42c02b sim_test_target_host`OHOS::Telephony::MultiSim::LegacyCompletion::CompleteLegacyInt(this=0x00005ea4243e5060, plan=0x00007ffe2d7c2408, legacyResult=0) at legacy_completion.cpp:45:1
+   42   }
+   43
+   44   void LegacyCompletion::CompleteLegacyInt(const CompletionPlan &plan, int32_t legacyResult)
+-> 45   {
+        ^
+   46       const auto *route = std::get_if<SynchronousCompletionRoute>(&plan.route);
+   47       if (route && route->waiter.origin == SynchronousWaitRef::Origin::ModulePrimary) {
+   48           {
+(lldb) frame variable legacyResult
+(int32_t) legacyResult = 0
+(lldb) breakpoint disable
+All breakpoints disabled. (4 breakpoints)
+(lldb) continue
+[       OK ] AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry (315 ms)
+[----------] 1 test from AF2Primary (315 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (315 ms total)
+[  PASSED  ] 1 test.
+Process 48 resuming
+Process 48 exited with status = 0 (0x00000000)

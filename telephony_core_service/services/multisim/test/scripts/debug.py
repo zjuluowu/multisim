@@ -44,7 +44,8 @@ def main():
         raise SystemExit('Debug requires one selected case')
     slot_required = args.slot is not None or any(
         name in args.breakpoint for name in ('SimStateManager', 'CoreServiceSim'))
-    command = ['lldb', '--batch', '-o', 'settings set target.disable-aslr false',
+    command = ['lldb', '--batch', '-O', 'settings set symbols.enable-external-lookup false',
+               '-o', 'settings set target.disable-aslr false',
                '-o', 'breakpoint set -n '+args.breakpoint, '-o', 'run', '-o', 'thread backtrace']
     if slot_required:
         command += ['-o', 'frame variable slotId']

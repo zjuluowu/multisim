@@ -9,3 +9,6 @@
 | [Target 定点构建与运行](first-target-route.json) | `test.py run --filter AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry`，由源码及枚举定位正式 Target |
 | [生命周期计时](legacy-lifecycle-timings.json) | 两种模型各 10 次，启动真实 Primary ELF，按日志接收时刻计量清理前、清理后、GTest 完成及进程退出 |
 | [单激活首轮日志](legacy-lifecycle-single-active.log)、[双激活首轮日志](legacy-lifecycle-dual-active-primary0.log) | 保留队列 pending/running、next_ms、Manager 清理和 GTest 结果 |
+| [LLDB 计时](debug-timings.json)、[关闭外部查找核对](lldb-nofetch.log) | LLDB 18，沿用相同的 Target 无优化 ELF。批处理退出包含断点、调用栈及单例退出验证 |
+| [Legacy 双激活单步](legacy-local-step.log)、[正式 Target 主卡单步](target-local-step.log) | 保留命中帧、源码步骤、参数或原操作证据、单例退出 |
+| [双激活失败样本](lifecycle-dual-active-primary0-4.log) | 热路径采样 #4，保留额外 Radio 发令、3 秒清理屏障和残留引用失败原文 |

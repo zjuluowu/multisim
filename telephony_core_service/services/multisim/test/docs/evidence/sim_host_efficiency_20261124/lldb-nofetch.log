@@ -1,0 +1,26 @@
+(lldb) target create "/tmp/af2-m1/host/debug/build/sim_test_target_host"
+Current executable set to '/tmp/af2-m1/host/debug/build/sim_test_target_host' (x86_64).
+(lldb) settings set -- target.run-args  "--gtest_filter=AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry"
+(lldb) settings set symbols.enable-external-lookup false
+(lldb) settings set target.disable-aslr false
+(lldb) breakpoint set -n OHOS::Telephony::MultiSim::SimModule::SetPrimarySlotId
+Breakpoint 1: where = sim_test_target_host`OHOS::Telephony::MultiSim::SimModule::SetPrimarySlotId(int, OHOS::Telephony::MultiSim::LegacyCallerRef) + 33 at sim_module_factory.cpp:124:1, address = 0x000000000018ff41
+(lldb) run
+Note: Google Test filter = AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry
+Process 51 launched: '/tmp/af2-m1/host/debug/build/sim_test_target_host' (x86_64)
+Process 51 stopped
+* thread #1, name = 'sim_test_target', stop reason = breakpoint 1.1
+    frame #0: 0x0000559317f4af41 sim_test_target_host`OHOS::Telephony::MultiSim::SimModule::SetPrimarySlotId(this=0x000055931e9bb8f0, slot=1, caller=(token = 7)) at sim_module_factory.cpp:124:1
+   121  }
+   122
+   123  int32_t SimModule::SetPrimarySlotId(int32_t slot, LegacyCallerRef caller)
+-> 124  {
+        ^
+   125      if (!ports_.primaryHost) { return -1; }
+   126      if (!AdmitPrimaryCall()) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
+   127      const PrimaryCall call {shared_from_this()};
+0.52 seconds

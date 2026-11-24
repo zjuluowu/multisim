@@ -5,6 +5,9 @@
       "name": "SIM Legacy C0 (dual active)",
       "type": "lldb",
       "request": "launch",
+      "initCommands": [
+        "settings set symbols.enable-external-lookup false"
+      ],
       "program": "${workspaceFolder}/.host-out/build/sim_primary_slot_real_test",
       "args": [
         "--gtest_filter=RealSimPrimary.C0CoreToRealManagerAndController"
@@ -22,6 +25,9 @@
       "name": "SIM Target (step-through)",
       "type": "lldb",
       "request": "launch",
+      "initCommands": [
+        "settings set symbols.enable-external-lookup false"
+      ],
       "program": "${workspaceFolder}/.host-out/debug/build/sim_test_target_host",
       "args": [
         "--gtest_filter=${input:gtestFilter}"

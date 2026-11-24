@@ -281,13 +281,21 @@ def build(args, output, trace):
     reason = graph_reason(build_dir, values, previous)
     before = file_identity(database) if database.exists() else None
     start = perf_counter()
+    database_seconds = None
     if reason:
         gnargs = ' '.join(key + '=' + json.dumps(value) for key, value in values.items())
-        subprocess.run(['gn', 'gen', str(build_dir), '--root=' + str(HOST_ROOT),
-                        '--export-compile-commands', '--args=' + gnargs], check=True)
+        generated = subprocess.run(['gn', 'gen', str(build_dir), '--root=' + str(HOST_ROOT),
+                                    '--export-compile-commands', '--args=' + gnargs],
+                                   stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        print(generated.stdout, end='', flush=True)
+        match = re.search(r'Generating compile_commands took (\d+)ms', generated.stdout)
+        if match:
+            database_seconds = int(match[1]) / 1000
+        generated.check_returncode()
     trace['gn'] = {'seconds_including_compile_database': perf_counter() - start,
                    'count': int(bool(reason)), 'reason': reason}
     trace['compile_database_changed'] = before != file_identity(database)
+    trace['compile_database_seconds'] = database_seconds
     start = perf_counter()
     targets = route_cases(database, args.route) if args.route else args.target
     if not targets or not set(targets).issubset(args.target):

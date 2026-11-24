@@ -223,7 +223,7 @@ def main():
                         started = perf_counter()
                         cases, listing = discover(binary, pattern, env, 60, allow_empty=True)
                         result['timings']['discovery'].append({'target':target,'seconds':perf_counter()-started,
-                                                               'count':len(cases)})
+                                                               'processes':1,'cases':len(cases)})
                         if cases:
                             discovered[target] = cases
                             (session/(target+'-discovery.txt')).write_text(listing)

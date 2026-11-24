@@ -178,6 +178,9 @@
   "testMate.cpp.debug.configTemplate": {
     "type": "lldb",
     "request": "launch",
+    "initCommands": [
+      "settings set symbols.enable-external-lookup false"
+    ],
     "program": "${exec}",
     "args": "${argsArray}",
     "cwd": "${cwd}",

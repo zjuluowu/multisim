@@ -1,0 +1,229 @@
+(lldb) settings set symbols.enable-external-lookup false
+(lldb) target create "/mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test"
+Current executable set to '/mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test' (x86_64).
+(lldb) settings set -- target.run-args  "--gtest_filter=RealSimPrimary.C0CoreToRealManagerAndController"
+(lldb) settings set target.disable-aslr false
+(lldb) breakpoint set -n OHOS::Telephony::CoreServiceSim::SetPrimarySlotId
+Breakpoint 1: where = sim_primary_slot_real_test`OHOS::Telephony::CoreServiceSim::SetPrimarySlotId(int) + 20 at core_service_sim.cpp:517:1, address = 0x00000000002aa034
+(lldb) run
+Note: Google Test filter = RealSimPrimary.C0CoreToRealManagerAndController
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from RealSimPrimary
+[ RUN      ] RealSimPrimary.C0CoreToRealManagerAndController
+INIT_TRACE seq=1 us=960542704895 thread=130017297352576 queue=calling-thread stage=manager_constructed slot=-1 object=0x5e267ad95bb0 event=0 request=0
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey0=-1
+DIAGNOSTIC SIM_STATE_CHANGE
+INIT_TRACE seq=2 us=960542720797 thread=130016494999232 queue=host-general stage=ril_status_request slot=0 object=0x5e267ad96a10 event=21 request=1
+TRACE parameter telephony.sim.opkey1=-1
+DIAGNOSTIC SIM_STATE_CHANGE
+TRACE parameter telephony.sim.opkey2=-1
+INIT_TRACE seq=3 us=960542732775 thread=130017297352576 queue=calling-thread stage=manager_oninit_returned slot=-1 object=0x5e267ad95bb0 event=0 request=0
+INIT_TRACE seq=4 us=960542734010 thread=130014758561472 queue=MultiSimMonitor stage=provider_update slot=-1 object=0x5e267ad843c0 event=0 request=0 row_slot=-1 row_active=1
+INIT_TRACE seq=5 us=960542737688 thread=130014758561472 queue=MultiSimMonitor stage=provider_update slot=-1 object=0x5e267ad843c0 event=0 request=0 row_slot=-1 row_active=1
+INIT_TRACE seq=6 us=960542738568 thread=130017297352576 queue=calling-thread stage=ril_response_enqueue slot=0 object=0x5e267ad96a10 event=21 request=1
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+INIT_TRACE seq=7 us=960542739588 thread=130014758561472 queue=MultiSimMonitor stage=provider_query slot=-1 object=0x5e267ad843c0 event=0 request=0 row_slot=-1 row_active=1
+TRACE parameter telephony.sim.opkey0=-1
+INIT_TRACE seq=8 us=960542740750 thread=130016494999232 queue=host-general stage=ril_status_request slot=1 object=0x5e267ada03a0 event=21 request=2
+INIT_TRACE seq=9 us=960542740794 thread=130016494999232 queue=host-general stage=ril_response_enqueue slot=1 object=0x5e267ada03a0 event=21 request=2
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGE
+INIT_TRACE seq=10 us=960542741238 thread=130016494999232 queue=host-general stage=ril_status_request slot=2 object=0x5e267adaa0c0 event=21 request=3
+TRACE parameter telephony.sim.opkey1=-1
+INIT_TRACE seq=11 us=960542741399 thread=130016494999232 queue=host-general stage=ril_response_enqueue slot=2 object=0x5e267adaa0c0 event=21 request=3
+INIT_TRACE seq=12 us=960542741669 thread=130016503391936 queue=StkController stage=ril_response_enqueue slot=0 object=0x5e267ad9ed50 event=544 request=4
+TRACE notify usual.event.SIM_STATE_CHANGED slot=-1 sim=-1 done=0 user=0
+DIAGNOSTIC SIM_STATE_CHANGEINIT_TRACE seq=
+13 us=960542741813 thread=130015438042816 queue=StkController stage=ril_response_enqueue slot=1 object=0x5e267ada8a00 event=544 request=5
+TRACE parameter telephony.sim.opkey2=-1
+DIAGNOSTIC ACCOUNT_NOTIFY
+REGISTRY_UNAVAILABLE code=83886094
+INIT_TRACE seq=14 us=960542742597 thread=130014758561472 queue=MultiSimMonitor stage=provider_query slot=-1 object=0x5e267ad843c0 event=0 request=0 row_slot=-1 row_active=1
+INIT_TRACE seq=15 us=960542742708 thread=130014758561472 queue=MultiSimMonitor stage=provider_update slot=-1 object=0x5e267ad843c0 event=0 request=0 row_slot=-1 row_active=1
+INIT_TRACE seq=16 us=960542742795 thread=130014758561472 queue=MultiSimMonitor stage=provider_query slot=-1 object=0x5e267ad843c0 event=0 request=0 row_slot=-1 row_active=1
+INIT_TRACE seq=17 us=960542742900 thread=130014758561472 queue=MultiSimMonitor stage=provider_query slot=-1 object=0x5e267ad843c0 event=0 request=0 row_slot=-1 row_active=1
+INIT_TRACE seq=18 us=960542744404 thread=130017040262848 queue=SimFile stage=ril_response_enqueue slot=0 object=0x5e267ad91570 event=3 request=6
+INIT_TRACE seq=19 us=960542744468 thread=130015974913728 queue=SimFile stage=ril_response_enqueue slot=1 object=0x5e267ad916a0 event=3 request=7
+DIAGNOSTIC ACCOUNT_NOTIFY
+REGISTRY_UNAVAILABLE code=83886094
+DIAGNOSTIC ACCOUNT_NOTIFY
+REGISTRY_UNAVAILABLE code=83886094
+INIT_TRACE seq=20 us=960542744793 thread=130014750168768 queue=sim028-account-observer stage=account_loaded_event slot=0 object=0x5e267ad9b080 event=521 request=0
+INIT_TRACE seq=21 us=960542744889 thread=130014758561472 queue=MultiSimMonitor stage=provider_query slot=-1 object=0x5e267ad843c0 event=0 request=0 row_slot=-1 row_active=1
+INIT_TRACE seq=22 us=960542745957 thread=130014758561472 queue=MultiSimMonitor stage=provider_update slot=-1 object=0x5e267ad843c0 event=0 request=0 row_slot=1 row_active=1
+INIT_TRACE seq=23 us=960542746025 thread=130014758561472 queue=MultiSimMonitor stage=provider_query slot=-1 object=0x5e267ad843c0 event=0 request=0 row_slot=1 row_active=1
+INIT_TRACE seq=24 us=960542746115 thread=130015974913728 queue=SimFile stage=ril_response_enqueue slot=1 object=0x5e267ad916a0 event=3 request=8
+INIT_TRACE seq=25 us=960542746234 thread=130017040262848 queue=SimFile stage=ril_response_enqueue slot=0 object=0x5e267ad91570 event=3 request=9
+INIT_TRACE seq=26 us=960542746305 thread=130014758561472 queue=MultiSimMonitor stage=provider_query slot=-1 object=0x5e267ad843c0 event=0 request=0 row_slot=1 row_active=1
+DIAGNOSTIC ACCOUNT_NOTIFY
+REGISTRY_UNAVAILABLE code=83886094
+TRACE parameter persist.telephony.MainSlotId=0
+DIAGNOSTIC ACCOUNT_NOTIFY
+TRACE parameter persist.telephony.MainCard.Iccid=5BC332BC693934EB3D0DEAED37C106D2DEFD6F9767721BFE2B1AC6E209D6B67D
+INIT_TRACE seq=27 us=960542747673 thread=130014750168768 queue=sim028-account-observer stage=account_loaded_event slot=1 object=0x5e267ad9b080 event=521 request=0
+REGISTRY_UNAVAILABLE code=83886094
+TRACE notify usual.event.SIM.DEFAULT_MAIN_SUBSCRIPTION_CHANGED slot=0 sim=2 done=0 user=0
+TRACE parameter persist.telephony.MainCellularDataSlotId=0
+TRACE notify usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED slot=-1 sim=2 done=0 user=0
+DIAGNOSTIC SET_DEFAULT_CELLULAR_DATA
+DIAGNOSTIC ACCOUNT_NOTIFY
+REGISTRY_UNAVAILABLE code=83886094
+INIT_TRACE seq=28 us=960542748315 thread=130017297352576 queue=calling-thread stage=account_wait_returned slot=1 object=0x5e267ad95bb0 event=0 request=0
+INIT_TRACE seq=29 us=960542748448 thread=130014758561472 queue=MultiSimMonitor stage=provider_update slot=-1 object=0x5e267ad843c0 event=0 request=0 row_slot=1 row_active=1
+INIT_TRACE seq=30 us=960542748512 thread=130014758561472 queue=MultiSimMonitor stage=provider_query slot=-1 object=0x5e267ad843c0 event=0 request=0 row_slot=1 row_active=1
+INIT_TRACE seq=31 us=960542748601 thread=130014758561472 queue=MultiSimMonitor stage=provider_query slot=-1 object=0x5e267ad843c0 event=0 request=0 row_slot=1 row_active=1
+DIAGNOSTIC ACCOUNT_NOTIFY
+REGISTRY_UNAVAILABLE code=83886094
+INIT_TRACE seq=32 us=960542748879 thread=130017297352576 queue=calling-thread stage=precondition_snapshot slot=1 object=0x5e267ad95bb0 event=0 request=0 loaded=1 drained=1 active=1 present=1 presence_result=0 sim_state=2 state_result=0
+INIT_TRACE seq=33 us=960542748976 thread=130017297352576 queue=calling-thread stage=ril_response_enqueue slot=0 object=0x5e267adb4980 event=522 request=10
+INIT_TRACE seq=34 us=960542749016 thread=130017297352576 queue=calling-thread stage=ril_response_enqueue slot=1 object=0x5e267adb4980 event=522 request=11
+TRACE parameter persist.telephony.MainSlotId=0
+TRACE parameter persist.telephony.MainCard.Iccid=5BC332BC693934EB3D0DEAED37C106D2DEFD6F9767721BFE2B1AC6E209D6B67D
+TRACE parameter persist.telephony.MainCellularDataSlotId=0
+TRACE notify usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED slot=-1 sim=2 done=0 user=0
+DIAGNOSTIC SET_DEFAULT_CELLULAR_DATA
+DIAGNOSTIC ACCOUNT_NOTIFY
+REGISTRY_UNAVAILABLE code=83886094
+INIT_TRACE seq=35 us=960542749506 thread=130017297352576 queue=calling-thread stage=public_primary0_prepared slot=0 object=0x5e267ad95bb0 event=0 request=0 primary=0 data=0
+LIFE_QUEUE stage=initialization_admission address=103519362811680 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=179989
+LIFE_QUEUE stage=initialization_admission address=103519362841120 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362842864 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362844816 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362848816 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362857936 name=OperatorConfigCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362860144 name=SimStateTracker pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362862640 name=SimSmsController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362864752 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362866752 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362869200 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362871808 name=StkController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362855520 name=host-general pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362877744 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=179991
+LIFE_QUEUE stage=initialization_admission address=103519362880256 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362881984 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362883904 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362887904 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362897600 name=OperatorConfigCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362899936 name=SimStateTracker pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362902672 name=SimSmsController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362904784 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362906864 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362909312 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362911920 name=StkController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362917968 name=SimStateHandle pending=1 running=0 cancelled=0 next_ms=179992
+LIFE_QUEUE stage=initialization_admission address=103519362920432 name=SimFileManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362922288 name=UsimFileController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362924208 name=IccDiallingNumbersHandler pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362928208 name=SimFile pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362937376 name=OperatorConfigCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362939792 name=SimStateTracker pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362942528 name=SimSmsController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362945680 name=IccDiallingNumbersManager pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362947760 name=IccDiallingNumbersCache pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362950208 name=UsimDiallingNumbersService pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362952816 name=StkController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362958784 name=MultiSimController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362960944 name=RadioProtocolController pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362964560 name=MultiSimMonitor pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=initialization_admission address=103519362967888 name=sim028-account-observer pending=0 running=0 cancelled=0 next_ms=-1
+INIT_TRACE seq=36 us=960542751363 thread=130017297352576 queue=calling-thread stage=ril_response_enqueue slot=0 object=0x5e267adb4980 event=522 request=12
+INIT_TRACE seq=37 us=960542751460 thread=130017297352576 queue=calling-thread stage=ril_response_enqueue slot=1 object=0x5e267adb4980 event=522 request=13
+TRACE input request=C0CoreToRealManagerAndController slot=1 userSet=true
+
+GMOCK WARNING:
+../../telephony_core_service/services/multisim/test/framework/internal/host/primary/primary_api.cpp:160: Too many actions specified in EXPECT_CALL(*s.ril, SetPrimarySlot(testing::_, testing::_))...
+Expected to be never called, but has 0 WillOnce()s and a WillRepeatedly().
+GMOCK WARNING:
+../../telephony_core_service/services/multisim/test/framework/internal/host/primary/primary_api.cpp:172: Too many actions specified in EXPECT_CALL(*s.ril, SetRadioProtocol(testing::_, testing::_, testing::_))...
+Expected to be never called, but has 0 WillOnce()s and a WillRepeatedly().Process 49 launched: '/mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test' (x86_64)
+Process 49 stopped
+* thread #1, name = 'sim_primary_slo', stop reason = breakpoint 1.1
+    frame #0: 0x00005e2676a7f034 sim_primary_slot_real_test`OHOS::Telephony::CoreServiceSim::SetPrimarySlotId(this=0x00005e267ad84030, slotId=1) at core_service_sim.cpp:517:1
+   514  }
+   515
+   516  int32_t CoreServiceSim::SetPrimarySlotId(int32_t slotId)
+-> 517  {
+        ^
+   518      Admission admission(*this);
+   519      if (!admission) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
+   520      if (!TelephonyPermission::CheckCallerIsSystemApp()) {
+(lldb) frame variable slotId
+(int32_t) slotId = 1
+(lldb) thread step-over
+Process 49 stopped
+* thread #1, name = 'sim_primary_slo', stop reason = step over
+    frame #0: 0x00005e2676a7f03e sim_primary_slot_real_test`OHOS::Telephony::CoreServiceSim::SetPrimarySlotId(this=0x00005e267ad84030, slotId=1) at core_service_sim.cpp:518:15
+   515
+   516  int32_t CoreServiceSim::SetPrimarySlotId(int32_t slotId)
+   517  {
+-> 518      Admission admission(*this);
+                      ^
+   519      if (!admission) { return TELEPHONY_ERR_LOCAL_PTR_NULL; }
+   520      if (!TelephonyPermission::CheckCallerIsSystemApp()) {
+   521          TELEPHONY_LOGE("Non-system applications use system APIs!");
+(lldb) breakpoint set -n OHOS::Telephony::MultiSimController::SetPrimarySlotId
+Breakpoint 2: where = sim_primary_slot_real_test`OHOS::Telephony::SimManager::SetPrimarySlotId(int, bool) + 174 [inlined] OHOS::Telephony::MultiSimController::SetPrimarySlotId(int, bool) at multi_sim_controller.cpp:1495:1, address = 0x00005e2676b8276e
+(lldb) continue
+TRACE parameter persist.telephony.userPreferPrimarySlot=true
+Process 49 resuming
+Process 49 stopped
+* thread #1, name = 'sim_primary_slo', stop reason = breakpoint 2.1
+    frame #0: 0x00005e2676b8276e sim_primary_slot_real_test`OHOS::Telephony::SimManager::SetPrimarySlotId(int, bool) [inlined] OHOS::Telephony::MultiSimController::SetPrimarySlotId(this=0x00005e267adb4130, slotId=1, isUserSet=true) at multi_sim_controller.cpp:1495:1
+   1492 }
+   1493
+   1494 int32_t MultiSimController::SetPrimarySlotId(int32_t slotId, bool isUserSet)
+-> 1495 {
+        ^
+   1496     TelLifecycle::Lease request(Lifecycle(),TelLifecycle::Kind::Business);if(!request)return TELEPHONY_ERR_LOCAL_PTR_NULL;
+   1497     TELEPHONY_LOGI("set primary slotId:%{public}d, isUserSet:%{public}d", slotId, isUserSet);
+   1498     if (slotId == SIM_SLOT_3) {
+(lldb) frame variable slotId isUserSet
+(int32_t) slotId = 1
+(bool) isUserSet = true
+(lldb) thread backtrace
+* thread #1, name = 'sim_primary_slo', stop reason = breakpoint 2.1
+  * frame #0: 0x00005e2676b8276e sim_primary_slot_real_test`OHOS::Telephony::SimManager::SetPrimarySlotId(int, bool) [inlined] OHOS::Telephony::MultiSimController::SetPrimarySlotId(this=0x00005e267adb4130, slotId=1, isUserSet=true) at multi_sim_controller.cpp:1495:1
+    frame #1: 0x00005e2676b8276e sim_primary_slot_real_test`OHOS::Telephony::SimManager::SetPrimarySlotId(this=0x00005e267ad95bb0, slotId=1, isUserSet=true) at sim_manager.cpp:480:40
+    frame #2: 0x00005e2676a8005b sim_primary_slot_real_test`OHOS::Telephony::CoreServiceSim::SetPrimarySlotId(this=0x00005e267ad84030, slotId=1) at core_service_sim.cpp:547:25
+    frame #3: 0x00005e2676a0a668 sim_primary_slot_real_test`Sim028Host::PrimaryEnvironment::SetPrimarySlotId(this=<unavailable>, slot=1) at primary_environment.h:141:33
+    frame #4: 0x00005e2676a48d80 sim_primary_slot_real_test`RealSimPrimary_C0CoreToRealManagerAndController_Test::TestBody() [inlined] SimGuard::SimTest::SelectPrimary(this=0x00005e267ad83470, card=0x00007fff2fd8b1e8) at primary_api.cpp:194:30
+    frame #5: 0x00005e2676a48d05 sim_primary_slot_real_test`RealSimPrimary_C0CoreToRealManagerAndController_Test::TestBody(this=0x00005e267ad83470) at primary_test.cpp:8:5
+    frame #6: 0x00005e2676bb9fa5 sim_primary_slot_real_test`void testing::internal::HandleExceptionsInMethodIfSupported<testing::Test, void>(testing::Test*, void (testing::Test::*)(), char const*) [inlined] void testing::internal::HandleSehExceptionsInMethodIfSupported<testing::Test, void>(object=0x00005e267ad83470, method=0x00000000000000000000000000000021, location="the test body") at gtest.cc:2638:10
+    frame #7: 0x00005e2676bb9f96 sim_primary_slot_real_test`void testing::internal::HandleExceptionsInMethodIfSupported<testing::Test, void>(object=0x00005e267ad83470, method=0x00000000000000000000000000000021, location="the test body") at gtest.cc:2674:14
+    frame #8: 0x00005e2676bc8ece sim_primary_slot_real_test`testing::internal::UnitTestImpl::RunAllTests() [inlined] testing::Test::Run(this=0x00005e267ad83470) at gtest.cc:2713:5
+    frame #9: 0x00005e2676bc8d23 sim_primary_slot_real_test`testing::internal::UnitTestImpl::RunAllTests() [inlined] testing::TestInfo::Run(this=0x00005e267ad76640) at gtest.cc:2859:11
+    frame #10: 0x00005e2676bc8bc4 sim_primary_slot_real_test`testing::internal::UnitTestImpl::RunAllTests() [inlined] testing::TestSuite::Run(this=0x00005e267ad70f30) at gtest.cc:3037:30
+    frame #11: 0x00005e2676bc87e9 sim_primary_slot_real_test`testing::internal::UnitTestImpl::RunAllTests(this=0x00005e267ad6ef30) at gtest.cc:5967:44
+    frame #12: 0x00005e2676ba2c7c sim_primary_slot_real_test`main [inlined] bool testing::internal::HandleSehExceptionsInMethodIfSupported<testing::internal::UnitTestImpl, bool>(object=0x00005e267ad6ef30, method=0x00000000000000000000000000000000, location=<unavailable>) at gtest.cc:2638:10
+    frame #13: 0x00005e2676ba2c74 sim_primary_slot_real_test`main [inlined] bool testing::internal::HandleExceptionsInMethodIfSupported<testing::internal::UnitTestImpl, bool>(object=0x00005e267ad6ef30, method=0x00000000000000000000000000000000, location=<unavailable>) at gtest.cc:2674:14
+    frame #14: 0x00005e2676ba2c55 sim_primary_slot_real_test`main [inlined] testing::UnitTest::Run(this=<unavailable>) at gtest.cc:5546:10
+    frame #15: 0x00005e2676ba2b8c sim_primary_slot_real_test`main [inlined] RUN_ALL_TESTS() at gtest.h:2334:73
+    frame #16: 0x00005e2676ba2b8c sim_primary_slot_real_test`main(argc=<unavailable>, argv=<unavailable>) at main.cpp:47:12
+    frame #17: 0x000076400202a1ca libc.so.6`___lldb_unnamed_symbol3278 + 122
+    frame #18: 0x000076400202a28b libc.so.6`__libc_start_main + 139
+(lldb) breakpoint disable
+All breakpoints disabled. (2 breakpoints)
+(lldb) continue
+TRACE parameter persist.telephony.MainSlotId=1
+TRACE parameter persist.telephony.MainCard.Iccid=AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2
+TRACE notify usual.event.SIM.DEFAULT_MAIN_SUBSCRIPTION_CHANGED slot=1 sim=1 done=0 user=0
+TRACE parameter persist.telephony.MainCellularDataSlotId=1
+TRACE notify usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED slot=-1 sim=1 done=0 user=0
+DIAGNOSTIC SET_DEFAULT_CELLULAR_DATA
+DIAGNOSTIC ACCOUNT_NOTIFY
+REGISTRY_UNAVAILABLE code=83886094
+LIFE_CHECKPOINT stage=before_cleanup manager=0x5e267ad95bb0 ril=0x5e267ad85130
+LIFE_QUEUE stage=before_cleanup address=103519362855520 name=host-general pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_QUEUE stage=before_cleanup address=103519362967888 name=sim028-account-observer pending=0 running=0 cancelled=0 next_ms=-1
+LIFE_CHECKPOINT stage=after_cleanup manager=0 ril=0x5e267ad85130
+[       OK ] RealSimPrimary.C0CoreToRealManagerAndController (381 ms)
+[----------] 1 test from RealSimPrimary (381 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (382 ms total)
+[  PASSED  ] 1 test.
+Process 49 resuming
+Process 49 exited with status = 0 (0x00000000)
