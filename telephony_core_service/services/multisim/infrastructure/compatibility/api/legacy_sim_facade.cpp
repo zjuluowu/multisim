@@ -25,14 +25,6 @@ LegacySimFacade::LegacySimFacade(const SlotCatalog &catalog, LegacyIngressPort &
     ActivateSimUseCase &activation, AssignmentService &assignment, LocalCardRequests &localCards)
     : catalog_(catalog), ingress_(ingress), callbacks_(callbacks), numbers_(numbers), query_(query),
       activation_(activation), assignment_(assignment), localCards_(localCards) {}
-int32_t LegacySimFacade::RunPrimarySwitchAtExecutionPoint(const SwitchPrimaryCommand &command)
-{
-    auto issued = command;
-    const auto waiter = callbacks_.RetainSynchronousWaiter(LegacySynchronousCall::PrimarySwitch);
-    issued.completion.route = SynchronousCompletionRoute {waiter};
-    StartLegacyPrimarySwitch(assignment_, issued);
-    return callbacks_.AwaitOriginalIntResult(waiter);
-}
 int32_t LegacySimFacade::RunOrdinaryActivationAtExecutionPoint(const ActivateSimCommand &command)
 {
     auto issued = command;

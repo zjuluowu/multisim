@@ -33,6 +33,16 @@ public:
     virtual EntryCheck CheckSetShowNumberEntry(LegacyCallerRef caller, SlotId slot, LegacyCallbackRef callback) = 0;
     virtual void QueueSetShowNumberTask(const SetShowNumberCommand &command) = 0;
 };
+enum class LegacyPrimaryError { Unavailable, NonSystemCaller, PermissionDenied, InvalidSlot, NoCard, Failed };
+class LegacyPrimaryHostPort {
+public:
+    virtual ~LegacyPrimaryHostPort() = default;
+    virtual bool IsSystemCaller(LegacyCallerRef caller) = 0;
+    virtual bool CanSetTelephonyState(LegacyCallerRef caller) = 0;
+    virtual bool SupportsPrimarySlot(SlotId slot) = 0;
+    virtual int32_t PrimaryError(LegacyPrimaryError error) const = 0;
+    virtual void NotifyOriginalAccountChanged() = 0;
+};
 class CallbackHostPort {
 public:
     virtual ~CallbackHostPort() = default;

@@ -31,6 +31,7 @@ struct PrimaryRadioObservation {
     bool dedicatedPrimaryRilSupported;
     bool vendorMappingRequired;
     uint64_t observationRevision;
+    bool ordinarySwitchAllowed {true};
 };
 struct RadioSwitchRequest {
     StepRef step;
@@ -105,6 +106,8 @@ public:
     virtual ~AssignmentOutputPort() = default;
     virtual void PublishPrimaryPhase(bool setDone, bool isUserSet) = 0;
     virtual void PublishMainCardChanged(SlotId slot) = 0;
+    virtual void PublishMainCardChanged(SlotId slot, SubscriptionId)
+    { PublishMainCardChanged(slot); }
     virtual void PublishDefaultDataChanged(SlotId slot, SubscriptionId subscription) = 0;
 }; // setDone为旧阶段结束，不冒充设备成功。
 } // namespace OHOS::Telephony::MultiSim

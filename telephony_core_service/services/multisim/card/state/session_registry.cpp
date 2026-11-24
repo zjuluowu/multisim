@@ -39,6 +39,12 @@ std::optional<SessionRef> SessionRegistry::Current(CardApplicationTarget target)
     return found == sessions_.end() ? std::nullopt : std::optional<SessionRef>(found->second);
 }
 
+bool SessionRegistry::HasVerifiedSession(SlotId slot) const
+{
+    const auto first = sessions_.lower_bound({slot, {}});
+    return first != sessions_.end() && first->first.slot == slot;
+}
+
 bool SessionRegistry::StillCurrent(const SessionRef &session) const
 {
     const auto current = Current(session.application);

@@ -24,6 +24,8 @@
 #include "infrastructure/assembly/slot_catalog.h"
 #include "account/legacy_entry.h"
 #include "role_assignment/legacy_entry.h"
+#include "role_assignment/primary/primary_topology_port.h"
+#include "infrastructure/compatibility/events/legacy_completion.h"
 
 namespace OHOS::Telephony::MultiSim {
 // 目标 C 私有桥，未来原 CoreServiceSim/SimManager/CMI 委托至此；不替换它们的公开签名。
@@ -37,7 +39,11 @@ public:
     void RunQueuedSetShowNumber(const SetShowNumberCommand &command);
     ShowNumberRead GetShowNumberAtExecutionPoint(int32_t slotId);
     int32_t RunOrdinaryActivationAtExecutionPoint(const ActivateSimCommand &command);
-    int32_t RunPrimarySwitchAtExecutionPoint(const SwitchPrimaryCommand &command);
+    // The H lease covers validation, dispatch and taking the original synchronous result.
+    static int32_t SetPrimarySlotId(SlotId slot, LegacyCallerRef caller, const SlotCatalog &catalog,
+        LegacyPrimaryHostPort &host, const PrimaryTopologyPort &topology, LegacyCompletion &completion,
+        const std::function<bool(SlotId)> &hasVerifiedCard,
+        const std::function<void(const SwitchPrimaryCommand &)> &issue);
     AssignmentView ReadAssignmentForLegacyProjection() const;
     void VerifyPinAtExecutionPoint(const VerifyPinRequest &request);
     EuiccPrimitiveResult SwitchLocalProfileAtExecutionPoint(const SwitchProfileRequest &request);

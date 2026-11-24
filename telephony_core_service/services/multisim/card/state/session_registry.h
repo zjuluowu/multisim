@@ -53,6 +53,7 @@ class SessionRegistry final {
 public:
     explicit SessionRegistry(RuntimeEpoch epoch) : epoch_(epoch) {}
     std::optional<SessionRef> Current(CardApplicationTarget target) const;
+    bool HasVerifiedSession(SlotId slot) const;
     bool StillCurrent(const SessionRef &session) const;
     bool MayPublishVerifiedSession(const SessionRef &session) const; // 替换前预检，旧观察不得先撤销当前会话。
     bool PublishVerifiedSession(const SessionRef &session); // 先交T旧会话失效，再正式暴露新会话。

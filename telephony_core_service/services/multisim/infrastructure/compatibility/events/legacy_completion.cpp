@@ -17,23 +17,64 @@
 // 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
 
 #include "infrastructure/compatibility/events/legacy_completion.h"
+#include <limits>
 
 namespace OHOS::Telephony::MultiSim {
-void LegacyCompletion::CompleteLegacyInt(const CompletionPlan &plan, int32_t legacyResult)
+std::optional<SynchronousWaitRef> LegacyCompletion::RetainPrimaryWaiter()
 {
-    if (legacyResult == 0 && plan.accountNotificationOnWholeSuccess) { output_.NotifyOriginalAccountChanged(); }
-    output_.DeliverOriginalInt(plan.route, legacyResult);
+    std::lock_guard<std::mutex> guard(waitersLock_);
+    if (nextWaiter_ == std::numeric_limits<uint64_t>::max()) { return std::nullopt; }
+    const auto waiter = nextWaiter_;
+    primaryWaiters_.try_emplace(waiter);
+    ++nextWaiter_;
+    return SynchronousWaitRef {waiter, SynchronousWaitRef::Origin::ModulePrimary};
 }
 
-/* CompleteShowNumber 仅声明；伪代码：
- * 只有 completion.legacyResult 为原整体成功且计划要求原Manager通知时，
- * output_.NotifyOriginalAccountChanged()；随后 output_.TransferOriginalShowNumberResult。
- * 顺序对应 SimManager::SetShowNumber 的 NotifySimAccountChanged 在返回后
- * CoreServiceSim::SetShowNumber 才 callback->Transfer(ret)。通知投递/消费者到达不保证先后。
- * 卡成功但DB/缓存失败不发成功账户通知；卡晚到不再次进入此原完成出口。
- * 原通知或callback交付失败不反转设备/DB结果，不增加持久outbox或自动重试。
- * CompleteLegacyInt(plan,result)：仅在该方法原整体成功且计划适用时NotifyOriginalAccountChanged；
- * 随后output_.DeliverOriginalInt(plan.route,result)，由宿主区分callback、同步waiter及内部reply。
- * T进度在旧Hook节点清零，不因C完成交付才清零；等待结束与资源静止分别处理。
- */
+std::optional<int32_t> LegacyCompletion::TakePrimaryResult(SynchronousWaitRef waiter)
+{
+    if (waiter.origin != SynchronousWaitRef::Origin::ModulePrimary) { return std::nullopt; }
+    std::lock_guard<std::mutex> guard(waitersLock_);
+    const auto found = primaryWaiters_.find(waiter.value);
+    if (found == primaryWaiters_.end()) { return std::nullopt; }
+    const auto result = found->second.Result();
+    primaryWaiters_.erase(found);
+    return result;
+}
+
+void LegacyCompletion::CompleteLegacyInt(const CompletionPlan &plan, int32_t legacyResult)
+{
+    const auto *route = std::get_if<SynchronousCompletionRoute>(&plan.route);
+    if (route && route->waiter.origin == SynchronousWaitRef::Origin::ModulePrimary) {
+        {
+            std::lock_guard<std::mutex> guard(waitersLock_);
+            const auto found = primaryWaiters_.find(route->waiter.value);
+            if (found == primaryWaiters_.end() || !found->second.Deliver(legacyResult)) { return; }
+        }
+        // The synchronous C0 call has not yet returned to the waiter. No lock spans notification.
+        if (primary_ && legacyResult == 0 && plan.accountNotificationOnWholeSuccess) {
+            primary_->NotifyOriginalAccountChanged();
+        }
+        return;
+    }
+    if (fallback_) {
+        fallback_->CompleteLegacyInt(plan, legacyResult);
+        return;
+    }
+    if (legacyResult == 0 && plan.accountNotificationOnWholeSuccess) { output_->NotifyOriginalAccountChanged(); }
+    output_->DeliverOriginalInt(plan.route, legacyResult);
+}
+
+void LegacyCompletion::CompleteShowNumber(const ShowNumberCompletion &completion)
+{
+    if (output_) {
+        if (const auto *route = std::get_if<CallbackCompletionRoute>(&completion.plan.route)) {
+            if (completion.legacyResult == 0 && completion.plan.accountNotificationOnWholeSuccess) {
+                output_->NotifyOriginalAccountChanged();
+            }
+            output_->TransferOriginalShowNumberResult(route->callback, completion.legacyResult);
+            return;
+        }
+    }
+    CompleteLegacyInt(completion.plan, completion.legacyResult);
+}
 } // namespace OHOS::Telephony::MultiSim

@@ -28,11 +28,31 @@ struct AssignmentParameterResult {
     int32_t parameterResult;
     bool callFinished; // false: effect is unknown/unconfirmed; 0 must not be translated to success.
 };
+enum class C0ParameterKey { Preference, PrimarySlot, PrimaryIccid, DefaultData, Count };
+struct C0ParameterOperation {
+    StepRef original;
+    C0ParameterKey key;
+    bool operator==(const C0ParameterOperation &other) const
+    { return original == other.original && key == other.key; }
+};
+struct C0ParameterOutcome {
+    AssignmentParameterResult call {-1, false};
+    EffectKnowledge effect {EffectKnowledge::Unknown};
+};
+struct C0ParameterEvidence {
+    C0ParameterOperation operation;
+    C0ParameterOutcome outcome;
+};
 struct RoleStoreResult { int32_t legacyResult; bool writeConfirmed; bool callFinished; };
 // A 专属字段/参数协议。A专属 AssignmentStoreAdapter 实现，保持原 URI/键，非新 schema。
 class AssignmentStore {
 public:
     virtual ~AssignmentStore() = default;
+    virtual bool SupportsTrackedC0() const { return false; }
+    virtual C0ParameterOutcome WriteC0Parameter(const C0ParameterOperation &, SlotId, const std::string &, bool)
+    { return {}; }
+    virtual std::optional<C0ParameterEvidence> ReadC0ParameterEvidence(const C0ParameterOperation &)
+    { return std::nullopt; }
     virtual RoleStoreResult WriteDefaultRole(const SetRoleCommand &command) = 0;
     virtual PrimaryParameterSnapshot ReadPrimaryParameters() = 0;
     // Despite the historical argument name, input is raw ICCID; the Store adapter owns Legacy-compatible encoding.

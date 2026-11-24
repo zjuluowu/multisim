@@ -56,7 +56,8 @@ def check_directory_migration(source, token_sequence, *, repo=None):
         'device/resource/resource_radio_runtime.cpp',
         'device/resource/resource_radio_runtime.h',
         'infrastructure/request/runtime_operation_store.cpp',
-        'role_assignment/assignment_store_adapter.cpp'}
+        'role_assignment/assignment_store_adapter.cpp',
+        'infrastructure/compatibility/api/legacy_primary_entry.cpp'}
     if len(set(outputs)) != len(rows) or module_destinations(outputs, moved_docs) != actual:
         raise ValueError('Directory map destinations differ from actual module files')
     before = committed_inputs(repo, manifest['baseline'], prefix, names)

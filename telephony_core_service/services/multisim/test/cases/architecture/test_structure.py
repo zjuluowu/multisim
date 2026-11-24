@@ -118,7 +118,7 @@ class BoundaryGuard(unittest.TestCase):
 
     def test_move_preserves_gn_visibility(self):
         self.check_mapped_mutation("BUILD.gn", lambda s: s.replace('":*"', '"//*"', 1),
-                                  "AF2 M2 source input differs: BUILD.gn")
+                                  "AF2 M3 source input differs: BUILD.gn")
 
     def test_documentation_migration(self):
         from documentation_migration import documentation_moves

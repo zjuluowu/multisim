@@ -88,6 +88,38 @@ bool LegacySlotTextValid(const std::string &text)
 }
 } // namespace
 
+C0ParameterOutcome AssignmentParameterPort::WriteC0Parameter(const C0ParameterOperation &,
+    const std::string &key, const std::string &value)
+{
+    const auto call = Write(key, value);
+    return {call, call.callFinished && call.parameterResult == 0 ?
+        EffectKnowledge::ConfirmedApplied : EffectKnowledge::Unknown};
+}
+
+C0ParameterOutcome AssignmentStoreAdapter::WriteC0Parameter(const C0ParameterOperation &operation, SlotId slot,
+    const std::string &rawIccid, bool userSet)
+{
+    switch (operation.key) {
+        case C0ParameterKey::Preference:
+            return parameters_.WriteC0Parameter(operation, kUserPreference, userSet ? "true" : "false");
+        case C0ParameterKey::PrimarySlot:
+            return parameters_.WriteC0Parameter(operation, kPrimarySlot, std::to_string(slot.legacySlotId));
+        case C0ParameterKey::PrimaryIccid:
+            return parameters_.WriteC0Parameter(operation, kPrimaryIccid, Sha256Hex(rawIccid));
+        case C0ParameterKey::DefaultData:
+            return parameters_.WriteC0Parameter(operation, kDefaultDataSlot, std::to_string(slot.legacySlotId));
+        case C0ParameterKey::Count:
+            return {};
+    }
+    return {};
+}
+
+std::optional<C0ParameterEvidence> AssignmentStoreAdapter::ReadC0ParameterEvidence(
+    const C0ParameterOperation &operation)
+{
+    return parameters_.ReadC0ParameterEvidence(operation);
+}
+
 RoleStoreResult AssignmentStoreAdapter::WriteDefaultRole(const SetRoleCommand &)
 { return {-1, false, true}; }
 

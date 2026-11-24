@@ -19,18 +19,30 @@
 #ifndef OHOS_TELEPHONY_MULTISIM_COMPATIBILITY_OUTPUT_LEGACY_COMPLETION_H
 #define OHOS_TELEPHONY_MULTISIM_COMPATIBILITY_OUTPUT_LEGACY_COMPLETION_H
 
+#include <map>
+#include <mutex>
 #include "infrastructure/compatibility/api/legacy_boundary_ports.h"
+#include "infrastructure/compatibility/events/completion_cell.h"
 #include "account/number/show_number_completion_port.h"
 
 namespace OHOS::Telephony::MultiSim {
 // T号码完成端口的实现；只解释旧出口，不通过通知再写业务状态。
 class LegacyCompletion final : public ShowNumberCompletionPort, public LegacyIntCompletionPort {
 public:
-    explicit LegacyCompletion(LegacyOutputPort &output) : output_(output) {}
+    explicit LegacyCompletion(LegacyOutputPort &output) : output_(&output) {}
+    LegacyCompletion(LegacyIntCompletionPort &fallback, LegacyPrimaryHostPort *primary)
+        : fallback_(&fallback), primary_(primary) {}
+    std::optional<SynchronousWaitRef> RetainPrimaryWaiter();
+    std::optional<int32_t> TakePrimaryResult(SynchronousWaitRef waiter);
     void CompleteShowNumber(const ShowNumberCompletion &completion) override;
     void CompleteLegacyInt(const CompletionPlan &plan, int32_t legacyResult) override;
 private:
-    LegacyOutputPort &output_;
+    LegacyOutputPort *output_ {nullptr};
+    LegacyIntCompletionPort *fallback_ {nullptr};
+    LegacyPrimaryHostPort *primary_ {nullptr};
+    std::mutex waitersLock_;
+    std::map<uint64_t, CompletionCell> primaryWaiters_;
+    uint64_t nextWaiter_ {1};
 };
 } // namespace OHOS::Telephony::MultiSim
 

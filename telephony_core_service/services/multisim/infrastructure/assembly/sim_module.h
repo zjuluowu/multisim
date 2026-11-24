@@ -22,6 +22,7 @@
 #include "infrastructure/assembly/sim_module_factory.h"
 #include "infrastructure/assembly/primary_host_lifecycle.h"
 #include "account/topology_service.h"
+#include "infrastructure/compatibility/events/legacy_completion.h"
 #include "card/runtime/card_observation_runtime.h"
 
 namespace OHOS::Telephony::MultiSim {
@@ -35,6 +36,7 @@ struct CoreSimModulePorts {
     std::shared_ptr<RetrySchedulerPort> scheduler;
     std::shared_ptr<RadioOwnerDispatchPort> ownerDispatch;
     std::function<std::optional<InitialRecoveryEvidence>(const ResourceKey &, RuntimeEpoch)> initialEvidence;
+    std::shared_ptr<LegacyPrimaryHostPort> primaryHost {};
 };
 
 // Account and card facts confirmed by the startup source. M2 adds live observation and provider writes.
@@ -63,6 +65,8 @@ public:
     std::optional<ConfirmedDiscoveryRoles> ReadConfirmedDiscoveryRoles(SubscriptionId id) const;
     std::optional<AssignmentService::C0Receipt> ReadC0Receipt() const;
     // A disengaged result means the module rejected a new call before entering A.
+    bool ReconcilePrimaryParameter(const C0ParameterOperation &operation);
+    int32_t SetPrimarySlotId(int32_t slot, LegacyCallerRef caller);
     std::optional<RequestId> StartPrimarySwitch(const SwitchPrimaryCommand &command);
     DrainResult StopAcceptingAndDrain();
     std::optional<ResourceState> ReadPrimaryResourceState() const;
@@ -74,6 +78,7 @@ private:
     ~SimModule() = default;
     bool InitializeResources();
     bool SeedAccount(const ConfirmedSlotAccount &confirmed);
+    bool AdmitPrimaryCall(bool originalOnly = false);
     void ReturnPrimaryCall();
     bool AdmitDiscoveryCall(bool originalOnly = false);
     void ReturnDiscoveryCall();
@@ -97,6 +102,7 @@ private:
     SessionRegistry sessions_;
     TopologyService topology_;
     CardObservationRuntime card_;
+    LegacyCompletion completion_;
     std::shared_ptr<AssignmentService> assignment_;
     PrimaryHostLifecycle lifecycle_;
     std::mutex admissionMutex_;

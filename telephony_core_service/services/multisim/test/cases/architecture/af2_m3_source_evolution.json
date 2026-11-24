@@ -1,0 +1,29 @@
+{
+  "baseline": "2c0145c854600cae9ca6e40e1aa578ec8e443029",
+  "files": {
+    "BUILD.gn": "ffe0692307ff9d16d7580e1c741f37c5c44728f6064b667e74443d6004093388",
+    "card/runtime/card_observation_runtime.cpp": "f49f8e550208dcf48cf8fa44136a7b19927db5bbb11c5c190daa9e9a8892f446",
+    "card/runtime/card_observation_runtime.h": "c355e243cc6a17280ce4e8e3d74263c3eb2ac47000288bd62c2abae89e9d8522",
+    "card/state/session_registry.cpp": "2b32501001862c88213354789afc0359d4eb9c327feeffe76ca902065086eca2",
+    "card/state/session_registry.h": "aa89b91e306e26d4c97a4b7114349813e2b84b7dd62d26b07cdba6d6b42f9139",
+    "infrastructure/assembly/sim_module.h": "b56cad77dcf35203f1540dd837b15d2862c18120b7318e60993311ed8c81cc09",
+    "infrastructure/assembly/sim_module_factory.cpp": "ac1e06e86e81b8253bb2d96625ad6c8d232f99ad929945c7da68d9e62a30cc90",
+    "infrastructure/compatibility/api/legacy_boundary_ports.h": "0ec6dffc945ab8ce6e1d58da3268ee86bcce3ea8bae7e0ad05aa10d3b8277f6c",
+    "infrastructure/compatibility/api/legacy_sim_facade.cpp": "d4b16afba37e2278a5efbdf8ffd2fc3fdd9b7bcc26845faddb915ab2e9b8d724",
+    "infrastructure/compatibility/api/legacy_sim_facade.h": "b1c86d28a39a9c4b44a19046492b899204daa5f67975759357ff50ff02364f57",
+    "infrastructure/compatibility/events/legacy_completion.cpp": "72b5d96f9ab935e1a07ed414d0f1d24a1a28e0b0d871a8cf5e7e4336be5aa31b",
+    "infrastructure/compatibility/events/legacy_completion.h": "c28b3402033b7e94b0eddafa6c81f837308c1ae2aab981e63f4dd699e1fa138c",
+    "infrastructure/request/request_context.h": "14385d00317b1b967e1598ad5b929aa8632096890fd9423ea525b6d107ad15ef",
+    "role_assignment/assignment_aggregate.cpp": "be7d8bef012dcbb5d974cebe30d2e73099d263f71233702484d7cafff0135888",
+    "role_assignment/assignment_aggregate.h": "9b308ebcd95ac6a3ade45aab08c3235157f1b4a7915ca68ac3e6ee012a8a920d",
+    "role_assignment/assignment_service.cpp": "937abc81d315b13cf1a5a9c4242b6eb77c8fb571323320985aecb547fbdc4d10",
+    "role_assignment/assignment_service.h": "93ef16149f4c9f118c9a55fb3b9dd77280efcef27e6d7dc62cf4c8054e8af2de",
+    "role_assignment/assignment_store.h": "9af4dfbb50a1863c2f42d58f5c01102fadf9c489ed0dc03f0da603d8ce24ef32",
+    "role_assignment/assignment_store_adapter.cpp": "b59f08c120febd7717131524eeaadba14388ca2352d5fad099c78f604426affa",
+    "role_assignment/assignment_store_adapter.h": "a4366e7dbb3f1d3cbbdbaa8c3642bd5b83575eec815b524da28ce1958dbe889d",
+    "role_assignment/primary/radio_execution_port.h": "3a0e05eed2e07a25cd01372cd698191a90cb4f011995f7953245f486c2b0513a"
+  },
+  "added": {
+    "infrastructure/compatibility/api/legacy_primary_entry.cpp": "eb3dd4ad79a06fbca7661e5f67be8ec33a9b07a7c13392e89538bb6e86a00b6c"
+  }
+}

@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 #include "infrastructure/assembly/sim_module.h"
+#include "infrastructure/compatibility/api/legacy_sim_facade.h"
 
 #include <atomic>
 #include <limits>
@@ -52,8 +53,9 @@ SimModule::SimModule(CoreSimModulePorts ports, std::shared_ptr<const SlotCatalog
       radio_(resources_, *ports_.radio, {primaryResource_}, ResourceRadioRuntime::Mode::ObserveOnly),
       sessions_(epoch_),
       topology_(*catalog_, *ports_.accountStore, epoch_), card_(*catalog_, sessions_, topology_, epoch_),
+      completion_(*ports_.completion, ports_.primaryHost.get()),
       assignment_(std::make_shared<AssignmentService>(*catalog_, *ports_.assignmentStore, radio_,
-          *ports_.output, topology_, *ports_.completion, epoch_, AssignmentService::PrimaryScope::C0Only)),
+          *ports_.output, topology_, completion_, epoch_, AssignmentService::PrimaryScope::C0Only)),
       lifecycle_(assignment_, radio_, *ports_.scheduler, ports_.ownerDispatch)
 {
     for (const auto &slot : catalog_->Slots()) {
@@ -109,25 +111,48 @@ std::optional<ResourceState> SimModule::ReadPrimaryResourceState() const
     return resources_.ReadState(primaryResource_);
 }
 
+bool SimModule::AdmitPrimaryCall(bool originalOnly)
+{
+    std::lock_guard<std::mutex> guard(admissionMutex_);
+    if (drained_ || joining_ || primaryCallActive_) { return false; }
+    if (originalOnly ? !primaryEffectUnresolved_ : (!accepting_ || primaryEffectUnresolved_)) { return false; }
+    primaryCallActive_ = true;
+    return true;
+}
+
+int32_t SimModule::SetPrimarySlotId(int32_t slot, LegacyCallerRef caller)
+{
+    if (!ports_.primaryHost) { return -1; }
+    if (!AdmitPrimaryCall()) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
+    const PrimaryCall call {shared_from_this()};
+    return LegacySimFacade::SetPrimarySlotId({slot}, caller, *catalog_, *ports_.primaryHost, topology_, completion_,
+        [this](SlotId target) { return card_.HasVerifiedCard(target); },
+        [this](const SwitchPrimaryCommand &command) { (void)StartLegacyPrimarySwitch(*assignment_, command); });
+}
+
 std::optional<RequestId> SimModule::StartPrimarySwitch(const SwitchPrimaryCommand &command)
 {
-    const auto self = shared_from_this();
-    {
-        std::lock_guard<std::mutex> guard(admissionMutex_);
-        if (!accepting_ || primaryCallActive_ || primaryEffectUnresolved_) { return std::nullopt; }
-        primaryCallActive_ = true;
-    }
-    const PrimaryCall call {self};
+    if (!AdmitPrimaryCall()) { return std::nullopt; }
+    const PrimaryCall call {shared_from_this()};
     return assignment_->StartPrimarySwitch(command);
+}
+
+bool SimModule::ReconcilePrimaryParameter(const C0ParameterOperation &operation)
+{
+    if (!AdmitPrimaryCall(true)) { return false; }
+    const PrimaryCall call {shared_from_this()};
+    return assignment_->ReconcileC0Parameter(operation);
 }
 
 void SimModule::ReturnPrimaryCall()
 {
     const auto receipt = assignment_->ReadC0Receipt();
     std::lock_guard<std::mutex> guard(admissionMutex_);
-    if (receipt) {
-        primaryEffectUnresolved_ = true;
+    primaryEffectUnresolved_ = receipt.has_value();
+    if (primaryEffectUnresolved_) {
         closeHold_ = shared_from_this();
+    } else if (accepting_ && !topology_.PendingDiscoveryCount() && !assignment_->PendingDiscoveryRoles()) {
+        closeHold_.reset();
     }
     primaryCallActive_ = false;
 }
@@ -161,7 +186,7 @@ SimModule::DrainResult SimModule::StopAcceptingAndDrain()
     if (primary == PrimaryHostLifecycle::DrainResult::DeviceEffectsUnresolved) {
         return DrainResult::DeviceEffectsUnresolved;
     }
-    if (discoveryCalls_) { return DrainResult::CallbacksStillInFlight; }
+    if (primaryCallActive_ || discoveryCalls_) { return DrainResult::CallbacksStillInFlight; }
     if (primaryEffectUnresolved_ || topology_.PendingDiscoveryCount() || assignment_->PendingDiscoveryRoles()) {
         return DrainResult::BusinessEffectsUnresolved;
     }

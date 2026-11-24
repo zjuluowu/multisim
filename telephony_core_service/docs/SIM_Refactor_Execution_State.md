@@ -26,6 +26,12 @@ Gate 工作树为 `d9c2d23dce7148df1fc474ce598fb1cff55b839d`，签收前 main/or
 
 实际 Target 117/117，M2 9/9，M1 6/6，ASan 与 TSan 各 15/15。两张实时卡的 Binding 已用于 C0，原关系失效后旧命令不能再登记后续效果。Both C0 的 Legacy、Target、Oracle 均通过，差异 0。架构全入口通过，修复原 Topology 行 182 断言，按固定 Git 字节核对 M1 已有的布局差异。LLDB 已实测完整发现链路和单步，VS Code GUI 未实测。宿主 testonly 图使用可归因的 Host Store 证据。产品 Provider、外部观察订阅、B/C1 发令、原生装配与生产写权继续按原门禁验收。[验证及原始日志](../services/multisim/test/docs/evidence/af2_m2_20261124/README.md) · [实时发现、断点与 M3 接线](../services/multisim/test/docs/Host_Usage.md#af2-m2-debug)
 
+<a id="af2-m3-status"></a>
+
+### AF-2 M3 C0 兼容主卡业务（2026-11-24）
+
+**`AF2_M3_PARTIAL`。** 输入 `2c0145c85`。正式入口 `SimModule::SetPrimarySlotId` 已用双卡实时发现的 Account 与 Binding 执行 C0。H 持有原调用，C 保留同步完成路由，A 逐键核验 T 的目标资格并登记原效果。换卡后旧请求停止后续写入。Stop 保留在途调用和待证效果，原操作证据可以在封口后结清。Target Host 124/124，完整架构、GN/Ninja 通过。最终版 sanitizer、双激活 Both/Oracle 和调试证据待归档验收。
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）

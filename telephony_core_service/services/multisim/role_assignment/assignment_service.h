@@ -20,6 +20,7 @@
 #define OHOS_TELEPHONY_MULTISIM_ASSIGNMENT_ASSIGNMENT_SERVICE_H
 
 #include "infrastructure/request/runtime_operation_store.h"
+#include <array>
 #include <atomic>
 #include <mutex>
 #include <vector>
@@ -44,6 +45,9 @@ public:
     struct C0Receipt {
         RequestId request;
         C0Stage outstanding;
+        BindingRef binding;
+        std::array<std::optional<C0ParameterEvidence>, static_cast<size_t>(C0ParameterKey::Count)> writes {};
+        bool businessSucceeded {false};
     };
 
     AssignmentService(const SlotCatalog &catalog, AssignmentStore &store, RadioExecutionPort &radio,
@@ -62,6 +66,7 @@ public:
     bool IsStoppingPrimaryRequests() const;
     bool HasPendingDeviceEffects() const;
     std::optional<C0Receipt> ReadC0Receipt() const;
+    bool ReconcileC0Parameter(const C0ParameterOperation &operation);
     void RetryPrimaryAfterReconciliation(RequestId request);
     AssignmentView ReadLegacyAssignment() const;
     LegacyActivationWaitResult WaitForLegacyPrimaryBeforeActivation(SlotId slot) override;
@@ -92,6 +97,8 @@ private:
     mutable std::recursive_mutex primaryCommitLock_;
     void CompleteOnce(RequestId request, const CompletionPlan &plan, int32_t result,
         TerminalState terminal, std::unique_lock<std::recursive_mutex> *commit = nullptr);
+    void RunTrackedC0(RequestId request, const SwitchPrimaryCommand &command, const SlotDescriptor &target,
+        const PrimaryTargetFacts &facts, std::unique_lock<std::recursive_mutex> &guard);
     bool ScheduleC1Retry(RequestId request, uint32_t attempt);
     const SlotCatalog &catalog_;
     const PrimaryScope primaryScope_;

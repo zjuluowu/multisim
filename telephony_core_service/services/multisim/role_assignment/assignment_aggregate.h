@@ -62,6 +62,7 @@ public:
         TransitionPhase expected, TransitionPhase next);
     bool IsSwitchInProgress(const RadioDomainId &domain) const;
     void AcceptPrimaryParameterProjection(SlotId lastPrimary);
+    bool ClaimPrimaryAnnouncement(SlotId slot, SubscriptionId subscription);
     void AcceptDataParameterProjection(SlotId lastData);
     std::optional<SlotId> ReadLastPrimary() const { return lastPrimary_; }
     std::optional<SlotId> ReadLastData() const { return lastData_; }
@@ -77,6 +78,7 @@ private:
     std::map<RadioDomainId, AssignmentTransition> transitions_;
     std::map<uint64_t, uint32_t> roleWriteOwners_;
     std::optional<SlotId> lastPrimary_;
+    std::optional<std::pair<SlotId, SubscriptionId>> lastPrimaryAnnouncement_;
     std::optional<SlotId> lastData_;
     // current/all角色列按各自旧节点接纳，重载版本分别保存，不交T整行覆盖。
 };

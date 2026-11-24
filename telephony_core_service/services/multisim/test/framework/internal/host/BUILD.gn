@@ -41,6 +41,8 @@ static_library("sim_target_production_host") {
   sources = [
     "$production_root/services/multisim/infrastructure/assembly/slot_catalog.cpp",
     "$production_root/services/multisim/infrastructure/assembly/sim_module_factory.cpp",
+    "$production_root/services/multisim/infrastructure/compatibility/api/legacy_primary_entry.cpp",
+    "$production_root/services/multisim/infrastructure/compatibility/events/legacy_completion.cpp",
     "$production_root/services/multisim/card/state/session_registry.cpp",
     "$production_root/services/multisim/card/runtime/card_observation_runtime.cpp",
     "$production_root/services/multisim/infrastructure/assembly/primary_host_lifecycle.cpp",
@@ -71,7 +73,11 @@ executable("sim_test_target_host") {
     "$test_root/cases/target/primary/c0_topology_integration_test.cpp",
   ]
   configs += [ ":target_production_headers" ]
-  include_dirs = [ "$gtest_root/googletest/include" ]
+  include_dirs = [
+    "$gtest_root/googletest/include",
+    "$production_root/interfaces/innerkits/include",
+    "$test_root/framework/internal/host/stubs/include",
+  ]
   deps = [
     ":googlemock",
     ":sim_target_production_host",

@@ -35,6 +35,7 @@ AUTHORIZED_NEW_FILES = {
     'device/resource/resource_radio_runtime.h',
     'infrastructure/request/runtime_operation_store.cpp',
     'role_assignment/assignment_store_adapter.cpp',
+    'infrastructure/compatibility/api/legacy_primary_entry.cpp',
 }
 
 # Explicit semantic boundaries: physical groups do not define layers.
@@ -64,7 +65,8 @@ SOURCE_GROUPS = {'readonly_query': ('infrastructure/compatibility/api/real_sim_c
                           'role_assignment/primary/primary_switch_plan.h'),
  'assignment_types': ('role_assignment/assignment_types.h', 'role_assignment/primary/primary_execution.h'),
  'compatibility_contracts': ('infrastructure/compatibility/api/legacy_boundary_ports.h',),
- 'compatibility_core': ('infrastructure/compatibility/api/legacy_sim_facade.cpp',
+ 'compatibility_core': ('infrastructure/compatibility/api/legacy_primary_entry.cpp',
+                        'infrastructure/compatibility/api/legacy_sim_facade.cpp',
                         'infrastructure/compatibility/api/legacy_sim_facade.h',
                         'infrastructure/compatibility/events/completion_cell.h',
                         'infrastructure/compatibility/events/legacy_completion.cpp',

@@ -83,7 +83,7 @@
 
 ### 3.1 当前工作树：已存在的完整业务文件清单
 
-当前物理组织遵循[五组目录设计方案](SIM重构代码目录结构设计方案.md)，替代历史B+六组布局。bcc1614fd 的 91 个模块文件包含 89 个 C++ 单元及 BUILD/README。M9.3 将 AcceptResult 的定义由 assignment_service.cpp 移至原 request_mechanism 逻辑目标，变为 90 个 C++ 单元（共 92 文件）。至 `82a76db12`，B/C1 在 device/resource 增加 ResourceRadioRuntime 的头和实现，计 92 个 C++ 单元，共 94 文件；`role_assignment/assignment_store_adapter.cpp` 是 C0 系统参数兼容实现的首个已授权新增业务源，不承担 SIM 账户数据库职责；test/tools另列，不计入该数字。25个逻辑source_set及依赖边、public/visibility和testonly状态保持。G2a业务查询源仅由testonly目标验证，Core/Binding参考实现在test/framework/internal/host/g2a_reference，不由产品源表接入。M2 当前共 98 文件，含 96 个 C++ 单元。`card/runtime` 的 CardObservationRuntime 独立接入实时观察，完整 CardRuntime 暂作为其他能力的过渡落点。
+当前物理组织遵循[五组目录设计方案](SIM重构代码目录结构设计方案.md)，替代历史B+六组布局。bcc1614fd 的 91 个模块文件包含 89 个 C++ 单元及 BUILD/README。M9.3 将 AcceptResult 的定义由 assignment_service.cpp 移至原 request_mechanism 逻辑目标，变为 90 个 C++ 单元（共 92 文件）。至 `82a76db12`，B/C1 在 device/resource 增加 ResourceRadioRuntime 的头和实现，计 92 个 C++ 单元，共 94 文件；`role_assignment/assignment_store_adapter.cpp` 是 C0 系统参数兼容实现的首个已授权新增业务源，不承担 SIM 账户数据库职责；test/tools另列，不计入该数字。25个逻辑source_set及依赖边、public/visibility和testonly状态保持。G2a业务查询源仅由testonly目标验证，Core/Binding参考实现在test/framework/internal/host/g2a_reference，不由产品源表接入。M3 当前共 99 文件，含 97 个 C++ 单元。`card/runtime` 的 CardObservationRuntime 独立接入实时观察，完整 CardRuntime 暂作为其他能力的过渡落点。
 
 ```text
 services/multisim/
@@ -167,6 +167,7 @@ services/multisim/
 │   ├── compatibility/
 │   │   ├── api/
 │   │   │   ├── legacy_boundary_ports.h
+│   │   │   ├── legacy_primary_entry.cpp
 │   │   │   ├── legacy_sim_facade.cpp
 │   │   │   ├── legacy_sim_facade.h
 │   │   │   ├── real_sim_count_query.cpp

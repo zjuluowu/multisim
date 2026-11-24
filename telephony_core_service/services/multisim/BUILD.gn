@@ -50,6 +50,7 @@ source_set("assembly_core") {
   public_deps = [
     ":assembly_contracts",
     ":assignment_cases",
+    ":compatibility_core",
     ":runtime_core",
     ":runtime_mechanisms",
     ":topology_cases",
@@ -216,6 +217,7 @@ source_set("compatibility_core") {
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
   sources = [
+    "infrastructure/compatibility/api/legacy_primary_entry.cpp",
     "infrastructure/compatibility/api/legacy_sim_facade.cpp",
     "infrastructure/compatibility/api/legacy_sim_facade.h",
     "infrastructure/compatibility/events/completion_cell.h",

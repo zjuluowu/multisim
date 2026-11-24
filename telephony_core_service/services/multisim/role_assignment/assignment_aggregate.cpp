@@ -116,6 +116,14 @@ void AssignmentAggregate::AcceptPrimaryParameterProjection(SlotId lastPrimary)
     ++revision_;
 }
 
+bool AssignmentAggregate::ClaimPrimaryAnnouncement(SlotId slot, SubscriptionId subscription)
+{
+    const auto target = std::make_pair(slot, subscription);
+    if (lastPrimaryAnnouncement_ == target) { return false; }
+    lastPrimaryAnnouncement_ = target;
+    return true;
+}
+
 void AssignmentAggregate::AcceptDataParameterProjection(SlotId lastData)
 {
     lastData_ = lastData;
