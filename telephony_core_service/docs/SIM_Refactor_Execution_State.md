@@ -14,9 +14,9 @@ Gate 工作树为 `d9c2d23dce7148df1fc474ce598fb1cff55b839d`，签收前 main/or
 
 ### AF-2 M1 基础框架（2026-11-24）
 
-**`AF2_M1_PARTIAL`。** 输入 main/origin `199920c6f`，目标源码签收基线 `632f6a2a8`。已实现 `CreateCoreSimModule`，同一 epoch 下装配真实 T/A、卡会话、设备观察与唯一共享屏障。从启动期已确认账户建立 Binding，再通过 H 的业务入口执行 C0；B/C1 设备提交在新图中禁用。关闭先封 H 入口，同步调用实际返回后收回 Owner 任务及资源，原参数/通知/完成未了时保留图。源码已实际链接；首轮 Target 108/108，M1 定点及资源故障注入通过。最终交付验证正在复跑。[Host 单步和 M2 接线](../services/multisim/test/docs/Host_Usage.md#af2-m1-debug)
+**`AF2_M1_FRAMEWORK_READY`。** M1 源码已发布为 `b521a081a`，输入 main/origin `199920c6f`，目标源码签收基线 `632f6a2a8`。真实 `CreateCoreSimModule` 在同一 epoch 装配 T/A、R 卡会话、设备观察、唯一屏障和 `PrimaryHostLifecycle`。启动期已确认账户通过 T 建立 Binding，H 的业务入口执行真实 C0，B/C1 设备提交在新图中禁用。关闭保留原执行帧和业务责任，未知参数效果阻止销毁和后继写入。生产根 GN、Legacy 与产品写权保持原状。
 
-AF1-19 的签收目录已以 `199920c6f` 的 Git 对象与 SHA 建立独立比较输入，历史 SHA 保留并验证。目录摘要负控通过；完整迁移随后报出已在签收基线复核的 `assignment/account_roles/account_role_protocol.h` 历史布局差异。最小纯规则入口仍复现签收前 Topology 行 182 断言，其路径用于 M2 发现准备失败，M1 的已确认启动接纳不走该处理。
+最终 Target 108/108（含 M1 6/6），ASan 6/6，TSan 6/6。多键分配故障注入、共享键竞争、独立语法、GN/Ninja、导航、完整性通过。LLDB 实测断点、单步和销毁，VS Code GUI 未实测。AF1-19 的签收文档已登记精确比较输入，历史摘要继续验证。完整架构门禁仍分别报告签收基线既有的 `account_role_protocol.h` 布局差异和 Topology 行 182 独立纯规则失败，后者属于 M2 发现准备。两项已有失败继续跟踪，均未通过修改预期关闭。[验证记录](../services/multisim/test/docs/evidence/af2_m1_20261124/README.md) · [Host 单步和 M2 接线](../services/multisim/test/docs/Host_Usage.md#af2-m1-debug)
 
 <a id="af1-signoff-validation"></a>
 
@@ -61,10 +61,9 @@ AF1-19 的签收目录已以 `199920c6f` 的 Git 对象与 SHA 建立独立比�
 
 ### 下一批任务与依赖
 
-1. **AF-2 M1 最小 H 装配**。使 testonly 工厂可实际链接并构造 T/A/R 与唯一屏障，完成端口校验、发布和最小关闭。验收缺依赖、半初始化、同键互斥及回调在途。[四项代码任务与调试路线](AF1_AF2_Implementation_Handoff_20261124.md#af2-first-batch)
-2. **AF-2 M2 SIM 发现与账户绑定**。从真实卡观察经原 t/call、A 预留和一次 Provider 写到 Binding/W，覆盖换卡、Unknown、重复和精确回执。
-3. **AF-2 M3 C0 主卡分配**。从 H 的兼容入口经 M2 绑定进入 A，核对原参数、Primary/Data、通知和一次完成，执行 Target 专项与 Both C0 差分。
-4. Provider、Radio、关闭／重建、生产接入及新能力按[签收包 §16](AF1_Architecture_Final_Signoff_Package_20261124.md#16-外部产品门禁)、[原功能与 WU](migration/SIM_Architecture_Refactor_Design.md#writer-cutover)及[主设计 §22](SIM_Target_Architecture_Design_v1.2.md#22-分阶段实施门禁)取证。
+1. **AF-2 M2 SIM 发现与账户绑定**。复用本次 H、R 会话、T/A 与 Store 装配，接通活卡观察及关闭责任。从真实卡观察经原 t/call、A 预留和一次 Provider 写到 Binding/W，验证换卡、Unknown、重复和精确回执。定点修复或裁定 `EndPreparationFailure` 的既有断言。
+2. **AF-2 M3 C0 主卡分配**。把 M2 的实时 Binding 接至既有 H/C0 入口，并补完整兼容层、逐键效果恢复、原通知和一次完成；执行 Target 专项与 Both C0 差分。
+3. **AF2-08 与产品门禁**。复核历史目录映射与签收源码的角色协议差异。AF2-03 的多成员 Submit、Radio 产品证据、重建、生产接入及新能力按[签收包 §16](AF1_Architecture_Final_Signoff_Package_20261124.md#16-外部产品门禁)、[原功能与 WU](migration/SIM_Architecture_Refactor_Design.md#writer-cutover)及[主设计 §22](SIM_Target_Architecture_Design_v1.2.md#22-分阶段实施门禁)取证。
 
 2026-11-19 独立设计审查以 `0e4004bef` 为源码输入，形成[历史评审](history/reviews/SIM_Architecture_Independent_Review_20261119.md)。评审先独立发布于 `d8fcbba40`，随后将分责、共享输出和异步资格同步至主设计与源码详细设计。产品装配、设备与业务执行仍按原批次记录；当前设计验收见[第二轮复审](history/reviews/SIM_Architecture_Independent_Review_20261119.md#第二轮复审--对修改后的设计提出反例)。
 

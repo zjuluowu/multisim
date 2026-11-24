@@ -1,0 +1,637 @@
+{
+  "source_commit": "b521a081a1bbf61736f5859d28c3a3c9fb927f07",
+  "signoff_doc": "199920c6f056d61889e103e15de35519910d164f",
+  "source_signoff": "632f6a2a888cfbbc3c9387edc89732364e12a10e",
+  "runs": {
+    "target-final2": {
+      "binary_sha256": "3f7fe3a996b6db9c35c2e96e5fc16c35e9e0154d00310f745b56109a96e5b97b",
+      "case_counts": {
+        "PASS": 108
+      },
+      "protected_profile_unchanged": true,
+      "checked_module_source_files": 322,
+      "cases": [
+        {
+          "id": "TargetArchitecture.C0PrimaryPlanUsesNoDeviceSwitch",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.BSuccessCommitsOnlyAfterMatchingReply",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.ResourceBarrierCheckingBlocksSendUntilInitialRecovery",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleOldHandleRejectedAndAcceptedRequestCompletes",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleCloseIntentRejectsStartBeforeOwnerSeal",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecyclePostedSealOutlivesCoordinator",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleConcurrentStopCannotDrainBeforeSeals",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleConcurrentStopHasOneCleaner",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleOwnerDispatchFailureIsNotDeviceDrain",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleStopOnEmptyHostIsIdempotent",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleCancelsQueuedRetryAndOldEpochCannotRun",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleStopRequestedFromOwnerCallbackDoesNotJoinSelf",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleDoesNotStopUnrelatedSharedRilConsumer",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleOldAndNewInstancesRemainIsolated",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleStopDuringC1CheckPreservesMemberResponsibility",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleStopAndExternalResultRaceCompletesOnce",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleStopAndLateEvidencePreserveOriginalCompletion",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleHandoffUnknownKeepsDeviceResponsibility",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleQuarantinedResultIsNotDrained",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.ResourceHandoffAcceptedRequiresExpectedSerial",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.ResourceSubmitUnknownQuarantinesInsteadOfConfirmedCancel",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.ResourceSubmitResponseBeforeReturnIsBufferedUntilHandoffClassified",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.ResourceSubmitDuplicatesDeduplicateAndConflictsQuarantine",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.ResourceSubmitConfirmedNotSentRejectsContradictoryCallback",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.ResourceBarrierIsNotAcquiredForC0",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.ResourceBarrierConfirmedNotSentReturnsAvailable",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.ResourceBarrierBEndsBeforeResultIsDelivered",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.ResourceBarrierRejectsWrongBindingWithoutReleasingLease",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.ResourceRejectsOldSerialOnCurrentTransportToken",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.ResourceBarrierRejectsDuplicateMemberSubmission",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.ResourceBarrierBTimeoutQuarantinesUntilRealRecovery",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.ResourceBarrierLateBResultRecoversOnlyWithCurrentStateProof",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.ResourceRetainsOwnerDeliveryWhenDispatchIsStopped",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.ResourceRequiresDispatcherBeforeProductSubmit",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.ResourceC1ConcurrentMemberCallbacksStayOwnerSerialized",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.ResourceBarrierC1AutomaticallyRetriesOnlyAfterEachPhaseEnded",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.ResourceBarrierC1UpdateNotifyCannotCompleteWithoutReuseEvidence",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.ResourceBarrierDoesNotScheduleRetryBeforeCompleteMembersEnd",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.ResourceCallbackAfterOwnerDestructionCannotAccessDanglingSink",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.ResourceBarrierStopSeparatesOwnerAndDeviceDrain",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.BErrorKeepsPreviousRolesAndCompletesOriginalFailure",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.BTimeoutAt45000KeepsRolesAndRejectsLateReply",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.BindingChangeAndUnknownEffectsPreserveIsolation",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.C1ThreePhaseSuccessRejectsStaleSession",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.C1SharedWriteQualificationBlocksC0InDifferentDomainUntilRelease",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.C0ReentrantPrimaryNotificationCannotAdmitConflictingRequest",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.C1BindingChangeRestoresPrewrittenPrimaryParameters",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.C1BackgroundRetryUsesControlledAsyncScheduler",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.C1RetrySchedulerRejectsDuplicateAndBindingChange",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.C1RetrySchedulerStopCancelsAndOldEpochCannotRun",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.C1RetryDueAndStopRaceDrainsCallbackBeforeResultDecision",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.C1DestroyedOwnerRejectsQueuedRetryWithoutUaf",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.C1StopReportsDrainFailureUntilActiveDeviceResultEnds",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.C1StopDuringActiveRoundCancelsRetryAfterConfirmedComplete",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.C1StopAndQueuedRadioCallbacksRemainOwnerSerialized",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.C1UnknownDoesNotScheduleRetry",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.C1CheckFailureRestoresAndExhaustsFiveRetries",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimaryB.RejectsWrongAssociationAndDoesNotAdvanceNewRequest",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimary.C0AssignmentServiceAlreadyPrimary",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimary.C0RejectsMissingInactiveOrChangedTopologyFacts",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimary.C0RejectsUnknownStaleOrDifferentRadioObservation",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimary.C0PreservesPartialEffectsWhenStoreWriteFails",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimary.C0RejectsConflictingRequestAndCanRestartAfterFailure",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimary.C0DifferentDomainsRejectNestedSharedRoleWrite",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimary.C0KeepsUnfinishedWritesUncommittedAndQualified",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimary.C0OperationAdmissionRejectsOldEpochStepAndDuplicateCompletion",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimary.C0OperationConsumesNotSentAndKeepsLateEvidenceSeparate",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetPrimary.SharedWriteSetRejectsDifferentDomainButDisjointRoleAdvances",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetAdapterIntegration.C0UsesRealAssignmentStoreAdapter",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetAdapterIntegration.C0PreservesLegacySuccessForCompletedParameterFailures",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetAdapterIntegration.C0DoesNotCompleteUnconfirmedWrites",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetAdapterIntegration.RestoreKeepsLegacyValidSlotAndConditionalIccidRules",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T1NewDiscoveryExecutesOneProviderWriteAndAcceptsTARoles",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T1ProviderIoDoesNotHoldTLockAcrossAReadWrite",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T1KnownIccidReusesIdentityWithoutNewInsertSemantics",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T1KnownAccountAlreadyBoundCannotShadowMove",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T1DuplicateObservationDoesNotRepeatStore",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T1ObservationInvalidatedDuringWriteKeepsEffectWithoutBinding",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T1ConcurrentInvalidationRejectsBlockedProviderReturn",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T1UnknownStoreEffectIsNotRetriedByDuplicateObservation",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T1ConfirmedNotAppliedDoesNotCreateBinding",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T1RoleRevisionChangeRejectsOldDiscoveredFragment",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T1ProviderIdentityMismatchForKnownIccidIsRejected",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T1MatchFailureBeforeWriteDoesNotReserveProviderEffect",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T2AcceptedRoleReservationSurvivesLaterUnrelatedRoleMutation",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T2StaleAppliedCanReconcileWithoutRestoringOldBinding",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T2RecoveryDoesNotReleaseRoleForMissingProviderRow",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T1ProviderReconnectRequiresFreshObservationNotCachedRetry",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T1SameSlotNewCardRejectsOldCompletedWrite",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T2SameIccidDifferentSlotIsRejectedBeforeProviderWrite",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T2C1InFlightDoesNotBlockUnrelatedDiscoveryReservation",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T2UnrelatedDiscoveryDoesNotSharePendingRoleReservation",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T2ReloadCurrentAndHistoricalAcceptIndependentAttempts",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T2FailedViewDoesNotClearOtherOrSameView",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T2OlderReloadCannotOverwriteFieldUpdatedAfterAttempt",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T2OutOfOrderAttemptsUseLatestOnly",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T2ReloadDoesNotRemovePostAttemptNewAccount",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.T1OldEpochCannotEnterNewTopology",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.C0UsesRealRegistryBindingIndexAndTopologyService",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.C0RejectsUnboundInactiveChangedAndStaleIdentity",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.BindingAbaAndAccountViewLifetimeProtectC0",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "TargetTopologyIntegration.BindingChangeDuringAssignmentReadRejectsOldRequest",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "AF2Module.FactoryPublishesRealTopologyAndRunsC0",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "AF2Module.MissingPortAndBadEvidenceNeverPublishAndReleasePartialGraph",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "AF2Module.DeviceBranchesAreRejectedBeforeAnyWriteOrCommand",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "AF2Module.ConcurrentStopDuringCompletionSealsOldEntryAndKeepsOriginalFrame",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "AF2Module.UnknownParameterEffectRetainsOriginalResponsibility",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "AF2Module.SharedResourceAllowsOnlyOneCompetingOwner",
+          "status": "PASS",
+          "exit_code": 0
+        }
+      ]
+    },
+    "asan-run": {
+      "binary_sha256": "9d4ad160a5fe3549b7f49419f4337587dd7d47d87eeebc0118120869f979551c",
+      "case_counts": {
+        "PASS": 6
+      },
+      "protected_profile_unchanged": true,
+      "checked_module_source_files": 322,
+      "cases": [
+        {
+          "id": "AF2Module.FactoryPublishesRealTopologyAndRunsC0",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "AF2Module.MissingPortAndBadEvidenceNeverPublishAndReleasePartialGraph",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "AF2Module.DeviceBranchesAreRejectedBeforeAnyWriteOrCommand",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "AF2Module.ConcurrentStopDuringCompletionSealsOldEntryAndKeepsOriginalFrame",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "AF2Module.UnknownParameterEffectRetainsOriginalResponsibility",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "AF2Module.SharedResourceAllowsOnlyOneCompetingOwner",
+          "status": "PASS",
+          "exit_code": 0
+        }
+      ]
+    },
+    "tsan-run": {
+      "binary_sha256": "c8aabf874db65c54778fa9e1fa32edd239c6dafb07330d2445ccbf377d8200af",
+      "case_counts": {
+        "PASS": 6
+      },
+      "protected_profile_unchanged": true,
+      "checked_module_source_files": 322,
+      "cases": [
+        {
+          "id": "AF2Module.FactoryPublishesRealTopologyAndRunsC0",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "AF2Module.MissingPortAndBadEvidenceNeverPublishAndReleasePartialGraph",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "AF2Module.DeviceBranchesAreRejectedBeforeAnyWriteOrCommand",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "AF2Module.ConcurrentStopDuringCompletionSealsOldEntryAndKeepsOriginalFrame",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "AF2Module.UnknownParameterEffectRetainsOriginalResponsibility",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "id": "AF2Module.SharedResourceAllowsOnlyOneCompetingOwner",
+          "status": "PASS",
+          "exit_code": 0
+        }
+      ]
+    }
+  }
+}
