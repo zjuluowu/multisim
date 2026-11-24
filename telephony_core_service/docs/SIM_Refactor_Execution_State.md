@@ -30,7 +30,9 @@ Gate 工作树为 `d9c2d23dce7148df1fc474ce598fb1cff55b839d`，签收前 main/or
 
 ### AF-2 M3 C0 兼容主卡业务（2026-11-24）
 
-**`AF2_M3_PARTIAL`。** 输入 `2c0145c85`。正式入口 `SimModule::SetPrimarySlotId` 已用双卡实时发现的 Account 与 Binding 执行 C0。H 持有原调用，C 保留同步完成路由，A 逐键核验 T 的目标资格并登记原效果。换卡后旧请求停止后续写入。Stop 保留在途调用和待证效果，原操作证据可以在封口后结清。Target Host 124/124，完整架构、GN/Ninja 通过。最终版 sanitizer、双激活 Both/Oracle 和调试证据待归档验收。
+**`AF2_M3_PRIMARY_COMPATIBILITY_READY`。** 输入 `2c0145c85`，实现 `e86d2fcf8`。正式 `SimModule::SetPrimarySlotId` 经 `LegacySimFacade` 和 A 处理两张实时发现的卡。H 管理原调用寿命，C 先登记同步完成单元，A 逐键核验 T 的目标资格并登记原效果。C0 接纳 Primary/Data 投影，发出相应通知与原同步返回，Radio 发令为零。换卡后旧请求停止后续写入。Stop 保留在途调用及待证键，精确原操作证据可在封口后结清，已定案的返回和通知保持单次交付。
+
+Target Host 124/124，含 M1 6/6、M2 9/9、M3 7/7。ASan 和 TSan 各 22/22，双激活 Both C0 与 Oracle 差异均为 0。完整架构、GN/Ninja、导航和完整性通过。Legacy 和正式 Target 单例均实际完成 LLDB 断点与单步。首轮两项 B 关闭测试的调度竞争已在 M2 二进制复现，用现有队列控制固定观察时点，原断言继续执行。VS Code GUI、产品供证、B/C1 设备发令及生产迁移仍按原门禁验收。[本轮验证及原始日志](../services/multisim/test/docs/evidence/af2_m3_20261124/README.md) · [主卡调试与角色接线](../services/multisim/test/docs/M3_Primary_Debug.md)
 
 <a id="af1-signoff-validation"></a>
 
@@ -75,8 +77,9 @@ Gate 工作树为 `d9c2d23dce7148df1fc474ce598fb1cff55b839d`，签收前 main/or
 
 ### 下一批任务与依赖
 
-1. **AF-2 M3 C0 主卡分配**。沿 M2 的 `FindBinding(slot)` 读取真实 `BindingRef`，由既有 H/C0 入口请求 A。继续完成兼容主卡入口、逐键效果恢复和原通知／完成。复用两张实时卡加 C0 的组合用例，并按原出口运行 Both 差分。[操作与断点](../services/multisim/test/docs/Host_Usage.md#af2-m2-debug)
-2. **后续能力及产品门禁**。Part 26 的 Reload 因果覆盖、AF2-03 的多成员 Submit、Radio 产品供证、跨实例重建及生产写权按[签收包 §16](AF1_Architecture_Final_Signoff_Package_20261124.md#16-外部产品门禁)、[原功能与 WU](migration/SIM_Architecture_Refactor_Design.md#writer-cutover)及[主设计 §22](SIM_Target_Architecture_Design_v1.2.md#22-分阶段实施门禁)取证。
+1. **M4 独立 Data**。以正式兼容入口接 A 的角色请求，复用实时 Binding、逐键效果和原完成。核对共享 Data 写集，以及独立 Data 选择另一有效槽时的原返回和通知。
+2. **M5 Voice/SMS**。沿各自角色契约接窄入口与独立写集，以真实发现建图和对应 Legacy 用例验证。M4/M5 是本轮推荐的开发顺序。[接线与调试](../services/multisim/test/docs/M3_Primary_Debug.md#原效果核对和后续角色)
+3. **后续能力及产品门禁**。Part 26 的 Reload 因果覆盖、AF2-03 的多成员 Submit、Radio 产品供证、跨实例重建及生产写权按[签收包 §16](AF1_Architecture_Final_Signoff_Package_20261124.md#16-外部产品门禁)、[原功能与 WU](migration/SIM_Architecture_Refactor_Design.md#writer-cutover)及[主设计 §22](SIM_Target_Architecture_Design_v1.2.md#22-分阶段实施门禁)取证。
 
 2026-11-19 独立设计审查以 `0e4004bef` 为源码输入，形成[历史评审](history/reviews/SIM_Architecture_Independent_Review_20261119.md)。评审先独立发布于 `d8fcbba40`，随后将分责、共享输出和异步资格同步至主设计与源码详细设计。产品装配、设备与业务执行仍按原批次记录；当前设计验收见[第二轮复审](history/reviews/SIM_Architecture_Independent_Review_20261119.md#第二轮复审--对修改后的设计提出反例)。
 

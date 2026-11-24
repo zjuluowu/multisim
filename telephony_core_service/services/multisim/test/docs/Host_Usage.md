@@ -58,10 +58,10 @@ lldb /tmp/af2-m1/host/build/sim_test_target_host
 | --- | --- |
 | `infrastructure/assembly/sim_module_factory.cpp` 的 `CreateCoreSimModule`、`SimModule::SeedAccount` | 工厂签发 `epoch_`、接纳只读 `catalog_`，构造唯一的 `resources_`、`sessions_`、`topology_` 和共享的 `assignment_`。看 `confirmed.application`、`generation`、两条账户证明和 `radio_` 借用的同一屏障。 |
 | `account/topology_service.cpp` 的 `AcceptStoredDiscovery` | 核对 `observation.session.epoch` 与 H、`account.subscription`、原 Store 证明和实际 Binding。M1 的输入是启动时已确认的卡及账户。 |
-| `role_assignment/assignment_service.cpp` 的 `StartPrimarySwitch` 与 `role_assignment/assignment_store_adapter.cpp` 的 `WritePrimaryParameters` | `command.expectedBinding` 固定原订阅、槽和版本，`request` 带实例 epoch。观察 C0 的 `c0Receipt_`、参数调用、Primary/Data 投影及原完成。平台观察来自 R，设备提交次数为零。 |
+| `role_assignment/assignment_service.cpp` 的 `StartPrimarySwitch` 与 `role_assignment/assignment_store_adapter.cpp` 的 `WriteC0Parameter` | `command.expectedBinding` 固定原订阅、槽和版本，`request` 带实例 epoch。观察 C0 的 `c0Receipt_`、参数调用、Primary/Data 投影及原完成。平台观察来自 R，设备提交次数为零。 |
 | `SimModule::StopAcceptingAndDrain` 与 `SimModuleDeleter::operator()` | 查看 `primaryCallActive_`、A 业务收据和 `lifecycle_`。宿主在返回未排空时保留操作入口供核对／重读，Drain 成功后释放最后一个句柄。普通单例走匹配 deleter。 |
 
-M1 的共享资源只登记 `primary-shared`。宿主提供的该键初始证据必须匹配本次 epoch。持有同一物理域的另一个执行实例、未排空的旧命令和真实硬件复用仍按产品门禁取证。工厂在 M1 只开放观察及 C0，B/C1 的旧组件夹具继续单独回归。Store 效果未确认时，原请求和写权留在 A，图保留，后继写拒绝，后续切片负责凭原操作证据收回。
+M1 的共享资源只登记 `primary-shared`。宿主提供的该键初始证据必须匹配本次 epoch。持有同一物理域的另一个执行实例、未排空的旧命令和真实硬件复用仍按产品门禁取证。工厂在 M1 只开放观察及 C0，B/C1 的旧组件夹具继续单独回归。Store 效果未确认时，原请求和写权留在 A，图保留，后继写拒绝，M3 已接入原操作证据核对，见本页 M3。
 
 M2 的实时卡观察、账户绑定和可运行单例见下节。
 
@@ -136,4 +136,10 @@ classDiagram
 
 Unknown 同票从 `SimModule::ReconcileDiscovery(call)` 续行。只认可实际 Store 原调用证据，按列累计，同值普通查询不会提升归因。可信换卡撤掉原关系，原票仍可凭后继证明只结历史。用 `ReadDiscoveryReceipt` 观察原阶段、列和 token。`ReadConfirmedDiscoveryRoles` 读取确认过的存储角色结果。Stop 之后这些续行保留，新的发现写入封口。未接入的真实产品 Provider 仍需证明原操作及实际列。
 
-M3 的组合验证用 `AF2Discovery.LiveBindingsFeedExistingC0AndStaleTargetCannotAdvance`。从 `FindBinding(slot)` 读取真实关系并将该 `BindingRef` 放入 C0 命令。A 用 T 的词法资格登记下一效果。换绑后旧命令不再登记后续写和角色投影。完整兼容入口、参数效果恢复及产品验收按 M3 门禁推进。
+M2 的 `AF2Discovery.LiveBindingsFeedExistingC0AndStaleTargetCannotAdvance` 继续验证内部命令使用的真实 Binding。兼容入口由框架取得原 Binding，业务开发直接使用下一节的入口。
+
+<a id="af2-m3-debug"></a>
+
+## AF-2 M3 从兼容主卡入口单步
+
+在 WSL 中选择 `AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry` 调试。该用例先发现两张实体卡，再调用 `SimModule::SetPrimarySlotId(1, caller)`。沿 `LegacySimFacade::SetPrimarySlotId`、`AssignmentService::RunTrackedC0`、`AssignmentStoreAdapter::WriteC0Parameter`、`LegacyCompletion::CompleteLegacyInt` 观察兼容检查、目标资格、原步、逐键写入和同步取值。查看 `ReadAssignment()` 的 Primary/Data 投影及 `StopAcceptingAndDrain()`。前后端断点、参数及账户数据流、可复用的 Data/Voice/SMS 接线与 LLDB 实测见[M3 主卡调试对照](M3_Primary_Debug.md)。
