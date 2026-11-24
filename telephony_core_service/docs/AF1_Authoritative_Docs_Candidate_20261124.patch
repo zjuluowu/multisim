@@ -1,0 +1,278 @@
+diff --git a/telephony_core_service/docs/SIM_Target_Architecture_Design_v1.2.md b/telephony_core_service/docs/SIM_Target_Architecture_Design_v1.2.md
+--- a/telephony_core_service/docs/SIM_Target_Architecture_Design_v1.2.md
++++ b/telephony_core_service/docs/SIM_Target_Architecture_Design_v1.2.md
+@@ -286,6 +286,10 @@
+ A 按原分支逐节点准备输出，出锁调用参数、广播或设备，再带原资格接纳证据。T 的绑定复核只证明读取瞬间，首写后换卡要区分已完成的前缀与下一动作。C1 有设备前预写，B 在设备确认后保存；一次参数写、另一键写、通知提交和投递各有观察时点。在一个有序的 Owner 执行域，A 能串行化本地准入、投影接纳与完成领取；外部系统没有共同提交点。资格释放须证明旧操作不能再覆盖后继。未知的成员及原证据留在 A/R 核对，独立成员有充分证据才可先释放。重入不能同步等候自身。Busy 的对外映射、排队、超时、补偿与通知变化均须按方法签收。[写集、恢复及候选](history/reviews/SIM_Role_Concurrency_and_Async_Request_Review_20261119.md#a--角色准入提交与恢复)
+
+ 当产品引入独立的 Port 配额或解除 Primary/Data 联动时，重新评估绑定/选路边界。整体备选、14 个场景及触发条件见[独立审查](history/reviews/SIM_Architecture_Independent_Review_20261119.md#三个可实施的候选)。功能/WU 中历史 O 路径按发起用例解释。
++
++<a id="af1-final-owners"></a>
++
++**AF-1 写权边界（PROPOSED）。** SubscriptionId 标识本机订阅。Account 按 Current/Historical 的各自读源保存身份和资料。Binding 是可撤销的订阅与位置关系。T 接纳这三类事实。A 接纳偏好、有效角色、参数投影和业务切换。O 由每个发起 Owner 私有实例化，只提供原步骤、效果和完成领取机制。R·card 签发卡应用 Session，管理原卡、库存、加载范围及观察。R·device 管协议成员、传输关联、全资源租约和结束证据。C 表示兼容入口及原出口交付，I 提供真实存储/参数/平台证据，H 持装配和关闭寿命。Core 拥有共享 RIL。签收范围和历史勘误见[AF-1 签收包](AF1_Architecture_Final_Signoff_Package_20261124.md)。
+
+ ### 4.1.1 跨形态业务事实分工及不可越界事项（2026-11-17增补，PROPOSED）
+
+@@ -671,13 +675,36 @@
+
+ AccountRegistry 是一个 Owner，但 Current/历史两种兼容投影有各自字段与版本。显示名、号码、active、label、IMS等按旧公开可见节点接纳；不要求两个投影同时成功。AccountStore读取明确投影类别、load attempt与独立结果，分别复用 QueryAllValidData/QueryAllData；当前成功/历史失败时保持历史旧值及其重试责任。角色列从同次读取拆为A片段，不由T重算或整行反灌。
+
+-号码步骤计划是Application兼容编排，移出Domain。号码写资格依赖绑定、会话和号码字段版本，不因无关显示名变化而失效。资格覆盖锁外存储全过程；DB已写但资格失效时进入核对，不以拒绝内存发布宣称无效果。同值字段重载保留字段版本，仅变名称/标签不撤销号码资格；view各自的attempt、成员基线和删除接纳防止旧列表覆盖新成员；投影删除/重建保留字段版本水位，避免旧号码资格ABA。
++号码步骤计划是Application兼容编排，移出Domain。号码写资格依赖绑定、会话和号码字段版本，不因无关显示名变化而失效。资格覆盖锁外存储全过程；DB已写但资格失效时进入核对，不以拒绝内存发布宣称无效果。同值字段重载保留字段版本，仅变名称/标签不撤销号码资格。各 view 的本地版本、存续和墓碑防止本实例内的旧读回写。能否替换受保护事实还依赖本次真实读源。
++
++<a id="af1-final-reload"></a>
++
++**读源、成员和字段（PROPOSED）。** 取样前由 T 签 L=(epoch,view,attempt)，固定水位 w 和该 view 的身份 i、逐字段 F 基线。T 按 (view,subscription) 保留最近成员刻度 m、本段加入刻度 j 及退役水位。新原票只对证实且原计划要求的视图首次加入、恢复或重新确认各进一次 m，持续存在保持 j，恢复令 j=m，删除留墓碑。同一原票重放不升版本。仅本票有权且明确重申的字段即使同值也使该 F 前进一次。普通 Reload 的同值读不升 F，不重申成员。Binding 的槽水位 r 独立于这些刻度。版本耗尽在发布前拒绝。
++
++| 本次 Reload 可能产生的变化 | T 在发布点所需的证据（PROPOSED） |
++|---|---|
++| 缺行删除 | 同一 epoch/view 最新未消费 L，真实查询完整覆盖谓词、正常遍历、身份唯一，s 原在 expected 且仍在场，i/F 全基线匹配且 0<m≤w；无未核实前缀及冲突在途。读图像须覆盖身份、成员和将消失的**所有**受保护字段。退役时 m 前进、清 j、保留负向依据，r 原样。 |
++| 有行合并 | 完整读取、可信身份及列，原来与现在为同一存续（0<j≤w），且实际采样的行确属该段存续。即使 L 在重建后新签、号码自身无保护，也须有证明该样本越过原退役和本次重新加入边界的成员/身份读源依据；滞后读取的同 s/i 不得给新存续授予字段写权。随后逐字段比 expected.F[k]，核实本键无未决写、覆盖全部前驱；该字段值改变才升 F。m>w 且 j≤w 允许无冲突列独立接纳。签票时已缺席的创建另验现仍缺席、m≤w、身份及墓碑覆盖；新建字段高于退役水位。 |
++| 不完整或无覆盖 | 错路线、游标中断、全批身份无法认证时不从前缀写入。完整遍历中的单列解码或覆盖不足仅保留受影响项及依赖它的集合。迟到、同 L 重放只读处置。可信的后继业务移出可凭原身份、范围和顺序独立退役其视图；拔卡只按实际来源撤绑定。 |
++
++**保护的寿命与取证（PROPOSED）。** 写入归因、L 的局部资格、外部图像已包含该写或其后继是三个命题。T/A 各自在真实发布点随事实就位正向/负向保护。保护有库、用户、世系、身份、谓词/键/列和范围；保留不可比较的前驱。认证的同路有序会话须证明原写已可见、实际取样在后且后读不倒退；另一可用路径是同世系、同范围的写凭据与可见前缀证明。二者任选有实证的一种。仅见相同值、成功码、时间戳或新 L 时覆盖未知。同位矛盾证据隔离。每次合格后继值入账时同步推进下界，包含原写而落后于已接纳后继的图像不能回写。已知可信初态中从未受保护的独立字段可用原成功读源；重建、换库/用户或重连而缺可信移交/基线时保留未知。静态下界可长于原票，有实际补证工作才形成关闭项。
++
++**角色整组交付（PROPOSED）。** T 对每一 view 以原 L 交付完整不可变批次。先核账户行与角色行的身份键集合完全相等、无重复或错配，再检查返回、遗漏、墓碑及谓词全域的成员与身份依据。T 保留成员争议时不出整组许可，无关姓名冲突允许独立角色交付。A 在实际替换点验证原 L、未撤回的一次许可、角色版本/attempt、完整角色列和集合证据；覆盖域包含旧集合、候选集合、遗漏会被擦除的旧项、负向范围及所有会受影响的未决合写。T 在 L 的角色许可存续期间按整个谓词域撤回，包含原行集中从未出现、后来新建或重新加入的成员。A 在自身提交点检查本域版本、既有保护和在途写；单个已返回成员的有效性不能代表该域。不能用只枚举返回行的检查放行空集。任何必要证据欠缺则整组保留。相关成员/身份/路线失效和新同 view 尝试撤回尚未使用的许可；A 在准备完成后以一次条件转换取得提交权，无抛发布。A 的聚合与读取投影仍各循原接纳节点，T 的字段成功不证明 A 成功。
+
+ #### 6.5.2 发现、联合建行与跨Owner接纳
+
+ R发出不可变发现/替换/撤销观察，携带发起SessionRef及单调观察序号。T按卡应用保存已接受的观察顺序，最后提交与相关失效输入在同一受控接纳域排序；重复、乱序或旧epoch不得重新绑定当前槽。单次R校验或T同步读取一次R当前值都不能覆盖检查后的窗口。
+
+-联合发现分成四个节点：T准备身份匹配/建行上下文（可尚无SubscriptionId）→A根据产品/角色输入及角色资格生成只读计划片段→I执行原Insert/Update并返回实际身份和效果→T接纳账户/绑定、A接纳所属角色投影。多步跨Owner子请求保留父子关联；初始角色片段以A预留资格关联T建行计划，不以新建前未知simId为A规划前置，不复制第二存储缓存，不承诺provider事务。锁外I/O期间观察/角色失效时，只能核对已发生持久效果，不盲目重放。原用例在调用已结束且确认未生效时，可按原预算在同一有效观察下显式取得新尝试；重复观察本身不重试，Unknown或已写效果先核对，不强求新的R事件。
++**历史方案（2026-10-29）。** 当时以 T 准备、A 规划、I 一次 Insert/Update、T/A 分别接纳描述联合发现。其窄端口和原返回节点仍是输入，逐步恢复以如下候选契约为准。
++
++<a id="af1-final-discovery"></a>
++
++**发现与原票（PROPOSED）。** T 签 t=(epoch,admission)，在任何外部写前保存原观察、位置水位 r、订阅/ICCID 匹配、不可变字段和值、视图/字段资格，关联 A 的原 plan/token。若 s 待分配，先冻 w0/原计划，返回后查从 w0 起的成员变化；缺原字段基线不能覆盖已有字段。发现的当前位置索引只负责来源/冲突，不负责原票寿命。T 短域在封口与授予原 call 唯一发送权之间排序并登记执行体；先封则零写，先授则只允许原执行体进入一次。可信来源在可能入队前先登记投递并使 T 对应来源待排或失效，缺号/停监暂停当前发布。未交还的 call/claim 不能因超时被抢占。
++
++1. T 按原 call、真实执行源、实际身份和列逐项判 Applied / NotApplied / Unknown。可用原回执或证明该次提交作者、唯一行及覆盖列的组合依据。相同行、同 ICCID、读回成功、缺行或错误码均不能独立归因。部分已写、全部已知但混合、矛盾证据分别保留原前缀和未了处置。只对全未发/已证全无效果按原预算准入新尝试。效果证据到达或原条件恢复时由 T 唤醒同票，单一 claim 只补欠缺的内部步。
++2. A 锁内核对原 token/计划和实际订阅，一次固定 resolvedIdentity；重复同身份回原答复，异身份拒绝。固定身份不发布角色、不通知。合写角色列若仍待处置，A 持相应键的在途屏障。在其原计划已归因的角色列完成正式处置时，A 在同一短域将所涉 view/键的保护下界与合写凭据一并登记，再允许消除在途屏障或释放 token。若该处置只结历史，保存对后续读仍有效的已写列/范围前驱或逐项证明其已被支配；无覆盖的窗口内不得以整组 reload 替换。单纯 Finalize 不重发角色值或通知。
++3. T 在实际提交域验证同票、来源连续、A 的固定片段、s/i、装配、原 r、跨槽唯一性、视图和字段原资格。先私下准备 Account、成员/字段水位、槽条目/来源、保护依据和票内见证 W，再以无分配、无外调、无失败尾段统一发布。空槽建 r+1，同源同订阅原水位仍合格只确认 r。W 固定视图集合、m/j/F、原与结果 BindingRef、A 凭据和处置。准备失败全组不可见；旧路径先前已露出的 Account 前缀另核对。在本地提交前已可信终止的资格只结历史，暂停或不明留 t。若提交已先发生，随后真实撤销按新事实处理，重放 W 只能结原票。
++4. 只有当前接纳见证、可信仅历史处置（含原前缀）或全未写证明可请求 A 精确释放。相同 t/token/处置可重取同一确认，异票、异 token、异处置及“找不到”不能核销。T 在获得精确确认、双方在途已交还后回收该票。原调用返回、业务接纳、A 释放、原交付实际返回分别登记。
+
+ 空位置也保留按绑定键连续推进的revision。移除只清内容而不清版本；同一卡拔出再插不能使旧BindingRef重新有效。若仅路由组合变化，必须明确R会话与T绑定的分别失效范围。
+
+@@ -850,6 +877,8 @@
+
+ 这里的预留是应用执行资格，不是持锁等待或 provider 事务。DataShare/Hook 同步反向调用 Core 时，查询仍按 §8.2 保留原读源；原内存查询可读已可见投影，不能为了规避重入把 QueryImsSwitch 的 DataShare 查询或 GetShowNumber 的异步回写改成纯快照。[F09](#src-09) 若查询再次访问同一 provider/服务形成同步闭环，须由对应提供方证明可重入或给出获批准的处理方式；锁外调用本身不消除该闭环。冲突写回调不得同步等待正在等待它的同一通道，只能采用该方法契约允许的排队或既有失败出口；缺证据仅阻塞相关切片，不统一新增错误或缓存回退。
+
++**AF-1 提交边界（PROPOSED）。** 发现统一发布仅覆盖 T 的内存事实。T/A 跨 Owner 的原写归因、资格、回执和回调交还仍有各自顺序。读源缺乏因果覆盖时，保持原公开返回轨迹，内部逐键记录处置。需要靠该读源传播真实外部变化的 WU，必须证明可见性或合法后继事件可达才可切换。[发现与原票](#af1-final-discovery) · [读源判据](#af1-final-reload)
++
+ ### 9.3 本次核实的兼容轨迹与目标处理
+
+ 表中顺序为源码单条路径的局部顺序；通知消费者到达顺序、并发查询实际交错需另做运行采集。失败验收是将来的要求，非本轮测试结果。
+@@ -924,6 +953,12 @@
+
+ 纯 Radio 步骤的发送登记只携带原 StepRef 与本地轮次。R 给出本轮经验证的成员及其路由观察版本，A 在本分支首次副作用之前取得并冻结，同一轮不增删成员。提交时 R 发现路由观察版本已变，则拒绝该次提交并把原轮转入核对，不在途换路。每次提交的结果保留三种语义：确认未发送、交接已接受、交接未知。交接未知不得当作未发送处理，A 须保留原步骤、角色资格和核对责任。C1 的 CHECK、COMPLETE 匹配原响应，UPDATE 只接受同一原生会话的成员 NOTIFY，不存在独立的 UPDATE 确认。接口形态见[源码详细设计 §9](SIM_Multisim_Source_Architecture_Detailed_Design.md#af1-radio-plan)。
+
++<a id="af1-final-target"></a>
++
++**来源撤权 M1 与阶段准入 M2（PROPOSED）。** T 在绑定条目记录原 BindingRef、epoch、来源作用域、应用代次、连续序号和有证据的路由。普通 EF/应用刷新限受影响范围；唯一来源暂失确证时保留 r 并暂停相关新业务，其他应用/槽独立。可信撤销匹配原关系才撤一次；同卡再插需新会话、新接纳、水位从 r 经空位 r+1 到 r+2。Profile 命令返回、软件 ABSENT 及相同 ICCID 均不能独自证明替换。库存和应用会话仍由 R·card 维护。
++
++A 在每一原目标业务步前于 A 短域持有写集，并在 T 受保护短读区间内核实原 BindingRef、来源、身份、active 及版本，登记不可变原目标意图或接纳本地事实；随后出域才调用外部。失效先赢则无新步，登记先赢则仅结原目标在途。C0 零设备；B 专用发令后按原节点写参数；C1 预写后按冻结成员走 CHECK、UPDATE（匹配原 session 的 NOTIFY）、COMPLETE。每键参数、Data、输出及每个新 attempt 分别取资格。设备结果只结原设备前缀。目标失效后只可凭原协议收尾能力完成原 COMPLETE，缺证隔离。新业务重试另验预算、原目标、成员/路由、上轮真实结束和资源复用。完成只交付一次。A 域冲突/写集与 R 完整资源集须分别满足；H 持屏障寿命，实例外旁路和重建依旧取外部证据。
++
+ ### 10.2 换卡、Refresh 与合法会话接续
+
+ 换卡/移除使受影响卡应用的旧状态写权失效；R 清理对应 Records/电话簿会话，T 独立撤销或接纳绑定。无关卡和历史账户不随之全局失效。卡移除也不自动证明共享 Modem 空闲。
+@@ -1050,6 +1085,8 @@
+ **AF-1 补充 · 唯一资源准入的范围与证明边界（PROPOSED，待架构负责人签收）。**
+
+ 1. **原子准入范围。** 一条设备命令对它实际触及的全部物理资源键只申请一次。资源屏障在自己的短提交域内完成“全部可用才全部预留”，该提交域只保护屏障自身的状态，其中不调用任何外部代码。原子性的范围是同一个屏障实例内的一次申请，不跨实例、不跨进程。把同一个屏障对象交给多个各自加锁的调用方而屏障自身不保证原子，不满足本条。
++   **共同资源与成员交接（PROPOSED）。** 完整集 Acquire 在一个排序点全部预留或全部失败，失败须零前缀、零可用租约、零平台提交。共用 phase 租约时，R 在出域调用平台前先为 (step,round,phase,member,token/fence) 登记一次不可重复的在途发送资格。P 已进入平台未返、Q 返回 ConfirmedNotSent，只能核销 Q 自身的未发；禁止撤整组租约、回收 P 的关联或重复提交 P/Q。同成员重复请求读原处置。只有组已封新提交、全部提交执行体退出且逐成员确证全未发，才可撤整组；含已交接或未知者，仍持原组并核对每个相关命令的结束、整套资源可复用与在途返回，随后才可释放。缺证持租或隔离，保留晚证据和实际执行体。
++
+ 2. **资源权威与对象持有分开。** 物理域状态、租约和 fence 的事实归 R 的设备资源组件。H 只负责创建这一个实例、按已验证的资源路由登记资源键并把它借给执行适配，H 不读写租约，也不据此判定设备可复用。
+ 3. **Card 与 Radio 共享同一准入。** Radio 协议执行适配和需要占用设备的卡侧命令（通道、APDU、激活）向同一实例申请。卡侧仍可直接使用注入的窄硬件能力，前提是先取得租约，并按“预留 → 登记已发 → 提交域外发令 → 凭设备证据完成或隔离”的顺序执行。租约由提交该命令的执行适配保存，只经屏障释放。不设置统揽全部设备命令的总执行者。
+ 4. **RadioDomainId 与 ResourceKey。** 前者是 A 的业务冲突范围，用于同域至多一个切换；后者是 R 的物理资源域。两者不要求一对一。对应关系只在 R 内部，由宿主提供的已验证设备路由得出，A 不需要看到资源键。路由或独立性未证时使用一个保守共享键。按本轮实际路由得出键集，是不同物理域能够并行的前提。
+@@ -1119,6 +1156,8 @@
+ **禁止 T/A 各自整行 Save 同一账户。** I 接受带字段所有者和目标的窄补丁/现有命令，拒绝越权字段；建行由 T 与 A 形成一次明确写计划，重载把字段分别交相应 Owner，再生成只读旧 DTO。共享数据库行不意味着共享领域可写引用。
+
+ 本仓存储协调只排序本仓受控写请求；跨进程直接写者清单由 provider 负责人提供，确认前假定可能存在。对会覆盖未知字段的计划不实施，不能用“先读后整行写”消除竞争。provider 更改通知、服务重连和启动重读仍按旧路径；重读也要防止旧读取覆盖本地新版本，但无法从无版本 provider 结果证明全局新鲜度。严格跨进程保证留待独立协议。
++
++**N1 与合写字段（PROPOSED）。** 成功 setter 在 A 真正发布的同一短域更新聚合、规划版本和受影响 Current 角色版本及保护依据。Historical 沿自己的读源，确认失败不升成功版，Unknown 持原项。联合建行由 A 决定 includeInStorage；仅当为真时，把原计划的 Voice/SMS/MainCard/CellularData 四个 DB 列列入合写。为假时不认领这些列。T 签 ICCID、位置、active/eSIM 和适用标签。角色 DB 列、偏好和生效参数各按原读写节点维护。核对实际执行的列和值；同一物理行可一次调用，各 Owner 的已写前驱留在各自键的保护范围。[读源与角色整组交付](#af1-final-reload)
+
+ ### 13.3 长期增强及独立前提
+
+@@ -1201,7 +1240,9 @@
+ - **移交逐项确认。** 常驻接手者只能对具体的某一项给出确认，确认内容包含原请求、完成路由、该项效果和相应资格。不允许用“已移交若干项”的总数去抵消未了事项的总数。没有接手机制或接手者拒绝时，该项保持未了，原图留存。
+ - **效果未知即未完成。** C0 的任一参数键写入结果未知，以及 B、C1 在设备成功之后的参数写入结果未知，都必须作为未了事项留在 A 的收据中，同时保留相应角色资格。设备请求数为零、设备资源已可复用都不能使其消失。
+ - **领取与返回分开。** “完成已领取”只说明一次交付资格已被取走。原回调实际返回或同步等待已交还之前，该项仍是未了事项，并计入在途执行。
+-- **模块级结果。** 关闭只有一个入口。H 的私有结果区分三类未完成原因：在途执行、业务责任未了、设备未决。只有全部出具者的清单为空或逐项已确认移交，才是 Drained。重复调用读取同一轮状态，不重复封口、重投、重试或回调。
++- **模块级结果。** 关闭只有一个入口。H 的私有结果区分三类未完成原因：在途执行、业务责任未了、设备未决。只有同轮稳定取据、各项为空或已获有效移交且原图执行体均已退出，才是 Drained。重复调用读取同一轮状态，不重复封口、重投、重试或回调。
++
++**全图稳定截面（PROPOSED）。** H 固定 q=(epoch,closeGeneration) 及实际装配的参与集合，收齐根门 sealAck。T/A、卡/设备执行、原输出与调度器所持父项先登记再投递，接收方先登记子项，发送方待确认且本端执行退出才退票。每个 Owner 在同域出具 q、sealAck、不回绕 activityVersion、原在途和逐项 M19。H 连收两组完整快照，所有参与者的两读版本、门态、明细相同，外部入口及原执行帧均已核销，各未了项已结或取得逐项驻留移交，设备屏障结果满足本级别，才可宣布排空。变化则重取整组；持续未证保留原图。已知写但待 T 接纳、原 token 待确认、角色许可在途及实际补证均可阻止排空。无工作的静态保护只限制后续重建。
+
+ **源码事实。** Core 在 Publish 后逐个创建和发布服务。OnStop 置宿主状态，调用 IMS.UnInit、搜网.DeInit、RIL.DeInit 和可选扩展；RIL 这一步只注销 HDF 服务状态监听。可见链没有进入 Legacy SimManager::Stop，也没有撤回 CMI 等持有者或等待全部已投递回调。Legacy 的显式 Stop 有局部工作组、退订及 join；析构只做部分清理。局部 75 秒等待不能作为宿主全程关闭上限。[F01](#src-01) · [专项审查与配套消费者取证](history/reviews/SIM_Host_Stop_Async_Drain_Device_RIL_Lifecycle_Review_20261120.md)
+
+diff --git a/telephony_core_service/docs/SIM_Multisim_Source_Architecture_Detailed_Design.md b/telephony_core_service/docs/SIM_Multisim_Source_Architecture_Detailed_Design.md
+--- a/telephony_core_service/docs/SIM_Multisim_Source_Architecture_Detailed_Design.md
++++ b/telephony_core_service/docs/SIM_Multisim_Source_Architecture_Detailed_Design.md
+@@ -345,6 +345,10 @@
+
+ <a id="review-decisions"></a>
+
++<a id="af1-final-ports"></a>
++
++**AF-1 私有端口映射（PROPOSED）。** 业务规则以[主设计 §6.5](SIM_Target_Architecture_Design_v1.2.md#af1-final-discovery)为准。AccountRolePlanningPort 的 Prepare / AcceptDiscoveredRoleProjection / Finalize 固定 t、原 plan/token、实际身份与带证据的处置，给出可按原票重读的精确回执。AcceptReloadedRoleProjectionSet 收原 L、view、角色版本、不可变完整批次、读源及一次许可，返回整组实际处置。T 锁外调用 A。PrimaryTopologyPort 提供受保护的短读区间供 A 同域登记原目标步，不返可变容器。H 注入端口，跨域调用仍用 contracts 目标。
++
+ ### 4.3 历史双模型意见裁决（2026-10-30，非当前物理树）
+
+ 本节仅为历史记录；当前物理布局由五组方案与§3维护。以下保留当轮Opus/Gemini比较的逻辑取舍及证据；表内foundation、api/domain/adapters等物理建议已由本轮§3和主设计§6.6收敛为六组，不能作为第二套当前目录。
+@@ -385,6 +389,8 @@
+ | 查账户、切换关联到某个订阅的角色 | SubscriptionId 包装旧 simId。T 的 [BindingIndex](../services/multisim/account/binding_index.cpp)返回 BindingRef，含订阅、位置与该位置版本 | 空位置也有版本，同槽解绑再绑原订阅仍使旧引用失效。历史账户可查，当前写资格取 current |
+ | 库存 Profile 与动态来源 | card/esim 的本地请求保留 legacyPortIndex、可选验证路由与卡结果；当前三个 Target 中没有独立库存 ID 或远端全局 ID | eUICC/库存项身份与当前使用的端口分别核实。仅有请求暂存的端口值不足以接纳绑定；产品确认多绑定后再评估键及 schema |
+
++**M1 来源映射（PROPOSED）。** CardObservationSink 的失效输入关联原 epoch、Session、来源/作用域、原因、连续投递序号。CardRuntime 在可排队前经 T 短入口排序并留投递在途。TopologyService 以槽条目保存来源及 BindingRef，受影响的 ReadPrimaryTarget 按来源状态暂停或恢复。可信终止仅调 RemoveBinding(expected)，重放不得命中新版。同卡重插水位逐次推进，无关会话保留。
++
+ <a id="topology"></a>
+
+ ## 6. T：账户与连接拓扑
+@@ -403,9 +409,20 @@
+ | ActivationProgress | 独立slot/request/session进度，旧完成不能清新请求；不作为账户属性或资源空闲证明 |
+ | TopologyService | ReadPrimaryTarget 读取真实绑定与当前账户。AcceptStoredDiscovery 接纳已确认的发现结果；Provider 调用及第三卡映射另验 |
+
+-AccountStore的LoadAccounts接AccountLoadRequest(view,attempt)，分别返回原读取的T行和StoredAccountRoleFragment。PrepareAccountReload保存相关身份、各字段及A角色投影版本；一个view失败保留该view旧值，另一个view仍可成功。纯AcceptReloadProjection对字段分别核对，无关改名不拒绝号码，旧重载不覆盖新字段。
+-
+-发现协议为：同序接纳CardDiscoveryObservation→预留受影响旧/新键→锁外MatchAccountByIccid→A角色规划/资格→一次原WriteDiscoveredAccount→复核ledger/绑定键/A资格→T接纳provider身份/绑定，A接纳角色。新账户规划允许无simId，消除插入前后的因果环。写前及返回后经StillOwnsInitialRoleReservation校验角色资格，FinalizeInitialRoleReservation要求原调用结束、存储效果明确且投影已接纳或核对完成；Unknown或已写但失效不能只因调用返回就释放。
++5796fce68 的 LoadAccounts 分 Current/Historical 返回账户行和 StoredAccountRoleFragment，PrepareAccountReload 保存本地读取资格。现有 acceptedAttempt 可能与冲突字段同时出现；角色整组应用的目标条件见下。
++
++5796fce68 的 DiscoverAccount 按当前位置预留、匹配及写库，使用 StillOwnsInitialRoleReservation、FinalizeInitialRoleReservation 复核。既有位置索引和锁外瞬时复核无法单独给两张原票、部分效果及最终释放出据。
++
++<a id="af1-final-topology"></a>
++
++**T 私有接口与载荷（PROPOSED）。**
++
++| 接口、持有者 | 原输入、输出和调用截面 |
++|---|---|
++| TopologyService::DiscoverAccount / ReconcileDiscovery | pendingDiscoveries_ 以 t=(epoch,admission) 标识原项，登记原 call、计划、r、发送权、执行体、逐列效果、当前 claim、W 和 A 确认。Evidence 按预先绑定的原操作关联；两种返回都续行同票。DiscoveryObservationLedger 仅保存当前观察/水位与按持票人释放的冲突索引。 |
++| AccountRegistry / BindingIndex | 在 T 短域内准备一条 Account 及各 view 的 i、m/j/F、保护/墓碑、槽差量和 W。可能分配的节点/值及见证先私有准备，可回退预留；最终用预取得的节点及可证明无抛的交换/赋值联合发布。ReadAccount / FindBinding / ReadPrimaryTarget 和收据按需在该域取同一截面。AcceptStoredDiscovery 仅作明示的建境夹具，正常业务从带来源的发现票进入。 |
++| PrepareAccountReload / AcceptAccountReload | 原 L 冻结 view、attempt、w、expected[s] 的 i/F 和 A 版本；绑定实际采样。AcceptReload / AcceptReloadProjection 返回消费、逐键处置和独立全组交付资格。只新增/确认相应 view 的成员或字段，缺席/有行/重建分别按主设计检查；有行列还须验证样本所属存续段，号码无独立保护也须证明实际读源跨过退役/重建。无论 L 是否消费，角色处置另候 A 回执。 |
++| AccountStore::WriteDiscoveredAccount / MatchAccountByIccid / LoadAccounts | 返回原调用数值、是否交还及能归因的身份/列，Match 保持观察读口。读取保留旧结果及异常，同时交付真实库/用户/路线/世系、取样关联、游标是否正常结束、完整谓词、每列有效性及可见范围证明。桥缺能力时给 Unknown。不同 view 各自绑定原查询。 |
+
+ CardSessionInvalidation经同一T序列撤销原会话资格，绑定移除继续保存空位置revision。已经写库但观察失效时保留assignedSubscription和已发生效果进入核对，不能只拒绝内存发布后宣称无效果。
+
+@@ -449,6 +466,14 @@
+ AssignmentStoreAdapter 在 Host 处理偏好、Primary 两键与 ICCID 散列、Data 原参数。AssignmentAggregate 的 roleWriteOwners_ 已按请求 token 登记 kPrimaryRoleWriteSet（偏好、Primary 参数/通知、Data 参数/通知）；SetDefaultRole 复用 Data 或独立 Voice/SMS 成员。A 内的这些检查以 Owner 串行执行为条件。AcceptEntryPrimaryPreference 仍可直接经 Store 写偏好，完整接管须逐个核对调用者及其授权时点。T 复核原绑定，R 判定实际命令资格。逐键已发前缀与失败恢复仍按分支补足。[参数适配](../services/multisim/role_assignment/assignment_store_adapter.cpp) · [角色准入设计](SIM_Target_Architecture_Design_v1.2.md#41-从问题推导边界并裁决上下文)
+
+ AccountRolePlanningInput允许existingSubscription为空；A先生成带reservation的字段片段，原Insert返回身份后分别接纳。加载返回StoredAccountRoleFragment原DB载荷，current/historical角色版本独立，不以A当前态反填旧读取。冲突资格覆盖存储调用，不能先读片段后任意整行写。
++
++<a id="af1-final-roles"></a>
++
++**A 的发现和读取回执（PROPOSED）。** AccountRoleProtocol 的原预留附 t、原计划/字段及 token。AcceptDiscoveredRoleProjection 首次匹配只固定 resolvedIdentity。FinalizeInitialRoleReservation 验 t/token/同一终局并返回可重读确认。合写所及角色键在效果未决时保留在途；按 A 正式处置在同域安装或合并该 call 的已证列及后继需覆盖的下界后才撤在途。若尚无可信覆盖或处置则继续持项。不能靠 T 的 W 消账。includeInStorage=false 或原 call 已证全无角色效果时不凭空增加合写列下界；对实际已写列，即使 A 旧有 map 当时无该 s，也按受影响的谓词范围保留保护。
++
++AcceptReloadedRoleProjectionSet 在 A 域检查 expectedRoleRevision、attempt、经认证的整组谓词/列与所有返回或被遗漏、删除、仍受负向保护的角色键。预备候选 map、整组保护及原回执后，条件占用 L 的一次资格并无抛交换。原批返回空集也保留按整个 view 谓词域撤回的能力，后加入的 Y 无须先出现在批次中。T 的同 view 新票、有关成员更改或路线撤销须先令未用资格失效。A 先占用则该步先于撤回，后到撤回不能逆转；A 未交还时原 L 持项。回执遗失只重取。SetDefaultRole 在成功接纳点与 NoteLocalRoleMutation、Current 保护及版本一起提交；Historical 不受该 setter 影响。
++
++**M2 接口映射（PROPOSED）。** StartPrimarySwitch / AcceptRadioStep 每一新业务步使用原 request/step/attempt、写集和 PrimaryTopologyPort 的目标连续性。AssignmentStore 的 Primary 槽与 ICCID 各键分别登记、锁外执行并返原效果。PlanPrimaryRound 冻结 R 的成员/路线，RecordRadioSent 只记原 Radio 步。AcceptLateRadioEvidence 只回原轮；AcceptC1RetryDue 另验预算、原目标、上轮设备结束/复用及下一轮路由。R 的原会话 COMPLETE 收尾需单独协议证据。[阶段规则](SIM_Target_Architecture_Design_v1.2.md#af1-final-target)
+
+ <a id="application"></a>
+
+@@ -547,6 +572,8 @@
+
+ 资源租约核对epoch、完整资源集、fence及完整StepRef。未发不能伪完成，已发不能伪NotSent；写Unknown不释放。只读查询在证明结束和可复用后可释放资源，但仍保留原失败结果；开通道Get也不能绕过冲突域。
+
++**共享阶段的提交记录（PROPOSED）。** ResourceRadioRuntime::SwitchPrimaryRadio 在调用 SubmitPrimaryRadio 前登记逐原步/轮/阶段/成员的执行体、token 与组 lease/fence；重复相同成员不再次进平台。平台返回时只更改对应成员。ResourceBarrier::CancelConfirmedNotSent 只能在新提交已封、各成员已证未发、无在途执行时由组发起。P 的 Submit 尚未返回时，Q 的未发结果不能令两者撤租。已交接/未知的成员由原组留存，待提交执行退出、命令结束和全资源可复用的相应证据再结组。[完整资源准入](SIM_Target_Architecture_Design_v1.2.md#af1-resource-admission)
++
+ <a id="af1-barrier"></a>
+
+ **AF-1 补充 · 唯一屏障实例的契约（PROPOSED，待架构负责人签收）。** ResourceBarrier 的公开方法沿用，自身保证每个方法的原子性，内部不调用外部代码。一个模块实例内只构造一个，由 H 在装配时构造、登记资源键并以引用交给执行适配：
+@@ -601,6 +628,8 @@
+ ### 10.1 Adapter和平台输入的归属
+
+ AccountStoreAdapter与字段翻译在`account`，AssignmentStoreAdapter在`role_assignment`；carrier的PdpProfileRdbHelper随carrier。跨Owner共享的DataShare连接/重连/技术CRUD可留跨Owner技术连接（尚无独立实现，业务Adapter随Owner），业务字段计划不下沉。现SimRdbHelper混合语义不能整类当纯底座；TelephonyDataHelper有连接/错误状态，不应写“无状态”，但不持T/A事实缓存。共享底座升级可必要地影响多个Adapter，不能借此把它们再收拢成业务集中点。
++
++**I 证据边界（PROPOSED）。** AccountStoreAdapter 把原 I/O 的错误、完成、执行路线与能证明的效果/快照范围保留到对应请求，不受理调用方自报的 covers 布尔值。桥的同值读回可供核对，不能签发原写或后读已覆盖证明。A、T 的排序、消费及处置只在自己的受控入口发生。
+
+ C monitor保留原登记、首帧、死亡清理、重连及预算，把账户/角色重载交T/A、卡加载交R。不新增统一监听总线、不要求保持一只万能Monitor，也不未经事件差分强制只订阅过滤后的R事件。权限、调用者捕获及原排队节点留原层或等值C/宿主适配，不能因目录移动重新验证为服务身份。
+
+@@ -659,16 +688,27 @@
+ ```cpp
+ // infrastructure/request 的协议头，纯值
+ struct CloseObligation {
+-    enum class Kind { RequestOpen, CompletionNotReturned, EffectUnknown, QualificationHeld };
++    enum class Kind { RequestOpen, CompletionNotReturned, EffectUnknown, QualificationHeld,
++                      BusinessAdmissionPending, ExactReceiptPending, SourceDeliveryInFlight };
+     Kind kind;
+     std::optional<RequestId> request; // 原请求；发现、重载等非请求工作留空并填 subject
+     std::string subject;              // 原工作项，以及 EffectUnknown / QualificationHeld 所指的键、行列或资格成员
+     bool handedOff;                   // 仅当常驻接手者对这一项给出确认
+ };
+-struct OwnerCloseReceipt { RuntimeEpoch epoch; std::vector<CloseObligation> outstanding; };
++// 私有候选载荷，按已装配 Owner 独立签发
++struct OwnerCloseReceipt {
++    RuntimeEpoch epoch;
++    uint64_t closeGeneration;
++    bool sealAck;
++    uint64_t activityVersion;
++    std::vector<CloseObligation> outstanding;
++    std::vector<std::string> inFlightSubjects;
++};
+ ```
+
+-A、T、各用例和卡运行各增加一个只读的出具方法，内容来自各自已有的状态：A 的 pendingPrimary_、角色写集、未终态切换和未交还的完成；T 的 pendingDiscoveries_、观察台账中未结束的存储票据、已签发未接纳的重载尝试、激活进度；卡运行未结束的会话期望。632f6a2a8 的 A 在 C0 参数效果未知时不留 pendingPrimary_，在设备成功后的参数写未知时删除 pendingPrimary_，两处都须改为保留可出具的记录。
++**逐项来源（PROPOSED）。** TopologyService 暴露按 t/call/claim 的在途、已证写待业务接纳、W 待 A 精确确认、L 及角色许可待回执；卡侧报告待排/停监证据和原执行体，A 报 token、每键未结前缀及交付在途。H 用 q 固定已装配的 Owner 和根门，含 Scheduler、原交付与设备子图，收齐两组完整同轮收据并比较 activityVersion、门与明细。无有效逐项移交则原图留存。[业务关闭条件](SIM_Target_Architecture_Design_v1.2.md#af1-close-receipts)
++
++**源码差距。** 632f6a2a8 的 A 在 C0 参数效果未知时不留 pendingPrimary_，在设备成功后的参数写未知时删除 pendingPrimary_；原状态不足以派生完整收据。
+
+ **工厂范围。** Host 装配函数为 testonly，用于核心框架验证。AttachSimModuleToExisting 与 CreateOwnedSimServices 维持下表的声明状态，不因 Host 装配而提前实现。
+
+diff --git a/telephony_core_service/docs/SIM重构代码目录结构设计方案.md b/telephony_core_service/docs/SIM重构代码目录结构设计方案.md
+--- a/telephony_core_service/docs/SIM重构代码目录结构设计方案.md
++++ b/telephony_core_service/docs/SIM重构代码目录结构设计方案.md
+@@ -187,6 +187,10 @@
+ 
+ 账户的绑定事实由 Account 负责维护，其他模块通过接口和关联引用获取必要信息，不直接修改 Account 内部状态。
+ 
++<a id="af1-final-account-dir"></a>
++
++**AF-1 目录映射（PROPOSED）。** `account/` 的 TopologyService 持逐票发现、发送资格和在途处置，`account/discovery/` 中的观察台账维护当前来源/水位。AccountRegistry 持本域两视图的成员、字段保护和墓碑，BindingIndex 是关系的唯一写点。AccountStore 及所属 Adapter 提供原 I/O 证据；角色端口使用契约依赖，不导入角色实现。R·card 的来源/会话及加载成员留在 `card/`，R·device 的协议路由与全域屏障留在 `device/`。[接口位置](SIM_Multisim_Source_Architecture_Detailed_Design.md#af1-final-topology)
++
+ ### 4.2 Card：SIM 卡应用与操作
+ 
+ **核心职责：管理 SIM 卡应用的运行状态及其卡侧操作能力。**
+@@ -220,6 +224,8 @@
+ <a id="sc03-role-dir"></a>
+ 
+ SC-03 的角色偏好写资格与参数适配在 `role_assignment/`。Core 兼容入口、card/esim 的 Profile 提示依赖 A 的窄入站契约。账户标签恢复提示交 `account/`，按物理键的完整清单只查[D §5.2.1](migration/SIM_Architecture_Refactor_Design.md#sc03-ledger)。
++
++**AF-1 目录映射（PROPOSED）。** `role_assignment/` 持角色片段 token、合写列保护、逐 view 角色集合与原释放/投递回执；Primary 阶段与业务重试归 `role_assignment/primary/`。读取只经 T 的窄端口，发令依赖 Radio 契约。C 兼容出口和 O 私有使用的机制位于 Infrastructure，不在此复制共享状态。[角色接口](SIM_Multisim_Source_Architecture_Detailed_Design.md#af1-final-roles)
+ 
+ **核心职责：管理 SIM 业务角色及其分配关系。**
+ 
+@@ -366,7 +372,7 @@
+ 
+ <a id="sc01-assembly-dir"></a>
+ 
+-SC-01 的 `primary_host_lifecycle.*` 在此汇总已装配对象的关闭收据。业务效果与资格留在 `role_assignment/`，原出口关联留在 Owner 使用的 `infrastructure/request/` 与兼容交付侧，调度器报告队列及执行退出，设备域收据来自 `device/`。宿主借用 Core 的共享 RIL。[接口与收据](SIM_Multisim_Source_Architecture_Detailed_Design.md#sc01-receipts)
++**SC-01 目录映射（PROPOSED）。** `infrastructure/assembly/sim_module.*` 汇合实际装配 Owner 的同轮收据。`primary_host_lifecycle.*` 承接 A、调度器及 Radio 子图；T、卡侧、原出口及其投递各有原 Owner。`infrastructure/request/` 提供由使用者实例化的请求与领取机制。Assembly 只管理寿命、接线与收据读取，宿主借用 Core 的共享 RIL。[接口与收据](SIM_Multisim_Source_Architecture_Detailed_Design.md#sc01-receipts)
+ 
+ **核心职责：将各业务模块组织起来，接入现有 CoreService，并管理整个 SIM 模块的对象创建、依赖连接和生命周期。**
+ 
+diff --git a/telephony_core_service/docs/migration/SIM_Architecture_Refactor_Design.md b/telephony_core_service/docs/migration/SIM_Architecture_Refactor_Design.md
+--- a/telephony_core_service/docs/migration/SIM_Architecture_Refactor_Design.md
++++ b/telephony_core_service/docs/migration/SIM_Architecture_Refactor_Design.md
+@@ -778,6 +778,8 @@
+
+ **SC-01 验收。** C0 先完成主槽写，分别令 ICCID 实际写入/未写入，而存储入口均未返回完成证明。保持原出口未交付、角色仍进行中、R 命令数为零。首次 Stop 与重复 Stop 均须非 Drained，核对无重复写、无伪完成、原接收者仍存活。分别恢复证据、拒绝移交、确认有效移交，并使回调在执行中暂停。拒收须继续持有责任。确认移交才可让旧实例退出，接手者必须完成核对并按原契约交付一次。无移交时待原出口实际返回和效果核销后再判 Drained。重复 Stop 不能再调度、再执行或补发通知。[收据契约](../SIM_Multisim_Source_Architecture_Detailed_Design.md#sc01-receipts)
+
++**AF-1 关闭故障注入（PROPOSED）。** 在封口/发送权竞争、撤销已登记尚未投递、A 已固定身份而 T 准备失败、T 已提交而 A 释放回执丢失、角色许可已领取但未返回五处暂停。观察两组同 q 完整收据、原 call/claim/token/L、执行帧和版本。逐项交接需接收先登记、发送确认及本端退出；两遍之间转移义务须让该组失效。重复 Stop 同轮且无重投。只剩无在途的静态保护时分别验 L3、重建基线和 L4/L5。[关闭规范](../SIM_Target_Architecture_Design_v1.2.md#af1-close-receipts)
++
+ 保留 `ISimManager`/`IEsimManager` 公共布局；它们当前无虚析构。现有由具体类型创建的 shared_ptr 控制块并非因此错误；新工厂必须由 SIM 创建并提供匹配销毁方式，不通过接口裸指针 delete。跨 SO shared_ptr/容器仍要求同编译链/标准库/分配器/Feature 宏，发布按同产品全量重建，不宣称跨版本 ABI 稳定。
+
+ 内部生命周期建议：`Constructed→Starting→Running→Stopping→Draining→Stopped→Destroyed`。Starting 的部分就绪保持旧入口错误与查询行为。工厂返回兼容门面及私有生命周期句柄；Core 创建 HostPorts（RIL、搜网查询、Hub、外围协作），再装配 R 与用例，最后按原时点公开就绪。
+@@ -806,6 +808,18 @@
+ | SC-02 / WU-04/07 | 纯 Radio 步骤的发送记录中不出现卡应用会话。成员取自 R 的规划结果，四端点两栈时每阶段两条命令。路由观察版本在途变化时提交被拒并转入核对。提交结果区分确认未发送、交接已接受、交接未知；交接未知时不重发、不释放资格。UPDATE 只以成员 NOTIFY 推进。 | 必需成员无路由时在预写之前结束，参数写次数为零；产品的缺路由出口仍按 O3。 |
+ | SC-03 / WU-04，SIM-024、028、051 | [字段台账](#sc03-ledger)前三行的偏好键：无冲突时经 A 登记后写一次；父请求持有时沿用；C1 持有期间到达的独立提示不产生直接写。 | 相交后的处置（延后、等待或暂缓切换）未签收前，这三行入口不切换生产写权，保留原路径。Host 验证仅限不旁路写入，不得借此引入等待、丢弃提示或改变对外结果。 |
+ | 设备资源准入 / WU-06、08 及全部发令切片 | 同一物理域只有一个屏障实例。两个命令族键集相交时后到者在平台提交前被拒，不相交时并行。先到者结果未知时该键保持隔离。 | 屏障不覆盖仍在运行的旧 `services/sim` 执行者、其他共享 RIL 消费者和厂商旁路。按 WU 退出旧执行者之前，不以屏障存在宣称该域独占。Host 另验：旧实例的键仍隔离或未排空时，新实例的同域键停在 Checking，平台提交次数为零。该断言不等于产品热重建安全，后者属 G2c 门禁。 |
++
++<a id="af1-final-cutover"></a>
++
++**AF-1 候选切换断言（PROPOSED）。** 各行使用原 WU 的公开入口/后台入口、原返回与通知 Oracle，核实旧写者、执行者和重试者的最后一笔再切换。证据分别标 SOURCE、HOST、PRODUCT、DEVICE；以下为待执行断言。业务规范及勘误见[主设计](../SIM_Target_Architecture_Design_v1.2.md#af1-final-owners)和[签收包](../AF1_Architecture_Final_Signoff_Package_20261124.md)。
++
++| 切片 | 对照与放行证据 |
++|---|---|
++| 发现、建行及账户字段，WU-01～05 | 同一行来自原票/他写两因，混合列、已失效来源与内部失败，X/Y 两票写返回及核对顺序各双向。持续有效 Y 最终可得 W、真实 BindingRef 与原 A 释放确认，可信失效只结原效果。暂停于 A 固定、T 统一发布和释放回执前后验 M19。每票一次 Store、同票重放零增版、零重复发布。旧 Loader/Detect、初始化、后台及恢复写者依完整 WU 退出。 |
++| 两视图、字段与角色重载，WU-01～05 | 同一 L 接滞后空、覆盖后真实移出、未知路线，分别保留/删除/保留。截断不消费为整组替换。原票同值确认 vs 普通同值读、旧读有行跨 j、新 L 在重建后读到前段同身份号码且该号码无独立保护、遗漏项/墓碑、后继图像倒退分别取证。冲突 name 保留而合格 number 可更新；T 成员疑点、错配/重复角色行、遗漏受保护 A 键或未结角色合写均不得整组写。无关 T 字段冲突且 A 全域有效则允许整组。设置许可撤回/领取两种次序与丢回执，验 A 版本/保护、无重复交付、r 不因 reload 改变。成功 setter 阻旧 Current，独立 Historical 依其读源。 |
++| M1/M2，WU-04/07 及卡来源 | 从真实观察入口送局部刷新、短暂失证、确证拔卡、同卡重插，验 r / r+1 / r+2 与迟到撤销。C0、B、C1 在每次参数、阶段与输出前后换绑或停机。只核原目标每键前缀、原协议收尾及冻结成员；缺收尾证据时留隔离。错轮/普通 UPDATE response 不推进，无资格重试零新发令。 |
++| 共享物理资源，WU-06/08 及发令切片 | 完整集 K1/K2 中 K2 被占时检查 K1 未预留、平台零调用。一次 phase 的 P 进入平台后暂停，Q 返回确认未发，重放 P/Q 并尝试同域新发。观察原 lease/fence、P 的在途票、两成员提交次数和关闭明细，均不得撤组或重复交接。P 转未知/已交接时等待原结果与复用证明，单键、单成员结束不足以解隔离。 |
++| 外部与产品 / G2c、对应 G3 WU | Provider 负责人证明原写归因、两 view 读路线/世系/可见前缀或业务后继可达。RIL/HDI、设备及厂商证明实际成员、资源共享、原轮收尾、设备结束/复用；宿主证明根入口封口、驻留移交、重建与 SO 生命周期。AF1-13 的冲突处置仍需原产品返回/提示行为。无证明保留对应旧路径，Host 不放行产品迁移。 |
+
+ | 阶段/功能 | 共存方式 | 唯一写者/执行者与切换点 | 清理/回退条件 |
+ |---|---|---|---|
