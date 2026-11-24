@@ -22,7 +22,9 @@ Gate 工作树为 `d9c2d23dce7148df1fc474ce598fb1cff55b839d`，签收前 main/or
 
 ### AF-2 M2 实时卡发现与账户绑定（2026-11-24）
 
-**`AF2_M2_PARTIAL`。** 输入 `0f83e00cf`。已在正式 H 接通实时物理卡观察、可信会话失效、原 Store 操作的独立 T 票、Account/Binding 统一发布和 A 精确回执。已确认的实时 Binding 可进入现有 C0；换卡后旧 C0 命令不再取得后续效果资格。Stop 追踪 Store 在途、原票及 A 回执，保留有证续行。初轮完整 Target 117/117，Topology 规则修复后通过；最终证据、差分和 sanitizer 正在核对。产品 Provider、B/C1 发令、原生装配及生产写权仍受原门禁约束。[实时发现与调试](../services/multisim/test/docs/Host_Usage.md#af2-m2-debug)
+**`AF2_M2_ACCOUNT_DISCOVERY_READY`。** 输入 `0f83e00cf`，实现 `87f808d8e`。正式 H 接入实时物理卡观察。R 签会话和观察序号并有序撤权，T 签独立原票，由 I 返回原 Store 身份和逐列证据，T 同域发布 Account、Binding 和见证，A 精确确认并回收原预留。已知卡复用身份。Unknown 及部分效果可凭同票证据续行，可信换卡后的旧效果可结历史。Stop 封新发现并核对 Store 在途、T 原票及 A 收据。
+
+实际 Target 117/117，M2 9/9，M1 6/6，ASan 与 TSan 各 15/15。两张实时卡的 Binding 已用于 C0，原关系失效后旧命令不能再登记后续效果。Both C0 的 Legacy、Target、Oracle 均通过，差异 0。架构全入口通过，修复原 Topology 行 182 断言，按固定 Git 字节核对 M1 已有的布局差异。LLDB 已实测完整发现链路和单步，VS Code GUI 未实测。宿主 testonly 图使用可归因的 Host Store 证据。产品 Provider、外部观察订阅、B/C1 发令、原生装配与生产写权继续按原门禁验收。[验证及原始日志](../services/multisim/test/docs/evidence/af2_m2_20261124/README.md) · [实时发现、断点与 M3 接线](../services/multisim/test/docs/Host_Usage.md#af2-m2-debug)
 
 <a id="af1-signoff-validation"></a>
 
@@ -67,9 +69,8 @@ Gate 工作树为 `d9c2d23dce7148df1fc474ce598fb1cff55b839d`，签收前 main/or
 
 ### 下一批任务与依赖
 
-1. **AF-2 M2 SIM 发现与账户绑定**。复用本次 H、R 会话、T/A 与 Store 装配，接通活卡观察及关闭责任。从真实卡观察经原 t/call、A 预留和一次 Provider 写到 Binding/W，验证换卡、Unknown、重复和精确回执。定点修复或裁定 `EndPreparationFailure` 的既有断言。
-2. **AF-2 M3 C0 主卡分配**。把 M2 的实时 Binding 接至既有 H/C0 入口，并补完整兼容层、逐键效果恢复、原通知和一次完成；执行 Target 专项与 Both C0 差分。
-3. **AF2-08 与产品门禁**。复核历史目录映射与签收源码的角色协议差异。AF2-03 的多成员 Submit、Radio 产品证据、重建、生产接入及新能力按[签收包 §16](AF1_Architecture_Final_Signoff_Package_20261124.md#16-外部产品门禁)、[原功能与 WU](migration/SIM_Architecture_Refactor_Design.md#writer-cutover)及[主设计 §22](SIM_Target_Architecture_Design_v1.2.md#22-分阶段实施门禁)取证。
+1. **AF-2 M3 C0 主卡分配**。沿 M2 的 `FindBinding(slot)` 读取真实 `BindingRef`，由既有 H/C0 入口请求 A。继续完成兼容主卡入口、逐键效果恢复和原通知／完成。复用两张实时卡加 C0 的组合用例，并按原出口运行 Both 差分。[操作与断点](../services/multisim/test/docs/Host_Usage.md#af2-m2-debug)
+2. **后续能力及产品门禁**。Part 26 的 Reload 因果覆盖、AF2-03 的多成员 Submit、Radio 产品供证、跨实例重建及生产写权按[签收包 §16](AF1_Architecture_Final_Signoff_Package_20261124.md#16-外部产品门禁)、[原功能与 WU](migration/SIM_Architecture_Refactor_Design.md#writer-cutover)及[主设计 §22](SIM_Target_Architecture_Design_v1.2.md#22-分阶段实施门禁)取证。
 
 2026-11-19 独立设计审查以 `0e4004bef` 为源码输入，形成[历史评审](history/reviews/SIM_Architecture_Independent_Review_20261119.md)。评审先独立发布于 `d8fcbba40`，随后将分责、共享输出和异步资格同步至主设计与源码详细设计。产品装配、设备与业务执行仍按原批次记录；当前设计验收见[第二轮复审](history/reviews/SIM_Architecture_Independent_Review_20261119.md#第二轮复审--对修改后的设计提出反例)。
 

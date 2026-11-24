@@ -83,7 +83,7 @@
 
 ### 3.1 当前工作树：已存在的完整业务文件清单
 
-当前物理组织遵循[五组目录设计方案](SIM重构代码目录结构设计方案.md)，替代历史B+六组布局。bcc1614fd 的 91 个模块文件包含 89 个 C++ 单元及 BUILD/README。M9.3 将 AcceptResult 的定义由 assignment_service.cpp 移至原 request_mechanism 逻辑目标，变为 90 个 C++ 单元（共 92 文件）。至 `82a76db12`，B/C1 在 device/resource 增加 ResourceRadioRuntime 的头和实现，计 92 个 C++ 单元，共 94 文件；`role_assignment/assignment_store_adapter.cpp` 是 C0 系统参数兼容实现的首个已授权新增业务源，不承担 SIM 账户数据库职责；test/tools另列，不计入该数字。25个逻辑source_set及依赖边、public/visibility和testonly状态保持。G2a业务查询源仅由testonly目标验证，Core/Binding参考实现在test/framework/internal/host/g2a_reference，不由产品源表接入。CardRuntime/result_sinks暂在card/runtime，设备资源与卡状态尚未拆分；不是Assembly业务运行状态。
+当前物理组织遵循[五组目录设计方案](SIM重构代码目录结构设计方案.md)，替代历史B+六组布局。bcc1614fd 的 91 个模块文件包含 89 个 C++ 单元及 BUILD/README。M9.3 将 AcceptResult 的定义由 assignment_service.cpp 移至原 request_mechanism 逻辑目标，变为 90 个 C++ 单元（共 92 文件）。至 `82a76db12`，B/C1 在 device/resource 增加 ResourceRadioRuntime 的头和实现，计 92 个 C++ 单元，共 94 文件；`role_assignment/assignment_store_adapter.cpp` 是 C0 系统参数兼容实现的首个已授权新增业务源，不承担 SIM 账户数据库职责；test/tools另列，不计入该数字。25个逻辑source_set及依赖边、public/visibility和testonly状态保持。G2a业务查询源仅由testonly目标验证，Core/Binding参考实现在test/framework/internal/host/g2a_reference，不由产品源表接入。M2 当前共 98 文件，含 96 个 C++ 单元。`card/runtime` 的 CardObservationRuntime 独立接入实时观察，完整 CardRuntime 暂作为其他能力的过渡落点。
 
 ```text
 services/multisim/
@@ -136,6 +136,8 @@ services/multisim/
 │   │   ├── load_session.cpp
 │   │   └── load_session.h
 │   ├── runtime/
+│   │   ├── card_observation_runtime.cpp
+│   │   ├── card_observation_runtime.h
 │   │   ├── card_runtime.cpp
 │   │   ├── card_runtime.h
 │   │   └── result_sinks.h
@@ -683,7 +685,7 @@ H 在入口封好、Owner 封口任务生效后查询 A（包括 O/完成侧）�
 
 **M1 实际落点。** `CreateCoreSimModule` 通过 `CoreSimModulePorts` 装配已实现端口。H 给 T/A/R 注入同一 epoch，R·card 使用 `SessionRegistry` 接纳启动期已确认会话；T 通过 `AcceptStoredDiscovery` 接纳账户和 Binding。设备侧在共享屏障上以 `ObserveOnly` 装配，A 以 `C0Only` 限定可发起的计划。H 的窄 C0 入口登记实际执行帧；A 记录该请求的当前参数／输出／完成责任。H 排空当前帧、A、Scheduler 和 R 且无业务未了项后才允许销毁。现行代码使用范围及调试路径见[Host 单步](../services/multisim/test/docs/Host_Usage.md#af2-m1-debug)。
 
-**M2 实际落点。** H 复用同一组合根，将 `SessionRegistry` 与 `CardObservationSink` 接入 `CardObservationRuntime`。实时物理卡经 R 的短登记和 `TopologyService::DiscoverAccount` 进入独立原票；I 原操作带身份、列效果证据，T 准备节点后在同一域发布账户、绑定和原见证，A 交还精确处置。图的 Stop 同时核对已接纳帧、T 未结原票及 A 未交还收据。业务单例、取证与 M3 接线见[Host 使用说明](../services/multisim/test/docs/Host_Usage.md#af2-m2-debug)。
+**M2 实际落点。** H 复用同一组合根，将 `SessionRegistry` 与 `CardObservationSink` 接入 `CardObservationRuntime`。实时物理卡经 R 的短登记和 `TopologyService::DiscoverAccount` 进入独立原票。I 原操作带身份、列效果证据，T 准备节点后在同一域发布账户、绑定和原见证，A 交还精确处置。图的 Stop 同时核对已接纳帧、T 未结原票及 A 未交还收据。业务单例、取证与 M3 接线见[Host 使用说明](../services/multisim/test/docs/Host_Usage.md#af2-m2-debug)。
 
 **关闭。** SimModule::StopAcceptingAndDrain 先封兼容入口并登记在途调用，令 T、用例和卡运行停止受理，再调用 PrimaryHostLifecycle，随后汇合各出具者的收据和屏障状态。私有 DrainResult 增加“业务责任未了”一值。得到 Drained 之后才允许按成员反序析构，析构时 AssignmentService 不得另有强持有者。未 Drained 时保留原图。
 

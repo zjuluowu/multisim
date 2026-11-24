@@ -63,7 +63,7 @@ lldb /tmp/af2-m1/host/build/sim_test_target_host
 
 M1 的共享资源只登记 `primary-shared`。宿主提供的该键初始证据必须匹配本次 epoch。持有同一物理域的另一个执行实例、未排空的旧命令和真实硬件复用仍按产品门禁取证。工厂在 M1 只开放观察及 C0，B/C1 的旧组件夹具继续单独回归。Store 效果未确认时，原请求和写权留在 A，图保留，后继写拒绝，后续切片负责凭原操作证据收回。
 
-M2 在下节给出同一 H、R 会话与 T 实例的实时入口。原交接要求将真实 `CardObservationSink` 的投递与关闭责任接入 H，再从可信会话、原观察序列进入 `TopologyService::DiscoverAccount`。使用已接入的 `AccountStore` 和 A 规划端口，完成原写、T 发布及 A 原回执。首批验证一次真实写、换卡和 Unknown 原票，依赖与断言见[实施交接](../../../../docs/AF1_AF2_Implementation_Handoff_20261124.md#af2-first-batch)。
+M2 的实时卡观察、账户绑定和可运行单例见下节。
 
 <a id="af2-m2-debug"></a>
 
@@ -78,7 +78,7 @@ python3 -B "$TEST/scripts/test.py" run --backend target \
 lldb /tmp/af2-m2/host/build/sim_test_target_host
 ```
 
-在 LLDB 中设 `settings set target.disable-aslr false` 及 `settings set target.env-vars LLVM_PROFILE_FILE=/tmp/af2-m2/discovery-%p.profraw`，再运行 `run --gtest_filter=AF2Discovery.LiveCardDiscoveryCreatesAccountAndBinding`。VS Code 可用现有 Target Host 配置与同一过滤名。
+在 LLDB 中设 `settings set target.disable-aslr false` 及 `settings set target.env-vars LLVM_PROFILE_FILE=/tmp/af2-m2/discovery-%p.profraw`，再运行 `run --gtest_filter=AF2Discovery.LiveCardDiscoveryCreatesAccountAndBinding`。VS Code 可用现有 Target Host 配置与同一过滤名。优化构建若把 R 或 Registry 内联，可用验收记录中的无 LTO 调试构建定位这两处实现。
 
 ```mermaid
 sequenceDiagram
@@ -134,6 +134,6 @@ classDiagram
 | `AccountRegistry::PublishDiscovery`、`BindingIndex::PublishBinding` | T 在同一提交域做准备和发布。新订阅为 Store 返回的 41，Current/Historical 各有投影，绑定版本从 0 到 1。 |
 | `AssignmentService::FinalizeInitialRoleReservation`、`SimModule::FindBinding`、`SimModule::ReadAccount` | A 精确核对 call、token、结果身份和当前／历史处置，T 收回确认后未决项为零。外部读口可得到账户 41 和 slot 1 的绑定。 |
 
-Unknown 同票从 `SimModule::ReconcileDiscovery(call)` 续行。只认可实际 Store 原调用证据，按列累计，同值普通查询不会提升归因。可信换卡撤掉原关系，原票仍可凭后继证明只结历史。用 `ReadDiscoveryReceipt` 观察原阶段、列和 token；`ReadConfirmedDiscoveryRoles` 读取确认过的存储角色结果。Stop 之后这些续行保留，新的发现写入封口。未接入的真实产品 Provider 仍需证明原操作及实际列。
+Unknown 同票从 `SimModule::ReconcileDiscovery(call)` 续行。只认可实际 Store 原调用证据，按列累计，同值普通查询不会提升归因。可信换卡撤掉原关系，原票仍可凭后继证明只结历史。用 `ReadDiscoveryReceipt` 观察原阶段、列和 token。`ReadConfirmedDiscoveryRoles` 读取确认过的存储角色结果。Stop 之后这些续行保留，新的发现写入封口。未接入的真实产品 Provider 仍需证明原操作及实际列。
 
-M3 的组合验证用 `AF2Discovery.LiveBindingsFeedExistingC0AndStaleTargetCannotAdvance`。从 `FindBinding(slot)` 读取真实关系并将该 `BindingRef` 放入 C0 命令。A 用 T 的词法资格登记下一效果；换绑后旧命令不再登记后续写和角色投影。完整兼容入口、参数效果恢复及产品验收按 M3 门禁推进。
+M3 的组合验证用 `AF2Discovery.LiveBindingsFeedExistingC0AndStaleTargetCannotAdvance`。从 `FindBinding(slot)` 读取真实关系并将该 `BindingRef` 放入 C0 命令。A 用 T 的词法资格登记下一效果。换绑后旧命令不再登记后续写和角色投影。完整兼容入口、参数效果恢复及产品验收按 M3 门禁推进。
