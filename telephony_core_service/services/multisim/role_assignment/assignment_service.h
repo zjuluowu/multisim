@@ -79,6 +79,10 @@ public:
     bool StillOwnsInitialRoleReservation(const AccountRoleFragment &planned) const override;
     bool FinalizeInitialRoleReservation(const AccountRoleFragment &planned,
         const InitialRoleFinalizationEvidence &evidence) override;
+    void ConfirmInitialRoleReceipt(const AccountRoleFragment &planned,
+        const InitialRoleFinalizationEvidence &evidence) override;
+    size_t PendingDiscoveryRoles() const;
+    std::optional<ConfirmedDiscoveryRoles> ReadConfirmedDiscoveryRoles(SubscriptionId id) const;
     uint64_t ReadRoleProjectionRevision(bool historicalView) const override;
     bool AcceptReloadedRoleProjectionSet(const std::vector<StoredAccountRoleFragment> &loaded, uint64_t loadAttempt,
         uint64_t expectedAssignmentRevision, bool historicalView) override;

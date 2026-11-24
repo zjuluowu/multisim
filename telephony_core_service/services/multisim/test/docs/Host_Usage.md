@@ -63,4 +63,77 @@ lldb /tmp/af2-m1/host/build/sim_test_target_host
 
 M1 的共享资源只登记 `primary-shared`。宿主提供的该键初始证据必须匹配本次 epoch。持有同一物理域的另一个执行实例、未排空的旧命令和真实硬件复用仍按产品门禁取证。工厂在 M1 只开放观察及 C0，B/C1 的旧组件夹具继续单独回归。Store 效果未确认时，原请求和写权留在 A，图保留，后继写拒绝，后续切片负责凭原操作证据收回。
 
-M2 从同一 H、R 会话与 T 实例继续接线。将真实 `CardObservationSink` 的投递与关闭责任接入 H，再从可信会话、原观察序列进入 `TopologyService::DiscoverAccount`。使用已接入的 `AccountStore` 和 A 规划端口，完成原写、T 发布及 A 原回执。首批验证一次真实写、换卡和 Unknown 原票，依赖与断言见[实施交接](../../../../docs/AF1_AF2_Implementation_Handoff_20261124.md#af2-first-batch)。
+M2 在下节给出同一 H、R 会话与 T 实例的实时入口。原交接要求将真实 `CardObservationSink` 的投递与关闭责任接入 H，再从可信会话、原观察序列进入 `TopologyService::DiscoverAccount`。使用已接入的 `AccountStore` 和 A 规划端口，完成原写、T 发布及 A 原回执。首批验证一次真实写、换卡和 Unknown 原票，依赖与断言见[实施交接](../../../../docs/AF1_AF2_Implementation_Handoff_20261124.md#af2-first-batch)。
+
+<a id="af2-m2-debug"></a>
+
+## AF-2 M2 从实时卡观察单步
+
+从仓库根执行。首次构建按[测试入口](../README.md)设置固定依赖。用例位于 `test/cases/target/primary/c0_topology_integration_test.cpp`，其 fixture 接入可控制原操作证据的 Host Store 端口，其他对象由正式工厂创建。
+
+```sh
+TEST=telephony_core_service/services/multisim/test
+python3 -B "$TEST/scripts/test.py" run --backend target \
+  --filter AF2Discovery.LiveCardDiscoveryCreatesAccountAndBinding --out /tmp/af2-m2/host
+lldb /tmp/af2-m2/host/build/sim_test_target_host
+```
+
+在 LLDB 中设 `settings set target.disable-aslr false` 及 `settings set target.env-vars LLVM_PROFILE_FILE=/tmp/af2-m2/discovery-%p.profraw`，再运行 `run --gtest_filter=AF2Discovery.LiveCardDiscoveryCreatesAccountAndBinding`。VS Code 可用现有 Target Host 配置与同一过滤名。
+
+```mermaid
+sequenceDiagram
+    participant H as SimModule
+    participant R as CardObservationRuntime
+    participant T as TopologyService
+    participant I as AccountStore
+    participant A as AssignmentService
+    H->>R: ObserveVerifiedCard
+    R->>R: PublishVerifiedSession
+    R->>T: RegisterCardDiscoveryObservation
+    R->>T: DiscoverAccount
+    T->>T: BeginStore signs original call
+    T->>I: MatchDiscoveryAccount
+    T->>A: PrepareAccountRoleFragment
+    T->>I: WriteDiscoveredAccount once
+    I-->>T: Original call, identity, column evidence
+    T->>A: AcceptDiscoveredRoleProjection
+    T->>T: PublishDiscovery and PublishBinding
+    T->>A: FinalizeInitialRoleReservation
+    A-->>T: Exact receipt
+    T->>A: ConfirmInitialRoleReceipt
+    H->>T: ReadAccount and FindBinding
+```
+
+```mermaid
+classDiagram
+    SimModule *-- CardObservationRuntime
+    SimModule *-- SessionRegistry
+    SimModule *-- TopologyService
+    SimModule --> AssignmentService
+    CardObservationRuntime --> SessionRegistry
+    CardObservationRuntime --> CardObservationSink
+    TopologyService ..|> CardObservationSink
+    TopologyService *-- DiscoveryStoreTicket
+    TopologyService *-- AccountRegistry
+    TopologyService *-- BindingIndex
+    DiscoveryStoreTicket --> SessionRef
+    DiscoveryStoreTicket --> DiscoveryCallRef
+    DiscoveryCallRef --> AccountRoleFragment
+    BindingIndex --> BindingRef
+    AccountRegistry --> AccountRecord
+    BindingRef --> AccountRecord : SubscriptionId
+    AssignmentService --> AccountRoleFragment
+```
+
+| 源码断点 | 查看数据 |
+| --- | --- |
+| `infrastructure/assembly/sim_module_factory.cpp` 的 `CreateCoreSimModule` | 空 `accounts`、只读目录与本次 epoch，H 持卡观察、T 和 A。 |
+| `card/runtime/card_observation_runtime.cpp` 的 `ObserveVerifiedCard` 及 `card/state/session_registry.cpp` 的 `PublishVerifiedSession` | slot 1、USIM、来源代次 1，R 发布 Session 后签观察序号。可信撤销经同一短域到 T，Store I/O 在 R 短域外。 |
+| `account/topology_service.cpp` 的 `DiscoverAccount`、`account/discovery/discovery_observation_ledger.cpp` 的 `BeginStore` | 原 `admission`、epoch、ICCID 和预期绑定水位，初次 live 观察没有现存 Binding。 |
+| `ControlledDiscoveryStore::MatchDiscoveryAccount`、`AssignmentService::PrepareAccountRoleFragment`、`ControlledDiscoveryStore::WriteDiscoveredAccount` | Match 为确定没有行，A 按原 call 保留 token，I 的原计划和列证据对应同一次写。 |
+| `AccountRegistry::PublishDiscovery`、`BindingIndex::PublishBinding` | T 在同一提交域做准备和发布。新订阅为 Store 返回的 41，Current/Historical 各有投影，绑定版本从 0 到 1。 |
+| `AssignmentService::FinalizeInitialRoleReservation`、`SimModule::FindBinding`、`SimModule::ReadAccount` | A 精确核对 call、token、结果身份和当前／历史处置，T 收回确认后未决项为零。外部读口可得到账户 41 和 slot 1 的绑定。 |
+
+Unknown 同票从 `SimModule::ReconcileDiscovery(call)` 续行。只认可实际 Store 原调用证据，按列累计，同值普通查询不会提升归因。可信换卡撤掉原关系，原票仍可凭后继证明只结历史。用 `ReadDiscoveryReceipt` 观察原阶段、列和 token；`ReadConfirmedDiscoveryRoles` 读取确认过的存储角色结果。Stop 之后这些续行保留，新的发现写入封口。未接入的真实产品 Provider 仍需证明原操作及实际列。
+
+M3 的组合验证用 `AF2Discovery.LiveBindingsFeedExistingC0AndStaleTargetCannotAdvance`。从 `FindBinding(slot)` 读取真实关系并将该 `BindingRef` 放入 C0 命令。A 用 T 的词法资格登记下一效果；换绑后旧命令不再登记后续写和角色投影。完整兼容入口、参数效果恢复及产品验收按 M3 门禁推进。

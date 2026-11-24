@@ -22,7 +22,7 @@
 #include "infrastructure/assembly/sim_module_factory.h"
 #include "infrastructure/assembly/primary_host_lifecycle.h"
 #include "account/topology_service.h"
-#include "card/state/session_registry.h"
+#include "card/runtime/card_observation_runtime.h"
 
 namespace OHOS::Telephony::MultiSim {
 // Startup adapters are dedicated to this instance, except for the borrowed platform service.
@@ -51,8 +51,16 @@ public:
     RuntimeEpoch Epoch() const { return epoch_; }
     const SlotCatalog &Catalog() const { return *catalog_; }
     std::optional<BindingRef> FindBinding(SlotId slot) const;
-    std::optional<AccountView> ReadAccount(SubscriptionId subscription) const;
+    std::optional<AccountView> ReadAccount(SubscriptionId subscription,
+        AccountReadView view = AccountReadView::Current) const;
     AssignmentView ReadAssignment() const;
+    std::optional<SessionRef> ObserveVerifiedCard(const CardApplicationTarget &application,
+        uint64_t generation, const std::string &iccid);
+    bool InvalidateVerifiedCard(const SessionRef &session);
+    bool ReconcileDiscovery(DiscoveryCallRef call);
+    std::optional<TopologyService::DiscoveryReceipt> ReadDiscoveryReceipt(DiscoveryCallRef call) const;
+    size_t PendingDiscoveryRoles() const;
+    std::optional<ConfirmedDiscoveryRoles> ReadConfirmedDiscoveryRoles(SubscriptionId id) const;
     std::optional<AssignmentService::C0Receipt> ReadC0Receipt() const;
     // A disengaged result means the module rejected a new call before entering A.
     std::optional<RequestId> StartPrimarySwitch(const SwitchPrimaryCommand &command);
@@ -67,6 +75,13 @@ private:
     bool InitializeResources();
     bool SeedAccount(const ConfirmedSlotAccount &confirmed);
     void ReturnPrimaryCall();
+    bool AdmitDiscoveryCall(bool originalOnly = false);
+    void ReturnDiscoveryCall();
+
+    struct DiscoveryCall {
+        CoreSimModuleHandle module;
+        ~DiscoveryCall() { module->ReturnDiscoveryCall(); }
+    };
 
     struct PrimaryCall {
         CoreSimModuleHandle module;
@@ -81,10 +96,13 @@ private:
     ResourceRadioRuntime radio_;
     SessionRegistry sessions_;
     TopologyService topology_;
+    CardObservationRuntime card_;
     std::shared_ptr<AssignmentService> assignment_;
     PrimaryHostLifecycle lifecycle_;
     std::mutex admissionMutex_;
     bool accepting_ {true};
+    size_t discoveryCalls_ {0};
+    bool primaryEffectUnresolved_ {false};
     bool primaryCallActive_ {false};
     bool joining_ {false};
     bool drained_ {false};

@@ -683,6 +683,8 @@ H 在入口封好、Owner 封口任务生效后查询 A（包括 O/完成侧）�
 
 **M1 实际落点。** `CreateCoreSimModule` 通过 `CoreSimModulePorts` 装配已实现端口。H 给 T/A/R 注入同一 epoch，R·card 使用 `SessionRegistry` 接纳启动期已确认会话；T 通过 `AcceptStoredDiscovery` 接纳账户和 Binding。设备侧在共享屏障上以 `ObserveOnly` 装配，A 以 `C0Only` 限定可发起的计划。H 的窄 C0 入口登记实际执行帧；A 记录该请求的当前参数／输出／完成责任。H 排空当前帧、A、Scheduler 和 R 且无业务未了项后才允许销毁。现行代码使用范围及调试路径见[Host 单步](../services/multisim/test/docs/Host_Usage.md#af2-m1-debug)。
 
+**M2 实际落点。** H 复用同一组合根，将 `SessionRegistry` 与 `CardObservationSink` 接入 `CardObservationRuntime`。实时物理卡经 R 的短登记和 `TopologyService::DiscoverAccount` 进入独立原票；I 原操作带身份、列效果证据，T 准备节点后在同一域发布账户、绑定和原见证，A 交还精确处置。图的 Stop 同时核对已接纳帧、T 未结原票及 A 未交还收据。业务单例、取证与 M3 接线见[Host 使用说明](../services/multisim/test/docs/Host_Usage.md#af2-m2-debug)。
+
 **关闭。** SimModule::StopAcceptingAndDrain 先封兼容入口并登记在途调用，令 T、用例和卡运行停止受理，再调用 PrimaryHostLifecycle，随后汇合各出具者的收据和屏障状态。私有 DrainResult 增加“业务责任未了”一值。得到 Drained 之后才允许按成员反序析构，析构时 AssignmentService 不得另有强持有者。未 Drained 时保留原图。
 
 关闭收据的最小形态如下，要求见[主设计 §14.3](SIM_Target_Architecture_Design_v1.2.md#af1-close-receipts)。字段的具体类型在实施时确定，但必须能逐项定位：

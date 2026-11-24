@@ -289,17 +289,33 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         operations_.MarkTerminal(request, TerminalState::NeedsReconciliation);
     };
 
-    const auto beginEffect = [&](C0Stage stage) {
-        if (c0Only) {
-            c0Receipt_ = C0Receipt {request, stage};
-            guard.unlock();
+    const auto beginEffect = [&](C0Stage stage, const std::function<void()> &local = {}) {
+        if (!c0Only) {
+            if (local) { local(); }
+            return true;
         }
+        const bool admitted = topology_.WithCurrentPrimaryTarget(*facts, [&] {
+            if (local) { local(); }
+            c0Receipt_ = C0Receipt {request, stage};
+        });
+        if (admitted) { guard.unlock(); }
+        return admitted;
+    };
+    const auto endRevoked = [&](TransitionPhase expected) {
+        assignment_.AcceptTransitionPhase(*target->radioDomain, request.value, expected, TransitionPhase::Failed);
+        assignment_.ReleaseRoleWriteSet(request.value, kPrimaryRoleWriteSet);
+        c0Receipt_ = C0Receipt {request, C0Stage::Completion};
+        fail();
+        c0Receipt_.reset();
     };
     const auto effectReturned = [&] {
         if (c0Only) { guard.lock(); }
     };
 
-    beginEffect(C0Stage::Preference);
+    if (!beginEffect(C0Stage::Preference)) {
+        endRevoked(TransitionPhase::Admitted);
+        return request;
+    }
     const auto preference = store_.WriteUserPrimaryPreference(command.userSet);
     effectReturned();
     if (!preference.callFinished) {
@@ -307,7 +323,10 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         return request;
     }
     // Legacy Core ignores completed SetParameter failure for this user preference hint.
-    beginEffect(C0Stage::PrimaryParameters);
+    if (!beginEffect(C0Stage::PrimaryParameters)) {
+        endRevoked(TransitionPhase::Admitted);
+        return request;
+    }
     const auto primary = store_.WritePrimaryParameters(target->slot, facts->iccid);
     effectReturned();
     if (!primary.callFinished) {
@@ -315,14 +334,21 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         return request;
     }
     // Legacy SavePrimaryCardInfo records in-memory/output role despite completed parameter failure.
-    assignment_.AcceptPrimaryParameterProjection(target->slot);
-    assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
-        TransitionPhase::Admitted, TransitionPhase::ParametersWritten);
-    beginEffect(C0Stage::MainNotification);
+    if (!beginEffect(C0Stage::MainNotification, [&] {
+        assignment_.AcceptPrimaryParameterProjection(target->slot);
+        assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
+            TransitionPhase::Admitted, TransitionPhase::ParametersWritten);
+    })) {
+        endRevoked(TransitionPhase::Admitted);
+        return request;
+    }
     output_.PublishMainCardChanged(target->slot);
     effectReturned();
 
-    beginEffect(C0Stage::DataParameters);
+    if (!beginEffect(C0Stage::DataParameters)) {
+        endRevoked(TransitionPhase::ParametersWritten);
+        return request;
+    }
     const auto data = store_.WriteDefaultData(target->slot);
     effectReturned();
     if (!data.callFinished) {
@@ -330,8 +356,10 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         return request;
     }
     // Legacy SetDefaultCellularDataSlotId also returns success after a void parameter write.
-    assignment_.AcceptDataParameterProjection(target->slot);
-    beginEffect(C0Stage::DataNotification);
+    if (!beginEffect(C0Stage::DataNotification, [&] { assignment_.AcceptDataParameterProjection(target->slot); })) {
+        endRevoked(TransitionPhase::ParametersWritten);
+        return request;
+    }
     output_.PublishDefaultDataChanged(target->slot, facts->binding.subscription);
     effectReturned();
     assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
@@ -719,6 +747,25 @@ bool AssignmentService::StillOwnsInitialRoleReservation(const AccountRoleFragmen
     std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
     return accountRoles_.StillOwns(planned);
 }
+void AssignmentService::ConfirmInitialRoleReceipt(const AccountRoleFragment &planned,
+    const InitialRoleFinalizationEvidence &evidence)
+{
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
+    accountRoles_.ConfirmReceipt(planned, evidence);
+}
+
+std::optional<ConfirmedDiscoveryRoles> AssignmentService::ReadConfirmedDiscoveryRoles(SubscriptionId id) const
+{
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
+    return accountRoles_.ReadConfirmedDiscoveryRoles(id);
+}
+
+size_t AssignmentService::PendingDiscoveryRoles() const
+{
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
+    return accountRoles_.PendingDiscoveryRoles();
+}
+
 bool AssignmentService::FinalizeInitialRoleReservation(const AccountRoleFragment &planned,
     const InitialRoleFinalizationEvidence &evidence)
 {

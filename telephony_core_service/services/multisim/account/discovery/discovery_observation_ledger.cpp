@@ -17,6 +17,7 @@
 // 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
 
 #include "account/discovery/discovery_observation_ledger.h"
+#include <limits>
 
 namespace OHOS::Telephony::MultiSim {
 namespace {
@@ -35,8 +36,14 @@ bool DiscoveryObservationLedger::AcceptDiscovery(const CardDiscoveryObservation 
     }
     Key key {observation.session.application.slot, observation.session.application.applicationKey};
     auto current = accepted_.find(key);
-    if (current != accepted_.end() && observation.observationSequence <= current->second.sequence) {
-        return false;
+    if (current != accepted_.end()) {
+        const auto &previous = current->second;
+        if (observation.observationSequence <= previous.sequence ||
+            observation.session.bindingGeneration < previous.session.bindingGeneration ||
+            (SameSession(observation.session, previous.session) &&
+             (!previous.valid || previous.iccid != observation.iccid))) {
+            return false;
+        }
     }
     accepted_.insert_or_assign(key, Entry {observation.session, observation.observationSequence, true, observation.iccid});
     return true;
@@ -82,25 +89,32 @@ std::optional<DiscoveryStoreTicket> DiscoveryObservationLedger::BeginStore(
     if (!revision || !StillCurrent(observation)) { return std::nullopt; }
     auto &entry = accepted_.at({observation.session.application.slot, observation.session.application.applicationKey});
     if (entry.admission != 0) { return std::nullopt; } // 重复观察不自动重放建行。
-    const Key reserveKey {observation.session.application.slot, observation.session.application.applicationKey};
     const auto owner = activeIccids_.find(observation.iccid);
-    if (owner != activeIccids_.end() && owner->second != reserveKey) { return std::nullopt; }
-    activeIccids_.insert_or_assign(observation.iccid, reserveKey);
+    if (owner != activeIccids_.end() || nextAdmission_ == std::numeric_limits<uint64_t>::max()) {
+        return std::nullopt;
+    }
+    activeIccids_.emplace(observation.iccid, nextAdmission_ + 1);
     entry.admission = ++nextAdmission_;
     entry.pending = true;
     return DiscoveryStoreTicket {observation, entry.admission, *revision};
 }
+void DiscoveryObservationLedger::ReleaseStore(const DiscoveryStoreTicket &ticket)
+{
+    const auto found = activeIccids_.find(ticket.observation.iccid);
+    if (found != activeIccids_.end() && found->second == ticket.admission) { activeIccids_.erase(found); }
+}
+
 bool DiscoveryObservationLedger::EndPreparationFailure(const DiscoveryStoreTicket &ticket, bool callFinished,
     const BindingIndex &bindings)
 {
-    if (!MatchesStore(ticket, bindings)) { return false; }
+    if (!callFinished || !MatchesStore(ticket, bindings)) { return false; }
     auto &entry = accepted_.at({ticket.observation.session.application.slot,
         ticket.observation.session.application.applicationKey});
     if (!entry.pending) { return false; }
     entry.pending = false;
     entry.effect = EffectKnowledge::NotSent; // 仅匹配读取/角色规划失败，尚未发出建行写。
     entry.callFinished = callFinished;
-    activeIccids_.erase(ticket.observation.iccid);
+    ReleaseStore(ticket);
     return true;
 }
 std::optional<DiscoveryStoreTicket> DiscoveryObservationLedger::RetryAfterKnownNoEffect(
@@ -109,7 +123,8 @@ std::optional<DiscoveryStoreTicket> DiscoveryObservationLedger::RetryAfterKnownN
     if (!MatchesStore(ticket, bindings)) { return std::nullopt; }
     auto &entry = accepted_.at({ticket.observation.session.application.slot,
         ticket.observation.session.application.applicationKey});
-    if (entry.pending || !entry.callFinished || (entry.effect != EffectKnowledge::NotSent &&
+    if (entry.pending || !entry.callFinished || activeIccids_.count(ticket.observation.iccid) ||
+        nextAdmission_ == std::numeric_limits<uint64_t>::max() || (entry.effect != EffectKnowledge::NotSent &&
         entry.effect != EffectKnowledge::Rejected && entry.effect != EffectKnowledge::ConfirmedNotApplied)) {
         return std::nullopt;
     }
@@ -117,8 +132,7 @@ std::optional<DiscoveryStoreTicket> DiscoveryObservationLedger::RetryAfterKnownN
     entry.pending = true;
     entry.effect = EffectKnowledge::NotSent;
     entry.callFinished = false;
-    activeIccids_.insert_or_assign(ticket.observation.iccid,
-        Key{ticket.observation.session.application.slot, ticket.observation.session.application.applicationKey});
+    activeIccids_.emplace(ticket.observation.iccid, entry.admission);
     return DiscoveryStoreTicket {ticket.observation, entry.admission, ticket.bindingRevision};
 }
 DiscoveryStoreAcceptance DiscoveryObservationLedger::CompleteStored(const DiscoveryStoreTicket &ticket,
@@ -137,12 +151,12 @@ DiscoveryStoreAcceptance DiscoveryObservationLedger::CompleteStored(const Discov
     entry.effect = effect;
     entry.callFinished = callFinished;
     if (!allowBinding || effect != EffectKnowledge::ConfirmedApplied || !identity) {
-        if (!mayHaveWritten) { activeIccids_.erase(ticket.observation.iccid); }
+        if (!mayHaveWritten) { ReleaseStore(ticket); }
         return {false, mayHaveWritten, false};
     }
     const bool accepted = bindings.AcceptBinding(ticket.observation.session.application.slot, *identity,
         ticket.bindingRevision);
-    if (accepted) { activeIccids_.erase(ticket.observation.iccid); }
+    if (accepted) { ReleaseStore(ticket); }
     return {accepted, !accepted, false};
 }
 
@@ -159,7 +173,7 @@ DiscoveryStoreAcceptance DiscoveryObservationLedger::ReconcileStored(const Disco
     found->second.effect = effect;
     found->second.callFinished = true;
     if (identity && effect == EffectKnowledge::ConfirmedApplied) {
-        activeIccids_.erase(ticket.observation.iccid);
+        ReleaseStore(ticket);
     }
     return {false, !identity || effect == EffectKnowledge::Unknown, false};
 }

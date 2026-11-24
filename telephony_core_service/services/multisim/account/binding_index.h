@@ -30,6 +30,7 @@ struct SlotRuntimeEntry {
     bool instanceAssembled {false};
     uint64_t bindingRevision {0}; // 空位置也保存；移除后不得归零，防同卡再插ABA。
     std::optional<BindingRef> acceptedBinding;
+    std::optional<SessionRef> source {};
 };
 // T 维护已接受绑定/空位置版本；R 维护原始设备会话。目录不证明对象已装配。
 // 一位置一当前绑定沿旧契约；Port映到不同逻辑槽不自动要求新schema。
@@ -40,6 +41,10 @@ public:
     std::optional<uint64_t> ReadPositionRevision(SlotId slot) const;
     bool StillMatches(const BindingRef &expected) const;
     bool AcceptAssemblyState(SlotId slot, bool assembled);
+    std::optional<BindingRef> PrepareBinding(SlotId slot, SubscriptionId subscription, uint64_t expectedRevision) const;
+    void PublishBinding(const BindingRef &binding, std::optional<SessionRef> source) noexcept;
+    void InvalidateSource(const SessionRef &session);
+    bool CanObserve(const CardApplicationTarget &application) const;
     bool AcceptBinding(SlotId slot, SubscriptionId subscription, uint64_t expectedRevision);
     bool RemoveBinding(const BindingRef &expected);
     std::vector<SlotRuntimeEntry> ReadRuntimeSlots() const;

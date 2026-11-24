@@ -27,6 +27,8 @@ CONTRACTS = {"topology_contracts", "assignment_contracts", "runtime_contracts"}
 TYPES = {"topology_types", "assignment_types"}
 VALUES = {"sim_values", "request_protocol"}
 AUTHORIZED_NEW_FILES = {
+    'card/runtime/card_observation_runtime.cpp',
+    'card/runtime/card_observation_runtime.h',
     'infrastructure/assembly/primary_host_lifecycle.cpp',
     'infrastructure/assembly/primary_host_lifecycle.h',
     'device/resource/resource_radio_runtime.cpp',
@@ -80,7 +82,9 @@ SOURCE_GROUPS = {'readonly_query': ('infrastructure/compatibility/api/real_sim_c
                        'card/esim/profile_requests.h',
                        'card/records/ef_requests.h',
                        'card/security/pin_requests.h'),
- 'runtime_core': ('card/runtime/card_runtime.cpp',
+ 'runtime_core': ('card/runtime/card_observation_runtime.cpp',
+                  'card/runtime/card_observation_runtime.h',
+                  'card/runtime/card_runtime.cpp',
                   'card/runtime/card_runtime.h',
                   'card/runtime/result_sinks.h'),
  'runtime_mechanisms': ('card/records/load_session.cpp',
@@ -351,7 +355,7 @@ def type_definitions(text):
 def check_migration():
     manifest = json.loads(((_TEST / 'cases/architecture') / "source_migration.json").read_text())
     repo = ROOT.parent
-    from source_evolution import migration_inputs
+    from source_evolution import matches_prior_layout_delta, migration_inputs
     inputs_before_m1 = migration_inputs(SOURCE, repo)
 
     def migration_text(name):
@@ -470,7 +474,8 @@ def check_migration():
         if Path(entry["old"]).suffix in SUFFIXES:
             after = migration_text(entry["target"])
             # Includes are checked separately; preserve all remaining tokens, including header bodies.
-            if token_sequence(before.decode()) != token_sequence(after):
+            if (token_sequence(before.decode()) != token_sequence(after) and
+                    not matches_prior_layout_delta(entry["target"], after.encode())):
                 authorized_c0_targets = {
                     "role_assignment/assignment_aggregate.h",
                     "role_assignment/assignment_aggregate.cpp",

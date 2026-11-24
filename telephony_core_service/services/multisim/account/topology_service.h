@@ -64,9 +64,24 @@ public:
         const std::u16string &number);
     ReloadRequest PrepareAccountReload(AccountReadView view, uint64_t loadAttempt);
     void AcceptAccountReload(const ReloadRequest &request, const AccountLoadResult &loaded);
+    bool RegisterCardDiscoveryObservation(const CardDiscoveryObservation &observation) override;
     void AcceptCardDiscoveryObservation(const CardDiscoveryObservation &observation) override;
-    DiscoveryAcceptance DiscoverAccount(const CardDiscoveryObservation &observation);
+    DiscoveryAcceptance DiscoverAccount(const CardDiscoveryObservation &observation) override;
     bool ReconcileDiscovery(const CardDiscoveryObservation &observation);
+    bool ReconcileDiscovery(DiscoveryCallRef call);
+    void SealDiscovery();
+    size_t PendingDiscoveryCount() const;
+    enum class DiscoveryPhase { Matching, WaitingMatch, Planning, Writing, WaitingEvidence, Finalizing };
+    struct DiscoveryReceipt {
+        DiscoveryCallRef call;
+        DiscoveryPhase phase;
+        bool executing;
+        uint16_t applied;
+        uint16_t notApplied;
+        std::optional<uint64_t> roleToken;
+        std::optional<BindingRef> published;
+    };
+    std::optional<DiscoveryReceipt> ReadDiscoveryReceipt(DiscoveryCallRef call) const;
     void AcceptCardSessionInvalidation(const CardSessionInvalidation &invalidation) override;
     // Application ingress after the original provider write is confirmed. It does not
     // allocate identities or expose the private registries.
@@ -80,8 +95,14 @@ public:
     AccountAcceptance AcceptActivationProjection(SubscriptionId subscription, AccountReadView view,
         uint64_t expectedActiveRevision, bool active);
     std::optional<PrimaryTargetFacts> ReadPrimaryTarget(SlotId slot) const override;
+    bool WithCurrentPrimaryTarget(const PrimaryTargetFacts &expected, const std::function<void()> &admit) const override;
     RequestId BeginRouteMapping(const StepRef &parent, SlotTarget target) override;
 private:
+    DiscoveryAcceptance ContinueDiscovery(DiscoveryCallRef call,
+        const std::optional<AccountDiscoveryStoreResult> &result);
+    bool FinalizeDiscovery(DiscoveryCallRef call);
+    void MarkDiscoveryReturned(DiscoveryCallRef call);
+    void FinishWithoutWrite(DiscoveryCallRef call);
     AccountFieldReservation ReserveNumberField(const NumberExecutionTarget &target);
     void ReleaseAfterStoreCallFinished(const AccountFieldReservation &reservation,
         const AccountStoreWriteResult &result);
@@ -94,10 +115,23 @@ private:
     mutable std::recursive_mutex commitLock_;
     struct PendingDiscovery {
         DiscoveryStoreTicket ticket;
-        AccountRoleFragment rolePlan;
-        AccountDiscoveryStoreResult stored;
+        DiscoveryPhase phase {DiscoveryPhase::Matching};
+        bool executing {true};
+        std::optional<AccountRoleFragment> rolePlan {};
+        std::optional<AccountDiscoveryWritePlan> plan {};
+        std::optional<AccountStorageRow> matched {};
+        std::optional<SubscriptionId> assigned {};
+        int32_t originalLegacyResult {0};
+        uint16_t applied {0};
+        uint16_t notApplied {0};
+        bool ambiguous {false};
+        bool callFinished {false};
+        std::optional<InitialRoleFinalizationEvidence> finalization {};
+        std::optional<BindingRef> published {};
     };
-    std::map<std::pair<SlotId, std::string>, PendingDiscovery> pendingDiscoveries_;
+    const RuntimeEpoch discoveryEpoch_;
+    bool acceptingDiscovery_ {true};
+    std::map<uint64_t, PendingDiscovery> pendingDiscoveries_;
     ActivationProgress activationProgress_;
     // 发现：R顺序观察进入observations_；预留旧/新键；Match→A角色预留→一次原Insert/Update。
     // 返回后复核observations_/绑定键/角色资格，分别接纳；已写但失效进入核对。

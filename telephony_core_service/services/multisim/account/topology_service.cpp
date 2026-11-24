@@ -22,14 +22,15 @@
 namespace OHOS::Telephony::MultiSim {
 TopologyService::TopologyService(const SlotCatalog &catalog, AccountStore &store, RuntimeEpoch epoch)
     : bindings_(catalog), observations_(epoch), store_(store),
-      useLegacySingleSlotRoles_(catalog.Capacities().configured == 1), activationProgress_(epoch) {}
+      useLegacySingleSlotRoles_(catalog.Capacities().configured == 1), discoveryEpoch_(epoch), activationProgress_(epoch) {}
 
 void TopologyService::BindRolePlanner(AccountRolePlanningPort &roles)
 {
     roles_ = &roles; // H仅在发布前绑定一次；它和TopologyService不互相拥有生命周期。
 }
 bool TopologyService::AcceptSlotAssembly(SlotId slot, bool assembled)
-{ return bindings_.AcceptAssemblyState(slot, assembled); }
+{ std::lock_guard<std::recursive_mutex> guard(commitLock_);
+    return bindings_.AcceptAssemblyState(slot, assembled); }
 
 std::optional<ActivationTransition> TopologyService::PrepareActivationProgress(const ActivationTransition &transition)
 { return activationProgress_.Prepare(transition); }
@@ -56,193 +57,358 @@ std::optional<PrimaryTargetFacts> TopologyService::ReadPrimaryTarget(SlotId slot
     return PrimaryTargetFacts {*binding, account->iccid, account->current->active};
 }
 
+bool TopologyService::WithCurrentPrimaryTarget(const PrimaryTargetFacts &expected,
+    const std::function<void()> &admit) const
+{
+    std::lock_guard<std::recursive_mutex> guard(commitLock_);
+    const auto actual = ReadPrimaryTarget(expected.binding.slot);
+    if (!actual || !actual->active || actual->binding.bindingRevision != expected.binding.bindingRevision ||
+        !(actual->binding.subscription == expected.binding.subscription) || actual->iccid != expected.iccid) {
+        return false;
+    }
+    admit(); // A's short effect registration only. No I/O or delivery under T's source domain.
+    return true;
+}
+
 void TopologyService::AcceptCardDiscoveryObservation(const CardDiscoveryObservation &observation)
 {
     (void)DiscoverAccount(observation);
 }
 
+bool TopologyService::RegisterCardDiscoveryObservation(const CardDiscoveryObservation &observation)
+{
+    std::lock_guard<std::recursive_mutex> guard(commitLock_);
+    return acceptingDiscovery_ && bindings_.CanObserve(observation.session.application) &&
+        observations_.AcceptDiscovery(observation);
+}
+
 DiscoveryAcceptance TopologyService::DiscoverAccount(const CardDiscoveryObservation &observation)
 {
-    const AccountStoreWriteResult noWrite {0, false, false};
-    DiscoveryAcceptance rejected {0, false, std::nullopt, noWrite};
+    DiscoveryAcceptance rejected {};
     std::optional<DiscoveryStoreTicket> ticket;
     {
         std::lock_guard<std::recursive_mutex> guard(commitLock_);
-        if (!observations_.AcceptDiscovery(observation)) { return rejected; }
+        if (!acceptingDiscovery_ || !roles_ || !bindings_.CanObserve(observation.session.application) ||
+            (!observations_.StillCurrent(observation) && !observations_.AcceptDiscovery(observation))) {
+            return rejected;
+        }
         ticket = observations_.BeginStore(observation, bindings_);
-        if (!ticket || !roles_) { return rejected; }
+        if (!ticket) { return rejected; }
+        try {
+            pendingDiscoveries_.emplace(ticket->admission, PendingDiscovery {*ticket});
+        } catch (const std::exception &) {
+            observations_.ReleaseStore(*ticket);
+            throw;
+        }
     }
+    const DiscoveryCallRef call {discoveryEpoch_, ticket->admission};
 
-    const auto matched = store_.MatchAccountByIccid(observation.iccid);
-    if (!matched.callFinished) {
-        std::lock_guard<std::recursive_mutex> guard(commitLock_);
-        (void)observations_.EndPreparationFailure(*ticket, false, bindings_);
-        rejected.storage = {matched.legacyResult, false, false};
-        return rejected;
-    }
-    const std::optional<SubscriptionId> existingSubscription = matched.existing ?
-        std::make_optional(matched.existing->subscription) : std::nullopt;
-    if (existingSubscription) {
-        std::lock_guard<std::recursive_mutex> guard(commitLock_);
-        for (const auto &slot : bindings_.ReadRuntimeSlots()) {
-            if (slot.acceptedBinding && slot.acceptedBinding->subscription == *existingSubscription &&
-                !(slot.slot == observation.session.application.slot)) {
-                (void)observations_.EndPreparationFailure(*ticket, true, bindings_);
-                rejected.storage = {matched.legacyResult, false, true};
+    try {
+        auto matched = store_.MatchDiscoveryAccount(call, observation.iccid);
+        rejected.storage = {matched.legacyResult, false, matched.callFinished};
+        if (!matched.callFinished) {
+            std::lock_guard<std::recursive_mutex> guard(commitLock_);
+            auto &pending = pendingDiscoveries_.at(call.admission);
+            pending.phase = DiscoveryPhase::WaitingMatch;
+            pending.executing = false;
+            return rejected;
+        }
+
+        {
+            std::lock_guard<std::recursive_mutex> guard(commitLock_);
+            pendingDiscoveries_.at(call.admission).phase = DiscoveryPhase::Planning;
+        }
+        const auto identity = matched.existing ? std::make_optional(matched.existing->subscription) : std::nullopt;
+        {
+            std::lock_guard<std::recursive_mutex> guard(commitLock_);
+            const auto known = accounts_.FindByIccid(observation.iccid);
+            if (matched.legacyResult != 0 ||
+                (matched.existing && (matched.existing->iccid != observation.iccid ||
+                    matched.existing->subscription.legacySimId < 0)) ||
+                (known && !(identity == known)) || !acceptingDiscovery_ ||
+                !observations_.CanPublish(*ticket, bindings_) ||
+                (identity && !bindings_.PrepareBinding(observation.session.application.slot, *identity,
+                    ticket->bindingRevision))) {
+                FinishWithoutWrite(call);
                 return rejected;
             }
         }
-    }
-    // Do not call A while holding T's commit domain. A owns this reservation with its own short lock.
-    const auto rolePlan = roles_->PrepareAccountRoleFragment(
-        {existingSubscription, observation.session.application.slot, useLegacySingleSlotRoles_});
-    const auto preparationValid = rolePlan && roles_->StillOwnsInitialRoleReservation(*rolePlan);
-    bool stillPrepared = false;
-    {
-        std::lock_guard<std::recursive_mutex> guard(commitLock_);
-        stillPrepared = preparationValid && observations_.StillCurrent(observation) &&
-            bindings_.ReadPositionRevision(observation.session.application.slot).value_or(0) == ticket->bindingRevision;
-        if (!stillPrepared) {
-            (void)observations_.EndPreparationFailure(*ticket, true, bindings_);
-        }
-    }
-    if (!stillPrepared) {
-        if (rolePlan) {
-            (void)roles_->FinalizeInitialRoleReservation(*rolePlan,
-                {true, EffectKnowledge::ConfirmedNotApplied, true});
-        }
-        rejected.storage = {rolePlan ? 0 : matched.legacyResult, false, true};
-        return rejected;
-    }
 
-    const AccountDiscoveryWritePlan plan {observation, ticket->bindingRevision, existingSubscription,
-        {observation.session.application.slot, observation.iccid,
-         observation.legacyLabel ? observation.legacyLabel :
-             (matched.existing ? matched.existing->legacyLabel : std::nullopt),
-         observation.active, observation.isEsim}, *rolePlan};
-    const auto stored = store_.WriteDiscoveredAccount(plan);
-
-    const bool roleOwned = roles_->StillOwnsInitialRoleReservation(*rolePlan);
-    std::unique_lock<std::recursive_mutex> guard(commitLock_);
-    const bool stillValidFinal = observations_.StillCurrent(observation) &&
-        bindings_.ReadPositionRevision(observation.session.application.slot).value_or(0) == ticket->bindingRevision;
-    const bool storageKnown = stored.callFinished && stored.writeConfirmed &&
-        stored.effect == EffectKnowledge::ConfirmedApplied && stored.assignedSubscription;
-    const bool identityMatches = !existingSubscription ||
-        (stored.assignedSubscription && *stored.assignedSubscription == *existingSubscription);
-    if (storageKnown && identityMatches && stillValidFinal && roleOwned && stored.assignedSubscription) {
-        guard.unlock();
-        const bool roleAccepted = roles_->AcceptDiscoveredRoleProjection(*rolePlan, *stored.assignedSubscription);
-        std::unique_lock<std::recursive_mutex> finalGuard(commitLock_);
-        const auto account = accounts_.Read(*stored.assignedSubscription);
-        if (!roleAccepted || (account && account->iccid != observation.iccid)) {
-            (void)observations_.CompleteStored(*ticket, stored.effect, stored.assignedSubscription,
-                stored.callFinished, bindings_, false);
-            pendingDiscoveries_.insert_or_assign({observation.session.application.slot,
-                observation.session.application.applicationKey}, PendingDiscovery{*ticket, *rolePlan, stored});
-            return {stored.legacyResult, false, stored.assignedSubscription,
-                {stored.legacyResult, stored.writeConfirmed, stored.callFinished}};
+        const auto role = roles_->PrepareAccountRoleFragment(
+            {identity, observation.session.application.slot, useLegacySingleSlotRoles_, call});
+        if (!role) {
+            FinishWithoutWrite(call);
+            return rejected;
         }
-        if (!account) {
-            const AccountProjection projection {{}, {},
-                observation.legacyLabel ? observation.legacyLabel :
-                    (matched.existing ? matched.existing->legacyLabel : std::nullopt),
-                std::nullopt, observation.active, {}, observation.session.application.slot};
-            const AccountRecord discovered {*stored.assignedSubscription, observation.iccid, 1,
-                projection, projection};
-            if (accounts_.AcceptDiscoveredAccount(discovered) != AccountAcceptance::Accepted) {
-                (void)observations_.CompleteStored(*ticket, stored.effect, stored.assignedSubscription,
-                    stored.callFinished, bindings_, false);
-                pendingDiscoveries_.insert_or_assign({observation.session.application.slot,
-                    observation.session.application.applicationKey}, PendingDiscovery{*ticket, *rolePlan, stored});
-                return {stored.legacyResult, false, stored.assignedSubscription,
-                    {stored.legacyResult, stored.writeConfirmed, stored.callFinished}};
+        {
+            std::lock_guard<std::recursive_mutex> guard(commitLock_);
+            pendingDiscoveries_.at(call.admission).rolePlan = role;
+        }
+        const AccountDiscoveryWritePlan plan {observation, ticket->bindingRevision, identity,
+            {observation.session.application.slot, observation.iccid,
+             observation.legacyLabel ? observation.legacyLabel :
+                 (matched.existing ? matched.existing->legacyLabel : std::nullopt),
+             observation.active, observation.isEsim}, *role, call};
+        const bool roleOwned = roles_->StillOwnsInitialRoleReservation(*role);
+        bool send = false;
+        {
+            std::lock_guard<std::recursive_mutex> guard(commitLock_);
+            auto &pending = pendingDiscoveries_.at(call.admission);
+            if (acceptingDiscovery_ && roleOwned && observations_.CanPublish(*ticket, bindings_) &&
+                bindings_.CanObserve(observation.session.application)) {
+                pending.matched = std::move(matched.existing);
+                pending.plan = plan;
+                pending.phase = DiscoveryPhase::Writing;
+                send = true; // Seal and the one original send grant share this domain.
             }
         }
-        const auto accepted = observations_.CompleteStored(*ticket, stored.effect, stored.assignedSubscription,
-            stored.callFinished, bindings_);
-        finalGuard.unlock();
-        (void)roles_->FinalizeInitialRoleReservation(*rolePlan,
-            {stored.callFinished, stored.effect, accepted.bindingAccepted});
-        return {stored.legacyResult, accepted.bindingAccepted, stored.assignedSubscription,
-            {stored.legacyResult, stored.writeConfirmed, stored.callFinished}};
+        if (!send) {
+            FinishWithoutWrite(call);
+            return rejected;
+        }
+        return ContinueDiscovery(call, store_.WriteDiscoveredAccount(plan));
+    } catch (const std::exception &) {
+        const auto receipt = ReadDiscoveryReceipt(call);
+        if (receipt && receipt->phase == DiscoveryPhase::Planning) {
+            try {
+                FinishWithoutWrite(call);
+            } catch (const std::exception &) {
+                MarkDiscoveryReturned(call);
+            }
+        } else {
+            MarkDiscoveryReturned(call);
+        }
+        return rejected;
     }
+}
 
-    (void)observations_.CompleteStored(*ticket, stored.effect, stored.assignedSubscription,
-        stored.callFinished, bindings_, false);
-    guard.unlock();
-    const bool reconciledNoEffect = stored.callFinished && stored.effect != EffectKnowledge::ConfirmedApplied &&
-        stored.effect != EffectKnowledge::Unknown;
-    if (stored.effect == EffectKnowledge::Unknown ||
-        (stored.effect == EffectKnowledge::ConfirmedApplied && stored.assignedSubscription)) {
-        std::lock_guard<std::recursive_mutex> recoveryGuard(commitLock_);
-        pendingDiscoveries_.insert_or_assign({observation.session.application.slot,
-            observation.session.application.applicationKey}, PendingDiscovery{*ticket, *rolePlan, stored});
+void TopologyService::MarkDiscoveryReturned(DiscoveryCallRef call)
+{
+    std::lock_guard<std::recursive_mutex> guard(commitLock_);
+    const auto found = pendingDiscoveries_.find(call.admission);
+    if (found == pendingDiscoveries_.end()) { return; }
+    auto &pending = found->second;
+    if (pending.phase == DiscoveryPhase::Matching) { pending.phase = DiscoveryPhase::WaitingMatch; }
+    if (pending.phase == DiscoveryPhase::Writing) { pending.phase = DiscoveryPhase::WaitingEvidence; }
+    pending.executing = false;
+}
+
+void TopologyService::FinishWithoutWrite(DiscoveryCallRef call)
+{
+    {
+        std::lock_guard<std::recursive_mutex> guard(commitLock_);
+        auto &pending = pendingDiscoveries_.at(call.admission);
+        if (pending.rolePlan) {
+            pending.finalization = InitialRoleFinalizationEvidence {true, EffectKnowledge::NotSent, true, call};
+            pending.phase = DiscoveryPhase::Finalizing;
+        } else {
+            observations_.ReleaseStore(pending.ticket);
+            pendingDiscoveries_.erase(call.admission);
+            return;
+        }
     }
-    (void)roles_->FinalizeInitialRoleReservation(*rolePlan,
-        {stored.callFinished, stored.effect, reconciledNoEffect});
-    return {stored.legacyResult, false, stored.assignedSubscription,
-        {stored.legacyResult, stored.writeConfirmed, stored.callFinished}};
+    (void)FinalizeDiscovery(call);
+}
+
+DiscoveryAcceptance TopologyService::ContinueDiscovery(DiscoveryCallRef call,
+    const std::optional<AccountDiscoveryStoreResult> &result)
+{
+    DiscoveryAcceptance acceptance {};
+    std::optional<AccountRoleFragment> role;
+    std::optional<SubscriptionId> identity;
+    {
+        std::lock_guard<std::recursive_mutex> guard(commitLock_);
+        auto &pending = pendingDiscoveries_.at(call.admission);
+        const auto &plan = *pending.plan;
+        const auto columns = plan.Columns();
+        if (result && pending.phase == DiscoveryPhase::Writing) {
+            pending.originalLegacyResult = result->legacyResult;
+        }
+        acceptance.legacyResult = pending.originalLegacyResult;
+        if (result) {
+            acceptance.storedSubscription = result->assignedSubscription;
+            acceptance.storage = {pending.originalLegacyResult, result->writeConfirmed, result->callFinished};
+        }
+        pending.phase = DiscoveryPhase::WaitingEvidence;
+        if (result && result->evidence && result->evidence->call == call) {
+            const auto &evidence = *result->evidence;
+            if (((evidence.applied | evidence.notApplied) & ~columns) != 0 ||
+                ((evidence.applied | pending.applied) & (evidence.notApplied | pending.notApplied)) != 0 ||
+                (pending.assigned && result->assignedSubscription && !(pending.assigned == result->assignedSubscription)) ||
+                (plan.existingSubscription && result->assignedSubscription &&
+                    !(plan.existingSubscription == result->assignedSubscription))) {
+                pending.ambiguous = true;
+            } else {
+                pending.applied |= evidence.applied;
+                pending.notApplied |= evidence.notApplied;
+                if (result->assignedSubscription) { pending.assigned = result->assignedSubscription; }
+                pending.callFinished = pending.callFinished || result->callFinished;
+            }
+        }
+        if (!pending.ambiguous && pending.callFinished && pending.notApplied == columns) {
+            pending.finalization = InitialRoleFinalizationEvidence {true, EffectKnowledge::ConfirmedNotApplied,
+                true, call};
+            pending.phase = DiscoveryPhase::Finalizing;
+        } else if (!pending.ambiguous && pending.callFinished && pending.applied == columns && pending.assigned &&
+            pending.assigned->legacySimId >= 0) {
+            role = pending.rolePlan;
+            identity = pending.assigned;
+        } else {
+            pending.executing = false;
+            return acceptance;
+        }
+    }
+    if (role) {
+        if (!roles_->AcceptDiscoveredRoleProjection(*role, *identity)) {
+            MarkDiscoveryReturned(call);
+            return acceptance;
+        }
+        std::lock_guard<std::recursive_mutex> guard(commitLock_);
+        auto &pending = pendingDiscoveries_.at(call.admission);
+        const auto &plan = *pending.plan;
+        const auto &source = pending.ticket.observation.session;
+        const bool current = observations_.CanPublish(pending.ticket, bindings_) &&
+            bindings_.CanObserve(source.application);
+        const auto prepared = current ?
+            bindings_.PrepareBinding(source.application.slot, *identity, pending.ticket.bindingRevision) : std::nullopt;
+        if (current && !prepared) {
+            pending.executing = false;
+            return acceptance;
+        }
+        std::optional<SessionRef> preparedSource = prepared ? std::make_optional(source) : std::nullopt;
+        AccountProjection projection {{}, {}, plan.accountFields.legacyLabel, std::nullopt,
+            plan.accountFields.active, {}, plan.accountFields.legacyPosition};
+        if (pending.matched) {
+            projection.displayName = pending.matched->name;
+            projection.displayNumber = pending.matched->number;
+            projection.imsPreference = pending.matched->imsPreference;
+        }
+        const AccountRecord account {*identity, plan.accountFields.iccid, 1,
+            current ? std::make_optional(projection) : std::nullopt, projection};
+        if (accounts_.PublishDiscovery(account, plan.accountFields.legacyLabel.has_value()) != AccountAcceptance::Accepted) {
+            pending.executing = false;
+            return acceptance;
+        }
+        // All allocation and eligibility checks precede this tail. Both facts and the witness use the T domain.
+        if (prepared) { bindings_.PublishBinding(*prepared, std::move(preparedSource)); }
+        pending.published = prepared;
+        pending.finalization = InitialRoleFinalizationEvidence {true, EffectKnowledge::ConfirmedApplied,
+            true, call, identity, !current};
+        pending.phase = DiscoveryPhase::Finalizing;
+        acceptance.bindingAccepted = prepared.has_value();
+        acceptance.storedSubscription = identity;
+    }
+    (void)FinalizeDiscovery(call);
+    return acceptance;
+}
+
+bool TopologyService::FinalizeDiscovery(DiscoveryCallRef call)
+{
+    std::optional<AccountRoleFragment> role;
+    std::optional<InitialRoleFinalizationEvidence> disposition;
+    {
+        std::lock_guard<std::recursive_mutex> guard(commitLock_);
+        const auto &pending = pendingDiscoveries_.at(call.admission);
+        role = pending.rolePlan;
+        disposition = pending.finalization;
+    }
+    // A retains the exact result until T acknowledges the returned disposition.
+    if (!roles_->FinalizeInitialRoleReservation(*role, *disposition)) {
+        MarkDiscoveryReturned(call);
+        return false;
+    }
+    roles_->ConfirmInitialRoleReceipt(*role, *disposition);
+    std::lock_guard<std::recursive_mutex> guard(commitLock_);
+    const auto found = pendingDiscoveries_.find(call.admission);
+    observations_.ReleaseStore(found->second.ticket);
+    pendingDiscoveries_.erase(found);
+    return true;
+}
+
+bool TopologyService::ReconcileDiscovery(DiscoveryCallRef call)
+{
+    DiscoveryPhase phase;
+    bool alreadyProven = false;
+    {
+        std::lock_guard<std::recursive_mutex> guard(commitLock_);
+        const auto found = pendingDiscoveries_.find(call.admission);
+        if (call.epoch != discoveryEpoch_ || found == pendingDiscoveries_.end() || found->second.executing ||
+            found->second.ambiguous) { return false; }
+        auto &pending = found->second;
+        pending.executing = true;
+        phase = pending.phase;
+        alreadyProven = pending.plan && pending.callFinished &&
+            (pending.applied == pending.plan->Columns() || pending.notApplied == pending.plan->Columns());
+    }
+    try {
+        if (phase == DiscoveryPhase::Finalizing) { return FinalizeDiscovery(call); }
+        if (phase == DiscoveryPhase::WaitingMatch && store_.DiscoveryMatchReturned(call)) {
+            FinishWithoutWrite(call);
+            return !ReadDiscoveryReceipt(call);
+        }
+        if (phase == DiscoveryPhase::WaitingEvidence) {
+            const auto evidence = alreadyProven ? std::nullopt : store_.ReadDiscoveryEvidence(call);
+            if (alreadyProven || evidence) {
+                (void)ContinueDiscovery(call, *evidence);
+                return !ReadDiscoveryReceipt(call);
+            }
+        }
+    } catch (const std::exception &) {
+        MarkDiscoveryReturned(call);
+        return false;
+    }
+    MarkDiscoveryReturned(call);
+    return false;
 }
 
 bool TopologyService::ReconcileDiscovery(const CardDiscoveryObservation &observation)
 {
-    std::optional<PendingDiscovery> pending;
+    std::optional<DiscoveryCallRef> call;
     {
         std::lock_guard<std::recursive_mutex> guard(commitLock_);
-        const auto found = pendingDiscoveries_.find({observation.session.application.slot,
-            observation.session.application.applicationKey});
-        if (found == pendingDiscoveries_.end() ||
-            !(found->second.ticket.observation.session.epoch == observation.session.epoch &&
-              found->second.ticket.observation.session.application.slot == observation.session.application.slot &&
-              found->second.ticket.observation.session.application.applicationKey == observation.session.application.applicationKey &&
-              found->second.ticket.observation.session.bindingGeneration == observation.session.bindingGeneration) ||
-            found->second.ticket.observation.iccid != observation.iccid) {
-            return false;
+        for (const auto &[id, pending] : pendingDiscoveries_) {
+            const auto &original = pending.ticket.observation;
+            if (original.session.epoch == observation.session.epoch &&
+                original.session.application.slot == observation.session.application.slot &&
+                original.session.application.applicationKey == observation.session.application.applicationKey &&
+                original.session.bindingGeneration == observation.session.bindingGeneration &&
+                original.observationSequence == observation.observationSequence && original.iccid == observation.iccid) {
+                call = DiscoveryCallRef {discoveryEpoch_, id};
+                break;
+            }
         }
-        pending.emplace(found->second);
     }
-    const auto matched = store_.MatchAccountByIccid(observation.iccid);
-    if (!matched.callFinished || !matched.existing ||
-        (pending->stored.assignedSubscription &&
-         !(matched.existing->subscription == *pending->stored.assignedSubscription))) {
-        return false;
-    }
-    const bool roleOwned = roles_ && roles_->StillOwnsInitialRoleReservation(pending->rolePlan);
-    if (!roleOwned || (pending->rolePlan.subscription &&
-        !(*pending->rolePlan.subscription == matched.existing->subscription))) {
-        return false;
-    }
-    if (!roles_->AcceptDiscoveredRoleProjection(pending->rolePlan, matched.existing->subscription)) {
-        return false;
-    }
-    {
-        std::lock_guard<std::recursive_mutex> guard(commitLock_);
-        const auto existing = accounts_.Read(matched.existing->subscription);
-        if (existing && existing->iccid != observation.iccid) { return false; }
-        if (!existing) {
-            const AccountProjection projection {matched.existing->name, matched.existing->number,
-                matched.existing->legacyLabel, matched.existing->imsPreference, matched.existing->active,
-                {}, matched.existing->legacyPosition};
-            const AccountRecord record {matched.existing->subscription, matched.existing->iccid, 1,
-                projection, projection};
-            if (accounts_.AcceptDiscoveredAccount(record) != AccountAcceptance::Accepted) { return false; }
-        }
-        (void)observations_.ReconcileStored(pending->ticket, EffectKnowledge::ConfirmedApplied,
-            matched.existing->subscription, true);
-    }
-    const bool finalized = roles_->FinalizeInitialRoleReservation(pending->rolePlan,
-        {true, EffectKnowledge::ConfirmedApplied, true});
-    if (!finalized) { return false; }
-    std::lock_guard<std::recursive_mutex> guard(commitLock_);
-    pendingDiscoveries_.erase({observation.session.application.slot,
-        observation.session.application.applicationKey});
-    return true;
+    return call && ReconcileDiscovery(*call);
 }
+
+void TopologyService::SealDiscovery()
+{
+    std::lock_guard<std::recursive_mutex> guard(commitLock_);
+    acceptingDiscovery_ = false;
+}
+
+size_t TopologyService::PendingDiscoveryCount() const
+{
+    std::lock_guard<std::recursive_mutex> guard(commitLock_);
+    return pendingDiscoveries_.size();
+}
+
+std::optional<TopologyService::DiscoveryReceipt> TopologyService::ReadDiscoveryReceipt(DiscoveryCallRef call) const
+{
+    std::lock_guard<std::recursive_mutex> guard(commitLock_);
+    const auto found = pendingDiscoveries_.find(call.admission);
+    if (call.epoch != discoveryEpoch_ || found == pendingDiscoveries_.end()) { return std::nullopt; }
+    const auto &pending = found->second;
+    return DiscoveryReceipt {call, pending.phase, pending.executing, pending.applied, pending.notApplied,
+        pending.rolePlan ? std::make_optional(pending.rolePlan->reservation.token) : std::nullopt, pending.published};
+}
+
 void TopologyService::AcceptCardSessionInvalidation(const CardSessionInvalidation &invalidation)
 {
     std::lock_guard<std::recursive_mutex> guard(commitLock_);
-    observations_.AcceptInvalidation(invalidation);
+    if (observations_.AcceptInvalidation(invalidation)) {
+        bindings_.InvalidateSource(invalidation.invalidatedSession);
+    }
 }
 void TopologyService::AcceptCardRemoval(const BindingRef &expected)
 {
@@ -337,7 +503,9 @@ std::optional<BindingRef> TopologyService::AcceptStoredDiscovery(const CardDisco
     const auto accepted = observations_.CompleteStored(*ticket, stored.effect, stored.assignedSubscription,
         stored.callFinished, bindings_);
     if (!accepted.bindingAccepted) { return std::nullopt; }
-    return bindings_.Find(observation.session.application.slot);
+    const auto binding = bindings_.Find(observation.session.application.slot);
+    bindings_.PublishBinding(*binding, observation.session);
+    return binding;
 }
 
 /* DiscoverAccount 已执行写前资格、锁外I/O与最终接纳；下列其余方法仍保留协议说明：

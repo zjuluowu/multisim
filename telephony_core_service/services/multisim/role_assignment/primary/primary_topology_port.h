@@ -19,6 +19,7 @@
 #ifndef OHOS_TELEPHONY_MULTISIM_ASSIGNMENT_API_PRIMARY_TOPOLOGY_PORT_H
 #define OHOS_TELEPHONY_MULTISIM_ASSIGNMENT_API_PRIMARY_TOPOLOGY_PORT_H
 
+#include <functional>
 #include <optional>
 #include <string>
 #include "infrastructure/request/request_ref.h"
@@ -30,6 +31,9 @@ class PrimaryTopologyPort {
 public:
     virtual ~PrimaryTopologyPort() = default;
     virtual std::optional<PrimaryTargetFacts> ReadPrimaryTarget(SlotId slot) const = 0;
+    // The host-only C0 capability needs ordered local effect admission against source revocation.
+    virtual bool WithCurrentPrimaryTarget(const PrimaryTargetFacts &, const std::function<void()> &) const
+    { return false; }
     virtual RequestId BeginRouteMapping(const StepRef &parent, SlotTarget target) = 0;
 }; // 子请求以parent关联返回；A不得持角色/设备资格同步等待T。
 } // namespace OHOS::Telephony::MultiSim

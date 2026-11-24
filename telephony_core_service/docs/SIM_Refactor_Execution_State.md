@@ -18,6 +18,12 @@ Gate 工作树为 `d9c2d23dce7148df1fc474ce598fb1cff55b839d`，签收前 main/or
 
 最终 Target 108/108（含 M1 6/6），ASan 6/6，TSan 6/6。多键分配故障注入、共享键竞争、独立语法、GN/Ninja、导航、完整性通过。LLDB 实测断点、单步和销毁，VS Code GUI 未实测。AF1-19 的签收文档已登记精确比较输入，历史摘要继续验证。完整架构门禁仍分别报告签收基线既有的 `account_role_protocol.h` 布局差异和 Topology 行 182 独立纯规则失败，后者属于 M2 发现准备。两项已有失败继续跟踪，均未通过修改预期关闭。[验证记录](../services/multisim/test/docs/evidence/af2_m1_20261124/README.md) · [Host 单步和 M2 接线](../services/multisim/test/docs/Host_Usage.md#af2-m1-debug)
 
+<a id="af2-m2-status"></a>
+
+### AF-2 M2 实时卡发现与账户绑定（2026-11-24）
+
+**`AF2_M2_PARTIAL`。** 输入 `0f83e00cf`。已在正式 H 接通实时物理卡观察、可信会话失效、原 Store 操作的独立 T 票、Account/Binding 统一发布和 A 精确回执。已确认的实时 Binding 可进入现有 C0；换卡后旧 C0 命令不再取得后续效果资格。Stop 追踪 Store 在途、原票及 A 回执，保留有证续行。初轮完整 Target 117/117，Topology 规则修复后通过；最终证据、差分和 sanitizer 正在核对。产品 Provider、B/C1 发令、原生装配及生产写权仍受原门禁约束。[实时发现与调试](../services/multisim/test/docs/Host_Usage.md#af2-m2-debug)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）

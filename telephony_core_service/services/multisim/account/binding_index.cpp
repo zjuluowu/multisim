@@ -56,27 +56,56 @@ bool BindingIndex::AcceptAssemblyState(SlotId slot, bool assembled)
     return true;
 }
 
-bool BindingIndex::AcceptBinding(SlotId slot, SubscriptionId subscription, uint64_t expectedRevision)
+std::optional<BindingRef> BindingIndex::PrepareBinding(SlotId slot, SubscriptionId subscription,
+    uint64_t expectedRevision) const
 {
     auto entry = slots_.find(slot);
-    if (entry == slots_.end() || !entry->second.instanceAssembled ||
-        entry->second.bindingRevision != expectedRevision) {
-        return false;
+    if (entry == slots_.end() || !entry->second.instanceAssembled || entry->second.bindingRevision != expectedRevision) {
+        return std::nullopt;
     }
     if (entry->second.acceptedBinding) {
-        return entry->second.acceptedBinding->subscription == subscription;
+        return entry->second.acceptedBinding->subscription == subscription ? entry->second.acceptedBinding : std::nullopt;
     }
     for (const auto &[otherSlot, other] : slots_) {
-        if (!(otherSlot == slot) && other.acceptedBinding &&
-            other.acceptedBinding->subscription == subscription) {
-            return false; // 同一已接受账户不暗中迁移；跨键移动先走T计划。
+        if (!(otherSlot == slot) && other.acceptedBinding && other.acceptedBinding->subscription == subscription) {
+            return std::nullopt;
         }
     }
-    if (entry->second.bindingRevision == std::numeric_limits<uint64_t>::max()) {
-        return false; // 不允许回绕产生ABA。
+    if (expectedRevision == std::numeric_limits<uint64_t>::max()) { return std::nullopt; }
+    return BindingRef {subscription, slot, expectedRevision + 1};
+}
+
+void BindingIndex::PublishBinding(const BindingRef &binding, std::optional<SessionRef> source) noexcept
+{
+    auto &entry = slots_.find(binding.slot)->second;
+    entry.bindingRevision = binding.bindingRevision;
+    entry.acceptedBinding = binding;
+    if (source) { entry.source = std::move(source); }
+}
+
+bool BindingIndex::CanObserve(const CardApplicationTarget &application) const
+{
+    const auto entry = slots_.find(application.slot);
+    return entry != slots_.end() && (!entry->second.source ||
+        entry->second.source->application.applicationKey == application.applicationKey);
+}
+
+void BindingIndex::InvalidateSource(const SessionRef &session)
+{
+    const auto entry = slots_.find(session.application.slot);
+    if (entry == slots_.end() || !entry->second.source || !entry->second.acceptedBinding) { return; }
+    const auto &source = *entry->second.source;
+    if (source.epoch == session.epoch && source.bindingGeneration == session.bindingGeneration &&
+        source.application.applicationKey == session.application.applicationKey) {
+        (void)RemoveBinding(*entry->second.acceptedBinding);
     }
-    ++entry->second.bindingRevision;
-    entry->second.acceptedBinding = BindingRef {subscription, slot, entry->second.bindingRevision};
+}
+
+bool BindingIndex::AcceptBinding(SlotId slot, SubscriptionId subscription, uint64_t expectedRevision)
+{
+    const auto binding = PrepareBinding(slot, subscription, expectedRevision);
+    if (!binding) { return false; }
+    PublishBinding(*binding, std::nullopt);
     return true;
 }
 
@@ -90,6 +119,7 @@ bool BindingIndex::RemoveBinding(const BindingRef &expected)
         return false;
     }
     ++entry.bindingRevision;
+    entry.source.reset();
     entry.acceptedBinding.reset(); // 空位置继续持有递增后的版本。
     return true;
 }

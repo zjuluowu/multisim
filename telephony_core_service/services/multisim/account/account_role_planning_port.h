@@ -39,6 +39,7 @@ public:
     virtual bool StillOwnsInitialRoleReservation(const AccountRoleFragment &planned) const = 0;
     virtual bool FinalizeInitialRoleReservation(const AccountRoleFragment &planned,
         const InitialRoleFinalizationEvidence &evidence) = 0;
+    virtual void ConfirmInitialRoleReceipt(const AccountRoleFragment &, const InitialRoleFinalizationEvidence &) {}
     // 调用结束不等于可释放：已写但观察失效时保留资格直至投影接纳或核对完成。
 };
 } // namespace OHOS::Telephony::MultiSim

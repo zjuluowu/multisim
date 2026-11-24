@@ -92,6 +92,73 @@ AccountAcceptance AccountRegistry::AcceptDiscoveredAccount(const AccountRecord &
     return AccountAcceptance::Accepted;
 }
 
+AccountAcceptance AccountRegistry::PublishDiscovery(AccountRecord account, bool rewriteLabel)
+{
+    const auto found = accounts_.find(account.subscription);
+    if (account.identityRevision == 0 || (found != accounts_.end() && found->second.iccid != account.iccid)) {
+        return AccountAcceptance::ChangedInputs;
+    }
+    const auto sameIccid = FindByIccid(account.iccid);
+    if (sameIccid && !(*sameIccid == account.subscription)) { return AccountAcceptance::ChangedInputs; }
+    auto prepared = found == accounts_.end() ? account : found->second;
+    uint64_t nextClock = membershipClock_;
+    std::map<SubscriptionId, uint64_t> currentNode;
+    std::map<SubscriptionId, uint64_t> historicalNode;
+    for (auto view : {AccountReadView::Current, AccountReadView::Historical}) {
+        auto &input = Projection(account, view);
+        if (!input) { continue; }
+        if (nextClock == std::numeric_limits<uint64_t>::max()) { return AccountAcceptance::ChangedInputs; }
+        auto &output = Projection(prepared, view);
+        if (found == accounts_.end() || !output) {
+            output = std::move(input);
+            const auto retired = retiredFieldRevisions_[view].find(account.subscription);
+            if (retired != retiredFieldRevisions_[view].end()) {
+                if (!MayRecreate(retired->second)) { return AccountAcceptance::ChangedInputs; }
+                ContinueAfterRemoval(output->revisions, retired->second);
+            }
+        } else {
+            auto &current = *output;
+            auto &versions = current.revisions;
+            if (current.active != input->active) {
+                if (!MayAdvance(versions.active, versions.active)) { return AccountAcceptance::ChangedInputs; }
+                current.active = input->active;
+                ++versions.active;
+            }
+            if (!(current.legacyPosition == input->legacyPosition)) {
+                if (!MayAdvance(versions.position, versions.position)) {
+                    return AccountAcceptance::ChangedInputs;
+                }
+                current.legacyPosition = input->legacyPosition;
+                ++versions.position;
+            }
+            if (rewriteLabel && current.legacyLabel != input->legacyLabel) {
+                if (!MayAdvance(versions.label, versions.label)) { return AccountAcceptance::ChangedInputs; }
+                current.legacyLabel = input->legacyLabel;
+                ++versions.label;
+            }
+        }
+        // Only reserve the touched member, including reaffirmation with unchanged fields.
+        membershipVersions_.try_emplace(view);
+        auto &node = view == AccountReadView::Current ? currentNode : historicalNode;
+        node.emplace(account.subscription, ++nextClock);
+    }
+    std::map<SubscriptionId, AccountRecord> node;
+    node.emplace(account.subscription, std::move(prepared));
+
+    // Account/member maps use primitive subscription comparisons. Inserting prepared nodes cannot allocate.
+    if (found != accounts_.end()) { accounts_.erase(found); }
+    accounts_.insert(node.extract(node.begin()));
+    for (auto view : {AccountReadView::Current, AccountReadView::Historical}) {
+        auto &preparedNode = view == AccountReadView::Current ? currentNode : historicalNode;
+        if (preparedNode.empty()) { continue; }
+        auto &members = membershipVersions_.find(view)->second;
+        members.erase(account.subscription);
+        members.insert(preparedNode.extract(preparedNode.begin()));
+    }
+    membershipClock_ = nextClock;
+    return AccountAcceptance::Accepted;
+}
+
 AccountAcceptance AccountRegistry::AcceptNumberVisibility(SubscriptionId subscription, AccountReadView view,
     uint64_t expectedNumberRevision, const std::u16string &number)
 {

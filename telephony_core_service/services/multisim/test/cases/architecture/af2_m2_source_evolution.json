@@ -1,0 +1,59 @@
+{
+  "baseline": "0f83e00cfd70e4a1bb04c09953f31151fa937e33",
+  "files": {
+    "BUILD.gn": "1ab05643dfc05a6415372f00e2d62bf30dbbf05a78620491beba7fab7a445cb8",
+    "account/account_registry.cpp": "be994102e7d740ca5faeea800a12942745a62899b54ffd7180672146e1098149",
+    "account/account_registry.h": "bf365ae50606c2ca0bb6fb9b5d1740d360e39acf594ed31fae092bdebad38e84",
+    "account/account_role_planning_port.h": "d0294ea1c9f2e23f3947061f67c58c8b51ef0a9faff5629d874be45f3cb57b55",
+    "account/account_store.h": "6e93df9fefb1db475decd5b67857ca291b3a131f020503eb31b496105477b9fc",
+    "account/binding_index.cpp": "ae4c3be18f708b4512aa104f7b47897c5576f06b5a7e9b533d7fec67b5545b98",
+    "account/binding_index.h": "8fd24a3965c6ada97454e43c75525edd810e692d6f385e071b32ad578422232a",
+    "account/discovery/card_observation_port.h": "994ad0521779d1aec58675776ffb68b437aa38721379425cc35afde5520c671c",
+    "account/discovery/discovery_observation_ledger.cpp": "6886253d6058f62c0fa793d878a3adeff2a833c346d603a8c6bd804411a48a6a",
+    "account/discovery/discovery_observation_ledger.h": "dd53d739de9f5539ebae2841e6179d09b1d0749bb7fd043d03f0af5014c82f97",
+    "account/topology_service.cpp": "4da52a04582f284d9c658444246820987469f4e8589d30c147275c0d43cd0687",
+    "account/topology_service.h": "80e909245a36c6c41a41a48d38fdcd12e7e34d23026006e404d776eb5f267749",
+    "infrastructure/assembly/sim_module.h": "4d1d93a6e8d7f6af3a9959785bbb4fe25771e5d19fdd95328f64e04c67c7d778",
+    "infrastructure/assembly/sim_module_factory.cpp": "96aad7a0102b82f276ee2aa073c6a40822068775cf5852ad836809b1efdfa7eb",
+    "infrastructure/request/request_ref.h": "96d78491c641b26c973877f20c90f2db4ebd3950b87ec4f8a572549a692bca0f",
+    "role_assignment/account_role_protocol.h": "b9953d8f8bd4c878c7f16b13634628045f3bbec868df35171d261e8165bac773",
+    "role_assignment/assignment_requests.h": "9ad765500fbf86fc28e913b035fab8dbf52a01d17b4b36b99ea5a38a6eb64d75",
+    "role_assignment/assignment_service.cpp": "1b9ef6aab0acd8ed07767d23544b7c92dabf5c604b9297770fd87e7add8b32f4",
+    "role_assignment/assignment_service.h": "9c698064173853d0ad56f8dc4192c0b61bcf14ab0f3d05dab32b30559e09c56d",
+    "role_assignment/primary/primary_topology_port.h": "ce8fec933efe6e96dd0545c3f50ffc244f00ab39c875ddd0aae43dd372404f22"
+  },
+  "added": {
+    "card/runtime/card_observation_runtime.cpp": "93476a7230f5030646804615e0e6fe44ef52e6f8d1f4cde3de4dd193f3c6659f",
+    "card/runtime/card_observation_runtime.h": "e1b937a2f79ca1206839ec405e31b19d5dcd3f848e6bcec4dff7eb9164fbdc3e"
+  },
+  "prior_layout_deltas": {
+    "role_assignment/account_role_protocol.h": {
+      "sha256": "858954ecc2128e2a59a6c725781bee2ee1e676c0a6309f8a1cb3034e7cbdfc69",
+      "reason": "已在 M1 验收输入存在的 T1/T2 角色预留和按视图投影，固定 Git 基线精确比较。"
+    },
+    "account/account_store_adapter.cpp": {
+      "sha256": "d12ad095bfbe876c8042a23c22c9a72293f0b7d8fd453e2e5883807829a22451",
+      "reason": "T1/T2 持久化桥已在 M1 验收基线，新增原 Store Match/Write/Reload 转发。"
+    },
+    "account/account_store_adapter.h": {
+      "sha256": "7912767f1f1f9ee79fd800901c9acefd5674325eba935fca65bd5b7fd88bac82",
+      "reason": "T1/T2 已声明既有存储桥及 Match/Write/Reload 端口。"
+    },
+    "account/topology_requests.h": {
+      "sha256": "f51c80de30e2d78a2472aec17fdb5f4019380580f9f6a87577ed078a7af070a6",
+      "reason": "T1 已扩展卡发现的标签、active 与 eSIM 计划输入。"
+    },
+    "account/discovery/discovery_observation_ledger.cpp": {
+      "sha256": "bb6f9cd4376b2f5cc018a801102d877195e7587f829f321db80e46c455120b67",
+      "reason": "T1/T2 已实现观察登记及 Provider 写的接纳／核对。"
+    },
+    "account/discovery/discovery_observation_ledger.h": {
+      "sha256": "faae7c8824cbb01ca23252eb1a567694d64695421f84a02cbbc605f4fa18e4bc",
+      "reason": "T1/T2 已添加观察台账与存储原票接口。"
+    },
+    "account/account_store.h": {
+      "sha256": "eaeccdf233758aeee4906b9b3449feda3a80422d30b68c34811ef2d6a16547e9",
+      "reason": "目录冻结后 T1/T2 已加入账户 Store 原发现、角色字段计划和读载荷。"
+    }
+  }
+}

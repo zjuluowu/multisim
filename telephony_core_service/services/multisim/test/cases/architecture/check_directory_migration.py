@@ -45,10 +45,12 @@ def check_directory_migration(source, token_sequence, *, repo=None):
     outputs = [r['target'] for r in rows]
     from documentation_migration import documentation_moves, module_destinations
     moved_docs = documentation_moves(source)
-    from source_evolution import migration_inputs
+    from source_evolution import matches_prior_layout_delta, migration_inputs
     inputs_before_m1 = migration_inputs(source, repo)
     from check_structure import module_files
     actual = {p.relative_to(source).as_posix() for p in module_files(source)} - {
+        'card/runtime/card_observation_runtime.cpp',
+        'card/runtime/card_observation_runtime.h',
         'infrastructure/assembly/primary_host_lifecycle.cpp',
         'infrastructure/assembly/primary_host_lifecycle.h',
         'device/resource/resource_radio_runtime.cpp',
@@ -113,6 +115,8 @@ def check_directory_migration(source, token_sequence, *, repo=None):
                 'card_selection/primary/radio_execution_port.h',
                 'support/request/runtime_operation_store.h',
             }
+            if matches_prior_layout_delta(target, current):
+                continue
             if expected != current and name not in authorized_c0_targets:
                 raise ValueError('Directory changed bytes beyond mapped paths: ' + name)
             if Path(name).suffix in {'.h', '.cpp'} and token_sequence(original.decode()) != token_sequence(current.decode()):

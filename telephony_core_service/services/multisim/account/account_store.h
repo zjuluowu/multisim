@@ -62,12 +62,30 @@ struct AccountDiscoveryFields {
     bool active;
     bool isEsim;
 };
+enum DiscoveryColumn : uint16_t {
+    DiscoveryIccid = 1 << 0, DiscoveryPosition = 1 << 1, DiscoveryActive = 1 << 2, DiscoveryType = 1 << 3,
+    DiscoveryLabel = 1 << 4, DiscoveryVoice = 1 << 5, DiscoverySms = 1 << 6, DiscoveryMain = 1 << 7,
+    DiscoveryData = 1 << 8, DiscoveryCardId = 1 << 9
+};
 struct AccountDiscoveryWritePlan {
     CardDiscoveryObservation observation;
     uint64_t expectedBindingRevision;
     std::optional<SubscriptionId> existingSubscription;
     AccountDiscoveryFields accountFields;
     AccountRoleFragment roleFields; // A规划并预留；T专属Adapter执行一次原Insert/Update，不另定角色。
+    DiscoveryCallRef call {};
+    uint16_t Columns() const
+    {
+        return DiscoveryPosition | DiscoveryActive | DiscoveryType |
+            (existingSubscription ? 0 : DiscoveryIccid | DiscoveryCardId) |
+            (accountFields.legacyLabel ? DiscoveryLabel : 0) |
+            (roleFields.includeInStorage ? DiscoveryVoice | DiscoverySms | DiscoveryMain | DiscoveryData : 0);
+    }
+};
+struct DiscoveryWriteEvidence {
+    DiscoveryCallRef call;
+    uint16_t applied;
+    uint16_t notApplied;
 };
 struct AccountDiscoveryStoreResult {
     int32_t legacyResult; // 原 Insert/Update 返回；不由 read-back 改写。
@@ -75,6 +93,7 @@ struct AccountDiscoveryStoreResult {
     bool writeConfirmed;
     bool callFinished;
     EffectKnowledge effect; // 错误返回不补造ConfirmedNotApplied。
+    std::optional<DiscoveryWriteEvidence> evidence {};
 };
 struct AccountRemovalPatch {
     SubscriptionId subscription;
@@ -92,6 +111,12 @@ public:
     virtual AccountStoreWriteResult WriteImsPreference(const AccountImsPreferencePatch &patch) = 0;
     virtual AccountLoadResult LoadAccounts(const AccountLoadRequest &request) = 0;
     virtual AccountIdentityMatch MatchAccountByIccid(const std::string &iccid) = 0;
+    virtual AccountIdentityMatch MatchDiscoveryAccount(DiscoveryCallRef, const std::string &iccid)
+    { return MatchAccountByIccid(iccid); }
+    // These ports can report the original execution, independently of a fresh query or a matching row.
+    virtual bool DiscoveryMatchReturned(DiscoveryCallRef) { return false; }
+    virtual std::optional<AccountDiscoveryStoreResult> ReadDiscoveryEvidence(DiscoveryCallRef)
+    { return std::nullopt; }
     virtual AccountDiscoveryStoreResult WriteDiscoveredAccount(const AccountDiscoveryWritePlan &plan) = 0;
     virtual AccountStoreWriteResult WriteRemoval(const AccountRemovalPatch &patch) = 0;
     virtual int32_t QueryImsPreferenceByIccid(const std::string &iccid, int32_t &value) = 0;

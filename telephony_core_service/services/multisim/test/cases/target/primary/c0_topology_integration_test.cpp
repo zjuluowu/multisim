@@ -48,6 +48,49 @@ public:
     std::function<AccountLoadResult(const AccountLoadRequest &)> load;
     unsigned loads {0};
     std::optional<AccountDiscoveryWritePlan> lastPlan;
+    std::optional<DiscoveryCallRef> lastMatchCall;
+    std::optional<DiscoveryCallRef> returnedMatch;
+    std::map<uint64_t, AccountDiscoveryStoreResult> originalEvidence;
+    std::mutex callsMutex;
+    bool persistRows {false};
+    size_t inserts {0};
+    std::map<std::string, AccountStorageRow> rows;
+    std::function<void(DiscoveryCallRef)> beforeMatchReturn;
+
+    void RecordWrite(const AccountDiscoveryWritePlan &plan, SubscriptionId assigned)
+    {
+        if (!persistRows) { return; }
+        std::lock_guard<std::mutex> guard(callsMutex);
+        if (!plan.existingSubscription) { ++inserts; }
+        auto &row = rows[plan.accountFields.iccid];
+        row.subscription = assigned;
+        row.iccid = plan.accountFields.iccid;
+        row.legacyPosition = plan.accountFields.legacyPosition;
+        row.active = plan.accountFields.active;
+        if (plan.accountFields.legacyLabel) { row.legacyLabel = plan.accountFields.legacyLabel; }
+    }
+    AccountIdentityMatch MatchDiscoveryAccount(DiscoveryCallRef call, const std::string &iccid) override
+    {
+        {
+            std::lock_guard<std::mutex> guard(callsMutex);
+            lastMatchCall = call;
+        }
+        const auto match = MatchAccountByIccid(iccid);
+        if (beforeMatchReturn) { beforeMatchReturn(call); }
+        return match;
+    }
+    bool DiscoveryMatchReturned(DiscoveryCallRef call) override { return returnedMatch == call; }
+    std::optional<AccountDiscoveryStoreResult> ReadDiscoveryEvidence(DiscoveryCallRef call) override
+    {
+        const auto found = originalEvidence.find(call.admission);
+        return found == originalEvidence.end() ? std::nullopt : std::make_optional(found->second);
+    }
+    void ProveApplied(const AccountDiscoveryWritePlan &plan, SubscriptionId assigned)
+    {
+        RecordWrite(plan, assigned);
+        originalEvidence.insert_or_assign(plan.call.admission, AccountDiscoveryStoreResult {
+            0, assigned, true, true, EffectKnowledge::ConfirmedApplied, DiscoveryWriteEvidence {plan.call, plan.Columns(), 0}});
+    }
     AccountStoreWriteResult WriteDisplayNumber(const AccountNumberPatch &) override { return {-1,false,true}; }
     AccountStoreWriteResult WriteActiveProjection(const AccountActivePatch &) override { return {-1,false,true}; }
     AccountStoreWriteResult WriteDisplayName(const AccountNamePatch &) override { return {-1,false,true}; }
@@ -58,14 +101,33 @@ public:
         ++loads;
         return load ? load(r) : AccountLoadResult{r,-1,false,false,{}, {}};
     }
-    AccountIdentityMatch MatchAccountByIccid(const std::string &) override
-    { ++matches; return {matchResult,matchFinished,matched}; }
+    AccountIdentityMatch MatchAccountByIccid(const std::string &iccid) override
+    {
+        std::lock_guard<std::mutex> guard(callsMutex);
+        ++matches;
+        const auto row = rows.find(iccid);
+        return {matchResult, matchFinished, row == rows.end() ? matched : std::make_optional(row->second)};
+    }
     AccountDiscoveryStoreResult WriteDiscoveredAccount(const AccountDiscoveryWritePlan &plan) override
     {
-        ++writes;
-        lastPlan=plan;
-        if (beforeStoreReturn) { beforeStoreReturn(plan); }
-        return produceStore ? produceStore(plan) : stored;
+        auto result = stored;
+        const auto produce = produceStore;
+        const auto beforeReturn = beforeStoreReturn;
+        {
+            std::lock_guard<std::mutex> guard(callsMutex);
+            ++writes;
+            lastPlan = plan;
+        }
+        if (beforeReturn) { beforeReturn(plan); }
+        if (produce) { result = produce(plan); }
+        if (!result.evidence && result.writeConfirmed && result.effect == EffectKnowledge::ConfirmedApplied) {
+            if (result.assignedSubscription) { RecordWrite(plan, *result.assignedSubscription); }
+            result.evidence = DiscoveryWriteEvidence {plan.call, plan.Columns(), 0};
+        }
+        if (!result.evidence && result.effect == EffectKnowledge::ConfirmedNotApplied) {
+            result.evidence = DiscoveryWriteEvidence {plan.call, 0, plan.Columns()};
+        }
+        return result;
     }
     AccountStoreWriteResult WriteRemoval(const AccountRemovalPatch &) override { return {-1,false,true}; }
     int32_t QueryImsPreferenceByIccid(const std::string &, int32_t &) override { return -1; }
@@ -365,11 +427,11 @@ TEST(TargetTopologyIntegration, T2StaleAppliedCanReconcileWithoutRestoringOldBin
         f.topology.AcceptCardSessionInvalidation({observation.session,observation.observationSequence+1});
     };
     EXPECT_FALSE(f.topology.DiscoverAccount(observation).bindingAccepted);
-    f.accountStore.matched=AccountStorageRow{{41},kRaw1,SlotId{1},u"",u"",true,std::nullopt,0};
-    EXPECT_TRUE(f.topology.ReconcileDiscovery(observation));
-    EXPECT_FALSE(f.topology.FindBinding({1}).has_value());
-    EXPECT_TRUE(f.topology.ReadAccount({41},AccountReadView::Current).has_value());
-    EXPECT_TRUE(f.topology.ReconcileDiscovery(observation)==false);
+    EXPECT_FALSE(f.topology.ReconcileDiscovery(observation)); // Confirmed stale effect was already disposed.
+    EXPECT_FALSE(f.topology.FindBinding({1}));
+    EXPECT_FALSE(f.topology.ReadAccount({41},AccountReadView::Current));
+    EXPECT_TRUE(f.topology.ReadAccount({41},AccountReadView::Historical));
+    EXPECT_EQ(f.service.PendingDiscoveryRoles(), 0u);
 }
 
 TEST(TargetTopologyIntegration, T2RecoveryDoesNotReleaseRoleForMissingProviderRow)
@@ -380,7 +442,12 @@ TEST(TargetTopologyIntegration, T2RecoveryDoesNotReleaseRoleForMissingProviderRo
     EXPECT_FALSE(f.topology.DiscoverAccount(observation).bindingAccepted);
     EXPECT_FALSE(f.topology.ReconcileDiscovery(observation));
     f.accountStore.matched=AccountStorageRow{{41},kRaw1,SlotId{1},u"",u"",true,std::nullopt,0};
+    EXPECT_FALSE(f.topology.ReconcileDiscovery(observation)); // A matching row cannot attribute the original write.
+    ASSERT_TRUE(f.accountStore.lastPlan);
+    f.accountStore.ProveApplied(*f.accountStore.lastPlan, {41});
     EXPECT_TRUE(f.topology.ReconcileDiscovery(observation));
+    EXPECT_TRUE(f.topology.FindBinding({1}));
+    EXPECT_EQ(f.service.PendingDiscoveryRoles(), 0u);
 }
 
 TEST(TargetTopologyIntegration, T1ProviderReconnectRequiresFreshObservationNotCachedRetry)
@@ -394,11 +461,14 @@ TEST(TargetTopologyIntegration, T1ProviderReconnectRequiresFreshObservationNotCa
     f.accountStore.matchResult=0;
     EXPECT_FALSE(f.topology.DiscoverAccount(Discovery(1,1,kRaw1)).bindingAccepted);
     EXPECT_EQ(f.accountStore.writes,0u);
+    ASSERT_TRUE(f.accountStore.lastMatchCall);
+    f.accountStore.returnedMatch = f.accountStore.lastMatchCall;
+    EXPECT_TRUE(f.topology.ReconcileDiscovery(*f.accountStore.lastMatchCall));
     EXPECT_TRUE(f.topology.DiscoverAccount(Discovery(1,2,kRaw1)).bindingAccepted);
     EXPECT_EQ(f.accountStore.writes,1u);
 }
 
-TEST(TargetTopologyIntegration, T1SameSlotNewCardRejectsOldCompletedWrite)
+TEST(TargetTopologyIntegration, T1SameSlotNewCardDoesNotInheritOldCompletedWrite)
 {
     DiscoveryFixture f;
     const auto old=Discovery(1,1,"old-card");
@@ -408,9 +478,13 @@ TEST(TargetTopologyIntegration, T1SameSlotNewCardRejectsOldCompletedWrite)
     EXPECT_FALSE(f.topology.DiscoverAccount(old).bindingAccepted);
     f.accountStore.beforeStoreReturn={};
     f.accountStore.stored={0,SubscriptionId{42},true,true,EffectKnowledge::ConfirmedApplied};
-    EXPECT_FALSE(f.topology.DiscoverAccount(Discovery(1,2,"new-card")).bindingAccepted);
-    EXPECT_FALSE(f.topology.FindBinding({1}).has_value());
-    EXPECT_FALSE(f.topology.ReadAccount({41},AccountReadView::Current).has_value());
+    auto replacement = Discovery(1,2,"new-card");
+    replacement.observationSequence = old.observationSequence + 2; // After the old source's revocation.
+    EXPECT_TRUE(f.topology.DiscoverAccount(replacement).bindingAccepted);
+    ASSERT_TRUE(f.topology.FindBinding({1}));
+    EXPECT_EQ(f.topology.FindBinding({1})->subscription.legacySimId, 42);
+    EXPECT_FALSE(f.topology.ReadAccount({41},AccountReadView::Current));
+    EXPECT_TRUE(f.topology.ReadAccount({41},AccountReadView::Historical));
 }
 
 TEST(TargetTopologyIntegration, T2SameIccidDifferentSlotIsRejectedBeforeProviderWrite)
@@ -706,6 +780,7 @@ struct ModuleInputs {
     std::shared_ptr<Output> output = std::make_shared<Output>();
     std::shared_ptr<Completion> completion = std::make_shared<Completion>();
     std::shared_ptr<ModuleDispatch> dispatch = std::make_shared<ModuleDispatch>();
+    std::shared_ptr<AccountStore> accountStore = std::make_shared<UnsupportedAccountStore>();
     CoreSimModulePorts Ports()
     {
         // The adapter borrows the parameter port; keep the pair in one shared control block.
@@ -716,7 +791,7 @@ struct ModuleInputs {
             AssignmentStoreAdapter store;
         };
         const auto adapter = std::make_shared<ParameterAdapter>(parameters);
-        return {std::make_shared<UnsupportedAccountStore>(), std::shared_ptr<AssignmentStore>(adapter, &adapter->store),
+        return {accountStore, std::shared_ptr<AssignmentStore>(adapter, &adapter->store),
             output, completion, radio, dispatch, dispatch, [](const ResourceKey &key, RuntimeEpoch epoch) {
                 EXPECT_EQ(key.verifiedPhysicalDomain, "primary-shared");
                 return InitialRecoveryEvidence {epoch, true, true};
@@ -764,6 +839,7 @@ TEST(AF2Module, MissingPortAndBadEvidenceNeverPublishAndReleasePartialGraph)
     EXPECT_EQ(std::get<SimModuleInitFailure>(CreateCoreSimModule(std::move(ports), input.catalog, {})).stage,
         Stage::BindHostPorts);
     ports = input.Ports();
+    ports.accountStore = std::make_shared<UnsupportedAccountStore>();
     const std::weak_ptr<AccountStore> released = ports.accountStore;
     ports.initialEvidence = [](const ResourceKey &, RuntimeEpoch epoch) {
         ++epoch[1];
@@ -774,6 +850,7 @@ TEST(AF2Module, MissingPortAndBadEvidenceNeverPublishAndReleasePartialGraph)
     EXPECT_TRUE(released.expired());
 
     ports = input.Ports();
+    ports.accountStore = std::make_shared<UnsupportedAccountStore>();
     const std::weak_ptr<AccountStore> seedFailed = ports.accountStore;
     auto accounts = input.accounts;
     accounts.back().stored.writeConfirmed = false;
@@ -897,4 +974,290 @@ TEST(AF2Module, SharedResourceAllowsOnlyOneCompetingOwner)
     ASSERT_TRUE(other);
     EXPECT_TRUE(barrier.CancelConfirmedNotSent(*other));
     EXPECT_TRUE(barrier.CancelConfirmedNotSent(radioLease ? *radioLease : *cardLease));
+}
+
+namespace {
+struct LiveDiscoveryFixture {
+    ModuleInputs input;
+    std::shared_ptr<ControlledDiscoveryStore> store = std::make_shared<ControlledDiscoveryStore>();
+    CoreSimModuleHandle module;
+
+    LiveDiscoveryFixture()
+    {
+        store->persistRows = true;
+        input.accountStore = store;
+        module = std::get<CoreSimModuleHandle>(CreateCoreSimModule(input.Ports(), input.catalog, {}));
+    }
+};
+
+class LostRoleReceipt final : public AccountRolePlanningPort {
+public:
+    explicit LostRoleReceipt(AssignmentService &owner) : owner_(owner) {}
+    unsigned finalizations {0};
+
+    std::optional<AccountRoleFragment> PrepareAccountRoleFragment(const AccountRolePlanningInput &input) override
+    { return owner_.PrepareAccountRoleFragment(input); }
+    bool StillOwnsInitialRoleReservation(const AccountRoleFragment &plan) const override
+    { return owner_.StillOwnsInitialRoleReservation(plan); }
+    bool AcceptDiscoveredRoleProjection(const AccountRoleFragment &plan, SubscriptionId assigned) override
+    { return owner_.AcceptDiscoveredRoleProjection(plan, assigned); }
+    bool FinalizeInitialRoleReservation(const AccountRoleFragment &plan,
+        const InitialRoleFinalizationEvidence &evidence) override
+    {
+        const bool applied = owner_.FinalizeInitialRoleReservation(plan, evidence);
+        return ++finalizations > 1 && applied;
+    }
+    void ConfirmInitialRoleReceipt(const AccountRoleFragment &plan,
+        const InitialRoleFinalizationEvidence &evidence) override
+    { owner_.ConfirmInitialRoleReceipt(plan, evidence); }
+    uint64_t ReadRoleProjectionRevision(bool historical) const override
+    { return owner_.ReadRoleProjectionRevision(historical); }
+    bool AcceptReloadedRoleProjectionSet(const std::vector<StoredAccountRoleFragment> &rows,
+        uint64_t attempt, uint64_t expected, bool historical) override
+    { return owner_.AcceptReloadedRoleProjectionSet(rows, attempt, expected, historical); }
+    bool AcceptReloadedRoleProjection(const StoredAccountRoleFragment &row, uint64_t attempt,
+        uint64_t expected, bool historical) override
+    { return owner_.AcceptReloadedRoleProjection(row, attempt, expected, historical); }
+private:
+    AssignmentService &owner_;
+};
+} // namespace
+
+TEST(AF2Discovery, LiveCardDiscoveryCreatesAccountAndBinding)
+{
+    LiveDiscoveryFixture f;
+    ASSERT_FALSE(f.module->FindBinding({1}));
+    ASSERT_TRUE(f.module->ObserveVerifiedCard({{1}, "USIM"}, 1, kRaw1));
+    EXPECT_EQ(f.store->writes, 1u);
+    EXPECT_EQ(f.store->rows.at(kRaw1).subscription.legacySimId, 41);
+    EXPECT_EQ(f.store->inserts, 1u);
+    ASSERT_TRUE(f.module->ReadAccount({41}));
+    ASSERT_TRUE(f.module->ReadAccount({41}, AccountReadView::Historical));
+    ASSERT_TRUE(f.module->FindBinding({1}));
+    EXPECT_EQ(f.module->FindBinding({1})->subscription.legacySimId, 41);
+    EXPECT_EQ(f.module->PendingDiscoveryRoles(), 0u);
+    const auto roles = f.module->ReadConfirmedDiscoveryRoles({41});
+    ASSERT_TRUE(roles);
+    EXPECT_TRUE(roles->call == f.store->lastPlan->call);
+    EXPECT_FALSE(roles->stored.mainCardColumn);
+    EXPECT_FALSE(roles->historicalOnly);
+    EXPECT_FALSE(f.module->ReadDiscoveryReceipt(f.store->lastPlan->call));
+    EXPECT_EQ(f.module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Discovery, KnownCardReinsertKeepsIdentityAndRejectsDuplicateAndOldSource)
+{
+    LiveDiscoveryFixture f;
+    f.store->rows.emplace(kRaw1, AccountStorageRow {{77}, kRaw1, SlotId {1}, u"known", u"22", true, 3, {}});
+    f.store->stored.assignedSubscription = SubscriptionId {77};
+    auto first = f.module->ObserveVerifiedCard({{1}, "USIM"}, 1, kRaw1);
+    ASSERT_TRUE(first);
+    const auto old = f.module->FindBinding({1});
+    ASSERT_TRUE(old);
+    EXPECT_TRUE(f.module->ReadAccount({77})->displayName == u"known");
+    EXPECT_FALSE(f.module->ObserveVerifiedCard({{1}, "USIM"}, 1, kRaw1));
+    EXPECT_FALSE(f.module->ObserveVerifiedCard({{1}, "ISIM"}, 1, "other-application"));
+    EXPECT_TRUE(f.module->InvalidateVerifiedCard({f.module->Epoch(), {{1}, "ISIM"}, 1}));
+    EXPECT_EQ(f.module->FindBinding({1})->bindingRevision, old->bindingRevision);
+    EXPECT_TRUE(f.module->InvalidateVerifiedCard(*first));
+    EXPECT_FALSE(f.module->FindBinding({1}));
+    EXPECT_TRUE(f.module->ReadAccount({77}, AccountReadView::Historical));
+    ASSERT_TRUE(f.module->ObserveVerifiedCard({{1}, "USIM"}, 2, kRaw1));
+    ASSERT_TRUE(f.module->FindBinding({1}));
+    EXPECT_EQ(f.module->FindBinding({1})->bindingRevision, old->bindingRevision + 2);
+    EXPECT_FALSE(f.module->InvalidateVerifiedCard(*first));
+    EXPECT_EQ(f.module->FindBinding({1})->subscription.legacySimId, 77);
+    EXPECT_EQ(f.store->writes, 2u);
+    EXPECT_EQ(f.store->inserts, 0u);
+    EXPECT_FALSE(f.store->lastPlan->roleFields.includeInStorage);
+    EXPECT_EQ(f.module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Discovery, WrongProofAndPartialEvidenceKeepOriginalUntilAllColumnsAreProven)
+{
+    LiveDiscoveryFixture f;
+    f.store->stored = {-1, {}, false, true, EffectKnowledge::Unknown};
+    ASSERT_TRUE(f.module->ObserveVerifiedCard({{1}, "USIM"}, 1, kRaw1));
+    const auto original = *f.store->lastPlan;
+    ASSERT_TRUE(f.module->ReadDiscoveryReceipt(original.call));
+    EXPECT_EQ(f.module->PendingDiscoveryRoles(), 1u);
+    f.store->rows.emplace(kRaw1, AccountStorageRow {{41}, kRaw1, SlotId {1}, u"", u"", true, {}, {}});
+    EXPECT_FALSE(f.module->ReconcileDiscovery(original.call)); // Same-value row does not attribute.
+    auto wrong = original.call;
+    ++wrong.epoch[1];
+    f.store->originalEvidence[original.call.admission] = {0, SubscriptionId {41}, true, true,
+        EffectKnowledge::ConfirmedApplied, DiscoveryWriteEvidence {wrong, original.Columns(), 0}};
+    EXPECT_FALSE(f.module->ReconcileDiscovery(original.call));
+    f.store->originalEvidence[original.call.admission] = {0, SubscriptionId {41}, false, true,
+        EffectKnowledge::Unknown, DiscoveryWriteEvidence {original.call, DiscoveryIccid, 0}};
+    EXPECT_FALSE(f.module->ReconcileDiscovery(original.call));
+    ASSERT_TRUE(f.module->ReadDiscoveryReceipt(original.call));
+    EXPECT_EQ(f.module->ReadDiscoveryReceipt(original.call)->applied, DiscoveryIccid);
+    EXPECT_FALSE(f.module->ReadAccount({41}));
+    EXPECT_FALSE(f.module->FindBinding({1}));
+    const auto remaining = static_cast<uint16_t>(original.Columns() & ~DiscoveryIccid);
+    f.store->originalEvidence[original.call.admission] = {0, SubscriptionId {41}, true, true,
+        EffectKnowledge::ConfirmedApplied, DiscoveryWriteEvidence {original.call, remaining, 0}};
+    EXPECT_TRUE(f.module->ReconcileDiscovery(original.call));
+    ASSERT_TRUE(f.module->FindBinding({1}));
+    EXPECT_EQ(f.module->FindBinding({1})->bindingRevision, 1u);
+    EXPECT_TRUE(f.module->ReadAccount({41}));
+    EXPECT_FALSE(f.module->ReadDiscoveryReceipt(original.call));
+    EXPECT_FALSE(f.module->ReconcileDiscovery(original.call));
+    EXPECT_EQ(f.store->writes, 1u);
+    EXPECT_EQ(f.module->PendingDiscoveryRoles(), 0u);
+    EXPECT_EQ(f.module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Discovery, SameSlotOriginalsRecoverIndependentlyInBothResultOrders)
+{
+    for (const bool newerFirst : {false, true}) {
+        LiveDiscoveryFixture f;
+        f.store->stored = {-1, {}, false, true, EffectKnowledge::Unknown};
+        const auto old = f.module->ObserveVerifiedCard({{1}, "USIM"}, 1, kRaw0);
+        ASSERT_TRUE(old);
+        const auto first = *f.store->lastPlan;
+        ASSERT_TRUE(f.module->ObserveVerifiedCard({{1}, "USIM"}, 2, kRaw1));
+        const auto second = *f.store->lastPlan;
+        EXPECT_FALSE(first.call == second.call);
+        EXPECT_EQ(f.module->PendingDiscoveryRoles(), 2u);
+        EXPECT_FALSE(f.module->InvalidateVerifiedCard(*old));
+        EXPECT_EQ(f.module->StopAcceptingAndDrain(), SimModule::DrainResult::BusinessEffectsUnresolved);
+        EXPECT_FALSE(f.module->ObserveVerifiedCard({{1}, "USIM"}, 3, "third-card"));
+        f.store->ProveApplied(first, {40});
+        f.store->ProveApplied(second, {41});
+        if (newerFirst) {
+            EXPECT_TRUE(f.module->ReconcileDiscovery(second.call));
+            ASSERT_TRUE(f.module->FindBinding({1}));
+            EXPECT_EQ(f.module->FindBinding({1})->subscription.legacySimId, 41);
+            EXPECT_TRUE(f.module->ReadDiscoveryReceipt(first.call));
+            EXPECT_TRUE(f.module->ReconcileDiscovery(first.call));
+        } else {
+            EXPECT_TRUE(f.module->ReconcileDiscovery(first.call));
+            EXPECT_FALSE(f.module->FindBinding({1}));
+            EXPECT_TRUE(f.module->ReadDiscoveryReceipt(second.call));
+            EXPECT_TRUE(f.module->ReconcileDiscovery(second.call));
+        }
+        ASSERT_TRUE(f.module->FindBinding({1}));
+        EXPECT_EQ(f.module->FindBinding({1})->subscription.legacySimId, 41);
+        EXPECT_FALSE(f.module->ReadAccount({40}));
+        EXPECT_TRUE(f.module->ReadAccount({40}, AccountReadView::Historical));
+        const auto oldRoles = f.module->ReadConfirmedDiscoveryRoles({40});
+        ASSERT_TRUE(oldRoles);
+        EXPECT_TRUE(oldRoles->historicalOnly);
+        EXPECT_TRUE(oldRoles->call == first.call);
+        EXPECT_EQ(f.module->PendingDiscoveryRoles(), 0u);
+        EXPECT_EQ(f.store->writes, 2u);
+        EXPECT_EQ(f.module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+        const std::weak_ptr<SimModule> remained = f.module;
+        f.module.reset();
+        EXPECT_TRUE(remained.expired());
+    }
+}
+
+TEST(AF2Discovery, UnreturnedMatchKeepsOriginalAndNeverAuthorizesWrite)
+{
+    LiveDiscoveryFixture f;
+    f.store->matchFinished = false;
+    f.store->matchResult = -1;
+    ASSERT_TRUE(f.module->ObserveVerifiedCard({{1}, "USIM"}, 1, kRaw1));
+    const auto original = *f.store->lastMatchCall;
+    ASSERT_TRUE(f.module->ReadDiscoveryReceipt(original));
+    EXPECT_EQ(f.module->ReadDiscoveryReceipt(original)->phase, TopologyService::DiscoveryPhase::WaitingMatch);
+    EXPECT_EQ(f.module->StopAcceptingAndDrain(), SimModule::DrainResult::BusinessEffectsUnresolved);
+    EXPECT_FALSE(f.module->ReconcileDiscovery(original));
+    f.store->returnedMatch = original;
+    EXPECT_TRUE(f.module->ReconcileDiscovery(original));
+    EXPECT_EQ(f.store->writes, 0u);
+    EXPECT_EQ(f.module->PendingDiscoveryRoles(), 0u);
+    EXPECT_FALSE(f.module->FindBinding({1}));
+    EXPECT_EQ(f.module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Discovery, StopBeforeSendGrantSealsNewWork)
+{
+    LiveDiscoveryFixture f;
+    f.store->beforeMatchReturn = [&](DiscoveryCallRef) {
+        EXPECT_EQ(f.module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
+    };
+    ASSERT_TRUE(f.module->ObserveVerifiedCard({{1}, "USIM"}, 1, kRaw1));
+    EXPECT_EQ(f.store->writes, 0u);
+    EXPECT_EQ(f.module->PendingDiscoveryRoles(), 0u);
+    EXPECT_FALSE(f.module->FindBinding({1}));
+    EXPECT_EQ(f.module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Discovery, StopWhileWriteExecutesWaitsForRealReturnAndAllowsOriginalDisposition)
+{
+    LiveDiscoveryFixture f;
+    std::promise<void> entered, release;
+    auto enteredSignal = entered.get_future();
+    auto resume = release.get_future();
+    f.store->beforeStoreReturn = [&](const AccountDiscoveryWritePlan &) { entered.set_value(); resume.wait(); };
+    auto writing = std::async(std::launch::async, [&] { return f.module->ObserveVerifiedCard({{1}, "USIM"}, 1, kRaw1); });
+    if (enteredSignal.wait_for(std::chrono::seconds(3)) != std::future_status::ready) {
+        release.set_value();
+        FAIL() << "Store call did not enter";
+    }
+    EXPECT_EQ(f.module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
+    EXPECT_EQ(f.module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
+    EXPECT_FALSE(f.module->ReconcileDiscovery(f.store->lastPlan->call));
+    EXPECT_FALSE(f.module->FindBinding({1}));
+    EXPECT_FALSE(f.module->ObserveVerifiedCard({{0}, "USIM"}, 1, kRaw0));
+    release.set_value();
+    EXPECT_TRUE(writing.get());
+    EXPECT_TRUE(f.module->FindBinding({1}));
+    EXPECT_EQ(f.store->writes, 1u);
+    EXPECT_EQ(f.module->PendingDiscoveryRoles(), 0u);
+    EXPECT_EQ(f.module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Discovery, LostRoleReceiptIsReReadWithoutReplayingPublishOrWrite)
+{
+    DiscoveryFixture f;
+    LostRoleReceipt port(f.service);
+    f.topology.BindRolePlanner(port);
+    ASSERT_TRUE(f.topology.DiscoverAccount(Discovery(1, 1, kRaw1)).bindingAccepted);
+    const auto ticket = f.accountStore.lastPlan->call;
+    ASSERT_TRUE(f.topology.ReadDiscoveryReceipt(ticket));
+    const auto receipt = *f.topology.ReadDiscoveryReceipt(ticket);
+    EXPECT_EQ(receipt.phase, TopologyService::DiscoveryPhase::Finalizing);
+    ASSERT_TRUE(receipt.published);
+    EXPECT_EQ(f.service.PendingDiscoveryRoles(), 1u);
+    EXPECT_TRUE(f.topology.ReconcileDiscovery(ticket));
+    EXPECT_EQ(port.finalizations, 2u);
+    EXPECT_EQ(f.accountStore.writes, 1u);
+    EXPECT_EQ(f.topology.FindBinding({1})->bindingRevision, receipt.published->bindingRevision);
+    EXPECT_FALSE(f.topology.ReconcileDiscovery(ticket));
+    EXPECT_EQ(f.service.PendingDiscoveryRoles(), 0u);
+}
+
+TEST(AF2Discovery, LiveBindingsFeedExistingC0AndStaleTargetCannotAdvance)
+{
+    LiveDiscoveryFixture f;
+    f.store->produceStore = [](const AccountDiscoveryWritePlan &plan) {
+        return Stored({plan.accountFields.legacyPosition.legacySlotId == 0 ? 40 : 41});
+    };
+    ASSERT_TRUE(f.module->ObserveVerifiedCard({{0}, "USIM"}, 1, kRaw0));
+    auto second = f.module->ObserveVerifiedCard({{1}, "USIM"}, 1, kRaw1);
+    ASSERT_TRUE(second);
+    ASSERT_TRUE(f.module->FindBinding({0}));
+    const auto binding = f.module->FindBinding({1});
+    ASSERT_TRUE(binding);
+    ASSERT_TRUE(f.module->StartPrimarySwitch(Command(*binding)));
+    EXPECT_EQ(f.module->ReadAssignment().lastPrimary, SlotId {1});
+    EXPECT_EQ(f.module->ReadAssignment().lastData, SlotId {1});
+    EXPECT_TRUE(f.module->ReadAccount({40}));
+    EXPECT_TRUE(f.module->ReadAccount({41}));
+    EXPECT_EQ(f.input.radio->commands, 0u);
+    const auto before = f.input.parameters->writes.size();
+    f.input.parameters->writeResult = [&](const std::string &key) {
+        if (key == kPreference) { EXPECT_TRUE(f.module->InvalidateVerifiedCard(*second)); }
+        return AssignmentParameterResult {0, true};
+    };
+    ASSERT_TRUE(f.module->StartPrimarySwitch(Command(*binding)));
+    EXPECT_EQ(f.input.parameters->writes.size(), before + 1); // Only the original admitted preference.
+    EXPECT_FALSE(f.module->FindBinding({1}));
+    EXPECT_EQ(f.input.completion->results, (std::vector<int32_t> {0, -1}));
+    EXPECT_EQ(f.module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
 }

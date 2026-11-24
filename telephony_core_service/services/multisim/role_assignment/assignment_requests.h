@@ -52,6 +52,7 @@ struct AccountRolePlanningInput {
     std::optional<SubscriptionId> existingSubscription;
     SlotId discoveredSlot;
     bool useLegacySingleSlotRoles;
+    std::optional<DiscoveryCallRef> discoveryCall {};
 };
 struct AccountRoleReservation { uint64_t token; uint64_t assignmentRevision; };
 struct AccountRoleFragment {
@@ -62,6 +63,7 @@ struct AccountRoleFragment {
     bool mainCardColumn;
     bool dataCardColumn;
     bool includeInStorage; // 新行和单卡旧卡恢复写角色，多卡旧卡重绑定保留角色。
+    std::optional<DiscoveryCallRef> discoveryCall {};
 }; // 新simId由原Insert返回；A资格覆盖建行I/O，不是只读快照后任意写。
 struct StoredAccountRoleFragment {
     SubscriptionId subscription;
@@ -70,6 +72,11 @@ struct StoredAccountRoleFragment {
     bool mainCardColumn;
     bool dataCardColumn;
 }; // 原DB读取载荷；不能以A当前态填回旧DB读取结果。
+struct ConfirmedDiscoveryRoles {
+    DiscoveryCallRef call;
+    StoredAccountRoleFragment stored;
+    bool historicalOnly;
+};
 struct LegacyActivationWaitResult {
     bool primaryStillInProgress;
     bool boundedWaitExpired;
@@ -98,6 +105,15 @@ struct InitialRoleFinalizationEvidence {
     bool callFinished;
     EffectKnowledge storageEffect;
     bool projectionsAcceptedOrReconciled;
+    std::optional<DiscoveryCallRef> discoveryCall {};
+    std::optional<SubscriptionId> assigned {};
+    bool historicalOnly {false};
+    bool operator==(const InitialRoleFinalizationEvidence &other) const
+    {
+        return callFinished == other.callFinished && storageEffect == other.storageEffect &&
+            projectionsAcceptedOrReconciled == other.projectionsAcceptedOrReconciled &&
+            discoveryCall == other.discoveryCall && assigned == other.assigned && historicalOnly == other.historicalOnly;
+    }
 };
 inline bool MayFinalizeInitialRoles(const InitialRoleFinalizationEvidence &evidence)
 {

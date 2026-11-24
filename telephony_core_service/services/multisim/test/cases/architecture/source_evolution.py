@@ -1,17 +1,38 @@
-"""Check the exact active side of the M1 delta before replaying historical layout checks."""
+"""Verify active M1/M2 inputs and replay the frozen layout comparisons."""
 import hashlib
 import json
 from pathlib import Path
 
 
+def load_manifest(name):
+    return json.loads(Path(__file__).with_name(name + '_source_evolution.json').read_text())
+
+
 def migration_inputs(source, repo):
     from check_directory_migration import committed_inputs
 
-    manifest = json.loads(Path(__file__).with_name('af2_m1_source_evolution.json').read_text())
-    entries = manifest['files']
+    m1 = load_manifest('af2_m1')
+    m2 = load_manifest('af2_m2')
     prefix = 'telephony_core_service/services/multisim'
-    before = committed_inputs(repo, manifest['baseline'], prefix, sorted(entries))
-    for name, expected in entries.items():
+    prior = m2['prior_layout_deltas']
+    before_m2 = committed_inputs(repo, m2['baseline'], prefix, sorted(set(m2['files']) | set(prior)))
+    for name, delta in prior.items():
+        if not delta['reason'] or hashlib.sha256(before_m2[name]).hexdigest() != delta['sha256']:
+            raise ValueError('Pre-M2 historical layout input differs: ' + name)
+        if name not in m2['files'] and (source / name).read_bytes() != before_m2[name]:
+            raise ValueError('Active pre-M2 layout input differs: ' + name)
+    for name, expected in (m2['files'] | m2['added']).items():
         if hashlib.sha256((source / name).read_bytes()).hexdigest() != expected:
+            raise ValueError('AF2 M2 source input differs: ' + name)
+    before_m1 = committed_inputs(repo, m1['baseline'], prefix, sorted(m1['files']))
+    for name, expected in m1['files'].items():
+        contents = before_m2[name] if name in before_m2 else (source / name).read_bytes()
+        if hashlib.sha256(contents).hexdigest() != expected:
             raise ValueError('AF2 M1 source input differs: ' + name)
-    return before
+    return before_m2 | before_m1
+
+
+def matches_prior_layout_delta(name, predecessor):
+    # The historical input has already been checked against its original commit and digest.
+    expected = load_manifest('af2_m2')['prior_layout_deltas'].get(name)
+    return bool(expected and hashlib.sha256(predecessor).hexdigest() == expected['sha256'])

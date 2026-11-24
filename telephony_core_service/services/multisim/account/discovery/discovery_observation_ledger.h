@@ -44,6 +44,9 @@ public:
         bool allowBinding = true);
     DiscoveryStoreAcceptance ReconcileStored(const DiscoveryStoreTicket &ticket, EffectKnowledge effect,
         std::optional<SubscriptionId> identity, bool callFinished);
+    bool CanPublish(const DiscoveryStoreTicket &ticket, const BindingIndex &bindings) const
+    { return MatchesStore(ticket, bindings); }
+    void ReleaseStore(const DiscoveryStoreTicket &ticket);
 private:
     struct Entry {
         SessionRef session;
@@ -59,7 +62,7 @@ private:
     using Key = std::pair<SlotId, std::string>;
     RuntimeEpoch epoch_;
     std::map<Key, Entry> accepted_;
-    std::map<std::string, Key> activeIccids_;
+    std::map<std::string, uint64_t> activeIccids_;
     uint64_t nextAdmission_ {0};
 };
 } // namespace OHOS::Telephony::MultiSim

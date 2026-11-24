@@ -50,6 +50,7 @@ source_set("assembly_core") {
   public_deps = [
     ":assembly_contracts",
     ":assignment_cases",
+    ":runtime_core",
     ":runtime_mechanisms",
     ":topology_cases",
   ]
@@ -337,11 +338,14 @@ source_set("runtime_core") {
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
   sources = [
+    "card/runtime/card_observation_runtime.cpp",
+    "card/runtime/card_observation_runtime.h",
     "card/runtime/card_runtime.cpp",
     "card/runtime/card_runtime.h",
     "card/runtime/result_sinks.h",
   ]
   public = [
+    "card/runtime/card_observation_runtime.h",
     "card/runtime/card_runtime.h",
     "card/runtime/result_sinks.h",
   ]

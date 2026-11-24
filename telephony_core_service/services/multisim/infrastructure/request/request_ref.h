@@ -23,6 +23,13 @@
 #include "infrastructure/sim_identity.h"
 
 namespace OHOS::Telephony::MultiSim {
+struct DiscoveryCallRef {
+    RuntimeEpoch epoch;
+    uint64_t admission;
+    bool operator==(const DiscoveryCallRef &other) const
+    { return epoch == other.epoch && admission == other.admission; }
+    bool operator!=(const DiscoveryCallRef &other) const { return !(*this == other); }
+};
 enum class RequestOwner { Unspecified, ShowNumber, Activation, Assignment, LocalCard, LegacyBridge };
 struct RequestId {
     uint64_t value;

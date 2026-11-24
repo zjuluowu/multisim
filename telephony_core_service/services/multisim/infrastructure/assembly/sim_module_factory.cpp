@@ -51,11 +51,14 @@ SimModule::SimModule(CoreSimModulePorts ports, std::shared_ptr<const SlotCatalog
     : ports_(std::move(ports)), catalog_(std::move(catalog)), epoch_(epoch), resources_(epoch_),
       radio_(resources_, *ports_.radio, {primaryResource_}, ResourceRadioRuntime::Mode::ObserveOnly),
       sessions_(epoch_),
-      topology_(*catalog_, *ports_.accountStore, epoch_),
+      topology_(*catalog_, *ports_.accountStore, epoch_), card_(*catalog_, sessions_, topology_, epoch_),
       assignment_(std::make_shared<AssignmentService>(*catalog_, *ports_.assignmentStore, radio_,
           *ports_.output, topology_, *ports_.completion, epoch_, AssignmentService::PrimaryScope::C0Only)),
       lifecycle_(assignment_, radio_, *ports_.scheduler, ports_.ownerDispatch)
 {
+    for (const auto &slot : catalog_->Slots()) {
+        (void)topology_.AcceptSlotAssembly(slot.slot, true);
+    }
     topology_.BindRolePlanner(*assignment_);
     assignment_->BindRetryScheduler(ports_.scheduler);
     radio_.BindResultSink(assignment_);
@@ -86,9 +89,9 @@ std::optional<BindingRef> SimModule::FindBinding(SlotId slot) const
     return topology_.FindBinding(slot);
 }
 
-std::optional<AccountView> SimModule::ReadAccount(SubscriptionId subscription) const
+std::optional<AccountView> SimModule::ReadAccount(SubscriptionId subscription, AccountReadView view) const
 {
-    return topology_.ReadAccount(subscription);
+    return topology_.ReadAccount(subscription, view);
 }
 
 AssignmentView SimModule::ReadAssignment() const
@@ -111,7 +114,7 @@ std::optional<RequestId> SimModule::StartPrimarySwitch(const SwitchPrimaryComman
     const auto self = shared_from_this();
     {
         std::lock_guard<std::mutex> guard(admissionMutex_);
-        if (!accepting_ || primaryCallActive_ || closeHold_) { return std::nullopt; }
+        if (!accepting_ || primaryCallActive_ || primaryEffectUnresolved_) { return std::nullopt; }
         primaryCallActive_ = true;
     }
     const PrimaryCall call {self};
@@ -123,6 +126,7 @@ void SimModule::ReturnPrimaryCall()
     const auto receipt = assignment_->ReadC0Receipt();
     std::lock_guard<std::mutex> guard(admissionMutex_);
     if (receipt) {
+        primaryEffectUnresolved_ = true;
         closeHold_ = shared_from_this();
     }
     primaryCallActive_ = false;
@@ -134,9 +138,10 @@ SimModule::DrainResult SimModule::StopAcceptingAndDrain()
     {
         std::lock_guard<std::mutex> guard(admissionMutex_);
         accepting_ = false;
+        topology_.SealDiscovery();
         if (drained_) { return DrainResult::Drained; }
         closeHold_ = self;
-        if (primaryCallActive_ || joining_) { return DrainResult::CallbacksStillInFlight; }
+        if (primaryCallActive_ || discoveryCalls_ || joining_) { return DrainResult::CallbacksStillInFlight; }
         joining_ = true;
     }
 
@@ -156,10 +161,72 @@ SimModule::DrainResult SimModule::StopAcceptingAndDrain()
     if (primary == PrimaryHostLifecycle::DrainResult::DeviceEffectsUnresolved) {
         return DrainResult::DeviceEffectsUnresolved;
     }
-    if (assignment_->ReadC0Receipt()) { return DrainResult::BusinessEffectsUnresolved; }
+    if (discoveryCalls_) { return DrainResult::CallbacksStillInFlight; }
+    if (primaryEffectUnresolved_ || topology_.PendingDiscoveryCount() || assignment_->PendingDiscoveryRoles()) {
+        return DrainResult::BusinessEffectsUnresolved;
+    }
     drained_ = true;
     closeHold_.reset();
     return DrainResult::Drained;
+}
+
+bool SimModule::AdmitDiscoveryCall(bool originalOnly)
+{
+    std::lock_guard<std::mutex> guard(admissionMutex_);
+    if (drained_ || (!originalOnly && !accepting_)) { return false; }
+    ++discoveryCalls_;
+    return true;
+}
+
+void SimModule::ReturnDiscoveryCall()
+{
+    std::lock_guard<std::mutex> guard(admissionMutex_);
+    --discoveryCalls_;
+    if (topology_.PendingDiscoveryCount() || assignment_->PendingDiscoveryRoles()) {
+        closeHold_ = shared_from_this();
+    } else if (accepting_ && !primaryEffectUnresolved_) {
+        closeHold_.reset();
+    }
+}
+
+std::optional<SessionRef> SimModule::ObserveVerifiedCard(const CardApplicationTarget &application,
+    uint64_t generation, const std::string &iccid)
+{
+    const auto self = shared_from_this();
+    if (!AdmitDiscoveryCall()) { return std::nullopt; }
+    const DiscoveryCall call {self};
+    return card_.ObserveVerifiedCard(application, generation, iccid);
+}
+
+bool SimModule::InvalidateVerifiedCard(const SessionRef &session)
+{
+    const auto self = shared_from_this();
+    if (!AdmitDiscoveryCall(true)) { return false; }
+    const DiscoveryCall call {self};
+    return card_.InvalidateVerifiedCard(session);
+}
+
+bool SimModule::ReconcileDiscovery(DiscoveryCallRef original)
+{
+    const auto self = shared_from_this();
+    if (!AdmitDiscoveryCall(true)) { return false; }
+    const DiscoveryCall call {self};
+    return topology_.ReconcileDiscovery(original);
+}
+
+std::optional<TopologyService::DiscoveryReceipt> SimModule::ReadDiscoveryReceipt(DiscoveryCallRef call) const
+{
+    return topology_.ReadDiscoveryReceipt(call);
+}
+
+std::optional<ConfirmedDiscoveryRoles> SimModule::ReadConfirmedDiscoveryRoles(SubscriptionId id) const
+{
+    return assignment_->ReadConfirmedDiscoveryRoles(id);
+}
+
+size_t SimModule::PendingDiscoveryRoles() const
+{
+    return assignment_->PendingDiscoveryRoles();
 }
 
 void SimModuleDeleter::operator()(SimModule *module) const

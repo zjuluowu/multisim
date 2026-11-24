@@ -26,6 +26,9 @@ namespace OHOS::Telephony::MultiSim {
 class CardObservationSink {
 public:
     virtual ~CardObservationSink() = default;
+    // These registrations are short; the provider call runs after R leaves its observation domain.
+    virtual bool RegisterCardDiscoveryObservation(const CardDiscoveryObservation &observation) = 0;
+    virtual DiscoveryAcceptance DiscoverAccount(const CardDiscoveryObservation &observation) = 0;
     virtual void AcceptCardDiscoveryObservation(const CardDiscoveryObservation &observation) = 0;
     virtual void AcceptCardSessionInvalidation(const CardSessionInvalidation &invalidation) = 0;
 };
