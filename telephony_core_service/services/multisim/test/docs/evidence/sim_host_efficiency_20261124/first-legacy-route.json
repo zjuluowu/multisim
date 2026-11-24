@@ -1,0 +1,422 @@
+{
+  "build": {
+    "requested_targets": [
+      "sim_test_host",
+      "sim_component_test",
+      "sim_primary_slot_entry_test",
+      "sim_g2a_query_test",
+      "sim_upstream_query_test",
+      "sim_primary_slot_real_test",
+      "sim_bootstrap_characterization",
+      "sim_test_target_host"
+    ],
+    "dependencies": {
+      "googletest_inventory": 0.005228328984230757,
+      "googletest": {
+        "seconds": 0.0017423100071027875,
+        "reused": true,
+        "files": 247
+      },
+      "platform_headers": {
+        "seconds": 0.20703486201819032,
+        "reused": true,
+        "files": 21
+      },
+      "openssl": {
+        "seconds": 0.017899799975566566,
+        "reused": true,
+        "files": 136
+      },
+      "native_runtime": {
+        "seconds": 0.0005690039834007621,
+        "reused": true,
+        "files": 4
+      }
+    },
+    "lock_wait_seconds": 3.3598725269548595,
+    "source_manifest": {
+      "seconds": 0.378599523101002,
+      "changed": false
+    },
+    "gn": {
+      "seconds_including_compile_database": 1.100008375942707e-06,
+      "count": 0,
+      "reason": null
+    },
+    "compile_database_changed": false,
+    "targets": [
+      "sim_primary_slot_real_test"
+    ],
+    "route_seconds": 0.31292315491009504,
+    "configuration_changed": false,
+    "ninja": {
+      "seconds": 3.281291133025661,
+      "count": 1,
+      "actions": {
+        "CXX": 0,
+        "LINK": 0,
+        "SOLINK": 0,
+        "AR": 0,
+        "Regenerating": 0
+      }
+    },
+    "binary_identities": {
+      "sim_primary_slot_real_test": [
+        73,
+        1688849860411718,
+        52869376,
+        1795526064969304800,
+        1795526064969304800
+      ]
+    },
+    "lock_hold_seconds": 4.3903497530845925
+  },
+  "result": {
+    "head": "a3f94033cb66202f22ae2393b9611b58de51e1f1",
+    "started_utc": "2026-11-24T13:17:06.542312+00:00",
+    "commands": [
+      {
+        "name": "host-build",
+        "command": [
+          "/usr/bin/python3",
+          "-B",
+          "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/build_replacement.py",
+          "--out",
+          "/mnt/e/github/multisim/.host-out",
+          "--jobs",
+          "3",
+          "--target",
+          "sim_test_host",
+          "sim_component_test",
+          "sim_primary_slot_entry_test",
+          "sim_g2a_query_test",
+          "sim_upstream_query_test",
+          "sim_primary_slot_real_test",
+          "sim_bootstrap_characterization",
+          "sim_test_target_host",
+          "--result",
+          "/tmp/sim-host-efficiency/smoke-legacy/sim-v6m_uksn/build.json",
+          "--incremental",
+          "--route",
+          "[{\"targets\": [\"sim_test_host\", \"sim_component_test\", \"sim_primary_slot_entry_test\", \"sim_g2a_query_test\", \"sim_upstream_query_test\", \"sim_primary_slot_real_test\", \"sim_bootstrap_characterization\", \"sim_test_target_host\"], \"fallback\": [\"sim_test_host\", \"sim_component_test\", \"sim_primary_slot_entry_test\", \"sim_g2a_query_test\", \"sim_upstream_query_test\", \"sim_primary_slot_real_test\", \"sim_bootstrap_characterization\"], \"filter\": \"RealSimPrimary.C0CoreToRealManagerAndController\"}]"
+        ],
+        "exit_code": 0,
+        "status": "PASS",
+        "log": "host-build.log",
+        "seconds": 7.985969497007318
+      },
+      {
+        "name": "legacy-sim_primary_slot_real_test",
+        "command": [
+          "/usr/bin/python3",
+          "-B",
+          "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/run_gtest.py",
+          "--binary",
+          "/mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test",
+          "--output",
+          "/tmp/sim-host-efficiency/smoke-legacy/sim-v6m_uksn/legacy/sim_primary_slot_real_test",
+          "--filter",
+          "RealSimPrimary.C0CoreToRealManagerAndController",
+          "--env",
+          "SIM_HOST_BOOT_SLOT_COUNT=2",
+          "--env",
+          "SIM028_INIT_MODEL=single-active",
+          "--discovery-file",
+          "/tmp/sim-host-efficiency/smoke-legacy/sim-v6m_uksn/sim_primary_slot_real_test-discovery.txt",
+          "--development-evidence"
+        ],
+        "exit_code": 0,
+        "status": "PASS",
+        "log": "legacy-sim_primary_slot_real_test.log",
+        "seconds": 0.5477500350680202
+      }
+    ],
+    "cases": [
+      {
+        "unsafe_runtime": false,
+        "valid_xml": true,
+        "details": {
+          "gtest": "PASS",
+          "business": "PASS",
+          "lifecycle": "PASS",
+          "classification": "full_pass",
+          "properties": {
+            "initialization_order": "native-arrival",
+            "initialization_account_event": "PASS",
+            "initialization_ready_idle": "PASS",
+            "initialization_active": "PASS",
+            "initialization_present": "PASS",
+            "initialization_model": "single-active",
+            "business_assertions_before_cleanup": "PASS",
+            "primary_observation": "{\"schema\":1,\"parameters\":{\"const.telephony.slotCount\":\"2\",\"const.vendor.ril.set_primary_slot_support\":\"false\",\"persist.telephony.MainCard.Iccid\":\"AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2\",\"persist.telephony.MainCellularDataSlotId\":\"1\",\"persist.telephony.MainSlotId\":\"1\",\"persist.telephony.userPreferPrimarySlot\":\"true\",\"telephony.sim.opkey0\":\"-1\",\"telephony.sim.opkey1\":\"-1\",\"telephony.sim.opkey2\":\"-1\"},\"public\":{\"data\":\"1\",\"primary\":\"1\",\"primary_result\":\"0\",\"switching\":\"false\"},\"events\":[{\"kind\":\"api_input\",\"fields\":{\"at_us\":\"1799\",\"slot\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"1833\",\"key\":\"persist.telephony.userPreferPrimarySlot\",\"value\":\"true\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"1851\",\"key\":\"persist.telephony.MainSlotId\",\"value\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"1864\",\"key\":\"persist.telephony.MainCard.Iccid\",\"value\":\"AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SIM.DEFAULT_MAIN_SUBSCRIPTION_CHANGED\",\"at_us\":\"1882\",\"done\":\"false\",\"sim\":\"1\",\"slot\":\"1\",\"user\":\"false\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"1892\",\"key\":\"persist.telephony.MainCellularDataSlotId\",\"value\":\"1\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED\",\"at_us\":\"1900\",\"done\":\"false\",\"sim\":\"1\",\"slot\":\"-1\",\"user\":\"false\"}},{\"kind\":\"api_return\",\"fields\":{\"at_us\":\"1912\",\"result\":\"0\",\"symbol\":\"TELEPHONY_ERR_SUCCESS\"}}]}",
+            "workers_after_cleanup": "0",
+            "ril_references_after_cleanup": "1",
+            "account_observer_expired": "true",
+            "object_lifetime": "PASS",
+            "strict_ril_expectations_verified": "PASS"
+          },
+          "failures": [],
+          "post_destruction_callback_safety": "NOT_RUN"
+        },
+        "id": "RealSimPrimary.C0CoreToRealManagerAndController",
+        "status": "PASS",
+        "exit_code": 0,
+        "reason": "",
+        "command": [
+          "/mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test",
+          "--gtest_filter=RealSimPrimary.C0CoreToRealManagerAndController",
+          "--gtest_output=xml:/tmp/sim-host-efficiency/smoke-legacy/sim-v6m_uksn/legacy/sim_primary_slot_real_test/gtest-i6mpae7v/0000.xml"
+        ],
+        "xml": "0000.xml",
+        "log": "0000.log",
+        "timings": {
+          "process_seconds": 0.1689931059954688,
+          "timeout_kill_seconds": null,
+          "classification_seconds": 0.0013296069810166955
+        },
+        "target": "sim_primary_slot_real_test",
+        "backend": "legacy",
+        "report": "/tmp/sim-host-efficiency/smoke-legacy/sim-v6m_uksn/legacy/sim_primary_slot_real_test/gtest-i6mpae7v/result.json",
+        "scope": "host_component",
+        "scenario": "SIM028-LEGACY-C0-DUAL-PRIMARY0"
+      }
+    ],
+    "status": "PASS",
+    "backend_config": {
+      "backend": "legacy",
+      "platform": "host",
+      "build_if_missing": true,
+      "compare_with_oracle": true,
+      "output_dir": ".host-out"
+    },
+    "init_model": "single-active",
+    "timings": {
+      "initial_resolution_seconds": 0.009462753077968955,
+      "discovery": [
+        {
+          "target": "sim_primary_slot_real_test",
+          "seconds": 0.08743456902448088,
+          "count": 1
+        }
+      ],
+      "report_seconds_before_write": 0.002206711913459003,
+      "execution_lock_wait_seconds": 0.002244011964648962
+    },
+    "capabilities": {
+      "legacy": [
+        {
+          "scenario": "SIM028-LEGACY-C0-DUAL-PRIMARY0",
+          "test": "RealSimPrimary.C0CoreToRealManagerAndController",
+          "status": "SUPPORTED",
+          "reason": "Requires controlled modem/RIL and a validated product fixture."
+        }
+      ]
+    },
+    "build": {
+      "requested_targets": [
+        "sim_test_host",
+        "sim_component_test",
+        "sim_primary_slot_entry_test",
+        "sim_g2a_query_test",
+        "sim_upstream_query_test",
+        "sim_primary_slot_real_test",
+        "sim_bootstrap_characterization",
+        "sim_test_target_host"
+      ],
+      "dependencies": {
+        "googletest_inventory": 0.005228328984230757,
+        "googletest": {
+          "seconds": 0.0017423100071027875,
+          "reused": true,
+          "files": 247
+        },
+        "platform_headers": {
+          "seconds": 0.20703486201819032,
+          "reused": true,
+          "files": 21
+        },
+        "openssl": {
+          "seconds": 0.017899799975566566,
+          "reused": true,
+          "files": 136
+        },
+        "native_runtime": {
+          "seconds": 0.0005690039834007621,
+          "reused": true,
+          "files": 4
+        }
+      },
+      "lock_wait_seconds": 3.3598725269548595,
+      "source_manifest": {
+        "seconds": 0.378599523101002,
+        "changed": false
+      },
+      "gn": {
+        "seconds_including_compile_database": 1.100008375942707e-06,
+        "count": 0,
+        "reason": null
+      },
+      "compile_database_changed": false,
+      "targets": [
+        "sim_primary_slot_real_test"
+      ],
+      "route_seconds": 0.31292315491009504,
+      "configuration_changed": false,
+      "ninja": {
+        "seconds": 3.281291133025661,
+        "count": 1,
+        "actions": {
+          "CXX": 0,
+          "LINK": 0,
+          "SOLINK": 0,
+          "AR": 0,
+          "Regenerating": 0
+        }
+      },
+      "binary_identities": {
+        "sim_primary_slot_real_test": [
+          73,
+          1688849860411718,
+          52869376,
+          1795526064969304800,
+          1795526064969304800
+        ]
+      },
+      "lock_hold_seconds": 4.3903497530845925
+    },
+    "selected_targets": [
+      "sim_primary_slot_real_test"
+    ],
+    "selected_backends": [
+      "legacy"
+    ],
+    "discovery": {
+      "sim_primary_slot_real_test": [
+        "RealSimPrimary.C0CoreToRealManagerAndController"
+      ]
+    },
+    "backend_reports": {
+      "legacy": {
+        "cases": [
+          {
+            "unsafe_runtime": false,
+            "valid_xml": true,
+            "details": {
+              "gtest": "PASS",
+              "business": "PASS",
+              "lifecycle": "PASS",
+              "classification": "full_pass",
+              "properties": {
+                "initialization_order": "native-arrival",
+                "initialization_account_event": "PASS",
+                "initialization_ready_idle": "PASS",
+                "initialization_active": "PASS",
+                "initialization_present": "PASS",
+                "initialization_model": "single-active",
+                "business_assertions_before_cleanup": "PASS",
+                "primary_observation": "{\"schema\":1,\"parameters\":{\"const.telephony.slotCount\":\"2\",\"const.vendor.ril.set_primary_slot_support\":\"false\",\"persist.telephony.MainCard.Iccid\":\"AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2\",\"persist.telephony.MainCellularDataSlotId\":\"1\",\"persist.telephony.MainSlotId\":\"1\",\"persist.telephony.userPreferPrimarySlot\":\"true\",\"telephony.sim.opkey0\":\"-1\",\"telephony.sim.opkey1\":\"-1\",\"telephony.sim.opkey2\":\"-1\"},\"public\":{\"data\":\"1\",\"primary\":\"1\",\"primary_result\":\"0\",\"switching\":\"false\"},\"events\":[{\"kind\":\"api_input\",\"fields\":{\"at_us\":\"1799\",\"slot\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"1833\",\"key\":\"persist.telephony.userPreferPrimarySlot\",\"value\":\"true\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"1851\",\"key\":\"persist.telephony.MainSlotId\",\"value\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"1864\",\"key\":\"persist.telephony.MainCard.Iccid\",\"value\":\"AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SIM.DEFAULT_MAIN_SUBSCRIPTION_CHANGED\",\"at_us\":\"1882\",\"done\":\"false\",\"sim\":\"1\",\"slot\":\"1\",\"user\":\"false\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"1892\",\"key\":\"persist.telephony.MainCellularDataSlotId\",\"value\":\"1\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED\",\"at_us\":\"1900\",\"done\":\"false\",\"sim\":\"1\",\"slot\":\"-1\",\"user\":\"false\"}},{\"kind\":\"api_return\",\"fields\":{\"at_us\":\"1912\",\"result\":\"0\",\"symbol\":\"TELEPHONY_ERR_SUCCESS\"}}]}",
+                "workers_after_cleanup": "0",
+                "ril_references_after_cleanup": "1",
+                "account_observer_expired": "true",
+                "object_lifetime": "PASS",
+                "strict_ril_expectations_verified": "PASS"
+              },
+              "failures": [],
+              "post_destruction_callback_safety": "NOT_RUN"
+            },
+            "id": "RealSimPrimary.C0CoreToRealManagerAndController",
+            "status": "PASS",
+            "exit_code": 0,
+            "reason": "",
+            "command": [
+              "/mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test",
+              "--gtest_filter=RealSimPrimary.C0CoreToRealManagerAndController",
+              "--gtest_output=xml:/tmp/sim-host-efficiency/smoke-legacy/sim-v6m_uksn/legacy/sim_primary_slot_real_test/gtest-i6mpae7v/0000.xml"
+            ],
+            "xml": "0000.xml",
+            "log": "0000.log",
+            "timings": {
+              "process_seconds": 0.1689931059954688,
+              "timeout_kill_seconds": null,
+              "classification_seconds": 0.0013296069810166955
+            },
+            "target": "sim_primary_slot_real_test",
+            "backend": "legacy",
+            "report": "/tmp/sim-host-efficiency/smoke-legacy/sim-v6m_uksn/legacy/sim_primary_slot_real_test/gtest-i6mpae7v/result.json",
+            "scope": "host_component",
+            "scenario": "SIM028-LEGACY-C0-DUAL-PRIMARY0"
+          }
+        ],
+        "status": "PASS"
+      }
+    },
+    "primary_contracts": [
+      {
+        "id": "SIM028-LEGACY-C0-DUAL-PRIMARY0",
+        "status": "BLOCKED",
+        "reason": "This shared rich contract requires the frozen dual-active-primary0 precondition; raw legacy GTest business assertions remain authoritative for single-active",
+        "gtest": "PASS"
+      }
+    ],
+    "protected_profile_unchanged": true,
+    "finished_utc": "2026-11-24T13:17:15.288988+00:00"
+  },
+  "test": {
+    "status": "PASS",
+    "target": "sim_primary_slot_real_test",
+    "evidence": "development",
+    "timings": {
+      "provenance_seconds": 0.07979062700178474,
+      "report_seconds_before_write": 0.0008080049883574247,
+      "discovery": {
+        "seconds": 7.7600940130651e-05,
+        "processes": 0
+      }
+    },
+    "cases": [
+      {
+        "unsafe_runtime": false,
+        "valid_xml": true,
+        "details": {
+          "gtest": "PASS",
+          "business": "PASS",
+          "lifecycle": "PASS",
+          "classification": "full_pass",
+          "properties": {
+            "initialization_order": "native-arrival",
+            "initialization_account_event": "PASS",
+            "initialization_ready_idle": "PASS",
+            "initialization_active": "PASS",
+            "initialization_present": "PASS",
+            "initialization_model": "single-active",
+            "business_assertions_before_cleanup": "PASS",
+            "primary_observation": "{\"schema\":1,\"parameters\":{\"const.telephony.slotCount\":\"2\",\"const.vendor.ril.set_primary_slot_support\":\"false\",\"persist.telephony.MainCard.Iccid\":\"AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2\",\"persist.telephony.MainCellularDataSlotId\":\"1\",\"persist.telephony.MainSlotId\":\"1\",\"persist.telephony.userPreferPrimarySlot\":\"true\",\"telephony.sim.opkey0\":\"-1\",\"telephony.sim.opkey1\":\"-1\",\"telephony.sim.opkey2\":\"-1\"},\"public\":{\"data\":\"1\",\"primary\":\"1\",\"primary_result\":\"0\",\"switching\":\"false\"},\"events\":[{\"kind\":\"api_input\",\"fields\":{\"at_us\":\"1799\",\"slot\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"1833\",\"key\":\"persist.telephony.userPreferPrimarySlot\",\"value\":\"true\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"1851\",\"key\":\"persist.telephony.MainSlotId\",\"value\":\"1\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"1864\",\"key\":\"persist.telephony.MainCard.Iccid\",\"value\":\"AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SIM.DEFAULT_MAIN_SUBSCRIPTION_CHANGED\",\"at_us\":\"1882\",\"done\":\"false\",\"sim\":\"1\",\"slot\":\"1\",\"user\":\"false\"}},{\"kind\":\"parameter_write\",\"fields\":{\"at_us\":\"1892\",\"key\":\"persist.telephony.MainCellularDataSlotId\",\"value\":\"1\"}},{\"kind\":\"publication\",\"fields\":{\"action\":\"usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED\",\"at_us\":\"1900\",\"done\":\"false\",\"sim\":\"1\",\"slot\":\"-1\",\"user\":\"false\"}},{\"kind\":\"api_return\",\"fields\":{\"at_us\":\"1912\",\"result\":\"0\",\"symbol\":\"TELEPHONY_ERR_SUCCESS\"}}]}",
+            "workers_after_cleanup": "0",
+            "ril_references_after_cleanup": "1",
+            "account_observer_expired": "true",
+            "object_lifetime": "PASS",
+            "strict_ril_expectations_verified": "PASS"
+          },
+          "failures": [],
+          "post_destruction_callback_safety": "NOT_RUN"
+        },
+        "id": "RealSimPrimary.C0CoreToRealManagerAndController",
+        "status": "PASS",
+        "exit_code": 0,
+        "reason": "",
+        "command": [
+          "/mnt/e/github/multisim/.host-out/build/sim_primary_slot_real_test",
+          "--gtest_filter=RealSimPrimary.C0CoreToRealManagerAndController",
+          "--gtest_output=xml:/tmp/sim-host-efficiency/smoke-legacy/sim-v6m_uksn/legacy/sim_primary_slot_real_test/gtest-i6mpae7v/0000.xml"
+        ],
+        "xml": "0000.xml",
+        "log": "0000.log",
+        "timings": {
+          "process_seconds": 0.1689931059954688,
+          "timeout_kill_seconds": null,
+          "classification_seconds": 0.0013296069810166955
+        }
+      }
+    ]
+  }
+}

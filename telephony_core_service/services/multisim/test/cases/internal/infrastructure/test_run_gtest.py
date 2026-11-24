@@ -13,6 +13,12 @@ spec.loader.exec_module(runner)
 
 
 class ResultProtocol(unittest.TestCase):
+    def test_discovery_listing_can_be_reused_without_losing_parameter_names(self):
+        listing = 'Fixture.\n  Ordinary\nPrefix/Parameter.\n  Value/0  # GetParam() = 3\n'
+        self.assertEqual(runner.parse_listing(listing), ['Fixture.Ordinary', 'Prefix/Parameter.Value/0'])
+        with self.assertRaises(RuntimeError):
+            runner.parse_listing(listing + '  Value/0\n')
+
     def setUp(self):
         self.directory = tempfile.TemporaryDirectory()
         self.addCleanup(self.directory.cleanup)

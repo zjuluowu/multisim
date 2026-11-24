@@ -2,132 +2,6 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "type": "process",
-      "command": "/usr/bin/python3",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [
-        "$gcc"
-      ],
-      "label": "Build Host",
-      "args": [
-        "-B",
-        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
-        "build"
-      ],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      }
-    },
-    {
-      "type": "process",
-      "command": "/usr/bin/python3",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [
-        "$gcc"
-      ],
-      "label": "Build Real SIM Host",
-      "args": [
-        "-B",
-        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
-        "build",
-        "--target",
-        "sim_primary_slot_real_test",
-        "sim_bootstrap_characterization"
-      ]
-    },
-    {
-      "type": "process",
-      "command": "/usr/bin/python3",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [
-        "$gcc"
-      ],
-      "label": "Run All Tests",
-      "args": [
-        "-B",
-        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
-        "all",
-        "--ci"
-      ]
-    },
-    {
-      "type": "process",
-      "command": "/usr/bin/python3",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [
-        "$gcc"
-      ],
-      "label": "Run Selected Test",
-      "args": [
-        "-B",
-        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
-        "run",
-        "--filter",
-        "${input:gtestFilter}"
-      ]
-    },
-    {
-      "type": "process",
-      "command": "/usr/bin/python3",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [
-        "$gcc"
-      ],
-      "label": "Debug Selected Test",
-      "args": [
-        "-B",
-        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
-        "debug",
-        "--filter",
-        "${input:gtestFilter}"
-      ]
-    },
-    {
-      "type": "process",
-      "command": "/usr/bin/python3",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [
-        "$gcc"
-      ],
-      "label": "Check Device Wiring",
-      "args": [
-        "-B",
-        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
-        "device"
-      ]
-    },
-    {
-      "type": "process",
-      "command": "/usr/bin/python3",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [
-        "$gcc"
-      ],
-      "label": "Build All SIM Host",
-      "args": [
-        "-B",
-        "telephony_core_service/services/multisim/test/scripts/test.py",
-        "build",
-        "--backend",
-        "both"
-      ]
-    },
-    {
       "label": "Prepare Testing Panel",
       "type": "process",
       "command": "/usr/bin/python3",
@@ -146,6 +20,28 @@
       ]
     },
     {
+      "label": "Build Legacy Host",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
+        "build",
+        "--backend",
+        "legacy"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
       "label": "Build Target Host",
       "type": "process",
       "command": "/usr/bin/python3",
@@ -156,8 +52,66 @@
         "--backend",
         "target"
       ],
-      "options": {"cwd": "${workspaceFolder}"},
-      "problemMatcher": ["$gcc"]
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "Build All Host",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
+        "build",
+        "--backend",
+        "both"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "Run Legacy Regression",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
+        "run",
+        "--backend",
+        "legacy"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "Run Target Regression",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
+        "run",
+        "--backend",
+        "target"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
     },
     {
       "label": "Run Both Backends",
@@ -170,18 +124,313 @@
         "--backend",
         "both",
         "--filter",
+        "${input:scenarioId}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "Verify / CI (Legacy admission)",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
+        "all",
+        "--backend",
+        "legacy",
+        "--ci"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "Verify Target Host",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
+        "all",
+        "--backend",
+        "target"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "Run Selected Test",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
+        "run",
+        "--filter",
         "${input:gtestFilter}"
       ],
-      "options": {"cwd": "${workspaceFolder}"},
-      "problemMatcher": ["$gcc"]
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "Debug Selected Test (LLDB evidence)",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
+        "debug",
+        "--filter",
+        "${input:gtestFilter}",
+        "--breakpoint",
+        "${input:breakpoint}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "Check Device Wiring",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
+        "device"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "Build sim_test_host",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
+        "build",
+        "--backend",
+        "legacy",
+        "--target",
+        "sim_test_host"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "hide": true
+    },
+    {
+      "label": "Build sim_component_test",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
+        "build",
+        "--backend",
+        "legacy",
+        "--target",
+        "sim_component_test"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "hide": true
+    },
+    {
+      "label": "Build sim_primary_slot_entry_test",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
+        "build",
+        "--backend",
+        "legacy",
+        "--target",
+        "sim_primary_slot_entry_test"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "hide": true
+    },
+    {
+      "label": "Build sim_g2a_query_test",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
+        "build",
+        "--backend",
+        "legacy",
+        "--target",
+        "sim_g2a_query_test"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "hide": true
+    },
+    {
+      "label": "Build sim_upstream_query_test",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
+        "build",
+        "--backend",
+        "legacy",
+        "--target",
+        "sim_upstream_query_test"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "hide": true
+    },
+    {
+      "label": "Build sim_primary_slot_real_test",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
+        "build",
+        "--backend",
+        "legacy",
+        "--target",
+        "sim_primary_slot_real_test"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "hide": true
+    },
+    {
+      "label": "Build sim_bootstrap_characterization",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
+        "build",
+        "--backend",
+        "legacy",
+        "--target",
+        "sim_bootstrap_characterization"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "hide": true
+    },
+    {
+      "label": "Build sim_test_target_host",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
+        "build",
+        "--backend",
+        "target",
+        "--target",
+        "sim_test_target_host"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "hide": true
+    },
+    {
+      "label": "Build Target Host (step-through)",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "${workspaceFolder}/telephony_core_service/services/multisim/test/scripts/test.py",
+        "build",
+        "--target",
+        "sim_test_target_host",
+        "--debug-build"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "hide": true
     }
   ],
   "inputs": [
     {
       "id": "gtestFilter",
       "type": "promptString",
-      "description": "Exact GoogleTest case (Testing panel selects it automatically)",
-      "default": "SimTest.DualSimPinUnlockAfterWrongPin"
+      "description": "Exact GoogleTest case",
+      "default": "AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry"
+    },
+    {
+      "id": "scenarioId",
+      "type": "promptString",
+      "description": "Frozen dual-backend scenario ID",
+      "default": "SIM028-LEGACY-C0-DUAL-PRIMARY0"
+    },
+    {
+      "id": "breakpoint",
+      "type": "promptString",
+      "description": "Fully qualified LLDB function breakpoint",
+      "default": "OHOS::Telephony::MultiSim::SimModule::SetPrimarySlotId"
     }
   ]
 }

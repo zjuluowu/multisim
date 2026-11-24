@@ -5,14 +5,61 @@ import tempfile
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import patch
 
 SCRIPTS = Path(__file__).resolve().parents[3] / 'scripts'
 sys.path.insert(0, str(SCRIPTS))
 from backend_selector import capability_report, gtest_filter, load_config, resolve
+import build_replacement as build
 from compare_backends import compare, compare_reports, C0, C0_ORACLE, load_oracle
 
 
 class BackendSelectorTest(unittest.TestCase):
+    def test_host_route_uses_current_registrations_and_gn_ownership(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            cases = root / 'cases'
+            cases.mkdir()
+            legacy, target = cases/'legacy.cpp', cases/'target.cpp'
+            legacy.write_text('TEST_F(Fixture, First) {}\nTEST_P(Param, Values) {}')
+            target.write_text('TEST_F(Fixture, Second) {}')
+            targets = [build.LEGACY[0], build.TARGET[0]]
+            database = root/'compile_commands.json'
+            database.write_text(json.dumps([
+                {'directory': str(root), 'file': str(source),
+                 'command': f'clang++ -c {source} -o obj/{owner}.{source.stem}.o'}
+                for source, owner in zip((legacy, target), targets)
+            ]))
+            with patch.object(build, 'TEST', root):
+                def route(pattern):
+                    return build.route_cases(database, [{'targets': targets, 'filter': pattern}])
+                self.assertEqual(route('Fixture.Second'), [targets[1]])
+                self.assertEqual(route('Prefix/Param.Values/0'), [targets[0]])
+                self.assertEqual(route('Fixture.First:Fixture.Second'), targets)
+                self.assertEqual(route('Unknown.Case'), targets)
+                target.write_text('TEST_F(Fixture, First) {}')
+                self.assertEqual(route('Fixture.First'), targets)
+
+    def test_dependency_fast_path_revalidates_changes_and_full_mode(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            file = Path(temporary) / 'pinned.h'
+            file.write_text('correct')
+            current, timing = {}, {}
+            with patch.object(build, 'digest_file', wraps=build.digest_file) as digest:
+                def verify(previous, full=False):
+                    build.verify_group('test', [file], lambda: build.digest_file(file),
+                                       previous, current, timing, full)
+                verify({})
+                verify(dict(current))
+                self.assertTrue(timing['test']['reused'])
+                self.assertEqual(digest.call_count, 1)
+                verify(dict(current), full=True)
+                self.assertFalse(timing['test']['reused'])
+                file.write_text('changed')
+                verify(dict(current))
+                self.assertFalse(timing['test']['reused'])
+                self.assertEqual(digest.call_count, 3)
+
     def test_defaults_are_legacy_and_host(self):
         config = load_config()
         self.assertEqual(config['backend'], 'legacy')

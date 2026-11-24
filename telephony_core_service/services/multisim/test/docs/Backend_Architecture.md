@@ -1,5 +1,10 @@
 # Legacy / Target 双后端测试架构
 
+## Host 开发执行路径
+
+Host 使用 [统一入口](../scripts/test.py)。已知 ELF 时按所属后端和目标增量检查。精确 CLI 用例由当前 GN 编译数据库和测试声明缩小候选范围，再由所属 ELF 的 GoogleTest 枚举确认。Scenario ID 仍由 [能力矩阵](../config/backend_capabilities.json)映射。源码定位验证由 `editor` 负责，日常 Run/Debug 和完整验证入口见 [Host 使用说明](Host_Usage.md)。本轮实测及构建图见 [开发效率报告](SIM_Host_Development_Efficiency_Optimization_Report.md)。
+
+
 ## 阶段二现状（基于 bcb7ff742）
 
 | 项 | 实际状态 |

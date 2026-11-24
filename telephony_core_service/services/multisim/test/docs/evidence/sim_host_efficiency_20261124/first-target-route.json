@@ -1,0 +1,342 @@
+{
+  "build": {
+    "requested_targets": [
+      "sim_test_host",
+      "sim_component_test",
+      "sim_primary_slot_entry_test",
+      "sim_g2a_query_test",
+      "sim_upstream_query_test",
+      "sim_primary_slot_real_test",
+      "sim_bootstrap_characterization",
+      "sim_test_target_host"
+    ],
+    "dependencies": {
+      "googletest_inventory": 0.006372535950504243,
+      "googletest": {
+        "seconds": 0.051862290943972766,
+        "reused": false,
+        "files": 247
+      },
+      "platform_headers": {
+        "seconds": 0.2550082280067727,
+        "reused": false,
+        "files": 21
+      }
+    },
+    "lock_wait_seconds": 1.3599987141788006e-05,
+    "source_manifest": {
+      "seconds": 0.2872420090716332,
+      "changed": false
+    },
+    "gn": {
+      "seconds_including_compile_database": 4.00003045797348e-07,
+      "count": 0,
+      "reason": null
+    },
+    "compile_database_changed": false,
+    "targets": [
+      "sim_test_target_host"
+    ],
+    "route_seconds": 0.2740305350162089,
+    "configuration_changed": false,
+    "ninja": {
+      "seconds": 0.37902702298015356,
+      "count": 1,
+      "actions": {
+        "CXX": 0,
+        "LINK": 0,
+        "SOLINK": 0,
+        "AR": 0,
+        "Regenerating": 0
+      }
+    },
+    "binary_identities": {
+      "sim_test_target_host": [
+        2096,
+        198845,
+        19483064,
+        1795520706332274961,
+        1795520706332274961
+      ]
+    },
+    "lock_hold_seconds": 1.3076435250695795
+  },
+  "result": {
+    "head": "a3f94033cb66202f22ae2393b9611b58de51e1f1",
+    "started_utc": "2026-11-24T13:17:06.410754+00:00",
+    "commands": [
+      {
+        "name": "host-build",
+        "command": [
+          "/usr/bin/python3",
+          "-B",
+          "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/build_replacement.py",
+          "--out",
+          "/tmp/af2-m1/host",
+          "--jobs",
+          "3",
+          "--target",
+          "sim_test_host",
+          "sim_component_test",
+          "sim_primary_slot_entry_test",
+          "sim_g2a_query_test",
+          "sim_upstream_query_test",
+          "sim_primary_slot_real_test",
+          "sim_bootstrap_characterization",
+          "sim_test_target_host",
+          "--result",
+          "/tmp/sim-host-efficiency/smoke-target/sim-l2wexnae/build.json",
+          "--incremental",
+          "--route",
+          "[{\"targets\": [\"sim_test_host\", \"sim_component_test\", \"sim_primary_slot_entry_test\", \"sim_g2a_query_test\", \"sim_upstream_query_test\", \"sim_primary_slot_real_test\", \"sim_bootstrap_characterization\", \"sim_test_target_host\"], \"fallback\": [\"sim_test_host\", \"sim_component_test\", \"sim_primary_slot_entry_test\", \"sim_g2a_query_test\", \"sim_upstream_query_test\", \"sim_primary_slot_real_test\", \"sim_bootstrap_characterization\"], \"filter\": \"AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry\"}]"
+        ],
+        "exit_code": 0,
+        "status": "PASS",
+        "log": "host-build.log",
+        "seconds": 1.508350849035196
+      },
+      {
+        "name": "target-sim_test_target_host",
+        "command": [
+          "/usr/bin/python3",
+          "-B",
+          "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/run_gtest.py",
+          "--binary",
+          "/tmp/af2-m1/host/build/sim_test_target_host",
+          "--output",
+          "/tmp/sim-host-efficiency/smoke-target/sim-l2wexnae/target/sim_test_target_host",
+          "--filter",
+          "AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry",
+          "--discovery-file",
+          "/tmp/sim-host-efficiency/smoke-target/sim-l2wexnae/sim_test_target_host-discovery.txt",
+          "--development-evidence"
+        ],
+        "exit_code": 0,
+        "status": "PASS",
+        "log": "target-sim_test_target_host.log",
+        "seconds": 0.39816723100375384
+      }
+    ],
+    "cases": [
+      {
+        "unsafe_runtime": false,
+        "valid_xml": true,
+        "details": {
+          "gtest": "PASS",
+          "business": "PASS",
+          "lifecycle": "PASS",
+          "classification": "full_pass",
+          "properties": {},
+          "failures": [],
+          "post_destruction_callback_safety": "NOT_RUN"
+        },
+        "id": "AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry",
+        "status": "PASS",
+        "exit_code": 0,
+        "reason": "",
+        "command": [
+          "/tmp/af2-m1/host/build/sim_test_target_host",
+          "--gtest_filter=AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry",
+          "--gtest_output=xml:/tmp/sim-host-efficiency/smoke-target/sim-l2wexnae/target/sim_test_target_host/gtest-rglpto69/0000.xml"
+        ],
+        "xml": "0000.xml",
+        "log": "0000.log",
+        "timings": {
+          "process_seconds": 0.008226545993238688,
+          "timeout_kill_seconds": null,
+          "classification_seconds": 0.0009650050196796656
+        },
+        "target": "sim_test_target_host",
+        "backend": "target",
+        "report": "/tmp/sim-host-efficiency/smoke-target/sim-l2wexnae/target/sim_test_target_host/gtest-rglpto69/result.json",
+        "scope": "host_component",
+        "scenario": null
+      }
+    ],
+    "status": "PASS",
+    "backend_config": {
+      "backend": "legacy",
+      "platform": "host",
+      "build_if_missing": true,
+      "compare_with_oracle": true,
+      "output_dir": ".host-out"
+    },
+    "init_model": "single-active",
+    "timings": {
+      "initial_resolution_seconds": 0.007653043023310602,
+      "discovery": [
+        {
+          "target": "sim_test_target_host",
+          "seconds": 0.009002650040201843,
+          "count": 1
+        }
+      ],
+      "report_seconds_before_write": 0.0018218097975477576,
+      "execution_lock_wait_seconds": 6.559991743415594e-05
+    },
+    "capabilities": {
+      "target": []
+    },
+    "build": {
+      "requested_targets": [
+        "sim_test_host",
+        "sim_component_test",
+        "sim_primary_slot_entry_test",
+        "sim_g2a_query_test",
+        "sim_upstream_query_test",
+        "sim_primary_slot_real_test",
+        "sim_bootstrap_characterization",
+        "sim_test_target_host"
+      ],
+      "dependencies": {
+        "googletest_inventory": 0.006372535950504243,
+        "googletest": {
+          "seconds": 0.051862290943972766,
+          "reused": false,
+          "files": 247
+        },
+        "platform_headers": {
+          "seconds": 0.2550082280067727,
+          "reused": false,
+          "files": 21
+        }
+      },
+      "lock_wait_seconds": 1.3599987141788006e-05,
+      "source_manifest": {
+        "seconds": 0.2872420090716332,
+        "changed": false
+      },
+      "gn": {
+        "seconds_including_compile_database": 4.00003045797348e-07,
+        "count": 0,
+        "reason": null
+      },
+      "compile_database_changed": false,
+      "targets": [
+        "sim_test_target_host"
+      ],
+      "route_seconds": 0.2740305350162089,
+      "configuration_changed": false,
+      "ninja": {
+        "seconds": 0.37902702298015356,
+        "count": 1,
+        "actions": {
+          "CXX": 0,
+          "LINK": 0,
+          "SOLINK": 0,
+          "AR": 0,
+          "Regenerating": 0
+        }
+      },
+      "binary_identities": {
+        "sim_test_target_host": [
+          2096,
+          198845,
+          19483064,
+          1795520706332274961,
+          1795520706332274961
+        ]
+      },
+      "lock_hold_seconds": 1.3076435250695795
+    },
+    "selected_targets": [
+      "sim_test_target_host"
+    ],
+    "selected_backends": [
+      "target"
+    ],
+    "discovery": {
+      "sim_test_target_host": [
+        "AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry"
+      ]
+    },
+    "backend_reports": {
+      "target": {
+        "cases": [
+          {
+            "unsafe_runtime": false,
+            "valid_xml": true,
+            "details": {
+              "gtest": "PASS",
+              "business": "PASS",
+              "lifecycle": "PASS",
+              "classification": "full_pass",
+              "properties": {},
+              "failures": [],
+              "post_destruction_callback_safety": "NOT_RUN"
+            },
+            "id": "AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry",
+            "status": "PASS",
+            "exit_code": 0,
+            "reason": "",
+            "command": [
+              "/tmp/af2-m1/host/build/sim_test_target_host",
+              "--gtest_filter=AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry",
+              "--gtest_output=xml:/tmp/sim-host-efficiency/smoke-target/sim-l2wexnae/target/sim_test_target_host/gtest-rglpto69/0000.xml"
+            ],
+            "xml": "0000.xml",
+            "log": "0000.log",
+            "timings": {
+              "process_seconds": 0.008226545993238688,
+              "timeout_kill_seconds": null,
+              "classification_seconds": 0.0009650050196796656
+            },
+            "target": "sim_test_target_host",
+            "backend": "target",
+            "report": "/tmp/sim-host-efficiency/smoke-target/sim-l2wexnae/target/sim_test_target_host/gtest-rglpto69/result.json",
+            "scope": "host_component",
+            "scenario": null
+          }
+        ],
+        "status": "PASS"
+      }
+    },
+    "primary_contracts": [],
+    "protected_profile_unchanged": true,
+    "finished_utc": "2026-11-24T13:17:08.424534+00:00"
+  },
+  "test": {
+    "status": "PASS",
+    "target": "sim_test_target_host",
+    "evidence": "development",
+    "timings": {
+      "provenance_seconds": 0.06492496409919113,
+      "report_seconds_before_write": 0.0009002049919217825,
+      "discovery": {
+        "seconds": 8.269993122667074e-05,
+        "processes": 0
+      }
+    },
+    "cases": [
+      {
+        "unsafe_runtime": false,
+        "valid_xml": true,
+        "details": {
+          "gtest": "PASS",
+          "business": "PASS",
+          "lifecycle": "PASS",
+          "classification": "full_pass",
+          "properties": {},
+          "failures": [],
+          "post_destruction_callback_safety": "NOT_RUN"
+        },
+        "id": "AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry",
+        "status": "PASS",
+        "exit_code": 0,
+        "reason": "",
+        "command": [
+          "/tmp/af2-m1/host/build/sim_test_target_host",
+          "--gtest_filter=AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry",
+          "--gtest_output=xml:/tmp/sim-host-efficiency/smoke-target/sim-l2wexnae/target/sim_test_target_host/gtest-rglpto69/0000.xml"
+        ],
+        "xml": "0000.xml",
+        "log": "0000.log",
+        "timings": {
+          "process_seconds": 0.008226545993238688,
+          "timeout_kill_seconds": null,
+          "classification_seconds": 0.0009650050196796656
+        }
+      }
+    ]
+  }
+}

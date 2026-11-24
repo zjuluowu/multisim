@@ -2,6 +2,7 @@
 """Generate explicit GN source lists for independently linked SUT slices."""
 import argparse
 import re
+import tempfile
 from pathlib import Path
 root = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser(description=__doc__)
@@ -14,15 +15,16 @@ def capability(path):
  if re.search(r'\bStateProtocol\b',text):return 'state_protocol'
  if re.search(r'\bReadCapacity\s*\(',text):return 'capacity'
  return 'state'
+classified = {path: capability(path) for path in ordinary}
 groups = {
- 'sim_case_sources': [p for p in ordinary if capability(p)=='state'],
- 'sim_state_protocol_case_sources': [p for p in ordinary if capability(p)=='state_protocol'],
+ 'sim_case_sources': [p for p in ordinary if classified[p]=='state'],
+ 'sim_state_protocol_case_sources': [p for p in ordinary if classified[p]=='state_protocol'],
  'sim_protocol_case_sources': list((root/'cases/internal/protocol').glob('*.cpp')),
  'sim_platform_case_sources': list((root/'cases/internal/platform').glob('*.cpp')),
- 'sim_capacity_case_sources': [p for p in ordinary if capability(p)=='capacity'],
+ 'sim_capacity_case_sources': [p for p in ordinary if classified[p]=='capacity'],
  'sim_bootstrap_case_sources': [root/'cases/internal/bootstrap_test.cpp'],
  'sim_primary_entry_case_sources': [root/'cases/internal/primary_entry_test.cpp'],
- 'sim_primary_case_sources': [p for p in ordinary if capability(p)=='primary']+[root/'cases/internal'/name for name in ['primary_initialization_test.cpp','lifecycle_test.cpp','shutdown_test.cpp']],
+ 'sim_primary_case_sources': [p for p in ordinary if classified[p]=='primary']+[root/'cases/internal'/name for name in ['primary_initialization_test.cpp','lifecycle_test.cpp','shutdown_test.cpp']],
  'sim_reference_case_sources': [root/'cases/internal/query/g2a_query_test.cpp'],
  'sim_upstream_case_sources': [root/'cases/internal/query/g2a_upstream_test.cpp'],
 }
@@ -33,4 +35,7 @@ for name,files in groups.items():
 target = root/'cases/sources.gni'
 if args.check:
  if not target.is_file() or target.read_text()!=text:raise SystemExit('Case source list is stale; run scripts/update_case_sources.py')
-elif not target.is_file() or target.read_text()!=text:target.write_text(text)
+elif not target.is_file() or target.read_text()!=text:
+ with tempfile.NamedTemporaryFile(mode='w', dir=target.parent, suffix='.gni.tmp', delete=False) as stream:
+  stream.write(text)
+ Path(stream.name).replace(target)

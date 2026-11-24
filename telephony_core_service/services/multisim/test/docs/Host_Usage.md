@@ -1,24 +1,14 @@
 # Windows VS Code + WSL SIM Host
 
-2026-11-18 Host回归124/124 PASS、CI准入PASS，历史失败与修复证据见[本批归档](archive/remaining_failures_20261118/phase_b/README.md)；产品和GUI未验收。
-
-当前构建、发现、单例运行与调试统一见[测试README](../README.md)，使用scripts/test.py。VS Code的Build Host构建全部业务切片；Run/Debug Selected Test只需用例名，Testing面板保持每例独立进程。手工launch仍可选择真实链接切片。
-
-公开接口为sim_test.h与sim_protocol_test.h，平台细节在framework/internal；固定依赖见[dependency_lock.json](../framework/internal/host/configs/dependency_lock.json)。旧build_host.sh/run_host_tests.sh及compatibility Adapter已退役，不再作为开发入口。
-
-[Full_Replacement.md](Full_Replacement.md)记录实际CLI/LLDB、生命周期失败、产品与GUI边界；2026-11-11历史结果及本页旧命令在Git历史和归档中保留，不视为当前验收。
-
 ## Testing 面板、源码定位和断点
 
-用 VS Code 的“WSL: Reopen Folder in WSL”打开仓库根目录，在 WSL 扩展端安装推荐的 TestMate C++、CodeLLDB 和 clangd。Linux ELF 测试不能由 Windows 本地扩展端直接运行。
+1. 在 VS Code 用 **WSL: Reopen Folder in WSL** 打开仓库根目录。在 WSL 扩展端安装 TestMate C++、CodeLLDB 和 clangd。
+2. 首次准备固定依赖，执行 **Tasks: Run Task → Prepare Testing Panel**。该任务对 Legacy 和 Target 做完整依赖校验，并检查各可执行程序的 XML 源码位置。初始化参数见 [测试入口](../README.md)。
+3. 打开测试 CPP，选中 Testing 面板中的用例。点击 **Run**，或设置源码断点后点击 **Debug Test**。即使同一文件显示在多个程序下，用例也使用所在行的可执行程序及后端。
 
-首次执行“Tasks: Run Task → Prepare Testing Panel”。该任务通过统一 test.py 构建七个业务测试程序，并逐个验证 GoogleTest XML 中每条用例的源码绝对路径和行号。固定依赖须先按 README 准备；首次也可向 `test.py editor` 传入 `--gtest-root`、`--openssl-root`、`--runtime-root`，验证后的路径保存在 .host-out/replacement.json，后续任务复用。任务失败时查看其输出的 Report 路径及对应 build 日志。
+TestMate 在 Run 和 Debug 前执行该程序的任务。任务退出非零时操作中止，构建日志位于任务输出所指向的报告目录。每例使用单独进程及 `%p` profile。Legacy 的真实 Primary 和 Bootstrap 日常使用双槽、single-active 模型。需要双激活 C0 时选择 **SIM Legacy C0 (dual active)** 启动配置。Target 常规 Debug 使用 DWARF，遇到优化后不可见的变量或内联函数时选择 **SIM Target (step-through)**，使用独立的 `.host-out/debug/build` 目录。
 
-构建完成后打开 Testing 面板，点击刷新。启用启动自动发现、关闭枚举缓存，新增 TEST_F 后再次执行准备任务并刷新。七个程序按独立链接切片显示；这里只枚举 Host GoogleTest，Python 技术检查、架构脚本和需要设备的原生测试仍从 test.py 对应入口执行。
-
-双击面板中的用例名称或使用“Go to Test”打开 TEST_F 所在文件及行号。在用例体或被调用的生产代码行号左侧设置断点，然后使用该用例的“Debug Test”（虫形图标或右键菜单）。普通运行按钮不启动调试器。TestMate 自动传入该用例的可执行文件、精确过滤参数和环境，不需要手填用例名；运行/调试前均增量构建，保持每例独立进程及独立 profile。宿主构建保留 DWARF 和帧指针；优化代码中的部分行或局部变量可能被优化，优先在实际执行语句处断点。
-
-`test.py editor` 的报告包含 `editor/locations.json` 和七份原始枚举 XML，可用于检查列表数量与定位。该检查不运行业务用例，也不代表 GUI 点击或全部业务断言通过；业务结果以实际回归报告为准，历史失败证据保留。
+首次枚举及 ELF 变更后，TestMate 用 GoogleTest XML 获取源码位置。已验证的 ELF 未更新时，TestMate 按 ELF 修改时间与发现配置复用 XML。新增、删除或改名 TEST 后先运行对应的 **Build Legacy Host** 或 **Build Target Host** 任务。Testing 面板仍显示旧条目时点刷新。新建普通 `cases/*.cpp` 自动更新源码清单；新增显式链接切片的 CPP 须加入对应 GN 源表。XML 检查记录在 Prepare 报告的 `editor/locations.json`。
 
 ## 随当前 CPP 文件筛选用例
 
@@ -32,12 +22,19 @@
 
 C0 主卡单例的旧实现析构/ICCID注销问题已修复，资源清理断言保持；修复前后、反向验证及当前其他失败见[本批证据](archive/c0_lifetime_fix_20261117/README.md)。查询切片只构造未初始化Manager，其Host链接边界被调用即报错，不能用这些切片证明完整对象图清理。
 
-## 完整回归报告
+## 回归、差分与准入
 
-VS Code任务 `Run All Tests` 使用 `test.py all --ci`；构建仍在.host-out，报告默认在.host-out/results。本次架构检查会临时在仓外执行，并将产物复制至报告的architecture/；architecture-location.json记录执行位置和保留位置。临时目录完成后移除，排查时使用保留位置及architecture.log。直接调用run_architecture.py仍使用仓外--output。
+| VS Code 任务 | 执行范围 |
+| --- | --- |
+| Run Legacy Regression | Legacy 全部业务目标，常规初始化模型 |
+| Run Target Regression | Target Host 全部业务用例 |
+| Run Both Backends | 输入冻结 Scenario ID，两边按原映射运行并与 Oracle 比对；ID 无实现时报告 BLOCKED |
+| Verify / CI (Legacy admission) | Legacy 业务覆盖清单、完整依赖校验、架构与技术检查、真实执行审计、Mutation、Profile Safety 及 CI 准入 |
+| Verify Target Host | Target 全量、完整依赖校验、架构与技术检查及 Target 真实执行审计 |
 
-当前五项已修复缺陷必须PASS；修复策略文件缺失、删项或重复均拒绝准入，不回退到历史失败豁免。历史签名及原始报告保持原字节。
+报告默认在 `.host-out/results`。完整架构检查要求仓外执行，入口会按需准备临时目录并将结果保存在本次报告的 `architecture/`。历史失败签名固定，五个已解决条目必须通过。当前性能、完整验证和 GUI 状态见 [专项报告](SIM_Host_Development_Efficiency_Optimization_Report.md)。
 
+`Run Selected Test` 只要求用例名，在命令行可用 `--backend` 与 `--target` 明确选择。批处理 `Debug Selected Test (LLDB evidence)` 还需要函数断点符号，会在命中后记录调用栈并继续运行。交互单步使用 Testing 面板的 **Debug Test**。CLI 默认每次执行增量检查；`--no-incremental-build` 显式选择已有 ELF。完整门禁始终验证内容和构建。
 
 <a id="af2-m1-debug"></a>
 
@@ -78,7 +75,7 @@ python3 -B "$TEST/scripts/test.py" run --backend target \
 lldb /tmp/af2-m2/host/build/sim_test_target_host
 ```
 
-在 LLDB 中设 `settings set target.disable-aslr false` 及 `settings set target.env-vars LLVM_PROFILE_FILE=/tmp/af2-m2/discovery-%p.profraw`，再运行 `run --gtest_filter=AF2Discovery.LiveCardDiscoveryCreatesAccountAndBinding`。VS Code 可用现有 Target Host 配置与同一过滤名。优化构建若把 R 或 Registry 内联，可用验收记录中的无 LTO 调试构建定位这两处实现。
+在 LLDB 中设 `settings set target.disable-aslr false` 及 `settings set target.env-vars LLVM_PROFILE_FILE=/tmp/af2-m2/discovery-%p.profraw`，再运行 `run --gtest_filter=AF2Discovery.LiveCardDiscoveryCreatesAccountAndBinding`。VS Code 可用现有 Target Host 配置与同一过滤名。优化构建如果内联了 R 或 Registry 的函数，选择 **SIM Target (step-through)**。
 
 ```mermaid
 sequenceDiagram

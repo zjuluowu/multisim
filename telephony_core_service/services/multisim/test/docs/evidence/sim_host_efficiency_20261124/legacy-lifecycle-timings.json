@@ -1,0 +1,182 @@
+[
+  {
+    "mode": "single-active",
+    "index": 0,
+    "rc": 0,
+    "before_cleanup": 0.6825024590361863,
+    "after_cleanup": 0.6825186590431258,
+    "gtest_passed": 0.6825417591026053,
+    "exit": 1.2983884420245886
+  },
+  {
+    "mode": "single-active",
+    "index": 1,
+    "rc": 0,
+    "before_cleanup": 0.5840725030284375,
+    "after_cleanup": 0.5840857030125335,
+    "gtest_passed": 0.5841027030255646,
+    "exit": 1.0749641800066456
+  },
+  {
+    "mode": "single-active",
+    "index": 2,
+    "rc": 0,
+    "before_cleanup": 0.5624389910371974,
+    "after_cleanup": 0.5624511910136789,
+    "gtest_passed": 0.5647346070036292,
+    "exit": 0.802420468069613
+  },
+  {
+    "mode": "single-active",
+    "index": 3,
+    "rc": 0,
+    "before_cleanup": 0.45326026796828955,
+    "after_cleanup": 0.4532717679394409,
+    "gtest_passed": 0.4532849679235369,
+    "exit": 0.6493207379244268
+  },
+  {
+    "mode": "single-active",
+    "index": 4,
+    "rc": 0,
+    "before_cleanup": 0.43119731394108385,
+    "after_cleanup": 0.4312100139213726,
+    "gtest_passed": 0.43122351402416825,
+    "exit": 0.6226945529924706
+  },
+  {
+    "mode": "single-active",
+    "index": 5,
+    "rc": 0,
+    "before_cleanup": 0.4592674110317603,
+    "after_cleanup": 0.4592793110059574,
+    "gtest_passed": 0.45929461100604385,
+    "exit": 0.6618035270366818
+  },
+  {
+    "mode": "single-active",
+    "index": 6,
+    "rc": 0,
+    "before_cleanup": 0.36332194006536156,
+    "after_cleanup": 0.3633342400426045,
+    "gtest_passed": 0.36334814107976854,
+    "exit": 0.5290465990547091
+  },
+  {
+    "mode": "single-active",
+    "index": 7,
+    "rc": 0,
+    "before_cleanup": 0.5088683579815552,
+    "after_cleanup": 0.5088794579496607,
+    "gtest_passed": 0.5088936579413712,
+    "exit": 0.7667132609058172
+  },
+  {
+    "mode": "single-active",
+    "index": 8,
+    "rc": 0,
+    "before_cleanup": 0.6007842009421438,
+    "after_cleanup": 0.6007953010266647,
+    "gtest_passed": 0.6008972019189969,
+    "exit": 0.873202706919983
+  },
+  {
+    "mode": "single-active",
+    "index": 9,
+    "rc": 0,
+    "before_cleanup": 0.5627008359879255,
+    "after_cleanup": 0.5627138359704986,
+    "gtest_passed": 0.5627524359151721,
+    "exit": 0.8517048569628969
+  },
+  {
+    "mode": "dual-active-primary0",
+    "index": 0,
+    "rc": 0,
+    "before_cleanup": 0.5674891700036824,
+    "after_cleanup": 0.5674999699695036,
+    "gtest_passed": 0.5679582729935646,
+    "exit": 0.8779391419375315
+  },
+  {
+    "mode": "dual-active-primary0",
+    "index": 1,
+    "rc": 0,
+    "before_cleanup": 0.6221460530068725,
+    "after_cleanup": 0.6221569529734552,
+    "gtest_passed": 0.6221704529598355,
+    "exit": 0.8490219409577549
+  },
+  {
+    "mode": "dual-active-primary0",
+    "index": 2,
+    "rc": 0,
+    "before_cleanup": 0.5546728810295463,
+    "after_cleanup": 0.5546836809953675,
+    "gtest_passed": 0.5546983820386231,
+    "exit": 0.8399380780756474
+  },
+  {
+    "mode": "dual-active-primary0",
+    "index": 3,
+    "rc": 0,
+    "before_cleanup": 0.5385288849938661,
+    "after_cleanup": 0.5385611850069836,
+    "gtest_passed": 0.5386192851001397,
+    "exit": 0.788644609041512
+  },
+  {
+    "mode": "dual-active-primary0",
+    "index": 4,
+    "rc": 1,
+    "before_cleanup": 78.48919758398551,
+    "after_cleanup": 81.50510310195386,
+    "gtest_passed": 81.50514510192443,
+    "exit": 81.61780283402186
+  },
+  {
+    "mode": "dual-active-primary0",
+    "index": 5,
+    "rc": 0,
+    "before_cleanup": 0.2883070179959759,
+    "after_cleanup": 0.28831761807668954,
+    "gtest_passed": 0.28835181903559715,
+    "exit": 0.3879382780287415
+  },
+  {
+    "mode": "dual-active-primary0",
+    "index": 6,
+    "rc": 0,
+    "before_cleanup": 0.26849390694405884,
+    "after_cleanup": 0.2685052069136873,
+    "gtest_passed": 0.26853780692908913,
+    "exit": 0.363687940989621
+  },
+  {
+    "mode": "dual-active-primary0",
+    "index": 7,
+    "rc": 0,
+    "before_cleanup": 0.2281245809281245,
+    "after_cleanup": 0.22813408100046217,
+    "gtest_passed": 0.22814618097618222,
+    "exit": 0.39976254396606237
+  },
+  {
+    "mode": "dual-active-primary0",
+    "index": 8,
+    "rc": 0,
+    "before_cleanup": 0.2796319699846208,
+    "after_cleanup": 0.27964157005771995,
+    "gtest_passed": 0.27965437003877014,
+    "exit": 0.3774459189735353
+  },
+  {
+    "mode": "dual-active-primary0",
+    "index": 9,
+    "rc": 0,
+    "before_cleanup": 0.22978139005135745,
+    "after_cleanup": 0.22979359002783895,
+    "gtest_passed": 0.22985239000990987,
+    "exit": 0.32173670607153326
+  }
+]

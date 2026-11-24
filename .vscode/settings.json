@@ -11,7 +11,7 @@
   },
   "testMate.cpp.test.advancedExecutables": [
     {
-      "pattern": ".host-out/build/{sim_test_host,sim_component_test,sim_primary_slot_entry_test,sim_g2a_query_test,sim_upstream_query_test,sim_test_target_host}",
+      "pattern": ".host-out/build/sim_test_host",
       "cwd": "${workspaceFolder}/.host-out",
       "maxTestsPerExecutable": 1,
       "parallelizationLimit": 1,
@@ -21,7 +21,7 @@
       },
       "runTask": {
         "before": [
-          "Build Host"
+          "Build sim_test_host"
         ]
       },
       "testGrouping": {
@@ -31,19 +31,141 @@
       }
     },
     {
-      "pattern": ".host-out/build/{sim_primary_slot_real_test,sim_bootstrap_characterization}",
+      "pattern": ".host-out/build/sim_component_test",
       "cwd": "${workspaceFolder}/.host-out",
       "maxTestsPerExecutable": 1,
       "parallelizationLimit": 1,
       "env": {
-        "SIM_HOST_BOOT_SLOT_COUNT": "2",
-        "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/real-testmate-%p.profraw",
+        "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/testmate-%p.profraw",
+        "LD_LIBRARY_PATH": "${workspaceFolder}/.host-out/build"
+      },
+      "runTask": {
+        "before": [
+          "Build sim_component_test"
+        ]
+      },
+      "testGrouping": {
+        "groupByExecutable": {
+          "groupBySource": {}
+        }
+      }
+    },
+    {
+      "pattern": ".host-out/build/sim_primary_slot_entry_test",
+      "cwd": "${workspaceFolder}/.host-out",
+      "maxTestsPerExecutable": 1,
+      "parallelizationLimit": 1,
+      "env": {
+        "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/testmate-%p.profraw",
+        "LD_LIBRARY_PATH": "${workspaceFolder}/.host-out/build"
+      },
+      "runTask": {
+        "before": [
+          "Build sim_primary_slot_entry_test"
+        ]
+      },
+      "testGrouping": {
+        "groupByExecutable": {
+          "groupBySource": {}
+        }
+      }
+    },
+    {
+      "pattern": ".host-out/build/sim_g2a_query_test",
+      "cwd": "${workspaceFolder}/.host-out",
+      "maxTestsPerExecutable": 1,
+      "parallelizationLimit": 1,
+      "env": {
+        "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/testmate-%p.profraw",
+        "LD_LIBRARY_PATH": "${workspaceFolder}/.host-out/build"
+      },
+      "runTask": {
+        "before": [
+          "Build sim_g2a_query_test"
+        ]
+      },
+      "testGrouping": {
+        "groupByExecutable": {
+          "groupBySource": {}
+        }
+      }
+    },
+    {
+      "pattern": ".host-out/build/sim_upstream_query_test",
+      "cwd": "${workspaceFolder}/.host-out",
+      "maxTestsPerExecutable": 1,
+      "parallelizationLimit": 1,
+      "env": {
+        "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/testmate-%p.profraw",
+        "LD_LIBRARY_PATH": "${workspaceFolder}/.host-out/build"
+      },
+      "runTask": {
+        "before": [
+          "Build sim_upstream_query_test"
+        ]
+      },
+      "testGrouping": {
+        "groupByExecutable": {
+          "groupBySource": {}
+        }
+      }
+    },
+    {
+      "pattern": ".host-out/build/sim_primary_slot_real_test",
+      "cwd": "${workspaceFolder}/.host-out",
+      "maxTestsPerExecutable": 1,
+      "parallelizationLimit": 1,
+      "env": {
+        "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/testmate-%p.profraw",
         "LD_LIBRARY_PATH": "${workspaceFolder}/.host-out/build",
+        "SIM_HOST_BOOT_SLOT_COUNT": "2",
         "SIM028_INIT_MODEL": "single-active"
       },
       "runTask": {
         "before": [
-          "Build Host"
+          "Build sim_primary_slot_real_test"
+        ]
+      },
+      "testGrouping": {
+        "groupByExecutable": {
+          "groupBySource": {}
+        }
+      }
+    },
+    {
+      "pattern": ".host-out/build/sim_bootstrap_characterization",
+      "cwd": "${workspaceFolder}/.host-out",
+      "maxTestsPerExecutable": 1,
+      "parallelizationLimit": 1,
+      "env": {
+        "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/testmate-%p.profraw",
+        "LD_LIBRARY_PATH": "${workspaceFolder}/.host-out/build",
+        "SIM_HOST_BOOT_SLOT_COUNT": "2",
+        "SIM028_INIT_MODEL": "single-active"
+      },
+      "runTask": {
+        "before": [
+          "Build sim_bootstrap_characterization"
+        ]
+      },
+      "testGrouping": {
+        "groupByExecutable": {
+          "groupBySource": {}
+        }
+      }
+    },
+    {
+      "pattern": ".host-out/build/sim_test_target_host",
+      "cwd": "${workspaceFolder}/.host-out",
+      "maxTestsPerExecutable": 1,
+      "parallelizationLimit": 1,
+      "env": {
+        "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/testmate-%p.profraw",
+        "LD_LIBRARY_PATH": "${workspaceFolder}/.host-out/build"
+      },
+      "runTask": {
+        "before": [
+          "Build sim_test_target_host"
         ]
       },
       "testGrouping": {
@@ -62,6 +184,7 @@
     "env": "${envObj}"
   },
   "testMate.cpp.discovery.loadOnStartup": true,
-  "testMate.cpp.discovery.testListCaching": false,
-  "testMate.cpp.discovery.runtimeLimit": 30
+  "testMate.cpp.discovery.testListCaching": true,
+  "testMate.cpp.discovery.runtimeLimit": 30,
+  "testMate.cpp.test.parallelExecutionLimit": 1
 }

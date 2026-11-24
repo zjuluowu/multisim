@@ -4,8 +4,13 @@ import argparse,fcntl,hashlib,json,os,subprocess
 from pathlib import Path
 from _paths import TEST,CORE
 p=argparse.ArgumentParser(description=__doc__);p.add_argument('--out',type=Path,required=True);p.add_argument('--output',type=Path,required=True);a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
+with (a.out/'.build.lock').open('a') as lock:
+ fcntl.flock(lock.fileno(),fcntl.LOCK_SH)
+ config=json.loads((a.out/'replacement.json').read_text())
+# Keep mutation-linked ELF files out of the ordinary Host and editor output.
+a.out=a.out/'mutation-build';a.out.mkdir(parents=True,exist_ok=True)
 build_lock=(a.out/'.build.lock').open('a');fcntl.flock(build_lock.fileno(),fcntl.LOCK_EX)
-config=json.loads((a.out/'replacement.json').read_text());gnargs=' '.join(k+'='+json.dumps(v) for k,v in config.items());rows=[]
+gnargs=' '.join(k+'='+json.dumps(v) for k,v in config.items());rows=[]
 def run(name,cmd,expected=0):
  with (a.output/(name+'.log')).open('w') as log:r=subprocess.run(list(map(str,cmd)),stdout=log,stderr=subprocess.STDOUT,env=dict(os.environ,LLVM_PROFILE_FILE=str(a.output.resolve()/(name+'-%p.profraw'))))
  rows.append({'name':name,'command':list(map(str,cmd)),'exit_code':r.returncode,'expected_exit_code':expected});(a.output/'result.json').write_text(json.dumps({'commands':rows,'status':'RUNNING'},indent=2)+'\n')

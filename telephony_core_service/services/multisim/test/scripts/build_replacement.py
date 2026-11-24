@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Incremental GN/Ninja entry for the replacement fixture; no legacy runner imports."""
+"""Prepare one Host GN graph and build the requested Ninja targets."""
 import argparse
 import fcntl
 import hashlib
@@ -7,11 +7,204 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
+import shlex
 import subprocess
 import sys
+import tempfile
+from time import perf_counter
 
 TEST = Path(__file__).resolve().parents[1]
 REPO = TEST.parents[3]
+HOST_ROOT = TEST / 'framework/internal/host'
+LEGACY = ['sim_test_host', 'sim_component_test', 'sim_primary_slot_entry_test',
+          'sim_g2a_query_test', 'sim_upstream_query_test', 'sim_primary_slot_real_test',
+          'sim_bootstrap_characterization']
+REAL = LEGACY[-2:]
+TARGET = ['sim_test_target_host']
+PROBE = 'sim_capability_probe'
+
+
+def read_json(path, default):
+    try:
+        return json.loads(path.read_text())
+    except (FileNotFoundError, ValueError):
+        return default
+
+
+def write_json(path, data):
+    content = json.dumps(data, indent=2) + '\n'
+    if path.is_file() and path.read_text() == content:
+        return False
+    with tempfile.NamedTemporaryFile(mode='w', dir=path.parent, delete=False) as stream:
+        stream.write(content)
+    Path(stream.name).replace(path)
+    return True
+
+
+def file_identity(path):
+    info = path.stat()
+    return [info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns]
+
+
+def cache_key(paths):
+    digest = hashlib.sha256()
+    for path in sorted(paths):
+        digest.update(os.fsencode(path) + b'\0' + repr(file_identity(path)).encode() + b'\0')
+    return digest.hexdigest()
+
+
+def verify_group(name, files, verify, previous, current, timing, full):
+    start = perf_counter()
+    files = list(files)
+    key = cache_key(files)
+    reused = not full and previous.get(name) == key
+    if not reused:
+        verify()
+        if key != cache_key(files):
+            raise ValueError(f'{name} files changed during verification')
+    current[name] = key
+    timing[name] = {'seconds': perf_counter() - start, 'reused': reused, 'files': len(files)}
+
+
+def digest_file(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def check_hashes(root, hashes):
+    for name, expected in hashes.items():
+        if digest_file(root / name) != expected:
+            raise ValueError('Pinned dependency differs: ' + str(root / name))
+
+
+def verify_dependencies(output, values, targets, full, timing):
+    lock_path = HOST_ROOT / 'configs/dependency_lock.json'
+    lock_bytes = lock_path.read_bytes()
+    lock = json.loads(lock_bytes)
+    cache = output / 'dependency-verification.json'
+    old = read_json(cache, {})
+    context = {'version': 1, 'lock_sha256': hashlib.sha256(lock_bytes).hexdigest(), 'config': values}
+    previous = old.get('groups', {}) if isinstance(old, dict) and old.get('context') == context else {}
+    if not isinstance(previous, dict):
+        previous = {}
+    current = dict(previous)
+    root = Path(values['gtest_root'])
+    start = perf_counter()
+    files = sorted(path for path in root.rglob('*') if path.is_file())
+    timing['googletest_inventory'] = perf_counter() - start
+
+    def verify_gtest():
+        digest = hashlib.sha256()
+        for path in files:
+            digest.update(os.fsencode(path.relative_to(root)) + b'\0' + path.read_bytes() + b'\0')
+        if digest.hexdigest() != lock['googletest']['tree_sha256']:
+            raise ValueError('GoogleTest source differs from dependency_lock.json')
+
+    verify_group('googletest', files, verify_gtest, previous, current, timing, full)
+    headers = {row['path']: row['sha256'] for row in lock['platform_headers']}
+    verify_group('platform_headers', (HOST_ROOT / name for name in headers),
+                 lambda: check_hashes(HOST_ROOT, headers), previous, current, timing, full)
+    if set(targets).intersection(REAL):
+        if not values['openssl_root'] or not values['sim028_runtime_root']:
+            raise ValueError('Real Primary requires prepared --openssl-root and --runtime-root')
+        openssl = Path(values['openssl_root'])
+        metadata = openssl / 'sim_dependency.json'
+        start = perf_counter()
+        if json.loads(metadata.read_text()) != lock['openssl_headers']:
+            raise ValueError('Real Primary requires pinned --openssl-root prepared by prepare_openssl.py')
+        headers = lock['openssl_headers']['header_sha256']
+        # Include new header files in the inventory. Unlisted headers may shadow pinned declarations.
+        installed = {str(path.relative_to(openssl)) for folder in {Path(name).parent for name in headers}
+                     for path in (openssl / folder).rglob('*.h') if path.is_file()}
+        if installed != set(headers):
+            raise ValueError('OpenSSL pinned header inventory differs from dependency_lock.json')
+        verify_group('openssl', [metadata, *(openssl / name for name in headers)],
+                     lambda: check_hashes(openssl, headers), previous, current, timing, full)
+        timing['openssl']['seconds'] = perf_counter() - start
+        runtime = Path(values['sim028_runtime_root'])
+        metadata = runtime / 'runtime_dependencies.json'
+        start = perf_counter()
+        archives = json.loads(metadata.read_text())['archives']
+        required = {'libsim028_strings.a', 'libsim028_securec.a', 'libsim028_cjson.a'}
+        if set(archives) != required or {path.name for path in runtime.glob('*.a')} != required:
+            raise ValueError('Native Runtime archive inventory differs from the Host link inputs')
+        verify_group('native_runtime', [metadata, *(runtime / name for name in archives)],
+                     lambda: check_hashes(runtime, archives), previous, current, timing, full)
+        timing['native_runtime']['seconds'] = perf_counter() - start
+    write_json(cache, {'context': context, 'groups': current})
+
+
+def graph_reason(build, values, previous):
+    required = ('args.gn', 'build.ninja', 'build.ninja.stamp', 'build.ninja.d',
+                'toolchain.ninja', 'compile_commands.json')
+    if not all((build / name).is_file() for name in required):
+        return 'missing_graph_input_or_output'
+    if values != previous:
+        return 'configuration_changed'
+    assignment = r'\s*(\w+)\s*=\s*("(?:[^"\\]|\\.)*"|true|false)\s*'
+    actual_args = (build / 'args.gn').read_text()
+    assignments = re.findall(assignment, actual_args)
+    if re.sub(assignment, '', actual_args).strip() or len(assignments) != len(values) or (
+            {key: json.loads(value) for key, value in assignments} != values):
+        return 'gn_arguments_changed'
+    # GN emits make-style paths in this depfile. Compare with the same stamp
+    # Ninja uses for automatic regeneration, including imported GN/GNI inputs.
+    depfile = (build / 'build.ninja.d').read_text()
+    stamp = (build / 'build.ninja.stamp').stat().st_mtime_ns
+    inputs = shlex.split(depfile.replace('\\\n', ' '))[1:]
+    if not inputs:
+        return 'missing_graph_inputs'
+    for name in inputs:
+        path = build / name
+        if not path.is_file() or path.stat().st_mtime_ns > stamp:
+            return 'changed_graph_input:' + name
+    return None
+
+
+def exact_case(pattern):
+    return re.fullmatch(r'[\w/]+\.[\w/]+', pattern) is not None
+
+
+def literal_cases(pattern):
+    parts = pattern.split(':')
+    return parts if all(map(exact_case, parts)) else []
+
+
+def route_cases(database, groups):
+    """Use current GN source membership and literal GoogleTest registrations as routing hints."""
+    targets = {target for group in groups for target in group['targets']}
+    by_source = {}
+    registration = re.compile(
+        r'\b(?:TEST|TEST_F|TEST_P|TYPED_TEST|TYPED_TEST_P)\s*\(\s*(\w+)\s*,\s*(\w+)\s*\)')
+    for row in json.loads(database.read_text()):
+        path = Path(os.path.abspath(Path(row['directory']) / row['file']))
+        if not path.is_relative_to(TEST / 'cases'):
+            continue
+        # The Host GN CXX tool names objects <target>.<source>.o.
+        match = re.search(r' -o\s+(.+)$', row['command'])
+        if match:
+            target = Path(shlex.split(match[1])[0]).name.split('.', 1)[0]
+            if target in targets:
+                by_source.setdefault(path, set()).add(target)
+    registrations = {}
+    for path, linked_targets in by_source.items():
+        source = re.sub(r'/\*.*?\*/|//[^\n]*', '', path.read_text(), flags=re.S)
+        for name in registration.findall(source):
+            registrations.setdefault(name, set()).update(linked_targets)
+    selected = []
+    for group in groups:
+        matches = []
+        for pattern in literal_cases(group['filter']):
+            suite, name = pattern.split('.', 1)
+            # Ordinary, value-parameterized, and typed suite names.
+            candidates = set().union(*(registrations.get((fixture, name.split('/')[0]), ())
+                                       for fixture in suite.split('/')))
+            matches.append(candidates.intersection(group['targets']))
+        if matches and all(matches):
+            selected.extend(target for target in group['targets'] if any(target in row for row in matches))
+        else:
+            selected.extend(group.get('fallback', group['targets']))
+    return list(dict.fromkeys(selected))
 
 
 def main():
@@ -19,12 +212,13 @@ def main():
     parser.add_argument('--out', type=Path, default=REPO / '.host-out')
     parser.add_argument('--gtest-root', type=Path, default=os.environ.get('SIM_GTEST_ROOT'))
     parser.add_argument('--jobs', type=int, default=3)
-    parser.add_argument('--target', nargs='+', default=['sim_test_host'], choices=[
-        'sim_test_host', 'sim_component_test', 'sim_primary_slot_entry_test',
-        'sim_primary_slot_real_test', 'sim_g2a_query_test', 'sim_upstream_query_test', 'sim_bootstrap_characterization', 'sim_capability_probe',
-        'sim_test_target_host'])
+    parser.add_argument('--target', nargs='+', default=['sim_test_host'], choices=LEGACY + TARGET + [PROBE])
     parser.add_argument('--openssl-root', type=Path)
     parser.add_argument('--runtime-root', type=Path)
+    parser.add_argument('--debug-build', action='store_true')
+    parser.add_argument('--incremental', action='store_true', help='Reuse verified dependency identities')
+    parser.add_argument('--route', type=json.loads, help=argparse.SUPPRESS)
+    parser.add_argument('--result', type=Path, help=argparse.SUPPRESS)
     args = parser.parse_args()
     if platform.system() != 'Linux' or platform.machine() != 'x86_64' or args.jobs < 1:
         parser.error('Requires Linux x86_64 and a positive --jobs value')
@@ -33,50 +227,91 @@ def main():
     output = args.out.resolve()
     if output == REPO or output in REPO.parents or output == TEST or TEST in output.parents:
         parser.error('Choose a dedicated build directory outside the test source')
+    if args.debug_build:
+        output /= 'debug'
     output.mkdir(parents=True, exist_ok=True)
-    build_lock = (output / '.build.lock').open('a')
-    fcntl.flock(build_lock.fileno(), fcntl.LOCK_EX)
+    trace = {'requested_targets': args.target, 'dependencies': {}}
+    with (output / '.build.lock').open('a') as build_lock:
+        start = perf_counter()
+        fcntl.flock(build_lock.fileno(), fcntl.LOCK_EX)
+        entered = perf_counter()
+        trace['lock_wait_seconds'] = entered - start
+        try:
+            build(args, output, trace)
+        except (OSError, ValueError, subprocess.CalledProcessError) as error:
+            trace['error'] = str(error)
+            print('Host build failed: ' + str(error), file=sys.stderr)
+            return 1
+        finally:
+            trace['lock_hold_seconds'] = perf_counter() - entered
+            if args.result:
+                write_json(args.result, trace)
+            print('Host build timings: ' + json.dumps(trace), flush=True)
+    return 0
+
+
+def build(args, output, trace):
     config = output / 'replacement.json'
-    previous = json.loads(config.read_text()) if config.exists() else {}
-    root = args.gtest_root or previous.get('gtest_root')
+    previous = read_json(config, {})
+    if not isinstance(previous, dict):
+        previous = {}
+    roots = dict(previous)
+    if args.debug_build and not previous:
+        inherited = read_json(output.parent / 'replacement.json', {})
+        if isinstance(inherited, dict):
+            roots = inherited
+    root = args.gtest_root or roots.get('gtest_root')
     if not root:
-        parser.error('Set SIM_GTEST_ROOT or --gtest-root to the pinned GoogleTest source')
-    root = Path(root).resolve()
-    digest = hashlib.sha256()
-    for path in sorted(root.rglob('*')):
-        if path.is_file():
-            digest.update(str(path.relative_to(root)).encode() + b'\0' + path.read_bytes() + b'\0')
-    lock = json.loads((TEST / 'framework/internal/host/configs/dependency_lock.json').read_text())
-    if digest.hexdigest() != lock['googletest']['tree_sha256']:
-        parser.error('GoogleTest source differs from dependency_lock.json')
-    for row in lock['platform_headers']:
-        if hashlib.sha256((TEST / 'framework/internal/host' / row['path']).read_bytes()).hexdigest() != row['sha256']:
-            parser.error('Pinned platform declaration changed: ' + row['path'])
-    values = {'gtest_root': str(root), 'production_root': str(REPO / 'telephony_core_service'),
+        raise ValueError('Set SIM_GTEST_ROOT or --gtest-root to the pinned GoogleTest source')
+    values = {'gtest_root': str(Path(root).resolve()),
+              'production_root': str(REPO / 'telephony_core_service'),
               'host_debug': True,
-              'openssl_root': str(args.openssl_root.resolve()) if args.openssl_root else previous.get('openssl_root', ''),
-              'sim028_runtime_root': str(args.runtime_root.resolve()) if args.runtime_root else previous.get('sim028_runtime_root', '')}
-    if any(t in args.target for t in ['sim_primary_slot_real_test','sim_bootstrap_characterization']):
-        openssl = Path(values['openssl_root'])
-        runtime = Path(values['sim028_runtime_root'])
-        metadata = openssl / 'sim_dependency.json'
-        if not metadata.is_file() or json.loads(metadata.read_text()) != lock['openssl_headers']:
-            parser.error('Real Primary requires pinned --openssl-root prepared by prepare_openssl.py')
-        for name, expected in lock['openssl_headers']['header_sha256'].items():
-            if hashlib.sha256((openssl / name).read_bytes()).hexdigest() != expected:
-                parser.error('OpenSSL header drift: ' + name)
-        if not (runtime / 'runtime_dependencies.json').is_file():
-            parser.error('Real Primary requires --runtime-root prepared by prepare_runtime.py')
-        for name, expected in json.loads((runtime / 'runtime_dependencies.json').read_text())['archives'].items():
-            if hashlib.sha256((runtime / name).read_bytes()).hexdigest() != expected:
-                parser.error('Native archive drift: ' + name)
+              'openssl_root': str(args.openssl_root.resolve()) if args.openssl_root else roots.get('openssl_root', ''),
+              'sim028_runtime_root': str(args.runtime_root.resolve()) if args.runtime_root else roots.get('sim028_runtime_root', '')}
+    if args.debug_build:
+        values['host_step_debug'] = True
+    build_dir = output / 'build'
+    database = build_dir / 'compile_commands.json'
+    source_list = TEST / 'cases/sources.gni'
+    source_before = file_identity(source_list) if source_list.exists() else None
+    start = perf_counter()
     subprocess.run([sys.executable, '-B', str(TEST / 'scripts/update_case_sources.py')], check=True)
-    gnargs = ' '.join(key + '=' + json.dumps(value) for key, value in values.items())
-    subprocess.run(['gn', 'gen', str(output / 'build'), '--root=' + str(TEST / 'framework/internal/host'),
-                    '--export-compile-commands', '--args=' + gnargs], check=True)
-    config.write_text(json.dumps(values, indent=2) + '\n')
-    subprocess.run(['ninja', '-C', str(output / 'build'), '-j', str(args.jobs), *args.target], check=True)
+    trace['source_manifest'] = {'seconds': perf_counter() - start,
+                                'changed': source_before != file_identity(source_list)}
+    reason = graph_reason(build_dir, values, previous)
+    before = file_identity(database) if database.exists() else None
+    start = perf_counter()
+    if reason:
+        gnargs = ' '.join(key + '=' + json.dumps(value) for key, value in values.items())
+        subprocess.run(['gn', 'gen', str(build_dir), '--root=' + str(HOST_ROOT),
+                        '--export-compile-commands', '--args=' + gnargs], check=True)
+    trace['gn'] = {'seconds_including_compile_database': perf_counter() - start,
+                   'count': int(bool(reason)), 'reason': reason}
+    trace['compile_database_changed'] = before != file_identity(database)
+    start = perf_counter()
+    targets = route_cases(database, args.route) if args.route else args.target
+    if not targets or not set(targets).issubset(args.target):
+        raise ValueError('Target routing must select a nonempty subset of the requested targets')
+    trace['targets'] = targets
+    trace['route_seconds'] = perf_counter() - start
+    verify_dependencies(output, values, targets, not args.incremental, trace['dependencies'])
+    trace['configuration_changed'] = write_json(config, values)
+    start = perf_counter()
+    counts = {'CXX': 0, 'LINK': 0, 'SOLINK': 0, 'AR': 0, 'Regenerating': 0}
+    env = dict(os.environ, NINJA_STATUS='[%f/%t] ')
+    with subprocess.Popen(['ninja', '-C', str(build_dir), '-j', str(args.jobs), *targets],
+                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=env) as child:
+        for line in child.stdout:
+            print(line, end='', flush=True)
+            action = re.match(r'^\[\d+/\d+\] (\w+)', line)
+            if action and action[1] in counts:
+                counts[action[1]] += 1
+        code = child.wait()
+    trace['ninja'] = {'seconds': perf_counter() - start, 'count': 1, 'actions': counts}
+    if code:
+        raise ValueError(f'Ninja exited with status {code}')
+    trace['binary_identities'] = {target: file_identity(build_dir / target) for target in targets}
 
 
 if __name__ == '__main__':
-    main()
+    raise SystemExit(main())

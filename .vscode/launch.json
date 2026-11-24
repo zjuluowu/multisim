@@ -2,44 +2,44 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "SIM selected GoogleTest (WSL)",
+      "name": "SIM Legacy C0 (dual active)",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/.host-out/build/${input:hostTarget}",
+      "program": "${workspaceFolder}/.host-out/build/sim_primary_slot_real_test",
+      "args": [
+        "--gtest_filter=RealSimPrimary.C0CoreToRealManagerAndController"
+      ],
+      "cwd": "${workspaceFolder}/.host-out",
+      "env": {
+        "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/debug-%p.profraw",
+        "LD_LIBRARY_PATH": "${workspaceFolder}/.host-out/build",
+        "SIM_HOST_BOOT_SLOT_COUNT": "2",
+        "SIM028_INIT_MODEL": "dual-active-primary0"
+      },
+      "preLaunchTask": "Build sim_primary_slot_real_test"
+    },
+    {
+      "name": "SIM Target (step-through)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/.host-out/debug/build/sim_test_target_host",
       "args": [
         "--gtest_filter=${input:gtestFilter}"
       ],
       "cwd": "${workspaceFolder}/.host-out",
       "env": {
-        "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/profiles/debug-%p.profraw",
-        "LD_LIBRARY_PATH": "${workspaceFolder}/.host-out/build",
-        "SIM_HOST_BOOT_SLOT_COUNT": "2"
+        "LLVM_PROFILE_FILE": "${workspaceFolder}/.host-out/debug-%p.profraw",
+        "LD_LIBRARY_PATH": "${workspaceFolder}/.host-out/debug/build"
       },
-      "preLaunchTask": "Build All SIM Host"
+      "preLaunchTask": "Build Target Host (step-through)"
     }
   ],
   "inputs": [
     {
       "id": "gtestFilter",
       "type": "promptString",
-      "description": "Exact GoogleTest case (Testing panel selects it automatically)",
-      "default": "SimTest.DualSimPinUnlockAfterWrongPin"
-    },
-    {
-      "id": "hostTarget",
-      "type": "pickString",
-      "description": "Independently linked SUT slice",
-      "options": [
-        "sim_test_host",
-        "sim_component_test",
-        "sim_primary_slot_entry_test",
-        "sim_g2a_query_test",
-        "sim_upstream_query_test",
-        "sim_test_target_host",
-        "sim_primary_slot_real_test",
-        "sim_bootstrap_characterization"
-      ],
-      "default": "sim_test_host"
+      "description": "Exact GoogleTest case",
+      "default": "AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry"
     }
   ]
 }

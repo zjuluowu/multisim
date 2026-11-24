@@ -14,7 +14,9 @@ python3 -B "$TEST/scripts/test.py" run --backend both --init-model dual-active-p
   --filter SIM028-LEGACY-C0-DUAL-PRIMARY0 --out /tmp/m3-host
 ```
 
-两边使用独立可执行文件。冻结的 Both 映射仍运行既有组件用例 `TargetPrimary.C0AssignmentServiceAlreadyPrimary`。正式装配的入口、实时双卡、参数、通知及原同步结果由 `AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry` 直接验证。运行时可在 VS Code Remote-WSL 的 Testing 面板选精确用例，或使用以下 LLDB 命令。
+两边使用独立可执行文件。冻结的 Both 映射仍运行既有组件用例 `TargetPrimary.C0AssignmentServiceAlreadyPrimary`。正式装配的入口、实时双卡、参数、通知及原同步结果由 `AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry` 直接验证。VS Code Remote-WSL 的 Testing 面板按 ELF 区分用例。对正式 Target 用例点击 **Debug Test**，前置任务只更新 Target。要观察冻结双激活 Legacy 初态，运行配置 **SIM Legacy C0 (dual active)**。普通 Legacy Testing 面板使用 single-active 初态。
+
+以下表格适用于上述 CLI 输出路径。
 
 | | Legacy | Target |
 | --- | --- | --- |
@@ -23,7 +25,7 @@ python3 -B "$TEST/scripts/test.py" run --backend both --init-model dual-active-p
 | `run --gtest_filter=…` | `RealSimPrimary.C0CoreToRealManagerAndController` | `AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry` |
 | 最早的业务断点 | `CoreServiceSim::SetPrimarySlotId` | `SimModule::SetPrimarySlotId` |
 
-在 LLDB 中先设置 `settings set target.disable-aslr false`。Legacy 设置 `settings set target.env-vars SIM_HOST_BOOT_SLOT_COUNT=2 SIM028_INIT_MODEL=dual-active-primary0 LLVM_PROFILE_FILE=/tmp/m3-legacy-%p.profraw`，Target 只需设置 profile 路径。函数断点用 `breakpoint set -n <完整函数名>`。Legacy 命名空间为 `OHOS::Telephony`，Target 函数在其 `MultiSim` 子命名空间。设置首个断点后运行精确过滤，在断点上用 `bt`、`frame variable slotId` 或 `frame variable slot`，用 `thread step-over` 进入下一源码语句。读优化构建中被内联的 Target 函数时，按[本批证据](evidence/af2_m3_20261124/README.md)保留 DWARF 并关闭 Host 调试副本的优化和 LTO。
+在 LLDB 中先设置 `settings set target.disable-aslr false`。Legacy 设置 `settings set target.env-vars SIM_HOST_BOOT_SLOT_COUNT=2 SIM028_INIT_MODEL=dual-active-primary0 LLVM_PROFILE_FILE=/tmp/m3-legacy-%p.profraw`，Target 只需设置 profile 路径。函数断点用 `breakpoint set -n <完整函数名>`。Legacy 命名空间为 `OHOS::Telephony`，Target 函数在其 `MultiSim` 子命名空间。设置首个断点后运行精确过滤，在断点上用 `bt`、`frame variable slotId` 或 `frame variable slot`，用 `thread step-over` 进入下一源码语句。读优化构建中被内联的 Target 函数时，选择 **SIM Target (step-through)**，或向 `test.py debug` 加上 `--debug-build`。该配置使用独立的 `<out>/debug/build` 并保留 DWARF。
 
 ## Legacy 调用及数据
 

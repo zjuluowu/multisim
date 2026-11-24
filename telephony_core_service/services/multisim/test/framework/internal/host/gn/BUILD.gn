@@ -8,11 +8,15 @@ config("host") {
     "SIM_PROFILE_DEFAULT=\"" + get_path_info(root_build_dir, "abspath") +
         "/profiles/direct-%p.profraw\"",
   ]
-  cflags_cc = [
-    "-std=c++17",
-    "-flto=full",
-    "-fwhole-program-vtables",
-    "-fvirtual-function-elimination",
+  cflags_cc = [ "-std=c++17" ]
+  if (!host_step_debug) {
+    cflags_cc += [
+      "-flto=full",
+      "-fwhole-program-vtables",
+      "-fvirtual-function-elimination",
+    ]
+  }
+  cflags_cc += [
     "-fvisibility=hidden",
     "-ffunction-sections",
     "-fdata-sections",
@@ -24,7 +28,13 @@ config("host") {
   if (host_asan) {
     cflags_cc += [ "-fsanitize=address" ]
   }
-  if (host_debug) {
+  if (host_step_debug) {
+    cflags_cc += [
+      "-O0",
+      "-g",
+      "-fno-omit-frame-pointer",
+    ]
+  } else if (host_debug) {
     cflags_cc += [
       "-O1",
       "-g",
@@ -33,8 +43,11 @@ config("host") {
   } else {
     cflags_cc += [ "-O2" ]
   }
-  ldflags = [
-    "-flto=full",
+  ldflags = []
+  if (!host_step_debug) {
+    ldflags += [ "-flto=full" ]
+  }
+  ldflags += [
     "-fuse-ld=gold",
     "-Wl,--gc-sections",
     "-pthread",
@@ -62,13 +75,13 @@ toolchain("linux") {
     output_prefix = "lib"
   }
   tool("link") {
-    command = "clang++ {{ldflags}} -o {{output}} {{inputs}} {{libs}}"
+    command = "clang++ {{ldflags}} -o {{output}}.linking {{inputs}} {{libs}} && mv -f {{output}}.linking {{output}}"
     outputs = [ "{{root_out_dir}}/{{target_output_name}}" ]
     description = "LINK {{output}}"
   }
   tool("solink") {
     command =
-        "clang++ -shared -fPIC {{ldflags}} -o {{output}} {{inputs}} {{libs}}"
+        "clang++ -shared -fPIC {{ldflags}} -o {{output}}.linking {{inputs}} {{libs}} && mv -f {{output}}.linking {{output}}"
     outputs = [ "{{root_out_dir}}/lib{{target_output_name}}.so" ]
     link_output = "{{root_out_dir}}/lib{{target_output_name}}.so"
     depend_output = "{{root_out_dir}}/lib{{target_output_name}}.so"

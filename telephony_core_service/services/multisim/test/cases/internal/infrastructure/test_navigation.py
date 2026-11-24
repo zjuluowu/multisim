@@ -64,19 +64,32 @@ class LiveNavigation(unittest.TestCase):
 
     def test_one_default_build_and_resolved_task_references(self):
         tasks = json.loads((REPO/'.vscode/tasks.json').read_text())['tasks']
-        self.assertEqual(default_builds(tasks), ['Build Host'])
+        self.assertEqual(default_builds(tasks), ['Build Legacy Host'])
         labels = [task['label'] for task in tasks]
         self.assertEqual(len(labels), len(set(labels)))
         launch = json.loads((REPO/'.vscode/launch.json').read_text())
+        by_label = {task['label']: task for task in tasks}
         for config in launch['configurations']:
-            self.assertIn(config['preLaunchTask'], labels)
+            build = by_label[config['preLaunchTask']]['args']
+            self.assertEqual(build[build.index('--target') + 1:], [Path(config['program']).name]
+                             + (['--debug-build'] if '/debug/build/' in config['program'] else []))
         settings = json.loads((REPO/'.vscode/settings.json').read_text())
-        for entry in settings['testMate.cpp.test.advancedExecutables']:
+        entries = settings['testMate.cpp.test.advancedExecutables']
+        self.assertEqual(len(entries), 8)
+        self.assertEqual(len({entry['pattern'] for entry in entries}), len(entries))
+        for entry in entries:
             self.assertEqual(entry['maxTestsPerExecutable'], 1)
             self.assertEqual(entry['parallelizationLimit'], 1)
             self.assertIn('%p', entry['env']['LLVM_PROFILE_FILE'])
             for label in entry['runTask']['before']:
-                self.assertIn(label, labels)
+                build = by_label[label]['args']
+                target = Path(entry['pattern']).name
+                self.assertEqual(build[build.index('--target') + 1:], [target])
+                backend = 'target' if target == 'sim_test_target_host' else 'legacy'
+                self.assertEqual(build[build.index('--backend') + 1], backend)
+                if backend == 'target':
+                    self.assertNotIn('SIM028_INIT_MODEL', entry['env'])
+                    self.assertNotIn('SIM_HOST_BOOT_SLOT_COUNT', entry['env'])
 
     def test_duplicate_default_is_detectable(self):
         group = {'kind': 'build', 'isDefault': True}
@@ -85,14 +98,14 @@ class LiveNavigation(unittest.TestCase):
     def test_selected_tasks_only_require_business_case_name(self):
         tasks = json.loads((REPO/'.vscode/tasks.json').read_text())['tasks']
         for task in tasks:
-            if task['label'] in ('Run Selected Test', 'Debug Selected Test'):
+            if task['label'].startswith(('Run Selected Test', 'Debug Selected Test')):
                 self.assertNotIn('--target', task['args'])
                 self.assertIn('${input:gtestFilter}', task['args'])
             args = task.get('args', [])
             if len(args) > 1:
                 script = args[1].replace('${workspaceFolder}/', '')
                 self.assertTrue((REPO/script).is_file(), script)
-        build = next(task for task in tasks if task['label'] == 'Build Host')
+        build = next(task for task in tasks if task['label'] == 'Build Legacy Host')
         self.assertNotIn('--target', build['args'])
 
 
