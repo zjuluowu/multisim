@@ -55,6 +55,8 @@ public:
     std::optional<BindingRef> FindBinding(SlotId slot) const;
     std::optional<AccountView> ReadAccount(SubscriptionId subscription,
         AccountReadView view = AccountReadView::Current) const;
+    int32_t SaveImsSwitch(int32_t slot, int32_t preference);
+    int32_t QueryImsSwitch(int32_t slot, int32_t &preference);
     int32_t SetShowName(int32_t slot, const std::u16string &name, LegacyCallerRef caller);
     int32_t GetShowName(int32_t slot, std::u16string &name, LegacyCallerRef caller);
     int32_t SetSimLabelIndexByIccId(const std::string &iccid, int32_t label);

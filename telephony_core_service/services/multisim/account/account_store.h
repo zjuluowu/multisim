@@ -30,7 +30,7 @@ struct AccountNumberPatch { SubscriptionId subscription; std::u16string number; 
 struct AccountActivePatch { SubscriptionId subscription; bool active; };
 struct AccountNamePatch { SubscriptionId subscription; std::u16string name; };
 struct AccountLabelPatch { SubscriptionId subscription; int32_t legacyLabel; std::string iccid {}; };
-struct AccountImsPreferencePatch { SubscriptionId subscription; int32_t preference; };
+struct AccountImsPreferencePatch { SubscriptionId subscription; int32_t preference; std::string iccid; };
 struct AccountStorageRow {
     SubscriptionId subscription;
     std::string iccid;
@@ -116,7 +116,8 @@ public:
     { return {-1, true, EffectKnowledge::NotSent}; }
     virtual std::optional<AccountMetadataEvidence> ReadMetadataEvidence(const AccountMetadataOperation &)
     { return std::nullopt; }
-    virtual AccountStoreWriteResult WriteImsPreference(const AccountImsPreferencePatch &patch) = 0;
+    virtual AccountMetadataOutcome WriteImsPreference(const AccountMetadataOperation &, const AccountImsPreferencePatch &)
+    { return {-1, true, EffectKnowledge::NotSent}; }
     virtual AccountLoadResult LoadAccounts(const AccountLoadRequest &request) = 0;
     virtual AccountIdentityMatch MatchAccountByIccid(const std::string &iccid) = 0;
     virtual AccountIdentityMatch MatchDiscoveryAccount(DiscoveryCallRef, const std::string &iccid)
@@ -127,7 +128,7 @@ public:
     { return std::nullopt; }
     virtual AccountDiscoveryStoreResult WriteDiscoveredAccount(const AccountDiscoveryWritePlan &plan) = 0;
     virtual AccountStoreWriteResult WriteRemoval(const AccountRemovalPatch &patch) = 0;
-    virtual int32_t QueryImsPreferenceByIccid(const std::string &iccid, int32_t &value) = 0;
+    virtual ImsPreferenceRead QueryImsPreferenceByIccid(const std::string &) { return {}; }
 };
 } // namespace OHOS::Telephony::MultiSim
 

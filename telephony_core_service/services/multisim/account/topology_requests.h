@@ -54,7 +54,12 @@ struct AccountView {
     AccountFieldRevisions fields;
     std::optional<int32_t> legacyLabel {};
 };
-enum class AccountMetadataField { DisplayName, Label };
+enum class AccountMetadataField { DisplayName, Label, ImsPreference };
+enum class ImsPreferenceReadStatus { Failed, NoRow, Value };
+struct ImsPreferenceRead {
+    ImsPreferenceReadStatus status {ImsPreferenceReadStatus::Failed};
+    int32_t value {-1};
+};
 enum class AccountMetadataResult { Success, NoAccount, InvalidLabel, Conflict, DatabaseWriteFailed, HistoricalMissing };
 struct AccountMetadataOperation {
     StepRef original;

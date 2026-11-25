@@ -1,0 +1,17 @@
+{
+  "baseline": "7edbc86ff2c2c4154f7b11807558c9bdb23b2247",
+  "files": {
+    "account/account_registry.cpp": "950fb86cc88b76deea5fe6bb39872fca52beab601af038f9bbbf75b53594d700",
+    "account/account_registry.h": "543bfae70457727c4ff174a736729fd1246269626d8b423a2bbd4d7c8029dc29",
+    "account/account_store.h": "c349f0c0b7cd0b3dcd64584dcc2eaddc33deb144a36e340c2367cadca32901cb",
+    "account/account_store_adapter.cpp": "62f6d1270cf8e50c06ecb8c99279f1ba809167ec25295f2472ef32c8faa6d349",
+    "account/account_store_adapter.h": "213091d2be7f717d93aa999da03f03676387b0a832f90b5afc07d054a6ce8789",
+    "account/topology_metadata.cpp": "f1b7f6baa12aaa31806df33f558846e6d917b090915621b7f487394399913fdb",
+    "account/topology_requests.h": "74d634f4509bd672ecb3376f7292cca8bb574e02e47edc5118a3e27b380aec64",
+    "account/topology_service.h": "0c7a15cf78d9d30abf961334357a0aa61ec5033e2c7423b5e4f0fa1396a232f4",
+    "infrastructure/assembly/sim_module.h": "58b041647ff15129e368333fbb57b5e10b2c0198ec377144a89702e864b339ea",
+    "infrastructure/assembly/sim_module_factory.cpp": "603773b4ff47682bff3e640af5c9395a0f9b725c93c849d9bfd7b4fae48335fd",
+    "infrastructure/compatibility/api/legacy_account_entry.cpp": "aec4420f0651e16e2ea782033bce3c248412decd5136387d09a78b7ff97bc205",
+    "infrastructure/compatibility/api/legacy_sim_facade.h": "b30434cf729a713a568820def99a096ec658df09995c071fcd40774e2ab2fc76"
+  }
+}

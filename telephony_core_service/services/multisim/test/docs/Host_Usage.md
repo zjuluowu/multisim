@@ -159,3 +159,5 @@ M2 的 `AF2Discovery.LiveBindingsFeedExistingC0AndStaleTargetCannotAdvance` 继�
 默认 Voice、SMS 和四角色组合的单例、断点及 Provider 契约见 [M5 开发与调试](M5_Voice_SMS_Debug.md)。
 
 账户名称、ICCID 标签、四角色组合的单例及正式调用路径见 [M6 账户资料开发与调试](M6_Account_Metadata_Debug.md)。
+
+IMS Preference 的 Provider 直读、原码透传与换卡单步用例见 [M7A 开发与调试](M7A_Ims_Preference_Debug.md)。

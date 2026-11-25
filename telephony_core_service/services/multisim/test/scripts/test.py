@@ -304,6 +304,9 @@ def main():
                     if args.action=='all' and backend=='legacy' and target in slices:
                         run(backend+'-'+target+'-execution','audit_replacement_execution.py',['--slice',slices[target],'--binary',binary,'--profiles',reports[0].parent,'--output',session/(backend+'-'+target+'-execution')])
                     if args.action=='all' and backend=='legacy' and target=='sim_primary_slot_real_test':
+                        run('legacy-ims-preference-execution','audit_replacement_execution.py',
+                            ['--slice','legacy-ims-preference','--binary',binary,'--profiles',reports[0].parent,
+                             '--output',session/'legacy-ims-preference-execution'])
                         run('legacy-account-metadata-execution','audit_replacement_execution.py',
                             ['--slice','legacy-account-metadata','--binary',binary,'--profiles',reports[0].parent,
                              '--output',session/'legacy-account-metadata-execution'])
@@ -314,6 +317,9 @@ def main():
                             ['--slice','legacy-data','--binary',binary,'--profiles',reports[0].parent,
                              '--output',session/'legacy-data-execution'])
                     if args.action=='all' and backend=='target' and target=='sim_test_target_host':
+                        run('target-ims-preference-execution','audit_replacement_execution.py',
+                            ['--slice','target-ims-preference','--binary',binary,'--profiles',reports[0].parent,
+                             '--output',session/'target-ims-preference-execution'])
                         run('target-account-metadata-execution','audit_replacement_execution.py',
                             ['--slice','target-account-metadata','--binary',binary,'--profiles',reports[0].parent,
                              '--output',session/'target-account-metadata-execution'])

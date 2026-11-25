@@ -38,13 +38,11 @@ public:
     AccountStoreWriteResult WriteActiveProjection(const AccountActivePatch &) override { return {-1,false,true}; }
     AccountStoreWriteResult WriteDisplayName(const AccountNamePatch &) override { return {-1,false,true}; }
     AccountStoreWriteResult WriteLabel(const AccountLabelPatch &) override { return {-1,false,true}; }
-    AccountStoreWriteResult WriteImsPreference(const AccountImsPreferencePatch &) override { return {-1,false,true}; }
     AccountLoadResult LoadAccounts(const AccountLoadRequest &r) override { return {r,-1,false,false,{}, {}}; }
     AccountIdentityMatch MatchAccountByIccid(const std::string &) override { return {-1,true,std::nullopt}; }
     AccountDiscoveryStoreResult WriteDiscoveredAccount(const AccountDiscoveryWritePlan &) override
     { return {-1,std::nullopt,false,true,EffectKnowledge::Rejected}; }
     AccountStoreWriteResult WriteRemoval(const AccountRemovalPatch &) override { return {-1,false,true}; }
-    int32_t QueryImsPreferenceByIccid(const std::string &, int32_t &) override { return -1; }
 };
 class Parameters final : public AssignmentParameterPort {
 public:

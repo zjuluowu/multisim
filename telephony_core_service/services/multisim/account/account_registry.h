@@ -79,6 +79,8 @@ public:
         uint64_t expectedNameRevision, const std::u16string &name);
     AccountAcceptance AcceptLabel(SubscriptionId subscription, AccountReadView view,
         uint64_t expectedLabelRevision, int32_t legacyLabel);
+    AccountAcceptance ConfirmImsPreferenceWrite(SubscriptionId subscription, AccountReadView view,
+        uint64_t expectedImsRevision);
     AccountAcceptance AcceptImsPreference(SubscriptionId subscription, AccountReadView view,
         uint64_t expectedImsRevision, int32_t preference);
     // 仅首次导入已由旧provider分配的身份；已有账户通过字段接纳，不整行覆盖。

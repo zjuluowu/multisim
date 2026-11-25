@@ -32,22 +32,35 @@ int32_t MetadataError(AccountMetadataResult result, LegacyPrimaryHostPort &host,
     return host.PrimaryError(LegacyPrimaryError::Failed);
 }
 
-int32_t CompleteMetadata(LegacyPrimaryHostPort &host, LegacyCompletion &completion,
-    const std::function<AccountMetadataResult(const CompletionPlan &)> &issue, bool slotTarget)
+int32_t CompleteAccountWrite(LegacyCompletion &completion, const std::function<int32_t(const CompletionPlan &)> &issue,
+    bool notify, int32_t unavailable)
 {
     const auto waiter = completion.RetainRoleWaiter();
-    if (!waiter) { return host.PrimaryError(LegacyPrimaryError::Failed); }
-    const CompletionPlan plan {SynchronousCompletionRoute {*waiter}, true};
+    if (!waiter) { return unavailable; }
+    const CompletionPlan plan {SynchronousCompletionRoute {*waiter}, notify};
     try {
-        const auto result = issue(plan);
-        completion.CompleteLegacyInt(plan, MetadataError(result, host, slotTarget));
+        completion.CompleteLegacyInt(plan, issue(plan));
     } catch (const std::exception &) {
         // A result delivered before an account observer unwound stays authoritative.
     }
     const auto result = completion.TakeRoleResult(*waiter);
-    return result ? *result : host.PrimaryError(LegacyPrimaryError::Failed);
+    return result ? *result : unavailable;
 }
 } // namespace
+
+int32_t LegacySimFacade::SaveImsSwitch(SlotId slot, const SlotCatalog &catalog, LegacyPrimaryHostPort &host,
+    LegacyCompletion &completion, const std::function<int32_t(const CompletionPlan &)> &issue)
+{
+    if (!catalog.Find(slot)) { return host.PrimaryError(LegacyPrimaryError::InvalidArgument); }
+    return CompleteAccountWrite(completion, issue, false, -1);
+}
+
+int32_t LegacySimFacade::QueryImsSwitch(SlotId slot, const SlotCatalog &catalog, LegacyPrimaryHostPort &host,
+    const std::function<int32_t()> &read)
+{
+    if (!catalog.Find(slot)) { return host.PrimaryError(LegacyPrimaryError::InvalidArgument); }
+    return read();
+}
 
 int32_t LegacySimFacade::SetShowName(SlotId slot, LegacyCallerRef caller, const SlotCatalog &catalog,
     LegacyPrimaryHostPort &host, LegacyCompletion &completion, const std::function<bool(SlotId)> &hasCard,
@@ -58,14 +71,18 @@ int32_t LegacySimFacade::SetShowName(SlotId slot, LegacyCallerRef caller, const 
     if (!host.SupportsPrimarySlot(slot)) { return host.PrimaryError(LegacyPrimaryError::InvalidSlot); }
     if (!catalog.Find(slot)) { return host.PrimaryError(LegacyPrimaryError::Unavailable); }
     if (!hasCard(slot)) { return host.PrimaryError(LegacyPrimaryError::NoCard); }
-    return CompleteMetadata(host, completion, issue, true);
+    return CompleteAccountWrite(completion,
+        [&](const CompletionPlan &plan) { return MetadataError(issue(plan), host, true); },
+        true, host.PrimaryError(LegacyPrimaryError::Failed));
 }
 
 int32_t LegacySimFacade::SetSimLabelIndexByIccId(LegacyPrimaryHostPort &host, LegacyCompletion &completion,
     const std::function<AccountMetadataResult(const CompletionPlan &)> &issue)
 {
     // The ICCID entry represents the existing in-process CMI route.
-    return CompleteMetadata(host, completion, issue, false);
+    return CompleteAccountWrite(completion,
+        [&](const CompletionPlan &plan) { return MetadataError(issue(plan), host, false); },
+        true, host.PrimaryError(LegacyPrimaryError::Failed));
 }
 
 int32_t LegacySimFacade::GetShowName(SlotId slot, LegacyCallerRef caller, const SlotCatalog &catalog,

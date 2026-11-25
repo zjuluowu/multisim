@@ -30,13 +30,11 @@ public:
     AccountStoreWriteResult WriteActiveProjection(const AccountActivePatch &) override { return {-1, false, true}; }
     AccountStoreWriteResult WriteDisplayName(const AccountNamePatch &) override { return {-1, false, true}; }
     AccountStoreWriteResult WriteLabel(const AccountLabelPatch &) override { return {-1, false, true}; }
-    AccountStoreWriteResult WriteImsPreference(const AccountImsPreferencePatch &) override { return {-1, false, true}; }
     AccountLoadResult LoadAccounts(const AccountLoadRequest &r) override { return {r, -1, false, false, {}, {},}; }
     AccountIdentityMatch MatchAccountByIccid(const std::string &) override { return {-1, true, std::nullopt}; }
     AccountDiscoveryStoreResult WriteDiscoveredAccount(const AccountDiscoveryWritePlan &) override
     { return {-1, std::nullopt, false, true, EffectKnowledge::Rejected}; }
     AccountStoreWriteResult WriteRemoval(const AccountRemovalPatch &) override { return {-1, false, true}; }
-    int32_t QueryImsPreferenceByIccid(const std::string &, int32_t &) override { return -1; }
 };
 
 class ControlledDiscoveryStore final : public AccountStore {
@@ -99,7 +97,6 @@ public:
     AccountStoreWriteResult WriteActiveProjection(const AccountActivePatch &) override { return {-1,false,true}; }
     AccountStoreWriteResult WriteDisplayName(const AccountNamePatch &) override { return {-1,false,true}; }
     AccountStoreWriteResult WriteLabel(const AccountLabelPatch &) override { return {-1,false,true}; }
-    AccountStoreWriteResult WriteImsPreference(const AccountImsPreferencePatch &) override { return {-1,false,true}; }
     AccountLoadResult LoadAccounts(const AccountLoadRequest &r) override
     {
         ++loads;
@@ -134,7 +131,6 @@ public:
         return result;
     }
     AccountStoreWriteResult WriteRemoval(const AccountRemovalPatch &) override { return {-1,false,true}; }
-    int32_t QueryImsPreferenceByIccid(const std::string &, int32_t &) override { return -1; }
 };
 
 class Parameters final : public AssignmentParameterPort {
@@ -1074,6 +1070,7 @@ public:
     bool independent {true};
     std::function<AccountMetadataOutcome(const Write &)> respond;
     std::optional<AccountMetadataEvidence> evidence;
+    std::function<ImsPreferenceRead(const std::string &)> readIms;
 
     bool HasIndependentMetadataFields() const override { return independent; }
     AccountMetadataOutcome UpdateAccountField(const AccountMetadataOperation &operation, std::string_view uri,
@@ -1086,7 +1083,41 @@ public:
             std::lock_guard<std::mutex> guard(lock_);
             writes_.push_back(write);
         }
-        return respond ? respond(write) : AccountMetadataOutcome {0, true, EffectKnowledge::ConfirmedApplied};
+        const auto outcome = respond ? respond(write) :
+            AccountMetadataOutcome {0, true, EffectKnowledge::ConfirmedApplied};
+        if (field == "ims_switch" && outcome.callFinished && outcome.effect == EffectKnowledge::ConfirmedApplied) {
+            SetImsValue(predicate, std::get<int32_t>(value));
+        }
+        return outcome;
+    }
+    ImsPreferenceRead QueryAccountField(std::string_view uri, std::string_view selector,
+        const std::string &predicate, std::string_view field) override
+    {
+        EXPECT_EQ(uri, "datashare:///com.ohos.simability/sim/sim_info");
+        EXPECT_EQ(selector, "icc_id");
+        EXPECT_EQ(field, "ims_switch");
+        {
+            std::lock_guard<std::mutex> guard(lock_);
+            reads_.push_back(predicate);
+        }
+        return readIms ? readIms(predicate) : StoredImsValue(predicate);
+    }
+    ImsPreferenceRead StoredImsValue(const std::string &iccid)
+    {
+        std::lock_guard<std::mutex> guard(lock_);
+        const auto row = ims_.find(iccid);
+        return row == ims_.end() ? ImsPreferenceRead {ImsPreferenceReadStatus::NoRow} :
+            ImsPreferenceRead {ImsPreferenceReadStatus::Value, row->second};
+    }
+    void SetImsValue(const std::string &iccid, int32_t value)
+    {
+        std::lock_guard<std::mutex> guard(lock_);
+        ims_.insert_or_assign(iccid, value);
+    }
+    std::vector<std::string> Reads()
+    {
+        std::lock_guard<std::mutex> guard(lock_);
+        return reads_;
     }
     std::optional<AccountMetadataEvidence> ReadMetadataEvidence(const AccountMetadataOperation &) override
     { return evidence; }
@@ -1098,6 +1129,8 @@ public:
 private:
     std::mutex lock_;
     std::vector<Write> writes_;
+    std::vector<std::string> reads_;
+    std::map<std::string, int32_t> ims_;
 };
 
 struct MetadataStorePorts {
@@ -2444,5 +2477,289 @@ TEST(AF2AccountMetadata, ReplacementDoesNotReceiveTheOriginalSlotWrite)
     EXPECT_TRUE(module->ReadAccount({41}, AccountReadView::Historical)->displayName.empty());
     EXPECT_EQ(f.host->accountsChanged, 0u);
     EXPECT_EQ(provider->Writes().size(), 1u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2ImsPreference, LiveDualSimSavesAndQueriesProviderPreference)
+{
+    auto provider = std::make_shared<MetadataProvider>();
+    PrimaryFixture f(PrimaryZeroCatalog(), {}, provider);
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    const auto a = module->FindBinding({0});
+    const auto b = module->FindBinding({1});
+    ASSERT_TRUE(a && b);
+    ASSERT_EQ(a->subscription.legacySimId, 40);
+    ASSERT_EQ(b->subscription.legacySimId, 41);
+    const auto before = module->ReadAccount(a->subscription);
+    ASSERT_TRUE(before);
+    f.host->system = false;
+    f.host->permitted = false;
+    f.host->readable = false;
+
+    ASSERT_EQ(module->SaveImsSwitch(0, 21), 0);
+    ASSERT_EQ(module->SaveImsSwitch(1, -7), 0);
+    ASSERT_EQ(module->SaveImsSwitch(0, 21), 0);
+    int32_t output = 99;
+    ASSERT_EQ(module->QueryImsSwitch(0, output), 0);
+    EXPECT_EQ(output, 21);
+    ASSERT_EQ(module->QueryImsSwitch(1, output), 0);
+    EXPECT_EQ(output, -7);
+    EXPECT_EQ(provider->Reads(), (std::vector<std::string> {kRaw0, kRaw1}));
+    const auto writes = provider->Writes();
+    ASSERT_EQ(writes.size(), 3u);
+    EXPECT_EQ(writes[0].operation.subscription, a->subscription);
+    EXPECT_EQ(writes[1].operation.subscription, b->subscription);
+    EXPECT_EQ(writes[0].operation.field, AccountMetadataField::ImsPreference);
+    EXPECT_EQ(writes[0].field, "ims_switch");
+    EXPECT_EQ(writes[0].selector, "icc_id");
+    EXPECT_EQ(writes[0].predicate, kRaw0);
+    EXPECT_EQ(writes[1].predicate, kRaw1);
+    EXPECT_EQ(std::get<int32_t>(writes[1].value), -7);
+    const auto after = module->ReadAccount(a->subscription);
+    const auto historical = module->ReadAccount(a->subscription, AccountReadView::Historical);
+    ASSERT_TRUE(after && historical);
+    EXPECT_EQ(after->fields.imsPreference, before->fields.imsPreference + 2);
+    EXPECT_EQ(historical->fields.imsPreference, after->fields.imsPreference);
+    EXPECT_EQ(after->fields.name, before->fields.name);
+    EXPECT_EQ(after->fields.label, before->fields.label);
+    EXPECT_EQ(after->displayName, before->displayName);
+    EXPECT_EQ(after->legacyLabel, before->legacyLabel);
+    EXPECT_TRUE(f.host->calls.empty());
+    EXPECT_EQ(f.host->accountsChanged, 0u);
+    EXPECT_EQ(f.live.input.radio->commands, 0u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+    const std::weak_ptr<SimModule> weak = module;
+    module.reset();
+    EXPECT_TRUE(weak.expired());
+}
+
+TEST(AF2ImsPreference, LegacyProviderContract)
+{
+    using namespace OHOS::Telephony;
+    auto provider = std::make_shared<MetadataProvider>();
+    PrimaryFixture f(PrimaryZeroCatalog(), {}, provider);
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    int32_t rawWrite = 0;
+    provider->respond = [&](const auto &write) {
+        EXPECT_EQ(write.predicate, kRaw1);
+        EXPECT_EQ(write.field, "ims_switch");
+        return AccountMetadataOutcome {rawWrite, true,
+            rawWrite >= 0 ? EffectKnowledge::ConfirmedApplied : EffectKnowledge::Rejected};
+    };
+    int32_t value = 99;
+    EXPECT_EQ(module->SaveImsSwitch(-1, 100), TELEPHONY_ERR_ARGUMENT_INVALID);
+    EXPECT_EQ(module->QueryImsSwitch(-1, value), TELEPHONY_ERR_ARGUMENT_INVALID);
+    EXPECT_EQ(value, 99);
+    const auto first = module->SaveImsSwitch(1, 17);
+    const auto repeat = module->SaveImsSwitch(1, 17);
+    EXPECT_EQ(first, 0);
+    EXPECT_EQ(repeat, 0);
+    EXPECT_EQ(module->QueryImsSwitch(1, value), 0);
+    EXPECT_EQ(value, 17);
+    rawWrite = 6;
+    const auto positive = module->SaveImsSwitch(1, -9);
+    EXPECT_EQ(positive, 6);
+    EXPECT_EQ(module->QueryImsSwitch(1, value), 0);
+    EXPECT_EQ(value, -9);
+    rawWrite = -23;
+    const auto failure = module->SaveImsSwitch(1, 123);
+    EXPECT_EQ(failure, -23);
+    provider->SetImsValue(kRaw1, 33);
+    EXPECT_EQ(module->QueryImsSwitch(1, value), 0);
+    EXPECT_EQ(value, 33);
+    const auto external = value;
+    provider->SetImsValue(kRaw1, -1);
+    EXPECT_EQ(module->QueryImsSwitch(1, value), 0);
+    EXPECT_EQ(value, -1);
+    provider->readIms = [](const auto &) { return ImsPreferenceRead {ImsPreferenceReadStatus::NoRow, 77}; };
+    const auto empty = module->QueryImsSwitch(1, value);
+    EXPECT_EQ(empty, 0);
+    EXPECT_EQ(value, -1);
+    provider->readIms = [](const auto &) { return ImsPreferenceRead {ImsPreferenceReadStatus::Failed, 88}; };
+    const auto failedRead = module->QueryImsSwitch(1, value);
+    EXPECT_EQ(failedRead, 0);
+    EXPECT_EQ(value, -1);
+    const auto writes = provider->Writes();
+    const auto reads = provider->Reads();
+    ASSERT_EQ(writes.size(), 4u);
+    EXPECT_EQ(std::get<int32_t>(writes[0].value), 17);
+    EXPECT_EQ(std::get<int32_t>(writes[1].value), 17);
+    EXPECT_EQ(std::get<int32_t>(writes[2].value), -9);
+    EXPECT_EQ(std::get<int32_t>(writes[3].value), 123);
+    EXPECT_EQ(reads, std::vector<std::string>(6, kRaw1));
+    EXPECT_EQ(module->ReadAccount({41})->fields.imsPreference, 3u);
+    EXPECT_EQ(f.host->accountsChanged, 0u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+    RecordProperty("ims_preference_observation", SimGuard::Primary::Json({
+        {"first", std::to_string(first)}, {"repeat", std::to_string(repeat)},
+        {"positive", std::to_string(positive)}, {"failure", std::to_string(failure)},
+        {"externalValue", std::to_string(external)}, {"noRow", std::to_string(empty)},
+        {"failedRead", std::to_string(failedRead)}, {"unknown", std::to_string(value)},
+        {"writes", std::to_string(writes.size())}, {"reads", std::to_string(reads.size())},
+        {"notifications", std::to_string(f.host->accountsChanged)}
+    }));
+}
+
+TEST(AF2ImsPreference, MissingBindingDoesNotAddressEmptyIccid)
+{
+    auto provider = std::make_shared<MetadataProvider>();
+    PrimaryFixture f(PrimaryZeroCatalog(), {}, provider);
+    auto &module = f.live.module;
+    ASSERT_TRUE(module->ObserveVerifiedCard({{1}, "USIM"}, 1, kRaw1));
+    ASSERT_FALSE(module->FindBinding({0}));
+    int32_t output = 99;
+    const auto save = module->SaveImsSwitch(0, 7);
+    const auto read = module->QueryImsSwitch(0, output);
+    EXPECT_EQ(save, -1);
+    EXPECT_EQ(read, -1);
+    EXPECT_EQ(output, -1);
+    EXPECT_TRUE(provider->Writes().empty());
+    EXPECT_TRUE(provider->Reads().empty());
+    RecordProperty("ims_preference_empty_binding", SimGuard::Primary::Json({
+        {"save", std::to_string(save)}, {"read", std::to_string(read)}, {"output", std::to_string(output)},
+        {"writes", std::to_string(provider->Writes().size())}, {"reads", std::to_string(provider->Reads().size())}
+    }));
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2ImsPreference, FieldIsolationAndStopDuringOriginalWrite)
+{
+    using namespace OHOS::Telephony;
+    for (const bool independent : {true, false}) {
+        auto provider = std::make_shared<MetadataProvider>();
+        provider->independent = independent;
+        PrimaryFixture f(PrimaryZeroCatalog(), {}, provider);
+        ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+        auto &module = f.live.module;
+        std::promise<void> entered;
+        std::promise<void> release;
+        auto enteredWait = entered.get_future();
+        auto releaseWait = release.get_future();
+        provider->respond = [&](const auto &write) {
+            if (write.field == "ims_switch" && write.predicate == kRaw0) {
+                entered.set_value();
+                releaseWait.wait();
+            }
+            return AccountMetadataOutcome {0, true, EffectKnowledge::ConfirmedApplied};
+        };
+        auto running = std::async(std::launch::async, [&] { return module->SaveImsSwitch(0, 23); });
+        enteredWait.wait();
+        EXPECT_EQ(module->SaveImsSwitch(0, 24), -1);
+        EXPECT_EQ(module->SaveImsSwitch(1, 25), 0);
+        EXPECT_EQ(module->SetShowName(0, u"same row", {7}), independent ? TELEPHONY_ERR_SUCCESS : TELEPHONY_ERR_FAIL);
+        EXPECT_EQ(module->SetSimLabelIndexByIccId(kRaw0, 8), independent ? TELEPHONY_ERR_SUCCESS : TELEPHONY_ERR_FAIL);
+        int32_t output = 99;
+        EXPECT_EQ(module->QueryImsSwitch(0, output), 0);
+        EXPECT_EQ(output, -1);
+        EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
+        EXPECT_EQ(module->SaveImsSwitch(0, 26), TELEPHONY_ERR_LOCAL_PTR_NULL);
+        release.set_value();
+        EXPECT_EQ(running.get(), 0);
+        EXPECT_EQ(provider->StoredImsValue(kRaw0).value, 23);
+        EXPECT_EQ(provider->StoredImsValue(kRaw1).value, 25);
+        EXPECT_EQ(provider->Writes().size(), independent ? 4u : 2u);
+        EXPECT_EQ(f.host->accountsChanged, independent ? 2u : 0u);
+        EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+    }
+}
+
+TEST(AF2ImsPreference, ReplacementDuringQueryKeepsOriginalIccidAndOpenCall)
+{
+    using namespace OHOS::Telephony;
+    auto provider = std::make_shared<MetadataProvider>();
+    PrimaryFixture f(PrimaryZeroCatalog(), {}, provider);
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    ASSERT_EQ(module->SaveImsSwitch(1, 23), 0);
+    constexpr auto replacementIccid = "89000000000000000056";
+    std::promise<void> entered;
+    std::promise<void> release;
+    auto enteredWait = entered.get_future();
+    auto releaseWait = release.get_future();
+    provider->readIms = [&](const auto &iccid) {
+        const auto value = provider->StoredImsValue(iccid);
+        if (iccid == kRaw1) {
+            entered.set_value();
+            releaseWait.wait();
+        }
+        return value;
+    };
+    auto running = std::async(std::launch::async, [&] {
+        int32_t output = 99;
+        const auto result = module->QueryImsSwitch(1, output);
+        return std::make_pair(result, output);
+    });
+    enteredWait.wait();
+    f.live.store->produceStore = [](const AccountDiscoveryWritePlan &) { return Stored({56}); };
+    EXPECT_TRUE(module->ObserveVerifiedCard({{1}, "USIM"}, 2, replacementIccid));
+    EXPECT_EQ(module->SaveImsSwitch(1, 24), 0);
+    int32_t output = 99;
+    EXPECT_EQ(module->QueryImsSwitch(1, output), 0);
+    EXPECT_EQ(output, 24);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
+    EXPECT_EQ(module->QueryImsSwitch(1, output), TELEPHONY_ERR_LOCAL_PTR_NULL);
+    EXPECT_EQ(output, 24);
+    release.set_value();
+    EXPECT_EQ(running.get(), std::make_pair(0, 23));
+    EXPECT_EQ(provider->Reads(), (std::vector<std::string> {kRaw1, replacementIccid}));
+    EXPECT_EQ(f.host->accountsChanged, 0u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2ImsPreference, UnknownKeepsTheExactOriginalWriteUntilEvidenceAfterStop)
+{
+    auto provider = std::make_shared<MetadataProvider>();
+    PrimaryFixture f(PrimaryZeroCatalog(), {}, provider);
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    provider->respond = [](const auto &) { return AccountMetadataOutcome {6, true, EffectKnowledge::Unknown}; };
+    EXPECT_EQ(module->SaveImsSwitch(1, 29), 6);
+    ASSERT_EQ(provider->Writes().size(), 1u);
+    const auto original = provider->Writes()[0].operation;
+    provider->SetImsValue(kRaw1, 29);
+    int32_t output = 99;
+    EXPECT_EQ(module->QueryImsSwitch(1, output), 0);
+    EXPECT_EQ(output, 29);
+    EXPECT_FALSE(module->ReconcileAccountMetadata(original));
+    EXPECT_EQ(module->SaveImsSwitch(1, 29), -1);
+    f.live.store->produceStore = [](const AccountDiscoveryWritePlan &) { return Stored({56}); };
+    EXPECT_TRUE(module->ObserveVerifiedCard({{1}, "USIM"}, 2, "89000000000000000056"));
+    EXPECT_EQ(module->QueryImsSwitch(1, output), 0);
+    EXPECT_EQ(output, -1);
+    auto other = original;
+    ++other.original.attempt;
+    provider->evidence = AccountMetadataEvidence {other, {6, true, EffectKnowledge::ConfirmedApplied}};
+    EXPECT_FALSE(module->ReconcileAccountMetadata(original));
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::BusinessEffectsUnresolved);
+    provider->evidence = AccountMetadataEvidence {original, {6, true, EffectKnowledge::ConfirmedApplied}};
+    EXPECT_TRUE(module->ReconcileAccountMetadata(original));
+    EXPECT_FALSE(module->ReconcileAccountMetadata(original));
+    EXPECT_EQ(provider->Writes().size(), 1u);
+    EXPECT_EQ(module->ReadAccount({41})->fields.imsPreference, 0u);
+    EXPECT_EQ(module->ReadAccount({56})->fields.imsPreference, 0u);
+    EXPECT_EQ(f.host->accountsChanged, 0u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2ImsPreference, ConfirmedWriteAfterReplacementKeepsRawReturnWithoutAdvancingVersions)
+{
+    auto provider = std::make_shared<MetadataProvider>();
+    PrimaryFixture f(PrimaryZeroCatalog(), {}, provider);
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    provider->respond = [&](const auto &write) {
+        EXPECT_EQ(write.operation.subscription.legacySimId, 41);
+        EXPECT_EQ(write.predicate, kRaw1);
+        f.live.store->produceStore = [](const AccountDiscoveryWritePlan &) { return Stored({56}); };
+        EXPECT_TRUE(module->ObserveVerifiedCard({{1}, "USIM"}, 2, "89000000000000000056"));
+        return AccountMetadataOutcome {2, true, EffectKnowledge::ConfirmedApplied};
+    };
+    EXPECT_EQ(module->SaveImsSwitch(1, 31), 2);
+    EXPECT_EQ(module->ReadAccount({41})->fields.imsPreference, 0u);
+    EXPECT_EQ(module->ReadAccount({56})->fields.imsPreference, 0u);
+    EXPECT_EQ(provider->StoredImsValue(kRaw1).value, 31);
+    EXPECT_EQ(f.host->accountsChanged, 0u);
     EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
 }

@@ -51,12 +51,19 @@ std::optional<AccountMetadataEvidence> AccountStoreAdapter::ReadMetadataEvidence
     return metadata_ ? metadata_->ReadMetadataEvidence(operation) : std::nullopt;
 }
 
-AccountStoreWriteResult AccountStoreAdapter::WriteImsPreference(const AccountImsPreferencePatch &) { return NotImplemented(); }
+AccountMetadataOutcome AccountStoreAdapter::WriteImsPreference(const AccountMetadataOperation &operation,
+    const AccountImsPreferencePatch &patch)
+{
+    if (!metadata_) { return {-1, true, EffectKnowledge::NotSent}; }
+    return metadata_->UpdateAccountField(operation, kSimInfoUri, "icc_id", patch.iccid, "ims_switch", patch.preference);
+}
 AccountLoadResult AccountStoreAdapter::LoadAccounts(const AccountLoadRequest &request)
 { return discovery_ ? discovery_->LoadAccounts(request) : legacy_.load(*legacy_.store, request); }
 AccountStoreWriteResult AccountStoreAdapter::WriteRemoval(const AccountRemovalPatch &) { return NotImplemented(); }
-int32_t AccountStoreAdapter::QueryImsPreferenceByIccid(const std::string &, int32_t &)
-{ return -1; }
+ImsPreferenceRead AccountStoreAdapter::QueryImsPreferenceByIccid(const std::string &iccid)
+{
+    return metadata_ ? metadata_->QueryAccountField(kSimInfoUri, "icc_id", iccid, "ims_switch") : ImsPreferenceRead {};
+}
 
 AccountIdentityMatch AccountStoreAdapter::MatchAccountByIccid(const std::string &iccid)
 {
@@ -83,7 +90,6 @@ AccountDiscoveryStoreResult AccountStoreAdapter::WriteDiscoveredAccount(const Ac
  * WriteDiscoveredAccount只执行T已准备字段与A已授权角色片段的一次明确原Insert/Update；
  * 新建时回传原分配simId，A初始角色计划不要求先有该simId。Adapter不自行决定初始角色。
  * WriteRemoval沿原同次解绑/标签/active补丁，拒绝夹带其他Owner字段；部分效果逐项返回。
- * QueryImsPreferenceByIccid沿原QueryImsSwitch读源与错误。
  * provider重连/初始化/用户切换不可借Adapter整行回灌A角色或覆盖较新T字段。
  */
 } // namespace OHOS::Telephony::MultiSim

@@ -28,14 +28,42 @@ std::optional<AccountView> TopologyService::ReadAccountAtSlot(SlotTarget origin)
 AccountMetadataResult TopologyService::SetDisplayName(SlotTarget origin, const std::u16string &name,
     const CompletionPlan &completion)
 {
-    return UpdateMetadata(origin, name, completion);
+    return UpdateMetadata(AccountMetadataField::DisplayName, origin, name, completion).acceptance;
 }
 
 AccountMetadataResult TopologyService::SetSimLabel(const std::string &iccid, int32_t legacyLabel,
     const CompletionPlan &completion)
 {
     if (iccid.empty() || legacyLabel < 1 || legacyLabel > 10) { return AccountMetadataResult::InvalidLabel; }
-    return UpdateMetadata(iccid, legacyLabel, completion);
+    return UpdateMetadata(AccountMetadataField::Label, iccid, legacyLabel, completion).acceptance;
+}
+
+int32_t TopologyService::SaveImsPreference(SlotTarget origin, int32_t preference, const CompletionPlan &completion)
+{
+    return UpdateMetadata(AccountMetadataField::ImsPreference, origin, preference, completion).rawResult;
+}
+
+int32_t TopologyService::QueryImsPreference(SlotTarget origin, int32_t &preference)
+{
+    preference = -1; // Legacy UNKNOWN, also the fallback for a missing Provider row or failed query.
+    std::string iccid;
+    {
+        std::lock_guard<std::recursive_mutex> guard(commitLock_);
+        const auto binding = bindings_.Find(origin.slot);
+        const auto account = binding ? accounts_.Read(binding->subscription) : std::nullopt;
+        if (!supportsMetadata_ || !account || !account->current || account->iccid.empty() ||
+            !bindings_.StillMatches(*binding)) {
+            return -1;
+        }
+        iccid = account->iccid;
+    }
+    try {
+        const auto read = store_.QueryImsPreferenceByIccid(iccid);
+        if (read.status == ImsPreferenceReadStatus::Value) { preference = read.value; }
+    } catch (const std::exception &) {
+        // The valid-target Legacy query returns success with UNKNOWN when the Provider cannot supply a value.
+    }
+    return 0;
 }
 
 bool TopologyService::MetadataConflictsWithDiscovery(const std::string &iccid) const
@@ -49,12 +77,12 @@ bool TopologyService::MetadataConflictsWithDiscovery(const std::string &iccid) c
     });
 }
 
-AccountMetadataResult TopologyService::UpdateMetadata(const MetadataTarget &target, const MetadataValue &value,
-    const CompletionPlan &completion)
+TopologyService::MetadataWriteResult TopologyService::UpdateMetadata(AccountMetadataField field,
+    const MetadataTarget &target, const MetadataValue &value, const CompletionPlan &completion)
 {
     std::unique_lock<std::recursive_mutex> guard(commitLock_);
-    if (!acceptingDiscovery_) { return AccountMetadataResult::Conflict; }
-    if (!supportsMetadata_) { return AccountMetadataResult::DatabaseWriteFailed; }
+    if (!acceptingDiscovery_) { return {AccountMetadataResult::Conflict}; }
+    if (!supportsMetadata_) { return {AccountMetadataResult::DatabaseWriteFailed}; }
 
     const auto *location = std::get_if<SlotTarget>(&target);
     const auto binding = location ? bindings_.Find(location->slot) : std::nullopt;
@@ -63,9 +91,8 @@ AccountMetadataResult TopologyService::UpdateMetadata(const MetadataTarget &targ
     const auto account = identity ? accounts_.Read(*identity) : std::nullopt;
     if (!account || account->iccid.empty() ||
         (location && (!binding || !bindings_.StillMatches(*binding) || !account->current))) {
-        return AccountMetadataResult::NoAccount;
+        return {AccountMetadataResult::NoAccount};
     }
-    const auto field = location ? AccountMetadataField::DisplayName : AccountMetadataField::Label;
     const auto overlaps = [&](const auto &entry) {
         const auto &operation = entry.second.evidence.operation;
         return operation.subscription == *identity &&
@@ -76,33 +103,51 @@ AccountMetadataResult TopologyService::UpdateMetadata(const MetadataTarget &targ
          std::any_of(pendingDiscoveries_.begin(), pendingDiscoveries_.end(), [&](const auto &entry) {
              return entry.second.ticket.observation.iccid == account->iccid;
          }))) {
-        return AccountMetadataResult::Conflict;
+        return {AccountMetadataResult::Conflict};
     }
 
-    const auto *name = std::get_if<std::u16string>(&value);
-    const auto write = name ? std::variant<AccountNamePatch, AccountLabelPatch> {AccountNamePatch {*identity, *name}} :
-        std::variant<AccountNamePatch, AccountLabelPatch> {
-            AccountLabelPatch {*identity, std::get<int32_t>(value), account->iccid}};
+    using Patch = std::variant<AccountNamePatch, AccountLabelPatch, AccountImsPreferencePatch>;
+    const auto prepare = [&]() -> Patch {
+        switch (field) {
+            case AccountMetadataField::DisplayName:
+                return AccountNamePatch {*identity, std::get<std::u16string>(value)};
+            case AccountMetadataField::Label:
+                return AccountLabelPatch {*identity, std::get<int32_t>(value), account->iccid};
+            case AccountMetadataField::ImsPreference:
+                return AccountImsPreferencePatch {*identity, std::get<int32_t>(value), account->iccid};
+        }
+        throw std::logic_error("Invalid account metadata field");
+    };
+    const auto write = prepare();
     const auto request = metadataOperations_.Begin(SubscriptionTarget {*identity}, completion, std::nullopt);
     const AccountMetadataOperation operation {{request, 1, 0}, *identity, field};
     try {
         if (!metadataOperations_.AdvanceStep({request, 0, 0}, 1, 0, std::nullopt)) {
             metadataOperations_.MarkTerminal(request, TerminalState::Failed);
             metadataOperations_.RetireAfterEvidenceRetention(request);
-            return AccountMetadataResult::Conflict;
+            return {AccountMetadataResult::Conflict};
         }
         pendingMetadata_.emplace(request, PendingMetadata {{operation, {}}});
     } catch (const std::exception &) {
         metadataOperations_.MarkTerminal(request, TerminalState::Failed);
         metadataOperations_.RetireAfterEvidenceRetention(request);
-        return AccountMetadataResult::Conflict;
+        return {AccountMetadataResult::Conflict};
     }
 
     guard.unlock();
     AccountMetadataOutcome outcome;
     try {
-        outcome = name ? store_.WriteDisplayName(operation, std::get<AccountNamePatch>(write)) :
-            store_.WriteLabel(operation, std::get<AccountLabelPatch>(write));
+        switch (field) {
+            case AccountMetadataField::DisplayName:
+                outcome = store_.WriteDisplayName(operation, std::get<AccountNamePatch>(write));
+                break;
+            case AccountMetadataField::Label:
+                outcome = store_.WriteLabel(operation, std::get<AccountLabelPatch>(write));
+                break;
+            case AccountMetadataField::ImsPreference:
+                outcome = store_.WriteImsPreference(operation, std::get<AccountImsPreferencePatch>(write));
+                break;
+        }
     } catch (const std::exception &) {
         // The platform may already hold the original call.
     }
@@ -111,10 +156,11 @@ AccountMetadataResult TopologyService::UpdateMetadata(const MetadataTarget &targ
     const bool unresolved = !outcome.Settled();
     metadataOperations_.AcceptResult(operation.original, unresolved ? EffectKnowledge::Unknown : outcome.effect);
     auto result = AccountMetadataResult::DatabaseWriteFailed;
-    const bool legacySucceeded = location ? outcome.legacyResult != -1 : outcome.legacyResult == 0;
-    if (outcome.callFinished && outcome.effect == EffectKnowledge::ConfirmedApplied && legacySucceeded) {
+    const bool mayAccept = field == AccountMetadataField::ImsPreference ||
+        (field == AccountMetadataField::DisplayName ? outcome.legacyResult != -1 : outcome.legacyResult == 0);
+    if (outcome.callFinished && outcome.effect == EffectKnowledge::ConfirmedApplied && mayAccept) {
         try {
-            result = AcceptMetadata(*account, binding, value);
+            result = AcceptMetadata(*account, binding, field, value);
         } catch (const std::exception &) {
             result = AccountMetadataResult::Conflict;
         }
@@ -123,18 +169,18 @@ AccountMetadataResult TopologyService::UpdateMetadata(const MetadataTarget &targ
     pending.evidence.outcome = outcome;
     metadataOperations_.MarkTerminal(request, unresolved ? TerminalState::NeedsReconciliation :
         (result == AccountMetadataResult::Success ? TerminalState::Succeeded : TerminalState::Failed));
-    if (!metadataOperations_.ClaimCompletion(request)) { return AccountMetadataResult::Conflict; }
+    if (!metadataOperations_.ClaimCompletion(request)) { return {AccountMetadataResult::Conflict}; }
     if (unresolved) {
         pending.reconcilable = true;
     } else {
         metadataOperations_.RetireAfterEvidenceRetention(request);
         pendingMetadata_.erase(request);
     }
-    return result;
+    return {result, outcome.callFinished ? outcome.legacyResult : -1};
 }
 
 AccountMetadataResult TopologyService::AcceptMetadata(const AccountRecord &original,
-    const std::optional<BindingRef> &binding, const MetadataValue &value)
+    const std::optional<BindingRef> &binding, AccountMetadataField field, const MetadataValue &value)
 {
     const auto current = accounts_.Read(original.subscription);
     if (!current || current->identityRevision != original.identityRevision || current->iccid != original.iccid ||
@@ -144,16 +190,27 @@ AccountMetadataResult TopologyService::AcceptMetadata(const AccountRecord &origi
     bool accepted = true;
     const auto apply = [&](AccountReadView view, const std::optional<AccountProjection> &projection) {
         if (!projection) { return; }
-        const auto *name = std::get_if<std::u16string>(&value);
-        const auto result = name ?
-            accounts_.AcceptDisplayName(original.subscription, view, projection->revisions.name, *name) :
-            accounts_.AcceptLabel(original.subscription, view, projection->revisions.label, std::get<int32_t>(value));
+        auto result = AccountAcceptance::ChangedInputs;
+        switch (field) {
+            case AccountMetadataField::DisplayName:
+                result = accounts_.AcceptDisplayName(original.subscription, view, projection->revisions.name,
+                    std::get<std::u16string>(value));
+                break;
+            case AccountMetadataField::Label:
+                result = accounts_.AcceptLabel(original.subscription, view, projection->revisions.label,
+                    std::get<int32_t>(value));
+                break;
+            case AccountMetadataField::ImsPreference:
+                result = accounts_.ConfirmImsPreferenceWrite(original.subscription, view,
+                    projection->revisions.imsPreference);
+                break;
+        }
         accepted = accepted && result == AccountAcceptance::Accepted;
     };
     apply(AccountReadView::Current, original.current);
     apply(AccountReadView::Historical, original.historical);
     if (!accepted) { return AccountMetadataResult::Conflict; }
-    return binding && !original.historical ? AccountMetadataResult::HistoricalMissing : AccountMetadataResult::Success;
+    return field == AccountMetadataField::DisplayName && !original.historical ? AccountMetadataResult::HistoricalMissing : AccountMetadataResult::Success;
 }
 
 size_t TopologyService::PendingMetadataCount() const

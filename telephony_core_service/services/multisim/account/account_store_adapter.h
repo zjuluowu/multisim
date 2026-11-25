@@ -40,6 +40,9 @@ public:
     virtual AccountMetadataOutcome UpdateAccountField(const AccountMetadataOperation &, std::string_view uri,
         std::string_view predicateColumn, const std::string &predicateValue, std::string_view field,
         const AccountMetadataValue &value) = 0;
+    // A found row can carry the original UNKNOWN value. Query results never attribute a write.
+    virtual ImsPreferenceRead QueryAccountField(std::string_view, std::string_view,
+        const std::string &, std::string_view) { return {}; }
     virtual std::optional<AccountMetadataEvidence> ReadMetadataEvidence(const AccountMetadataOperation &) = 0;
 };
 // The platform port encodes the typed value in the original DataShare values bucket.
@@ -60,7 +63,8 @@ public:
     AccountStoreWriteResult WriteActiveProjection(const AccountActivePatch &patch) override;
     AccountStoreWriteResult WriteDisplayName(const AccountNamePatch &patch) override;
     AccountStoreWriteResult WriteLabel(const AccountLabelPatch &patch) override;
-    AccountStoreWriteResult WriteImsPreference(const AccountImsPreferencePatch &patch) override;
+    AccountMetadataOutcome WriteImsPreference(const AccountMetadataOperation &operation,
+        const AccountImsPreferencePatch &patch) override;
     AccountLoadResult LoadAccounts(const AccountLoadRequest &request) override;
     AccountIdentityMatch MatchAccountByIccid(const std::string &iccid) override;
     AccountIdentityMatch MatchDiscoveryAccount(DiscoveryCallRef call, const std::string &iccid) override
@@ -71,7 +75,7 @@ public:
     { return discovery_ ? discovery_->ReadDiscoveryEvidence(call) : std::nullopt; }
     AccountDiscoveryStoreResult WriteDiscoveredAccount(const AccountDiscoveryWritePlan &plan) override;
     AccountStoreWriteResult WriteRemoval(const AccountRemovalPatch &patch) override;
-    int32_t QueryImsPreferenceByIccid(const std::string &iccid, int32_t &value) override;
+    ImsPreferenceRead QueryImsPreferenceByIccid(const std::string &iccid) override;
 private:
     struct LegacyDiscoveryBridge {
         SimRdbHelper *store {nullptr};

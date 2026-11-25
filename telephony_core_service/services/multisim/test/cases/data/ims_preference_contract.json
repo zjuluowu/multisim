@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "SIM024-LEGACY-IMS-PREFERENCE-BOUND",
+  "expect": {
+    "first": "0",
+    "repeat": "0",
+    "positive": "6",
+    "failure": "-23",
+    "externalValue": "33",
+    "noRow": "0",
+    "failedRead": "0",
+    "unknown": "-1",
+    "writes": "4",
+    "reads": "6",
+    "notifications": "0"
+  }
+}

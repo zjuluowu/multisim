@@ -115,8 +115,10 @@ VS Code GUI 保持人工未验收。IMS Preference 留待独立核对契约，�
 
 **PARTIAL。** 输入本地及远端 main `7edbc86ff`。真实 Legacy Verify 特征用例
 1/1 PASS。保存透传 Provider 整数，查询现场读取 Provider，空结果和失败可同样返回成功
-加 UNKNOWN。单激活下槽位置有效、ICCID 空时仍调用 Provider。M7A 的 Target 接线、
-正式验收及该兼容差异的裁决继续跟踪。
+加 UNKNOWN。Target 已接入正式保存和 Provider 直读，复用 M6 字段写权、原效果和 H
+生命周期。Developer M1～M7A 51/51，真实 LLDB 单步验证原调用以及 Stop 和销毁。
+Verify 门禁归档中。独立兼容差异待裁决。单激活空槽在 Legacy 以空 ICCID 发读写，
+Target 无已接纳 Binding 时拒绝访问 Provider。
 [Legacy 及 Target 契约](../services/multisim/test/docs/M7A_Ims_Preference_Debug.md) ·
 [原始证据](../services/multisim/test/docs/evidence/af2_m7a_20261125/README.md)
 

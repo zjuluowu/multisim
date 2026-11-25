@@ -129,8 +129,12 @@ class BoundaryGuard(unittest.TestCase):
                                   "AF2 M5 source input differs: role_assignment/assignment_service.cpp")
 
     def test_m6_account_source_drift(self):
+        self.check_mapped_mutation("infrastructure/request/request_ref.h", lambda s: s + '\n// drift\n',
+                                  "AF2 M6 source input differs: infrastructure/request/request_ref.h")
+
+    def test_m7a_ims_preference_source_drift(self):
         self.check_mapped_mutation("account/topology_metadata.cpp", lambda s: s + '\n// drift\n',
-                                  "AF2 M6 source input differs: account/topology_metadata.cpp")
+                                  "AF2 M7A source input differs: account/topology_metadata.cpp")
 
     def test_documentation_migration(self):
         from documentation_migration import documentation_moves

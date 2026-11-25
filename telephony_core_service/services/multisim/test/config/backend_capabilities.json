@@ -72,6 +72,12 @@
       "differential": "SUPPORTED"
     },
     {
+      "id": "SIM024-LEGACY-IMS-PREFERENCE-BOUND",
+      "legacy": {"test": "RealSimPrimary.ImsPreferencePreservesProviderReturnAndReadSource", "host": "SUPPORTED", "device": "BLOCKED", "reason": "Real CMI, SIM Manager, Controller and RDB calls against a controlled Provider."},
+      "target": {"test": "AF2ImsPreference.LegacyProviderContract", "host": "SUPPORTED", "device": "BLOCKED", "reason": "Formal Target account and Provider read path with a verified Binding."},
+      "differential": "SUPPORTED"
+    },
+    {
       "id": "TARGET-C0-PLAN-NO-DEVICE",
       "legacy": {
         "test": null,

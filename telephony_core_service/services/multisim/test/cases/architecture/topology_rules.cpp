@@ -58,11 +58,17 @@ int main()
     AccountProjection delayed;
     delayed.displayName = u"old-name";
     delayed.displayNumber = u"old-number";
+    assert(accounts.ConfirmImsPreferenceWrite({3}, AccountReadView::Current, 0) == AccountAcceptance::Accepted);
+    assert(accounts.ConfirmImsPreferenceWrite({3}, AccountReadView::Current, 0) == AccountAcceptance::ChangedInputs);
+    delayed.imsPreference = 17;
     delayed.active = true;
     delayed.legacyLabel = 2;
     auto accepted = accounts.AcceptReloadProjection({3}, AccountReadView::Current, 1, {}, delayed);
     assert(accepted.identityAccepted && !accepted.nameAccepted && !accepted.numberAccepted && accepted.activeAccepted);
-    assert(!accepted.labelAccepted);
+    assert(!accepted.labelAccepted && !accepted.imsAccepted);
+    assert(!accounts.ReadProjection({3}, AccountReadView::Current)->imsPreference);
+    assert(accounts.ReadProjection({3}, AccountReadView::Current)->revisions.imsPreference == 1);
+    assert(accounts.ReadProjection({3}, AccountReadView::Historical)->revisions.imsPreference == 0);
     assert(accounts.ReadProjection({3}, AccountReadView::Current)->displayName == u"new-name");
     assert(accounts.ReadProjection({3}, AccountReadView::Current)->legacyLabel == 3);
     assert(accounts.ReadProjection({3}, AccountReadView::Current)->displayNumber == u"123");

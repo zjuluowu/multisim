@@ -243,6 +243,21 @@ AccountAcceptance AccountRegistry::AcceptLabel(SubscriptionId subscription, Acco
     return AccountAcceptance::Accepted;
 }
 
+AccountAcceptance AccountRegistry::ConfirmImsPreferenceWrite(SubscriptionId subscription, AccountReadView view,
+    uint64_t expectedImsRevision)
+{
+    auto account = accounts_.find(subscription);
+    if (account == accounts_.end()) { return AccountAcceptance::MissingAccount; }
+    auto &projection = Projection(account->second, view);
+    if (!projection) { return AccountAcceptance::MissingProjection; }
+    if (!MayAdvance(projection->revisions.imsPreference, expectedImsRevision)) {
+        return AccountAcceptance::ChangedInputs;
+    }
+    // SaveImsSwitch never publishes a value to either account cache.
+    ++projection->revisions.imsPreference;
+    return AccountAcceptance::Accepted;
+}
+
 AccountAcceptance AccountRegistry::AcceptImsPreference(SubscriptionId subscription, AccountReadView view,
     uint64_t expectedImsRevision, int32_t preference)
 {

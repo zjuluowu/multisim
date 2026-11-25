@@ -96,6 +96,24 @@ std::optional<AccountView> SimModule::ReadAccount(SubscriptionId subscription, A
     return topology_.ReadAccount(subscription, view);
 }
 
+int32_t SimModule::SaveImsSwitch(int32_t slot, int32_t preference)
+{
+    if (!ports_.primaryHost) { return -1; }
+    if (!AdmitModuleCall()) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
+    const ModuleCall call {shared_from_this()};
+    return LegacySimFacade::SaveImsSwitch({slot}, *catalog_, *ports_.primaryHost, completion_,
+        [&](const CompletionPlan &plan) { return topology_.SaveImsPreference({{slot}}, preference, plan); });
+}
+
+int32_t SimModule::QueryImsSwitch(int32_t slot, int32_t &preference)
+{
+    if (!ports_.primaryHost) { return -1; }
+    if (!AdmitModuleCall()) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
+    const ModuleCall call {shared_from_this()};
+    return LegacySimFacade::QueryImsSwitch({slot}, *catalog_, *ports_.primaryHost,
+        [&] { return topology_.QueryImsPreference({{slot}}, preference); });
+}
+
 int32_t SimModule::SetShowName(int32_t slot, const std::u16string &name, LegacyCallerRef caller)
 {
     if (!ports_.primaryHost) { return -1; }

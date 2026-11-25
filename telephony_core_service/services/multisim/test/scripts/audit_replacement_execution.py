@@ -13,7 +13,7 @@ REQUIRED = {
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--slice', choices=['state','primary','query','upstream','target-adapter','target-topology','target-primary-b','legacy-data','target-data','legacy-voice-sms','target-voice-sms','legacy-account-metadata','target-account-metadata'], default='state')
+    parser.add_argument('--slice', choices=['state','primary','query','upstream','target-adapter','target-topology','target-primary-b','legacy-data','target-data','legacy-voice-sms','target-voice-sms','legacy-account-metadata','target-account-metadata','legacy-ims-preference','target-ims-preference'], default='state')
     parser.add_argument('--binary', required=True, type=Path)
     parser.add_argument('--profiles', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
@@ -94,6 +94,18 @@ def main():
                     'AccountRegistry': ['AcceptDisplayName', 'AcceptLabel'],
                     'AccountStoreAdapter': ['WriteDisplayName', 'WriteLabel', 'ReadMetadataEvidence'],
                     'RuntimeOperationStore': ['AcceptResult', 'AcceptLateEvidence', 'ClaimCompletion']}
+    elif args.slice == 'legacy-ims-preference':
+        required = {'CoreManagerInner': ['SaveImsSwitch', 'QueryImsSwitch'],
+                    'SimManager': ['SaveImsSwitch', 'QueryImsSwitch'],
+                    'MultiSimController': ['SaveImsSwitch', 'QueryImsSwitch', 'GetTargetIccId'],
+                    'SimRdbHelper': ['UpdateDataByIccId', 'QueryDataByIccId']}
+    elif args.slice == 'target-ims-preference':
+        required = {'SimModule': ['SaveImsSwitch', 'QueryImsSwitch'],
+                    'LegacySimFacade': ['SaveImsSwitch', 'QueryImsSwitch'],
+                    'TopologyService': ['SaveImsPreference', 'QueryImsPreference', 'UpdateMetadata', 'ReconcileMetadata'],
+                    'AccountStoreAdapter': ['WriteImsPreference', 'QueryImsPreferenceByIccid'],
+                    'AccountRegistry': ['ConfirmImsPreferenceWrite'],
+                    'RuntimeOperationStore': ['AcceptResult', 'AcceptLateEvidence']}
     elif args.slice == 'target-primary-b':
         required = {'AssignmentService':['AcceptRadioStep', 'AcceptPrimarySwitchTimeout',
                     'ScheduleC1Retry', 'AcceptScheduledC1Retry', 'StopAcceptingAndCancelScheduledRetries'],

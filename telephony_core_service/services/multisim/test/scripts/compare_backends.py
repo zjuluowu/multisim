@@ -14,10 +14,13 @@ from primary_expectations import differential_oracle
 
 C0_ORACLE = differential_oracle(C0)
 DATA_CONTRACT = json.loads((TEST / 'cases/data/default_data_contract.json').read_text())
+IMS_PREFERENCE_CONTRACT = json.loads((TEST / 'cases/data/ims_preference_contract.json').read_text())
 METADATA_CONTRACT = json.loads((TEST / 'cases/data/account_metadata_contract.json').read_text())
 CALL_MESSAGE_CONTRACTS = json.loads((TEST / 'cases/data/default_voice_sms_contract.json').read_text())['scenarios']
 
 def load_oracle(scenario):
+    if scenario == IMS_PREFERENCE_CONTRACT['id']:
+        return IMS_PREFERENCE_CONTRACT['expect']
     if scenario == METADATA_CONTRACT['id']:
         return METADATA_CONTRACT['expect']
     if scenario in CALL_MESSAGE_CONTRACTS:
@@ -73,9 +76,14 @@ def normalized(case):
     if not case:
         return {}
     scenario = case.get('scenario')
-    if scenario in CALL_MESSAGE_CONTRACTS or scenario == METADATA_CONTRACT['id']:
-        observation = ('account_metadata_observation' if scenario == METADATA_CONTRACT['id'] else
-                       'default_call_message_observation')
+    observation = None
+    if scenario == IMS_PREFERENCE_CONTRACT['id']:
+        observation = 'ims_preference_observation'
+    elif scenario == METADATA_CONTRACT['id']:
+        observation = 'account_metadata_observation'
+    elif scenario in CALL_MESSAGE_CONTRACTS:
+        observation = 'default_call_message_observation'
+    if observation:
         payload = case.get('details', {}).get('properties', {}).get(observation)
         if not payload:
             return {}

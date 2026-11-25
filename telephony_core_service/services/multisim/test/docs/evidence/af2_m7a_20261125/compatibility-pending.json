@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "items": [
+    {
+      "id": "M7A-IMS-EMPTY-BINDING",
+      "approval": "PENDING",
+      "scope": "A configured slot with a Legacy position but empty ICCID and no current Target Binding.",
+      "legacy_gtest": "RealSimPrimary.ImsPreferencePreservesProviderReturnAndReadSource",
+      "legacy_evidence": "legacy-characteristic.xml.gz",
+      "target_gtest": "AF2ImsPreference.MissingBindingDoesNotAddressEmptyIccid",
+      "target_evidence": "target-empty-binding.xml.gz",
+      "legacy": {"save": 0, "read": 0, "output": -1, "writes": 1, "reads": 1},
+      "target": {"save": -1, "read": -1, "output": -1, "writes": 0, "reads": 0},
+      "product_gate": "Review the consumers of the CMI return codes and the empty-ICCID Provider predicate before accepting the change."
+    },
+    {
+      "id": "M6-LABEL-UNKNOWN-ICCID",
+      "approval": "PENDING",
+      "scope": "Trusted SIM label updates without a known persistent account. Updating a known historical account remains supported.",
+      "legacy": "Can return success with no matching row.",
+      "target": "Returns TELEPHONY_ERR_ARGUMENT_INVALID before the Provider call.",
+      "product_gate": "Obtain an explicit compatibility decision before migrating this CMI entry."
+    }
+  ]
+}

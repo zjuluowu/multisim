@@ -10,3 +10,11 @@
 均通过 0 与 −1 的双重断言。4 次保存、6 次查询及 0 次通知覆盖已绑定目标。单激活的空槽另有
 读写各一次，谓词实测为空 ICCID，保存返回 0，查询返回 `(0, -1)`。
 [报告](legacy-characteristic.json.gz) · [GTest XML](legacy-characteristic.xml.gz) · [原始日志](legacy-characteristic.log.gz)
+
+## Target 实现与独立决策项
+
+Developer 实跑 M1～M7A 51/51。已绑定 IMS 用例的 LLDB 单步记录账户与 Binding、
+`imsPreference` 版本、原读写、同步整数和模块销毁。空绑定案例单独执行，保留真实
+差异。M7A 空绑定和 M6 未知 ICCID 标签仍待分别裁决。
+[Developer](developer.json.gz) · [LLDB 命令](ims-preference.lldb) · [LLDB 日志](ims-preference-lldb.log.gz) ·
+[Target 空绑定](target-empty-binding.xml.gz) · [决策项](compatibility-pending.json)
