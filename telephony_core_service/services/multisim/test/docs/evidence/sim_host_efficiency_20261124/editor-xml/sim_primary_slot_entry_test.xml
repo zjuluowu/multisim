@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="19" name="AllTests">
+  <testsuite name="PrimaryEntry" tests="17">
+    <testcase name="StopSealsOldHandleBeforeParameterAndManagerWrite" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/primary_entry_test.cpp" line="5" />
+    <testcase name="StopDoesNotCrossAlreadyAcceptedParameterWrite" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/primary_entry_test.cpp" line="13" />
+    <testcase name="ManagerReplacementWaitsForAcceptedCallAndGetReturnsSnapshot" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/primary_entry_test.cpp" line="34" />
+    <testcase name="StopDuringReplacementDoesNotReopenOldCloseGeneration" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/primary_entry_test.cpp" line="60" />
+    <testcase name="StopReopensOnlyOnNewManagerGeneration" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/primary_entry_test.cpp" line="84" />
+    <testcase name="NonSystemCallerPrecedesPermissionAndNullManager" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/primary_entry_test.cpp" line="97" />
+    <testcase name="PermissionDenialPrecedesNullManager" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/primary_entry_test.cpp" line="104" />
+    <testcase name="NullManagerPrecedesCapabilityRecheck" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/primary_entry_test.cpp" line="110" />
+    <testcase name="ChangedExternalSystemAppDecisionRejectsExtendedSlot" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/primary_entry_test.cpp" line="116" />
+    <testcase name="MissingCardStopsBeforeActiveAndPreference" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/primary_entry_test.cpp" line="125" />
+    <testcase name="InactiveCardStopsBeforePreferenceAndSwitch" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/primary_entry_test.cpp" line="131" />
+    <testcase name="ReadyCardWritesPreferenceBeforeDelegatingExactTarget" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/primary_entry_test.cpp" line="139" />
+    <testcase name="ManagerFailureReturnedUnchangedAfterPreferenceWrite" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/primary_entry_test.cpp" line="147" />
+    <testcase name="FailedPreferenceWriteStillDelegatesCurrentBehavior" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/primary_entry_test.cpp" line="155" />
+    <testcase name="PresenceQueryFailureWithFalseOutputReturnsNoCard" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/primary_entry_test.cpp" line="164" />
+    <testcase name="PresenceQueryFailureWithTrueOutputStillDelegates" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/primary_entry_test.cpp" line="171" />
+    <testcase name="StableSystemAppPassesExtendedSlotCapability" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/primary_entry_test.cpp" line="180" />
+  </testsuite>
+  <testsuite name="CallerKinds/NativeOrShell" tests="2">
+    <testcase name="SystemAppAndExtendedCapabilityUseRealTokenRules/0" value_param="1" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/primary_entry_test.cpp" line="191" />
+    <testcase name="SystemAppAndExtendedCapabilityUseRealTokenRules/1" value_param="2" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/primary_entry_test.cpp" line="191" />
+  </testsuite>
+</testsuites>

@@ -12,9 +12,21 @@ sys.path.insert(0, str(SCRIPTS))
 from backend_selector import capability_report, gtest_filter, load_config, resolve
 import build_replacement as build
 from compare_backends import compare, compare_reports, C0, C0_ORACLE, load_oracle
+from test import backend_filter
 
 
 class BackendSelectorTest(unittest.TestCase):
+    def test_unfiltered_both_run_uses_reviewed_differential_cases(self):
+        args = SimpleNamespace(action='run', backend='both', filter='*', platform='host')
+        legacy = backend_filter(args, 'legacy').split(':')
+        target = backend_filter(args, 'target').split(':')
+        self.assertIn('RealSimPrimary.C0CoreToRealManagerAndController', legacy)
+        self.assertIn('TargetPrimary.C0AssignmentServiceAlreadyPrimary', target)
+        self.assertNotIn('TargetArchitecture.C0PrimaryPlanUsesNoDeviceSwitch', target)
+        self.assertEqual(len(legacy), len(target))
+        args.action = 'all'
+        self.assertEqual(backend_filter(args, 'legacy'), '*')
+
     def test_host_route_uses_current_registrations_and_gn_ownership(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

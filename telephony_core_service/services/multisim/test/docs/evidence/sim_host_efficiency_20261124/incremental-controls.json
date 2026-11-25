@@ -1,0 +1,1963 @@
+{
+  "no-change": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/test.py",
+      "run",
+      "--target",
+      "sim_test_target_host",
+      "--filter",
+      "AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry",
+      "--out",
+      "/tmp/af2-m1/host",
+      "--output",
+      "/tmp/sim-host-efficiency/incremental/no-change"
+    ],
+    "seconds": 2.16337108600419,
+    "exit": 0,
+    "expected_exit": 0,
+    "status": "PASS",
+    "build": {
+      "requested_targets": [
+        "sim_test_target_host"
+      ],
+      "dependencies": {
+        "googletest_inventory": 0.00662723695859313,
+        "googletest": {
+          "seconds": 0.001976510975509882,
+          "reused": true,
+          "files": 247
+        },
+        "platform_headers": {
+          "seconds": 0.09904844395350665,
+          "reused": true,
+          "files": 21
+        }
+      },
+      "lock_wait_seconds": 9.999959729611874e-06,
+      "source_manifest": {
+        "seconds": 0.29231960605829954,
+        "changed": false
+      },
+      "gn": {
+        "seconds_including_compile_database": 8.00006091594696e-07,
+        "count": 0,
+        "reason": null
+      },
+      "compile_database_changed": false,
+      "compile_database_seconds": null,
+      "targets": [
+        "sim_test_target_host"
+      ],
+      "route_seconds": 8.100061677396297e-06,
+      "configuration_changed": false,
+      "ninja": {
+        "seconds": 0.571366039919667,
+        "count": 1,
+        "actions": {
+          "CXX": 0,
+          "LINK": 0,
+          "SOLINK": 0,
+          "AR": 0,
+          "Regenerating": 0
+        }
+      },
+      "binary_identities": {
+        "sim_test_target_host": [
+          2096,
+          362601,
+          19483064,
+          1795526927814633849,
+          1795526928034635059
+        ]
+      },
+      "lock_hold_seconds": 1.0325785740278661
+    },
+    "cases": [
+      "AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry"
+    ],
+    "commands": [
+      [
+        "host-build",
+        "PASS"
+      ],
+      [
+        "target-sim_test_target_host",
+        "PASS"
+      ]
+    ]
+  },
+  "target-test-cpp": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/test.py",
+      "run",
+      "--target",
+      "sim_test_target_host",
+      "--filter",
+      "AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry",
+      "--out",
+      "/tmp/af2-m1/host",
+      "--output",
+      "/tmp/sim-host-efficiency/incremental/target-test-cpp"
+    ],
+    "seconds": 78.1697492969688,
+    "exit": 0,
+    "expected_exit": 0,
+    "status": "PASS",
+    "build": {
+      "requested_targets": [
+        "sim_test_target_host"
+      ],
+      "dependencies": {
+        "googletest_inventory": 0.005126527976244688,
+        "googletest": {
+          "seconds": 0.0016955089522525668,
+          "reused": true,
+          "files": 247
+        },
+        "platform_headers": {
+          "seconds": 0.10350286902394146,
+          "reused": true,
+          "files": 21
+        }
+      },
+      "lock_wait_seconds": 7.3999399319291115e-06,
+      "source_manifest": {
+        "seconds": 0.216162986936979,
+        "changed": false
+      },
+      "gn": {
+        "seconds_including_compile_database": 8.00006091594696e-07,
+        "count": 0,
+        "reason": null
+      },
+      "compile_database_changed": false,
+      "compile_database_seconds": null,
+      "targets": [
+        "sim_test_target_host"
+      ],
+      "route_seconds": 8.20099376142025e-06,
+      "configuration_changed": false,
+      "ninja": {
+        "seconds": 76.05412267602514,
+        "count": 1,
+        "actions": {
+          "CXX": 1,
+          "LINK": 1,
+          "SOLINK": 0,
+          "AR": 0,
+          "Regenerating": 0
+        }
+      },
+      "binary_identities": {
+        "sim_test_target_host": [
+          2096,
+          365484,
+          19483064,
+          1795527832667612995,
+          1795527832807613764
+        ]
+      },
+      "lock_hold_seconds": 76.4458419290604
+    },
+    "cases": [
+      "AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry"
+    ],
+    "commands": [
+      [
+        "host-build",
+        "PASS"
+      ],
+      [
+        "target-sim_test_target_host",
+        "PASS"
+      ]
+    ]
+  },
+  "target-test-cpp-recovery": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/test.py",
+      "build",
+      "--target",
+      "sim_test_target_host",
+      "--out",
+      "/tmp/af2-m1/host",
+      "--output",
+      "/tmp/sim-host-efficiency/incremental/target-test-cpp-recovery"
+    ],
+    "seconds": 69.42126890202053,
+    "exit": 0,
+    "expected_exit": 0,
+    "status": "PASS",
+    "build": {
+      "requested_targets": [
+        "sim_test_target_host"
+      ],
+      "dependencies": {
+        "googletest_inventory": 0.008501846925355494,
+        "googletest": {
+          "seconds": 0.002765416051261127,
+          "reused": true,
+          "files": 247
+        },
+        "platform_headers": {
+          "seconds": 0.05784411903005093,
+          "reused": true,
+          "files": 21
+        }
+      },
+      "lock_wait_seconds": 67.78203607199248,
+      "source_manifest": {
+        "seconds": 0.3890632459660992,
+        "changed": false
+      },
+      "gn": {
+        "seconds_including_compile_database": 6.00004568696022e-07,
+        "count": 0,
+        "reason": null
+      },
+      "compile_database_changed": false,
+      "compile_database_seconds": null,
+      "targets": [
+        "sim_test_target_host"
+      ],
+      "route_seconds": 6.3999323174357414e-06,
+      "configuration_changed": false,
+      "ninja": {
+        "seconds": 0.5007025629747659,
+        "count": 1,
+        "actions": {
+          "CXX": 0,
+          "LINK": 0,
+          "SOLINK": 0,
+          "AR": 0,
+          "Regenerating": 0
+        }
+      },
+      "binary_identities": {
+        "sim_test_target_host": [
+          2096,
+          365740,
+          19483064,
+          1795527902039994396,
+          1795527902203995301
+        ]
+      },
+      "lock_hold_seconds": 1.0321528950007632
+    },
+    "cases": [],
+    "commands": [
+      [
+        "host-build",
+        "PASS"
+      ]
+    ]
+  },
+  "target-production-cpp": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/test.py",
+      "run",
+      "--target",
+      "sim_test_target_host",
+      "--filter",
+      "AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry",
+      "--out",
+      "/tmp/af2-m1/host",
+      "--output",
+      "/tmp/sim-host-efficiency/incremental/target-production-cpp"
+    ],
+    "seconds": 46.91179946810007,
+    "exit": 0,
+    "expected_exit": 0,
+    "status": "PASS",
+    "build": {
+      "requested_targets": [
+        "sim_test_target_host"
+      ],
+      "dependencies": {
+        "googletest_inventory": 0.00586753198876977,
+        "googletest": {
+          "seconds": 0.00210381206125021,
+          "reused": true,
+          "files": 247
+        },
+        "platform_headers": {
+          "seconds": 0.17738017905503511,
+          "reused": true,
+          "files": 21
+        }
+      },
+      "lock_wait_seconds": 8.600065484642982e-06,
+      "source_manifest": {
+        "seconds": 0.36018238798715174,
+        "changed": false
+      },
+      "gn": {
+        "seconds_including_compile_database": 8.00006091594696e-07,
+        "count": 0,
+        "reason": null
+      },
+      "compile_database_changed": false,
+      "compile_database_seconds": null,
+      "targets": [
+        "sim_test_target_host"
+      ],
+      "route_seconds": 8.400063961744308e-06,
+      "configuration_changed": false,
+      "ninja": {
+        "seconds": 44.11840887798462,
+        "count": 1,
+        "actions": {
+          "CXX": 1,
+          "LINK": 1,
+          "SOLINK": 0,
+          "AR": 1,
+          "Regenerating": 0
+        }
+      },
+      "binary_identities": {
+        "sim_test_target_host": [
+          2096,
+          365310,
+          19483064,
+          1795527949012253023,
+          1795527949108253551
+        ]
+      },
+      "lock_hold_seconds": 44.76374343899079
+    },
+    "cases": [
+      "AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry"
+    ],
+    "commands": [
+      [
+        "host-build",
+        "PASS"
+      ],
+      [
+        "target-sim_test_target_host",
+        "PASS"
+      ]
+    ]
+  },
+  "target-production-cpp-recovery": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/test.py",
+      "build",
+      "--target",
+      "sim_test_target_host",
+      "--out",
+      "/tmp/af2-m1/host",
+      "--output",
+      "/tmp/sim-host-efficiency/incremental/target-production-cpp-recovery"
+    ],
+    "seconds": 53.321035259985365,
+    "exit": 0,
+    "expected_exit": 0,
+    "status": "PASS",
+    "build": {
+      "requested_targets": [
+        "sim_test_target_host"
+      ],
+      "dependencies": {
+        "googletest_inventory": 0.005679531022906303,
+        "googletest": {
+          "seconds": 0.001615408924408257,
+          "reused": true,
+          "files": 247
+        },
+        "platform_headers": {
+          "seconds": 0.09417611791286618,
+          "reused": true,
+          "files": 21
+        }
+      },
+      "lock_wait_seconds": 51.96014727395959,
+      "source_manifest": {
+        "seconds": 0.22658514499198645,
+        "changed": false
+      },
+      "gn": {
+        "seconds_including_compile_database": 5.00003807246685e-07,
+        "count": 0,
+        "reason": null
+      },
+      "compile_database_changed": false,
+      "compile_database_seconds": null,
+      "targets": [
+        "sim_test_target_host"
+      ],
+      "route_seconds": 5.801091901957989e-06,
+      "configuration_changed": false,
+      "ninja": {
+        "seconds": 0.40389542502816767,
+        "count": 1,
+        "actions": {
+          "CXX": 0,
+          "LINK": 0,
+          "SOLINK": 0,
+          "AR": 0,
+          "Regenerating": 0
+        }
+      },
+      "binary_identities": {
+        "sim_test_target_host": [
+          2096,
+          365864,
+          19483064,
+          1795528002652548635,
+          1795528002780549338
+        ]
+      },
+      "lock_hold_seconds": 0.7706313399830833
+    },
+    "cases": [],
+    "commands": [
+      [
+        "host-build",
+        "PASS"
+      ]
+    ]
+  },
+  "legacy-production-cpp": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/test.py",
+      "run",
+      "--target",
+      "sim_primary_slot_real_test",
+      "--filter",
+      "RealSimPrimary.C0CoreToRealManagerAndController",
+      "--out",
+      "/tmp/sim-final-host",
+      "--output",
+      "/tmp/sim-host-efficiency/incremental/legacy-production-cpp"
+    ],
+    "seconds": 236.36517599702347,
+    "exit": 0,
+    "expected_exit": 0,
+    "status": "PASS",
+    "build": {
+      "requested_targets": [
+        "sim_primary_slot_real_test"
+      ],
+      "dependencies": {
+        "googletest_inventory": 0.005400729947723448,
+        "googletest": {
+          "seconds": 0.0015535090351477265,
+          "reused": true,
+          "files": 247
+        },
+        "platform_headers": {
+          "seconds": 0.10119205596856773,
+          "reused": true,
+          "files": 21
+        },
+        "openssl": {
+          "seconds": 0.013413973967544734,
+          "reused": true,
+          "files": 136
+        },
+        "native_runtime": {
+          "seconds": 0.000904805026948452,
+          "reused": true,
+          "files": 4
+        }
+      },
+      "lock_wait_seconds": 231.73841856594663,
+      "source_manifest": {
+        "seconds": 0.19299435999710113,
+        "changed": false
+      },
+      "gn": {
+        "seconds_including_compile_database": 4.00003045797348e-07,
+        "count": 0,
+        "reason": null
+      },
+      "compile_database_changed": false,
+      "compile_database_seconds": null,
+      "targets": [
+        "sim_primary_slot_real_test"
+      ],
+      "route_seconds": 6.199930794537067e-06,
+      "configuration_changed": false,
+      "ninja": {
+        "seconds": 1.1409234680468217,
+        "count": 1,
+        "actions": {
+          "CXX": 0,
+          "LINK": 0,
+          "SOLINK": 0,
+          "AR": 0,
+          "Regenerating": 0
+        }
+      },
+      "binary_identities": {
+        "sim_primary_slot_real_test": [
+          2096,
+          366032,
+          52885432,
+          1795528235781830163,
+          1795528236025831504
+        ]
+      },
+      "lock_hold_seconds": 1.5158640280133113
+    },
+    "cases": [
+      "RealSimPrimary.C0CoreToRealManagerAndController"
+    ],
+    "commands": [
+      [
+        "host-build",
+        "PASS"
+      ],
+      [
+        "legacy-sim_primary_slot_real_test",
+        "PASS"
+      ]
+    ]
+  },
+  "legacy-production-cpp-recovery": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/test.py",
+      "build",
+      "--target",
+      "sim_primary_slot_real_test",
+      "--out",
+      "/tmp/sim-final-host",
+      "--output",
+      "/tmp/sim-host-efficiency/incremental/legacy-production-cpp-recovery"
+    ],
+    "seconds": 228.6391414029058,
+    "exit": 0,
+    "expected_exit": 0,
+    "status": "PASS",
+    "build": {
+      "requested_targets": [
+        "sim_primary_slot_real_test"
+      ],
+      "dependencies": {
+        "googletest_inventory": 0.004736426053568721,
+        "googletest": {
+          "seconds": 0.001967011019587517,
+          "reused": true,
+          "files": 247
+        },
+        "platform_headers": {
+          "seconds": 0.12122806604020298,
+          "reused": true,
+          "files": 21
+        },
+        "openssl": {
+          "seconds": 0.012238866998814046,
+          "reused": true,
+          "files": 136
+        },
+        "native_runtime": {
+          "seconds": 0.0005383029347285628,
+          "reused": true,
+          "files": 4
+        }
+      },
+      "lock_wait_seconds": 6.5999338403344154e-06,
+      "source_manifest": {
+        "seconds": 0.31881295202765614,
+        "changed": false
+      },
+      "gn": {
+        "seconds_including_compile_database": 7.00005330145359e-07,
+        "count": 0,
+        "reason": null
+      },
+      "compile_database_changed": false,
+      "compile_database_seconds": null,
+      "targets": [
+        "sim_primary_slot_real_test"
+      ],
+      "route_seconds": 7.00005330145359e-06,
+      "configuration_changed": false,
+      "ninja": {
+        "seconds": 227.1418522769818,
+        "count": 1,
+        "actions": {
+          "CXX": 1,
+          "LINK": 1,
+          "SOLINK": 0,
+          "AR": 0,
+          "Regenerating": 0
+        }
+      },
+      "binary_identities": {
+        "sim_primary_slot_real_test": [
+          2096,
+          365379,
+          52885432,
+          1795528468415110408,
+          1795528468619111530
+        ]
+      },
+      "lock_hold_seconds": 227.6807051380165
+    },
+    "cases": [],
+    "commands": [
+      [
+        "host-build",
+        "PASS"
+      ]
+    ]
+  },
+  "target-shared-header": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/test.py",
+      "run",
+      "--target",
+      "sim_test_target_host",
+      "--filter",
+      "AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry",
+      "--out",
+      "/tmp/af2-m1/host",
+      "--output",
+      "/tmp/sim-host-efficiency/incremental/target-shared-header"
+    ],
+    "seconds": 56.878962313057855,
+    "exit": 0,
+    "expected_exit": 0,
+    "status": "PASS",
+    "build": {
+      "requested_targets": [
+        "sim_test_target_host"
+      ],
+      "dependencies": {
+        "googletest_inventory": 0.004237323068082333,
+        "googletest": {
+          "seconds": 0.0013747079065069556,
+          "reused": true,
+          "files": 247
+        },
+        "platform_headers": {
+          "seconds": 0.14767691190354526,
+          "reused": true,
+          "files": 21
+        }
+      },
+      "lock_wait_seconds": 6.300047971308231e-06,
+      "source_manifest": {
+        "seconds": 0.22465913509950042,
+        "changed": false
+      },
+      "gn": {
+        "seconds_including_compile_database": 4.00003045797348e-07,
+        "count": 0,
+        "reason": null
+      },
+      "compile_database_changed": false,
+      "compile_database_seconds": null,
+      "targets": [
+        "sim_test_target_host"
+      ],
+      "route_seconds": 4.899920895695686e-06,
+      "configuration_changed": false,
+      "ninja": {
+        "seconds": 55.46348961000331,
+        "count": 1,
+        "actions": {
+          "CXX": 2,
+          "LINK": 1,
+          "SOLINK": 0,
+          "AR": 1,
+          "Regenerating": 0
+        }
+      },
+      "binary_identities": {
+        "sim_test_target_host": [
+          2096,
+          365522,
+          19483064,
+          1795528525107422468,
+          1795528525203423001
+        ]
+      },
+      "lock_hold_seconds": 55.907553051947616
+    },
+    "cases": [
+      "AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry"
+    ],
+    "commands": [
+      [
+        "host-build",
+        "PASS"
+      ],
+      [
+        "target-sim_test_target_host",
+        "PASS"
+      ]
+    ]
+  },
+  "target-shared-header-recovery": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/test.py",
+      "build",
+      "--target",
+      "sim_test_target_host",
+      "--out",
+      "/tmp/af2-m1/host",
+      "--output",
+      "/tmp/sim-host-efficiency/incremental/target-shared-header-recovery"
+    ],
+    "seconds": 53.03798436699435,
+    "exit": 0,
+    "expected_exit": 0,
+    "status": "PASS",
+    "build": {
+      "requested_targets": [
+        "sim_test_target_host"
+      ],
+      "dependencies": {
+        "googletest_inventory": 0.004169623949564993,
+        "googletest": {
+          "seconds": 0.0013445069780573249,
+          "reused": true,
+          "files": 247
+        },
+        "platform_headers": {
+          "seconds": 0.11894976103212684,
+          "reused": true,
+          "files": 21
+        }
+      },
+      "lock_wait_seconds": 7.200054824352264e-06,
+      "source_manifest": {
+        "seconds": 0.3040615909267217,
+        "changed": false
+      },
+      "gn": {
+        "seconds_including_compile_database": 5.00003807246685e-07,
+        "count": 0,
+        "reason": null
+      },
+      "compile_database_changed": false,
+      "compile_database_seconds": null,
+      "targets": [
+        "sim_test_target_host"
+      ],
+      "route_seconds": 5.999929271638393e-06,
+      "configuration_changed": false,
+      "ninja": {
+        "seconds": 51.73849734291434,
+        "count": 1,
+        "actions": {
+          "CXX": 2,
+          "LINK": 1,
+          "SOLINK": 0,
+          "AR": 1,
+          "Regenerating": 0
+        }
+      },
+      "binary_identities": {
+        "sim_test_target_host": [
+          2096,
+          366059,
+          19483064,
+          1795528578475716977,
+          1795528578571717506
+        ]
+      },
+      "lock_hold_seconds": 52.23673621297348
+    },
+    "cases": [],
+    "commands": [
+      [
+        "host-build",
+        "PASS"
+      ]
+    ]
+  },
+  "gni-change": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/test.py",
+      "run",
+      "--target",
+      "sim_test_target_host",
+      "--filter",
+      "AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry",
+      "--out",
+      "/tmp/af2-m1/host",
+      "--output",
+      "/tmp/sim-host-efficiency/incremental/gni-change"
+    ],
+    "seconds": 1.9108846229501069,
+    "exit": 0,
+    "expected_exit": 0,
+    "status": "PASS",
+    "build": {
+      "requested_targets": [
+        "sim_test_target_host"
+      ],
+      "dependencies": {
+        "googletest_inventory": 0.004270522971637547,
+        "googletest": {
+          "seconds": 0.001324106939136982,
+          "reused": true,
+          "files": 247
+        },
+        "platform_headers": {
+          "seconds": 0.12599879398476332,
+          "reused": true,
+          "files": 21
+        }
+      },
+      "lock_wait_seconds": 8.100992999970913e-06,
+      "source_manifest": {
+        "seconds": 0.25279599300120026,
+        "changed": false
+      },
+      "gn": {
+        "seconds_including_compile_database": 0.07056818902492523,
+        "count": 1,
+        "reason": "changed_graph_input:../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/framework/component_sources.gni"
+      },
+      "compile_database_changed": false,
+      "compile_database_seconds": 0.002,
+      "targets": [
+        "sim_test_target_host"
+      ],
+      "route_seconds": 4.400033503770828e-06,
+      "configuration_changed": false,
+      "ninja": {
+        "seconds": 0.2802784430095926,
+        "count": 1,
+        "actions": {
+          "CXX": 0,
+          "LINK": 0,
+          "SOLINK": 0,
+          "AR": 0,
+          "Regenerating": 0
+        }
+      },
+      "binary_identities": {
+        "sim_test_target_host": [
+          2096,
+          366059,
+          19483064,
+          1795528578475716977,
+          1795528578571717506
+        ]
+      },
+      "lock_hold_seconds": 0.7691528360592201
+    },
+    "cases": [
+      "AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry"
+    ],
+    "commands": [
+      [
+        "host-build",
+        "PASS"
+      ],
+      [
+        "target-sim_test_target_host",
+        "PASS"
+      ]
+    ]
+  },
+  "gni-recovery": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/test.py",
+      "build",
+      "--target",
+      "sim_test_target_host",
+      "--out",
+      "/tmp/af2-m1/host",
+      "--output",
+      "/tmp/sim-host-efficiency/incremental/gni-recovery"
+    ],
+    "seconds": 1.7451501039322466,
+    "exit": 0,
+    "expected_exit": 0,
+    "status": "PASS",
+    "build": {
+      "requested_targets": [
+        "sim_test_target_host"
+      ],
+      "dependencies": {
+        "googletest_inventory": 0.00464172603096813,
+        "googletest": {
+          "seconds": 0.0014404079411178827,
+          "reused": true,
+          "files": 247
+        },
+        "platform_headers": {
+          "seconds": 0.12333677907008678,
+          "reused": true,
+          "files": 21
+        }
+      },
+      "lock_wait_seconds": 7.200054824352264e-06,
+      "source_manifest": {
+        "seconds": 0.29217110807076097,
+        "changed": false
+      },
+      "gn": {
+        "seconds_including_compile_database": 0.08066234400030226,
+        "count": 1,
+        "reason": "changed_graph_input:../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/framework/component_sources.gni"
+      },
+      "compile_database_changed": false,
+      "compile_database_seconds": 0.001,
+      "targets": [
+        "sim_test_target_host"
+      ],
+      "route_seconds": 5.300040356814861e-06,
+      "configuration_changed": false,
+      "ninja": {
+        "seconds": 0.3150567340198904,
+        "count": 1,
+        "actions": {
+          "CXX": 0,
+          "LINK": 0,
+          "SOLINK": 0,
+          "AR": 0,
+          "Regenerating": 0
+        }
+      },
+      "binary_identities": {
+        "sim_test_target_host": [
+          2096,
+          366059,
+          19483064,
+          1795528578475716977,
+          1795528578571717506
+        ]
+      },
+      "lock_hold_seconds": 0.858797725988552
+    },
+    "cases": [],
+    "commands": [
+      [
+        "host-build",
+        "PASS"
+      ]
+    ]
+  },
+  "compiler-failure-stops-run": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/test.py",
+      "run",
+      "--target",
+      "sim_test_target_host",
+      "--filter",
+      "AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry",
+      "--out",
+      "/tmp/af2-m1/host",
+      "--output",
+      "/tmp/sim-host-efficiency/incremental/compiler-failure-stops-run"
+    ],
+    "seconds": 7.101871582912281,
+    "exit": 1,
+    "expected_exit": 1,
+    "status": "FAIL",
+    "build": {
+      "requested_targets": [
+        "sim_test_target_host"
+      ],
+      "dependencies": {
+        "googletest_inventory": 0.004329724004492164,
+        "googletest": {
+          "seconds": 0.0013566069537773728,
+          "reused": true,
+          "files": 247
+        },
+        "platform_headers": {
+          "seconds": 0.11556433595251292,
+          "reused": true,
+          "files": 21
+        }
+      },
+      "lock_wait_seconds": 6.7999353632330894e-06,
+      "source_manifest": {
+        "seconds": 0.30460407596547157,
+        "changed": false
+      },
+      "gn": {
+        "seconds_including_compile_database": 5.00003807246685e-07,
+        "count": 0,
+        "reason": null
+      },
+      "compile_database_changed": false,
+      "compile_database_seconds": null,
+      "targets": [
+        "sim_test_target_host"
+      ],
+      "route_seconds": 6.09993003308773e-06,
+      "configuration_changed": false,
+      "ninja": {
+        "seconds": 5.742373701999895,
+        "count": 1,
+        "actions": {
+          "CXX": 1,
+          "LINK": 0,
+          "SOLINK": 0,
+          "AR": 0,
+          "Regenerating": 0
+        }
+      },
+      "error": "Ninja exited with status 1",
+      "lock_hold_seconds": 6.2398394390475005
+    },
+    "cases": [],
+    "commands": [
+      [
+        "host-build",
+        "FAIL"
+      ]
+    ]
+  },
+  "compiler-failure-recovery": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/test.py",
+      "run",
+      "--target",
+      "sim_test_target_host",
+      "--filter",
+      "AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry",
+      "--out",
+      "/tmp/af2-m1/host",
+      "--output",
+      "/tmp/sim-host-efficiency/incremental/compiler-failure-recovery"
+    ],
+    "seconds": 52.084005667013116,
+    "exit": 0,
+    "expected_exit": 0,
+    "status": "PASS",
+    "build": {
+      "requested_targets": [
+        "sim_test_target_host"
+      ],
+      "dependencies": {
+        "googletest_inventory": 0.0041571230394765735,
+        "googletest": {
+          "seconds": 0.0013304069871082902,
+          "reused": true,
+          "files": 247
+        },
+        "platform_headers": {
+          "seconds": 0.1155545359943062,
+          "reused": true,
+          "files": 21
+        }
+      },
+      "lock_wait_seconds": 6.500049494206905e-06,
+      "source_manifest": {
+        "seconds": 0.28017694200389087,
+        "changed": false
+      },
+      "gn": {
+        "seconds_including_compile_database": 5.00003807246685e-07,
+        "count": 0,
+        "reason": null
+      },
+      "compile_database_changed": false,
+      "compile_database_seconds": null,
+      "targets": [
+        "sim_test_target_host"
+      ],
+      "route_seconds": 6.300047971308231e-06,
+      "configuration_changed": false,
+      "ninja": {
+        "seconds": 50.45495020609815,
+        "count": 1,
+        "actions": {
+          "CXX": 1,
+          "LINK": 1,
+          "SOLINK": 0,
+          "AR": 0,
+          "Regenerating": 0
+        }
+      },
+      "binary_identities": {
+        "sim_test_target_host": [
+          2096,
+          366123,
+          19483064,
+          1795528641072061410,
+          1795528641168061937
+        ]
+      },
+      "lock_hold_seconds": 50.92992811999284
+    },
+    "cases": [
+      "AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry"
+    ],
+    "commands": [
+      [
+        "host-build",
+        "PASS"
+      ],
+      [
+        "target-sim_test_target_host",
+        "PASS"
+      ]
+    ]
+  },
+  "new-cpp-added-test": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/test.py",
+      "run",
+      "--backend",
+      "legacy",
+      "--filter",
+      "HostEfficiencyProbe.AddedRegistration",
+      "--out",
+      "/tmp/sim-final-host",
+      "--output",
+      "/tmp/sim-host-efficiency/incremental/new-cpp-added-test"
+    ],
+    "seconds": 65.75847187894396,
+    "exit": 0,
+    "expected_exit": 0,
+    "status": "PASS",
+    "build": {
+      "requested_targets": [
+        "sim_test_host",
+        "sim_component_test",
+        "sim_primary_slot_entry_test",
+        "sim_g2a_query_test",
+        "sim_upstream_query_test",
+        "sim_primary_slot_real_test",
+        "sim_bootstrap_characterization"
+      ],
+      "dependencies": {
+        "googletest_inventory": 0.004295123973861337,
+        "googletest": {
+          "seconds": 0.0016732090152800083,
+          "reused": true,
+          "files": 247
+        },
+        "platform_headers": {
+          "seconds": 0.11602293699979782,
+          "reused": true,
+          "files": 21
+        }
+      },
+      "lock_wait_seconds": 6.4999330788850784e-06,
+      "source_manifest": {
+        "seconds": 0.33183762209955603,
+        "changed": true
+      },
+      "gn": {
+        "seconds_including_compile_database": 0.08687687700148672,
+        "count": 1,
+        "reason": "changed_graph_input:../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/sources.gni"
+      },
+      "compile_database_changed": true,
+      "compile_database_seconds": 0.001,
+      "targets": [
+        "sim_test_host"
+      ],
+      "route_seconds": 0.1615475860890001,
+      "configuration_changed": false,
+      "ninja": {
+        "seconds": 63.96313111996278,
+        "count": 1,
+        "actions": {
+          "CXX": 1,
+          "LINK": 1,
+          "SOLINK": 0,
+          "AR": 0,
+          "Regenerating": 0
+        }
+      },
+      "binary_identities": {
+        "sim_test_host": [
+          2096,
+          366142,
+          20067112,
+          1795528706832422994,
+          1795528706932423544
+        ]
+      },
+      "lock_hold_seconds": 64.69532153906766
+    },
+    "cases": [
+      "HostEfficiencyProbe.AddedRegistration"
+    ],
+    "commands": [
+      [
+        "host-build",
+        "PASS"
+      ],
+      [
+        "legacy-sim_test_host",
+        "PASS"
+      ]
+    ]
+  },
+  "new-discovery-xml": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/check_editor.py",
+      "--out",
+      "/tmp/sim-final-host",
+      "--output",
+      "/tmp/sim-host-efficiency/incremental/new-discovery-xml",
+      "--target",
+      "sim_test_host"
+    ],
+    "seconds": 0.5529146410990506,
+    "exit": 0,
+    "expected_exit": 0,
+    "status": null,
+    "build": null,
+    "cases": [],
+    "commands": [],
+    "test_found": true
+  },
+  "deleted-test": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/test.py",
+      "list",
+      "--target",
+      "sim_test_host",
+      "--filter",
+      "HostEfficiencyProbe.AddedRegistration",
+      "--out",
+      "/tmp/sim-final-host",
+      "--output",
+      "/tmp/sim-host-efficiency/incremental/deleted-test"
+    ],
+    "seconds": 58.63021321105771,
+    "exit": 2,
+    "expected_exit": 2,
+    "status": "UNSUPPORTED",
+    "build": {
+      "requested_targets": [
+        "sim_test_host"
+      ],
+      "dependencies": {
+        "googletest_inventory": 0.004133222973905504,
+        "googletest": {
+          "seconds": 0.001277106930501759,
+          "reused": true,
+          "files": 247
+        },
+        "platform_headers": {
+          "seconds": 0.12535028997808695,
+          "reused": true,
+          "files": 21
+        }
+      },
+      "lock_wait_seconds": 6.299931555986404e-06,
+      "source_manifest": {
+        "seconds": 0.2651492580771446,
+        "changed": true
+      },
+      "gn": {
+        "seconds_including_compile_database": 0.08001283998601139,
+        "count": 1,
+        "reason": "changed_graph_input:../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/sources.gni"
+      },
+      "compile_database_changed": true,
+      "compile_database_seconds": 0.001,
+      "targets": [
+        "sim_test_host"
+      ],
+      "route_seconds": 5.100038833916187e-06,
+      "configuration_changed": false,
+      "ninja": {
+        "seconds": 57.37296148901805,
+        "count": 1,
+        "actions": {
+          "CXX": 0,
+          "LINK": 1,
+          "SOLINK": 0,
+          "AR": 0,
+          "Regenerating": 0
+        }
+      },
+      "binary_identities": {
+        "sim_test_host": [
+          2096,
+          366053,
+          20056624,
+          1795528766320752003,
+          1795528766420752568
+        ]
+      },
+      "lock_hold_seconds": 57.87885877199005
+    },
+    "cases": [],
+    "commands": [
+      [
+        "host-build",
+        "PASS"
+      ]
+    ]
+  },
+  "deleted-discovery-xml": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/check_editor.py",
+      "--out",
+      "/tmp/sim-final-host",
+      "--output",
+      "/tmp/sim-host-efficiency/incremental/deleted-discovery-xml",
+      "--target",
+      "sim_test_host"
+    ],
+    "seconds": 0.5331937130540609,
+    "exit": 0,
+    "expected_exit": 0,
+    "status": null,
+    "build": null,
+    "cases": [],
+    "commands": [],
+    "test_found": false
+  },
+  "legacy-then-target-legacy": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/test.py",
+      "run",
+      "--target",
+      "sim_primary_slot_real_test",
+      "--filter",
+      "RealSimPrimary.C0CoreToRealManagerAndController",
+      "--out",
+      "/tmp/sim-final-host",
+      "--output",
+      "/tmp/sim-host-efficiency/incremental/legacy-then-target-legacy"
+    ],
+    "seconds": 2.7600158299319446,
+    "exit": 0,
+    "expected_exit": 0,
+    "status": "PASS",
+    "build": {
+      "requested_targets": [
+        "sim_primary_slot_real_test"
+      ],
+      "dependencies": {
+        "googletest_inventory": 0.0036754210013896227,
+        "googletest": {
+          "seconds": 0.0012534069828689098,
+          "reused": true,
+          "files": 247
+        },
+        "platform_headers": {
+          "seconds": 0.1021644789725542,
+          "reused": true,
+          "files": 21
+        },
+        "openssl": {
+          "seconds": 0.010807960992679,
+          "reused": true,
+          "files": 136
+        },
+        "native_runtime": {
+          "seconds": 0.0004637030651792884,
+          "reused": true,
+          "files": 4
+        }
+      },
+      "lock_wait_seconds": 5.899928510189056e-06,
+      "source_manifest": {
+        "seconds": 0.23350102093536407,
+        "changed": false
+      },
+      "gn": {
+        "seconds_including_compile_database": 5.00003807246685e-07,
+        "count": 0,
+        "reason": null
+      },
+      "compile_database_changed": false,
+      "compile_database_seconds": null,
+      "targets": [
+        "sim_primary_slot_real_test"
+      ],
+      "route_seconds": 5.599926225841045e-06,
+      "configuration_changed": false,
+      "ninja": {
+        "seconds": 1.1382710490142927,
+        "count": 1,
+        "actions": {
+          "CXX": 0,
+          "LINK": 0,
+          "SOLINK": 0,
+          "AR": 0,
+          "Regenerating": 0
+        }
+      },
+      "binary_identities": {
+        "sim_primary_slot_real_test": [
+          2096,
+          365379,
+          52885432,
+          1795528468415110408,
+          1795528468619111530
+        ]
+      },
+      "lock_hold_seconds": 1.551572588039562
+    },
+    "cases": [
+      "RealSimPrimary.C0CoreToRealManagerAndController"
+    ],
+    "commands": [
+      [
+        "host-build",
+        "PASS"
+      ],
+      [
+        "legacy-sim_primary_slot_real_test",
+        "PASS"
+      ]
+    ]
+  },
+  "legacy-then-target-target": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/test.py",
+      "run",
+      "--target",
+      "sim_test_target_host",
+      "--filter",
+      "AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry",
+      "--out",
+      "/tmp/sim-final-host",
+      "--output",
+      "/tmp/sim-host-efficiency/incremental/legacy-then-target-target"
+    ],
+    "seconds": 53.52810637501534,
+    "exit": 0,
+    "expected_exit": 0,
+    "status": "PASS",
+    "build": {
+      "requested_targets": [
+        "sim_test_target_host"
+      ],
+      "dependencies": {
+        "googletest_inventory": 0.004254024010151625,
+        "googletest": {
+          "seconds": 0.001550709013827145,
+          "reused": true,
+          "files": 247
+        },
+        "platform_headers": {
+          "seconds": 0.11665116297081113,
+          "reused": true,
+          "files": 21
+        }
+      },
+      "lock_wait_seconds": 6.700051017105579e-06,
+      "source_manifest": {
+        "seconds": 0.2977447899756953,
+        "changed": false
+      },
+      "gn": {
+        "seconds_including_compile_database": 4.00003045797348e-07,
+        "count": 0,
+        "reason": null
+      },
+      "compile_database_changed": false,
+      "compile_database_seconds": null,
+      "targets": [
+        "sim_test_target_host"
+      ],
+      "route_seconds": 6.200047209858894e-06,
+      "configuration_changed": false,
+      "ninja": {
+        "seconds": 51.85587115702219,
+        "count": 1,
+        "actions": {
+          "CXX": 3,
+          "LINK": 1,
+          "SOLINK": 0,
+          "AR": 1,
+          "Regenerating": 0
+        }
+      },
+      "binary_identities": {
+        "sim_test_target_host": [
+          2096,
+          366203,
+          19483040,
+          1795528822841065773,
+          1795528822937066326
+        ]
+      },
+      "lock_hold_seconds": 52.349581758957356
+    },
+    "cases": [
+      "AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry"
+    ],
+    "commands": [
+      [
+        "host-build",
+        "PASS"
+      ],
+      [
+        "target-sim_test_target_host",
+        "PASS"
+      ]
+    ]
+  },
+  "unsupported-target": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/test.py",
+      "run",
+      "--backend",
+      "target",
+      "--filter",
+      "SimTest.DualSimPinUnlockAfterWrongPin",
+      "--out",
+      "/tmp/sim-final-host",
+      "--output",
+      "/tmp/sim-host-efficiency/incremental/unsupported-target"
+    ],
+    "seconds": 1.5446260009193793,
+    "exit": 2,
+    "expected_exit": 2,
+    "status": "BLOCKED",
+    "build": {
+      "requested_targets": [
+        "sim_test_target_host"
+      ],
+      "dependencies": {
+        "googletest_inventory": 0.004306924995034933,
+        "googletest": {
+          "seconds": 0.0013550070580095053,
+          "reused": true,
+          "files": 247
+        },
+        "platform_headers": {
+          "seconds": 0.11767527903430164,
+          "reused": true,
+          "files": 21
+        }
+      },
+      "lock_wait_seconds": 6.200047209858894e-06,
+      "source_manifest": {
+        "seconds": 0.2836821359815076,
+        "changed": false
+      },
+      "gn": {
+        "seconds_including_compile_database": 6.00004568696022e-07,
+        "count": 0,
+        "reason": null
+      },
+      "compile_database_changed": false,
+      "compile_database_seconds": null,
+      "targets": [
+        "sim_test_target_host"
+      ],
+      "route_seconds": 6.600050255656242e-06,
+      "configuration_changed": false,
+      "ninja": {
+        "seconds": 0.28929386800155044,
+        "count": 1,
+        "actions": {
+          "CXX": 0,
+          "LINK": 0,
+          "SOLINK": 0,
+          "AR": 0,
+          "Regenerating": 0
+        }
+      },
+      "binary_identities": {
+        "sim_test_target_host": [
+          2096,
+          366203,
+          19483040,
+          1795528822841065773,
+          1795528822937066326
+        ]
+      },
+      "lock_hold_seconds": 0.7712817470310256
+    },
+    "cases": [],
+    "commands": [
+      [
+        "host-build",
+        "PASS"
+      ],
+      [
+        "target-scenario-support",
+        "BLOCKED"
+      ]
+    ]
+  },
+  "concurrent-first": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/test.py",
+      "build",
+      "--target",
+      "sim_test_target_host",
+      "--out",
+      "/tmp/af2-m1/host",
+      "--output",
+      "/tmp/sim-host-efficiency/incremental/concurrent-first"
+    ],
+    "seconds": 1.370820211013779,
+    "exit": 0,
+    "expected_exit": 0,
+    "status": "PASS",
+    "build": {
+      "requested_targets": [
+        "sim_test_target_host"
+      ],
+      "dependencies": {
+        "googletest_inventory": 0.004420625977218151,
+        "googletest": {
+          "seconds": 0.0013736080145463347,
+          "reused": true,
+          "files": 247
+        },
+        "platform_headers": {
+          "seconds": 0.12091009807772934,
+          "reused": true,
+          "files": 21
+        }
+      },
+      "lock_wait_seconds": 7.0999376475811005e-06,
+      "source_manifest": {
+        "seconds": 0.31645002600271255,
+        "changed": false
+      },
+      "gn": {
+        "seconds_including_compile_database": 0.07508733298163861,
+        "count": 1,
+        "reason": "changed_graph_input:../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/sources.gni"
+      },
+      "compile_database_changed": false,
+      "compile_database_seconds": 0.001,
+      "targets": [
+        "sim_test_target_host"
+      ],
+      "route_seconds": 5.800044164061546e-06,
+      "configuration_changed": false,
+      "ninja": {
+        "seconds": 0.2917148839915171,
+        "count": 1,
+        "actions": {
+          "CXX": 0,
+          "LINK": 0,
+          "SOLINK": 0,
+          "AR": 0,
+          "Regenerating": 0
+        }
+      },
+      "binary_identities": {
+        "sim_test_target_host": [
+          2096,
+          366123,
+          19483064,
+          1795528641072061410,
+          1795528641168061937
+        ]
+      },
+      "lock_hold_seconds": 0.8403855509823188
+    },
+    "cases": [],
+    "commands": [
+      [
+        "host-build",
+        "PASS"
+      ]
+    ]
+  },
+  "concurrent-second": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/test.py",
+      "build",
+      "--target",
+      "sim_test_target_host",
+      "--out",
+      "/tmp/af2-m1/host",
+      "--output",
+      "/tmp/sim-host-efficiency/incremental/concurrent-second"
+    ],
+    "seconds": 2.1689303210005164,
+    "exit": 0,
+    "expected_exit": 0,
+    "status": "PASS",
+    "build": {
+      "requested_targets": [
+        "sim_test_target_host"
+      ],
+      "dependencies": {
+        "googletest_inventory": 0.004496225970797241,
+        "googletest": {
+          "seconds": 0.0015092090470716357,
+          "reused": true,
+          "files": 247
+        },
+        "platform_headers": {
+          "seconds": 0.12376401503570378,
+          "reused": true,
+          "files": 21
+        }
+      },
+      "lock_wait_seconds": 0.8398603470996022,
+      "source_manifest": {
+        "seconds": 0.29652161290869117,
+        "changed": false
+      },
+      "gn": {
+        "seconds_including_compile_database": 5.00003807246685e-07,
+        "count": 0,
+        "reason": null
+      },
+      "compile_database_changed": false,
+      "compile_database_seconds": null,
+      "targets": [
+        "sim_test_target_host"
+      ],
+      "route_seconds": 5.799927748739719e-06,
+      "configuration_changed": false,
+      "ninja": {
+        "seconds": 0.29569100809749216,
+        "count": 1,
+        "actions": {
+          "CXX": 0,
+          "LINK": 0,
+          "SOLINK": 0,
+          "AR": 0,
+          "Regenerating": 0
+        }
+      },
+      "binary_identities": {
+        "sim_test_target_host": [
+          2096,
+          366123,
+          19483064,
+          1795528641072061410,
+          1795528641168061937
+        ]
+      },
+      "lock_hold_seconds": 0.7993371179327369
+    },
+    "cases": [],
+    "commands": [
+      [
+        "host-build",
+        "PASS"
+      ]
+    ]
+  },
+  "missing-binary-restored": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "telephony_core_service/services/multisim/test/scripts/test.py",
+      "build",
+      "--debug-build",
+      "--target",
+      "sim_test_target_host",
+      "--out",
+      "/tmp/af2-m1/host",
+      "--output",
+      "/tmp/sim-host-efficiency/incremental/missing-binary-restored"
+    ],
+    "seconds": 12.75208849797491,
+    "exit": 0,
+    "expected_exit": 0,
+    "status": "PASS",
+    "build": {
+      "requested_targets": [
+        "sim_test_target_host"
+      ],
+      "dependencies": {
+        "googletest_inventory": 0.004402925027534366,
+        "googletest": {
+          "seconds": 0.0014236089773476124,
+          "reused": true,
+          "files": 247
+        },
+        "platform_headers": {
+          "seconds": 0.11642527405638248,
+          "reused": true,
+          "files": 21
+        }
+      },
+      "lock_wait_seconds": 7.00005330145359e-06,
+      "source_manifest": {
+        "seconds": 0.27757220598869026,
+        "changed": false
+      },
+      "gn": {
+        "seconds_including_compile_database": 0.07364192605018616,
+        "count": 1,
+        "reason": "changed_graph_input:../../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/sources.gni"
+      },
+      "compile_database_changed": false,
+      "compile_database_seconds": 0.002,
+      "targets": [
+        "sim_test_target_host"
+      ],
+      "route_seconds": 5.200039595365524e-06,
+      "configuration_changed": false,
+      "ninja": {
+        "seconds": 11.358499839087017,
+        "count": 1,
+        "actions": {
+          "CXX": 3,
+          "LINK": 1,
+          "SOLINK": 0,
+          "AR": 1,
+          "Regenerating": 0
+        }
+      },
+      "binary_identities": {
+        "sim_test_target_host": [
+          2096,
+          362044,
+          22247720,
+          1795528839657156412,
+          1795528839721156781
+        ]
+      },
+      "lock_hold_seconds": 11.867957885959186
+    },
+    "cases": [],
+    "commands": [
+      [
+        "host-build",
+        "PASS"
+      ]
+    ]
+  },
+  "rename-test-f": {
+    "BeforeRename-run": {
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "telephony_core_service/services/multisim/test/scripts/test.py",
+        "run",
+        "--target",
+        "sim_test_target_host",
+        "--debug-build",
+        "--out",
+        "/tmp/af2-m1/host",
+        "--output",
+        "/tmp/sim-host-efficiency/incremental/BeforeRename",
+        "--filter",
+        "HostEfficiencyFixture.BeforeRename"
+      ],
+      "exit": 0
+    },
+    "BeforeRename-editor": {
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "telephony_core_service/services/multisim/test/scripts/check_editor.py",
+        "--out",
+        "/tmp/af2-m1/host/debug",
+        "--output",
+        "/tmp/sim-host-efficiency/incremental/BeforeRename_editor",
+        "--target",
+        "sim_test_target_host"
+      ],
+      "exit": 0,
+      "matched_source": {
+        "target": "sim_test_target_host",
+        "name": "HostEfficiencyFixture.BeforeRename",
+        "file": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp",
+        "line": 1555,
+        "source": "TEST_F(HostEfficiencyFixture, BeforeRename) { EXPECT_TRUE(true); }"
+      }
+    },
+    "AfterRename-run": {
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "telephony_core_service/services/multisim/test/scripts/test.py",
+        "run",
+        "--target",
+        "sim_test_target_host",
+        "--debug-build",
+        "--out",
+        "/tmp/af2-m1/host",
+        "--output",
+        "/tmp/sim-host-efficiency/incremental/AfterRename",
+        "--filter",
+        "HostEfficiencyFixture.AfterRename"
+      ],
+      "exit": 0
+    },
+    "AfterRename-editor": {
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "telephony_core_service/services/multisim/test/scripts/check_editor.py",
+        "--out",
+        "/tmp/af2-m1/host/debug",
+        "--output",
+        "/tmp/sim-host-efficiency/incremental/AfterRename_editor",
+        "--target",
+        "sim_test_target_host"
+      ],
+      "exit": 0,
+      "matched_source": {
+        "target": "sim_test_target_host",
+        "name": "HostEfficiencyFixture.AfterRename",
+        "file": "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp",
+        "line": 1555,
+        "source": "TEST_F(HostEfficiencyFixture, AfterRename) { EXPECT_TRUE(true); }"
+      }
+    },
+    "source_restored_sha256": "3ca973a84c6609d5b9147a6a72f574c29ad78b20ec48ae86e0459160c9efe1c9",
+    "after_removal": {
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "telephony_core_service/services/multisim/test/scripts/test.py",
+        "list",
+        "--target",
+        "sim_test_target_host",
+        "--debug-build",
+        "--out",
+        "/tmp/af2-m1/host",
+        "--output",
+        "/tmp/sim-host-efficiency/incremental/renamed-restored",
+        "--filter",
+        "HostEfficiencyFixture.*"
+      ],
+      "exit": 2
+    }
+  }
+}

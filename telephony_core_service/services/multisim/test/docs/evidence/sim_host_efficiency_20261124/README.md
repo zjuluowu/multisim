@@ -12,3 +12,11 @@
 | [LLDB 计时](debug-timings.json)、[关闭外部查找核对](lldb-nofetch.log) | LLDB 18，沿用相同的 Target 无优化 ELF。批处理退出包含断点、调用栈及单例退出验证 |
 | [Legacy 双激活单步](legacy-local-step.log)、[正式 Target 主卡单步](target-local-step.log) | 保留命中帧、源码步骤、参数或原操作证据、单例退出 |
 | [双激活失败样本](lifecycle-dual-active-primary0-4.log) | 热路径采样 #4，保留额外 Radio 发令、3 秒清理屏障和残留引用失败原文 |
+| [基准取样](bench-samples.json) | 暖机、10 次 CLI、10 次真实 ELF 直接运行及前置任务等价调用。记录每轮 GN/Ninja 命令、编译链接计数、发现和进程阶段。原始 `before/legacy` 与 `before-ext4/legacy` 含跨脚本更新轮次，Legacy 配对统计使用 `replay-ext4/legacy`。`task-ext4/legacy` 第 8 轮包含受控 Controller 编译，单独保留 |
+| [完整门禁结果](quality-gates.json)、[Legacy 架构](legacy-ci-architecture.log)、[Target 架构](target-verify-architecture.log) | `test.py all --backend legacy --ci`、`test.py all --backend target`、两轮六场景差分、专项目标及技术和完整性 |
+| [依赖负控](dependency-controls.json) | 已验证树的同 mtime 内容改动导致本地快速构建在 Ninja 前退出。缓存损坏时回到内容校验 |
+| [增量正负控](incremental-controls.json) | 临时改动、相同构建配置并发、缺 ELF 恢复、TEST_F 改名、源码行定位、错误后端和编译失败 |
+| [八个 ELF 的枚举](editor-xml/) | `test.py editor --backend both` 构建同一输出下的八个业务程序，并执行真实 GoogleTest XML 发现 |
+| [首次 Target 单步构建](target-step-through-first-build.json) | 独立 `--debug-build --target sim_test_target_host` 的初次 GN/Ninja 初始化 |
+
+LLDB 与生命周期文本日志仅规范化终端颜色、缩进和行尾。阶段报告保留原命令、退出值、文件身份、配置及已接受的业务结果。C++ 验证改动均已恢复原字节。

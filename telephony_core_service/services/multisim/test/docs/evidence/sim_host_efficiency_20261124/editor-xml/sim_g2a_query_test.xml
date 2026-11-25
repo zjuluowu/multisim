@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="7" name="AllTests">
+  <testsuite name="Configurations/G2aReadOnlyQuery" tests="7">
+    <testcase name="OriginalManagerAttachment/single" value_param="24-byte object &lt;BC-C4 AE-D1 0F-62 00-00 B7-07 AF-D1 0F-62 00-00 00-00 00-00 00-00 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_query_test.cpp" line="9" />
+    <testcase name="OriginalManagerAttachment/dual" value_param="24-byte object &lt;C3-C4 AE-D1 0F-62 00-00 24-14 AF-D1 0F-62 00-00 00-00 00-00 00-00 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_query_test.cpp" line="9" />
+    <testcase name="OriginalManagerAttachment/zero" value_param="24-byte object &lt;C8-C4 AE-D1 0F-62 00-00 F1-FD AE-D1 0F-62 00-00 00-00 00-00 00-00 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_query_test.cpp" line="9" />
+    <testcase name="OriginalManagerAttachment/negative_atoi" value_param="24-byte object &lt;CD-C4 AE-D1 0F-62 00-00 DB-C4 AE-D1 0F-62 00-00 00-00 00-00 00-00 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_query_test.cpp" line="9" />
+    <testcase name="OriginalManagerAttachment/malformed_atoi" value_param="24-byte object &lt;DE-C4 AE-D1 0F-62 00-00 ED-C4 AE-D1 0F-62 00-00 00-00 00-00 00-00 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_query_test.cpp" line="9" />
+    <testcase name="OriginalManagerAttachment/vendor_override" value_param="24-byte object &lt;F5-C4 AE-D1 0F-62 00-00 24-14 AF-D1 0F-62 00-00 05-C5 AE-D1 0F-62 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_query_test.cpp" line="9" />
+    <testcase name="OriginalManagerAttachment/vendor_result_propagation" value_param="24-byte object &lt;07-C5 AE-D1 0F-62 00-00 24-14 AF-D1 0F-62 00-00 21-C5 AE-D1 0F-62 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_query_test.cpp" line="9" />
+  </testsuite>
+</testsuites>

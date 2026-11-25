@@ -32,7 +32,7 @@ C0 主卡单例的旧实现析构/ICCID注销问题已修复，资源清理断�
 | Verify / CI (Legacy admission) | Legacy 业务覆盖清单、完整依赖校验、架构与技术检查、真实执行审计、Mutation、Profile Safety 及 CI 准入 |
 | Verify Target Host | Target 全量、完整依赖校验、架构与技术检查及 Target 真实执行审计 |
 
-报告默认在 `.host-out/results`。完整架构检查要求仓外执行，入口会按需准备临时目录并将结果保存在本次报告的 `architecture/`。历史失败签名固定，五个已解决条目必须通过。当前性能、完整验证和 GUI 状态见 [专项报告](SIM_Host_Development_Efficiency_Optimization_Report.md)。
+报告默认在 `.host-out/results`。完整架构检查要求仓外执行，入口会按需准备临时目录并将结果保存在本次报告的 `architecture/`。历史失败签名固定，五个已解决条目必须通过。CLI 的 `run --backend both` 默认执行全部已支持的冻结差分场景，`--filter <Scenario ID>` 选择其中一个。当前性能、完整验证和 GUI 状态见 [专项报告](SIM_Host_Development_Efficiency_Optimization_Report.md)。
 
 `Run Selected Test` 只要求用例名，在命令行可用 `--backend` 与 `--target` 明确选择。批处理 `Debug Selected Test (LLDB evidence)` 还需要函数断点符号，会在命中后记录调用栈并继续运行。交互单步使用 Testing 面板的 **Debug Test**。CLI 默认每次执行增量检查；`--no-incremental-build` 显式选择已有 ELF。完整门禁始终验证内容和构建。
 

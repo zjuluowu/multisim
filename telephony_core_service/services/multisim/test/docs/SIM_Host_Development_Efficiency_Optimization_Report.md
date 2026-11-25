@@ -74,11 +74,72 @@ flowchart TD
 
 ## 调试启动
 
-同一 Target ELF 打开外部符号查询时曾测到 85.375 秒至正式主卡入口。关闭外部查找后，直接 LLDB 取样 0.52 秒命中，保留本机 DWARF。新版批处理 Target 10 次首停约 0.71–1.05 秒。TestMate 和手工 CodeLLDB 启动配置应用同一 LLDB 设置。Legacy 双激活断点及 Target 无优化单步均保存源码帧和原业务退出结果。[LLDB 原始取样](evidence/sim_host_efficiency_20261124/debug-timings.json)
+同一 Target ELF 打开外部符号查询时曾测到 85.375 秒至正式主卡入口。关闭外部查找后，直接 LLDB 取样 0.52 秒命中，保留本机 DWARF。新版批处理 Target 首停 10 次，最小 0.709 秒、中位数 0.909 秒、P90 1.022 秒、最大 1.048 秒。TestMate 和手工 CodeLLDB 启动配置应用同一 LLDB 设置。Legacy 双激活断点及 Target 无优化单步均保存源码帧和原业务退出结果。[LLDB 原始取样](evidence/sim_host_efficiency_20261124/debug-timings.json)
 
-## 验证状态
+## 性能对比
 
-Legacy C0 与 Target 正式 M3 的首轮 CLI 定点运行已通过，均只构建所属目标，各枚举一次。完整统计及门禁结果随本专项验证更新。
+以下为同一 WSL 机器、对应同一用例与初始化模型的连续取样，单位为秒。Legacy ext4 前值以原 `a3f94033c` 脚本在同一个已预热的输出上重放，后值沿用该输出。Target 两次都使用同一 ext4 输出。每行 10 次，P90 取排序后的第 9 个样本。收集期间有其它验证任务，锁及实际编译次数用于识别异常值。原始 `before/legacy` 和 `before-ext4/legacy` 的部分轮次跨越了脚本切换，仅用于保留过程及首次定位。下表的 Legacy 前值使用独立的冻结脚本重放。 [逐次原始数据](evidence/sim_host_efficiency_20261124/bench-samples.json)
+
+| 场景 | 最小 | 中位数 | P90 | 最大 | 目标/GN/Ninja/枚举 |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Legacy ext4，旧 CLI | 32.090 | 39.596 | 43.182 | 43.974 | 7 / 7 / 7 / 8 |
+| Legacy ext4，新 CLI | 2.353 | 4.149 | 4.264 | 4.273 | 1 / 0 / 1 / 1 |
+| Legacy 默认 DrvFS，新 CLI | 3.874 | 5.248 | 11.109 | 15.426 | 1 / 0 / 1 / 1 |
+| Target ext4，旧 CLI | 16.781 | 23.848 | 25.824 | 26.665 | 1 / 1 / 1 / 2 |
+| Target ext4，新 CLI | 2.340 | 3.225 | 3.510 | 30.885 | 1 / 0 / 1 / 1 |
+| Legacy ext4，旧脚本时期 ELF 直接运行 | 0.019 | 0.021 | 0.022 | 0.022 | 0 / 0 / 0 / 0 |
+| Legacy ext4，新 ELF 直接运行 | 0.020 | 0.022 | 0.022 | 0.023 | 0 / 0 / 0 / 0 |
+| Legacy 默认 DrvFS，新 ELF 直接运行 | 0.022 | 0.116 | 0.124 | 0.126 | 0 / 0 / 0 / 0 |
+| Target ext4，旧 ELF 直接运行 | 0.004 | 0.005 | 0.005 | 0.005 | 0 / 0 / 0 / 0 |
+| Target ext4，新 ELF 直接运行 | 0.003 | 0.003 | 0.004 | 0.004 | 0 / 0 / 0 / 0 |
+| TestMate 旧 Legacy 前置任务，CLI 等价调用 | 11.146 | 15.762 | 16.647 | 18.915 | 7 / 7 / 7 / 0 |
+| TestMate 新 Legacy 前置任务，CLI 等价调用 | 2.166 | 2.361 | 3.426 | 4.227 | 1 / 0 / 1 / 0 |
+
+热运行 CLI 的 CXX 和链接次数均为 0。Legacy ext4 CLI 中位数约下降 90%，Target 约下降 86%。Target 新 CLI 最大值包含 25.27 秒构建锁等待，Legacy DrvFS 前两轮也各有超过 4 秒的等待。表中直接运行包含进程启动、测试、清理、profile 写入及退出。当前样本的 CLI 中位数仍超过 2 秒。前置任务的 CLI 等价调用只计构建，VS Code GUI 3 秒目标未测。
+
+旧路径的 379.017 秒含三次 CXX、一次真实切片链接及其它目标准备，与热运行分开。新 Target 无优化调试目录的[首次构建](evidence/sim_host_efficiency_20261124/target-step-through-first-build.json)含 28 次 CXX 和 1 次链接，Ninja 用时 164.979 秒，整次持锁 167.390 秒。后续单目标构建复用该目录。普通源文件改动的实际 CXX 与链接耗时见下表，完整 LTO 下的单 CPP 场景仍有超过 10 秒的样本。
+
+本机 `/mnt/c`、`/mnt/d` 也是 9p 挂载，源码实测位置为 `/mnt/e`。`/tmp` 是 ext4。默认构建目录内有 clangd 磁盘索引，热构建复用编译数据库。曾采样到 I/O PSI 的 full avg10=0.31，未作 GUI/clangd 活动的同步归因。依赖负控中 GoogleTest 内容校验约 0.06 秒，热身份检查约 0.003 秒。平台声明、OpenSSL、Native Runtime 及锁、源码清单和各子进程分别计时，原始数值随构建记录保存。完整证据生成在 Legacy Primary 全量试验中实测耗时 21.31 秒，Target 全量 21.97 秒。一个 Legacy 开发单例的对应阶段实测约 0.053 秒。 [依赖检查原始数据](evidence/sim_host_efficiency_20261124/dependency-controls.json)
+
+## 增量与负控
+
+| 改动或故障 | 当前实际结果 |
+| --- | --- |
+| 源码无变化 | PASS，退出 0，2.16 秒，GN 0 次，CXX 0 次，链接 0 次。 |
+| Target 测试 CPP 改动 | PASS，退出 0，78.17 秒，GN 0 次，CXX 1 次，链接 1 次。 |
+| Target 生产 CPP 改动 | PASS，退出 0，46.91 秒，GN 0 次，CXX 1 次，链接 1 次。 |
+| Legacy Controller CPP 改动 | PASS，退出 0，236.37 秒，GN 0 次，CXX 0 次，链接 0 次。 |
+| Target 装配公共头改动 | PASS，退出 0，56.88 秒，GN 0 次，CXX 2 次，链接 1 次。 |
+| GNI 改动 | PASS，退出 0，1.91 秒，GN 1 次，CXX 0 次，链接 0 次。 |
+| Target CPP 编译负控 | FAIL，退出 1，7.10 秒，GN 0 次，CXX 1 次，链接 0 次。 |
+| 恢复正确源码 | PASS，退出 0，52.08 秒，GN 0 次，CXX 1 次，链接 1 次。 |
+| 新增普通 CPP 及用例 | PASS，退出 0，65.76 秒，GN 1 次，CXX 1 次，链接 1 次。 |
+| 删除普通 CPP 后查询原用例 | UNSUPPORTED，退出 2，58.63 秒，GN 1 次，CXX 0 次，链接 1 次。 |
+| 同一输出先 Legacy | PASS，退出 0，2.76 秒，GN 0 次，CXX 0 次，链接 0 次。 |
+| 同一输出再 Target | PASS，退出 0，53.53 秒，GN 0 次，CXX 3 次，链接 1 次。 |
+| Target 查询仅 Legacy 的用例 | BLOCKED，退出 2，1.54 秒，GN 0 次，CXX 0 次，链接 0 次。 |
+| 两个同配置构建之一 | PASS，退出 0，1.37 秒，GN 1 次，CXX 0 次，链接 0 次，构建锁等待 0.000 秒。 |
+| 两个同配置构建之二 | PASS，退出 0，2.17 秒，GN 0 次，CXX 0 次，链接 0 次，构建锁等待 0.840 秒。 |
+| 已准备输出缺失 ELF | PASS，退出 0，12.75 秒，GN 1 次，CXX 3 次，链接 1 次。 |
+
+各 CPP 和头文件的验证改动均为短期标记，已逐字恢复。固定依赖缓存损坏后重新验证。复制的 GoogleTest 头内容改变且保留原 mtime 时，快速构建仍检出并在 Ninja 前失败。编译负控保留失败进程状态及用例列表，已构建产物未被拿来执行。已对 Target 的临时 TEST_F 实际运行、改名并重建，XML 只给出该轮有效名称和行号。移除后按原名搜索退出 2。发现验证保留真实参数化实例名及源码行。 [增量和负控命令与结果](evidence/sim_host_efficiency_20261124/incremental-controls.json)
+
+## 完整质量门禁
+
+| 验证 | 本轮结果 |
+| --- | --- |
+| Legacy Host 全量及 CI 准入 | 140/140，历史覆盖清单、已解决缺陷策略、能力负控、4 组真实执行审计通过 |
+| Target Host 全量 | 124/124，M1 6/6、M2 9/9、M3 7/7，3 组真实执行审计通过 |
+| 六个冻结 Scenario 差分 | 两边 12/12，Legacy/Target/Oracle 差异 0 |
+| M1/M2/M3 的 ASan / TSan | 各 22/22 |
+| 完整性、架构与 GN/Ninja | 历史资产、源码规则、迁移检查、17 个结构检查、5 个声明编译负控、四组规则、97 个语法单元和 GN 对象构建通过 |
+| Mutation | READY 与 PUK 两个变异均检出，恢复试验通过，隔离目录中正常 ELF 的 SHA 恢复 |
+| Profile Safety | 通过，既有 `default.profraw` 原字节保持 |
+| 八个业务 ELF 的测试发现 | 264 个有效文件与行号，Legacy 140、Target 124，覆盖参数化用例 |
+| LLDB 业务验证 | Legacy 双激活进入真实 Core/Controller。Target 进入正式主卡、实时卡观察、原证据与 Stop 场景 |
+| GUI | 未实测 |
+
+正式 Target 主卡单步命中 `SimModule::SetPrimarySlotId`、`AssignmentService::RunTrackedC0`、`AssignmentStoreAdapter::WriteC0Parameter` 和 `LegacyCompletion::CompleteLegacyInt`，保留同一请求逐键凭证、槽号和同步返回。原业务测试继续断言四个参数、Primary/Data 投影、通知和零 Radio 发令。未决效果与 Stop 场景通过原测试断言。双激活直接运行的单次失败保存为独立风险，正式冻结差分及双激活 LLDB 均有各自的 PASS 报告。 [完整门禁原始结果](evidence/sim_host_efficiency_20261124/quality-gates.json) · [Target 主卡单步](evidence/sim_host_efficiency_20261124/target-local-step.log)
 
 ## 最短 VS Code 操作
 

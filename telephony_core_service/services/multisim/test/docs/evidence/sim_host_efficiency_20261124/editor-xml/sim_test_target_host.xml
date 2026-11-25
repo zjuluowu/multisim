@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="124" name="AllTests">
+  <testsuite name="TargetArchitecture" tests="1">
+    <testcase name="C0PrimaryPlanUsesNoDeviceSwitch" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/architecture/primary_plan_test.cpp" line="8" />
+  </testsuite>
+  <testsuite name="TargetPrimaryB" tests="57">
+    <testcase name="BSuccessCommitsOnlyAfterMatchingReply" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="575" />
+    <testcase name="ResourceBarrierCheckingBlocksSendUntilInitialRecovery" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="593" />
+    <testcase name="HostLifecycleOldHandleRejectedAndAcceptedRequestCompletes" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="620" />
+    <testcase name="HostLifecycleCloseIntentRejectsStartBeforeOwnerSeal" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="644" />
+    <testcase name="HostLifecyclePostedSealOutlivesCoordinator" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="667" />
+    <testcase name="HostLifecycleConcurrentStopCannotDrainBeforeSeals" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="681" />
+    <testcase name="HostLifecycleConcurrentStopHasOneCleaner" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="696" />
+    <testcase name="HostLifecycleOwnerDispatchFailureIsNotDeviceDrain" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="715" />
+    <testcase name="HostLifecycleStopOnEmptyHostIsIdempotent" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="736" />
+    <testcase name="HostLifecycleCancelsQueuedRetryAndOldEpochCannotRun" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="748" />
+    <testcase name="HostLifecycleStopRequestedFromOwnerCallbackDoesNotJoinSelf" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="763" />
+    <testcase name="HostLifecycleDoesNotStopUnrelatedSharedRilConsumer" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="781" />
+    <testcase name="HostLifecycleOldAndNewInstancesRemainIsolated" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="800" />
+    <testcase name="HostLifecycleStopDuringC1CheckPreservesMemberResponsibility" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="822" />
+    <testcase name="HostLifecycleStopAndExternalResultRaceCompletesOnce" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="840" />
+    <testcase name="HostLifecycleStopAndLateEvidencePreserveOriginalCompletion" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="868" />
+    <testcase name="HostLifecycleHandoffUnknownKeepsDeviceResponsibility" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="895" />
+    <testcase name="HostLifecycleQuarantinedResultIsNotDrained" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="913" />
+    <testcase name="ResourceHandoffAcceptedRequiresExpectedSerial" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="929" />
+    <testcase name="ResourceSubmitUnknownQuarantinesInsteadOfConfirmedCancel" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="939" />
+    <testcase name="ResourceSubmitResponseBeforeReturnIsBufferedUntilHandoffClassified" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="949" />
+    <testcase name="ResourceSubmitDuplicatesDeduplicateAndConflictsQuarantine" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="964" />
+    <testcase name="ResourceSubmitConfirmedNotSentRejectsContradictoryCallback" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="992" />
+    <testcase name="ResourceBarrierIsNotAcquiredForC0" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1006" />
+    <testcase name="ResourceBarrierConfirmedNotSentReturnsAvailable" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1016" />
+    <testcase name="ResourceBarrierBEndsBeforeResultIsDelivered" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1026" />
+    <testcase name="ResourceBarrierRejectsWrongBindingWithoutReleasingLease" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1044" />
+    <testcase name="ResourceRejectsOldSerialOnCurrentTransportToken" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1060" />
+    <testcase name="ResourceBarrierRejectsDuplicateMemberSubmission" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1074" />
+    <testcase name="ResourceBarrierBTimeoutQuarantinesUntilRealRecovery" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1086" />
+    <testcase name="ResourceBarrierLateBResultRecoversOnlyWithCurrentStateProof" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1102" />
+    <testcase name="ResourceRetainsOwnerDeliveryWhenDispatchIsStopped" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1118" />
+    <testcase name="ResourceRequiresDispatcherBeforeProductSubmit" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1135" />
+    <testcase name="ResourceC1ConcurrentMemberCallbacksStayOwnerSerialized" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1146" />
+    <testcase name="ResourceBarrierC1AutomaticallyRetriesOnlyAfterEachPhaseEnded" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1169" />
+    <testcase name="ResourceBarrierC1UpdateNotifyCannotCompleteWithoutReuseEvidence" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1203" />
+    <testcase name="ResourceBarrierDoesNotScheduleRetryBeforeCompleteMembersEnd" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1223" />
+    <testcase name="ResourceCallbackAfterOwnerDestructionCannotAccessDanglingSink" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1238" />
+    <testcase name="ResourceBarrierStopSeparatesOwnerAndDeviceDrain" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1251" />
+    <testcase name="BErrorKeepsPreviousRolesAndCompletesOriginalFailure" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1265" />
+    <testcase name="BTimeoutAt45000KeepsRolesAndRejectsLateReply" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1280" />
+    <testcase name="BindingChangeAndUnknownEffectsPreserveIsolation" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1305" />
+    <testcase name="C1ThreePhaseSuccessRejectsStaleSession" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1345" />
+    <testcase name="C1SharedWriteQualificationBlocksC0InDifferentDomainUntilRelease" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1385" />
+    <testcase name="C0ReentrantPrimaryNotificationCannotAdmitConflictingRequest" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1411" />
+    <testcase name="C1BindingChangeRestoresPrewrittenPrimaryParameters" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1428" />
+    <testcase name="C1BackgroundRetryUsesControlledAsyncScheduler" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1449" />
+    <testcase name="C1RetrySchedulerRejectsDuplicateAndBindingChange" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1487" />
+    <testcase name="C1RetrySchedulerStopCancelsAndOldEpochCannotRun" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1503" />
+    <testcase name="C1RetryDueAndStopRaceDrainsCallbackBeforeResultDecision" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1527" />
+    <testcase name="C1DestroyedOwnerRejectsQueuedRetryWithoutUaf" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1542" />
+    <testcase name="C1StopReportsDrainFailureUntilActiveDeviceResultEnds" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1558" />
+    <testcase name="C1StopDuringActiveRoundCancelsRetryAfterConfirmedComplete" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1576" />
+    <testcase name="C1StopAndQueuedRadioCallbacksRemainOwnerSerialized" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1589" />
+    <testcase name="C1UnknownDoesNotScheduleRetry" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1616" />
+    <testcase name="C1CheckFailureRestoresAndExhaustsFiveRetries" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1634" />
+    <testcase name="RejectsWrongAssociationAndDoesNotAdvanceNewRequest" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp" line="1674" />
+  </testsuite>
+  <testsuite name="TargetPrimary" tests="10">
+    <testcase name="C0AssignmentServiceAlreadyPrimary" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_assignment_service_test.cpp" line="193" />
+    <testcase name="C0RejectsMissingInactiveOrChangedTopologyFacts" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_assignment_service_test.cpp" line="218" />
+    <testcase name="C0RejectsUnknownStaleOrDifferentRadioObservation" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_assignment_service_test.cpp" line="252" />
+    <testcase name="C0PreservesPartialEffectsWhenStoreWriteFails" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_assignment_service_test.cpp" line="268" />
+    <testcase name="C0RejectsConflictingRequestAndCanRestartAfterFailure" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_assignment_service_test.cpp" line="303" />
+    <testcase name="C0DifferentDomainsRejectNestedSharedRoleWrite" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_assignment_service_test.cpp" line="332" />
+    <testcase name="C0KeepsUnfinishedWritesUncommittedAndQualified" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_assignment_service_test.cpp" line="375" />
+    <testcase name="C0OperationAdmissionRejectsOldEpochStepAndDuplicateCompletion" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_assignment_service_test.cpp" line="407" />
+    <testcase name="C0OperationConsumesNotSentAndKeepsLateEvidenceSeparate" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_assignment_service_test.cpp" line="434" />
+    <testcase name="SharedWriteSetRejectsDifferentDomainButDisjointRoleAdvances" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_assignment_service_test.cpp" line="463" />
+  </testsuite>
+  <testsuite name="TargetAdapterIntegration" tests="4">
+    <testcase name="C0UsesRealAssignmentStoreAdapter" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_store_adapter_integration_test.cpp" line="111" />
+    <testcase name="C0PreservesLegacySuccessForCompletedParameterFailures" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_store_adapter_integration_test.cpp" line="131" />
+    <testcase name="C0DoesNotCompleteUnconfirmedWrites" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_store_adapter_integration_test.cpp" line="155" />
+    <testcase name="RestoreKeepsLegacyValidSlotAndConditionalIccidRules" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_store_adapter_integration_test.cpp" line="180" />
+  </testsuite>
+  <testsuite name="TargetTopologyIntegration" tests="30">
+    <testcase name="T1NewDiscoveryExecutesOneProviderWriteAndAcceptsTARoles" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="277" />
+    <testcase name="T1ProviderIoDoesNotHoldTLockAcrossAReadWrite" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="299" />
+    <testcase name="T1KnownIccidReusesIdentityWithoutNewInsertSemantics" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="316" />
+    <testcase name="T1KnownAccountAlreadyBoundCannotShadowMove" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="327" />
+    <testcase name="T1DuplicateObservationDoesNotRepeatStore" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="340" />
+    <testcase name="T1ObservationInvalidatedDuringWriteKeepsEffectWithoutBinding" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="351" />
+    <testcase name="T1ConcurrentInvalidationRejectsBlockedProviderReturn" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="365" />
+    <testcase name="T1UnknownStoreEffectIsNotRetriedByDuplicateObservation" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="384" />
+    <testcase name="T1ConfirmedNotAppliedDoesNotCreateBinding" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="395" />
+    <testcase name="T1RoleRevisionChangeRejectsOldDiscoveredFragment" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="404" />
+    <testcase name="T1ProviderIdentityMismatchForKnownIccidIsRejected" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="418" />
+    <testcase name="T1MatchFailureBeforeWriteDoesNotReserveProviderEffect" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="428" />
+    <testcase name="T2AcceptedRoleReservationSurvivesLaterUnrelatedRoleMutation" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="439" />
+    <testcase name="T2StaleAppliedCanReconcileWithoutRestoringOldBinding" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="450" />
+    <testcase name="T2RecoveryDoesNotReleaseRoleForMissingProviderRow" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="465" />
+    <testcase name="T1ProviderReconnectRequiresFreshObservationNotCachedRetry" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="481" />
+    <testcase name="T1SameSlotNewCardDoesNotInheritOldCompletedWrite" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="499" />
+    <testcase name="T2SameIccidDifferentSlotIsRejectedBeforeProviderWrite" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="518" />
+    <testcase name="T2C1InFlightDoesNotBlockUnrelatedDiscoveryReservation" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="537" />
+    <testcase name="T2UnrelatedDiscoveryDoesNotSharePendingRoleReservation" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="551" />
+    <testcase name="T2ReloadCurrentAndHistoricalAcceptIndependentAttempts" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="575" />
+    <testcase name="T2FailedViewDoesNotClearOtherOrSameView" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="595" />
+    <testcase name="T2OlderReloadCannotOverwriteFieldUpdatedAfterAttempt" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="613" />
+    <testcase name="T2OutOfOrderAttemptsUseLatestOnly" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="628" />
+    <testcase name="T2ReloadDoesNotRemovePostAttemptNewAccount" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="643" />
+    <testcase name="T1OldEpochCannotEnterNewTopology" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="658" />
+    <testcase name="C0UsesRealRegistryBindingIndexAndTopologyService" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="667" />
+    <testcase name="C0RejectsUnboundInactiveChangedAndStaleIdentity" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="690" />
+    <testcase name="BindingAbaAndAccountViewLifetimeProtectC0" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="716" />
+    <testcase name="BindingChangeDuringAssignmentReadRejectsOldRequest" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="750" />
+  </testsuite>
+  <testsuite name="AF2Module" tests="6">
+    <testcase name="FactoryPublishesRealTopologyAndRunsC0" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="834" />
+    <testcase name="MissingPortAndBadEvidenceNeverPublishAndReleasePartialGraph" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="861" />
+    <testcase name="DeviceBranchesAreRejectedBeforeAnyWriteOrCommand" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="891" />
+    <testcase name="ConcurrentStopDuringCompletionSealsOldEntryAndKeepsOriginalFrame" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="910" />
+    <testcase name="UnknownParameterEffectRetainsOriginalResponsibility" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="950" />
+    <testcase name="SharedResourceAllowsOnlyOneCompetingOwner" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="977" />
+  </testsuite>
+  <testsuite name="AF2Discovery" tests="9">
+    <testcase name="LiveCardDiscoveryCreatesAccountAndBinding" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="1056" />
+    <testcase name="KnownCardReinsertKeepsIdentityAndRejectsDuplicateAndOldSource" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="1078" />
+    <testcase name="WrongProofAndPartialEvidenceKeepOriginalUntilAllColumnsAreProven" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="1106" />
+    <testcase name="SameSlotOriginalsRecoverIndependentlyInBothResultOrders" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="1142" />
+    <testcase name="UnreturnedMatchKeepsOriginalAndNeverAuthorizesWrite" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="1188" />
+    <testcase name="StopBeforeSendGrantSealsNewWork" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="1207" />
+    <testcase name="StopWhileWriteExecutesWaitsForRealReturnAndAllowsOriginalDisposition" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="1220" />
+    <testcase name="LostRoleReceiptIsReReadWithoutReplayingPublishOrWrite" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="1245" />
+    <testcase name="LiveBindingsFeedExistingC0AndStaleTargetCannotAdvance" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="1265" />
+  </testsuite>
+  <testsuite name="AF2Primary" tests="7">
+    <testcase name="LiveDualSimSetPrimaryThroughLegacyEntry" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="1342" />
+    <testcase name="EntryPreservesPermissionSlotAndMissingBindingOrder" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="1371" />
+    <testcase name="ReplacementDuringPrimarySlotWriteRevokesRemainingKeys" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="1396" />
+    <testcase name="InterruptedIccidWriteRetainsPrefixAndOnlyAcceptsOriginalEvidenceAfterStop" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="1423" />
+    <testcase name="CompletedLegacyParameterErrorsReturnSuccessAndRetainOnlyIndeterminateEffects" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="1468" />
+    <testcase name="StopInFlightAndDuringOriginalNotificationRetainsCallUntilReturn" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="1512" />
+    <testcase name="IndependentRepeatedSelectionPreservesLegacyMainAnnouncementDeduplication" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp" line="1542" />
+  </testsuite>
+</testsuites>

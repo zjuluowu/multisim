@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="7" name="AllTests">
+  <testsuite name="Configurations/UpstreamRealSimCount" tests="7">
+    <testcase name="OriginalCoreAndManager/single" value_param="24-byte object &lt;79-29 1B-5C C3-5B 00-00 0E-69 1B-5C C3-5B 00-00 00-00 00-00 00-00 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_upstream_test.cpp" line="11" />
+    <testcase name="OriginalCoreAndManager/dual" value_param="24-byte object &lt;80-29 1B-5C C3-5B 00-00 3C-75 1B-5C C3-5B 00-00 00-00 00-00 00-00 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_upstream_test.cpp" line="11" />
+    <testcase name="OriginalCoreAndManager/zero" value_param="24-byte object &lt;85-29 1B-5C C3-5B 00-00 6B-5F 1B-5C C3-5B 00-00 00-00 00-00 00-00 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_upstream_test.cpp" line="11" />
+    <testcase name="OriginalCoreAndManager/negative_atoi" value_param="24-byte object &lt;8A-29 1B-5C C3-5B 00-00 98-29 1B-5C C3-5B 00-00 00-00 00-00 00-00 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_upstream_test.cpp" line="11" />
+    <testcase name="OriginalCoreAndManager/malformed_atoi" value_param="24-byte object &lt;9B-29 1B-5C C3-5B 00-00 AA-29 1B-5C C3-5B 00-00 00-00 00-00 00-00 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_upstream_test.cpp" line="11" />
+    <testcase name="OriginalCoreAndManager/vendor_override" value_param="24-byte object &lt;B2-29 1B-5C C3-5B 00-00 3C-75 1B-5C C3-5B 00-00 C2-29 1B-5C C3-5B 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_upstream_test.cpp" line="11" />
+    <testcase name="OriginalCoreAndManager/vendor_result_propagation" value_param="24-byte object &lt;C4-29 1B-5C C3-5B 00-00 3C-75 1B-5C C3-5B 00-00 DE-29 1B-5C C3-5B 00-00&gt;" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/query/g2a_upstream_test.cpp" line="11" />
+  </testsuite>
+</testsuites>

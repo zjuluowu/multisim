@@ -1,0 +1,72 @@
+{
+  "cold_content_verification": {
+    "googletest_inventory": 0.009087849059142172,
+    "googletest": {
+      "seconds": 0.05926732497755438,
+      "reused": false,
+      "files": 247
+    },
+    "platform_headers": {
+      "seconds": 0.661111524910666,
+      "reused": false,
+      "files": 21
+    }
+  },
+  "warm_identity_reuse": {
+    "googletest_inventory": 0.007648542057722807,
+    "googletest": {
+      "seconds": 0.002624013926833868,
+      "reused": true,
+      "files": 247
+    },
+    "platform_headers": {
+      "seconds": 0.20880534499883652,
+      "reused": true,
+      "files": 21
+    }
+  },
+  "verify_forces_content": {
+    "googletest_inventory": 0.006448635016568005,
+    "googletest": {
+      "seconds": 0.05991072894539684,
+      "reused": false,
+      "files": 247
+    },
+    "platform_headers": {
+      "seconds": 0.5731062419945374,
+      "reused": false,
+      "files": 21
+    }
+  },
+  "corrupt_cache_rebuilt": {
+    "googletest_inventory": 0.007163938949815929,
+    "googletest": {
+      "seconds": 0.0553944039857015,
+      "reused": false,
+      "files": 247
+    },
+    "platform_headers": {
+      "seconds": 0.609442241024226,
+      "reused": false,
+      "files": 21
+    }
+  },
+  "same_mtime_tamper": {
+    "exit_code": 1,
+    "error": "GoogleTest source differs from dependency_lock.json",
+    "ninja_called": false
+  },
+  "restored_dependency": {
+    "googletest_inventory": 0.005503729917109013,
+    "googletest": {
+      "seconds": 0.05216328601818532,
+      "reused": false,
+      "files": 247
+    },
+    "platform_headers": {
+      "seconds": 0.15428194601554424,
+      "reused": true,
+      "files": 21
+    }
+  }
+}

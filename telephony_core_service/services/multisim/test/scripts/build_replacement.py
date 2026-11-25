@@ -89,6 +89,8 @@ def verify_dependencies(output, values, targets, full, timing):
         previous = {}
     current = dict(previous)
     root = Path(values['gtest_root'])
+    if not root.is_dir():
+        raise FileNotFoundError('Pinned GoogleTest source directory is missing: ' + str(root))
     start = perf_counter()
     files = sorted(path for path in root.rglob('*') if path.is_file())
     timing['googletest_inventory'] = perf_counter() - start
@@ -106,7 +108,7 @@ def verify_dependencies(output, values, targets, full, timing):
                  lambda: check_hashes(HOST_ROOT, headers), previous, current, timing, full)
     if set(targets).intersection(REAL):
         if not values['openssl_root'] or not values['sim028_runtime_root']:
-            raise ValueError('Real Primary requires prepared --openssl-root and --runtime-root')
+            raise FileNotFoundError('Real Primary requires prepared --openssl-root and --runtime-root')
         openssl = Path(values['openssl_root'])
         metadata = openssl / 'sim_dependency.json'
         start = perf_counter()
@@ -241,7 +243,7 @@ def main():
         except (OSError, ValueError, subprocess.CalledProcessError) as error:
             trace['error'] = str(error)
             print('Host build failed: ' + str(error), file=sys.stderr)
-            return 1
+            return 2 if isinstance(error, FileNotFoundError) else 1
         finally:
             trace['lock_hold_seconds'] = perf_counter() - entered
             if args.result:
@@ -262,7 +264,7 @@ def build(args, output, trace):
             roots = inherited
     root = args.gtest_root or roots.get('gtest_root')
     if not root:
-        raise ValueError('Set SIM_GTEST_ROOT or --gtest-root to the pinned GoogleTest source')
+        raise FileNotFoundError('Set SIM_GTEST_ROOT or --gtest-root to the pinned GoogleTest source')
     values = {'gtest_root': str(Path(root).resolve()),
               'production_root': str(REPO / 'telephony_core_service'),
               'host_debug': True,
@@ -312,8 +314,10 @@ def build(args, output, trace):
         for line in child.stdout:
             print(line, end='', flush=True)
             action = re.match(r'^\[\d+/\d+\] (\w+)', line)
-            if action and action[1] in counts:
-                counts[action[1]] += 1
+            if action:
+                name = 'AR' if action[1] == 'ar' else action[1]
+                if name in counts:
+                    counts[name] += 1
         code = child.wait()
     trace['ninja'] = {'seconds': perf_counter() - start, 'count': 1, 'actions': counts}
     if code:

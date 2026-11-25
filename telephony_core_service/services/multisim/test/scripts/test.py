@@ -24,6 +24,13 @@ HOST = [target for target in LEGACY if target not in REAL]
 BACKEND_TARGETS = {'legacy': LEGACY, 'target': TARGET}
 
 
+def backend_filter(args, backend):
+    if args.action == 'run' and args.backend == 'both' and args.filter == '*':
+        return ':'.join(row[backend]['test'] for row in selected_scenarios()
+                        if row['differential'] == 'SUPPORTED' and row[backend].get('test'))
+    return gtest_filter(backend, args.filter, args.platform)
+
+
 def build_plan(args, auto_route):
     backends = expanded_backends(args.backend)
     targets = args.target or [target for backend in backends for target in BACKEND_TARGETS[backend]]
@@ -33,7 +40,7 @@ def build_plan(args, auto_route):
         return LEGACY + TARGET, [{'targets': LEGACY + TARGET, 'fallback': targets, 'filter': args.filter}]
     groups = []
     for backend in backends:
-        pattern = gtest_filter(backend, args.filter, args.platform)
+        pattern = backend_filter(args, backend)
         if literal_cases(pattern) and len(BACKEND_TARGETS[backend]) > 1:
             groups.append({'targets': BACKEND_TARGETS[backend], 'filter': pattern})
         else:
@@ -186,11 +193,16 @@ def main():
                 if trace.is_file():
                     result['build'] = json.loads(trace.read_text())
                 if build_exit:
-                    result['status'] = 'FAIL'
+                    result['status'] = 'BLOCKED' if build_exit == 2 else 'FAIL'
                     print(result.get('build', {}).get('error', 'Host build failed') +
                           '; see ' + str(session/'host-build.log'), file=sys.stderr)
-                    return 1
+                    return build_exit
                 selected_targets = [target for target in result['build']['targets'] if target != PROBE]
+            if selected_targets and not args.out.is_dir():
+                result['status'] = 'BLOCKED'
+                result['reason'] = 'Host output directory is missing and incremental build is disabled'
+                print(result['reason'], file=sys.stderr)
+                return 2
             if selected_targets and args.action != 'build':
                 wait_start = perf_counter()
                 execution_lock = (args.out/'.build.lock').open('a')
@@ -209,7 +221,7 @@ def main():
             discovered = {}
             if args.action in ('run','list','debug'):
                 for backend in active_backends:
-                    pattern = gtest_filter(backend, args.filter, args.platform)
+                    pattern = backend_filter(args, backend)
                     for target in selected_targets:
                         if target not in BACKEND_TARGETS[backend]:
                             continue
@@ -246,8 +258,8 @@ def main():
                         continue
                     binary = args.out/'build'/target
                     report_dir = session/backend/target
-                    backend_filter = gtest_filter(backend,args.filter,args.platform)
-                    options = ['--binary',binary,'--output',report_dir,'--filter',backend_filter]
+                    pattern = backend_filter(args, backend)
+                    options = ['--binary',binary,'--output',report_dir,'--filter',pattern]
                     if target in REAL:
                         options += ['--env','SIM_HOST_BOOT_SLOT_COUNT=2','--env','SIM028_INIT_MODEL='+args.init_model]
                     if args.action != 'all':
@@ -264,7 +276,7 @@ def main():
                             breakpoint = 'OHOS::Telephony::SimStateManager::UnlockPin'
                             if backend == 'target':
                                 breakpoint = 'OHOS::Telephony::MultiSim::SimModule::SetPrimarySlotId'
-                            elif backend_filter == 'RealSimPrimary.C0CoreToRealManagerAndController':
+                            elif pattern == 'RealSimPrimary.C0CoreToRealManagerAndController':
                                 breakpoint = 'OHOS::Telephony::CoreServiceSim::SetPrimarySlotId'
                         options += ['--breakpoint', breakpoint]
                         if args.slot is not None:
@@ -273,7 +285,7 @@ def main():
                             options += ['--primary-cleanup-diagnostic']
                         run(backend+'-'+target+'-debug','debug.py',options)
                         continue
-                    if args.action == 'run' and exact_case(backend_filter) and args.backend != 'both' and not args.full_evidence:
+                    if args.action == 'run' and exact_case(pattern) and args.backend != 'both' and not args.full_evidence:
                         options += ['--development-evidence']
                     run(backend+'-'+target,'run_gtest.py',options)
                     reports = list(report_dir.glob('gtest-*/result.json'))

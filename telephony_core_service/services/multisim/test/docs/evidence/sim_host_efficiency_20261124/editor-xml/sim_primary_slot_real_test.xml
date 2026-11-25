@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="48" name="AllTests">
+  <testsuite name="RunnerLifetime" tests="5">
+    <testcase name="NormalCompletionAndRepeatedStop" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/lifecycle_test.cpp" line="22" />
+    <testcase name="PendingTaskCancelledAndCapturedOwnerReleased" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/lifecycle_test.cpp" line="32" />
+    <testcase name="InFlightStopJoinsAndRejectsCallbackRepost" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/lifecycle_test.cpp" line="45" />
+    <testcase name="ConcurrentStopIsIdempotent" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/lifecycle_test.cpp" line="69" />
+    <testcase name="CallbackCannotSynchronouslyJoinItself" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/lifecycle_test.cpp" line="81" />
+  </testsuite>
+  <testsuite name="RealCardLifetime" tests="3">
+    <testcase name="MissingRilInitializationReleasesState" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/lifecycle_test.cpp" line="91" />
+    <testcase name="InitializedStateUnregistersRilAndReleases" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/lifecycle_test.cpp" line="101" />
+    <testcase name="PublicDetachReleasesRealStateFileAndRil" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/lifecycle_test.cpp" line="115" />
+  </testsuite>
+  <testsuite name="RealSimPrimary" tests="7">
+    <testcase name="InitializesRealManagerAndControllerWithoutRil" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/primary_initialization_test.cpp" line="16" />
+    <testcase name="BDirectRilSuccessCommitsAfterReply" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_protocol_test.cpp" line="6" />
+    <testcase name="BDirectRilFailureKeepsPreviousPrimary" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_protocol_test.cpp" line="23" />
+    <testcase name="C1ThreePhasesWithStaleCheckResponseRejected" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_protocol_test.cpp" line="38" />
+    <testcase name="BRealTimeoutKeepsPreviousPrimary" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_protocol_test.cpp" line="79" />
+    <testcase name="C1CheckFailureRestoresParametersAndExhaustsFiveRetries" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_protocol_test.cpp" line="96" />
+    <testcase name="C0CoreToRealManagerAndController" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/primary_test.cpp" line="4" />
+  </testsuite>
+  <testsuite name="AccountProviderHost" tests="6">
+    <testcase name="AdapterMatchDistinguishesFailureFromConfirmedNoRow" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="44" />
+    <testcase name="LoadAccountsMapsCurrentAndHistoricalSourceSeparately" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="73" />
+    <testcase name="LoadAccountsFailureIsNotReplaceableEmptySuccess" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="94" />
+    <testcase name="AdapterUsesOneInsertThenReadBackIdentity" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="109" />
+    <testcase name="AdapterFailedWriteWithMatchingReadBackStaysUnknown" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="135" />
+    <testcase name="AdapterDoesNotTurnUnknownReadBackIntoSuccess" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="157" />
+  </testsuite>
+  <testsuite name="PairingReview" tests="5">
+    <testcase name="AllThreeSlotsPublicDetach" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="175" />
+    <testcase name="IccidObserverUnregisterReleasesSubscriber" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="192" />
+    <testcase name="PartialInitializationAndRepeatedUnregister" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="210" />
+    <testcase name="DestroyThenReinitializeCardGraph" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="227" />
+    <testcase name="UnrelatedRuntimeWorkerIsBaseline" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="239" />
+  </testsuite>
+  <testsuite name="ShutdownContract" tests="8">
+    <testcase name="ANormalPrimaryThenStop" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="272" />
+    <testcase name="BThreeSlotsThenStop" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="285" />
+    <testcase name="CPartialInitializationThenStop" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="300" />
+    <testcase name="DRepeatedStop" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="308" />
+    <testcase name="EInFlightSuccessCompletesBeforeRelease" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="346" />
+    <testcase name="FErrorReplyDuringStoppingKeepsOriginalResult" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="348" />
+    <testcase name="GDelayedDispatchAfterStop" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="350" />
+    <testcase name="HDestroyAndCreateNewGraph" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="365" />
+  </testsuite>
+  <testsuite name="ShutdownExtra" tests="14">
+    <testcase name="CoreLegacyHostCoordinatesRealManagerStop" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="385" />
+    <testcase name="CoreLegacyHostRetainsManagerAfterStopFailureAndRetries" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="399" />
+    <testcase name="CoreEntrySealDrainsAcceptedIpcBeforeLegacyStop" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="414" />
+    <testcase name="CoreCallbackMayRequestSealWithoutWaitingForSelf" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="436" />
+    <testcase name="CorePostTaskFailureReturnsNoCompletionOwnership" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="453" />
+    <testcase name="WatcherLateCallbackAfterOwnerDestruction" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="467" />
+    <testcase name="PartialWatcherRegistration" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="481" />
+    <testcase name="FailedWatcherRemovalKeepsStoppingAndRetries" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="488" />
+    <testcase name="ObserverReleaseOutsideLockAllowsReentrantDestruction" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="500" />
+    <testcase name="C1StopAtCheck" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="569" />
+    <testcase name="C1StopAtUpdate" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="570" />
+    <testcase name="C1StopAtComplete" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="571" />
+    <testcase name="WatcherInFlightIsDrainedAndSelfStopIsRejected" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="573" />
+    <testcase name="OwnedTaskClosureDestructionIsPartOfStopBarrier" file="/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/internal/shutdown_test.cpp" line="596" />
+  </testsuite>
+</testsuites>
