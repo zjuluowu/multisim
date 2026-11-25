@@ -7,6 +7,7 @@
 #include <set>
 #include <typeinfo>
 #include <type_traits>
+#include <utility>
 #include <cstring>
 #include <thread>
 #include <chrono>
@@ -90,7 +91,39 @@ template<class Rep, class Period> void sleep_for(std::chrono::duration<Rep, Peri
     std::this_thread::sleep_for(delay);
 }
 }
-using thread = std::thread;
+class thread {
+public:
+    template<class F>
+    explicit thread(F &&action)
+    {
+        auto ticket = BeginOwnedThread();
+        try {
+            worker_ = std::thread([action = std::forward<F>(action), ticket = ticket]() mutable {
+                struct Completion {
+                    std::shared_ptr<void> ticket;
+                    ~Completion() { FinishOwnedThread(ticket); }
+                } completion{std::move(ticket)};
+                AwaitOwnedThreadGate();
+                action();
+            });
+        } catch (...) {
+            FinishOwnedThread(ticket);
+            throw;
+        }
+    }
+    thread(thread &&) noexcept = default;
+    thread &operator=(thread &&) noexcept = default;
+    thread(const thread &) = delete;
+    thread &operator=(const thread &) = delete;
+    bool joinable() const { return worker_.joinable(); }
+    void join() { worker_.join(); }
+
+private:
+    static std::shared_ptr<void> BeginOwnedThread();
+    static void FinishOwnedThread(const std::shared_ptr<void> &ticket);
+    static void AwaitOwnedThreadGate();
+    std::thread worker_;
+};
 }
 #include "host_refptr.h"
 namespace OHOS {

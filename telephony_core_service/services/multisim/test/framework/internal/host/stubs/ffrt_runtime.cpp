@@ -1,6 +1,7 @@
 // External FFRT subset only. No SIM state, account or modem decisions.
 #include "ffrt_runtime.h"
 #include <algorithm>
+#include <cstdlib>
 #include <stdexcept>
 
 namespace {
@@ -9,6 +10,11 @@ ffrt::condition_variable evidenceChanged;
 unsigned workers = 0;
 unsigned failures = 0;
 uint64_t schedulerRevision = 0;
+std::mutex ownedThreadMutex;
+std::condition_variable ownedThreadChanged;
+unsigned ownedThreads = 0;
+uint64_t ownedThreadRevision = 0;
+bool ownedThreadsReleased = false;
 std::vector<std::weak_ptr<ffrt::HostQueue>> queues;
 thread_local std::string currentQueueName = "calling-thread";
 
@@ -23,6 +29,43 @@ void SchedulerChanged()
 }
 
 namespace ffrt {
+std::shared_ptr<void> thread::BeginOwnedThread()
+{
+    auto ticket = std::make_shared<int>(0);
+    std::lock_guard<std::mutex> guard(ownedThreadMutex);
+    ++ownedThreads;
+    ++ownedThreadRevision;
+    ownedThreadChanged.notify_all();
+    return ticket;
+}
+void thread::FinishOwnedThread(const std::shared_ptr<void> &ticket)
+{
+    (void)ticket;
+    std::lock_guard<std::mutex> guard(ownedThreadMutex);
+    --ownedThreads;
+    ++ownedThreadRevision;
+    ownedThreadChanged.notify_all();
+}
+void thread::AwaitOwnedThreadGate()
+{
+    if (!std::getenv("SIM028_HOLD_OWNED_THREADS")) return;
+    std::unique_lock<std::mutex> guard(ownedThreadMutex);
+    ownedThreadChanged.wait(guard, [] { return ownedThreadsReleased; });
+}
+std::pair<unsigned, uint64_t> OwnedThreadEvidence()
+{
+    std::lock_guard<std::mutex> guard(ownedThreadMutex);
+    // Negative control: reconstruct the pre-fix pthread-detach-only view.
+    if (std::getenv("SIM028_OLD_OWNED_THREAD_WAIT")) return {0, ownedThreadRevision};
+    return {ownedThreads, ownedThreadRevision};
+}
+bool AwaitOwnedThreadsIdle(std::chrono::steady_clock::time_point deadline)
+{
+    // Must match OwnedThreadEvidence during the same negative-control run.
+    if (std::getenv("SIM028_OLD_OWNED_THREAD_WAIT")) return true;
+    std::unique_lock<std::mutex> guard(ownedThreadMutex);
+    return ownedThreadChanged.wait_until(guard, deadline, [] { return ownedThreads == 0; });
+}
 static std::atomic<uint64_t> nextTaskId{1};
 static thread_local uint64_t currentTaskId=0;
 namespace this_task { uint64_t get_id() { return currentTaskId; } }
@@ -235,6 +278,12 @@ void wait() { GeneralQueue().wait_idle(); }
 }
 
 namespace SimHost {
+void ReleaseOwnedThreads()
+{
+    std::lock_guard<std::mutex> guard(ownedThreadMutex);
+    ownedThreadsReleased = true;
+    ownedThreadChanged.notify_all();
+}
 std::string CurrentQueueName() { return currentQueueName; }
 void StopCallingThreadTasks()
 {

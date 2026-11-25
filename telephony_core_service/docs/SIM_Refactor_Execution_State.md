@@ -36,6 +36,19 @@ Target Host 124/124，含 M1 6/6、M2 9/9、M3 7/7。ASan 和 TSan 各 22/22，�
 
 **SIM Host 开发效率专项。** 输入 `a3f94033c`。统一入口批量准备同配置目标，精确用例经 GN 源码归属和 GoogleTest 枚举确认。VS Code 按 ELF 执行单目标前置任务，Target 的 step-through 使用独立调试目录。已复现 Legacy 原路径 379 秒，其中真实主卡切片的 Ninja 占 343 秒。新版 Legacy C0 和正式 Target M3 各只更新自身目标，CLI 实际运行通过。已用真实 LLDB 验证 Legacy 双激活和正式 Target 的断点及单步。关闭外部符号查询后，Target 首停连续 10 次为 0.71–1.05 秒。并行高负载期间一次 Legacy 双激活发生额外 Radio 发令和清理屏障失败，详见专项原始证据。Legacy CI 140/140，Target 124/124，六个冻结差分与 Oracle 差异均为 0，ASan/TSan 各 22/22，八个 ELF 核对 264 个源码位置。单例准入、源码改动、发现刷新和负控均有独立证据。CLI/LLDB 和默认输出的 Prepare 已验收。2026-11-25 已找到 Remote WSL 窗口，Windows 前台焦点受限，GUI Run、Debug 和刷新未采样。完整性能与验证范围查[专项报告](../services/multisim/test/docs/SIM_Host_Development_Efficiency_Optimization_Report.md)。AF-2 M3 业务里程碑按上节证据维持。
 
+**2026-11-25 · SIM Host 收尾。** 双激活偶发已确定为既有 Host owned-thread
+同步缺口，不是 `a3f94033c` 的工具链回归或 Legacy 生产业务缺陷。Host 旧
+FFRT 模型只观察队列和 pthread-detach，漏计 `TelLifecycle::Submit(detached=true)`
+的 joinable `std::thread`，初始化可早于自动主卡校正完成进入 C0；迟到 Radio
+通信随后持有对象图，导致 3 秒清理屏障失败。修复后 fixture 同时观察 owned
+thread 完成并保持原业务断言。确定性交错旧屏障负控复现 81.018 秒、额外 Radio
+发令及 Stop/引用未排空；当前屏障同一输入 14 ms 通过，空闲、8 CPU 饱和、DrvFS
+I/O 各 20/20。Developer 保持独立 `-O0`、无 LTO 输出；源码仍在 `/mnt/e`、输出
+移至 ext4 时普通 CPP Ninja 增量为 8.54–10.25 秒，Verify LTO link 同类改动为
+36.917 秒。热 Developer CLI 后段 2.16–2.25 秒，未稳定达到 2/10 秒指标，余量由
+DrvFS 源码读取和 final link 解释；源码复制到 ext4 未经授权不执行。Windows GUI
+仍为人工未验收。详见[收尾证据](../services/multisim/test/docs/evidence/sim_host_efficiency_20261125/README.md)。
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）

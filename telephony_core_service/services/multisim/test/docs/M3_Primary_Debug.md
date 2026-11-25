@@ -29,6 +29,12 @@ python3 -B "$TEST/scripts/test.py" run --backend both --init-model dual-active-p
 
 ## Legacy 调用及数据
 
+双激活夹具现在把 `TelLifecycle::Submit(detached=true)` 的 owned thread 纳入
+初始化完成屏障。只有自动主卡校正、Radio 映射和主卡 0 基线完成后才准入 C0，
+避免调试初始化顺序本身触发迟到的 `SetRadioProtocol`。确定性交错证据见
+[Host 收尾记录](evidence/sim_host_efficiency_20261125/README.md)；生产
+`MultiSimController`/`RadioProtocolController` 行为未在本轮修改。
+
 ```text
 RealSimPrimary.C0CoreToRealManagerAndController
 → SimTest::SelectPrimary → Legacy Host 的 Core 调用包装

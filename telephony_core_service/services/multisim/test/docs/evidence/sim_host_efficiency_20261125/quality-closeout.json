@@ -1,0 +1,53 @@
+{
+  "input_head": "920526203119c1108507cf7bbf457470a0c5e4cb",
+  "target_all": {
+    "status": "PASS",
+    "cases": 124,
+    "report": ".host-out/results/sim-nz2c42c8/result.json",
+    "gates": [
+      "architecture",
+      "integrity",
+      "technical",
+      "production-execution"
+    ]
+  },
+  "legacy_ci": {
+    "status": "PASS",
+    "cases": 140,
+    "report": ".host-out/results/sim-x9y4tfzx/result.json",
+    "gates": [
+      "capability-negative-controls",
+      "profile-safety",
+      "architecture",
+      "integrity",
+      "technical",
+      "device-static",
+      "migration-equivalence",
+      "mutation"
+    ]
+  },
+  "both_oracle": {
+    "status": "PASS",
+    "executions": 12,
+    "frozen_scenarios": 6,
+    "differences": 0,
+    "report": ".host-out/results/sim-t61rfhcb/result.json"
+  },
+  "sanitizers": {
+    "asan": {
+      "status": "PASS",
+      "cases": 22
+    },
+    "tsan": {
+      "status": "PASS",
+      "cases": 22
+    }
+  },
+  "gui": {
+    "run": "UNVERIFIED",
+    "debug": "UNVERIFIED",
+    "source_navigation": "UNVERIFIED",
+    "test_tree_refresh": "UNVERIFIED",
+    "reason": "Windows foreground focus rejection; no repeated UI interception"
+  }
+}

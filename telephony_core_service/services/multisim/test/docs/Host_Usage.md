@@ -6,6 +6,12 @@
 2. 首次准备固定依赖，执行 **Tasks: Run Task → Prepare Testing Panel**。该任务对 Legacy 和 Target 做完整依赖校验，并检查各可执行程序的 XML 源码位置。初始化参数见 [测试入口](../README.md)。
 3. 打开测试 CPP，选中 Testing 面板中的用例。点击 **Run**，或设置源码断点后点击 **Debug Test**。即使同一文件显示在多个程序下，用例也使用所在行的可执行程序及后端。
 
+日常 Target 开发优先把输出放在 WSL ext4，使用 `--debug-build`；它独立编译
+`-O0`、无 LTO 的产物，修改生产 CPP 后只重建该 Target ELF。正式回归和验收继续
+使用默认 Verify 配置，不能用 Developer 产物代替。热运行预热后约 2.2 秒，
+普通生产 CPP 修改的构建受 `/mnt/e` 读源速度影响；详细分解见
+[专项报告收尾章节](SIM_Host_Development_Efficiency_Optimization_Report.md#收尾异步屏障与-developer-构建)。
+
 TestMate 在 Run 和 Debug 前执行该程序的任务。任务退出非零时操作中止，构建日志位于任务输出所指向的报告目录。每例使用单独进程及 `%p` profile。Legacy 的真实 Primary 和 Bootstrap 日常使用双槽、single-active 模型。需要双激活 C0 时选择 **SIM Legacy C0 (dual active)** 启动配置。调试启动默认使用本机 DWARF，关闭 LLDB 外部符号查询以避开网络等待。Target 常规 Debug 使用 DWARF，遇到优化后不可见的变量或内联函数时选择 **SIM Target (step-through)**，使用独立的 `.host-out/debug/build` 目录。
 
 首次枚举及 ELF 变更后，TestMate 用 GoogleTest XML 获取源码位置。已验证的 ELF 未更新时，TestMate 按 ELF 修改时间与发现配置复用 XML。新增、删除或改名 TEST 后先运行对应的 **Build Legacy Host** 或 **Build Target Host** 任务。Testing 面板仍显示旧条目时点刷新。新建普通 `cases/*.cpp` 自动更新源码清单；新增显式链接切片的 CPP 须加入对应 GN 源表。XML 检查记录在 Prepare 报告的 `editor/locations.json`。
@@ -35,6 +41,13 @@ C0 主卡单例的旧实现析构/ICCID注销问题已修复，资源清理断�
 报告默认在 `.host-out/results`。完整架构检查要求仓外执行，入口会按需准备临时目录并将结果保存在本次报告的 `architecture/`。历史失败签名固定，五个已解决条目必须通过。CLI 的 `run --backend both` 默认执行全部已支持的冻结差分场景，`--filter <Scenario ID>` 选择其中一个。Windows 自动化的前台焦点检查阻止了 GUI 采样。已通过 CLI 核对默认构建目录的八个程序和源码位置。当前性能及完整验证见 [专项报告](SIM_Host_Development_Efficiency_Optimization_Report.md)。
 
 `Run Selected Test` 只要求用例名，在命令行可用 `--backend` 与 `--target` 明确选择。批处理 `Debug Selected Test (LLDB evidence)` 还需要函数断点符号，会在命中后记录调用栈并继续运行。交互单步使用 Testing 面板的 **Debug Test**。CLI 默认每次执行增量检查；`--no-incremental-build` 显式选择已有 ELF。完整门禁始终验证内容和构建。
+
+Windows 前台焦点仍由用户确认时，手工验收清单固定为：Legacy 与 Target Run/
+Debug 是否命中各自目标；Target 源码修改后是否执行最新 ELF；源码跳转文件/行号；
+`SimModule::SetPrimarySlotId` 断点；进入 `AssignmentService` 与
+`AssignmentStoreAdapter`；观察 `SessionRef`、`BindingRef`、`AccountRecord` 和
+`AssignmentAggregate`；新增或改名用例后的刷新。焦点拒绝时不要重复抢占，记录
+“GUI 未验收”而非把 CLI/LLDB 结果冒充 GUI PASS。
 
 <a id="af2-m1-debug"></a>
 

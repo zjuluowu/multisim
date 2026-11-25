@@ -167,6 +167,36 @@ def exact_case(pattern):
     return re.fullmatch(r'[\w/]+\.[\w/]+', pattern) is not None
 
 
+def case_source_inventory():
+    cases = TEST / 'cases'
+    return {str(path.relative_to(cases)): file_identity(path)
+            for path in sorted(cases.rglob('*.cpp'))}
+
+
+def update_case_manifest(output, incremental, trace):
+    source_list = TEST / 'cases/sources.gni'
+    cache_path = output / 'case-source-inventory.json'
+    script = TEST / 'scripts/update_case_sources.py'
+    source_before = file_identity(source_list) if source_list.exists() else None
+    start = perf_counter()
+    inventory = {'script': file_identity(script),
+                 'sources': case_source_inventory(),
+                 'manifest': source_before}
+    previous = read_json(cache_path, {}) if incremental else {}
+    reused = previous == inventory
+    if not reused:
+        subprocess.run([sys.executable, '-B', str(script)], check=True)
+        source_after = file_identity(source_list) if source_list.exists() else None
+        inventory['manifest'] = source_after
+        write_json(cache_path, inventory)
+    trace['source_manifest'] = {
+        'seconds': perf_counter() - start,
+        'changed': not reused and source_before != inventory['manifest'],
+        'inventory_reused': reused,
+        'case_sources': len(inventory['sources']),
+    }
+
+
 def literal_cases(pattern):
     parts = pattern.split(':')
     return parts if all(map(exact_case, parts)) else []
@@ -274,12 +304,7 @@ def build(args, output, trace):
         values['host_step_debug'] = True
     build_dir = output / 'build'
     database = build_dir / 'compile_commands.json'
-    source_list = TEST / 'cases/sources.gni'
-    source_before = file_identity(source_list) if source_list.exists() else None
-    start = perf_counter()
-    subprocess.run([sys.executable, '-B', str(TEST / 'scripts/update_case_sources.py')], check=True)
-    trace['source_manifest'] = {'seconds': perf_counter() - start,
-                                'changed': source_before != file_identity(source_list)}
+    update_case_manifest(output, args.incremental, trace)
     reason = graph_reason(build_dir, values, previous)
     before = file_identity(database) if database.exists() else None
     start = perf_counter()

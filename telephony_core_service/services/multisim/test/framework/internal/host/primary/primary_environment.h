@@ -138,6 +138,12 @@ public:
     int SetPrimarySlotId(int slot)
     {
         observation.Add("api_input", {{"slot", std::to_string(slot)}});
+        if (std::getenv("SIM028_HOLD_OWNED_THREADS")) {
+            SimHost::ReleaseOwnedThreads();
+            if (!SimHost::AwaitDetachedThreadsIdle(5s)) {
+                ADD_FAILURE() << "OWNED_THREAD_INTERLEAVE_GATE_TIMEOUT";
+            }
+        }
         const int result = core.SetPrimarySlotId(slot);
         std::string symbol = ErrorSymbol(result);
         observation.Add("api_return", {{"result", std::to_string(result)}, {"symbol", symbol}});
@@ -552,6 +558,7 @@ public:
     }
     ~PrimaryEnvironment()
     {
+        SimHost::ReleaseOwnedThreads();
         ExportPrimaryObservation();
         if (manager) EXPECT_TRUE(manager->Stop()) << "REAL_MANAGER_STOP_FAILED";
         if (dual) SetInitializationAccountProbe({});

@@ -28,6 +28,7 @@ bool AwaitSchedulerIdle(std::chrono::milliseconds budget);
 // Fixture admission barrier: drain running and already-due work, leaving future
 // production timers intact. This does not cancel tasks or change business state.
 bool AwaitSchedulerReadyIdle(std::chrono::milliseconds budget);
+void ReleaseOwnedThreads();
 bool AwaitSchedulerStopped(std::chrono::milliseconds budget);
 void StopCallingThreadTasks();
 void ResetSchedulerEvidence(); // Requires all queue owners/workers released.

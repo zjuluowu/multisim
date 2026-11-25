@@ -7,6 +7,11 @@
 #include <map>
 #include <memory>
 
+namespace ffrt {
+std::pair<unsigned, uint64_t> OwnedThreadEvidence();
+bool AwaitOwnedThreadsIdle(std::chrono::steady_clock::time_point deadline);
+}
+
 namespace {
 struct Ticket {
     void *(*entry)(void *);
@@ -91,19 +96,28 @@ namespace SimHost {
 DetachedThreadEvidence GetDetachedThreadEvidence()
 {
     auto &threads = Registry();
-    std::lock_guard<std::mutex> lock(threads.mutex);
     unsigned active = 0;
-    for (const auto &[id, ticket] : threads.tickets) active += ticket->detached && !ticket->finished;
-    return {active, threads.revision};
+    uint64_t revision = 0;
+    {
+        std::lock_guard<std::mutex> lock(threads.mutex);
+        for (const auto &[id, ticket] : threads.tickets) active += ticket->detached && !ticket->finished;
+        revision = threads.revision;
+    }
+    const auto owned = ffrt::OwnedThreadEvidence();
+    return {active + owned.first, revision + owned.second};
 }
 bool AwaitDetachedThreadsIdle(std::chrono::milliseconds budget)
 {
+    const auto deadline = std::chrono::steady_clock::now() + budget;
     auto &threads = Registry();
-    std::unique_lock<std::mutex> lock(threads.mutex);
-    return threads.changed.wait_for(lock, budget, [&] {
-        for (const auto &[id, ticket] : threads.tickets)
-            if (ticket->detached && !ticket->finished) return false;
-        return true;
-    });
+    {
+        std::unique_lock<std::mutex> lock(threads.mutex);
+        if (!threads.changed.wait_until(lock, deadline, [&] {
+            for (const auto &[id, ticket] : threads.tickets)
+                if (ticket->detached && !ticket->finished) return false;
+            return true;
+        })) return false;
+    }
+    return ffrt::AwaitOwnedThreadsIdle(deadline);
 }
 }

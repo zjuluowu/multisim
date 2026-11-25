@@ -152,3 +152,97 @@ flowchart TD
 默认 `.host-out` 的 Prepare 已实际通过。构建一次 Ninja，核对 264 个源码位置。Windows 互操作可用，自动化能定位 Remote WSL 项目窗口。前台焦点检查失败，因此未发送按键，也未采集 GUI Run、Debug 或刷新结果。CLI、源码定位和 LLDB 有独立证据。 [默认 Prepare](evidence/sim_host_efficiency_20261124/default-editor-prepare.json) · [GUI 探测](evidence/sim_host_efficiency_20261124/vscode-gui-probe.log)
 
 Host 证据对应 AF-2 M3 Host 实现，产品构建、SA/IPC、设备和生产迁移沿用原验收边界。
+
+## 收尾：异步屏障与 Developer 构建
+
+### Legacy 双激活因果分析
+
+`a3f94033c` 到本轮输入 `920526203` 未改变 `primary_environment.h`、
+`primary_api.cpp`、`MultiSimController` 或 `RadioProtocolController`，因此偶发失败
+不是本轮 Python/GN/VS Code 优化引入的生产或夹具回归。触发条件是 Host 对
+`TelLifecycle::Submit(..., detached=true)` 的不完整模型：生产源码在独立线程中投递
+自动主卡校正，但 Host 的 `AwaitSchedulerReadyIdle` 只看 FFRT 队列，
+`AwaitDetachedThreadsIdle` 只看由 `pthread_detach` 标记的线程；该 `ffrt::thread`
+实际映射到 joinable `std::thread`，因而从两个计数都不可见。
+
+双激活初始化在两次账户载入后产生自动主卡校正 callable。旧完成谓词可以在该线程仍
+运行时宣布初始化完成。随后用户 C0 已进入，自动校正又根据实时卡、ICCID 和 Radio
+映射调用 `CheckIfNeedSwitchMainSlotId → CoreManagerInner::SetPrimarySlotId`。
+`MultiSimController::SetPrimarySlotId` 读到目标映射不是 `MODEM_ID_0` 后进入
+`SetRadioProtocol`；Host 的业务严格断言把这组后到请求视为非预期。Strict RIL 未返回
+该请求，Radio 控制器维持 45 秒通信窗口。原先的清理入口在 3 秒内无法停止仍持
+RIL 引用和 owned thread 的生产图，所以 `manager->Stop`、scheduler drain 和 RIL
+引用断言失败。非预期 Radio 与清理失败属于同一因果链；180 秒的卡状态和 10 秒
+RIL 之外的正常定时器不是原因。
+
+Host 修复将 `ffrt::thread` 的 callable 纳入 owned-thread 计数，并让
+`GetDetachedThreadEvidence`、`AwaitDetachedThreadsIdle` 同时等待原 detach 线程与
+joinable owned thread。稳定 revision 防止扫描与提交之间的空窗。测试完成谓词现在
+先确认账户、卡状态、激活、Radio 映射、自动主卡校正 callable 及同步主卡 0
+基线全部完成，才安装 C0 的 Times(0) 断言。没有扩大 timeout、删除断言、注入业务
+结果或修改生产 SIM 代码。
+
+确定性负控使用 Host 门控暂停已提交 callable，并恢复修复前计数视图；81.018 秒
+内得到 4 次非预期 `SetRadioProtocol`、未完成 `manager->Stop`、scheduler 和 RIL
+引用未排空。单独启用当前屏障后，同一 ELF、同一输入在 14 ms 通过。修复后
+dual-active-primary0 在空闲 20/20、8 CPU 饱和 20/20、DrvFS 顺序 I/O 负载 20/20；
+Original 2026-11-24 的一次 81.618 秒失败可由相同交错确定复现。原始证据见
+[2026-11-25 收尾目录](evidence/sim_host_efficiency_20261125/)。
+
+结论：这是**既有测试 Host 同步模型缺陷**；不是 Legacy 生产业务并发缺陷，也不是
+工具链优化回归。真实生产 `TelLifecycle` 拥有线程并在 Stop 时 join，但夹具此前把
+“FFRT due work 为空”错误推演为“自动校正线程已结束”。该结论不改变产品 SA/IPC、
+真实 FFRT 或设备 Radio 的验收边界。
+
+### Developer 与 Verify
+
+保留两种独立配置：
+
+| 配置 | 当前参数 | 用途 |
+| --- | --- | --- |
+| Developer | `--debug-build`，独立 `<out>/debug/build`，`-O0 -g`，无 LTO | 日常修改、正式生产源码断点、局部变量及对象观察 |
+| Verify | 默认输出，`-O1 -g`、full LTO、原质量门禁 | 业务回归、审计、sanitizer、完整验收及证据 |
+
+两者记录不同 GN 参数和二进制，不能互相冒充。Developer 不启用 `-Og`：同一
+`assignment_service.cpp` 的受控编译中，`-O0` 为 5.35–7.26 秒，`-Og` 为
+8.31–12.74 秒，并且对象可观察性没有 O0 完整。编译缓存当前未安装，采用缓存不会
+解决 9p 读源或 full LTO final link，故本轮不引入工具链依赖。
+
+在源码继续位于 `/mnt/e`、输出移到 WSL ext4 后，Developer 首次构建为 28 个 CXX、
+59.358 秒 Ninja。普通生产 CPP 改动首次为 4.537 秒构建加 0.353 秒执行；相同
+环境的三次重复为 12.17–15.58 秒 CLI，Ninja 8.54–10.25 秒。Verify 同一改动的
+Ninja 为 36.917 秒，LTO link 占 33.717 秒。`Developer` 的无 LTO link 明显低于
+Verify，但源码从 DrvFS 读取使单 CPP 和 DWARF 时间仍波动；不宣称稳定达到 10
+秒。正式构建输出仍可位于 ext4，但质量门禁配置不变。
+
+热 Developer CLI 预热后的最后四次为 2.157–2.251 秒；测试进程自身为 6–9 ms。
+构建清单生成现在只在脚本、测试 CPP 身份或生成文件身份变化时重读；Verify
+仍始终全量重生成和校验。额外剩余约 1 秒来自 9p 文件身份扫描、平台头依赖扫描、
+Ninja 的 depfile 检查及 Python/GoogleTest 发现。没有未解释的构建锁等待、clangd
+或并发阻塞；抽样时 clangd 只有一个 `.host-out` 默认索引进程，I/O PSI avg10=0。
+源码与输出同时置于 ext4 的实验 D 未执行，因为这需要复制源码，未经用户允许不
+改变当前工作区。
+
+### VS Code 与停止边界
+
+配置路径仍按 ELF 分别绑定 Legacy/Target；Developer/正式 Target 的源码和调试
+产物隔离。CLI 已确认 Target 修改后构建并运行最新 ELF，正式
+`SimModule::SetPrimarySlotId` 入口、AssignmentService 和 StoreAdapter 的 LLDB
+证据沿用上一轮，不重复全量 264 位置初始化。
+
+本轮未再次尝试 Windows 前台 GUI 自动化。实际 GUI Run、Debug、源码跳转、
+测试改名刷新仍为**人工未验收**。人工验收只需依次确认：双后端各自 target、
+修改后 Target ELF、`SimModule::SetPrimarySlotId` 断点、进入
+`AssignmentService`/`AssignmentStoreAdapter`、观察 `SessionRef`、`BindingRef`、
+`AccountRecord`、`AssignmentAggregate`，以及新增/改名用例后的刷新。
+
+P0 已转化为可确定复现并修复；Developer 快路径已实测；2 秒热运行仅差约
+0.2 秒且受 9p/DrvFS 波动，10 秒单 CPP 目标存在读源瓶颈。停止继续优化不改变
+业务真实性，也避免为性能数字复制源码、关闭 LTO 正式门禁或弱化测试断言。
+
+最终必要回归为 Target 124/124、Legacy CI 140/140、六个冻结场景双方 12 次
+执行及 Oracle 差异 0、ASan 22/22、TSan 22/22；架构、完整性、技术、生产执行、
+Mutation、Profile Safety 和迁移等适用门禁均通过。GUI 保持未验收。该结果支持进入
+AF-2 M4 的 Target Host/Data 业务开发，但不等于产品 SA/IPC、真实设备 Radio 或
+Windows GUI 验收。需继续隔离跟踪的风险仅为 `/mnt/e` 单 CPP 性能波动、未执行的
+源码全 ext4 复制实验，以及人工 GUI 边界。

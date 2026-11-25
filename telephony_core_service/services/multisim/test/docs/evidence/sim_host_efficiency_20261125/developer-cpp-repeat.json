@@ -1,0 +1,26 @@
+[
+  {
+    "index": 0,
+    "rc": 0,
+    "seconds": 15.583718982990831,
+    "ninja_seconds": 10.250894895056263,
+    "source_manifest_seconds": 1.0743031610036269,
+    "execution_seconds": 1.1406011569779366
+  },
+  {
+    "index": 1,
+    "rc": 0,
+    "seconds": 13.82633725006599,
+    "ninja_seconds": 8.537215700023808,
+    "source_manifest_seconds": 1.2798109120922163,
+    "execution_seconds": 0.7013819849817082
+  },
+  {
+    "index": 2,
+    "rc": 0,
+    "seconds": 12.16561827098485,
+    "ninja_seconds": 8.636678201961331,
+    "source_manifest_seconds": 0.9076244189636782,
+    "execution_seconds": 0.6924452430102974
+  }
+]

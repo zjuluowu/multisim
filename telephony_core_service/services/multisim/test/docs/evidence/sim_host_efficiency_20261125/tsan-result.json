@@ -1,0 +1,112 @@
+[
+  {
+    "id": "AF2Module.FactoryPublishesRealTopologyAndRunsC0",
+    "rc": 0,
+    "stderr_tail": ""
+  },
+  {
+    "id": "AF2Module.MissingPortAndBadEvidenceNeverPublishAndReleasePartialGraph",
+    "rc": 0,
+    "stderr_tail": ""
+  },
+  {
+    "id": "AF2Module.DeviceBranchesAreRejectedBeforeAnyWriteOrCommand",
+    "rc": 0,
+    "stderr_tail": ""
+  },
+  {
+    "id": "AF2Module.ConcurrentStopDuringCompletionSealsOldEntryAndKeepsOriginalFrame",
+    "rc": 0,
+    "stderr_tail": ""
+  },
+  {
+    "id": "AF2Module.UnknownParameterEffectRetainsOriginalResponsibility",
+    "rc": 0,
+    "stderr_tail": ""
+  },
+  {
+    "id": "AF2Module.SharedResourceAllowsOnlyOneCompetingOwner",
+    "rc": 0,
+    "stderr_tail": ""
+  },
+  {
+    "id": "AF2Discovery.LiveCardDiscoveryCreatesAccountAndBinding",
+    "rc": 0,
+    "stderr_tail": ""
+  },
+  {
+    "id": "AF2Discovery.KnownCardReinsertKeepsIdentityAndRejectsDuplicateAndOldSource",
+    "rc": 0,
+    "stderr_tail": ""
+  },
+  {
+    "id": "AF2Discovery.WrongProofAndPartialEvidenceKeepOriginalUntilAllColumnsAreProven",
+    "rc": 0,
+    "stderr_tail": ""
+  },
+  {
+    "id": "AF2Discovery.SameSlotOriginalsRecoverIndependentlyInBothResultOrders",
+    "rc": 0,
+    "stderr_tail": ""
+  },
+  {
+    "id": "AF2Discovery.UnreturnedMatchKeepsOriginalAndNeverAuthorizesWrite",
+    "rc": 0,
+    "stderr_tail": ""
+  },
+  {
+    "id": "AF2Discovery.StopBeforeSendGrantSealsNewWork",
+    "rc": 0,
+    "stderr_tail": ""
+  },
+  {
+    "id": "AF2Discovery.StopWhileWriteExecutesWaitsForRealReturnAndAllowsOriginalDisposition",
+    "rc": 0,
+    "stderr_tail": ""
+  },
+  {
+    "id": "AF2Discovery.LostRoleReceiptIsReReadWithoutReplayingPublishOrWrite",
+    "rc": 0,
+    "stderr_tail": ""
+  },
+  {
+    "id": "AF2Discovery.LiveBindingsFeedExistingC0AndStaleTargetCannotAdvance",
+    "rc": 0,
+    "stderr_tail": ""
+  },
+  {
+    "id": "AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry",
+    "rc": 0,
+    "stderr_tail": ""
+  },
+  {
+    "id": "AF2Primary.EntryPreservesPermissionSlotAndMissingBindingOrder",
+    "rc": 0,
+    "stderr_tail": ""
+  },
+  {
+    "id": "AF2Primary.ReplacementDuringPrimarySlotWriteRevokesRemainingKeys",
+    "rc": 0,
+    "stderr_tail": ""
+  },
+  {
+    "id": "AF2Primary.InterruptedIccidWriteRetainsPrefixAndOnlyAcceptsOriginalEvidenceAfterStop",
+    "rc": 0,
+    "stderr_tail": ""
+  },
+  {
+    "id": "AF2Primary.CompletedLegacyParameterErrorsReturnSuccessAndRetainOnlyIndeterminateEffects",
+    "rc": 0,
+    "stderr_tail": ""
+  },
+  {
+    "id": "AF2Primary.StopInFlightAndDuringOriginalNotificationRetainsCallUntilReturn",
+    "rc": 0,
+    "stderr_tail": ""
+  },
+  {
+    "id": "AF2Primary.IndependentRepeatedSelectionPreservesLegacyMainAnnouncementDeduplication",
+    "rc": 0,
+    "stderr_tail": ""
+  }
+]
