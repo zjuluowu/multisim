@@ -135,8 +135,10 @@ def main():
                     'TelephonyExtWrapper':['GetRealSimCountExt']}
     for owner, methods in required.items():
         for method in methods:
-            needle = str(len(owner)) + owner + str(len(method)) + method + 'E'
-            matched = [f for f in functions if needle in f['name'] and any(
+            stem = str(len(owner)) + owner + str(len(method)) + method
+            # Itanium C++ symbols can place a libstdc++ ABI tag before the member-name terminator.
+            names = (stem + 'E', stem + 'B5cxx11E')
+            matched = [f for f in functions if any(name in f['name'] for name in names) and any(
                 ('/frameworks/native/src/' in name or '/services/multisim/infrastructure/compatibility/events/' in name or '/services/sim/src/' in name or '/services/core/src/' in name or '/framework/internal/host/g2a_reference/' in name or '/services/multisim/infrastructure/compatibility/api/' in name or '/services/multisim/role_assignment/' in name or '/services/multisim/account/' in name or '/services/multisim/infrastructure/request/' in name or '/services/multisim/card/runtime/' in name or '/services/multisim/device/resource/' in name or '/services/multisim/infrastructure/assembly/' in name or '/services/telephony_ext_wrapper/src/' in name) for name in f['filenames'])]
             count = sum(f['count'] for f in matched)
             rows.append({'owner': owner, 'method': method, 'count': count,

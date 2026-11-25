@@ -13,3 +13,8 @@ Legacy Verify ELF 的 `RealSimPrimary.ShowNumberReadsAccountAfterMsisdnFailure` 
 外部符号。补充「IMS 服务缺席」的 Host 边界后重跑通过。
 [原报告](legacy-number.json.gz) · [XML](legacy-number.xml.gz) · [原日志](legacy-number.log.gz) ·
 [首轮链接](legacy-initial-link.log.gz) · [兼容待决](compatibility-pending.json)
+
+Legacy 执行审计首轮漏认 `SimFileManager::GetSimTelephoneNumber[abi:cxx11]`。
+在原覆盖产物中核对到该生产符号有实际执行。审计匹配补充准确的 C++ ABI 标签后，
+同一 Verify ELF 及 Profile 的复审通过，保留原方法正向覆盖要求。
+[首轮审计](legacy-initial-audit.json) · [修正复审](legacy-corrected-audit.json)

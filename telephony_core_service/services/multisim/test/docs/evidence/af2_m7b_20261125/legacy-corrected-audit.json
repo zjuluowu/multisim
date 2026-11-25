@@ -1,0 +1,76 @@
+{
+  "scope": "Positive execution of selected legacy-show-number production methods; not full SIM coverage",
+  "methods": [
+    {
+      "owner": "SimManager",
+      "method": "SetShowNumber",
+      "count": 1,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_manager.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimManager",
+      "method": "GetShowNumber",
+      "count": 1,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_manager.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "MultiSimController",
+      "method": "SetShowNumber",
+      "count": 1,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "MultiSimController",
+      "method": "GetShowNumber",
+      "count": 1,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimFileManager",
+      "method": "SetSimTelephoneNumber",
+      "count": 1,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_file_manager.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimFileManager",
+      "method": "GetSimTelephoneNumber",
+      "count": 33,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_file_manager.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimFile",
+      "method": "UpdateMsisdnNumber",
+      "count": 1,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_file.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}
