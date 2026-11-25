@@ -201,4 +201,70 @@ TEST_F(RealSimPrimary, DefaultSmsProviderAndNotificationContract)
 {
     VerifyDefaultRoleContract(false);
 }
+
+TEST_F(RealSimPrimary, AccountMetadataUsesLegacyPredicatesAndFieldCaches)
+{
+    using namespace testing;
+    Sim028Host::PrimaryEnvironment rig(false);
+    ASSERT_TRUE(rig.StartLockedCard());
+    auto &manager = *rig.manager;
+    auto &inner = CoreManagerInner::GetInstance();
+    IccAccountInfo original;
+    ASSERT_EQ(manager.GetSimAccountInfo(1, false, original), TELEPHONY_ERR_SUCCESS);
+    ASSERT_GT(original.simId, 0);
+    const auto iccid = OHOS::Str16ToStr8(original.iccId);
+    unsigned calls = 0;
+    int providerResult = 0;
+    std::vector<std::string> fieldTrace;
+    EXPECT_CALL(*rig.provider, Update(_, _, _)).WillRepeatedly([&](auto &uri, const auto &predicates,
+        const auto &bucket) {
+        EXPECT_EQ(uri.ToString(), "datashare:///com.ohos.simability/sim/sim_info");
+        EXPECT_EQ(bucket.valuesMap.size(), 1u);
+        EXPECT_EQ(predicates.Requests().size(), 1u);
+        const auto &where = predicates.Requests().at(0);
+        const bool name = bucket.valuesMap.count(SimData::SHOW_NAME);
+        EXPECT_EQ(where.field, name ? SimData::SIM_ID : SimData::ICC_ID);
+        EXPECT_EQ(where.kind, "EqualTo");
+        EXPECT_EQ(Sim028Host::ProviderRow::Text(where.value.value),
+            name ? std::to_string(original.simId) : iccid);
+        const auto &field = bucket.valuesMap.begin()->first;
+        fieldTrace.emplace_back(field);
+        ++calls;
+        return providerResult;
+    });
+    unsigned notifications = 0;
+    Sim028Host::ObserveCallingThreadDiagnostics([&](const auto &name) {
+        if (name == "ACCOUNT_NOTIFY") { ++notifications; }
+    });
+    EXPECT_EQ(inner.SetShowName(1, u"Host account"), TELEPHONY_ERR_SUCCESS);
+    EXPECT_EQ(inner.SetShowName(1, u"Host account"), TELEPHONY_ERR_SUCCESS);
+    EXPECT_EQ(inner.SetShowName(1, u""), TELEPHONY_ERR_SUCCESS);
+    std::u16string name = u"not the cache";
+    EXPECT_EQ(inner.GetShowName(1, name), TELEPHONY_ERR_SUCCESS);
+    EXPECT_TRUE(name.empty());
+    EXPECT_EQ(manager.SetSimLabelIndex(original.simId, 3), TELEPHONY_ERR_ARGUMENT_INVALID);
+    EXPECT_EQ(inner.SetSimLabelIndex(iccid, 11), TELEPHONY_ERR_ARGUMENT_INVALID);
+    EXPECT_EQ(inner.SetSimLabelIndex(iccid, 3), TELEPHONY_ERR_SUCCESS);
+    EXPECT_EQ(inner.SetSimLabelIndex(iccid, 3), TELEPHONY_ERR_SUCCESS);
+    providerResult = -1;
+    EXPECT_EQ(inner.SetShowName(1, u"failed"), TELEPHONY_ERR_DATABASE_WRITE_FAIL);
+    EXPECT_EQ(inner.SetSimLabelIndex(iccid, 4), TELEPHONY_ERR_DATABASE_WRITE_FAIL);
+    Sim028Host::ObserveCallingThreadDiagnostics({});
+    IccAccountInfo current;
+    ASSERT_EQ(manager.GetSimAccountInfo(1, false, current), TELEPHONY_ERR_SUCCESS);
+    EXPECT_EQ(current.simLabelIndex, 3);
+    EXPECT_TRUE(current.showName.empty());
+    EXPECT_EQ(current.simId, original.simId);
+    EXPECT_EQ(current.showNumber, original.showNumber);
+    EXPECT_EQ(notifications, 5u);
+    EXPECT_EQ(calls, 7u);
+    EXPECT_EQ(fieldTrace, (std::vector<std::string> {
+        "show_name", "show_name", "show_name", "sim_label_index", "sim_label_index", "show_name", "sim_label_index"}));
+    using SimGuard::Primary::Json;
+    testing::Test::RecordProperty("account_metadata_observation", Json({
+        {"label", std::to_string(current.simLabelIndex)}, {"emptyName", current.showName.empty() ? "true" : "false"},
+        {"providerCalls", std::to_string(calls)}, {"accountNotifications", std::to_string(notifications)},
+        {"identity", current.simId == original.simId ? "true" : "false"}
+    }));
+}
 }

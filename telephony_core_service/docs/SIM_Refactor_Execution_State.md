@@ -89,6 +89,12 @@ B/C1 设备执行、Core/SA/IPC 和 SO 切换继续按原门禁验收。
 [开发与调试](../services/multisim/test/docs/M5_Voice_SMS_Debug.md) ·
 [原始验收](../services/multisim/test/docs/evidence/af2_m5_20261125/README.md)
 
+<a id="af2-m6-status"></a>
+
+### AF-2 M6 账户资料（2026-11-25）
+
+**PARTIAL。** 输入 main/origin `43881d571`。已从 Legacy 实现和 Verify 特征用例确认显示名称及内部 ICCID 标签写入的定位、字段、查询与通知契约，特征用例 1/1 PASS。账户资料 Target 验收继续跟踪。[契约与调试](../services/multisim/test/docs/M6_Account_Metadata_Debug.md) · [验证证据](../services/multisim/test/docs/evidence/af2_m6_20261125/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）
