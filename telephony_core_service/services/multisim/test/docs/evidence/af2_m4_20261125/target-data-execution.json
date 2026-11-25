@@ -1,0 +1,141 @@
+{
+  "scope": "Positive execution of selected target-data production methods; not full SIM coverage",
+  "methods": [
+    {
+      "owner": "SimModule",
+      "method": "SetDefaultCellularDataSlotId",
+      "count": 40,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimModule",
+      "method": "ReconcileDataParameter",
+      "count": 11,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "LegacySimFacade",
+      "method": "SetDefaultCellularDataSlotId",
+      "count": 20,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/compatibility/api/legacy_primary_entry.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentService",
+      "method": "SetDefaultRole",
+      "count": 26,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_service.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentService",
+      "method": "WriteTrackedParameter",
+      "count": 124,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_service.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentService",
+      "method": "ReconcileC0Parameter",
+      "count": 18,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_service.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentAggregate",
+      "method": "AdmitRoleWriteSet",
+      "count": 119,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_aggregate.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentAggregate",
+      "method": "AcceptDataParameterProjection",
+      "count": 54,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_aggregate.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentAggregate",
+      "method": "ReleaseRoleWriteSet",
+      "count": 72,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_aggregate.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "TopologyService",
+      "method": "WithCurrentPrimaryTarget",
+      "count": 94,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/topology_service.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentStoreAdapter",
+      "method": "WriteC0Parameter",
+      "count": 61,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_store_adapter.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentStoreAdapter",
+      "method": "ReadC0ParameterEvidence",
+      "count": 12,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_store_adapter.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "LegacyCompletion",
+      "method": "RetainRoleWaiter",
+      "count": 26,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/compatibility/events/legacy_completion.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "LegacyCompletion",
+      "method": "CompleteLegacyInt",
+      "count": 31,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/compatibility/events/legacy_completion.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "LegacyCompletion",
+      "method": "TakeRoleResult",
+      "count": 26,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/compatibility/events/legacy_completion.cpp"
+      ],
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

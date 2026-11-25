@@ -51,23 +51,23 @@ DrvFS 源码读取和 final link 解释；源码复制到 ext4 未经授权不�
 
 <a id="af2-m4-status"></a>
 
-### AF-2 M4 独立默认数据卡
+### AF-2 M4 独立默认数据卡（2026-11-25）
 
-输入本地及远端 main `bced9e9f3df22bcf54f5d017dea04d34cdec8543`。本批已读取
-本仓实际 CMI、Manager、Controller、Monitor 和行为事件，以及固定版本 Cellular Data
-N-API、IDL、SA 检查和通话数据调用者。公开权限检查和内部 Manager 槽范围校验位于不同调用层。
-重复选择与已完成的参数错误仍推进原槽缓存、Data 公告和账户通知。已登记 Target 资格差异及产品侧待证契约。
-本阶段结论来自源码，Host 业务和验收证据在后续阶段登记。
-[独立 Data 契约与调试](../services/multisim/test/docs/M4_Default_Data_Debug.md)
+**`AF2_M4_DEFAULT_DATA_COMPATIBILITY_READY`。** 输入本地及远端 main
+`bced9e9f3df22bcf54f5d017dea04d34cdec8543`，最终验证代码及脚本已发布于
+`5f9cae36b`。正式 `SimModule::SetDefaultCellularDataSlotId` 在实时双卡图中复用
+T 的当前账户及 Binding 和 A 的共享写权、逐键原票与同步完成。Primary=0、Data=1
+的独立选择保留原键、Data 公告、行为事件和账户通知。一次操作的槽和账户身份在 A
+作为同一个投影接纳。双向冲突、换卡、效果未知、原证据迟到和 Stop 均确定性验证。
 
-正式 Target Host 入口已通过实时双卡图选择独立 Data。Primary/Data 共用写集、逐键原票和
-同步完成。真实双向冲突、换卡、效果未知及 Stop 通过 Developer 专项，M1–M4 合计 30/30。
-架构、迁移前态比较、独立语法及 GN/Ninja 对象通过。Data 槽与订阅合并为同一个
-定长投影，避免写后再为角色条目分配内存，已重跑 Developer 30 项与 LLDB 实际单步。
-Legacy 特征在单激活和双激活各 1/1 通过，真实 CMI 到 Controller 的正执行审计通过。
-新场景的开发期两端实测数据与独立 Data Oracle 差异为 0。最终 Verify 的全量、冻结场景、
-编辑器枚举和 sanitizer 复验仍在执行。
-[阶段原始证据](../services/multisim/test/docs/evidence/af2_m4_20261125/README.md)
+本轮实测 Verify Legacy 141/141、Target 132/132，含 M1–M3 22/22、M4 Target 8/8。
+Legacy 特征单激活和双激活各 1/1，ASan 与 TSan 各 30/30。六个原冻结场景和新增
+Data 场景的双后端 14/14 通过，Oracle 和两端差异均为 0。完整 Legacy CI 准入、变异及
+恢复、架构/GN/Ninja、完整性、真实执行审计和技术门禁通过。8 个 ELF 的 273 处源码
+定位及 Developer LLDB 实际单步通过。VS Code GUI 保持人工未验收。产品 Provider、
+AF2-03 多成员提交、Reload 因果覆盖、Core/SA/IPC、设备与生产切换继续按原门禁。
+[独立 Data 契约与调试](../services/multisim/test/docs/M4_Default_Data_Debug.md) ·
+[Verify 与原始证据](../services/multisim/test/docs/evidence/af2_m4_20261125/README.md)
 
 <a id="af1-signoff-validation"></a>
 
@@ -112,9 +112,8 @@ Legacy 特征在单激活和双激活各 1/1 通过，真实 CMI 到 Controller 
 
 ### 下一批任务与依赖
 
-1. **M4 独立 Data**。以正式兼容入口接 A 的角色请求，复用实时 Binding、逐键效果和原完成。核对共享 Data 写集，以及独立 Data 选择另一有效槽时的原返回和通知。
-2. **M5 Voice/SMS**。沿各自角色契约接窄入口与独立写集，以真实发现建图和对应 Legacy 用例验证。M4/M5 是本轮推荐的开发顺序。[接线与调试](../services/multisim/test/docs/M3_Primary_Debug.md#原效果核对和后续角色)
-3. **后续能力及产品门禁**。Part 26 的 Reload 因果覆盖、AF2-03 的多成员 Submit、Radio 产品供证、跨实例重建及生产写权按[签收包 §16](AF1_Architecture_Final_Signoff_Package_20261124.md#16-外部产品门禁)、[原功能与 WU](migration/SIM_Architecture_Refactor_Design.md#writer-cutover)及[主设计 §22](SIM_Target_Architecture_Design_v1.2.md#22-分阶段实施门禁)取证。
+1. **M5 Voice/SMS**。沿各自角色契约接窄入口与独立写集，以真实发现建图和对应 Legacy 用例验证。[M4 角色接线与调试](../services/multisim/test/docs/M4_Default_Data_Debug.md)
+2. **后续能力及产品门禁**。Part 26 的 Reload 因果覆盖、AF2-03 的多成员 Submit、Radio 产品供证、跨实例重建及生产写权按[签收包 §16](AF1_Architecture_Final_Signoff_Package_20261124.md#16-外部产品门禁)、[原功能与 WU](migration/SIM_Architecture_Refactor_Design.md#writer-cutover)及[主设计 §22](SIM_Target_Architecture_Design_v1.2.md#22-分阶段实施门禁)取证。
 
 2026-11-19 独立设计审查以 `0e4004bef` 为源码输入，形成[历史评审](history/reviews/SIM_Architecture_Independent_Review_20261119.md)。评审先独立发布于 `d8fcbba40`，随后将分责、共享输出和异步资格同步至主设计与源码详细设计。产品装配、设备与业务执行仍按原批次记录；当前设计验收见[第二轮复审](history/reviews/SIM_Architecture_Independent_Review_20261119.md#第二轮复审--对修改后的设计提出反例)。
 

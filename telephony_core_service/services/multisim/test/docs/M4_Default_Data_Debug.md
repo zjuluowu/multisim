@@ -126,7 +126,7 @@ python3 -B "$TEST/scripts/test.py" run --backend both --init-model dual-active-p
 | [SimModule::SetDefaultCellularDataSlotId](../../infrastructure/assembly/sim_module_factory.cpp) | 调用参数 `slot=1`，调用者 token 7，H 的调用租约。 |
 | [LegacySimFacade::SetDefaultCellularDataSlotId](../../infrastructure/compatibility/api/legacy_primary_entry.cpp) | `SlotId` 的兼容位置，系统身份与权限检查，T 返回的原 Binding。 |
 | [TopologyService::ReadPrimaryTarget](../../account/topology_service.cpp) | `BindingIndex::Find`、`AccountRegistry::Read` 和账户的 current/active。 |
-| [SetLegacyDefaultData、SetDefaultRole、WriteTrackedParameter](../../role_assignment/assignment_service.cpp) | 原 Binding 为槽 1、订阅 41、版本 1。Data 请求的原目标为订阅 41。写调用使用 `DefaultData` 步骤。 |
+| [SetLegacyDefaultData、SetDefaultRole、WriteTrackedParameter](../../role_assignment/assignment_service.cpp) | 原 Binding 为槽 1、订阅 41、版本 1。LLDB 停在 Assignment 请求 2、step 1、attempt 0，键为 `DefaultData`。 |
 | [AssignmentAggregate::AdmitRoleWriteSet](../../role_assignment/assignment_aggregate.cpp) | Data 的写成员掩码为 24。 |
 | [AssignmentStoreAdapter::WriteC0Parameter](../../role_assignment/assignment_store_adapter.cpp) | `DefaultData` 路由使用原键和值 `1`。 |
 | [AssignmentAggregate::AcceptDataParameterProjection](../../role_assignment/assignment_aggregate.cpp) | `lastPrimary_` 保持槽 0，`lastData_` 从槽 0 改为 1，Data 订阅从 40 改为 41。 |
@@ -152,3 +152,18 @@ GN target 保持，未新增跨域依赖或依赖环。
 M3 C0 仍经过原偏好、Primary 两键、主卡公告以及联动 Data 的逐键顺序，M4 复用其中的
 Data 参数和投影接纳。双向竞争用例从正式入口证明同一共享资源只能由先取得写集的请求推进。
 M5 Voice/SMS 可以按各自实际写成员扩展同一请求和完成机制，再补对应的 Legacy 契约及差分。
+
+
+## 本轮验收
+
+| 项目 | 实测结果 |
+| --- | --- |
+| Verify Host | Legacy 141/141，Target 132/132 |
+| 专项与 sanitizer | M1–M3 22/22，M4 Target 8/8。ASan、TSan 分别 30/30 |
+| 业务差分 | 六个冻结场景和新增独立 Data 场景合计 14/14，Oracle 差异和后端差异均为 0 |
+| 门禁 | Legacy CI 准入、真实执行审计、架构/GN/Ninja、测试完整性、变异与恢复通过 |
+| 调试 | 精确用例成功枚举，8 个 ELF 的 273 处源码位置有效。Developer LLDB 实际单步至对象释放 |
+
+VS Code GUI 保持人工未验收。日常调试使用 Developer，验收报告来自独立 Verify 与 sanitizer
+输出。产品权限与通知送达、外部客户端缓存、Provider 供证及设备行为按原门禁验证。
+[同轮原始命令与结果](evidence/af2_m4_20261125/README.md)

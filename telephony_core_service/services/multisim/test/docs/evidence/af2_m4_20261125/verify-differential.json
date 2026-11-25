@@ -1,0 +1,18 @@
+{
+  "legacy": "PASS",
+  "target": "PASS",
+  "oracle": "PASS",
+  "oracle_differences": [],
+  "legacy_target": "PASS",
+  "overall": "PASS",
+  "scenarios": [
+    "SIM027-LEGACY-DATA-INDEPENDENT-DUAL-PRIMARY0",
+    "SIM028-LEGACY-B-ERROR-DUAL-PRIMARY0",
+    "SIM028-LEGACY-B-SUCCESS-DUAL-PRIMARY0",
+    "SIM028-LEGACY-B-TIMEOUT-DUAL-PRIMARY0",
+    "SIM028-LEGACY-C0-DUAL-PRIMARY0",
+    "SIM028-LEGACY-C1-CHECK-ERROR-RETRY-DUAL-PRIMARY0",
+    "SIM028-LEGACY-C1-SUCCESS-STALE-DUAL-PRIMARY0"
+  ],
+  "differences": []
+}
