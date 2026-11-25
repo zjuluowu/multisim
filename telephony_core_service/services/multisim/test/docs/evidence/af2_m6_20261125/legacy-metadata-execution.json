@@ -1,0 +1,116 @@
+{
+  "scope": "Positive execution of selected legacy-account-metadata production methods; not full SIM coverage",
+  "methods": [
+    {
+      "owner": "CoreManagerInner",
+      "method": "SetSimLabelIndex",
+      "count": 4,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/frameworks/native/src/core_manager_inner.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimManager",
+      "method": "SetShowName",
+      "count": 4,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_manager.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimManager",
+      "method": "GetShowName",
+      "count": 1,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_manager.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimManager",
+      "method": "SetSimLabelIndexByIccId",
+      "count": 4,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_manager.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimManager",
+      "method": "GetSimAccountInfo",
+      "count": 11,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_manager.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "MultiSimController",
+      "method": "SetShowName",
+      "count": 4,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "MultiSimController",
+      "method": "GetShowName",
+      "count": 1,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "MultiSimController",
+      "method": "SetSimLabelIndexByIccId",
+      "count": 3,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "MultiSimController",
+      "method": "GetSimAccountInfo",
+      "count": 11,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimRdbHelper",
+      "method": "UpdateDataBySimId",
+      "count": 4,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimRdbHelper",
+      "method": "UpdateDataByIccId",
+      "count": 33,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

@@ -1,0 +1,195 @@
+{
+  "scope": "Positive execution of selected target-account-metadata production methods; not full SIM coverage",
+  "methods": [
+    {
+      "owner": "SimModule",
+      "method": "SetShowName",
+      "count": 49,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimModule",
+      "method": "GetShowName",
+      "count": 17,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimModule",
+      "method": "SetSimLabelIndexByIccId",
+      "count": 27,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimModule",
+      "method": "ReconcileAccountMetadata",
+      "count": 4,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "LegacySimFacade",
+      "method": "SetShowName",
+      "count": 18,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/compatibility/api/legacy_account_entry.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "LegacySimFacade",
+      "method": "GetShowName",
+      "count": 8,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/compatibility/api/legacy_account_entry.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "LegacySimFacade",
+      "method": "SetSimLabelIndexByIccId",
+      "count": 13,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/compatibility/api/legacy_account_entry.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "TopologyService",
+      "method": "SetDisplayName",
+      "count": 14,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/topology_metadata.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "TopologyService",
+      "method": "SetSimLabel",
+      "count": 13,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/topology_metadata.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "TopologyService",
+      "method": "UpdateMetadata",
+      "count": 33,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/topology_metadata.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "TopologyService",
+      "method": "AcceptMetadata",
+      "count": 49,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/topology_metadata.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "TopologyService",
+      "method": "ReadAccountAtSlot",
+      "count": 4,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/topology_metadata.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "TopologyService",
+      "method": "ReconcileMetadata",
+      "count": 11,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/topology_metadata.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AccountRegistry",
+      "method": "AcceptDisplayName",
+      "count": 20,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/account_registry.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AccountRegistry",
+      "method": "AcceptLabel",
+      "count": 12,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/account_registry.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AccountStoreAdapter",
+      "method": "WriteDisplayName",
+      "count": 12,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/account_store_adapter.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AccountStoreAdapter",
+      "method": "WriteLabel",
+      "count": 8,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/account_store_adapter.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AccountStoreAdapter",
+      "method": "ReadMetadataEvidence",
+      "count": 3,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/account_store_adapter.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "RuntimeOperationStore",
+      "method": "AcceptResult",
+      "count": 86,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/request/runtime_operation_store.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "RuntimeOperationStore",
+      "method": "AcceptLateEvidence",
+      "count": 11,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/request/runtime_operation_store.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "RuntimeOperationStore",
+      "method": "ClaimCompletion",
+      "count": 167,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/request/runtime_operation_store.cpp"
+      ],
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}
