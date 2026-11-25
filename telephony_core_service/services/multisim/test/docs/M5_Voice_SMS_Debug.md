@@ -9,7 +9,7 @@ Voice 的公开路径从 Core Client/Proxy 进入 Core SIM。Core 依次通过�
 [M5 Legacy Core Voice](../../../core/src/core_service_sim.cpp#L452) ·
 [固定版本 SMS SA](https://github.com/openharmony/telephony_sms_mms/blob/2336a3c3ba9a5cc53e95535cf25a6cfe15c74de7/services/sms/sms_service.cpp#L671) ·
 [SMS Misc](https://github.com/openharmony/telephony_sms_mms/blob/2336a3c3ba9a5cc53e95535cf25a6cfe15c74de7/services/sms/sms_misc_manager.cpp#L569) ·
-[CMI 和 Manager](../../../sim/src/sim_manager.cpp#L415)
+[CMI](../../../../frameworks/native/src/core_manager_inner.cpp#L2026) · [Manager](../../../sim/src/sim_manager.cpp#L415)
 
 | 条件 | Legacy Voice | Legacy SMS |
 | --- | --- | --- |
@@ -132,3 +132,17 @@ Account 增量可沿现有 T 的账户读写入口接入，先核对真实字段
 原 Binding 和字段版本登记原操作。涉及角色的建行继续向 A 取得该角色写资格，
 技术 Store 按 Owner 提供的列写入并返回同票证据。这样可以直接复用 M2 的发现证据、
 H 的保活及 M5 的并发验证方法。
+
+
+## 本轮验收
+
+| 项目 | 本轮实测 |
+| --- | --- |
+| Verify Legacy 与 Target | Legacy 143/143，Target 140/140。M1–M4 30/30，M5 Target 8/8 |
+| 双后端及 Oracle | 六个冻结场景、M4 Data 和新 Voice/SMS，共 18/18，差异 0 |
+| Sanitizer | ASan 和 TSan 各 38/38 |
+| 门禁 | 完整 GN/Ninja、架构、执行审计、Legacy CI 准入与变异恢复通过 |
+| 开发调试 | 源码定位 283 处。LLDB 实测 Voice 原票 3 和 SMS 原票 4，Voice 提交后 Current 从 0 到 1、Historical 为 0，进程在模块析构后退出 0 |
+
+VS Code GUI 保持人工未验收。本轮里程碑覆盖正式 Target Host 的设置与结果投影。
+[实测命令、日志和报告](evidence/af2_m5_20261125/README.md)

@@ -1,0 +1,104 @@
+{
+  "scope": "Positive execution of selected legacy-voice-sms production methods; not full SIM coverage",
+  "methods": [
+    {
+      "owner": "CoreServiceSim",
+      "method": "SetDefaultVoiceSlotId",
+      "count": 6,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_sim.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "CoreManagerInner",
+      "method": "SetDefaultSmsSlotId",
+      "count": 6,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/frameworks/native/src/core_manager_inner.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimManager",
+      "method": "SetDefaultVoiceSlotId",
+      "count": 6,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_manager.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimManager",
+      "method": "SetDefaultSmsSlotId",
+      "count": 6,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_manager.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "MultiSimController",
+      "method": "SetDefaultVoiceSlotId",
+      "count": 5,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "MultiSimController",
+      "method": "SetDefaultSmsSlotId",
+      "count": 5,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "MultiSimController",
+      "method": "AnnounceDefaultVoiceSimIdChanged",
+      "count": 2,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "MultiSimController",
+      "method": "AnnounceDefaultSmsSimIdChanged",
+      "count": 2,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimRdbHelper",
+      "method": "SetDefaultVoiceCard",
+      "count": 5,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimRdbHelper",
+      "method": "SetDefaultMessageCard",
+      "count": 5,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

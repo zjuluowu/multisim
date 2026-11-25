@@ -1,0 +1,105 @@
+{
+  "scope": "Positive execution of selected target-voice-sms production methods; not full SIM coverage",
+  "methods": [
+    {
+      "owner": "SimModule",
+      "method": "SetDefaultVoiceSlotId",
+      "count": 16,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimModule",
+      "method": "SetDefaultSmsSlotId",
+      "count": 16,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimModule",
+      "method": "ReconcileRoleProvider",
+      "count": 6,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "LegacySimFacade",
+      "method": "SetDefaultCallMessageRole",
+      "count": 30,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/compatibility/api/legacy_primary_entry.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentService",
+      "method": "SetDefaultRole",
+      "count": 119,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_service.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentService",
+      "method": "ReconcileRoleProvider",
+      "count": 15,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_service.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentAggregate",
+      "method": "AdmitRoleWriteSet",
+      "count": 149,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_aggregate.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentAggregate",
+      "method": "AcceptRoleSelection",
+      "count": 14,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_aggregate.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AccountRoleProtocol",
+      "method": "NoteLocalRoleMutation",
+      "count": 28,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/account_role_protocol.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentStoreAdapter",
+      "method": "WriteDefaultRole",
+      "count": 19,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_store_adapter.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentStoreAdapter",
+      "method": "ReadRoleProviderEvidence",
+      "count": 3,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_store_adapter.cpp"
+      ],
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

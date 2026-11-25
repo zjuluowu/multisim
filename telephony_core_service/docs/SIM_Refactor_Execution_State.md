@@ -71,18 +71,23 @@ AF2-03 多成员提交、Reload 因果覆盖、Core/SA/IPC、设备与生产切�
 
 <a id="af2-m5-status"></a>
 
-### AF-2 M5 默认 Voice / SMS
+### AF-2 M5 默认 Voice / SMS（2026-11-25）
 
-输入本地与远端 main `85515ad34788d869806d28d522f0d5eed11ae8ee`。Legacy Voice Core
-与 SMS CMI 特征在双激活 Verify 各 1/1 通过。已核对原 Provider 命令、重复设置、清除、
-公告失败后的状态，以及 Voice 无值和 SMS 首个活跃账户回退。
+**`AF2_M5_VOICE_SMS_COMPATIBILITY_READY`。** 输入本地及远端 main
+`85515ad34788d869806d28d522f0d5eed11ae8ee`，验证代码及测试脚本发布于
+`74e9a1993`。正式 SimModule 在同一个实时双卡图中运行 Primary、Data、Voice 和 SMS。
+Voice/SMS 采用原 Provider set_card 命令和独立角色投影。A 根据已证的 Provider 事务
+隔离决定写权，记录原票及 Current 版本，保留分别适用的清除、回退、重选及公告失败语义。
+部分、未知、换卡和关闭交错均有实测，原效果核对不重发已结束的业务。
 
-**M5 PARTIAL。** 正式 Target Voice/SMS 已接入实时双卡图、原 Provider 命令、共享请求与完成。
-Developer M1–M5 38/38，结构迁移和 LLDB 四角色单步通过。两种 Provider 事务条件
-均已覆盖，部分和未知效果、换卡、原版本保护及 Stop 已通过专项。Verify、差分、
-完整架构、CI 和 sanitizer 的最终结果随后登记。
-[契约和调试](../services/multisim/test/docs/M5_Voice_SMS_Debug.md) ·
-[阶段原始证据](../services/multisim/test/docs/evidence/af2_m5_20261125/README.md)
+Verify Legacy 143/143、Target 140/140，含 M1–M4 30/30、M5 8/8。ASan 和 TSan
+各 38/38。九个差分场景的两端 18/18，Oracle 和后端差异均为 0。完整架构、GN/Ninja、
+真实执行审计、完整性、技术门禁、变异恢复和 Legacy CI 准入通过。8 个 ELF 的 283 处
+源码定位通过，LLDB 单步记录四角色用例的账户、写权、Provider 原票、Current 版本、
+完成及析构。VS Code GUI 保持人工未验收。真实产品 Provider、AF2-03、完整 Reload、
+B/C1 设备执行、Core/SA/IPC 和 SO 切换继续按原门禁验收。
+[开发与调试](../services/multisim/test/docs/M5_Voice_SMS_Debug.md) ·
+[原始验收](../services/multisim/test/docs/evidence/af2_m5_20261125/README.md)
 
 <a id="af1-signoff-validation"></a>
 
@@ -127,7 +132,9 @@ Developer M1–M5 38/38，结构迁移和 LLDB 四角色单步通过。两种 Pr
 
 ### 下一批任务与依赖
 
-1. **M5 Voice/SMS**。沿各自角色契约接窄入口与独立写集，以真实发现建图和对应 Legacy 用例验证。[M4 角色接线与调试](../services/multisim/test/docs/M4_Default_Data_Debug.md)
+1. **Account 业务增量**。先从真实 Legacy 入口核对候选账户字段、当前/历史读源与通知节点，
+沿 T 的原 Binding 和字段版本接线。合写角色列时继续使用 A 的原资格和 Provider 同票证明。
+[M5 复用经验](../services/multisim/test/docs/M5_Voice_SMS_Debug.md#扩展性与后续-account-接线)
 2. **后续能力及产品门禁**。Part 26 的 Reload 因果覆盖、AF2-03 的多成员 Submit、Radio 产品供证、跨实例重建及生产写权按[签收包 §16](AF1_Architecture_Final_Signoff_Package_20261124.md#16-外部产品门禁)、[原功能与 WU](migration/SIM_Architecture_Refactor_Design.md#writer-cutover)及[主设计 §22](SIM_Target_Architecture_Design_v1.2.md#22-分阶段实施门禁)取证。
 
 2026-11-19 独立设计审查以 `0e4004bef` 为源码输入，形成[历史评审](history/reviews/SIM_Architecture_Independent_Review_20261119.md)。评审先独立发布于 `d8fcbba40`，随后将分责、共享输出和异步资格同步至主设计与源码详细设计。产品装配、设备与业务执行仍按原批次记录；当前设计验收见[第二轮复审](history/reviews/SIM_Architecture_Independent_Review_20261119.md#第二轮复审--对修改后的设计提出反例)。
