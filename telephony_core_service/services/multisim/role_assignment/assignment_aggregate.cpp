@@ -21,7 +21,7 @@
 namespace OHOS::Telephony::MultiSim {
 bool AssignmentAggregate::AcceptRoleSelection(const RoleSelection &selection, uint64_t expectedAssignmentRevision)
 {
-    if (expectedAssignmentRevision != revision_) { return false; }
+    if (selection.role == DefaultRole::Data || expectedAssignmentRevision != revision_) { return false; }
     roles_[selection.role] = selection;
     ++revision_;
     return true;
@@ -29,6 +29,10 @@ bool AssignmentAggregate::AcceptRoleSelection(const RoleSelection &selection, ui
 
 std::optional<RoleSelection> AssignmentAggregate::ReadRoleSelection(DefaultRole role) const
 {
+    if (role == DefaultRole::Data) {
+        if (!lastData_) { return std::nullopt; }
+        return RoleSelection {role, lastData_->second, lastData_->second};
+    }
     const auto found = roles_.find(role);
     return found == roles_.end() ? std::nullopt : std::make_optional(found->second);
 }
@@ -126,7 +130,7 @@ bool AssignmentAggregate::ClaimPrimaryAnnouncement(SlotId slot, SubscriptionId s
 
 void AssignmentAggregate::AcceptDataParameterProjection(SlotId lastData, SubscriptionId subscription)
 {
-    AcceptRoleSelection({DefaultRole::Data, subscription, subscription}, revision_);
-    lastData_ = lastData;
+    lastData_.emplace(lastData, subscription);
+    ++revision_;
 }
 } // namespace OHOS::Telephony::MultiSim

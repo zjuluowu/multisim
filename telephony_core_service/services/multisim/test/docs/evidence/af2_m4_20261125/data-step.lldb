@@ -13,6 +13,9 @@ breakpoint set -n OHOS::Telephony::MultiSim::TopologyService::ReadPrimaryTarget
 continue
 frame variable slot
 thread step-over
+breakpoint set -f topology_service.cpp -l 57 -o true
+continue
+frame variable binding account
 breakpoint disable 3
 breakpoint set -n OHOS::Telephony::MultiSim::SetLegacyDefaultData
 continue

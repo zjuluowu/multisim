@@ -65,7 +65,8 @@ public:
     bool ClaimPrimaryAnnouncement(SlotId slot, SubscriptionId subscription);
     void AcceptDataParameterProjection(SlotId lastData, SubscriptionId subscription);
     std::optional<SlotId> ReadLastPrimary() const { return lastPrimary_; }
-    std::optional<SlotId> ReadLastData() const { return lastData_; }
+    std::optional<SlotId> ReadLastData() const
+    { return lastData_ ? std::make_optional(lastData_->first) : std::nullopt; }
     std::optional<AssignmentTransition> ReadTransition(const RadioDomainId &domain) const
     {
         const auto found = transitions_.find(domain);
@@ -79,7 +80,7 @@ private:
     std::map<uint64_t, uint32_t> roleWriteOwners_;
     std::optional<SlotId> lastPrimary_;
     std::optional<std::pair<SlotId, SubscriptionId>> lastPrimaryAnnouncement_;
-    std::optional<SlotId> lastData_;
+    std::optional<std::pair<SlotId, SubscriptionId>> lastData_;
     // current/all角色列按各自旧节点接纳，重载版本分别保存，不交T整行覆盖。
 };
 } // namespace OHOS::Telephony::MultiSim

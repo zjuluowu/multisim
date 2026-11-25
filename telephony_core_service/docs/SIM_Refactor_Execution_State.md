@@ -62,7 +62,9 @@ N-API、IDL、SA 检查和通话数据调用者。公开权限检查和内部 Ma
 
 正式 Target Host 入口已通过实时双卡图选择独立 Data。Primary/Data 共用写集、逐键原票和
 同步完成。真实双向冲突、换卡、效果未知及 Stop 通过 Developer 专项，M1–M4 合计 30/30。
-架构、迁移前态比较、独立语法及 GN/Ninja 对象通过。当前阶段继续等待 Verify、双后端、
+架构、迁移前态比较、独立语法及 GN/Ninja 对象通过。Data 槽与订阅合并为同一个
+定长投影，避免写后再为角色条目分配内存，已重跑 Developer 30 项与 LLDB 实际单步。
+当前阶段继续等待最终 Verify、双后端、
 Legacy 特征及 sanitizer 验收。
 [阶段原始证据](../services/multisim/test/docs/evidence/af2_m4_20261125/README.md)
 
