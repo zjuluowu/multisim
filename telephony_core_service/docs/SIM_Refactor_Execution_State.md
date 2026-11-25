@@ -49,6 +49,17 @@ I/O 各 20/20。Developer 保持独立 `-O0`、无 LTO 输出；源码仍在 `/m
 DrvFS 源码读取和 final link 解释；源码复制到 ext4 未经授权不执行。Windows GUI
 仍为人工未验收。详见[收尾证据](../services/multisim/test/docs/evidence/sim_host_efficiency_20261125/README.md)。
 
+<a id="af2-m4-status"></a>
+
+### AF-2 M4 独立默认数据卡
+
+输入本地及远端 main `bced9e9f3df22bcf54f5d017dea04d34cdec8543`。本批已读取
+本仓实际 CMI、Manager、Controller、Monitor 和行为事件，以及固定版本 Cellular Data
+N-API、IDL、SA 检查和通话数据调用者。公开权限检查和内部 Manager 槽范围校验位于不同调用层。
+重复选择与已完成的参数错误仍推进原槽缓存、Data 公告和账户通知。已登记 Target 资格差异及产品侧待证契约。
+本阶段结论来自源码，Host 业务和验收证据在后续阶段登记。
+[独立 Data 契约与调试](../services/multisim/test/docs/M4_Default_Data_Debug.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）
