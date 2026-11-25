@@ -1,0 +1,26 @@
+{
+  "status": "PRODUCT_DECISION_PENDING",
+  "cases": [
+    {
+      "id": "M7B-PIN-ACCOUNT-AT-EXECUTION",
+      "legacy": "The queued task selects File by slot at execution. After card success the DB path resolves simId by slot again.",
+      "target": "The queued task pins Binding and Session at execution. A later replacement cannot authorize the original DB effect.",
+      "target_test": "AF2ShowNumber.CardFailureAndReplacementDoNotPersist",
+      "evidence_limit": "Target Host tested. Legacy source establishes the late slot lookup; this exact concurrent Legacy outcome was not observed."
+    },
+    {
+      "id": "M7B-BACKWRITE-KEEP-ORIGINAL-BINDING",
+      "legacy": "The query's independent closure stores a slot and number, then resolves simId on execution.",
+      "target": "The independent request captures its Binding, Session and number revisions, and rejects stale input.",
+      "target_test": "AF2ShowNumber.QueryUsesRealSourcesAndBackwritePinsOriginalAccount",
+      "evidence_limit": "Target Host tested. Native Provider and consumer effects remain a separate decision."
+    },
+    {
+      "id": "M7B-NATIVE-MSISDN-EVIDENCE",
+      "host": "Only the actual original ticket with an ended command and reusable resource can clear a quarantine.",
+      "target_test": "AF2ShowNumber.TimeoutQuarantinesOriginalResourcesUntilCorrelatedProofAfterStop",
+      "evidence_limit": "Product adapter has yet to prove per-card-type EF transport, timer, same-session records acceptance and actual reusable hardware state."
+    }
+  ],
+  "prior_decisions_still_pending": ["M6-LABEL-UNKNOWN-ICCID", "M7A-IMS-EMPTY-BINDING"]
+}

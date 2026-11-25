@@ -377,4 +377,40 @@ TEST_F(RealSimPrimary, ImsPreferencePreservesProviderReturnAndReadSource)
         {"notifications", std::to_string(notifications)}
     }));
 }
+
+TEST_F(RealSimPrimary, ShowNumberReadsAccountAfterMsisdnFailure)
+{
+    using namespace testing;
+    Sim028Host::PrimaryEnvironment rig(false);
+    rig.row.cells[SimData::PHONE_NUMBER] = std::string("555123");
+    ASSERT_TRUE(rig.StartLockedCard());
+    unsigned cardCommands = 0;
+    EXPECT_CALL(*rig.ril, GetSimIO(1, Field(&SimIoRequestInfo::fileId, ELEMENTARY_FILE_MSISDN), _))
+        .WillOnce([&](int slot, const auto &info, const auto &event) {
+            ++cardCommands;
+            EXPECT_EQ(info.command, 0xc0);
+            auto request = event->template GetUniqueObject<IccToRilMsg>();
+            EXPECT_TRUE(request);
+            auto response = std::make_shared<IccFromRilMsg>(request->controlHolder);
+            auto failed = std::make_shared<RadioResponseInfo>();
+            failed->error = ErrType::ERR_GENERIC_FAILURE;
+            response->fileData.exception = failed;
+            auto owner = std::dynamic_pointer_cast<TelEventHandler>(event->GetOwner());
+            EXPECT_TRUE(owner && owner->SendEvent(OHOS::AppExecFwk::InnerEvent::Get(event->GetInnerEventId(), response)));
+            EXPECT_EQ(slot, 1);
+            return 0;
+        });
+    EXPECT_CALL(*rig.provider, Update(_, _, _)).Times(0);
+    const auto failure = rig.manager->SetShowNumber(1, u"555999");
+    EXPECT_EQ(failure, TELEPHONY_ERR_FAIL);
+    EXPECT_EQ(cardCommands, 1u);
+    std::u16string number;
+    const auto result = rig.manager->GetShowNumber(1, number);
+    EXPECT_EQ(result, TELEPHONY_ERR_SUCCESS);
+    EXPECT_EQ(number, u"555123");
+    RecordProperty("show_number_observation", SimGuard::Primary::Json({
+        {"cachedNumber", OHOS::Str16ToStr8(number)}, {"readResult", std::to_string(result)},
+        {"failed", failure == TELEPHONY_ERR_FAIL ? "true" : "false"}, {"commands", std::to_string(cardCommands)}
+    }));
+}
 }

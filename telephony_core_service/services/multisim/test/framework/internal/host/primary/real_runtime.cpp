@@ -20,6 +20,7 @@
 #include "lifecycle/external_runner.h"
 #include "initialization_trace.h"
 #include "hisysevent.h"
+#include "ims_core_service_client.h"
 #include <mutex>
 #include <condition_variable>
 namespace Sim028Host {
@@ -59,6 +60,16 @@ template<> std::shared_ptr<Telephony::PdpProfileRdbHelper> DelayedSingleton<Tele
     static auto instance = std::shared_ptr<Telephony::PdpProfileRdbHelper>(new Telephony::PdpProfileRdbHelper,
         [](auto *p) { delete p; });
     return instance;
+}
+// The locked-card Host fixture has no IMS application service or IPC transport.
+template<> std::shared_ptr<Telephony::ImsCoreServiceClient>
+DelayedSingleton<Telephony::ImsCoreServiceClient>::GetInstance()
+{
+    return nullptr;
+}
+int32_t Telephony::ImsCoreServiceClient::GetPhoneNumberFromIMPU(int32_t, std::string &)
+{
+    return TELEPHONY_ERR_IPC_CONNECT_STUB_FAIL;
 }
 int32_t IPCSkeleton::GetCallingUid() { return 1001; }
 int32_t IPCSkeleton::GetCallingPid() { return 101; }

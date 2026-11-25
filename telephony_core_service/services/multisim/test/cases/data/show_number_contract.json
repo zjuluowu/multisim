@@ -1,0 +1,4 @@
+{
+  "id": "SIM023-LEGACY-SHOW-NUMBER-AFTER-CARD-FAILURE",
+  "expect": {"cachedNumber": "555123", "readResult": "0", "failed": "true", "commands": "1"}
+}

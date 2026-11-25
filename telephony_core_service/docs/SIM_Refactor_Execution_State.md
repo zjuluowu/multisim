@@ -143,8 +143,8 @@ M6 Host 验收记录保留。相关产品迁移须独立审核原调用者依赖
 **PARTIAL。** 输入 main/origin `cd04fbad6`。已接入正式 Host 号码设置和查询。H/C 保留
 受理和回调，T 在执行点固定账户及字段版本，R 使用已有卡会话及同一物理屏障登记原票，
 已证卡写成功后才执行独立 Provider 子步骤。查询保留卡、账户及 IMPU 三个读源和后台回写。
-Developer 59/59，含号码 8/8。真实 LLDB 单步和析构通过。正式 Verify、Legacy 特征及
-Oracle 继续归档。G3b 产品行为裁决、原生设备桥和产品写权保持待验证。
+Developer 59/59，含号码 8/8。真实 LLDB 单步和析构通过。真实 Legacy 卡侧失败及账户读源特征 1/1 PASS，已提取新的差分 Oracle，正式 Verify
+及 CI 继续归档。G3b 产品行为裁决、原生设备桥和产品写权保持待验证。
 [开发与调试](../services/multisim/test/docs/M7B_Show_Number_Debug.md) ·
 [验证证据](../services/multisim/test/docs/evidence/af2_m7b_20261125/README.md)
 

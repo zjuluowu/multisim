@@ -78,6 +78,12 @@
       "differential": "SUPPORTED"
     },
     {
+      "id": "SIM023-LEGACY-SHOW-NUMBER-AFTER-CARD-FAILURE",
+      "legacy": {"test": "RealSimPrimary.ShowNumberReadsAccountAfterMsisdnFailure", "host": "SUPPORTED", "device": "BLOCKED", "reason": "Real Legacy File, Manager, Controller and persisted account fallback."},
+      "target": {"test": "AF2ShowNumber.ProviderAccountFallbackAfterOriginalCardFailure", "host": "SUPPORTED", "device": "BLOCKED", "reason": "Formal Target queued number path with controlled MSISDN and Provider."},
+      "differential": "SUPPORTED"
+    },
+    {
       "id": "TARGET-C0-PLAN-NO-DEVICE",
       "legacy": {
         "test": null,

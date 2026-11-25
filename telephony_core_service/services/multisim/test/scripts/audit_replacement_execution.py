@@ -13,7 +13,7 @@ REQUIRED = {
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--slice', choices=['state','primary','query','upstream','target-adapter','target-topology','target-primary-b','legacy-data','target-data','legacy-voice-sms','target-voice-sms','legacy-account-metadata','target-account-metadata','legacy-ims-preference','target-ims-preference'], default='state')
+    parser.add_argument('--slice', choices=['state','primary','query','upstream','target-adapter','target-topology','target-primary-b','legacy-data','target-data','legacy-voice-sms','target-voice-sms','legacy-account-metadata','target-account-metadata','legacy-ims-preference','target-ims-preference','legacy-show-number','target-show-number'], default='state')
     parser.add_argument('--binary', required=True, type=Path)
     parser.add_argument('--profiles', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
@@ -106,6 +106,21 @@ def main():
                     'AccountStoreAdapter': ['WriteImsPreference', 'QueryImsPreferenceByIccid'],
                     'AccountRegistry': ['ConfirmImsPreferenceWrite'],
                     'RuntimeOperationStore': ['AcceptResult', 'AcceptLateEvidence']}
+    elif args.slice == 'legacy-show-number':
+        required = {'SimManager': ['SetShowNumber', 'GetShowNumber'],
+                    'MultiSimController': ['SetShowNumber', 'GetShowNumber'],
+                    'SimFileManager': ['SetSimTelephoneNumber', 'GetSimTelephoneNumber'],
+                    'SimFile': ['UpdateMsisdnNumber']}
+    elif args.slice == 'target-show-number':
+        required = {'SimModule': ['SetShowNumber', 'GetShowNumber', 'AcceptMsisdnEvidence'],
+                    'SetShowNumberUseCase': ['StartAtExecutionPoint', 'AcceptMsisdnResult', 'AcceptLateEvidence'],
+                    'ShowNumberQuery': ['ReadAtLegacyExecutionPoint', 'RunIndependentBackwrite'],
+                    'MsisdnRuntime': ['WriteMsisdn', 'AcceptEvidence', 'DrainEvidence'],
+                    'TopologyService': ['PrepareNumberTarget', 'AcceptNumberAfterCardWrite',
+                                        'AcceptIndependentNumberBackwrite'],
+                    'AccountStoreAdapter': ['WriteDisplayNumber'],
+                    'AccountRegistry': ['AcceptNumberVisibility'],
+                    'LegacyCompletion': ['CompleteShowNumber']}
     elif args.slice == 'target-primary-b':
         required = {'AssignmentService':['AcceptRadioStep', 'AcceptPrimarySwitchTimeout',
                     'ScheduleC1Retry', 'AcceptScheduledC1Retry', 'StopAcceptingAndCancelScheduledRetries'],
@@ -122,7 +137,7 @@ def main():
         for method in methods:
             needle = str(len(owner)) + owner + str(len(method)) + method + 'E'
             matched = [f for f in functions if needle in f['name'] and any(
-                ('/frameworks/native/src/' in name or '/services/multisim/infrastructure/compatibility/events/' in name or '/services/sim/src/' in name or '/services/core/src/' in name or '/framework/internal/host/g2a_reference/' in name or '/services/multisim/infrastructure/compatibility/api/' in name or '/services/multisim/role_assignment/' in name or '/services/multisim/account/' in name or '/services/multisim/infrastructure/request/' in name or '/services/multisim/device/resource/' in name or '/services/multisim/infrastructure/assembly/' in name or '/services/telephony_ext_wrapper/src/' in name) for name in f['filenames'])]
+                ('/frameworks/native/src/' in name or '/services/multisim/infrastructure/compatibility/events/' in name or '/services/sim/src/' in name or '/services/core/src/' in name or '/framework/internal/host/g2a_reference/' in name or '/services/multisim/infrastructure/compatibility/api/' in name or '/services/multisim/role_assignment/' in name or '/services/multisim/account/' in name or '/services/multisim/infrastructure/request/' in name or '/services/multisim/card/runtime/' in name or '/services/multisim/device/resource/' in name or '/services/multisim/infrastructure/assembly/' in name or '/services/telephony_ext_wrapper/src/' in name) for name in f['filenames'])]
             count = sum(f['count'] for f in matched)
             rows.append({'owner': owner, 'method': method, 'count': count,
                          'files': sorted({name for f in matched for name in f['filenames']}),
