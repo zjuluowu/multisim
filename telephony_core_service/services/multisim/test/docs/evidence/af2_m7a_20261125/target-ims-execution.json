@@ -1,0 +1,123 @@
+{
+  "scope": "Positive execution of selected target-ims-preference production methods; not full SIM coverage",
+  "methods": [
+    {
+      "owner": "SimModule",
+      "method": "SaveImsSwitch",
+      "count": 41,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimModule",
+      "method": "QueryImsSwitch",
+      "count": 32,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "LegacySimFacade",
+      "method": "SaveImsSwitch",
+      "count": 20,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/compatibility/api/legacy_account_entry.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "LegacySimFacade",
+      "method": "QueryImsSwitch",
+      "count": 16,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/compatibility/api/legacy_account_entry.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "TopologyService",
+      "method": "SaveImsPreference",
+      "count": 19,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/topology_metadata.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "TopologyService",
+      "method": "QueryImsPreference",
+      "count": 15,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/topology_metadata.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "TopologyService",
+      "method": "UpdateMetadata",
+      "count": 102,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/topology_metadata.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "TopologyService",
+      "method": "ReconcileMetadata",
+      "count": 22,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/topology_metadata.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AccountStoreAdapter",
+      "method": "WriteImsPreference",
+      "count": 15,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/account_store_adapter.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AccountStoreAdapter",
+      "method": "QueryImsPreferenceByIccid",
+      "count": 14,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/account_store_adapter.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AccountRegistry",
+      "method": "ConfirmImsPreferenceWrite",
+      "count": 24,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/account_registry.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "RuntimeOperationStore",
+      "method": "AcceptResult",
+      "count": 103,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/request/runtime_operation_store.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "RuntimeOperationStore",
+      "method": "AcceptLateEvidence",
+      "count": 12,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/request/runtime_operation_store.cpp"
+      ],
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

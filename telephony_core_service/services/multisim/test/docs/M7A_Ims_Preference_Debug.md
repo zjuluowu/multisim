@@ -12,7 +12,7 @@ Manager 先取生命周期 Lease，再检查槽范围及 Controller。无效槽�
 |---|---|
 | 取得 ICCID | `GetTargetIccId` 在锁内复制当前槽缓存的 ICCID。它检查缓存边界，不要求账户激活，也不判空字符串。Controller 找不到缓存位置或 DB Helper 对象为空时返回 `-1`，查询还把输出设为 `-1`。 |
 | 保存 | `UpdateDataByIccId` 在普通 SIM URI 上提交 `icc_id = 原 ICCID` 与单列 `ims_switch`。任何输入整数都直传，重复请求也写。原返回直接透传，未单独定义「只有 0 才成功」的业务判据。 |
-| 查询 | `QueryDataByIccId` 现场查询 Provider，使用同一 URI 和谓词；原 Helper 请求所有列并读取结果中的 `ims_switch`。Controller 以 `-1` 初始化临时值，忽略 Helper 的返回，原出口返回 0 并带回该值。没有行、Helper 获取失败、查询失败和行中明确存放 `-1` 的外部结果均可为 `(0, -1)`。 |
+| 查询 | `QueryDataByIccId` 现场查询 Provider，使用同一 URI 和谓词。原 Helper 请求所有列并读取结果中的 `ims_switch`。Controller 以 `-1` 初始化临时值，忽略 Helper 的返回，原出口返回 0 并带回该值。没有行、Helper 获取失败、查询失败和行中明确存放 `-1` 的外部结果均可为 `(0, -1)`。 |
 | 账户状态与通知 | 保存和查询均不更新 Current/Historical 的偏好值，不通知观察者，也不操作 IMS 设备。 |
 
 URI 为 `datashare:///com.ohos.simability/sim/sim_info`。

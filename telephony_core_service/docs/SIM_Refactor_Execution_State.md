@@ -113,14 +113,24 @@ VS Code GUI 保持人工未验收。IMS Preference 留待独立核对契约，�
 
 ### AF-2 M7A IMS Preference（2026-11-25）
 
-**PARTIAL。** 输入本地及远端 main `7edbc86ff`。真实 Legacy Verify 特征用例
-1/1 PASS。保存透传 Provider 整数，查询现场读取 Provider，空结果和失败可同样返回成功
-加 UNKNOWN。Target 已接入正式保存和 Provider 直读，复用 M6 字段写权、原效果和 H
-生命周期。Developer M1～M7A 51/51，真实 LLDB 单步验证原调用以及 Stop 和销毁。
-Verify 门禁归档中。独立兼容差异待裁决。单激活空槽在 Legacy 以空 ICCID 发读写，
-Target 无已接纳 Binding 时拒绝访问 Provider。
-[Legacy 及 Target 契约](../services/multisim/test/docs/M7A_Ims_Preference_Debug.md) ·
-[原始证据](../services/multisim/test/docs/evidence/af2_m7a_20261125/README.md)
+**PARTIAL · Host 业务及验证通过，空绑定兼容差异待裁决。** 输入
+`7edbc86ff2c2c4154f7b11807558c9bdb23b2247`，实现 `d975637cf`。已接入正式保存与
+Provider 直读。按原绑定写 `ims_switch` 单列，返回 Provider 原码。查询区分 Provider
+实际失败、无行与行值，按 Legacy 出口交付原整数和 UNKNOWN。T 复用 M6 字段写权、
+原效果、字段版本和 H 生命周期。保存及查询均无账户通知或设备执行。
+
+Verify Legacy 145/145、Target 153/153，含 M1～M6 44/44 和 M7A 7/7。ASan、TSan
+各 51/51。11 个双后端场景 22/22，后端及 Oracle 差异 0。完整架构、GN/Ninja、
+真实执行审计、Legacy CI、完整性和变异恢复通过。8 个 ELF 的 298 处源码定位通过。
+LLDB 实际单步到原读写、字段版本、同步输出、Stop 和析构。VS Code GUI 人工未验收。
+
+**独立兼容待决 M7A · 配置有效但无当前 Binding。** Legacy 单激活实测以空 ICCID 各发
+一次读写。保存原码为 0，查询为 `(0, -1)`。Target 读写均返回 `-1`，查询输出为
+`-1`，Provider 调用次数为零。兼容矩阵中的已绑定 IMS 场景覆盖共同语义，此差异单独
+执行和归档。取得正式裁决前保留 PARTIAL，产品 Provider、Core/SA/IPC、实际 IMS 设备
+开关与既有生产门禁继续有效。
+[调用及调试](../services/multisim/test/docs/M7A_Ims_Preference_Debug.md) ·
+[原始证据及两项待决记录](../services/multisim/test/docs/evidence/af2_m7a_20261125/README.md)
 
 **独立产品迁移待决 M6 · 未知 ICCID 的 SIM 标签。** 仓内签收及提交记录尚无此项正式裁决。
 Legacy 可无变更成功，Target 对未知持久身份返回参数错误。已知历史账户仍允许更新。
@@ -169,10 +179,13 @@ M6 Host 验收记录保留。相关产品迁移须独立审核原调用者依赖
 
 ### 下一批任务与依赖
 
-1. **下一项账户资料**。先核对 IMS Preference 的原 Slot/ICCID 读写、权限和设备依赖。
-可独立验证的资料字段沿 T 的原身份、字段版本和 I 单列证据接入。涉及设备行为时按对应切片验收。
-[M6 接线及调试](../services/multisim/test/docs/M6_Account_Metadata_Debug.md#修改局部性与后续资料接线)
-2. **后续能力及产品门禁**。Part 26 的 Reload 因果覆盖、AF2-03 的多成员 Submit、Radio 产品供证、跨实例重建及生产写权按[签收包 §16](AF1_Architecture_Final_Signoff_Package_20261124.md#16-外部产品门禁)、[原功能与 WU](migration/SIM_Architecture_Refactor_Design.md#writer-cutover)及[主设计 §22](SIM_Target_Architecture_Design_v1.2.md#22-分阶段实施门禁)取证。
+1. **兼容裁决**。分别审核 M7A 空绑定 IMS 和 M6 未知 ICCID 标签的原调用者与 Provider
+谓词。保留各自的审批及切换条件。
+[实测和待决项](../services/multisim/test/docs/evidence/af2_m7a_20261125/README.md)
+2. **M7B 号码管理**。按授权确定 MSISDN、账户展示号码和 IMS IMPU 的入口与原读源。
+先核对卡、Provider 两段原效果，再使用原会话和 T 的号码字段写权接线。
+[M7B 接线建议](../services/multisim/test/docs/M7A_Ims_Preference_Debug.md#修改局部性与-m7b)
+3. **后续能力及产品门禁**。Part 26 的 Reload 因果覆盖、AF2-03 的多成员 Submit、Radio 产品供证、跨实例重建及生产写权按[签收包 §16](AF1_Architecture_Final_Signoff_Package_20261124.md#16-外部产品门禁)、[原功能与 WU](migration/SIM_Architecture_Refactor_Design.md#writer-cutover)及[主设计 §22](SIM_Target_Architecture_Design_v1.2.md#22-分阶段实施门禁)取证。
 
 2026-11-19 独立设计审查以 `0e4004bef` 为源码输入，形成[历史评审](history/reviews/SIM_Architecture_Independent_Review_20261119.md)。评审先独立发布于 `d8fcbba40`，随后将分责、共享输出和异步资格同步至主设计与源码详细设计。产品装配、设备与业务执行仍按原批次记录；当前设计验收见[第二轮复审](history/reviews/SIM_Architecture_Independent_Review_20261119.md#第二轮复审--对修改后的设计提出反例)。
 

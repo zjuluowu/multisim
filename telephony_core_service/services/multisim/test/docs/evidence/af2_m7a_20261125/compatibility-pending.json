@@ -9,9 +9,22 @@
       "legacy_evidence": "legacy-characteristic.xml.gz",
       "target_gtest": "AF2ImsPreference.MissingBindingDoesNotAddressEmptyIccid",
       "target_evidence": "target-empty-binding.xml.gz",
-      "legacy": {"save": 0, "read": 0, "output": -1, "writes": 1, "reads": 1},
-      "target": {"save": -1, "read": -1, "output": -1, "writes": 0, "reads": 0},
-      "product_gate": "Review the consumers of the CMI return codes and the empty-ICCID Provider predicate before accepting the change."
+      "legacy": {
+        "save": 0,
+        "read": 0,
+        "output": -1,
+        "writes": 1,
+        "reads": 1
+      },
+      "target": {
+        "save": -1,
+        "read": -1,
+        "output": -1,
+        "writes": 0,
+        "reads": 0
+      },
+      "product_gate": "Review the consumers of the CMI return codes and the empty-ICCID Provider predicate before accepting the change.",
+      "target_verify_evidence": "target-empty-binding-verify.xml.gz"
     },
     {
       "id": "M6-LABEL-UNKNOWN-ICCID",
