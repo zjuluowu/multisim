@@ -48,6 +48,24 @@ int32_t CompleteAccountWrite(LegacyCompletion &completion, const std::function<i
 }
 } // namespace
 
+int32_t LegacySimFacade::CheckNumberEntry(SlotId slot, LegacyCallerRef caller, LegacyCallbackRef callback,
+    bool writing, bool available, LegacyPrimaryHostPort &host)
+{
+    if (!host.IsSystemCaller(caller)) { return host.PrimaryError(LegacyPrimaryError::NonSystemCaller); }
+    if (!(writing ? host.CanSetTelephonyState(caller) : host.CanGetTelephonyState(caller))) {
+        return host.PrimaryError(LegacyPrimaryError::PermissionDenied);
+    }
+    if (!available || !callback.token) { return host.PrimaryError(LegacyPrimaryError::Unavailable); }
+    return host.SupportsPrimarySlot(slot) ? 0 : host.PrimaryError(LegacyPrimaryError::InvalidSlot);
+}
+
+NumberLegacyErrors LegacySimFacade::NumberErrors(const LegacyPrimaryHostPort &host)
+{
+    return {host.PrimaryError(LegacyPrimaryError::NoCard), host.PrimaryError(LegacyPrimaryError::Unavailable),
+        host.PrimaryError(LegacyPrimaryError::InvalidArgument), host.PrimaryError(LegacyPrimaryError::Failed),
+        host.PrimaryError(LegacyPrimaryError::DatabaseWriteFailed), host.PrimaryError(LegacyPrimaryError::HistoricalMissing)};
+}
+
 int32_t LegacySimFacade::SaveImsSwitch(SlotId slot, const SlotCatalog &catalog, LegacyPrimaryHostPort &host,
     LegacyCompletion &completion, const std::function<int32_t(const CompletionPlan &)> &issue)
 {

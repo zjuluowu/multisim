@@ -24,6 +24,9 @@
 #include "account/topology_service.h"
 #include "infrastructure/compatibility/events/legacy_completion.h"
 #include "card/runtime/card_observation_runtime.h"
+#include "card/runtime/msisdn_runtime.h"
+#include "account/number/set_show_number_use_case.h"
+#include "account/number/show_number_query.h"
 
 namespace OHOS::Telephony::MultiSim {
 // Startup adapters are dedicated to this instance, except for the borrowed platform service.
@@ -37,6 +40,8 @@ struct CoreSimModulePorts {
     std::shared_ptr<RadioOwnerDispatchPort> ownerDispatch;
     std::function<std::optional<InitialRecoveryEvidence>(const ResourceKey &, RuntimeEpoch)> initialEvidence;
     std::shared_ptr<LegacyPrimaryHostPort> primaryHost {};
+    std::shared_ptr<LegacyNumberHostPort> numberHost {};
+    std::shared_ptr<MsisdnPlatformPort> msisdn {};
 };
 
 // Account and card facts confirmed by the startup source. M2 adds live observation and provider writes.
@@ -55,6 +60,9 @@ public:
     std::optional<BindingRef> FindBinding(SlotId slot) const;
     std::optional<AccountView> ReadAccount(SubscriptionId subscription,
         AccountReadView view = AccountReadView::Current) const;
+    int32_t SetShowNumber(int32_t slot, const std::u16string &number, LegacyCallerRef caller, LegacyCallbackRef callback);
+    int32_t GetShowNumber(int32_t slot, LegacyCallerRef caller, LegacyCallbackRef callback);
+    bool AcceptMsisdnEvidence(const MsisdnTransportEvidence &evidence);
     int32_t SaveImsSwitch(int32_t slot, int32_t preference);
     int32_t QueryImsSwitch(int32_t slot, int32_t &preference);
     int32_t SetShowName(int32_t slot, const std::u16string &name, LegacyCallerRef caller);
@@ -90,6 +98,9 @@ private:
     SimModule(CoreSimModulePorts ports, std::shared_ptr<const SlotCatalog> catalog, RuntimeEpoch epoch);
     ~SimModule() = default;
     bool InitializeResources();
+    bool QueueNumberTask(std::function<void()> task);
+    int32_t QueueNumberEntry(SlotId slot, LegacyCallerRef caller, LegacyCallbackRef callback,
+        const std::optional<std::u16string> &number);
     bool SeedAccount(const ConfirmedSlotAccount &confirmed);
     bool AdmitPrimaryCall(bool originalOnly = false);
     void ReturnPrimaryCall();
@@ -99,6 +110,7 @@ private:
     int32_t SetDefaultCallMessageRole(DefaultRole role, int32_t slot, LegacyCallerRef caller);
 
     struct ModuleCall {
+        explicit ModuleCall(CoreSimModuleHandle owner) : module(std::move(owner)) {}
         CoreSimModuleHandle module;
         ~ModuleCall() { module->ReturnModuleCall(); }
     };
@@ -118,6 +130,9 @@ private:
     TopologyService topology_;
     CardObservationRuntime card_;
     LegacyCompletion completion_;
+    std::optional<MsisdnRuntime> msisdn_;
+    std::optional<SetShowNumberUseCase> numbers_;
+    std::optional<ShowNumberQuery> numberQuery_;
     std::shared_ptr<AssignmentService> assignment_;
     PrimaryHostLifecycle lifecycle_;
     std::mutex admissionMutex_;

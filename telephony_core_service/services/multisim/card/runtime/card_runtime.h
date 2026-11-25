@@ -71,7 +71,7 @@ class CardRuntime final : public ShowNumberRuntimePort, public ActivationRuntime
 public:
     CardRuntime(const SlotCatalog &catalog, RuntimeEpoch epoch, std::vector<ProductionSlotBindings> slots,
         RadioProtocolController &radio, ITelRilManager &sharedRil, EsimManager *euicc);
-    std::optional<CardNumberView> ReadMsisdnCache(SlotTarget target) const override;
+    std::optional<CardNumberView> ReadMsisdnCache(const SessionRef &session) const override;
     void WriteMsisdn(const MsisdnWriteRequest &request) override;
     void AcceptMsisdnWriteCompletion(const MsisdnWriteResult &result); // 原事件桥结果接纳点。
     void SetOrdinarySimActive(const ActivationDeviceRequest &request) override;

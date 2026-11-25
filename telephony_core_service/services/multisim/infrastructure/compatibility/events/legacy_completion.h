@@ -30,8 +30,8 @@ namespace OHOS::Telephony::MultiSim {
 class LegacyCompletion final : public ShowNumberCompletionPort, public LegacyIntCompletionPort {
 public:
     explicit LegacyCompletion(LegacyOutputPort &output) : output_(&output) {}
-    LegacyCompletion(LegacyIntCompletionPort &fallback, LegacyPrimaryHostPort *primary)
-        : fallback_(&fallback), primary_(primary) {}
+    LegacyCompletion(LegacyIntCompletionPort &fallback, LegacyPrimaryHostPort *primary, LegacyOutputPort *number = nullptr)
+        : output_(number), fallback_(&fallback), primary_(primary) {}
     std::optional<SynchronousWaitRef> RetainRoleWaiter();
     std::optional<int32_t> TakeRoleResult(SynchronousWaitRef waiter);
     void CompleteShowNumber(const ShowNumberCompletion &completion) override;

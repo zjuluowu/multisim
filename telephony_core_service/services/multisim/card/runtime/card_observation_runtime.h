@@ -18,6 +18,7 @@ public:
         CardObservationSink &sink, RuntimeEpoch epoch);
     std::optional<SessionRef> ObserveVerifiedCard(const CardApplicationTarget &application, uint64_t generation,
         const std::string &iccid);
+    bool StillCurrent(const SessionRef &session);
     bool HasVerifiedCard(SlotId slot);
     bool InvalidateVerifiedCard(const SessionRef &session);
 private:

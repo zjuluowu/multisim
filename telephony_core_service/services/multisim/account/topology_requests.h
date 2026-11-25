@@ -30,6 +30,14 @@ struct SetShowNumberCommand {
     std::u16string number;
     CompletionPlan completion;
 };
+struct NumberLegacyErrors {
+    int32_t noCard;
+    int32_t unavailable;
+    int32_t invalidArgument;
+    int32_t failed;
+    int32_t databaseWriteFailed;
+    int32_t historicalMissing;
+};
 enum class NumberSource { CardMsisdnCache, AccountDisplay, ImsImpu, Empty };
 struct ShowNumberRead {
     std::u16string number;
@@ -54,7 +62,7 @@ struct AccountView {
     AccountFieldRevisions fields;
     std::optional<int32_t> legacyLabel {};
 };
-enum class AccountMetadataField { DisplayName, Label, ImsPreference };
+enum class AccountMetadataField { DisplayName, Label, ImsPreference, DisplayNumber };
 enum class ImsPreferenceReadStatus { Failed, NoRow, Value };
 struct ImsPreferenceRead {
     ImsPreferenceReadStatus status {ImsPreferenceReadStatus::Failed};
@@ -83,7 +91,12 @@ struct AccountStoreWriteResult {
     bool writeConfirmed;
     bool callFinished; // 不确定调用已结束时保留原冲突资格，不盲重写。
 };
-struct NumberFieldRevisions { std::optional<uint64_t> current; std::optional<uint64_t> historical; };
+struct NumberFieldRevisions {
+    std::optional<uint64_t> current;
+    std::optional<uint64_t> historical;
+    bool operator==(const NumberFieldRevisions &other) const
+    { return current == other.current && historical == other.historical; }
+};
 struct NumberExecutionTarget {
     BindingRef binding;
     SessionRef session;
@@ -91,8 +104,8 @@ struct NumberExecutionTarget {
     NumberFieldRevisions numberRevisions; // 改名/IMS/active不应使合法号码结果失效。
 };
 struct NumberAcceptance {
-    int32_t legacyResult;
-    AccountStoreWriteResult storage;
+    AccountMetadataResult acceptance;
+    AccountMetadataOutcome storage;
     bool currentCacheAccepted;
     bool historicalCacheAccepted;
 };

@@ -63,7 +63,8 @@ public:
     int32_t SaveImsPreference(SlotTarget origin, int32_t preference, const CompletionPlan &completion);
     int32_t QueryImsPreference(SlotTarget origin, int32_t &preference);
     std::optional<NumberExecutionTarget> PrepareNumberTarget(SlotTarget origin, const SessionRef &session) const;
-    NumberAcceptance AcceptNumberAfterCardWrite(const NumberExecutionTarget &target, const std::u16string &number);
+    NumberAcceptance AcceptNumberAfterCardWrite(const NumberExecutionTarget &target, const std::u16string &number,
+        StepRef original);
     NumberAcceptance AcceptIndependentNumberBackwrite(const NumberExecutionTarget &target,
         const std::u16string &number);
     ReloadRequest PrepareAccountReload(AccountReadView view, uint64_t loadAttempt);
@@ -100,6 +101,7 @@ public:
         uint64_t expectedActiveRevision, bool active);
     std::optional<PrimaryTargetFacts> ReadPrimaryTarget(SlotId slot) const override;
     bool WithCurrentPrimaryTarget(const PrimaryTargetFacts &expected, const std::function<void()> &admit) const override;
+    std::optional<SessionRef> ReadNumberSession(SlotId slot) const;
     RequestId BeginRouteMapping(const StepRef &parent, SlotTarget target) override;
 private:
     DiscoveryAcceptance ContinueDiscovery(DiscoveryCallRef call,
@@ -107,18 +109,23 @@ private:
     bool FinalizeDiscovery(DiscoveryCallRef call);
     void MarkDiscoveryReturned(DiscoveryCallRef call);
     void FinishWithoutWrite(DiscoveryCallRef call);
-    AccountFieldReservation ReserveNumberField(const NumberExecutionTarget &target);
-    void ReleaseAfterStoreCallFinished(const AccountFieldReservation &reservation,
-        const AccountStoreWriteResult &result);
     using MetadataTarget = std::variant<SlotTarget, std::string>;
     using MetadataValue = std::variant<std::u16string, int32_t>;
     struct MetadataWriteResult {
         AccountMetadataResult acceptance;
-        int32_t rawResult {-1};
+        AccountMetadataOutcome outcome {};
+        bool currentAccepted {false};
+        bool historicalAccepted {false};
+        int32_t RawResult() const { return outcome.callFinished ? outcome.legacyResult : -1; }
     };
     MetadataWriteResult UpdateMetadata(AccountMetadataField field, const MetadataTarget &target,
-        const MetadataValue &value, const CompletionPlan &completion);
-    AccountMetadataResult AcceptMetadata(const AccountRecord &original,
+        const MetadataValue &value, const CompletionPlan &completion, const NumberExecutionTarget *number = nullptr,
+        std::optional<StepRef> parent = std::nullopt);
+    NumberAcceptance WriteNumber(const NumberExecutionTarget &target, const std::u16string &number,
+        std::optional<StepRef> parent);
+    std::optional<NumberExecutionTarget> PrepareNumberTargetLocked(SlotTarget origin, const SessionRef &session) const;
+    bool StillMatchesNumberTarget(const NumberExecutionTarget &target) const;
+    MetadataWriteResult AcceptMetadata(const AccountRecord &original,
         const std::optional<BindingRef> &binding, AccountMetadataField field, const MetadataValue &value);
     bool MetadataConflictsWithDiscovery(const std::string &iccid) const;
     struct PendingMetadata {

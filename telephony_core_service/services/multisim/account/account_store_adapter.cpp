@@ -26,6 +26,14 @@ AccountStoreWriteResult NotImplemented()
 }
 
 AccountStoreWriteResult AccountStoreAdapter::WriteDisplayNumber(const AccountNumberPatch &) { return NotImplemented(); }
+AccountMetadataOutcome AccountStoreAdapter::WriteDisplayNumber(const AccountMetadataOperation &operation,
+    const AccountNumberPatch &patch)
+{
+    if (!metadata_) { return {-1, true, EffectKnowledge::NotSent}; }
+    return metadata_->UpdateAccountField(operation, kSimInfoUri, "sim_id",
+        std::to_string(patch.subscription.legacySimId), "phone_number", patch.number);
+}
+
 AccountStoreWriteResult AccountStoreAdapter::WriteActiveProjection(const AccountActivePatch &) { return NotImplemented(); }
 AccountStoreWriteResult AccountStoreAdapter::WriteDisplayName(const AccountNamePatch &) { return NotImplemented(); }
 AccountStoreWriteResult AccountStoreAdapter::WriteLabel(const AccountLabelPatch &) { return NotImplemented(); }

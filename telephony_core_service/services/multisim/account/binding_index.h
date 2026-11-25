@@ -39,6 +39,7 @@ public:
     explicit BindingIndex(const SlotCatalog &catalog);
     std::optional<BindingRef> Find(SlotId slot) const;
     std::optional<uint64_t> ReadPositionRevision(SlotId slot) const;
+    std::optional<SessionRef> Source(SlotId slot) const;
     bool StillMatches(const BindingRef &expected) const;
     bool AcceptAssemblyState(SlotId slot, bool assembled);
     std::optional<BindingRef> PrepareBinding(SlotId slot, SubscriptionId subscription, uint64_t expectedRevision) const;

@@ -86,7 +86,9 @@ SOURCE_GROUPS = {'readonly_query': ('infrastructure/compatibility/api/real_sim_c
                        'card/esim/profile_requests.h',
                        'card/records/ef_requests.h',
                        'card/security/pin_requests.h'),
- 'runtime_core': ('card/runtime/card_observation_runtime.cpp',
+ 'runtime_core': ('card/runtime/msisdn_runtime.cpp',
+                  'card/runtime/msisdn_runtime.h',
+                  'card/runtime/card_observation_runtime.cpp',
                   'card/runtime/card_observation_runtime.h',
                   'card/runtime/card_runtime.cpp',
                   'card/runtime/card_runtime.h',
@@ -460,7 +462,7 @@ def check_migration():
     if inputs != {entry["old"] for entry in entries} or len(inputs) != len(entries):
         raise ValueError("Layout revision must map every input file exactly once")
     actual = {p.relative_to(SOURCE).as_posix() for p in module_files(SOURCE)} - AUTHORIZED_NEW_FILES
-    actual -= set(load_manifest('af2_m6')['added'])
+    actual -= set(load_manifest('af2_m6')['added']) | set(load_manifest('af2_m7b')['added'])
     additions = manifest.get("additions", [])
     # Preserve the committed copy's provenance, but check its explicit canonical destination.
     documentation = manifest.get("documentation_additions", [])

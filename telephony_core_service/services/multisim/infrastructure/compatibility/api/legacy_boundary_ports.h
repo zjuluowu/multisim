@@ -19,7 +19,8 @@
 #ifndef OHOS_TELEPHONY_MULTISIM_COMPATIBILITY_API_LEGACY_BOUNDARY_PORTS_H
 #define OHOS_TELEPHONY_MULTISIM_COMPATIBILITY_API_LEGACY_BOUNDARY_PORTS_H
 
-#include "account/topology_requests.h"
+#include "account/number/number_query_host_port.h"
+#include <functional>
 
 namespace OHOS::Telephony::MultiSim {
 struct LegacyCallerRef { uint64_t token; }; // Core 保存真实调用者上下文，不在异步线程重新取服务身份。
@@ -65,6 +66,14 @@ public:
     virtual void NotifyOriginalAccountChanged() = 0;
     virtual void TransferOriginalShowNumberResult(CompletionId completion, int32_t legacyResult) = 0;
     virtual void DeliverOriginalInt(const CompletionRoute &route, int32_t legacyResult) = 0;
+};
+class LegacyNumberHostPort : public NumberQueryHostPort, public LegacyOutputPort {
+public:
+    virtual std::optional<CompletionId> RetainNumberCallback(LegacyCallbackRef callback) = 0;
+    virtual void ReleaseNumberCallback(CompletionId completion) = 0;
+    // Accepted tasks execute once asynchronously on the installed Host queue.
+    virtual bool PostNumberTask(std::function<void()> task) = 0;
+    virtual void TransferOriginalNumberRead(CompletionId completion, const ShowNumberRead &result) = 0;
 };
 } // namespace OHOS::Telephony::MultiSim
 

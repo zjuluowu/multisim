@@ -344,12 +344,15 @@ source_set("runtime_core") {
     "card/runtime/card_observation_runtime.cpp",
     "card/runtime/card_observation_runtime.h",
     "card/runtime/card_runtime.cpp",
+    "card/runtime/msisdn_runtime.h",
+    "card/runtime/msisdn_runtime.cpp",
     "card/runtime/card_runtime.h",
     "card/runtime/result_sinks.h",
   ]
   public = [
     "card/runtime/card_observation_runtime.h",
     "card/runtime/card_runtime.h",
+    "card/runtime/msisdn_runtime.h",
     "card/runtime/result_sinks.h",
   ]
   public_deps = [

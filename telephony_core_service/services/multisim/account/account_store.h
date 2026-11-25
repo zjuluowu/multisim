@@ -105,6 +105,8 @@ class AccountStore {
 public:
     virtual ~AccountStore() = default;
     virtual AccountStoreWriteResult WriteDisplayNumber(const AccountNumberPatch &patch) = 0;
+    virtual AccountMetadataOutcome WriteDisplayNumber(const AccountMetadataOperation &, const AccountNumberPatch &)
+    { return {-1, true, EffectKnowledge::NotSent}; }
     virtual AccountStoreWriteResult WriteActiveProjection(const AccountActivePatch &patch) = 0;
     virtual AccountStoreWriteResult WriteDisplayName(const AccountNamePatch &patch) = 0;
     virtual AccountStoreWriteResult WriteLabel(const AccountLabelPatch &patch) = 0;

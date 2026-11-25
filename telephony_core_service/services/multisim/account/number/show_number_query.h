@@ -28,7 +28,8 @@ namespace OHOS::Telephony::MultiSim {
 class ShowNumberQuery final {
 public:
     ShowNumberQuery(TopologyService &topology, ShowNumberRuntimePort &runtime, NumberQueryHostPort &host);
-    ShowNumberRead ReadAtLegacyExecutionPoint(SlotTarget origin);
+    ShowNumberRead ReadAtLegacyExecutionPoint(SlotTarget origin, const NumberLegacyErrors &errors,
+        const std::function<void(NumberBackwrite)> &postBackwrite);
     void RunIndependentBackwrite(const NumberBackwrite &backwrite);
 private:
     TopologyService &topology_;

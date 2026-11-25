@@ -35,6 +35,12 @@ std::optional<SessionRef> CardObservationRuntime::ObserveVerifiedCard(const Card
     return session;
 }
 
+bool CardObservationRuntime::StillCurrent(const SessionRef &session)
+{
+    std::lock_guard<std::mutex> guard(mutex_);
+    return sessions_.StillCurrent(session);
+}
+
 bool CardObservationRuntime::HasVerifiedCard(SlotId slot)
 {
     std::lock_guard<std::mutex> guard(mutex_);

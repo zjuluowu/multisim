@@ -1,0 +1,49 @@
+settings set target.disable-aslr false
+settings set symbols.enable-external-lookup false
+settings set target.env-vars LLVM_PROFILE_FILE=/tmp/af2-m7b-developer/lldb-%p.profraw
+breakpoint set -n OHOS::Telephony::MultiSim::SimModule::SetShowNumber -o true
+run --gtest_filter=AF2ShowNumber.LiveCardNumberWriteUpdatesAccountAndCompletes
+frame variable slot number caller callback
+thread step-over
+breakpoint set -n OHOS::Telephony::MultiSim::LegacySimFacade::CheckNumberEntry -o true
+continue
+frame variable slot writing callback
+breakpoint set -n OHOS::Telephony::MultiSim::SetShowNumberUseCase::StartAtExecutionPoint -o true
+continue
+frame variable command
+breakpoint set -f topology_metadata.cpp -l 89 -o true
+continue
+frame variable binding session account
+breakpoint set -f set_show_number_use_case.cpp -l 45 -o true
+continue
+frame variable target step
+breakpoint set -f msisdn_runtime.cpp -l 50 -o true
+continue
+frame variable ticket lease request
+thread step-over
+breakpoint set -n OHOS::Telephony::MultiSim::MsisdnRuntime::AcceptEvidence -o true
+continue
+frame variable evidence
+breakpoint set -n OHOS::Telephony::MultiSim::SetShowNumberUseCase::AcceptMsisdnResult -o true
+continue
+frame variable result
+breakpoint set -n OHOS::Telephony::MultiSim::TopologyService::AcceptNumberAfterCardWrite -o true
+continue
+frame variable target number original
+breakpoint set -f account_store_adapter.cpp -l 33 -o true
+continue
+frame variable operation patch
+breakpoint set -n OHOS::Telephony::MultiSim::AccountRegistry::AcceptNumberVisibility -o true
+continue
+frame variable subscription view expectedNumberRevision number
+thread step-over
+breakpoint set -n OHOS::Telephony::MultiSim::LegacyCompletion::CompleteShowNumber -o true
+continue
+frame variable completion
+breakpoint set -n OHOS::Telephony::MultiSim::SimModule::StopAcceptingAndDrain -o true
+continue
+frame variable this->moduleCalls_
+breakpoint set -f sim_module_factory.cpp -l 459 -o true
+continue
+frame variable module
+continue

@@ -53,7 +53,7 @@ SimModule::SimModule(CoreSimModulePorts ports, std::shared_ptr<const SlotCatalog
       radio_(resources_, *ports_.radio, {primaryResource_}, ResourceRadioRuntime::Mode::ObserveOnly),
       sessions_(epoch_),
       topology_(*catalog_, *ports_.accountStore, epoch_), card_(*catalog_, sessions_, topology_, epoch_),
-      completion_(*ports_.completion, ports_.primaryHost.get()),
+      completion_(*ports_.completion, ports_.primaryHost.get(), ports_.numberHost.get()),
       assignment_(std::make_shared<AssignmentService>(*catalog_, *ports_.assignmentStore, radio_,
           *ports_.output, topology_, completion_, epoch_, AssignmentService::PrimaryScope::C0Only)),
       lifecycle_(assignment_, radio_, *ports_.scheduler, ports_.ownerDispatch)
@@ -65,14 +65,29 @@ SimModule::SimModule(CoreSimModulePorts ports, std::shared_ptr<const SlotCatalog
     assignment_->BindRetryScheduler(ports_.scheduler);
     radio_.BindResultSink(assignment_);
     radio_.BindOwnerDispatch(ports_.ownerDispatch);
+    if (ports_.numberHost && ports_.msisdn && ports_.primaryHost) {
+        msisdn_.emplace(card_, resources_, *ports_.msisdn);
+        numbers_.emplace(topology_, *msisdn_, completion_, epoch_);
+        numberQuery_.emplace(topology_, *msisdn_, *ports_.numberHost);
+        msisdn_->BindNumberSink(*numbers_);
+    }
 }
 
 bool SimModule::InitializeResources()
 {
-    if (!resources_.RegisterForInitialCheck(primaryResource_)) { return false; }
+    std::set<ResourceKey> keys {primaryResource_};
+    if (msisdn_) {
+        for (const auto &slot : catalog_->Slots()) {
+            if (const auto key = ports_.msisdn->ResourceFor(slot.slot)) { keys.insert(*key); }
+        }
+    }
     auto provider = std::move(ports_.initialEvidence);
-    const auto evidence = provider(primaryResource_, epoch_);
-    return evidence && resources_.AcceptInitialRecoveryEvidence(primaryResource_, *evidence);
+    for (const auto &key : keys) {
+        if (!resources_.RegisterForInitialCheck(key)) { return false; }
+        const auto evidence = provider(key, epoch_);
+        if (!evidence || !resources_.AcceptInitialRecoveryEvidence(key, *evidence)) { return false; }
+    }
+    return true;
 }
 
 bool SimModule::SeedAccount(const ConfirmedSlotAccount &confirmed)
@@ -94,6 +109,76 @@ std::optional<BindingRef> SimModule::FindBinding(SlotId slot) const
 std::optional<AccountView> SimModule::ReadAccount(SubscriptionId subscription, AccountReadView view) const
 {
     return topology_.ReadAccount(subscription, view);
+}
+
+bool SimModule::QueueNumberTask(std::function<void()> task)
+{
+    if (!AdmitModuleCall()) { return false; }
+    const auto lifetime = std::make_shared<ModuleCall>(shared_from_this());
+    try {
+        return ports_.numberHost->PostNumberTask([lifetime, task = std::move(task)]() mutable {
+            const auto executing = std::move(lifetime);
+            if (executing) { task(); }
+        });
+    } catch (const std::exception &) {
+        return false;
+    }
+}
+
+int32_t SimModule::SetShowNumber(int32_t slot, const std::u16string &number, LegacyCallerRef caller,
+    LegacyCallbackRef callback)
+{
+    return QueueNumberEntry({slot}, caller, callback, number);
+}
+
+int32_t SimModule::GetShowNumber(int32_t slot, LegacyCallerRef caller, LegacyCallbackRef callback)
+{
+    return QueueNumberEntry({slot}, caller, callback, std::nullopt);
+}
+
+int32_t SimModule::QueueNumberEntry(SlotId slot, LegacyCallerRef caller, LegacyCallbackRef callback,
+    const std::optional<std::u16string> &number)
+{
+    if (!ports_.primaryHost) { return -1; }
+    if (!AdmitModuleCall()) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
+    const ModuleCall call {shared_from_this()};
+    const auto checked = LegacySimFacade::CheckNumberEntry(slot, caller, callback, number.has_value(),
+        numberQuery_.has_value(), *ports_.primaryHost);
+    if (checked != 0) { return checked; }
+    const auto errors = LegacySimFacade::NumberErrors(*ports_.primaryHost);
+    const auto receiver = ports_.numberHost->RetainNumberCallback(callback);
+    if (!receiver) { return errors.unavailable; }
+    if (!QueueNumberTask([this, slot, receiver = *receiver, number, errors] {
+        if (number) {
+            const CompletionPlan plan {CallbackCompletionRoute {receiver}, true};
+            if (!catalog_->Find(slot)) {
+                completion_.CompleteShowNumber({plan, errors.unavailable, EffectKnowledge::NotSent, {}});
+            } else {
+                numbers_->StartAtExecutionPoint({{slot}, *number, plan}, errors);
+            }
+            return;
+        }
+        ShowNumberRead result {{}, NumberSource::Empty, errors.unavailable};
+        if (catalog_->Find(slot)) {
+            result = numberQuery_->ReadAtLegacyExecutionPoint({slot}, errors, [this](NumberBackwrite backwrite) {
+                QueueNumberTask([this, backwrite = std::move(backwrite)] {
+                    numberQuery_->RunIndependentBackwrite(backwrite);
+                });
+            });
+        }
+        ports_.numberHost->TransferOriginalNumberRead(receiver, result);
+    })) {
+        ports_.numberHost->ReleaseNumberCallback(*receiver);
+        return errors.unavailable;
+    }
+    return 0;
+}
+
+bool SimModule::AcceptMsisdnEvidence(const MsisdnTransportEvidence &evidence)
+{
+    if (!msisdn_ || !AdmitModuleCall(true)) { return false; }
+    const ModuleCall call {shared_from_this()};
+    return msisdn_->AcceptEvidence(evidence);
 }
 
 int32_t SimModule::SaveImsSwitch(int32_t slot, int32_t preference)
@@ -294,6 +379,7 @@ SimModule::DrainResult SimModule::StopAcceptingAndDrain()
         return DrainResult::DeviceEffectsUnresolved;
     }
     if (primaryCallActive_ || moduleCalls_) { return DrainResult::CallbacksStillInFlight; }
+    if (msisdn_ && msisdn_->HasPending()) { return DrainResult::DeviceEffectsUnresolved; }
     if (HasPendingBusinessEffects()) {
         return DrainResult::BusinessEffectsUnresolved;
     }
@@ -325,7 +411,7 @@ bool SimModule::HasPendingBusinessEffects() const
 {
     return primaryEffectUnresolved_ || assignment_->ReadDataParameterReceipt() ||
         assignment_->ReadRoleProviderReceipt(DefaultRole::Voice) || assignment_->ReadRoleProviderReceipt(DefaultRole::Sms) ||
-        topology_.PendingDiscoveryCount() || topology_.PendingMetadataCount() || assignment_->PendingDiscoveryRoles();
+        (msisdn_ && msisdn_->HasPending()) || topology_.PendingDiscoveryCount() || topology_.PendingMetadataCount() || assignment_->PendingDiscoveryRoles();
 }
 
 std::optional<SessionRef> SimModule::ObserveVerifiedCard(const CardApplicationTarget &application,

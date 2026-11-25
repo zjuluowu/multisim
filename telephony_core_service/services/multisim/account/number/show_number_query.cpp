@@ -17,19 +17,44 @@
 // 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
 
 #include "account/number/show_number_query.h"
+#include <stdexcept>
 
 namespace OHOS::Telephony::MultiSim {
 ShowNumberQuery::ShowNumberQuery(TopologyService &topology, ShowNumberRuntimePort &runtime,
     NumberQueryHostPort &host) : topology_(topology), runtime_(runtime), host_(host) {}
-/* 伪代码，两个查询方法仅声明：
- * ReadAtLegacyExecutionPoint：先保留 IsValidData/FileManager 检查；
- * runtime_.ReadMsisdnCache 有号码时与 topology_.ReadAccount 比较，不同则独立回写并返回；
- * 卡缓存空 -> FindBinding/GetTargetSimId 原错误 -> 账户号码非空则直接返回；
- * 两者空 -> host_.ReadImpuNumber，非空且不同则 PostIndependentNumberBackwrite；
- * 保留 IMPU 原失败/空值语义与原返回节点，不等回写，不统一读成账户快照。
- * RunIndependentBackwrite：发起时保存 binding/session/身份与号码字段版本，执行时复核再调用
- * topology_.AcceptIndependentNumberBackwrite；拒绝后不写当前槽的新账户。
- * 旧闭包仅捕获 slot/number，执行时才 GetTargetSimId；固定回写目标属于 G3b 行为增强。
- * 来源 MultiSimController::GetShowNumber/GetSimTelephoneNumber 的 TelFFRTUtils::Submit。
- */
+ShowNumberRead ShowNumberQuery::ReadAtLegacyExecutionPoint(SlotTarget origin, const NumberLegacyErrors &errors,
+    const std::function<void(NumberBackwrite)> &postBackwrite)
+{
+    const auto session = topology_.ReadNumberSession(origin.slot);
+    if (!session) { return {{}, NumberSource::Empty, errors.noCard}; }
+    const auto target = topology_.PrepareNumberTarget(origin, *session);
+    if (!target) { return {{}, NumberSource::Empty, errors.invalidArgument}; }
+    const auto card = runtime_.ReadMsisdnCache(*session);
+    if (!card) { return {{}, NumberSource::Empty, errors.unavailable}; }
+    const auto account = topology_.ReadAccount(target->binding.subscription);
+    if (!account || account->identityRevision != target->identityRevision) {
+        return {{}, NumberSource::Empty, errors.invalidArgument};
+    }
+    const auto result = [&]() -> ShowNumberRead {
+        if (!card->number.empty()) { return {card->number, NumberSource::CardMsisdnCache, 0}; }
+        if (!account->displayNumber.empty()) { return {account->displayNumber, NumberSource::AccountDisplay, 0}; }
+        try {
+            const auto impu = host_.ReadImpuNumber(origin.slot);
+            return {impu.number, impu.number.empty() ? NumberSource::Empty : NumberSource::ImsImpu, impu.legacyResult};
+        } catch (const std::exception &) {
+            return {{}, NumberSource::Empty, errors.unavailable};
+        }
+    }();
+    if (result.legacyResult == 0 && !result.number.empty() && result.number != account->displayNumber) {
+        postBackwrite({target->binding, target->session, target->identityRevision, target->numberRevisions,
+            result.number, result.source});
+    }
+    return result;
+}
+
+void ShowNumberQuery::RunIndependentBackwrite(const NumberBackwrite &backwrite)
+{
+    topology_.AcceptIndependentNumberBackwrite({backwrite.binding, backwrite.sourceSession,
+        backwrite.expectedIdentityRevision, backwrite.expectedNumberRevisions}, backwrite.number);
+}
 } // namespace OHOS::Telephony::MultiSim

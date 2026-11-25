@@ -37,7 +37,6 @@ class NumberQueryHostPort {
 public:
     virtual ~NumberQueryHostPort() = default;
     virtual ImpuNumberResult ReadImpuNumber(SlotId slot) = 0;
-    virtual void PostIndependentNumberBackwrite(const NumberBackwrite &backwrite) = 0;
 };
 } // namespace OHOS::Telephony::MultiSim
 

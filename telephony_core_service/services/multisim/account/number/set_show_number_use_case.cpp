@@ -23,30 +23,75 @@ SetShowNumberUseCase::SetShowNumberUseCase(TopologyService &topology, ShowNumber
     ShowNumberCompletionPort &completion, RuntimeEpoch epoch)
     : topology_(topology), runtime_(runtime), completion_(completion), operations_(epoch, RequestOwner::ShowNumber) {}
 
-/* 伪代码 / 尚未定义流程方法，不可调用：
- * StartAtExecutionPoint(command):
- *   保留旧 IsValidData、FileManager空值检查与错误优先级；不得增加号码格式限制。
- *   runtime_.ReadMsisdnCache(command.origin) -> 发起时 session + alphaTag；
- *   topology_.PrepareNumberTarget(command.origin, session) -> 固定 binding/账户输入；
- *   operations_.Begin(command.origin, command.completion)；保存 PendingNumber；
- *   plan = PlanShowNumberUpdate()；runtime_.WriteMsisdn({step, session, alphaTag, number})。
- *   发起时关联由 R 复用原事件/serial，R 将结果送 AcceptMsisdnResult。
- *
- * AcceptMsisdnResult(result):
- *   同一 T 执行域复核请求/step/attempt/目标/终态，operations_.AcceptResult 一次消费。
- *   legacyWaitSucceeded=false -> FinishWithLegacyResult(原FAIL, effect, 无账户结果)。
- *   超时 OnLegacyWaitTimeout 终结旧等待并记 Unknown；不推断 ConfirmedNotApplied。
- *   有效成功 -> ContinueAccountUpdate -> topology_.AcceptNumberAfterCardWrite(target, number)。
- *   逐步保留 DB/当前/历史缓存结果，再 FinishWithLegacyResult(...)->completion_.CompleteShowNumber。
- *   卡成功/DB失败不调用反向写卡；不重放 WriteMsisdn；没有跨卡与DB统一事务。
- *
- * AcceptLateEvidence(result):
- *   R 仅在原会话证据可信时接纳卡效果；T 记录核对信息。
- *   不 ContinueAccountUpdate，不再次 callback，不补发旧请求账户通知。
- *
- * 兼容区分：旧公共入口仅捕获 slot，File 按任务执行时的 slot 取对象；账户又在
- * SetShowNumberToDB 时 GetTargetSimId。这里固定执行目标、逐结果准入是主设计推荐增强，
- * 不能把以上伪代码当成 G2 等价实现。前移到 IPC 接收时固定更须 TGT-OPEN-011 评审。
- * 独立 ShowNumberQuery 的回写是新请求，不通过 AcceptLateEvidence 复活本请求。
- */
+void SetShowNumberUseCase::StartAtExecutionPoint(const SetShowNumberCommand &command, const NumberLegacyErrors &errors)
+{
+    const auto session = topology_.ReadNumberSession(command.origin.slot);
+    if (!session) {
+        completion_.CompleteShowNumber({command.completion, errors.noCard, EffectKnowledge::NotSent, {}});
+        return;
+    }
+    const auto card = runtime_.ReadMsisdnCache(*session);
+    const auto target = topology_.PrepareNumberTarget(command.origin, *session);
+    if (!card || !target) {
+        completion_.CompleteShowNumber({command.completion, card ? errors.noCard : errors.unavailable,
+            EffectKnowledge::NotSent, {}});
+        return;
+    }
+    StepRef step;
+    {
+        std::lock_guard<std::mutex> guard(mutex_);
+        const auto request = operations_.Begin(command.origin, command.completion);
+        step = {request, 1, 0};
+        operations_.AdvanceStep({request, 0, 0}, step.step, step.attempt, *session);
+        pending_.emplace(request.value, PendingNumber {*target, command.number, errors});
+    }
+    runtime_.WriteMsisdn({step, *session, card->alphaTag, command.number});
+}
+
+void SetShowNumberUseCase::AcceptMsisdnResult(const MsisdnWriteResult &result)
+{
+    std::optional<PendingNumber> pending;
+    std::optional<CompletionPlan> completion;
+    {
+        std::lock_guard<std::mutex> guard(mutex_);
+        const auto entry = pending_.find(result.step.request.value);
+        const auto operation = operations_.Read(result.step.request);
+        if (entry == pending_.end() || !operation || !(entry->second.target.session == result.sentSession) ||
+            operations_.AcceptResult(result.step, result.effect) != RuntimeOperationStore::ResultAdmission::Accepted) {
+            return;
+        }
+        pending = std::move(entry->second);
+        pending_.erase(entry);
+        completion = operation->context.completion;
+    }
+    int32_t legacyResult = pending->errors.failed;
+    std::optional<NumberAcceptance> account;
+    if (result.legacyWaitSucceeded && result.effect == EffectKnowledge::ConfirmedApplied) {
+        account = topology_.AcceptNumberAfterCardWrite(pending->target, pending->number, result.step);
+        switch (account->acceptance) {
+            case AccountMetadataResult::Success: legacyResult = 0; break;
+            case AccountMetadataResult::DatabaseWriteFailed: legacyResult = pending->errors.databaseWriteFailed; break;
+            case AccountMetadataResult::HistoricalMissing: legacyResult = pending->errors.historicalMissing; break;
+            default: break;
+        }
+    }
+    {
+        std::lock_guard<std::mutex> guard(mutex_);
+        operations_.MarkTerminal(result.step.request, result.effect == EffectKnowledge::Unknown ?
+            TerminalState::NeedsReconciliation : (legacyResult == 0 ? TerminalState::Succeeded : TerminalState::Failed));
+        if (!operations_.ClaimCompletion(result.step.request)) { return; }
+        operations_.RetireAfterEvidenceRetention(result.step.request);
+    }
+    completion_.CompleteShowNumber({*completion, legacyResult, result.effect, account});
+}
+
+void SetShowNumberUseCase::AcceptLateEvidence(const MsisdnWriteResult &result)
+{
+    std::lock_guard<std::mutex> guard(mutex_);
+    const auto operation = operations_.Read(result.step.request);
+    if (operation && operation->context.sentSession == result.sentSession &&
+        operations_.AcceptLateEvidence(result.step, result.effect)) {
+        operations_.RetireAfterEvidenceRetention(result.step.request);
+    }
+}
 } // namespace OHOS::Telephony::MultiSim

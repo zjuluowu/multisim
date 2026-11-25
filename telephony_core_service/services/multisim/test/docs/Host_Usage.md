@@ -161,3 +161,5 @@ M2 的 `AF2Discovery.LiveBindingsFeedExistingC0AndStaleTargetCannotAdvance` 继�
 账户名称、ICCID 标签、四角色组合的单例及正式调用路径见 [M6 账户资料开发与调试](M6_Account_Metadata_Debug.md)。
 
 IMS Preference 的 Provider 直读、原码透传与换卡单步用例见 [M7A 开发与调试](M7A_Ims_Preference_Debug.md)。
+
+SIM 号码的异步队列、卡会话、资源租约及账户回写单步见 [M7B 号码开发与调试](M7B_Show_Number_Debug.md)。

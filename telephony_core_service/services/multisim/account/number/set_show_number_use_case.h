@@ -20,6 +20,7 @@
 #define OHOS_TELEPHONY_MULTISIM_TOPOLOGY_PROFILE_SET_SHOW_NUMBER_USE_CASE_H
 
 #include "infrastructure/request/runtime_operation_store.h"
+#include <mutex>
 #include "account/topology_service.h"
 #include "account/number/show_number_plan.h"
 #include "account/number/show_number_runtime_port.h"
@@ -35,22 +36,20 @@ public:
         ShowNumberCompletionPort &completion, RuntimeEpoch epoch);
     // C 的原异步任务执行点调用；不在 IPC 接收时提前解析账户。
     // 本入口表达 G3b 固定执行目标与准入增强，尚未授权生产启用。
-    RequestId StartAtExecutionPoint(const SetShowNumberCommand &command);
+    void StartAtExecutionPoint(const SetShowNumberCommand &command, const NumberLegacyErrors &errors);
     void AcceptMsisdnResult(const MsisdnWriteResult &result) override;
-    void OnLegacyWaitTimeout(StepRef step); // 原错误出口，设备效果可为 Unknown。
     void AcceptLateEvidence(const MsisdnWriteResult &result) override; // 不复活账户写入/原成功完成。
 private:
     struct PendingNumber {
         NumberExecutionTarget target;
         std::u16string number;
-        ShowNumberPlan plan;
+        NumberLegacyErrors errors;
     };
-    void ContinueAccountUpdate(RequestId request, const PendingNumber &pending);
-    void FinishWithLegacyResult(RequestId request, int32_t legacyResult,
-        EffectKnowledge cardEffect, std::optional<NumberAcceptance> account);
+
     TopologyService &topology_;
     ShowNumberRuntimePort &runtime_;
     ShowNumberCompletionPort &completion_;
+    std::mutex mutex_;
     RuntimeOperationStore operations_; // 无全局 OperationCoordinator。
     std::map<uint64_t, PendingNumber> pending_; // 请求输入，不是业务可写缓存。
 };

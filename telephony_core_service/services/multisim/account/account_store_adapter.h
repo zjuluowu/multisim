@@ -60,6 +60,7 @@ public:
     AccountMetadataOutcome WriteLabel(const AccountMetadataOperation &, const AccountLabelPatch &) override;
     std::optional<AccountMetadataEvidence> ReadMetadataEvidence(const AccountMetadataOperation &) override;
     AccountStoreWriteResult WriteDisplayNumber(const AccountNumberPatch &patch) override;
+    AccountMetadataOutcome WriteDisplayNumber(const AccountMetadataOperation &, const AccountNumberPatch &) override;
     AccountStoreWriteResult WriteActiveProjection(const AccountActivePatch &patch) override;
     AccountStoreWriteResult WriteDisplayName(const AccountNamePatch &patch) override;
     AccountStoreWriteResult WriteLabel(const AccountLabelPatch &patch) override;

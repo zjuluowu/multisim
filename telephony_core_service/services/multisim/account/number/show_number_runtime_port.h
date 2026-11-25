@@ -54,7 +54,7 @@ struct CardNumberView {
 class ShowNumberRuntimePort {
 public:
     virtual ~ShowNumberRuntimePort() = default;
-    virtual std::optional<CardNumberView> ReadMsisdnCache(SlotTarget target) const = 0;
+    virtual std::optional<CardNumberView> ReadMsisdnCache(const SessionRef &session) const = 0;
     virtual void WriteMsisdn(const MsisdnWriteRequest &request) = 0;
 };
 } // namespace OHOS::Telephony::MultiSim

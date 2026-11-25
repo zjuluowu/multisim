@@ -1,0 +1,34 @@
+{
+  "baseline": "cd04fbad61941d8584fd8884457910e9447ac8fe",
+  "files": {
+    "BUILD.gn": "7107c01c220d64f0c33ffba9c33da7b4003e0dc4c9dd660cefeb4173589b686e",
+    "account/account_store.h": "cf38b448c28826e5905cf92958639640ce67f574b6e9ecb4e86178b8a915228b",
+    "account/account_store_adapter.cpp": "215f26908da341ce1e392a6ffadeebec1c8a62bba426850fdd2c015482ccc452",
+    "account/account_store_adapter.h": "9afa9a15700337e10a5b5602968091c4965dd77a32a55e01e5de118b376b6782",
+    "account/binding_index.cpp": "91c776e732d4f2620d60201c343890d8e0dd17252274319f0af4dfcbd23a2bc6",
+    "account/binding_index.h": "b96d1e985bdc5ad499f6cd97c55eea71c8d0dff1b5fba34ee1dce20b379a695c",
+    "account/number/number_query_host_port.h": "4d7f9c32d148fe44e9195d8c3fe944a02c22e680ab6231da1d861f5e4763c750",
+    "account/number/set_show_number_use_case.cpp": "04032bf9a15a219ed66edf595e5b19e01e5f1eb9930541ffc05642f1d1c02115",
+    "account/number/set_show_number_use_case.h": "d134b4495688d3da6677d5adcda588950613f4195d51fe7e636f1161e64e75ae",
+    "account/number/show_number_query.cpp": "e779807179c1f01bdf46a54b486f7fdf7623362002f7dfc2d1d35da268f5a410",
+    "account/number/show_number_query.h": "2ce1caf7b0fdfe3fc2a807853c44dc4001d6a3efd1a88b66e49dd26966a74a85",
+    "account/number/show_number_runtime_port.h": "337a35e060567acfb832f49b863c656d4c48f7a7fb2645850e01c71e5540393a",
+    "account/topology_metadata.cpp": "00c03995078697d0eddfbfb78da56aab1b6acc9c83da552f14d1ae3e35addeaf",
+    "account/topology_requests.h": "fe06e10d4a97bc06ec4fbffc4003219d505b9c7a33c21eca322e95bc50826d3f",
+    "account/topology_service.h": "cbc41526366513944a62332fc75530c3720595886f8bb2f469e3c8afb60582e3",
+    "card/runtime/card_observation_runtime.cpp": "362369f6a54bd857e73317e2738e0f2d6443dee9e5489213edfe20ef68004efa",
+    "card/runtime/card_observation_runtime.h": "95970d5688dcacb09ca8acc28f68258e25cb79a6f6710405dcc5a4d78975e8fe",
+    "card/runtime/card_runtime.h": "055a96baeb15d1bdb027afedd127522d7690a49d0688ec686c9ca863290834e4",
+    "infrastructure/assembly/sim_module.h": "89e1afb6035bcfef670936d16f462566fd51597031677e6e955ab9c02bfd2bfb",
+    "infrastructure/assembly/sim_module_factory.cpp": "947170ae12521234e76014222472457a2d6a85d29f4a0bf523e5937cc9546bfd",
+    "infrastructure/compatibility/api/legacy_account_entry.cpp": "f3d061fc167b68381aca5a1f99b6eac21341b2972882f4a20e3e0f326b9f0160",
+    "infrastructure/compatibility/api/legacy_boundary_ports.h": "c52ad075275b18f3a0876118f7536431e14382e7213c5d0705acffe68f21bd5b",
+    "infrastructure/compatibility/api/legacy_sim_facade.h": "8a73980e970222748e54be33e1fc0f65b1dd23a345b086307fa5ec8606351f33",
+    "infrastructure/compatibility/events/legacy_completion.h": "99059aee864ce452f4c0c06bcf13414694fab5b0e85562a10e9248075b77f330",
+    "infrastructure/sim_identity.h": "260b550be43b93618d265f5ce32f2e65a7e8fcb95503a95a9df46dbba1de4f6c"
+  },
+  "added": {
+    "card/runtime/msisdn_runtime.cpp": "e6a11da48a18200a708648d751bf82893e9bc4c0b92a80174b626bad9388d3b9",
+    "card/runtime/msisdn_runtime.h": "4fa1a82688f19b6fca3fd83a3e3ef3d69ba83f2fc48e2623880840ca07c77036"
+  }
+}

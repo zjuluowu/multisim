@@ -54,6 +54,11 @@ struct SessionRef {
     RuntimeEpoch epoch;
     CardApplicationTarget application;
     uint64_t bindingGeneration;
+    bool operator==(const SessionRef &other) const
+    {
+        return epoch == other.epoch && application.slot == other.application.slot &&
+            application.applicationKey == other.application.applicationKey && bindingGeneration == other.bindingGeneration;
+    }
 };
 struct BindingRef {
     SubscriptionId subscription;

@@ -51,6 +51,9 @@ public:
         const SlotCatalog &catalog, LegacyPrimaryHostPort &host, const PrimaryTopologyPort &topology,
         LegacyCompletion &completion, AssignmentService &assignment,
         const std::function<bool(SlotId)> &hasVerifiedCard);
+    static int32_t CheckNumberEntry(SlotId slot, LegacyCallerRef caller, LegacyCallbackRef callback,
+        bool writing, bool available, LegacyPrimaryHostPort &host);
+    static NumberLegacyErrors NumberErrors(const LegacyPrimaryHostPort &host);
     static int32_t SaveImsSwitch(SlotId slot, const SlotCatalog &catalog, LegacyPrimaryHostPort &host,
         LegacyCompletion &completion, const std::function<int32_t(const CompletionPlan &)> &issue);
     static int32_t QueryImsSwitch(SlotId slot, const SlotCatalog &catalog, LegacyPrimaryHostPort &host,

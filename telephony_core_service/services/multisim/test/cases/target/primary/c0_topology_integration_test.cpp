@@ -1146,7 +1146,8 @@ struct LiveDiscoveryFixture {
 
     explicit LiveDiscoveryFixture(std::shared_ptr<LegacyPrimaryHostPort> primaryHost = {},
         std::shared_ptr<SlotCatalog> catalog = {}, std::shared_ptr<RoleProvider> provider = {},
-        std::shared_ptr<MetadataProvider> metadata = {})
+        std::shared_ptr<MetadataProvider> metadata = {},
+        std::shared_ptr<LegacyNumberHostPort> numberHost = {}, std::shared_ptr<MsisdnPlatformPort> msisdn = {})
     {
         if (catalog) { input.catalog = std::move(catalog); }
         store->persistRows = true;
@@ -1158,6 +1159,8 @@ struct LiveDiscoveryFixture {
         }
         auto ports = input.Ports(std::move(provider));
         ports.primaryHost = std::move(primaryHost);
+        ports.numberHost = std::move(numberHost);
+        ports.msisdn = std::move(msisdn);
         module = std::get<CoreSimModuleHandle>(CreateCoreSimModule(std::move(ports), input.catalog, {}));
     }
 };
@@ -2761,5 +2764,367 @@ TEST(AF2ImsPreference, ConfirmedWriteAfterReplacementKeepsRawReturnWithoutAdvanc
     EXPECT_EQ(module->ReadAccount({56})->fields.imsPreference, 0u);
     EXPECT_EQ(provider->StoredImsValue(kRaw1).value, 31);
     EXPECT_EQ(f.host->accountsChanged, 0u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+namespace {
+class NumberHost final : public LegacyNumberHostPort {
+public:
+    std::vector<std::function<void()>> queue;
+    std::set<uint64_t> retained;
+    std::vector<std::pair<uint64_t, int32_t>> writes;
+    std::vector<std::pair<uint64_t, ShowNumberRead>> reads;
+    std::vector<std::string> events;
+    ImpuNumberResult impu {0, {}};
+    bool acceptingTasks {true};
+    unsigned impuReads {};
+
+    std::optional<CompletionId> RetainNumberCallback(LegacyCallbackRef callback) override
+    {
+        if (!retained.insert(callback.token).second) { return std::nullopt; }
+        return CompletionId {callback.token};
+    }
+    void ReleaseNumberCallback(CompletionId callback) override { EXPECT_EQ(retained.erase(callback.value), 1u); }
+    bool PostNumberTask(std::function<void()> task) override
+    {
+        if (!acceptingTasks) { return false; }
+        queue.push_back(std::move(task));
+        return true;
+    }
+    void RunNext()
+    {
+        ASSERT_FALSE(queue.empty());
+        auto task = std::move(queue.front());
+        queue.erase(queue.begin());
+        task();
+    }
+    ImpuNumberResult ReadImpuNumber(SlotId) override { ++impuReads; return impu; }
+    void NotifyOriginalAccountChanged() override { events.push_back("notify"); }
+    void TransferOriginalShowNumberResult(CompletionId completion, int32_t result) override
+    {
+        ReleaseNumberCallback(completion);
+        writes.emplace_back(completion.value, result);
+        events.push_back("callback");
+    }
+    void TransferOriginalNumberRead(CompletionId completion, const ShowNumberRead &result) override
+    {
+        ReleaseNumberCallback(completion);
+        reads.emplace_back(completion.value, result);
+    }
+    void DeliverOriginalInt(const CompletionRoute &, int32_t) override { ADD_FAILURE(); }
+};
+
+class NumberDevice final : public MsisdnPlatformPort {
+public:
+    struct Command {
+        MsisdnTransportTicket ticket;
+        std::u16string tag;
+        std::u16string number;
+    };
+    std::optional<ResourceKey> ResourceFor(SlotId) const override { return ResourceKey {"primary-shared"}; }
+    std::optional<CardNumberView> ReadCachedNumber(const SessionRef &session) const override
+    {
+        auto it = std::find_if(records.begin(), records.end(), [&](const auto &view) { return view.session == session; });
+        return it != records.end() ? *it : CardNumberView {session, {}, u"line"};
+    }
+    void AcceptWrittenNumber(const CardNumberView &view) override
+    {
+        auto it = std::find_if(records.begin(), records.end(), [&](const auto &item) { return item.session == view.session; });
+        if (it == records.end()) { records.push_back(view); }
+        else { *it = view; }
+    }
+    bool SubmitNumberWrite(const MsisdnTransportTicket &ticket, const std::u16string &alphaTag,
+        const std::u16string &number) override
+    {
+        commands.push_back({ticket, alphaTag, number});
+        if (onSubmit) { onSubmit(commands.back()); }
+        return true;
+    }
+    MsisdnTransportEvidence Applied(size_t index)
+    {
+        const auto &command = commands.at(index);
+        return {command.ticket, EffectKnowledge::ConfirmedApplied, true, true, true, true};
+    }
+
+    std::vector<CardNumberView> records;
+    std::vector<Command> commands;
+    std::function<void(const Command &)> onSubmit;
+};
+
+struct NumberFixture {
+    std::shared_ptr<NumberHost> host = std::make_shared<NumberHost>();
+    std::shared_ptr<PrimaryHost> permissions = std::make_shared<PrimaryHost>();
+    std::shared_ptr<NumberDevice> device = std::make_shared<NumberDevice>();
+    std::shared_ptr<MetadataProvider> db = std::make_shared<MetadataProvider>();
+    LiveDiscoveryFixture live {permissions, PrimaryZeroCatalog(), {}, db, host, device};
+
+    void DiscoverBoth()
+    {
+        live.store->produceStore = [](const AccountDiscoveryWritePlan &plan) {
+            return Stored({plan.accountFields.legacyPosition.legacySlotId == 0 ? 40 : 41});
+        };
+        ASSERT_TRUE(live.module->ObserveVerifiedCard({{0}, "USIM"}, 1, kRaw0));
+        ASSERT_TRUE(live.module->ObserveVerifiedCard({{1}, "USIM"}, 1, kRaw1));
+    }
+    void ReplaceSecond()
+    {
+        live.store->produceStore = [](const AccountDiscoveryWritePlan &) { return Stored({56}); };
+        EXPECT_TRUE(live.module->ObserveVerifiedCard({{1}, "USIM"}, 2, "89000000000000000056"));
+    }
+};
+} // namespace
+
+TEST(AF2ShowNumber, LiveCardNumberWriteUpdatesAccountAndCompletes)
+{
+    NumberFixture f;
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    ASSERT_EQ(module->SetShowNumber(1, u"123+456", {7}, {31}), 0);
+    EXPECT_TRUE(f.device->commands.empty());
+    EXPECT_TRUE(f.host->writes.empty());
+    f.host->RunNext();
+    ASSERT_EQ(f.device->commands.size(), 1u);
+    const auto &command = f.device->commands.front();
+    EXPECT_EQ(command.tag, u"line");
+    EXPECT_EQ(command.number, u"123+456");
+    EXPECT_EQ(command.ticket.session.application.slot, SlotId {1});
+    EXPECT_EQ(command.ticket.step.request.owner, RequestOwner::ShowNumber);
+    EXPECT_GT(command.ticket.fence, 0u);
+    EXPECT_TRUE(f.db->Writes().empty());
+    const auto reply = f.device->Applied(0);
+    EXPECT_TRUE(module->AcceptMsisdnEvidence(reply));
+    EXPECT_FALSE(module->AcceptMsisdnEvidence(reply));
+    ASSERT_EQ(f.db->Writes().size(), 1u);
+    const auto write = f.db->Writes().front();
+    EXPECT_EQ(write.operation.subscription.legacySimId, 41);
+    EXPECT_EQ(write.selector, "sim_id");
+    EXPECT_EQ(write.predicate, "41");
+    EXPECT_EQ(write.field, "phone_number");
+    EXPECT_EQ(std::get<std::u16string>(write.value), u"123+456");
+    EXPECT_EQ(module->ReadAccount({41})->displayNumber, u"123+456");
+    EXPECT_EQ(module->ReadAccount({41}, AccountReadView::Historical)->displayNumber, u"123+456");
+    EXPECT_EQ(f.host->events, (std::vector<std::string> {"notify", "callback"}));
+    EXPECT_EQ(f.host->writes, (std::vector<std::pair<uint64_t, int32_t>> {{31, 0}}));
+    ASSERT_EQ(module->GetShowNumber(1, {7}, {32}), 0);
+    f.host->RunNext();
+    ASSERT_EQ(f.host->reads.size(), 1u);
+    EXPECT_EQ(f.host->reads.front().second.number, u"123+456");
+    EXPECT_EQ(f.host->reads.front().second.source, NumberSource::CardMsisdnCache);
+    EXPECT_TRUE(f.host->queue.empty());
+    EXPECT_TRUE(f.host->retained.empty());
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+    std::weak_ptr<SimModule> weak = module;
+    module.reset();
+    EXPECT_TRUE(weak.expired());
+}
+
+TEST(AF2ShowNumber, QueryUsesRealSourcesAndBackwritePinsOriginalAccount)
+{
+    NumberFixture f;
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    f.host->impu = {0, u"555123"};
+    ASSERT_EQ(module->GetShowNumber(1, {7}, {31}), 0);
+    f.host->RunNext();
+    EXPECT_TRUE(f.db->Writes().empty());
+    ASSERT_EQ(f.host->reads.size(), 1u);
+    EXPECT_EQ(f.host->reads[0].second.source, NumberSource::ImsImpu);
+    EXPECT_EQ(f.host->reads[0].second.number, u"555123");
+    ASSERT_EQ(f.host->queue.size(), 1u);
+    f.host->RunNext();
+    ASSERT_EQ(f.db->Writes().size(), 1u);
+    ASSERT_EQ(module->GetShowNumber(1, {7}, {32}), 0);
+    f.host->RunNext();
+    EXPECT_EQ(f.host->impuReads, 1u);
+    ASSERT_EQ(f.host->reads.size(), 2u);
+    EXPECT_EQ(f.host->reads[1].second.source, NumberSource::AccountDisplay);
+    EXPECT_EQ(f.host->reads[1].second.number, u"555123");
+    const auto old = f.live.store->lastPlan->observation.session;
+    f.device->records.push_back({old, u"666", u"line"});
+    ASSERT_EQ(module->GetShowNumber(1, {7}, {33}), 0);
+    f.host->RunNext();
+    ASSERT_EQ(f.host->reads.size(), 3u);
+    EXPECT_EQ(f.host->reads[2].second.source, NumberSource::CardMsisdnCache);
+    EXPECT_EQ(f.host->reads[2].second.number, u"666");
+    ASSERT_EQ(f.host->queue.size(), 1u);
+    f.ReplaceSecond();
+    f.host->RunNext();
+    EXPECT_EQ(f.db->Writes().size(), 1u);
+    EXPECT_TRUE(module->ReadAccount({56})->displayNumber.empty());
+    EXPECT_TRUE(f.device->commands.empty());
+    EXPECT_TRUE(f.host->events.empty());
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2ShowNumber, EarlyReplyAndStoreFailurePreserveSeparateEffects)
+{
+    using namespace OHOS::Telephony;
+    NumberFixture f;
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    f.db->respond = [](const auto &) {
+        return AccountMetadataOutcome {-1, true, EffectKnowledge::ConfirmedNotApplied};
+    };
+    f.device->onSubmit = [&](const auto &) {
+        EXPECT_TRUE(module->AcceptMsisdnEvidence(f.device->Applied(0)));
+        EXPECT_TRUE(f.host->writes.empty());
+        EXPECT_EQ(module->ReadPrimaryResourceState(), ResourceState::InFlight);
+    };
+    ASSERT_EQ(module->SetShowNumber(1, u"555", {7}, {31}), 0);
+    f.host->RunNext();
+    ASSERT_EQ(f.host->writes.size(), 1u);
+    EXPECT_EQ(f.host->writes[0].second, TELEPHONY_ERR_DATABASE_WRITE_FAIL);
+    EXPECT_EQ(f.host->events, std::vector<std::string> {"callback"});
+    EXPECT_TRUE(module->ReadAccount({41})->displayNumber.empty());
+    EXPECT_EQ(f.device->records.back().number, u"555");
+    EXPECT_EQ(f.device->commands.size(), 1u);
+    EXPECT_EQ(f.db->Writes().size(), 1u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2ShowNumber, TimeoutQuarantinesOriginalResourcesUntilCorrelatedProofAfterStop)
+{
+    using namespace OHOS::Telephony;
+    NumberFixture f;
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    ASSERT_EQ(module->SetShowNumber(1, u"777", {7}, {31}), 0);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
+    f.host->RunNext();
+    ASSERT_EQ(f.device->commands.size(), 1u);
+    const auto ticket = f.device->commands[0].ticket;
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::DeviceEffectsUnresolved);
+    EXPECT_EQ(module->SetShowNumber(0, u"8", {7}, {32}), TELEPHONY_ERR_LOCAL_PTR_NULL);
+    EXPECT_TRUE(module->AcceptMsisdnEvidence({ticket, EffectKnowledge::Unknown, false, false, false}));
+    EXPECT_EQ(module->ReadPrimaryResourceState(), ResourceState::Quarantined);
+    EXPECT_EQ(f.host->writes, (std::vector<std::pair<uint64_t, int32_t>> {{31, TELEPHONY_ERR_FAIL}}));
+    auto proof = f.device->Applied(0);
+    ++proof.ticket.fence;
+    EXPECT_FALSE(module->AcceptMsisdnEvidence(proof));
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::DeviceEffectsUnresolved);
+    --proof.ticket.fence;
+    proof.currentStateVerified = false;
+    EXPECT_FALSE(module->AcceptMsisdnEvidence(proof));
+    proof.currentStateVerified = true;
+    EXPECT_TRUE(module->AcceptMsisdnEvidence(proof));
+    EXPECT_FALSE(module->AcceptMsisdnEvidence(proof));
+    EXPECT_EQ(f.host->writes.size(), 1u);
+    EXPECT_TRUE(f.db->Writes().empty());
+    EXPECT_EQ(module->ReadPrimaryResourceState(), ResourceState::Available);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2ShowNumber, CardFailureAndReplacementDoNotPersist)
+{
+    using namespace OHOS::Telephony;
+    NumberFixture f;
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    ASSERT_EQ(module->SetShowNumber(1, u"7", {7}, {31}), 0);
+    f.host->RunNext();
+    ASSERT_EQ(f.device->commands.size(), 1u);
+    ASSERT_TRUE(module->AcceptMsisdnEvidence({f.device->commands[0].ticket,
+        EffectKnowledge::ConfirmedNotApplied, true, true, false}));
+    ASSERT_EQ(module->SetShowNumber(1, u"8", {7}, {32}), 0);
+    f.host->RunNext();
+    ASSERT_EQ(f.device->commands.size(), 2u);
+    f.ReplaceSecond();
+    EXPECT_TRUE(module->AcceptMsisdnEvidence(f.device->Applied(1)));
+    EXPECT_TRUE(f.db->Writes().empty());
+    EXPECT_TRUE(module->ReadAccount({56})->displayNumber.empty());
+    EXPECT_TRUE(module->ReadAccount({41})->displayNumber.empty());
+    EXPECT_EQ(f.host->writes, (std::vector<std::pair<uint64_t, int32_t>> {{31, TELEPHONY_ERR_FAIL},
+        {32, TELEPHONY_ERR_FAIL}}));
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2ShowNumber, UnresolvedStoreRetainsNumberFieldAndUsesOriginalEvidence)
+{
+    using namespace OHOS::Telephony;
+    NumberFixture f;
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    f.db->respond = [](const auto &write) {
+        return write.field == "phone_number" ? AccountMetadataOutcome {-1, true, EffectKnowledge::Unknown} :
+            AccountMetadataOutcome {0, true, EffectKnowledge::ConfirmedApplied};
+    };
+    ASSERT_EQ(module->SetShowNumber(1, u"333", {7}, {31}), 0);
+    f.host->RunNext();
+    ASSERT_TRUE(module->AcceptMsisdnEvidence(f.device->Applied(0)));
+    ASSERT_EQ(f.db->Writes().size(), 1u);
+    EXPECT_EQ(f.host->writes[0].second, TELEPHONY_ERR_DATABASE_WRITE_FAIL);
+    const auto original = f.db->Writes()[0].operation;
+    ASSERT_EQ(module->GetShowNumber(1, {7}, {32}), 0);
+    f.host->RunNext();
+    EXPECT_EQ(f.host->reads[0].second.number, u"333");
+    f.host->RunNext();
+    EXPECT_EQ(f.db->Writes().size(), 1u);
+    EXPECT_FALSE(module->ReconcileAccountMetadata(original));
+    EXPECT_EQ(module->SetShowName(1, u"disjoint", {7}), 0);
+    EXPECT_EQ(f.db->Writes().size(), 2u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::BusinessEffectsUnresolved);
+    f.db->evidence = AccountMetadataEvidence {original, {0, true, EffectKnowledge::ConfirmedApplied}};
+    EXPECT_TRUE(module->ReconcileAccountMetadata(original));
+    EXPECT_FALSE(module->ReconcileAccountMetadata(original));
+    EXPECT_EQ(f.host->writes.size(), 1u);
+    EXPECT_TRUE(module->ReadAccount({41})->displayNumber.empty());
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2ShowNumber, QueueAdmissionAndExecutionPointUseLegacyOrder)
+{
+    using namespace OHOS::Telephony;
+    NumberFixture f;
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    f.permissions->system = false;
+    EXPECT_EQ(module->SetShowNumber(-1, u"111", {7}, {0}), TELEPHONY_ERR_ILLEGAL_USE_OF_SYSTEM_API);
+    f.permissions->system = true;
+    f.permissions->permitted = false;
+    EXPECT_EQ(module->SetShowNumber(-1, u"111", {7}, {0}), TELEPHONY_ERR_PERMISSION_ERR);
+    f.permissions->permitted = true;
+    f.host->acceptingTasks = false;
+    EXPECT_EQ(module->SetShowNumber(1, u"111", {7}, {31}), TELEPHONY_ERR_LOCAL_PTR_NULL);
+    EXPECT_TRUE(f.host->retained.empty());
+    f.host->acceptingTasks = true;
+    ASSERT_EQ(module->SetShowNumber(1, u"111", {7}, {31}), 0);
+    f.ReplaceSecond();
+    f.host->RunNext();
+    ASSERT_EQ(f.device->commands.size(), 1u);
+    EXPECT_EQ(f.device->commands[0].ticket.session.bindingGeneration, 2u);
+    EXPECT_TRUE(module->AcceptMsisdnEvidence(f.device->Applied(0)));
+    ASSERT_EQ(f.db->Writes().size(), 1u);
+    EXPECT_EQ(f.db->Writes()[0].operation.subscription.legacySimId, 56);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2ShowNumber, ProviderAccountFallbackAfterOriginalCardFailure)
+{
+    using namespace OHOS::Telephony;
+    NumberFixture f;
+    f.live.store->rows.emplace(kRaw1, AccountStorageRow {{41}, kRaw1, SlotId {1}, {}, u"555123", true, {}, {}});
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    ASSERT_EQ(module->SetShowNumber(1, u"555999", {7}, {31}), 0);
+    f.host->RunNext();
+    ASSERT_EQ(f.device->commands.size(), 1u);
+    ASSERT_TRUE(module->AcceptMsisdnEvidence({f.device->commands[0].ticket,
+        EffectKnowledge::ConfirmedNotApplied, true, true, false}));
+    ASSERT_EQ(f.host->writes.size(), 1u);
+    EXPECT_EQ(f.host->writes[0].second, TELEPHONY_ERR_FAIL);
+    EXPECT_TRUE(f.db->Writes().empty());
+    ASSERT_EQ(module->GetShowNumber(1, {7}, {32}), 0);
+    f.host->RunNext();
+    ASSERT_EQ(f.host->reads.size(), 1u);
+    const auto &result = f.host->reads[0].second;
+    EXPECT_EQ(result.source, NumberSource::AccountDisplay);
+    EXPECT_EQ(result.number, u"555123");
+    EXPECT_EQ(result.legacyResult, 0);
+    RecordProperty("show_number_observation", SimGuard::Primary::Json({
+        {"cachedNumber", result.number == u"555123" ? "555123" : "unexpected"},
+        {"readResult", std::to_string(result.legacyResult)},
+        {"failed", f.host->writes[0].second == TELEPHONY_ERR_FAIL ? "true" : "false"},
+        {"commands", std::to_string(f.device->commands.size())}
+    }));
     EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
 }

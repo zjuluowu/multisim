@@ -39,6 +39,12 @@ std::optional<uint64_t> BindingIndex::ReadPositionRevision(SlotId slot) const
     return entry == slots_.end() ? std::nullopt : std::optional<uint64_t>(entry->second.bindingRevision);
 }
 
+std::optional<SessionRef> BindingIndex::Source(SlotId slot) const
+{
+    const auto entry = slots_.find(slot);
+    return entry != slots_.end() && entry->second.acceptedBinding ? entry->second.source : std::nullopt;
+}
+
 bool BindingIndex::StillMatches(const BindingRef &expected) const
 {
     auto current = Find(expected.slot);

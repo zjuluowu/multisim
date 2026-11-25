@@ -136,6 +136,18 @@ LLDB 实际单步到原读写、字段版本、同步输出、Stop 和析构。V
 Legacy 可无变更成功，Target 对未知持久身份返回参数错误。已知历史账户仍允许更新。
 M6 Host 验收记录保留。相关产品迁移须独立审核原调用者依赖并取得批准。
 
+<a id="af2-m7b-status"></a>
+
+### AF-2 M7B SIM 号码（2026-11-25）
+
+**PARTIAL。** 输入 main/origin `cd04fbad6`。已接入正式 Host 号码设置和查询。H/C 保留
+受理和回调，T 在执行点固定账户及字段版本，R 使用已有卡会话及同一物理屏障登记原票，
+已证卡写成功后才执行独立 Provider 子步骤。查询保留卡、账户及 IMPU 三个读源和后台回写。
+Developer 59/59，含号码 8/8。真实 LLDB 单步和析构通过。正式 Verify、Legacy 特征及
+Oracle 继续归档。G3b 产品行为裁决、原生设备桥和产品写权保持待验证。
+[开发与调试](../services/multisim/test/docs/M7B_Show_Number_Debug.md) ·
+[验证证据](../services/multisim/test/docs/evidence/af2_m7b_20261125/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）
