@@ -52,6 +52,26 @@ struct AccountView {
     bool activeProjection;
     uint64_t identityRevision;
     AccountFieldRevisions fields;
+    std::optional<int32_t> legacyLabel {};
+};
+enum class AccountMetadataField { DisplayName, Label };
+enum class AccountMetadataResult { Success, NoAccount, InvalidLabel, Conflict, DatabaseWriteFailed, HistoricalMissing };
+struct AccountMetadataOperation {
+    StepRef original;
+    SubscriptionId subscription;
+    AccountMetadataField field;
+    bool operator==(const AccountMetadataOperation &other) const
+    { return original == other.original && subscription == other.subscription && field == other.field; }
+};
+struct AccountMetadataOutcome {
+    int32_t legacyResult {-1};
+    bool callFinished {false};
+    EffectKnowledge effect {EffectKnowledge::Unknown};
+    bool Settled() const { return callFinished && effect != EffectKnowledge::Unknown; }
+};
+struct AccountMetadataEvidence {
+    AccountMetadataOperation operation;
+    AccountMetadataOutcome outcome;
 };
 struct AccountStoreWriteResult {
     int32_t legacyResult;

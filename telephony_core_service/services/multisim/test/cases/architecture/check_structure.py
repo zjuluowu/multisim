@@ -35,7 +35,8 @@ AUTHORIZED_NEW_FILES = {
     'device/resource/resource_radio_runtime.h',
     'infrastructure/request/runtime_operation_store.cpp',
     'role_assignment/assignment_store_adapter.cpp',
-    'infrastructure/compatibility/api/legacy_primary_entry.cpp',
+    'infrastructure/compatibility/api/legacy_account_entry.cpp',
+                        'infrastructure/compatibility/api/legacy_primary_entry.cpp',
 }
 
 # Explicit semantic boundaries: physical groups do not define layers.
@@ -65,7 +66,8 @@ SOURCE_GROUPS = {'readonly_query': ('infrastructure/compatibility/api/real_sim_c
                           'role_assignment/primary/primary_switch_plan.h'),
  'assignment_types': ('role_assignment/assignment_types.h', 'role_assignment/primary/primary_execution.h'),
  'compatibility_contracts': ('infrastructure/compatibility/api/legacy_boundary_ports.h',),
- 'compatibility_core': ('infrastructure/compatibility/api/legacy_primary_entry.cpp',
+ 'compatibility_core': ('infrastructure/compatibility/api/legacy_account_entry.cpp',
+                        'infrastructure/compatibility/api/legacy_primary_entry.cpp',
                         'infrastructure/compatibility/api/legacy_sim_facade.cpp',
                         'infrastructure/compatibility/api/legacy_sim_facade.h',
                         'infrastructure/compatibility/events/completion_cell.h',
@@ -110,6 +112,7 @@ SOURCE_GROUPS = {'readonly_query': ('infrastructure/compatibility/api/real_sim_c
                     'account/number/show_number_query.h',
                     'account/activation/activate_sim_use_case.cpp',
                     'account/activation/activate_sim_use_case.h',
+                    'account/topology_metadata.cpp',
                     'account/topology_service.cpp',
                     'account/topology_service.h'),
  'topology_contracts': ('account/account_role_planning_port.h',
@@ -358,7 +361,7 @@ def type_definitions(text):
 def check_migration():
     manifest = json.loads(((_TEST / 'cases/architecture') / "source_migration.json").read_text())
     repo = ROOT.parent
-    from source_evolution import matches_prior_layout_delta, migration_inputs
+    from source_evolution import load_manifest, matches_prior_layout_delta, migration_inputs
     inputs_before_m1 = migration_inputs(SOURCE, repo)
 
     def migration_text(name):
@@ -457,6 +460,7 @@ def check_migration():
     if inputs != {entry["old"] for entry in entries} or len(inputs) != len(entries):
         raise ValueError("Layout revision must map every input file exactly once")
     actual = {p.relative_to(SOURCE).as_posix() for p in module_files(SOURCE)} - AUTHORIZED_NEW_FILES
+    actual -= set(load_manifest('af2_m6')['added'])
     additions = manifest.get("additions", [])
     # Preserve the committed copy's provenance, but check its explicit canonical destination.
     documentation = manifest.get("documentation_additions", [])

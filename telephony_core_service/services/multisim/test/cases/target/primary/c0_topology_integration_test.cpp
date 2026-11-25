@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <vector>
+#include "account/account_store_adapter.h"
 #include "account/topology_service.h"
 #include "infrastructure/assembly/sim_module.h"
 #include "role_assignment/assignment_service.h"
@@ -1060,17 +1061,68 @@ TEST(AF2Module, SharedResourceAllowsOnlyOneCompetingOwner)
 }
 
 namespace {
+class MetadataProvider final : public AccountMetadataProviderPort {
+public:
+    struct Write {
+        AccountMetadataOperation operation;
+        std::string selector;
+        std::string predicate;
+        std::string field;
+        AccountMetadataValue value;
+    };
+
+    bool independent {true};
+    std::function<AccountMetadataOutcome(const Write &)> respond;
+    std::optional<AccountMetadataEvidence> evidence;
+
+    bool HasIndependentMetadataFields() const override { return independent; }
+    AccountMetadataOutcome UpdateAccountField(const AccountMetadataOperation &operation, std::string_view uri,
+        std::string_view selector, const std::string &predicate, std::string_view field,
+        const AccountMetadataValue &value) override
+    {
+        EXPECT_EQ(uri, "datashare:///com.ohos.simability/sim/sim_info");
+        Write write {operation, std::string(selector), predicate, std::string(field), value};
+        {
+            std::lock_guard<std::mutex> guard(lock_);
+            writes_.push_back(write);
+        }
+        return respond ? respond(write) : AccountMetadataOutcome {0, true, EffectKnowledge::ConfirmedApplied};
+    }
+    std::optional<AccountMetadataEvidence> ReadMetadataEvidence(const AccountMetadataOperation &) override
+    { return evidence; }
+    std::vector<Write> Writes()
+    {
+        std::lock_guard<std::mutex> guard(lock_);
+        return writes_;
+    }
+private:
+    std::mutex lock_;
+    std::vector<Write> writes_;
+};
+
+struct MetadataStorePorts {
+    std::shared_ptr<ControlledDiscoveryStore> discovery;
+    std::shared_ptr<MetadataProvider> provider;
+    AccountStoreAdapter adapter;
+};
+
 struct LiveDiscoveryFixture {
     ModuleInputs input;
     std::shared_ptr<ControlledDiscoveryStore> store = std::make_shared<ControlledDiscoveryStore>();
     CoreSimModuleHandle module;
 
     explicit LiveDiscoveryFixture(std::shared_ptr<LegacyPrimaryHostPort> primaryHost = {},
-        std::shared_ptr<SlotCatalog> catalog = {}, std::shared_ptr<RoleProvider> provider = {})
+        std::shared_ptr<SlotCatalog> catalog = {}, std::shared_ptr<RoleProvider> provider = {},
+        std::shared_ptr<MetadataProvider> metadata = {})
     {
         if (catalog) { input.catalog = std::move(catalog); }
         store->persistRows = true;
         input.accountStore = store;
+        if (metadata) {
+            auto owner = std::make_shared<MetadataStorePorts>(MetadataStorePorts {
+                store, metadata, AccountStoreAdapter(*store, *metadata)});
+            input.accountStore = std::shared_ptr<AccountStore>(owner, &owner->adapter);
+        }
         auto ports = input.Ports(std::move(provider));
         ports.primaryHost = std::move(primaryHost);
         module = std::get<CoreSimModuleHandle>(CreateCoreSimModule(std::move(ports), input.catalog, {}));
@@ -1355,12 +1407,14 @@ public:
     bool system {true};
     bool permitted {true};
     bool slotSupported {true};
+    bool readable {true};
     unsigned accountsChanged {0};
     std::vector<std::string> calls;
     std::function<void()> onAccountChanged;
 
     bool IsSystemCaller(LegacyCallerRef) override { calls.emplace_back("system"); return system; }
     bool CanSetTelephonyState(LegacyCallerRef) override { calls.emplace_back("permission"); return permitted; }
+    bool CanGetTelephonyState(LegacyCallerRef) override { calls.emplace_back("read-permission"); return readable; }
     bool SupportsPrimarySlot(SlotId) override { calls.emplace_back("slot"); return slotSupported; }
     void NotifyOriginalAccountChanged() override
     {
@@ -1379,6 +1433,8 @@ public:
             case LegacyPrimaryError::Failed: return TELEPHONY_ERR_FAIL;
             case LegacyPrimaryError::InactiveCard: return CORE_SERVICE_SIM_CARD_IS_NOT_ACTIVE;
             case LegacyPrimaryError::DatabaseWriteFailed: return TELEPHONY_ERR_DATABASE_WRITE_FAIL;
+            case LegacyPrimaryError::InvalidArgument: return TELEPHONY_ERR_ARGUMENT_INVALID;
+            case LegacyPrimaryError::HistoricalMissing: return TELEPHONY_ERR_ARRAY_OUT_OF_BOUNDS;
             case LegacyPrimaryError::BroadcastFailed: return TELEPHONY_ERR_PUBLISH_BROADCAST_FAIL;
         }
         return TELEPHONY_ERR_FAIL;
@@ -1386,8 +1442,9 @@ public:
 };
 struct PrimaryFixture {
     std::shared_ptr<PrimaryHost> host = std::make_shared<PrimaryHost>();
-    explicit PrimaryFixture(std::shared_ptr<SlotCatalog> catalog = {}, std::shared_ptr<RoleProvider> provider = {})
-        : live(host, std::move(catalog), std::move(provider)) {}
+    explicit PrimaryFixture(std::shared_ptr<SlotCatalog> catalog = {}, std::shared_ptr<RoleProvider> provider = {},
+        std::shared_ptr<MetadataProvider> metadata = {})
+        : live(host, std::move(catalog), std::move(provider), std::move(metadata)) {}
     LiveDiscoveryFixture live;
 
     void DiscoverBoth()
@@ -2139,4 +2196,253 @@ TEST(AF2VoiceSms, CurrentRoleVersionRejectsPreMutationReload)
     EXPECT_FALSE(protocol.Projection(false).at({40}).voice);
     EXPECT_EQ(protocol.Revision(true), previousHistorical);
     EXPECT_TRUE(protocol.Projection(true).at({40}).voice);
+}
+
+TEST(AF2AccountMetadata, LiveDualSimMetadataAndFourRoles)
+{
+    using namespace OHOS::Telephony;
+    auto provider = std::make_shared<MetadataProvider>();
+    auto roleProvider = std::make_shared<RoleProvider>();
+    PrimaryFixture f(PrimaryZeroCatalog(), roleProvider, provider);
+    auto &module = f.live.module;
+    ASSERT_FALSE(module->FindBinding({0}));
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    const auto first = module->FindBinding({0});
+    const auto second = module->FindBinding({1});
+    ASSERT_TRUE(first && second);
+    ASSERT_EQ(first->subscription.legacySimId, 40);
+    ASSERT_EQ(second->subscription.legacySimId, 41);
+    const auto before = module->ReadAssignment();
+    ASSERT_EQ(module->SetShowName(0, u"个人", {7}), TELEPHONY_ERR_SUCCESS);
+    ASSERT_EQ(module->SetShowName(1, u"Work", {7}), TELEPHONY_ERR_SUCCESS);
+    ASSERT_EQ(module->SetSimLabelIndexByIccId(kRaw0, 3), TELEPHONY_ERR_SUCCESS);
+    ASSERT_EQ(module->SetSimLabelIndexByIccId(kRaw1, 4), TELEPHONY_ERR_SUCCESS);
+    EXPECT_EQ(module->ReadAssignment().lastPrimary, before.lastPrimary);
+    EXPECT_EQ(module->ReadAssignment().defaultData, before.defaultData);
+    EXPECT_EQ(module->ReadAssignment().defaultVoice, before.defaultVoice);
+    EXPECT_EQ(module->ReadAssignment().defaultSms, before.defaultSms);
+    const auto left = module->ReadAccount(first->subscription);
+    const auto right = module->ReadAccount(second->subscription);
+    ASSERT_TRUE(left && right);
+    std::u16string name;
+    EXPECT_EQ(module->GetShowName(0, name, {7}), TELEPHONY_ERR_SUCCESS);
+    EXPECT_EQ(name, u"个人");
+    EXPECT_EQ(module->GetShowName(1, name, {7}), TELEPHONY_ERR_SUCCESS);
+    EXPECT_EQ(name, u"Work");
+    EXPECT_EQ(left->legacyLabel, 3);
+    EXPECT_EQ(right->legacyLabel, 4);
+    const auto writes = provider->Writes();
+    ASSERT_EQ(writes.size(), 4u);
+    EXPECT_EQ(writes[0].selector, "sim_id");
+    EXPECT_EQ(writes[0].predicate, "40");
+    EXPECT_EQ(writes[0].field, "show_name");
+    EXPECT_EQ(std::get<std::u16string>(writes[0].value), u"个人");
+    EXPECT_EQ(writes[3].selector, "icc_id");
+    EXPECT_EQ(writes[3].predicate, kRaw1);
+    EXPECT_EQ(writes[3].field, "sim_label_index");
+    EXPECT_EQ(std::get<int32_t>(writes[3].value), 4);
+    ASSERT_EQ(module->SetPrimarySlotId(0, {7}), TELEPHONY_ERR_SUCCESS);
+    ASSERT_EQ(module->SetDefaultCellularDataSlotId(1, {7}), TELEPHONY_ERR_SUCCESS);
+    ASSERT_EQ(module->SetDefaultVoiceSlotId(1, {7}), TELEPHONY_ERR_SUCCESS);
+    ASSERT_EQ(module->SetDefaultSmsSlotId(0, {7}), TELEPHONY_ERR_SUCCESS);
+    const auto roles = module->ReadAssignment();
+    EXPECT_EQ(roles.lastPrimary, SlotId {0});
+    EXPECT_EQ(roles.defaultData, second->subscription);
+    EXPECT_EQ(roles.defaultVoice, second->subscription);
+    EXPECT_EQ(roles.defaultSms, first->subscription);
+    for (const auto &account : {*left, *right}) {
+        const auto after = module->ReadAccount(account.subscription);
+        const auto historical = module->ReadAccount(account.subscription, AccountReadView::Historical);
+        ASSERT_TRUE(after && historical);
+        EXPECT_EQ(after->displayName, account.displayName);
+        EXPECT_EQ(after->legacyLabel, account.legacyLabel);
+        EXPECT_EQ(after->fields.name, account.fields.name);
+        EXPECT_EQ(after->fields.label, account.fields.label);
+        EXPECT_EQ(historical->displayName, account.displayName);
+        EXPECT_EQ(historical->legacyLabel, account.legacyLabel);
+    }
+    EXPECT_EQ(f.host->accountsChanged, 8u);
+    EXPECT_EQ(f.live.input.radio->commands, 0u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+    const std::weak_ptr<SimModule> weak = module;
+    module.reset();
+    EXPECT_TRUE(weak.expired());
+}
+
+TEST(AF2AccountMetadata, LegacyFieldContract)
+{
+    using namespace OHOS::Telephony;
+    auto provider = std::make_shared<MetadataProvider>();
+    PrimaryFixture f(PrimaryZeroCatalog(), {}, provider);
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    ASSERT_EQ(module->SetShowName(0, u"Host account", {7}), TELEPHONY_ERR_SUCCESS);
+    const auto named = module->ReadAccount({40});
+    ASSERT_TRUE(named);
+    EXPECT_EQ(module->SetShowName(0, u"Host account", {7}), TELEPHONY_ERR_SUCCESS);
+    EXPECT_EQ(module->ReadAccount({40})->fields.name, named->fields.name);
+    EXPECT_EQ(module->SetShowName(0, u"", {7}), TELEPHONY_ERR_SUCCESS);
+    EXPECT_EQ(module->SetSimLabelIndexByIccId(kRaw0, 11), TELEPHONY_ERR_ARGUMENT_INVALID);
+    EXPECT_EQ(module->SetSimLabelIndexByIccId(kRaw0, 3), TELEPHONY_ERR_SUCCESS);
+    const auto labeled = module->ReadAccount({40});
+    ASSERT_TRUE(labeled);
+    EXPECT_EQ(module->SetSimLabelIndexByIccId(kRaw0, 3), TELEPHONY_ERR_SUCCESS);
+    EXPECT_EQ(module->ReadAccount({40})->fields.label, labeled->fields.label);
+    provider->respond = [](const auto &) { return AccountMetadataOutcome {-1, true, EffectKnowledge::Rejected}; };
+    EXPECT_EQ(module->SetShowName(0, u"rejected", {7}), TELEPHONY_ERR_DATABASE_WRITE_FAIL);
+    EXPECT_EQ(module->SetSimLabelIndexByIccId(kRaw0, 7), TELEPHONY_ERR_DATABASE_WRITE_FAIL);
+    std::u16string name;
+    EXPECT_EQ(module->GetShowName(0, name, {7}), TELEPHONY_ERR_SUCCESS);
+    const auto account = module->ReadAccount({40});
+    ASSERT_TRUE(account && account->legacyLabel);
+    EXPECT_TRUE(name.empty());
+    EXPECT_EQ(*account->legacyLabel, 3);
+    EXPECT_EQ(f.host->accountsChanged, 5u);
+    EXPECT_EQ(provider->Writes().size(), 7u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+    const std::string observation = "{\"accountNotifications\":\"" + std::to_string(f.host->accountsChanged) +
+        "\",\"emptyName\":\"" + (name.empty() ? "true" : "false") + "\",\"identity\":\"" +
+        (account->subscription.legacySimId == 40 ? "true" : "false") + "\",\"label\":\"" +
+        std::to_string(*account->legacyLabel) + "\",\"providerCalls\":\"" +
+        std::to_string(provider->Writes().size()) + "\"}";
+    RecordProperty("account_metadata_observation", observation);
+}
+
+TEST(AF2AccountMetadata, PermissionAndHistoricalIdentityWithoutBinding)
+{
+    using namespace OHOS::Telephony;
+    auto provider = std::make_shared<MetadataProvider>();
+    PrimaryFixture f(PrimaryZeroCatalog(), {}, provider);
+    auto &module = f.live.module;
+    auto session = module->ObserveVerifiedCard({{1}, "USIM"}, 1, kRaw1);
+    ASSERT_TRUE(session);
+    std::u16string name = u"unmodified";
+    f.host->system = false;
+    f.host->permitted = false;
+    f.host->readable = false;
+    EXPECT_EQ(module->SetShowName(-1, u"name", {7}), TELEPHONY_ERR_ILLEGAL_USE_OF_SYSTEM_API);
+    EXPECT_EQ(module->GetShowName(-1, name, {7}), TELEPHONY_ERR_ILLEGAL_USE_OF_SYSTEM_API);
+    f.host->system = true;
+    EXPECT_EQ(module->GetShowName(1, name, {7}), TELEPHONY_ERR_PERMISSION_ERR);
+    EXPECT_EQ(module->SetShowName(1, u"name", {7}), TELEPHONY_ERR_PERMISSION_ERR);
+    f.host->readable = true;
+    f.host->permitted = true;
+    f.host->slotSupported = false;
+    EXPECT_EQ(module->GetShowName(1, name, {7}), TELEPHONY_ERR_SLOTID_INVALID);
+    f.host->slotSupported = true;
+    EXPECT_EQ(module->SetShowName(3, u"name", {7}), TELEPHONY_ERR_LOCAL_PTR_NULL);
+    ASSERT_TRUE(module->InvalidateVerifiedCard(*session));
+    EXPECT_FALSE(module->FindBinding({1}));
+    EXPECT_EQ(module->SetShowName(1, u"name", {7}), TELEPHONY_ERR_NO_SIM_CARD);
+    EXPECT_EQ(module->GetShowName(1, name, {7}), TELEPHONY_ERR_NO_SIM_CARD);
+    EXPECT_EQ(name, u"unmodified");
+    EXPECT_EQ(module->SetSimLabelIndexByIccId("", 3), TELEPHONY_ERR_ARGUMENT_INVALID);
+    EXPECT_EQ(module->SetSimLabelIndexByIccId("unseen", 3), TELEPHONY_ERR_ARGUMENT_INVALID);
+    EXPECT_EQ(module->SetSimLabelIndexByIccId(kRaw1, 8), TELEPHONY_ERR_SUCCESS);
+    const auto old = module->ReadAccount({41}, AccountReadView::Historical);
+    ASSERT_TRUE(old);
+    EXPECT_EQ(old->legacyLabel, 8);
+    EXPECT_TRUE(old->displayName.empty());
+    ASSERT_EQ(provider->Writes().size(), 1u);
+    EXPECT_EQ(provider->Writes()[0].operation.subscription.legacySimId, 41);
+    EXPECT_EQ(f.host->accountsChanged, 1u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2AccountMetadata, FieldAndRowIsolationWhileOriginalWriteIsInFlight)
+{
+    using namespace OHOS::Telephony;
+    for (const bool independent : {true, false}) {
+        auto provider = std::make_shared<MetadataProvider>();
+        provider->independent = independent;
+        PrimaryFixture f(PrimaryZeroCatalog(), std::make_shared<RoleProvider>(), provider);
+        ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+        auto &module = f.live.module;
+        std::promise<void> entered;
+        std::promise<void> release;
+        auto enteredWait = entered.get_future();
+        auto releaseWait = release.get_future();
+        provider->respond = [&](const auto &write) {
+            if (write.value == AccountMetadataValue {u"first"}) {
+                entered.set_value();
+                releaseWait.wait();
+            }
+            return AccountMetadataOutcome {0, true, EffectKnowledge::ConfirmedApplied};
+        };
+        auto running = std::async(std::launch::async, [&] { return module->SetShowName(0, u"first", {7}); });
+        enteredWait.wait();
+        EXPECT_EQ(module->SetShowName(0, u"conflict", {7}), TELEPHONY_ERR_FAIL);
+        EXPECT_EQ(module->SetShowName(1, u"independent account", {7}), TELEPHONY_ERR_SUCCESS);
+        EXPECT_EQ(module->SetSimLabelIndexByIccId(kRaw0, 8), independent ? TELEPHONY_ERR_SUCCESS : TELEPHONY_ERR_FAIL);
+        EXPECT_EQ(module->SetDefaultCellularDataSlotId(1, {7}), TELEPHONY_ERR_SUCCESS);
+        EXPECT_EQ(module->SetDefaultVoiceSlotId(1, {7}), TELEPHONY_ERR_SUCCESS);
+        EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
+        EXPECT_EQ(module->SetShowName(1, u"closed", {7}), TELEPHONY_ERR_LOCAL_PTR_NULL);
+        release.set_value();
+        EXPECT_EQ(running.get(), TELEPHONY_ERR_SUCCESS);
+        EXPECT_EQ(module->ReadAccount({40})->displayName, u"first");
+        EXPECT_EQ(module->ReadAccount({41})->displayName, u"independent account");
+        if (independent) { EXPECT_EQ(module->ReadAccount({40})->legacyLabel, 8); }
+        EXPECT_EQ(provider->Writes().size(), independent ? 3u : 2u);
+        EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+    }
+}
+
+TEST(AF2AccountMetadata, UnknownRequiresExactOriginalEvidenceAfterStop)
+{
+    using namespace OHOS::Telephony;
+    auto provider = std::make_shared<MetadataProvider>();
+    PrimaryFixture f(PrimaryZeroCatalog(), {}, provider);
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    provider->respond = [](const auto &write) {
+        return write.field == "sim_label_index" ? AccountMetadataOutcome {0, false, EffectKnowledge::Unknown} :
+            AccountMetadataOutcome {0, true, EffectKnowledge::ConfirmedApplied};
+    };
+    EXPECT_EQ(module->SetSimLabelIndexByIccId(kRaw1, 8), TELEPHONY_ERR_DATABASE_WRITE_FAIL);
+    ASSERT_EQ(provider->Writes().size(), 1u);
+    const auto original = provider->Writes()[0].operation;
+    EXPECT_EQ(module->SetSimLabelIndexByIccId(kRaw1, 8), TELEPHONY_ERR_FAIL);
+    EXPECT_EQ(module->SetShowName(1, u"independent", {7}), TELEPHONY_ERR_SUCCESS);
+    EXPECT_FALSE(module->ReconcileAccountMetadata(original)); // Reading the same value supplies no original evidence.
+    auto wrong = original;
+    ++wrong.original.attempt;
+    provider->evidence = AccountMetadataEvidence {wrong, {0, true, EffectKnowledge::ConfirmedApplied}};
+    EXPECT_FALSE(module->ReconcileAccountMetadata(original));
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::BusinessEffectsUnresolved);
+    EXPECT_EQ(module->SetSimLabelIndexByIccId(kRaw1, 9), TELEPHONY_ERR_LOCAL_PTR_NULL);
+    provider->evidence = AccountMetadataEvidence {original, {0, true, EffectKnowledge::ConfirmedApplied}};
+    EXPECT_TRUE(module->ReconcileAccountMetadata(original));
+    EXPECT_FALSE(module->ReconcileAccountMetadata(original));
+    EXPECT_NE(module->ReadAccount({41})->legacyLabel, 8);
+    EXPECT_EQ(module->ReadAccount({41})->displayName, u"independent");
+    EXPECT_EQ(f.host->accountsChanged, 1u);
+    EXPECT_EQ(provider->Writes().size(), 2u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2AccountMetadata, ReplacementDoesNotReceiveTheOriginalSlotWrite)
+{
+    using namespace OHOS::Telephony;
+    auto provider = std::make_shared<MetadataProvider>();
+    PrimaryFixture f(PrimaryZeroCatalog(), {}, provider);
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    provider->respond = [&](const auto &write) {
+        EXPECT_EQ(write.operation.subscription.legacySimId, 41);
+        EXPECT_EQ(write.predicate, "41");
+        f.live.store->produceStore = [](const AccountDiscoveryWritePlan &) { return Stored({56}); };
+        EXPECT_TRUE(module->ObserveVerifiedCard({{1}, "USIM"}, 2, "89000000000000000056"));
+        return AccountMetadataOutcome {0, true, EffectKnowledge::ConfirmedApplied};
+    };
+    EXPECT_EQ(module->SetShowName(1, u"issued for old identity", {7}), TELEPHONY_ERR_FAIL);
+    ASSERT_TRUE(module->FindBinding({1}));
+    EXPECT_EQ(module->FindBinding({1})->subscription.legacySimId, 56);
+    std::u16string name;
+    EXPECT_EQ(module->GetShowName(1, name, {7}), TELEPHONY_ERR_SUCCESS);
+    EXPECT_TRUE(name.empty());
+    EXPECT_TRUE(module->ReadAccount({41}, AccountReadView::Historical)->displayName.empty());
+    EXPECT_EQ(f.host->accountsChanged, 0u);
+    EXPECT_EQ(provider->Writes().size(), 1u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
 }

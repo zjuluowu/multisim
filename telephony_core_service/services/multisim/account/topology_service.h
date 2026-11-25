@@ -23,6 +23,7 @@
 #include <mutex>
 #include <optional>
 #include "account/topology_requests.h"
+#include "infrastructure/request/runtime_operation_store.h"
 #include "account/account_registry.h"
 #include "account/binding_index.h"
 #include "account/discovery/discovery_observation_ledger.h"
@@ -54,8 +55,11 @@ public:
     std::optional<BindingRef> FindBinding(SlotId slot) const;
     std::optional<AccountView> ReadAccount(SubscriptionId subscription,
         AccountReadView view = AccountReadView::Current) const;
-    int32_t SetDisplayName(SlotTarget origin, const std::u16string &name);
-    int32_t SetSimLabel(SubscriptionId subscription, int32_t legacyLabel);
+    std::optional<AccountView> ReadAccountAtSlot(SlotTarget origin) const;
+    AccountMetadataResult SetDisplayName(SlotTarget origin, const std::u16string &name, const CompletionPlan &completion);
+    AccountMetadataResult SetSimLabel(const std::string &iccid, int32_t legacyLabel, const CompletionPlan &completion);
+    size_t PendingMetadataCount() const;
+    bool ReconcileMetadata(const AccountMetadataOperation &operation);
     int32_t SaveImsPreference(SlotTarget origin, int32_t preference);
     int32_t QueryImsPreference(SlotTarget origin, int32_t &preference);
     std::optional<NumberExecutionTarget> PrepareNumberTarget(SlotTarget origin, const SessionRef &session) const;
@@ -106,6 +110,17 @@ private:
     AccountFieldReservation ReserveNumberField(const NumberExecutionTarget &target);
     void ReleaseAfterStoreCallFinished(const AccountFieldReservation &reservation,
         const AccountStoreWriteResult &result);
+    using MetadataTarget = std::variant<SlotTarget, std::string>;
+    using MetadataValue = std::variant<std::u16string, int32_t>;
+    AccountMetadataResult UpdateMetadata(const MetadataTarget &target, const MetadataValue &value,
+        const CompletionPlan &completion);
+    AccountMetadataResult AcceptMetadata(const AccountRecord &original,
+        const std::optional<BindingRef> &binding, const MetadataValue &value);
+    bool MetadataConflictsWithDiscovery(const std::string &iccid) const;
+    struct PendingMetadata {
+        AccountMetadataEvidence evidence;
+        bool reconcilable {false};
+    };
     AccountRegistry accounts_;
     BindingIndex bindings_;
     DiscoveryObservationLedger observations_;
@@ -132,6 +147,10 @@ private:
     const RuntimeEpoch discoveryEpoch_;
     bool acceptingDiscovery_ {true};
     std::map<uint64_t, PendingDiscovery> pendingDiscoveries_;
+    const bool supportsMetadata_;
+    const bool metadataFieldsIndependent_;
+    RuntimeOperationStore metadataOperations_;
+    std::map<RequestId, PendingMetadata> pendingMetadata_;
     ActivationProgress activationProgress_;
     // 发现：R顺序观察进入observations_；预留旧/新键；Match→A角色预留→一次原Insert/Update。
     // 返回后复核observations_/绑定键/角色资格，分别接纳；已写但失效进入核对。

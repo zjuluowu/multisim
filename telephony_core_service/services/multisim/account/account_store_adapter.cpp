@@ -14,12 +14,13 @@
  */
 // TARGET ARCHITECTURE SKELETON / PROPOSED: 仅接入 testonly 骨架构建，尚未接入生产，未转移写权。
 // Design: docs/SIM_Target_Architecture_Design_v1.2.md §8.2、§9.2、§13.2。
-// 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
+// Host discovery and metadata use the configured store and Provider ports.
 
 #include "account/account_store_adapter.h"
 
 namespace OHOS::Telephony::MultiSim {
 namespace {
+constexpr auto kSimInfoUri = "datashare:///com.ohos.simability/sim/sim_info";
 AccountStoreWriteResult NotImplemented()
 { return {-1, false, false}; }
 }
@@ -28,28 +29,50 @@ AccountStoreWriteResult AccountStoreAdapter::WriteDisplayNumber(const AccountNum
 AccountStoreWriteResult AccountStoreAdapter::WriteActiveProjection(const AccountActivePatch &) { return NotImplemented(); }
 AccountStoreWriteResult AccountStoreAdapter::WriteDisplayName(const AccountNamePatch &) { return NotImplemented(); }
 AccountStoreWriteResult AccountStoreAdapter::WriteLabel(const AccountLabelPatch &) { return NotImplemented(); }
+AccountMetadataOutcome AccountStoreAdapter::WriteDisplayName(const AccountMetadataOperation &operation,
+    const AccountNamePatch &patch)
+{
+    if (!metadata_) { return {-1, true, EffectKnowledge::NotSent}; }
+    return metadata_->UpdateAccountField(operation, kSimInfoUri, "sim_id",
+        std::to_string(patch.subscription.legacySimId), "show_name", patch.name);
+}
+
+AccountMetadataOutcome AccountStoreAdapter::WriteLabel(const AccountMetadataOperation &operation,
+    const AccountLabelPatch &patch)
+{
+    if (!metadata_) { return {-1, true, EffectKnowledge::NotSent}; }
+    return metadata_->UpdateAccountField(operation, kSimInfoUri, "icc_id", patch.iccid,
+        "sim_label_index", patch.legacyLabel);
+}
+
+std::optional<AccountMetadataEvidence> AccountStoreAdapter::ReadMetadataEvidence(
+    const AccountMetadataOperation &operation)
+{
+    return metadata_ ? metadata_->ReadMetadataEvidence(operation) : std::nullopt;
+}
+
 AccountStoreWriteResult AccountStoreAdapter::WriteImsPreference(const AccountImsPreferencePatch &) { return NotImplemented(); }
 AccountLoadResult AccountStoreAdapter::LoadAccounts(const AccountLoadRequest &request)
-{ return LoadLegacyAccounts(legacyStore_, request); }
+{ return discovery_ ? discovery_->LoadAccounts(request) : legacy_.load(*legacy_.store, request); }
 AccountStoreWriteResult AccountStoreAdapter::WriteRemoval(const AccountRemovalPatch &) { return NotImplemented(); }
 int32_t AccountStoreAdapter::QueryImsPreferenceByIccid(const std::string &, int32_t &)
 { return -1; }
 
 AccountIdentityMatch AccountStoreAdapter::MatchAccountByIccid(const std::string &iccid)
 {
-    return MatchLegacyAccountByIccid(legacyStore_, iccid);
+    return discovery_ ? discovery_->MatchAccountByIccid(iccid) : legacy_.match(*legacy_.store, iccid);
 }
 
 AccountDiscoveryStoreResult AccountStoreAdapter::WriteDiscoveredAccount(const AccountDiscoveryWritePlan &plan)
 {
-    return WriteLegacyDiscoveredAccount(legacyStore_, plan);
+    return discovery_ ? discovery_->WriteDiscoveredAccount(plan) : legacy_.write(*legacy_.store, plan);
 }
 
-/* MatchAccountByIccid/WriteDiscoveredAccount委托同一Legacy Provider bridge；其余方法仍保持显式失败。
+/* MatchAccountByIccid/WriteDiscoveredAccount delegate to the configured discovery source.
  * WriteDisplayNumber的计划复用位置：
  * 与 MultiSimController::SetShowNumberToDB 相同，转换number到原编码；
  * DataShareValuesBucket只Put SimData::PHONE_NUMBER，调用
- * legacyStore_.UpdateDataBySimId(patch.subscription.legacySimId, values)。
+ * SimRdbHelper::UpdateDataBySimId(patch.subscription.legacySimId, values)。
  * 保留INVALID_VALUE->原DATABASE_WRITE_FAIL，其余返回的旧解释；不宣称CAS。
  * DB返回后交T接纳缓存，Adapter不改localCacheInfo_/allLocalCacheInfo_。
  * LoadAccounts(request)：Current走原QueryAllValidData，Historical走QueryAllData；

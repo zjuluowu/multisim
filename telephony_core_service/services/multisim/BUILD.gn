@@ -217,6 +217,7 @@ source_set("compatibility_core") {
   check_includes = true
   public_configs = [ ":skeleton_includes" ]
   sources = [
+    "infrastructure/compatibility/api/legacy_account_entry.cpp",
     "infrastructure/compatibility/api/legacy_primary_entry.cpp",
     "infrastructure/compatibility/api/legacy_sim_facade.cpp",
     "infrastructure/compatibility/api/legacy_sim_facade.h",
@@ -446,6 +447,7 @@ source_set("topology_cases") {
     "account/number/set_show_number_use_case.h",
     "account/number/show_number_query.cpp",
     "account/number/show_number_query.h",
+    "account/topology_metadata.cpp",
     "account/topology_service.cpp",
     "account/topology_service.h",
   ]

@@ -14,9 +14,12 @@ from primary_expectations import differential_oracle
 
 C0_ORACLE = differential_oracle(C0)
 DATA_CONTRACT = json.loads((TEST / 'cases/data/default_data_contract.json').read_text())
+METADATA_CONTRACT = json.loads((TEST / 'cases/data/account_metadata_contract.json').read_text())
 CALL_MESSAGE_CONTRACTS = json.loads((TEST / 'cases/data/default_voice_sms_contract.json').read_text())['scenarios']
 
 def load_oracle(scenario):
+    if scenario == METADATA_CONTRACT['id']:
+        return METADATA_CONTRACT['expect']
     if scenario in CALL_MESSAGE_CONTRACTS:
         return CALL_MESSAGE_CONTRACTS[scenario]
     if scenario == DATA_CONTRACT['id']:
@@ -69,8 +72,11 @@ def normalized_data(case):
 def normalized(case):
     if not case:
         return {}
-    if case.get('scenario') in CALL_MESSAGE_CONTRACTS:
-        payload = case.get('details', {}).get('properties', {}).get('default_call_message_observation')
+    scenario = case.get('scenario')
+    if scenario in CALL_MESSAGE_CONTRACTS or scenario == METADATA_CONTRACT['id']:
+        observation = ('account_metadata_observation' if scenario == METADATA_CONTRACT['id'] else
+                       'default_call_message_observation')
+        payload = case.get('details', {}).get('properties', {}).get(observation)
         if not payload:
             return {}
         return {'scenario': case['scenario'], 'status': case['status'], **json.loads(payload)}

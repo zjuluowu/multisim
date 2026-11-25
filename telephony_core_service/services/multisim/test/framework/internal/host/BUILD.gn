@@ -41,6 +41,7 @@ static_library("sim_target_production_host") {
   sources = [
     "$production_root/services/multisim/infrastructure/assembly/slot_catalog.cpp",
     "$production_root/services/multisim/infrastructure/assembly/sim_module_factory.cpp",
+    "$production_root/services/multisim/infrastructure/compatibility/api/legacy_account_entry.cpp",
     "$production_root/services/multisim/infrastructure/compatibility/api/legacy_primary_entry.cpp",
     "$production_root/services/multisim/infrastructure/compatibility/events/legacy_completion.cpp",
     "$production_root/services/multisim/card/state/session_registry.cpp",
@@ -54,6 +55,8 @@ static_library("sim_target_production_host") {
     "$production_root/services/multisim/account/discovery/discovery_observation_ledger.cpp",
     "$production_root/services/multisim/account/activation/activation_progress.cpp",
     "$production_root/services/multisim/account/topology_service.cpp",
+    "$production_root/services/multisim/account/topology_metadata.cpp",
+    "$production_root/services/multisim/account/account_store_adapter.cpp",
     "$production_root/services/multisim/role_assignment/assignment_aggregate.cpp",
     "$production_root/services/multisim/role_assignment/assignment_service.cpp",
     "$production_root/services/multisim/role_assignment/assignment_store_adapter.cpp",

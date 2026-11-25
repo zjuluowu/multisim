@@ -93,7 +93,7 @@ B/C1 设备执行、Core/SA/IPC 和 SO 切换继续按原门禁验收。
 
 ### AF-2 M6 账户资料（2026-11-25）
 
-**PARTIAL。** 输入 main/origin `43881d571`。已从 Legacy 实现和 Verify 特征用例确认显示名称及内部 ICCID 标签写入的定位、字段、查询与通知契约，特征用例 1/1 PASS。账户资料 Target 验收继续跟踪。[契约与调试](../services/multisim/test/docs/M6_Account_Metadata_Debug.md) · [验证证据](../services/multisim/test/docs/evidence/af2_m6_20261125/README.md)
+**PARTIAL。** 输入 main/origin `43881d571`。已从 Legacy 实现和 Verify 特征用例确认显示名称及内部 ICCID 标签写入的定位、字段、查询与通知契约，特征用例 1/1 PASS。正式 Host 已实现按槽名称设置及查询、按持久 ICCID 写入和读取存储标签。T 复用账户、绑定及字段版本，保留原操作效果并纳入 H 关闭。Developer M1–M6 44/44，LLDB 单步和销毁通过，10 个双后端场景 20/20、Oracle 差异 0。Legacy CI 最终归档待完成。[契约与调试](../services/multisim/test/docs/M6_Account_Metadata_Debug.md) · [验证证据](../services/multisim/test/docs/evidence/af2_m6_20261125/README.md)
 
 <a id="af1-signoff-validation"></a>
 

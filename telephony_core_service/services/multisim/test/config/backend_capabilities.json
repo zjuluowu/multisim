@@ -66,6 +66,12 @@
       "differential": "SUPPORTED"
     },
     {
+      "id": "SIM023-LEGACY-ACCOUNT-METADATA-DUAL",
+      "legacy": {"test": "RealSimPrimary.AccountMetadataUsesLegacyPredicatesAndFieldCaches", "host": "SUPPORTED", "device": "BLOCKED", "reason": "Real Legacy Provider commands, controlled Provider boundary."},
+      "target": {"test": "AF2AccountMetadata.LegacyFieldContract", "host": "SUPPORTED", "device": "BLOCKED", "reason": "Live Target Account and Binding with original Provider operation evidence."},
+      "differential": "SUPPORTED"
+    },
+    {
       "id": "TARGET-C0-PLAN-NO-DEVICE",
       "legacy": {
         "test": null,

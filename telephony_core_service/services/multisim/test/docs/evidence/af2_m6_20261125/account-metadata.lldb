@@ -1,0 +1,62 @@
+settings set target.disable-aslr false
+settings set symbols.enable-external-lookup false
+settings set target.env-vars LLVM_PROFILE_FILE=/tmp/af2-m6-developer/lldb-%p.profraw
+breakpoint set -n OHOS::Telephony::MultiSim::SimModule::SetShowName -o true
+run --gtest_filter=AF2AccountMetadata.LiveDualSimMetadataAndFourRoles
+frame variable slot name caller
+thread step-over
+breakpoint set -n OHOS::Telephony::MultiSim::LegacySimFacade::SetShowName -o true
+continue
+frame variable slot caller
+thread step-over
+breakpoint set -f topology_metadata.cpp -l 64 -o true
+continue
+frame variable binding identity account
+breakpoint set -f topology_metadata.cpp -l 101 -o true
+continue
+frame variable operation
+thread step-over
+breakpoint set -f account_store_adapter.cpp -l 36 -o true
+continue
+frame variable operation patch
+breakpoint set -r MetadataProvider::UpdateAccountField -o true
+continue
+frame variable uri selector predicate field value
+frame variable --raw-output predicate
+breakpoint set -f account_registry.cpp -l 218 -o true
+continue
+frame variable subscription view expectedNameRevision name
+frame variable projection
+thread step-over
+thread step-over
+frame variable projection
+breakpoint set -n OHOS::Telephony::MultiSim::LegacyCompletion::CompleteLegacyInt -o true
+continue
+frame variable legacyResult plan
+breakpoint set -r PrimaryHost::NotifyOriginalAccountChanged -o true
+continue
+frame variable this->accountsChanged
+thread step-over
+frame variable this->accountsChanged
+breakpoint set -n OHOS::Telephony::MultiSim::SimModule::SetSimLabelIndexByIccId -o true
+continue
+frame variable iccid label
+breakpoint set -f account_store_adapter.cpp -l 44 -o true
+continue
+frame variable operation patch
+breakpoint set -f account_registry.cpp -l 240 -o true
+continue
+frame variable subscription view expectedLabelRevision legacyLabel
+thread step-over
+thread step-over
+frame variable projection
+breakpoint set -n OHOS::Telephony::MultiSim::TopologyService::ReadAccountAtSlot -o true
+continue
+frame variable origin
+breakpoint set -n OHOS::Telephony::MultiSim::SimModule::StopAcceptingAndDrain -o true
+continue
+frame variable this->moduleCalls_ this->accepting_
+breakpoint set -f sim_module_factory.cpp -l 355 -o true
+continue
+frame variable module
+continue

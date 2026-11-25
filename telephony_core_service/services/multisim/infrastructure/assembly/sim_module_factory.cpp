@@ -96,6 +96,42 @@ std::optional<AccountView> SimModule::ReadAccount(SubscriptionId subscription, A
     return topology_.ReadAccount(subscription, view);
 }
 
+int32_t SimModule::SetShowName(int32_t slot, const std::u16string &name, LegacyCallerRef caller)
+{
+    if (!ports_.primaryHost) { return -1; }
+    if (!AdmitModuleCall()) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
+    const ModuleCall call {shared_from_this()};
+    return LegacySimFacade::SetShowName({slot}, caller, *catalog_, *ports_.primaryHost, completion_,
+        [this](SlotId target) { return card_.HasVerifiedCard(target); },
+        [&](const CompletionPlan &plan) { return topology_.SetDisplayName({{slot}}, name, plan); });
+}
+
+int32_t SimModule::GetShowName(int32_t slot, std::u16string &name, LegacyCallerRef caller)
+{
+    if (!ports_.primaryHost) { return -1; }
+    if (!AdmitModuleCall()) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
+    const ModuleCall call {shared_from_this()};
+    return LegacySimFacade::GetShowName({slot}, caller, *catalog_, *ports_.primaryHost, name,
+        [this](SlotId target) { return card_.HasVerifiedCard(target); },
+        [&] { return topology_.ReadAccountAtSlot({{slot}}); });
+}
+
+int32_t SimModule::SetSimLabelIndexByIccId(const std::string &iccid, int32_t label)
+{
+    if (!ports_.primaryHost) { return -1; }
+    if (!AdmitModuleCall()) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
+    const ModuleCall call {shared_from_this()};
+    return LegacySimFacade::SetSimLabelIndexByIccId(*ports_.primaryHost, completion_,
+        [&](const CompletionPlan &plan) { return topology_.SetSimLabel(iccid, label, plan); });
+}
+
+bool SimModule::ReconcileAccountMetadata(const AccountMetadataOperation &operation)
+{
+    if (!AdmitModuleCall(true)) { return false; }
+    const ModuleCall call {shared_from_this()};
+    return topology_.ReconcileMetadata(operation);
+}
+
 AssignmentView SimModule::ReadAssignment() const
 {
     return assignment_->ReadLegacyAssignment();
@@ -271,7 +307,7 @@ bool SimModule::HasPendingBusinessEffects() const
 {
     return primaryEffectUnresolved_ || assignment_->ReadDataParameterReceipt() ||
         assignment_->ReadRoleProviderReceipt(DefaultRole::Voice) || assignment_->ReadRoleProviderReceipt(DefaultRole::Sms) ||
-        topology_.PendingDiscoveryCount() || assignment_->PendingDiscoveryRoles();
+        topology_.PendingDiscoveryCount() || topology_.PendingMetadataCount() || assignment_->PendingDiscoveryRoles();
 }
 
 std::optional<SessionRef> SimModule::ObserveVerifiedCard(const CardApplicationTarget &application,

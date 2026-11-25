@@ -55,6 +55,10 @@ public:
     std::optional<BindingRef> FindBinding(SlotId slot) const;
     std::optional<AccountView> ReadAccount(SubscriptionId subscription,
         AccountReadView view = AccountReadView::Current) const;
+    int32_t SetShowName(int32_t slot, const std::u16string &name, LegacyCallerRef caller);
+    int32_t GetShowName(int32_t slot, std::u16string &name, LegacyCallerRef caller);
+    int32_t SetSimLabelIndexByIccId(const std::string &iccid, int32_t label);
+    bool ReconcileAccountMetadata(const AccountMetadataOperation &operation);
     AssignmentView ReadAssignment() const;
     std::optional<SessionRef> ObserveVerifiedCard(const CardApplicationTarget &application,
         uint64_t generation, const std::string &iccid);

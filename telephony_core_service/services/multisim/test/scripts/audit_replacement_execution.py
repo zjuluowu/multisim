@@ -13,7 +13,7 @@ REQUIRED = {
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--slice', choices=['state','primary','query','upstream','target-adapter','target-topology','target-primary-b','legacy-data','target-data','legacy-voice-sms','target-voice-sms'], default='state')
+    parser.add_argument('--slice', choices=['state','primary','query','upstream','target-adapter','target-topology','target-primary-b','legacy-data','target-data','legacy-voice-sms','target-voice-sms','legacy-account-metadata','target-account-metadata'], default='state')
     parser.add_argument('--binary', required=True, type=Path)
     parser.add_argument('--profiles', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
@@ -81,6 +81,19 @@ def main():
                     'AssignmentAggregate': ['AdmitRoleWriteSet', 'AcceptRoleSelection'],
                     'AccountRoleProtocol': ['NoteLocalRoleMutation'],
                     'AssignmentStoreAdapter': ['WriteDefaultRole', 'ReadRoleProviderEvidence']}
+    elif args.slice == 'legacy-account-metadata':
+        required = {'CoreManagerInner': ['SetSimLabelIndex'],
+                    'SimManager': ['SetShowName', 'GetShowName', 'SetSimLabelIndexByIccId', 'GetSimAccountInfo'],
+                    'MultiSimController': ['SetShowName', 'GetShowName', 'SetSimLabelIndexByIccId', 'GetSimAccountInfo'],
+                    'SimRdbHelper': ['UpdateDataBySimId', 'UpdateDataByIccId']}
+    elif args.slice == 'target-account-metadata':
+        required = {'SimModule': ['SetShowName', 'GetShowName', 'SetSimLabelIndexByIccId', 'ReconcileAccountMetadata'],
+                    'LegacySimFacade': ['SetShowName', 'GetShowName', 'SetSimLabelIndexByIccId'],
+                    'TopologyService': ['SetDisplayName', 'SetSimLabel', 'UpdateMetadata', 'AcceptMetadata',
+                                        'ReadAccountAtSlot', 'ReconcileMetadata'],
+                    'AccountRegistry': ['AcceptDisplayName', 'AcceptLabel'],
+                    'AccountStoreAdapter': ['WriteDisplayName', 'WriteLabel', 'ReadMetadataEvidence'],
+                    'RuntimeOperationStore': ['AcceptResult', 'AcceptLateEvidence', 'ClaimCompletion']}
     elif args.slice == 'target-primary-b':
         required = {'AssignmentService':['AcceptRadioStep', 'AcceptPrimarySwitchTimeout',
                     'ScheduleC1Retry', 'AcceptScheduledC1Retry', 'StopAcceptingAndCancelScheduledRetries'],

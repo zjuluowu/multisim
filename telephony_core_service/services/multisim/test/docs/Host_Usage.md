@@ -157,3 +157,5 @@ M2 的 `AF2Discovery.LiveBindingsFeedExistingC0AndStaleTargetCannotAdvance` 继�
 独立默认数据卡的单例、写权和 LLDB 断点见 [M4 开发与调试](M4_Default_Data_Debug.md)。
 
 默认 Voice、SMS 和四角色组合的单例、断点及 Provider 契约见 [M5 开发与调试](M5_Voice_SMS_Debug.md)。
+
+账户名称、ICCID 标签、四角色组合的单例及正式调用路径见 [M6 账户资料开发与调试](M6_Account_Metadata_Debug.md)。

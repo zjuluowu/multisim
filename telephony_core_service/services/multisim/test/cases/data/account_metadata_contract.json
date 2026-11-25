@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "id": "SIM023-LEGACY-ACCOUNT-METADATA-DUAL",
+  "expect": {
+    "accountNotifications": "5",
+    "emptyName": "true",
+    "identity": "true",
+    "label": "3",
+    "providerCalls": "7"
+  }
+}

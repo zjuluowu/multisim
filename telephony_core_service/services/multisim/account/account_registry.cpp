@@ -208,6 +208,10 @@ AccountAcceptance AccountRegistry::AcceptDisplayName(SubscriptionId subscription
     if (!projection) {
         return AccountAcceptance::MissingProjection;
     }
+    if (projection->displayName == name) {
+        return projection->revisions.name == expectedNameRevision ?
+            AccountAcceptance::Accepted : AccountAcceptance::ChangedInputs;
+    }
     if (!MayAdvance(projection->revisions.name, expectedNameRevision)) {
         return AccountAcceptance::ChangedInputs;
     }
@@ -226,6 +230,10 @@ AccountAcceptance AccountRegistry::AcceptLabel(SubscriptionId subscription, Acco
     auto &projection = Projection(account->second, view);
     if (!projection) {
         return AccountAcceptance::MissingProjection;
+    }
+    if (projection->legacyLabel == legacyLabel) {
+        return projection->revisions.label == expectedLabelRevision ?
+            AccountAcceptance::Accepted : AccountAcceptance::ChangedInputs;
     }
     if (!MayAdvance(projection->revisions.label, expectedLabelRevision)) {
         return AccountAcceptance::ChangedInputs;

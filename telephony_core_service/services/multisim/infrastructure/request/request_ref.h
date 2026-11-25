@@ -30,7 +30,7 @@ struct DiscoveryCallRef {
     { return epoch == other.epoch && admission == other.admission; }
     bool operator!=(const DiscoveryCallRef &other) const { return !(*this == other); }
 };
-enum class RequestOwner { Unspecified, ShowNumber, Activation, Assignment, LocalCard, LegacyBridge };
+enum class RequestOwner { Unspecified, ShowNumber, Activation, Assignment, LocalCard, LegacyBridge, AccountMetadata };
 struct RequestId {
     uint64_t value;
     RuntimeEpoch epoch {};

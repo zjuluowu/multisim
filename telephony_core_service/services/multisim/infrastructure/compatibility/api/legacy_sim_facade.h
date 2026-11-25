@@ -51,6 +51,14 @@ public:
         const SlotCatalog &catalog, LegacyPrimaryHostPort &host, const PrimaryTopologyPort &topology,
         LegacyCompletion &completion, AssignmentService &assignment,
         const std::function<bool(SlotId)> &hasVerifiedCard);
+    static int32_t SetShowName(SlotId slot, LegacyCallerRef caller, const SlotCatalog &catalog,
+        LegacyPrimaryHostPort &host, LegacyCompletion &completion, const std::function<bool(SlotId)> &hasCard,
+        const std::function<AccountMetadataResult(const CompletionPlan &)> &issue);
+    static int32_t SetSimLabelIndexByIccId(LegacyPrimaryHostPort &host, LegacyCompletion &completion,
+        const std::function<AccountMetadataResult(const CompletionPlan &)> &issue);
+    static int32_t GetShowName(SlotId slot, LegacyCallerRef caller, const SlotCatalog &catalog,
+        LegacyPrimaryHostPort &host, std::u16string &name, const std::function<bool(SlotId)> &hasCard,
+        const std::function<std::optional<AccountView>()> &read);
     AssignmentView ReadAssignmentForLegacyProjection() const;
     void VerifyPinAtExecutionPoint(const VerifyPinRequest &request);
     EuiccPrimitiveResult SwitchLocalProfileAtExecutionPoint(const SwitchProfileRequest &request);

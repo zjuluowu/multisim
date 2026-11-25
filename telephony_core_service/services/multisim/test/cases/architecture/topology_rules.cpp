@@ -50,6 +50,7 @@ int main()
     AccountRecord account {{3}, "iccid-A", 1, AccountProjection {}, AccountProjection {}};
     assert(accounts.AcceptDiscoveredAccount(account) == AccountAcceptance::Accepted);
     assert(accounts.AcceptDisplayName({3}, AccountReadView::Current, 0, u"new-name") == AccountAcceptance::Accepted);
+    assert(accounts.AcceptLabel({3}, AccountReadView::Current, 0, 3) == AccountAcceptance::Accepted);
     assert(accounts.AcceptNumberVisibility({3}, AccountReadView::Current, 0, u"123") == AccountAcceptance::Accepted);
     assert(accounts.ReadProjection({3}, AccountReadView::Current)->displayName == u"new-name");
     assert(accounts.ReadProjection({3}, AccountReadView::Historical)->displayNumber.empty());
@@ -58,8 +59,12 @@ int main()
     delayed.displayName = u"old-name";
     delayed.displayNumber = u"old-number";
     delayed.active = true;
+    delayed.legacyLabel = 2;
     auto accepted = accounts.AcceptReloadProjection({3}, AccountReadView::Current, 1, {}, delayed);
     assert(accepted.identityAccepted && !accepted.nameAccepted && !accepted.numberAccepted && accepted.activeAccepted);
+    assert(!accepted.labelAccepted);
+    assert(accounts.ReadProjection({3}, AccountReadView::Current)->displayName == u"new-name");
+    assert(accounts.ReadProjection({3}, AccountReadView::Current)->legacyLabel == 3);
     assert(accounts.ReadProjection({3}, AccountReadView::Current)->displayNumber == u"123");
     assert(accounts.ReadProjection({3}, AccountReadView::Current)->active);
     assert(!accounts.ReadProjection({3}, AccountReadView::Historical)->active);

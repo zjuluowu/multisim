@@ -22,7 +22,9 @@
 namespace OHOS::Telephony::MultiSim {
 TopologyService::TopologyService(const SlotCatalog &catalog, AccountStore &store, RuntimeEpoch epoch)
     : bindings_(catalog), observations_(epoch), store_(store),
-      useLegacySingleSlotRoles_(catalog.Capacities().configured == 1), discoveryEpoch_(epoch), activationProgress_(epoch) {}
+      useLegacySingleSlotRoles_(catalog.Capacities().configured == 1), discoveryEpoch_(epoch),
+      supportsMetadata_(store.SupportsMetadata()), metadataFieldsIndependent_(store.HasIndependentMetadataFields()),
+      metadataOperations_(epoch, RequestOwner::AccountMetadata), activationProgress_(epoch) {}
 
 void TopologyService::BindRolePlanner(AccountRolePlanningPort &roles)
 {
@@ -89,6 +91,7 @@ DiscoveryAcceptance TopologyService::DiscoverAccount(const CardDiscoveryObservat
     {
         std::lock_guard<std::recursive_mutex> guard(commitLock_);
         if (!acceptingDiscovery_ || !roles_ || !bindings_.CanObserve(observation.session.application) ||
+            MetadataConflictsWithDiscovery(observation.iccid) ||
             (!observations_.StillCurrent(observation) && !observations_.AcceptDiscovery(observation))) {
             return rejected;
         }
@@ -428,7 +431,7 @@ std::optional<AccountView> TopologyService::ReadAccount(SubscriptionId subscript
     const auto projection = accounts_.ReadProjection(subscription, view);
     if (!record || !projection) { return std::nullopt; }
     return AccountView {subscription, view, projection->displayName, projection->displayNumber,
-        projection->active, record->identityRevision, projection->revisions};
+        projection->active, record->identityRevision, projection->revisions, projection->legacyLabel};
 }
 
 AccountAcceptance TopologyService::AcceptActivationProjection(SubscriptionId subscription,

@@ -35,13 +35,14 @@ public:
 };
 enum class LegacyPrimaryError {
     Unavailable, NonSystemCaller, PermissionDenied, InvalidSlot, NoCard, Failed,
-    InactiveCard, DatabaseWriteFailed, BroadcastFailed
+    InactiveCard, DatabaseWriteFailed, BroadcastFailed, InvalidArgument, HistoricalMissing
 };
 class LegacyPrimaryHostPort {
 public:
     virtual ~LegacyPrimaryHostPort() = default;
     virtual bool IsSystemCaller(LegacyCallerRef caller) = 0;
     virtual bool CanSetTelephonyState(LegacyCallerRef caller) = 0;
+    virtual bool CanGetTelephonyState(LegacyCallerRef) { return false; }
     virtual bool SupportsPrimarySlot(SlotId slot) = 0;
     virtual int32_t PrimaryError(LegacyPrimaryError error) const = 0;
     virtual void NotifyOriginalAccountChanged() = 0;

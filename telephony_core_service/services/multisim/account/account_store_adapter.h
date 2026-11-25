@@ -19,6 +19,7 @@
 #ifndef OHOS_TELEPHONY_MULTISIM_TOPOLOGY_ADAPTERS_ACCOUNT_STORE_ADAPTER_H
 #define OHOS_TELEPHONY_MULTISIM_TOPOLOGY_ADAPTERS_ACCOUNT_STORE_ADAPTER_H
 
+#include <string_view>
 #include "account/account_store.h"
 
 namespace OHOS::Telephony { class SimRdbHelper; }
@@ -31,10 +32,30 @@ AccountIdentityMatch MatchLegacyAccountByIccid(OHOS::Telephony::SimRdbHelper &st
     const std::string &iccid);
 AccountDiscoveryStoreResult WriteLegacyDiscoveredAccount(OHOS::Telephony::SimRdbHelper &store,
     const AccountDiscoveryWritePlan &plan);
-// T专属Adapter实现字段级端口，借用现有helper，不直连新RDB，不保存业务缓存。
+using AccountMetadataValue = std::variant<std::u16string, int32_t>;
+class AccountMetadataProviderPort {
+public:
+    virtual ~AccountMetadataProviderPort() = default;
+    virtual bool HasIndependentMetadataFields() const = 0;
+    virtual AccountMetadataOutcome UpdateAccountField(const AccountMetadataOperation &, std::string_view uri,
+        std::string_view predicateColumn, const std::string &predicateValue, std::string_view field,
+        const AccountMetadataValue &value) = 0;
+    virtual std::optional<AccountMetadataEvidence> ReadMetadataEvidence(const AccountMetadataOperation &) = 0;
+};
+// The platform port encodes the typed value in the original DataShare values bucket.
+
 class AccountStoreAdapter final : public AccountStore {
 public:
-    explicit AccountStoreAdapter(SimRdbHelper &legacyStore) : legacyStore_(legacyStore) {}
+    explicit AccountStoreAdapter(SimRdbHelper &legacyStore)
+        : legacy_ {&legacyStore, LoadLegacyAccounts, MatchLegacyAccountByIccid, WriteLegacyDiscoveredAccount} {}
+    AccountStoreAdapter(AccountStore &discovery, AccountMetadataProviderPort &metadata)
+        : discovery_(&discovery), metadata_(&metadata) {}
+    bool SupportsMetadata() const override { return metadata_ != nullptr; }
+    bool HasIndependentMetadataFields() const override
+    { return metadata_ && metadata_->HasIndependentMetadataFields(); }
+    AccountMetadataOutcome WriteDisplayName(const AccountMetadataOperation &, const AccountNamePatch &) override;
+    AccountMetadataOutcome WriteLabel(const AccountMetadataOperation &, const AccountLabelPatch &) override;
+    std::optional<AccountMetadataEvidence> ReadMetadataEvidence(const AccountMetadataOperation &) override;
     AccountStoreWriteResult WriteDisplayNumber(const AccountNumberPatch &patch) override;
     AccountStoreWriteResult WriteActiveProjection(const AccountActivePatch &patch) override;
     AccountStoreWriteResult WriteDisplayName(const AccountNamePatch &patch) override;
@@ -42,11 +63,25 @@ public:
     AccountStoreWriteResult WriteImsPreference(const AccountImsPreferencePatch &patch) override;
     AccountLoadResult LoadAccounts(const AccountLoadRequest &request) override;
     AccountIdentityMatch MatchAccountByIccid(const std::string &iccid) override;
+    AccountIdentityMatch MatchDiscoveryAccount(DiscoveryCallRef call, const std::string &iccid) override
+    { return discovery_ ? discovery_->MatchDiscoveryAccount(call, iccid) : MatchAccountByIccid(iccid); }
+    bool DiscoveryMatchReturned(DiscoveryCallRef call) override
+    { return discovery_ && discovery_->DiscoveryMatchReturned(call); }
+    std::optional<AccountDiscoveryStoreResult> ReadDiscoveryEvidence(DiscoveryCallRef call) override
+    { return discovery_ ? discovery_->ReadDiscoveryEvidence(call) : std::nullopt; }
     AccountDiscoveryStoreResult WriteDiscoveredAccount(const AccountDiscoveryWritePlan &plan) override;
     AccountStoreWriteResult WriteRemoval(const AccountRemovalPatch &patch) override;
     int32_t QueryImsPreferenceByIccid(const std::string &iccid, int32_t &value) override;
 private:
-    SimRdbHelper &legacyStore_;
+    struct LegacyDiscoveryBridge {
+        SimRdbHelper *store {nullptr};
+        decltype(&LoadLegacyAccounts) load {nullptr};
+        decltype(&MatchLegacyAccountByIccid) match {nullptr};
+        decltype(&WriteLegacyDiscoveredAccount) write {nullptr};
+    };
+    LegacyDiscoveryBridge legacy_;
+    AccountStore *discovery_ {nullptr};
+    AccountMetadataProviderPort *metadata_ {nullptr};
 };
 } // namespace OHOS::Telephony::MultiSim
 
