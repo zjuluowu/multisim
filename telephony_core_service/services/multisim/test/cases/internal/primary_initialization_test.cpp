@@ -267,4 +267,114 @@ TEST_F(RealSimPrimary, AccountMetadataUsesLegacyPredicatesAndFieldCaches)
         {"identity", current.simId == original.simId ? "true" : "false"}
     }));
 }
+
+TEST_F(RealSimPrimary, ImsPreferencePreservesProviderReturnAndReadSource)
+{
+    using namespace testing;
+    Sim028Host::PrimaryEnvironment rig(false);
+    ASSERT_TRUE(rig.StartLockedCard());
+    auto &inner = CoreManagerInner::GetInstance();
+    IccAccountInfo account;
+    ASSERT_EQ(rig.manager->GetSimAccountInfo(1, false, account), TELEPHONY_ERR_SUCCESS);
+    const auto iccid = OHOS::Str16ToStr8(account.iccId);
+    ASSERT_FALSE(iccid.empty());
+    std::string predicate = iccid;
+    const auto checkPredicate = [&](auto &uri, const auto &where) {
+        EXPECT_EQ(uri.ToString(), "datashare:///com.ohos.simability/sim/sim_info");
+        EXPECT_EQ(where.Requests().size(), 1u);
+        EXPECT_EQ(where.Requests().at(0).kind, "EqualTo");
+        EXPECT_EQ(where.Requests().at(0).field, SimData::ICC_ID);
+        EXPECT_EQ(Sim028Host::ProviderRow::Text(where.Requests().at(0).value.value), predicate);
+    };
+    unsigned writes = 0;
+    unsigned reads = 0;
+    unsigned notifications = 0;
+    int32_t rawWrite = 0;
+    enum class ReadMode { Row, NoRow, Failure };
+    ReadMode readMode = ReadMode::Row;
+    std::vector<int32_t> written;
+    EXPECT_CALL(*rig.provider, Update(_, _, _)).WillRepeatedly([&](auto &uri, const auto &where, const auto &values) {
+        checkPredicate(uri, where);
+        EXPECT_EQ(values.valuesMap.size(), 1u);
+        const auto &value = values.valuesMap.at(SimData::IMS_SWITCH);
+        written.push_back(static_cast<int32_t>(std::get<int64_t>(value)));
+        ++writes;
+        if (rawWrite >= 0 && predicate == iccid) { rig.row.cells[SimData::IMS_SWITCH] = value; }
+        return rawWrite;
+    });
+    EXPECT_CALL(*rig.provider, Query(_, _, _, _)).WillRepeatedly(
+        [&](auto &uri, const auto &where, const auto &columns, auto *) -> std::shared_ptr<OHOS::DataShare::DataShareResultSet> {
+            checkPredicate(uri, where);
+            EXPECT_TRUE(columns.empty());
+            ++reads;
+            if (readMode == ReadMode::Failure) { return nullptr; }
+            if (readMode == ReadMode::NoRow) { return std::make_shared<OHOS::DataShare::DataShareResultSet>(
+                std::vector<std::string> {}, std::vector<OHOS::DataShare::DataShareResultSet::Row> {}); }
+            return rig.row.Query(where);
+        });
+    Sim028Host::ObserveCallingThreadDiagnostics([&](const auto &name) {
+        if (name == "ACCOUNT_NOTIFY") { ++notifications; }
+    });
+    int32_t value = 99;
+    EXPECT_EQ(inner.SaveImsSwitch(-1, 100), TELEPHONY_ERR_ARGUMENT_INVALID);
+    EXPECT_EQ(inner.QueryImsSwitch(-1, value), TELEPHONY_ERR_ARGUMENT_INVALID);
+    EXPECT_EQ(value, 99);
+    const auto first = inner.SaveImsSwitch(1, 17);
+    const auto repeat = inner.SaveImsSwitch(1, 17);
+    EXPECT_EQ(first, 0);
+    EXPECT_EQ(repeat, 0);
+    EXPECT_EQ(inner.QueryImsSwitch(1, value), 0);
+    EXPECT_EQ(value, 17);
+    rawWrite = 6;
+    const auto positive = inner.SaveImsSwitch(1, -9);
+    EXPECT_EQ(positive, 6);
+    EXPECT_EQ(inner.QueryImsSwitch(1, value), 0);
+    EXPECT_EQ(value, -9);
+    rawWrite = -23;
+    const auto failure = inner.SaveImsSwitch(1, 123);
+    EXPECT_EQ(failure, -23);
+    rig.row.cells[SimData::IMS_SWITCH] = int64_t(33); // Independent Provider edit.
+    EXPECT_EQ(inner.QueryImsSwitch(1, value), 0);
+    EXPECT_EQ(value, 33);
+    const auto external = value;
+    rig.row.cells[SimData::IMS_SWITCH] = int64_t(-1); // A row with explicit UNKNOWN.
+    EXPECT_EQ(inner.QueryImsSwitch(1, value), 0);
+    EXPECT_EQ(value, -1);
+    readMode = ReadMode::NoRow;
+    const auto empty = inner.QueryImsSwitch(1, value);
+    EXPECT_EQ(empty, 0);
+    EXPECT_EQ(value, -1);
+    readMode = ReadMode::Failure;
+    const auto failedRead = inner.QueryImsSwitch(1, value);
+    EXPECT_EQ(failedRead, 0);
+    EXPECT_EQ(value, -1);
+    const auto commonReads = reads;
+    const auto commonWrites = writes;
+    EXPECT_EQ(written, (std::vector<int32_t> {17, 17, -9, 123}));
+    EXPECT_EQ(commonReads, 6u);
+    EXPECT_EQ(commonWrites, 4u);
+
+    if (!rig.companionRow) {
+        // In the one-active model slot 0 has a cache position with an empty ICCID.
+        predicate.clear();
+        readMode = ReadMode::NoRow;
+        rawWrite = 0;
+        EXPECT_EQ(inner.SaveImsSwitch(0, 7), 0);
+        EXPECT_EQ(inner.QueryImsSwitch(0, value), 0);
+        EXPECT_EQ(value, -1);
+        EXPECT_EQ(writes, commonWrites + 1);
+        EXPECT_EQ(reads, commonReads + 1);
+        RecordProperty("empty_iccid_provider_access", "true");
+    }
+    Sim028Host::ObserveCallingThreadDiagnostics({});
+    EXPECT_EQ(notifications, 0u);
+    RecordProperty("ims_preference_observation", SimGuard::Primary::Json({
+        {"first", std::to_string(first)}, {"repeat", std::to_string(repeat)},
+        {"positive", std::to_string(positive)}, {"failure", std::to_string(failure)},
+        {"externalValue", std::to_string(external)}, {"noRow", std::to_string(empty)},
+        {"failedRead", std::to_string(failedRead)}, {"unknown", std::to_string(value)},
+        {"writes", std::to_string(commonWrites)}, {"reads", std::to_string(commonReads)},
+        {"notifications", std::to_string(notifications)}
+    }));
+}
 }

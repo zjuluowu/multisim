@@ -109,6 +109,21 @@ VS Code GUI 保持人工未验收。IMS Preference 留待独立核对契约，�
 [开发与调试](../services/multisim/test/docs/M6_Account_Metadata_Debug.md) ·
 [验证及原始证据](../services/multisim/test/docs/evidence/af2_m6_20261125/README.md)
 
+<a id="af2-m7a-status"></a>
+
+### AF-2 M7A IMS Preference（2026-11-25）
+
+**PARTIAL。** 输入本地及远端 main `7edbc86ff`。真实 Legacy Verify 特征用例
+1/1 PASS。保存透传 Provider 整数，查询现场读取 Provider，空结果和失败可同样返回成功
+加 UNKNOWN。单激活下槽位置有效、ICCID 空时仍调用 Provider。M7A 的 Target 接线、
+正式验收及该兼容差异的裁决继续跟踪。
+[Legacy 及 Target 契约](../services/multisim/test/docs/M7A_Ims_Preference_Debug.md) ·
+[原始证据](../services/multisim/test/docs/evidence/af2_m7a_20261125/README.md)
+
+**独立产品迁移待决 M6 · 未知 ICCID 的 SIM 标签。** 仓内签收及提交记录尚无此项正式裁决。
+Legacy 可无变更成功，Target 对未知持久身份返回参数错误。已知历史账户仍允许更新。
+M6 Host 验收记录保留。相关产品迁移须独立审核原调用者依赖并取得批准。
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）
