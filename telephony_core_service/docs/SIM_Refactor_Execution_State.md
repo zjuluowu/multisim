@@ -69,6 +69,16 @@ AF2-03 多成员提交、Reload 因果覆盖、Core/SA/IPC、设备与生产切�
 [独立 Data 契约与调试](../services/multisim/test/docs/M4_Default_Data_Debug.md) ·
 [Verify 与原始证据](../services/multisim/test/docs/evidence/af2_m4_20261125/README.md)
 
+<a id="af2-m5-status"></a>
+
+### AF-2 M5 默认 Voice / SMS
+
+输入本地与远端 main `85515ad34788d869806d28d522f0d5eed11ae8ee`。Legacy Voice Core
+与 SMS CMI 特征在双激活 Verify 各 1/1 通过。已核对原 Provider 命令、重复设置、清除、
+公告失败后的状态，以及 Voice 无值和 SMS 首个活跃账户回退。Target 正式入口和完整
+Host 验收继续实施。
+[契约及原始结果](../services/multisim/test/docs/M5_Voice_SMS_Debug.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）

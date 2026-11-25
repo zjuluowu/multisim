@@ -110,4 +110,95 @@ TEST_F(RealSimPrimary, IndependentDefaultDataUsesOriginalManagerContract)
         if (i < 2) { EXPECT_EQ(want.GetIntParam("simId", -99), rig.manager->GetSimId(1)); }
     }
 }
+
+void VerifyDefaultRoleContract(bool voice)
+{
+    using namespace OHOS::Security::AccessToken;
+    using namespace testing;
+    Sim028Host::PrimaryEnvironment rig(false);
+    ASSERT_TRUE(rig.StartLockedCard());
+    if (voice) {
+        EXPECT_CALL(rig.identity, TokenType(101)).WillRepeatedly(Return(TOKEN_NATIVE));
+        EXPECT_CALL(rig.identity, Verify(101, Permission::SET_TELEPHONY_STATE))
+            .WillRepeatedly(Return(PERMISSION_GRANTED));
+    }
+    auto &inner = CoreManagerInner::GetInstance();
+    const auto setRole = [&](int slot) {
+        return voice ? rig.core.SetDefaultVoiceSlotId(slot) : inner.SetDefaultSmsSlotId(slot);
+    };
+    const auto getRole = [&] { return voice ? inner.GetDefaultVoiceSlotId() : inner.GetDefaultSmsSlotId(); };
+    const auto simId = rig.manager->GetSimId(1);
+    ASSERT_GT(simId, 0);
+    rig.ClearObservations();
+    const auto parameters = rig.parametersDb;
+    std::vector<int> writes;
+    int providerResult = 0;
+    EXPECT_CALL(*rig.provider, Update(Truly([](const auto &uri) {
+        return uri.ToString() == "datashare:///com.ohos.simability/sim/sim_info/set_card";
+    }), _, _)).WillRepeatedly([&](auto &, const auto &predicates, const auto &bucket) {
+        EXPECT_TRUE(predicates.Requests().empty());
+        EXPECT_EQ(bucket.valuesMap.size(), 2u);
+        EXPECT_EQ(Sim028Host::ProviderRow::Text(bucket.valuesMap.at(SimData::CARD_TYPE)), voice ? "1" : "2");
+        writes.push_back(std::stoi(Sim028Host::ProviderRow::Text(bucket.valuesMap.at(SimData::SIM_ID))));
+        return providerResult;
+    });
+    const auto action = voice ?
+        OHOS::EventFwk::CommonEventSupport::COMMON_EVENT_SIM_CARD_DEFAULT_VOICE_SUBSCRIPTION_CHANGED :
+        OHOS::EventFwk::CommonEventSupport::COMMON_EVENT_SIM_CARD_DEFAULT_SMS_SUBSCRIPTION_CHANGED;
+    std::vector<int> announcements;
+    bool publish = true;
+    EXPECT_CALL(rig.services, Publish(Truly([&](const auto &event) {
+        return event.GetWant().GetAction() == action;
+    }), _)).WillRepeatedly([&](const auto &event, const auto &info) {
+        EXPECT_EQ(event.GetCode(), 1);
+        EXPECT_EQ(event.GetData(), voice ? "defaultVoiceSimIdChanged" : "defaultSmsSimIdChanged");
+        EXPECT_FALSE(info.IsOrdered());
+        announcements.push_back(event.GetWant().GetIntParam("simId", -1));
+        return publish;
+    });
+    unsigned accountNotifications = 0;
+    Sim028Host::ObserveCallingThreadDiagnostics([&](const auto &name) {
+        if (name == "ACCOUNT_NOTIFY") { ++accountNotifications; }
+    });
+    EXPECT_EQ(setRole(100), TELEPHONY_ERR_SLOTID_INVALID);
+    EXPECT_EQ(setRole(1), TELEPHONY_ERR_SUCCESS);
+    const int selected = getRole();
+    EXPECT_EQ(selected, 1);
+    EXPECT_EQ(setRole(1), TELEPHONY_ERR_SUCCESS);
+    providerResult = -1;
+    EXPECT_EQ(setRole(-1), TELEPHONY_ERR_DATABASE_WRITE_FAIL);
+    EXPECT_EQ(getRole(), 1);
+    providerResult = 0;
+    publish = false;
+    const auto clearResult = setRole(-1);
+    EXPECT_EQ(clearResult, TELEPHONY_ERR_PUBLISH_BROADCAST_FAIL);
+    const int cleared = getRole();
+    EXPECT_EQ(cleared, voice ? -1 : (rig.manager->IsSimActive(0) ? 0 : 1));
+    EXPECT_EQ(setRole(-1), TELEPHONY_ERR_SUCCESS);
+    Sim028Host::ObserveCallingThreadDiagnostics({});
+    EXPECT_EQ(accountNotifications, 3u);
+    EXPECT_EQ(writes, (std::vector<int> {simId, simId, 0, 0, 0}));
+    EXPECT_EQ(announcements, (std::vector<int> {simId, 0}));
+    EXPECT_TRUE(rig.writes.empty());
+    EXPECT_EQ(rig.parametersDb, parameters);
+
+    using SimGuard::Primary::Json;
+    testing::Test::RecordProperty("default_call_message_observation", Json({
+        {"selected", std::to_string(selected)}, {"cleared", std::to_string(cleared)},
+        {"clearResult", std::to_string(clearResult)}, {"writes", std::to_string(writes.size())},
+        {"announcements", std::to_string(announcements.size())},
+        {"accountNotifications", std::to_string(accountNotifications)},
+        {"identity", writes == std::vector<int> {simId, simId, 0, 0, 0} ? "true" : "false"}
+    }));
+}
+
+TEST_F(RealSimPrimary, DefaultVoiceProviderAndNotificationContract)
+{
+    VerifyDefaultRoleContract(true);
+}
+
+TEST_F(RealSimPrimary, DefaultSmsProviderAndNotificationContract)
+{
+    VerifyDefaultRoleContract(false);
+}
 }
