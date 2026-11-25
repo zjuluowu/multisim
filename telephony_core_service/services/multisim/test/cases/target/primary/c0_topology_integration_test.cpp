@@ -1,3 +1,4 @@
+#include "../../../framework/internal/common/primary_observation.h"
 #include <gtest/gtest.h>
 #include "telephony_errors.h"
 
@@ -191,10 +192,20 @@ public:
         mainChanges.emplace_back(slot, subscription);
         PublishMainCardChanged(slot);
     }
+    std::function<void(SubscriptionId)> onDataChanged;
+    std::function<void(SlotId)> onDataBehavior;
+    void ReportDefaultDataSelection(SlotId slot) override
+    {
+        events.emplace_back("data-behavior");
+        dataBehavior.push_back(slot);
+        if (onDataBehavior) { onDataBehavior(slot); }
+    }
+    std::vector<SlotId> dataBehavior;
     void PublishDefaultDataChanged(SlotId slot, SubscriptionId subscription) override
     {
         dataChanges.emplace_back(slot, subscription);
         events.emplace_back("data");
+        if (onDataChanged) { onDataChanged(subscription); }
     }
 };
 class Completion final : public LegacyIntCompletionPort {
@@ -1010,8 +1021,10 @@ struct LiveDiscoveryFixture {
     std::shared_ptr<ControlledDiscoveryStore> store = std::make_shared<ControlledDiscoveryStore>();
     CoreSimModuleHandle module;
 
-    explicit LiveDiscoveryFixture(std::shared_ptr<LegacyPrimaryHostPort> primaryHost = {})
+    explicit LiveDiscoveryFixture(std::shared_ptr<LegacyPrimaryHostPort> primaryHost = {},
+        std::shared_ptr<SlotCatalog> catalog = {})
     {
+        if (catalog) { input.catalog = std::move(catalog); }
         store->persistRows = true;
         input.accountStore = store;
         auto ports = input.Ports();
@@ -1326,7 +1339,8 @@ public:
 };
 struct PrimaryFixture {
     std::shared_ptr<PrimaryHost> host = std::make_shared<PrimaryHost>();
-    LiveDiscoveryFixture live {host};
+    explicit PrimaryFixture(std::shared_ptr<SlotCatalog> catalog = {}) : live(host, std::move(catalog)) {}
+    LiveDiscoveryFixture live;
 
     void DiscoverBoth()
     {
@@ -1549,4 +1563,288 @@ TEST(AF2Primary, IndependentRepeatedSelectionPreservesLegacyMainAnnouncementDedu
     EXPECT_EQ(f.live.input.output->events, (std::vector<std::string> {"primary", "data", "data"}));
     EXPECT_EQ(f.host->accountsChanged, 2u);
     EXPECT_EQ(f.live.module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+namespace {
+std::shared_ptr<SlotCatalog> PrimaryZeroCatalog()
+{
+    return std::make_shared<SlotCatalog>(std::vector<SlotDescriptor> {
+        {{0}, EndpointKind::Physical, 0, RadioDomainId {"m0"}, VisibilityClass::Ordinary, false},
+        {{1}, EndpointKind::Physical, 1, RadioDomainId {"m1"}, VisibilityClass::Ordinary, false}},
+        LegacyCapacityMeasures {2, 2, 2, 2, 2});
+}
+} // namespace
+
+TEST(AF2Data, LiveDualSimSetDefaultDataThroughLegacyEntry)
+{
+    using namespace OHOS::Telephony;
+    PrimaryFixture f(PrimaryZeroCatalog());
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    const auto binding = module->FindBinding({1});
+    ASSERT_TRUE(binding);
+    ASSERT_TRUE(module->ReadAccount(binding->subscription));
+    EXPECT_EQ(binding->subscription, SubscriptionId {41});
+    ASSERT_EQ(module->SetPrimarySlotId(0, {7}), TELEPHONY_ERR_SUCCESS);
+    EXPECT_EQ(module->ReadAssignment().defaultData, SubscriptionId {40});
+
+    auto &parameters = *f.live.input.parameters;
+    auto &output = *f.live.input.output;
+    const auto previous = parameters.values;
+    parameters.writes.clear();
+    output.events.clear();
+    output.dataChanges.clear();
+    SimGuard::Primary::Observation observation;
+    observation.Begin();
+    parameters.writeResult = [&](const std::string &key) {
+        observation.Add("parameter_write", {{"key", key}, {"value", parameters.writes.back().second}});
+        return AssignmentParameterResult {0, true};
+    };
+    output.onDataChanged = [&](SubscriptionId subscription) {
+        observation.Add("publication", {{"action", "usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED"},
+            {"sim", std::to_string(subscription.legacySimId)}});
+    };
+    output.onDataBehavior = [&](SlotId slot) {
+        observation.Add("diagnostic", {{"name", "SET_DEFAULT_CELLULAR_DATA"},
+            {"slot", std::to_string(slot.legacySlotId)}});
+    };
+    f.host->onAccountChanged = [&] {
+        observation.Add("diagnostic", {{"name", "ACCOUNT_NOTIFY"}});
+        EXPECT_EQ(output.events, (std::vector<std::string> {"data", "data-behavior"}));
+        EXPECT_EQ(module->ReadAssignment().defaultData, binding->subscription);
+    };
+    const auto result = module->SetDefaultCellularDataSlotId(1, {7});
+    EXPECT_EQ(result, TELEPHONY_ERR_SUCCESS);
+    EXPECT_EQ(module->ReadAssignment().lastPrimary, SlotId {0});
+    EXPECT_EQ(module->ReadAssignment().lastData, SlotId {1});
+    EXPECT_EQ(module->ReadAssignment().defaultData, binding->subscription);
+    EXPECT_EQ(parameters.writes, (std::vector<std::pair<std::string, std::string>> {{kData, "1"}}));
+    auto expected = previous;
+    expected[kData] = "1";
+    EXPECT_EQ(parameters.values, expected);
+    EXPECT_EQ(output.dataChanges, (std::vector<std::pair<SlotId, SubscriptionId>> {{{1}, {41}}}));
+    EXPECT_EQ(output.dataBehavior, (std::vector<SlotId> {{1}}));
+    EXPECT_EQ(output.mainChanges.size(), 1u);
+    EXPECT_EQ(f.host->accountsChanged, 2u);
+    observation.Add("api_return", {{"result", std::to_string(result)}});
+    const auto view = module->ReadAssignment();
+    ASSERT_TRUE(view.lastPrimary && view.lastData && view.defaultData);
+    RecordProperty("default_data_observation", observation.Snapshot(parameters.values,
+        {{"primary", std::to_string(view.lastPrimary->legacySlotId)}, {"data", std::to_string(view.lastData->legacySlotId)},
+            {"subscription", std::to_string(view.defaultData->legacySimId)}}));
+    EXPECT_TRUE(f.live.input.completion->results.empty());
+    EXPECT_EQ(f.live.input.radio->commands, 0u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+    std::weak_ptr<SimModule> weak = module;
+    module.reset();
+    EXPECT_TRUE(weak.expired());
+}
+
+TEST(AF2Data, RepeatedSelectionAndMoveBackEachPublish)
+{
+    using namespace OHOS::Telephony;
+    PrimaryFixture f(PrimaryZeroCatalog());
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    for (const int slot : {1, 1, 0}) {
+        EXPECT_EQ(f.live.module->SetDefaultCellularDataSlotId(slot, {7}), TELEPHONY_ERR_SUCCESS);
+    }
+    const auto &input = f.live.input;
+    EXPECT_EQ(input.parameters->writes, (std::vector<std::pair<std::string, std::string>> {
+        {kData, "1"}, {kData, "1"}, {kData, "0"}}));
+    EXPECT_EQ(input.output->dataChanges, (std::vector<std::pair<SlotId, SubscriptionId>> {
+        {{1}, {41}}, {{1}, {41}}, {{0}, {40}}}));
+    EXPECT_EQ(input.output->dataBehavior, (std::vector<SlotId> {{1}, {1}, {0}}));
+    EXPECT_EQ(f.host->accountsChanged, 3u);
+    EXPECT_EQ(f.live.module->ReadAssignment().defaultData, SubscriptionId {40});
+    EXPECT_EQ(f.live.module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Data, AuthorizationPrecedesMissingCardAndMissingBinding)
+{
+    using namespace OHOS::Telephony;
+    PrimaryFixture f;
+    f.host->system = false;
+    f.host->permitted = false;
+    EXPECT_EQ(f.live.module->SetDefaultCellularDataSlotId(-1, {7}), TELEPHONY_ERR_ILLEGAL_USE_OF_SYSTEM_API);
+    EXPECT_EQ(f.host->calls, std::vector<std::string> {"system"});
+    f.host->system = true;
+    EXPECT_EQ(f.live.module->SetDefaultCellularDataSlotId(-1, {7}), TELEPHONY_ERR_PERMISSION_ERR);
+    f.host->permitted = true;
+    EXPECT_EQ(f.live.module->SetDefaultCellularDataSlotId(2, {7}), TELEPHONY_ERR_NO_SIM_CARD);
+    EXPECT_EQ(f.live.module->SetDefaultCellularDataSlotId(1, {7}), TELEPHONY_ERR_NO_SIM_CARD);
+    f.live.store->stored = {-1, {}, false, true, EffectKnowledge::Unknown};
+    ASSERT_TRUE(f.live.module->ObserveVerifiedCard({{1}, "USIM"}, 1, kRaw1));
+    EXPECT_FALSE(f.live.module->FindBinding({1}));
+    EXPECT_EQ(f.live.module->SetDefaultCellularDataSlotId(1, {7}), TELEPHONY_ERR_SLOTID_INVALID);
+    EXPECT_TRUE(f.live.input.parameters->writes.empty());
+    EXPECT_TRUE(f.live.input.output->events.empty());
+    EXPECT_EQ(f.host->accountsChanged, 0u);
+    const auto plan = *f.live.store->lastPlan;
+    f.live.store->ProveApplied(plan, {41});
+    ASSERT_TRUE(f.live.module->ReconcileDiscovery(plan.call));
+    ASSERT_TRUE(f.live.module->InvalidateVerifiedCard({f.live.module->Epoch(), {{1}, "USIM"}, 1}));
+    EXPECT_EQ(f.live.module->SetDefaultCellularDataSlotId(1, {7}), TELEPHONY_ERR_NO_SIM_CARD);
+    EXPECT_TRUE(f.live.input.parameters->writes.empty());
+    EXPECT_EQ(f.live.module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Data, PrimaryAndDataRejectCompetingSharedWriteInBothOrders)
+{
+    using namespace OHOS::Telephony;
+    for (const bool primaryFirst : {true, false}) {
+        PrimaryFixture f(PrimaryZeroCatalog());
+        ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+        auto &module = f.live.module;
+        auto &parameters = *f.live.input.parameters;
+        std::promise<void> entered;
+        std::promise<void> release;
+        auto resume = release.get_future();
+        parameters.writeResult = [&](const std::string &key) {
+            if (key == (primaryFirst ? kPrimary : kData)) {
+                entered.set_value();
+                resume.wait();
+            }
+            return AssignmentParameterResult {0, true};
+        };
+        auto active = std::async(std::launch::async, [&] {
+            return primaryFirst ? module->SetPrimarySlotId(0, {7}) : module->SetDefaultCellularDataSlotId(1, {7});
+        });
+        if (entered.get_future().wait_for(std::chrono::seconds(3)) != std::future_status::ready) {
+            release.set_value();
+            FAIL() << "Original parameter call did not start";
+        }
+        const auto writes = parameters.writes.size();
+        const auto competing = primaryFirst ? module->SetDefaultCellularDataSlotId(1, {7}) :
+            module->SetPrimarySlotId(0, {7});
+        EXPECT_EQ(competing, TELEPHONY_ERR_FAIL);
+        EXPECT_EQ(parameters.writes.size(), writes);
+        release.set_value();
+        EXPECT_EQ(active.get(), TELEPHONY_ERR_SUCCESS);
+        EXPECT_EQ(module->ReadAssignment().defaultData, SubscriptionId {primaryFirst ? 40 : 41});
+        EXPECT_EQ(f.host->accountsChanged, 1u);
+        EXPECT_EQ(f.live.input.radio->commands, 0u);
+        EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+    }
+}
+
+TEST(AF2Data, CompletedParameterFailurePreservesLegacyResultAndKnownDisposition)
+{
+    using namespace OHOS::Telephony;
+    PrimaryFixture f(PrimaryZeroCatalog());
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &parameters = *f.live.input.parameters;
+    parameters.writeResult = [](const std::string &) { return AssignmentParameterResult {-9, true}; };
+    parameters.classify = [](const C0ParameterOperation &, AssignmentParameterResult call) {
+        return C0ParameterOutcome {call, EffectKnowledge::ConfirmedNotApplied};
+    };
+    EXPECT_EQ(f.live.module->SetDefaultCellularDataSlotId(1, {7}), TELEPHONY_ERR_SUCCESS);
+    EXPECT_EQ(parameters.values[kData], "0");
+    EXPECT_EQ(f.live.module->ReadAssignment().defaultData, SubscriptionId {41});
+    EXPECT_FALSE(f.live.module->ReadDataParameterReceipt());
+    EXPECT_EQ(f.live.input.output->events, (std::vector<std::string> {"data", "data-behavior"}));
+    EXPECT_EQ(f.host->accountsChanged, 1u);
+    EXPECT_EQ(f.live.module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Data, UnknownRetainsSharedWriteUntilOriginalEvidenceAfterStop)
+{
+    using namespace OHOS::Telephony;
+    using Drain = SimModule::DrainResult;
+    for (const bool returned : {false, true}) {
+        PrimaryFixture f(PrimaryZeroCatalog());
+        ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+        auto &module = f.live.module;
+        auto &parameters = *f.live.input.parameters;
+        parameters.writeResult = [=](const std::string &) { return AssignmentParameterResult {-9, returned}; };
+        EXPECT_EQ(module->SetDefaultCellularDataSlotId(1, {7}),
+            returned ? TELEPHONY_ERR_SUCCESS : TELEPHONY_ERR_FAIL);
+        const auto receipt = module->ReadDataParameterReceipt();
+        ASSERT_TRUE(receipt);
+        EXPECT_EQ(receipt->outcome.effect, EffectKnowledge::Unknown);
+        EXPECT_EQ(receipt->outcome.call.callFinished, returned);
+        EXPECT_EQ(module->SetPrimarySlotId(0, {7}), TELEPHONY_ERR_FAIL);
+        EXPECT_EQ(module->SetDefaultCellularDataSlotId(0, {7}), TELEPHONY_ERR_FAIL);
+        EXPECT_TRUE(module->InvalidateVerifiedCard({module->Epoch(), {{1}, "USIM"}, 1}));
+        EXPECT_EQ(module->StopAcceptingAndDrain(), Drain::BusinessEffectsUnresolved);
+        EXPECT_EQ(module->SetDefaultCellularDataSlotId(0, {7}), TELEPHONY_ERR_LOCAL_PTR_NULL);
+        const auto original = receipt->operation;
+        auto wrong = original;
+        ++wrong.original.attempt;
+        EXPECT_FALSE(module->ReconcileDataParameter(wrong));
+        EXPECT_EQ(parameters.evidenceReads, 0u);
+        parameters.values[kData] = "1";
+        EXPECT_FALSE(module->ReconcileDataParameter(original));
+        parameters.evidence = C0ParameterEvidence {wrong, {{0, true}, EffectKnowledge::ConfirmedApplied}};
+        EXPECT_FALSE(module->ReconcileDataParameter(original));
+        parameters.evidence = C0ParameterEvidence {original, {{0, true}, EffectKnowledge::ConfirmedApplied}};
+        EXPECT_TRUE(module->ReconcileDataParameter(original));
+        EXPECT_FALSE(module->ReconcileDataParameter(original));
+        EXPECT_FALSE(module->ReadDataParameterReceipt());
+        EXPECT_EQ(parameters.writes.size(), 1u);
+        EXPECT_EQ(module->ReadAssignment().defaultData, returned ? std::optional<SubscriptionId>(SubscriptionId {41}) : std::nullopt);
+        EXPECT_EQ(f.live.input.output->events.size(), returned ? 2u : 0u);
+        EXPECT_EQ(f.host->accountsChanged, returned ? 1u : 0u);
+        EXPECT_EQ(module->StopAcceptingAndDrain(), Drain::Drained);
+    }
+}
+
+TEST(AF2Data, ReplacementDuringOriginalWritePreventsProjectionToNewBinding)
+{
+    using namespace OHOS::Telephony;
+    PrimaryFixture f(PrimaryZeroCatalog());
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    const auto old = module->FindBinding({1});
+    ASSERT_TRUE(old);
+    f.live.input.parameters->writeResult = [&](const std::string &) {
+        f.live.store->produceStore = [](const AccountDiscoveryWritePlan &) { return Stored({56}); };
+        EXPECT_TRUE(module->ObserveVerifiedCard({{1}, "USIM"}, 2, "89000000000000000056"));
+        return AssignmentParameterResult {0, true};
+    };
+    EXPECT_EQ(module->SetDefaultCellularDataSlotId(1, {7}), TELEPHONY_ERR_FAIL);
+    const auto replacement = module->FindBinding({1});
+    ASSERT_TRUE(replacement);
+    EXPECT_NE(old->bindingRevision, replacement->bindingRevision);
+    EXPECT_EQ(replacement->subscription, SubscriptionId {56});
+    EXPECT_EQ(f.live.input.parameters->values[kData], "1");
+    EXPECT_FALSE(module->ReadAssignment().defaultData);
+    EXPECT_TRUE(f.live.input.output->events.empty());
+    EXPECT_EQ(f.host->accountsChanged, 0u);
+    EXPECT_FALSE(module->ReadDataParameterReceipt());
+    f.live.input.parameters->writeResult = {};
+    EXPECT_EQ(module->SetDefaultCellularDataSlotId(1, {7}), TELEPHONY_ERR_SUCCESS);
+    EXPECT_EQ(module->ReadAssignment().defaultData, replacement->subscription);
+    EXPECT_EQ(f.live.module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Data, StopWaitsForParameterAndAccountNotification)
+{
+    using namespace OHOS::Telephony;
+    using Drain = SimModule::DrainResult;
+    PrimaryFixture f;
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    std::promise<void> entered;
+    std::promise<void> release;
+    auto resume = release.get_future();
+    f.live.input.parameters->writeResult = [&](const std::string &) {
+        entered.set_value();
+        resume.wait();
+        return AssignmentParameterResult {0, true};
+    };
+    f.host->onAccountChanged = [&] { EXPECT_EQ(module->StopAcceptingAndDrain(), Drain::CallbacksStillInFlight); };
+    auto active = std::async(std::launch::async, [&] { return module->SetDefaultCellularDataSlotId(1, {7}); });
+    if (entered.get_future().wait_for(std::chrono::seconds(3)) != std::future_status::ready) {
+        release.set_value();
+        FAIL() << "Original parameter call did not start";
+    }
+    EXPECT_EQ(module->StopAcceptingAndDrain(), Drain::CallbacksStillInFlight);
+    EXPECT_EQ(module->SetDefaultCellularDataSlotId(0, {7}), TELEPHONY_ERR_LOCAL_PTR_NULL);
+    const auto receipt = module->ReadDataParameterReceipt();
+    EXPECT_TRUE(receipt);
+    if (receipt) { EXPECT_FALSE(module->ReconcileDataParameter(receipt->operation)); }
+    release.set_value();
+    EXPECT_EQ(active.get(), TELEPHONY_ERR_SUCCESS);
+    EXPECT_EQ(f.host->accountsChanged, 1u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), Drain::Drained);
 }

@@ -60,6 +60,12 @@ N-API、IDL、SA 检查和通话数据调用者。公开权限检查和内部 Ma
 本阶段结论来自源码，Host 业务和验收证据在后续阶段登记。
 [独立 Data 契约与调试](../services/multisim/test/docs/M4_Default_Data_Debug.md)
 
+正式 Target Host 入口已通过实时双卡图选择独立 Data。Primary/Data 共用写集、逐键原票和
+同步完成。真实双向冲突、换卡、效果未知及 Stop 通过 Developer 专项，M1–M4 合计 30/30。
+架构、迁移前态比较、独立语法及 GN/Ninja 对象通过。当前阶段继续等待 Verify、双后端、
+Legacy 特征及 sanitizer 验收。
+[阶段原始证据](../services/multisim/test/docs/evidence/af2_m4_20261125/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）

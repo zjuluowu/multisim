@@ -25,6 +25,7 @@ namespace OHOS::Telephony::MultiSim {
 class AssignmentService;
 // No new owner, retry policy, completion route or runtime wrapper object.
 RequestId StartLegacyPrimarySwitch(AssignmentService &entry, const SwitchPrimaryCommand &command);
+void SetLegacyDefaultData(AssignmentService &entry, const BindingRef &binding, const CompletionPlan &completion);
 } // namespace OHOS::Telephony::MultiSim
 
 #endif // OHOS_TELEPHONY_MULTISIM_ASSIGNMENT_API_LEGACY_ENTRY_H

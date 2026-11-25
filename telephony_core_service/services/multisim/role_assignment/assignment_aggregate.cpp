@@ -124,9 +124,9 @@ bool AssignmentAggregate::ClaimPrimaryAnnouncement(SlotId slot, SubscriptionId s
     return true;
 }
 
-void AssignmentAggregate::AcceptDataParameterProjection(SlotId lastData)
+void AssignmentAggregate::AcceptDataParameterProjection(SlotId lastData, SubscriptionId subscription)
 {
+    AcceptRoleSelection({DefaultRole::Data, subscription, subscription}, revision_);
     lastData_ = lastData;
-    ++revision_;
 }
 } // namespace OHOS::Telephony::MultiSim

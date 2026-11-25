@@ -20,35 +20,35 @@
 #include <limits>
 
 namespace OHOS::Telephony::MultiSim {
-std::optional<SynchronousWaitRef> LegacyCompletion::RetainPrimaryWaiter()
+std::optional<SynchronousWaitRef> LegacyCompletion::RetainRoleWaiter()
 {
     std::lock_guard<std::mutex> guard(waitersLock_);
     if (nextWaiter_ == std::numeric_limits<uint64_t>::max()) { return std::nullopt; }
     const auto waiter = nextWaiter_;
-    primaryWaiters_.try_emplace(waiter);
+    roleWaiters_.try_emplace(waiter);
     ++nextWaiter_;
-    return SynchronousWaitRef {waiter, SynchronousWaitRef::Origin::ModulePrimary};
+    return SynchronousWaitRef {waiter, SynchronousWaitRef::Origin::ModuleRole};
 }
 
-std::optional<int32_t> LegacyCompletion::TakePrimaryResult(SynchronousWaitRef waiter)
+std::optional<int32_t> LegacyCompletion::TakeRoleResult(SynchronousWaitRef waiter)
 {
-    if (waiter.origin != SynchronousWaitRef::Origin::ModulePrimary) { return std::nullopt; }
+    if (waiter.origin != SynchronousWaitRef::Origin::ModuleRole) { return std::nullopt; }
     std::lock_guard<std::mutex> guard(waitersLock_);
-    const auto found = primaryWaiters_.find(waiter.value);
-    if (found == primaryWaiters_.end()) { return std::nullopt; }
+    const auto found = roleWaiters_.find(waiter.value);
+    if (found == roleWaiters_.end()) { return std::nullopt; }
     const auto result = found->second.Result();
-    primaryWaiters_.erase(found);
+    roleWaiters_.erase(found);
     return result;
 }
 
 void LegacyCompletion::CompleteLegacyInt(const CompletionPlan &plan, int32_t legacyResult)
 {
     const auto *route = std::get_if<SynchronousCompletionRoute>(&plan.route);
-    if (route && route->waiter.origin == SynchronousWaitRef::Origin::ModulePrimary) {
+    if (route && route->waiter.origin == SynchronousWaitRef::Origin::ModuleRole) {
         {
             std::lock_guard<std::mutex> guard(waitersLock_);
-            const auto found = primaryWaiters_.find(route->waiter.value);
-            if (found == primaryWaiters_.end() || !found->second.Deliver(legacyResult)) { return; }
+            const auto found = roleWaiters_.find(route->waiter.value);
+            if (found == roleWaiters_.end() || !found->second.Deliver(legacyResult)) { return; }
         }
         // The synchronous C0 call has not yet returned to the waiter. No lock spans notification.
         if (primary_ && legacyResult == 0 && plan.accountNotificationOnWholeSuccess) {

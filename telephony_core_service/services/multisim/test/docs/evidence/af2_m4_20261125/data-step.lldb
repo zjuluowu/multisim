@@ -1,0 +1,48 @@
+settings set target.disable-aslr false
+settings set symbols.enable-external-lookup false
+settings set target.env-vars LLVM_PROFILE_FILE=/tmp/af2-m4-developer/lldb-%p.profraw
+breakpoint set -n OHOS::Telephony::MultiSim::SimModule::SetDefaultCellularDataSlotId
+run --gtest_filter=AF2Data.LiveDualSimSetDefaultDataThroughLegacyEntry
+frame variable slot caller
+thread step-over
+breakpoint set -n OHOS::Telephony::MultiSim::LegacySimFacade::SetDefaultCellularDataSlotId
+continue
+frame variable slot caller
+thread step-over
+breakpoint set -n OHOS::Telephony::MultiSim::TopologyService::ReadPrimaryTarget
+continue
+frame variable slot
+thread step-over
+breakpoint disable 3
+breakpoint set -n OHOS::Telephony::MultiSim::SetLegacyDefaultData
+continue
+frame variable binding completion
+thread step-in
+breakpoint set -n OHOS::Telephony::MultiSim::AssignmentService::SetDefaultRole
+continue
+frame variable command binding
+breakpoint set -n OHOS::Telephony::MultiSim::AssignmentAggregate::AdmitRoleWriteSet
+continue
+frame variable ownerToken members
+breakpoint set -n OHOS::Telephony::MultiSim::AssignmentStoreAdapter::WriteC0Parameter
+continue
+frame variable operation slot
+breakpoint set -n OHOS::Telephony::MultiSim::AssignmentAggregate::AcceptDataParameterProjection
+continue
+frame variable lastData subscription this->lastPrimary_ this->lastData_
+thread step-over
+thread step-over
+frame variable this->lastPrimary_ this->lastData_
+breakpoint set -n OHOS::Telephony::MultiSim::LegacyCompletion::CompleteLegacyInt
+continue
+frame variable legacyResult plan
+breakpoint set -n OHOS::Telephony::MultiSim::LegacyCompletion::TakeRoleResult
+continue
+frame variable waiter
+breakpoint set -n OHOS::Telephony::MultiSim::SimModule::StopAcceptingAndDrain
+continue
+frame variable this->moduleCalls_ this->primaryCallActive_
+breakpoint set -f sim_module_factory.cpp -l 287
+continue
+frame variable module
+continue

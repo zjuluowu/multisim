@@ -27,6 +27,7 @@ public:
     void PublishPrimaryPhase(bool setDone, bool isUserSet) override;
     void PublishMainCardChanged(SlotId slot) override;
     void PublishDefaultDataChanged(SlotId slot, SubscriptionId subscription) override;
+    void ReportDefaultDataSelection(SlotId slot) override;
 };
 // 仍仅声明：复用原Controller的PublishSetPrimaryEvent/SendMainCardBroadCast/
 // AnnounceDefaultCellularDataSlotIdChanged的CES/广播参数和偏序。

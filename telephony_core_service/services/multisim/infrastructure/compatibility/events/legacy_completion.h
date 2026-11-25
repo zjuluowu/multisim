@@ -32,8 +32,8 @@ public:
     explicit LegacyCompletion(LegacyOutputPort &output) : output_(&output) {}
     LegacyCompletion(LegacyIntCompletionPort &fallback, LegacyPrimaryHostPort *primary)
         : fallback_(&fallback), primary_(primary) {}
-    std::optional<SynchronousWaitRef> RetainPrimaryWaiter();
-    std::optional<int32_t> TakePrimaryResult(SynchronousWaitRef waiter);
+    std::optional<SynchronousWaitRef> RetainRoleWaiter();
+    std::optional<int32_t> TakeRoleResult(SynchronousWaitRef waiter);
     void CompleteShowNumber(const ShowNumberCompletion &completion) override;
     void CompleteLegacyInt(const CompletionPlan &plan, int32_t legacyResult) override;
 private:
@@ -41,7 +41,7 @@ private:
     LegacyIntCompletionPort *fallback_ {nullptr};
     LegacyPrimaryHostPort *primary_ {nullptr};
     std::mutex waitersLock_;
-    std::map<uint64_t, CompletionCell> primaryWaiters_;
+    std::map<uint64_t, CompletionCell> roleWaiters_;
     uint64_t nextWaiter_ {1};
 };
 } // namespace OHOS::Telephony::MultiSim

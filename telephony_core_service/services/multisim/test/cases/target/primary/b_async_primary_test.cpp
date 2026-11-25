@@ -76,6 +76,7 @@ public:
         roles.emplace_back("primary");
         if (onPrimaryRole) { auto action = std::move(onPrimaryRole); action(); }
     }
+    void ReportDefaultDataSelection(SlotId) override {}
     void PublishDefaultDataChanged(SlotId,SubscriptionId) override { roles.emplace_back("data"); }
 };
 class Completion final : public LegacyIntCompletionPort {

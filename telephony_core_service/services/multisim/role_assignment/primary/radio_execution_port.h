@@ -109,6 +109,7 @@ public:
     virtual void PublishMainCardChanged(SlotId slot, SubscriptionId)
     { PublishMainCardChanged(slot); }
     virtual void PublishDefaultDataChanged(SlotId slot, SubscriptionId subscription) = 0;
+    virtual void ReportDefaultDataSelection(SlotId slot) = 0;
 }; // setDone为旧阶段结束，不冒充设备成功。
 } // namespace OHOS::Telephony::MultiSim
 

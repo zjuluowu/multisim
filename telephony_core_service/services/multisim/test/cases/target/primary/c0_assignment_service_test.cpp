@@ -85,6 +85,7 @@ public:
         timeline_.events.emplace_back("notify:primary");
         notifications.emplace_back("primary:" + std::to_string(slot.legacySlotId));
     }
+    void ReportDefaultDataSelection(SlotId) override {}
     void PublishDefaultDataChanged(SlotId slot, SubscriptionId subscription) override
     {
         timeline_.events.emplace_back("notify:data");

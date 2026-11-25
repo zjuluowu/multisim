@@ -47,6 +47,7 @@ struct AssignmentView {
     bool primarySwitchInProgress;
     uint64_t assignmentRevision;
     std::vector<RadioAssignmentView> radioAssignments; // C按原规则做第三卡投影。
+    std::optional<SubscriptionId> defaultData {};
 };
 struct AccountRolePlanningInput {
     std::optional<SubscriptionId> existingSubscription;

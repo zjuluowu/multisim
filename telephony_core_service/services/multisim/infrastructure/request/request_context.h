@@ -26,7 +26,7 @@
 namespace OHOS::Telephony::MultiSim {
 struct CompletionId { uint64_t value; }; // 旧callback索引；不改变IPC。
 struct SynchronousWaitRef {
-    enum class Origin { Host, ModulePrimary };
+    enum class Origin { Host, ModuleRole };
     uint64_t value;
     Origin origin {Origin::Host};
 };

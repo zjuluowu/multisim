@@ -66,6 +66,9 @@ public:
     std::optional<AssignmentService::C0Receipt> ReadC0Receipt() const;
     // A disengaged result means the module rejected a new call before entering A.
     bool ReconcilePrimaryParameter(const C0ParameterOperation &operation);
+    int32_t SetDefaultCellularDataSlotId(int32_t slot, LegacyCallerRef caller);
+    std::optional<C0ParameterEvidence> ReadDataParameterReceipt() const;
+    bool ReconcileDataParameter(const C0ParameterOperation &operation);
     int32_t SetPrimarySlotId(int32_t slot, LegacyCallerRef caller);
     std::optional<RequestId> StartPrimarySwitch(const SwitchPrimaryCommand &command);
     DrainResult StopAcceptingAndDrain();
@@ -80,12 +83,13 @@ private:
     bool SeedAccount(const ConfirmedSlotAccount &confirmed);
     bool AdmitPrimaryCall(bool originalOnly = false);
     void ReturnPrimaryCall();
-    bool AdmitDiscoveryCall(bool originalOnly = false);
-    void ReturnDiscoveryCall();
+    bool AdmitModuleCall(bool originalOnly = false);
+    void ReturnModuleCall();
+    bool HasPendingBusinessEffects() const;
 
-    struct DiscoveryCall {
+    struct ModuleCall {
         CoreSimModuleHandle module;
-        ~DiscoveryCall() { module->ReturnDiscoveryCall(); }
+        ~ModuleCall() { module->ReturnModuleCall(); }
     };
 
     struct PrimaryCall {
@@ -107,7 +111,7 @@ private:
     PrimaryHostLifecycle lifecycle_;
     std::mutex admissionMutex_;
     bool accepting_ {true};
-    size_t discoveryCalls_ {0};
+    size_t moduleCalls_ {0};
     bool primaryEffectUnresolved_ {false};
     bool primaryCallActive_ {false};
     bool joining_ {false};

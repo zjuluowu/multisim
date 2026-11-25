@@ -62,6 +62,7 @@ public:
     std::vector<std::string> events;
     void PublishPrimaryPhase(bool, bool) override {}
     void PublishMainCardChanged(SlotId) override { events.emplace_back("primary"); }
+    void ReportDefaultDataSelection(SlotId) override {}
     void PublishDefaultDataChanged(SlotId, SubscriptionId) override { events.emplace_back("data"); }
 };
 class Completion final : public LegacyIntCompletionPort {

@@ -20,15 +20,37 @@ int32_t LegacySimFacade::SetPrimarySlotId(SlotId slot, LegacyCallerRef caller, c
     const auto target = topology.ReadPrimaryTarget(slot);
     if (!target || !target->active) { return host.PrimaryError(LegacyPrimaryError::InvalidSlot); }
 
-    const auto waiter = completion.RetainPrimaryWaiter();
+    const auto waiter = completion.RetainRoleWaiter();
     if (!waiter) { return host.PrimaryError(LegacyPrimaryError::Failed); }
     try {
         issue({{slot}, true, {SynchronousCompletionRoute {*waiter}, true}, std::nullopt, target->binding});
     } catch (const std::exception &) {
         // Preserve an already-recorded result if the original delivery hook unwound.
     }
-    const auto result = completion.TakePrimaryResult(*waiter);
+    const auto result = completion.TakeRoleResult(*waiter);
     if (!result || *result == -1) { return host.PrimaryError(LegacyPrimaryError::Failed); }
     return *result;
+}
+
+int32_t LegacySimFacade::SetDefaultCellularDataSlotId(SlotId slot, LegacyCallerRef caller, const SlotCatalog &catalog,
+    LegacyPrimaryHostPort &host, const PrimaryTopologyPort &topology, LegacyCompletion &completion,
+    AssignmentService &assignment, const std::function<bool(SlotId)> &hasVerifiedCard)
+{
+    if (!host.IsSystemCaller(caller)) { return host.PrimaryError(LegacyPrimaryError::NonSystemCaller); }
+    if (!host.CanSetTelephonyState(caller)) { return host.PrimaryError(LegacyPrimaryError::PermissionDenied); }
+    if (!catalog.Find(slot) || !hasVerifiedCard(slot)) { return host.PrimaryError(LegacyPrimaryError::NoCard); }
+    const auto target = topology.ReadPrimaryTarget(slot);
+    if (!target || !target->active) { return host.PrimaryError(LegacyPrimaryError::InvalidSlot); }
+
+    const auto waiter = completion.RetainRoleWaiter();
+    if (!waiter) { return host.PrimaryError(LegacyPrimaryError::Failed); }
+    try {
+        SetLegacyDefaultData(assignment, target->binding,
+            {SynchronousCompletionRoute {*waiter}, true});
+    } catch (const std::exception &) {
+        // Take the retained result even if dispatch unwinds.
+    }
+    const auto result = completion.TakeRoleResult(*waiter);
+    return !result || *result == -1 ? host.PrimaryError(LegacyPrimaryError::Failed) : *result;
 }
 } // namespace OHOS::Telephony::MultiSim

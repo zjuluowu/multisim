@@ -63,7 +63,7 @@ public:
     bool IsSwitchInProgress(const RadioDomainId &domain) const;
     void AcceptPrimaryParameterProjection(SlotId lastPrimary);
     bool ClaimPrimaryAnnouncement(SlotId slot, SubscriptionId subscription);
-    void AcceptDataParameterProjection(SlotId lastData);
+    void AcceptDataParameterProjection(SlotId lastData, SubscriptionId subscription);
     std::optional<SlotId> ReadLastPrimary() const { return lastPrimary_; }
     std::optional<SlotId> ReadLastData() const { return lastData_; }
     std::optional<AssignmentTransition> ReadTransition(const RadioDomainId &domain) const

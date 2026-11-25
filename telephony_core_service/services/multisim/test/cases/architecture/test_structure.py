@@ -120,6 +120,10 @@ class BoundaryGuard(unittest.TestCase):
         self.check_mapped_mutation("BUILD.gn", lambda s: s.replace('":*"', '"//*"', 1),
                                   "AF2 M3 source input differs: BUILD.gn")
 
+    def test_m4_role_source_drift(self):
+        self.check_mapped_mutation("role_assignment/assignment_service.cpp", lambda s: s + '\n// drift\n',
+                                  "AF2 M4 source input differs: role_assignment/assignment_service.cpp")
+
     def test_documentation_migration(self):
         from documentation_migration import documentation_moves
         for old, (original, _) in self.documents.items():

@@ -1,0 +1,20 @@
+{
+  "baseline": "bced9e9f3df22bcf54f5d017dea04d34cdec8543",
+  "files": {
+    "infrastructure/assembly/sim_module.h": "55e7afa01b7d9b987530765a3e4765df572caba0952bc4c784d0b2bde4f366ee",
+    "infrastructure/assembly/sim_module_factory.cpp": "61c89dc5f0cc76dcd5c5005f9a55b107101aaa1c5097f3b4d62f0172bc525a69",
+    "infrastructure/compatibility/api/legacy_primary_entry.cpp": "8c1d03ca5dc0b881f7a66b4b138e8c1b871920181a760e3b73af3eb00fcfa2f9",
+    "infrastructure/compatibility/api/legacy_sim_facade.h": "82fcc367dfb84a0395fd2f8778e6525d5b3b4eb1416e705b75f1afbe80e81c15",
+    "infrastructure/compatibility/events/legacy_completion.cpp": "38fc2ba73323c153d57bbcf3d96a1bc63553c0e3022ccfb04615ed66df06064e",
+    "infrastructure/compatibility/events/legacy_completion.h": "eb9e995a496bd462446f809af89d2b4c718980952282849c2130023aa8f9c3c6",
+    "infrastructure/request/request_context.h": "50d706db2d5270f83f77187763825eb5a70c09213345f1ebe983ed0724ee9df4",
+    "role_assignment/assignment_aggregate.cpp": "cbe0c86ccf6b2b4d0cf3e7e8b430e4d6e277b33abaad473193ad5398d4025d64",
+    "role_assignment/assignment_aggregate.h": "afdab8fc69529828d180d95899cab3b0092788e457ea37980b748801bd07e03e",
+    "role_assignment/assignment_output_adapter.h": "d0ab39ef2c3c749303f2c629e5ce53a6beb0611db07fbbd725dcc8b77c75f1f1",
+    "role_assignment/assignment_requests.h": "cf3c53aad94d17549010170b801ff754c2de7d7147a3521a8ebdbca5a8bbed9e",
+    "role_assignment/assignment_service.cpp": "c1369fb6bf80caf76612276d0358b0df52ba0eb9fa5e4d3ea17e282eb05529b2",
+    "role_assignment/assignment_service.h": "2a56f4d87e278e6f995230021fd4cb4550b6f2e82445406b8df14eea1f703893",
+    "role_assignment/legacy_entry.h": "150841eff59d90da8f575b4efa865566d4c789040326c6201987931524c7844e",
+    "role_assignment/primary/radio_execution_port.h": "ec2d1b4ff759f3f44415909b275ac5ca06c386aa134dccd2748b5811b18957de"
+  }
+}

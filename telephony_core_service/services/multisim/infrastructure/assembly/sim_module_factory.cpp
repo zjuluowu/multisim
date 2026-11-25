@@ -130,6 +130,28 @@ int32_t SimModule::SetPrimarySlotId(int32_t slot, LegacyCallerRef caller)
         [this](const SwitchPrimaryCommand &command) { (void)StartLegacyPrimarySwitch(*assignment_, command); });
 }
 
+int32_t SimModule::SetDefaultCellularDataSlotId(int32_t slot, LegacyCallerRef caller)
+{
+    if (!ports_.primaryHost) { return -1; }
+    if (!AdmitModuleCall()) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
+    const ModuleCall call {shared_from_this()};
+    return LegacySimFacade::SetDefaultCellularDataSlotId({slot}, caller, *catalog_, *ports_.primaryHost, topology_,
+        completion_, *assignment_, [this](SlotId target) { return card_.HasVerifiedCard(target); });
+}
+
+std::optional<C0ParameterEvidence> SimModule::ReadDataParameterReceipt() const
+{
+    return assignment_->ReadDataParameterReceipt();
+}
+
+bool SimModule::ReconcileDataParameter(const C0ParameterOperation &operation)
+{
+    if (!AdmitModuleCall(true)) { return false; }
+    const ModuleCall call {shared_from_this()};
+    const auto receipt = assignment_->ReadDataParameterReceipt();
+    return receipt && receipt->operation == operation && assignment_->ReconcileC0Parameter(operation);
+}
+
 std::optional<RequestId> SimModule::StartPrimarySwitch(const SwitchPrimaryCommand &command)
 {
     if (!AdmitPrimaryCall()) { return std::nullopt; }
@@ -149,9 +171,9 @@ void SimModule::ReturnPrimaryCall()
     const auto receipt = assignment_->ReadC0Receipt();
     std::lock_guard<std::mutex> guard(admissionMutex_);
     primaryEffectUnresolved_ = receipt.has_value();
-    if (primaryEffectUnresolved_) {
+    if (HasPendingBusinessEffects()) {
         closeHold_ = shared_from_this();
-    } else if (accepting_ && !topology_.PendingDiscoveryCount() && !assignment_->PendingDiscoveryRoles()) {
+    } else if (accepting_) {
         closeHold_.reset();
     }
     primaryCallActive_ = false;
@@ -166,7 +188,7 @@ SimModule::DrainResult SimModule::StopAcceptingAndDrain()
         topology_.SealDiscovery();
         if (drained_) { return DrainResult::Drained; }
         closeHold_ = self;
-        if (primaryCallActive_ || discoveryCalls_ || joining_) { return DrainResult::CallbacksStillInFlight; }
+        if (primaryCallActive_ || moduleCalls_ || joining_) { return DrainResult::CallbacksStillInFlight; }
         joining_ = true;
     }
 
@@ -186,8 +208,8 @@ SimModule::DrainResult SimModule::StopAcceptingAndDrain()
     if (primary == PrimaryHostLifecycle::DrainResult::DeviceEffectsUnresolved) {
         return DrainResult::DeviceEffectsUnresolved;
     }
-    if (primaryCallActive_ || discoveryCalls_) { return DrainResult::CallbacksStillInFlight; }
-    if (primaryEffectUnresolved_ || topology_.PendingDiscoveryCount() || assignment_->PendingDiscoveryRoles()) {
+    if (primaryCallActive_ || moduleCalls_) { return DrainResult::CallbacksStillInFlight; }
+    if (HasPendingBusinessEffects()) {
         return DrainResult::BusinessEffectsUnresolved;
     }
     drained_ = true;
@@ -195,47 +217,53 @@ SimModule::DrainResult SimModule::StopAcceptingAndDrain()
     return DrainResult::Drained;
 }
 
-bool SimModule::AdmitDiscoveryCall(bool originalOnly)
+bool SimModule::AdmitModuleCall(bool originalOnly)
 {
     std::lock_guard<std::mutex> guard(admissionMutex_);
     if (drained_ || (!originalOnly && !accepting_)) { return false; }
-    ++discoveryCalls_;
+    ++moduleCalls_;
     return true;
 }
 
-void SimModule::ReturnDiscoveryCall()
+void SimModule::ReturnModuleCall()
 {
     std::lock_guard<std::mutex> guard(admissionMutex_);
-    --discoveryCalls_;
-    if (topology_.PendingDiscoveryCount() || assignment_->PendingDiscoveryRoles()) {
+    --moduleCalls_;
+    if (HasPendingBusinessEffects()) {
         closeHold_ = shared_from_this();
-    } else if (accepting_ && !primaryEffectUnresolved_) {
+    } else if (accepting_) {
         closeHold_.reset();
     }
+}
+
+bool SimModule::HasPendingBusinessEffects() const
+{
+    return primaryEffectUnresolved_ || assignment_->ReadDataParameterReceipt() ||
+        topology_.PendingDiscoveryCount() || assignment_->PendingDiscoveryRoles();
 }
 
 std::optional<SessionRef> SimModule::ObserveVerifiedCard(const CardApplicationTarget &application,
     uint64_t generation, const std::string &iccid)
 {
     const auto self = shared_from_this();
-    if (!AdmitDiscoveryCall()) { return std::nullopt; }
-    const DiscoveryCall call {self};
+    if (!AdmitModuleCall()) { return std::nullopt; }
+    const ModuleCall call {self};
     return card_.ObserveVerifiedCard(application, generation, iccid);
 }
 
 bool SimModule::InvalidateVerifiedCard(const SessionRef &session)
 {
     const auto self = shared_from_this();
-    if (!AdmitDiscoveryCall(true)) { return false; }
-    const DiscoveryCall call {self};
+    if (!AdmitModuleCall(true)) { return false; }
+    const ModuleCall call {self};
     return card_.InvalidateVerifiedCard(session);
 }
 
 bool SimModule::ReconcileDiscovery(DiscoveryCallRef original)
 {
     const auto self = shared_from_this();
-    if (!AdmitDiscoveryCall(true)) { return false; }
-    const DiscoveryCall call {self};
+    if (!AdmitModuleCall(true)) { return false; }
+    const ModuleCall call {self};
     return topology_.ReconcileDiscovery(original);
 }
 

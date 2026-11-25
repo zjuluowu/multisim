@@ -48,12 +48,15 @@ public:
         BindingRef binding;
         std::array<std::optional<C0ParameterEvidence>, static_cast<size_t>(C0ParameterKey::Count)> writes {};
         bool businessSucceeded {false};
+        uint32_t writeSet {kPrimaryRoleWriteSet};
     };
 
     AssignmentService(const SlotCatalog &catalog, AssignmentStore &store, RadioExecutionPort &radio,
         AssignmentOutputPort &output, PrimaryTopologyPort &topology, LegacyIntCompletionPort &completion,
         RuntimeEpoch epoch, PrimaryScope primaryScope = PrimaryScope::ExistingBranches);
     int32_t SetDefaultRole(const SetRoleCommand &command);
+    void SetDefaultRole(const SetRoleCommand &command, const BindingRef &binding, const CompletionPlan &completion);
+    std::optional<C0ParameterEvidence> ReadDataParameterReceipt() const;
     RequestId StartPrimarySwitch(const SwitchPrimaryCommand &command);
     void AcceptRadioStep(const RadioSwitchResult &result) override;
     void AcceptLateRadioEvidence(const RadioSwitchResult &result) override;
@@ -97,6 +100,8 @@ private:
     mutable std::recursive_mutex primaryCommitLock_;
     void CompleteOnce(RequestId request, const CompletionPlan &plan, int32_t result,
         TerminalState terminal, std::unique_lock<std::recursive_mutex> *commit = nullptr);
+    bool WriteTrackedParameter(C0ParameterKey key, StepRef &step, const PrimaryTargetFacts &facts, bool userSet,
+        std::unique_lock<std::recursive_mutex> &guard);
     void RunTrackedC0(RequestId request, const SwitchPrimaryCommand &command, const SlotDescriptor &target,
         const PrimaryTargetFacts &facts, std::unique_lock<std::recursive_mutex> &guard);
     bool ScheduleC1Retry(RequestId request, uint32_t attempt);

@@ -1,4 +1,4 @@
-"""Verify active M1/M2/M3 inputs and replay the frozen layout comparisons."""
+"""Verify active AF-2 inputs and replay the frozen layout comparisons."""
 import hashlib
 import json
 from pathlib import Path
@@ -15,13 +15,22 @@ def migration_inputs(source, repo):
     m2 = load_manifest('af2_m2')
     m3 = load_manifest('af2_m3')
     prefix = 'telephony_core_service/services/multisim'
+    m4 = load_manifest('af2_m4')
+    before_m4 = committed_inputs(repo, m4['baseline'], prefix, sorted(m4['files']))
+    for name, expected in m4['files'].items():
+        if hashlib.sha256((source / name).read_bytes()).hexdigest() != expected:
+            raise ValueError('AF2 M4 source input differs: ' + name)
+
+    def pre_m4(name):
+        return before_m4[name] if name in before_m4 else (source / name).read_bytes()
+
     before_m3 = committed_inputs(repo, m3['baseline'], prefix, sorted(m3['files']))
     for name, expected in (m3['files'] | m3['added']).items():
-        if hashlib.sha256((source / name).read_bytes()).hexdigest() != expected:
+        if hashlib.sha256(pre_m4(name)).hexdigest() != expected:
             raise ValueError('AF2 M3 source input differs: ' + name)
 
     def pre_m3(name):
-        return before_m3[name] if name in before_m3 else (source / name).read_bytes()
+        return before_m3[name] if name in before_m3 else pre_m4(name)
 
     prior = m2['prior_layout_deltas']
     before_m2 = committed_inputs(repo, m2['baseline'], prefix, sorted(set(m2['files']) | set(prior)))
@@ -38,7 +47,7 @@ def migration_inputs(source, repo):
         contents = before_m2[name] if name in before_m2 else pre_m3(name)
         if hashlib.sha256(contents).hexdigest() != expected:
             raise ValueError('AF2 M1 source input differs: ' + name)
-    return before_m3 | before_m2 | before_m1
+    return before_m4 | before_m3 | before_m2 | before_m1
 
 
 def matches_prior_layout_delta(name, predecessor):
