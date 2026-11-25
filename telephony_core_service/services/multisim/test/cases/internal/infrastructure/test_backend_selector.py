@@ -98,6 +98,36 @@ class BackendSelectorTest(unittest.TestCase):
         self.assertEqual(error['api_result'], 83886087)
         self.assertEqual(timeout['api_result'], 83886087)
 
+    def test_independent_data_requires_actual_subscription_and_ordered_trace(self):
+        from compare_backends import DATA_CONTRACT
+
+        scenario = DATA_CONTRACT['id']
+        def report(subscription, announced, swap=False):
+            observation = {
+                'public': {'primary': '0', 'data': '1', 'subscription': str(subscription)},
+                'parameters': {'persist.telephony.MainSlotId': '0', 'persist.telephony.MainCellularDataSlotId': '1'},
+                'events': [
+                    {'kind': 'parameter_write', 'fields': {
+                        'key': 'persist.telephony.MainCellularDataSlotId', 'value': '1'}},
+                    {'kind': 'publication', 'fields': {
+                        'action': 'usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED', 'sim': str(announced)}},
+                    {'kind': 'diagnostic', 'fields': {'name': 'SET_DEFAULT_CELLULAR_DATA'}},
+                    {'kind': 'diagnostic', 'fields': {'name': 'ACCOUNT_NOTIFY'}},
+                    {'kind': 'api_return', 'fields': {'result': '0'}},
+                ],
+            }
+            if swap:
+                observation['events'][2], observation['events'][3] = observation['events'][3], observation['events'][2]
+            return {'status': 'PASS', 'cases': [{'scenario': scenario, 'status': 'PASS',
+                     'details': {'properties': {'default_data_observation': json.dumps(observation)}}}]}
+
+        legacy = report(1, 1)
+        self.assertEqual(compare_reports(legacy, report(41, 41), [scenario])['overall'], 'PASS')
+        self.assertEqual(compare_reports(legacy, report(41, 40), [scenario])['oracle'], 'FAIL')
+        self.assertEqual(compare_reports(legacy, report(41, 41, swap=True), [scenario])['oracle'], 'FAIL')
+        missing = {'status': 'PASS', 'cases': [{'scenario': scenario, 'status': 'PASS'}]}
+        self.assertEqual(compare_reports(legacy, missing, [scenario], False)['overall'], 'BLOCKED')
+
     def test_same_scenario_maps_different_gtest_names(self):
         rows = capability_report('target', 'host', 'C0CoreToRealManagerAndController')
         self.assertEqual(rows[0]['status'], 'SUPPORTED')

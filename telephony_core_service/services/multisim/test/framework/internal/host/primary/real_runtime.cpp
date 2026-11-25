@@ -19,10 +19,20 @@
 #include "ipc_skeleton.h"
 #include "lifecycle/external_runner.h"
 #include "initialization_trace.h"
+#include "hisysevent.h"
 #include <mutex>
 #include <condition_variable>
 namespace Sim028Host {
-void Diagnostic(const std::string &name) { std::cout << "DIAGNOSTIC " << name << '\n'; }
+namespace { thread_local std::function<void(const std::string &)> diagnosticObserver; }
+void ObserveCallingThreadDiagnostics(std::function<void(const std::string &)> observer)
+{
+    diagnosticObserver = std::move(observer);
+}
+void Diagnostic(const std::string &name)
+{
+    if (diagnosticObserver) { diagnosticObserver(name); }
+    std::cout << "DIAGNOSTIC " << name << '\n';
+}
 namespace { std::mutex initializationProbeMutex; std::function<void()> initializationProbe; }
 void SetInitializationAccountProbe(std::function<void()> probe)
 {

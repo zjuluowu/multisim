@@ -1,5 +1,11 @@
 # Legacy / Target 双后端测试架构
 
+AF-2 M4 独立默认数据卡走正式 SimModule、实时卡发现和真实 AssignmentStoreAdapter。
+Primary 与 Data 共用 Data 槽及订阅投影、参数证据和写权。差分用例
+`SIM027-LEGACY-DATA-INDEPENDENT-DUAL-PRIMARY0` 核对两边实测的写入、通知顺序和身份关系。
+[业务链路与调试](M4_Default_Data_Debug.md)
+
+
 ## Host 开发执行路径
 
 Host 使用 [统一入口](../scripts/test.py)。已知 ELF 时按所属后端和目标增量检查。精确 CLI 用例由当前 GN 编译数据库和测试声明缩小候选范围，再由所属 ELF 的 GoogleTest 枚举确认。Scenario ID 仍由 [能力矩阵](../config/backend_capabilities.json)映射。源码定位验证由 `editor` 负责，日常 Run/Debug 和完整验证入口见 [Host 使用说明](Host_Usage.md)。本轮实测及构建图见 [开发效率报告](SIM_Host_Development_Efficiency_Optimization_Report.md)。

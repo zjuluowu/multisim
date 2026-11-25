@@ -1,0 +1,112 @@
+{
+  "scope": "Positive execution of selected legacy-data production methods; not full SIM coverage",
+  "methods": [
+    {
+      "owner": "CoreManagerInner",
+      "method": "SetDefaultCellularDataSlotId",
+      "count": 5,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/frameworks/native/src/core_manager_inner.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "CoreManagerInner",
+      "method": "GetDefaultCellularDataSlotId",
+      "count": 3,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/frameworks/native/src/core_manager_inner.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "CoreManagerInner",
+      "method": "GetDefaultCellularDataSimId",
+      "count": 3,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/frameworks/native/src/core_manager_inner.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimManager",
+      "method": "SetDefaultCellularDataSlotId",
+      "count": 5,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_manager.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimManager",
+      "method": "GetDefaultCellularDataSlotId",
+      "count": 4,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_manager.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "MultiSimController",
+      "method": "SetDefaultCellularDataSlotId",
+      "count": 3,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "MultiSimController",
+      "method": "SaveDefaultCellularDataSlotIdInfo",
+      "count": 3,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "MultiSimController",
+      "method": "SendDefaultCellularDataBroadCast",
+      "count": 3,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "MultiSimController",
+      "method": "AnnounceDefaultCellularDataSimIdChanged",
+      "count": 3,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "CoreServiceHiSysEvent",
+      "method": "WriteDefaultDataSlotIdBehaviorEvent",
+      "count": 3,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_hisysevent.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "MultiSimMonitor",
+      "method": "NotifySimAccountChanged",
+      "count": 8,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_monitor.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

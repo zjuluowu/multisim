@@ -13,8 +13,11 @@ sys.path.insert(0, str(TEST / 'cases/internal'))
 from primary_expectations import differential_oracle
 
 C0_ORACLE = differential_oracle(C0)
+DATA_CONTRACT = json.loads((TEST / 'cases/data/default_data_contract.json').read_text())
 
 def load_oracle(scenario):
+    if scenario == DATA_CONTRACT['id']:
+        return DATA_CONTRACT['expect']
     return differential_oracle(scenario)
 
 
@@ -28,9 +31,43 @@ def _target_observation(case):
     return json.loads(value) if value else None
 
 
+def normalized_data(case):
+    result = {'status': case.get('status'), 'scenario': case.get('scenario')}
+    payload = case.get('details', {}).get('properties', {}).get('default_data_observation')
+    if not payload:
+        return {}
+    source = json.loads(payload)
+    public, parameters = source['public'], source['parameters']
+    trace = []
+    announced = []
+    api_result = None
+    for event in source['events']:
+        kind, fields = event['kind'], event['fields']
+        if kind == 'parameter_write':
+            trace.append([kind, fields['key'], fields['value']])
+        elif kind == 'publication':
+            trace.append([kind, fields['action']])
+            announced.append(int(fields['sim']))
+        elif kind == 'diagnostic':
+            trace.append([kind, fields['name']])
+        elif kind == 'api_return':
+            api_result = int(fields['result'])
+            trace.append([kind, api_result])
+        else:
+            trace.append([kind])
+    subscription = int(public['subscription'])
+    # Legacy and Target allocate different IDs. Validate the relation on each backend.
+    return {**result, 'api_result': api_result, 'primary_role': int(public['primary']),
+            'default_data_role': int(public['data']), 'data_identity_matches': subscription > 0 and
+            announced == [subscription], 'primary_parameter': int(parameters['persist.telephony.MainSlotId']),
+            'data_parameter': int(parameters['persist.telephony.MainCellularDataSlotId']), 'trace': trace}
+
+
 def normalized(case):
     if not case:
         return {}
+    if case.get('scenario') == DATA_CONTRACT['id']:
+        return normalized_data(case)
     observation = _legacy_observation(case) or _target_observation(case)
     if case.get('scenario') == C0 and observation is None:
         return {'status': case.get('status'), 'scenario': C0, 'measurement': 'MISSING'}

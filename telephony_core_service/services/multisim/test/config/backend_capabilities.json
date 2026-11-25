@@ -48,6 +48,12 @@
       "differential": "SUPPORTED"
     },
     {
+      "id": "SIM027-LEGACY-DATA-INDEPENDENT-DUAL-PRIMARY0",
+      "legacy": {"test": "RealSimPrimary.IndependentDefaultDataUsesOriginalManagerContract", "host": "SUPPORTED", "device": "BLOCKED", "reason": "Real CMI/Manager/Controller Host path with controlled parameter and notification platforms."},
+      "target": {"test": "AF2Data.LiveDualSimSetDefaultDataThroughLegacyEntry", "host": "SUPPORTED", "device": "BLOCKED", "reason": "Formal live Target Host graph with controlled parameter and notification platforms."},
+      "differential": "SUPPORTED"
+    },
+    {
       "id": "TARGET-C0-PLAN-NO-DEVICE",
       "legacy": {
         "test": null,

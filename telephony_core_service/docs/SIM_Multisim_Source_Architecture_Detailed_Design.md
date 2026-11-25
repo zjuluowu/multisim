@@ -466,7 +466,9 @@ TopologyService构造后由H绑定AccountRolePlanningPort；它实现PrimaryTopo
 
 **当前入口。** StartPrimarySwitch 在 A 自有 operations 登记原目标与完成出口。SlotCatalog 提供静态域；经 PrimaryTopologyPort 两读 BindingIndex 和 AccountRegistry 的 current 投影，中间读取 Radio 观察。A 对照原订阅、槽、绑定版本、ICCID 及 active 后选择分支，再经 AssignmentAggregate 的 AdmitTransitionWithRoleWriteSet 同时检查目标 radioDomain 和全部 Primary 写成员。C0 直接走参数与通知。B 登记 pending 后发一次专用命令。C1 先写 Primary 参数，再按目录成员发 CHECK、UPDATE、COMPLETE 三阶段（1、2、4）。VendorRouteMapping 尚未接入该入口。[用例源码](../services/multisim/role_assignment/assignment_service.cpp) · [分支计划](../services/multisim/role_assignment/primary/primary_switch_plan.cpp)
 
-AssignmentStoreAdapter 在 Host 处理偏好、Primary 两键与 ICCID 散列、Data 原参数。AssignmentAggregate 的 roleWriteOwners_ 已按请求 token 登记 kPrimaryRoleWriteSet（偏好、Primary 参数/通知、Data 参数/通知）；SetDefaultRole 复用 Data 或独立 Voice/SMS 成员。A 内的这些检查以 Owner 串行执行为条件。AcceptEntryPrimaryPreference 仍可直接经 Store 写偏好，完整接管须逐个核对调用者及其授权时点。T 复核原绑定，R 判定实际命令资格。逐键已发前缀与失败恢复仍按分支补足。[参数适配](../services/multisim/role_assignment/assignment_store_adapter.cpp) · [角色准入设计](SIM_Target_Architecture_Design_v1.2.md#41-从问题推导边界并裁决上下文)
+AssignmentStoreAdapter 在 Host 处理偏好、Primary 两键与 ICCID 散列、Data 原参数。AssignmentAggregate 的 roleWriteOwners_ 已按请求 token 登记 kPrimaryRoleWriteSet（偏好、Primary 参数/通知、Data 参数/通知）；正式 Host 的独立 Data 从 SimModule 经 LegacySimFacade 和 SetLegacyDefaultData 进入 A，
+使用 T 的原 Binding、A 的 Data 写集、原参数步骤和同步完成。Primary 与 Data 共用 Data
+投影接纳和逐键效果核对。Voice/SMS 仍是组件入口。写集登记及投影接纳在 A 的提交域执行。AcceptEntryPrimaryPreference 仍可直接经 Store 写偏好，完整接管须逐个核对调用者及其授权时点。T 复核原绑定，R 判定实际命令资格。逐键已发前缀与失败恢复仍按分支补足。[参数适配](../services/multisim/role_assignment/assignment_store_adapter.cpp) · [角色准入设计](SIM_Target_Architecture_Design_v1.2.md#41-从问题推导边界并裁决上下文)
 
 AccountRolePlanningInput允许existingSubscription为空；A先生成带reservation的字段片段，原Insert返回身份后分别接纳。加载返回StoredAccountRoleFragment原DB载荷，current/historical角色版本独立，不以A当前态反填旧读取。冲突资格覆盖存储调用，不能先读片段后任意整行写。
 

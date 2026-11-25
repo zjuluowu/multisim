@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "id": "SIM027-LEGACY-DATA-INDEPENDENT-DUAL-PRIMARY0",
+  "input": {
+    "model": "dual-active-primary0",
+    "slot": 1
+  },
+  "expect": {
+    "api_result": 0,
+    "primary_role": 0,
+    "default_data_role": 1,
+    "data_identity_matches": true,
+    "primary_parameter": 0,
+    "data_parameter": 1,
+    "trace": [
+      [
+        "parameter_write",
+        "persist.telephony.MainCellularDataSlotId",
+        "1"
+      ],
+      [
+        "publication",
+        "usual.event.SIM.DEFAULT_DATA_SUBSCRIPTION_CHANGED"
+      ],
+      [
+        "diagnostic",
+        "SET_DEFAULT_CELLULAR_DATA"
+      ],
+      [
+        "diagnostic",
+        "ACCOUNT_NOTIFY"
+      ],
+      [
+        "api_return",
+        0
+      ]
+    ]
+  }
+}

@@ -303,7 +303,14 @@ def main():
                               'sim_g2a_query_test':'query','sim_upstream_query_test':'upstream'}
                     if args.action=='all' and backend=='legacy' and target in slices:
                         run(backend+'-'+target+'-execution','audit_replacement_execution.py',['--slice',slices[target],'--binary',binary,'--profiles',reports[0].parent,'--output',session/(backend+'-'+target+'-execution')])
+                    if args.action=='all' and backend=='legacy' and target=='sim_primary_slot_real_test':
+                        run('legacy-data-execution','audit_replacement_execution.py',
+                            ['--slice','legacy-data','--binary',binary,'--profiles',reports[0].parent,
+                             '--output',session/'legacy-data-execution'])
                     if args.action=='all' and backend=='target' and target=='sim_test_target_host':
+                        run('target-data-execution','audit_replacement_execution.py',
+                            ['--slice','target-data','--binary',binary,'--profiles',reports[0].parent,
+                             '--output',session/'target-data-execution'])
                         run(backend+'-'+target+'-execution','audit_replacement_execution.py',['--slice','target-adapter','--binary',binary,'--profiles',reports[0].parent,'--output',session/(backend+'-'+target+'-execution')])
                         run(backend+'-'+target+'-topology-execution','audit_replacement_execution.py',['--slice','target-topology','--binary',binary,'--profiles',reports[0].parent,'--output',session/(backend+'-'+target+'-topology-execution')])
                         run(backend+'-'+target+'-primary-b-execution','audit_replacement_execution.py',['--slice','target-primary-b','--binary',binary,'--profiles',reports[0].parent,'--output',session/(backend+'-'+target+'-primary-b-execution')])

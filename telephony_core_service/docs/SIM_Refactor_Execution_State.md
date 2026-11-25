@@ -64,8 +64,9 @@ N-API、IDL、SA 检查和通话数据调用者。公开权限检查和内部 Ma
 同步完成。真实双向冲突、换卡、效果未知及 Stop 通过 Developer 专项，M1–M4 合计 30/30。
 架构、迁移前态比较、独立语法及 GN/Ninja 对象通过。Data 槽与订阅合并为同一个
 定长投影，避免写后再为角色条目分配内存，已重跑 Developer 30 项与 LLDB 实际单步。
-当前阶段继续等待最终 Verify、双后端、
-Legacy 特征及 sanitizer 验收。
+Legacy 特征在单激活和双激活各 1/1 通过，真实 CMI 到 Controller 的正执行审计通过。
+新场景的开发期两端实测数据与独立 Data Oracle 差异为 0。最终 Verify 的全量、冻结场景、
+编辑器枚举和 sanitizer 复验仍在执行。
 [阶段原始证据](../services/multisim/test/docs/evidence/af2_m4_20261125/README.md)
 
 <a id="af1-signoff-validation"></a>

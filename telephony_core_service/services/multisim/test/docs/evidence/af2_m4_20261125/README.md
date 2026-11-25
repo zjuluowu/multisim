@@ -9,5 +9,13 @@ Verify 使用独立输出。历史 M1–M3 结果只用于基线比较。
 | 架构、迁移和 GN/Ninja | `run_architecture.py --with-gn --migration --output <仓外路径>`，97 独立编译单元、18 结构测试、5 编译负控、四组纯规则及全部 GN 对象通过。 [原始日志](architecture.log) |
 | LLDB | Developer ELF 执行 `lldb -b <ELF> -s data-step.lldb`，实际命中资格、原票、写权、参数、投影、完成和析构断点，单步并运行单例至退出 0。 [脚本](data-step.lldb) · [原始日志](data-step.log.gz) |
 
+| Legacy 契约 | Verify Legacy ELF 用 `run_gtest.py --filter RealSimPrimary.IndependentDefaultDataUsesOriginalManagerContract`，固定两实体槽，分别运行 `single-active` 和 `dual-active-primary0`，各 1/1。 [单激活](legacy-contract-single.json.gz) · [双激活](legacy-contract-dual.json.gz) · [双激活日志](legacy-contract-dual.log.gz) |
+| Legacy 真实执行 | 新用例独立 profile，含真实 CMI、Manager、Controller、CES、诊断和账户通知方法。 [执行审计](legacy-data-execution.json) |
+| 开发期独立 Data 差分 | 双激活 Legacy Verify 观测与 Target Developer 观测经相同 Data Oracle，差异 0。 [对照](data-development-differential.json) |
+
+首轮 Legacy 特征用例将 2 当作内部越界槽。真实 Manager 在夹具中包含第三个内部槽位，
+Setter 接纳了 2 并公告缓存身份 0。越界测试改用 100，仍测试合法无账户槽的原行为。
+[首轮运行原始日志](legacy-slot-assumption-failed.log.gz)
+
 阶段进展覆盖正式入口、Data 成功路径、绑定撤销、共享键冲突及关闭核对。Verify、
 差分、Legacy 契约特征测试和 sanitizer 的最终结果随验收登记。
