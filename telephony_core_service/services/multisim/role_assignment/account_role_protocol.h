@@ -125,6 +125,22 @@ public:
         ++roleRevision_;
         return true;
     }
+    bool HasPendingStorageRoles() const
+    {
+        for (const auto &[token, reserved] : reservations_) {
+            (void)token;
+            if (reserved.plan.includeInStorage && !reserved.receipt) { return true; }
+        }
+        return false;
+    }
+    void NoteLocalRoleMutation(DefaultRole role, std::optional<SubscriptionId> subscription)
+    {
+        for (auto &[id, row] : current_.rows) {
+            auto &column = role == DefaultRole::Voice ? row.voice : row.sms;
+            column = subscription == id;
+        }
+        NoteLocalRoleMutation();
+    }
     void NoteLocalRoleMutation()
     {
         ++roleRevision_;

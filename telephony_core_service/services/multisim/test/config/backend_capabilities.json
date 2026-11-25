@@ -54,6 +54,18 @@
       "differential": "SUPPORTED"
     },
     {
+      "id": "SIM025-LEGACY-DEFAULT-VOICE-DUAL",
+      "legacy": {"test": "RealSimPrimary.DefaultVoiceProviderAndNotificationContract", "host": "SUPPORTED", "device": "BLOCKED", "reason": "Real Legacy controller and RDB command; controlled Provider and CES."},
+      "target": {"test": "AF2VoiceSms.DefaultVoiceProviderAndNotificationContract", "host": "SUPPORTED", "device": "BLOCKED", "reason": "Formal Host role entry with original Provider effects."},
+      "differential": "SUPPORTED"
+    },
+    {
+      "id": "SIM026-LEGACY-DEFAULT-SMS-DUAL",
+      "legacy": {"test": "RealSimPrimary.DefaultSmsProviderAndNotificationContract", "host": "SUPPORTED", "device": "BLOCKED", "reason": "Real Legacy controller and RDB command; controlled Provider and CES."},
+      "target": {"test": "AF2VoiceSms.DefaultSmsProviderAndNotificationContract", "host": "SUPPORTED", "device": "BLOCKED", "reason": "Formal Host role entry with original Provider effects."},
+      "differential": "SUPPORTED"
+    },
+    {
       "id": "TARGET-C0-PLAN-NO-DEVICE",
       "legacy": {
         "test": null,

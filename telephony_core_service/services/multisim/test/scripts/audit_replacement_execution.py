@@ -13,7 +13,7 @@ REQUIRED = {
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--slice', choices=['state','primary','query','upstream','target-adapter','target-topology','target-primary-b','legacy-data','target-data'], default='state')
+    parser.add_argument('--slice', choices=['state','primary','query','upstream','target-adapter','target-topology','target-primary-b','legacy-data','target-data','legacy-voice-sms','target-voice-sms'], default='state')
     parser.add_argument('--binary', required=True, type=Path)
     parser.add_argument('--profiles', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
@@ -67,6 +67,20 @@ def main():
                     'TopologyService': ['WithCurrentPrimaryTarget'],
                     'AssignmentStoreAdapter': ['WriteC0Parameter', 'ReadC0ParameterEvidence'],
                     'LegacyCompletion': ['RetainRoleWaiter', 'CompleteLegacyInt', 'TakeRoleResult']}
+    elif args.slice == 'legacy-voice-sms':
+        required = {'CoreServiceSim': ['SetDefaultVoiceSlotId'],
+                    'CoreManagerInner': ['SetDefaultSmsSlotId'],
+                    'SimManager': ['SetDefaultVoiceSlotId', 'SetDefaultSmsSlotId'],
+                    'MultiSimController': ['SetDefaultVoiceSlotId', 'SetDefaultSmsSlotId',
+                                           'AnnounceDefaultVoiceSimIdChanged', 'AnnounceDefaultSmsSimIdChanged'],
+                    'SimRdbHelper': ['SetDefaultVoiceCard', 'SetDefaultMessageCard']}
+    elif args.slice == 'target-voice-sms':
+        required = {'SimModule': ['SetDefaultVoiceSlotId', 'SetDefaultSmsSlotId', 'ReconcileRoleProvider'],
+                    'LegacySimFacade': ['SetDefaultCallMessageRole'],
+                    'AssignmentService': ['SetDefaultRole', 'ReconcileRoleProvider'],
+                    'AssignmentAggregate': ['AdmitRoleWriteSet', 'AcceptRoleSelection'],
+                    'AccountRoleProtocol': ['NoteLocalRoleMutation'],
+                    'AssignmentStoreAdapter': ['WriteDefaultRole', 'ReadRoleProviderEvidence']}
     elif args.slice == 'target-primary-b':
         required = {'AssignmentService':['AcceptRadioStep', 'AcceptPrimarySwitchTimeout',
                     'ScheduleC1Retry', 'AcceptScheduledC1Retry', 'StopAcceptingAndCancelScheduledRetries'],

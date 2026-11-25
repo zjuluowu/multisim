@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "scenarios": {
+    "SIM025-LEGACY-DEFAULT-VOICE-DUAL": {
+      "accountNotifications": "3",
+      "announcements": "2",
+      "clearResult": "83886102",
+      "identity": "true",
+      "selected": "1",
+      "writes": "5",
+      "cleared": "-1"
+    },
+    "SIM026-LEGACY-DEFAULT-SMS-DUAL": {
+      "accountNotifications": "3",
+      "announcements": "2",
+      "clearResult": "83886102",
+      "identity": "true",
+      "selected": "1",
+      "writes": "5",
+      "cleared": "0"
+    }
+  }
+}

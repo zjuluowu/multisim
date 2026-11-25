@@ -22,6 +22,7 @@
 #include <functional>
 #include <optional>
 #include "infrastructure/request/request_ref.h"
+#include "role_assignment/assignment_types.h"
 #include "role_assignment/primary/primary_execution.h"
 
 namespace OHOS::Telephony::MultiSim {
@@ -110,6 +111,7 @@ public:
     { PublishMainCardChanged(slot); }
     virtual void PublishDefaultDataChanged(SlotId slot, SubscriptionId subscription) = 0;
     virtual void ReportDefaultDataSelection(SlotId slot) = 0;
+    virtual bool PublishDefaultRoleChanged(DefaultRole, std::optional<SubscriptionId>) { return false; }
 }; // setDone为旧阶段结束，不冒充设备成功。
 } // namespace OHOS::Telephony::MultiSim
 

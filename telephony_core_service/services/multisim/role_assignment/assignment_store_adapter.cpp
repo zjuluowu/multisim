@@ -120,6 +120,23 @@ std::optional<C0ParameterEvidence> AssignmentStoreAdapter::ReadC0ParameterEviden
     return parameters_.ReadC0ParameterEvidence(operation);
 }
 
+RoleProviderOutcome AssignmentStoreAdapter::WriteDefaultRole(const RoleProviderOperation &operation)
+{
+    if (!provider_ || operation.role == DefaultRole::Data) {
+        return {-1, true, RoleProviderEffect::NotWritten};
+    }
+    constexpr auto uri = "datashare:///com.ohos.simability/sim/sim_info/set_card";
+    const int32_t cardType = operation.role == DefaultRole::Voice ? 1 : 2;
+    const int32_t simId = operation.subscription ? operation.subscription->legacySimId : 0;
+    return provider_->UpdateDefaultCard(operation, uri, {{{"sim_id", simId}, {"card_type", cardType}}});
+}
+
+std::optional<RoleProviderEvidence> AssignmentStoreAdapter::ReadRoleProviderEvidence(
+    const RoleProviderOperation &operation)
+{
+    return provider_ ? provider_->ReadRoleProviderEvidence(operation) : std::nullopt;
+}
+
 RoleStoreResult AssignmentStoreAdapter::WriteDefaultRole(const SetRoleCommand &)
 { return {-1, false, true}; }
 

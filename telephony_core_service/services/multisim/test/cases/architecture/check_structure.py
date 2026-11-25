@@ -299,7 +299,8 @@ def check(source=SOURCE):
             if delimiter == "<":
                 # The closed skeleton has only standard-library angle includes.
                 if include not in {"algorithm", "array", "atomic", "cassert", "cstddef", "cstdint", "functional",
-                                   "iomanip", "limits", "map", "memory", "mutex", "new", "optional", "set", "sstream", "stdexcept", "string", "tuple",
+                                   "iomanip", "limits", "map", "memory", "mutex", "new", "optional", "set", "sstream", "stdexcept", "string",
+                                   "string_view", "tuple",
                                    "type_traits", "utility", "variant", "vector"}:
                     raise ValueError(f"Unverified platform/angle include: {name}: {include}")
                 continue

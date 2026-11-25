@@ -1,6 +1,7 @@
 #include "../../../framework/internal/common/primary_observation.h"
 #include <gtest/gtest.h>
 #include "telephony_errors.h"
+#include "core_service_errors.h"
 
 #include <future>
 #include <map>
@@ -180,6 +181,40 @@ public:
     void SwitchPrimaryRadio(const RadioSwitchRequest &) override { ++switches; }
     void EndLegacySenseSwitch(const StepRef &, const RadioDomainId &) override { ++switches; }
 };
+class RoleProvider final : public AssignmentRoleProviderPort {
+public:
+    bool independent {true};
+    std::function<RoleProviderOutcome(const RoleProviderOperation &)> control;
+    std::optional<RoleProviderEvidence> originalEvidence;
+    std::mutex mutex;
+    std::vector<std::pair<DefaultRole, int32_t>> writes;
+    std::map<DefaultRole, int32_t> persisted;
+
+    bool HasIndependentRoleTransactions() const override { return independent; }
+    RoleProviderOutcome UpdateDefaultCard(const RoleProviderOperation &operation, std::string_view uri,
+        const RoleProviderValues &values) override
+    {
+        EXPECT_EQ(uri, "datashare:///com.ohos.simability/sim/sim_info/set_card");
+        EXPECT_EQ(values[0].first, "sim_id");
+        EXPECT_EQ(values[1].first, "card_type");
+        EXPECT_EQ(values[1].second, operation.role == DefaultRole::Voice ? 1 : 2);
+        {
+            std::lock_guard<std::mutex> lock(mutex);
+            writes.emplace_back(operation.role, values[0].second);
+        }
+        const auto outcome = control ? control(operation) : RoleProviderOutcome {0, true, RoleProviderEffect::Applied};
+        if (outcome.effect == RoleProviderEffect::Applied) {
+            std::lock_guard<std::mutex> lock(mutex);
+            persisted[operation.role] = values[0].second;
+        }
+        return outcome;
+    }
+    std::optional<RoleProviderEvidence> ReadRoleProviderEvidence(const RoleProviderOperation &) override
+    {
+        std::lock_guard<std::mutex> lock(mutex);
+        return originalEvidence;
+    }
+};
 class Output final : public AssignmentOutputPort {
 public:
     std::vector<std::string> events;
@@ -191,6 +226,14 @@ public:
     {
         mainChanges.emplace_back(slot, subscription);
         PublishMainCardChanged(slot);
+    }
+    std::vector<std::pair<DefaultRole, std::optional<SubscriptionId>>> roleChanges;
+    bool publishRole {true};
+    bool PublishDefaultRoleChanged(DefaultRole role, std::optional<SubscriptionId> subscription) override
+    {
+        roleChanges.emplace_back(role, subscription);
+        events.emplace_back(role == DefaultRole::Voice ? "voice" : "sms");
+        return publishRole;
     }
     std::function<void(SubscriptionId)> onDataChanged;
     std::function<void(SlotId)> onDataBehavior;
@@ -820,16 +863,17 @@ struct ModuleInputs {
     std::shared_ptr<Completion> completion = std::make_shared<Completion>();
     std::shared_ptr<ModuleDispatch> dispatch = std::make_shared<ModuleDispatch>();
     std::shared_ptr<AccountStore> accountStore = std::make_shared<UnsupportedAccountStore>();
-    CoreSimModulePorts Ports()
+    CoreSimModulePorts Ports(std::shared_ptr<RoleProvider> provider = {})
     {
         // The adapter borrows the parameter port; keep the pair in one shared control block.
         struct ParameterAdapter {
-            explicit ParameterAdapter(std::shared_ptr<Parameters> port) : parameters(std::move(port)), store(*parameters)
-            {}
+            ParameterAdapter(std::shared_ptr<Parameters> port, std::shared_ptr<RoleProvider> database)
+                : parameters(std::move(port)), provider(std::move(database)), store(*parameters, provider.get()) {}
             std::shared_ptr<Parameters> parameters;
+            std::shared_ptr<RoleProvider> provider;
             AssignmentStoreAdapter store;
         };
-        const auto adapter = std::make_shared<ParameterAdapter>(parameters);
+        const auto adapter = std::make_shared<ParameterAdapter>(parameters, std::move(provider));
         return {accountStore, std::shared_ptr<AssignmentStore>(adapter, &adapter->store),
             output, completion, radio, dispatch, dispatch, [](const ResourceKey &key, RuntimeEpoch epoch) {
                 EXPECT_EQ(key.verifiedPhysicalDomain, "primary-shared");
@@ -1022,12 +1066,12 @@ struct LiveDiscoveryFixture {
     CoreSimModuleHandle module;
 
     explicit LiveDiscoveryFixture(std::shared_ptr<LegacyPrimaryHostPort> primaryHost = {},
-        std::shared_ptr<SlotCatalog> catalog = {})
+        std::shared_ptr<SlotCatalog> catalog = {}, std::shared_ptr<RoleProvider> provider = {})
     {
         if (catalog) { input.catalog = std::move(catalog); }
         store->persistRows = true;
         input.accountStore = store;
-        auto ports = input.Ports();
+        auto ports = input.Ports(std::move(provider));
         ports.primaryHost = std::move(primaryHost);
         module = std::get<CoreSimModuleHandle>(CreateCoreSimModule(std::move(ports), input.catalog, {}));
     }
@@ -1333,13 +1377,17 @@ public:
             case LegacyPrimaryError::InvalidSlot: return TELEPHONY_ERR_SLOTID_INVALID;
             case LegacyPrimaryError::NoCard: return TELEPHONY_ERR_NO_SIM_CARD;
             case LegacyPrimaryError::Failed: return TELEPHONY_ERR_FAIL;
+            case LegacyPrimaryError::InactiveCard: return CORE_SERVICE_SIM_CARD_IS_NOT_ACTIVE;
+            case LegacyPrimaryError::DatabaseWriteFailed: return TELEPHONY_ERR_DATABASE_WRITE_FAIL;
+            case LegacyPrimaryError::BroadcastFailed: return TELEPHONY_ERR_PUBLISH_BROADCAST_FAIL;
         }
         return TELEPHONY_ERR_FAIL;
     }
 };
 struct PrimaryFixture {
     std::shared_ptr<PrimaryHost> host = std::make_shared<PrimaryHost>();
-    explicit PrimaryFixture(std::shared_ptr<SlotCatalog> catalog = {}) : live(host, std::move(catalog)) {}
+    explicit PrimaryFixture(std::shared_ptr<SlotCatalog> catalog = {}, std::shared_ptr<RoleProvider> provider = {})
+        : live(host, std::move(catalog), std::move(provider)) {}
     LiveDiscoveryFixture live;
 
     void DiscoverBoth()
@@ -1847,4 +1895,248 @@ TEST(AF2Data, StopWaitsForParameterAndAccountNotification)
     EXPECT_EQ(active.get(), TELEPHONY_ERR_SUCCESS);
     EXPECT_EQ(f.host->accountsChanged, 1u);
     EXPECT_EQ(module->StopAcceptingAndDrain(), Drain::Drained);
+}
+
+TEST(AF2VoiceSms, LiveDualSimSelectsFourRolesThroughLegacyEntries)
+{
+    using namespace OHOS::Telephony;
+    auto provider = std::make_shared<RoleProvider>();
+    PrimaryFixture f(PrimaryZeroCatalog(), provider);
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    ASSERT_EQ(module->SetPrimarySlotId(0, {7}), TELEPHONY_ERR_SUCCESS);
+    ASSERT_EQ(module->SetDefaultCellularDataSlotId(1, {7}), TELEPHONY_ERR_SUCCESS);
+    const auto parameters = f.live.input.parameters->values;
+    ASSERT_EQ(module->SetDefaultVoiceSlotId(1, {7}), TELEPHONY_ERR_SUCCESS);
+    ASSERT_EQ(module->SetDefaultSmsSlotId(0, {7}), TELEPHONY_ERR_SUCCESS);
+    const auto first = module->FindBinding({0});
+    const auto second = module->FindBinding({1});
+    ASSERT_TRUE(first && second && module->ReadAccount(first->subscription) && module->ReadAccount(second->subscription));
+    const auto roles = module->ReadAssignment();
+    EXPECT_EQ(roles.lastPrimary, SlotId {0});
+    EXPECT_EQ(roles.defaultData, second->subscription);
+    EXPECT_EQ(roles.defaultVoice, second->subscription);
+    EXPECT_EQ(roles.defaultSms, first->subscription);
+    EXPECT_EQ(provider->persisted[DefaultRole::Voice], 41);
+    EXPECT_EQ(provider->persisted[DefaultRole::Sms], 40);
+    EXPECT_EQ(f.live.input.parameters->values, parameters);
+    EXPECT_EQ(f.live.input.output->events,
+        (std::vector<std::string> {"primary", "data", "data", "data-behavior", "voice", "sms"}));
+    EXPECT_EQ(f.host->accountsChanged, 4u);
+    EXPECT_EQ(f.live.input.radio->commands, 0u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+    const std::weak_ptr<SimModule> weak = module;
+    module.reset();
+    EXPECT_TRUE(weak.expired());
+}
+
+namespace {
+void VerifyTargetCallMessageRole(DefaultRole role)
+{
+    using namespace OHOS::Telephony;
+    auto provider = std::make_shared<RoleProvider>();
+    PrimaryFixture f(PrimaryZeroCatalog(), provider);
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    const bool voice = role == DefaultRole::Voice;
+    const auto setRole = [&](int slot) {
+        return voice ? module->SetDefaultVoiceSlotId(slot, {7}) : module->SetDefaultSmsSlotId(slot, {7});
+    };
+    const auto getSlot = [&] {
+        const auto assignment = module->ReadAssignment();
+        const auto identity = voice ? assignment.defaultVoice : assignment.defaultSms;
+        for (const int slot : {0, 1}) {
+            const auto binding = module->FindBinding({slot});
+            if (binding && identity == binding->subscription) { return slot; }
+        }
+        return -1;
+    };
+    EXPECT_EQ(setRole(100), TELEPHONY_ERR_SLOTID_INVALID);
+    EXPECT_EQ(setRole(1), TELEPHONY_ERR_SUCCESS);
+    const int selected = getSlot();
+    EXPECT_EQ(selected, 1);
+    EXPECT_EQ(setRole(1), TELEPHONY_ERR_SUCCESS);
+    provider->control = [](const auto &) { return RoleProviderOutcome {-1, true, RoleProviderEffect::NotWritten}; };
+    EXPECT_EQ(setRole(-1), TELEPHONY_ERR_DATABASE_WRITE_FAIL);
+    EXPECT_EQ(getSlot(), 1);
+    provider->control = {};
+    f.live.input.output->publishRole = false;
+    const int clearResult = setRole(-1);
+    EXPECT_EQ(clearResult, TELEPHONY_ERR_PUBLISH_BROADCAST_FAIL);
+    const int cleared = getSlot();
+    EXPECT_EQ(cleared, voice ? -1 : 0);
+    EXPECT_EQ(setRole(-1), TELEPHONY_ERR_SUCCESS);
+    const auto assignment = module->ReadAssignment();
+    EXPECT_FALSE(voice ? assignment.voicePreference : assignment.smsPreference);
+    const auto &events = f.live.input.output->roleChanges;
+    const std::vector<std::pair<DefaultRole, int32_t>> expected {
+        {role, 41}, {role, 41}, {role, 0}, {role, 0}, {role, 0}};
+    EXPECT_EQ(provider->writes, expected);
+    EXPECT_EQ(provider->persisted[role], 0);
+    EXPECT_EQ(events, (std::vector<std::pair<DefaultRole, std::optional<SubscriptionId>>> {
+        {role, SubscriptionId {41}}, {role, std::nullopt}}));
+    EXPECT_EQ(f.host->accountsChanged, 3u);
+    EXPECT_TRUE(f.live.input.parameters->writes.empty());
+    using SimGuard::Primary::Json;
+    testing::Test::RecordProperty("default_call_message_observation", Json({
+        {"selected", std::to_string(selected)}, {"cleared", std::to_string(cleared)},
+        {"clearResult", std::to_string(clearResult)}, {"writes", std::to_string(provider->writes.size())},
+        {"announcements", std::to_string(events.size())},
+        {"accountNotifications", std::to_string(f.host->accountsChanged)},
+        {"identity", provider->writes == expected ? "true" : "false"}
+    }));
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+} // namespace
+
+TEST(AF2VoiceSms, DefaultVoiceProviderAndNotificationContract)
+{
+    VerifyTargetCallMessageRole(DefaultRole::Voice);
+}
+
+TEST(AF2VoiceSms, DefaultSmsProviderAndNotificationContract)
+{
+    VerifyTargetCallMessageRole(DefaultRole::Sms);
+}
+
+TEST(AF2VoiceSms, InFlightVoiceOrdersOnlyIntersectingWriters)
+{
+    using namespace OHOS::Telephony;
+    for (const bool independent : {true, false}) {
+        auto provider = std::make_shared<RoleProvider>();
+        provider->independent = independent;
+        PrimaryFixture f(PrimaryZeroCatalog(), provider);
+        ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+        auto &module = f.live.module;
+        std::promise<void> entered;
+        std::promise<void> release;
+        auto resume = release.get_future();
+        provider->control = [&](const RoleProviderOperation &operation) {
+            if (operation.role == DefaultRole::Voice) { entered.set_value(); resume.wait(); }
+            return RoleProviderOutcome {0, true, RoleProviderEffect::Applied};
+        };
+        auto voice = std::async(std::launch::async, [&] { return module->SetDefaultVoiceSlotId(1, {7}); });
+        if (entered.get_future().wait_for(std::chrono::seconds(3)) != std::future_status::ready) {
+            release.set_value();
+            FAIL() << "Voice Provider call did not start";
+        }
+        EXPECT_EQ(module->SetDefaultVoiceSlotId(0, {7}), TELEPHONY_ERR_FAIL);
+        EXPECT_EQ(module->SetDefaultSmsSlotId(0, {7}), independent ? TELEPHONY_ERR_SUCCESS : TELEPHONY_ERR_FAIL);
+        EXPECT_EQ(module->SetPrimarySlotId(0, {7}), TELEPHONY_ERR_SUCCESS);
+        EXPECT_EQ(module->SetDefaultCellularDataSlotId(1, {7}), TELEPHONY_ERR_SUCCESS);
+        EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
+        EXPECT_EQ(module->SetDefaultSmsSlotId(0, {7}), TELEPHONY_ERR_LOCAL_PTR_NULL);
+        const auto pending = module->ReadRoleProviderReceipt(DefaultRole::Voice);
+        EXPECT_TRUE(pending);
+        if (pending) { EXPECT_FALSE(module->ReconcileRoleProvider(pending->operation)); }
+        release.set_value();
+        EXPECT_EQ(voice.get(), TELEPHONY_ERR_SUCCESS);
+        EXPECT_EQ(provider->writes.size(), independent ? 2u : 1u);
+        EXPECT_EQ(module->ReadAssignment().defaultVoice, SubscriptionId {41});
+        EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+    }
+}
+
+TEST(AF2VoiceSms, StaleUnknownVoiceEffectRetainsOnlyItsOriginalWriteSet)
+{
+    using namespace OHOS::Telephony;
+    auto provider = std::make_shared<RoleProvider>();
+    PrimaryFixture f(PrimaryZeroCatalog(), provider);
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    const auto prior = module->FindBinding({1});
+    ASSERT_TRUE(prior);
+    provider->control = [&](const RoleProviderOperation &operation) {
+        if (operation.role == DefaultRole::Voice) {
+            EXPECT_TRUE(module->InvalidateVerifiedCard({module->Epoch(), {{1}, "USIM"}, 1}));
+            return RoleProviderOutcome {0, false, RoleProviderEffect::Unknown};
+        }
+        return RoleProviderOutcome {0, true, RoleProviderEffect::Applied};
+    };
+    EXPECT_EQ(module->SetDefaultVoiceSlotId(1, {7}), TELEPHONY_ERR_DATABASE_WRITE_FAIL);
+    const auto receipt = module->ReadRoleProviderReceipt(DefaultRole::Voice);
+    ASSERT_TRUE(receipt);
+    EXPECT_EQ(receipt->operation.subscription, prior->subscription);
+    EXPECT_EQ(module->SetDefaultVoiceSlotId(0, {7}), TELEPHONY_ERR_FAIL);
+    EXPECT_EQ(module->SetDefaultSmsSlotId(0, {7}), TELEPHONY_ERR_SUCCESS);
+    EXPECT_EQ(module->SetDefaultCellularDataSlotId(0, {7}), TELEPHONY_ERR_SUCCESS);
+    provider->persisted[DefaultRole::Voice] = prior->subscription.legacySimId;
+    EXPECT_FALSE(module->ReconcileRoleProvider(receipt->operation)); // a plausible current value is not original evidence
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::BusinessEffectsUnresolved);
+    auto wrong = receipt->operation;
+    ++wrong.original.attempt;
+    provider->originalEvidence = {wrong, {0, true, RoleProviderEffect::Applied}};
+    EXPECT_FALSE(module->ReconcileRoleProvider(receipt->operation));
+    provider->originalEvidence = {receipt->operation, {0, true, RoleProviderEffect::Applied}};
+    EXPECT_TRUE(module->ReconcileRoleProvider(receipt->operation));
+    EXPECT_FALSE(module->ReconcileRoleProvider(receipt->operation));
+    EXPECT_FALSE(module->ReadAssignment().defaultVoice);
+    EXPECT_EQ(provider->writes.size(), 2u);
+    EXPECT_EQ(f.live.input.output->roleChanges.size(), 1u);
+    EXPECT_EQ(f.host->accountsChanged, 2u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2VoiceSms, KnownPartialAndStaleAppliedNeverCommitCurrentRoles)
+{
+    using namespace OHOS::Telephony;
+    auto provider = std::make_shared<RoleProvider>();
+    PrimaryFixture f(PrimaryZeroCatalog(), provider);
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    provider->control = [](const auto &) { return RoleProviderOutcome {0, true, RoleProviderEffect::Partial}; };
+    EXPECT_EQ(module->SetDefaultSmsSlotId(1, {7}), TELEPHONY_ERR_DATABASE_WRITE_FAIL);
+    EXPECT_FALSE(module->ReadRoleProviderReceipt(DefaultRole::Sms));
+    EXPECT_FALSE(module->ReadAssignment().smsPreference);
+    EXPECT_EQ(module->ReadAssignment().defaultSms, SubscriptionId {40});
+    const auto old = module->FindBinding({1});
+    ASSERT_TRUE(old);
+    provider->control = [&](const auto &) {
+        EXPECT_TRUE(module->ObserveVerifiedCard({{1}, "USIM"}, 2, kRaw0));
+        return RoleProviderOutcome {0, true, RoleProviderEffect::Applied};
+    };
+    EXPECT_EQ(module->SetDefaultVoiceSlotId(1, {7}), TELEPHONY_ERR_FAIL);
+    EXPECT_FALSE(module->ReadAssignment().defaultVoice);
+    EXPECT_TRUE(f.live.input.output->roleChanges.empty());
+    EXPECT_EQ(f.host->accountsChanged, 0u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2VoiceSms, PermissionsAndBindingRejectBeforeProvider)
+{
+    using namespace OHOS::Telephony;
+    auto provider = std::make_shared<RoleProvider>();
+    PrimaryFixture f(PrimaryZeroCatalog(), provider);
+    f.host->system = false;
+    EXPECT_EQ(f.live.module->SetDefaultVoiceSlotId(-1, {7}), TELEPHONY_ERR_ILLEGAL_USE_OF_SYSTEM_API);
+    f.host->system = true;
+    f.host->permitted = false;
+    EXPECT_EQ(f.live.module->SetDefaultSmsSlotId(-1, {7}), TELEPHONY_ERR_PERMISSION_ERR);
+    f.host->permitted = true;
+    EXPECT_EQ(f.live.module->SetDefaultSmsSlotId(1, {7}), TELEPHONY_ERR_NO_SIM_CARD);
+    f.live.store->stored = {-1, {}, false, true, EffectKnowledge::Unknown};
+    ASSERT_TRUE(f.live.module->ObserveVerifiedCard({{1}, "USIM"}, 1, kRaw1));
+    EXPECT_EQ(f.live.module->SetDefaultVoiceSlotId(1, {7}), CORE_SERVICE_SIM_CARD_IS_NOT_ACTIVE);
+    EXPECT_EQ(f.live.module->SetDefaultSmsSlotId(-1, {7}), TELEPHONY_ERR_FAIL); // shared discovery columns
+    EXPECT_TRUE(provider->writes.empty());
+    const auto plan = *f.live.store->lastPlan;
+    f.live.store->ProveApplied(plan, {41});
+    EXPECT_TRUE(f.live.module->ReconcileDiscovery(plan.call));
+    EXPECT_EQ(f.live.module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2VoiceSms, CurrentRoleVersionRejectsPreMutationReload)
+{
+    AccountRoleProtocol protocol;
+    const StoredAccountRoleFragment old {{40}, true, false, false, false};
+    ASSERT_TRUE(protocol.AcceptReloadSet({old}, 1, 0, false));
+    ASSERT_TRUE(protocol.AcceptReloadSet({old}, 1, 0, true));
+    const auto previousCurrent = protocol.Revision(false);
+    const auto previousHistorical = protocol.Revision(true);
+    protocol.NoteLocalRoleMutation(DefaultRole::Voice, std::nullopt);
+    EXPECT_EQ(protocol.Revision(false), previousCurrent + 1);
+    EXPECT_FALSE(protocol.AcceptReloadSet({old}, 2, previousCurrent, false));
+    EXPECT_FALSE(protocol.Projection(false).at({40}).voice);
+    EXPECT_EQ(protocol.Revision(true), previousHistorical);
+    EXPECT_TRUE(protocol.Projection(true).at({40}).voice);
 }

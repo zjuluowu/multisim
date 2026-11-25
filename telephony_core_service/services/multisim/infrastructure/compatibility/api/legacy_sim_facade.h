@@ -47,6 +47,10 @@ public:
     static int32_t SetDefaultCellularDataSlotId(SlotId slot, LegacyCallerRef caller, const SlotCatalog &catalog,
         LegacyPrimaryHostPort &host, const PrimaryTopologyPort &topology, LegacyCompletion &completion,
         AssignmentService &assignment, const std::function<bool(SlotId)> &hasVerifiedCard);
+    static int32_t SetDefaultCallMessageRole(DefaultRole role, SlotId slot, LegacyCallerRef caller,
+        const SlotCatalog &catalog, LegacyPrimaryHostPort &host, const PrimaryTopologyPort &topology,
+        LegacyCompletion &completion, AssignmentService &assignment,
+        const std::function<bool(SlotId)> &hasVerifiedCard);
     AssignmentView ReadAssignmentForLegacyProjection() const;
     void VerifyPinAtExecutionPoint(const VerifyPinRequest &request);
     EuiccPrimitiveResult SwitchLocalProfileAtExecutionPoint(const SwitchProfileRequest &request);

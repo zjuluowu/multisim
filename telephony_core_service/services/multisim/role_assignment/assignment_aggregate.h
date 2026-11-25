@@ -74,7 +74,8 @@ public:
     }
     uint64_t Revision() const { return revision_; }
 private:
-    std::map<DefaultRole, RoleSelection> roles_; // 全局角色约束域不随Modem数量复制。
+    std::optional<RoleSelection> voice_;
+    std::optional<RoleSelection> sms_;
     uint64_t revision_ {0};
     std::map<RadioDomainId, AssignmentTransition> transitions_;
     std::map<uint64_t, uint32_t> roleWriteOwners_;

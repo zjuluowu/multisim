@@ -22,7 +22,7 @@ namespace OHOS::Telephony::MultiSim {
 bool AssignmentAggregate::AcceptRoleSelection(const RoleSelection &selection, uint64_t expectedAssignmentRevision)
 {
     if (selection.role == DefaultRole::Data || expectedAssignmentRevision != revision_) { return false; }
-    roles_[selection.role] = selection;
+    (selection.role == DefaultRole::Voice ? voice_ : sms_) = selection;
     ++revision_;
     return true;
 }
@@ -33,8 +33,7 @@ std::optional<RoleSelection> AssignmentAggregate::ReadRoleSelection(DefaultRole 
         if (!lastData_) { return std::nullopt; }
         return RoleSelection {role, lastData_->second, lastData_->second};
     }
-    const auto found = roles_.find(role);
-    return found == roles_.end() ? std::nullopt : std::make_optional(found->second);
+    return role == DefaultRole::Voice ? voice_ : sms_;
 }
 
 bool AssignmentAggregate::AdmitRoleWriteSet(uint64_t ownerToken, uint32_t members)

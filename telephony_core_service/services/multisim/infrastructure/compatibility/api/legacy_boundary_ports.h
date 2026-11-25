@@ -33,7 +33,10 @@ public:
     virtual EntryCheck CheckSetShowNumberEntry(LegacyCallerRef caller, SlotId slot, LegacyCallbackRef callback) = 0;
     virtual void QueueSetShowNumberTask(const SetShowNumberCommand &command) = 0;
 };
-enum class LegacyPrimaryError { Unavailable, NonSystemCaller, PermissionDenied, InvalidSlot, NoCard, Failed };
+enum class LegacyPrimaryError {
+    Unavailable, NonSystemCaller, PermissionDenied, InvalidSlot, NoCard, Failed,
+    InactiveCard, DatabaseWriteFailed, BroadcastFailed
+};
 class LegacyPrimaryHostPort {
 public:
     virtual ~LegacyPrimaryHostPort() = default;

@@ -304,10 +304,16 @@ def main():
                     if args.action=='all' and backend=='legacy' and target in slices:
                         run(backend+'-'+target+'-execution','audit_replacement_execution.py',['--slice',slices[target],'--binary',binary,'--profiles',reports[0].parent,'--output',session/(backend+'-'+target+'-execution')])
                     if args.action=='all' and backend=='legacy' and target=='sim_primary_slot_real_test':
+                        run('legacy-voice-sms-execution','audit_replacement_execution.py',
+                            ['--slice','legacy-voice-sms','--binary',binary,'--profiles',reports[0].parent,
+                             '--output',session/'legacy-voice-sms-execution'])
                         run('legacy-data-execution','audit_replacement_execution.py',
                             ['--slice','legacy-data','--binary',binary,'--profiles',reports[0].parent,
                              '--output',session/'legacy-data-execution'])
                     if args.action=='all' and backend=='target' and target=='sim_test_target_host':
+                        run('target-voice-sms-execution','audit_replacement_execution.py',
+                            ['--slice','target-voice-sms','--binary',binary,'--profiles',reports[0].parent,
+                             '--output',session/'target-voice-sms-execution'])
                         run('target-data-execution','audit_replacement_execution.py',
                             ['--slice','target-data','--binary',binary,'--profiles',reports[0].parent,
                              '--output',session/'target-data-execution'])

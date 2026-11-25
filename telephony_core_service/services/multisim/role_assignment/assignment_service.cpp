@@ -27,6 +27,12 @@ namespace OHOS::Telephony::MultiSim {
 RequestId StartLegacyPrimarySwitch(AssignmentService &entry, const SwitchPrimaryCommand &command)
 { return entry.StartPrimarySwitch(command); }
 
+void SetLegacyDefaultCallMessage(AssignmentService &entry, const SetRoleCommand &command,
+    const std::optional<BindingRef> &binding, const CompletionPlan &completion)
+{
+    entry.SetDefaultRole(command, binding, completion);
+}
+
 void SetLegacyDefaultData(AssignmentService &entry, const BindingRef &binding, const CompletionPlan &completion)
 {
     entry.SetDefaultRole({DefaultRole::Data, binding.subscription, binding.slot}, binding, completion);
@@ -35,7 +41,9 @@ void SetLegacyDefaultData(AssignmentService &entry, const BindingRef &binding, c
 AssignmentService::AssignmentService(const SlotCatalog &catalog, AssignmentStore &store,
     RadioExecutionPort &radio, AssignmentOutputPort &output, PrimaryTopologyPort &topology,
     LegacyIntCompletionPort &completion, RuntimeEpoch epoch, PrimaryScope primaryScope)
-    : catalog_(catalog), primaryScope_(primaryScope), operations_(epoch, RequestOwner::Assignment), store_(store), radio_(radio),
+    : supportsRoleProvider_(store.SupportsRoleProvider()),
+      independentRoleTransactions_(store.HasIndependentRoleTransactions()), catalog_(catalog), primaryScope_(primaryScope),
+      operations_(epoch, RequestOwner::Assignment), store_(store), radio_(radio),
       output_(output), topology_(topology), completion_(completion) {}
 
 void AssignmentService::CompleteOnce(RequestId request, const CompletionPlan &plan, int32_t result,
@@ -533,14 +541,34 @@ AssignmentView AssignmentService::ReadLegacyAssignment() const
     if (const auto data = assignment_.ReadRoleSelection(DefaultRole::Data)) {
         view.defaultData = data->effective;
     }
+    const auto voice = assignment_.ReadRoleSelection(DefaultRole::Voice);
+    const auto sms = assignment_.ReadRoleSelection(DefaultRole::Sms);
+    if (voice) { view.voicePreference = voice->preference; }
+    if (sms) { view.smsPreference = sms->preference; }
+    if (supportsRoleProvider_) {
+        std::optional<std::pair<SlotId, SubscriptionId>> firstActive;
+        for (const auto &slot : slots) {
+            const auto facts = topology_.ReadPrimaryTarget(slot.slot);
+            if (!facts || !facts->active) { continue; }
+            const auto subscription = facts->binding.subscription;
+            if (view.voicePreference == subscription) { view.defaultVoice = subscription; }
+            if (view.smsPreference == subscription) { view.defaultSms = subscription; }
+            if (!firstActive || slot.slot < firstActive->first) { firstActive.emplace(slot.slot, subscription); }
+        }
+        if (!view.defaultSms && firstActive) { view.defaultSms = firstActive->second; }
+    } else {
+        view.defaultVoice = view.voicePreference;
+        view.defaultSms = view.smsPreference;
+    }
     view.assignmentRevision = assignment_.Revision();
     return view;
 }
 
 int32_t AssignmentService::SetDefaultRole(const SetRoleCommand &command)
 {
-    // The component-only Voice/SMS entry remains available. Data requires an original Binding and waiter.
-    if (command.role == DefaultRole::Data) { return -1; }
+    // Retain the old recording-store component tests. Formal and Provider graphs use original operations.
+    if (command.role == DefaultRole::Data || primaryScope_ == PrimaryScope::C0Only ||
+        supportsRoleProvider_) { return -1; }
     const uint32_t members = command.role == DefaultRole::Voice ? kVoiceParameters : kSmsParameters;
     std::unique_lock<std::recursive_mutex> guard(primaryCommitLock_);
     if (stopping_) { return -1; }
@@ -611,6 +639,138 @@ void AssignmentService::SetDefaultRole(const SetRoleCommand &command, const Bind
     assignment_.ReleaseRoleWriteSet(request.value, kDefaultDataWriteSet);
     operations_.RetireAfterEvidenceRetention(request);
     c0Receipt_.reset();
+}
+
+void AssignmentService::SetDefaultRole(const SetRoleCommand &command, const std::optional<BindingRef> &binding,
+    const CompletionPlan &completion)
+{
+    const auto role = command.role;
+    if (role == DefaultRole::Data) { return; }
+    const auto index = static_cast<size_t>(role);
+    const uint32_t members = independentRoleTransactions_ ?
+        (role == DefaultRole::Voice ? kVoiceParameters : kSmsParameters) : kVoiceParameters | kSmsParameters;
+    std::unique_lock<std::recursive_mutex> guard(primaryCommitLock_);
+    const auto facts = binding ? topology_.ReadPrimaryTarget(binding->slot) : std::nullopt;
+    const auto request = operations_.Begin(command.subscription ?
+        ResolvedTarget {SubscriptionTarget {*command.subscription}} : ResolvedTarget {SlotTarget {command.legacySlot}},
+        completion, std::nullopt);
+    auto &receipt = providerReceipts_[index];
+    const auto finish = [&](LegacyRoleResult result, bool unresolved) {
+        CompleteOnce(request, completion, static_cast<int32_t>(result), unresolved ? TerminalState::NeedsReconciliation :
+            (result == LegacyRoleResult::Success ? TerminalState::Succeeded : TerminalState::Failed), &guard);
+        if (unresolved) {
+            receipt->reconcilable = true;
+        } else {
+            operations_.RetireAfterEvidenceRetention(request);
+        }
+    };
+    const bool validTarget = binding ?
+        facts && binding->subscription.legacySimId > 0 && command.subscription == binding->subscription &&
+            command.legacySlot == binding->slot &&
+            facts->binding.subscription == binding->subscription &&
+            facts->binding.bindingRevision == binding->bindingRevision :
+        !command.subscription && command.legacySlot.legacySlotId == -1;
+    if (stopping_ || !supportsRoleProvider_ || !validTarget || accountRoles_.HasPendingStorageRoles()) {
+        finish(LegacyRoleResult::Failed, false);
+        return;
+    }
+    const auto admit = [&] {
+        if (!assignment_.AdmitRoleWriteSet(request.value, members)) { return; }
+        if (!operations_.AdvanceStep({request, 0, 0}, 1, 0, std::nullopt)) {
+            assignment_.ReleaseRoleWriteSet(request.value, members);
+            return;
+        }
+        receipt.emplace(RoleProviderReceipt {{{{request, 1, 0}, role, command.subscription}, {}}, members});
+    };
+    try {
+        if (facts) { topology_.WithCurrentPrimaryTarget(*facts, admit); }
+        else { admit(); }
+    } catch (const std::exception &) {
+        assignment_.ReleaseRoleWriteSet(request.value, members);
+        if (receipt && receipt->evidence.operation.original.request == request) { receipt.reset(); }
+    }
+    if (!receipt || !(receipt->evidence.operation.original.request == request)) {
+        finish(LegacyRoleResult::Failed, false);
+        return;
+    }
+    const auto original = receipt->evidence.operation;
+    guard.unlock();
+    RoleProviderOutcome outcome;
+    try {
+        outcome = store_.WriteDefaultRole(original);
+    } catch (const std::exception &) {
+        // The Provider may have accepted the original update before the call unwound.
+    }
+    guard.lock();
+    receipt->evidence.outcome = outcome;
+    auto result = LegacyRoleResult::StoreFailed;
+    if (outcome.callFinished && outcome.result != -1 && outcome.effect == RoleProviderEffect::Applied) {
+        const auto previous = assignment_.ReadRoleSelection(role);
+        const bool announce = !((previous ? previous->preference : std::nullopt) == command.subscription);
+        const auto commit = [&] {
+            assignment_.AcceptRoleSelection({role, command.subscription, command.subscription}, assignment_.Revision());
+            accountRoles_.NoteLocalRoleMutation(role, command.subscription);
+        };
+        bool accepted = true;
+        try {
+            if (facts) { accepted = topology_.WithCurrentPrimaryTarget(*facts, commit); }
+            else { commit(); }
+        } catch (const std::exception &) {
+            accepted = false;
+        }
+        result = accepted ? LegacyRoleResult::Success : LegacyRoleResult::Failed;
+        if (accepted && announce) {
+            guard.unlock();
+            bool published = false;
+            try {
+                published = output_.PublishDefaultRoleChanged(role, command.subscription);
+            } catch (const std::exception &) {
+                // The committed role and deduplication survive failure to publish.
+            }
+            guard.lock();
+            if (!published) { result = LegacyRoleResult::PublicationFailed; }
+        }
+    }
+    const bool unresolved = !outcome.Settled();
+    finish(result, unresolved);
+    if (!unresolved) {
+        assignment_.ReleaseRoleWriteSet(request.value, members);
+        receipt.reset();
+    }
+}
+
+std::optional<RoleProviderEvidence> AssignmentService::ReadRoleProviderReceipt(DefaultRole role) const
+{
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
+    if (role == DefaultRole::Data) { return std::nullopt; }
+    const auto &receipt = providerReceipts_[static_cast<size_t>(role)];
+    return receipt ? std::make_optional(receipt->evidence) : std::nullopt;
+}
+
+bool AssignmentService::ReconcileRoleProvider(const RoleProviderOperation &operation)
+{
+    std::unique_lock<std::recursive_mutex> guard(primaryCommitLock_);
+    if (operation.role == DefaultRole::Data) { return false; }
+    auto &receipt = providerReceipts_[static_cast<size_t>(operation.role)];
+    const auto matches = [&] {
+        return receipt && receipt->reconcilable && receipt->evidence.operation == operation;
+    };
+    if (!matches()) { return false; }
+    guard.unlock();
+    std::optional<RoleProviderEvidence> evidence;
+    try {
+        evidence = store_.ReadRoleProviderEvidence(operation);
+    } catch (const std::exception &) {
+        return false;
+    }
+    guard.lock();
+    if (!matches() || !evidence || !(evidence->operation == operation) || !evidence->outcome.Settled()) { return false; }
+    const auto previousEffect = receipt->evidence.outcome.effect;
+    if (previousEffect != RoleProviderEffect::Unknown && previousEffect != evidence->outcome.effect) { return false; }
+    assignment_.ReleaseRoleWriteSet(operation.original.request.value, receipt->writeSet);
+    operations_.RetireAfterEvidenceRetention(operation.original.request);
+    receipt.reset();
+    return true;
 }
 
 void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
@@ -943,6 +1103,8 @@ void AssignmentService::AcceptLocalProfilePreference(const StepRef &, SlotId)
 std::optional<AccountRoleFragment> AssignmentService::PrepareAccountRoleFragment(const AccountRolePlanningInput &input)
 {
     std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
+    if ((!input.existingSubscription || input.useLegacySingleSlotRoles) &&
+        (providerReceipts_[0] || providerReceipts_[1])) { return std::nullopt; }
     return accountRoles_.Prepare(input);
 }
 bool AssignmentService::AcceptDiscoveredRoleProjection(const AccountRoleFragment &planned, SubscriptionId assigned)
@@ -989,12 +1151,14 @@ bool AssignmentService::AcceptReloadedRoleProjectionSet(const std::vector<Stored
     uint64_t loadAttempt, uint64_t expectedRevision, bool historicalView)
 {
     std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
+    if (!historicalView && (providerReceipts_[0] || providerReceipts_[1])) { return false; }
     return accountRoles_.AcceptReloadSet(loaded, loadAttempt, expectedRevision, historicalView);
 }
 bool AssignmentService::AcceptReloadedRoleProjection(const StoredAccountRoleFragment &loaded,
     uint64_t, uint64_t expectedRevision, bool historicalView)
 {
     std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
+    if (!historicalView && (providerReceipts_[0] || providerReceipts_[1])) { return false; }
     return accountRoles_.AcceptSingleProjection(loaded, expectedRevision, historicalView);
 }
 /* 仅声明方法的流程契约：

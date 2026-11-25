@@ -43,6 +43,24 @@ struct C0ParameterEvidence {
     C0ParameterOperation operation;
     C0ParameterOutcome outcome;
 };
+enum class RoleProviderEffect { Unknown, NotWritten, Applied, Partial };
+struct RoleProviderOperation {
+    StepRef original;
+    DefaultRole role;
+    std::optional<SubscriptionId> subscription;
+    bool operator==(const RoleProviderOperation &other) const
+    { return original == other.original && role == other.role && subscription == other.subscription; }
+};
+struct RoleProviderOutcome {
+    int32_t result {-1};
+    bool callFinished {false};
+    RoleProviderEffect effect {RoleProviderEffect::Unknown};
+    bool Settled() const { return callFinished && effect != RoleProviderEffect::Unknown; }
+};
+struct RoleProviderEvidence {
+    RoleProviderOperation operation;
+    RoleProviderOutcome outcome;
+};
 struct RoleStoreResult { int32_t legacyResult; bool writeConfirmed; bool callFinished; };
 // A 专属字段/参数协议。A专属 AssignmentStoreAdapter 实现，保持原 URI/键，非新 schema。
 class AssignmentStore {
@@ -52,6 +70,11 @@ public:
     virtual C0ParameterOutcome WriteC0Parameter(const C0ParameterOperation &, SlotId, const std::string &, bool)
     { return {}; }
     virtual std::optional<C0ParameterEvidence> ReadC0ParameterEvidence(const C0ParameterOperation &)
+    { return std::nullopt; }
+    virtual bool SupportsRoleProvider() const { return false; }
+    virtual bool HasIndependentRoleTransactions() const { return false; }
+    virtual RoleProviderOutcome WriteDefaultRole(const RoleProviderOperation &) { return {}; }
+    virtual std::optional<RoleProviderEvidence> ReadRoleProviderEvidence(const RoleProviderOperation &)
     { return std::nullopt; }
     virtual RoleStoreResult WriteDefaultRole(const SetRoleCommand &command) = 0;
     virtual PrimaryParameterSnapshot ReadPrimaryParameters() = 0;

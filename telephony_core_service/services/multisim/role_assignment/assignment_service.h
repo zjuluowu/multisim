@@ -56,6 +56,10 @@ public:
         RuntimeEpoch epoch, PrimaryScope primaryScope = PrimaryScope::ExistingBranches);
     int32_t SetDefaultRole(const SetRoleCommand &command);
     void SetDefaultRole(const SetRoleCommand &command, const BindingRef &binding, const CompletionPlan &completion);
+    void SetDefaultRole(const SetRoleCommand &command, const std::optional<BindingRef> &binding,
+        const CompletionPlan &completion);
+    std::optional<RoleProviderEvidence> ReadRoleProviderReceipt(DefaultRole role) const;
+    bool ReconcileRoleProvider(const RoleProviderOperation &operation);
     std::optional<C0ParameterEvidence> ReadDataParameterReceipt() const;
     RequestId StartPrimarySwitch(const SwitchPrimaryCommand &command);
     void AcceptRadioStep(const RadioSwitchResult &result) override;
@@ -105,6 +109,14 @@ private:
     void RunTrackedC0(RequestId request, const SwitchPrimaryCommand &command, const SlotDescriptor &target,
         const PrimaryTargetFacts &facts, std::unique_lock<std::recursive_mutex> &guard);
     bool ScheduleC1Retry(RequestId request, uint32_t attempt);
+    struct RoleProviderReceipt {
+        RoleProviderEvidence evidence;
+        uint32_t writeSet;
+        bool reconcilable {false};
+    };
+    std::array<std::optional<RoleProviderReceipt>, 2> providerReceipts_;
+    const bool supportsRoleProvider_;
+    const bool independentRoleTransactions_;
     const SlotCatalog &catalog_;
     const PrimaryScope primaryScope_;
     std::optional<C0Receipt> c0Receipt_;

@@ -17,7 +17,9 @@
 #ifndef OHOS_TELEPHONY_MULTISIM_ASSIGNMENT_ADAPTERS_ASSIGNMENT_STORE_ADAPTER_H
 #define OHOS_TELEPHONY_MULTISIM_ASSIGNMENT_ADAPTERS_ASSIGNMENT_STORE_ADAPTER_H
 
+#include <array>
 #include <string>
+#include <string_view>
 #include "role_assignment/assignment_store.h"
 
 namespace OHOS::Telephony::MultiSim {
@@ -35,9 +37,25 @@ public:
     { return std::nullopt; }
 };
 
+using RoleProviderValues = std::array<std::pair<std::string_view, int32_t>, 2>;
+class AssignmentRoleProviderPort {
+public:
+    virtual ~AssignmentRoleProviderPort() = default;
+    virtual bool HasIndependentRoleTransactions() const = 0;
+    virtual RoleProviderOutcome UpdateDefaultCard(const RoleProviderOperation &, std::string_view uri,
+        const RoleProviderValues &values) = 0;
+    virtual std::optional<RoleProviderEvidence> ReadRoleProviderEvidence(const RoleProviderOperation &) = 0;
+};
+
 class AssignmentStoreAdapter final : public AssignmentStore {
 public:
-    explicit AssignmentStoreAdapter(AssignmentParameterPort &parameters) : parameters_(parameters) {}
+    explicit AssignmentStoreAdapter(AssignmentParameterPort &parameters, AssignmentRoleProviderPort *provider = nullptr)
+        : parameters_(parameters), provider_(provider) {}
+    bool SupportsRoleProvider() const override { return provider_ != nullptr; }
+    bool HasIndependentRoleTransactions() const override
+    { return provider_ && provider_->HasIndependentRoleTransactions(); }
+    RoleProviderOutcome WriteDefaultRole(const RoleProviderOperation &operation) override;
+    std::optional<RoleProviderEvidence> ReadRoleProviderEvidence(const RoleProviderOperation &operation) override;
     bool SupportsTrackedC0() const override { return true; }
     C0ParameterOutcome WriteC0Parameter(const C0ParameterOperation &operation, SlotId slot,
         const std::string &rawIccid, bool userSet) override;
@@ -50,6 +68,7 @@ public:
     AssignmentParameterResult WriteUserPrimaryPreference(bool userSet) override;
 private:
     AssignmentParameterPort &parameters_;
+    AssignmentRoleProviderPort *provider_;
 };
 } // namespace OHOS::Telephony::MultiSim
 

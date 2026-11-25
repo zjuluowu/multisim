@@ -66,6 +66,10 @@ public:
     std::optional<AssignmentService::C0Receipt> ReadC0Receipt() const;
     // A disengaged result means the module rejected a new call before entering A.
     bool ReconcilePrimaryParameter(const C0ParameterOperation &operation);
+    int32_t SetDefaultVoiceSlotId(int32_t slot, LegacyCallerRef caller);
+    int32_t SetDefaultSmsSlotId(int32_t slot, LegacyCallerRef caller);
+    std::optional<RoleProviderEvidence> ReadRoleProviderReceipt(DefaultRole role) const;
+    bool ReconcileRoleProvider(const RoleProviderOperation &operation);
     int32_t SetDefaultCellularDataSlotId(int32_t slot, LegacyCallerRef caller);
     std::optional<C0ParameterEvidence> ReadDataParameterReceipt() const;
     bool ReconcileDataParameter(const C0ParameterOperation &operation);
@@ -86,6 +90,7 @@ private:
     bool AdmitModuleCall(bool originalOnly = false);
     void ReturnModuleCall();
     bool HasPendingBusinessEffects() const;
+    int32_t SetDefaultCallMessageRole(DefaultRole role, int32_t slot, LegacyCallerRef caller);
 
     struct ModuleCall {
         CoreSimModuleHandle module;

@@ -75,9 +75,14 @@ AF2-03 多成员提交、Reload 因果覆盖、Core/SA/IPC、设备与生产切�
 
 输入本地与远端 main `85515ad34788d869806d28d522f0d5eed11ae8ee`。Legacy Voice Core
 与 SMS CMI 特征在双激活 Verify 各 1/1 通过。已核对原 Provider 命令、重复设置、清除、
-公告失败后的状态，以及 Voice 无值和 SMS 首个活跃账户回退。Target 正式入口和完整
-Host 验收继续实施。
-[契约及原始结果](../services/multisim/test/docs/M5_Voice_SMS_Debug.md)
+公告失败后的状态，以及 Voice 无值和 SMS 首个活跃账户回退。
+
+**M5 PARTIAL。** 正式 Target Voice/SMS 已接入实时双卡图、原 Provider 命令、共享请求与完成。
+Developer M1–M5 38/38，结构迁移和 LLDB 四角色单步通过。两种 Provider 事务条件
+均已覆盖，部分和未知效果、换卡、原版本保护及 Stop 已通过专项。Verify、差分、
+完整架构、CI 和 sanitizer 的最终结果随后登记。
+[契约和调试](../services/multisim/test/docs/M5_Voice_SMS_Debug.md) ·
+[阶段原始证据](../services/multisim/test/docs/evidence/af2_m5_20261125/README.md)
 
 <a id="af1-signoff-validation"></a>
 

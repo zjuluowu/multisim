@@ -1,0 +1,54 @@
+settings set target.disable-aslr false
+settings set symbols.enable-external-lookup false
+settings set target.env-vars LLVM_PROFILE_FILE=/tmp/af2-m5-developer/lldb-%p.profraw
+breakpoint set -n OHOS::Telephony::MultiSim::SimModule::SetDefaultVoiceSlotId -o true
+run --gtest_filter=AF2VoiceSms.LiveDualSimSelectsFourRolesThroughLegacyEntries
+frame variable slot caller
+thread step-over
+breakpoint set -n OHOS::Telephony::MultiSim::LegacySimFacade::SetDefaultCallMessageRole -o true
+continue
+frame variable role slot
+breakpoint set -f topology_service.cpp -l 57 -o true
+continue
+frame variable binding account
+breakpoint set -n OHOS::Telephony::MultiSim::AssignmentService::SetDefaultRole -o true
+continue
+frame variable command binding completion
+breakpoint set -n OHOS::Telephony::MultiSim::AssignmentAggregate::AdmitRoleWriteSet -o true
+continue
+frame variable ownerToken members
+breakpoint set -n OHOS::Telephony::MultiSim::AssignmentStoreAdapter::WriteDefaultRole -o true
+continue
+frame variable operation
+thread step-over
+breakpoint set -f assignment_store_adapter.cpp -l 131 -o true
+continue
+frame variable uri simId cardType
+breakpoint set -n OHOS::Telephony::MultiSim::AssignmentAggregate::AcceptRoleSelection -o true
+continue
+frame variable selection expectedAssignmentRevision
+breakpoint set -n OHOS::Telephony::MultiSim::AccountRoleProtocol::NoteLocalRoleMutation -o true
+continue
+frame variable role subscription this->current_.revision
+thread step-over
+thread step-over
+frame variable this->current_.revision this->historical_.revision
+breakpoint set -r Output::PublishDefaultRoleChanged -o true
+continue
+frame variable role subscription
+breakpoint set -n OHOS::Telephony::MultiSim::LegacyCompletion::CompleteLegacyInt -o true
+continue
+frame variable legacyResult plan
+breakpoint set -n OHOS::Telephony::MultiSim::SimModule::SetDefaultSmsSlotId -o true
+continue
+frame variable slot caller
+breakpoint set -n OHOS::Telephony::MultiSim::AssignmentStoreAdapter::WriteDefaultRole -o true
+continue
+frame variable operation
+breakpoint set -n OHOS::Telephony::MultiSim::SimModule::StopAcceptingAndDrain -o true
+continue
+frame variable this->moduleCalls_ this->primaryCallActive_
+breakpoint set -f sim_module_factory.cpp -l 319 -o true
+continue
+frame variable module
+continue

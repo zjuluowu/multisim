@@ -53,4 +53,40 @@ int32_t LegacySimFacade::SetDefaultCellularDataSlotId(SlotId slot, LegacyCallerR
     const auto result = completion.TakeRoleResult(*waiter);
     return !result || *result == -1 ? host.PrimaryError(LegacyPrimaryError::Failed) : *result;
 }
+
+int32_t LegacySimFacade::SetDefaultCallMessageRole(DefaultRole role, SlotId slot, LegacyCallerRef caller,
+    const SlotCatalog &catalog, LegacyPrimaryHostPort &host, const PrimaryTopologyPort &topology,
+    LegacyCompletion &completion, AssignmentService &assignment, const std::function<bool(SlotId)> &hasVerifiedCard)
+{
+    if (!host.IsSystemCaller(caller)) { return host.PrimaryError(LegacyPrimaryError::NonSystemCaller); }
+    if (!host.CanSetTelephonyState(caller)) { return host.PrimaryError(LegacyPrimaryError::PermissionDenied); }
+    std::optional<BindingRef> binding;
+    if (slot.legacySlotId != -1) {
+        if (!catalog.Find(slot) || (role == DefaultRole::Voice && !host.SupportsPrimarySlot(slot))) {
+            return host.PrimaryError(LegacyPrimaryError::InvalidSlot);
+        }
+        if (!hasVerifiedCard(slot)) { return host.PrimaryError(LegacyPrimaryError::NoCard); }
+        const auto facts = topology.ReadPrimaryTarget(slot);
+        if (!facts || !facts->active) { return host.PrimaryError(LegacyPrimaryError::InactiveCard); }
+        binding = facts->binding;
+    }
+
+    const auto waiter = completion.RetainRoleWaiter();
+    if (!waiter) { return host.PrimaryError(LegacyPrimaryError::Failed); }
+    try {
+        SetLegacyDefaultCallMessage(assignment, {role,
+            binding ? std::make_optional(binding->subscription) : std::nullopt, slot}, binding,
+            {SynchronousCompletionRoute {*waiter}, true});
+    } catch (const std::exception &) {
+        // Consume the original waiter even if validation or dispatch unwinds.
+    }
+    const auto result = static_cast<LegacyRoleResult>(completion.TakeRoleResult(*waiter).value_or(-1));
+    switch (result) {
+        case LegacyRoleResult::Success: return 0;
+        case LegacyRoleResult::StoreFailed: return host.PrimaryError(LegacyPrimaryError::DatabaseWriteFailed);
+        case LegacyRoleResult::PublicationFailed: return host.PrimaryError(LegacyPrimaryError::BroadcastFailed);
+        case LegacyRoleResult::Failed: return host.PrimaryError(LegacyPrimaryError::Failed);
+    }
+    return host.PrimaryError(LegacyPrimaryError::Failed);
+}
 } // namespace OHOS::Telephony::MultiSim

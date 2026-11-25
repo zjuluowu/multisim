@@ -155,3 +155,5 @@ M2 的 `AF2Discovery.LiveBindingsFeedExistingC0AndStaleTargetCannotAdvance` 继�
 在 WSL 中选择 `AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry` 调试。该用例先发现两张实体卡，再调用 `SimModule::SetPrimarySlotId(1, caller)`。沿 `LegacySimFacade::SetPrimarySlotId`、`AssignmentService::RunTrackedC0`、`AssignmentStoreAdapter::WriteC0Parameter`、`LegacyCompletion::CompleteLegacyInt` 观察兼容检查、目标资格、原步、逐键写入和同步取值。查看 `ReadAssignment()` 的 Primary/Data 投影及 `StopAcceptingAndDrain()`。前后端断点、参数及账户数据流、可复用的 Data/Voice/SMS 接线与 LLDB 实测见[M3 主卡调试对照](M3_Primary_Debug.md)。
 
 独立默认数据卡的单例、写权和 LLDB 断点见 [M4 开发与调试](M4_Default_Data_Debug.md)。
+
+默认 Voice、SMS 和四角色组合的单例、断点及 Provider 契约见 [M5 开发与调试](M5_Voice_SMS_Debug.md)。

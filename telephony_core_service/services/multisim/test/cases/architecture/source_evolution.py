@@ -15,14 +15,23 @@ def migration_inputs(source, repo):
     m2 = load_manifest('af2_m2')
     m3 = load_manifest('af2_m3')
     prefix = 'telephony_core_service/services/multisim'
+    m5 = load_manifest('af2_m5')
+    before_m5 = committed_inputs(repo, m5['baseline'], prefix, sorted(m5['files']))
+    for name, expected in m5['files'].items():
+        if hashlib.sha256((source / name).read_bytes()).hexdigest() != expected:
+            raise ValueError('AF2 M5 source input differs: ' + name)
+
+    def pre_m5(name):
+        return before_m5[name] if name in before_m5 else (source / name).read_bytes()
+
     m4 = load_manifest('af2_m4')
     before_m4 = committed_inputs(repo, m4['baseline'], prefix, sorted(m4['files']))
     for name, expected in m4['files'].items():
-        if hashlib.sha256((source / name).read_bytes()).hexdigest() != expected:
+        if hashlib.sha256(pre_m5(name)).hexdigest() != expected:
             raise ValueError('AF2 M4 source input differs: ' + name)
 
     def pre_m4(name):
-        return before_m4[name] if name in before_m4 else (source / name).read_bytes()
+        return before_m4[name] if name in before_m4 else pre_m5(name)
 
     before_m3 = committed_inputs(repo, m3['baseline'], prefix, sorted(m3['files']))
     for name, expected in (m3['files'] | m3['added']).items():
@@ -47,7 +56,7 @@ def migration_inputs(source, repo):
         contents = before_m2[name] if name in before_m2 else pre_m3(name)
         if hashlib.sha256(contents).hexdigest() != expected:
             raise ValueError('AF2 M1 source input differs: ' + name)
-    return before_m4 | before_m3 | before_m2 | before_m1
+    return before_m5 | before_m4 | before_m3 | before_m2 | before_m1
 
 
 def matches_prior_layout_delta(name, predecessor):

@@ -121,8 +121,12 @@ class BoundaryGuard(unittest.TestCase):
                                   "AF2 M3 source input differs: BUILD.gn")
 
     def test_m4_role_source_drift(self):
+        self.check_mapped_mutation("infrastructure/request/request_context.h", lambda s: s + '\n// drift\n',
+                                  "AF2 M4 source input differs: infrastructure/request/request_context.h")
+
+    def test_m5_role_source_drift(self):
         self.check_mapped_mutation("role_assignment/assignment_service.cpp", lambda s: s + '\n// drift\n',
-                                  "AF2 M4 source input differs: role_assignment/assignment_service.cpp")
+                                  "AF2 M5 source input differs: role_assignment/assignment_service.cpp")
 
     def test_documentation_migration(self):
         from documentation_migration import documentation_moves

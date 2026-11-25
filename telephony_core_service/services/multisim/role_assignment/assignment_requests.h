@@ -26,6 +26,7 @@
 #include "role_assignment/assignment_types.h"
 
 namespace OHOS::Telephony::MultiSim {
+enum class LegacyRoleResult : int32_t { Success = 0, Failed = -1, StoreFailed = -2, PublicationFailed = -3 };
 struct SetRoleCommand { DefaultRole role; std::optional<SubscriptionId> subscription; SlotId legacySlot; };
 struct SwitchPrimaryCommand {
     SlotTarget target;
@@ -48,6 +49,8 @@ struct AssignmentView {
     uint64_t assignmentRevision;
     std::vector<RadioAssignmentView> radioAssignments; // C按原规则做第三卡投影。
     std::optional<SubscriptionId> defaultData {};
+    std::optional<SubscriptionId> voicePreference {};
+    std::optional<SubscriptionId> smsPreference {};
 };
 struct AccountRolePlanningInput {
     std::optional<SubscriptionId> existingSubscription;

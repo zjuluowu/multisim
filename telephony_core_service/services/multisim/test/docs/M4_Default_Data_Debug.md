@@ -167,3 +167,5 @@ M5 Voice/SMS 可以按各自实际写成员扩展同一请求和完成机制，�
 VS Code GUI 保持人工未验收。日常调试使用 Developer，验收报告来自独立 Verify 与 sanitizer
 输出。产品权限与通知送达、外部客户端缓存、Provider 供证及设备行为按原门禁验证。
 [同轮原始命令与结果](evidence/af2_m4_20261125/README.md)
+
+四种角色在同一模块中的接线与对照见 [M5 Voice / SMS](M5_Voice_SMS_Debug.md)。

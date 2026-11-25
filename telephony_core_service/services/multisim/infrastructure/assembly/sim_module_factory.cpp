@@ -139,6 +139,37 @@ int32_t SimModule::SetDefaultCellularDataSlotId(int32_t slot, LegacyCallerRef ca
         completion_, *assignment_, [this](SlotId target) { return card_.HasVerifiedCard(target); });
 }
 
+int32_t SimModule::SetDefaultVoiceSlotId(int32_t slot, LegacyCallerRef caller)
+{
+    return SetDefaultCallMessageRole(DefaultRole::Voice, slot, caller);
+}
+
+int32_t SimModule::SetDefaultSmsSlotId(int32_t slot, LegacyCallerRef caller)
+{
+    return SetDefaultCallMessageRole(DefaultRole::Sms, slot, caller);
+}
+
+int32_t SimModule::SetDefaultCallMessageRole(DefaultRole role, int32_t slot, LegacyCallerRef caller)
+{
+    if (!ports_.primaryHost) { return -1; }
+    if (!AdmitModuleCall()) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
+    const ModuleCall call {shared_from_this()};
+    return LegacySimFacade::SetDefaultCallMessageRole(role, {slot}, caller, *catalog_, *ports_.primaryHost,
+        topology_, completion_, *assignment_, [this](SlotId target) { return card_.HasVerifiedCard(target); });
+}
+
+std::optional<RoleProviderEvidence> SimModule::ReadRoleProviderReceipt(DefaultRole role) const
+{
+    return assignment_->ReadRoleProviderReceipt(role);
+}
+
+bool SimModule::ReconcileRoleProvider(const RoleProviderOperation &operation)
+{
+    if (!AdmitModuleCall(true)) { return false; }
+    const ModuleCall call {shared_from_this()};
+    return assignment_->ReconcileRoleProvider(operation);
+}
+
 std::optional<C0ParameterEvidence> SimModule::ReadDataParameterReceipt() const
 {
     return assignment_->ReadDataParameterReceipt();
@@ -239,6 +270,7 @@ void SimModule::ReturnModuleCall()
 bool SimModule::HasPendingBusinessEffects() const
 {
     return primaryEffectUnresolved_ || assignment_->ReadDataParameterReceipt() ||
+        assignment_->ReadRoleProviderReceipt(DefaultRole::Voice) || assignment_->ReadRoleProviderReceipt(DefaultRole::Sms) ||
         topology_.PendingDiscoveryCount() || assignment_->PendingDiscoveryRoles();
 }
 
