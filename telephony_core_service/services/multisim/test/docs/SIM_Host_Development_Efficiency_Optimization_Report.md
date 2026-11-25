@@ -108,7 +108,7 @@ flowchart TD
 | 源码无变化 | PASS，退出 0，2.16 秒，GN 0 次，CXX 0 次，链接 0 次。 |
 | Target 测试 CPP 改动 | PASS，退出 0，78.17 秒，GN 0 次，CXX 1 次，链接 1 次。 |
 | Target 生产 CPP 改动 | PASS，退出 0，46.91 秒，GN 0 次，CXX 1 次，链接 1 次。 |
-| Legacy Controller CPP 改动 | PASS，退出 0，236.37 秒，GN 0 次，CXX 0 次，链接 0 次。 |
+| Legacy Controller CPP 改动 | 同输出的 TestMate 前置任务等价调用先取得构建锁，1 次 CXX、1 次链接，234.92 秒。CLI 等锁 231.74 秒，随后使用更新的 ELF 运行 C0 并通过。恢复原 CPP 后再次实际编译及链接，Ninja 227.14 秒。 |
 | Target 装配公共头改动 | PASS，退出 0，56.88 秒，GN 0 次，CXX 2 次，链接 1 次。 |
 | GNI 改动 | PASS，退出 0，1.91 秒，GN 1 次，CXX 0 次，链接 0 次。 |
 | Target CPP 编译负控 | FAIL，退出 1，7.10 秒，GN 0 次，CXX 1 次，链接 0 次。 |
@@ -137,12 +137,18 @@ flowchart TD
 | Profile Safety | 通过，既有 `default.profraw` 原字节保持 |
 | 八个业务 ELF 的测试发现 | 264 个有效文件与行号，Legacy 140、Target 124，覆盖参数化用例 |
 | LLDB 业务验证 | Legacy 双激活进入真实 Core/Controller。Target 进入正式主卡、实时卡观察、原证据与 Stop 场景 |
-| GUI | 未实测 |
+| GUI | 窗口可访问，Windows 前台焦点检查失败，Run、Debug 和刷新未实测 |
 
 正式 Target 主卡单步命中 `SimModule::SetPrimarySlotId`、`AssignmentService::RunTrackedC0`、`AssignmentStoreAdapter::WriteC0Parameter` 和 `LegacyCompletion::CompleteLegacyInt`，保留同一请求逐键凭证、槽号和同步返回。原业务测试继续断言四个参数、Primary/Data 投影、通知和零 Radio 发令。未决效果与 Stop 场景通过原测试断言。双激活直接运行的单次失败保存为独立风险，正式冻结差分及双激活 LLDB 均有各自的 PASS 报告。 [完整门禁原始结果](evidence/sim_host_efficiency_20261124/quality-gates.json) · [Target 主卡单步](evidence/sim_host_efficiency_20261124/target-local-step.log)
 
 ## 最短 VS Code 操作
 
-在 Remote-WSL 打开仓库，首次运行 **Prepare Testing Panel**。打开测试 CPP，在 Testing 面板选所属 ELF 的用例，点击 **Run** 或设断点后点击 **Debug Test**。检查新增用例时，构建所属后端后刷新列表，使用 `@doc` 检查文件定位。两个 C0 模型及精确断点见[主卡调试](M3_Primary_Debug.md)。完整任务范围见[Host 使用说明](Host_Usage.md)。
+1. 在 Remote-WSL 打开仓库。新输出首次运行 **Prepare Testing Panel**，当前机器的默认输出已准备完成。在 Testing 面板可用 `@doc` 筛选当前文件。
+2. 打开 [Legacy 主卡用例](../cases/primary_test.cpp#L4)，在 `sim_primary_slot_real_test` 下运行 `RealSimPrimary.C0CoreToRealManagerAndController`。在 `CoreServiceSim::SetPrimarySlotId` 设断点后点击 **Debug Test**。
+3. 打开 [正式 Target 主卡用例](../cases/target/primary/c0_topology_integration_test.cpp#L1342)，在 `sim_test_target_host` 下运行 `AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry`。在 `SimModule::SetPrimarySlotId` 设断点后点击 **Debug Test**。新增或改名用例后，构建所属后端并刷新 Testing。
 
-GUI 交互在本环境未实测。CLI、真实 ELF 构建、源码位置、LLDB 和源日志分别记录。Host 证据对应 AF-2 M3 Host 实现，产品构建、SA/IPC、设备和生产迁移沿用原验收边界。
+冻结双激活模型及逐步观察点见[主卡调试](M3_Primary_Debug.md)。完整任务范围见[Host 使用说明](Host_Usage.md)。
+
+默认 `.host-out` 的 Prepare 已实际通过。构建一次 Ninja，核对 264 个源码位置。Windows 互操作可用，自动化能定位 Remote WSL 项目窗口。前台焦点检查失败，因此未发送按键，也未采集 GUI Run、Debug 或刷新结果。CLI、源码定位和 LLDB 有独立证据。 [默认 Prepare](evidence/sim_host_efficiency_20261124/default-editor-prepare.json) · [GUI 探测](evidence/sim_host_efficiency_20261124/vscode-gui-probe.log)
+
+Host 证据对应 AF-2 M3 Host 实现，产品构建、SA/IPC、设备和生产迁移沿用原验收边界。

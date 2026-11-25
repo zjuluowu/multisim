@@ -1,0 +1,246 @@
+{
+  "head": "9060f1f9a0bed95c37662522e4d13f24f3fa7be4",
+  "status": "PASS",
+  "started_utc": "2026-11-25T00:48:50.928129+00:00",
+  "finished_utc": "2026-11-25T00:53:24.988077+00:00",
+  "commands": [
+    {
+      "name": "host-build",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/build_replacement.py",
+        "--out",
+        "/mnt/e/github/multisim/.host-out",
+        "--jobs",
+        "3",
+        "--target",
+        "sim_test_host",
+        "sim_component_test",
+        "sim_primary_slot_entry_test",
+        "sim_g2a_query_test",
+        "sim_upstream_query_test",
+        "sim_primary_slot_real_test",
+        "sim_bootstrap_characterization",
+        "sim_test_target_host",
+        "--result",
+        "/tmp/sim-host-efficiency/editor-default/sim-floir576/build.json"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "host-build.log",
+      "seconds": 272.3160205199383
+    },
+    {
+      "name": "editor-discovery",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/check_editor.py",
+        "--out",
+        "/mnt/e/github/multisim/.host-out",
+        "--output",
+        "/tmp/sim-host-efficiency/editor-default/sim-floir576/editor",
+        "--target",
+        "sim_test_host",
+        "sim_component_test",
+        "sim_primary_slot_entry_test",
+        "sim_g2a_query_test",
+        "sim_upstream_query_test",
+        "sim_primary_slot_real_test",
+        "sim_bootstrap_characterization",
+        "sim_test_target_host"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "editor-discovery.log",
+      "seconds": 1.7006353070028126
+    }
+  ],
+  "protected_profile_unchanged": true,
+  "build": {
+    "requested_targets": [
+      "sim_test_host",
+      "sim_component_test",
+      "sim_primary_slot_entry_test",
+      "sim_g2a_query_test",
+      "sim_upstream_query_test",
+      "sim_primary_slot_real_test",
+      "sim_bootstrap_characterization",
+      "sim_test_target_host"
+    ],
+    "dependencies": {
+      "googletest_inventory": 0.004819742986001074,
+      "googletest": {
+        "seconds": 0.03752023505512625,
+        "reused": false,
+        "files": 247
+      },
+      "platform_headers": {
+        "seconds": 0.4290816090069711,
+        "reused": false,
+        "files": 21
+      },
+      "openssl": {
+        "seconds": 0.03067757107783109,
+        "reused": false,
+        "files": 136
+      },
+      "native_runtime": {
+        "seconds": 0.006604659021832049,
+        "reused": false,
+        "files": 4
+      }
+    },
+    "lock_wait_seconds": 0.0004541040398180485,
+    "source_manifest": {
+      "seconds": 0.30420670995954424,
+      "changed": false
+    },
+    "gn": {
+      "seconds_including_compile_database": 0.2099941709311679,
+      "count": 1,
+      "reason": "changed_graph_input:../../telephony_core_service/services/multisim/test/cases/sources.gni"
+    },
+    "compile_database_changed": false,
+    "compile_database_seconds": 0.018,
+    "targets": [
+      "sim_test_host",
+      "sim_component_test",
+      "sim_primary_slot_entry_test",
+      "sim_g2a_query_test",
+      "sim_upstream_query_test",
+      "sim_primary_slot_real_test",
+      "sim_bootstrap_characterization",
+      "sim_test_target_host"
+    ],
+    "route_seconds": 1.1999974958598614e-05,
+    "configuration_changed": false,
+    "ninja": {
+      "seconds": 270.9869665389415,
+      "count": 1,
+      "actions": {
+        "CXX": 25,
+        "LINK": 3,
+        "SOLINK": 0,
+        "AR": 1,
+        "Regenerating": 0
+      }
+    },
+    "binary_identities": {
+      "sim_test_host": [
+        73,
+        2814749767271922,
+        20053544,
+        1795526683118053100,
+        1795526683316507300
+      ],
+      "sim_component_test": [
+        73,
+        844424930297363,
+        5054440,
+        1795526307417661900,
+        1795526307479394200
+      ],
+      "sim_primary_slot_entry_test": [
+        73,
+        4222124650811567,
+        7216016,
+        1795526352572423600,
+        1795526352726477400
+      ],
+      "sim_g2a_query_test": [
+        73,
+        2814749767257696,
+        13331928,
+        1795526460068285400,
+        1795526460356731500
+      ],
+      "sim_upstream_query_test": [
+        73,
+        562949953590346,
+        13124608,
+        1795526645368638100,
+        1795526645556962100
+      ],
+      "sim_primary_slot_real_test": [
+        73,
+        844424930301093,
+        52869232,
+        1795568003057282200,
+        1795568003242687600
+      ],
+      "sim_bootstrap_characterization": [
+        73,
+        281474976879829,
+        20053112,
+        1795567832235866800,
+        1795567832344304700
+      ],
+      "sim_test_target_host": [
+        73,
+        562949953590486,
+        19482392,
+        1795567885725583300,
+        1795567885802402900
+      ]
+    },
+    "lock_hold_seconds": 272.11984939093236
+  },
+  "discovery": {
+    "status": "PASS",
+    "cases": {
+      "sim_test_host": 57,
+      "sim_component_test": 1,
+      "sim_primary_slot_entry_test": 19,
+      "sim_g2a_query_test": 7,
+      "sim_upstream_query_test": 7,
+      "sim_primary_slot_real_test": 48,
+      "sim_bootstrap_characterization": 1,
+      "sim_test_target_host": 124
+    },
+    "errors": [],
+    "timings": [
+      {
+        "target": "sim_test_host",
+        "processes": 2,
+        "seconds": 0.2731639810372144
+      },
+      {
+        "target": "sim_component_test",
+        "processes": 2,
+        "seconds": 0.028933466994203627
+      },
+      {
+        "target": "sim_primary_slot_entry_test",
+        "processes": 2,
+        "seconds": 0.09303313889540732
+      },
+      {
+        "target": "sim_g2a_query_test",
+        "processes": 2,
+        "seconds": 0.060057846014387906
+      },
+      {
+        "target": "sim_upstream_query_test",
+        "processes": 2,
+        "seconds": 0.05703772802371532
+      },
+      {
+        "target": "sim_primary_slot_real_test",
+        "processes": 2,
+        "seconds": 0.30118333199061453
+      },
+      {
+        "target": "sim_bootstrap_characterization",
+        "processes": 2,
+        "seconds": 0.06568957807030529
+      },
+      {
+        "target": "sim_test_target_host",
+        "processes": 2,
+        "seconds": 0.5055627069668844
+      }
+    ]
+  }
+}

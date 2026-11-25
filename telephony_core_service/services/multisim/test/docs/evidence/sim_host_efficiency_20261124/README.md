@@ -20,3 +20,5 @@
 | [首次 Target 单步构建](target-step-through-first-build.json) | 独立 `--debug-build --target sim_test_target_host` 的初次 GN/Ninja 初始化 |
 
 LLDB 与生命周期文本日志仅规范化终端颜色、缩进和行尾。阶段报告保留原命令、退出值、文件身份、配置及已接受的业务结果。C++ 验证改动均已恢复原字节。
+
+2026-11-25 补充 [默认 .host-out Prepare](default-editor-prepare.json) 及 [Windows GUI 探测](vscode-gui-probe.log)。默认目录真实构建及八个 ELF 枚举均通过。Windows 前台焦点检查中止了 GUI 按键阶段。

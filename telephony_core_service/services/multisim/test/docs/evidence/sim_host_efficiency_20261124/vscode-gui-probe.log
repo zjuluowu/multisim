@@ -1,0 +1,20 @@
+2026-11-25 Windows / Remote WSL GUI verification
+WSL distro Ubuntu-24.04, Windows process session 1.
+Approved Windows PowerShell interop probe (exit 0):
+WINDOWS_INTEROP_READY
+
+Launch probe command:
+D:\Microsoft VS Code\Code.exe --new-window --force-renderer-accessibility --folder-uri vscode-remote://wsl+Ubuntu-24.04/mnt/e/github/multisim
+
+Initial 20-second accessible-window probe (exit 2):
+Session 1
+GUI_BLOCKED: No new remote VS Code project window exposed by Windows UI Automation
+
+Read-only follow-up after startup (exit 0):
+GUI_PROBE session=1 code_processes=9 visible_code_main_handles=1 accessible_code_windows=1 accessible_project_windows=1
+PROJECT_WINDOW primary_test.cpp - multisim [WSL: Ubuntu-24.04] - Visual Studio Code
+
+Targeted foreground check before sending the Legacy Run at Cursor shortcuts (exit 2):
+GUI_BLOCKED: Windows would not focus the Remote WSL editor
+
+The foreground check ran before any shortcut was sent. No GUI Run, Debug or refresh result was obtained.
