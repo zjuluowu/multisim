@@ -1,0 +1,159 @@
+{
+  "scope": "Positive execution of selected target-show-number production methods; not full SIM coverage",
+  "methods": [
+    {
+      "owner": "SimModule",
+      "method": "SetShowNumber",
+      "count": 12,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimModule",
+      "method": "GetShowNumber",
+      "count": 6,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimModule",
+      "method": "AcceptMsisdnEvidence",
+      "count": 13,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SetShowNumberUseCase",
+      "method": "StartAtExecutionPoint",
+      "count": 8,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/number/set_show_number_use_case.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SetShowNumberUseCase",
+      "method": "AcceptMsisdnResult",
+      "count": 8,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/number/set_show_number_use_case.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SetShowNumberUseCase",
+      "method": "AcceptLateEvidence",
+      "count": 1,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/number/set_show_number_use_case.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "ShowNumberQuery",
+      "method": "ReadAtLegacyExecutionPoint",
+      "count": 12,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/number/show_number_query.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "ShowNumberQuery",
+      "method": "RunIndependentBackwrite",
+      "count": 3,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/number/show_number_query.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "MsisdnRuntime",
+      "method": "WriteMsisdn",
+      "count": 8,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/card/runtime/msisdn_runtime.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "MsisdnRuntime",
+      "method": "AcceptEvidence",
+      "count": 13,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/card/runtime/msisdn_runtime.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "MsisdnRuntime",
+      "method": "DrainEvidence",
+      "count": 9,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/card/runtime/msisdn_runtime.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "TopologyService",
+      "method": "PrepareNumberTarget",
+      "count": 14,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/topology_metadata.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "TopologyService",
+      "method": "AcceptNumberAfterCardWrite",
+      "count": 5,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/topology_metadata.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "TopologyService",
+      "method": "AcceptIndependentNumberBackwrite",
+      "count": 3,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/topology_metadata.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AccountStoreAdapter",
+      "method": "WriteDisplayNumber",
+      "count": 5,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/account_store_adapter.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AccountRegistry",
+      "method": "AcceptNumberVisibility",
+      "count": 6,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/account_registry.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "LegacyCompletion",
+      "method": "CompleteShowNumber",
+      "count": 8,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/compatibility/events/legacy_completion.cpp"
+      ],
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}
