@@ -198,22 +198,19 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         return request;
     }
 
-    const auto observeRadio = [&] { return radio_.ReadPrimaryRadioObservation(command.target.slot); };
     std::optional<PrimaryRadioObservation> observation;
-    if (c0Only) {
-        guard.unlock();
-        try {
-            if (store_.SupportsTrackedC0()) { observation = observeRadio(); }
-        } catch (const std::exception &) {
-            // No effect has been issued. Reject if the required external observation is unavailable.
+    guard.unlock();
+    try {
+        if (!c0Only || store_.SupportsTrackedC0()) {
+            observation = radio_.ReadPrimaryRadioObservation(command.target.slot);
         }
-        guard.lock();
-        if (!observation) {
-            fail();
-            return request;
-        }
-    } else {
-        observation = observeRadio();
+    } catch (const std::exception &) {
+        // No effect has been issued. Reject if the required external observation is unavailable.
+    }
+    guard.lock();
+    if (!observation || stopping_) {
+        fail();
+        return request;
     }
     const auto &observed = *observation;
     const auto refreshedFacts = topology_.ReadPrimaryTarget(command.target.slot);
@@ -226,8 +223,8 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
     }
     const bool validObservation = observed.slot == command.target.slot && observed.observationRevision != 0 &&
         observed.currentModemId.has_value() && target->rilInstance.has_value();
-    if (!validObservation || (c0Only && !observed.ordinarySwitchAllowed)) {
-        // Unknown is not M0. Other primary paths remain outside this C0 host closure.
+    if (!validObservation) {
+        // An unknown current modem does not describe M0.
         fail();
         return request;
     }
@@ -235,11 +232,26 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         *target->rilInstance == *observed.currentModemId;
     const auto plan = PlanPrimarySwitch({*target, command.userSet, observed.dedicatedPrimaryRilSupported,
         alreadyOnPrimaryModem, observed.vendorMappingRequired});
-    if (!plan || (c0Only && plan->mode != PrimarySwitchMode::AlreadyPrimary) || (plan->mode != PrimarySwitchMode::AlreadyPrimary &&
+    if (!plan || (c0Only && plan->mode != PrimarySwitchMode::AlreadyPrimary) ||
+        (!observed.ordinarySwitchAllowed && plan->mode != PrimarySwitchMode::WithoutModemRestart) ||
+        (plan->mode != PrimarySwitchMode::AlreadyPrimary &&
         plan->mode != PrimarySwitchMode::WithoutModemRestart &&
         plan->mode != PrimarySwitchMode::ThreePhaseProtocol)) {
         fail();
         return request;
+    }
+    std::optional<RadioProtocolMember> targetMember;
+    if (plan->mode != PrimarySwitchMode::AlreadyPrimary) {
+        const auto &routing = observed.routing;
+        if (routing) {
+            const auto member = std::find_if(routing->members.begin(), routing->members.end(),
+                [&](const auto &entry) { return entry.nativeMember == routing->targetMember; });
+            if (member != routing->members.end()) { targetMember = *member; }
+        }
+        if (!targetMember) {
+            fail();
+            return request;
+        }
     }
     if (assignment_.AdmitTransitionWithRoleWriteSet(*target, request.value, kPrimaryRoleWriteSet) !=
         TransitionAdmission::Admitted) {
@@ -258,11 +270,9 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
             operations_.MarkTerminal(request, TerminalState::NeedsReconciliation);
             return request;
         }
-        const SessionRef session {request.epoch,
-            CardApplicationTarget {target->slot, "USIM"}, facts->binding.bindingRevision};
         const StepRef sentStep {request, 2, 0};
         if (!operations_.AdvanceStep({request, 1, 0}, 2, 0, std::nullopt) ||
-            !operations_.RecordSent(sentStep, session) ||
+            !operations_.RecordRadioStep(sentStep) ||
             !assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
                 TransitionPhase::Admitted, TransitionPhase::DevicePending)) {
             fail();
@@ -271,11 +281,11 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         }
         pendingPrimary_.emplace(request.value, PendingPrimarySwitch {sentStep, *facts, *target,
             facts->iccid, command.userSet, command.completion, plan->mode, 0,
-            nextProtocolSession_++, {}, {}, {}, false, 0, false, false, false, 0, std::nullopt,
-            std::nullopt});
+            nextProtocolSession_++, targetMember->nativeMember, {*targetMember}, {}, {},
+            false, 0, false, false, false, 0, std::nullopt, std::nullopt});
         output_.PublishPrimaryPhase(false, command.userSet);
-        const RadioSwitchRequest device {sentStep, target->slot, *target->radioDomain, plan->mode,
-            facts->binding, pendingPrimary_.at(request.value).protocolSession, 0, 1};
+        const RadioSwitchRequest device {sentStep, targetMember->route, *target->radioDomain, plan->mode,
+            facts->binding, pendingPrimary_.at(request.value).protocolSession, 0, 1, targetMember};
         if (!SubmitRadioOutsideCommit(device, guard)) {
             const auto pending = pendingPrimary_.find(request.value);
             const auto operation = operations_.Read(request);
@@ -302,11 +312,9 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
             TransitionPhase::Admitted, TransitionPhase::ParametersWritten);
         output_.PublishPrimaryPhase(false, false); // Legacy C1 status event ignores the public input flag.
-        const SessionRef session {request.epoch,
-            CardApplicationTarget {target->slot, "USIM"}, facts->binding.bindingRevision};
         const StepRef sentStep {request, 2, 0};
         if (!operations_.AdvanceStep({request, 1, 0}, 2, 0, std::nullopt) ||
-            !operations_.RecordSent(sentStep, session) ||
+            !operations_.RecordRadioStep(sentStep) ||
             !assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
                 TransitionPhase::ParametersWritten, TransitionPhase::DevicePending)) {
             fail();
@@ -314,9 +322,9 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
             return request;
         }
         PendingPrimarySwitch pending {sentStep, *facts, *target, facts->iccid, command.userSet,
-            command.completion, plan->mode, 1, nextProtocolSession_++, {}, {}, oldParameters,
-            false, 0, false, false, false, 0, std::nullopt, std::nullopt};
-        for (const auto &slot : catalog_.Slots()) { pending.members.push_back(slot.slot); }
+            command.completion, plan->mode, 1, nextProtocolSession_++, targetMember->nativeMember,
+            observed.routing->members, {}, oldParameters, false, 0, false, false, false, 0,
+            std::nullopt, std::nullopt};
         pendingPrimary_.emplace(request.value, std::move(pending));
         (void)SubmitC1Round(pendingPrimary_.at(request.value), guard);
         return request;
@@ -781,12 +789,12 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
     const auto operation = operations_.Read(result.step.request);
     if (!assignment_.OwnsRoleWriteSet(result.step.request.value, kPrimaryRoleWriteSet) ||
         !operation || operation->terminal != TerminalState::Open ||
-        !(pending->second.step == result.step) || !operation->context.sentSession ||
+        !(pending->second.step == result.step) || !operation->context.deviceStepRegistered ||
         result.protocolSession != pending->second.protocolSession) {
         return;
     }
     if (pending->second.mode == PrimarySwitchMode::WithoutModemRestart) {
-        if (!(result.memberSlot == pending->second.target.slot) || !result.expectedBinding ||
+        if (!(result.memberSlot == pending->second.members.front().route) || !result.expectedBinding ||
             !(result.expectedBinding->subscription == pending->second.facts.binding.subscription) ||
             result.expectedBinding->bindingRevision != pending->second.facts.binding.bindingRevision) {
             return;
@@ -796,8 +804,8 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
         (result.expectedBinding &&
          (!(result.expectedBinding->subscription == pending->second.facts.binding.subscription) ||
           result.expectedBinding->bindingRevision != pending->second.facts.binding.bindingRevision)) ||
-        std::find(pending->second.members.begin(), pending->second.members.end(), result.memberSlot) ==
-            pending->second.members.end() ||
+        std::none_of(pending->second.members.begin(), pending->second.members.end(),
+            [&](const auto &member) { return member.route == result.memberSlot; }) ||
         std::find(pending->second.completedMembers.begin(), pending->second.completedMembers.end(), result.memberSlot) !=
             pending->second.completedMembers.end()) {
         return;
@@ -826,10 +834,7 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
             if (!operations_.AdvanceStep(pending->second.step, nextStep,
                 pending->second.step.attempt, std::nullopt)) { return; }
             pending->second.step.step = nextStep;
-            const SessionRef session {pending->second.step.request.epoch,
-                CardApplicationTarget {pending->second.target.slot, "USIM"},
-                pending->second.facts.binding.bindingRevision};
-            if (!operations_.RecordSent(pending->second.step, session)) { return; }
+            if (!operations_.RecordRadioStep(pending->second.step)) { return; }
             pending->second.phase = nextPhase;
             (void)SubmitC1Round(pending->second, guard);
             return;
@@ -887,7 +892,7 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
         return;
     }
     const auto currentFacts = topology_.ReadPrimaryTarget(pending->second.target.slot);
-    const bool bindingCurrent = currentFacts &&
+    const bool bindingCurrent = currentFacts && currentFacts->active &&
         currentFacts->binding.subscription == pending->second.facts.binding.subscription &&
         currentFacts->binding.slot == pending->second.facts.binding.slot &&
         currentFacts->binding.bindingRevision == pending->second.facts.binding.bindingRevision &&
@@ -970,7 +975,9 @@ void AssignmentService::AcceptLateRadioEvidence(const RadioSwitchResult &result)
         !(result.expectedBinding->subscription == pending->second.facts.binding.subscription) ||
         result.expectedBinding->bindingRevision != pending->second.facts.binding.bindingRevision ||
         result.protocolSession != pending->second.protocolSession ||
-        !(result.memberSlot == pending->second.target.slot)) {
+        std::none_of(pending->second.members.begin(), pending->second.members.end(), [&](const auto &member) {
+            return member.nativeMember == pending->second.targetMember && member.route == result.memberSlot;
+        })) {
         return;
     }
     // Late evidence is recorded separately from the original completion/step.
@@ -1024,9 +1031,7 @@ bool AssignmentService::AcceptC1RetryDue(RequestId request, std::unique_lock<std
     pending->second.step.step = nextStep;
     pending->second.step.attempt = pending->second.attemptCount;
     pending->second.protocolSession = nextProtocolSession_++;
-    const SessionRef session {request.epoch, CardApplicationTarget {pending->second.target.slot, "USIM"},
-        pending->second.facts.binding.bindingRevision};
-    if (!operations_.RecordSent(pending->second.step, session) ||
+    if (!operations_.RecordRadioStep(pending->second.step) ||
         !assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(), request.value,
             TransitionPhase::Reconciling, TransitionPhase::DevicePending)) {
         return false;
@@ -1059,7 +1064,7 @@ bool AssignmentService::SubmitC1Round(const PendingPrimarySwitch &round,
     // A synchronous result may advance or retire this round before Submit returns.
     const StepRef step = round.step;
     const auto domain = round.target.radioDomain.value();
-    const auto target = round.target.slot;
+    const auto targetMember = round.targetMember;
     const auto binding = round.facts.binding;
     const uint32_t protocolSession = round.protocolSession;
     const uint32_t phase = round.phase;
@@ -1072,9 +1077,9 @@ bool AssignmentService::SubmitC1Round(const PendingPrimarySwitch &round,
     };
     for (const auto &member : members) {
         if (!stillCurrent()) { return true; }
-        const RadioSwitchRequest device {step, member, domain, PrimarySwitchMode::ThreePhaseProtocol,
-            member == target ? std::optional<BindingRef>{binding} : std::nullopt,
-            protocolSession, phase, static_cast<uint32_t>(members.size())};
+        const RadioSwitchRequest device {step, member.route, domain, PrimarySwitchMode::ThreePhaseProtocol,
+            member.nativeMember == targetMember ? std::optional<BindingRef>{binding} : std::nullopt,
+            protocolSession, phase, static_cast<uint32_t>(members.size()), member};
         if (!SubmitRadioOutsideCommit(device, guard)) {
             if (!stillCurrent()) { return true; }
             assignment_.AcceptTransitionPhase(domain, step.request.value, TransitionPhase::DevicePending,

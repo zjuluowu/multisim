@@ -53,11 +53,18 @@ public:
     AssignmentParameterResult Write(const std::string &key,const std::string &value) override
     { writes.emplace_back(key,value); values[key]=value; return {0,true}; }
 };
+const std::vector<RadioProtocolMember> kControlledProtocolMembers {
+    {100, {0}, 8}, {200, {1}, 9}
+};
+
 class Radio final : public RadioExecutionPort {
 public:
     bool directSupported {true};
     PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const override
-    { return {slot, slot.legacySlotId == 0 ? 0 : 1, directSupported, false, 9}; }
+    {
+        return {slot, slot.legacySlotId == 0 ? 0 : 1, directSupported, false, 9, true,
+            PrimaryProtocolRouting {slot.legacySlotId == 0 ? 100u : 200u, kControlledProtocolMembers}};
+    }
     bool SwitchPrimaryRadio(const RadioSwitchRequest &request) override { requests.push_back(request); return true; }
     void EndLegacySenseSwitch(const StepRef &, const RadioDomainId &) override { ++ended; }
     std::vector<RadioSwitchRequest> requests;
@@ -377,12 +384,22 @@ public:
     std::vector<std::pair<uint64_t, RadioSwitchRequest>> requests;
     unsigned unrelatedRilRequests {0};
     bool SubmitUnrelatedRilRequest() { ++unrelatedRilRequests; return true; }
+    std::vector<RadioProtocolMember> protocolMembers = kControlledProtocolMembers;
     PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const override
-    { return {slot, alreadyPrimary ? 0 : (slot.legacySlotId == 0 ? 0 : 1), directSupported, false, 9}; }
+    {
+        return {slot, alreadyPrimary || slot.legacySlotId == 0 ? 0 : 1, directSupported, false, 9, true,
+            PrimaryProtocolRouting {slot.legacySlotId == 0 ? 100u : 200u, protocolMembers}};
+    }
     RadioSubmitDisposition disposition {RadioSubmitDisposition::HandoffAccepted};
+    std::function<void(const RadioSwitchRequest &)> beforeSendPermission;
     std::function<void(uint64_t,const RadioSwitchRequest &)> onSynchronousResponse;
     RadioSubmitResult SubmitPrimaryRadio(const RadioSwitchRequest &request, uint64_t token) override
     {
+        if (beforeSendPermission) { beforeSendPermission(request); }
+        if (request.member && std::find(protocolMembers.begin(), protocolMembers.end(), *request.member) ==
+            protocolMembers.end()) {
+            return {RadioSubmitDisposition::ConfirmedNotSent, std::nullopt};
+        }
         if (onSynchronousResponse) { onSynchronousResponse(token, request); }
         if (disposition == RadioSubmitDisposition::ConfirmedNotSent) {
             return {RadioSubmitDisposition::ConfirmedNotSent, std::nullopt};
@@ -397,9 +414,7 @@ public:
 };
 
 struct ResourceFixture {
-    SlotCatalog catalog {{
-        {SlotId{0},EndpointKind::Physical,0,RadioDomainId{"m0"},VisibilityClass::Ordinary,false},
-        {SlotId{1},EndpointKind::Physical,1,RadioDomainId{"m1"},VisibilityClass::Ordinary,false}}, {2,2,2,2,2}};
+    SlotCatalog catalog;
     AccountStorePort accountStore;
     TopologyService topology {catalog,accountStore,RuntimeEpoch{6,2}};
     Parameters parameters;
@@ -415,7 +430,10 @@ struct ResourceFixture {
     std::shared_ptr<ControlledRetryScheduler> schedulerOwner=std::make_shared<ControlledRetryScheduler>();
     ControlledRetryScheduler &scheduler=*schedulerOwner;
     BindingRef target;
-    ResourceFixture()
+    explicit ResourceFixture(std::vector<SlotDescriptor> endpoints = {
+        {{0}, EndpointKind::Physical, 0, RadioDomainId {"m0"}, VisibilityClass::Ordinary, false},
+        {{1}, EndpointKind::Physical, 1, RadioDomainId {"m1"}, VisibilityClass::Ordinary, false}})
+        : catalog(std::move(endpoints), {2, 2, 2, 2, 2})
     {
         EXPECT_TRUE(barrier.RegisterForInitialCheck(key));
         EXPECT_TRUE(radio.Initialize(key, {{6,2}, true, true}));
@@ -983,6 +1001,65 @@ TEST(TargetPrimaryB,C1InlineRepliesFinishWithoutAccessingRetiredRound)
     EXPECT_EQ(f.completion.results, (std::vector<int32_t>{0}));
     EXPECT_EQ(f.radio.ReadResourceState(f.key), ResourceState::Available);
     EXPECT_FALSE(f.service->HasPendingDeviceEffects());
+}
+
+TEST(TargetPrimaryB,RadioProtocolsUseNativeMembersInsteadOfEndpointCount)
+{
+    ResourceFixture fixture({
+        {{0}, EndpointKind::Physical, 0, RadioDomainId {"m0"}, VisibilityClass::Ordinary, false},
+        {{1}, EndpointKind::Physical, 1, RadioDomainId {"m1"}, VisibilityClass::Ordinary, false},
+        {{2}, EndpointKind::Physical, 0, RadioDomainId {"m0"}, VisibilityClass::Ordinary, false},
+        {{3}, EndpointKind::Physical, 1, RadioDomainId {"m1"}, VisibilityClass::Ordinary, false}});
+    fixture.platform.protocolMembers.push_back(kControlledProtocolMembers.back());
+
+    fixture.Start(true);
+    for (const uint32_t phase : {1u, 2u, 4u}) {
+        const size_t begin = phase == 1 ? 0u : phase == 2 ? 2u : 4u;
+        ASSERT_EQ(fixture.platform.requests.size(), begin + 2);
+        for (size_t member = 0; member < kControlledProtocolMembers.size(); ++member) {
+            const auto request = fixture.platform.requests[begin + member].second;
+            EXPECT_EQ(request.phase, phase);
+            EXPECT_EQ(request.member, kControlledProtocolMembers[member]);
+            EXPECT_EQ(request.memberCount, 2u);
+            ASSERT_TRUE(fixture.ResultAt(begin + member, EffectKnowledge::ConfirmedApplied, 0, phase == 2));
+        }
+        ASSERT_TRUE(fixture.scheduler.WaitOwnerIdle());
+    }
+    EXPECT_EQ(fixture.completion.results, std::vector<int32_t> {0});
+    EXPECT_EQ(fixture.radio.SubmittedCommands(), 6u);
+    EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
+}
+
+TEST(TargetPrimaryB,ConflictingNativeMemberRoutesRejectBeforeStoreAndSubmit)
+{
+    ResourceFixture fixture;
+    fixture.platform.protocolMembers.push_back({200, {2}, 11});
+    fixture.Start(true);
+
+    EXPECT_TRUE(fixture.platform.requests.empty());
+    EXPECT_TRUE(fixture.parameters.writes.empty());
+    EXPECT_EQ(fixture.completion.results, std::vector<int32_t> {-1});
+    EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
+}
+
+TEST(TargetPrimaryB,RouteRevocationStopsUnsentMemberAndKeepsOriginalRound)
+{
+    ResourceFixture fixture;
+    fixture.platform.beforeSendPermission = [&](const RadioSwitchRequest &request) {
+        if (request.target == SlotId {1}) { ++fixture.platform.protocolMembers.back().routeRevision; }
+    };
+
+    fixture.Start(true);
+
+    ASSERT_EQ(fixture.platform.requests.size(), 1u);
+    EXPECT_EQ(fixture.platform.requests.front().second.phase, 1u);
+    EXPECT_EQ(fixture.platform.requests.front().second.member, kControlledProtocolMembers.front());
+    EXPECT_EQ(fixture.radio.ReadResourceState(fixture.key), ResourceState::Quarantined);
+    EXPECT_FALSE(fixture.ResultAt(0, EffectKnowledge::ConfirmedApplied, 0, false, true, true, false));
+    EXPECT_TRUE(fixture.ResultAt(0, EffectKnowledge::ConfirmedApplied, 0, false, true, true, true));
+    EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
+    EXPECT_EQ(fixture.platform.requests.size(), 1u);
+    EXPECT_TRUE(fixture.completion.results.empty());
 }
 
 TEST(TargetPrimaryB,PlatformHandoffDoesNotHoldAssignmentCommitLock)

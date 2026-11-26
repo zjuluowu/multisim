@@ -37,3 +37,27 @@ python3 -B "$TEST/scripts/run_architecture.py" --with-gn --migration --output "$
 本检查点为组件与共用合同验证。正式图真实协议成员、路由与发令许可线性化、正式回包及同步入口、
 B/C1 逐键 Store 以及业务和资源两遍关闭收据仍待闭合。A 的 Store、通知和 Legacy Sense 结束调用
 仍有锁内路径。本批未启用正式 B/C1。D02～D06 及产品门禁仍按唯一状态推进。
+
+## 原生协议成员及路由验证
+
+输入交接检查点 `30ed18ef53bf76ea48946bc0f5f9fe1aa372bad8`。
+交接检查点的独立 [ASan 61/61](handoff-asan.json.gz) 与 [TSan 61/61](handoff-tsan.json.gz)
+覆盖 Radio 组件，早于本节新增路由代码。
+
+A 的原步票使用 `RuntimeOperationStore::RecordRadioStep`，保留原 StepRef 而无需卡应用会话。
+受控平台为 R 提供目标原生成员和各成员路由及修订。R 合并同一成员的相同事实并拒绝冲突路由。
+A 在原参数写入和发令之前冻结事实，B 选择原目标成员，C1 各阶段看同一份成员表。
+
+| 新测试 | 生产路径及断言 |
+|---|---|
+| `RadioProtocolsUseNativeMembersInsteadOfEndpointCount` | 四端点共享两个原生成员，其中一个重复输入。CHECK、UPDATE/NOTIFY 与 COMPLETE 各发两笔，原生 ID 不依赖槽索引。 |
+| `ConflictingNativeMemberRoutesRejectBeforeStoreAndSubmit` | 同一原生成员带冲突路由时无参数写入、无设备提交。 |
+| `RouteRevocationStopsUnsentMemberAndKeepsOriginalRound` | 在第二成员的 Host 平台发送许可前撤销原路由。仅首成员实际交接，组租约隔离，原结束与复用证据结清。 |
+| `RadioStepRegistrationDoesNotRequireACardApplication` | 拒绝重复步及旧步登记，Radio 票没有卡应用记录。 |
+
+初轮测试遗漏给拓扑集成夹具提供协议成员事实，旧 `T2C1InFlightDoesNotBlockUnrelatedDiscoveryReservation`
+的原发令断言失败。补齐该夹具的受控事实并保留原断言，复验 Target [181/181](routing-target-full.json.gz)。
+[首轮失败](routing-initial.json.gz) · [迁移与 GN](routing-architecture.log.gz)。
+
+平台许可的路由验证已在受控适配器上执行。正式 SimModule、A/T/R 联合发令许可、重试刷新、逐键 Store
+及原结果接纳仍是 D01 技术事项。正式路径之外的 Host 路由事实不提供硬件供证。

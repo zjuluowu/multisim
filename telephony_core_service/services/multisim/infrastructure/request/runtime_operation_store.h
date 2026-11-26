@@ -67,16 +67,9 @@ public:
     bool AdvanceStep(StepRef expected, uint32_t nextStep, uint32_t attempt,
         std::optional<SessionRef> sentSession); // 同域推进，禁止外部直接改Context。
     bool RecordSent(StepRef expected, const SessionRef &sentSession)
-    {
-        const auto found = operations_.find(expected.request.value);
-        if (expected.request.epoch != epoch_ || expected.request.owner != owner_ || found == operations_.end() ||
-            !(found->second.context.step == expected) || found->second.terminal != TerminalState::Open ||
-            found->second.context.sentSession) {
-            return false;
-        }
-        found->second.context.sentSession = sentSession;
-        return true;
-    }
+    { return RegisterDeviceStep(expected, sentSession); }
+    bool RecordRadioStep(StepRef expected)
+    { return RegisterDeviceStep(expected, std::nullopt); }
     std::optional<RuntimeOperation> Read(RequestId request) const;
     ResultAdmission AcceptResult(StepRef step, EffectKnowledge evidence);
     bool AcceptLateEvidence(StepRef step, EffectKnowledge evidence);
@@ -105,6 +98,18 @@ public:
         }
     }
 private:
+    bool RegisterDeviceStep(StepRef expected, std::optional<SessionRef> sentSession)
+    {
+        const auto found = operations_.find(expected.request.value);
+        if (expected.request.epoch != epoch_ || expected.request.owner != owner_ || found == operations_.end() ||
+            !(found->second.context.step == expected) || found->second.terminal != TerminalState::Open ||
+            found->second.context.deviceStepRegistered) {
+            return false;
+        }
+        found->second.context.sentSession = std::move(sentSession);
+        found->second.context.deviceStepRegistered = true;
+        return true;
+    }
     // 由所属 Owner 的短提交域保护；未来实现使用 FFRT，不持锁跨 I/O。
     RuntimeEpoch epoch_;
     RequestOwner owner_;
@@ -137,6 +142,7 @@ inline bool RuntimeOperationStore::AdvanceStep(StepRef expected, uint32_t nextSt
         return false;
     }
     found->second.context.step = StepRef {expected.request, nextStep, attempt};
+    found->second.context.deviceStepRegistered = sentSession.has_value();
     found->second.context.sentSession = std::move(sentSession);
     found->second.deviceEffect = EffectKnowledge::NotSent;
     stepConsumed_[expected.request.value] = false;

@@ -180,7 +180,8 @@ public:
     PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const override
     {
         if (beforeRead) { const_cast<Radio *>(this)->beforeRead(); beforeRead = {}; }
-        return {slot, 0, false, false, 9};
+        return {slot, 0, false, false, 9, true,
+            PrimaryProtocolRouting {slot == SlotId {0} ? 100u : 200u, {{100, {0}, 8}, {200, {1}, 9}}}};
     }
     bool SwitchPrimaryRadio(const RadioSwitchRequest &) override { ++switches; return true; }
     void EndLegacySenseSwitch(const StepRef &, const RadioDomainId &) override { ++switches; }

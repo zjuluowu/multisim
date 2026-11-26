@@ -237,6 +237,12 @@ GN、规则及历史迁移指纹校验通过。正式模块仍需实现真实成
 同步入口和逐键原效果接线。状态保持 `AF2_M9_IN_PROGRESS`。
 [D01 运行证据](../services/multisim/test/docs/evidence/af2_m9_d01_20261126/README.md)
 
+**D01 协议成员检查点。** Host 组件按设备端提供的原生协议身份、路由和版本执行。
+A 移除槽列表成员推导及 Binding 代次构造卡会话的用法，R 对重复与冲突事实校验。
+执行四端点两原生协议成员、路由撤销及原设备证据结清。Target 181/181，独立语法、逻辑 GN
+与新旧源码指纹检查通过。ASan/TSan 各 61/61 对应前一交接检查点。
+正式模块仍封闭 B/C1，原生产品证据另计。[D01 原始证据](../services/multisim/test/docs/evidence/af2_m9_d01_20261126/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）

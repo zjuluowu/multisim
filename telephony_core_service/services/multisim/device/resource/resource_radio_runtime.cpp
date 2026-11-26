@@ -37,7 +37,26 @@ bool ResourceRadioRuntime::OwnerCallbacksDrained() const
 
 PrimaryRadioObservation ResourceRadioRuntime::ReadPrimaryRadioObservation(SlotId slot) const
 {
-    return platform_.ReadPrimaryRadioObservation(slot);
+    auto observed = platform_.ReadPrimaryRadioObservation(slot);
+    if (!observed.routing) { return observed; }
+    std::map<uint32_t, RadioProtocolMember> byNativeMember;
+    std::set<SlotId> routes;
+    std::vector<RadioProtocolMember> unique;
+    for (const auto &member : observed.routing->members) {
+        const auto [existing, inserted] = byNativeMember.emplace(member.nativeMember, member);
+        if (member.routeRevision == 0 || member.route.legacySlotId < 0 ||
+            (inserted && !routes.insert(member.route).second) || !(existing->second == member)) {
+            observed.routing.reset();
+            return observed;
+        }
+        if (inserted) { unique.push_back(member); }
+    }
+    if (!byNativeMember.count(observed.routing->targetMember)) {
+        observed.routing.reset();
+    } else {
+        observed.routing->members = std::move(unique);
+    }
+    return observed;
 }
 
 bool ResourceRadioRuntime::SameGroup(const RadioSwitchRequest &left, const RadioSwitchRequest &right)
@@ -80,7 +99,8 @@ bool ResourceRadioRuntime::SwitchPrimaryRadio(const RadioSwitchRequest &request)
     {
         std::lock_guard<std::mutex> guard(lock_);
         if (mode_ != Mode::Execute || stopping_ || sink_.expired() || dispatch_.expired() ||
-            nextTransportToken_ == std::numeric_limits<uint64_t>::max()) { return false; }
+            nextTransportToken_ == std::numeric_limits<uint64_t>::max() ||
+            (request.member && !(request.member->route == request.target))) { return false; }
         Group *group = FindGroup(request);
         if (!group) {
             const auto lease = barrier_.Acquire(resources_, request.step);

@@ -21,11 +21,27 @@
 
 #include <functional>
 #include <optional>
+#include <vector>
 #include "infrastructure/request/request_ref.h"
 #include "role_assignment/assignment_types.h"
 #include "role_assignment/primary/primary_execution.h"
 
 namespace OHOS::Telephony::MultiSim {
+struct RadioProtocolMember {
+    uint32_t nativeMember;
+    SlotId route;
+    uint64_t routeRevision;
+    bool operator==(const RadioProtocolMember &other) const
+    {
+        return nativeMember == other.nativeMember && route == other.route && routeRevision == other.routeRevision;
+    }
+};
+// Platform routing facts. Target member describes a route for the requested endpoint.
+// Multiple endpoints can select the same native member.
+struct PrimaryProtocolRouting {
+    uint32_t targetMember;
+    std::vector<RadioProtocolMember> members;
+};
 struct PrimaryRadioObservation {
     SlotId slot;
     std::optional<int32_t> currentModemId;
@@ -33,6 +49,7 @@ struct PrimaryRadioObservation {
     bool vendorMappingRequired;
     uint64_t observationRevision;
     bool ordinarySwitchAllowed {true};
+    std::optional<PrimaryProtocolRouting> routing {};
 };
 struct RadioSwitchRequest {
     StepRef step;
@@ -43,6 +60,7 @@ struct RadioSwitchRequest {
     uint32_t protocolSession;
     uint32_t phase;
     uint32_t memberCount {1};
+    std::optional<RadioProtocolMember> member {};
 };
 struct RadioSwitchResult {
     StepRef step;
@@ -99,6 +117,9 @@ class RadioPlatformPort {
 public:
     virtual ~RadioPlatformPort() = default;
     virtual PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const = 0;
+    // For a routed request the adapter must verify the original native member,
+    // endpoint and route revision in the same domain as irreversible send admission.
+    // An invalidated route must return ConfirmedNotSent unless the send already won.
     virtual RadioSubmitResult SubmitPrimaryRadio(const RadioSwitchRequest &request,
         uint64_t transportToken) = 0;
     virtual void EndLegacySenseSwitch(const StepRef &owner, const RadioDomainId &domain) = 0;

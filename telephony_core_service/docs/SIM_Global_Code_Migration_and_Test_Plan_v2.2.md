@@ -14,7 +14,7 @@
 | 同步查询、同步修改 | `AF2AccountMetadata.LiveDualSimMetadataAndFourRoles` | M6；共用名称、标签、重复和失败序列用 SIM023-LEGACY-ACCOUNT-METADATA-DUAL |
 | 持久偏好 | `AF2ImsPreference.LiveDualSimSavesAndQueriesProviderPreference` | M7A，读源及空 Binding 各自回归 |
 | 四角色 | `AF2VoiceSms.LiveDualSimSelectsFourRolesThroughLegacyEntries` | M3～M5 正式入口，复用角色写集 |
-| B/C1 异步 | `TargetPrimaryB` 的 B、C1 和成员交接专项 | 组件路径。正式组合根仍为 ObserveOnly／C0Only |
+| B/C1 异步 | `TargetPrimaryB` 的 B、C1 和成员交接专项 | 组件已验证原生路由、成员去重、原步票和 A 锁外 Submit。正式组合根仍为 ObserveOnly／C0Only |
 | 号码组合 | `AF2ShowNumber.LiveCardNumberWriteUpdatesAccountAndCompletes` | M7B，原任务固定关系、原设备结果、Provider 写和回调 |
 | 卡安全短请求 | Legacy `SimStateManager::UnlockPin` | Target 需接卡应用会话、原返回、错误剩余次数、LOCKED→NOT_READY、厂商回调 |
 | ICCID EF | Legacy `SimFile::ProcessGetIccIdDone`，Target `LoadSession` | Target 仍需用真实 EF 回包驱动解码、Records、发现和绑定 |

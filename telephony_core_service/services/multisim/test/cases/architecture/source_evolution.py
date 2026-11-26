@@ -15,23 +15,21 @@ def migration_inputs(source, repo):
     m2 = load_manifest('af2_m2')
     m3 = load_manifest('af2_m3')
     prefix = 'telephony_core_service/services/multisim'
-    d01 = load_manifest('af2_m9_d01')
-    before_d01 = committed_inputs(repo, d01['baseline'], prefix, sorted(d01['files']))
-    for name, expected in d01['files'].items():
-        if hashlib.sha256((source / name).read_bytes()).hexdigest() != expected:
-            raise ValueError('AF2 M9 D01 source input differs: ' + name)
-
-    def pre_d01(name):
-        return before_d01[name] if name in before_d01 else (source / name).read_bytes()
-
-    m9 = load_manifest('af2_m9')
-    before_m9 = committed_inputs(repo, m9['baseline'], prefix, sorted(m9['files']))
-    for name, expected in (m9['files'] | m9['added']).items():
-        if hashlib.sha256(pre_d01(name)).hexdigest() != expected:
-            raise ValueError('AF2 M9 source input differs: ' + name)
+    before_m9 = {}
+    for manifest, stage in (
+        ('af2_m9_d01_routing', 'AF2 M9 D01 routing'),
+        ('af2_m9_d01', 'AF2 M9 D01'),
+        ('af2_m9', 'AF2 M9'),
+    ):
+        revision = load_manifest(manifest)
+        for name, expected in (revision['files'] | revision.get('added', {})).items():
+            contents = before_m9[name] if name in before_m9 else (source / name).read_bytes()
+            if hashlib.sha256(contents).hexdigest() != expected:
+                raise ValueError(f'{stage} source input differs: {name}')
+        before_m9.update(committed_inputs(repo, revision['baseline'], prefix, sorted(revision['files'])))
 
     def pre_m9(name):
-        return before_m9[name] if name in before_m9 else pre_d01(name)
+        return before_m9[name] if name in before_m9 else (source / name).read_bytes()
 
     m8 = load_manifest('af2_m8')
     before_m8 = committed_inputs(repo, m8['baseline'], prefix, sorted(m8['files']))
@@ -110,7 +108,7 @@ def migration_inputs(source, repo):
         contents = before_m2[name] if name in before_m2 else pre_m3(name)
         if hashlib.sha256(contents).hexdigest() != expected:
             raise ValueError('AF2 M1 source input differs: ' + name)
-    return before_d01 | before_m9 | before_m8 | before_m7b | before_m7a | before_m6 | before_m5 | before_m4 | before_m3 | before_m2 | before_m1
+    return before_m9 | before_m8 | before_m7b | before_m7a | before_m6 | before_m5 | before_m4 | before_m3 | before_m2 | before_m1
 
 
 def matches_prior_layout_delta(name, predecessor):

@@ -149,7 +149,8 @@ private:
         PrimarySwitchMode mode;
         uint32_t phase {0};
         uint32_t protocolSession {0};
-        std::vector<SlotId> members;
+        uint32_t targetMember;
+        std::vector<RadioProtocolMember> members;
         std::vector<SlotId> completedMembers;
         PrimaryParameterSnapshot oldParameters;
         bool roundFailed {false};

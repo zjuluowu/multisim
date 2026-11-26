@@ -464,7 +464,7 @@ TopologyService构造后由H绑定AccountRolePlanningPort；它实现PrimaryTopo
 | AlreadyPrimary | WithoutDevice | 原已为M0分支不执行完整协议，仍保持原保存/Data节点 |
 | VendorRouteMapping | AfterDevice | 经T映射子请求和厂商能力，旧早返回与后续步骤分别保持 |
 
-**当前入口。** StartPrimarySwitch 在 A 自有 operations 登记原目标与完成出口。SlotCatalog 提供静态域；经 PrimaryTopologyPort 两读 BindingIndex 和 AccountRegistry 的 current 投影，中间读取 Radio 观察。A 对照原订阅、槽、绑定版本、ICCID 及 active 后选择分支，再经 AssignmentAggregate 的 AdmitTransitionWithRoleWriteSet 同时检查目标 radioDomain 和全部 Primary 写成员。C0 直接走参数与通知。B 登记 pending 后发一次专用命令。C1 先写 Primary 参数，再按目录成员发 CHECK、UPDATE、COMPLETE 三阶段（1、2、4）。VendorRouteMapping 尚未接入该入口。[用例源码](../services/multisim/role_assignment/assignment_service.cpp) · [分支计划](../services/multisim/role_assignment/primary/primary_switch_plan.cpp)
+**当前入口。** StartPrimarySwitch 在 A 自有 operations 登记原目标与完成出口。SlotCatalog 提供静态域；经 PrimaryTopologyPort 两读 BindingIndex 和 AccountRegistry 的 current 投影，中间读取 Radio 观察。A 对照原订阅、槽、绑定版本、ICCID 及 active 后选择分支，再经 AssignmentAggregate 的 AdmitTransitionWithRoleWriteSet 同时检查目标 radioDomain 和全部 Primary 写成员。C0 直接走参数与通知。B 登记 pending 后发一次专用命令。C1 先冻结 R 验证的原生协议成员及路由，再按原参数前缀执行 CHECK、UPDATE、COMPLETE（1、2、4）。B/C1 当前运行在 Host 组件闭包，正式 SimModule 仍封闭设备分支。VendorRouteMapping 尚未接入该入口。[用例源码](../services/multisim/role_assignment/assignment_service.cpp) · [分支计划](../services/multisim/role_assignment/primary/primary_switch_plan.cpp)
 
 AssignmentStoreAdapter 在 Host 处理偏好、Primary 两键与 ICCID 散列、Data 原参数。AssignmentAggregate 的 roleWriteOwners_ 已按请求 token 登记 kPrimaryRoleWriteSet（偏好、Primary 参数/通知、Data 参数/通知）；正式 Host 的独立 Data 从 SimModule 经 LegacySimFacade 和 SetLegacyDefaultData 进入 A，
 使用 T 的原 Binding、A 的 Data 写集、原参数步骤和同步完成。Primary 与 Data 共用 Data
@@ -488,7 +488,7 @@ AcceptReloadedRoleProjectionSet 在 A 域检查 expectedRoleRevision、attempt�
 
 ## 8. 应用编排机制与短请求
 
-**SC-02 · RecordSent 的调用契约（待实现）。** 保留现有卡用重载，R 提供真实 SessionRef，PIN/EF 等消费。为纯 Radio 步骤提供按原 StepRef 登记发送的专用形式，A 的 pending 保留目标 BindingRef 及下节的冻结计划，R 持每次传输映射。无需让通用请求库依赖具体 Radio 实现。接受结果与迟到核对也按同类原发送记录校验。登记发送意图和 R 确认平台交接分别记账；旧卡重载不能接受虚构应用。
+**SC-02 · 原设备步登记。** 请求库的 `RecordRadioStep` 登记原 StepRef。A 保留原 BindingRef 及冻结成员，R 持每次传输映射。卡命令继续使用真实 SessionRef，PIN/EF 接入待实施。无需让通用请求库依赖具体 Radio 实现。接受结果与迟到核对也按同类原发送记录校验。登记发送意图和 R 确认平台交接分别记账；旧卡重载不能接受虚构应用。
 
 <a id="af1-radio-sent"></a>
 
@@ -536,7 +536,7 @@ LocalCardRequests是具名短请求，不是新的业务上下文。SwitchProfil
 | 原生响应 → R → A | 将原生 protocolSession 映射到本地轮次。当前 Host 计数仅能关联 Host 发送。CHECK、COMPLETE 匹配原响应，UPDATE 只接受匹配原 session 的成员 NOTIFY。没有 serial 的原生通知按原协议关联，不能填造 serial。重复、错阶段、错成员、过期轮次不推进计数。R 判执行/资源证据，A 仅在冻结集合各成员满足该阶段时推进。 |
 | 重试、换路和缺成员 | 先核对旧轮设备与业务前缀，再按原预算取得新轮资格及关联。同一轮不更换成员，无路由的旁观端点不参与。必需路由缺失时仅在尚未发生本分支效果且保持旧时序时使用已验证旧路径，或按已批准契约拒绝。已发命令归原轮核对。 |
 
-`bd4fbe833` 的 StartPrimarySwitch 及续步/重试用 T 的 bindingRevision 和字面值 USIM 构造 SessionRef，C1 从 catalog_.Slots() 建 members。RadioSwitchRequest 的 memberCount、RadioSwitchResult 的 memberSlot/phase/protocolSession、R 的 token/serial 检查可复用。上面的成员授权及 Radio 专用登记仍待实现。[现有 Radio 端口](../services/multisim/role_assignment/primary/radio_execution_port.h) · [现有发送与匹配](../services/multisim/role_assignment/assignment_service.cpp)
+当前 Host 组件由平台在 PrimaryRadioObservation 提供 `PrimaryProtocolRouting`。R 核验目标成员可定位、路由有效且互不冲突，合并完全相同的成员条目。A 将原生身份、路由及版本冻结到原轮次，B 选择原目标成员，C1 全阶段使用同一份成员表。平台接纳合同时必须在不可撤销发送点复核原路由。正式装配、目标撤权与资源准入的联合线性化、重试刷新及三值结果贯通仍待完成。[现有 Radio 端口](../services/multisim/role_assignment/primary/radio_execution_port.h) · [现有发送与匹配](../services/multisim/role_assignment/assignment_service.cpp)
 
 <a id="af1-radio-plan"></a>
 
@@ -565,7 +565,7 @@ A 在预写、首个阶段通知和发令之前调用 PlanPrimaryRound 并冻结
 
 R 在首次提交时依据宿主注入的已验证路由表，把本轮成员映射为资源键集并一次申请；该映射不出现在 A 可见的头文件中。路由表缺项时使用保守共享键。传输 token、fence 和原生协议会话号留在 R 内部，不增加包装类型。
 
-632f6a2a8 的资源集是 ResourceRadioRuntime 构造时固定的全集，C1 成员取自 catalog_.Slots()，均待改。产品的真实成员来源与路由证据仍按签收矩阵 O3。
+ResourceRadioRuntime 在当前 Host 组件仍使用构造时固定的保守资源全集。正式图须验证真实共享关系、完整原轮资源和前驱恢复。产品的成员来源与路由证据继续按 O3 独立验证。
 
 R整体完整承接原State/File/Controller、安全、MSISDN、Records、SIM短信存储、电话簿、STK、运营商配置/APN/权限及eUICC能力；不能把这些能力都解释为稳态CardRuntime的成员和实现。当前ProductionSlotBindings显式借用原对象，CardRuntime仍集中持会话、资源、加载、MSISDN关联和观察序列；本轮与result_sinks暂移至card/runtime过渡运行位置，仍属R逻辑target，H不取得这些状态写权。类尚未薄化，不能把物理搬迁宣称为运行责任拆分完成。稳态CardRuntime可仅作能力分派/结果绑定；协议/缓存和请求关联由对应能力组件拥有，session/resource按真实生命周期注入，不机械复制成熟类。原单一EsimManager内部已有普通/低优先级两套EsimFile，不创建第二Manager。
 

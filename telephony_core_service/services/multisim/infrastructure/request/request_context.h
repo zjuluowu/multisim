@@ -47,6 +47,7 @@ struct RequestContext {
     ResolvedTarget originTarget;
     std::optional<SessionRef> sentSession;
     CompletionPlan completion;
+    bool deviceStepRegistered {false};
     // R/I保存原serial/InnerEvent关联；不得在回包时读取当前会话补造。
 };
 struct RuntimeOperation {

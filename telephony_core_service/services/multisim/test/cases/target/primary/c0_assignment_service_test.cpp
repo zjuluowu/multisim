@@ -445,6 +445,24 @@ TEST(TargetPrimary, C0OperationAdmissionRejectsOldEpochStepAndDuplicateCompletio
     EXPECT_EQ(operation->terminal, TerminalState::Succeeded);
 }
 
+TEST(TargetPrimary, RadioStepRegistrationDoesNotRequireACardApplication)
+{
+    RuntimeOperationStore store({8, 3}, RequestOwner::Assignment);
+    const auto request = store.Begin(SlotTarget {{1}},
+        {SynchronousCompletionRoute {SynchronousWaitRef {1}}, false});
+    const StepRef original {request, 1, 0};
+    ASSERT_TRUE(store.AdvanceStep({request, 0, 0}, 1, 0, std::nullopt));
+    ASSERT_TRUE(store.RecordRadioStep(original));
+    EXPECT_FALSE(store.RecordRadioStep(original));
+    const auto record = store.Read(request);
+    ASSERT_TRUE(record);
+    EXPECT_TRUE(record->context.deviceStepRegistered);
+    EXPECT_FALSE(record->context.sentSession);
+    ASSERT_TRUE(store.AdvanceStep(original, 2, 0, std::nullopt));
+    EXPECT_FALSE(store.RecordRadioStep(original));
+    EXPECT_TRUE(store.RecordRadioStep({request, 2, 0}));
+}
+
 TEST(TargetPrimary, C0OperationConsumesNotSentAndKeepsLateEvidenceSeparate)
 {
     RuntimeOperationStore store({8, 3}, RequestOwner::Assignment);
