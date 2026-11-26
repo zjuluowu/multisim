@@ -23,6 +23,18 @@ class PublicBoundary(unittest.TestCase):
  def test_ordinary_mock_usage_rejected(self):
   (self.root/'cases/plain.cpp').write_text('EXPECT_CALL(mock,Operation());\n')
   with self.assertRaises(RuntimeError):self.check()
+ def test_shared_scenario_cannot_include_either_production_backend(self):
+  directory=self.root/'cases/shared';directory.mkdir()
+  scenario=directory/'example.h'
+  (self.root/'cases/plain.cpp').write_text('#include "shared/example.h"\n')
+  valid='#include <string>\n#include <gtest/gtest.h>\n'
+  scenario.write_text(valid)
+  self.assertEqual(self.check()['status'],'PASS')
+  for include in ('sim_manager.h','account/topology_service.h'):
+   scenario.write_text(valid+f'#include "{include}"\n')
+   with self.assertRaisesRegex(RuntimeError,'Shared scenario depends on an implementation'):self.check()
+  scenario.write_text(valid)
+  self.assertEqual(self.check()['status'],'PASS')
  def test_native_read_only_setup_requires_no_mutation_resource(self):
   text=(T/'framework/internal/device/sim_test.cpp').read_text();setup=text.split('void SimTest::SetUp()',1)[1].split('void SimTest::TearDown()',1)[0]
   for forbidden in ['SIM_DEVICE_CONTROL_SOCKET','SET_TELEPHONY_STATE','RESERVE','< 2']:

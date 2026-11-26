@@ -67,7 +67,7 @@ def main():
         "assignment": ["role_assignment/assignment_aggregate.cpp",
                        "role_assignment/primary/primary_switch_plan.cpp",
                        "card/esim/local_card_requests.cpp"],
-        "runtime_protocol": ["card/state/session_registry.cpp"],
+        "runtime_protocol": ["card/state/session_registry.cpp", "card/records/load_session.cpp"],
     }
     with tempfile.TemporaryDirectory(prefix="multisim-architecture-rules-") as temporary:
         output = (args.output or Path(temporary)).resolve()

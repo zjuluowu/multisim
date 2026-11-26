@@ -15,6 +15,7 @@
 // 主机协议测试：无生产设备/服务成功桩；opaque句柄只检查控制块及发布顺序，不调用平台方法。
 #include <cassert>
 #include <iostream>
+#include "card/records/load_session.h"
 #include "infrastructure/assembly/manager_publication.h"
 #include "device/resource/resource_barrier.h"
 #include "card/state/session_registry.h"
@@ -117,6 +118,30 @@ void ResultSinkScenarios()
     assert(consumer.advances == 1); // 迟到证据不被该R路由转成号码推进出口。
 }
 
+void ScopedRecordReadScenarios()
+{
+    const SessionRef first {{5, 6}, {{0}, "USIM"}, 1};
+    const SessionRef peer {{5, 6}, {{1}, "USIM"}, 1};
+    const LoadMember read {1, std::nullopt, true, LoadAccess::Read, LoadMemberState::Pending};
+    LoadSession oldIccid(first, "ICCID", 1);
+    LoadSession iccid(first, "ICCID", 2);
+    LoadSession spn(first, "SPN", 1);
+    LoadSession peerIccid(peer, "ICCID", 1);
+    for (auto *load : {&oldIccid, &iccid, &spn, &peerIccid}) {
+        assert(load->AddMember(read));
+        assert(!load->AddMember(read));
+    }
+    oldIccid.InvalidateAffectedReadMembers();
+    assert(!oldIccid.TryConsumeRead({first, "ICCID", 1, 1}, true));
+    assert(!iccid.TryConsumeRead({first, "ICCID", 1, 1}, true));
+    assert(!iccid.TryConsumeRead({peer, "ICCID", 2, 1}, true));
+    assert(!spn.TryConsumeRead({first, "ICCID", 1, 1}, true));
+    assert(iccid.TryConsumeRead({first, "ICCID", 2, 1}, false));
+    assert(!iccid.TryConsumeRead({first, "ICCID", 2, 1}, true));
+    assert(spn.TryConsumeRead({first, "SPN", 1, 1}, true));
+    assert(peerIccid.TryConsumeRead({peer, "ICCID", 1, 1}, true));
+}
+
 // 只分配不透明测试存储；没有伪造ISimManager/IEsimManager定义或业务返回。
 struct OpaqueStorage {
     int &destroyed;
@@ -163,5 +188,6 @@ int main()
     FactoryPublicationScenarios();
     ExpectedTransitionScenarios();
     ResultSinkScenarios();
+    ScopedRecordReadScenarios();
     std::cout << "resource / factory publication scenarios passed\n";
 }

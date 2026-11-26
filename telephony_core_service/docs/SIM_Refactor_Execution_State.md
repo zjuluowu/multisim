@@ -203,6 +203,13 @@ Legacy SIM 已合成一个可复用的归档，Target 独立归档继续保留�
 源归属及两端链接边界。干净输出构建和 ELF 归属已有证据，产品原生构建待独立验证。
 [Host ELF 与归档](../services/multisim/test/docs/evidence/af2_m9_foundation_20261126/elf-and-archive.log)
 
+两端共享源码现覆盖 C0、Data、Voice、SMS、账户资料、已绑定 IMS 和号码写卡失败回退。
+正式 Target 的 Reload 仍保留因果证据专项。Both 12 个共同契约共 24/24，Oracle 与后端
+差异为零。LoadSession 独立纯规则验证旧 ICCID 轮次、作用域错误、读失败后重复回包、同卡
+未受影响 SPN 与邻卡读请求。该纯规则尚未装配至真实 EF 链路。
+[Both 结果](../services/multisim/test/docs/evidence/af2_m9_foundation_20261126/both.json.gz)
+
+
 
 <a id="af1-signoff-validation"></a>
 

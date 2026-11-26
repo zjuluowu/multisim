@@ -1,3 +1,4 @@
+#include "../../shared/cellular_selection_scenario.h"
 #include <gtest/gtest.h>
 
 #include <functional>
@@ -194,23 +195,35 @@ struct Fixture {
 TEST(TargetPrimary, C0AssignmentServiceAlreadyPrimary)
 {
     Fixture f;
-    const RequestId request = f.service.StartPrimarySwitch(C0Command());
+    SimGuard::ExerciseC0Selection(
+        [&](int target) {
+            auto command = C0Command();
+            command.target.slot = SlotId {target};
+            const auto request = f.service.StartPrimarySwitch(command);
+            EXPECT_EQ(request.epoch, RuntimeEpoch ({8, 3}));
+            EXPECT_EQ(request.owner, RequestOwner::Assignment);
+            EXPECT_EQ(f.completion.results.size(), 1u);
+            return f.completion.results.empty() ? -1 : f.completion.results.front();
+        },
+        [&](int target, const char *identity) {
+            const auto view = f.service.ReadLegacyAssignment();
+            ASSERT_TRUE(view.lastPrimary.has_value());
+            ASSERT_TRUE(view.lastData.has_value());
+            EXPECT_EQ(view.lastPrimary->legacySlotId, target);
+            EXPECT_EQ(view.lastData->legacySlotId, target);
+            EXPECT_EQ(f.store.primaryIccid, identity);
+        },
+        [&] { EXPECT_FALSE(f.service.ReadLegacyAssignment().primarySwitchInProgress); },
+        [&](int target) {
+            EXPECT_EQ(f.output.notifications, (std::vector<std::string> {
+                "primary:" + std::to_string(target), "data:" + std::to_string(target) + ":1"}));
+        });
     const auto view = f.service.ReadLegacyAssignment();
-    EXPECT_EQ(request.epoch, RuntimeEpoch ({8, 3}));
-    EXPECT_EQ(request.owner, RequestOwner::Assignment);
-    ASSERT_EQ(f.completion.results, (std::vector<int32_t> {0}));
     EXPECT_EQ(f.store.receivedRawIccid, kRawIccid);
-    EXPECT_EQ(f.store.primaryIccid, kEncodedIccid);
     EXPECT_EQ(f.timeline.events, (std::vector<std::string> {
         "write:user", "write:primary", "notify:primary", "write:data", "notify:data", "complete"}));
-    EXPECT_EQ(f.output.notifications, (std::vector<std::string> {"primary:1", "data:1:1"}));
     EXPECT_EQ(f.radio.reads, 1u);
     EXPECT_EQ(f.radio.switches, 0u);
-    EXPECT_FALSE(view.primarySwitchInProgress);
-    ASSERT_TRUE(view.lastPrimary.has_value());
-    ASSERT_TRUE(view.lastData.has_value());
-    EXPECT_EQ(view.lastPrimary->legacySlotId, 1);
-    EXPECT_EQ(view.lastData->legacySlotId, 1);
     RecordProperty("scenario_id", "SIM028-LEGACY-C0-DUAL-PRIMARY0");
     RecordProperty("primary_observation", Observation(f.store, f.output, f.radio, f.completion, view));
     RecordProperty("target_business_path", "AssignmentService/PlanPrimarySwitch/AssignmentAggregate");

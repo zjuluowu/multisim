@@ -2,6 +2,10 @@
 #include <gtest/gtest.h>
 #include "telephony_errors.h"
 #include "../../shared/account_metadata_scenario.h"
+#include "../../shared/default_call_message_scenario.h"
+#include "../../shared/ims_preference_scenario.h"
+#include "../../shared/cellular_selection_scenario.h"
+#include "../../shared/show_number_scenario.h"
 #include "core_service_errors.h"
 
 #include <future>
@@ -1778,11 +1782,19 @@ TEST(AF2Data, LiveDualSimSetDefaultDataThroughLegacyEntry)
         EXPECT_EQ(output.events, (std::vector<std::string> {"data", "data-behavior"}));
         EXPECT_EQ(module->ReadAssignment().defaultData, binding->subscription);
     };
-    const auto result = module->SetDefaultCellularDataSlotId(1, {7});
-    EXPECT_EQ(result, TELEPHONY_ERR_SUCCESS);
+    int result = -1;
+    int selectedSlot = -1;
+    int selectedSim = -1;
+    SimGuard::ExerciseIndependentDataSelection(
+        [&](int slot) { return module->SetDefaultCellularDataSlotId(slot, {7}); },
+        [&] { return module->ReadAssignment().lastData.value_or(SlotId {-1}).legacySlotId; },
+        [&](int &sim) {
+            const auto subscription = module->ReadAssignment().defaultData;
+            if (!subscription) { return TELEPHONY_ERR_FAIL; }
+            sim = subscription->legacySimId;
+            return TELEPHONY_ERR_SUCCESS;
+        }, binding->subscription.legacySimId, result, selectedSlot, selectedSim);
     EXPECT_EQ(module->ReadAssignment().lastPrimary, SlotId {0});
-    EXPECT_EQ(module->ReadAssignment().lastData, SlotId {1});
-    EXPECT_EQ(module->ReadAssignment().defaultData, binding->subscription);
     EXPECT_EQ(parameters.writes, (std::vector<std::pair<std::string, std::string>> {{kData, "1"}}));
     auto expected = previous;
     expected[kData] = "1";
@@ -1795,8 +1807,8 @@ TEST(AF2Data, LiveDualSimSetDefaultDataThroughLegacyEntry)
     const auto view = module->ReadAssignment();
     ASSERT_TRUE(view.lastPrimary && view.lastData && view.defaultData);
     RecordProperty("default_data_observation", observation.Snapshot(parameters.values,
-        {{"primary", std::to_string(view.lastPrimary->legacySlotId)}, {"data", std::to_string(view.lastData->legacySlotId)},
-            {"subscription", std::to_string(view.defaultData->legacySimId)}}));
+        {{"primary", std::to_string(view.lastPrimary->legacySlotId)}, {"data", std::to_string(selectedSlot)},
+            {"subscription", std::to_string(selectedSim)}}));
     EXPECT_TRUE(f.live.input.completion->results.empty());
     EXPECT_EQ(f.live.input.radio->commands, 0u);
     EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
@@ -2068,26 +2080,21 @@ void VerifyTargetCallMessageRole(DefaultRole role)
         }
         return -1;
     };
-    EXPECT_EQ(setRole(100), TELEPHONY_ERR_SLOTID_INVALID);
-    EXPECT_EQ(setRole(1), TELEPHONY_ERR_SUCCESS);
-    const int selected = getSlot();
-    EXPECT_EQ(selected, 1);
-    EXPECT_EQ(setRole(1), TELEPHONY_ERR_SUCCESS);
-    provider->control = [](const auto &) { return RoleProviderOutcome {-1, true, RoleProviderEffect::NotWritten}; };
-    EXPECT_EQ(setRole(-1), TELEPHONY_ERR_DATABASE_WRITE_FAIL);
-    EXPECT_EQ(getSlot(), 1);
-    provider->control = {};
-    f.live.input.output->publishRole = false;
-    const int clearResult = setRole(-1);
-    EXPECT_EQ(clearResult, TELEPHONY_ERR_PUBLISH_BROADCAST_FAIL);
-    const int cleared = getSlot();
-    EXPECT_EQ(cleared, voice ? -1 : 0);
-    EXPECT_EQ(setRole(-1), TELEPHONY_ERR_SUCCESS);
+    const auto [selected, cleared, clearResult] = SimGuard::ExerciseDefaultCallMessage(setRole, getSlot,
+        [&](bool fail) {
+            if (fail) {
+                provider->control = [](const auto &) {
+                    return RoleProviderOutcome {-1, true, RoleProviderEffect::NotWritten};
+                };
+            } else {
+                provider->control = {};
+            }
+        }, [&] { f.live.input.output->publishRole = false; }, voice ? -1 : 0);
     const auto assignment = module->ReadAssignment();
     EXPECT_FALSE(voice ? assignment.voicePreference : assignment.smsPreference);
     const auto &events = f.live.input.output->roleChanges;
-    const std::vector<std::pair<DefaultRole, int32_t>> expected {
-        {role, 41}, {role, 41}, {role, 0}, {role, 0}, {role, 0}};
+    std::vector<std::pair<DefaultRole, int32_t>> expected;
+    for (const auto simId : SimGuard::DefaultCallMessageWrites(41)) { expected.emplace_back(role, simId); }
     EXPECT_EQ(provider->writes, expected);
     EXPECT_EQ(provider->persisted[role], 0);
     EXPECT_EQ(events, (std::vector<std::pair<DefaultRole, std::optional<SubscriptionId>>> {
@@ -2594,39 +2601,19 @@ TEST(AF2ImsPreference, LegacyProviderContract)
         return AccountMetadataOutcome {rawWrite, true,
             rawWrite >= 0 ? EffectKnowledge::ConfirmedApplied : EffectKnowledge::Rejected};
     };
-    int32_t value = 99;
-    EXPECT_EQ(module->SaveImsSwitch(-1, 100), TELEPHONY_ERR_ARGUMENT_INVALID);
-    EXPECT_EQ(module->QueryImsSwitch(-1, value), TELEPHONY_ERR_ARGUMENT_INVALID);
-    EXPECT_EQ(value, 99);
-    const auto first = module->SaveImsSwitch(1, 17);
-    const auto repeat = module->SaveImsSwitch(1, 17);
-    EXPECT_EQ(first, 0);
-    EXPECT_EQ(repeat, 0);
-    EXPECT_EQ(module->QueryImsSwitch(1, value), 0);
-    EXPECT_EQ(value, 17);
-    rawWrite = 6;
-    const auto positive = module->SaveImsSwitch(1, -9);
-    EXPECT_EQ(positive, 6);
-    EXPECT_EQ(module->QueryImsSwitch(1, value), 0);
-    EXPECT_EQ(value, -9);
-    rawWrite = -23;
-    const auto failure = module->SaveImsSwitch(1, 123);
-    EXPECT_EQ(failure, -23);
-    provider->SetImsValue(kRaw1, 33);
-    EXPECT_EQ(module->QueryImsSwitch(1, value), 0);
-    EXPECT_EQ(value, 33);
-    const auto external = value;
-    provider->SetImsValue(kRaw1, -1);
-    EXPECT_EQ(module->QueryImsSwitch(1, value), 0);
-    EXPECT_EQ(value, -1);
-    provider->readIms = [](const auto &) { return ImsPreferenceRead {ImsPreferenceReadStatus::NoRow, 77}; };
-    const auto empty = module->QueryImsSwitch(1, value);
-    EXPECT_EQ(empty, 0);
-    EXPECT_EQ(value, -1);
-    provider->readIms = [](const auto &) { return ImsPreferenceRead {ImsPreferenceReadStatus::Failed, 88}; };
-    const auto failedRead = module->QueryImsSwitch(1, value);
-    EXPECT_EQ(failedRead, 0);
-    EXPECT_EQ(value, -1);
+    const auto [first, repeat, positive, failure, external, empty, failedRead, value] =
+        SimGuard::ExerciseBoundImsPreference(
+            [&](int slot, int setting) { return module->SaveImsSwitch(slot, setting); },
+            [&](int slot, int &setting) { return module->QueryImsSwitch(slot, setting); },
+            [&](int result) { rawWrite = result; },
+            [&](int setting) { provider->SetImsValue(kRaw1, setting); },
+            [&](SimGuard::ImsReadMode mode) {
+                provider->readIms = [mode](const auto &) {
+                    return mode == SimGuard::ImsReadMode::NoRow ?
+                        ImsPreferenceRead {ImsPreferenceReadStatus::NoRow, 77} :
+                        ImsPreferenceRead {ImsPreferenceReadStatus::Failed, 88};
+                };
+            });
     const auto writes = provider->Writes();
     const auto reads = provider->Reads();
     ASSERT_EQ(writes.size(), 4u);
@@ -3145,29 +3132,36 @@ TEST(AF2ShowNumber, ProviderAccountFallbackAfterOriginalCardFailure)
 {
     using namespace OHOS::Telephony;
     NumberFixture f;
-    f.live.store->rows.emplace(kRaw1, AccountStorageRow {{41}, kRaw1, SlotId {1}, {}, u"555123", true, {}, {}});
+    f.live.store->rows.emplace(kRaw1, AccountStorageRow {{41}, kRaw1, SlotId {1}, {}, SimGuard::kStoredDisplayNumber, true, {}, {}});
     ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
     auto &module = f.live.module;
-    ASSERT_EQ(module->SetShowNumber(1, u"555999", {7}, {31}), 0);
-    f.host->RunNext();
-    ASSERT_EQ(f.device->commands.size(), 1u);
-    ASSERT_TRUE(module->AcceptMsisdnEvidence({f.device->commands[0].ticket,
-        EffectKnowledge::ConfirmedNotApplied, true, true, false}));
-    ASSERT_EQ(f.host->writes.size(), 1u);
-    EXPECT_EQ(f.host->writes[0].second, TELEPHONY_ERR_FAIL);
-    EXPECT_TRUE(f.db->Writes().empty());
-    ASSERT_EQ(module->GetShowNumber(1, {7}, {32}), 0);
-    f.host->RunNext();
-    ASSERT_EQ(f.host->reads.size(), 1u);
-    const auto &result = f.host->reads[0].second;
-    EXPECT_EQ(result.source, NumberSource::AccountDisplay);
-    EXPECT_EQ(result.number, u"555123");
-    EXPECT_EQ(result.legacyResult, 0);
+    SimGuard::FailedShowNumberResult observed {};
+    ASSERT_NO_FATAL_FAILURE(SimGuard::ExerciseFailedShowNumber(
+        [&](int slot, const auto &number, int &result) {
+            ASSERT_EQ(module->SetShowNumber(slot, number, {7}, {31}), 0);
+            f.host->RunNext();
+            ASSERT_EQ(f.device->commands.size(), 1u);
+            ASSERT_TRUE(module->AcceptMsisdnEvidence({f.device->commands[0].ticket,
+                EffectKnowledge::ConfirmedNotApplied, true, true, false}));
+            ASSERT_EQ(f.host->writes.size(), 1u);
+            result = f.host->writes[0].second;
+            EXPECT_TRUE(f.db->Writes().empty());
+        },
+        [&](int slot, auto &number, int &result) {
+            ASSERT_EQ(module->GetShowNumber(slot, {7}, {32}), 0);
+            f.host->RunNext();
+            ASSERT_EQ(f.host->reads.size(), 1u);
+            const auto &read = f.host->reads[0].second;
+            EXPECT_EQ(read.source, NumberSource::AccountDisplay);
+            number = read.number;
+            result = read.legacyResult;
+        }, [&] { return f.device->commands.size(); }, observed));
     RecordProperty("show_number_observation", SimGuard::Primary::Json({
-        {"cachedNumber", result.number == u"555123" ? "555123" : "unexpected"},
-        {"readResult", std::to_string(result.legacyResult)},
-        {"failed", f.host->writes[0].second == TELEPHONY_ERR_FAIL ? "true" : "false"},
-        {"commands", std::to_string(f.device->commands.size())}
+        {"cachedNumber", observed.number == SimGuard::kStoredDisplayNumber ?
+            SimGuard::kStoredPhoneNumber : "unexpected"},
+        {"readResult", std::to_string(observed.readResult)},
+        {"failed", observed.writeResult == TELEPHONY_ERR_FAIL ? "true" : "false"},
+        {"commands", std::to_string(observed.commands)}
     }));
     EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
 }

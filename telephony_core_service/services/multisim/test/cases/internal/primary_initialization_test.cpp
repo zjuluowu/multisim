@@ -1,6 +1,10 @@
 #include <gmock/gmock.h>
 #include "sim_test.h"
 #include "../shared/account_metadata_scenario.h"
+#include "../shared/default_call_message_scenario.h"
+#include "../shared/ims_preference_scenario.h"
+#include "../shared/cellular_selection_scenario.h"
+#include "../shared/show_number_scenario.h"
 #include "sim_manager.h"
 #include "core_service_sim.h"
 #include "parameter_mock.h"
@@ -67,15 +71,19 @@ TEST_F(RealSimPrimary, IndependentDefaultDataUsesOriginalManagerContract)
             rig.observation.Add("diagnostic", {{"name", name}});
         }
     });
-    const auto result = core.SetDefaultCellularDataSlotId(1);
+    int result = -1;
+    int selectedSlot = -1;
+    int selectedSim = -1;
+    SimGuard::ExerciseIndependentDataSelection(
+        [&](int slot) { return core.SetDefaultCellularDataSlotId(slot); },
+        [&] { return core.GetDefaultCellularDataSlotId(); },
+        [&](int &sim) { return core.GetDefaultCellularDataSimId(sim); },
+        rig.manager->GetSimId(1), result, selectedSlot, selectedSim);
     Sim028Host::ObserveCallingThreadDiagnostics({});
-    EXPECT_EQ(result, TELEPHONY_ERR_SUCCESS);
     EXPECT_EQ(diagnostics, (std::vector<std::string> {"SET_DEFAULT_CELLULAR_DATA", "ACCOUNT_NOTIFY"}));
     rig.observation.Add("api_return", {{"result", std::to_string(result)}});
-    int32_t selectedSim = -1;
-    EXPECT_EQ(core.GetDefaultCellularDataSimId(selectedSim), TELEPHONY_ERR_SUCCESS);
     testing::Test::RecordProperty("default_data_observation", rig.observation.Snapshot(rig.parametersDb,
-        {{"primary", std::to_string(primaryBefore)}, {"data", std::to_string(core.GetDefaultCellularDataSlotId())},
+        {{"primary", std::to_string(primaryBefore)}, {"data", std::to_string(selectedSlot)},
             {"subscription", std::to_string(selectedSim)}}));
     EXPECT_EQ(core.SetDefaultCellularDataSlotId(1), TELEPHONY_ERR_SUCCESS);
     EXPECT_EQ(core.GetDefaultCellularDataSlotId(), 1);
@@ -161,24 +169,13 @@ void VerifyDefaultRoleContract(bool voice)
     Sim028Host::ObserveCallingThreadDiagnostics([&](const auto &name) {
         if (name == "ACCOUNT_NOTIFY") { ++accountNotifications; }
     });
-    EXPECT_EQ(setRole(100), TELEPHONY_ERR_SLOTID_INVALID);
-    EXPECT_EQ(setRole(1), TELEPHONY_ERR_SUCCESS);
-    const int selected = getRole();
-    EXPECT_EQ(selected, 1);
-    EXPECT_EQ(setRole(1), TELEPHONY_ERR_SUCCESS);
-    providerResult = -1;
-    EXPECT_EQ(setRole(-1), TELEPHONY_ERR_DATABASE_WRITE_FAIL);
-    EXPECT_EQ(getRole(), 1);
-    providerResult = 0;
-    publish = false;
-    const auto clearResult = setRole(-1);
-    EXPECT_EQ(clearResult, TELEPHONY_ERR_PUBLISH_BROADCAST_FAIL);
-    const int cleared = getRole();
-    EXPECT_EQ(cleared, voice ? -1 : (rig.manager->IsSimActive(0) ? 0 : 1));
-    EXPECT_EQ(setRole(-1), TELEPHONY_ERR_SUCCESS);
+    const auto [selected, cleared, clearResult] = SimGuard::ExerciseDefaultCallMessage(setRole, getRole,
+        [&](bool fail) { providerResult = fail ? -1 : 0; }, [&] { publish = false; },
+        voice ? -1 : (rig.manager->IsSimActive(0) ? 0 : 1));
     Sim028Host::ObserveCallingThreadDiagnostics({});
     EXPECT_EQ(accountNotifications, 3u);
-    EXPECT_EQ(writes, (std::vector<int> {simId, simId, 0, 0, 0}));
+    const auto expectedWrites = SimGuard::DefaultCallMessageWrites(simId);
+    EXPECT_EQ(writes, expectedWrites);
     EXPECT_EQ(announcements, (std::vector<int> {simId, 0}));
     EXPECT_TRUE(rig.writes.empty());
     EXPECT_EQ(rig.parametersDb, parameters);
@@ -189,7 +186,7 @@ void VerifyDefaultRoleContract(bool voice)
         {"clearResult", std::to_string(clearResult)}, {"writes", std::to_string(writes.size())},
         {"announcements", std::to_string(announcements.size())},
         {"accountNotifications", std::to_string(accountNotifications)},
-        {"identity", writes == std::vector<int> {simId, simId, 0, 0, 0} ? "true" : "false"}
+        {"identity", writes == expectedWrites ? "true" : "false"}
     }));
 }
 
@@ -314,7 +311,7 @@ TEST_F(RealSimPrimary, ImsPreferencePreservesProviderReturnAndReadSource)
     unsigned reads = 0;
     unsigned notifications = 0;
     int32_t rawWrite = 0;
-    enum class ReadMode { Row, NoRow, Failure };
+    using ReadMode = SimGuard::ImsReadMode;
     ReadMode readMode = ReadMode::Row;
     std::vector<int32_t> written;
     EXPECT_CALL(*rig.provider, Update(_, _, _)).WillRepeatedly([&](auto &uri, const auto &where, const auto &values) {
@@ -339,39 +336,14 @@ TEST_F(RealSimPrimary, ImsPreferencePreservesProviderReturnAndReadSource)
     Sim028Host::ObserveCallingThreadDiagnostics([&](const auto &name) {
         if (name == "ACCOUNT_NOTIFY") { ++notifications; }
     });
-    int32_t value = 99;
-    EXPECT_EQ(inner.SaveImsSwitch(-1, 100), TELEPHONY_ERR_ARGUMENT_INVALID);
-    EXPECT_EQ(inner.QueryImsSwitch(-1, value), TELEPHONY_ERR_ARGUMENT_INVALID);
-    EXPECT_EQ(value, 99);
-    const auto first = inner.SaveImsSwitch(1, 17);
-    const auto repeat = inner.SaveImsSwitch(1, 17);
-    EXPECT_EQ(first, 0);
-    EXPECT_EQ(repeat, 0);
-    EXPECT_EQ(inner.QueryImsSwitch(1, value), 0);
-    EXPECT_EQ(value, 17);
-    rawWrite = 6;
-    const auto positive = inner.SaveImsSwitch(1, -9);
-    EXPECT_EQ(positive, 6);
-    EXPECT_EQ(inner.QueryImsSwitch(1, value), 0);
-    EXPECT_EQ(value, -9);
-    rawWrite = -23;
-    const auto failure = inner.SaveImsSwitch(1, 123);
-    EXPECT_EQ(failure, -23);
-    rig.row.cells[SimData::IMS_SWITCH] = int64_t(33); // Independent Provider edit.
-    EXPECT_EQ(inner.QueryImsSwitch(1, value), 0);
-    EXPECT_EQ(value, 33);
-    const auto external = value;
-    rig.row.cells[SimData::IMS_SWITCH] = int64_t(-1); // A row with explicit UNKNOWN.
-    EXPECT_EQ(inner.QueryImsSwitch(1, value), 0);
-    EXPECT_EQ(value, -1);
-    readMode = ReadMode::NoRow;
-    const auto empty = inner.QueryImsSwitch(1, value);
-    EXPECT_EQ(empty, 0);
-    EXPECT_EQ(value, -1);
-    readMode = ReadMode::Failure;
-    const auto failedRead = inner.QueryImsSwitch(1, value);
-    EXPECT_EQ(failedRead, 0);
-    EXPECT_EQ(value, -1);
+    const auto [first, repeat, positive, failure, external, empty, failedRead, queriedValue] =
+        SimGuard::ExerciseBoundImsPreference(
+            [&](int slot, int value) { return inner.SaveImsSwitch(slot, value); },
+            [&](int slot, int &value) { return inner.QueryImsSwitch(slot, value); },
+            [&](int result) { rawWrite = result; },
+            [&](int value) { rig.row.cells[SimData::IMS_SWITCH] = int64_t(value); },
+            [&](ReadMode mode) { readMode = mode; });
+    int32_t value = queriedValue;
     const auto commonReads = reads;
     const auto commonWrites = writes;
     EXPECT_EQ(written, (std::vector<int32_t> {17, 17, -9, 123}));
@@ -406,7 +378,7 @@ TEST_F(RealSimPrimary, ShowNumberReadsAccountAfterMsisdnFailure)
 {
     using namespace testing;
     Sim028Host::PrimaryEnvironment rig(false);
-    rig.row.cells[SimData::PHONE_NUMBER] = std::string("555123");
+    rig.row.cells[SimData::PHONE_NUMBER] = std::string(SimGuard::kStoredPhoneNumber);
     ASSERT_TRUE(rig.StartLockedCard());
     unsigned cardCommands = 0;
     EXPECT_CALL(*rig.ril, GetSimIO(1, Field(&SimIoRequestInfo::fileId, ELEMENTARY_FILE_MSISDN), _))
@@ -425,16 +397,14 @@ TEST_F(RealSimPrimary, ShowNumberReadsAccountAfterMsisdnFailure)
             return 0;
         });
     EXPECT_CALL(*rig.provider, Update(_, _, _)).Times(0);
-    const auto failure = rig.manager->SetShowNumber(1, u"555999");
-    EXPECT_EQ(failure, TELEPHONY_ERR_FAIL);
-    EXPECT_EQ(cardCommands, 1u);
-    std::u16string number;
-    const auto result = rig.manager->GetShowNumber(1, number);
-    EXPECT_EQ(result, TELEPHONY_ERR_SUCCESS);
-    EXPECT_EQ(number, u"555123");
+    SimGuard::FailedShowNumberResult observed {};
+    ASSERT_NO_FATAL_FAILURE(SimGuard::ExerciseFailedShowNumber(
+        [&](int slot, const auto &number, int &result) { result = rig.manager->SetShowNumber(slot, number); },
+        [&](int slot, auto &number, int &result) { result = rig.manager->GetShowNumber(slot, number); },
+        [&] { return cardCommands; }, observed));
     RecordProperty("show_number_observation", SimGuard::Primary::Json({
-        {"cachedNumber", OHOS::Str16ToStr8(number)}, {"readResult", std::to_string(result)},
-        {"failed", failure == TELEPHONY_ERR_FAIL ? "true" : "false"}, {"commands", std::to_string(cardCommands)}
+        {"cachedNumber", OHOS::Str16ToStr8(observed.number)}, {"readResult", std::to_string(observed.readResult)},
+        {"failed", observed.writeResult == TELEPHONY_ERR_FAIL ? "true" : "false"}, {"commands", std::to_string(observed.commands)}
     }));
 }
 }
