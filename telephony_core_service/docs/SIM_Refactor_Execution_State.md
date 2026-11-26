@@ -189,7 +189,8 @@ CD-01～03 继续作为独立批准行为回归。产品因果证据、Provider�
 增加确定性负控，并将正式 Host Target 测试纳入自动 GN 源发现。已接通无账户应用会话，
 M6 共用测试体通过两端 Oracle 对照。Legacy 和 Target Host 源表已归一到各自的清单，
 GNU archive 按当前输入重建并通过源码遗漏负控。候选回归 Legacy 147/147、Target 171/171、
-ASan 与 TSan 各 73/73。12 个共同契约共 24/24，Oracle 差异为零。正式图仍需补 AF2-03
+ASan 与 TSan 各 73/73。12 个共同契约共 24/24，Oracle 差异为零。后续 Submit 原返回校正
+修复同步重入时的结果错配，Target 复验 172/172。正式图仍需补 AF2-03
 真实成员／路由规划、卡安全与 EF 样板，以及 H 的全图关闭契约。人工 GUI、非框架作者
 演练和负责人签收分别留证。
 [实施与验证证据](../services/multisim/test/docs/evidence/af2_m9_20261126/README.md) ·

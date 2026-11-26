@@ -64,16 +64,6 @@ bool ResourceRadioRuntime::SameCommand(const RadioSwitchRequest &request, const 
         result.notify == notifyExpected;
 }
 
-bool ResourceRadioRuntime::SameRequest(const RadioSwitchRequest &left, const RadioSwitchRequest &right)
-{
-    const bool binding = (!left.expectedBinding && !right.expectedBinding) ||
-        (left.expectedBinding && right.expectedBinding &&
-         left.expectedBinding->subscription == right.expectedBinding->subscription &&
-         left.expectedBinding->slot == right.expectedBinding->slot &&
-         left.expectedBinding->bindingRevision == right.expectedBinding->bindingRevision);
-    return SameGroup(left, right) && left.target == right.target && binding;
-}
-
 ResourceRadioRuntime::Group *ResourceRadioRuntime::FindGroup(const RadioSwitchRequest &request)
 {
     for (auto &[fence, group] : groups_) {
@@ -83,20 +73,18 @@ ResourceRadioRuntime::Group *ResourceRadioRuntime::FindGroup(const RadioSwitchRe
     return nullptr;
 }
 
-void ResourceRadioRuntime::SwitchPrimaryRadio(const RadioSwitchRequest &request)
+bool ResourceRadioRuntime::SwitchPrimaryRadio(const RadioSwitchRequest &request)
 {
     uint64_t fence = 0;
     uint64_t transport = 0;
     {
         std::lock_guard<std::mutex> guard(lock_);
-        lastSubmission_ = request;
-        lastSubmissionAccepted_ = false;
         if (mode_ != Mode::Execute || stopping_ || sink_.expired() || dispatch_.expired() ||
-            nextTransportToken_ == std::numeric_limits<uint64_t>::max()) { return; }
+            nextTransportToken_ == std::numeric_limits<uint64_t>::max()) { return false; }
         Group *group = FindGroup(request);
         if (!group) {
             const auto lease = barrier_.Acquire(resources_, request.step);
-            if (!lease) { return; }
+            if (!lease) { return false; }
             auto inserted = groups_.emplace(lease->fence,
                 Group {*lease, request, request.memberCount == 0 ? 1u : request.memberCount,
                     {}, {}, {}, {}, {}, {}, false, false});
@@ -104,7 +92,7 @@ void ResourceRadioRuntime::SwitchPrimaryRadio(const RadioSwitchRequest &request)
         }
         if (group->quarantined || group->admittedMembers.size() >= group->expected ||
             group->admittedMembers.find(request.target.legacySlotId) != group->admittedMembers.end()) {
-            return;
+            return false;
         }
         fence = group->lease.fence;
         transport = nextTransportToken_++;
@@ -121,16 +109,15 @@ void ResourceRadioRuntime::SwitchPrimaryRadio(const RadioSwitchRequest &request)
     } catch (const std::exception &) {
     }
 
+    bool accepted = false;
     std::vector<RadioDeviceResult> pending;
     {
         std::lock_guard<std::mutex> guard(lock_);
         submittingTransmissions_.erase(transport);
         const auto found = groups_.find(fence);
-        if (found == groups_.end()) { transmissions_.erase(transport); return; }
+        if (found == groups_.end()) { transmissions_.erase(transport); return false; }
         Group &group = found->second;
         --group.submitting;
-        lastSubmission_ = request;
-        lastSubmissionAccepted_ = false;
         const auto buffered = pendingSubmissionResults_.find(transport);
         const bool callbackContradiction = buffered != pendingSubmissionResults_.end();
         if (handoff.disposition == RadioSubmitDisposition::ConfirmedNotSent && !callbackContradiction) {
@@ -140,7 +127,7 @@ void ResourceRadioRuntime::SwitchPrimaryRadio(const RadioSwitchRequest &request)
                 Quarantine(group, EffectKnowledge::Unknown);
             } else if (group.submitting == 0 && barrier_.CancelConfirmedNotSent(group.lease)) {
                 groups_.erase(found);
-                return;
+                return false;
             }
         } else {
             if (!group.sent) {
@@ -150,9 +137,9 @@ void ResourceRadioRuntime::SwitchPrimaryRadio(const RadioSwitchRequest &request)
             ++submittedCommands_;
             transmissions_.at(transport).transportSerial = handoff.transportSerial;
             group.submittedTransmissions.insert(transport);
-            lastSubmissionAccepted_ = handoff.disposition == RadioSubmitDisposition::HandoffAccepted &&
+            accepted = handoff.disposition == RadioSubmitDisposition::HandoffAccepted &&
                 handoff.transportSerial.has_value();
-            if (group.hasNotSentMember || !lastSubmissionAccepted_) { Quarantine(group, EffectKnowledge::Unknown); }
+            if (group.hasNotSentMember || !accepted) { Quarantine(group, EffectKnowledge::Unknown); }
             if (callbackContradiction &&
                 (buffered->second.conflict || handoff.disposition == RadioSubmitDisposition::ConfirmedNotSent)) {
                 Quarantine(group, EffectKnowledge::Unknown);
@@ -170,12 +157,7 @@ void ResourceRadioRuntime::SwitchPrimaryRadio(const RadioSwitchRequest &request)
         }
     }
     for (const auto &evidence : pending) { (void)AcceptDeviceResult(evidence); }
-}
-
-bool ResourceRadioRuntime::WasLastSubmissionAccepted(const RadioSwitchRequest &request) const
-{
-    std::lock_guard<std::mutex> guard(lock_);
-    return lastSubmission_ && SameRequest(*lastSubmission_, request) && lastSubmissionAccepted_;
+    return accepted;
 }
 
 void ResourceRadioRuntime::EndLegacySenseSwitch(const StepRef &owner, const RadioDomainId &domain)

@@ -125,7 +125,7 @@ public:
         return {slot, known ? std::optional<int32_t>{modem} : std::nullopt, false, false,
             stale ? 0u : 9u};
     }
-    void SwitchPrimaryRadio(const RadioSwitchRequest &) override { ++switches; }
+    bool SwitchPrimaryRadio(const RadioSwitchRequest &) override { ++switches; return true; }
     void EndLegacySenseSwitch(const StepRef &, const RadioDomainId &) override { ++switches; }
 };
 

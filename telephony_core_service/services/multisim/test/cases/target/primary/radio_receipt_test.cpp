@@ -12,7 +12,12 @@ constexpr RuntimeEpoch epoch{6,2};
 const ResourceKey key{"same-physical-modem"};
 struct Sink : RadioResultSink {
     std::vector<uint64_t> deliveries;
-    void AcceptRadioStep(const RadioSwitchResult &r) override { deliveries.push_back(r.step.request.value); }
+    std::function<void()> onDelivery;
+    void AcceptRadioStep(const RadioSwitchResult &r) override
+    {
+        deliveries.push_back(r.step.request.value);
+        if (onDelivery) { onDelivery(); }
+    }
     void AcceptLateRadioEvidence(const RadioSwitchResult &) override {}
 };
 struct Dispatcher : RadioOwnerDispatchPort {
@@ -44,12 +49,18 @@ struct Dispatcher : RadioOwnerDispatchPort {
     }
 };
 struct Device : RadioPlatformPort {
+    std::function<RadioSubmitResult(const RadioSwitchRequest &, uint64_t)> onSubmit;
     PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const override { return {slot}; }
-    RadioSubmitResult SubmitPrimaryRadio(const RadioSwitchRequest &, uint64_t token) override
+    RadioSubmitResult SubmitPrimaryRadio(const RadioSwitchRequest &request, uint64_t token) override
     {
+        if (onSubmit) { return onSubmit(request, token); }
         return {RadioSubmitDisposition::HandoffAccepted, static_cast<int32_t>(token)};
     }
     void EndLegacySenseSwitch(const StepRef &, const RadioDomainId &) override {}
+};
+struct InlineDispatch final : RadioOwnerDispatchPort {
+    bool PostRadioOwnerTask(std::function<void()> task) override { task(); return true; }
+    bool RadioOwnerCallbacksDrained() const override { return true; }
 };
 RadioSwitchRequest Request(uint64_t id)
 {
@@ -100,5 +111,32 @@ TEST(TargetRadioReceipt, RefusedPostDoesNotRemoveAnotherRequestsReceipt)
     postedSecond();
     EXPECT_TRUE(runtime.FlushOwnerDeliveries());
     EXPECT_EQ(sink->deliveries, (std::vector<uint64_t> {2, 1}));
+}
+
+TEST(TargetRadioReceipt, EarlyDeliveryCannotOverwriteOriginalSubmitResult)
+{
+    ResourceBarrier barrier{epoch};
+    Device device;
+    auto sink = std::make_shared<Sink>();
+    auto dispatch = std::make_shared<InlineDispatch>();
+    ResourceRadioRuntime runtime{barrier, device, {key}, ResourceRadioRuntime::Mode::Execute};
+    ASSERT_TRUE(barrier.RegisterForInitialCheck(key));
+    ASSERT_TRUE(runtime.Initialize(key, {epoch, true, true}));
+    runtime.BindResultSink(sink);
+    runtime.BindOwnerDispatch(dispatch);
+    device.onSubmit = [&](const RadioSwitchRequest &request, uint64_t token) -> RadioSubmitResult {
+        if (request.step.request.value == 2) {
+            return {RadioSubmitDisposition::ConfirmedNotSent, std::nullopt};
+        }
+        EXPECT_EQ(token, 1u);
+        EXPECT_TRUE(runtime.AcceptDeviceResult(Reply(1)));
+        return {RadioSubmitDisposition::HandoffAccepted, static_cast<int32_t>(token)};
+    };
+    sink->onDelivery = [&] { EXPECT_FALSE(runtime.SwitchPrimaryRadio(Request(2))); };
+
+    EXPECT_TRUE(runtime.SwitchPrimaryRadio(Request(1)));
+    EXPECT_EQ(sink->deliveries, (std::vector<uint64_t>{1}));
+    EXPECT_EQ(runtime.SubmittedCommands(), 1u);
+    EXPECT_EQ(runtime.ReadResourceState(key), ResourceState::Available);
 }
 } // namespace OHOS::Telephony::MultiSim

@@ -708,7 +708,8 @@
       "dependencies": "P2.2、M9 A 执行契约",
       "product_evidence": "RIL/HDI 真实路由和复用",
       "candidate_tests_to_credit": [
-        "TargetPrimaryB.ResourceSubmitMemberCannotDuplicateOrReleaseAnotherInSubmit"
+        "TargetPrimaryB.ResourceSubmitMemberCannotDuplicateOrReleaseAnotherInSubmit",
+        "TargetRadioReceipt.EarlyDeliveryCannotOverwriteOriginalSubmitResult"
       ],
       "scope": "Host negative/regression only; planned slice still open"
     },

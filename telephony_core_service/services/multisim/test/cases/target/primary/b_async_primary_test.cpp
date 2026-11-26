@@ -58,7 +58,7 @@ public:
     bool directSupported {true};
     PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const override
     { return {slot, slot.legacySlotId == 0 ? 0 : 1, directSupported, false, 9}; }
-    void SwitchPrimaryRadio(const RadioSwitchRequest &request) override { requests.push_back(request); }
+    bool SwitchPrimaryRadio(const RadioSwitchRequest &request) override { requests.push_back(request); return true; }
     void EndLegacySenseSwitch(const StepRef &, const RadioDomainId &) override { ++ended; }
     std::vector<RadioSwitchRequest> requests;
     unsigned ended {0};
@@ -929,10 +929,11 @@ TEST(TargetPrimaryB,ResourceHandoffAcceptedRequiresExpectedSerial)
 {
     ResourceFixture f;
     f.platform.omitSerial=true;
-    f.Start(false);
+    const RadioSwitchRequest request {{RequestId{1,{6,2},RequestOwner::Assignment},2,0},
+        {0},{"m1"},PrimarySwitchMode::WithoutModemRestart,std::nullopt,1,0,1};
+    EXPECT_FALSE(f.radio.SwitchPrimaryRadio(request));
     EXPECT_EQ(f.platform.requests.size(),1u);
     EXPECT_EQ(f.radio.ReadResourceState(f.key),ResourceState::Quarantined);
-    EXPECT_FALSE(f.radio.WasLastSubmissionAccepted(f.platform.requests[0].second));
 }
 
 TEST(TargetPrimaryB,ResourceSubmitUnknownQuarantinesInsteadOfConfirmedCancel)
@@ -1115,8 +1116,7 @@ TEST(TargetPrimaryB,ResourceBarrierRejectsDuplicateMemberSubmission)
     f.Start(true);
     ASSERT_EQ(f.platform.requests.size(),2u);
     const auto duplicate=f.platform.requests[0].second;
-    f.radio.SwitchPrimaryRadio(duplicate);
-    EXPECT_FALSE(f.radio.WasLastSubmissionAccepted(duplicate));
+    EXPECT_FALSE(f.radio.SwitchPrimaryRadio(duplicate));
     EXPECT_EQ(f.platform.requests.size(),2u);
     EXPECT_EQ(f.radio.ReadResourceState(f.key),ResourceState::InFlight);
 }

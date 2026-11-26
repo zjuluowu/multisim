@@ -67,3 +67,32 @@ python3 -B "$T/scripts/test.py" run --backend target --no-incremental-build --fu
 python3 -B "$T/scripts/run_architecture.py" --with-gn --migration --output <证据>
 python3 -B "$T/scripts/handoff_inventory.py" --compile-db <Target编译数据库> --legacy <Legacy报告> --target <Target报告> --output <清单>
 ```
+
+## Submit 返回归属复验
+
+在 `065c5930b11e37724013bb0a852eea3f4a74c7cf` 上复现了同步早回包到 Owner 后重入的问题。
+首笔完成触发第二笔，第二笔确定未发。基线把首笔也判成未取得传输关联。
+用单次返回取代共享 Last 查询后，两笔结果保持各自归属，设备原完成只投递一次。
+
+[复现源码](submit-reentrant-probe.cpp) · [基线](submit-reentrant-before.log) ·
+[修订后](submit-reentrant-after.log) · [Target 172/172](submit-target.json.gz) ·
+[ASan 127/127](submit-asan.json.gz) · [TSan 127/127](submit-tsan.json.gz) · [架构](submit-architecture.log.gz)
+
+运行探针时，基线从对应 Git 源使用 `-DBASELINE`，修订后省略此宏。
+
+```bash
+clang++ -std=c++17 -pthread -I"$M" "$E/submit-reentrant-probe.cpp" \
+  "$M/device/resource/resource_barrier.cpp" "$M/device/resource/resource_radio_runtime.cpp" \
+  -o /tmp/m9-submit-probe
+/tmp/m9-submit-probe
+```
+
+本切片未接入正式 B/C1 图。A 在原有锁边界上仍需按已签收契约准备成员并做锁外交接。
+
+独立反查以 `-D_GLIBCXX_DEBUG` 链接真实 A 与 R。双成员完整 C1 同步回包在完成后留下悬空成员
+迭代器。该负控在 M9 输入及本切片均可复现，风险限制于当前组件路径，正式图仍未启用。
+[探针](c1-inline-owner-probe.cpp) · [失败](c1-inline-owner.log.gz)
+
+附加的 B/C1 执行审计在 Debug 构建发现 `RuntimeOperationStore::TryMarkTerminal` 的计数为零。
+实际 ELF 选择了测试翻译单元生成的未插桩 inline 实例。该项取证保留失败，其他已记录的执行审计保持原范围。
+[初次架构负控分类失败](submit-architecture-initial.log.gz) · [附加执行审计](submit-audit-before.json.gz)

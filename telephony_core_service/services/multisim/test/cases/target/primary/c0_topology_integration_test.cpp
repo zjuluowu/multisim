@@ -176,7 +176,7 @@ public:
         if (beforeRead) { const_cast<Radio *>(this)->beforeRead(); beforeRead = {}; }
         return {slot, 0, false, false, 9};
     }
-    void SwitchPrimaryRadio(const RadioSwitchRequest &) override { ++switches; }
+    bool SwitchPrimaryRadio(const RadioSwitchRequest &) override { ++switches; return true; }
     void EndLegacySenseSwitch(const StepRef &, const RadioDomainId &) override { ++switches; }
 };
 class RoleProvider final : public AssignmentRoleProviderPort {

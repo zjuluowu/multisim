@@ -73,8 +73,9 @@ class RadioExecutionPort {
 public:
     virtual ~RadioExecutionPort() = default;
     virtual PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const = 0;
-    virtual void SwitchPrimaryRadio(const RadioSwitchRequest &request) = 0;
-    virtual bool WasLastSubmissionAccepted(const RadioSwitchRequest &) const { return true; }
+    // This invocation crossed the handoff boundary with a known transport association.
+    // False also covers an unknown handoff and grants no permission to retry.
+    virtual bool SwitchPrimaryRadio(const RadioSwitchRequest &request) = 0;
     virtual void EndLegacySenseSwitch(const StepRef &owner, const RadioDomainId &domain) = 0;
 };
 // Narrow platform seam below R. The platform reports an opaque transport token and

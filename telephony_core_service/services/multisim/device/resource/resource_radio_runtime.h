@@ -28,7 +28,7 @@ public:
     void BindOwnerDispatch(const std::shared_ptr<RadioOwnerDispatchPort> &dispatch) { dispatch_ = dispatch; }
     bool Initialize(const ResourceKey &key, const InitialRecoveryEvidence &evidence);
     PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const override;
-    void SwitchPrimaryRadio(const RadioSwitchRequest &request) override;
+    bool SwitchPrimaryRadio(const RadioSwitchRequest &request) override;
     void EndLegacySenseSwitch(const StepRef &owner, const RadioDomainId &domain) override;
     bool AcceptDeviceResult(const RadioDeviceResult &deviceResult);
     bool Recover(const StepRef &original, const RecoveryEvidence &evidence);
@@ -40,7 +40,6 @@ public:
     size_t SubmittedCommands() const;
     size_t RejectedStaleResults() const;
     std::optional<int32_t> ReadTransportSerial(uint64_t token) const;
-    bool WasLastSubmissionAccepted(const RadioSwitchRequest &request) const override;
 private:
     struct Group {
         ResourceLease lease;
@@ -75,7 +74,6 @@ private:
     static bool SameGroup(const RadioSwitchRequest &left, const RadioSwitchRequest &right);
     static bool SameBinding(const RadioSwitchRequest &request, const RadioSwitchResult &result);
     static bool SameCommand(const RadioSwitchRequest &request, const RadioSwitchResult &result);
-    static bool SameRequest(const RadioSwitchRequest &left, const RadioSwitchRequest &right);
     void Quarantine(Group &group, EffectKnowledge effect);
 
     mutable std::mutex lock_;
@@ -96,8 +94,6 @@ private:
     std::vector<RadioSwitchResult> pendingNormalDeliveries_;
     std::vector<RadioSwitchResult> pendingLateDeliveries_;
     mutable std::vector<std::shared_ptr<OwnerDeliveryReceipt>> ownerDeliveryReceipts_;
-    std::optional<RadioSwitchRequest> lastSubmission_;
-    bool lastSubmissionAccepted_ {false};
 };
 } // namespace OHOS::Telephony::MultiSim
 
