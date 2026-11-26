@@ -45,6 +45,13 @@ struct ReloadRequest {
     uint64_t expectedRoleProjectionRevision;
     std::vector<ReloadAccountInput> affected;
 };
+struct ReloadResult {
+    bool admitted {false};
+    int32_t legacyResult {-1};
+    bool legacyReturn {false};
+    AccountReloadResult accounts {};
+    RoleReloadDisposition roles {RoleReloadDisposition::Rejected};
+};
 struct AccountFieldReservation { uint64_t token; SubscriptionId subscription; }; // 非DB锁。
 // T唯一事实接纳入口；各方法在所属短提交域工作，不持锁跨DB/RIL/其他Owner调用。
 class TopologyService final : public CardObservationSink, public PrimaryTopologyPort {
@@ -68,7 +75,9 @@ public:
     NumberAcceptance AcceptIndependentNumberBackwrite(const NumberExecutionTarget &target,
         const std::u16string &number);
     ReloadRequest PrepareAccountReload(AccountReadView view, uint64_t loadAttempt);
-    void AcceptAccountReload(const ReloadRequest &request, const AccountLoadResult &loaded);
+    ReloadResult AcceptAccountReload(const ReloadRequest &request, const AccountLoadResult &loaded);
+    ReloadResult ReloadAccounts(AccountReadView view);
+    void SealReload();
     bool RegisterCardDiscoveryObservation(const CardDiscoveryObservation &observation) override;
     void AcceptCardDiscoveryObservation(const CardDiscoveryObservation &observation) override;
     DiscoveryAcceptance DiscoverAccount(const CardDiscoveryObservation &observation) override;
@@ -126,13 +135,18 @@ private:
     std::optional<NumberExecutionTarget> PrepareNumberTargetLocked(SlotTarget origin, const SessionRef &session) const;
     bool StillMatchesNumberTarget(const NumberExecutionTarget &target) const;
     MetadataWriteResult AcceptMetadata(const AccountRecord &original,
-        const std::optional<BindingRef> &binding, AccountMetadataField field, const MetadataValue &value);
+        const std::optional<BindingRef> &binding, AccountMetadataField field, const MetadataValue &value,
+        std::optional<StorePosition> position);
     bool MetadataConflictsWithDiscovery(const std::string &iccid) const;
     struct PendingMetadata {
         AccountMetadataEvidence evidence;
         bool reconcilable {false};
     };
+    void RevokeReloadRoles();
+    static uint8_t ReloadField(AccountMetadataField field);
     AccountRegistry accounts_;
+    std::array<std::weak_ptr<const RoleReloadDelivery>, 2> reloadDeliveries_;
+    bool reloadOpen_ {true};
     BindingIndex bindings_;
     DiscoveryObservationLedger observations_;
     AccountStore &store_;
@@ -154,6 +168,7 @@ private:
         bool callFinished {false};
         std::optional<InitialRoleFinalizationEvidence> finalization {};
         std::optional<BindingRef> published {};
+        std::optional<StorePosition> position {};
     };
     const RuntimeEpoch discoveryEpoch_;
     bool acceptingDiscovery_ {true};

@@ -163,6 +163,17 @@ Provider、生产写权、Core/SA/IPC、AF2-03 和设备门禁继续有效。
 [开发与调试](../services/multisim/test/docs/M7B_Show_Number_Debug.md) ·
 [原始验收](../services/multisim/test/docs/evidence/af2_m7b_20261125/README.md)
 
+<a id="af2-m8-status"></a>
+
+### AF-2 M8 账户加载和 Reload
+
+**PARTIAL · Host 实现联调中。** 输入为 `9bebb54e82f9242203d530f997d1b58fc77cc8c4`。
+正式模块入口已接通 Current／Historical 独立读取。T 复核原读取、成员和逐列保护，A
+以一次性交付资格接纳完整角色集。开发组合用例已实际经过持久账户恢复、实时绑定、滞后
+防覆盖、合法后继图像、Stop 和析构断言。完整验收结果另行归档。
+CD-01～03 继续作为独立批准行为回归。产品因果证据、Provider、Core/SA/IPC、原生设备及生产切换
+门禁沿用既有规则。
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）

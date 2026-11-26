@@ -571,6 +571,7 @@ source_set("topology_types") {
   public_configs = [ ":skeleton_includes" ]
   sources = [ "account/account_types.h" ]
   public = [ "account/account_types.h" ]
+  public_deps = [ ":sim_values" ]
 }
 
 source_set("readonly_query") {

@@ -115,27 +115,27 @@ class BoundaryGuard(unittest.TestCase):
     def test_move_preserves_cpp_members(self):
         self.check_mapped_mutation("infrastructure/sim_identity.h",
                                   lambda s: s.replace("struct SlotId {", "struct SlotId { int extra;", 1),
-                                  "AF2 M7B source input differs: infrastructure/sim_identity.h")
+                                  "AF2 M8 source input differs: infrastructure/sim_identity.h")
 
     def test_move_preserves_gn_visibility(self):
         self.check_mapped_mutation("BUILD.gn", lambda s: s.replace('":*"', '"//*"', 1),
-                                  "AF2 M7B source input differs: BUILD.gn")
+                                  "AF2 M8 source input differs: BUILD.gn")
 
     def test_m4_role_source_drift(self):
         self.check_mapped_mutation("infrastructure/request/request_context.h", lambda s: s + '\n// drift\n',
                                   "AF2 M4 source input differs: infrastructure/request/request_context.h")
 
-    def test_m5_role_source_drift(self):
+    def test_m8_role_source_drift(self):
         self.check_mapped_mutation("role_assignment/assignment_service.cpp", lambda s: s + '\n// drift\n',
-                                  "AF2 M5 source input differs: role_assignment/assignment_service.cpp")
+                                  "AF2 M8 source input differs: role_assignment/assignment_service.cpp")
 
     def test_m6_account_source_drift(self):
         self.check_mapped_mutation("infrastructure/request/request_ref.h", lambda s: s + '\n// drift\n',
                                   "AF2 M6 source input differs: infrastructure/request/request_ref.h")
 
-    def test_m7a_ims_preference_source_drift(self):
+    def test_m8_registry_source_drift(self):
         self.check_mapped_mutation("account/account_registry.h", lambda s: s + '\n// drift\n',
-                                  "AF2 M7A source input differs: account/account_registry.h")
+                                  "AF2 M8 source input differs: account/account_registry.h")
 
     def test_m7b_msisdn_source_drift(self):
         self.check_mapped_mutation("card/runtime/msisdn_runtime.cpp", lambda s: s + '\n// drift\n',

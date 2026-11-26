@@ -44,7 +44,10 @@ def main():
         required = {'AssignmentStoreAdapter':['WritePrimaryParameters', 'WriteDefaultData',
                                               'WriteUserPrimaryPreference']}
     elif args.slice == 'target-topology':
-        required = {'AccountRegistry':['Read', 'AcceptDiscoveredAccount'], 'BindingIndex':['Find'],
+        required = {'SimModule':['ReloadAccounts', 'ReadStoredAccountRoles'],
+                    'AccountStoreAdapter':['LoadAccounts'],
+                    'AccountRegistry':['Read', 'AcceptDiscoveredAccount', 'BeginReload', 'AcceptReload',
+                                       'AcceptReloadProjection'], 'BindingIndex':['Find'],
                     'TopologyService':['ReadPrimaryTarget', 'AcceptStoredDiscovery', 'DiscoverAccount',
                                       'ReconcileDiscovery', 'PrepareAccountReload', 'AcceptAccountReload'],
                     'DiscoveryObservationLedger':['BeginStore', 'CompleteStored'],

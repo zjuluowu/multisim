@@ -278,7 +278,8 @@ AccountAcceptance AccountRegistry::AcceptImsPreference(SubscriptionId subscripti
 }
 
 AccountReloadAcceptance AccountRegistry::AcceptReloadProjection(SubscriptionId subscription, AccountReadView view,
-    uint64_t expectedIdentityRevision, const AccountFieldRevisions &expected, const AccountProjection &loaded)
+    uint64_t expectedIdentityRevision, const AccountFieldRevisions &expected, const AccountProjection &loaded,
+    uint8_t allowedFields)
 {
     AccountReloadAcceptance accepted;
     auto account = accounts_.find(subscription);
@@ -299,42 +300,42 @@ AccountReloadAcceptance AccountRegistry::AcceptReloadProjection(SubscriptionId s
         }
         projection.emplace();
     }
-    if (MayAdvance(projection->revisions.name, expected.name)) {
+    if ((allowedFields & ReloadName) && MayAdvance(projection->revisions.name, expected.name)) {
         if (created || projection->displayName != loaded.displayName) {
             projection->displayName = loaded.displayName;
             ++projection->revisions.name;
         }
         accepted.nameAccepted = true;
     }
-    if (MayAdvance(projection->revisions.number, expected.number)) {
+    if ((allowedFields & ReloadNumber) && MayAdvance(projection->revisions.number, expected.number)) {
         if (created || projection->displayNumber != loaded.displayNumber) {
             projection->displayNumber = loaded.displayNumber;
             ++projection->revisions.number;
         }
         accepted.numberAccepted = true;
     }
-    if (MayAdvance(projection->revisions.active, expected.active)) {
+    if ((allowedFields & ReloadActive) && MayAdvance(projection->revisions.active, expected.active)) {
         if (created || projection->active != loaded.active) {
             projection->active = loaded.active;
             ++projection->revisions.active;
         }
         accepted.activeAccepted = true;
     }
-    if (MayAdvance(projection->revisions.label, expected.label)) {
+    if ((allowedFields & ReloadLabel) && MayAdvance(projection->revisions.label, expected.label)) {
         if (created || projection->legacyLabel != loaded.legacyLabel) {
             projection->legacyLabel = loaded.legacyLabel;
             ++projection->revisions.label;
         }
         accepted.labelAccepted = true;
     }
-    if (MayAdvance(projection->revisions.imsPreference, expected.imsPreference)) {
+    if ((allowedFields & ReloadIms) && MayAdvance(projection->revisions.imsPreference, expected.imsPreference)) {
         if (created || projection->imsPreference != loaded.imsPreference) {
             projection->imsPreference = loaded.imsPreference;
             ++projection->revisions.imsPreference;
         }
         accepted.imsAccepted = true;
     }
-    if (MayAdvance(projection->revisions.position, expected.position)) {
+    if ((allowedFields & ReloadPosition) && MayAdvance(projection->revisions.position, expected.position)) {
         const bool samePosition = (!projection->legacyPosition && !loaded.legacyPosition) ||
             (projection->legacyPosition && loaded.legacyPosition &&
                 *projection->legacyPosition == *loaded.legacyPosition);
@@ -349,79 +350,214 @@ AccountReloadAcceptance AccountRegistry::AcceptReloadProjection(SubscriptionId s
     }
     return accepted;
 }
+void AccountRegistry::ProtectReloadFields(SubscriptionId id, AccountReadView view, uint8_t fields,
+    std::optional<StorePosition> position)
+{
+    auto &member = reloadMembers_[view][id];
+    for (size_t field = 0; field < member.fields.size(); ++field) {
+        if (fields & (1U << field)) { member.fields[field].Set(position); }
+    }
+}
+
+void AccountRegistry::ProtectDiscovery(SubscriptionId id, bool current, bool label,
+    std::optional<StorePosition> position)
+{
+    const auto &account = accounts_.at(id);
+    for (const auto view : {AccountReadView::Current, AccountReadView::Historical}) {
+        if (view == AccountReadView::Current && !current) { continue; }
+        auto &member = reloadMembers_[view][id];
+        member.iccid = account.iccid;
+        if (!member.continuousSince) {
+            const auto version = membershipVersions_[view].find(id);
+            if (version == membershipVersions_[view].end()) { continue; }
+            member.continuousSince = version->second;
+        }
+        member.protection.Set(position);
+        ProtectReloadFields(id, view, ReloadPosition | ReloadActive | (label ? ReloadLabel : 0), position);
+    }
+}
+
 AccountReloadTicket AccountRegistry::BeginReload(AccountReadView view)
 {
-    AccountReloadTicket ticket {view, ++issuedLoads_[view], membershipClock_, {}};
+    auto &issued = issuedLoads_[view];
+    if (issued == std::numeric_limits<uint64_t>::max()) { return {view, 0, 0, {}}; }
+    AccountReloadTicket ticket {view, issued + 1, membershipClock_, {}};
     for (const auto &[id, account] : accounts_) {
         const auto projection = ReadProjection(id, view);
         if (projection) { ticket.expected.emplace(id, AccountReloadInput {account.identityRevision, projection->revisions}); }
     }
+    issued = ticket.attempt;
     return ticket;
 }
 
 AccountReloadResult AccountRegistry::AcceptReload(const AccountReloadTicket &ticket, bool replaceable,
-    const std::vector<AccountRecord> &loaded)
+    const std::vector<AccountRecord> &loaded, const std::vector<uint8_t> &validFields,
+    const std::optional<AccountLoadImage> &image, const std::vector<AccountReloadPending> &pending,
+    bool membershipPending, bool requireCertifiedRemoval)
 {
-    AccountReloadResult result {false, 0, 0};
+    AccountReloadResult result;
     if (ticket.attempt == 0 || issuedLoads_[ticket.view] != ticket.attempt ||
         consumedLoads_[ticket.view] >= ticket.attempt) { return result; }
     consumedLoads_[ticket.view] = ticket.attempt;
-    if (!replaceable) { return result; } // 失败保留本view，另一view独立前进。
+    if (!replaceable || (!validFields.empty() && validFields.size() != loaded.size())) { return result; }
+
+    // Prepare the whole T candidate before publishing. The private copy is never used as a second read source.
+    auto accounts = accounts_;
+    auto members = reloadMembers_[ticket.view];
+    auto versions = membershipVersions_[ticket.view];
+    auto retired = retiredFieldRevisions_[ticket.view];
+    auto clock = membershipClock_;
     std::set<SubscriptionId> present;
+    std::set<std::string> identities;
     for (const auto &row : loaded) {
         const auto &projection = ticket.view == AccountReadView::Current ? row.current : row.historical;
-        const auto current = accounts_.find(row.subscription);
-        if (!projection || row.identityRevision == 0 || !present.insert(row.subscription).second ||
-            (current != accounts_.end() && current->second.iccid != row.iccid)) { return result; }
+        const auto current = accounts.find(row.subscription);
+        const auto sameIccid = FindByIccid(row.iccid);
+        const auto member = members.find(row.subscription);
+        if (!projection || row.subscription.legacySimId < 0 || row.iccid.empty() || row.identityRevision == 0 ||
+            !present.insert(row.subscription).second || !identities.insert(row.iccid).second ||
+            (current != accounts.end() && current->second.iccid != row.iccid) ||
+            (sameIccid && !(*sameIccid == row.subscription)) ||
+            (member != members.end() && !member->second.iccid.empty() && member->second.iccid != row.iccid)) {
+            return result;
+        }
     }
+
+    const auto membershipImage = image && image->coversMembership ?
+        std::make_optional(image->position) : std::nullopt;
+    const auto pendingFields = [&](SubscriptionId id) {
+        uint8_t fields = 0;
+        for (const auto &item : pending) { if (item.subscription == id) { fields |= item.fields; } }
+        return fields;
+    };
+    const auto fieldImage = [&](unsigned bit) {
+        return image && (image->coveredFields & bit) ? std::make_optional(image->position) : std::nullopt;
+    };
+    const auto sameFields = [](const AccountFieldRevisions &a, const AccountFieldRevisions &b) {
+        return a.name == b.name && a.number == b.number && a.active == b.active && a.label == b.label &&
+            a.imsPreference == b.imsPreference && a.position == b.position;
+    };
+
+    // Reuse the field merge against the candidate; only its selected view will be published.
+    AccountRegistry candidate;
+    candidate.accounts_.swap(accounts);
+    candidate.retiredFieldRevisions_[ticket.view] = retired;
     result.acceptedAttempt = true;
-    for (const auto &row : loaded) {
-        auto current = accounts_.find(row.subscription);
-        const auto expected = ticket.expected.find(row.subscription);
-        if (current == accounts_.end()) {
-            if (expected != ticket.expected.end() ||
-                membershipVersions_[ticket.view][row.subscription] > ticket.membershipWatermark) {
-                ++result.conflictedFields; continue;
-            }
-            current = accounts_.emplace(row.subscription,
-                AccountRecord {row.subscription, row.iccid, row.identityRevision, {}, {}}).first;
+    result.roleMembershipEligible = !membershipPending;
+    for (size_t index = 0; index < loaded.size(); ++index) {
+        const auto &row = loaded[index];
+        const auto id = row.subscription;
+        auto existing = candidate.accounts_.find(id);
+        const auto expected = ticket.expected.find(id);
+        const bool existed = existing != candidate.accounts_.end() && Projection(existing->second, ticket.view);
+        auto &member = members[id];
+        const auto memberVersion = versions[id];
+        const bool newerThanTombstone = !retired.count(id) || existed ||
+            (membershipImage && (!member.protection.floor || !(*membershipImage == *member.protection.floor)));
+        const bool stableMember = memberVersion <= ticket.membershipWatermark &&
+            member.protection.CoveredBy(membershipImage) && (!requireCertifiedRemoval || newerThanTombstone);
+        result.roleMembershipEligible &= stableMember;
+        const auto columns = validFields.empty() ? ReloadAllFields : validFields[index];
+        if ((expected == ticket.expected.end() && (existed || membershipPending || !stableMember ||
+            columns != ReloadAllFields || clock == std::numeric_limits<uint64_t>::max() ||
+            (retired.count(id) && !MayRecreate(retired.at(id))))) ||
+            (expected != ticket.expected.end() && (!existed || member.continuousSince > ticket.membershipWatermark ||
+            existing->second.identityRevision != expected->second.identityRevision))) {
+            result.roleMembershipEligible = false;
+            result.conflictedFields += 6;
+            continue;
         }
-        auto &projection = Projection(current->second, ticket.view);
-        if (expected == ticket.expected.end() && (projection ||
-            membershipVersions_[ticket.view][row.subscription] > ticket.membershipWatermark)) {
-            ++result.conflictedFields; continue;
-        }
+
         const auto &incoming = ticket.view == AccountReadView::Current ? row.current : row.historical;
-        const auto accepted = AcceptReloadProjection(row.subscription, ticket.view,
-            expected == ticket.expected.end() ? row.identityRevision : expected->second.identityRevision,
-            expected == ticket.expected.end() ? AccountFieldRevisions {} : expected->second.fields, *incoming);
-        const size_t fields = static_cast<size_t>(accepted.nameAccepted) + accepted.numberAccepted +
-            accepted.activeAccepted + accepted.labelAccepted + accepted.imsAccepted + accepted.positionAccepted;
-        result.acceptedFields += fields;
-        result.conflictedFields += 6 - fields;
-        if (expected == ticket.expected.end() && projection) {
-            membershipVersions_[ticket.view][row.subscription] = ++membershipClock_;
+        uint8_t allowed = columns & ~pendingFields(id);
+        std::array<bool, 6> unchanged {};
+        if (existed) {
+            const auto &previous = *Projection(existing->second, ticket.view);
+            unchanged = {previous.displayName == incoming->displayName,
+                previous.displayNumber == incoming->displayNumber, previous.active == incoming->active,
+                previous.legacyLabel == incoming->legacyLabel, previous.imsPreference == incoming->imsPreference,
+                previous.legacyPosition == incoming->legacyPosition};
         }
-    }
-    for (auto it = accounts_.begin(); it != accounts_.end();) {
-        auto &projection = Projection(it->second, ticket.view);
-        if (projection && present.count(it->first) == 0) {
-            const auto expected = ticket.expected.find(it->first);
-            const auto &v = projection->revisions;
-            const bool unchanged = expected != ticket.expected.end() &&
-                it->second.identityRevision == expected->second.identityRevision &&
-                v.name == expected->second.fields.name && v.number == expected->second.fields.number &&
-                v.active == expected->second.fields.active && v.label == expected->second.fields.label &&
-                v.imsPreference == expected->second.fields.imsPreference && v.position == expected->second.fields.position;
-            if (unchanged) {
-                retiredFieldRevisions_[ticket.view][it->first] = projection->revisions;
-                projection.reset();
-                membershipVersions_[ticket.view][it->first] = ++membershipClock_;
+        for (size_t field = 0; field < member.fields.size(); ++field) {
+            const unsigned bit = 1U << field;
+            const auto sample = fieldImage(bit);
+            const auto &protectedField = member.fields[field];
+            if (!protectedField.CoveredBy(sample) ||
+                (sample && protectedField.observed && sample == protectedField.floor && !unchanged[field])) {
+                allowed &= ~bit;
+            }
+        }
+        // A newly created projection must carry every field; no partial row can revive a tombstone.
+        if (!existed && allowed != ReloadAllFields) {
+            result.roleMembershipEligible = false;
+            result.conflictedFields += 6;
+            continue;
+        }
+        if (existing == candidate.accounts_.end()) {
+            existing = candidate.accounts_.emplace(id, AccountRecord {id, row.iccid, row.identityRevision, {}, {}}).first;
+        }
+        const auto accepted = candidate.AcceptReloadProjection(id, ticket.view, existing->second.identityRevision,
+            expected == ticket.expected.end() ? AccountFieldRevisions {} : expected->second.fields, *incoming, allowed);
+        const std::array fields {accepted.nameAccepted, accepted.numberAccepted, accepted.activeAccepted,
+            accepted.labelAccepted, accepted.imsAccepted, accepted.positionAccepted};
+        for (size_t field = 0; field < fields.size(); ++field) {
+            if (fields[field]) {
+                ++result.acceptedFields;
+                if (const auto position = fieldImage(1U << field)) { member.fields[field].Set(position, true); }
             } else { ++result.conflictedFields; }
         }
-        if (!it->second.current && !it->second.historical) { it = accounts_.erase(it); }
+        if (!existed) {
+            versions[id] = ++clock;
+            member.continuousSince = clock;
+            member.iccid = row.iccid;
+        }
+        if (stableMember && membershipImage) { member.protection.Set(membershipImage, true); }
+    }
+
+    for (auto it = candidate.accounts_.begin(); it != candidate.accounts_.end();) {
+        const auto id = it->first;
+        auto &projection = Projection(it->second, ticket.view);
+        if (projection && !present.count(id)) {
+            const auto expected = ticket.expected.find(id);
+            auto &member = members[id];
+            bool covered = member.protection.CoveredBy(membershipImage);
+            for (size_t field = 0; field < member.fields.size(); ++field) {
+                covered &= member.fields[field].CoveredBy(fieldImage(1U << field));
+            }
+            const bool newerMembership = membershipImage && (!member.protection.floor ||
+                !(*membershipImage == *member.protection.floor));
+            if (!membershipPending && !pendingFields(id) && covered &&
+                (!requireCertifiedRemoval || newerMembership) && versions[id] <= ticket.membershipWatermark &&
+                expected != ticket.expected.end() && it->second.identityRevision == expected->second.identityRevision &&
+                sameFields(projection->revisions, expected->second.fields) &&
+                clock != std::numeric_limits<uint64_t>::max()) {
+                retired[id] = projection->revisions;
+                projection.reset();
+                versions[id] = ++clock;
+                member.iccid = it->second.iccid;
+                member.continuousSince = 0;
+                if (membershipImage) { member.protection.Set(membershipImage, true); }
+            } else {
+                result.roleMembershipEligible = false;
+                ++result.conflictedFields;
+            }
+        }
+        if (!it->second.current && !it->second.historical) { it = candidate.accounts_.erase(it); }
         else { ++it; }
     }
+    for (const auto &[id, member] : members) {
+        if (!member.continuousSince && versions[id] > ticket.membershipWatermark && !retired.count(id)) {
+            result.roleMembershipEligible = false;
+        }
+        if (!member.continuousSince && !present.count(id) && !member.protection.CoveredBy(membershipImage)) {
+            result.roleMembershipEligible = false;
+        }
+    }
+    accounts_.swap(candidate.accounts_);
+    reloadMembers_[ticket.view].swap(members);
+    membershipVersions_[ticket.view].swap(versions);
+    retiredFieldRevisions_[ticket.view].swap(retired);
+    membershipClock_ = clock;
     return result;
 }
 } // namespace OHOS::Telephony::MultiSim

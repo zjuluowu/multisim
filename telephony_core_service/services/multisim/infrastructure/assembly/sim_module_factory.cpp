@@ -101,6 +101,19 @@ bool SimModule::SeedAccount(const ConfirmedSlotAccount &confirmed)
         topology_.AcceptStoredDiscovery({session, 1, confirmed.account.iccid}, confirmed.account, confirmed.stored);
 }
 
+ReloadResult SimModule::ReloadAccounts(AccountReadView view)
+{
+    if (!AdmitModuleCall()) { return {}; }
+    ModuleCall call(shared_from_this());
+    return topology_.ReloadAccounts(view);
+}
+
+std::optional<StoredAccountRoleFragment> SimModule::ReadStoredAccountRoles(SubscriptionId id,
+    AccountReadView view) const
+{
+    return assignment_->ReadStoredAccountRoles(id, view == AccountReadView::Historical);
+}
+
 std::optional<BindingRef> SimModule::FindBinding(SlotId slot) const
 {
     return topology_.FindBinding(slot);
@@ -356,6 +369,7 @@ SimModule::DrainResult SimModule::StopAcceptingAndDrain()
         std::lock_guard<std::mutex> guard(admissionMutex_);
         accepting_ = false;
         topology_.SealDiscovery();
+        topology_.SealReload();
         if (drained_) { return DrainResult::Drained; }
         closeHold_ = self;
         if (primaryCallActive_ || moduleCalls_ || joining_) { return DrainResult::CallbacksStillInFlight; }

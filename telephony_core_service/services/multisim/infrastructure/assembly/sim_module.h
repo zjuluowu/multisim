@@ -60,6 +60,8 @@ public:
     std::optional<BindingRef> FindBinding(SlotId slot) const;
     std::optional<AccountView> ReadAccount(SubscriptionId subscription,
         AccountReadView view = AccountReadView::Current) const;
+    ReloadResult ReloadAccounts(AccountReadView view);
+    std::optional<StoredAccountRoleFragment> ReadStoredAccountRoles(SubscriptionId id, AccountReadView view) const;
     int32_t SetShowNumber(int32_t slot, const std::u16string &number, LegacyCallerRef caller, LegacyCallbackRef callback);
     int32_t GetShowNumber(int32_t slot, LegacyCallerRef caller, LegacyCallbackRef callback);
     bool AcceptMsisdnEvidence(const MsisdnTransportEvidence &evidence);

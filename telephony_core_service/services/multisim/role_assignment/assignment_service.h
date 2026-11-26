@@ -96,10 +96,8 @@ public:
     size_t PendingDiscoveryRoles() const;
     std::optional<ConfirmedDiscoveryRoles> ReadConfirmedDiscoveryRoles(SubscriptionId id) const;
     uint64_t ReadRoleProjectionRevision(bool historicalView) const override;
-    bool AcceptReloadedRoleProjectionSet(const std::vector<StoredAccountRoleFragment> &loaded, uint64_t loadAttempt,
-        uint64_t expectedAssignmentRevision, bool historicalView) override;
-    bool AcceptReloadedRoleProjection(const StoredAccountRoleFragment &loaded, uint64_t loadAttempt,
-        uint64_t expectedAssignmentRevision, bool historicalView) override;
+    std::optional<StoredAccountRoleFragment> ReadStoredAccountRoles(SubscriptionId id, bool historical) const;
+    void AcceptReloadedRoleProjectionSet(const RoleReloadDelivery &delivery) override;
 private:
     mutable std::recursive_mutex primaryCommitLock_;
     void CompleteOnce(RequestId request, const CompletionPlan &plan, int32_t result,
@@ -119,6 +117,7 @@ private:
     const bool independentRoleTransactions_;
     const SlotCatalog &catalog_;
     const PrimaryScope primaryScope_;
+    const RuntimeEpoch reloadEpoch_;
     std::optional<C0Receipt> c0Receipt_;
     AssignmentAggregate assignment_;
     RuntimeOperationStore operations_;

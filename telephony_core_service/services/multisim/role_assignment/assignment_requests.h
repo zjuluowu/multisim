@@ -19,6 +19,7 @@
 #ifndef OHOS_TELEPHONY_MULTISIM_ASSIGNMENT_API_ASSIGNMENT_REQUESTS_H
 #define OHOS_TELEPHONY_MULTISIM_ASSIGNMENT_API_ASSIGNMENT_REQUESTS_H
 
+#include <atomic>
 #include <optional>
 #include <string>
 #include <vector>
@@ -75,7 +76,29 @@ struct StoredAccountRoleFragment {
     bool sms;
     bool mainCardColumn;
     bool dataCardColumn;
+    bool operator==(const StoredAccountRoleFragment &other) const
+    {
+        return subscription == other.subscription && voice == other.voice && sms == other.sms &&
+            mainCardColumn == other.mainCardColumn && dataCardColumn == other.dataCardColumn;
+    }
 }; // 原DB读取载荷；不能以A当前态填回旧DB读取结果。
+enum class RoleReloadDisposition {
+    Available, Revoked, Applying, Accepted, Rejected, StaleRevision, InsufficientCoverage, InvalidBatch
+};
+struct RoleReloadDelivery {
+    RuntimeEpoch epoch;
+    uint64_t attempt;
+    uint64_t expectedRevision;
+    bool historical;
+    std::optional<StorePosition> position;
+    std::vector<StoredAccountRoleFragment> rows;
+    mutable std::atomic<RoleReloadDisposition> receipt {RoleReloadDisposition::Available};
+    void Revoke() const
+    {
+        auto expected = RoleReloadDisposition::Available;
+        (void)receipt.compare_exchange_strong(expected, RoleReloadDisposition::Revoked);
+    }
+};
 struct ConfirmedDiscoveryRoles {
     DiscoveryCallRef call;
     StoredAccountRoleFragment stored;
@@ -112,11 +135,13 @@ struct InitialRoleFinalizationEvidence {
     std::optional<DiscoveryCallRef> discoveryCall {};
     std::optional<SubscriptionId> assigned {};
     bool historicalOnly {false};
+    std::optional<StorePosition> position {};
     bool operator==(const InitialRoleFinalizationEvidence &other) const
     {
         return callFinished == other.callFinished && storageEffect == other.storageEffect &&
             projectionsAcceptedOrReconciled == other.projectionsAcceptedOrReconciled &&
-            discoveryCall == other.discoveryCall && assigned == other.assigned && historicalOnly == other.historicalOnly;
+            discoveryCall == other.discoveryCall && assigned == other.assigned && historicalOnly == other.historicalOnly &&
+            position == other.position;
     }
 };
 inline bool MayFinalizeInitialRoles(const InitialRoleFinalizationEvidence &evidence)

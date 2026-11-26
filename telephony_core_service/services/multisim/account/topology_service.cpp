@@ -17,6 +17,7 @@
 // 未定义的方法有意仅保留声明；不提供伪成功或可执行设备路径。
 
 #include "account/topology_service.h"
+#include <set>
 #include <stdexcept>
 
 namespace OHOS::Telephony::MultiSim {
@@ -242,6 +243,7 @@ DiscoveryAcceptance TopologyService::ContinueDiscovery(DiscoveryCallRef call,
                     !(plan.existingSubscription == result->assignedSubscription))) {
                 pending.ambiguous = true;
             } else {
+                if (evidence.applied == columns) { pending.position = result->position; }
                 pending.applied |= evidence.applied;
                 pending.notApplied |= evidence.notApplied;
                 if (result->assignedSubscription) { pending.assigned = result->assignedSubscription; }
@@ -292,11 +294,13 @@ DiscoveryAcceptance TopologyService::ContinueDiscovery(DiscoveryCallRef call,
             pending.executing = false;
             return acceptance;
         }
-        // All allocation and eligibility checks precede this tail. Both facts and the witness use the T domain.
+        accounts_.ProtectDiscovery(*identity, current, plan.accountFields.legacyLabel.has_value(), pending.position);
+        RevokeReloadRoles();
+        // The binding and the original witness become visible in the same T domain.
         if (prepared) { bindings_.PublishBinding(*prepared, std::move(preparedSource)); }
         pending.published = prepared;
         pending.finalization = InitialRoleFinalizationEvidence {true, EffectKnowledge::ConfirmedApplied,
-            true, call, identity, !current};
+            true, call, identity, !current, pending.position};
         pending.phase = DiscoveryPhase::Finalizing;
         acceptance.bindingAccepted = prepared.has_value();
         acceptance.storedSubscription = identity;
@@ -438,49 +442,137 @@ AccountAcceptance TopologyService::AcceptActivationProjection(SubscriptionId sub
     AccountReadView view, uint64_t expectedActiveRevision, bool active)
 {
     std::lock_guard<std::recursive_mutex> guard(commitLock_);
-    return accounts_.AcceptActiveProjection(subscription, view, expectedActiveRevision, active);
+    const auto accepted = accounts_.AcceptActiveProjection(subscription, view, expectedActiveRevision, active);
+    if (accepted == AccountAcceptance::Accepted) {
+        accounts_.ProtectReloadFields(subscription, view, ReloadActive, {});
+    }
+    return accepted;
 }
 
-ReloadRequest TopologyService::PrepareAccountReload(AccountReadView view, uint64_t loadAttempt)
+void TopologyService::RevokeReloadRoles()
 {
-    const uint64_t expectedRoleRevision = roles_ ? roles_->ReadRoleProjectionRevision(
-        view == AccountReadView::Historical) : 0;
+    for (auto &permit : reloadDeliveries_) {
+        if (const auto delivery = permit.lock()) { delivery->Revoke(); }
+    }
+}
+
+void TopologyService::SealReload()
+{
     std::lock_guard<std::recursive_mutex> guard(commitLock_);
-    const auto ticket = accounts_.BeginReload(view);
-    (void)loadAttempt; // Existing caller hint; T's per-view ticket is the write authority.
+    reloadOpen_ = false;
+    RevokeReloadRoles();
+}
+
+ReloadRequest TopologyService::PrepareAccountReload(AccountReadView view, uint64_t)
+{
+    const bool historical = view == AccountReadView::Historical;
+    const auto expectedRoleRevision = roles_ ? roles_->ReadRoleProjectionRevision(historical) : 0;
+    std::lock_guard<std::recursive_mutex> guard(commitLock_);
+    if (!reloadOpen_) { return {{view, 0, discoveryEpoch_}, {view, 0, 0, {}}, 0, {}}; }
+    if (const auto delivery = reloadDeliveries_[historical].lock()) { delivery->Revoke(); }
+    auto ticket = accounts_.BeginReload(view);
     std::vector<ReloadAccountInput> affected;
     for (const auto &[subscription, expected] : ticket.expected) {
         affected.push_back({subscription, expected.identityRevision, expected.fields});
     }
-    return {{view, ticket.attempt}, ticket, expectedRoleRevision, std::move(affected)};
+    const auto attempt = ticket.attempt;
+    return {{view, attempt, discoveryEpoch_}, std::move(ticket), expectedRoleRevision, std::move(affected)};
 }
 
-void TopologyService::AcceptAccountReload(const ReloadRequest &request, const AccountLoadResult &loaded)
+ReloadResult TopologyService::ReloadAccounts(AccountReadView view)
 {
-    if (!(loaded.request.view == request.storeRequest.view) ||
-        loaded.request.loadAttempt != request.storeRequest.loadAttempt ||
-        loaded.rows.size() != loaded.storedRoles.size()) {
-        return;
+    const auto request = PrepareAccountReload(view, 0);
+    if (!request.storeRequest.loadAttempt) { return {}; }
+    AccountLoadResult loaded {request.storeRequest, -1, false, false, {}, {}};
+    try {
+        loaded = store_.LoadAccounts(request.storeRequest);
+    } catch (const std::exception &) {
+        // A failed read leaves both projections untouched.
     }
+    return AcceptAccountReload(request, loaded);
+}
+
+ReloadResult TopologyService::AcceptAccountReload(const ReloadRequest &request, const AccountLoadResult &loaded)
+{
+    ReloadResult result {true, loaded.legacyResult, loaded.legacyReturn};
+    const auto view = request.storeRequest.view;
+    const bool historical = view == AccountReadView::Historical;
+    const auto sameRead = loaded.request == request.storeRequest &&
+        request.storeRequest.epoch == discoveryEpoch_ && request.acceptance.view == view &&
+        request.acceptance.attempt == request.storeRequest.loadAttempt;
+    const bool imageValid = !loaded.image ||
+        (loaded.image->sample == loaded.request && loaded.image->position.Valid());
+    bool complete = sameRead && imageValid && loaded.complete;
     std::vector<AccountRecord> records;
-    records.reserve(loaded.rows.size());
-    for (const auto &row : loaded.rows) {
-        const AccountProjection projection {row.name, row.number, row.legacyLabel, row.imsPreference,
-            row.active, {}, row.legacyPosition};
-        records.push_back({row.subscription, row.iccid, 1,
-            request.storeRequest.view == AccountReadView::Current ? std::make_optional(projection) : std::nullopt,
-            request.storeRequest.view == AccountReadView::Historical ? std::make_optional(projection) : std::nullopt});
+    std::vector<uint8_t> columns;
+    std::set<SubscriptionId> identities;
+    std::set<SubscriptionId> roleIdentities;
+    if (complete) {
+        records.reserve(loaded.rows.size());
+        columns.reserve(loaded.rows.size());
+        for (const auto &row : loaded.rows) {
+            complete &= identities.insert(row.subscription).second;
+            if (!historical && (!(row.validReloadFields & ReloadPosition) ||
+                !row.legacyPosition || row.legacyPosition->legacySlotId < 0)) { complete = false; }
+            const AccountProjection projection {row.name, row.number, row.legacyLabel, row.imsPreference,
+                row.active, {}, row.legacyPosition};
+            records.push_back({row.subscription, row.iccid, 1,
+                historical ? std::nullopt : std::make_optional(projection),
+                historical ? std::make_optional(projection) : std::nullopt});
+            columns.push_back(row.validReloadFields);
+        }
     }
-    AccountReloadResult accepted;
+    bool roleRowsComplete = loaded.roleColumnsValid;
+    if (complete && roleRowsComplete) {
+        for (const auto &row : loaded.storedRoles) {
+            roleRowsComplete &= roleIdentities.insert(row.subscription).second;
+        }
+        roleRowsComplete &= roleIdentities == identities;
+    }
+    std::shared_ptr<RoleReloadDelivery> delivery;
+    if (complete && roleRowsComplete && roles_) {
+        delivery = std::make_shared<RoleReloadDelivery>();
+        delivery->epoch = discoveryEpoch_;
+        delivery->attempt = request.storeRequest.loadAttempt;
+        delivery->expectedRevision = request.expectedRoleProjectionRevision;
+        delivery->historical = historical;
+        if (loaded.image && loaded.image->coversRoles) { delivery->position = loaded.image->position; }
+        delivery->rows = loaded.storedRoles;
+    }
     {
         std::lock_guard<std::recursive_mutex> guard(commitLock_);
-        accepted = accounts_.AcceptReload(request.acceptance, loaded.complete, records);
+        if (!reloadOpen_) { result.roles = RoleReloadDisposition::Revoked; return result; }
+        std::vector<AccountReloadPending> pending;
+        pending.reserve(pendingMetadata_.size() + pendingDiscoveries_.size());
+        for (const auto &[id, entry] : pendingMetadata_) {
+            (void)id;
+            const auto &operation = entry.evidence.operation;
+            pending.push_back({operation.subscription, ReloadField(operation.field)});
+        }
+        for (const auto &[id, entry] : pendingDiscoveries_) {
+            (void)id;
+            const auto subscription = accounts_.FindByIccid(entry.ticket.observation.iccid);
+            if (subscription) {
+                const auto fields = ReloadPosition | ReloadActive |
+                    (entry.plan && entry.plan->accountFields.legacyLabel ? ReloadLabel : 0);
+                pending.push_back({*subscription, static_cast<uint8_t>(fields)});
+            }
+        }
+        result.accounts = accounts_.AcceptReload(request.acceptance, complete, records, columns,
+            loaded.image, pending, !pendingDiscoveries_.empty(), true);
+        if (delivery && result.accounts.roleMembershipEligible) { reloadDeliveries_[historical] = delivery; }
+        else { delivery.reset(); }
     }
-    if (loaded.complete && accepted.acceptedAttempt && roles_) {
-        (void)roles_->AcceptReloadedRoleProjectionSet(loaded.storedRoles,
-            request.storeRequest.loadAttempt, request.expectedRoleProjectionRevision,
-            request.storeRequest.view == AccountReadView::Historical);
+    if (delivery) {
+        try {
+            roles_->AcceptReloadedRoleProjectionSet(*delivery);
+        } catch (const std::exception &) {
+            auto available = RoleReloadDisposition::Available;
+            (void)delivery->receipt.compare_exchange_strong(available, RoleReloadDisposition::Rejected);
+        }
+        result.roles = delivery->receipt.load();
     }
+    return result;
 }
 
 std::optional<BindingRef> TopologyService::AcceptStoredDiscovery(const CardDiscoveryObservation &observation,
@@ -507,6 +599,8 @@ std::optional<BindingRef> TopologyService::AcceptStoredDiscovery(const CardDisco
         stored.callFinished, bindings_);
     if (!accepted.bindingAccepted) { return std::nullopt; }
     const auto binding = bindings_.Find(observation.session.application.slot);
+    accounts_.ProtectDiscovery(account.subscription, account.current.has_value(), false, stored.position);
+    RevokeReloadRoles();
     bindings_.PublishBinding(*binding, observation.session);
     return binding;
 }

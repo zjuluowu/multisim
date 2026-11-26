@@ -223,7 +223,7 @@ TopologyService::MetadataWriteResult TopologyService::UpdateMetadata(AccountMeta
         (field == AccountMetadataField::Label ? outcome.legacyResult == 0 : outcome.legacyResult != -1);
     if (outcome.callFinished && outcome.effect == EffectKnowledge::ConfirmedApplied && mayAccept) {
         try {
-            result = AcceptMetadata(*account, binding, field, value);
+            result = AcceptMetadata(*account, binding, field, value, outcome.position);
             result.outcome = outcome;
         } catch (const std::exception &) {
             result.acceptance = AccountMetadataResult::Conflict;
@@ -244,7 +244,8 @@ TopologyService::MetadataWriteResult TopologyService::UpdateMetadata(AccountMeta
 }
 
 TopologyService::MetadataWriteResult TopologyService::AcceptMetadata(const AccountRecord &original,
-    const std::optional<BindingRef> &binding, AccountMetadataField field, const MetadataValue &value)
+    const std::optional<BindingRef> &binding, AccountMetadataField field, const MetadataValue &value,
+    std::optional<StorePosition> position)
 {
     const auto current = accounts_.Read(original.subscription);
     if (!current || current->identityRevision != original.identityRevision || current->iccid != original.iccid ||
@@ -273,7 +274,9 @@ TopologyService::MetadataWriteResult TopologyService::AcceptMetadata(const Accou
                     projection->revisions.imsPreference);
                 break;
         }
-        return result == AccountAcceptance::Accepted;
+        if (result != AccountAcceptance::Accepted) { return false; }
+        accounts_.ProtectReloadFields(original.subscription, view, ReloadField(field), position);
+        return true;
     };
     const bool currentAccepted = apply(AccountReadView::Current, original.current);
     const bool historicalAccepted = apply(AccountReadView::Historical, original.historical);
@@ -286,6 +289,17 @@ TopologyService::MetadataWriteResult TopologyService::AcceptMetadata(const Accou
         acceptance.acceptance = AccountMetadataResult::HistoricalMissing;
     }
     return acceptance;
+}
+
+uint8_t TopologyService::ReloadField(AccountMetadataField field)
+{
+    switch (field) {
+        case AccountMetadataField::DisplayName: return ReloadName;
+        case AccountMetadataField::DisplayNumber: return ReloadNumber;
+        case AccountMetadataField::Label: return ReloadLabel;
+        case AccountMetadataField::ImsPreference: return ReloadIms;
+    }
+    return 0;
 }
 
 size_t TopologyService::PendingMetadataCount() const
@@ -315,6 +329,12 @@ bool TopologyService::ReconcileMetadata(const AccountMetadataOperation &operatio
     const auto previous = pendingMetadata_.at(operation.original.request).evidence.outcome.effect;
     if (previous != EffectKnowledge::Unknown && previous != evidence->outcome.effect) { return false; }
     if (!metadataOperations_.AcceptLateEvidence(operation.original, evidence->outcome.effect)) { return false; }
+    if (evidence->outcome.effect == EffectKnowledge::ConfirmedApplied) {
+        for (const auto view : {AccountReadView::Current, AccountReadView::Historical}) {
+            accounts_.ProtectReloadFields(operation.subscription, view, ReloadField(operation.field),
+                evidence->outcome.position);
+        }
+    }
     metadataOperations_.RetireAfterEvidenceRetention(operation.original.request);
     pendingMetadata_.erase(operation.original.request);
     return true;

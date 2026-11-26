@@ -49,6 +49,17 @@ struct SubscriptionTarget { SubscriptionId subscription; }; // 允许离线账�
 using ResolvedTarget = std::variant<SlotTarget, CardApplicationTarget, SubscriptionTarget>;
 using RuntimeEpoch = std::array<uint64_t, 2>; // H 每次实例创建提供新令牌，非从零重置计数。
 
+// Positions are issued by an authenticated Store route, never by a module counter.
+struct StorePosition {
+    uint64_t lineage;
+    uint64_t position;
+    bool Valid() const { return lineage != 0 && position != 0; }
+    bool Covers(const StorePosition &other) const
+    { return Valid() && other.Valid() && lineage == other.lineage && position >= other.position; }
+    bool operator==(const StorePosition &other) const
+    { return lineage == other.lineage && position == other.position; }
+};
+
 // R 拥有代次；纯值契约可跨端口传递，Domain 不拥有运行会话。
 struct SessionRef {
     RuntimeEpoch epoch;

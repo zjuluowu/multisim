@@ -62,14 +62,25 @@ struct AccountReloadTicket {
     uint64_t membershipWatermark;
     std::map<SubscriptionId, AccountReloadInput> expected;
 };
-struct AccountReloadResult { bool acceptedAttempt; size_t acceptedFields; size_t conflictedFields; };
+struct AccountReloadResult {
+    bool acceptedAttempt {false};
+    size_t acceptedFields {0};
+    size_t conflictedFields {0};
+    bool roleMembershipEligible {false};
+};
+struct AccountReloadPending { SubscriptionId subscription; uint8_t fields; };
 class AccountRegistry final {
 public:
     std::optional<AccountRecord> Read(SubscriptionId subscription) const;
     std::optional<SubscriptionId> FindByIccid(const std::string &iccid) const;
     AccountReloadTicket BeginReload(AccountReadView view);
     AccountReloadResult AcceptReload(const AccountReloadTicket &ticket, bool replaceable,
-        const std::vector<AccountRecord> &loaded);
+        const std::vector<AccountRecord> &loaded, const std::vector<uint8_t> &validFields = {},
+        const std::optional<AccountLoadImage> &image = {}, const std::vector<AccountReloadPending> &pending = {},
+        bool membershipPending = false, bool requireCertifiedRemoval = false);
+    void ProtectReloadFields(SubscriptionId id, AccountReadView view, uint8_t fields,
+        std::optional<StorePosition> position);
+    void ProtectDiscovery(SubscriptionId id, bool current, bool label, std::optional<StorePosition> position);
     std::optional<AccountProjection> ReadProjection(SubscriptionId subscription, AccountReadView view) const;
     AccountAcceptance AcceptNumberVisibility(SubscriptionId subscription, AccountReadView view,
         uint64_t expectedNumberRevision, const std::u16string &number);
@@ -89,7 +100,7 @@ public:
     AccountAcceptance AcceptDiscoveredAccount(const AccountRecord &account);
     AccountReloadAcceptance AcceptReloadProjection(SubscriptionId subscription, AccountReadView view,
         uint64_t expectedIdentityRevision, const AccountFieldRevisions &expected,
-        const AccountProjection &loaded);
+        const AccountProjection &loaded, uint8_t allowedFields = ReloadAllFields);
 private:
     std::optional<AccountProjection> &Projection(AccountRecord &record, AccountReadView view);
     std::map<SubscriptionId, AccountRecord> accounts_;
@@ -98,6 +109,27 @@ private:
     std::map<AccountReadView, std::map<SubscriptionId, uint64_t>> membershipVersions_;
     std::map<AccountReadView, std::map<SubscriptionId, AccountFieldRevisions>> retiredFieldRevisions_;
     // 移除投影只撤销内容；重建时字段版本继续，防旧号码资格在同一绑定上ABA。
+    struct Protection {
+        bool known {false};
+        std::optional<StorePosition> floor;
+        bool observed {false};
+        bool CoveredBy(const std::optional<StorePosition> &position) const
+        { return !known || (floor && position && position->Covers(*floor)); }
+        void Set(std::optional<StorePosition> position, bool fromRead = false)
+        {
+            if (known && floor && position && !position->Covers(*floor)) { position.reset(); }
+            known = true;
+            floor = position;
+            observed = fromRead;
+        }
+    };
+    struct Membership {
+        uint64_t continuousSince {0};
+        std::string iccid;
+        Protection protection;
+        std::array<Protection, 6> fields {};
+    };
+    std::map<AccountReadView, std::map<SubscriptionId, Membership>> reloadMembers_;
     uint64_t membershipClock_ {0}; // 删除不归零；旧读取不得复活已移除的投影。
 };
 } // namespace OHOS::Telephony::MultiSim

@@ -43,6 +43,7 @@ AssignmentService::AssignmentService(const SlotCatalog &catalog, AssignmentStore
     LegacyIntCompletionPort &completion, RuntimeEpoch epoch, PrimaryScope primaryScope)
     : supportsRoleProvider_(store.SupportsRoleProvider()),
       independentRoleTransactions_(store.HasIndependentRoleTransactions()), catalog_(catalog), primaryScope_(primaryScope),
+      reloadEpoch_(epoch),
       operations_(epoch, RequestOwner::Assignment), store_(store), radio_(radio),
       output_(output), topology_(topology), completion_(completion) {}
 
@@ -704,12 +705,16 @@ void AssignmentService::SetDefaultRole(const SetRoleCommand &command, const std:
     guard.lock();
     receipt->evidence.outcome = outcome;
     auto result = LegacyRoleResult::StoreFailed;
+    if (outcome.callFinished && (outcome.effect == RoleProviderEffect::Applied ||
+        outcome.effect == RoleProviderEffect::Partial)) {
+        accountRoles_.ProtectProviderRole(role, outcome.position);
+    }
     if (outcome.callFinished && outcome.result != -1 && outcome.effect == RoleProviderEffect::Applied) {
         const auto previous = assignment_.ReadRoleSelection(role);
         const bool announce = !((previous ? previous->preference : std::nullopt) == command.subscription);
         const auto commit = [&] {
             assignment_.AcceptRoleSelection({role, command.subscription, command.subscription}, assignment_.Revision());
-            accountRoles_.NoteLocalRoleMutation(role, command.subscription);
+            accountRoles_.NoteLocalRoleMutation(role, command.subscription, outcome.position);
         };
         bool accepted = true;
         try {
@@ -767,6 +772,9 @@ bool AssignmentService::ReconcileRoleProvider(const RoleProviderOperation &opera
     if (!matches() || !evidence || !(evidence->operation == operation) || !evidence->outcome.Settled()) { return false; }
     const auto previousEffect = receipt->evidence.outcome.effect;
     if (previousEffect != RoleProviderEffect::Unknown && previousEffect != evidence->outcome.effect) { return false; }
+    if (evidence->outcome.effect == RoleProviderEffect::Applied || evidence->outcome.effect == RoleProviderEffect::Partial) {
+        accountRoles_.ProtectProviderRole(operation.role, evidence->outcome.position);
+    }
     assignment_.ReleaseRoleWriteSet(operation.original.request.value, receipt->writeSet);
     operations_.RetireAfterEvidenceRetention(operation.original.request);
     receipt.reset();
@@ -1142,25 +1150,32 @@ bool AssignmentService::FinalizeInitialRoleReservation(const AccountRoleFragment
     std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
     return accountRoles_.Finalize(planned, evidence);
 }
+std::optional<StoredAccountRoleFragment> AssignmentService::ReadStoredAccountRoles(SubscriptionId id,
+    bool historical) const
+{
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
+    const auto &projection = accountRoles_.Projection(historical);
+    const auto row = projection.find(id);
+    return row == projection.end() ? std::nullopt : std::make_optional(row->second);
+}
+
 uint64_t AssignmentService::ReadRoleProjectionRevision(bool historicalView) const
 {
     std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
     return accountRoles_.Revision(historicalView);
 }
-bool AssignmentService::AcceptReloadedRoleProjectionSet(const std::vector<StoredAccountRoleFragment> &loaded,
-    uint64_t loadAttempt, uint64_t expectedRevision, bool historicalView)
+void AssignmentService::AcceptReloadedRoleProjectionSet(const RoleReloadDelivery &delivery)
 {
     std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
-    if (!historicalView && (providerReceipts_[0] || providerReceipts_[1])) { return false; }
-    return accountRoles_.AcceptReloadSet(loaded, loadAttempt, expectedRevision, historicalView);
+    if (delivery.epoch != reloadEpoch_ || providerReceipts_[0] || providerReceipts_[1] ||
+        accountRoles_.HasPendingStorageRoles()) {
+        auto expected = RoleReloadDisposition::Available;
+        (void)delivery.receipt.compare_exchange_strong(expected, RoleReloadDisposition::Rejected);
+        return;
+    }
+    accountRoles_.AcceptReloadSet(delivery);
 }
-bool AssignmentService::AcceptReloadedRoleProjection(const StoredAccountRoleFragment &loaded,
-    uint64_t, uint64_t expectedRevision, bool historicalView)
-{
-    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
-    if (!historicalView && (providerReceipts_[0] || providerReceipts_[1])) { return false; }
-    return accountRoles_.AcceptSingleProjection(loaded, expectedRevision, historicalView);
-}
+
 /* 仅声明方法的流程契约：
  * StartPrimarySwitch在原执行点读取T窄事实与R动态PrimaryRadioObservation，不从目录推断当前分配。
  * 同一请求的全局角色/Primary参数域与真实Radio冲突集在唯一准入处一次登记；跨Owner子请求带parent。

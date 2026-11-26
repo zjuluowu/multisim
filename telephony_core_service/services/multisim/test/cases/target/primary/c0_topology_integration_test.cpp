@@ -48,7 +48,7 @@ public:
     unsigned matches {0};
     unsigned writes {0};
     std::function<AccountLoadResult(const AccountLoadRequest &)> load;
-    unsigned loads {0};
+    std::atomic<unsigned> loads {0};
     std::optional<AccountDiscoveryWritePlan> lastPlan;
     std::optional<DiscoveryCallRef> lastMatchCall;
     std::optional<DiscoveryCallRef> returnedMatch;
@@ -452,18 +452,19 @@ TEST(TargetTopologyIntegration, T1ConfirmedNotAppliedDoesNotCreateBinding)
     EXPECT_EQ(f.accountStore.writes,1u);
 }
 
-TEST(TargetTopologyIntegration, T1RoleRevisionChangeRejectsOldDiscoveredFragment)
+TEST(TargetTopologyIntegration, T1PendingDiscoveryPreventsReloadedRoleReplacement)
 {
     DiscoveryFixture f;
-    f.accountStore.beforeStoreReturn=[&](const AccountDiscoveryWritePlan &) {
-        const auto revision=f.service.ReadRoleProjectionRevision(false);
-        EXPECT_TRUE(f.service.AcceptReloadedRoleProjection(
-            {{9},false,false,false,false},1,revision,false));
+    ASSERT_TRUE(f.topology.AcceptSlotAssembly({1}, true));
+    f.accountStore.beforeStoreReturn = [&](const AccountDiscoveryWritePlan &) {
+        const auto reload = f.topology.PrepareAccountReload(AccountReadView::Current, 1);
+        const auto result = f.topology.AcceptAccountReload(reload, {reload.storeRequest, 0, true, true, {}, {}});
+        EXPECT_NE(result.roles, RoleReloadDisposition::Accepted);
     };
-    const auto acceptance=f.topology.DiscoverAccount(Discovery(1,1,kRaw1));
-    EXPECT_FALSE(acceptance.bindingAccepted);
-    EXPECT_FALSE(f.topology.FindBinding({1}).has_value());
-    EXPECT_FALSE(f.topology.ReadAccount({41},AccountReadView::Current).has_value());
+    const auto acceptance = f.topology.DiscoverAccount(Discovery(1, 1, kRaw1));
+    EXPECT_TRUE(acceptance.bindingAccepted);
+    EXPECT_TRUE(f.topology.FindBinding({1}));
+    EXPECT_TRUE(f.topology.ReadAccount({41}, AccountReadView::Current));
 }
 
 TEST(TargetTopologyIntegration, T1ProviderIdentityMismatchForKnownIccidIsRejected)
@@ -1187,12 +1188,8 @@ public:
     { owner_.ConfirmInitialRoleReceipt(plan, evidence); }
     uint64_t ReadRoleProjectionRevision(bool historical) const override
     { return owner_.ReadRoleProjectionRevision(historical); }
-    bool AcceptReloadedRoleProjectionSet(const std::vector<StoredAccountRoleFragment> &rows,
-        uint64_t attempt, uint64_t expected, bool historical) override
-    { return owner_.AcceptReloadedRoleProjectionSet(rows, attempt, expected, historical); }
-    bool AcceptReloadedRoleProjection(const StoredAccountRoleFragment &row, uint64_t attempt,
-        uint64_t expected, bool historical) override
-    { return owner_.AcceptReloadedRoleProjection(row, attempt, expected, historical); }
+    void AcceptReloadedRoleProjectionSet(const RoleReloadDelivery &delivery) override
+    { owner_.AcceptReloadedRoleProjectionSet(delivery); }
 private:
     AssignmentService &owner_;
 };
@@ -3159,5 +3156,287 @@ TEST(AF2ShowNumber, BackwriteRejectsStaleNumberRevisionOnSameBinding)
     EXPECT_EQ(module->ReadAccount({41})->displayNumber, u"111");
     EXPECT_EQ(module->ReadAccount({41}, AccountReadView::Historical)->displayNumber, u"111");
     EXPECT_TRUE(f.host->events.empty());
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+namespace {
+AccountStorageRow ReloadRow(SubscriptionId id, const std::string &iccid, int32_t position, std::u16string name)
+{
+    return {id, iccid, SlotId {position}, std::move(name), u"100", true, 2, 0};
+}
+
+AccountLoadResult ReloadImage(const AccountLoadRequest &request, uint64_t position,
+    std::vector<AccountStorageRow> rows, std::vector<StoredAccountRoleFragment> roles,
+    uint8_t fields = ReloadAllFields, bool membership = true, bool roleColumns = true)
+{
+    return {request, 0, true, true, std::move(rows), std::move(roles),
+        AccountLoadImage {request, {8, position}, fields, membership, roleColumns}};
+}
+} // namespace
+
+TEST(AF2Reload, LiveAccountsAndRolesSurviveStaleReload)
+{
+    using namespace OHOS::Telephony;
+    const auto metadata = std::make_shared<MetadataProvider>();
+    const auto provider = std::make_shared<RoleProvider>();
+    PrimaryFixture f(PrimaryZeroCatalog(), provider, metadata);
+    auto &module = f.live.module;
+    auto first = ReloadRow({40}, kRaw0, 0, u"Stored A");
+    auto second = ReloadRow({41}, kRaw1, 1, u"Stored B");
+    uint64_t visibleThrough = 5;
+    std::vector<StoredAccountRoleFragment> roles {{{40}, false, true, false, true},
+        {{41}, true, false, true, false}};
+    f.live.store->load = [&](const auto &request) { return ReloadImage(request, visibleThrough, {first, second}, roles); };
+    for (const auto view : {AccountReadView::Current, AccountReadView::Historical}) {
+        const auto loaded = module->ReloadAccounts(view);
+        EXPECT_TRUE(loaded.admitted);
+        EXPECT_TRUE(loaded.accounts.acceptedAttempt);
+        EXPECT_EQ(loaded.roles, RoleReloadDisposition::Accepted);
+        EXPECT_EQ(module->ReadAccount({40}, view)->displayName, u"Stored A");
+    }
+    EXPECT_FALSE(module->FindBinding({0}));
+    EXPECT_FALSE(module->FindBinding({1}));
+    f.live.store->rows.emplace(kRaw0, first);
+    f.live.store->rows.emplace(kRaw1, second);
+    f.live.store->produceStore = [](const AccountDiscoveryWritePlan &plan) {
+        auto stored = Stored({plan.accountFields.legacyPosition.legacySlotId == 0 ? 40 : 41});
+        stored.position = StorePosition {8, 7};
+        return stored;
+    };
+    const auto sessionA = module->ObserveVerifiedCard({{0}, "USIM"}, 1, kRaw0);
+    const auto sessionB = module->ObserveVerifiedCard({{1}, "USIM"}, 1, kRaw1);
+    ASSERT_TRUE(sessionA && sessionB);
+    const auto binding = module->FindBinding({0});
+    ASSERT_TRUE(binding);
+    metadata->respond = [](const auto &) {
+        return AccountMetadataOutcome {0, true, EffectKnowledge::ConfirmedApplied, StorePosition {8, 11}};
+    };
+    unsigned roleReadsDuringWrite = 0;
+    provider->control = [&](const auto &operation) {
+        const auto during = module->ReloadAccounts(AccountReadView::Current);
+        EXPECT_TRUE(during.accounts.roleMembershipEligible);
+        EXPECT_EQ(during.roles, RoleReloadDisposition::Rejected);
+        ++roleReadsDuringWrite;
+        const uint64_t committedAt = operation.role == DefaultRole::Voice ? 12 : 13;
+        return RoleProviderOutcome {0, true, RoleProviderEffect::Applied, StorePosition {8, committedAt}};
+    };
+    ASSERT_EQ(module->SetShowName(0, u"New A", {7}), TELEPHONY_ERR_SUCCESS);
+    ASSERT_EQ(module->SetPrimarySlotId(0, {7}), TELEPHONY_ERR_SUCCESS);
+    ASSERT_EQ(module->SetDefaultCellularDataSlotId(1, {7}), TELEPHONY_ERR_SUCCESS);
+    visibleThrough = 8;
+    ASSERT_EQ(module->SetDefaultVoiceSlotId(0, {7}), TELEPHONY_ERR_SUCCESS);
+    ASSERT_EQ(module->SetDefaultSmsSlotId(1, {7}), TELEPHONY_ERR_SUCCESS);
+    EXPECT_EQ(roleReadsDuringWrite, 2u);
+    const auto assignment = module->ReadAssignment();
+    const auto parameters = f.live.input.parameters->values;
+    ASSERT_EQ(assignment.lastPrimary, SlotId {0});
+    ASSERT_EQ(assignment.defaultData, SubscriptionId {41});
+
+    visibleThrough = 10;
+    first.number = u"200";
+    for (const auto view : {AccountReadView::Current, AccountReadView::Historical}) {
+        const auto stale = module->ReloadAccounts(view);
+        EXPECT_TRUE(stale.accounts.acceptedAttempt);
+        EXPECT_NE(stale.accounts.conflictedFields, 0u);
+        EXPECT_EQ(stale.roles, RoleReloadDisposition::InsufficientCoverage);
+        EXPECT_EQ(module->ReadAccount({40}, view)->displayName, u"New A");
+        EXPECT_EQ(module->ReadAccount({40}, view)->displayNumber, u"200");
+    }
+    EXPECT_TRUE(module->ReadStoredAccountRoles({40}, AccountReadView::Current)->voice);
+    visibleThrough = 14;
+    first.name = u"Later A";
+    roles[0].voice = true;
+    roles[0].sms = false;
+    roles[1].voice = false;
+    roles[1].sms = true;
+    for (const auto view : {AccountReadView::Current, AccountReadView::Historical}) {
+        const auto fresh = module->ReloadAccounts(view);
+        EXPECT_EQ(fresh.roles, RoleReloadDisposition::Accepted);
+        EXPECT_EQ(module->ReadAccount({40}, view)->displayName, u"Later A");
+        EXPECT_TRUE(module->ReadStoredAccountRoles({40}, view)->voice);
+        EXPECT_TRUE(module->ReadStoredAccountRoles({41}, view)->sms);
+    }
+    visibleThrough = 13; // Covers the setters but not the already accepted later image.
+    first.name = u"New A";
+    EXPECT_EQ(module->ReloadAccounts(AccountReadView::Current).roles, RoleReloadDisposition::Rejected);
+    EXPECT_EQ(module->ReadAccount({40})->displayName, u"Later A");
+    EXPECT_EQ(module->FindBinding({0})->bindingRevision, binding->bindingRevision);
+    EXPECT_EQ(module->FindBinding({0})->subscription, binding->subscription);
+    EXPECT_EQ(module->ReadAssignment().lastPrimary, assignment.lastPrimary);
+    EXPECT_EQ(module->ReadAssignment().defaultData, assignment.defaultData);
+    EXPECT_EQ(f.live.input.parameters->values, parameters);
+    EXPECT_TRUE(module->InvalidateVerifiedCard(*sessionA));
+    EXPECT_TRUE(module->InvalidateVerifiedCard(*sessionB));
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+    const std::weak_ptr<SimModule> weak = module;
+    module.reset();
+    EXPECT_TRUE(weak.expired());
+}
+
+TEST(AF2Reload, IndependentViewsValidateCompleteMembershipAndExactRoleIdentity)
+{
+    LiveDiscoveryFixture f;
+    const auto row = ReloadRow({40}, kRaw0, 0, u"Account");
+    const std::vector<StoredAccountRoleFragment> roles {{{40}, true, true, true, true}};
+    f.store->load = [&](const auto &request) {
+        if (request.view == AccountReadView::Current) {
+            return AccountLoadResult {request, -2, false, true, {row}, roles};
+        }
+        return ReloadImage(request, 1, {row}, roles);
+    };
+    const auto current = f.module->ReloadAccounts(AccountReadView::Current);
+    EXPECT_EQ(current.legacyResult, -2);
+    EXPECT_TRUE(current.legacyReturn);
+    EXPECT_FALSE(current.accounts.acceptedAttempt);
+    EXPECT_FALSE(f.module->ReadAccount({40}));
+    EXPECT_EQ(f.module->ReloadAccounts(AccountReadView::Historical).roles, RoleReloadDisposition::Accepted);
+    ASSERT_TRUE(f.module->ReadAccount({40}, AccountReadView::Historical));
+    f.store->load = [&](const auto &request) { return ReloadImage(request, 2, {row}, roles); };
+    ASSERT_EQ(f.module->ReloadAccounts(AccountReadView::Current).roles, RoleReloadDisposition::Accepted);
+    f.store->load = [&](const auto &request) {
+        return ReloadImage(request, 3, {row}, {{{41}, false, false, false, false}});
+    };
+    EXPECT_EQ(f.module->ReloadAccounts(AccountReadView::Current).roles, RoleReloadDisposition::Rejected);
+    EXPECT_TRUE(f.module->ReadStoredAccountRoles({40}, AccountReadView::Current)->voice);
+    EXPECT_FALSE(f.module->ReadStoredAccountRoles({41}, AccountReadView::Current));
+    f.store->load = [&](const auto &request) { return ReloadImage(request, 4, {row}, roles, ReloadAllFields, true, false); };
+    EXPECT_EQ(f.module->ReloadAccounts(AccountReadView::Current).roles, RoleReloadDisposition::InsufficientCoverage);
+    f.store->load = [&](const auto &request) {
+        auto image = ReloadImage(request, 5, {row}, roles);
+        image.image->sample.view = AccountReadView::Historical;
+        return image;
+    };
+    EXPECT_FALSE(f.module->ReloadAccounts(AccountReadView::Current).accounts.acceptedAttempt);
+    EXPECT_TRUE(f.module->ReadAccount({40}));
+    EXPECT_FALSE(f.module->FindBinding({0}));
+    EXPECT_EQ(f.module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Reload, AbsentMembershipRequiresCoverageAndTombstoneRejectsReappearance)
+{
+    LiveDiscoveryFixture f;
+    const auto row = ReloadRow({40}, kRaw0, 0, u"Original");
+    const std::vector<StoredAccountRoleFragment> roles {{{40}, true, true, true, true}};
+    uint64_t visibleThrough = 10;
+    bool present = true;
+    f.store->load = [&](const auto &request) {
+        return present ? ReloadImage(request, visibleThrough, {row}, roles) :
+            ReloadImage(request, visibleThrough, {}, {});
+    };
+    ASSERT_EQ(f.module->ReloadAccounts(AccountReadView::Current).roles, RoleReloadDisposition::Accepted);
+    ASSERT_EQ(f.module->ReloadAccounts(AccountReadView::Historical).roles, RoleReloadDisposition::Accepted);
+    present = false;
+    visibleThrough = 9;
+    EXPECT_EQ(f.module->ReloadAccounts(AccountReadView::Current).roles, RoleReloadDisposition::Rejected);
+    ASSERT_TRUE(f.module->ReadAccount({40}));
+    const auto original = f.module->ReadAccount({40})->fields;
+    visibleThrough = 11;
+    EXPECT_EQ(f.module->ReloadAccounts(AccountReadView::Current).roles, RoleReloadDisposition::Accepted);
+    EXPECT_FALSE(f.module->ReadAccount({40}));
+    EXPECT_FALSE(f.module->ReadStoredAccountRoles({40}, AccountReadView::Current));
+    EXPECT_TRUE(f.module->ReadAccount({40}, AccountReadView::Historical));
+    present = true;
+    visibleThrough = 10;
+    EXPECT_EQ(f.module->ReloadAccounts(AccountReadView::Current).roles, RoleReloadDisposition::Rejected);
+    EXPECT_FALSE(f.module->ReadAccount({40}));
+    visibleThrough = 12;
+    EXPECT_EQ(f.module->ReloadAccounts(AccountReadView::Current).roles, RoleReloadDisposition::Accepted);
+    ASSERT_TRUE(f.module->ReadAccount({40}));
+    EXPECT_GT(f.module->ReadAccount({40})->fields.number, original.number);
+    EXPECT_FALSE(f.module->FindBinding({0}));
+    EXPECT_EQ(f.module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Reload, LaterAttemptAndStopPreventAnInFlightReadFromPublishing)
+{
+    LiveDiscoveryFixture f;
+    auto &module = f.module;
+    std::promise<void> entered, release;
+    auto ready = entered.get_future();
+    auto resume = release.get_future().share();
+    f.store->load = [&](const auto &request) {
+        if (request.loadAttempt == 1) { entered.set_value(); resume.wait(); }
+        const auto name = request.loadAttempt == 1 ? u"Old" : u"New";
+        return ReloadImage(request, request.loadAttempt, {ReloadRow({40}, kRaw0, 0, name)},
+            {{{40}, true, false, false, true}});
+    };
+    auto old = std::async(std::launch::async, [&] { return module->ReloadAccounts(AccountReadView::Current); });
+    ready.wait();
+    EXPECT_EQ(module->ReloadAccounts(AccountReadView::Current).roles, RoleReloadDisposition::Accepted);
+    release.set_value();
+    EXPECT_FALSE(old.get().accounts.acceptedAttempt);
+    ASSERT_EQ(module->ReadAccount({40})->displayName, u"New");
+
+    std::promise<void> enteredStop, releaseStop;
+    auto stopReady = enteredStop.get_future();
+    auto stopResume = releaseStop.get_future().share();
+    f.store->load = [&](const auto &request) {
+        enteredStop.set_value();
+        stopResume.wait();
+        return ReloadImage(request, 12, {}, {});
+    };
+    auto inFlight = std::async(std::launch::async, [&] { return module->ReloadAccounts(AccountReadView::Current); });
+    stopReady.wait();
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
+    EXPECT_FALSE(module->ReloadAccounts(AccountReadView::Historical).admitted);
+    releaseStop.set_value();
+    EXPECT_EQ(inFlight.get().roles, RoleReloadDisposition::Revoked);
+    EXPECT_TRUE(module->ReadAccount({40}));
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Reload, RoleReceiptCanBeReadAgainWithoutReapplying)
+{
+    AccountRoleProtocol owner;
+    const RoleReloadDelivery batch {{1, 2}, 1, 0, false, StorePosition {8, 4},
+        {{{40}, false, true, false, true}}};
+    owner.AcceptReloadSet(batch);
+    ASSERT_EQ(batch.receipt.load(), RoleReloadDisposition::Accepted);
+    const auto revision = owner.Revision(false);
+    owner.AcceptReloadSet(batch);
+    EXPECT_EQ(batch.receipt.load(), RoleReloadDisposition::Accepted);
+    EXPECT_EQ(owner.Revision(false), revision);
+
+    const RoleReloadDelivery revoked {{1, 2}, 2, revision, false, StorePosition {8, 5}, {}};
+    revoked.Revoke();
+    owner.AcceptReloadSet(revoked);
+    EXPECT_EQ(revoked.receipt.load(), RoleReloadDisposition::Revoked);
+    EXPECT_EQ(owner.Revision(false), revision);
+    EXPECT_TRUE(owner.Projection(false).at({40}).sms);
+}
+
+TEST(AF2Reload, ReadWhileMetadataWriteIsUnresolved)
+{
+    const auto metadata = std::make_shared<MetadataProvider>();
+    const auto provider = std::make_shared<RoleProvider>();
+    PrimaryFixture f(PrimaryZeroCatalog(), provider, metadata);
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    auto first = ReloadRow({40}, kRaw0, 0, u"Stored");
+    auto second = ReloadRow({41}, kRaw1, 1, u"Other");
+    f.live.store->load = [&](const auto &request) {
+        // The discovery port provides no comparable membership evidence in this fixture.
+        return ReloadImage(request, 9, {first, second},
+            {{{40}, true, false, false, false}, {{41}, false, true, false, false}});
+    };
+    metadata->respond = [](const auto &) {
+        return AccountMetadataOutcome {0, true, EffectKnowledge::Unknown};
+    };
+    const auto before = module->ReadAccount({40})->displayName;
+    (void)module->SetShowName(0, u"Unconfirmed", {7});
+    ASSERT_EQ(metadata->Writes().size(), 1u);
+    const auto operation = metadata->Writes().front().operation;
+    const auto read = module->ReloadAccounts(AccountReadView::Current);
+    EXPECT_TRUE(read.accounts.acceptedAttempt);
+    EXPECT_EQ(module->ReadAccount({40})->displayName, before);
+    EXPECT_EQ(module->ReadAccount({40})->displayNumber, u"100");
+
+    metadata->evidence = AccountMetadataEvidence {operation,
+        {0, true, EffectKnowledge::ConfirmedApplied, StorePosition {8, 10}}};
+    EXPECT_TRUE(module->ReconcileAccountMetadata(operation));
+    EXPECT_FALSE(module->ReconcileAccountMetadata(operation));
+    EXPECT_TRUE(module->ReloadAccounts(AccountReadView::Current).accounts.acceptedAttempt);
+    EXPECT_EQ(module->ReadAccount({40})->displayName, before);
+    EXPECT_EQ(metadata->Writes().size(), 1u);
     EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
 }

@@ -55,6 +55,7 @@ struct RoleProviderOutcome {
     int32_t result {-1};
     bool callFinished {false};
     RoleProviderEffect effect {RoleProviderEffect::Unknown};
+    std::optional<StorePosition> position {};
     bool Settled() const { return callFinished && effect != RoleProviderEffect::Unknown; }
 };
 struct RoleProviderEvidence {

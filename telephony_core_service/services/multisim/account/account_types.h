@@ -20,9 +20,29 @@
 #define OHOS_TELEPHONY_MULTISIM_TOPOLOGY_API_ACCOUNT_TYPES_H
 
 #include <cstdint>
+#include "infrastructure/sim_identity.h"
 
 namespace OHOS::Telephony::MultiSim {
 enum class AccountReadView { Current, Historical };
+enum AccountReloadColumn : uint8_t {
+    ReloadName = 1 << 0, ReloadNumber = 1 << 1, ReloadActive = 1 << 2,
+    ReloadLabel = 1 << 3, ReloadIms = 1 << 4, ReloadPosition = 1 << 5,
+    ReloadAllFields = (1 << 6) - 1
+};
+struct AccountLoadRequest {
+    AccountReadView view;
+    uint64_t loadAttempt;
+    RuntimeEpoch epoch {};
+    bool operator==(const AccountLoadRequest &other) const
+    { return view == other.view && loadAttempt == other.loadAttempt && epoch == other.epoch; }
+};
+struct AccountLoadImage {
+    AccountLoadRequest sample;
+    StorePosition position;
+    uint8_t coveredFields;
+    bool coversMembership;
+    bool coversRoles;
+};
 struct AccountFieldRevisions {
     uint64_t name {0};
     uint64_t number {0};

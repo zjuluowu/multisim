@@ -80,6 +80,7 @@ struct AccountMetadataOutcome {
     int32_t legacyResult {-1};
     bool callFinished {false};
     EffectKnowledge effect {EffectKnowledge::Unknown};
+    std::optional<StorePosition> position {};
     bool Settled() const { return callFinished && effect != EffectKnowledge::Unknown; }
 };
 struct AccountMetadataEvidence {

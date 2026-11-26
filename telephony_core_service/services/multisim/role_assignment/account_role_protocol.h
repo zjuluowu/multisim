@@ -79,6 +79,8 @@ public:
         if (plan.discoveryCall) {
             if (evidence.storageEffect == EffectKnowledge::ConfirmedApplied && plan.includeInStorage) {
                 const auto id = *evidence.assigned;
+                if (!evidence.historicalOnly) { current_.discovery.Set(evidence.position); }
+                historical_.discovery.Set(evidence.position);
                 confirmedDiscoveryRoles_.insert_or_assign(id, ConfirmedDiscoveryRoles {*plan.discoveryCall,
                     {id, plan.voice, plan.sms, plan.mainCardColumn, plan.dataCardColumn}, evidence.historicalOnly});
             }
@@ -104,26 +106,46 @@ public:
     bool AcceptReloadSet(const std::vector<StoredAccountRoleFragment> &rows, uint64_t attempt,
         uint64_t expectedRevision, bool historical)
     {
-        auto &projection = historical ? historical_ : current_;
-        if (projection.revision != expectedRevision || attempt <= projection.lastAttempt) { return false; }
-        std::map<SubscriptionId, StoredAccountRoleFragment> next;
-        for (const auto &row : rows) {
-            if (!next.emplace(row.subscription, row).second) { return false; }
-        }
-        projection.rows = std::move(next);
-        projection.lastAttempt = attempt;
-        ++projection.revision;
-        ++roleRevision_;
-        return true;
+        RoleReloadDelivery delivery {{}, attempt, expectedRevision, historical, {}, rows};
+        AcceptReloadSet(delivery);
+        return delivery.receipt.load() == RoleReloadDisposition::Accepted;
     }
-    bool AcceptSingleProjection(const StoredAccountRoleFragment &row, uint64_t expectedRevision, bool historical)
+    void AcceptReloadSet(const RoleReloadDelivery &delivery)
     {
-        auto &projection = historical ? historical_ : current_;
-        if (projection.revision != expectedRevision) { return false; }
-        projection.rows.insert_or_assign(row.subscription, row);
-        ++projection.revision;
-        ++roleRevision_;
-        return true;
+        auto &projection = delivery.historical ? historical_ : current_;
+        auto available = RoleReloadDisposition::Available;
+        if (delivery.receipt.load() != available) { return; }
+        if (projection.revision != delivery.expectedRevision || delivery.attempt <= projection.lastAttempt ||
+            projection.revision == std::numeric_limits<uint64_t>::max() ||
+            roleRevision_ == std::numeric_limits<uint64_t>::max()) {
+            (void)delivery.receipt.compare_exchange_strong(available, RoleReloadDisposition::StaleRevision);
+            return;
+        }
+        if (!projection.image.CoveredBy(delivery.position) || !projection.discovery.CoveredBy(delivery.position) ||
+            !projection.voice.CoveredBy(delivery.position) || !projection.sms.CoveredBy(delivery.position)) {
+            (void)delivery.receipt.compare_exchange_strong(available, RoleReloadDisposition::InsufficientCoverage);
+            return;
+        }
+        std::map<SubscriptionId, StoredAccountRoleFragment> next;
+        for (const auto &row : delivery.rows) {
+            if (row.subscription.legacySimId < 0 || !next.emplace(row.subscription, row).second) {
+                (void)delivery.receipt.compare_exchange_strong(available, RoleReloadDisposition::InvalidBatch);
+                return;
+            }
+        }
+        if (projection.image.floor && delivery.position == projection.image.floor && next != projection.rows) {
+            (void)delivery.receipt.compare_exchange_strong(available, RoleReloadDisposition::InvalidBatch);
+            return;
+        }
+        if (!delivery.receipt.compare_exchange_strong(available, RoleReloadDisposition::Applying)) { return; }
+        if (next != projection.rows) {
+            projection.rows.swap(next);
+            ++projection.revision;
+            ++roleRevision_;
+        }
+        projection.lastAttempt = delivery.attempt;
+        if (delivery.position) { projection.image.Set(delivery.position); }
+        delivery.receipt.store(RoleReloadDisposition::Accepted);
     }
     bool HasPendingStorageRoles() const
     {
@@ -133,12 +155,19 @@ public:
         }
         return false;
     }
-    void NoteLocalRoleMutation(DefaultRole role, std::optional<SubscriptionId> subscription)
+    void ProtectProviderRole(DefaultRole role, std::optional<StorePosition> position)
+    {
+        (role == DefaultRole::Voice ? current_.voice : current_.sms).Set(position);
+        (role == DefaultRole::Voice ? historical_.voice : historical_.sms).Set(position);
+    }
+    void NoteLocalRoleMutation(DefaultRole role, std::optional<SubscriptionId> subscription,
+        std::optional<StorePosition> position = {})
     {
         for (auto &[id, row] : current_.rows) {
             auto &column = role == DefaultRole::Voice ? row.voice : row.sms;
             column = subscription == id;
         }
+        ProtectProviderRole(role, position);
         NoteLocalRoleMutation();
     }
     void NoteLocalRoleMutation()
@@ -162,10 +191,26 @@ private:
         SlotId discoveredSlot;
         std::optional<InitialRoleFinalizationEvidence> receipt;
     };
+    struct Protection {
+        bool known {false};
+        std::optional<StorePosition> floor;
+        bool CoveredBy(const std::optional<StorePosition> &position) const
+        { return !known || (floor && position && position->Covers(*floor)); }
+        void Set(std::optional<StorePosition> position)
+        {
+            if (known && floor && position && !position->Covers(*floor)) { position.reset(); }
+            known = true;
+            floor = position;
+        }
+    };
     struct RoleProjection {
         std::map<SubscriptionId, StoredAccountRoleFragment> rows;
         uint64_t revision {0};
         uint64_t lastAttempt {0};
+        Protection image;
+        Protection discovery;
+        Protection voice;
+        Protection sms;
     };
     RoleProjection current_;
     RoleProjection historical_;

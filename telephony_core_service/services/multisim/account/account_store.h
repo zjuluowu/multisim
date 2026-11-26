@@ -40,8 +40,8 @@ struct AccountStorageRow {
     bool active;
     std::optional<int32_t> legacyLabel;
     std::optional<int32_t> imsPreference;
+    uint8_t validReloadFields {ReloadAllFields};
 };
-struct AccountLoadRequest { AccountReadView view; uint64_t loadAttempt; };
 struct AccountLoadResult {
     AccountLoadRequest request;
     int32_t legacyResult;
@@ -49,6 +49,8 @@ struct AccountLoadResult {
     bool legacyReturn; // 原GetList/GetAllList均为result != INVALID_VALUE。
     std::vector<AccountStorageRow> rows;
     std::vector<StoredAccountRoleFragment> storedRoles; // 同次旧读取所得，交A接纳，不能用A当前值补造。
+    std::optional<AccountLoadImage> image {};
+    bool roleColumnsValid {true};
 };
 struct AccountIdentityMatch {
     int32_t legacyResult;
@@ -94,6 +96,7 @@ struct AccountDiscoveryStoreResult {
     bool callFinished;
     EffectKnowledge effect; // 错误返回不补造ConfirmedNotApplied。
     std::optional<DiscoveryWriteEvidence> evidence {};
+    std::optional<StorePosition> position {};
 };
 struct AccountRemovalPatch {
     SubscriptionId subscription;
