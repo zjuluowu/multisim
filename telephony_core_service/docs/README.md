@@ -13,6 +13,8 @@
 | E · 继续推进迁移 | 先看[阻塞与下一批任务](SIM_Refactor_Execution_State.md#next-work)，用 [WU-01～09](migration/SIM_Architecture_Refactor_Design.md#writer-cutover)确认全量旧入口和验收闭包，再查[源码接入映射 §17](SIM_Multisim_Source_Architecture_Detailed_Design.md)与[测试入口](../services/multisim/test/README.md)。按[阶段门禁 §22](SIM_Target_Architecture_Design_v1.2.md#22-分阶段实施门禁)更新执行状态。 |
 | F · 开发 AF-2 基础框架 | 从[首批里程碑与 M1 验收](AF1_AF2_Implementation_Handoff_20261124.md#af2-first-batch)进入。 |
 
+[AF-2 已批准兼容行为](AF2_Compatibility_Decisions_Approved_20261126.md) 记录 CD-01、CD-02、CD-03 及后续切片继承规则。
+
 ## 维护职责
 
 | 文档 | 唯一维护内容 | 维护角色与更新时机 |

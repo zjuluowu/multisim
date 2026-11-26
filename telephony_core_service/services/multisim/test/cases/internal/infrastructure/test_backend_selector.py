@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+import re
 import sys
 import tempfile
 import unittest
@@ -13,9 +14,45 @@ from backend_selector import capability_report, gtest_filter, load_config, resol
 import build_replacement as build
 from compare_backends import compare, compare_reports, C0, C0_ORACLE, load_oracle
 from test import backend_filter
+from _paths import CORE, TEST
 
 
 class BackendSelectorTest(unittest.TestCase):
+    def test_approved_compatibility_has_independent_regression_contracts(self):
+        matrix = json.loads((TEST / 'config/approved_compatibility_contracts.json').read_text())
+        contracts = matrix['contracts']
+        milestones = {'CD-01': 'M6', 'CD-02': 'M7A', 'CD-03': 'M7B'}
+        self.assertEqual({key: row['milestone'] for key, row in contracts.items()}, milestones)
+        record = CORE / matrix['decision_record']
+        decisions = record.read_text()
+        state = (CORE / 'docs/SIM_Refactor_Execution_State.md').read_text()
+        scenarios = json.loads((TEST / 'config/backend_capabilities.json').read_text())['scenarios']
+        common = {row['id']: row for row in scenarios if row['differential'] == 'SUPPORTED'}
+        common_target_cases = {row['target']['test'] for row in common.values()}
+        target = (TEST / 'cases/target/primary/c0_topology_integration_test.cpp').read_text()
+        legacy = (TEST / 'cases/internal/primary_initialization_test.cpp').read_text()
+
+        def assert_registered(source, test_name):
+            suite, case = test_name.split('.')
+            self.assertRegex(source, rf'\bTEST(?:_F)?\(\s*{re.escape(suite)},\s*{re.escape(case)}\s*\)')
+
+        for key, row in contracts.items():
+            with self.subTest(decision=key):
+                anchor = key.lower()
+                self.assertIn(f'<a id="{anchor}"></a>', decisions)
+                self.assertIn(f'{record.name}#{anchor}', state)
+                self.assertEqual(row['status'], 'APPROVED_TARGET_BEHAVIOR')
+                self.assertIn(row['common_scenario'], common)
+                self.assertTrue(row['target_host'])
+                for case in row['target_host']:
+                    assert_registered(target, case)
+                    self.assertNotIn(case, common_target_cases)
+                if 'legacy_host' in row:
+                    self.assertEqual(row['legacy_host']['init_model'], 'single-active')
+                    assert_registered(legacy, row['legacy_host']['case'])
+                else:
+                    self.assertTrue((CORE / row['legacy_source_only']).is_file())
+
     def test_unfiltered_both_run_uses_reviewed_differential_cases(self):
         args = SimpleNamespace(action='run', backend='both', filter='*', platform='host')
         legacy = backend_filter(args, 'legacy').split(':')

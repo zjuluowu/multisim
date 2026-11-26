@@ -78,17 +78,16 @@ classDiagram
 查询回写作为独立请求。普通同值读没有因果证据。Stop 拒绝新工作，已排队、在途卡效果和
 Provider 未决分别由原生命周期账目保活。
 
-## 兼容及产品待决
+## 兼容裁决及产品门禁
 
 G3b 的任务执行点固定以及查询独立回写的目标固定有意提前于 Legacy 写库时的槽解析。
 Host 实际替换卡后，旧请求不写后继账户，旧库或卡证据只结原票。Legacy 的源码可证重新
-解析，当前未在真实 Legacy 落库路径复现这一换卡交错。产品裁决继续待定。设备桥须
+解析，原 Host 批次没有复现 Legacy 换卡落库交错。[CD-03](../../../../docs/AF2_Compatibility_Decisions_Approved_20261126.md#cd-03) 已正式批准 Target 的执行点固定、独立回写资格及迟到保护。设备桥须
 实证负责每种卡型的 EF 协议、原 Session 路由、原 1 秒等待计时、真实结束和复用证据，
 并在实际 Records 写点防止跨会话接纳。Host 已执行该窄端口及核心 R，产品装配和实际
 RIL/HDI 验收继续按原门禁。Provider 原证据和产品切换也保留原门禁。
 
-[M6 未知 ICCID 标签和 M7A 空 Binding IMS](M7A_Ims_Preference_Debug.md#独立兼容差异)
-继续作为独立待决项。本切片无产品启用授权。
+[CD-01](../../../../docs/AF2_Compatibility_Decisions_Approved_20261126.md#cd-01) 和 [CD-02](../../../../docs/AF2_Compatibility_Decisions_Approved_20261126.md#cd-02) 分别适用原标签与 IMS 切片。产品原生桥和调用者适配独立验收。
 
 ## Developer 用例与实际断点
 

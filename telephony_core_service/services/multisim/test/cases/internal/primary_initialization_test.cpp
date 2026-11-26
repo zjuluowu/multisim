@@ -268,6 +268,36 @@ TEST_F(RealSimPrimary, AccountMetadataUsesLegacyPredicatesAndFieldCaches)
     }));
 }
 
+TEST_F(RealSimPrimary, UnknownIccidLabelCanSucceedWithoutChangingAccount)
+{
+    using namespace testing;
+    Sim028Host::PrimaryEnvironment rig(false);
+    ASSERT_TRUE(rig.StartLockedCard());
+    IccAccountInfo before;
+    ASSERT_EQ(rig.manager->GetSimAccountInfo(1, false, before), TELEPHONY_ERR_SUCCESS);
+    const std::string missingIccid = "8900000000000099999";
+    constexpr int32_t label = 7;
+    EXPECT_CALL(*rig.provider, Update(_, _, _)).WillOnce([&](auto &uri, const auto &predicates, const auto &bucket) {
+        EXPECT_EQ(uri.ToString(), "datashare:///com.ohos.simability/sim/sim_info");
+        EXPECT_EQ(bucket.valuesMap.size(), 1u);
+        EXPECT_EQ(Sim028Host::ProviderRow::Text(bucket.valuesMap.at(SimData::SIM_LABEL_INDEX)), "7");
+        EXPECT_EQ(predicates.Requests().size(), 1u);
+        const auto &predicate = predicates.Requests().at(0);
+        EXPECT_EQ(predicate.field, SimData::ICC_ID);
+        EXPECT_EQ(predicate.kind, "EqualTo");
+        EXPECT_EQ(Sim028Host::ProviderRow::Text(predicate.value.value), missingIccid);
+        EXPECT_FALSE(rig.row.Matches(predicates));
+        if (rig.companionRow) { EXPECT_FALSE(rig.companionRow->Matches(predicates)); }
+        return 0;
+    });
+
+    EXPECT_EQ(CoreManagerInner::GetInstance().SetSimLabelIndex(missingIccid, label), TELEPHONY_ERR_SUCCESS);
+    IccAccountInfo after;
+    ASSERT_EQ(rig.manager->GetSimAccountInfo(1, false, after), TELEPHONY_ERR_SUCCESS);
+    EXPECT_EQ(after.simId, before.simId);
+    EXPECT_EQ(after.simLabelIndex, before.simLabelIndex);
+}
+
 TEST_F(RealSimPrimary, ImsPreferencePreservesProviderReturnAndReadSource)
 {
     using namespace testing;

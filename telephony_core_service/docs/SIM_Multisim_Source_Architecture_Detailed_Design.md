@@ -766,7 +766,7 @@ CMI实现仍在既有API库，wrapper仍在原共享定义处；H复用原对象
 
 等待超时内部保留Unknown，晚到可信结果只供原R会话观察/核对，不继续已结束T账户步骤或重复成功完成。实际ProcessSetMsisdnDone写点必须先准入，不能先改共享lastMsisdn缓存再在外层丢弃。
 
-G2保持旧任务执行时定位File、写库步骤才解析simId；当前执行点固定目标和陈旧拒绝属于G3b，不能直接宣称等价替换。IPC接收时提前固定另行裁决。
+G2 保持旧任务执行时定位 File、写库才解析 simId。[CD-03](AF2_Compatibility_Decisions_Approved_20261126.md#cd-03) 已批准 Target 在实际任务执行点固定原目标及陈旧拒绝。IPC 受理时提前固定另行裁决。
 
 <a id="query-number"></a>
 
@@ -774,7 +774,7 @@ G2保持旧任务执行时定位File、写库步骤才解析simId；当前执行
 
 稳态`account/number/show_number_query.*`消费R records窄视图、T资料和Core Host IMPU端口（T adapter/HostPorts注入），不依赖Core实现。ShowNumberQuery保留卡缓存→账户→Core IMS IMPU原读源、错误与立即返回，不等待后台回写。NumberBackwrite保存原binding/session、身份和current/historical号码字段版本；改名或IMS偏好变化不应废除合法号码资格。
 
-独立回写执行时由T复核并预留字段，拒绝后不补写新卡账户。该回写是新请求，不通过AcceptLateEvidence复活已终结设置请求。原闭包仅捕获slot/号码并在执行时找账户的行为作为G2基线，固定与陈旧拒绝单列G3b。
+独立回写执行时由T复核并预留字段，拒绝后不补写新卡账户。该回写是新请求，不通过AcceptLateEvidence复活已终结设置请求。原闭包仅捕获槽与号码并在执行时找账户的行为作为 G2 基线。Target 固定及陈旧拒绝按 [CD-03](AF2_Compatibility_Decisions_Approved_20261126.md#cd-03) 回归。
 
 QueryImsPreference仍按ICCID走原存储读源，不因T拥有资料就改成统一内存查询。
 
@@ -837,6 +837,7 @@ T激活等待、A切换资格和R设备租约是不同约束。跨Owner子请求
 | State、PIN/PUK、认证/IO，SIM-005～011 | `card/state/`卡态/失效，`card/security/`安全协议与具名短请求 | 不要求simId，不复制协议/剩余次数 |
 | File、Records、Refresh及卡记录，SIM-012～019 | `card/records/`、`records/codec/`及`card/state/` | 保留卡型/解析/原LOADED路径；不把加载放入T事务 |
 | InitData/InitIccId/账户缓存，SIM-020～022 | T TopologyService/AccountRegistry/BindingIndex | 身份/账户归T，建行角色由A片段提供 |
+| 未知 ICCID 标签、空 Binding IMS，SIM-031.a/045.a | T 账户资料、I 字段存储 | [CD-01](AF2_Compatibility_Decisions_Approved_20261126.md#cd-01) 持久账户资格及 [CD-02](AF2_Compatibility_Decisions_Approved_20261126.md#cd-02) 当前绑定资格 |
 | 名称、号码、查询回写，SIM-023及子项 | T资料/号码用例，R MSISDN，I字段存储，C完成 | 名称不写卡，号码先卡后库，查询回写独立 |
 | 普通/force/卫星激活，SIM-024 | T激活用例；A准入/偏好；R设备；I Hook | active与进行中归T，各分支不统一事务化 |
 | Voice/SMS/Data/Primary/Radio，SIM-025～030 | A AssignmentService/Aggregate，R协议 | 保留参数预写/条件恢复/重试与Primary→Data |

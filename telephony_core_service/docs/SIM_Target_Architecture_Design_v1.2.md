@@ -636,7 +636,7 @@ C 无独立业务写权，但可调用有副作用的正式查询用例。Legacy
 | WU-02 账户 active | T 分别处理缓存、持久效果及重载。R 持设备效果 | 旧激活、初始化与清理仍须通过 T。沿用原 force 分支 |
 | WU-03 Voice/SMS | A 管默认选择、建行角色片段及其通知去重。T 只接受角色投影 | 保留旧 URI、读源和广播顺序（§8.2） |
 | WU-04 Primary/Data 与用户偏好 | A 管角色列片段、逐键效果、查询投影和通知去重。角色 DB 初值和运行期主卡读源分别维护 | 建行片段先随账户接纳，之后完整切换运行期参数及其恢复资格 |
-| WU-05 名称、号码、标签、IMS、探测资料 | T 写账户字段及按槽标签提示，R 单独持卡侧 MSISDN。无后缀 Disable 参数保留原兼容输出归属（§13.2） | 含初始化、后台读取回写及失效核对。固定目标或新增拒绝属于单独行为裁决（§9.5） |
+| WU-05 名称、号码、标签、IMS、探测资料 | T 写账户字段及按槽标签提示，R 单独持卡侧 MSISDN。无后缀 Disable 参数保留原兼容输出归属（§13.2） | 含初始化、后台读取回写及失效核对。固定目标或新增拒绝按具名裁决确认。已批准范围见 [CD-01](AF2_Compatibility_Decisions_Approved_20261126.md#cd-01)、[CD-02](AF2_Compatibility_Decisions_Approved_20261126.md#cd-02)、[CD-03](AF2_Compatibility_Decisions_Approved_20261126.md#cd-03)（§9.5） |
 | WU-06 卡状态/锁因、ICCID、Records/电话簿及 loaded；原 R 视图 | R 接纳 Handle 设备/软件输入、Manager、文件完成、Refresh/ClearData；不建平行卡状态机 | G3b 同次接管全部相关写者，保留 §10.2 的旧卡型和过滤语义；未迁的 G3c 旧用例经私有桥登记/撤销 ExpectedTransition，不能让 R 反向启动业务流程 |
 | WU-07 本地进度/等待/重试及进行中标志（`isSetActiveSimInProgress_`、`isSetPrimarySlotIdInProgress_`、`targetPrimarySlotId_`、重试计数）；原方法结果 | 各用例的进程所有者接管步骤、重试与进行中标志：Primary/Radio/DSDS 归 A 的 AssignmentTransition，激活归 T；编排内核只提供关联与等待；R 继续拥有 serial/协议 session | G3c 逐用例关闭旧重试发令和 detached 线程自调用；更早已转移的 T/A 字段从其切换时即委托，禁止等到此阶段再关旁路 |
 | WU-08 eUICC channel/Profile 缓存、普通/低优先级实例与关闭结果 | R/euicc 接管两组对象和清理；应用短请求关联；T 接受实际绑定 | G3d 统一相关资源入口与查询；资源键/恢复证据不足只保留该旧用例，不启用新屏障 |
@@ -853,7 +853,7 @@ flowchart TB
 | Voice / SMS 角色查询 | Controller Voice 找 active 且 isVoiceCard=MAIN 的首项，无则 INVALID_VALUE；SMS 无同类命中则 GetFirstActivedSlotId。SimManager 的两个 Slot getter 在单卡配置下直接返回 0，但 SimId getter 自身走 Controller/映射，不能合并实现 [F33](#src-33) |
 | Data / Primary 查询 | 各读 lastCellularDataSlotId_ / lastPrimarySlotId_；InitMainCardSlotId 从对应参数读取，缺省字符串为 "0"。不按数据库同名布尔列、当前 active 或设备观察重新推导；外层 Data 校验见 §16.1 [F06](#src-06)、[F33](#src-33) |
 | GetShowNumber | 应用查询用例读取 R 卡缓存→账户→Host IMS IMPU；需要时异步向 T 提交资料回写，查询返回不等回写完成 [F09](#src-09) |
-| QueryImsSwitch | 保留按 ICCID 的存储查询和原缺省/返回语义，不能统一改为内存读取 [F09](#src-09) |
+| QueryImsSwitch | 有当前 Binding 时保留按 ICCID 的 Provider 直读、原缺省和返回语义 [F09](#src-09)。无当前 Binding 的保存与查询按 [CD-02](AF2_Compatibility_Decisions_Approved_20261126.md#cd-02) 拒绝 |
 | 设备/库存观察 | 最近观察 + 来源/会话/有效性；实时查询保留该方法原有路径，不为所有查询新增 RIL 请求。Get 可能开通道/发 APDU，是否准入按实际资源冲突判断，见 §12.3；不把原实时查询静默改成缓存 |
 | 内部操作查询 | 返回本地接纳、效果、等待与终态；不新增公开 Operation 查询接口或跨重启承诺 |
 
@@ -899,11 +899,11 @@ Commit 是**某个 Owner 在其作用域内接纳状态的一次动作**，必�
 | SIM-027 Data [F06](#src-06)、[F33](#src-33) | Controller 先 SetParameter，再写 lastCellularDataSlotId_，再设置 defaultCellularSimId_ 并广播；参数返回和广播结果均未成为 setter 的失败返回，Controller 返回成功。Manager 的直接入口只先校验 slot；完整外层校验不在这个函数 | A 保留参数失败仍可能推进 last、广播失败仍可能返回成功；不套用 Voice/SMS 的 PUBLISH_BROADCAST_FAIL。该成功不表示数据连接/网络切换完成 |
 | SIM-023.a 名称 [F34](#src-34) | SetShowName 不写卡；DB→当前缓存→全量缓存索引/写入。DB 成功后索引失败可留部分缓存；Manager 仅整体成功账户通知，CoreServiceSim 经队列回调 | T 属性用例直接承接，不登记多步关联；保存后失败按旧错误，不能把名称和号码合成同一写卡流程 |
 | SIM-023.b 号码修改 [F08](#src-08)、[F15](#src-15) | 写 MSISDN 返回 false 不进 DB；该 false 包含等待超时，不能等同已确认卡未写入。卡成功回包更新 MSISDN 缓存；之后 DB 失败不撤销卡效果，DB 成功后账户缓存检查仍可能失败；Manager 仅整体成功发原账户通知 | R 卡记录、T 资料分别接纳，T 号码用例保留部分结果。保留原失败出口；超时内部记 Unknown，晚到有效写卡结果仅作原会话观察/核对，不补走已结束用例的账户写入或成功通知；后续独立 GetShowNumber 仍可按旧规则触发新的账户回写，不视为复活旧用例；不自动改回卡号码 |
-| SIM-023.c 查询回写 [F09](#src-09) | 卡缓存非空可直接返回并 Submit 异步 SetShowNumberToDB；卡/账户为空再用 IMPU；闭包捕获 slot 和号码，执行时才 GetTargetSimId，查询不等待 DB | T 接管全部回写。原目标固定/陈旧拒绝须单列行为变更；可证明交错及范围见下文，不宣称已复现 |
+| SIM-023.c 查询回写 [F09](#src-09) | 卡缓存非空可直接返回并 Submit 异步 SetShowNumberToDB；卡/账户为空再用 IMPU；闭包捕获 slot 和号码，执行时才 GetTargetSimId，查询不等待 DB | T 接管全部回写。原目标固定及陈旧拒绝由 [CD-03](AF2_Compatibility_Decisions_Approved_20261126.md#cd-03) 批准。Legacy 交错的证据范围见下文 |
 | SIM-051 卡侧 Profile [F11](#src-11)、[F13](#src-13) | EsimManager::SwitchToProfile 外层返回成功，enumResult 承载卡侧失败/超时；随后仍写 USER_PREFER_PRIMARY_SLOT | 不把外层 int 成功当 Profile 已切换、拓扑/Radio 就绪；保持旧双结果及参数节点，缺陷修改另审 |
 | SIM-031.c 映射开始 [F18](#src-18) | SimManager 先置映射标志，再 StateManager/Handle 注入人工 ABSENT；后者失败不撤销标志；旧相同状态分支及清理条件另受状态机控制 | T 标志与映射用例、R 软件原因状态、C 输出分别维护；不宣称物理拔卡/路由已完成 |
 
-号码回写的 DERIVED 交错为：A 在 slot=s 时 GetShowNumber 读到号码 nA 并排入仅带 `(s,nA)` 的任务；任务执行前换卡/重载使 s 对应 B；旧任务 SetShowNumberToDB 此时 GetTargetSimId 得到 simIdB，随后按 B 写库/当前缓存。F09/F08 支持这些指令和捕获值，不证明本轮发生过该交错。推荐在原查询用例发起回写时保存 A 的身份/会话，执行时由 T 校验，不改查询立即返回；拒绝后不自动补写 B。它与异步公共写命令“接收时还是执行时解析”的问题不同（§16.2），仅阻塞相关 G3b 行为增强。
+号码回写的 DERIVED 交错为：A 在 slot=s 时 GetShowNumber 读到号码 nA 并排入仅带 `(s,nA)` 的任务；任务执行前换卡/重载使 s 对应 B；旧任务 SetShowNumberToDB 此时 GetTargetSimId 得到 simIdB，随后按 B 写库/当前缓存。F09/F08 支持这些指令和捕获值，不证明本轮发生过该交错。[CD-03](AF2_Compatibility_Decisions_Approved_20261126.md#cd-03) 已批准在发起回写时保存原身份、Binding、Session 和字段资格，由 T 在执行时复核，查询仍立即返回。异步号码设置在实际任务执行点固定目标，IPC 受理时固定仍属独立变更（§16.2）。
 
 ### 9.4 崩溃、输出失败与恢复
 
@@ -1315,7 +1315,7 @@ TopologyChanged、SubscriptionDiscovered/Removed、ActivationTransitionChanged�
 
 当前部分入口在接收时仅捕获 slot，目标查找在异步任务执行时发生。[F15](#src-15) 因此原提案“统一在命令接纳时绑定 Subscription 身份”并非已验证的兼容事实。
 
-近期结构切片保留方法原解析时点及 Slot/CardApplication/Subscription 分类，不让 PIN、空槽和未识别卡因缺 simId 被新模型拒绝。增强建议是在**该方法明确的执行接纳点、发设备步骤或后台回写之前**固定目标/会话，并在结果阶段复核；不能旧 slot 被复用后静默重定向新身份。若要求前移至 IPC 接收点、禁止原有重定向或改变等待/返回，作为 TGT-OPEN-011 的行为变化评审；比较接收→排队→换卡→执行→回调的轨迹和非目标卡影响。
+近期结构切片保留方法原解析时点及 Slot/CardApplication/Subscription 分类，不让 PIN、空槽和未识别卡因缺 simId 被新模型拒绝。增强建议是在**该方法明确的执行接纳点、发设备步骤或后台回写之前**固定目标/会话，并在结果阶段复核；不能旧 slot 被复用后静默重定向新身份。已取证的号码设置及独立回写按 [CD-03](AF2_Compatibility_Decisions_Approved_20261126.md#cd-03) 固定原目标并复核资格。其他入口若要求前移至 IPC 接收点、禁止原有重定向或改变等待/返回，按 TGT-OPEN-011 比较接收、排队、换卡、执行和回调的轨迹及非目标卡影响。
 
 ### 16.3 新 Subscription API
 
@@ -1676,7 +1676,7 @@ PlantUML 1.2025.2 / JRE 21 的 4 幅图语法检查及 SVG 渲染通过，修改
 | TGT-OPEN-008 成功是否含拓扑/Radio 收敛 | F05～F08/F11/F15：不同返回、业务结果、部分效果与后续动作 | 逐旧方法保持成功范围；新增内部 Unknown 不加公开码；远端 listener 范围待契约，不默认含驻网，§9/12/16 | 正常/部分失败轨迹与返回/out/callback/查询对照；服务与产品确认长期收敛语义 | PROPOSED + OPEN-EXTERNAL；API/产品/eSIM 负责人；只阻塞改变成功保证的接口或远端依赖切片 |
 | TGT-OPEN-009 Commit/可见性/通知 | F05～F09/F11 直接反例；F21 无跨存储事务证据 | 近期按旧节点接纳，严格持久后发布与可靠投递另设前提；通知失败不虚构回滚，§8/9/13/15 | §9.3 方法级失败轨迹（含写卡超时与晚到、Data 忽略错误与 Primary 失败完成事件）、查询中间态、同字段 W1/W2 锁外写排序、通知次数/偏序；新可靠投递做真实崩溃窗口实验 | PROPOSED；SIM/API 负责人，可靠投递需 provider/服务；仅阻塞所改方法的行为切换，长期增强不阻塞 G2 |
 | TGT-OPEN-010 Linux 最小生产闭包 | F03 装配；systemtest 原文和工作树差异；F29 当前 capability 与旧 Oracle 不一致 | 复用独立 host 工程，从真实 OnInit+无卡 RIL 输入切片起；先补匹配平台/存储契约，不能以容量 PASS 代替，§19 | 真实链接/生产函数执行审计、合法边界输入、负控、清理和 XML/JSON；未知依赖明确 BLOCKED | PROPOSED；测试/平台适配负责人；事实范围已明确，完整闭包仍未运行，只阻塞对应业务自动化门禁 |
-| TGT-OPEN-011 Slot 写命令绑定时点 | F15：接收只捕获 slot，业务在队列执行；F09 后台任务回写 | G2 保留原解析点；G3 在实际执行接纳/发起处固定目标，前移至 IPC 接收或禁止旧重定向须独立行为评审，§10/11/16 | 接收后排队期间换卡、后台回写迟到、Refresh 期间在途写、旧 session 错误、无 simId PIN、非目标不受影响及原错误/时延 | PROPOSED + OPEN-EXTERNAL；API/产品负责人；只阻塞受影响异步方法的增强，非所有查询/拆库 |
+| TGT-OPEN-011 Slot 写命令绑定时点 | F15：接收只捕获 slot，业务在队列执行；F09 后台任务回写 | G2 保留原解析点；G3 在实际执行接纳/发起处固定目标，前移至 IPC 接收或禁止旧重定向须独立行为评审，§10/11/16 | 接收后排队期间换卡、后台回写迟到、Refresh 期间在途写、旧 session 错误、无 simId PIN、非目标不受影响及原错误/时延 | [CD-03](AF2_Compatibility_Decisions_Approved_20261126.md#cd-03) 覆盖已取证的号码增强。其他方法的解析点变化仍按本项评估，产品调用者及设备证据独立验收 |
 | TGT-OPEN-012 多版本组合查询 | F07/F09/F23：不同来源独立更新，无原子组合证明 | 内部携带版本/来源、有界重读；旧外部输出不加新字段/错误，不宣称原子快照；强组合另审，§8.3/16 | 并发 T/A/R 变化、原查询来源和错误；新接口明确一致性及预算 | PROPOSED；查询/API 负责人；不阻塞旧查询适配，阻塞新增强一致保证 |
 | TGT-OPEN-013 当前图真实组件/调用/SA | F01～F03/F10/F14/F24/F28/F30 的装配、GN、配置及接口 | 已用固定代码重画当前图；区分 Runtime/任务、配置/实测、源码存在/装配，§5.1/7/20 | 固定 URL/符号/行号复核，GN 条件与实例构造一致；设备装载另由产品验证 | RESOLVED-FACT；本仓静态问题关闭；设备真实进程/加载未验证，仅阻塞设备部署结论 |
 

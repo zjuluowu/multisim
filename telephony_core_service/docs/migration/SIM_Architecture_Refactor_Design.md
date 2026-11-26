@@ -477,12 +477,12 @@ R 内 `ResourceArbiter/ResourceBarrier` 维护真实共享域的独占资格；O
 | 子功能ID | 已核实现有职责/入口 | 目标维护者及协作者 | 层与建议模块/目录 | 保留、拆分及完成条件 |
 |---|---|---|---|---|
 | <a id="sim-023-a"></a>SIM-023.a | SetShowName/GetShowName；账户显示名称 [E22](#e22) | T 唯一资料写者；I/store，C 输出 | 应用 `application/topology/account_profile/`；领域 `domain/topology/account/` | 保留名称校验、DB→缓存、Manager 成功账户通知；不引入卡写入 |
-| <a id="sim-023-b"></a>SIM-023.b | SetShowNumber→写 MSISDN→SetShowNumberToDB [E78](#e78)、[E79](#e79) | T号码用例唯一主编排并使用O机制；R卡记录；T号码资料；C完成 | 应用 `account/number/`；R卡记录 `card/records/`；T资料端口（当前/计划以详细设计为准） | 保留卡失败不进入 DB、卡成功/DB 失败仍返回原错误且不撤销卡效果；完整成功才走原账户通知 |
-| <a id="sim-023-c"></a>SIM-023.c | GetShowNumber、其 GetSimTelephoneNumber 回退、InitShowNumber；读卡缓存并同步资料 [E80](#e80) | T 查询用例协调 R 卡读取、Host IMS 回退与 I 存取；C 保留异步返回 | 应用 `application/topology/number_query/`；运行 `runtime/query/` | 保留卡缓存优先、账户→IMS IMPU 回退及异步 SetShowNumberToDB；回写附发起时账户/会话，换卡后的旧任务不得写新账户，门控差异在 G3b 验收 |
-| <a id="sim-031-a"></a>SIM-031.a | SetSimLabelIndex/ByIccId、ClearSimLabel、InsertEsimData、UpdateEsimOpName、IsEsim | T 资料/绑定查询；A 提供建行角色字段；I 存取 | 应用 `application/topology/account_profile/`；领域 `domain/topology/account/` | 标签不是路由事实；保留插入/更新/查询条件与缺省角色字段，不自行建立 Port 映射 |
+| <a id="sim-023-b"></a>SIM-023.b | SetShowNumber→写 MSISDN→SetShowNumberToDB [E78](#e78)、[E79](#e79) | T号码用例唯一主编排并使用O机制；R卡记录；T号码资料；C完成 | 应用 `account/number/`；R卡记录 `card/records/`；T资料端口（当前/计划以详细设计为准） | 保留卡失败不进入 DB、卡成功/DB 失败仍返回原错误且不撤销卡效果；完整成功才走原账户通知。[CD-03](../AF2_Compatibility_Decisions_Approved_20261126.md#cd-03) 批准在任务执行点固定原账户 |
+| <a id="sim-023-c"></a>SIM-023.c | GetShowNumber、其 GetSimTelephoneNumber 回退、InitShowNumber；读卡缓存并同步资料 [E80](#e80) | T 查询用例协调 R 卡读取、Host IMS 回退与 I 存取；C 保留异步返回 | 应用 `application/topology/number_query/`；运行 `runtime/query/` | 保留卡缓存优先、账户→IMS IMPU 回退及异步 SetShowNumberToDB；回写附发起时账户/会话，换卡后的旧任务不得写新账户，固定及拒迟到按 [CD-03](../AF2_Compatibility_Decisions_Approved_20261126.md#cd-03) 回归，产品原生门控仍验收 |
+| <a id="sim-031-a"></a>SIM-031.a | SetSimLabelIndex/ByIccId、ClearSimLabel、InsertEsimData、UpdateEsimOpName、IsEsim | T 资料/绑定查询；A 提供建行角色字段；I 存取 | 应用 `application/topology/account_profile/`；领域 `domain/topology/account/` | 标签不是路由事实；保留插入/更新/查询条件与缺省角色字段。[CD-01](../AF2_Compatibility_Decisions_Approved_20261126.md#cd-01) 批准未知 ICCID 拒绝写入，已知历史账户可写 |
 | <a id="sim-031-b"></a>SIM-031.b | UpdateSimPresent→占位记录插入/更新、全量账户重查、成功账户通知 | T 管既有展示资料；I/store；C 通知 | 应用 `application/topology/presence_view/` | 保留 INVALID_ICCID 系列占位与原筛选语义，不将该展示记录当可信物理卡身份，也不顺便改 NULL |
 | <a id="sim-031-c"></a>SIM-031.c | NotifySimSlotsMapping→映射标志→人工 ABSENT→原状态处理；ForgetAllData 消费标志 [E77](#e77)、[E81](#e81)、[E82](#e82) | O 应用入口协调；T 过程标志/账户；R 状态；C 输出 | 应用 `application/operation/remap/`、`application/topology/binding/`；运行 `runtime/state/` | 将软件原因送入 R，不让 T 直接改卡状态；保留“标志已置而状态调用失败”的部分效果及重复 ABSENT 分支，验证 loaded 复位/标签清理/通知 |
-| <a id="sim-045-a"></a>SIM-045.a | SaveImsSwitch/QueryImsSwitch；按 ICCID 的 IMS_SWITCH 存取 | T 账户偏好；I/store | 应用 `application/topology/account_profile/` | QueryImsSwitch 保留数据库访问与返回/缺省语义；A 不另设 IMS 偏好写者 |
+| <a id="sim-045-a"></a>SIM-045.a | SaveImsSwitch/QueryImsSwitch；按 ICCID 的 IMS_SWITCH 存取 | T 账户偏好；I/store | 应用 `application/topology/account_profile/` | 已绑定时保留数据库访问和返回/缺省语义。无当前 Binding 按 [CD-02](../AF2_Compatibility_Decisions_Approved_20261126.md#cd-02) 拒绝 |
 | <a id="sim-045-b"></a>SIM-045.b | SimAccountManager::UpdateImsCapFromChip；运营商配置输入 [E34](#e34) | R/carrier 维护能力观察；Host 提供芯片协作 | 运行 `runtime/carrier/config/`；技术 `infrastructure/vendor/` | 保留能力输入和配置后续；IMS 注册/通话事实留原模块，A 若需读取只消费快照 |
 
 ### 5.2 状态、缓存、持久化与对象生命周期迁移
@@ -847,7 +847,7 @@ Git revert/恢复旧产物只回退软件。执行前停止受理并核实在途
 | G2b SO 机械拆分 | 按 4.4 移动已经解耦的生产源，库保持原需要的驻留期 | Core→SIM 链接单向；同产品 eSIM 开/关、EXT/VSIM、卫星构建；CFI/导出/vtable/跨 SO 销毁与行为差分；不启用新停止/资源策略 | 构建/ABI + SIM；不得以容量测试证明整套通过 |
 | G2c 关闭协议 | 单独实现 7.4 的停止受理/注销/取消等待/排空/资源接收器寿命 | 旧错误出口、重复停止、晚到回调、Hook 未返回、关闭超时和同进程重建验证；不完整停止不卸载 | SIM + 宿主；有动态重建/卸载要求的产品必须先完成 |
 | G3a 拓扑/账户写权 | SIM-004、020～023、031、035、055～056；WU-01～03、05 及 04 的角色 DB 片段收口，包括旧激活和号码查询回写；04 的运行期参数见 G3c；先视图后唯一写者 | ID/账户/权限及 B-A/B-N 轨迹保持；每个状态全部旧入口均委托；同槽换卡/存储失败/用户切换通过后删旧 writer | SIM 账户 + A 旧策略适配 + 提供方 Q-04 |
-| G3b 卡会话/门控 | SIM-005～019、023.c、031.c、032、058；按 4.6 实现会话/LoadScope，保留生产解析 | S2、PIN、局部 Refresh 未受影响请求、人工 ABSENT 重复、查询回写跨会话、关闭晚到均通过；门控修正差异单列裁决；解析改动跑 fuzz | SIM 卡运行/测试；需合法原协议注入 |
+| G3b 卡会话/门控 | SIM-005～019、023.c、031.c、032、058；按 4.6 实现会话/LoadScope，保留生产解析 | S2、PIN、局部 Refresh 未受影响请求、人工 ABSENT 重复、查询回写跨会话、关闭晚到均通过；号码已批准门控按 [CD-03](../AF2_Compatibility_Decisions_Approved_20261126.md#cd-03) 回归，其他变更单列裁决。解析改动跑 fuzz | SIM 卡运行/测试；需合法原协议注入 |
 | G3c 角色/操作 | SIM-023.b、024～030；A 持角色策略与 WU-04 运行期参数，T/A 分别驱动其用例，R 唯一执行并管资源，WU-07 接管原重试 | S3/S4 与 B-N，超时/丢回包/重启/资源隔离后准入、部分失败；逐命令恢复判据完成，旧恢复器关闭 | SIM + Modem/业务方 Q-06；缺判据只阻塞相关用例 |
 | G3d 支撑/eSIM | SIM-036～054、057、059～061；按族单独切片 | S5 与短信/电话簿/STK/运营商全部既有边界；66250 唯一主编排与回调完成核实后迁相关本地步骤 | 对应业务维护者；Q-03/Q-05 |
 | G4 新能力 | Q-01/02/04/06 批准后独立产品/数据方案 | 真实协议、权限可见性、Port 绑定、并发/性能/恢复分别验收 | 产品 + 依赖仓；不阻塞既有拓扑 G2/G3 |

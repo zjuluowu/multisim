@@ -3128,3 +3128,36 @@ TEST(AF2ShowNumber, ProviderAccountFallbackAfterOriginalCardFailure)
     }));
     EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
 }
+
+TEST(AF2ShowNumber, BackwriteRejectsStaleNumberRevisionOnSameBinding)
+{
+    NumberFixture f;
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    const auto session = f.live.store->lastPlan->observation.session;
+    const auto binding = module->FindBinding({1});
+    ASSERT_TRUE(binding);
+    f.device->records.push_back({session, u"111", u"line"});
+    ASSERT_EQ(module->GetShowNumber(1, {7}, {31}), 0);
+    ASSERT_EQ(module->GetShowNumber(1, {7}, {32}), 0);
+    f.host->RunNext();
+    f.device->records.front().number = u"222";
+    f.host->RunNext();
+    ASSERT_EQ(f.host->reads.size(), 2u);
+    EXPECT_EQ(f.host->reads[0].second.number, u"111");
+    EXPECT_EQ(f.host->reads[1].second.number, u"222");
+    ASSERT_EQ(f.host->queue.size(), 2u);
+    ASSERT_TRUE(f.db->Writes().empty());
+
+    f.host->RunNext();
+    f.host->RunNext();
+    ASSERT_EQ(f.db->Writes().size(), 1u);
+    EXPECT_EQ(std::get<std::u16string>(f.db->Writes().front().value), u"111");
+    const auto current = module->FindBinding({1});
+    ASSERT_TRUE(current);
+    EXPECT_EQ(current->bindingRevision, binding->bindingRevision);
+    EXPECT_EQ(module->ReadAccount({41})->displayNumber, u"111");
+    EXPECT_EQ(module->ReadAccount({41}, AccountReadView::Historical)->displayNumber, u"111");
+    EXPECT_TRUE(f.host->events.empty());
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}

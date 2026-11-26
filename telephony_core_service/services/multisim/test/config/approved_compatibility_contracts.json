@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "decision_record": "docs/AF2_Compatibility_Decisions_Approved_20261126.md",
+  "contracts": {
+    "CD-01": {
+      "milestone": "M6",
+      "status": "APPROVED_TARGET_BEHAVIOR",
+      "legacy_host": {
+        "case": "RealSimPrimary.UnknownIccidLabelCanSucceedWithoutChangingAccount",
+        "init_model": "single-active"
+      },
+      "target_host": ["AF2AccountMetadata.PermissionAndHistoricalIdentityWithoutBinding"],
+      "common_scenario": "SIM023-LEGACY-ACCOUNT-METADATA-DUAL"
+    },
+    "CD-02": {
+      "milestone": "M7A",
+      "status": "APPROVED_TARGET_BEHAVIOR",
+      "legacy_host": {
+        "case": "RealSimPrimary.ImsPreferencePreservesProviderReturnAndReadSource",
+        "init_model": "single-active"
+      },
+      "target_host": ["AF2ImsPreference.MissingBindingDoesNotAddressEmptyIccid"],
+      "common_scenario": "SIM024-LEGACY-IMS-PREFERENCE-BOUND"
+    },
+    "CD-03": {
+      "milestone": "M7B",
+      "status": "APPROVED_TARGET_BEHAVIOR",
+      "legacy_source_only": "services/sim/src/multi_sim_controller.cpp",
+      "target_host": [
+        "AF2ShowNumber.QueueAdmissionAndExecutionPointUseLegacyOrder",
+        "AF2ShowNumber.CardFailureAndReplacementDoNotPersist",
+        "AF2ShowNumber.QueryUsesRealSourcesAndBackwritePinsOriginalAccount",
+        "AF2ShowNumber.BackwriteRejectsStaleNumberRevisionOnSameBinding",
+        "AF2ShowNumber.TimeoutQuarantinesOriginalResourcesUntilCorrelatedProofAfterStop",
+        "AF2ShowNumber.UnresolvedStoreRetainsNumberFieldAndUsesOriginalEvidence"
+      ],
+      "common_scenario": "SIM023-LEGACY-SHOW-NUMBER-AFTER-CARD-FAILURE"
+    }
+  }
+}

@@ -40,15 +40,8 @@ Current、Historical 的 `imsPreference` 版本分别推进，保护较旧的读
 
 ## 独立兼容差异
 
-- **M7A 槽有效但无已接纳的 Binding，待裁决。** Legacy 如果已有该槽缓存位置，使用空 ICCID
-  发读写请求，可能分别返回 Provider 原码及 `(0, -1)`。Target 保存或查询返回 `-1`，
-  查询输出 `-1`，且没有 Provider 调用。影响空槽以及没有当前绑定的时段。拒绝以空 ICCID
-  作为可写账户是 Target Host 显式行为。产品切换前需审核调用者是否依赖无绑定的返回码
-  或 Provider 调用，并正式裁决兼容策略。独立证据见 [本轮证据](evidence/af2_m7a_20261125/README.md)。
-- **M6 未知 ICCID 的 SIM 标签，产品待裁决。** 当前仓库执行状态、签收材料与已提交记录中
-  未找到该具体行为的正式批准。Legacy 在特定条件下可返回无变更成功，Target 返回参数错误。
-  影响可信 CMI 标签入口的未知身份，已知的历史账户仍可改标签。该项继续独立阻断相应产品迁移，
-  不用本轮的已绑定 IMS Oracle 为其背书。[M6 契约](M6_Account_Metadata_Debug.md)
+- [CD-02](../../../../docs/AF2_Compatibility_Decisions_Approved_20261126.md#cd-02) 已批准。Legacy 单激活空槽以空 ICCID 调用 Provider，保存返回 `0`，查询返回 `(0, -1)`。Target 无当前 Binding 时保存返回 `-1`，查询返回 `(-1, -1)`，Provider 调用为零。已绑定 IMS 的原读源和返回继续独立验证。产品切换前仍需核验调用者适配。[2026-11-25 原始证据](evidence/af2_m7a_20261125/README.md)
+- [CD-01](../../../../docs/AF2_Compatibility_Decisions_Approved_20261126.md#cd-01) 对未知 ICCID 标签的批准独立生效，已知历史账户仍允许改标签。[M6 契约](M6_Account_Metadata_Debug.md)
 
 ## 单步示例
 

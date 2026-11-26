@@ -89,6 +89,16 @@ B/C1 设备执行、Core/SA/IPC 和 SO 切换继续按原门禁验收。
 [开发与调试](../services/multisim/test/docs/M5_Voice_SMS_Debug.md) ·
 [原始验收](../services/multisim/test/docs/evidence/af2_m5_20261125/README.md)
 
+<a id="af2-compatibility-approved"></a>
+
+### AF-2 兼容裁决（2026-11-26）
+
+项目架构负责人批准 [CD-01](AF2_Compatibility_Decisions_Approved_20261126.md#cd-01) 未知 ICCID 标签、[CD-02](AF2_Compatibility_Decisions_Approved_20261126.md#cd-02) 空 Binding IMS Preference、
+[CD-03](AF2_Compatibility_Decisions_Approved_20261126.md#cd-03) G3b 号码固定目标。状态均为 `APPROVED_TARGET_BEHAVIOR`。后续 AF-2/AF-3
+（含 M8）直接继承，按独立回归契约验证，无须重新审批，不作为后续 Host 阻塞。
+实质需求、产品契约或正确性发现按[继承规则](AF2_Compatibility_Decisions_Approved_20261126.md#inheritance)另案处理。
+[当前专项验证](../services/multisim/test/docs/evidence/af2_compatibility_20261126/README.md)
+
 <a id="af2-m6-status"></a>
 
 ### AF-2 M6 账户资料（2026-11-25）
@@ -104,7 +114,7 @@ Provider 只写相应列，换卡后失效绑定无法接纳原名称写入。�
 ASan、TSan 各 44/44。10 个双后端场景 20/20，后端及 Oracle 差异为 0。
 完整架构、GN/Ninja、真实执行审计、完整性、技术、变异恢复与 Legacy CI 准入均通过。
 8 个 ELF 的 290 处源码定位通过。LLDB 实际单步验证字段版本、同步结果与销毁。
-VS Code GUI 保持人工未验收。IMS Preference 留待独立核对契约，产品 Provider 归因、
+VS Code GUI 保持人工未验收。[CD-01](AF2_Compatibility_Decisions_Approved_20261126.md#cd-01) 已批准未知 ICCID 返回参数错误且不写 Provider。已知历史账户仍可设置标签。产品 Provider 归因、
 正式 Reload、AF2-03、B/C1、Core/SA/IPC、设备及 SO 门禁继续有效。
 [开发与调试](../services/multisim/test/docs/M6_Account_Metadata_Debug.md) ·
 [验证及原始证据](../services/multisim/test/docs/evidence/af2_m6_20261125/README.md)
@@ -113,7 +123,7 @@ VS Code GUI 保持人工未验收。IMS Preference 留待独立核对契约，�
 
 ### AF-2 M7A IMS Preference（2026-11-25）
 
-**PARTIAL · Host 业务及验证通过，空绑定兼容差异待裁决。** 输入
+**`AF2_M7A_IMS_PREFERENCE_COMPATIBILITY_READY`。** 原 Host 验收输入
 `7edbc86ff2c2c4154f7b11807558c9bdb23b2247`，实现 `d975637cf`。已接入正式保存与
 Provider 直读。按原绑定写 `ims_switch` 单列，返回 Provider 原码。查询区分 Provider
 实际失败、无行与行值，按 Legacy 出口交付原整数和 UNKNOWN。T 复用 M6 字段写权、
@@ -124,23 +134,17 @@ Verify Legacy 145/145、Target 153/153，含 M1～M6 44/44 和 M7A 7/7。ASan、
 真实执行审计、Legacy CI、完整性和变异恢复通过。8 个 ELF 的 298 处源码定位通过。
 LLDB 实际单步到原读写、字段版本、同步输出、Stop 和析构。VS Code GUI 人工未验收。
 
-**独立兼容待决 M7A · 配置有效但无当前 Binding。** Legacy 单激活实测以空 ICCID 各发
-一次读写。保存原码为 0，查询为 `(0, -1)`。Target 读写均返回 `-1`，查询输出为
-`-1`，Provider 调用次数为零。兼容矩阵中的已绑定 IMS 场景覆盖共同语义，此差异单独
-执行和归档。取得正式裁决前保留 PARTIAL，产品 Provider、Core/SA/IPC、实际 IMS 设备
-开关与既有生产门禁继续有效。
+[CD-02](AF2_Compatibility_Decisions_Approved_20261126.md#cd-02) 已裁决，无当前 Binding 时保存返回 `-1`，查询返回 `(-1, -1)`，
+Provider 调用为零。已绑定场景继续按原读源及返回契约回归。产品 Provider、Core/SA/IPC
+和实际 IMS 开关仍分别按原门禁验收。
 [调用及调试](../services/multisim/test/docs/M7A_Ims_Preference_Debug.md) ·
-[原始证据及两项待决记录](../services/multisim/test/docs/evidence/af2_m7a_20261125/README.md)
-
-**独立产品迁移待决 M6 · 未知 ICCID 的 SIM 标签。** 仓内签收及提交记录尚无此项正式裁决。
-Legacy 可无变更成功，Target 对未知持久身份返回参数错误。已知历史账户仍允许更新。
-M6 Host 验收记录保留。相关产品迁移须独立审核原调用者依赖并取得批准。
+[原始验收](../services/multisim/test/docs/evidence/af2_m7a_20261125/README.md)
 
 <a id="af2-m7b-status"></a>
 
 ### AF-2 M7B SIM 号码（2026-11-25）
 
-**PARTIAL · 号码 Target Host 闭环已验证，G3b 与原生设备证据待定。** 输入
+**`AF2_M7B_SHOW_NUMBER_COMPATIBILITY_READY`（Target Host）。** 原 Host 验收输入
 `cd04fbad61941d8584fd8884457910e9447ac8fe`。实现 `6afce256e`，Legacy 与差分验证接线
 `5fbe89d08`。H/C 保留原受理、异步任务和回调，T 固定执行点的账户、Binding 及号码
 字段版本。R 复用原卡会话和唯一物理屏障，登记原 Step、Session 和 fence。Provider 写库和
@@ -151,13 +155,12 @@ Verify Legacy 146/146、Target 161/161，M1～M7A 51/51、M7B 8/8。ASan、TSan 
 技术、完整性、Legacy CI 及变异恢复通过。LLDB 对真实组合用例完成断点、单步和销毁。
 VS Code GUI 人工未验收。
 
-**独立待决 M7B。** 原设置在任务执行点固定 Binding，独立查询回写同时固定原字段版本。
-Legacy 源码在落库时仍按槽解析账户，相关换卡交错只取得 Target Host 证据。G3b 行为需产品
-批准。原生桥还须证明每种卡型的 EF 协议、原定时器、原传输关联、Records 写点会话准入及
-硬件复用。Provider、生产写权、Core/SA/IPC、AF2-03 和设备门禁继续有效。M6 未知 ICCID
-和 M7A 空 Binding 的独立待决保持原记录。
+[CD-03](AF2_Compatibility_Decisions_Approved_20261126.md#cd-03) 已批准在任务实际执行时固定目标，并保护独立回写及晚证据。M7B
+Host 里程碑使用已完成的 Target Host 闭环、差分、执行审计和 LLDB 证据。产品原生 MSISDN
+桥仍待验收，需验证各卡型 EF、原定时器及传输关联、Records 会话提交和硬件复用。
+Provider、生产写权、Core/SA/IPC、AF2-03 和设备门禁继续有效。
 [开发与调试](../services/multisim/test/docs/M7B_Show_Number_Debug.md) ·
-[验证证据及待决项](../services/multisim/test/docs/evidence/af2_m7b_20261125/README.md)
+[原始验收](../services/multisim/test/docs/evidence/af2_m7b_20261125/README.md)
 
 <a id="af1-signoff-validation"></a>
 
@@ -202,12 +205,11 @@ Legacy 源码在落库时仍按槽解析账户，相关换卡交错只取得 Tar
 
 ### 下一批任务与依赖
 
-1. **兼容裁决**。分别审核 M7A 空绑定 IMS 和 M6 未知 ICCID 标签的原调用者与 Provider
-谓词。保留各自的审批及切换条件。
-[实测和待决项](../services/multisim/test/docs/evidence/af2_m7a_20261125/README.md)
-2. **M7B 原生桥与产品裁决**。复查 G3b 执行点和独立回写的换卡差异。原生接线须证明
-每条 EF 的原关联、硬件结束和复用，以及原会话 Records 提交门禁。
-[M7B 调试与兼容待决](../services/multisim/test/docs/M7B_Show_Number_Debug.md#兼容及产品待决)
+1. **后续 Host 业务**。M8 及其他 AF-2/AF-3 切片继承[已批准行为](AF2_Compatibility_Decisions_Approved_20261126.md#inheritance)。
+按独立测试契约回归 CD-01、CD-02、CD-03。
+2. **外部适配与原生桥**。验证 CD-01、CD-02、CD-03 的产品调用者适配。M7B 原生接线
+须证明各 EF 的原关联、硬件结束和复用，以及原会话 Records 提交。
+[M7B 调试与产品门禁](../services/multisim/test/docs/M7B_Show_Number_Debug.md#兼容裁决及产品门禁)
 3. **后续能力及产品门禁**。Part 26 的 Reload 因果覆盖、AF2-03 的多成员 Submit、Radio 产品供证、跨实例重建及生产写权按[签收包 §16](AF1_Architecture_Final_Signoff_Package_20261124.md#16-外部产品门禁)、[原功能与 WU](migration/SIM_Architecture_Refactor_Design.md#writer-cutover)及[主设计 §22](SIM_Target_Architecture_Design_v1.2.md#22-分阶段实施门禁)取证。
 
 2026-11-19 独立设计审查以 `0e4004bef` 为源码输入，形成[历史评审](history/reviews/SIM_Architecture_Independent_Review_20261119.md)。评审先独立发布于 `d8fcbba40`，随后将分责、共享输出和异步资格同步至主设计与源码详细设计。产品装配、设备与业务执行仍按原批次记录；当前设计验收见[第二轮复审](history/reviews/SIM_Architecture_Independent_Review_20261119.md#第二轮复审--对修改后的设计提出反例)。

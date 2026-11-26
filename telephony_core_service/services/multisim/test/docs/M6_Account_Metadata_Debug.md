@@ -17,7 +17,7 @@
 ## Target Host 入口与数据流
 
 - 显示名称调用 `SimModule::SetShowName(slot, name, caller)`，查询调用 `GetShowName(slot, out, caller)`。C 先核对系统应用及 SET 或 GET 权限。T 从当前位置的 `BindingRef` 取得持久 `SubscriptionId`，同一提交域中检查绑定并登记写入。
-- 标签使用可信的 Host CMI 等价入口 `SimModule::SetSimLabelIndexByIccId(iccid, label)`，支持已知历史账户。使用 `ReadAccount(subscription, view).legacyLabel` 读取原始标签。未发现过的 ICCID 返回参数错误，避免沿用 Legacy 无匹配条目时的无变更成功。公开 eSIM setter 和物理槽展示标签走各自的产品契约。
+- 标签使用可信的 Host CMI 等价入口 `SimModule::SetSimLabelIndexByIccId(iccid, label)`，支持已知历史账户。使用 `ReadAccount(subscription, view).legacyLabel` 读取原始标签。未知 ICCID 返回参数错误且不访问 Provider，[CD-01](../../../../docs/AF2_Compatibility_Decisions_Approved_20261126.md#cd-01) 已正式批准。公开 eSIM setter 和物理槽展示标签走各自的产品契约。
 - 两个 setter 都保留 Legacy 同值写入和成功通知。名称按 Legacy 判断原码是否为 −1，标签判断是否为 0。T 同时要求原调用已结束、实际字段效果已确认，才允许接纳。只有更改过的字段推进对应版本，Current、Historical 各保留自己的版本。
 
 ```mermaid

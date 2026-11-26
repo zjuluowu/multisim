@@ -37,6 +37,20 @@ Host 使用 [统一入口](../scripts/test.py)。已知 ELF 时按所属后端�
 
 缺失任一后端、没有共同场景、重复 Scenario、Oracle 不一致或外部业务字段不同，不能得到 PASS。内部对象地址、线程、内部请求序号和调度耗时不参与比较。
 
+<a id="approved-compatibility"></a>
+
+## 已批准差异的独立回归矩阵
+
+下表三项均为 `APPROVED_TARGET_BEHAVIOR`。各自保留 Legacy 原证据及 Target 专项，右列的共同场景单独执行原 Oracle。
+
+| 决策 | Legacy 冻结或证据范围 | Target 独立回归 | 共同场景 |
+|---|---|---|---|
+| [CD-01](../../../../docs/AF2_Compatibility_Decisions_Approved_20261126.md#cd-01) | 未知 ICCID 的 Provider 无匹配成功 | 拒绝未知 ICCID 且无写入。已知历史账户仍可写 | `SIM023-LEGACY-ACCOUNT-METADATA-DUAL` |
+| [CD-02](../../../../docs/AF2_Compatibility_Decisions_Approved_20261126.md#cd-02) | 单激活空槽对空 ICCID 发读写 | 空 Binding 保存 `-1`、查询 `(-1, -1)`，零 Provider 调用 | `SIM024-LEGACY-IMS-PREFERENCE-BOUND` |
+| [CD-03](../../../../docs/AF2_Compatibility_Decisions_Approved_20261126.md#cd-03) | Legacy 在写库时解析槽由源码核实。换卡交错未复现 | 执行点、换卡、字段版本、独立回写和晚证据分别检查 | `SIM023-LEGACY-SHOW-NUMBER-AFTER-CARD-FAILURE` |
+
+[独立测试契约](../config/approved_compatibility_contracts.json)登记各自 GTest 和初始化模型。原生设备与 Provider 因果、产品调用者适配等继续按各自门禁验收。
+
 ## Target C0 真实调用链
 
 ```text
