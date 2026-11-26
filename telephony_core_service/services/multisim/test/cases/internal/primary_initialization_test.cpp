@@ -375,45 +375,74 @@ TEST_F(RealSimPrimary, ImsPreferencePreservesProviderReturnAndReadSource)
     }));
 }
 
-TEST_F(RealSimPrimary, FreshAccountReloadKeepsViewsIndependent)
+void CheckAccountReload(bool sparse)
 {
     using namespace SimGuard;
     Sim028Host::PrimaryEnvironment rig;
     Sim028Host::ProviderRow previous;
-    rig.row.cells[SimData::SIM_ID] = int64_t(kCurrentAccount);
+    bool reverse = false;
+    bool includeHistorical = true;
+    const int currentId = sparse ? kSparseCurrentAccount : kCurrentAccount;
+    const int historicalId = sparse ? kSparseHistoricalAccount : kHistoricalAccount;
+    rig.row.cells[SimData::SIM_ID] = int64_t(currentId);
     rig.row.cells[SimData::SLOT_INDEX] = int64_t(1);
     rig.row.cells[SimData::ICC_ID] = std::string(kCurrentReloadIccid);
-    previous.cells[SimData::SIM_ID] = int64_t(kHistoricalAccount);
+    previous.cells[SimData::SIM_ID] = int64_t(historicalId);
     previous.cells[SimData::SLOT_INDEX] = int64_t(-1);
     previous.cells[SimData::IS_ACTIVE] = int64_t(0);
     previous.cells[SimData::ICC_ID] = std::string(kHistoricalReloadIccid);
     EXPECT_CALL(*rig.provider, Query(testing::_, testing::_, testing::_, testing::_)).WillRepeatedly(
-        [&](auto &, const auto &predicate, auto &, auto *) { return rig.row.Query(predicate, &previous); });
+        [&](auto &, const auto &predicate, auto &, auto *) {
+            return reverse ? previous.Query(predicate, &rig.row) :
+                rig.row.Query(predicate, includeHistorical ? &previous : nullptr);
+        });
 
     auto controller = std::make_shared<MultiSimController>(nullptr,
         std::vector<std::shared_ptr<SimStateManager>>{}, std::vector<std::shared_ptr<SimFileManager>>{});
     controller->Init();
-    ExerciseFreshAccountReload(
-        [&](const char16_t *current, const char16_t *historical) {
-            rig.row.cells[SimData::SHOW_NAME] = OHOS::Str16ToStr8(current);
-            previous.cells[SimData::SHOW_NAME] = OHOS::Str16ToStr8(historical);
-        },
-        [&](ReloadView view) {
-            return view == ReloadView::Current ?
-                controller->GetListFromDataBase(false) : controller->GetAllListFromDataBase(false);
-        },
-        [&](ReloadView view, int id) {
-            std::vector<IccAccountInfo> rows;
-            const auto result = view == ReloadView::Current ?
-                controller->GetActiveSimAccountInfoList(false, rows) :
-                controller->GetAllSimAccountInfoList(false, rows);
-            EXPECT_EQ(result, TELEPHONY_ERR_SUCCESS);
-            for (const auto &account : rows) {
-                if (account.simId == id) { return account.showName; }
-            }
-            return std::u16string{};
-        });
+    const auto setStorage = [&](const char16_t *current, const char16_t *historical) {
+        rig.row.cells[SimData::SHOW_NAME] = OHOS::Str16ToStr8(current);
+        previous.cells[SimData::SHOW_NAME] = OHOS::Str16ToStr8(historical);
+    };
+    const auto reload = [&](ReloadView view) {
+        return view == ReloadView::Current ?
+            controller->GetListFromDataBase(false) : controller->GetAllListFromDataBase(false);
+    };
+    const auto readName = [&](ReloadView view, int id) {
+        std::vector<IccAccountInfo> rows;
+        const auto result = view == ReloadView::Current ?
+            controller->GetActiveSimAccountInfoList(false, rows) :
+            controller->GetAllSimAccountInfoList(false, rows);
+        EXPECT_EQ(result, TELEPHONY_ERR_SUCCESS);
+        for (const auto &account : rows) {
+            if (account.simId == id) { return account.showName; }
+        }
+        return std::u16string{};
+    };
+    if (sparse) {
+        ExerciseSparseAccountReload(
+            [&](const char16_t *current, const char16_t *historical, bool order, bool include) {
+                reverse = order;
+                includeHistorical = include;
+                setStorage(current, historical);
+            }, reload, readName, false);
+        EXPECT_EQ(controller->GetSlotId(currentId), 1);
+        EXPECT_EQ(controller->GetSlotId(historicalId), -1);
+        EXPECT_EQ(controller->GetSlotId(42), -1);
+    } else {
+        ExerciseFreshAccountReload(setStorage, reload, readName);
+    }
     EXPECT_TRUE(controller->Shutdown());
+}
+
+TEST_F(RealSimPrimary, FreshAccountReloadKeepsViewsIndependent)
+{
+    CheckAccountReload(false);
+}
+
+TEST_F(RealSimPrimary, SparseAccountReloadPreservesLegacyObservation)
+{
+    CheckAccountReload(true);
 }
 
 TEST_F(RealSimPrimary, ShowNumberReadsAccountAfterMsisdnFailure)

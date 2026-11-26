@@ -10,8 +10,8 @@
 
 [开发文档入口](docs/README.md)维护文档职责、阅读路径和冲突处理规则。先查[唯一执行状态](docs/SIM_Refactor_Execution_State.md#current-status)，再按本批授权选择工作。实际修改涉及既有行为时，以已发布或批准的契约为约束，按固定代码和证据复验。
 
-后续 AF-2/AF-3 切片直接继承 [CD-01、CD-02、CD-03](docs/AF2_Compatibility_Decisions_Approved_20261126.md#inheritance)。
-保持独立回归，按原门禁验证产品桥和外部调用者适配。三项在后续 Host 开发中沿用已有批准，兼容缺陷登记和新变更按该记录的范围判定。
+后续 AF-2/AF-3 切片直接继承 [CD-01～CD-04](docs/AF2_Compatibility_Decisions_Approved_20261126.md#inheritance)。
+保持独立回归，按原门禁验证产品桥和外部调用者适配。后续 Host 开发沿用已有批准，兼容缺陷登记和新变更按该记录的范围判定。
 
 ## 恢复与任务选择
 

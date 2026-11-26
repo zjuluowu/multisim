@@ -17,7 +17,7 @@
 | M9.5 | 复用 CLI、构建、LLDB 与自动化围栏 | 人工和技术分别验收 |
 | M9.6 | 逐文件统计和 SIM/WU/P 候选台账 | 逐项证据、独立开发、正式签收未结 |
 
-## 前批十项门禁记录
+## 历史十项门禁记录
 
 | Gate | 结果 | 实际证据及剩余事项 | 验收责任 |
 |---|---|---|---|
@@ -81,7 +81,7 @@ LoadSession 资格逻辑仍待实际 EF 路径消费。遗漏源码负控另复�
 | 任务 | 证据和实际范围 | 当前结果 |
 |---|---|---|
 | B01 | Legacy 51 CPP 与 Target 25 CPP；独立 ELF、GN check、实际遗漏/恢复 | Host PASS；OHOS 产品 BLOCKED |
-| B02 | 八个共用源码业务路径；Both 12×2、Oracle 差异 0；Reload 两端正向通过 | 稀疏 ID 外部差异待产品核对 |
+| B02 | 八个共用源码业务路径；Both 12×2、Oracle 差异 0；Reload 两端正向通过 | 稀疏 simId 已批准按 CD-04 执行独立契约 |
 | B03 | 原 PIN 接入点、状态/剩余次数契约，已有 Legacy 回归。Target 只有预身份会话 | 原 PIN 传输、资源及完成责任缺证，局部 BLOCKED |
 | B04 | 原 EF 解码链、LoadSession 纯规则、预身份发现 | 真实 EF 发令与 Records 接纳待接，局部 BLOCKED |
 | B05 | 独立 worktree、CLI、增量、自动定位及两端 LLDB | CLI PASS；GUI 未执行 |
@@ -91,18 +91,21 @@ LoadSession 资格逻辑仍待实际 EF 路径消费。遗漏源码负控另复�
 
 ### Architecture Ready 当前技术检查
 
-| 检查 | 本批结果 |
-|---|---|
-| H01 | FAIL。正式 B/C1 成员/路由与 A 锁外交接待闭合 |
-| H02 | FAIL。卡安全/EF 的正式路径及全图关闭、跨实例组合未验收 |
-| H03 | BLOCKED。UnlockPin 和 ICCID EF 缺可运行 Target 样板，B/C1 只有组件路径 |
-| H04 | Host PASS。原生 OHOS 与产品库 BLOCKED |
-| H05 | 本批八个共用源码路径通过。12 个原 Oracle 场景通过，Reload 新增一项共用断言；全量语义去重仍开放 |
-| H06 | CLI、LLDB、自动枚举 PASS；GUI NOT_RUN |
-| H07 | 静态 PASS；实际 Refresh、全图关闭的运行时负控未完成 |
-| H08 | PARTIAL。实测工作包及源码入口已有台账，剩余语义和产品分支需实证 |
-| H09 | 产品边界已记录。原生 Provider、设备、Feature 矩阵及生产切换 BLOCKED |
-| H10 | BLOCKED。缺可供独立扩展的 PIN/ICCID 样板 |
+执行 [AD-01～AD-04](SIM_Target_Architecture_Design_v1.2.md#architecture-ready-decisions)。
+下表保留基础工程阶段的实际证据边界，当前批进度见唯一执行状态。
+
+| 检查 | Host 完成条件 | 基础批证据 |
+|---|---|---|
+| H01 | 正式 SimModule 对象图、核心职责和唯一写权，包括 B/C1、真实成员及锁外交接 | FAIL，正式 B/C1 尚未装配 |
+| H02 | 卡应用会话、公共请求与资源、Refresh、关闭收据和跨实例重建 | PARTIAL，已有组件机制及预身份会话 |
+| H03 | 九类样板通过正式生产入口执行 | PARTIAL，缺正式 B/C1、UnlockPin 和 ICCID EF |
+| H04 | 独立 Legacy/Target Host 生产库，源码归属、逻辑 GN 与真实链接核对 | PASS，基础候选归档和 ELF 已核对 |
+| H05 | 适用的业务测试共用，兼容差异契约独立，业务与机制用例可追溯 | PARTIAL，八个共用源码路径与 12 个冻结 Oracle 场景已验证 |
+| H06 | 双端 CLI、精确单例、生产与测试源码发现、增量、LLDB 和 VS Code 指导 | PARTIAL，基础候选已实测 CLI、自动枚举及两端 LLDB，GUI_NOT_RUN |
+| H07 | GN、静态护栏及全图场景的确定性反例和运行时负控 | PARTIAL，静态与组件负控已验证 |
+| H08 | 剩余功能、源码及依赖、验收、代码与测试预算实质对账 | PARTIAL，已有候选台账及实测数据 |
+| H09 | 记载独立产品门禁及禁止提前切换条件 | PASS。原生 Provider、设备、Feature 矩阵及生产切换独立验证 |
+| H10 | 两项独立 Agent 扩展及同候选组合回归 | NOT_RUN，依赖稳定正式 PIN 和 ICCID EF 样板 |
 
 本批达到 `M9_FOUNDATION_READY_FOR_DEEP_REVIEW`。全局保持 `AF2_M9_IN_PROGRESS`。
 普通 Verify 已验证 Legacy 调试，Target 另有 Developer；Legacy 无 LTO 的产品专属符号、

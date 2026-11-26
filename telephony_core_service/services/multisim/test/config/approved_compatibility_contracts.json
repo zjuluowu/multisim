@@ -9,7 +9,9 @@
         "case": "RealSimPrimary.UnknownIccidLabelCanSucceedWithoutChangingAccount",
         "init_model": "single-active"
       },
-      "target_host": ["AF2AccountMetadata.PermissionAndHistoricalIdentityWithoutBinding"],
+      "target_host": [
+        "AF2AccountMetadata.PermissionAndHistoricalIdentityWithoutBinding"
+      ],
       "common_scenario": "SIM023-LEGACY-ACCOUNT-METADATA-DUAL"
     },
     "CD-02": {
@@ -19,7 +21,9 @@
         "case": "RealSimPrimary.ImsPreferencePreservesProviderReturnAndReadSource",
         "init_model": "single-active"
       },
-      "target_host": ["AF2ImsPreference.MissingBindingDoesNotAddressEmptyIccid"],
+      "target_host": [
+        "AF2ImsPreference.MissingBindingDoesNotAddressEmptyIccid"
+      ],
       "common_scenario": "SIM024-LEGACY-IMS-PREFERENCE-BOUND"
     },
     "CD-03": {
@@ -35,6 +39,21 @@
         "AF2ShowNumber.UnresolvedStoreRetainsNumberFieldAndUsesOriginalEvidence"
       ],
       "common_scenario": "SIM023-LEGACY-SHOW-NUMBER-AFTER-CARD-FAILURE"
+    },
+    "CD-04": {
+      "milestone": "M9",
+      "status": "APPROVED_TARGET_BEHAVIOR",
+      "legacy_host": {
+        "case": "RealSimPrimary.SparseAccountReloadPreservesLegacyObservation",
+        "init_model": "single-active"
+      },
+      "target_host": [
+        "AF2Reload.SparseAccountReloadKeepsPersistedIdentity"
+      ],
+      "shared_control": {
+        "legacy": "RealSimPrimary.FreshAccountReloadKeepsViewsIndependent",
+        "target": "AF2Reload.FreshAccountReloadKeepsViewsIndependent"
+      }
     }
   }
 }

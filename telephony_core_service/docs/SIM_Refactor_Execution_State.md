@@ -192,8 +192,8 @@ GNU archive 按当前输入重建并通过源码遗漏负控。候选回归 Lega
 ASan 与 TSan 各 73/73。12 个共同契约共 24/24，Oracle 差异为零。后续 Submit 原返回校正
 修复同步重入时的结果错配。C1 组件也已通过早回包负控。最新 Target 173/173、
 ASan 和 TSan 各 128/128、B/C1 组件执行审计通过。正式图仍需补 AF2-03
-真实成员／路由规划、卡安全与 EF 样板，以及 H 的全图关闭契约。人工 GUI、非框架作者
-演练和负责人签收分别留证。
+真实成员／路由规划、卡安全与 EF 样板，以及 H 的全图关闭契约。该批 GUI 和
+扩展演练均未执行。最新验收口径见本节末。
 [实施与验证证据](../services/multisim/test/docs/evidence/af2_m9_20261126/README.md) ·
 [开发指导 v2.2](SIM_Global_Code_Migration_and_Test_Plan_v2.2.md) ·
 [交接检查点](AF2_M9_Developer_Handoff_Acceptance_Report.md)
@@ -219,6 +219,16 @@ Reload 共用场景通过。Legacy 148/148、Target 174/174，12 个冻结共同
 
 
 
+
+**Architecture Ready 深度实施（D00）。** 本地与远端 main 输入均为
+`9615088e8d006efaca071c61a490e427c6232e60`。恢复检查 `CHECKPOINT_VERIFIED`。
+[AD-01～AD-04](SIM_Target_Architecture_Design_v1.2.md#architecture-ready-decisions) 已批准生效。
+技术验收采用同候选 Host 正反证据，独立 Agent 演练具备资格，实际 GUI 未执行记为
+`GUI_NOT_RUN`。稀疏 simId 的历史资料纠正按 [CD-04](AF2_Compatibility_Decisions_Approved_20261126.md#cd-04)
+验证，产品门禁独立。双端连续及稀疏专项各 2/2，静态、逻辑 GN 与保护资产检查通过。
+Target 保留 41、49 的 Historical 账户，两视图独立刷新。Legacy 原 Historical 丢行再次复现。
+双端多卡换绑组合尚待专项，产品调用者适配仍待。全局仍为 `AF2_M9_IN_PROGRESS`。
+[D00 实际验证](../services/multisim/test/docs/evidence/af2_m9_d00_20261126/README.md)
 
 <a id="af1-signoff-validation"></a>
 
@@ -263,12 +273,11 @@ Reload 共用场景通过。Legacy 148/148、Target 174/174，12 个冻结共同
 
 ### 下一批任务与依赖
 
-1. **后续 Host 业务**。M8 及其他 AF-2/AF-3 切片继承[已批准行为](AF2_Compatibility_Decisions_Approved_20261126.md#inheritance)。
-按独立测试契约回归 CD-01、CD-02、CD-03。
-2. **外部适配与原生桥**。验证 CD-01、CD-02、CD-03 的产品调用者适配。M7B 原生接线
-须证明各 EF 的原关联、硬件结束和复用，以及原会话 Records 提交。
-[M7B 调试与产品门禁](../services/multisim/test/docs/M7B_Show_Number_Debug.md#兼容裁决及产品门禁)
-3. **后续能力及产品门禁**。Part 26 的 Reload 因果覆盖、AF2-03 的多成员 Submit、Radio 产品供证、跨实例重建及生产写权按[签收包 §16](AF1_Architecture_Final_Signoff_Package_20261124.md#16-外部产品门禁)、[原功能与 WU](migration/SIM_Architecture_Refactor_Design.md#writer-cutover)及[主设计 §22](SIM_Target_Architecture_Design_v1.2.md#22-分阶段实施门禁)取证。
+1. **D01 正式 Radio。** 继承 B08-01、02 的反例。正式模块从设备边界读取真实协议与路由事实，冻结成员及原责任，再于 A 锁外交接。
+2. **D02～D04 卡命令及全图。** 按 B08-03～06 建共享卡命令机制、UnlockPin、ICCID EF，随后组合验证 Refresh、Stop/Drain 与跨实例责任。
+3. **D05～D06 技术收口。** 从稳定基线开展 UnlockPuk、IMSI 独立 Agent 扩展，合入组合回归，执行 B08-07 独立反审、负控、修复及最终候选全量验证。
+4. **独立产品门禁。** 按[设计批准时记录的外部门禁](AF1_Architecture_Final_Signoff_Package_20261124.md#16-外部产品门禁)、[原功能与 WU](migration/SIM_Architecture_Refactor_Design.md#writer-cutover)及[主设计 §22](SIM_Target_Architecture_Design_v1.2.md#22-分阶段实施门禁)取证。真实 Provider、设备、产品构建与生产切换分别记录。
+
 
 2026-11-19 独立设计审查以 `0e4004bef` 为源码输入，形成[历史评审](history/reviews/SIM_Architecture_Independent_Review_20261119.md)。评审先独立发布于 `d8fcbba40`，随后将分责、共享输出和异步资格同步至主设计与源码详细设计。产品装配、设备与业务执行仍按原批次记录；当前设计验收见[第二轮复审](history/reviews/SIM_Architecture_Independent_Review_20261119.md#第二轮复审--对修改后的设计提出反例)。
 

@@ -41,13 +41,14 @@ Host 使用 [统一入口](../scripts/test.py)。已知 ELF 时按所属后端�
 
 ## 已批准差异的独立回归矩阵
 
-下表三项均为 `APPROVED_TARGET_BEHAVIOR`。各自保留 Legacy 原证据及 Target 专项，右列的共同场景单独执行原 Oracle。
+下表四项均为 `APPROVED_TARGET_BEHAVIOR`。各自保留 Legacy 原证据及 Target 专项，冻结共同场景继续执行原 Oracle。
 
 | 决策 | Legacy 冻结或证据范围 | Target 独立回归 | 共同场景 |
 |---|---|---|---|
 | [CD-01](../../../../docs/AF2_Compatibility_Decisions_Approved_20261126.md#cd-01) | 未知 ICCID 的 Provider 无匹配成功 | 拒绝未知 ICCID 且无写入。已知历史账户仍可写 | `SIM023-LEGACY-ACCOUNT-METADATA-DUAL` |
 | [CD-02](../../../../docs/AF2_Compatibility_Decisions_Approved_20261126.md#cd-02) | 单激活空槽对空 ICCID 发读写 | 空 Binding 保存 `-1`、查询 `(-1, -1)`，零 Provider 调用 | `SIM024-LEGACY-IMS-PREFERENCE-BOUND` |
 | [CD-03](../../../../docs/AF2_Compatibility_Decisions_Approved_20261126.md#cd-03) | Legacy 在写库时解析槽由源码核实。换卡交错未复现 | 执行点、换卡、字段版本、独立回写和晚证据分别检查 | `SIM023-LEGACY-SHOW-NUMBER-AFTER-CARD-FAILURE` |
+| [CD-04](../../../../docs/AF2_Compatibility_Decisions_Approved_20261126.md#cd-04) | 41、49 在 Historical 遗漏，Current 仍可读活动账户 | 保留稀疏持久标识、两视图独立刷新及行序变化 | 连续 ID Reload 双端共用断言。稀疏差异独立于冻结 Oracle |
 
 [独立测试契约](../config/approved_compatibility_contracts.json)登记各自 GTest 和初始化模型。原生设备与 Provider 因果、产品调用者适配等继续按各自门禁验收。
 

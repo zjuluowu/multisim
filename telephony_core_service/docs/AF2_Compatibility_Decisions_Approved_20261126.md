@@ -1,8 +1,8 @@
 # AF-2 兼容行为正式裁决
 
-批准人角色为项目架构负责人，批准日期为 2026-11-26。裁决输入为本地与远端 main
-`cd0330c51aafb9c9697ff560c9008268a5a98039`。三项裁决状态统一为
-`APPROVED_TARGET_BEHAVIOR`，属于有意批准的非等价兼容增强。
+CD-01～CD-03 的批准日期为 2026-11-26，输入 main 为
+`cd0330c51aafb9c9697ff560c9008268a5a98039`。CD-04 随 Architecture Ready 决策批准。
+各项状态为 `APPROVED_TARGET_BEHAVIOR`。
 
 <a id="cd-01"></a>
 
@@ -34,11 +34,20 @@
 - **理由及产品验证**。异步步骤使用原业务对象和关系。真实产品仍须验证外部调用者、原生 MSISDN 桥、各卡型 EF、定时器、原传输关联、实际 Records 会话及硬件可复用性。IPC 受理时固定目标仍需另案。
 - **源码与证据**。[Legacy 查询及写库](../services/sim/src/multi_sim_controller.cpp#L1731) · [Target 设置](../services/multisim/account/number/set_show_number_use_case.cpp) · [Target 查询回写](../services/multisim/account/number/show_number_query.cpp) · [M7B 原始实测与差异](../services/multisim/test/docs/evidence/af2_m7b_20261125/README.md)。
 
+<a id="cd-04"></a>
+
+## CD-04 稀疏 simId 的账户加载与解析
+
+- **批准行为**。合法账户使用原持久 simId，允许删除和数据演进造成的空洞。Current 与 Historical 各自加载，行顺序影响不了账户身份。继续以有效当前关系解析活动位置，以持久标识查询历史账户。未知标识沿用原无匹配语义。
+- **Legacy 缺陷**。`MultiSimController::SortAllCache` 按行数分配数组并用 simId−1 寻址，导致 41、49 的 Historical 资料遗漏。Current 仍按原活动位置处理。
+- **Target 契约**。两类合法账户的持久标识、资料及既有对象关系都要保留。此裁决仅授权纠正 Historical 丢行。产品调用方和真实导入/删除行为仍按各自门禁验证。
+- **源码及证据**。[Legacy 历史加载](../services/sim/src/multi_sim_controller.cpp#L768) · [Target 账户加载](../services/multisim/account/topology_service.cpp#L483) · [原稀疏探针](../services/multisim/test/docs/evidence/af2_m9_foundation_20261126/README.md) · [独立测试配置](../services/multisim/test/config/approved_compatibility_contracts.json)。
+
 <a id="inheritance"></a>
 
 ## 继承与验收
 
-后续 AF-2/AF-3（含 M8）直接继承 CD-01、CD-02、CD-03。三项行为进入 Target 正式业务契约和独立回归，已有裁决可直接引用。历史 Legacy 断言及共同契约 Oracle 继续按原口径维护。这三个编号从兼容缺陷、重复审批和后续 Host 阻塞的范围移除。恢复旧行为或改变已批准行为需要另案决策。
+后续 Host 业务与产品迁移直接继承 CD-01～CD-04。各项行为进入 Target 正式业务契约和独立回归。历史 Legacy 断言及共同契约 Oracle 继续按原口径维护。恢复旧行为或改变已批准行为需要另案决策。
 
 仅当业务需求变化、新证据表明有明确产品契约冲突、外部调用者有真实不兼容依赖，或发现此前未覆盖的正确性问题时，才提出独立变更。新提案须有自身证据和批准记录。
 

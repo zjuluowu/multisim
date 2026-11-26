@@ -109,6 +109,21 @@ verification_note: 2026-10-31目录基线为main@5404aefe66decde4e5c5f03a01f355f
 
 ### 1.3 状态标记
 
+<a id="architecture-ready-decisions"></a>
+
+### Architecture Ready 已批准架构决策
+
+以下决策均为 **APPROVED**，自基线 `9615088e8d006efaca071c61a490e427c6232e60` 的实施批次起适用。
+
+| 决策 | 生效契约 |
+|---|---|
+| AD-01 | Architecture Ready 以 Host 正式 SimModule 对象图及实际技术验证为准。核验核心对象与唯一写权、九类样板、公共机制及并发、Refresh、Stop/Drain、跨实例重建，独立归档、工程、共用测试、静态护栏、运行时负控及独立扩展组合回归。剩余业务必须有可执行的范围、依赖及验收条件。 |
+| AD-02 | 验证独立构建、后端切换、精确单例、新增生产与测试源码自动发现、增量构建及 LLDB 生产断点和单步。维护 VS Code 配置与指导。实际 Windows Remote WSL GUI 未执行时登记 `GUI_NOT_RUN`，仍可完成 Host 技术里程碑。 |
+| AD-03 | UnlockPuk 与 IMSI EF 从同一稳定基线由独立 Agent 在隔离 worktree 或分支实施。分别验证公共机制复用、核心对象稳定、源码与测试发现、并行开发及合入回归。出现核心变更需求时先修复架构，再以新基线重演。 |
+| AD-04 | 历史外部接口及持久标识继续兼容。稀疏 simId 合法，保持原值和关系。业务围绕所属对象及关联，避免标识和数组索引耦合。批准 Target 保留 Legacy Historical 遗漏的合法账户，单独验证并保护冻结 Oracle。依据 [CD-04](AF2_Compatibility_Decisions_Approved_20261126.md#cd-04)。 |
+
+采用 [H01～H10 技术检查](AF2_M9_Developer_Handoff_Acceptance_Report.md#architecture-ready-当前技术检查)。保留独立反向审查和实测。原生 OHOS、真实 Provider、RIL/HDI、Core/SA/IPC、Feature、SO/ABI/CFI、产品生命周期与 WU 切换继续适用独立产品门禁。Host 平台输入必须有可验证契约。产品未实测的事项记录实际状态。
+
 <a id="af1-architecture-design-signoff"></a>
 
 **AF1_ARCHITECTURE_DESIGN_SIGNED_OFF（2026-11-24）。** 架构负责人于本次任务书面批准 [AF-1 签收包](AF1_Architecture_Final_Signoff_Package_20261124.md)所述核心设计，包括 T/A/O/R/C/I/H 职责及私有端口、原票归因与统一发布、Reload 因果覆盖与角色整组接纳、来源与阶段准入、唯一资源权威、逐项关闭及缺证时的安全处置。批准按 testonly Target Host 交接启动 AF-2。[最终独立 Gate](history/reviews/AF1_Final_Independent_Gate_20261124.md)的原始判定为 `AF1_REVIEW_READY_FOR_ARCHITECT_DECISION`。

@@ -9,6 +9,7 @@
 #include "../../shared/account_reload_scenario.h"
 #include "core_service_errors.h"
 
+#include <algorithm>
 #include <future>
 #include <map>
 #include <optional>
@@ -3215,40 +3216,71 @@ AccountLoadResult ReloadImage(const AccountLoadRequest &request, uint64_t positi
 }
 } // namespace
 
-TEST(AF2Reload, FreshAccountReloadKeepsViewsIndependent)
+namespace {
+void CheckAccountReload(bool sparse)
 {
     using namespace SimGuard;
     LiveDiscoveryFixture f;
     std::u16string currentName;
     std::u16string historicalName;
+    bool reverse = false;
+    bool includeHistorical = true;
+    const int currentId = sparse ? kSparseCurrentAccount : kCurrentAccount;
+    const int historicalId = sparse ? kSparseHistoricalAccount : kHistoricalAccount;
     uint64_t readPosition = 0;
     f.store->load = [&](const AccountLoadRequest &request) {
         std::vector<AccountStorageRow> rows {
-            ReloadRow({kCurrentAccount}, kCurrentReloadIccid, 1, currentName)};
-        std::vector<StoredAccountRoleFragment> roles {{{kCurrentAccount}, false, false, false, false}};
-        if (request.view == AccountReadView::Historical) {
-            auto older = ReloadRow({kHistoricalAccount}, kHistoricalReloadIccid, -1, historicalName);
+            ReloadRow({currentId}, kCurrentReloadIccid, 1, currentName)};
+        std::vector<StoredAccountRoleFragment> roles {{{currentId}, false, false, false, false}};
+        if (request.view == AccountReadView::Historical && includeHistorical) {
+            auto older = ReloadRow({historicalId}, kHistoricalReloadIccid, -1, historicalName);
             older.active = false;
             rows.push_back(older);
-            roles.push_back({{kHistoricalAccount}, false, false, false, false});
+            roles.push_back({{historicalId}, false, false, false, false});
+        }
+        if (reverse) {
+            std::reverse(rows.begin(), rows.end());
+            std::reverse(roles.begin(), roles.end());
         }
         return ReloadImage(request, ++readPosition, std::move(rows), std::move(roles));
     };
     const auto viewFor = [](ReloadView view) {
         return view == ReloadView::Current ? AccountReadView::Current : AccountReadView::Historical;
     };
-    ExerciseFreshAccountReload(
-        [&](const char16_t *current, const char16_t *historical) {
-            currentName = current;
-            historicalName = historical;
-        },
-        [&](ReloadView view) { return f.module->ReloadAccounts(viewFor(view)).accounts.acceptedAttempt; },
-        [&](ReloadView view, int id) {
-            const auto account = f.module->ReadAccount({id}, viewFor(view));
-            return account ? account->displayName : std::u16string{};
-        });
+    const auto setStorage = [&](const char16_t *current, const char16_t *historical) {
+        currentName = current;
+        historicalName = historical;
+    };
+    const auto reload = [&](ReloadView view) {
+        return f.module->ReloadAccounts(viewFor(view)).accounts.acceptedAttempt;
+    };
+    const auto readName = [&](ReloadView view, int id) {
+        const auto account = f.module->ReadAccount({id}, viewFor(view));
+        return account ? account->displayName : std::u16string{};
+    };
+    if (sparse) {
+        ExerciseSparseAccountReload(
+            [&](const char16_t *current, const char16_t *historical, bool order, bool include) {
+                reverse = order;
+                includeHistorical = include;
+                setStorage(current, historical);
+            }, reload, readName, true);
+    } else {
+        ExerciseFreshAccountReload(setStorage, reload, readName);
+    }
     EXPECT_FALSE(f.module->FindBinding({1}));
     EXPECT_EQ(f.module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+} // namespace
+
+TEST(AF2Reload, FreshAccountReloadKeepsViewsIndependent)
+{
+    CheckAccountReload(false);
+}
+
+TEST(AF2Reload, SparseAccountReloadKeepsPersistedIdentity)
+{
+    CheckAccountReload(true);
 }
 
 TEST(AF2Reload, LiveAccountsAndRolesSurviveStaleReload)

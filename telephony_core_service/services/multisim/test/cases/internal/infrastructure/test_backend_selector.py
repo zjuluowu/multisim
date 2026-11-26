@@ -24,7 +24,7 @@ class BackendSelectorTest(unittest.TestCase):
     def test_approved_compatibility_has_independent_regression_contracts(self):
         matrix = json.loads((TEST / 'config/approved_compatibility_contracts.json').read_text())
         contracts = matrix['contracts']
-        milestones = {'CD-01': 'M6', 'CD-02': 'M7A', 'CD-03': 'M7B'}
+        milestones = {'CD-01': 'M6', 'CD-02': 'M7A', 'CD-03': 'M7B', 'CD-04': 'M9'}
         self.assertEqual({key: row['milestone'] for key, row in contracts.items()}, milestones)
         record = CORE / matrix['decision_record']
         decisions = record.read_text()
@@ -45,7 +45,12 @@ class BackendSelectorTest(unittest.TestCase):
                 self.assertIn(f'<a id="{anchor}"></a>', decisions)
                 self.assertIn(f'{record.name}#{anchor}', state)
                 self.assertEqual(row['status'], 'APPROVED_TARGET_BEHAVIOR')
-                self.assertIn(row['common_scenario'], common)
+                if 'shared_control' in row:
+                    self.assertNotIn('common_scenario', row)
+                    assert_registered(legacy, row['shared_control']['legacy'])
+                    assert_registered(target, row['shared_control']['target'])
+                else:
+                    self.assertIn(row['common_scenario'], common)
                 self.assertTrue(row['target_host'])
                 for case in row['target_host']:
                     assert_registered(target, case)

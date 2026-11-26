@@ -3,8 +3,8 @@
 **架构基础交付候选。** Architecture Ready、业务特性补充、完整生产替换按各自证据推进。 实际代码和验收状态见[执行状态](SIM_Refactor_Execution_State.md#af2-m9-status)。
 本版更新 [v2.1](SIM_Global_Code_Migration_and_Test_Plan_v2.1.md) 的 M9 工程对账。P1～P7 的
 子任务、目录预算、验收条件及共享文件合入规则沿用 v2.1 第 3、4 章。
-AF-1 的 Owner 和依赖规则继续由已签收设计维护。开发与回归直接继承
-[CD-01～03](AF2_Compatibility_Decisions_Approved_20261126.md)。
+业务 Owner 与依赖规则由主设计维护。开发与回归继承 [AD-01～04](SIM_Target_Architecture_Design_v1.2.md#architecture-ready-decisions)
+及 [CD-01～04](AF2_Compatibility_Decisions_Approved_20261126.md)。
 
 ## 候选工程与样板
 
@@ -32,7 +32,7 @@ M9 门禁、Radio 反例及证据范围见[验收报告](AF2_M9_Developer_Handof
    共同业务优先复用 `cases/shared/` 的场景体，再接两端真实装配。产品独立行为、内部
    架构行为和已批准 CD 继续用原分类。
 4. 在 VS Code Remote WSL 中运行 Prepare Testing Panel，检查枚举、刷新、新用例
-   Run 和 Debug、真实生产断点。GUI 结果单独交测试负责人确认。
+   Run、Debug 和生产断点。实际 GUI 未执行时记录 `GUI_NOT_RUN`，CLI 与 LLDB 保留实测证据。
 
 ## 构建与代码统计
 
@@ -87,10 +87,10 @@ Target 174 个测试登记、Legacy 148 个，已验证 13 个共同语义，内
 
 [逐项台账](../services/multisim/test/docs/evidence/af2_m9_20261126/task-inventory.json) 摘录
 SIM-001～062、WU-01～09 和 32 个 P 子任务的原入口、Owner、依赖及证据要求。尚未复核的
-SIM 条目由各 Owner 对照[迁移设计](migration/SIM_Architecture_Refactor_Design.md)与真实入口认领。
+SIM 条目按[迁移设计](migration/SIM_Architecture_Refactor_Design.md)和实际生产入口及用例逐项核实。
 所有 WU 保持原产品 writer 责任。
 
-| 包 | 责任田及并行条件 | v2.1 原预算 / 交接前预留（净增 LOC，新增测试） | 候选边界 |
+| 包 | 责任田及并行条件 | v2.1 原预算 / 架构基础预留（净增 LOC，新增测试） | 候选边界 |
 |---|---|---|---|
 | P1 账户与绑定 | A。Provider 谓词、账户观察可分开，T 接线单点合入 | 1,460，34 / 300，8 | M2、M6～M8 有 Host 基线，产品 Provider、探测及号码桥需证 |
 | P2 卡状态、安全、EF、资源 | B、C、G。先固定应用来源、资源及请求契约，B 写安全，C 写 codec/Records | 6,430，86 / 1,700，26 | 会话前置、资源已有验证，PIN/ICCID 待完整链路 |
@@ -105,7 +105,7 @@ SIM 条目由各 Owner 对照[迁移设计](migration/SIM_Architecture_Refactor_
 八个责任田的目录、共享文件维护人和集成顺序继续按
 [v2.1 §4](SIM_Global_Code_Migration_and_Test_Plan_v2.1.md#4-全局实施顺序与批次验收开发人员执行指导)。
 
-UnlockPin 与 ICCID EF 具备稳定样板后，可分别用 UnlockPuk、IMSI 在独立 worktree
+UnlockPin 与 ICCID EF 具备稳定样板后，独立 Agent 从同一基线分别用 UnlockPuk、IMSI 在独立 worktree
 验证扩展的改动范围、共用业务断言、负控及合入回归。实际完成的能力与测试分别核销 P2.3、P2.6。
 
 ## 架构基础交付续批
@@ -116,6 +116,6 @@ Primary 和 Bootstrap 两个消费者中共用，容量探针保留窄闭包。�
 
 八个已经验证的共用业务路径有源码共用体，其中 M6 继承已有实现。五个 B/C1 共同契约
 继续使用组件测试与原 Oracle。Reload 连续 ID 的正向加载形成独立共用场景，Target 保留内部因果规则专项。
-稀疏 ID 的历史行保留差异单独取证，继续核对原产品调用者。工作包台账保留未具备证据的业务标记，未将场景体抽取计作新增业务。新增 Reload 双端登记只计一个共用测试。
+稀疏 simId 按 CD-04 保留原值，独立验证 Target 历史账户保留及 Legacy 已知遗漏，继续核对原产品调用者。工作包台账保留未具备证据的业务标记，未将场景体抽取计作新增业务。新增 Reload 双端登记只计一个共用测试。
 [基础证据与问题清单](../services/multisim/test/docs/evidence/af2_m9_foundation_20261126/README.md) ·
 [SIM/WU/P 台账](../services/multisim/test/docs/evidence/af2_m9_foundation_20261126/task-inventory.json)
