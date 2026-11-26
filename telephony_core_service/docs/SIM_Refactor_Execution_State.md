@@ -97,6 +97,7 @@ B/C1 设备执行、Core/SA/IPC 和 SO 切换继续按原门禁验收。
 [CD-03](AF2_Compatibility_Decisions_Approved_20261126.md#cd-03) G3b 号码固定目标。状态均为 `APPROVED_TARGET_BEHAVIOR`。后续 AF-2/AF-3
 （含 M8）直接继承，按独立回归契约验证，无须重新审批，不作为后续 Host 阻塞。
 实质需求、产品契约或正确性发现按[继承规则](AF2_Compatibility_Decisions_Approved_20261126.md#inheritance)另案处理。
+本次回归覆盖 Legacy 专项 4/4、Target 专项 22/22 及 12 个共同契约场景 24/24，后端和 Oracle 差异均为零。
 [当前专项验证](../services/multisim/test/docs/evidence/af2_compatibility_20261126/README.md)
 
 <a id="af2-m6-status"></a>

@@ -1,0 +1,81 @@
+structure: PASS {"files": 101, "includes": 176, "targets": 25}
+migration: PASS (73 original files; original token order preserved, with authorized C0 Assignment additions)
+layout revision: PASS (88 files; mapped layout preserved, with authorized C0 Assignment additions)
+directory migration: PASS (91 inputs; 90 module destinations; 1 canonical document; non-C0 mapped C++/GN bytes exact; authorized C0 additions only)
+......................
+----------------------------------------------------------------------
+Ran 22 tests in 42.430s
+
+OK
+open/closed declarations: PASS (enum/type assertions; 5 compiler negative controls; not product ABI)
+syntax: PASS (101 independent units and one combined header TU)
+PASS binding ABA/assembly, independent projections/field reload, discovery replacement, activation cleanup ownership
+topology: PASS (pure rules only)
+resource: PASS (pure rules only)
+assignment / completion / Profile protocol scenarios passed
+assignment: PASS (pure rules only)
+resource / factory publication scenarios passed
+runtime_protocol: PASS (pure rules only)
+Done. Made 27 targets from 4 files in 184ms
+ninja: Entering directory `/tmp/af2-cd-20261126/architecture/gn'
+[1/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_store_adapter.cpp
+[2/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_aggregate.cpp
+[3/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/primary_host_lifecycle.cpp
+[4/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/primary/primary_switch_plan.cpp
+[5/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_service.cpp
+[6/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/compatibility/api/legacy_account_entry.cpp
+[7/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/compatibility/api/legacy_primary_entry.cpp
+[8/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp
+[9/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/compatibility/api/real_sim_count_query.cpp
+[10/60] touch obj/services/multisim/readonly_query.stamp
+[11/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/compatibility/api/legacy_sim_facade.cpp
+[12/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/compatibility/events/legacy_completion.cpp
+[13/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/compatibility/events/legacy_output_adapter.cpp
+[14/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/card/esim/local_card_requests.cpp
+[15/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/request/runtime_operation_store.cpp
+[16/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/card/runtime/card_observation_runtime.cpp
+[17/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/card/records/load_session.cpp
+[18/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/card/runtime/card_runtime.cpp
+[19/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/card/runtime/msisdn_runtime.cpp
+[20/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/device/resource/resource_barrier.cpp
+[21/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/slot_catalog.cpp
+[22/60] touch obj/services/multisim/sim_values.stamp
+[23/60] touch obj/services/multisim/assignment_types.stamp
+[24/60] touch obj/services/multisim/assignment_domain.stamp
+[25/60] touch obj/services/multisim/request_protocol.stamp
+[26/60] touch obj/services/multisim/assignment_contracts.stamp
+[27/60] touch obj/services/multisim/assignment_adapters.stamp
+[28/60] touch obj/services/multisim/assignment_protocols.stamp
+[29/60] touch obj/services/multisim/request_mechanism.stamp
+[30/60] touch obj/services/multisim/runtime_contracts.stamp
+[31/60] touch obj/services/multisim/runtime_cases.stamp
+[32/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/card/state/session_registry.cpp
+[33/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/account/account_store_adapter.cpp
+[34/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/device/resource/resource_radio_runtime.cpp
+[35/60] touch obj/services/multisim/runtime_mechanisms.stamp
+[36/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/account/activation/activate_sim_use_case.cpp
+[37/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/account/number/set_show_number_use_case.cpp
+[38/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/account/number/show_number_query.cpp
+[39/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/account/binding_index.cpp
+[40/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/account/topology_metadata.cpp
+[41/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/account/account_registry.cpp
+[42/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/account/activation/activation_progress.cpp
+[43/60] touch obj/services/multisim/topology_types.stamp
+[44/60] touch obj/services/multisim/topology_contracts.stamp
+[45/60] touch obj/services/multisim/assignment_cases.stamp
+[46/60] touch obj/services/multisim/compatibility_contracts.stamp
+[47/60] touch obj/services/multisim/assembly_contracts.stamp
+[48/60] touch obj/services/multisim/compatibility_core.stamp
+[49/60] touch obj/services/multisim/repository_exports.stamp
+[50/60] touch obj/services/multisim/runtime_core.stamp
+[51/60] touch obj/services/multisim/topology_adapters.stamp
+[52/60] touch obj/services/multisim/topology_domain.stamp
+[53/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/account/number/show_number_plan.cpp
+[54/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/account/discovery/discovery_observation_ledger.cpp
+[55/60] touch obj/services/multisim/topology_protocols.stamp
+[56/60] CXX ../../../../mnt/e/github/multisim/telephony_core_service/services/multisim/account/topology_service.cpp
+[57/60] touch obj/services/multisim/topology_cases.stamp
+[58/60] touch obj/services/multisim/assembly_core.stamp
+[59/60] touch obj/services/multisim/skeleton.stamp
+[60/60] touch obj/services/multisim/test/cases/architecture/all.stamp
+GN: PASS (all skeleton objects; no production link or startup)

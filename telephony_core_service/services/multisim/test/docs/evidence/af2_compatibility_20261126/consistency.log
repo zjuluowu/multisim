@@ -1,0 +1,8 @@
+Git whitespace: PASS
+Production source and assembly: unchanged
+Frozen scenario mappings, Oracle implementation and historical M6/M7A/M7B evidence: unchanged
+AF2-08 pinned canonical document and digest manifest: unchanged
+integrity: PASS (317 exact archived originals; 299 dispositions; 8 immutable live contracts/references)
+34 distinct local links across 12 changed Markdown files
+PASS
+Compressed evidence integrity: PASS
