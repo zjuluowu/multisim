@@ -161,7 +161,10 @@ private:
         std::optional<uint64_t> retrySchedulerTask;
         std::optional<EffectKnowledge> lateDeviceEffect;
     };
-    bool SubmitC1Round(const PendingPrimarySwitch &round);
+    bool AcceptC1RetryDue(RequestId request, std::unique_lock<std::recursive_mutex> &guard);
+    bool SubmitRadioOutsideCommit(const RadioSwitchRequest &device,
+        std::unique_lock<std::recursive_mutex> &guard);
+    bool SubmitC1Round(const PendingPrimarySwitch &round, std::unique_lock<std::recursive_mutex> &guard);
     std::map<uint64_t, PendingPrimarySwitch> pendingPrimary_;
     std::weak_ptr<RetrySchedulerPort> retryScheduler_;
     bool retrySchedulerBound_ {false};

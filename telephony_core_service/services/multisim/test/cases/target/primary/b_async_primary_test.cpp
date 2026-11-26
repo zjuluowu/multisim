@@ -985,6 +985,34 @@ TEST(TargetPrimaryB,C1InlineRepliesFinishWithoutAccessingRetiredRound)
     EXPECT_FALSE(f.service->HasPendingDeviceEffects());
 }
 
+TEST(TargetPrimaryB,PlatformHandoffDoesNotHoldAssignmentCommitLock)
+{
+    for (bool threePhase : {false, true}) {
+        SCOPED_TRACE(threePhase ? "C1 CHECK" : "B");
+        ResourceFixture fixture;
+        std::promise<void> entered;
+        auto platformEntered = entered.get_future();
+        std::promise<void> release;
+        auto releasePlatform = release.get_future();
+        fixture.platform.onSynchronousResponse = [&](uint64_t, const RadioSwitchRequest &request) {
+            if (!(request.target == SlotId {1})) { return; }
+            entered.set_value();
+            releasePlatform.wait();
+        };
+        auto start = std::async(std::launch::async, [&] { return fixture.Start(threePhase); });
+        platformEntered.wait();
+
+        auto inspect = std::async(std::launch::async, [&] {
+            return fixture.service->HasPendingDeviceEffects();
+        });
+        const auto readyWhileBlocked = inspect.wait_for(std::chrono::seconds(2));
+        release.set_value();
+        (void)start.get();
+        EXPECT_EQ(readyWhileBlocked, std::future_status::ready);
+        EXPECT_TRUE(inspect.get());
+    }
+}
+
 TEST(TargetPrimaryB,ResourceSubmitDuplicatesDeduplicateAndConflictsQuarantine)
 {
     ResourceFixture duplicate;
@@ -1064,6 +1092,30 @@ TEST(TargetPrimaryB,ResourceSubmitMemberCannotDuplicateOrReleaseAnotherInSubmit)
     EXPECT_TRUE(f.radio.AcceptDeviceResult({token, Result(first, EffectKnowledge::ConfirmedApplied, 0),
         true, true, true, static_cast<int32_t>(token)}));
     EXPECT_EQ(f.radio.ReadResourceState(f.key), ResourceState::Available);
+}
+
+TEST(TargetPrimaryB,ResourceStopSealsUnsubmittedMembersAndRetainsOriginalTransmission)
+{
+    ResourceFixture fixture;
+    const RadioSwitchRequest original {{RequestId {1, {6, 2}, RequestOwner::Assignment}, 2, 0},
+        {0}, {"m1"}, PrimarySwitchMode::ThreePhaseProtocol, std::nullopt, 1, 1, 2};
+    auto unsubmitted = original;
+    unsubmitted.target = {1};
+
+    fixture.platform.onSynchronousResponse = [&](uint64_t, const RadioSwitchRequest &) {
+        EXPECT_FALSE(fixture.radio.StopAccepting());
+        EXPECT_FALSE(fixture.radio.SwitchPrimaryRadio(unsubmitted));
+        EXPECT_EQ(fixture.radio.ReadResourceState(fixture.key), ResourceState::InFlight);
+    };
+    ASSERT_TRUE(fixture.radio.SwitchPrimaryRadio(original));
+    ASSERT_EQ(fixture.platform.requests.size(), 1u);
+    EXPECT_EQ(fixture.radio.ReadResourceState(fixture.key), ResourceState::Quarantined);
+    const auto token = fixture.platform.requests.front().first;
+    const auto result = Result(original, EffectKnowledge::ConfirmedApplied, 0);
+    EXPECT_FALSE(fixture.radio.AcceptDeviceResult({token, result, true, true, false, static_cast<int32_t>(token)}));
+    EXPECT_TRUE(fixture.radio.AcceptDeviceResult({token, result, true, true, true, static_cast<int32_t>(token)}));
+    EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
+    EXPECT_EQ(fixture.radio.ReadResourceState(fixture.key), ResourceState::Available);
 }
 
 TEST(TargetPrimaryB,ResourceBarrierIsNotAcquiredForC0)

@@ -446,6 +446,15 @@ bool ResourceRadioRuntime::StopAccepting()
 {
     std::unique_lock<std::mutex> guard(lock_);
     stopping_ = true;
+    for (auto &[fence, group] : groups_) {
+        (void)fence;
+        if (group.admittedMembers.size() < group.expected) {
+            // No remaining member can cross the gate. Already admitted transmissions
+            // keep their original responsibility, including calls still in Submit.
+            group.hasNotSentMember = true;
+            if (group.sent) { Quarantine(group, EffectKnowledge::Unknown); }
+        }
+    }
     ownerDeliveryReceipts_.erase(std::remove_if(ownerDeliveryReceipts_.begin(), ownerDeliveryReceipts_.end(),
         [](const auto &receipt) { return receipt->delivered.load(std::memory_order_acquire); }),
         ownerDeliveryReceipts_.end());

@@ -230,6 +230,13 @@ Target 保留 41、49 的 Historical 账户，两视图独立刷新。Legacy 原
 双端多卡换绑组合尚待专项，产品调用者适配仍待。全局仍为 `AF2_M9_IN_PROGRESS`。
 [D00 实际验证](../services/multisim/test/docs/evidence/af2_m9_d00_20261126/README.md)
 
+**D01 交接检查点。** B/C1 的平台 Submit 已退出 A 核心锁，按原 StepRef 核对交接结果。
+R 封口明确记录未交接成员并保留已交接传输责任。旧源码在两条平台阻塞路径复现锁负控，
+修订后 B/C1 组件 61/61，Target 177/177，继承的 Legacy 149/149，冻结 Both 24/24、Oracle 差异为零。
+GN、规则及历史迁移指纹校验通过。正式模块仍需实现真实成员及路由、发送许可、回包、
+同步入口和逐键原效果接线。状态保持 `AF2_M9_IN_PROGRESS`。
+[D01 运行证据](../services/multisim/test/docs/evidence/af2_m9_d01_20261126/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）

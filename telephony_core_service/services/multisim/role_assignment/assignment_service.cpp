@@ -101,7 +101,7 @@ bool AssignmentService::ScheduleC1Retry(RequestId request, uint32_t attempt)
 
 bool AssignmentService::AcceptScheduledC1Retry(const ScheduledRetryEvent &event)
 {
-    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
+    std::unique_lock<std::recursive_mutex> guard(primaryCommitLock_);
     if (stopping_) { return false; }
     const auto pending = pendingPrimary_.find(event.request.value);
     if (pending == pendingPrimary_.end() || !pending->second.retryScheduled ||
@@ -111,7 +111,7 @@ bool AssignmentService::AcceptScheduledC1Retry(const ScheduledRetryEvent &event)
     }
     pending->second.retryScheduled = false;
     pending->second.retrySchedulerTask.reset();
-    return AcceptC1RetryDue(event.request);
+    return AcceptC1RetryDue(event.request, guard);
 }
 
 void AssignmentService::RequestStopAccepting()
@@ -276,10 +276,15 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         output_.PublishPrimaryPhase(false, command.userSet);
         const RadioSwitchRequest device {sentStep, target->slot, *target->radioDomain, plan->mode,
             facts->binding, pendingPrimary_.at(request.value).protocolSession, 0, 1};
-        if (!radio_.SwitchPrimaryRadio(device)) {
-            assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
-                TransitionPhase::DevicePending, TransitionPhase::NeedsReconciliation);
-            operations_.MarkTerminal(request, TerminalState::NeedsReconciliation);
+        if (!SubmitRadioOutsideCommit(device, guard)) {
+            const auto pending = pendingPrimary_.find(request.value);
+            const auto operation = operations_.Read(request);
+            if (pending != pendingPrimary_.end() && pending->second.step == sentStep &&
+                operation && operation->terminal == TerminalState::Open) {
+                assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
+                    TransitionPhase::DevicePending, TransitionPhase::NeedsReconciliation);
+                operations_.MarkTerminal(request, TerminalState::NeedsReconciliation);
+            }
         }
         return request;
     }
@@ -313,7 +318,7 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
             false, 0, false, false, false, 0, std::nullopt, std::nullopt};
         for (const auto &slot : catalog_.Slots()) { pending.members.push_back(slot.slot); }
         pendingPrimary_.emplace(request.value, std::move(pending));
-        (void)SubmitC1Round(pendingPrimary_.at(request.value));
+        (void)SubmitC1Round(pendingPrimary_.at(request.value), guard);
         return request;
     }
 
@@ -770,7 +775,7 @@ bool AssignmentService::ReconcileRoleProvider(const RoleProviderOperation &opera
 
 void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
 {
-    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
+    std::unique_lock<std::recursive_mutex> guard(primaryCommitLock_);
     const auto pending = pendingPrimary_.find(result.step.request.value);
     if (pending == pendingPrimary_.end()) { return; }
     const auto operation = operations_.Read(result.step.request);
@@ -826,7 +831,7 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
                 pending->second.facts.binding.bindingRevision};
             if (!operations_.RecordSent(pending->second.step, session)) { return; }
             pending->second.phase = nextPhase;
-            (void)SubmitC1Round(pending->second);
+            (void)SubmitC1Round(pending->second, guard);
             return;
         }
     }
@@ -979,7 +984,12 @@ void AssignmentService::AcceptLateRadioEvidence(const RadioSwitchResult &result)
 
 bool AssignmentService::AcceptC1RetryDue(RequestId request)
 {
-    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
+    std::unique_lock<std::recursive_mutex> guard(primaryCommitLock_);
+    return AcceptC1RetryDue(request, guard);
+}
+
+bool AssignmentService::AcceptC1RetryDue(RequestId request, std::unique_lock<std::recursive_mutex> &guard)
+{
     const auto pending = pendingPrimary_.find(request.value);
     if (pending == pendingPrimary_.end() || !pending->second.retryReady || pending->second.phase != 4 ||
         pending->second.mode != PrimarySwitchMode::ThreePhaseProtocol) {
@@ -1025,10 +1035,26 @@ bool AssignmentService::AcceptC1RetryDue(RequestId request)
     pending->second.roundFailed = false;
     pending->second.completedMembers.clear();
     output_.PublishPrimaryPhase(false, false);
-    return SubmitC1Round(pending->second);
+    return SubmitC1Round(pending->second, guard);
 }
 
-bool AssignmentService::SubmitC1Round(const PendingPrimarySwitch &round)
+bool AssignmentService::SubmitRadioOutsideCommit(const RadioSwitchRequest &device,
+    std::unique_lock<std::recursive_mutex> &guard)
+{
+    // The original step and its write qualification are already registered.
+    guard.unlock();
+    bool accepted = false;
+    try {
+        accepted = radio_.SwitchPrimaryRadio(device);
+    } catch (const std::exception &) {
+        // Crossing the platform boundary may leave an unknown effect.
+    }
+    guard.lock();
+    return accepted;
+}
+
+bool AssignmentService::SubmitC1Round(const PendingPrimarySwitch &round,
+    std::unique_lock<std::recursive_mutex> &guard)
 {
     // A synchronous result may advance or retire this round before Submit returns.
     const StepRef step = round.step;
@@ -1049,7 +1075,7 @@ bool AssignmentService::SubmitC1Round(const PendingPrimarySwitch &round)
         const RadioSwitchRequest device {step, member, domain, PrimarySwitchMode::ThreePhaseProtocol,
             member == target ? std::optional<BindingRef>{binding} : std::nullopt,
             protocolSession, phase, static_cast<uint32_t>(members.size())};
-        if (!radio_.SwitchPrimaryRadio(device)) {
+        if (!SubmitRadioOutsideCommit(device, guard)) {
             if (!stillCurrent()) { return true; }
             assignment_.AcceptTransitionPhase(domain, step.request.value, TransitionPhase::DevicePending,
                 TransitionPhase::NeedsReconciliation);

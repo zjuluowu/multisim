@@ -1,0 +1,8 @@
+{
+  "baseline": "9615088e8d006efaca071c61a490e427c6232e60",
+  "files": {
+    "device/resource/resource_radio_runtime.cpp": "a0d5f0f52a8170c954eeb1c588aff5acc0af21178ccbb8b030792e1ffaf0c0d1",
+    "role_assignment/assignment_service.cpp": "92e83df85b742a879bb7dbee8bb27246b766b9492eb0af5ffc13aa1f52d27203",
+    "role_assignment/assignment_service.h": "b2029498fa1a7ec913ff17a8f30e4ef39a0a6f01cd195135a9be79a0e20d669c"
+  }
+}
