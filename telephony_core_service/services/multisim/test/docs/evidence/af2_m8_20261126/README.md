@@ -1,14 +1,21 @@
 # AF-2 M8 Target Host 验证证据
 
 执行于 2026-11-26。输入 `9bebb54e82f9242203d530f997d1b58fc77cc8c4`。
-首批代码发布 `e316298c045cd9b1c2d98e49238dd1638c663390`，登记为 PARTIAL。
+首批代码发布 `e316298c045cd9b1c2d98e49238dd1638c663390`。完整实现发布于 `635e632e9cdb1f73bb5107e3740313b92846bacf`。
 
-| 检查 | 首批结果 |
+| 检查 | 本轮实际结果 |
 | --- | --- |
 | Developer 真实拓扑与 Reload 专项 | 32/32。包含上一批 T1/T2 和本轮首批 M8 用例。[原报告](developer-initial.json.gz) |
 | LLDB | 实际断在 H、T、Store、Registry、A、Stop 及删除行，单步执行并观察进程退出 0。[命令](reload.lldb) · [原始日志](lldb.log.gz) |
 | Developer 发布保护复验 | 33/33。覆盖六项 M8 用例。[原报告](developer-publication.json.gz) |
 | ASan | 66/66，启用泄漏检测，含 M1～M8 及批准行为专项。使用独立无 LTO sanitizer 构建。[原报告](asan.json.gz) |
+| TSan | 66/66，使用独立 TSan GN 构建并执行同一专项集合。[原报告](tsan.json.gz) |
+
+| Verify Legacy | 147/147；真实执行审计、能力负控、证据保护、迁移等价、变异恢复及 CI 准入通过。[全集](verify-legacy.json.gz) · [执行审计](legacy-reload-execution.json) · [命令日志](verify-legacy.log.gz) · [变异恢复](mutation.json) |
+| Verify Target | 168/168，含 M8 6/6；拓扑及其他已实施能力的真实执行审计通过。[全集](verify-target.json.gz) · [执行审计](target-reload-execution.json) · [命令日志](verify-target.log.gz) |
+| CD-01～03 独立回归 | Legacy 2/2、Target 8/8。CD-03 的 Legacy 换卡交错沿用源码证据。[Legacy](legacy-cd.json.gz) · [Target](target-cd.json.gz) |
+| 共同契约 | 12 个已冻结场景，24/24，后端和 Oracle 差异为零。[全集](verify-both.json.gz) · [差分](differential.json) |
+| 架构与构建 | 22 项架构断言、101 个独立单元及组合头、5 个编译负控、4 组纯规则、GN 和 Ninja 通过。[原始日志](architecture.log) |
 
 最新 LLDB 在带符号的 ASan 专项 ELF 单步，观察图像 10 和 14、原账号字段及删除点，进程
 退出 0。LLDB 运行单独关闭泄漏检测，ASan 回归仍启用泄漏检测。
@@ -39,7 +46,21 @@ python3 -B "$T/scripts/test.py" all --backend target --out "$VERIFY" \
 python3 -B "$T/scripts/test.py" run --backend both --out "$VERIFY" \
   --gtest-root "$G" --openssl-root "$S" --runtime-root "$R" --output "$OUT/both" --jobs 4 \
   --init-model dual-active-primary0
+python3 -B "$T/scripts/test.py" run --backend both --out "$VERIFY" --no-build-if-missing \
+  --output "$OUT/both-release" --init-model dual-active-primary0
 python3 -B "$T/scripts/run_architecture.py" --with-gn --migration --output "$OUT/architecture-final"
 python3 -B "$T/scripts/technical.py" --output "$OUT/technical"
 lldb --batch -s "$OUT/reload.lldb" "$DEV/build/sim_test_target_host"
+gn gen "$OUT/asan-build" --root="$PWD/$T/framework/internal/host" \
+  --args="gtest_root=\"$G\" production_root=\"$PWD/telephony_core_service\" host_debug=true host_step_debug=true host_asan=true"
+ninja -C "$OUT/asan-build" -j 3 sim_test_target_host
+python3 -B "$T/scripts/run_gtest.py" --binary "$OUT/asan-build/sim_test_target_host" \
+  --output "$OUT/asan-release" --filter 'AF2*.*' --env ASAN_OPTIONS=detect_leaks=1
+ninja -C /tmp/af2-m4-tsan -j 3 sim_test_target_host
+python3 -B "$T/scripts/run_gtest.py" --binary /tmp/af2-m4-tsan/sim_test_target_host \
+  --output "$OUT/tsan-release" --filter 'AF2*.*'
+lldb --batch -s "$OUT/reload-final.lldb" "$OUT/asan-build/sim_test_target_host"
 ```
+
+首轮双后端构建与 Verify Target 链接交错，产物身份保护拒绝执行。待两个 Verify 产物
+稳定后按相同双激活配置重跑，以上差分以 `both-release` 为准。

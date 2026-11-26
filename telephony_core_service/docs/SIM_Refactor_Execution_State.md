@@ -167,11 +167,14 @@ Provider、生产写权、Core/SA/IPC、AF2-03 和设备门禁继续有效。
 
 ### AF-2 M8 账户加载和 Reload
 
-**PARTIAL · Host 实现联调中。** 输入为 `9bebb54e82f9242203d530f997d1b58fc77cc8c4`。
-正式模块入口已接通 Current／Historical 独立读取。T 复核原读取、成员和逐列保护，
-逐账户报告掩码，A 以一次性交付资格接纳完整角色集。Developer 专项 33/33，ASan 66/66。
-LLDB 实际执行组合用例的初次恢复、旧图像、后继图像、Stop 和删除点。Verify 与剩余验收
-正在按独立门禁核对。
+**`AF2_M8_ACCOUNT_RELOAD_HOST_READY`。** 输入 `9bebb54e82f9242203d530f997d1b58fc77cc8c4`，
+实现及加固 `e316298c0`、`635e632e9`。正式入口支持 Current／Historical 独立恢复、刷新及
+重试。T 按来源、成员和字段资格接纳，逐账户报告掩码。A 接纳有资格的完整角色集并
+保留该次交付的精确回执。Reload 期间的 Store 调用与 T/A 交付沿用 H 的保活和排空。
+Verify Legacy 147/147、Target 168/168，含 M8 六项。CD 独立回归 Legacy 2/2、Target 8/8，
+共同契约 12 个双后端场景 24/24，后端与 Oracle 差异均为零。ASan/TSan 各 66/66。
+完整架构、GN/Ninja、执行审计、完整性及 Legacy CI 准入通过。LLDB 实际执行初次恢复、
+滞后图像、后继图像、Stop 和删除点。VS Code GUI 保持人工未验收。
 CD-01～03 继续作为独立批准行为回归。产品因果证据、Provider、Core/SA/IPC、原生设备及生产切换
 门禁沿用既有规则。
 [开发与调试](../services/multisim/test/docs/M8_Account_Reload_Debug.md) ·

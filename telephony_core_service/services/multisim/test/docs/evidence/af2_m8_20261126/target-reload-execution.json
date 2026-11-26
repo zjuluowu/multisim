@@ -1,0 +1,204 @@
+{
+  "scope": "Positive execution of selected target-topology production methods; not full SIM coverage",
+  "methods": [
+    {
+      "owner": "SimModule",
+      "method": "ReloadAccounts",
+      "count": 27,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimModule",
+      "method": "ReadStoredAccountRoles",
+      "count": 8,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AccountStoreAdapter",
+      "method": "LoadAccounts",
+      "count": 11,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/account_store_adapter.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AccountRegistry",
+      "method": "Read",
+      "count": 951,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/account_registry.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AccountRegistry",
+      "method": "AcceptDiscoveredAccount",
+      "count": 133,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/account_registry.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AccountRegistry",
+      "method": "BeginReload",
+      "count": 35,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/account_registry.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AccountRegistry",
+      "method": "AcceptReload",
+      "count": 523,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/account_registry.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AccountRegistry",
+      "method": "AcceptReloadProjection",
+      "count": 36,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/account_registry.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "BindingIndex",
+      "method": "Find",
+      "count": 1600,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/binding_index.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "TopologyService",
+      "method": "ReadPrimaryTarget",
+      "count": 585,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/topology_service.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "TopologyService",
+      "method": "AcceptStoredDiscovery",
+      "count": 138,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/topology_service.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "TopologyService",
+      "method": "DiscoverAccount",
+      "count": 154,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/topology_service.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "TopologyService",
+      "method": "ReconcileDiscovery",
+      "count": 24,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/topology_service.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "TopologyService",
+      "method": "PrepareAccountReload",
+      "count": 35,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/topology_service.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "TopologyService",
+      "method": "AcceptAccountReload",
+      "count": 35,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/topology_service.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "DiscoveryObservationLedger",
+      "method": "BeginStore",
+      "count": 288,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/discovery/discovery_observation_ledger.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "DiscoveryObservationLedger",
+      "method": "CompleteStored",
+      "count": 135,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/discovery/discovery_observation_ledger.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentService",
+      "method": "PrepareAccountRoleFragment",
+      "count": 143,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_service.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentService",
+      "method": "AcceptDiscoveredRoleProjection",
+      "count": 140,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_service.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentService",
+      "method": "StillOwnsInitialRoleReservation",
+      "count": 143,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_service.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentService",
+      "method": "FinalizeInitialRoleReservation",
+      "count": 142,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_service.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentService",
+      "method": "AcceptReloadedRoleProjectionSet",
+      "count": 16,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_service.cpp"
+      ],
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

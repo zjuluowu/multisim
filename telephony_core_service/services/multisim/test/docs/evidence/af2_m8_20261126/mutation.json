@@ -1,0 +1,150 @@
+{
+  "commands": [
+    {
+      "name": "baseline-gn",
+      "command": [
+        "gn",
+        "gen",
+        "/tmp/af2-m7b-verify/mutation-build/build",
+        "--root=/mnt/e/github/multisim/telephony_core_service/services/multisim/test/framework/internal/host",
+        "--args=gtest_root=\"/tmp/sim-sync-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59\" production_root=\"/mnt/e/github/multisim/telephony_core_service\" host_debug=true openssl_root=\"/tmp/sim-replacement-openssl\" sim028_runtime_root=\"/tmp/sim-replacement-runtime\""
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0
+    },
+    {
+      "name": "baseline-build",
+      "command": [
+        "ninja",
+        "-C",
+        "/tmp/af2-m7b-verify/mutation-build/build",
+        "-j",
+        "3",
+        "sim_test_host"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0
+    },
+    {
+      "name": "ready-gn",
+      "command": [
+        "gn",
+        "gen",
+        "/tmp/af2-m7b-verify/mutation-build/build",
+        "--root=/mnt/e/github/multisim/telephony_core_service/services/multisim/test/framework/internal/host",
+        "--args=gtest_root=\"/tmp/sim-sync-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59\" production_root=\"/mnt/e/github/multisim/telephony_core_service\" host_debug=true openssl_root=\"/tmp/sim-replacement-openssl\" sim028_runtime_root=\"/tmp/sim-replacement-runtime\" sim_state_source_override=\"/tmp/af2-m8/verify-legacy-final/sim-hdphozak/mutation/sim_state_handle_mutant.cpp\""
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0
+    },
+    {
+      "name": "ready-build",
+      "command": [
+        "ninja",
+        "-C",
+        "/tmp/af2-m7b-verify/mutation-build/build",
+        "-j",
+        "3",
+        "sim_test_host"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0
+    },
+    {
+      "name": "ready-detected",
+      "command": [
+        "/tmp/af2-m7b-verify/mutation-build/build/sim_test_host",
+        "--gtest_filter=SimTest.LIFE_001",
+        "--gtest_output=xml:/tmp/af2-m8/verify-legacy-final/sim-hdphozak/mutation/ready.xml"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1
+    },
+    {
+      "name": "puk-gn",
+      "command": [
+        "gn",
+        "gen",
+        "/tmp/af2-m7b-verify/mutation-build/build",
+        "--root=/mnt/e/github/multisim/telephony_core_service/services/multisim/test/framework/internal/host",
+        "--args=gtest_root=\"/tmp/sim-sync-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59\" production_root=\"/mnt/e/github/multisim/telephony_core_service\" host_debug=true openssl_root=\"/tmp/sim-replacement-openssl\" sim028_runtime_root=\"/tmp/sim-replacement-runtime\" sim_manager_source_override=\"/tmp/af2-m8/verify-legacy-final/sim-hdphozak/mutation/sim_state_manager_mutant.cpp\""
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0
+    },
+    {
+      "name": "puk-build",
+      "command": [
+        "ninja",
+        "-C",
+        "/tmp/af2-m7b-verify/mutation-build/build",
+        "-j",
+        "3",
+        "sim_test_host"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0
+    },
+    {
+      "name": "puk-detected",
+      "command": [
+        "/tmp/af2-m7b-verify/mutation-build/build/sim_test_host",
+        "--gtest_filter=PinMemoryContract.PukSuccessUsesNewPinAndPinAlterOperation",
+        "--gtest_output=xml:/tmp/af2-m8/verify-legacy-final/sim-hdphozak/mutation/puk.xml"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1
+    },
+    {
+      "name": "restore-gn",
+      "command": [
+        "gn",
+        "gen",
+        "/tmp/af2-m7b-verify/mutation-build/build",
+        "--root=/mnt/e/github/multisim/telephony_core_service/services/multisim/test/framework/internal/host",
+        "--args=gtest_root=\"/tmp/sim-sync-deps/googletest-b514bdc898e2951020cbdca1304b75f5950d1f59\" production_root=\"/mnt/e/github/multisim/telephony_core_service\" host_debug=true openssl_root=\"/tmp/sim-replacement-openssl\" sim028_runtime_root=\"/tmp/sim-replacement-runtime\""
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0
+    },
+    {
+      "name": "restore-build",
+      "command": [
+        "ninja",
+        "-C",
+        "/tmp/af2-m7b-verify/mutation-build/build",
+        "-j",
+        "3",
+        "sim_test_host"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0
+    },
+    {
+      "name": "recovery-SimTest.LIFE_001",
+      "command": [
+        "/tmp/af2-m7b-verify/mutation-build/build/sim_test_host",
+        "--gtest_filter=SimTest.LIFE_001",
+        "--gtest_output=xml:/tmp/af2-m8/verify-legacy-final/sim-hdphozak/mutation/recovery-SimTest.LIFE_001.xml"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0
+    },
+    {
+      "name": "recovery-PinMemoryContract.PukSuccessUsesNewPinAndPinAlterOperation",
+      "command": [
+        "/tmp/af2-m7b-verify/mutation-build/build/sim_test_host",
+        "--gtest_filter=PinMemoryContract.PukSuccessUsesNewPinAndPinAlterOperation",
+        "--gtest_output=xml:/tmp/af2-m8/verify-legacy-final/sim-hdphozak/mutation/recovery-PinMemoryContract.PukSuccessUsesNewPinAndPinAlterOperation.xml"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0
+    }
+  ],
+  "status": "PASS",
+  "binary_before_sha256": "43f5854a73302d2f796bee1810b7028e63c5f86fb8cd9646296eaec16ca23ec0",
+  "binary_after_sha256": "43f5854a73302d2f796bee1810b7028e63c5f86fb8cd9646296eaec16ca23ec0",
+  "mutations": "DETECTED",
+  "production_sources_unchanged": true,
+  "normal_binary_restored": true
+}

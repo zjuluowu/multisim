@@ -1,0 +1,119 @@
+{
+  "scope": "Positive execution of selected primary production methods; not full SIM coverage",
+  "methods": [
+    {
+      "owner": "CoreServiceSim",
+      "method": "SetPrimarySlotId",
+      "count": 13,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_sim.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "CoreServiceSim",
+      "method": "StopAccepting",
+      "count": 6,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_sim.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "CoreServiceSim",
+      "method": "WaitForAcceptedCallsDrained",
+      "count": 12,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_sim.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "CoreServiceSim",
+      "method": "AsyncSimGeneralExecute",
+      "count": 5,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/core/src/core_service_sim.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimManager",
+      "method": "SetPrimarySlotId",
+      "count": 43,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_manager.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimManager",
+      "method": "Stop",
+      "count": 134,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_manager.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "MultiSimController",
+      "method": "SetPrimarySlotId",
+      "count": 19,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimRdbHelper",
+      "method": "QueryAllValidData",
+      "count": 99,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimRdbHelper",
+      "method": "QueryAllData",
+      "count": 134,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp",
+        "/mnt/e/github/multisim/telephony_core_service/utils/log/include/telephony_log_wrapper.h"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AccountStoreAdapter",
+      "method": "LoadAccounts",
+      "count": 4,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/account_store_adapter.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AccountStoreAdapter",
+      "method": "MatchAccountByIccid",
+      "count": 3,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/account_store_adapter.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AccountStoreAdapter",
+      "method": "WriteDiscoveredAccount",
+      "count": 3,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/account_store_adapter.cpp"
+      ],
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}
