@@ -119,7 +119,7 @@ class BoundaryGuard(unittest.TestCase):
 
     def test_move_preserves_gn_visibility(self):
         self.check_mapped_mutation("BUILD.gn", lambda s: s.replace('":*"', '"//*"', 1),
-                                  "AF2 M9 D02 transport source input differs: BUILD.gn")
+                                  "AF2 M9 D03 ICCID source input differs: BUILD.gn")
 
     def test_m4_role_source_drift(self):
         self.check_mapped_mutation("infrastructure/request/request_context.h", lambda s: s + '\n// drift\n',
@@ -143,7 +143,7 @@ class BoundaryGuard(unittest.TestCase):
 
     def test_m7b_msisdn_source_drift(self):
         self.check_mapped_mutation("card/runtime/msisdn_runtime.cpp", lambda s: s + '\n// drift\n',
-                                  "AF2 M9 D02 transport source input differs: card/runtime/msisdn_runtime.cpp")
+                                  "AF2 M9 D03 ICCID source input differs: card/runtime/msisdn_runtime.cpp")
 
     def test_documentation_migration(self):
         from documentation_migration import documentation_moves

@@ -64,6 +64,53 @@ bool CardObservationRuntime::WithCurrentApplication(const SessionRef &session,
     return sessions_.StillCurrent(session) && commit();
 }
 
+bool CardObservationRuntime::PublishRecordIdentity(const SessionRef &session, const std::string &full,
+    const std::string &decimal,
+    const std::function<bool(bool accepted, std::optional<uint64_t> sequence)> &commit)
+{
+    CardDiscoveryObservation observation {session, 0, full};
+    {
+        std::lock_guard<std::mutex> guard(mutex_);
+        if (!sessions_.StillCurrent(session)) { return false; }
+        auto matched = sink_.MatchesObservedIdentity(session, full);
+        if (matched && !*matched && full != decimal) {
+            matched = sink_.MatchesObservedIdentity(session, decimal);
+            if (matched.value_or(false)) { observation.iccid = decimal; }
+        }
+        if ((matched && !*matched) || full.empty()) {
+            return commit(false, std::nullopt);
+        }
+        if (sessions_.IdentityPublished(session)) { return commit(matched.value_or(false), std::nullopt); }
+        if (sequence_ == std::numeric_limits<uint64_t>::max()) { return commit(false, std::nullopt); }
+        observation.observationSequence = ++sequence_;
+        if (!commit(true, observation.observationSequence) ||
+            !sink_.RegisterCardDiscoveryObservation(observation) || !sessions_.PublishVerifiedSession(session)) {
+            return false;
+        }
+    }
+    if (!sink_.DiscoverAccount(observation).observationAdmitted) {
+        // A previous original reservation can still own this identity. Retire only
+        // our unadmitted observation so a fresh Records load can try after it settles.
+        std::lock_guard<std::mutex> guard(mutex_);
+        if (sessions_.StillCurrent(session) && sink_.RevokePendingIdentity(session, observation.observationSequence)) {
+            sessions_.WithdrawPublishedIdentity(session);
+        }
+    }
+    return true;
+}
+
+bool CardObservationRuntime::RefreshRecordIdentity(const SessionRef &session,
+    const std::function<bool(std::optional<uint64_t> &sequence)> &refresh)
+{
+    std::lock_guard<std::mutex> guard(mutex_);
+    std::optional<uint64_t> sequence;
+    if (!sessions_.StillCurrent(session) || !refresh(sequence)) { return false; }
+    if (sequence && sink_.RevokePendingIdentity(session, *sequence)) {
+        sessions_.WithdrawPublishedIdentity(session);
+    }
+    return true;
+}
+
 bool CardObservationRuntime::HasVerifiedCard(SlotId slot)
 {
     std::lock_guard<std::mutex> guard(mutex_);

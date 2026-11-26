@@ -16,7 +16,6 @@ TARGET_LOGICAL_ONLY = {
     'account/activation/activate_sim_use_case.cpp': 'Full activation use case awaits the production activation path',
     'account/number/show_number_plan.cpp': 'Logical number planning; the Host path runs SetShowNumberUseCase',
     'card/esim/local_card_requests.cpp': 'Local card/profile scaffold awaits the R adapter',
-    'card/records/load_session.cpp': 'Logical Records load scope; currently exercised by architecture rules',
     'card/runtime/card_runtime.cpp': 'Logical production bridge scaffold; Host uses narrow observation and MSISDN runtimes',
     'infrastructure/compatibility/api/legacy_sim_facade.cpp': 'Logical future compatibility facade; Host uses named H/C entries',
     'infrastructure/compatibility/api/real_sim_count_query.cpp': 'Executed by the historical G2a reference executable',

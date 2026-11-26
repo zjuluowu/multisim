@@ -254,6 +254,13 @@ Target 全量 182/182，上一协议路由候选冻结 Both 24/24 与 Oracle 零
 独立生产归档源码归属和 GN/迁移通过。后续接 PIN、EF 原始设备响应、LoadSession 及全图关闭。
 [D02 实现及实测证据](../services/multisim/test/docs/evidence/af2_m9_d02_transport_20261126/README.md)
 
+**D03 透明 ICCID EF 检查点。** 正式 H 以预身份应用运行 GET RESPONSE、READ BINARY、原始
+数据解码、Records 接纳、可信观察及 Account Discovery。局部 Refresh 能撤回尚未取得 Binding 的原观察，
+原账户匹配/Store 责任继续按原票处理。独立审查后的变异 ELF 检出原旧写入，恢复通过。
+同会话冲突身份拒绝，可信直接 ICCID 与同源 EF 填充差异继续保留原账户。正式 PIN、B/C1、
+全图关闭及其余技术验收仍待，状态保持 `AF2_M9_IN_PROGRESS`。
+[ICCID 测试、原始证据及开发断点](../services/multisim/test/docs/evidence/af2_m9_d03_iccid_20261126/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）

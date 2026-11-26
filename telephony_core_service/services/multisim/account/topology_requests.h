@@ -130,6 +130,7 @@ struct DiscoveryAcceptance {
     bool bindingAccepted;
     std::optional<SubscriptionId> storedSubscription;
     AccountStoreWriteResult storage;
+    bool observationAdmitted {false};
 };
 } // namespace OHOS::Telephony::MultiSim
 

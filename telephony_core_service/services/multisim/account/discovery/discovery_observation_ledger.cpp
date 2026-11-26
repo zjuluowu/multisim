@@ -40,8 +40,7 @@ bool DiscoveryObservationLedger::AcceptDiscovery(const CardDiscoveryObservation 
         const auto &previous = current->second;
         if (observation.observationSequence <= previous.sequence ||
             observation.session.bindingGeneration < previous.session.bindingGeneration ||
-            (SameSession(observation.session, previous.session) &&
-             (!previous.valid || previous.iccid != observation.iccid))) {
+            (SameSession(observation.session, previous.session) && previous.iccid != observation.iccid)) {
             return false;
         }
     }
@@ -74,6 +73,25 @@ bool DiscoveryObservationLedger::StillCurrent(const CardDiscoveryObservation &ob
         current->second.sequence == observation.observationSequence && current->second.iccid == observation.iccid &&
         SameSession(current->second.session, observation.session);
 }
+std::optional<bool> DiscoveryObservationLedger::MatchesIdentity(const SessionRef &session,
+    const std::string &iccid) const
+{
+    const auto found = accepted_.find({session.application.slot, session.application.applicationKey});
+    if (found == accepted_.end() || !SameSession(found->second.session, session)) { return std::nullopt; }
+    return found->second.iccid == iccid;
+}
+
+bool DiscoveryObservationLedger::RevokeIdentity(const SessionRef &session, uint64_t sequence)
+{
+    const auto found = accepted_.find({session.application.slot, session.application.applicationKey});
+    if (found == accepted_.end() || !SameSession(found->second.session, session) ||
+        found->second.sequence != sequence || !found->second.valid) { return false; }
+    // Preserve the last seen identity and sequence. Only a newer observation of that same
+    // identity can reopen discovery within this application session.
+    found->second.valid = false;
+    return true;
+}
+
 bool DiscoveryObservationLedger::MatchesStore(const DiscoveryStoreTicket &ticket, const BindingIndex &bindings) const
 {
     const auto revision = bindings.ReadPositionRevision(ticket.observation.session.application.slot);

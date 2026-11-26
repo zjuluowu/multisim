@@ -85,6 +85,19 @@ bool TopologyService::RegisterCardDiscoveryObservation(const CardDiscoveryObserv
         observations_.AcceptDiscovery(observation);
 }
 
+std::optional<bool> TopologyService::MatchesObservedIdentity(const SessionRef &session, const std::string &iccid) const
+{
+    std::lock_guard<std::recursive_mutex> guard(commitLock_);
+    return observations_.MatchesIdentity(session, iccid);
+}
+
+bool TopologyService::RevokePendingIdentity(const SessionRef &session, uint64_t sequence)
+{
+    std::lock_guard<std::recursive_mutex> guard(commitLock_);
+    const auto source = bindings_.Source(session.application.slot);
+    return (!source || !(*source == session)) && observations_.RevokeIdentity(session, sequence);
+}
+
 DiscoveryAcceptance TopologyService::DiscoverAccount(const CardDiscoveryObservation &observation)
 {
     DiscoveryAcceptance rejected {};
@@ -98,6 +111,7 @@ DiscoveryAcceptance TopologyService::DiscoverAccount(const CardDiscoveryObservat
         }
         ticket = observations_.BeginStore(observation, bindings_);
         if (!ticket) { return rejected; }
+        rejected.observationAdmitted = true;
         try {
             pendingDiscoveries_.emplace(ticket->admission, PendingDiscovery {*ticket});
         } catch (const std::exception &) {
@@ -170,7 +184,9 @@ DiscoveryAcceptance TopologyService::DiscoverAccount(const CardDiscoveryObservat
             FinishWithoutWrite(call);
             return rejected;
         }
-        return ContinueDiscovery(call, store_.WriteDiscoveredAccount(plan));
+        auto accepted = ContinueDiscovery(call, store_.WriteDiscoveredAccount(plan));
+        accepted.observationAdmitted = true;
+        return accepted;
     } catch (const std::exception &) {
         const auto receipt = ReadDiscoveryReceipt(call);
         if (receipt && receipt->phase == DiscoveryPhase::Planning) {

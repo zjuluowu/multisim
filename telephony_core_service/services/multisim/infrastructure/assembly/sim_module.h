@@ -24,6 +24,7 @@
 #include "account/topology_service.h"
 #include "infrastructure/compatibility/events/legacy_completion.h"
 #include "card/runtime/card_observation_runtime.h"
+#include "card/records/iccid_records_runtime.h"
 #include "card/runtime/msisdn_runtime.h"
 #include "account/number/set_show_number_use_case.h"
 #include "account/number/show_number_query.h"
@@ -42,6 +43,7 @@ struct CoreSimModulePorts {
     std::shared_ptr<LegacyPrimaryHostPort> primaryHost {};
     std::shared_ptr<LegacyNumberHostPort> numberHost {};
     std::shared_ptr<MsisdnPlatformPort> msisdn {};
+    std::shared_ptr<IccidIoPort> iccidIo {};
 };
 
 // Account and card facts confirmed by the startup source. M2 adds live observation and provider writes.
@@ -65,6 +67,10 @@ public:
     int32_t SetShowNumber(int32_t slot, const std::u16string &number, LegacyCallerRef caller, LegacyCallbackRef callback);
     int32_t GetShowNumber(int32_t slot, LegacyCallerRef caller, LegacyCallbackRef callback);
     bool AcceptMsisdnEvidence(const MsisdnTransportEvidence &evidence);
+    std::optional<RequestId> LoadIccid(const SessionRef &session);
+    bool RefreshIccid(const SessionRef &session);
+    std::optional<IccidRecords> ReadIccidRecords(const SessionRef &session);
+    bool AcceptIccidIoEvidence(const CardCommandEvidence &evidence);
     int32_t SaveImsSwitch(int32_t slot, int32_t preference);
     int32_t QueryImsSwitch(int32_t slot, int32_t &preference);
     int32_t SetShowName(int32_t slot, const std::u16string &name, LegacyCallerRef caller);
@@ -135,6 +141,7 @@ private:
     CardCommandTransport cardTransport_;
     LegacyCompletion completion_;
     std::optional<MsisdnRuntime> msisdn_;
+    std::optional<IccidRecordsRuntime> iccidRecords_;
     std::optional<SetShowNumberUseCase> numbers_;
     std::optional<ShowNumberQuery> numberQuery_;
     std::shared_ptr<AssignmentService> assignment_;

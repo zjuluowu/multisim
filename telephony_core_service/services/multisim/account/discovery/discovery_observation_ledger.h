@@ -34,6 +34,8 @@ public:
     bool AcceptDiscovery(const CardDiscoveryObservation &observation);
     bool AcceptInvalidation(const CardSessionInvalidation &invalidation);
     bool StillCurrent(const CardDiscoveryObservation &observation) const;
+    std::optional<bool> MatchesIdentity(const SessionRef &session, const std::string &iccid) const;
+    bool RevokeIdentity(const SessionRef &session, uint64_t sequence);
     std::optional<DiscoveryStoreTicket> BeginStore(const CardDiscoveryObservation &observation,
         const BindingIndex &bindings);
     bool EndPreparationFailure(const DiscoveryStoreTicket &ticket, bool callFinished, const BindingIndex &bindings);

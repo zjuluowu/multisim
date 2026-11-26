@@ -94,6 +94,9 @@ struct RecordingSinks final : MsisdnResultSink, ActivationResultSink, RadioResul
     void AcceptRadioStep(const RadioSwitchResult &result) override { radio = result; }
     void AcceptLateRadioEvidence(const RadioSwitchResult &result) override { radio = result; }
     bool RegisterCardDiscoveryObservation(const CardDiscoveryObservation &) override { return true; }
+    std::optional<bool> MatchesObservedIdentity(const SessionRef &, const std::string &) const override
+    { return std::nullopt; }
+    bool RevokePendingIdentity(const SessionRef &, uint64_t) override { return false; }
     DiscoveryAcceptance DiscoverAccount(const CardDiscoveryObservation &) override { return {}; }
     void AcceptCardDiscoveryObservation(const CardDiscoveryObservation &) override {}
     void AcceptCardSessionInvalidation(const CardSessionInvalidation &) override {}

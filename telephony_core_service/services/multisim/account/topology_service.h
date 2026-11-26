@@ -79,6 +79,8 @@ public:
     ReloadResult ReloadAccounts(AccountReadView view);
     void SealReload();
     bool RegisterCardDiscoveryObservation(const CardDiscoveryObservation &observation) override;
+    std::optional<bool> MatchesObservedIdentity(const SessionRef &session, const std::string &iccid) const override;
+    bool RevokePendingIdentity(const SessionRef &session, uint64_t sequence) override;
     void AcceptCardDiscoveryObservation(const CardDiscoveryObservation &observation) override;
     DiscoveryAcceptance DiscoverAccount(const CardDiscoveryObservation &observation) override;
     bool ReconcileDiscovery(const CardDiscoveryObservation &observation);

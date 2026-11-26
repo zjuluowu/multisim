@@ -84,12 +84,12 @@ public:
     }
     void MarkTerminal(RequestId request, TerminalState terminal) { (void)TryMarkTerminal(request, terminal); }
     bool TryMarkTerminal(RequestId request, TerminalState terminal);
-    void RetireAfterEvidenceRetention(RequestId request)
+    void RetireAfterEvidenceRetention(RequestId request, bool verifiedTransportEnd = false)
     {
         if (request.epoch != epoch_ || request.owner != owner_) { return; }
         const auto found = operations_.find(request.value);
         if (found != operations_.end() && found->second.terminal != TerminalState::Open &&
-            (found->second.deviceEffect != EffectKnowledge::Unknown ||
+            (verifiedTransportEnd || found->second.deviceEffect != EffectKnowledge::Unknown ||
              lateEffects_.find(request.value) != lateEffects_.end())) {
             stepConsumed_.erase(request.value);
             completionClaimed_.erase(request.value);

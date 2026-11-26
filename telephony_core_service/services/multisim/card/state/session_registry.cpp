@@ -75,6 +75,13 @@ bool SessionRegistry::IdentityPublished(const SessionRef &session) const
     return found != sessions_.end() && found->second.session == session && found->second.identityPublished;
 }
 
+void SessionRegistry::WithdrawPublishedIdentity(const SessionRef &session)
+{
+    if (StillCurrent(session)) {
+        sessions_.at({session.application.slot, session.application.applicationKey}).identityPublished = false;
+    }
+}
+
 bool SessionRegistry::PublishVerifiedSession(const SessionRef &session)
 {
     return PublishSession(session, true);

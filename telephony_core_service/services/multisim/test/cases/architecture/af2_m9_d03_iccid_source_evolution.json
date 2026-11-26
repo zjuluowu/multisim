@@ -1,0 +1,26 @@
+{
+  "baseline": "338ac4a2f6931682dfae41b1179614bb2d3fdb6e",
+  "files": {
+    "BUILD.gn": "af243e8320fd052308199559ba3750f1ae71d2e2e5d667cb02ec467332dba2cb",
+    "card/runtime/card_command_transport.cpp": "29afb0d8644defb728d3b3c5380d749017d18542794ca957e18a4396eb1dd839",
+    "card/runtime/card_command_transport.h": "5f096b131d1bedab645f6ac25fd760ad9fa75a2e15b53851661704aa15a1c01d",
+    "card/runtime/card_observation_runtime.cpp": "2b33d0f43ad920819633365e8f734ca64eed73a7e682c7563c3623e6e4a6dc31",
+    "card/runtime/card_observation_runtime.h": "16beaa118b7ce7ca9b0f107899d8229ca9a58edb3d1f0bad254152f77bb0baa7",
+    "card/runtime/msisdn_runtime.cpp": "a2b8446a0bc0216d7020d2ae02ae48dbca1b1c7deb93af5a6c118fe10ea83ba8",
+    "infrastructure/assembly/sim_module.h": "fe7ed014e5b3ad75eb8d2473203b15fa48488fbabb74c3d32aacd74cfacaca50",
+    "infrastructure/assembly/sim_module_factory.cpp": "43d6262032e6992c42a1b14eb5d97bba948a26a60a4d3de400c9fc0e8b1184bc",
+    "infrastructure/request/runtime_operation_store.h": "445efde9ec1af73552a5821a60e0597de69954b7aebff738b1946f0d8cec1300",
+    "account/discovery/card_observation_port.h": "5ab86703e3e7fa289fa7e7874671ab14bd81fe76237083f2f6f28d8f04424fc8",
+    "account/discovery/discovery_observation_ledger.cpp": "821b1e8960463e7623bf08887991e62a4999d849ef843b5f43525d702e8e274c",
+    "account/discovery/discovery_observation_ledger.h": "eebfdd3bde217a6849d8ef21d9102ea921655b3dbc08000b3f5c5f3f436d2e01",
+    "account/topology_requests.h": "66914cc9e3cd5a084182b7de009617ae7ae824b28ac912f5268f482a587d02df",
+    "account/topology_service.cpp": "e2e68795b4beafa3c2a17716420cd73fb30dccde4a73755686d40b4447109068",
+    "account/topology_service.h": "e33c0fe350a997d350cfa4c14c87e4aa167411a39db45fa90bb9f1810ed91cfd",
+    "card/state/session_registry.cpp": "32b10b53dc1abdaba3de80b49bf6c532e2636c111c67ac9f7044c37b41a98f8e",
+    "card/state/session_registry.h": "307767ddf19ecd34ea976c71a74ffca812b4434b09322b5ad0a15e5518ffbe84"
+  },
+  "added": {
+    "card/records/iccid_records_runtime.cpp": "bbdeb03299cda770012ac8a8e58e46554bcd5501eab8cea0836609918b8769d9",
+    "card/records/iccid_records_runtime.h": "16b241a5a6206264d4571ee9a923bd0ede7533d3fa58bab952adfb4f26b5765d"
+  }
+}

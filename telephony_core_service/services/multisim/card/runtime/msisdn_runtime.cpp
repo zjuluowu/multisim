@@ -37,7 +37,7 @@ void MsisdnRuntime::WriteMsisdn(const MsisdnWriteRequest &request)
             [this, written = CardNumberView {request.session, request.number, request.alphaTag}] {
                 if (card_.StillCurrent(written.session)) { platform_.AcceptWrittenNumber(written); }
             },
-            [this](const CardCommandEvidence &evidence, EffectKnowledge effect, bool first) {
+            [this](const CardCommandEvidence &evidence, EffectKnowledge effect, bool first, bool) {
                 const auto &ticket = evidence.ticket;
                 const MsisdnWriteResult result {ticket.step, ticket.session, effect,
                     first && evidence.legacyWaitSucceeded && effect == EffectKnowledge::ConfirmedApplied};

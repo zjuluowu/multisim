@@ -58,6 +58,7 @@ public:
     bool MayPublishVerifiedSession(const SessionRef &session) const; // 替换前预检，旧观察不得先撤销当前会话。
     bool PublishApplicationSession(const SessionRef &session);
     bool IdentityPublished(const SessionRef &session) const;
+    void WithdrawPublishedIdentity(const SessionRef &session);
     bool PublishVerifiedSession(const SessionRef &session); // 先交T旧会话失效，再正式暴露新会话。
     void InvalidateForVerifiedReplacement(const SessionRef &oldSession);
     bool RegisterExpectedTransition(const ExpectedTransition &expected);

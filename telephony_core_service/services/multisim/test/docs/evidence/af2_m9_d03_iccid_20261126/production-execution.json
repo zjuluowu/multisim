@@ -1,0 +1,26 @@
+{
+  "IccidRecordsRuntime::Load": {
+    "count": 1,
+    "symbol": "_ZN4OHOS9Telephony8MultiSim19IccidRecordsRuntime4LoadERKNS1_10SessionRefE"
+  },
+  "IccidRecordsRuntime::Submit": {
+    "count": 2,
+    "symbol": "_ZN4OHOS9Telephony8MultiSim19IccidRecordsRuntime6SubmitERKNS1_7StepRefERKNS1_9LoadTokenERKNS1_12IccidIoRouteENS1_14IccidIoCommand4CodeEt"
+  },
+  "IccidRecordsRuntime::AcceptRead": {
+    "count": 1,
+    "symbol": "_ZN4OHOS9Telephony8MultiSim19IccidRecordsRuntime10AcceptReadERKNS1_9LoadTokenERKSt8optionalINS1_12IccidRecordsEE"
+  },
+  "CardCommandTransport::AcceptEvidence": {
+    "count": 4,
+    "symbol": "_ZN4OHOS9Telephony8MultiSim20CardCommandTransport14AcceptEvidenceERKNS1_19CardCommandEvidenceE"
+  },
+  "TopologyService::DiscoverAccount": {
+    "count": 1,
+    "symbol": "_ZN4OHOS9Telephony8MultiSim15TopologyService15DiscoverAccountERKNS1_24CardDiscoveryObservationE"
+  },
+  "DecodeIccid": {
+    "count": 1,
+    "symbol": "iccid_records_runtime.cpp:_ZN4OHOS9Telephony8MultiSim12_GLOBAL__N_111DecodeIccidERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE"
+  }
+}

@@ -23,6 +23,10 @@ public:
     bool StillCurrent(const SessionRef &session);
     // Only register local responsibilities here. The callback cannot invoke the platform or deliver results.
     bool WithCurrentApplication(const SessionRef &session, const std::function<bool()> &commit);
+    bool PublishRecordIdentity(const SessionRef &session, const std::string &full, const std::string &decimal,
+        const std::function<bool(bool accepted, std::optional<uint64_t> sequence)> &commit);
+    bool RefreshRecordIdentity(const SessionRef &session,
+        const std::function<bool(std::optional<uint64_t> &sequence)> &refresh);
     bool HasVerifiedCard(SlotId slot);
     bool InvalidateVerifiedCard(const SessionRef &session);
 private:

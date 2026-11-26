@@ -1156,7 +1156,8 @@ struct LiveDiscoveryFixture {
     explicit LiveDiscoveryFixture(std::shared_ptr<LegacyPrimaryHostPort> primaryHost = {},
         std::shared_ptr<SlotCatalog> catalog = {}, std::shared_ptr<RoleProvider> provider = {},
         std::shared_ptr<MetadataProvider> metadata = {},
-        std::shared_ptr<LegacyNumberHostPort> numberHost = {}, std::shared_ptr<MsisdnPlatformPort> msisdn = {})
+        std::shared_ptr<LegacyNumberHostPort> numberHost = {}, std::shared_ptr<MsisdnPlatformPort> msisdn = {},
+        std::shared_ptr<IccidIoPort> iccidIo = {})
     {
         if (catalog) { input.catalog = std::move(catalog); }
         store->persistRows = true;
@@ -1170,6 +1171,14 @@ struct LiveDiscoveryFixture {
         ports.primaryHost = std::move(primaryHost);
         ports.numberHost = std::move(numberHost);
         ports.msisdn = std::move(msisdn);
+        ports.iccidIo = std::move(iccidIo);
+        if (ports.iccidIo) {
+            ports.initialEvidence = [](const ResourceKey &key, RuntimeEpoch epoch) {
+                EXPECT_TRUE(key.verifiedPhysicalDomain == "primary-shared" ||
+                    key.verifiedPhysicalDomain == "other-card-ef");
+                return InitialRecoveryEvidence {epoch, true, true};
+            };
+        }
         module = std::get<CoreSimModuleHandle>(CreateCoreSimModule(std::move(ports), input.catalog, {}));
     }
 };
@@ -1227,6 +1236,382 @@ TEST(AF2Discovery, ApplicationPrecedesIdentityAndStalePromotionCannotCreateBindi
     EXPECT_FALSE(f.module->ObserveVerifiedCard(application, 2, kRaw1));
     EXPECT_EQ(f.module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
     EXPECT_FALSE(f.module->ObserveCardApplication(application, 3));
+}
+
+namespace {
+constexpr auto kIccidMetadata = "0000000A0000040000000000000000";
+constexpr auto kFirstRawIccid = "980000000000000000F1";
+
+class IccidDevice final : public IccidIoPort {
+public:
+    std::vector<ResourceKey> InitialResources() const override
+    { return {{"primary-shared"}, {"other-card-ef"}}; }
+
+    std::optional<IccidIoRoute> ResolveIccidRoute(const SessionRef &session) override
+    {
+        const char *domain = session.application.slot == SlotId {0} ? "other-card-ef" : "primary-shared";
+        return IccidIoRoute {{{domain}}, "3F00"};
+    }
+
+    bool SubmitIccidIo(const CardCommandTicket &ticket, const IccidIoCommand &command) override
+    {
+        commands.emplace_back(ticket, command);
+        if (replyInline) {
+            auto reply = Reply(commands.size() - 1,
+                command.code == IccidIoCommand::Code::GetResponse ? kIccidMetadata : kFirstRawIccid);
+            replyInline(reply);
+        }
+        return handoffAccepted;
+    }
+
+    bool handoffAccepted {true};
+    CardCommandEvidence Reply(size_t index, const std::string &hex) const
+    {
+        return {commands.at(index).first, EffectKnowledge::ConfirmedApplied, true, true, true, false, hex};
+    }
+
+    std::vector<std::pair<CardCommandTicket, IccidIoCommand>> commands;
+    std::function<void(const CardCommandEvidence &)> replyInline;
+};
+
+struct IccidFixture {
+    std::shared_ptr<IccidDevice> io = std::make_shared<IccidDevice>();
+    LiveDiscoveryFixture live {{}, {}, {}, {}, {}, {}, io};
+};
+} // namespace
+
+TEST(AF2Iccid, PreIdentityApplicationReadsRawEfAndDiscoversOneAccount)
+{
+    IccidFixture fixture;
+    auto &module = fixture.live.module;
+    const auto session = module->ObserveCardApplication({{1}, "USIM"}, 1);
+    ASSERT_TRUE(session);
+    ASSERT_FALSE(module->FindBinding({1}));
+    const auto request = module->LoadIccid(*session);
+    ASSERT_TRUE(request);
+    ASSERT_EQ(fixture.io->commands.size(), 1u);
+    const auto [getTicket, getCommand] = fixture.io->commands.front();
+    EXPECT_EQ(getTicket.step.request, *request);
+    EXPECT_EQ(getTicket.session, *session);
+    EXPECT_EQ(getCommand.code, IccidIoCommand::Code::GetResponse);
+    EXPECT_EQ(getCommand.fileId, 0x2fe2);
+    EXPECT_EQ(getCommand.path, "3F00");
+    EXPECT_EQ(getCommand.size, 15);
+
+    const auto metadata = fixture.io->Reply(0, kIccidMetadata);
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(metadata));
+    ASSERT_EQ(fixture.io->commands.size(), 2u);
+    const auto [readTicket, readCommand] = fixture.io->commands.back();
+    EXPECT_EQ(readTicket.step.request, *request);
+    EXPECT_NE(readTicket.fence, getTicket.fence);
+    EXPECT_EQ(readCommand.code, IccidIoCommand::Code::ReadBinary);
+    EXPECT_EQ(readCommand.size, 10);
+    EXPECT_FALSE(module->ReadIccidRecords(*session));
+    EXPECT_FALSE(module->AcceptIccidIoEvidence(metadata));
+
+    const auto reply = fixture.io->Reply(1, kFirstRawIccid);
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(reply));
+    ASSERT_FALSE(module->AcceptIccidIoEvidence(reply));
+    const auto record = module->ReadIccidRecords(*session);
+    ASSERT_TRUE(record);
+    EXPECT_EQ(record->full, "8900000000000000001F");
+    EXPECT_EQ(record->decimal, "8900000000000000001");
+    const auto binding = module->FindBinding({1});
+    ASSERT_TRUE(binding);
+    EXPECT_EQ(binding->subscription, SubscriptionId {41});
+    EXPECT_EQ(fixture.live.store->rows.count(record->full), 1u);
+    EXPECT_EQ(fixture.live.store->writes, 1u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Iccid, InlineRepliesRetainEachOriginalIoStep)
+{
+    IccidFixture fixture;
+    auto &module = fixture.live.module;
+    const auto session = module->ObserveCardApplication({{1}, "SIM"}, 1);
+    ASSERT_TRUE(session);
+    fixture.io->replyInline = [&](const CardCommandEvidence &reply) {
+        EXPECT_TRUE(module->AcceptIccidIoEvidence(reply));
+    };
+    const auto request = module->LoadIccid(*session);
+    ASSERT_TRUE(request);
+    ASSERT_EQ(fixture.io->commands.size(), 2u);
+    EXPECT_EQ(fixture.io->commands[0].first.step.request, *request);
+    EXPECT_EQ(fixture.io->commands[1].first.step.request, *request);
+    EXPECT_TRUE(module->ReadIccidRecords(*session));
+    EXPECT_EQ(fixture.live.store->writes, 1u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Iccid, FailedAndMalformedRepliesCannotCreateBinding)
+{
+    IccidFixture fixture;
+    auto &module = fixture.live.module;
+    const auto session = module->ObserveCardApplication({{1}, "USIM"}, 1);
+    ASSERT_TRUE(session);
+
+    ASSERT_TRUE(module->LoadIccid(*session));
+    auto failed = fixture.io->Reply(0, kIccidMetadata);
+    failed.effect = EffectKnowledge::ConfirmedNotApplied;
+    failed.legacyWaitSucceeded = false;
+    EXPECT_TRUE(module->AcceptIccidIoEvidence(failed));
+    EXPECT_FALSE(module->AcceptIccidIoEvidence(fixture.io->Reply(0, kIccidMetadata)));
+    ASSERT_EQ(fixture.io->commands.size(), 1u);
+
+    ASSERT_TRUE(module->LoadIccid(*session));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(1, kIccidMetadata)));
+    EXPECT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(2, "980")));
+    EXPECT_FALSE(module->ReadIccidRecords(*session));
+
+    ASSERT_TRUE(module->LoadIccid(*session));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(3, kIccidMetadata)));
+    EXPECT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(4, std::string(20, 'F'))));
+    EXPECT_FALSE(module->ReadIccidRecords(*session));
+    EXPECT_FALSE(module->FindBinding({1}));
+    EXPECT_EQ(fixture.live.store->writes, 0u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Iccid, RefreshRejectsOldReadAndLeavesNeighbourRunning)
+{
+    IccidFixture fixture;
+    auto &module = fixture.live.module;
+    const auto old = module->ObserveCardApplication({{1}, "USIM"}, 1);
+    const auto peer = module->ObserveCardApplication({{0}, "SIM"}, 1);
+    ASSERT_TRUE(old && peer);
+    fixture.live.store->produceStore = [](const auto &plan) {
+        return Stored({plan.accountFields.legacyPosition.legacySlotId == 0 ? 40 : 41});
+    };
+    ASSERT_TRUE(module->LoadIccid(*old));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(0, kIccidMetadata)));
+    ASSERT_TRUE(module->LoadIccid(*peer));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(2, kIccidMetadata)));
+    ASSERT_TRUE(module->RefreshIccid(*old));
+
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(1, kFirstRawIccid)));
+    EXPECT_FALSE(module->ReadIccidRecords(*old));
+    EXPECT_FALSE(module->FindBinding({1}));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(3, "980000000000000000F2")));
+    ASSERT_TRUE(module->ReadIccidRecords(*peer));
+    EXPECT_EQ(module->ReadIccidRecords(*peer)->decimal, "8900000000000000002");
+
+    ASSERT_TRUE(module->LoadIccid(*old));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(4, kIccidMetadata)));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(5, kFirstRawIccid)));
+    EXPECT_TRUE(module->FindBinding({1}));
+    EXPECT_EQ(fixture.live.store->writes, 2u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Iccid, RefreshAfterGetResponseHandoffPreventsOldReadBinary)
+{
+    IccidFixture fixture;
+    auto &module = fixture.live.module;
+    const auto session = module->ObserveCardApplication({{1}, "USIM"}, 1);
+    ASSERT_TRUE(session);
+    ASSERT_TRUE(module->LoadIccid(*session));
+    ASSERT_TRUE(module->RefreshIccid(*session));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(0, kIccidMetadata)));
+    EXPECT_EQ(fixture.io->commands.size(), 1u);
+    EXPECT_EQ(module->ReadPrimaryResourceState(), ResourceState::Available);
+    EXPECT_FALSE(module->ReadIccidRecords(*session));
+    EXPECT_EQ(fixture.live.store->writes, 0u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Iccid, RefreshRevokesOriginalProviderMatchBeforeItsWrite)
+{
+    IccidFixture fixture;
+    auto &module = fixture.live.module;
+    const auto session = module->ObserveCardApplication({{1}, "USIM"}, 1);
+    ASSERT_TRUE(session);
+    fixture.live.store->beforeMatchReturn = [&](DiscoveryCallRef) {
+        EXPECT_TRUE(module->RefreshIccid(*session));
+    };
+
+    ASSERT_TRUE(module->LoadIccid(*session));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(0, kIccidMetadata)));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(1, kFirstRawIccid)));
+    EXPECT_FALSE(module->ReadIccidRecords(*session));
+    EXPECT_FALSE(module->FindBinding({1}));
+    EXPECT_EQ(fixture.live.store->writes, 0u);
+
+    fixture.live.store->beforeMatchReturn = {};
+    ASSERT_TRUE(module->LoadIccid(*session));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(2, kIccidMetadata)));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(3, kFirstRawIccid)));
+    EXPECT_TRUE(module->FindBinding({1}));
+    EXPECT_EQ(fixture.live.store->writes, 1u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Iccid, FreshReadCanDiscoverAfterPriorMatchReleasesSameIdentity)
+{
+    IccidFixture fixture;
+    auto &module = fixture.live.module;
+    const auto session = module->ObserveCardApplication({{1}, "USIM"}, 1);
+    ASSERT_TRUE(session);
+    bool reloadedDuringMatch = false;
+    fixture.live.store->beforeMatchReturn = [&](DiscoveryCallRef) {
+        if (reloadedDuringMatch) { return; }
+        reloadedDuringMatch = true;
+        ASSERT_TRUE(module->RefreshIccid(*session));
+        ASSERT_TRUE(module->LoadIccid(*session));
+        ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(2, kIccidMetadata)));
+        ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(3, kFirstRawIccid)));
+        EXPECT_FALSE(module->FindBinding({1}));
+    };
+
+    ASSERT_TRUE(module->LoadIccid(*session));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(0, kIccidMetadata)));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(1, kFirstRawIccid)));
+    EXPECT_TRUE(reloadedDuringMatch);
+    EXPECT_FALSE(module->FindBinding({1}));
+
+    fixture.live.store->beforeMatchReturn = {};
+    ASSERT_TRUE(module->LoadIccid(*session));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(4, kIccidMetadata)));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(5, kFirstRawIccid)));
+    EXPECT_TRUE(module->FindBinding({1}));
+    EXPECT_EQ(fixture.live.store->writes, 1u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Iccid, PaddedEfRetainsIdentityAlreadyReadFromCardState)
+{
+    IccidFixture fixture;
+    auto &module = fixture.live.module;
+    const auto session = module->ObserveVerifiedCard({{1}, "USIM"}, 1, kRaw1);
+    ASSERT_TRUE(session);
+    const auto bound = module->FindBinding({1});
+    ASSERT_TRUE(bound);
+    ASSERT_TRUE(module->LoadIccid(*session));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(0, kIccidMetadata)));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(1, kFirstRawIccid)));
+    const auto records = module->ReadIccidRecords(*session);
+    ASSERT_TRUE(records);
+    EXPECT_EQ(records->full, "8900000000000000001F");
+    EXPECT_EQ(records->decimal, kRaw1);
+    EXPECT_EQ(module->FindBinding({1})->subscription, bound->subscription);
+    EXPECT_EQ(module->FindBinding({1})->bindingRevision, bound->bindingRevision);
+    EXPECT_EQ(fixture.live.store->writes, 1u);
+    EXPECT_EQ(fixture.live.store->rows.count(kRaw1), 1u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Iccid, ConflictingIdentityInOneApplicationCannotReplaceRecordsOrBinding)
+{
+    IccidFixture fixture;
+    auto &module = fixture.live.module;
+    const auto session = module->ObserveCardApplication({{1}, "USIM"}, 1);
+    ASSERT_TRUE(session);
+    ASSERT_TRUE(module->LoadIccid(*session));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(0, kIccidMetadata)));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(1, kFirstRawIccid)));
+    const auto bound = module->FindBinding({1});
+    ASSERT_TRUE(bound);
+    ASSERT_TRUE(module->RefreshIccid(*session));
+
+    ASSERT_TRUE(module->LoadIccid(*session));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(2, kIccidMetadata)));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(3, "980000000000000000F2")));
+    EXPECT_FALSE(module->ReadIccidRecords(*session));
+    ASSERT_TRUE(module->FindBinding({1}));
+    EXPECT_EQ(module->FindBinding({1})->subscription, bound->subscription);
+    EXPECT_EQ(module->FindBinding({1})->bindingRevision, bound->bindingRevision);
+    EXPECT_EQ(fixture.live.store->writes, 1u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Iccid, ContradictoryEarlyReplyKeepsOriginalDeviceResponsibility)
+{
+    IccidFixture fixture;
+    auto &module = fixture.live.module;
+    const auto session = module->ObserveCardApplication({{1}, "USIM"}, 1);
+    ASSERT_TRUE(session);
+    fixture.io->handoffAccepted = false;
+    fixture.io->replyInline = [&](const CardCommandEvidence &reply) {
+        EXPECT_TRUE(module->AcceptIccidIoEvidence(reply));
+    };
+
+    ASSERT_TRUE(module->LoadIccid(*session));
+    EXPECT_EQ(fixture.io->commands.size(), 1u);
+    EXPECT_EQ(module->ReadPrimaryResourceState(), ResourceState::Quarantined);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::DeviceEffectsUnresolved);
+    auto proof = fixture.io->Reply(0, kIccidMetadata);
+    proof.currentStateVerified = true;
+    EXPECT_TRUE(module->AcceptIccidIoEvidence(proof));
+    EXPECT_EQ(fixture.io->commands.size(), 1u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Iccid, ReplacedApplicationCannotPublishOldIdentity)
+{
+    IccidFixture fixture;
+    auto &module = fixture.live.module;
+    const auto original = module->ObserveCardApplication({{1}, "USIM"}, 1);
+    ASSERT_TRUE(original);
+    ASSERT_TRUE(module->LoadIccid(*original));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(0, kIccidMetadata)));
+    const auto replaced = module->ObserveCardApplication({{1}, "USIM"}, 2);
+    ASSERT_TRUE(replaced);
+
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(1, kFirstRawIccid)));
+    EXPECT_FALSE(module->ReadIccidRecords(*original));
+    EXPECT_FALSE(module->ReadIccidRecords(*replaced));
+    EXPECT_FALSE(module->FindBinding({1}));
+    EXPECT_EQ(fixture.live.store->writes, 0u);
+
+    ASSERT_TRUE(module->LoadIccid(*replaced));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(2, kIccidMetadata)));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(3, "980000000000000000F2")));
+    ASSERT_TRUE(module->ReadIccidRecords(*replaced));
+    EXPECT_EQ(module->ReadIccidRecords(*replaced)->decimal, "8900000000000000002");
+    EXPECT_TRUE(module->FindBinding({1}));
+    EXPECT_EQ(fixture.live.store->writes, 1u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Iccid, LateProofAfterUnknownReadClosesResourceWithoutPublishing)
+{
+    IccidFixture fixture;
+    auto &module = fixture.live.module;
+    const auto session = module->ObserveCardApplication({{1}, "USIM"}, 1);
+    ASSERT_TRUE(session);
+    ASSERT_TRUE(module->LoadIccid(*session));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(0, kIccidMetadata)));
+    auto early = fixture.io->Reply(1, "");
+    early.effect = EffectKnowledge::Unknown;
+    early.commandEnded = false;
+    early.resourceReusable = false;
+    early.legacyWaitSucceeded = false;
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(early));
+    EXPECT_EQ(module->ReadPrimaryResourceState(), ResourceState::Quarantined);
+    EXPECT_FALSE(module->ReadIccidRecords(*session));
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::DeviceEffectsUnresolved);
+
+    auto late = fixture.io->Reply(1, kFirstRawIccid);
+    EXPECT_FALSE(module->AcceptIccidIoEvidence(late));
+    late.currentStateVerified = true;
+    EXPECT_TRUE(module->AcceptIccidIoEvidence(late));
+    EXPECT_FALSE(module->FindBinding({1}));
+    EXPECT_EQ(fixture.live.store->writes, 0u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Iccid, StopRetainsOriginalGetResponseAndRejectsContinuation)
+{
+    IccidFixture fixture;
+    auto &module = fixture.live.module;
+    const auto session = module->ObserveCardApplication({{1}, "USIM"}, 1);
+    ASSERT_TRUE(session);
+    ASSERT_TRUE(module->LoadIccid(*session));
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::DeviceEffectsUnresolved);
+    EXPECT_FALSE(module->LoadIccid(*session));
+    EXPECT_TRUE(module->AcceptIccidIoEvidence(fixture.io->Reply(0, kIccidMetadata)));
+    EXPECT_EQ(fixture.io->commands.size(), 1u);
+    EXPECT_EQ(fixture.live.store->writes, 0u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
 }
 
 TEST(AF2Discovery, LiveCardDiscoveryCreatesAccountAndBinding)

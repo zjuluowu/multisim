@@ -7,15 +7,59 @@
 #include <stdexcept>
 
 namespace OHOS::Telephony::MultiSim {
-CardCommandTransport::CardCommandTransport(CardObservationRuntime &card, ResourceBarrier &resources)
-    : card_(card), resources_(resources) {}
+CardCommandTransport::CardCommandTransport(CardObservationRuntime &card, ResourceBarrier &resources,
+    RuntimeEpoch epoch) : card_(card), resources_(resources), localRequests_(epoch, RequestOwner::LocalCard) {}
+
+std::optional<StepRef> CardCommandTransport::BeginLocalRequest(const SessionRef &session)
+{
+    std::lock_guard<std::mutex> guard(mutex_);
+    if (!acceptingLocal_) { return std::nullopt; }
+    const auto request = localRequests_.Begin(session.application, {InternalCompletionRoute {{0}}, false});
+    if (!localRequests_.AdvanceStep({request, 0, 0}, 1, 0, std::nullopt)) { return std::nullopt; }
+    return StepRef {request, 1, 0};
+}
+
+std::optional<StepRef> CardCommandTransport::AdvanceLocalRequest(const StepRef &original)
+{
+    std::lock_guard<std::mutex> guard(mutex_);
+    if (!acceptingLocal_ || localRequests_.AcceptResult(original, EffectKnowledge::ConfirmedApplied) !=
+        RuntimeOperationStore::ResultAdmission::Accepted) { return std::nullopt; }
+    const auto next = original.step + 1;
+    if (!localRequests_.AdvanceStep(original, next, original.attempt, std::nullopt)) { return std::nullopt; }
+    return StepRef {original.request, next, original.attempt};
+}
+
+void CardCommandTransport::CloseLocalRequest(const StepRef &original, EffectKnowledge evidence, bool transportEnded)
+{
+    std::lock_guard<std::mutex> guard(mutex_);
+    const auto operation = localRequests_.Read(original.request);
+    if (!operation || !(operation->context.step == original)) { return; }
+    if (operation->terminal == TerminalState::Open) {
+        if (localRequests_.AcceptResult(original, evidence) != RuntimeOperationStore::ResultAdmission::Accepted) {
+            return;
+        }
+        const auto terminal = transportEnded ?
+            (evidence == EffectKnowledge::ConfirmedApplied ? TerminalState::Succeeded : TerminalState::Failed) :
+            TerminalState::NeedsReconciliation;
+        localRequests_.MarkTerminal(original.request, terminal);
+    } else if (!transportEnded) {
+        return;
+    }
+    localRequests_.RetireAfterEvidenceRetention(original.request, transportEnded);
+}
+
+void CardCommandTransport::SealLocalCommands()
+{
+    std::lock_guard<std::mutex> guard(mutex_);
+    acceptingLocal_ = false;
+}
 
 void CardCommandTransport::Submit(const CardCommandExecution &execution, const Handoff &handoff,
     CardCommandHandlers handlers)
 {
     const auto reject = [&](const CardCommandHandlers &callbacks) {
         callbacks.deliver({{execution.step, execution.session, 0}, EffectKnowledge::NotSent, false, false,
-            false}, EffectKnowledge::NotSent, true);
+            false}, EffectKnowledge::NotSent, true, true);
     };
     const auto callbacks = std::make_shared<const CardCommandHandlers>(std::move(handlers));
     const auto lease = resources_.Acquire(execution.resources, execution.step, execution.effectRequirement);
@@ -25,10 +69,14 @@ void CardCommandTransport::Submit(const CardCommandExecution &execution, const H
     bool duplicate = false;
     try {
         registered = card_.WithCurrentApplication(execution.session, [&] {
+            if (execution.scopeCurrent && !execution.scopeCurrent()) { return false; }
             std::lock_guard<std::mutex> guard(mutex_);
+            duplicate = pending_.count(execution.step.request) != 0;
+            if (duplicate) { return false; }
+            if (execution.step.request.owner == RequestOwner::LocalCard &&
+                (!acceptingLocal_ || !localRequests_.RecordSent(execution.step, execution.session))) { return false; }
             const auto inserted = pending_.try_emplace(execution.step.request,
                 Pending {ticket, *lease, callbacks, true, false, false, false, EffectKnowledge::Unknown, {}});
-            duplicate = !inserted.second;
             return inserted.second;
         });
     } catch (const std::exception &) {
@@ -50,9 +98,15 @@ void CardCommandTransport::Submit(const CardCommandExecution &execution, const H
     {
         std::lock_guard<std::mutex> guard(mutex_);
         auto &pending = pending_.at(execution.step.request);
-        accepted = accepted || !pending.evidence.empty();
+        const bool contradicted = pending.contradictoryEvidence || (!accepted && !pending.evidence.empty());
+        accepted = accepted || contradicted;
         if (accepted) {
             resources_.MarkSent(*lease);
+            if (contradicted) {
+                pending.quarantined = resources_.Quarantine(*lease, EffectKnowledge::Unknown);
+                pending.evidence.clear();
+                pending.evidence.push_back({ticket, EffectKnowledge::Unknown, false, false, false});
+            }
             pending.submitting = false;
             pending.delivering = drain = !pending.evidence.empty();
         } else {
@@ -80,6 +134,14 @@ bool CardCommandTransport::AcceptEvidence(const CardCommandEvidence &evidence)
                 pending.lease.effectRequirement != EffectRequirement::NoBusinessWrite) ||
             (pending.effect != EffectKnowledge::Unknown && pending.effect != evidence.effect))) {
             return false;
+        }
+        if (pending.submitting && !pending.evidence.empty()) {
+            const auto &first = pending.evidence.front();
+            pending.contradictoryEvidence |= first.effect != evidence.effect ||
+                first.commandEnded != evidence.commandEnded || first.resourceReusable != evidence.resourceReusable ||
+                first.legacyWaitSucceeded != evidence.legacyWaitSucceeded ||
+                first.currentStateVerified != evidence.currentStateVerified || first.rawResponse != evidence.rawResponse;
+            return true;
         }
         pending.evidence.push_back(evidence);
         if (pending.submitting || pending.delivering) { return true; }
@@ -140,11 +202,13 @@ void CardCommandTransport::DrainEvidence(RequestId request)
             } else {
                 pending.delivered = true;
                 pending.effect = reply.effect;
-                pending.quarantined = resources_.Quarantine(pending.lease, reply.effect);
+                if (!pending.quarantined) {
+                    pending.quarantined = resources_.Quarantine(pending.lease, reply.effect);
+                }
             }
         }
         try {
-            callbacks->deliver(*next, settled ? next->effect : EffectKnowledge::Unknown, first);
+            callbacks->deliver(*next, settled ? next->effect : EffectKnowledge::Unknown, first, settled);
         } catch (const std::exception &) {
             // Observer failure cannot prevent recovery of the physical lease.
         }

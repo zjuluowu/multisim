@@ -53,7 +53,7 @@ SimModule::SimModule(CoreSimModulePorts ports, std::shared_ptr<const SlotCatalog
       radio_(resources_, *ports_.radio, {primaryResource_}, ResourceRadioRuntime::Mode::ObserveOnly),
       sessions_(epoch_),
       topology_(*catalog_, *ports_.accountStore, epoch_), card_(*catalog_, sessions_, topology_, epoch_),
-      cardTransport_(card_, resources_),
+      cardTransport_(card_, resources_, epoch_),
       completion_(*ports_.completion, ports_.primaryHost.get(), ports_.numberHost.get()),
       assignment_(std::make_shared<AssignmentService>(*catalog_, *ports_.assignmentStore, radio_,
           *ports_.output, topology_, completion_, epoch_, AssignmentService::PrimaryScope::C0Only)),
@@ -63,6 +63,7 @@ SimModule::SimModule(CoreSimModulePorts ports, std::shared_ptr<const SlotCatalog
         (void)topology_.AcceptSlotAssembly(slot.slot, true);
     }
     topology_.BindRolePlanner(*assignment_);
+    if (ports_.iccidIo) { iccidRecords_.emplace(card_, cardTransport_, *ports_.iccidIo); }
     assignment_->BindRetryScheduler(ports_.scheduler);
     radio_.BindResultSink(assignment_);
     radio_.BindOwnerDispatch(ports_.ownerDispatch);
@@ -81,6 +82,10 @@ bool SimModule::InitializeResources()
         for (const auto &slot : catalog_->Slots()) {
             if (const auto key = ports_.msisdn->ResourceFor(slot.slot)) { keys.insert(*key); }
         }
+    }
+    if (ports_.iccidIo) {
+        const auto cardKeys = ports_.iccidIo->InitialResources();
+        keys.insert(cardKeys.begin(), cardKeys.end());
     }
     auto provider = std::move(ports_.initialEvidence);
     for (const auto &key : keys) {
@@ -190,7 +195,37 @@ int32_t SimModule::QueueNumberEntry(SlotId slot, LegacyCallerRef caller, LegacyC
 
 bool SimModule::AcceptMsisdnEvidence(const MsisdnTransportEvidence &evidence)
 {
-    if (!msisdn_ || !AdmitModuleCall(true)) { return false; }
+    if (!msisdn_ || evidence.ticket.step.request.owner != RequestOwner::ShowNumber ||
+        !AdmitModuleCall(true)) { return false; }
+    const ModuleCall call {shared_from_this()};
+    return cardTransport_.AcceptEvidence(evidence);
+}
+
+std::optional<RequestId> SimModule::LoadIccid(const SessionRef &session)
+{
+    if (!iccidRecords_ || !AdmitModuleCall()) { return std::nullopt; }
+    const ModuleCall call {shared_from_this()};
+    return iccidRecords_->Load(session);
+}
+
+bool SimModule::RefreshIccid(const SessionRef &session)
+{
+    if (!iccidRecords_ || !AdmitModuleCall()) { return false; }
+    const ModuleCall call {shared_from_this()};
+    return iccidRecords_->Refresh(session);
+}
+
+std::optional<IccidRecords> SimModule::ReadIccidRecords(const SessionRef &session)
+{
+    if (!iccidRecords_ || !AdmitModuleCall()) { return std::nullopt; }
+    const ModuleCall call {shared_from_this()};
+    return iccidRecords_->Read(session);
+}
+
+bool SimModule::AcceptIccidIoEvidence(const CardCommandEvidence &evidence)
+{
+    if (!iccidRecords_ || evidence.ticket.step.request.owner != RequestOwner::LocalCard ||
+        !AdmitModuleCall(true)) { return false; }
     const ModuleCall call {shared_from_this()};
     return cardTransport_.AcceptEvidence(evidence);
 }
@@ -369,6 +404,7 @@ SimModule::DrainResult SimModule::StopAcceptingAndDrain()
     {
         std::lock_guard<std::mutex> guard(admissionMutex_);
         accepting_ = false;
+        cardTransport_.SealLocalCommands();
         topology_.SealDiscovery();
         topology_.SealReload();
         if (drained_) { return DrainResult::Drained; }
