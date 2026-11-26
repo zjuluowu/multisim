@@ -49,13 +49,11 @@ Host 两后端分别编译、链接和执行。Legacy 的 SIM 基础及 eSIM 条
 
 ## 候选实测范围
 
-目录统计冻结于 `b6f6c25eed8b690da53f5b86ef3e7883cbe46916`。目录行包含其子目录。
-随后 Radio 结果修订净减 25 个生产物理行，无新增生产文件。该切片新增一个 Target 专属
-语义用例，Target 全量登记增至 172 个。
+以下为 C1 修订候选实测，回归入口及源文件校验见前节证据。目录行包含其子目录。
 
 | 目录 | 文件 | 物理行 | 有效行 |
 |---|---:|---:|---:|
-| 生产合计 | 101 | 11,184 | 8,554 |
+| 生产合计 | 101 | 11,153 | 8,521 |
 | `account` | 33 | 3,867 | 2,935 |
 | `account/activation` | 7 | 365 | 179 |
 | `account/discovery` | 3 | 287 | 218 |
@@ -66,8 +64,8 @@ Host 两后端分别编译、链接和执行。Legacy 的 SIM 基础及 eSIM 条
 | `card/runtime` | 7 | 609 | 447 |
 | `card/security` | 1 | 29 | 8 |
 | `card/state` | 2 | 276 | 220 |
-| `device` | 4 | 930 | 834 |
-| `device/resource` | 4 | 930 | 834 |
+| `device` | 4 | 908 | 814 |
+| `device/resource` | 4 | 908 | 814 |
 | `infrastructure` | 28 | 2,351 | 1,674 |
 | `infrastructure/assembly` | 11 | 1,142 | 867 |
 | `infrastructure/assembly/exports` | 2 | 42 | 8 |
@@ -75,12 +73,13 @@ Host 两后端分别编译、链接和执行。Legacy 的 SIM 基础及 eSIM 条
 | `infrastructure/compatibility/api` | 7 | 506 | 341 |
 | `infrastructure/compatibility/events` | 5 | 251 | 135 |
 | `infrastructure/request` | 4 | 371 | 276 |
-| `role_assignment` | 19 | 2,785 | 2,269 |
-| `role_assignment/primary` | 5 | 288 | 186 |
+| `role_assignment` | 19 | 2,776 | 2,256 |
+| `role_assignment/primary` | 5 | 289 | 185 |
 
 Target Host 归档有 25 个 CPP 对象。另有 8 个 CPP 只参与逻辑 GN，68 个头文件计声明资产。
-测试 cases／framework 的 C/C++ 为 167 个文件、23,722 物理行、19,788 有效行。
-相对中心目标 33,500 物理行，候选差额为 22,316 行。该差额是实测对账，P 的净增分配和
+Target 173 个测试登记、Legacy 147 个，12 个共同语义已对照；尚缺全量语义去重。
+测试 cases／framework 的 C/C++ 为 167 个文件、23,784 物理行、19,846 有效行。
+相对中心目标 33,500 物理行，候选差额为 22,347 行。该差额是实测对账，P 的净增分配和
 数量考核继续按原窗口及实际功能证据调整。
 
 ## 剩余任务和预算

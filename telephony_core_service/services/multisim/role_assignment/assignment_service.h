@@ -161,6 +161,7 @@ private:
         std::optional<uint64_t> retrySchedulerTask;
         std::optional<EffectKnowledge> lateDeviceEffect;
     };
+    bool SubmitC1Round(const PendingPrimarySwitch &round);
     std::map<uint64_t, PendingPrimarySwitch> pendingPrimary_;
     std::weak_ptr<RetrySchedulerPort> retryScheduler_;
     bool retrySchedulerBound_ {false};

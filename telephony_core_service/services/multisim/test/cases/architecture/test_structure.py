@@ -126,8 +126,8 @@ class BoundaryGuard(unittest.TestCase):
                                   "AF2 M4 source input differs: infrastructure/request/request_context.h")
 
     def test_m8_role_source_drift(self):
-        self.check_mapped_mutation("role_assignment/assignment_service.h", lambda s: s + '\n// drift\n',
-                                  "AF2 M8 source input differs: role_assignment/assignment_service.h")
+        self.check_mapped_mutation("role_assignment/account_role_protocol.h", lambda s: s + '\n// drift\n',
+                                  "AF2 M8 source input differs: role_assignment/account_role_protocol.h")
 
     def test_m9_role_source_drift(self):
         self.check_mapped_mutation("role_assignment/assignment_service.cpp", lambda s: s + '\n// drift\n',

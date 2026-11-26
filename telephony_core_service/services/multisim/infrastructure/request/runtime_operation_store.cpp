@@ -15,6 +15,18 @@
 #include "infrastructure/request/runtime_operation_store.h"
 
 namespace OHOS::Telephony::MultiSim {
+bool RuntimeOperationStore::TryMarkTerminal(RequestId request, TerminalState terminal)
+{
+    if (request.epoch != epoch_ || request.owner != owner_) { return false; }
+    const auto found = operations_.find(request.value);
+    if (found == operations_.end()) { return false; }
+    const auto current = found->second.terminal;
+    if (terminal == TerminalState::Open) { return current == TerminalState::Open; }
+    if (current != TerminalState::Open) { return current == terminal; }
+    found->second.terminal = terminal;
+    return true;
+}
+
 RuntimeOperationStore::ResultAdmission RuntimeOperationStore::AcceptResult(
     StepRef step, EffectKnowledge evidence)
 {

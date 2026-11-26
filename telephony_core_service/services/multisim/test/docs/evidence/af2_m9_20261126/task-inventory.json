@@ -709,7 +709,8 @@
       "product_evidence": "RIL/HDI 真实路由和复用",
       "candidate_tests_to_credit": [
         "TargetPrimaryB.ResourceSubmitMemberCannotDuplicateOrReleaseAnotherInSubmit",
-        "TargetRadioReceipt.EarlyDeliveryCannotOverwriteOriginalSubmitResult"
+        "TargetRadioReceipt.EarlyDeliveryCannotOverwriteOriginalSubmitResult",
+        "TargetPrimaryB.C1InlineRepliesFinishWithoutAccessingRetiredRound"
       ],
       "scope": "Host negative/regression only; planned slice still open"
     },

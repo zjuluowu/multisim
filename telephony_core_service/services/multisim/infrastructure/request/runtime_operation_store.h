@@ -143,18 +143,6 @@ inline bool RuntimeOperationStore::AdvanceStep(StepRef expected, uint32_t nextSt
     return true;
 }
 
-inline bool RuntimeOperationStore::TryMarkTerminal(RequestId request, TerminalState terminal)
-{
-    if (request.epoch != epoch_ || request.owner != owner_) { return false; }
-    const auto found = operations_.find(request.value);
-    if (found == operations_.end()) { return false; }
-    const auto current = found->second.terminal;
-    if (terminal == TerminalState::Open) { return current == TerminalState::Open; }
-    if (current != TerminalState::Open) { return current == terminal; }
-    found->second.terminal = terminal;
-    return true;
-}
-
 inline std::optional<RuntimeOperation> RuntimeOperationStore::Read(RequestId request) const
 {
     if (request.epoch != epoch_ || request.owner != owner_) { return std::nullopt; }

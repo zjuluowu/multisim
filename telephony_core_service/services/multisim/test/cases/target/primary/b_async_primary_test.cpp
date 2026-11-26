@@ -961,6 +961,30 @@ TEST(TargetPrimaryB,ResourceSubmitResponseBeforeReturnIsBufferedUntilHandoffClas
     EXPECT_EQ(f.completion.results,(std::vector<int32_t>{0}));
 }
 
+TEST(TargetPrimaryB,C1InlineRepliesFinishWithoutAccessingRetiredRound)
+{
+    struct InlineOwner : RadioOwnerDispatchPort {
+        bool PostRadioOwnerTask(std::function<void()> task) override { task(); return true; }
+        bool RadioOwnerCallbacksDrained() const override { return true; }
+    };
+    ResourceFixture f;
+    auto owner = std::make_shared<InlineOwner>();
+    f.radio.BindOwnerDispatch(owner);
+    f.platform.onSynchronousResponse = [&](uint64_t token, const RadioSwitchRequest &request) {
+        EXPECT_TRUE(f.radio.AcceptDeviceResult({token,
+            Result(request, EffectKnowledge::ConfirmedApplied, 0, request.phase == 2),
+            true, true, false, static_cast<int32_t>(token)}));
+    };
+    f.Start(true);
+
+    std::vector<uint32_t> phases;
+    for (const auto &entry : f.platform.requests) { phases.push_back(entry.second.phase); }
+    EXPECT_EQ(phases, (std::vector<uint32_t>{1, 1, 2, 2, 4, 4}));
+    EXPECT_EQ(f.completion.results, (std::vector<int32_t>{0}));
+    EXPECT_EQ(f.radio.ReadResourceState(f.key), ResourceState::Available);
+    EXPECT_FALSE(f.service->HasPendingDeviceEffects());
+}
+
 TEST(TargetPrimaryB,ResourceSubmitDuplicatesDeduplicateAndConflictsQuarantine)
 {
     ResourceFixture duplicate;

@@ -10,7 +10,10 @@
     "device/resource/resource_radio_runtime.h": "6d1d22c61f6628c6c884be54d203ca6028f67e43407abac68077e6ab9b417c44",
     "infrastructure/assembly/sim_module.h": "6087cdd42999b8fd384817fa5ee9fc8b02ab7bb7af9edf9a6c17236439617f79",
     "infrastructure/assembly/sim_module_factory.cpp": "b00f5823f4e0514fbb00c9a3236dcb551a902edb095bed8f17a4d55efb1c3016",
-    "role_assignment/assignment_service.cpp": "9778fea09da4c8fb2a11e75d09da2a9665b7cf427e107a0c0495854bf16c1927",
+    "infrastructure/request/runtime_operation_store.cpp": "59fa841cfd8ac4de00d4bb47c7f66714d404e40132443adf488aba9f70cd03ba",
+    "infrastructure/request/runtime_operation_store.h": "5896686fcb442bdbdbfa2da6ccfba38674d5a8f8a76bda4d12943aad7a9409bc",
+    "role_assignment/assignment_service.cpp": "9090d731e6ee7df0828cc8ff5e02b3ca9c25a589e8515a0363e4a4ead75d56c4",
+    "role_assignment/assignment_service.h": "14f24cd426813499336a5ed4d942104ac65348df46c250c9726b3467fc1da234",
     "role_assignment/primary/radio_execution_port.h": "38691f911ea7dd5a94ebc2f5e03ab72062fd230c0a8a48b367b87b680c2db4fb"
   },
   "added": {}

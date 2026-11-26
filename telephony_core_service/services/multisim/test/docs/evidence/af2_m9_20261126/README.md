@@ -96,3 +96,28 @@ clang++ -std=c++17 -pthread -I"$M" "$E/submit-reentrant-probe.cpp" \
 附加的 B/C1 执行审计在 Debug 构建发现 `RuntimeOperationStore::TryMarkTerminal` 的计数为零。
 实际 ELF 选择了测试翻译单元生成的未插桩 inline 实例。该项取证保留失败，其他已记录的执行审计保持原范围。
 [初次架构负控分类失败](submit-architecture-initial.log.gz) · [附加执行审计](submit-audit-before.json.gz)
+
+## C1 同步回包修订复验
+
+在父提交 `012e33a0f4a5a6907b787b306489458ed3a2da16` 的候选工作区复验。原独立探针
+使用真实 AssignmentService、ResourceRadioRuntime 和 ResourceBarrier。修订后分别提交
+CHECK、UPDATE、COMPLETE 各两笔，共发令 6 次，只完成一次。原请求完成后无悬空迭代器。
+Debug 审计将终态提交收归生产翻译单元，指定 B/C1 和 Radio 用例实际命中 TryMarkTerminal 93 次。
+
+[独立探针复验](c1-inline-owner-fixed.log) · [LLDB 命令](c1-inline-owner.lldb) ·
+[LLDB 实录](c1-inline-owner-lldb.log.gz) · [组件执行审计](c1-audit.json.gz) ·
+[审计用例 61/61](c1-audit-cases.json.gz) · [GN/Ninja 与架构](c1-architecture.log.gz)
+
+[Target 173/173](c1-target.json.gz) · [ASan 128/128](c1-asan.json.gz) ·
+[TSan 128/128](c1-tsan.json.gz) · [最新 Target 共同契约](c1-common-target.json.gz) ·
+[共同契约 24/24，Oracle 差异 0](c1-differential.json.gz) · [源码清单](c1-source-inventory.json)
+
+独立探针和实际用例的重跑入口
+
+```bash
+mapfile -t sources < <(sed -n 's|^  "\$sim_target_root/\(.*\.cpp\)",$|\1|p' telephony_core_service/sim_target_sources.gni)
+for i in "${!sources[@]}"; do sources[$i]="$M/${sources[$i]}"; done
+clang++ -std=c++17 -D_GLIBCXX_DEBUG -pthread -I"$M" "$E/c1-inline-owner-probe.cpp" "${sources[@]}" -o /tmp/m9-c1-inline
+/tmp/m9-c1-inline
+python3 -B "$M/test/scripts/test.py" run --backend target --debug-build --filter TargetPrimaryB.C1InlineRepliesFinishWithoutAccessingRetiredRound
+```

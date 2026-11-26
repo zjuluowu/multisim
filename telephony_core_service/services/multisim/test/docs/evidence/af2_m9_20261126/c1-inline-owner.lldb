@@ -1,0 +1,13 @@
+settings set target.disable-aslr false
+breakpoint set --name 'OHOS::Telephony::MultiSim::AssignmentService::SubmitC1Round'
+run --gtest_filter=TargetPrimaryB.C1InlineRepliesFinishWithoutAccessingRetiredRound
+frame variable round.phase round.step.step round.protocolSession
+thread step-over
+frame variable step.step
+breakpoint disable 1
+breakpoint set --name 'OHOS::Telephony::MultiSim::RuntimeOperationStore::TryMarkTerminal'
+continue
+frame variable request.value terminal
+thread backtrace -c 8
+breakpoint disable 2
+continue
