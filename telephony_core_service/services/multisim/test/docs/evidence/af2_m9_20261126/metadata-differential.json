@@ -1,0 +1,12 @@
+{
+  "legacy": "PASS",
+  "target": "PASS",
+  "oracle": "PASS",
+  "oracle_differences": [],
+  "legacy_target": "PASS",
+  "overall": "PASS",
+  "scenarios": [
+    "SIM023-LEGACY-ACCOUNT-METADATA-DUAL"
+  ],
+  "differences": []
+}

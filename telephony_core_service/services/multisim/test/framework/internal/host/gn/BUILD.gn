@@ -69,7 +69,8 @@ toolchain("linux") {
     description = "CXX {{source}}"
   }
   tool("alink") {
-    command = "ar rcs {{output}} {{inputs}}"
+    # Rebuild membership from the current GN inputs, including when a source is removed.
+    command = "rm -f {{output}}.archiving && ar rcs {{output}}.archiving {{inputs}} && mv -f {{output}}.archiving {{output}}"
     outputs = [ "{{target_out_dir}}/lib{{target_output_name}}.a" ]
     default_output_extension = ".a"
     output_prefix = "lib"

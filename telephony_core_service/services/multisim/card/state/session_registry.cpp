@@ -36,7 +36,7 @@ bool SameSession(const SessionRef &left, const SessionRef &right)
 std::optional<SessionRef> SessionRegistry::Current(CardApplicationTarget target) const
 {
     const auto found = sessions_.find({target.slot, target.applicationKey});
-    return found == sessions_.end() ? std::nullopt : std::optional<SessionRef>(found->second);
+    return found == sessions_.end() ? std::nullopt : std::optional<SessionRef>(found->second.session);
 }
 
 bool SessionRegistry::HasVerifiedSession(SlotId slot) const
@@ -64,12 +64,34 @@ bool SessionRegistry::MayPublishVerifiedSession(const SessionRef &session) const
     return true;
 }
 
+bool SessionRegistry::PublishApplicationSession(const SessionRef &session)
+{
+    return PublishSession(session, false);
+}
+
+bool SessionRegistry::IdentityPublished(const SessionRef &session) const
+{
+    const auto found = sessions_.find({session.application.slot, session.application.applicationKey});
+    return found != sessions_.end() && found->second.session == session && found->second.identityPublished;
+}
+
 bool SessionRegistry::PublishVerifiedSession(const SessionRef &session)
+{
+    return PublishSession(session, true);
+}
+
+bool SessionRegistry::PublishSession(const SessionRef &session, bool identityPublished)
 {
     if (!MayPublishVerifiedSession(session)) { return false; }
     const ApplicationKey key {session.application.slot, session.application.applicationKey};
-    generations_.insert_or_assign(key, session.bindingGeneration);
-    sessions_.insert_or_assign(key, session);
+    if (StillCurrent(session)) {
+        if (identityPublished) { sessions_.at(key).identityPublished = true; }
+        return true;
+    }
+    const SessionEntry candidate {session, identityPublished};
+    generations_.try_emplace(key, 0);
+    sessions_.insert_or_assign(key, candidate);
+    generations_.at(key) = session.bindingGeneration;
     return true;
 }
 

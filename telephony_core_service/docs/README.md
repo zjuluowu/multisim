@@ -1,5 +1,7 @@
 # SIM 多卡重构开发入口
 
+AF-2 M9 的候选开发入口见[全局开发指导 v2.2](SIM_Global_Code_Migration_and_Test_Plan_v2.2.md)和[逐项验收记录](AF2_M9_Developer_Handoff_Acceptance_Report.md)。
+
 首次阅读只需三处。先读[业务问题与重构目标 §1～2](business/多SIM架构重构_设计说明与业务流程对照.md#1-%E8%AE%BE%E8%AE%A1%E7%9B%AE%E6%A0%87%E4%B8%8E%E9%80%82%E7%94%A8%E8%8C%83%E5%9B%B4)，再读[源码导航的目录职责](../services/multisim/README.md)，最后查[执行状态页首](SIM_Refactor_Execution_State.md#current-status)。现网 SIM 由 `services/sim/` 实现，`services/multisim/` 提供目标实现和 Host 验证。具体已实现切片、生产装配和设备验收分别查执行状态。
 
 ## 按开发任务阅读

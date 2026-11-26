@@ -56,6 +56,8 @@ public:
     bool HasVerifiedSession(SlotId slot) const;
     bool StillCurrent(const SessionRef &session) const;
     bool MayPublishVerifiedSession(const SessionRef &session) const; // 替换前预检，旧观察不得先撤销当前会话。
+    bool PublishApplicationSession(const SessionRef &session);
+    bool IdentityPublished(const SessionRef &session) const;
     bool PublishVerifiedSession(const SessionRef &session); // 先交T旧会话失效，再正式暴露新会话。
     void InvalidateForVerifiedReplacement(const SessionRef &oldSession);
     bool RegisterExpectedTransition(const ExpectedTransition &expected);
@@ -73,7 +75,9 @@ private:
             return slot < other.slot || (!(other.slot < slot) && application < other.application);
         }
     };
-    std::map<ApplicationKey, SessionRef> sessions_;
+    struct SessionEntry { SessionRef session; bool identityPublished; };
+    bool PublishSession(const SessionRef &session, bool identityPublished);
+    std::map<ApplicationKey, SessionEntry> sessions_;
     std::map<ApplicationKey, uint64_t> generations_; // 撤销也保留代次，不复活旧EF。
     std::vector<ExpectedTransition> expected_;
     // EndExpectedWait只结束本次等待；Unknown继续保留必要原关联交R核对，

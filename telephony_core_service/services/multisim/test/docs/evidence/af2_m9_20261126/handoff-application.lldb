@@ -1,0 +1,17 @@
+settings set target.disable-aslr false
+settings set symbols.enable-external-lookup false
+settings set target.env-vars LLVM_PROFILE_FILE=/tmp/af2-m9/lldb-%p.profraw
+breakpoint set -n OHOS::Telephony::MultiSim::SimModule::ObserveCardApplication -o true
+breakpoint set -n OHOS::Telephony::MultiSim::CardObservationRuntime::AcceptApplication -o true
+breakpoint set -n OHOS::Telephony::MultiSim::TopologyService::DiscoverAccount -o true
+breakpoint set -n OHOS::Telephony::MultiSim::SimModule::StopAcceptingAndDrain -o true
+run --gtest_filter=AF2Discovery.ApplicationPrecedesIdentityAndStalePromotionCannotCreateBinding
+frame variable application generation
+thread step-over
+continue
+frame variable session
+continue
+frame variable observation
+continue
+frame variable this->moduleCalls_
+continue

@@ -1,5 +1,7 @@
 # SIM 业务测试
 
+新建 Target 专属测试 CPP 可放在 `cases/target/`。下一次 Host 构建自动更新 GN 源表。可移植业务序列从 `cases/shared/` 复用，两个后端保持独立装配。参见 [M9 候选交接记录](../../../docs/AF2_M9_Developer_Handoff_Acceptance_Report.md)。
+
 ## Legacy / Target 双后端
 
 统一入口的全量操作默认使用 Legacy。传入精确用例名时，CLI 尝试根据当前测试源码和 GN 目标识别后端，可用 `--backend` 或 `--target` 明确选择。Target 不支持的场景返回 BLOCKED。

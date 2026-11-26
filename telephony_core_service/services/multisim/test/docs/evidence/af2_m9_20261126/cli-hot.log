@@ -1,0 +1,3 @@
+target-sim_test_target_host: PASS
+Report: /tmp/af2-m9/clean-hot/sim-k88i38sc/result.json
+hot_cli_seconds=0.51

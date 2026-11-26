@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import json
 import re
+import shlex
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -238,6 +240,23 @@ class BackendSelectorTest(unittest.TestCase):
             {'status': 'PASS', 'cases': [{'scenario': 'ARCH', 'status': 'PASS'}]},
             {'status': 'PASS', 'cases': [{'scenario': 'ARCH', 'status': 'PASS'}]}, [C0])
         self.assertEqual(result['overall'], 'BLOCKED')
+
+    def test_host_archive_replaces_removed_inputs(self):
+        toolchain = (TEST / 'framework/internal/host/gn/BUILD.gn').read_text()
+        archive = toolchain.split('tool("alink") {', 1)[1]
+        command = re.search(r'^    command = "([^"]+)"$', archive, re.M).group(1)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            output = root / 'libarchive.a'
+            first, second = root / 'first.o', root / 'second.o'
+            first.write_text('first')
+            second.write_text('second')
+            for member in (first, second):
+                invocation = command.replace('{{output}}', shlex.quote(str(output)))
+                invocation = invocation.replace('{{inputs}}', shlex.quote(str(member)))
+                subprocess.run(['sh', '-c', invocation], check=True)
+            members = subprocess.check_output(['ar', 't', str(output)], text=True).splitlines()
+            self.assertEqual(members, ['second.o'])
 
     def test_target_link_target_has_no_legacy_production(self):
         build = (SCRIPTS.parent / 'framework/internal/host/BUILD.gn').read_text()

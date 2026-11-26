@@ -1,0 +1,4 @@
+host-build: PASS
+target-sim_test_target_host: PASS
+Report: /tmp/af2-m9/clean-cold/sim-qiih82mb/result.json
+cold_cli_seconds=57.66

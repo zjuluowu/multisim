@@ -186,10 +186,14 @@ CD-01～03 继续作为独立批准行为回归。产品因果证据、Provider�
 
 **`AF2_M9_IN_PROGRESS`。** 输入 `bf7d0c689f7e12320c864a6866a2c8d92d0bd660`。
 独立探针复现 Radio 成员重复交接、提前归还共享资源和原完成重复投递。首批实施修复错配，
-增加确定性负控，并将正式 Host Target 测试纳入自动 GN 源发现。正式图仍需补 AF2-03
+增加确定性负控，并将正式 Host Target 测试纳入自动 GN 源发现。已接通无账户应用会话，
+M6 共用测试体通过两端 Oracle 对照。Legacy 和 Target Host 源表已归一到各自的清单，
+GNU archive 按当前输入重建并通过源码遗漏负控。正式图仍需补 AF2-03
 真实成员／路由规划、卡安全与 EF 样板，以及 H 的全图关闭契约。人工 GUI、非框架作者
 演练和负责人签收分别留证。
-[实施与验证证据](../services/multisim/test/docs/evidence/af2_m9_20261126/README.md)
+[实施与验证证据](../services/multisim/test/docs/evidence/af2_m9_20261126/README.md) ·
+[开发指导 v2.2](SIM_Global_Code_Migration_and_Test_Plan_v2.2.md) ·
+[交接检查点](AF2_M9_Developer_Handoff_Acceptance_Report.md)
 
 <a id="af1-signoff-validation"></a>
 

@@ -428,6 +428,13 @@ bool SimModule::HasPendingBusinessEffects() const
         (msisdn_ && msisdn_->HasPending()) || topology_.PendingDiscoveryCount() || topology_.PendingMetadataCount() || assignment_->PendingDiscoveryRoles();
 }
 
+std::optional<SessionRef> SimModule::ObserveCardApplication(const CardApplicationTarget &application, uint64_t generation)
+{
+    if (!AdmitModuleCall()) { return std::nullopt; }
+    const ModuleCall call {shared_from_this()};
+    return card_.ObserveCardApplication(application, generation);
+}
+
 std::optional<SessionRef> SimModule::ObserveVerifiedCard(const CardApplicationTarget &application,
     uint64_t generation, const std::string &iccid)
 {

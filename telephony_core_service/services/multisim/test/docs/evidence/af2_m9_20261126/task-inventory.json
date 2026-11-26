@@ -1,0 +1,954 @@
+{
+  "input": "bf7d0c689f7e12320c864a6866a2c8d92d0bd660",
+  "radio_candidate": "7264a3940595fa206c61583315338caae4ba269b",
+  "functions": {
+    "SIM-001": {
+      "legacy_function": "启动、装配与额外槽初始化",
+      "legacy_entry": "SimManager::OnInit/InitBaseManager/InitTelExtraModule；CoreService::Init",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-001",
+      "candidate_evidence": "M1 Host graph",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-002": {
+      "legacy_function": "停止、反注册、任务排空与销毁",
+      "legacy_entry": "CoreService::OnStop；SimStateManager 析构；MultiSimController/Monitor 析构",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-002",
+      "candidate_evidence": "M1–M8 Host call draining",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-003": {
+      "legacy_function": "公开入口权限、受限槽与隐私裁剪",
+      "legacy_entry": "CoreServiceSim；MultiSimsCapabilityMgr；GetSimAccountInfo(denied)",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-003",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-004": {
+      "legacy_function": "槽清单、最大/真实容量、配置合法性",
+      "legacy_entry": "SimManager::IsValidSlotId/GetMaxSimCount/GetRealSimCount",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-004",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-005": {
+      "legacy_function": "有卡、公开状态、卡类型、Modem 初始化查询",
+      "legacy_entry": "SimManager::HasSimCard/GetSimState/GetCardType；SimStateHandle",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-005",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-006": {
+      "legacy_function": "卡状态响应、缺卡/Unknown、锁态转换与发布",
+      "legacy_entry": "SimStateHandle::GetSimCardData/ProcessIccCardState/HandleSimAbsent",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-006",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-007": {
+      "legacy_function": "PIN1/PUK1、改 PIN、设置/查询锁",
+      "legacy_entry": "SimStateManager/Handle::UnlockPin/UnlockPuk/AlterPin/SetLockState/GetLockState",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-007",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-008": {
+      "legacy_function": "PIN2/PUK2、改 PIN2",
+      "legacy_entry": "SimStateManager/Handle::UnlockPin2/UnlockPuk2/AlterPin2",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-008",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-009": {
+      "legacy_function": "网络个性化锁/解锁",
+      "legacy_entry": "SimStateManager/Handle::UnlockSimLock；PersoLockInfo",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-009",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-010": {
+      "legacy_function": "SIM/USIM/ISIM 认证",
+      "legacy_entry": "SimStateManager::SimAuthentication；Handle 选 AID",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-010",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-011": {
+      "legacy_function": "普通 SIM IO 与状态字",
+      "legacy_entry": "SimStateManager::GetSimIO；SimStateHandle；TelRilSim",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-011",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-012": {
+      "legacy_function": "卡类型/应用选择、GSM/USIM/RUIM/CSIM/ISIM 路径",
+      "legacy_entry": "SimFileManager::InitSimFile/InitIccFileController/ChangeSimFileByCardType",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-012",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-013": {
+      "legacy_function": "EF 请求集合、首次加载、锁定加载与完成",
+      "legacy_entry": "SimFile/IsimFile/RuimFile；IccFileController",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-013",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-014": {
+      "legacy_function": "字符/号码/PLMN/TLV/ASN.1 解码与校验",
+      "legacy_entry": "SimFileParse、SimCharDecode、SimNumberDecode、SIMUtils、TagService、ASN.1",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-014",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-015": {
+      "legacy_function": "Refresh、同卡重载、清缓存和失效",
+      "legacy_entry": "SimFile::ProcessIccRefresh；SimFileManager::HandleIccRefresh；IccFile",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-015",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-016": {
+      "legacy_function": "ICCID/IMSI/GID/本机号码/IST 等读视图",
+      "legacy_entry": "SimManager→SimFileManager→IccFile/具体 File",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-016",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-017": {
+      "legacy_function": "语音信箱配置、标识、号码与未读计数",
+      "legacy_entry": "IccFile/SimFile、VoiceMailConstants；SimManager 入口",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-017",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-018": {
+      "legacy_function": "卡内呼叫转移标志与号码",
+      "legacy_entry": "SimManager::SetVoiceCallForwarding；IccFile/SimFile/Ruim/Isim",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-018",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-019": {
+      "legacy_function": "SPN/EONS/国家/运营商名称及显示规则",
+      "legacy_entry": "IccFile、PlmnFile、MccPool；SimManager::GetSimEons/ObtainSpnCondition",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-019",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-020": {
+      "legacy_function": "发现卡身份、账户建立及初始化后续",
+      "legacy_entry": "MultiSimController::InitIccId/InsertData/InitData/InitActive；Monitor::InitData",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-020",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-021": {
+      "legacy_function": "当前/历史账户缓存、列表、缺卡失效",
+      "legacy_entry": "MultiSimController::GetListFromDataBase/GetAllListFromDataBase/SortCache/ForgetAllData",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-021",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-022": {
+      "legacy_function": "simId↔slot 查询与目标解析",
+      "legacy_entry": "MultiSimController::GetSlotId/GetSimId/GetTargetSimId",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-022",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-023": {
+      "legacy_function": "显示名称、MSISDN 写卡与号码资料同步",
+      "legacy_entry": "MultiSimController::SetShowName/SetShowNumber/SetShowNumberToDB/GetShowNumber；SimFile::UpdateMsisdnNumber",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-023",
+      "candidate_evidence": "M6/M7B Host fields and number",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-024": {
+      "legacy_function": "卡激活/停用、卫星激活与进度",
+      "legacy_entry": "MultiSimController::SetActiveSim/SetActiveSimSatellite/SetActiveCommonSim",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-024",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-025": {
+      "legacy_function": "默认 Voice 选择、simId 与回退",
+      "legacy_entry": "MultiSimController::Get/SetDefaultVoiceSlotId/GetDefaultVoiceSimId",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-025",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-026": {
+      "legacy_function": "默认 SMS 选择、simId 与回退",
+      "legacy_entry": "MultiSimController::Get/SetDefaultSmsSlotId/GetDefaultSmsSimId",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-026",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-027": {
+      "legacy_function": "默认 Data、参数缓存与广播",
+      "legacy_entry": "MultiSimController::SetDefaultCellularDataSlotId/SaveDefaultCellularDataSlotIdInfo",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-027",
+      "candidate_evidence": "M4 Host default Data",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-028": {
+      "legacy_function": "主卡意图、策略、保存/回滚与重试",
+      "legacy_entry": "MultiSimController::SetPrimarySlotId/SavePrimarySlotIdInfo/CheckIfNeedSwitchMainSlotId",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-028",
+      "candidate_evidence": "M3 Host C0; B/C1 separate component",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-029": {
+      "legacy_function": "RadioProtocol/Modem 观察、三阶段切换",
+      "legacy_entry": "RadioProtocolController::Get/SetRadioProtocol/Process*Communication",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-029",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-030": {
+      "legacy_function": "DSDS、M0/M2 互换、特殊槽路由",
+      "legacy_entry": "MultiSimController/MultiSimHelper；SimManager::SetDsdsMode/SwapM0M2SimCards",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-030",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-031": {
+      "legacy_function": "SIM 标签、Profile/在位展示资料及映射开始的状态处理",
+      "legacy_entry": "MultiSimController::SetSimLabelIndex/InsertEsimData/UpdateSimPresent/IsEsim；SimManager/StateManager::NotifySimSlotsMapping",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-031",
+      "candidate_evidence": "M6 Host SIM label",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-032": {
+      "legacy_function": "卡状态/Records/账户等内部订阅和注销",
+      "legacy_entry": "SimManager::RegisterCoreNotify；File/Handle/Monitor Observer",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-032",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-033": {
+      "legacy_function": "账户回调、token、死亡清理与 Registry 更新",
+      "legacy_entry": "MultiSimMonitor::Register/UnregisterSimAccountCallback/NotifySimAccountChanged；DeathRecipient",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-033",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-034": {
+      "legacy_function": "DataShare/CES/Registry 就绪、服务重连与重查",
+      "legacy_entry": "MultiSimMonitor::InitListener/SubscribeDataShareReady/OnDataShareReady；SimStateTracker",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-034",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-035": {
+      "legacy_function": "用户切换、OpKey/配置重载",
+      "legacy_entry": "MultiSimMonitor::OnUserSwitched/UpdateAllSimData；Tracker",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-035",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-036": {
+      "legacy_function": "SIM 短信存储增删改读",
+      "legacy_entry": "SimSmsManager/SimSmsController",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-036",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-037": {
+      "legacy_function": "ADN/FDN 电话簿 CRUD 和安全前提",
+      "legacy_entry": "IccDiallingNumbersManager/Cache/Handler",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-037",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-038": {
+      "legacy_function": "USIM PBR/ANR/IAP 多文件电话簿合并",
+      "legacy_entry": "UsimDiallingNumbersService",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-038",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-039": {
+      "legacy_function": "STK Envelope/Terminal Response/Call Setup",
+      "legacy_entry": "StkManager/StkController",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-039",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-040": {
+      "legacy_function": "STK 主动命令、会话结束、卡变化事件",
+      "legacy_entry": "StkController::ProcessEvent/OnSendRilSessionEnd/OnIccStateChanged",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-040",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-041": {
+      "legacy_function": "运营商配置读取/更新/缓存及 IMS 能力输入",
+      "legacy_entry": "SimAccountManager；OperatorConfigCache",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-041",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-042": {
+      "legacy_function": "OpKey 匹配、规则加载、海外运营商识别",
+      "legacy_entry": "SimStateTracker、OperatorConfigLoader、OperatorMatchingRule、OperatorFileParser",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-042",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-043": {
+      "legacy_function": "运营商权限、卡内规则与证书判断",
+      "legacy_entry": "IccOperatorPrivilegeController/Rule",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-043",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-044": {
+      "legacy_function": "APN 配置初始化通知与失败重试",
+      "legacy_entry": "OperatorConfigCache::notifyInitApnConfigs；PdpProfileRdbHelper",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-044",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-045": {
+      "legacy_function": "IMS 开关持久化、芯片能力输入",
+      "legacy_entry": "MultiSimController::SaveImsSwitch/QueryImsSwitch；SimAccountManager::UpdateImsCapFromChip",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-045",
+      "candidate_evidence": "M7A Host IMS Preference",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-046": {
+      "legacy_function": "eSIM 下载/OSU 等既有服务任务入口",
+      "legacy_entry": "NAPI/ANI→EsimServiceClient→IEsimService listener",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-046",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-047": {
+      "legacy_function": "eUICC EID/库存/能力/Port/合约查询",
+      "legacy_entry": "EsimManager→EsimFile；GetEuiccInfo2/GetEsimPortIndex/GetContractInfo",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-047",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-048": {
+      "legacy_function": "eUICC 通道、APDU 分片、关闭和同 AID 复用",
+      "legacy_entry": "EsimFile::ObtainChannelSuccessExclusive/SendApduData/SyncCloseChannel",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-048",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-049": {
+      "legacy_function": "eUICC 卡侧认证与下载准备",
+      "legacy_entry": "EsimManager/EsimFile::AuthenticateServer/PrepareDownload",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-049",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-050": {
+      "legacy_function": "BPP 解码、分片装载与安装结果",
+      "legacy_entry": "EsimFile::ProcessLoadBoundProfilePackage/RealProcessLoadBoundProfilePackageDone",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-050",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-051": {
+      "legacy_function": "卡侧 Profile 禁用/删除/切换/改名",
+      "legacy_entry": "EsimManager/EsimFile::DisableProfile/DeleteProfile/SwitchToProfile/SetProfileNickname",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-051",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-052": {
+      "legacy_function": "eUICC 通知清单/读取/取回/移除",
+      "legacy_entry": "EsimManager 低优先级组→EsimFile::*Notifications",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-052",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-053": {
+      "legacy_function": "SM-DP/SM-DS 地址、会话取消、卡内 ResetMemory",
+      "legacy_entry": "EsimManager/EsimFile；CancelSession/ResetMemory/SetDefaultSmdpAddress",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-053",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-054": {
+      "legacy_function": "CA 验证、Profile 数量与 Profile 事件",
+      "legacy_entry": "EsimController；EsimManager::PublishEsimProfileChange；TelProfileUtil；StartOsuResultCallback",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-054",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-055": {
+      "legacy_function": "账户 DataShare CRUD、连接/游标关闭、错误",
+      "legacy_entry": "SimRdbHelper/TelephonyDataHelper；Insert/Query/Update/Delete",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-055",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-056": {
+      "legacy_function": "卡文件探测结果存取与账户缓存刷新",
+      "legacy_entry": "CardFileDetectManager::SaveCardFileDetectData/GetAllSimCardInfo",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-056",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-057": {
+      "legacy_function": "EXT/VSIM/分布式/卫星策略与执行钩子",
+      "legacy_entry": "TelephonyExtWrapper；MultiSimHelper；各 Manager Hook",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-057",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-058": {
+      "legacy_function": "serial/事件/同步等待/超时/进度关联",
+      "legacy_entry": "TelRilBase requestMap；SimStateHandle/Manager；RadioProtocolController",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-058",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-059": {
+      "legacy_function": "共宿主 Hub、直接调用及源代码反向依赖",
+      "legacy_entry": "CoreManagerInner；SIM 对门面反查；CoreServiceCommonEventHub",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-059",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-060": {
+      "legacy_function": "dump、计时/匹配轨迹、故障事件与统计",
+      "legacy_entry": "CoreServiceDumpHelper、OperatorConfigHisysevent、CoreServiceHiSysEvent",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-060",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-061": {
+      "legacy_function": "Core FactoryReset 与网络恢复设置",
+      "legacy_entry": "CoreService::FactoryReset→NetworkSearchManager::FactoryReset",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-061",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    },
+    "SIM-062": {
+      "legacy_function": "未装配的用户切换缓存同步源文件",
+      "legacy_entry": "SimCacheSyncManager；未见默认 BUILD/调用入口",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-062",
+      "candidate_evidence": "Review original slice against remaining task before claiming Host support",
+      "product_owner_status": "LEGACY_ACTIVE"
+    }
+  },
+  "writer_units": {
+    "WU-01": {
+      "fact": "当前/历史账户、Reload 与账户容器",
+      "packages": "P1/P6",
+      "cutover_requirements": "原 Controller/Monitor 重载不直接替换旧缓存；滞后读不能覆盖新事实",
+      "status": "LEGACY_ACTIVE"
+    },
+    "WU-02": {
+      "fact": "active 账户字段与激活写入",
+      "packages": "P1/P3",
+      "cutover_requirements": "旧初始化、普通/force/卫星及相交直接写统一委托 T，设备结果独立取证",
+      "status": "LEGACY_ACTIVE"
+    },
+    "WU-03": {
+      "fact": "Voice/SMS 等角色列及初始建行角色",
+      "packages": "P1/P3",
+      "cutover_requirements": "建行、重载、setter 接入 A 同一责任域，删除第二份默认规则",
+      "status": "LEGACY_ACTIVE"
+    },
+    "WU-04": {
+      "fact": "Primary/Data 参数及偏好、恢复",
+      "packages": "P3/P5/P6",
+      "cutover_requirements": "Core、Profile、Controller 共享键唯一准入，旧重试/恢复器不继续写",
+      "status": "LEGACY_ACTIVE"
+    },
+    "WU-05": {
+      "fact": "账户名称、号码、标签、IMS、探测/运营商资料",
+      "packages": "P1/P2/P4/P5",
+      "cutover_requirements": "单列/原目标写入，旧 Loader/探测、号码后台任务不旁路 T；标签恢复各键按批准归属",
+      "status": "LEGACY_ACTIVE"
+    },
+    "WU-06": {
+      "fact": "卡态、会话、EF、Records、电话簿等卡侧写入",
+      "packages": "P2/P4/P5",
+      "cutover_requirements": "原状态设备/软件/文件输入统一接纳，局部刷新与换卡负控通过，无重复可写缓存",
+      "status": "LEGACY_ACTIVE"
+    },
+    "WU-07": {
+      "fact": "业务进度、重试、等待及原步骤执行",
+      "packages": "P2/P3/P5/P6",
+      "cutover_requirements": "T/A/R 具名业务各持原责任，O 仅机制；同一业务不再有两个设备发令者或重试者",
+      "status": "LEGACY_ACTIVE"
+    },
+    "WU-08": {
+      "fact": "eUICC 通道、Profile 缓存和资源",
+      "packages": "P2/P4/P5",
+      "cutover_requirements": "普通/低优先级及清理统一资源资格，迟到 Close 不释放新租约，原双结果保留",
+      "status": "LEGACY_ACTIVE"
+    },
+    "WU-09": {
+      "fact": "回调、订阅、死亡清理、加载与重试标志",
+      "packages": "P1/P2/P4/P6",
+      "cutover_requirements": "关闭前后原通知/回调次数符合契约，旧 token/重试已回收或有正式接手责任",
+      "status": "LEGACY_ACTIVE"
+    }
+  },
+  "work_packages": {
+    "P1.1": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 100,
+        "tests": 3
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 150,
+        "tests": 6
+      },
+      "owner": "A",
+      "planned_slice": "原查询/目标解析；Store 单列 CRUD；未知身份原票恢复",
+      "dependencies": "M9 T/Store、Binding",
+      "product_evidence": "Provider 读写归因、权限"
+    },
+    "P1.2": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 200,
+        "tests": 5
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 330,
+        "tests": 7
+      },
+      "owner": "A",
+      "planned_slice": "探测有/无行；缺卡展示；运营商字段接纳；未覆盖 Reload 分支",
+      "dependencies": "M8、P1.1；P2.1/P4.5 对应观察",
+      "product_evidence": "DataShare 查询因果、探测调用者"
+    },
+    "P1.3": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 400,
+        "tests": 5
+      },
+      "owner": "A",
+      "planned_slice": "在位/标签恢复；历史账户；eSIM 运营商名；已批准 IMS 仅回归",
+      "dependencies": "P1.1、已有 M6/M7A",
+      "product_evidence": "Provider、P5.2 原标签键"
+    },
+    "P1.4": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 280,
+        "tests": 8
+      },
+      "owner": "A",
+      "planned_slice": "初始化号码、读回退、原后台回写；真实 MSISDN 桥",
+      "dependencies": "M7B、P2.5/P2.6 对应记录能力",
+      "product_evidence": "EF/RIL/IMPU/Provider"
+    },
+    "P2.1": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 350,
+        "tests": 6
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 620,
+        "tests": 10
+      },
+      "owner": "B",
+      "planned_slice": "状态查询；锁因；可信拔卡/换卡；应用切换/映射",
+      "dependencies": "M9 SessionRegistry 与观察",
+      "product_evidence": "真卡态/映射协议"
+    },
+    "P2.2": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 200,
+        "tests": 5
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 150,
+        "tests": 10
+      },
+      "owner": "G",
+      "planned_slice": "资源键证据；组申请；恢复及结束/复用；M9 已完成的仅回归",
+      "dependencies": "M9 唯一 ResourceBarrier",
+      "product_evidence": "RIL/HDI 真实共享资源"
+    },
+    "P2.3": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 300,
+        "tests": 5
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 770,
+        "tests": 13
+      },
+      "owner": "B",
+      "planned_slice": "PIN2/PUK2；锁设置/查询；个性化锁；认证/SIM IO；剩余 PIN",
+      "dependencies": "M9 UnlockPin/会话/原请求，P2.1/P2.2 对应能力",
+      "product_evidence": "真实卡安全结果、状态通知"
+    },
+    "P2.4": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 100,
+        "tests": 2
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 800,
+        "tests": 6
+      },
+      "owner": "C",
+      "planned_slice": "字符、号码、PLMN、TLV 等纯算法，分文件机械迁移",
+      "dependencies": "M9 codec 样板；原字节 Golden",
+      "product_evidence": "原生编译/平台差异（如适用）"
+    },
+    "P2.5": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 350,
+        "tests": 3
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 1450,
+        "tests": 8
+      },
+      "owner": "C",
+      "planned_slice": "透明/线性文件；读取/写入；按现有 SIM/USIM/ISIM/RUIM/CSIM 路径扩展",
+      "dependencies": "M9 ICCID IO、P2.1/P2.2、相应 codec",
+      "product_evidence": "EF/AID/状态字/设备回包"
+    },
+    "P2.6": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 400,
+        "tests": 5
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 1560,
+        "tests": 13
+      },
+      "owner": "C",
+      "planned_slice": "首次/锁定加载；局部 Refresh；IMSI/SPN/GID/PLMN；语音信箱/呼转/MSISDN",
+      "dependencies": "M9 LoadSession、P2.5 对应文件",
+      "product_evidence": "卡型 Records、原通知/EF 写入"
+    },
+    "P2.7": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": -620,
+        "tests": 0
+      },
+      "owner": "C+H",
+      "planned_slice": "runtime 接缝逐条迁出；按消费者删除，不单独造替代物",
+      "dependencies": "P2.1～P2.6 对应消费者、P1.4/P5 相关接线",
+      "product_evidence": "所有实际消费者及构建"
+    },
+    "P3.1": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 650,
+        "tests": 15
+      },
+      "owner": "D",
+      "planned_slice": "普通激活/停用；force；卫星 Hook；失败进度",
+      "dependencies": "T active、P2.1/P2.2、P3.4 受控端口",
+      "product_evidence": "真设备激活/卫星/厂商"
+    },
+    "P3.2": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 3
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 50,
+        "tests": 6
+      },
+      "owner": "D",
+      "planned_slice": "写键台账；建行/重载/角色偏好接纳；独立写集并发",
+      "dependencies": "M9 A/T，P1.1/P1.2",
+      "product_evidence": "Provider 写域、Core/eSIM 键"
+    },
+    "P3.3": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 200,
+        "tests": 3
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 500,
+        "tests": 14
+      },
+      "owner": "D",
+      "planned_slice": "B 正式路径；C1 各 phase/重试；偏好恢复；DSDS/M0/M2",
+      "dependencies": "P3.2/P3.4 真实 Host 图，P2.2",
+      "product_evidence": "实际成员、设备效果、COMPLETE 门禁"
+    },
+    "P3.4": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 300,
+        "tests": 3
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 700,
+        "tests": 13
+      },
+      "owner": "G",
+      "planned_slice": "成员/路由；逐成员交接；原生 Radio/Modem 适配",
+      "dependencies": "P2.2、M9 A 执行契约",
+      "product_evidence": "RIL/HDI 真实路由和复用",
+      "candidate_tests_to_credit": [
+        "TargetPrimaryB.ResourceSubmitMemberCannotDuplicateOrReleaseAnotherInSubmit"
+      ],
+      "scope": "Host negative/regression only; planned slice still open"
+    },
+    "P3.5": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 450,
+        "tests": 6
+      },
+      "owner": "D",
+      "planned_slice": "Voice/SMS 清除回退；Data 初始化/恢复；查询通知",
+      "dependencies": "M4/M5、P3.2",
+      "product_evidence": "Provider/系统参数/Registry"
+    },
+    "P4.1": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 1900,
+        "tests": 15
+      },
+      "owner": "E",
+      "planned_slice": "ADN/FDN 基础；PBR/ANR/IAP；多 EF 部分写",
+      "dependencies": "P2.3 PIN2、P2.5/P2.6",
+      "product_evidence": "卡电话簿及真实 EF"
+    },
+    "P4.2": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 400,
+        "tests": 7
+      },
+      "owner": "E",
+      "planned_slice": "卡短信读/容量；增删改；错误索引/满容量",
+      "dependencies": "P2.5/P2.6",
+      "product_evidence": "真卡短信 EF"
+    },
+    "P4.3": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 850,
+        "tests": 10
+      },
+      "owner": "E",
+      "planned_slice": "Envelope/Terminal Response；Call Setup；主动事件",
+      "dependencies": "P2.1、P6.4 事件端口",
+      "product_evidence": "STK/EXT、原通知"
+    },
+    "P4.4": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 850,
+        "tests": 10
+      },
+      "owner": "E",
+      "planned_slice": "配置加载缓存；APN 重试；IMS 芯片能力",
+      "dependencies": "Records 快照、P6.4 用户/重连事件",
+      "product_evidence": "原配置/APN/芯片能力"
+    },
+    "P4.5": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 900,
+        "tests": 10
+      },
+      "owner": "E",
+      "planned_slice": "规则解析；OpKey 匹配；卡参数和账户字段输出",
+      "dependencies": "P2.4/P2.6、P1.2 接纳",
+      "product_evidence": "真实配置/Provider、用户切换"
+    },
+    "P4.6": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 450,
+        "tests": 9
+      },
+      "owner": "E",
+      "planned_slice": "证书/规则解析；ARA-M 通道及关闭",
+      "dependencies": "P2.4/P2.2，P5.1 共享通道接口（接口先行）",
+      "product_evidence": "真通道与权限/证书"
+    },
+    "P5.1": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 1000,
+        "tests": 16
+      },
+      "owner": "F",
+      "planned_slice": "开通道；APDU 分片；关通道、晚 Close；共享资格",
+      "dependencies": "P2.1/P2.2，P4.6 契约",
+      "product_evidence": "eUICC/ARA-M 真实资源关系"
+    },
+    "P5.2": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 1500,
+        "tests": 18
+      },
+      "owner": "F",
+      "planned_slice": "EID/库存/Port；Profile 读写；通知/地址/Reset",
+      "dependencies": "P5.1、P1.3/P3.2/P3.3 对应写权",
+      "product_evidence": "真 eUICC、标签/偏好协议"
+    },
+    "P5.3": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 1400,
+        "tests": 13
+      },
+      "owner": "F",
+      "planned_slice": "认证/Prepare；BPP 解析/分片安装；本地回执",
+      "dependencies": "P2.4、P5.1",
+      "product_evidence": "66250 唯一主编排和原生安装证据"
+    },
+    "P5.4": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 150,
+        "tests": 6
+      },
+      "owner": "F+H",
+      "planned_slice": "本地双返回；Profile 事件；外部 Hook 协作",
+      "dependencies": "P5.1～P5.3 对应能力、T/A/R 契约",
+      "product_evidence": "eSIM/vSIM/通信共享/EXT 外部调用者"
+    },
+    "P6.1": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 200,
+        "tests": 4
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 200,
+        "tests": 10
+      },
+      "owner": "H",
+      "planned_slice": "逐业务装配；真实启动/关闭；驻留/重建",
+      "dependencies": "M9 H/O/R；各批真实入口",
+      "product_evidence": "Core/SA/共享 RIL/实际销毁"
+    },
+    "P6.2": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 30,
+        "tests": 1
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 30,
+        "tests": 2
+      },
+      "owner": "H",
+      "planned_slice": "条件源；库导出；构造/销毁/ABI",
+      "dependencies": "M9 独立源清单，已迁模块",
+      "product_evidence": "原生工具链/批准 G2b SO"
+    },
+    "P6.3": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 100,
+        "tests": 2
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 720,
+        "tests": 12
+      },
+      "owner": "H",
+      "planned_slice": "查询/权限；业务兼容入口；EXT/SA/IPC 逐桥",
+      "dependencies": "各 P*.x 业务实现",
+      "product_evidence": "原 IPC、Provider/平台、Feature"
+    },
+    "P6.4": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 100,
+        "tests": 3
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 340,
+        "tests": 10
+      },
+      "owner": "H",
+      "planned_slice": "各原通知出口；回调死亡；重连；诊断",
+      "dependencies": "各业务明确输出契约",
+      "product_evidence": "Registry/CES/Hub/SA"
+    },
+    "P6.5": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 150,
+        "tests": 4
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 100,
+        "tests": 5
+      },
+      "owner": "H",
+      "planned_slice": "适用原生等待/定时器/投递；原效果收据",
+      "dependencies": "M9 请求与关闭机制，各业务原关联",
+      "product_evidence": "FFRT/Binder/真实回调",
+      "candidate_tests_to_credit": [
+        "TargetRadioReceipt.RefusedPostDoesNotRemoveAnotherRequestsReceipt"
+      ],
+      "scope": "Host negative/regression only; planned slice still open"
+    },
+    "P6.6": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 20,
+        "tests": 1
+      },
+      "owner": "H",
+      "planned_slice": "纯类型检查；收敛不必要 ID/依赖",
+      "dependencies": "M9 纯值契约",
+      "product_evidence": "兼容 ABI 与原调用者"
+    }
+  }
+}

@@ -1,6 +1,7 @@
 #include "../../../framework/internal/common/primary_observation.h"
 #include <gtest/gtest.h>
 #include "telephony_errors.h"
+#include "../../shared/account_metadata_scenario.h"
 #include "core_service_errors.h"
 
 #include <future>
@@ -1195,6 +1196,32 @@ private:
 };
 } // namespace
 
+TEST(AF2Discovery, ApplicationPrecedesIdentityAndStalePromotionCannotCreateBinding)
+{
+    LiveDiscoveryFixture f;
+    const CardApplicationTarget application {{1}, "USIM"};
+    const auto first = f.module->ObserveCardApplication(application, 1);
+    ASSERT_TRUE(first);
+    EXPECT_EQ(f.module->ObserveCardApplication(application, 1), first);
+    EXPECT_FALSE(f.module->ReadAccount({41}));
+    EXPECT_FALSE(f.module->FindBinding({1}));
+    EXPECT_EQ(f.store->writes, 0u);
+
+    const auto replacement = f.module->ObserveCardApplication(application, 2);
+    ASSERT_TRUE(replacement);
+    EXPECT_FALSE(f.module->ObserveVerifiedCard(application, 1, kRaw1));
+    EXPECT_FALSE(f.module->FindBinding({1}));
+    EXPECT_EQ(f.store->writes, 0u);
+
+    EXPECT_EQ(f.module->ObserveVerifiedCard(application, 2, kRaw1), replacement);
+    ASSERT_TRUE(f.module->FindBinding({1}));
+    EXPECT_EQ(f.module->FindBinding({1})->subscription, SubscriptionId {41});
+    EXPECT_EQ(f.store->writes, 1u);
+    EXPECT_FALSE(f.module->ObserveVerifiedCard(application, 2, kRaw1));
+    EXPECT_EQ(f.module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+    EXPECT_FALSE(f.module->ObserveCardApplication(application, 3));
+}
+
 TEST(AF2Discovery, LiveCardDiscoveryCreatesAccountAndBinding)
 {
     LiveDiscoveryFixture f;
@@ -2309,32 +2336,51 @@ TEST(AF2AccountMetadata, LegacyFieldContract)
     PrimaryFixture f(PrimaryZeroCatalog(), {}, provider);
     ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
     auto &module = f.live.module;
-    ASSERT_EQ(module->SetShowName(0, u"Host account", {7}), TELEPHONY_ERR_SUCCESS);
-    const auto named = module->ReadAccount({40});
-    ASSERT_TRUE(named);
-    EXPECT_EQ(module->SetShowName(0, u"Host account", {7}), TELEPHONY_ERR_SUCCESS);
-    EXPECT_EQ(module->ReadAccount({40})->fields.name, named->fields.name);
-    EXPECT_EQ(module->SetShowName(0, u"", {7}), TELEPHONY_ERR_SUCCESS);
-    EXPECT_EQ(module->SetSimLabelIndexByIccId(kRaw0, 11), TELEPHONY_ERR_ARGUMENT_INVALID);
-    EXPECT_EQ(module->SetSimLabelIndexByIccId(kRaw0, 3), TELEPHONY_ERR_SUCCESS);
-    const auto labeled = module->ReadAccount({40});
-    ASSERT_TRUE(labeled);
-    EXPECT_EQ(module->SetSimLabelIndexByIccId(kRaw0, 3), TELEPHONY_ERR_SUCCESS);
-    EXPECT_EQ(module->ReadAccount({40})->fields.label, labeled->fields.label);
-    provider->respond = [](const auto &) { return AccountMetadataOutcome {-1, true, EffectKnowledge::Rejected}; };
-    EXPECT_EQ(module->SetShowName(0, u"rejected", {7}), TELEPHONY_ERR_DATABASE_WRITE_FAIL);
-    EXPECT_EQ(module->SetSimLabelIndexByIccId(kRaw0, 7), TELEPHONY_ERR_DATABASE_WRITE_FAIL);
-    std::u16string name;
-    EXPECT_EQ(module->GetShowName(0, name, {7}), TELEPHONY_ERR_SUCCESS);
+    std::optional<uint64_t> namedRevision;
+    std::optional<uint64_t> labeledRevision;
+    std::u16string observedName;
+    SimGuard::ExerciseAccountMetadata(
+        [&](const std::u16string &name) {
+            const auto result = module->SetShowName(0, name, {7});
+            if (name == u"Host account") {
+                const auto account = module->ReadAccount({40});
+                EXPECT_TRUE(account);
+                if (account) {
+                    if (namedRevision) { EXPECT_EQ(account->fields.name, namedRevision); }
+                    else { namedRevision = account->fields.name; }
+                }
+            }
+            return result;
+        },
+        [&](std::u16string &name) {
+            const auto result = module->GetShowName(0, name, {7});
+            observedName = name;
+            return result;
+        },
+        [&](int32_t label) {
+            const auto result = module->SetSimLabelIndexByIccId(kRaw0, label);
+            if (label == 3) {
+                const auto account = module->ReadAccount({40});
+                EXPECT_TRUE(account);
+                if (account) {
+                    if (labeledRevision) { EXPECT_EQ(account->fields.label, labeledRevision); }
+                    else { labeledRevision = account->fields.label; }
+                }
+            }
+            return result;
+        },
+        [&] { provider->respond = [](const auto &) {
+            return AccountMetadataOutcome {-1, true, EffectKnowledge::Rejected};
+        }; });
     const auto account = module->ReadAccount({40});
     ASSERT_TRUE(account && account->legacyLabel);
-    EXPECT_TRUE(name.empty());
+    EXPECT_TRUE(observedName.empty());
     EXPECT_EQ(*account->legacyLabel, 3);
     EXPECT_EQ(f.host->accountsChanged, 5u);
     EXPECT_EQ(provider->Writes().size(), 7u);
     EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
     const std::string observation = "{\"accountNotifications\":\"" + std::to_string(f.host->accountsChanged) +
-        "\",\"emptyName\":\"" + (name.empty() ? "true" : "false") + "\",\"identity\":\"" +
+        "\",\"emptyName\":\"" + (observedName.empty() ? "true" : "false") + "\",\"identity\":\"" +
         (account->subscription.legacySimId == 40 ? "true" : "false") + "\",\"label\":\"" +
         std::to_string(*account->legacyLabel) + "\",\"providerCalls\":\"" +
         std::to_string(provider->Writes().size()) + "\"}";

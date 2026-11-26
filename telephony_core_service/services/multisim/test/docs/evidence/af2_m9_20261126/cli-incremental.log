@@ -1,0 +1,4 @@
+host-build: PASS
+target-sim_test_target_host: PASS
+Report: /tmp/af2-m9/clean-incremental/sim-jfssn2q5/result.json
+incremental_cli_seconds=23.97

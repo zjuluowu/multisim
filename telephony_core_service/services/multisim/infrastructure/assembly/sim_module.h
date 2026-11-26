@@ -72,6 +72,7 @@ public:
     int32_t SetSimLabelIndexByIccId(const std::string &iccid, int32_t label);
     bool ReconcileAccountMetadata(const AccountMetadataOperation &operation);
     AssignmentView ReadAssignment() const;
+    std::optional<SessionRef> ObserveCardApplication(const CardApplicationTarget &application, uint64_t generation);
     std::optional<SessionRef> ObserveVerifiedCard(const CardApplicationTarget &application,
         uint64_t generation, const std::string &iccid);
     bool InvalidateVerifiedCard(const SessionRef &session);

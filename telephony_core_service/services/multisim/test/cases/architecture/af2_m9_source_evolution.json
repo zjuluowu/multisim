@@ -1,8 +1,14 @@
 {
   "baseline": "bf7d0c689f7e12320c864a6866a2c8d92d0bd660",
   "files": {
+    "card/runtime/card_observation_runtime.cpp": "b94726a157558a4ee82a230afc4e3878009aa1e74f34f1c2ab03e5ddd4a08343",
+    "card/runtime/card_observation_runtime.h": "0dd3f08ae1882af6361fccdcea31d79990375c9c64d9494f3ab43d85abc809ef",
+    "card/state/session_registry.cpp": "6e6142aeebbedfb4cf0460d420876fee7257ab545a76357f12c4bea7e3b671d6",
+    "card/state/session_registry.h": "2eecb0b0ea5f3f275775e51f6a838c03573789c196c2bb4d6374da72033e1ca5",
     "device/resource/resource_radio_runtime.cpp": "1aa7ab93413129c70660244061c4ac1df336112e44ac5be2bc5fddefd6221041",
-    "device/resource/resource_radio_runtime.h": "13c5469eb221e83181aa2ea613198d5ac5cf56115535eb79b4747bbe273eb4ed"
+    "device/resource/resource_radio_runtime.h": "13c5469eb221e83181aa2ea613198d5ac5cf56115535eb79b4747bbe273eb4ed",
+    "infrastructure/assembly/sim_module.h": "6087cdd42999b8fd384817fa5ee9fc8b02ab7bb7af9edf9a6c17236439617f79",
+    "infrastructure/assembly/sim_module_factory.cpp": "b00f5823f4e0514fbb00c9a3236dcb551a902edb095bed8f17a4d55efb1c3016"
   },
   "added": {}
 }

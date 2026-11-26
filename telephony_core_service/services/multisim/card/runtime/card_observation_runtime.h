@@ -16,12 +16,14 @@ class CardObservationRuntime final {
 public:
     CardObservationRuntime(const SlotCatalog &catalog, SessionRegistry &sessions,
         CardObservationSink &sink, RuntimeEpoch epoch);
+    std::optional<SessionRef> ObserveCardApplication(const CardApplicationTarget &application, uint64_t generation);
     std::optional<SessionRef> ObserveVerifiedCard(const CardApplicationTarget &application, uint64_t generation,
         const std::string &iccid);
     bool StillCurrent(const SessionRef &session);
     bool HasVerifiedCard(SlotId slot);
     bool InvalidateVerifiedCard(const SessionRef &session);
 private:
+    bool AcceptApplication(const SessionRef &session);
     const SlotCatalog &catalog_;
     SessionRegistry &sessions_;
     CardObservationSink &sink_;
