@@ -40,3 +40,30 @@ TargetRadioReceipt.RefusedPostDoesNotRemoveAnotherRequestsReceipt` 实测冷跑 
 在该 worktree 从 Target 源表移除 SlotCatalog 的 CPP。原归档工具留下旧成员，链接仍成功。
 更换为全量重建 archive 后，同一变异得到预期的未定义符号，恢复源表后重新链接通过。
 [原错误通过](archive-stale-before.log) · [负控](missing-target-source.log) · [恢复](archive-restore.log.gz)
+
+## 候选回归
+
+候选源码 SHA 为 `b6f6c25eed8b690da53f5b86ef3e7883cbe46916`。Legacy CI 任务在前一阶段启动，
+报告记录启动时的 Git SHA 和实际构建输入。候选另有按该 SHA 记录的两端全量运行。
+
+| 执行项 | 结果及证据 |
+|---|---|
+| Legacy 全量及 CI | 147/147 [候选全量](legacy-candidate.json.gz) · [CI 启动记录](legacy-ci.json.gz) · [变异及恢复](legacy-mutation.json.gz) |
+| Target 全量 | 171/171 [候选全量](target-verified.json.gz) |
+| 共同契约差分 | 12 个场景、24/24，[Legacy](legacy-common.json.gz) · [Target](target-common.json.gz) · [Oracle 差分](common-differential.json.gz)，差异 0 |
+| CD-01～03 | 原行为 [Legacy 2/2](legacy-approved.json.gz)，批准行为 [Target 8/8](target-approved.json.gz) |
+| Sanitizer | [ASan 73/73](asan.json.gz) · [TSan 73/73](tsan.json.gz) |
+| GN/Ninja、围栏与规则 | [架构全量](architecture.log.gz) · [技术门禁](technical.json.gz) |
+| 真实执行取证 | [Legacy 兼容入口](legacy-real-audit.json.gz) · [Target 拓扑](target-topology-audit.json.gz) |
+| 逐文件统计 | [源码](source-inventory.json) · [SIM/WU/P 台账](task-inventory.json) |
+
+全量及 CI 报告保留每个执行命令、筛选条件、断言结果和构建资料。在仓库根目录执行的主要入口
+
+```bash
+T=telephony_core_service/services/multisim/test
+python3 -B "$T/scripts/test.py" all --backend legacy --ci --out <Verify> --output <证据>
+python3 -B "$T/scripts/test.py" run --backend legacy --no-incremental-build --full-evidence --out <Verify> --output <证据>
+python3 -B "$T/scripts/test.py" run --backend target --no-incremental-build --full-evidence --out <Target> --output <证据>
+python3 -B "$T/scripts/run_architecture.py" --with-gn --migration --output <证据>
+python3 -B "$T/scripts/handoff_inventory.py" --compile-db <Target编译数据库> --legacy <Legacy报告> --target <Target报告> --output <清单>
+```

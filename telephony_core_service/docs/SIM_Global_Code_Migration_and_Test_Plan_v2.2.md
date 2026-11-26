@@ -47,6 +47,40 @@ Host 两后端分别编译、链接和执行。Legacy 的 SIM 基础及 eSIM 条
 后端注册数用于运行覆盖，不能推出全局业务语义数。
 [逐文件统计及原始回归](../services/multisim/test/docs/evidence/af2_m9_20261126/README.md)
 
+## 候选实测范围
+
+候选源码 SHA 为 `b6f6c25eed8b690da53f5b86ef3e7883cbe46916`。行数由逐文件统计，目录行包含其子目录。
+
+| 目录 | 文件 | 物理行 | 有效行 |
+|---|---:|---:|---:|
+| 生产合计 | 101 | 11,184 | 8,554 |
+| `account` | 33 | 3,867 | 2,935 |
+| `account/activation` | 7 | 365 | 179 |
+| `account/discovery` | 3 | 287 | 218 |
+| `account/number` | 9 | 464 | 261 |
+| `card` | 17 | 1,251 | 842 |
+| `card/esim` | 4 | 185 | 84 |
+| `card/records` | 3 | 152 | 83 |
+| `card/runtime` | 7 | 609 | 447 |
+| `card/security` | 1 | 29 | 8 |
+| `card/state` | 2 | 276 | 220 |
+| `device` | 4 | 930 | 834 |
+| `device/resource` | 4 | 930 | 834 |
+| `infrastructure` | 28 | 2,351 | 1,674 |
+| `infrastructure/assembly` | 11 | 1,142 | 867 |
+| `infrastructure/assembly/exports` | 2 | 42 | 8 |
+| `infrastructure/compatibility` | 12 | 757 | 476 |
+| `infrastructure/compatibility/api` | 7 | 506 | 341 |
+| `infrastructure/compatibility/events` | 5 | 251 | 135 |
+| `infrastructure/request` | 4 | 371 | 276 |
+| `role_assignment` | 19 | 2,785 | 2,269 |
+| `role_assignment/primary` | 5 | 288 | 186 |
+
+Target Host 归档有 25 个 CPP 对象。另有 8 个 CPP 只参与逻辑 GN，68 个头文件计声明资产。
+测试 cases／framework 的 C/C++ 为 167 个文件、23,722 物理行、19,788 有效行。
+相对中心目标 33,500 物理行，候选差额为 22,316 行。该差额是实测对账，P 的净增分配和
+数量考核继续按原窗口及实际功能证据调整。
+
 ## 剩余任务和预算
 
 [逐项台账](../services/multisim/test/docs/evidence/af2_m9_20261126/task-inventory.json) 摘录

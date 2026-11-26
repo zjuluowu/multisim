@@ -562,7 +562,11 @@
       "owner": "B",
       "planned_slice": "状态查询；锁因；可信拔卡/换卡；应用切换/映射",
       "dependencies": "M9 SessionRegistry 与观察",
-      "product_evidence": "真卡态/映射协议"
+      "product_evidence": "真卡态/映射协议",
+      "candidate_tests_to_credit": [
+        "AF2Discovery.ApplicationPrecedesIdentityAndStalePromotionCannotCreateBinding"
+      ],
+      "scope": "Verified Host pre-identity application admission only; planned slice remains open"
     },
     "P2.2": {
       "v2_1_before_handoff_reserve": {
@@ -950,5 +954,6 @@
       "dependencies": "M9 纯值契约",
       "product_evidence": "兼容 ABI 与原调用者"
     }
-  }
+  },
+  "candidate": "b6f6c25eed8b690da53f5b86ef3e7883cbe46916"
 }

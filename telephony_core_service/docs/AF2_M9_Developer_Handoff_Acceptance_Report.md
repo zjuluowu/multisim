@@ -1,7 +1,8 @@
 # AF-2 M9 开发工程交接验收记录
 
 **实施检查点。** 输入 `bf7d0c689f7e12320c864a6866a2c8d92d0bd660`。
-初次 Radio／工程成果已发布为 `7264a3940595fa206c61583315338caae4ba269b`。
+初次 Radio／工程成果为 `7264a3940595fa206c61583315338caae4ba269b`。
+阶段候选源码为 `b6f6c25eed8b690da53f5b86ef3e7883cbe46916`。
 [唯一执行状态](SIM_Refactor_Execution_State.md#af2-m9-status) ·
 [开发指导 v2.2](SIM_Global_Code_Migration_and_Test_Plan_v2.2.md) ·
 [原始命令和证据](../services/multisim/test/docs/evidence/af2_m9_20261126/README.md)
@@ -25,10 +26,18 @@
 | H04 | BLOCKED | Host 独立链接及源表对照。缺匹配 OHOS 树和 hb，产品独立库及条件源未验收 | 构建负责人 |
 | H05 | FAIL | 一个共同样板复用体，Target CPP 自动入 GN。其余仍有双实现业务测试体 | 测试负责人 |
 | H06 | PENDING_MANUAL_ACCEPTANCE | CLI 技术证据独立保存，仍需真实 GUI Run、Debug、刷新、生产断点 | 开发组长／测试负责人 |
-| H07 | FAIL | GN 与依赖围栏、Radio 正反运行有证据。全图卡态／Refresh／关闭和构建遗漏负控仍需补齐 | 架构师／测试负责人 |
+| H07 | FAIL | GN 与依赖围栏、Radio 正反运行有证据。构建遗漏负控已验证。全图卡态／Refresh／关闭仍需补齐 | 架构师／测试负责人 |
 | H08 | FAIL | 62 个 SIM、9 个 WU、32 个 P 已建候选台账。入口、语义去重、认领及核销需逐项复核 | 架构师／组长 |
 | H09 | PENDING_MANUAL_ACCEPTANCE | 下表记录证据责任和保留写权。外部负责人仍需认领 | 产品／外部接口负责人 |
 | H10 | BLOCKED | 两项样板和非框架作者证据欠缺 | 开发组长／架构师 |
+
+## 已完成的候选验证
+
+Legacy 147/147、Target 171/171，M1～M8 与本轮负控执行。Legacy CI 和真实执行审计通过。
+ASan、TSan 各 73/73。CD 独立回归 Legacy 2/2、Target 8/8。12 个共同契约场景
+24/24，Legacy/Target 和 Oracle 差异均为零。独立 worktree 的 Target 冷跑、热跑（直接复用
+ELF）、新增单 CPP 增量分别为 57.66、0.51、23.97 秒。LLDB 单步实际观察预身份应用、
+原代次、TopologyService 发现和 Stop，过程退出 0。标准库字符串格式器有摘要解析错误。
 
 ## 独立反向审查
 
@@ -37,7 +46,8 @@
 交付为 2、1、1，修订后为 2、1。原源码、失败输出和复验均已归档。
 
 反查确认正式 SimModule 的 B/C1 尚未执行，旧 A 仍用目录和 Binding 代次构造成员及会话。
-LoadSession 资格逻辑仍待实际 EF 路径消费。所有技术门禁闭合后进行最终独立反审。
+LoadSession 资格逻辑仍待实际 EF 路径消费。遗漏源码负控另复现 archive 残留旧对象，修订
+归档命令后实际链接失败，恢复源码则通过。所有技术门禁闭合后进行最终独立反审。
 
 ## 产品阻塞和责任
 
