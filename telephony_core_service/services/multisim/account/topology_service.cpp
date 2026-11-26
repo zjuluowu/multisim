@@ -243,7 +243,7 @@ DiscoveryAcceptance TopologyService::ContinueDiscovery(DiscoveryCallRef call,
                     !(plan.existingSubscription == result->assignedSubscription))) {
                 pending.ambiguous = true;
             } else {
-                if (evidence.applied == columns) { pending.position = result->position; }
+                if (evidence.applied == columns && pending.applied != columns) { pending.position = result->position; }
                 pending.applied |= evidence.applied;
                 pending.notApplied |= evidence.notApplied;
                 if (result->assignedSubscription) { pending.assigned = result->assignedSubscription; }
@@ -290,11 +290,11 @@ DiscoveryAcceptance TopologyService::ContinueDiscovery(DiscoveryCallRef call,
         }
         const AccountRecord account {*identity, plan.accountFields.iccid, 1,
             current ? std::make_optional(projection) : std::nullopt, projection};
-        if (accounts_.PublishDiscovery(account, plan.accountFields.legacyLabel.has_value()) != AccountAcceptance::Accepted) {
+        if (accounts_.PublishDiscovery(account, plan.accountFields.legacyLabel.has_value(), pending.position) !=
+            AccountAcceptance::Accepted) {
             pending.executing = false;
             return acceptance;
         }
-        accounts_.ProtectDiscovery(*identity, current, plan.accountFields.legacyLabel.has_value(), pending.position);
         RevokeReloadRoles();
         // The binding and the original witness become visible in the same T domain.
         if (prepared) { bindings_.PublishBinding(*prepared, std::move(preparedSource)); }
@@ -442,6 +442,7 @@ AccountAcceptance TopologyService::AcceptActivationProjection(SubscriptionId sub
     AccountReadView view, uint64_t expectedActiveRevision, bool active)
 {
     std::lock_guard<std::recursive_mutex> guard(commitLock_);
+    accounts_.ReserveReloadFieldProtection(subscription);
     const auto accepted = accounts_.AcceptActiveProjection(subscription, view, expectedActiveRevision, active);
     if (accepted == AccountAcceptance::Accepted) {
         accounts_.ProtectReloadFields(subscription, view, ReloadActive, {});
@@ -502,7 +503,7 @@ ReloadResult TopologyService::AcceptAccountReload(const ReloadRequest &request, 
         request.acceptance.attempt == request.storeRequest.loadAttempt;
     const bool imageValid = !loaded.image ||
         (loaded.image->sample == loaded.request && loaded.image->position.Valid());
-    bool complete = sameRead && imageValid && loaded.complete;
+    bool complete = sameRead && imageValid && loaded.complete && loaded.legacyResult == 0;
     std::vector<AccountRecord> records;
     std::vector<uint8_t> columns;
     std::set<SubscriptionId> identities;

@@ -187,6 +187,7 @@ TopologyService::MetadataWriteResult TopologyService::UpdateMetadata(AccountMeta
             metadataOperations_.RetireAfterEvidenceRetention(request);
             return {AccountMetadataResult::Conflict};
         }
+        accounts_.ReserveReloadFieldProtection(*identity);
         pendingMetadata_.emplace(request, PendingMetadata {{operation, {}}});
     } catch (const std::exception &) {
         metadataOperations_.MarkTerminal(request, TerminalState::Failed);

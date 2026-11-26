@@ -62,11 +62,21 @@ struct AccountReloadTicket {
     uint64_t membershipWatermark;
     std::map<SubscriptionId, AccountReloadInput> expected;
 };
+enum class AccountReloadMembership { Retained, Present, Added, Removed };
+struct AccountReloadRowResult {
+    AccountReloadMembership membership {AccountReloadMembership::Retained};
+    uint8_t accepted {0};
+    uint8_t invalid {0};
+    uint8_t unresolved {0};
+    uint8_t uncovered {0};
+    uint8_t changedInputs {0};
+};
 struct AccountReloadResult {
     bool acceptedAttempt {false};
     size_t acceptedFields {0};
     size_t conflictedFields {0};
     bool roleMembershipEligible {false};
+    std::map<SubscriptionId, AccountReloadRowResult> rows {};
 };
 struct AccountReloadPending { SubscriptionId subscription; uint8_t fields; };
 class AccountRegistry final {
@@ -78,6 +88,7 @@ public:
         const std::vector<AccountRecord> &loaded, const std::vector<uint8_t> &validFields = {},
         const std::optional<AccountLoadImage> &image = {}, const std::vector<AccountReloadPending> &pending = {},
         bool membershipPending = false, bool requireCertifiedRemoval = false);
+    void ReserveReloadFieldProtection(SubscriptionId id);
     void ProtectReloadFields(SubscriptionId id, AccountReadView view, uint8_t fields,
         std::optional<StorePosition> position);
     void ProtectDiscovery(SubscriptionId id, bool current, bool label, std::optional<StorePosition> position);
@@ -96,7 +107,8 @@ public:
         uint64_t expectedImsRevision, int32_t preference);
     // 仅首次导入已由旧provider分配的身份；已有账户通过字段接纳，不整行覆盖。
     // Publishes only prepared nodes; every potentially allocating operation precedes the first visible change.
-    AccountAcceptance PublishDiscovery(AccountRecord account, bool rewriteLabel);
+    AccountAcceptance PublishDiscovery(AccountRecord account, bool rewriteLabel,
+        std::optional<StorePosition> position);
     AccountAcceptance AcceptDiscoveredAccount(const AccountRecord &account);
     AccountReloadAcceptance AcceptReloadProjection(SubscriptionId subscription, AccountReadView view,
         uint64_t expectedIdentityRevision, const AccountFieldRevisions &expected,

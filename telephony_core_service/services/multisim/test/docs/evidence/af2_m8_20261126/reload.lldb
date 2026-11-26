@@ -1,0 +1,33 @@
+settings set target.disable-aslr false
+settings set symbols.enable-external-lookup false
+settings set target.env-vars LLVM_PROFILE_FILE=/tmp/af2-m8/lldb-%p.profraw
+breakpoint set -n OHOS::Telephony::MultiSim::SimModule::ReloadAccounts -o true
+breakpoint set -n OHOS::Telephony::MultiSim::TopologyService::PrepareAccountReload -o true
+breakpoint set -n OHOS::Telephony::MultiSim::AccountStoreAdapter::LoadAccounts -o true
+breakpoint set -n OHOS::Telephony::MultiSim::TopologyService::AcceptAccountReload -o true
+breakpoint set -n OHOS::Telephony::MultiSim::AccountRegistry::AcceptReload -o true
+breakpoint set -n OHOS::Telephony::MultiSim::AccountRegistry::AcceptReloadProjection -o true
+breakpoint set -n OHOS::Telephony::MultiSim::AssignmentService::AcceptReloadedRoleProjectionSet -o true
+breakpoint set -n OHOS::Telephony::MultiSim::SimModule::StopAcceptingAndDrain -o true
+breakpoint set -f sim_module_factory.cpp -l 473 -o true
+run --gtest_filter=AF2Reload.LiveAccountsAndRolesSurviveStaleReload
+frame variable view
+thread step-over
+continue
+frame variable view
+continue
+frame variable request
+continue
+frame variable loaded.image
+continue
+frame variable ticket.attempt ticket.membershipWatermark replaceable
+continue
+frame variable subscription expectedIdentityRevision allowedFields
+continue
+frame variable delivery.attempt delivery.historical delivery.position
+thread step-over
+continue
+frame variable this->moduleCalls_
+continue
+frame variable module
+continue

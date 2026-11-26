@@ -163,3 +163,5 @@ M2 的 `AF2Discovery.LiveBindingsFeedExistingC0AndStaleTargetCannotAdvance` 继�
 IMS Preference 的 Provider 直读、原码透传与换卡单步用例见 [M7A 开发与调试](M7A_Ims_Preference_Debug.md)。
 
 SIM 号码的异步队列、卡会话、资源租约及账户回写单步见 [M7B 号码开发与调试](M7B_Show_Number_Debug.md)。
+
+账户初次恢复、Current/Historical 刷新、字段保护及 A 的整组回执见 [M8 账户加载与 Reload 调试](M8_Account_Reload_Debug.md)。

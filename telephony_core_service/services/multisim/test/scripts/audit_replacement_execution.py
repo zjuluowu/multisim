@@ -35,6 +35,7 @@ def main():
                         'WaitForAcceptedCallsDrained', 'AsyncSimGeneralExecute'],
                     'SimManager':['SetPrimarySlotId', 'Stop'],
                     'MultiSimController':['SetPrimarySlotId'],
+                    'SimRdbHelper':['QueryAllValidData', 'QueryAllData'],
                     'AccountStoreAdapter':['LoadAccounts', 'MatchAccountByIccid', 'WriteDiscoveredAccount']}
     elif args.slice == 'query':
         required = {'CoreServiceSim':['GetRealSimCount'], 'SimManager':['GetRealSimCount'],

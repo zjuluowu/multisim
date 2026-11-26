@@ -3238,6 +3238,9 @@ TEST(AF2Reload, LiveAccountsAndRolesSurviveStaleReload)
         const auto stale = module->ReloadAccounts(view);
         EXPECT_TRUE(stale.accounts.acceptedAttempt);
         EXPECT_NE(stale.accounts.conflictedFields, 0u);
+        ASSERT_EQ(stale.accounts.rows.count({40}), 1u);
+        EXPECT_EQ(stale.accounts.rows.at({40}).uncovered & ReloadName, ReloadName);
+        EXPECT_EQ(stale.accounts.rows.at({40}).accepted & ReloadNumber, ReloadNumber);
         EXPECT_EQ(stale.roles, RoleReloadDisposition::InsufficientCoverage);
         EXPECT_EQ(module->ReadAccount({40}, view)->displayName, u"New A");
         EXPECT_EQ(module->ReadAccount({40}, view)->displayNumber, u"200");
@@ -3428,6 +3431,8 @@ TEST(AF2Reload, ReadWhileMetadataWriteIsUnresolved)
     const auto operation = metadata->Writes().front().operation;
     const auto read = module->ReloadAccounts(AccountReadView::Current);
     EXPECT_TRUE(read.accounts.acceptedAttempt);
+    ASSERT_EQ(read.accounts.rows.count({40}), 1u);
+    EXPECT_EQ(read.accounts.rows.at({40}).unresolved & ReloadName, ReloadName);
     EXPECT_EQ(module->ReadAccount({40})->displayName, before);
     EXPECT_EQ(module->ReadAccount({40})->displayNumber, u"100");
 

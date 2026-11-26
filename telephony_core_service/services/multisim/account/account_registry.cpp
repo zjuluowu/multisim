@@ -92,7 +92,8 @@ AccountAcceptance AccountRegistry::AcceptDiscoveredAccount(const AccountRecord &
     return AccountAcceptance::Accepted;
 }
 
-AccountAcceptance AccountRegistry::PublishDiscovery(AccountRecord account, bool rewriteLabel)
+AccountAcceptance AccountRegistry::PublishDiscovery(AccountRecord account, bool rewriteLabel,
+    std::optional<StorePosition> position)
 {
     const auto found = accounts_.find(account.subscription);
     if (account.identityRevision == 0 || (found != accounts_.end() && found->second.iccid != account.iccid)) {
@@ -104,6 +105,7 @@ AccountAcceptance AccountRegistry::PublishDiscovery(AccountRecord account, bool 
     uint64_t nextClock = membershipClock_;
     std::map<SubscriptionId, uint64_t> currentNode;
     std::map<SubscriptionId, uint64_t> historicalNode;
+    std::array<std::map<SubscriptionId, Membership>, 2> protectionNodes;
     for (auto view : {AccountReadView::Current, AccountReadView::Historical}) {
         auto &input = Projection(account, view);
         if (!input) { continue; }
@@ -141,6 +143,17 @@ AccountAcceptance AccountRegistry::PublishDiscovery(AccountRecord account, bool 
         membershipVersions_.try_emplace(view);
         auto &node = view == AccountReadView::Current ? currentNode : historicalNode;
         node.emplace(account.subscription, ++nextClock);
+        auto &protection = reloadMembers_[view];
+        const auto old = protection.find(account.subscription);
+        auto member = old == protection.end() ? Membership {} : old->second;
+        if (!member.continuousSince) { member.continuousSince = nextClock; }
+        member.iccid = account.iccid;
+        member.protection.Set(position);
+        const unsigned written = ReloadPosition | ReloadActive | (rewriteLabel ? ReloadLabel : 0);
+        for (size_t field = 0; field < member.fields.size(); ++field) {
+            if (written & (1U << field)) { member.fields[field].Set(position); }
+        }
+        protectionNodes[view == AccountReadView::Historical].emplace(account.subscription, std::move(member));
     }
     std::map<SubscriptionId, AccountRecord> node;
     node.emplace(account.subscription, std::move(prepared));
@@ -154,6 +167,10 @@ AccountAcceptance AccountRegistry::PublishDiscovery(AccountRecord account, bool 
         auto &members = membershipVersions_.find(view)->second;
         members.erase(account.subscription);
         members.insert(preparedNode.extract(preparedNode.begin()));
+        auto &preparedProtection = protectionNodes[view == AccountReadView::Historical];
+        auto &protection = reloadMembers_.find(view)->second;
+        protection.erase(account.subscription);
+        protection.insert(preparedProtection.extract(preparedProtection.begin()));
     }
     membershipClock_ = nextClock;
     return AccountAcceptance::Accepted;
@@ -350,6 +367,12 @@ AccountReloadAcceptance AccountRegistry::AcceptReloadProjection(SubscriptionId s
     }
     return accepted;
 }
+void AccountRegistry::ReserveReloadFieldProtection(SubscriptionId id)
+{
+    reloadMembers_[AccountReadView::Current].try_emplace(id);
+    reloadMembers_[AccountReadView::Historical].try_emplace(id);
+}
+
 void AccountRegistry::ProtectReloadFields(SubscriptionId id, AccountReadView view, uint8_t fields,
     std::optional<StorePosition> position)
 {
@@ -409,16 +432,33 @@ AccountReloadResult AccountRegistry::AcceptReload(const AccountReloadTicket &tic
     auto clock = membershipClock_;
     std::set<SubscriptionId> present;
     std::set<std::string> identities;
+    std::map<std::string, SubscriptionId> knownIccids;
+    for (const auto &[id, account] : accounts_) { knownIccids.emplace(account.iccid, id); }
+    for (const auto &[view, entries] : reloadMembers_) {
+        (void)view;
+        for (const auto &[id, member] : entries) {
+            if (!member.iccid.empty()) { knownIccids.emplace(member.iccid, id); }
+        }
+    }
+    const auto matchesRetainedIdentity = [&](const AccountRecord &row) {
+        for (const auto &[view, entries] : reloadMembers_) {
+            (void)view;
+            const auto member = entries.find(row.subscription);
+            if (member != entries.end() && !member->second.iccid.empty() && member->second.iccid != row.iccid) {
+                return false;
+            }
+        }
+        return true;
+    };
     for (const auto &row : loaded) {
         const auto &projection = ticket.view == AccountReadView::Current ? row.current : row.historical;
         const auto current = accounts.find(row.subscription);
-        const auto sameIccid = FindByIccid(row.iccid);
-        const auto member = members.find(row.subscription);
+        const auto sameIccid = knownIccids.find(row.iccid);
         if (!projection || row.subscription.legacySimId < 0 || row.iccid.empty() || row.identityRevision == 0 ||
             !present.insert(row.subscription).second || !identities.insert(row.iccid).second ||
             (current != accounts.end() && current->second.iccid != row.iccid) ||
-            (sameIccid && !(*sameIccid == row.subscription)) ||
-            (member != members.end() && !member->second.iccid.empty() && member->second.iccid != row.iccid)) {
+            (sameIccid != knownIccids.end() && !(sameIccid->second == row.subscription)) ||
+            !matchesRetainedIdentity(row)) {
             return result;
         }
     }
@@ -457,19 +497,23 @@ AccountReloadResult AccountRegistry::AcceptReload(const AccountReloadTicket &tic
         const bool stableMember = memberVersion <= ticket.membershipWatermark &&
             member.protection.CoveredBy(membershipImage) && (!requireCertifiedRemoval || newerThanTombstone);
         result.roleMembershipEligible &= stableMember;
-        const auto columns = validFields.empty() ? ReloadAllFields : validFields[index];
+        const uint8_t columns = (validFields.empty() ? ReloadAllFields : validFields[index]) & ReloadAllFields;
+        auto &disposition = result.rows[id];
+        disposition.invalid = ReloadAllFields & ~columns;
         if ((expected == ticket.expected.end() && (existed || membershipPending || !stableMember ||
             columns != ReloadAllFields || clock == std::numeric_limits<uint64_t>::max() ||
             (retired.count(id) && !MayRecreate(retired.at(id))))) ||
             (expected != ticket.expected.end() && (!existed || member.continuousSince > ticket.membershipWatermark ||
             existing->second.identityRevision != expected->second.identityRevision))) {
             result.roleMembershipEligible = false;
+            disposition.changedInputs = columns;
             result.conflictedFields += 6;
             continue;
         }
 
         const auto &incoming = ticket.view == AccountReadView::Current ? row.current : row.historical;
-        uint8_t allowed = columns & ~pendingFields(id);
+        disposition.unresolved = columns & pendingFields(id);
+        uint8_t allowed = columns & ~disposition.unresolved;
         std::array<bool, 6> unchanged {};
         if (existed) {
             const auto &previous = *Projection(existing->second, ticket.view);
@@ -484,11 +528,13 @@ AccountReloadResult AccountRegistry::AcceptReload(const AccountReloadTicket &tic
             const auto &protectedField = member.fields[field];
             if (!protectedField.CoveredBy(sample) ||
                 (sample && protectedField.observed && sample == protectedField.floor && !unchanged[field])) {
+                disposition.uncovered |= allowed & bit;
                 allowed &= ~bit;
             }
         }
         // A newly created projection must carry every field; no partial row can revive a tombstone.
         if (!existed && allowed != ReloadAllFields) {
+            disposition.changedInputs = allowed;
             result.roleMembershipEligible = false;
             result.conflictedFields += 6;
             continue;
@@ -503,9 +549,12 @@ AccountReloadResult AccountRegistry::AcceptReload(const AccountReloadTicket &tic
         for (size_t field = 0; field < fields.size(); ++field) {
             if (fields[field]) {
                 ++result.acceptedFields;
+                disposition.accepted |= 1U << field;
                 if (const auto position = fieldImage(1U << field)) { member.fields[field].Set(position, true); }
             } else { ++result.conflictedFields; }
         }
+        disposition.changedInputs = allowed & ~disposition.accepted;
+        disposition.membership = existed ? AccountReloadMembership::Present : AccountReloadMembership::Added;
         if (!existed) {
             versions[id] = ++clock;
             member.continuousSince = clock;
@@ -518,6 +567,7 @@ AccountReloadResult AccountRegistry::AcceptReload(const AccountReloadTicket &tic
         const auto id = it->first;
         auto &projection = Projection(it->second, ticket.view);
         if (projection && !present.count(id)) {
+            auto &disposition = result.rows[id];
             const auto expected = ticket.expected.find(id);
             auto &member = members[id];
             bool covered = member.protection.CoveredBy(membershipImage);
@@ -531,6 +581,7 @@ AccountReloadResult AccountRegistry::AcceptReload(const AccountReloadTicket &tic
                 expected != ticket.expected.end() && it->second.identityRevision == expected->second.identityRevision &&
                 sameFields(projection->revisions, expected->second.fields) &&
                 clock != std::numeric_limits<uint64_t>::max()) {
+                disposition.membership = AccountReloadMembership::Removed;
                 retired[id] = projection->revisions;
                 projection.reset();
                 versions[id] = ++clock;
