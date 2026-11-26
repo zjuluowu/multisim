@@ -48,12 +48,14 @@ private:
         uint32_t expected;
         std::vector<RadioSwitchResult> accepted;
         std::vector<RadioSwitchResult> recovered;
-        std::set<int32_t> submittedMembers;
+        std::set<int32_t> admittedMembers;
         std::set<int32_t> acceptedMembers;
         std::set<uint64_t> submittedTransmissions;
         std::set<uint64_t> recoveredTransmissions;
         bool quarantined {false};
         bool sent {false};
+        uint32_t submitting {0};
+        bool hasNotSentMember {false};
     };
     struct Transmission {
         uint64_t fence;

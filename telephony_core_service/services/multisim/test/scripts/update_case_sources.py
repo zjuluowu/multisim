@@ -17,6 +17,7 @@ def capability(path):
  return 'state'
 classified = {path: capability(path) for path in ordinary}
 groups = {
+ 'sim_target_case_sources': list((root/'cases/target').rglob('*.cpp')),
  'sim_case_sources': [p for p in ordinary if classified[p]=='state'],
  'sim_state_protocol_case_sources': [p for p in ordinary if classified[p]=='state_protocol'],
  'sim_protocol_case_sources': list((root/'cases/internal/protocol').glob('*.cpp')),

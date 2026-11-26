@@ -1002,6 +1002,45 @@ TEST(TargetPrimaryB,ResourceSubmitConfirmedNotSentRejectsContradictoryCallback)
     EXPECT_TRUE(f.completion.results.empty());
 }
 
+TEST(TargetPrimaryB,ResourceSubmitMemberCannotDuplicateOrReleaseAnotherInSubmit)
+{
+    ResourceFixture f;
+    const RadioSwitchRequest first {{RequestId{1,{6,2},RequestOwner::Assignment},2,0},
+        {0},{"m1"},PrimarySwitchMode::ThreePhaseProtocol,std::nullopt,1,0,2};
+    auto second = first;
+    second.target = {1};
+    auto rival = first;
+    rival.step.request.value = 2;
+    unsigned firstCalls = 0;
+    unsigned secondCalls = 0;
+    unsigned rivalCalls = 0;
+    f.platform.onSynchronousResponse = [&](uint64_t, const RadioSwitchRequest &request) {
+        if (request.step == rival.step) { ++rivalCalls; return; }
+        if (request.target == second.target) { ++secondCalls; return; }
+        if (++firstCalls != 1) { return; }
+
+        f.radio.SwitchPrimaryRadio(first);
+        f.platform.disposition = RadioSubmitDisposition::ConfirmedNotSent;
+        f.radio.SwitchPrimaryRadio(second);
+        EXPECT_EQ(f.radio.ReadResourceState(f.key), ResourceState::InFlight);
+        EXPECT_FALSE(f.radio.Recover(first.step, {first.step, EffectKnowledge::ConfirmedNotApplied,
+            true, true, true}));
+        f.radio.SwitchPrimaryRadio(rival);
+        f.platform.disposition = RadioSubmitDisposition::HandoffAccepted;
+    };
+    f.radio.SwitchPrimaryRadio(first);
+    EXPECT_EQ(firstCalls, 1u);
+    EXPECT_EQ(secondCalls, 1u);
+    EXPECT_EQ(rivalCalls, 0u);
+    EXPECT_EQ(f.radio.ReadResourceState(f.key), ResourceState::Quarantined);
+    ASSERT_EQ(f.platform.requests.size(), 1u);
+    const auto token = f.platform.requests.front().first;
+    EXPECT_EQ(f.radio.ReadTransportSerial(token), static_cast<int32_t>(token));
+    EXPECT_TRUE(f.radio.AcceptDeviceResult({token, Result(first, EffectKnowledge::ConfirmedApplied, 0),
+        true, true, true, static_cast<int32_t>(token)}));
+    EXPECT_EQ(f.radio.ReadResourceState(f.key), ResourceState::Available);
+}
+
 TEST(TargetPrimaryB,ResourceBarrierIsNotAcquiredForC0)
 {
     ResourceFixture f;

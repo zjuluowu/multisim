@@ -1,3 +1,5 @@
+import("../../../../sim_legacy_sources.gni")
+
 # Shared source ownership; each platform compiles its own objects.
 sim_core_root = get_path_info("../../../..", "abspath")
 sim_state_base_sources = [
@@ -16,57 +18,12 @@ sim_wrapper_sources = [
   "$sim_core_root/services/telephony_ext_wrapper/src/telephony_ext_wrapper.cpp",
 ]
 
-sim_initialization_sources = [
-  "$sim_core_root/services/sim/src/card_file_detect_manager.cpp",
-  "$sim_core_root/services/sim/src/csim_file_controller.cpp",
-  "$sim_core_root/services/sim/src/esim_manager.cpp",
-  "$sim_core_root/services/sim/src/icc_dialling_numbers_cache.cpp",
-  "$sim_core_root/services/sim/src/icc_dialling_numbers_handler.cpp",
-  "$sim_core_root/services/sim/src/icc_dialling_numbers_manager.cpp",
-  "$sim_core_root/services/sim/src/icc_file.cpp",
-  "$sim_core_root/services/sim/src/icc_file_controller.cpp",
-  "$sim_core_root/services/sim/src/icc_operator_privilege_controller.cpp",
-  "$sim_core_root/services/sim/src/icc_operator_rule.cpp",
-  "$sim_core_root/services/sim/src/icc_state.cpp",
-  "$sim_core_root/services/sim/src/isim_file.cpp",
-  "$sim_core_root/services/sim/src/isim_file_controller.cpp",
-  "$sim_core_root/services/sim/src/mcc_pool.cpp",
-  "$sim_core_root/services/sim/src/multi_sim_helper.cpp",
-  "$sim_core_root/services/sim/src/multi_sim_monitor.cpp",
-  "$sim_core_root/services/sim/src/operator_config_cache.cpp",
-  "$sim_core_root/services/sim/src/operator_config_hisysevent.cpp",
-  "$sim_core_root/services/sim/src/operator_config_loader.cpp",
-  "$sim_core_root/services/sim/src/operator_file_parser.cpp",
-  "$sim_core_root/services/sim/src/operator_matching_rule.cpp",
-  "$sim_core_root/services/sim/src/pdp_profile_rdb_helper.cpp",
-  "$sim_core_root/services/sim/src/plmn_file.cpp",
-  "$sim_core_root/services/sim/src/radio_protocol_controller.cpp",
-  "$sim_core_root/services/sim/src/ruim_file.cpp",
-  "$sim_core_root/services/sim/src/ruim_file_controller.cpp",
-  "$sim_core_root/services/sim/src/sim_account_callback_death_recipient.cpp",
-  "$sim_core_root/services/sim/src/sim_account_manager.cpp",
-  "$sim_core_root/services/sim/src/sim_char_decode.cpp",
-  "$sim_core_root/services/sim/src/sim_file.cpp",
-  "$sim_core_root/services/sim/src/sim_file_controller.cpp",
-  "$sim_core_root/services/sim/src/sim_file_init.cpp",
-  "$sim_core_root/services/sim/src/sim_file_manager.cpp",
-  "$sim_core_root/services/sim/src/sim_file_parse.cpp",
-  "$sim_core_root/services/sim/src/sim_number_decode.cpp",
-  "$sim_core_root/services/sim/src/sim_rdb_helper.cpp",
-  "$sim_core_root/services/sim/src/sim_sms_controller.cpp",
-  "$sim_core_root/services/sim/src/sim_sms_manager.cpp",
-  "$sim_core_root/services/sim/src/sim_state_tracker.cpp",
-  "$sim_core_root/services/sim/src/sim_utils.cpp",
-  "$sim_core_root/services/sim/src/stk_controller.cpp",
-  "$sim_core_root/services/sim/src/stk_manager.cpp",
-  "$sim_core_root/services/sim/src/tag_service.cpp",
-  "$sim_core_root/services/sim/src/telephony_data_helper.cpp",
-  "$sim_core_root/services/sim/src/usim_dialling_numbers_service.cpp",
-  "$sim_core_root/services/sim/src/usim_file_controller.cpp",
-  "$sim_core_root/services/sim/src/voice_mail_constants.cpp",
-  sim_state_handle_source,
-  sim_state_manager_source,
-]
+sim_initialization_sources = filter_exclude(
+        sim_legacy_core_sources,
+        [
+          "*/multi_sim_controller.cpp",
+          "*/sim_manager.cpp",
+        ])
 
 sim_primary_support_sources = [
   "$sim_core_root/frameworks/native/src/core_manager_inner.cpp",

@@ -244,8 +244,13 @@ class BackendSelectorTest(unittest.TestCase):
         start = build.index('static_library("sim_target_production_host")')
         end = build.index('# Primary-slot entry contract.', start)
         target = build[start:end]
-        self.assertIn('services/multisim/role_assignment/primary/primary_switch_plan.cpp', target)
-        self.assertIn('services/multisim/role_assignment/assignment_store_adapter.cpp', target)
+        sources = (CORE / 'sim_target_sources.gni').read_text()
+        self.assertIn('sources = sim_target_core_sources', target)
+        self.assertIn('role_assignment/primary/primary_switch_plan.cpp', sources)
+        self.assertIn('role_assignment/assignment_store_adapter.cpp', sources)
+        self.assertNotIn('services/sim/', sources)
+        for source in re.findall(r'\$sim_target_root/([^"]+\.cpp)', sources):
+            self.assertTrue((CORE / 'services/multisim' / source).is_file(), source)
         self.assertNotIn('services/sim', target)
         self.assertNotIn('sim_production_host', target)
 
