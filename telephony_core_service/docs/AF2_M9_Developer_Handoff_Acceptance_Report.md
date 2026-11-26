@@ -65,3 +65,12 @@ LoadSession 资格逻辑仍待实际 EF 路径消费。遗漏源码负控另复�
 
 **负责人签收入口。** 在唯一执行状态记录冻结 SHA、H01～H10 的正反证据、真实 GUI、
 两项独立演练的 PR 与实际开发者、最终反审和负责人确认。
+
+
+## 架构基础交付
+
+本批输入 `411b10672f8e119daa1ad21c9afd9984da99fe44`。B01 的完整 Host Legacy 归档包含
+51 个原实现 CPP，Primary 与 Bootstrap 共同链接此归档。Target 归档仍独立编入 25 个 CPP。
+生成 Host GN 图确认两个归档均为非 testonly。Legacy 和 Target 的 ELF 及代表生产符号
+已实际核对。产品根入口继续使用 Legacy，OHOS 原生构建仍缺匹配环境。
+[归档及 ELF](../services/multisim/test/docs/evidence/af2_m9_foundation_20261126/elf-and-archive.log)

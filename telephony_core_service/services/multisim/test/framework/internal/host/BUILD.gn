@@ -39,6 +39,7 @@ config("target_production_headers") {
 # unimplemented service/persistence/device closure remains explicitly BLOCKED in
 # backend_capabilities.json rather than being supplied by Legacy or a fake SUT.
 static_library("sim_target_production_host") {
+  testonly = false
   sources = sim_target_core_sources
   configs += [
     ":target_production_headers",
@@ -162,8 +163,7 @@ executable("sim_primary_slot_real_test") {
     ":primary_real_support",
     ":primary_slot_entry_production",
     ":scheduler_boundaries",
-    ":sim_initialization_production_host",
-    ":sim_production_host",
+    ":sim_legacy_production_host",
     ":test_entry",
     ":unsupported_state_protocol",
   ]
@@ -184,13 +184,15 @@ executable("sim_primary_slot_real_test") {
 
 # Original implementation sources, not copied and not mixed with fixtures/stubs.
 source_set("sim_wrapper_production_host") {
+  testonly = false
   sources = sim_wrapper_sources
   configs += [
     ":production_headers",
     ":production_execution_evidence",
   ]
 }
-source_set("sim_production_host") {
+static_library("sim_production_host") {
+  testonly = false
   deps = [ ":sim_wrapper_production_host" ]
   sources = [ "$production_root/services/sim/src/sim_manager.cpp" ]
   configs += [
@@ -218,6 +220,7 @@ source_set("external_service_boundaries") {
 
 # Preserve the production event transport; only external scheduler/base APIs are adapted.
 source_set("event_transport_production_host") {
+  testonly = false
   sources = sim_event_sources
   configs += [
     ":production_headers",
@@ -308,21 +311,24 @@ config("initialization_standard_headers") {
   ]
 }
 
-# Optional initialization closure audit. Not part of the runnable capacity suite.
-static_library("sim_initialization_production_host") {
+# Full supported Host feature selection. A single archive lets the linker resolve
+# SimManager and its collaborators together. The capacity/query harnesses retain
+# their separate, deliberately uninitialized manager-only closure.
+static_library("sim_legacy_production_host") {
+  testonly = false
+  deps = [ ":sim_wrapper_production_host" ]
   # Exact public header from telephony_telephony_data, pinned in provider/contract.json.
   # Target-local precedence preserves the old header and historical guard dependencies.
   include_dirs =
       [ "$test_root/framework/internal/host/primary/provider/include" ]
-  sources = sim_initialization_sources
+  sources = sim_legacy_core_sources
   configs += [
     ":production_headers",
     ":production_execution_evidence",
     ":initialization_standard_headers",
   ]
-  if (primary_slot_controller_source == "") {
-    sources += [ "$production_root/services/sim/src/multi_sim_controller.cpp" ]
-  } else {
+  if (primary_slot_controller_source != "") {
+    sources -= [ "$production_root/services/sim/src/multi_sim_controller.cpp" ]
     sources += [ primary_slot_controller_source ]
   }
 }
@@ -337,8 +343,7 @@ executable("sim_initialization_link_probe") {
     ":googlemock",
     ":platform_boundaries",
     ":scheduler_boundaries",
-    ":sim_initialization_production_host",
-    ":sim_production_host",
+    ":sim_legacy_production_host",
   ]
   ldflags =
       [ "-fprofile-instr-generate=" + get_path_info(root_build_dir, "abspath") +
@@ -378,8 +383,7 @@ executable("sim_bootstrap_characterization") {
     ":platform_boundaries",
     ":primary_real_support",
     ":scheduler_boundaries",
-    ":sim_initialization_production_host",
-    ":sim_production_host",
+    ":sim_legacy_production_host",
     ":test_entry",
   ]
   ldflags = [
@@ -452,6 +456,7 @@ executable("sim_g2a_query_test") {
 
 # Shared real state implementation; external ports are supplied by Framework.
 static_library("sim_state_production") {
+  testonly = false
   deps = [ ":sim_wrapper_production_host" ]
   sources = sim_state_base_sources
   if (sim_manager_source_override == "") {

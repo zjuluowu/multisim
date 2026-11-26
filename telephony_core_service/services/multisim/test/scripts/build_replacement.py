@@ -14,6 +14,8 @@ import sys
 import tempfile
 from time import perf_counter
 
+from host_build_contract import check_host_build
+
 TEST = Path(__file__).resolve().parents[1]
 REPO = TEST.parents[3]
 HOST_ROOT = TEST / 'framework/internal/host'
@@ -347,6 +349,9 @@ def build(args, output, trace):
     trace['ninja'] = {'seconds': perf_counter() - start, 'count': 1, 'actions': counts}
     if code:
         raise ValueError(f'Ninja exited with status {code}')
+    if not args.incremental or reason:
+        check_host_build(build_dir, HOST_ROOT)
+        trace['archive_ownership'] = 'PASS'
     trace['binary_identities'] = {target: file_identity(build_dir / target) for target in targets}
 
 

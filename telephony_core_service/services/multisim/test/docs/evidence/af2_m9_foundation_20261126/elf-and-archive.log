@@ -1,0 +1,98 @@
+/tmp/af2-m9-foundation/clean/build/obj/liblibsim_legacy_production_host.a: current ar archive
+ddcab9033640541970bdaed3b95ac87f7904310be6a11533d41e4a0beae18475  /tmp/af2-m9-foundation/clean/build/obj/liblibsim_legacy_production_host.a
+libsim_legacy_production_host.csim_file_controller.o
+libsim_legacy_production_host.esim_manager.o
+libsim_legacy_production_host.icc_dialling_numbers_cache.o
+libsim_legacy_production_host.icc_dialling_numbers_handler.o
+libsim_legacy_production_host.icc_dialling_numbers_manager.o
+libsim_legacy_production_host.icc_file.o
+libsim_legacy_production_host.icc_file_controller.o
+libsim_legacy_production_host.icc_operator_privilege_controller.o
+libsim_legacy_production_host.icc_operator_rule.o
+libsim_legacy_production_host.icc_state.o
+libsim_legacy_production_host.isim_file.o
+libsim_legacy_production_host.isim_file_controller.o
+libsim_legacy_production_host.mcc_pool.o
+libsim_legacy_production_host.multi_sim_controller.o
+libsim_legacy_production_host.multi_sim_monitor.o
+libsim_legacy_production_host.multi_sim_helper.o
+libsim_legacy_production_host.operator_config_cache.o
+libsim_legacy_production_host.operator_config_loader.o
+libsim_legacy_production_host.operator_file_parser.o
+libsim_legacy_production_host.operator_config_hisysevent.o
+libsim_legacy_production_host.operator_matching_rule.o
+libsim_legacy_production_host.pdp_profile_rdb_helper.o
+libsim_legacy_production_host.plmn_file.o
+libsim_legacy_production_host.radio_protocol_controller.o
+libsim_legacy_production_host.ruim_file.o
+libsim_legacy_production_host.ruim_file_controller.o
+libsim_legacy_production_host.sim_account_callback_death_recipient.o
+libsim_legacy_production_host.sim_account_manager.o
+libsim_legacy_production_host.sim_char_decode.o
+libsim_legacy_production_host.sim_file.o
+libsim_legacy_production_host.sim_file_controller.o
+libsim_legacy_production_host.sim_file_init.o
+libsim_legacy_production_host.sim_file_manager.o
+libsim_legacy_production_host.sim_file_parse.o
+libsim_legacy_production_host.sim_manager.o
+libsim_legacy_production_host.sim_number_decode.o
+libsim_legacy_production_host.sim_rdb_helper.o
+libsim_legacy_production_host.sim_sms_controller.o
+libsim_legacy_production_host.sim_sms_manager.o
+libsim_legacy_production_host.sim_state_handle.o
+libsim_legacy_production_host.sim_state_manager.o
+libsim_legacy_production_host.sim_state_tracker.o
+libsim_legacy_production_host.sim_utils.o
+libsim_legacy_production_host.stk_controller.o
+libsim_legacy_production_host.stk_manager.o
+libsim_legacy_production_host.tag_service.o
+libsim_legacy_production_host.telephony_data_helper.o
+libsim_legacy_production_host.usim_dialling_numbers_service.o
+libsim_legacy_production_host.usim_file_controller.o
+libsim_legacy_production_host.voice_mail_constants.o
+libsim_legacy_production_host.card_file_detect_manager.o
+/tmp/af2-m9-foundation/clean/build/obj/liblibsim_target_production_host.a: current ar archive
+37b1d078806ab0ff15a0d661e34f8b8579617ce4747d8c1a74ec9c2009d35571  /tmp/af2-m9-foundation/clean/build/obj/liblibsim_target_production_host.a
+libsim_target_production_host.account_registry.o
+libsim_target_production_host.account_store_adapter.o
+libsim_target_production_host.activation_progress.o
+libsim_target_production_host.binding_index.o
+libsim_target_production_host.discovery_observation_ledger.o
+libsim_target_production_host.set_show_number_use_case.o
+libsim_target_production_host.show_number_query.o
+libsim_target_production_host.topology_metadata.o
+libsim_target_production_host.topology_service.o
+libsim_target_production_host.card_observation_runtime.o
+libsim_target_production_host.msisdn_runtime.o
+libsim_target_production_host.session_registry.o
+libsim_target_production_host.resource_barrier.o
+libsim_target_production_host.resource_radio_runtime.o
+libsim_target_production_host.primary_host_lifecycle.o
+libsim_target_production_host.sim_module_factory.o
+libsim_target_production_host.slot_catalog.o
+libsim_target_production_host.legacy_account_entry.o
+libsim_target_production_host.legacy_primary_entry.o
+libsim_target_production_host.legacy_completion.o
+libsim_target_production_host.runtime_operation_store.o
+libsim_target_production_host.assignment_aggregate.o
+libsim_target_production_host.assignment_service.o
+libsim_target_production_host.assignment_store_adapter.o
+libsim_target_production_host.primary_switch_plan.o
+/tmp/af2-m9-foundation/clean/build/sim_primary_slot_real_test: ELF 64-bit LSB pie executable, x86-64, version 1 (GNU/Linux), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=153f090bc4a3ac1de7a8e11338f429c555cd9292, with debug_info, not stripped
+  Class:                             ELF64
+  Type:                              DYN (Position-Independent Executable file)
+  Machine:                           Advanced Micro Devices X86-64
+obj/liblibsim_legacy_production_host.a
+obj/liblibsim_legacy_production_host.a
+                              obj/liblibsim_legacy_production_host.a (_ZN4OHOS9Telephony17IccFileController16ObtainBinaryFileEiRKSt10unique_ptrINS_10AppExecFwk10InnerEventEPFvPS4_EE)
+/tmp/af2-m9-foundation/clean/build/sim_test_target_host: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=72377c4e420576dc1914904af3f488e37b7f42b5, with debug_info, not stripped
+  Class:                             ELF64
+  Type:                              DYN (Position-Independent Executable file)
+  Machine:                           Advanced Micro Devices X86-64
+obj/liblibsim_target_production_host.a
+obj/liblibsim_target_production_host.a
+obj/liblibsim_target_production_host.a
+Legacy entry symbol in Legacy ELF
+000000000032bf60 t OHOS::Telephony::SimManager::SetPrimarySlotId(int, bool) [clone .llvm] [clone .merged]
+Target entry symbol in Target ELF
+00000000001a7d60 t OHOS::Telephony::MultiSim::AssignmentService::StartPrimarySwitch(OHOS::Telephony::MultiSim::SwitchPrimaryCommand const&)

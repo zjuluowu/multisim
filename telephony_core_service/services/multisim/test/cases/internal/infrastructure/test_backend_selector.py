@@ -14,6 +14,7 @@ SCRIPTS = Path(__file__).resolve().parents[3] / 'scripts'
 sys.path.insert(0, str(SCRIPTS))
 from backend_selector import capability_report, gtest_filter, load_config, resolve
 import build_replacement as build
+from host_build_contract import check_graph, LEGACY_ARCHIVE, TARGET_ARCHIVE, TARGET_LOGICAL_ONLY, TARGET_TEST
 from compare_backends import compare, compare_reports, C0, C0_ORACLE, load_oracle
 from test import backend_filter
 from _paths import CORE, TEST
@@ -272,6 +273,44 @@ class BackendSelectorTest(unittest.TestCase):
             self.assertTrue((CORE / 'services/multisim' / source).is_file(), source)
         self.assertNotIn('services/sim', target)
         self.assertNotIn('sim_production_host', target)
+
+    def test_host_graph_detects_missing_sources_and_contaminated_links(self):
+        legacy = 'sim_manager.cpp'
+        target = 'account/account_registry.cpp'
+        case = 'cases/target/shared_test.cpp'
+
+        def node(kind, sources=(), deps=(), testonly=False):
+            return {'type': kind, 'sources': list(map(str, sources)),
+                    'deps': list(deps), 'testonly': testonly}
+
+        def fixture():
+            return {
+                LEGACY_ARCHIVE: node('static_library', [CORE / 'services/sim/src' / legacy]),
+                TARGET_ARCHIVE: node('static_library', [CORE / 'services/multisim' / target]),
+                TARGET_TEST: node('executable', [TEST / case], [TARGET_ARCHIVE], True),
+                '//:sim_primary_slot_real_test': node('executable', deps=[LEGACY_ARCHIVE], testonly=True),
+                '//:sim_bootstrap_characterization': node('executable', deps=[LEGACY_ARCHIVE], testonly=True),
+            }
+
+        def run(data, logical=None):
+            check_graph(data, {legacy}, {target},
+                        logical or (set(TARGET_LOGICAL_ONLY) | {target}), {case})
+
+        run(fixture())
+        for label, field, change, message in (
+            (TARGET_ARCHIVE, 'sources', [], 'account_registry.cpp'),
+            (LEGACY_ARCHIVE, 'deps', [TARGET_TEST], 'depends on a test target'),
+            (TARGET_TEST, 'deps', [TARGET_ARCHIVE, LEGACY_ARCHIVE], 'no Legacy SIM'),
+            (TARGET_TEST, 'sources', [], 'Target case source discovery'),
+        ):
+            with self.subTest(label=label, field=field):
+                graph = fixture()
+                graph[label][field] = change
+                with self.assertRaisesRegex(ValueError, message):
+                    run(graph)
+                run(fixture())
+        with self.assertRaisesRegex(ValueError, 'logical-only CPP disposition'):
+            run(fixture(), set(TARGET_LOGICAL_ONLY) | {target, 'card/records/unbuilt.cpp'})
 
 
 if __name__ == '__main__':

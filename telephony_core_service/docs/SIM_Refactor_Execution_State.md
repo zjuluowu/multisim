@@ -198,6 +198,12 @@ ASan 和 TSan 各 128/128、B/C1 组件执行审计通过。正式图仍需补 A
 [开发指导 v2.2](SIM_Global_Code_Migration_and_Test_Plan_v2.2.md) ·
 [交接检查点](AF2_M9_Developer_Handoff_Acceptance_Report.md)
 
+**架构基础交付续批。** 输入 `411b10672f8e119daa1ad21c9afd9984da99fe44`。Host 完整
+Legacy SIM 已合成一个可复用的归档，Target 独立归档继续保留。生成 GN 图核对生产依赖、
+源归属及两端链接边界。干净输出构建和 ELF 归属已有证据，产品原生构建待独立验证。
+[Host ELF 与归档](../services/multisim/test/docs/evidence/af2_m9_foundation_20261126/elf-and-archive.log)
+
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）
