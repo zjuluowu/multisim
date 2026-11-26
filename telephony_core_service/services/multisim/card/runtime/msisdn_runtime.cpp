@@ -32,17 +32,27 @@ void MsisdnRuntime::WriteMsisdn(const MsisdnWriteRequest &request)
         reject();
         return;
     }
-    if (!key || !card_.StillCurrent(request.session)) { reject(); return; }
+    if (!key) { reject(); return; }
     const auto lease = resources_.Acquire({*key}, request.step);
     if (!lease) { reject(); return; }
     const MsisdnTransportTicket ticket {request.step, request.session, lease->fence};
+    bool registered = false;
+    bool duplicate = false;
     try {
-        std::lock_guard<std::mutex> guard(mutex_);
-        pending_.emplace(request.step.request, Pending {ticket, *lease, {request.session, request.number, request.alphaTag}, true, false, false, false,
-            EffectKnowledge::Unknown, {}});
+        registered = card_.WithCurrentApplication(request.session, [&] {
+            std::lock_guard<std::mutex> guard(mutex_);
+            const auto inserted = pending_.try_emplace(request.step.request,
+                Pending {ticket, *lease, {request.session, request.number, request.alphaTag},
+                    true, false, false, false, EffectKnowledge::Unknown, {}});
+            duplicate = !inserted.second;
+            return inserted.second;
+        });
     } catch (const std::exception &) {
+        // No handoff has been attempted.
+    }
+    if (!registered) {
         resources_.CancelConfirmedNotSent(*lease);
-        reject();
+        if (!duplicate) { reject(); }
         return;
     }
     bool accepted = true;

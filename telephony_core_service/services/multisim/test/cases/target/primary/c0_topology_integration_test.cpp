@@ -2854,7 +2854,12 @@ public:
         std::u16string tag;
         std::u16string number;
     };
-    std::optional<ResourceKey> ResourceFor(SlotId) const override { return ResourceKey {"primary-shared"}; }
+    std::function<void(SlotId)> onRouteLookup;
+    std::optional<ResourceKey> ResourceFor(SlotId slot) const override
+    {
+        if (onRouteLookup) { onRouteLookup(slot); }
+        return ResourceKey {"primary-shared"};
+    }
     std::optional<CardNumberView> ReadCachedNumber(const SessionRef &session) const override
     {
         auto it = std::find_if(records.begin(), records.end(), [&](const auto &view) { return view.session == session; });
@@ -2906,6 +2911,44 @@ struct NumberFixture {
     }
 };
 } // namespace
+
+TEST(AF2ShowNumber, ReplacementBeforeCardSendPermissionDoesNotIssueOriginalCommand)
+{
+    using namespace OHOS::Telephony;
+    NumberFixture fixture;
+    ASSERT_NO_FATAL_FAILURE(fixture.DiscoverBoth());
+    auto &module = fixture.live.module;
+    fixture.device->onRouteLookup = [&](SlotId slot) {
+        EXPECT_EQ(slot, SlotId {1});
+        fixture.ReplaceSecond();
+    };
+
+    ASSERT_EQ(module->SetShowNumber(1, u"111", {7}, {31}), TELEPHONY_ERR_SUCCESS);
+    fixture.host->RunNext();
+    if (!fixture.device->commands.empty()) {
+        ADD_FAILURE() << "Revoked application issued an MSISDN command";
+        EXPECT_TRUE(module->AcceptMsisdnEvidence(fixture.device->Applied(0)));
+        EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+        return;
+    }
+    EXPECT_TRUE(fixture.db->Writes().empty());
+    EXPECT_EQ(fixture.host->writes,
+        (std::vector<std::pair<uint64_t, int32_t>> {{31, TELEPHONY_ERR_FAIL}}));
+    EXPECT_EQ(module->ReadPrimaryResourceState(), ResourceState::Available);
+    const auto replacement = module->FindBinding({1});
+    ASSERT_TRUE(replacement);
+    EXPECT_EQ(replacement->subscription, SubscriptionId {56});
+
+    fixture.device->onRouteLookup = {};
+    ASSERT_EQ(module->SetShowNumber(1, u"222", {7}, {32}), TELEPHONY_ERR_SUCCESS);
+    fixture.host->RunNext();
+    ASSERT_EQ(fixture.device->commands.size(), 1u);
+    EXPECT_EQ(fixture.device->commands.front().ticket.session.bindingGeneration, 2u);
+    EXPECT_TRUE(module->AcceptMsisdnEvidence(fixture.device->Applied(0)));
+    ASSERT_EQ(fixture.db->Writes().size(), 1u);
+    EXPECT_EQ(fixture.db->Writes().front().operation.subscription, SubscriptionId {56});
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
 
 TEST(AF2ShowNumber, LiveCardNumberWriteUpdatesAccountAndCompletes)
 {

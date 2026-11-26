@@ -1,0 +1,8 @@
+{
+  "baseline": "230ca8271dfe04735050773c81e50ada5ce41033",
+  "files": {
+    "card/runtime/card_observation_runtime.cpp": "24a4027a77352da4aadd60b7c97edb4e107e391c17e09d1a6d3a7d2d16c0e326",
+    "card/runtime/card_observation_runtime.h": "26a8fa2cec472226eff2db033aacbce4887f6d10ebdc7d751c73b21b15cc00cd",
+    "card/runtime/msisdn_runtime.cpp": "db35d999c87b0ba097de229dd24bff668afb13dc2857ca51bb742b2df90c00c3"
+  }
+}

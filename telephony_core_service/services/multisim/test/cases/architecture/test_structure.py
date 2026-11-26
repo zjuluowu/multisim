@@ -143,7 +143,7 @@ class BoundaryGuard(unittest.TestCase):
 
     def test_m7b_msisdn_source_drift(self):
         self.check_mapped_mutation("card/runtime/msisdn_runtime.cpp", lambda s: s + '\n// drift\n',
-                                  "AF2 M7B source input differs: card/runtime/msisdn_runtime.cpp")
+                                  "AF2 M9 D02 admission source input differs: card/runtime/msisdn_runtime.cpp")
 
     def test_documentation_migration(self):
         from documentation_migration import documentation_moves

@@ -5,6 +5,7 @@
 #ifndef OHOS_TELEPHONY_MULTISIM_CARD_OBSERVATION_RUNTIME_H
 #define OHOS_TELEPHONY_MULTISIM_CARD_OBSERVATION_RUNTIME_H
 
+#include <functional>
 #include <mutex>
 #include "account/discovery/card_observation_port.h"
 #include "card/state/session_registry.h"
@@ -20,6 +21,8 @@ public:
     std::optional<SessionRef> ObserveVerifiedCard(const CardApplicationTarget &application, uint64_t generation,
         const std::string &iccid);
     bool StillCurrent(const SessionRef &session);
+    // Only register local responsibilities here. The callback cannot invoke the platform or deliver results.
+    bool WithCurrentApplication(const SessionRef &session, const std::function<bool()> &commit);
     bool HasVerifiedCard(SlotId slot);
     bool InvalidateVerifiedCard(const SessionRef &session);
 private:

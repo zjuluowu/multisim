@@ -57,6 +57,13 @@ bool CardObservationRuntime::StillCurrent(const SessionRef &session)
     return sessions_.StillCurrent(session);
 }
 
+bool CardObservationRuntime::WithCurrentApplication(const SessionRef &session,
+    const std::function<bool()> &commit)
+{
+    std::lock_guard<std::mutex> guard(mutex_);
+    return sessions_.StillCurrent(session) && commit();
+}
+
 bool CardObservationRuntime::HasVerifiedCard(SlotId slot)
 {
     std::lock_guard<std::mutex> guard(mutex_);

@@ -243,6 +243,12 @@ A 移除槽列表成员推导及 Binding 代次构造卡会话的用法，R 对�
 与新旧源码指纹检查通过。ASan/TSan 各 61/61 对应前一交接检查点。
 正式模块仍封闭 B/C1，原生产品证据另计。[D01 原始证据](../services/multisim/test/docs/evidence/af2_m9_d01_20261126/README.md)
 
+**D02 卡应用发令准入检查点。** 原 MSISDN 会话再核验与原命令登记在同一 R 提交域。
+正式模块换卡负控在取消核验时实际发出旧命令，恢复后原命令零发令，新会话可复用资源并成功入库。
+Target 全量 182/182，上一协议路由候选冻结 Both 24/24 与 Oracle 零差异已归档。
+共用卡传输、PIN/EF、Refresh 与全图关闭仍需实施，状态保持 `AF2_M9_IN_PROGRESS`。
+[运行时负控与阶段统计](../services/multisim/test/docs/evidence/af2_m9_d02_admission_20261126/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）
