@@ -1,0 +1,2425 @@
+{
+  "input": "411b10672f8e119daa1ad21c9afd9984da99fe44",
+  "radio_candidate": "7264a3940595fa206c61583315338caae4ba269b",
+  "functions": {
+    "SIM-001": {
+      "legacy_function": "启动、装配与额外槽初始化",
+      "legacy_entry": "SimManager::OnInit/InitBaseManager/InitTelExtraModule；CoreService::Init",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-001",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e02",
+        "e04",
+        "e61"
+      ],
+      "signed_behavior": "拆分：保留 RIL→卡运行→搜网的依赖前提，部分就绪可见性逐入口兼容。",
+      "work_packages": [
+        "P6.1",
+        "P6.2"
+      ],
+      "target_status": "HOST_SLICE",
+      "target_source": "infrastructure/assembly/sim_module_factory.cpp",
+      "evidence": "AF2Module.FactoryPublishesRealTopologyAndRunsC0",
+      "remaining": "Full product Core and extra-slot publication",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-002": {
+      "legacy_function": "停止、反注册、任务排空与销毁",
+      "legacy_entry": "CoreService::OnStop；SimStateManager 析构；MultiSimController/Monitor 析构",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-002",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e03",
+        "e07",
+        "e30"
+      ],
+      "signed_behavior": "保留现有清理，新增内部 Stop 协议建议；不宣称原实现已有完整排空。",
+      "work_packages": [
+        "P6.1"
+      ],
+      "target_status": "HOST_SLICE",
+      "target_source": "infrastructure/assembly/sim_module_factory.cpp",
+      "evidence": "AF2Reload.LaterAttemptAndStopPreventAnInFlightReadFromPublishing",
+      "remaining": "Whole-module receipts and cross-instance device/Store obligations",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-003": {
+      "legacy_function": "公开入口权限、受限槽与隐私裁剪",
+      "legacy_entry": "CoreServiceSim；MultiSimsCapabilityMgr；GetSimAccountInfo(denied)",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-003",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e59",
+        "e60",
+        "e21"
+      ],
+      "signed_behavior": "保留各方法检查顺序/错误；调用线程捕获可信 caller 上下文，跨异步不重新取成服务身份。",
+      "work_packages": [
+        "P6.1",
+        "P6.3"
+      ],
+      "target_status": "HOST_SLICE",
+      "target_source": "infrastructure/compatibility/api/legacy_account_entry.cpp",
+      "evidence": "AF2Data.AuthorizationPrecedesMissingCardAndMissingBinding",
+      "remaining": "Remaining public API authorization, slot and privacy paths",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-004": {
+      "legacy_function": "槽清单、最大/真实容量、配置合法性",
+      "legacy_entry": "SimManager::IsValidSlotId/GetMaxSimCount/GetRealSimCount",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-004",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e04",
+        "e68",
+        "e73"
+      ],
+      "signed_behavior": "拆分配置/运行已装配/对外容量；不统一参数、逻辑槽和硬件资源上限。",
+      "work_packages": [
+        "P6.1",
+        "P6.3",
+        "P6.6"
+      ],
+      "target_status": "REFERENCE_HOST",
+      "target_source": "infrastructure/assembly/slot_catalog.cpp",
+      "evidence": "Configurations/G2aReadOnlyQuery",
+      "remaining": "Real count reference and full product capacity closure differ",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-005": {
+      "legacy_function": "有卡、公开状态、卡类型、Modem 初始化查询",
+      "legacy_entry": "SimManager::HasSimCard/GetSimState/GetCardType；SimStateHandle",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-005",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e05",
+        "e06",
+        "e69"
+      ],
+      "signed_behavior": "保留六值与无卡派生分支；简单查询直读已接受视图，不启动操作事务。",
+      "work_packages": [
+        "P2.1"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-006": {
+      "legacy_function": "卡状态响应、缺卡/Unknown、锁态转换与发布",
+      "legacy_entry": "SimStateHandle::GetSimCardData/ProcessIccCardState/HandleSimAbsent",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-006",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e06",
+        "e07",
+        "e15"
+      ],
+      "signed_behavior": "拆分原始卡状态与已接受绑定事实；保留切换/指定 ICCID 过滤、Registry 重连重发。",
+      "work_packages": [
+        "P2.1",
+        "P2.7"
+      ],
+      "target_status": "HOST_SLICE",
+      "target_source": "card/runtime/card_observation_runtime.cpp",
+      "evidence": "AF2Discovery.ApplicationPrecedesIdentityAndStalePromotionCannotCreateBinding",
+      "remaining": "Original card state and lock observation, invalidation and notifications",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-007": {
+      "legacy_function": "PIN1/PUK1、改 PIN、设置/查询锁",
+      "legacy_entry": "SimStateManager/Handle::UnlockPin/UnlockPuk/AlterPin/SetLockState/GetLockState",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-007",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e08",
+        "e09"
+      ],
+      "signed_behavior": "拆分请求关联与卡协议执行；无需先有有效 simId；错误与剩余次数按旧响应输出。",
+      "work_packages": [
+        "P2.3"
+      ],
+      "target_status": "TARGET_BLOCKED",
+      "target_source": "card/security/pin_requests.h",
+      "evidence": "SimTest.DualSimPinUnlockAfterWrongPin",
+      "remaining": "PIN transport and original completion; Legacy evidence only",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-008": {
+      "legacy_function": "PIN2/PUK2、改 PIN2",
+      "legacy_entry": "SimStateManager/Handle::UnlockPin2/UnlockPuk2/AlterPin2",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-008",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e08",
+        "e09"
+      ],
+      "signed_behavior": "保留 FDN 等用途、独立请求上下文；不合并为 PIN1 的一次完成。",
+      "work_packages": [
+        "P2.3"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-009": {
+      "legacy_function": "网络个性化锁/解锁",
+      "legacy_entry": "SimStateManager/Handle::UnlockSimLock；PersoLockInfo",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-009",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e08",
+        "e09"
+      ],
+      "signed_behavior": "保留 lockType/锁原因/错误，不把网络锁与 Profile 禁用归一。",
+      "work_packages": [
+        "P2.3"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-010": {
+      "legacy_function": "SIM/USIM/ISIM 认证",
+      "legacy_entry": "SimStateManager::SimAuthentication；Handle 选 AID",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-010",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e10"
+      ],
+      "signed_behavior": "转为用例和执行适配；认证数据不进入持久化操作记录或诊断。",
+      "work_packages": [
+        "P2.3"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-011": {
+      "legacy_function": "普通 SIM IO 与状态字",
+      "legacy_entry": "SimStateManager::GetSimIO；SimStateHandle；TelRilSim",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-011",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e11",
+        "e62"
+      ],
+      "signed_behavior": "保留 command/fileId/path/data/sw1/sw2 与旧超时/返回包装；不新增外部 OperationId。",
+      "work_packages": [
+        "P2.3",
+        "P2.5"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-012": {
+      "legacy_function": "卡类型/应用选择、GSM/USIM/RUIM/CSIM/ISIM 路径",
+      "legacy_entry": "SimFileManager::InitSimFile/InitIccFileController/ChangeSimFileByCardType",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-012",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e12",
+        "e17"
+      ],
+      "signed_behavior": "保留各卡型生产实现与默认路径；增卡形态仅扩展选择/能力适配，不复制账户规则。",
+      "work_packages": [
+        "P2.1",
+        "P2.5",
+        "P2.7"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-013": {
+      "legacy_function": "EF 请求集合、首次加载、锁定加载与完成",
+      "legacy_entry": "SimFile/IsimFile/RuimFile；IccFileController",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-013",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e13",
+        "e14",
+        "e17"
+      ],
+      "signed_behavior": "保留请求/解析；逐步加入 LoadSession；记录缺失/失败不能用加载计数归零伪造成功。",
+      "work_packages": [
+        "P2.5",
+        "P2.6",
+        "P2.7"
+      ],
+      "target_status": "TARGET_BLOCKED",
+      "target_source": "card/records/load_session.cpp",
+      "evidence": "ScopedRecordReadScenarios",
+      "remaining": "EF issuing, raw decode, serialized Records acceptance and discovery",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-014": {
+      "legacy_function": "字符/号码/PLMN/TLV/ASN.1 解码与校验",
+      "legacy_entry": "SimFileParse、SimCharDecode、SimNumberDecode、SIMUtils、TagService、ASN.1",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-014",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e18",
+        "e47",
+        "e48"
+      ],
+      "signed_behavior": "保留算法，按调用归属整理；不为 DDD 重写编解码。改动另跑相应 fuzzer。",
+      "work_packages": [
+        "P2.4"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-015": {
+      "legacy_function": "Refresh、同卡重载、清缓存和失效",
+      "legacy_entry": "SimFile::ProcessIccRefresh；SimFileManager::HandleIccRefresh；IccFile",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-015",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e12",
+        "e16"
+      ],
+      "signed_behavior": "拆分 BindingGeneration 与 RecordsGeneration；局部刷新保留原有文件选择与输出。",
+      "work_packages": [
+        "P2.6",
+        "P2.7"
+      ],
+      "target_status": "PURE_RULE_ONLY",
+      "target_source": "card/records/load_session.cpp",
+      "evidence": "ScopedRecordReadScenarios",
+      "remaining": "Real EF, Refresh dispatch and same-card publication",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-016": {
+      "legacy_function": "ICCID/IMSI/GID/本机号码/IST 等读视图",
+      "legacy_entry": "SimManager→SimFileManager→IccFile/具体 File",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-016",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e05",
+        "e12",
+        "e13"
+      ],
+      "signed_behavior": "保留授权、缺数据输出与精确接口语义；T 只接受身份发现，不拥有 EF 副本写权。",
+      "work_packages": [
+        "P2.5",
+        "P2.6",
+        "P2.7"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-017": {
+      "legacy_function": "语音信箱配置、标识、号码与未读计数",
+      "legacy_entry": "IccFile/SimFile、VoiceMailConstants；SimManager 入口",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-017",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e12",
+        "e13"
+      ],
+      "signed_behavior": "保留卡 EF/运营商配置联动；业务通话/语音信箱服务不搬入。",
+      "work_packages": [
+        "P2.5",
+        "P2.6"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-018": {
+      "legacy_function": "卡内呼叫转移标志与号码",
+      "legacy_entry": "SimManager::SetVoiceCallForwarding；IccFile/SimFile/Ruim/Isim",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-018",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e12",
+        "e13"
+      ],
+      "signed_behavior": "保留 CFIS/CFF 路径和指示；网络补充业务仍在原模块。",
+      "work_packages": [
+        "P2.5",
+        "P2.6"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-019": {
+      "legacy_function": "SPN/EONS/国家/运营商名称及显示规则",
+      "legacy_entry": "IccFile、PlmnFile、MccPool；SimManager::GetSimEons/ObtainSpnCondition",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-019",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e12",
+        "e18"
+      ],
+      "signed_behavior": "保留卡侧规则；搜网的驻网/运营商显示最终决策保留在搜网。",
+      "work_packages": [
+        "P2.5",
+        "P2.6",
+        "P4.5"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-020": {
+      "legacy_function": "发现卡身份、账户建立及初始化后续",
+      "legacy_entry": "MultiSimController::InitIccId/InsertData/InitData/InitActive；Monitor::InitData",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-020",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e19",
+        "e30",
+        "e55",
+        "e83",
+        "e84"
+      ],
+      "signed_behavior": "身份匹配入 T；初始化中的 force 激活与主卡后续分别委托原用例；建行角色字段由 A 提供，不把全部 InitData 搬入 T。ID 分配保持。 [逐键写点与退出](#sc03-ledger)",
+      "work_packages": [
+        "P1.1",
+        "P1.2"
+      ],
+      "target_status": "HOST_SLICE",
+      "target_source": "account/topology_service.cpp",
+      "evidence": "AF2Discovery.LiveCardDiscoveryCreatesAccountAndBinding",
+      "remaining": "Product observation and original activation follow-up",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-021": {
+      "legacy_function": "当前/历史账户缓存、列表、缺卡失效",
+      "legacy_entry": "MultiSimController::GetListFromDataBase/GetAllListFromDataBase/SortCache/ForgetAllData",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-021",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e19",
+        "e21",
+        "e31"
+      ],
+      "signed_behavior": "合并本仓账户缓存写权；当前绑定与历史记录区分，缺卡不擅自物理删除历史账户。",
+      "work_packages": [
+        "P1.1",
+        "P1.2"
+      ],
+      "target_status": "HOST_SLICE",
+      "target_source": "account/account_registry.cpp",
+      "evidence": "AF2Reload.LiveAccountsAndRolesSurviveStaleReload; SIM021-ACCOUNT-RELOAD-FRESH-VIEWS",
+      "remaining": "Provider causal coverage, product list compatibility and observed historical loss for sparse IDs in Legacy SortAllCache",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-022": {
+      "legacy_function": "simId↔slot 查询与目标解析",
+      "legacy_entry": "MultiSimController::GetSlotId/GetSimId/GetTargetSimId",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-022",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e20",
+        "e21"
+      ],
+      "signed_behavior": "迁移映射规则；旧查询保留 active 筛选/先命中行为；新写决策遇歧义停止并核对，不自行改变旧查询输出。",
+      "work_packages": [
+        "P1.1",
+        "P1.2",
+        "P6.3",
+        "P6.6"
+      ],
+      "target_status": "HOST_SLICE",
+      "target_source": "account/binding_index.cpp",
+      "evidence": "AF2Discovery.LiveCardDiscoveryCreatesAccountAndBinding",
+      "remaining": "All original lookup/ambiguity semantics",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-023": {
+      "legacy_function": "显示名称、MSISDN 写卡与号码资料同步",
+      "legacy_entry": "MultiSimController::SetShowName/SetShowNumber/SetShowNumberToDB/GetShowNumber；SimFile::UpdateMsisdnNumber",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-023",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e22",
+        "e55",
+        "e78",
+        "e80"
+      ],
+      "signed_behavior": "拆为 SIM-023.a～c（5.1.1）；保留写卡→DB→缓存→成功账户通知及查询异步回写，不改变卡/存储部分失败语义。 [逐键写点与退出](#sc03-ledger)",
+      "work_packages": [
+        "P1.1",
+        "P1.3",
+        "P1.4"
+      ],
+      "target_status": "HOST_SLICE",
+      "target_source": "account/topology_metadata.cpp; account/number/set_show_number_use_case.cpp",
+      "evidence": "SIM023-LEGACY-ACCOUNT-METADATA-DUAL; SIM023-LEGACY-SHOW-NUMBER-AFTER-CARD-FAILURE",
+      "remaining": "Product number card bridge, original storage and callers",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-024": {
+      "legacy_function": "卡激活/停用、卫星激活与进度",
+      "legacy_entry": "MultiSimController::SetActiveSim/SetActiveSimSatellite/SetActiveCommonSim",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-024",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e23",
+        "e28"
+      ],
+      "signed_behavior": "拆分资格(T/A)、步骤(T用例)、设备(R)、已接受账户状态(T)；保留参数/缓存/通知既有时序。 [逐键写点与退出](#sc03-ledger)",
+      "work_packages": [
+        "P3.1",
+        "P3.4"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-025": {
+      "legacy_function": "默认 Voice 选择、simId 与回退",
+      "legacy_entry": "MultiSimController::Get/SetDefaultVoiceSlotId/GetDefaultVoiceSimId",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-025",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e24",
+        "e55"
+      ],
+      "signed_behavior": "迁移角色规则；存储字段由 A 规划，T 只投影读取；不重复在账户模块维护默认规则。",
+      "work_packages": [
+        "P3.2",
+        "P3.5"
+      ],
+      "target_status": "HOST_SLICE",
+      "target_source": "role_assignment/assignment_service.cpp",
+      "evidence": "SIM025-LEGACY-DEFAULT-VOICE-DUAL",
+      "remaining": "Product Provider, initialization and legacy notification closure",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-026": {
+      "legacy_function": "默认 SMS 选择、simId 与回退",
+      "legacy_entry": "MultiSimController::Get/SetDefaultSmsSlotId/GetDefaultSmsSimId",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-026",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e25",
+        "e55"
+      ],
+      "signed_behavior": "同一 RolePolicy 维护类型差异，不强行统一默认 Voice/SMS 的边界值。",
+      "work_packages": [
+        "P3.2",
+        "P3.5"
+      ],
+      "target_status": "HOST_SLICE",
+      "target_source": "role_assignment/assignment_service.cpp",
+      "evidence": "SIM026-LEGACY-DEFAULT-SMS-DUAL",
+      "remaining": "Product Provider, initialization and legacy notification closure",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-027": {
+      "legacy_function": "默认 Data、参数缓存与广播",
+      "legacy_entry": "MultiSimController::SetDefaultCellularDataSlotId/SaveDefaultCellularDataSlotIdInfo",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-027",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e26"
+      ],
+      "signed_behavior": "迁移唯一 writer；保留参数键、last 值与事件，不改用数据库布尔字段作运行真值。 [逐键写点与退出](#sc03-ledger)",
+      "work_packages": [
+        "P3.2",
+        "P3.5"
+      ],
+      "target_status": "HOST_SLICE",
+      "target_source": "role_assignment/assignment_service.cpp",
+      "evidence": "SIM027-LEGACY-DATA-INDEPENDENT-DUAL-PRIMARY0",
+      "remaining": "Original shared parameter producers and cutover",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-028": {
+      "legacy_function": "主卡意图、策略、保存/回滚与重试",
+      "legacy_entry": "MultiSimController::SetPrimarySlotId/SavePrimarySlotIdInfo/CheckIfNeedSwitchMainSlotId",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-028",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e27",
+        "e29"
+      ],
+      "signed_behavior": "拆分策略、持久投影与执行；保留主卡成功/保存路径的默认 Data 联动与 EXT 分支。 [逐键写点与退出](#sc03-ledger)",
+      "work_packages": [
+        "P3.2",
+        "P3.3"
+      ],
+      "target_status": "HOST_SLICE",
+      "target_source": "role_assignment/assignment_service.cpp",
+      "evidence": "SIM028-LEGACY-C0-DUAL-PRIMARY0",
+      "remaining": "Formal B/C1 graph, true member route and product modem",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-029": {
+      "legacy_function": "RadioProtocol/Modem 观察、三阶段切换",
+      "legacy_entry": "RadioProtocolController::Get/SetRadioProtocol/Process*Communication",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-029",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e28",
+        "e29",
+        "e62"
+      ],
+      "signed_behavior": "拆分期望分配与设备观察；保留已有 session 检查，绝不由角色设置推断驻网或数据成功。",
+      "work_packages": [
+        "P2.2",
+        "P3.2",
+        "P3.3",
+        "P3.4"
+      ],
+      "target_status": "HOST_COMPONENT",
+      "target_source": "device/resource/resource_radio_runtime.cpp",
+      "evidence": "TargetPrimaryB.C1InlineRepliesFinishWithoutAccessingRetiredRound",
+      "remaining": "Formal B/C1 graph, original member and transport evidence",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-030": {
+      "legacy_function": "DSDS、M0/M2 互换、特殊槽路由",
+      "legacy_entry": "MultiSimController/MultiSimHelper；SimManager::SetDsdsMode/SwapM0M2SimCards",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-030",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e28",
+        "e77"
+      ],
+      "signed_behavior": "保留产品 EXT/VSIM 门禁；特殊槽含义只在边界解释，不固化为通用硬件模型。",
+      "work_packages": [
+        "P3.2",
+        "P3.3",
+        "P3.4"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-031": {
+      "legacy_function": "SIM 标签、Profile/在位展示资料及映射开始的状态处理",
+      "legacy_entry": "MultiSimController::SetSimLabelIndex/InsertEsimData/UpdateSimPresent/IsEsim；SimManager/StateManager::NotifySimSlotsMapping",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-031",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e19",
+        "e21",
+        "e77",
+        "e81",
+        "e82"
+      ],
+      "signed_behavior": "拆为 SIM-031.a～c（5.1.1）；映射开始需人工缺失处理及旧清理条件，不能当成已完成重映射或物理拔卡证明。 [逐键写点与退出](#sc03-ledger)",
+      "work_packages": [
+        "P1.1",
+        "P1.2",
+        "P1.3",
+        "P2.1"
+      ],
+      "target_status": "HOST_SLICE",
+      "target_source": "account/topology_metadata.cpp",
+      "evidence": "AF2AccountMetadata.PermissionAndHistoricalIdentityWithoutBinding",
+      "remaining": "eSIM presence/display and remapping state",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-032": {
+      "legacy_function": "卡状态/Records/账户等内部订阅和注销",
+      "legacy_entry": "SimManager::RegisterCoreNotify；File/Handle/Monitor Observer",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-032",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e06",
+        "e12",
+        "e30",
+        "e61"
+      ],
+      "signed_behavior": "保留 RadioEvent 编号、订阅条件和既有首帧；领域事件另行建目录，不替换旧机制。",
+      "work_packages": [
+        "P6.3",
+        "P6.4"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-033": {
+      "legacy_function": "账户回调、token、死亡清理与 Registry 更新",
+      "legacy_entry": "MultiSimMonitor::Register/UnregisterSimAccountCallback/NotifySimAccountChanged；DeathRecipient",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-033",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e32"
+      ],
+      "signed_behavior": "保留调用次数与通知路径，不从新快照去重；回调锁外执行、死亡后注销按旧契约。",
+      "work_packages": [
+        "P6.4"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-034": {
+      "legacy_function": "DataShare/CES/Registry 就绪、服务重连与重查",
+      "legacy_entry": "MultiSimMonitor::InitListener/SubscribeDataShareReady/OnDataShareReady；SimStateTracker",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-034",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e30",
+        "e37",
+        "e56"
+      ],
+      "signed_behavior": "拆分服务可用性与业务事实；重试读取不等同卡重新插入。",
+      "work_packages": [
+        "P6.1",
+        "P6.4"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-035": {
+      "legacy_function": "用户切换、OpKey/配置重载",
+      "legacy_entry": "MultiSimMonitor::OnUserSwitched/UpdateAllSimData；Tracker",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-035",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e33",
+        "e37"
+      ],
+      "signed_behavior": "保留用户范围与先后；不把未装配 CacheSync 当已执行流程。",
+      "work_packages": [
+        "P6.4"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-036": {
+      "legacy_function": "SIM 短信存储增删改读",
+      "legacy_entry": "SimSmsManager/SimSmsController",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-036",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e40"
+      ],
+      "signed_behavior": "保留真实卡存储和返回；完整短信投递/收发/会话仍在 sms_mms。",
+      "work_packages": [
+        "P4.2"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-037": {
+      "legacy_function": "ADN/FDN 电话簿 CRUD 和安全前提",
+      "legacy_entry": "IccDiallingNumbersManager/Cache/Handler",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-037",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e41"
+      ],
+      "signed_behavior": "保留类型、PIN2/FDN、索引、超时及更新语义；不接管联系人数据库。",
+      "work_packages": [
+        "P4.1"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-038": {
+      "legacy_function": "USIM PBR/ANR/IAP 多文件电话簿合并",
+      "legacy_entry": "UsimDiallingNumbersService",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-038",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e42"
+      ],
+      "signed_behavior": "保留多阶段关联与合并顺序；新加载代次同时覆盖辅助请求。",
+      "work_packages": [
+        "P4.1"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-039": {
+      "legacy_function": "STK Envelope/Terminal Response/Call Setup",
+      "legacy_entry": "StkManager/StkController",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-039",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e43"
+      ],
+      "signed_behavior": "保留命令格式与 EXT 特殊分支；STK 会话不以账户事务替换。",
+      "work_packages": [
+        "P4.3"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-040": {
+      "legacy_function": "STK 主动命令、会话结束、卡变化事件",
+      "legacy_entry": "StkController::ProcessEvent/OnSendRilSessionEnd/OnIccStateChanged",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-040",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e44"
+      ],
+      "signed_behavior": "转为专用输出适配；保留 action、权限、卡状态载荷和首帧/重复语义。",
+      "work_packages": [
+        "P4.3",
+        "P6.4"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-041": {
+      "legacy_function": "运营商配置读取/更新/缓存及 IMS 能力输入",
+      "legacy_entry": "SimAccountManager；OperatorConfigCache",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-041",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e34",
+        "e35",
+        "e72"
+      ],
+      "signed_behavior": "按真实职责迁移；不因 AccountManager 名称归到 T 账户领域。 [逐键写点与退出](#sc03-ledger)",
+      "work_packages": [
+        "P4.4"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-042": {
+      "legacy_function": "OpKey 匹配、规则加载、海外运营商识别",
+      "legacy_entry": "SimStateTracker、OperatorConfigLoader、OperatorMatchingRule、OperatorFileParser",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-042",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e36",
+        "e37"
+      ],
+      "signed_behavior": "合并规则维护入口；文件/提供方访问为适配，匹配规则保持。 [逐键写点与退出](#sc03-ledger)",
+      "work_packages": [
+        "P4.5"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-043": {
+      "legacy_function": "运营商权限、卡内规则与证书判断",
+      "legacy_entry": "IccOperatorPrivilegeController/Rule",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-043",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e38"
+      ],
+      "signed_behavior": "保留调用者权限判断位置和安全上下文；规则读取共用会话通道而非复制。",
+      "work_packages": [
+        "P4.6"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-044": {
+      "legacy_function": "APN 配置初始化通知与失败重试",
+      "legacy_entry": "OperatorConfigCache::notifyInitApnConfigs；PdpProfileRdbHelper",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-044",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e39",
+        "e72"
+      ],
+      "signed_behavior": "转为适配；既有 URI/BatchInsert 语义保留，数据连接与 APN 提供方留外部。",
+      "work_packages": [
+        "P4.4"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-045": {
+      "legacy_function": "IMS 开关持久化、芯片能力输入",
+      "legacy_entry": "MultiSimController::SaveImsSwitch/QueryImsSwitch；SimAccountManager::UpdateImsCapFromChip",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-045",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e34",
+        "e55"
+      ],
+      "signed_behavior": "拆分存储偏好和配置观察；IMS 注册和通话事实不迁入。 [逐键写点与退出](#sc03-ledger)",
+      "work_packages": [
+        "P1.3",
+        "P4.4"
+      ],
+      "target_status": "HOST_SLICE",
+      "target_source": "account/topology_metadata.cpp",
+      "evidence": "SIM024-LEGACY-IMS-PREFERENCE-BOUND",
+      "remaining": "Chip IMS observation and product Provider",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-046": {
+      "legacy_function": "eSIM 下载/OSU 等既有服务任务入口",
+      "legacy_entry": "NAPI/ANI→EsimServiceClient→IEsimService listener",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-046",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e53",
+        "e54"
+      ],
+      "signed_behavior": "保留服务身份/任务入口；Core 不复制远端主流程。实现与唯一编排验证缺口见 Q-03。",
+      "work_packages": [
+        "P5.3",
+        "P6.3"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-047": {
+      "legacy_function": "eUICC EID/库存/能力/Port/合约查询",
+      "legacy_entry": "EsimManager→EsimFile；GetEuiccInfo2/GetEsimPortIndex/GetContractInfo",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-047",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e45",
+        "e71"
+      ],
+      "signed_behavior": "保留普通/低优先级执行对象；不将缓存 PortIndex 直接推导持久账户绑定。",
+      "work_packages": [
+        "P5.2",
+        "P5.4"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-048": {
+      "legacy_function": "eUICC 通道、APDU 分片、关闭和同 AID 复用",
+      "legacy_entry": "EsimFile::ObtainChannelSuccessExclusive/SendApduData/SyncCloseChannel",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-048",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e46",
+        "e62"
+      ],
+      "signed_behavior": "迁移资源租约/串行规则；两个 EsimFile 仍需共享设备级互斥，不能只按对象锁隔离。",
+      "work_packages": [
+        "P2.2",
+        "P5.1",
+        "P5.4"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-049": {
+      "legacy_function": "eUICC 卡侧认证与下载准备",
+      "legacy_entry": "EsimManager/EsimFile::AuthenticateServer/PrepareDownload",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-049",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e47"
+      ],
+      "signed_behavior": "保留编码、错误与设备能力输入；SM-DP+ 网络与远端任务不迁入。",
+      "work_packages": [
+        "P5.3",
+        "P5.4"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-050": {
+      "legacy_function": "BPP 解码、分片装载与安装结果",
+      "legacy_entry": "EsimFile::ProcessLoadBoundProfilePackage/RealProcessLoadBoundProfilePackageDone",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-050",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e48"
+      ],
+      "signed_behavior": "保留卡安装原语；传输成功、卡返回、Profile 可用分开。",
+      "work_packages": [
+        "P5.3",
+        "P5.4"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-051": {
+      "legacy_function": "卡侧 Profile 禁用/删除/切换/改名",
+      "legacy_entry": "EsimManager/EsimFile::DisableProfile/DeleteProfile/SwitchToProfile/SetProfileNickname",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-051",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e49",
+        "e50"
+      ],
+      "signed_behavior": "拆分本地步骤与事实接纳；保留外层 int 与 enumResult 双结果、偏好参数和既有服务回调。 [逐键写点与退出](#sc03-ledger)",
+      "work_packages": [
+        "P5.2",
+        "P5.4"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-052": {
+      "legacy_function": "eUICC 通知清单/读取/取回/移除",
+      "legacy_entry": "EsimManager 低优先级组→EsimFile::*Notifications",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-052",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e45",
+        "e51"
+      ],
+      "signed_behavior": "保留卡通知序号和错误；不混作内部领域事件或普通 CES。",
+      "work_packages": [
+        "P5.1",
+        "P5.2",
+        "P5.4"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-053": {
+      "legacy_function": "SM-DP/SM-DS 地址、会话取消、卡内 ResetMemory",
+      "legacy_entry": "EsimManager/EsimFile；CancelSession/ResetMemory/SetDefaultSmdpAddress",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-053",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e45",
+        "e46",
+        "e54"
+      ],
+      "signed_behavior": "保留业务命令；CancelSession 原语与取消本地等待严格区分；不联动 Core FactoryReset。",
+      "work_packages": [
+        "P5.2",
+        "P5.4"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-054": {
+      "legacy_function": "CA 验证、Profile 数量与 Profile 事件",
+      "legacy_entry": "EsimController；EsimManager::PublishEsimProfileChange；TelProfileUtil；StartOsuResultCallback",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-054",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e52",
+        "e76"
+      ],
+      "signed_behavior": "保留 CA 结果/偏好与事件；空 OnStartOsu 回调不充当 OSU 编排完成证据。",
+      "work_packages": [
+        "P5.2",
+        "P5.3",
+        "P5.4",
+        "P6.4"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-055": {
+      "legacy_function": "账户 DataShare CRUD、连接/游标关闭、错误",
+      "legacy_entry": "SimRdbHelper/TelephonyDataHelper；Insert/Query/Update/Delete",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-055",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e55",
+        "e56"
+      ],
+      "signed_behavior": "转为各 Owner 的存储端口实现；无新 schema/直写连接/跨系统事务。",
+      "work_packages": [
+        "P1.1"
+      ],
+      "target_status": "HOST_SLICE",
+      "target_source": "account/account_store_adapter.cpp",
+      "evidence": "AF2Reload.IndependentViewsValidateCompleteMembershipAndExactRoleIdentity",
+      "remaining": "Product Provider causality and all original CRUD",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-056": {
+      "legacy_function": "卡文件探测结果存取与账户缓存刷新",
+      "legacy_entry": "CardFileDetectManager::SaveCardFileDetectData/GetAllSimCardInfo",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-056",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e57",
+        "e04"
+      ],
+      "signed_behavior": "拆分探测事实与存取；现有装配 weak_ptr 时点风险 R-05 另测，不在本次悄然修复。 [逐键写点与退出](#sc03-ledger)",
+      "work_packages": [
+        "P1.2",
+        "P4.5"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-057": {
+      "legacy_function": "EXT/VSIM/分布式/卫星策略与执行钩子",
+      "legacy_entry": "TelephonyExtWrapper；MultiSimHelper；各 Manager Hook",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-057",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e27",
+        "e43",
+        "e67",
+        "e77"
+      ],
+      "signed_behavior": "转为私有端口适配现有函数指针；不改厂商ABI，不吞默认/失败分支。SIM-OC-003/004/012～016按当前符号与Feature核对；PIN记忆随R安全/状态，拓扑结果分别归T/A/R，旁路准入另证。",
+      "work_packages": [
+        "P3.1",
+        "P3.4",
+        "P5.4",
+        "P6.3"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-058": {
+      "legacy_function": "serial/事件/同步等待/超时/进度关联",
+      "legacy_entry": "TelRilBase requestMap；SimStateHandle/Manager；RadioProtocolController",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-058",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e08",
+        "e09",
+        "e29",
+        "e62"
+      ],
+      "signed_behavior": "合并业务完成门控，保留 RIL serial 与协议 session；不以全局 revision 拒绝合法新会话。",
+      "work_packages": [
+        "P2.2",
+        "P6.5",
+        "P2.7"
+      ],
+      "target_status": "HOST_SLICE",
+      "target_source": "infrastructure/request/runtime_operation_store.cpp",
+      "evidence": "TargetRadioReceipt.EarlyDeliveryCannotOverwriteOriginalSubmitResult",
+      "remaining": "PIN/EF association and whole-graph shutdown/rebuild",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-059": {
+      "legacy_function": "共宿主 Hub、直接调用及源代码反向依赖",
+      "legacy_entry": "CoreManagerInner；SIM 对门面反查；CoreServiceCommonEventHub",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-059",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e02",
+        "e61"
+      ],
+      "signed_behavior": "保留外部签名与调用语义；消除SIM→Core具体实现链接，将非SIM端口由宿主实现并注入。SIM-OC-002/005/006/010/011保持原CMI/API定义、注入对象和控制块，注册/注销实际效果单独验收。",
+      "work_packages": [
+        "P6.1",
+        "P6.2",
+        "P6.3"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-060": {
+      "legacy_function": "dump、计时/匹配轨迹、故障事件与统计",
+      "legacy_entry": "CoreServiceDumpHelper、OperatorConfigHisysevent、CoreServiceHiSysEvent",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-060",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e74",
+        "e08"
+      ],
+      "signed_behavior": "保留既有 dump 输出兼容与脱敏；统计超时不得当新业务成功，改行为先做定向兼容裁决。",
+      "work_packages": [
+        "P6.4"
+      ],
+      "target_status": "NO_VERIFIED_TARGET_CASE",
+      "target_source": null,
+      "evidence": null,
+      "remaining": "Execute the mapped Legacy obligation and prove the matching Target path",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-061": {
+      "legacy_function": "Core FactoryReset 与网络恢复设置",
+      "legacy_entry": "CoreService::FactoryReset→NetworkSearchManager::FactoryReset",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-061",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e63",
+        "e64"
+      ],
+      "signed_behavior": "保留：自动选网、首选网络和通知；不新增删 Profile/擦卡动作。",
+      "work_packages": [
+        "P6.3"
+      ],
+      "target_status": "RETAIN_EXTERNAL",
+      "target_source": "services/network_search",
+      "evidence": "E63/E64",
+      "remaining": "Continue executing original FactoryReset responsibilities",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    },
+    "SIM-062": {
+      "legacy_function": "未装配的用户切换缓存同步源文件",
+      "legacy_entry": "SimCacheSyncManager；未见默认 BUILD/调用入口",
+      "approved_mapping": "../../../../../../docs/migration/SIM_Architecture_Refactor_Design.md#sim-062",
+      "product_owner_status": "LEGACY_ACTIVE",
+      "legacy_source_anchors": [
+        "e58",
+        "e01"
+      ],
+      "signed_behavior": "保留但不激活、不宣称现行业务；经确认取舍后再接入或删除，不能因重构自行废弃。",
+      "work_packages": [
+        "P7.1"
+      ],
+      "target_status": "NOT_BUILT",
+      "target_source": "services/sim/src/sim_cache_sync_manager.cpp",
+      "evidence": "E58/E01",
+      "remaining": "Keep unassembled until consumers and approved disposition are known",
+      "host_acceptance": "Verify original visible behavior and applicable Owner invariants at a real entry point",
+      "product_acceptance": "Use the linked package product evidence and enabled feature matrix",
+      "cutover_acceptance": "Retain existing writer until all applicable WU predecessors, old callers and duties are verified"
+    }
+  },
+  "writer_units": {
+    "WU-01": {
+      "fact": "当前/历史账户、Reload 与账户容器",
+      "packages": "P1/P6",
+      "cutover_requirements": "原 Controller/Monitor 重载不直接替换旧缓存；滞后读不能覆盖新事实",
+      "status": "LEGACY_ACTIVE"
+    },
+    "WU-02": {
+      "fact": "active 账户字段与激活写入",
+      "packages": "P1/P3",
+      "cutover_requirements": "旧初始化、普通/force/卫星及相交直接写统一委托 T，设备结果独立取证",
+      "status": "LEGACY_ACTIVE"
+    },
+    "WU-03": {
+      "fact": "Voice/SMS 等角色列及初始建行角色",
+      "packages": "P1/P3",
+      "cutover_requirements": "建行、重载、setter 接入 A 同一责任域，删除第二份默认规则",
+      "status": "LEGACY_ACTIVE"
+    },
+    "WU-04": {
+      "fact": "Primary/Data 参数及偏好、恢复",
+      "packages": "P3/P5/P6",
+      "cutover_requirements": "Core、Profile、Controller 共享键唯一准入，旧重试/恢复器不继续写",
+      "status": "LEGACY_ACTIVE"
+    },
+    "WU-05": {
+      "fact": "账户名称、号码、标签、IMS、探测/运营商资料",
+      "packages": "P1/P2/P4/P5",
+      "cutover_requirements": "单列/原目标写入，旧 Loader/探测、号码后台任务不旁路 T；标签恢复各键按批准归属",
+      "status": "LEGACY_ACTIVE"
+    },
+    "WU-06": {
+      "fact": "卡态、会话、EF、Records、电话簿等卡侧写入",
+      "packages": "P2/P4/P5",
+      "cutover_requirements": "原状态设备/软件/文件输入统一接纳，局部刷新与换卡负控通过，无重复可写缓存",
+      "status": "LEGACY_ACTIVE"
+    },
+    "WU-07": {
+      "fact": "业务进度、重试、等待及原步骤执行",
+      "packages": "P2/P3/P5/P6",
+      "cutover_requirements": "T/A/R 具名业务各持原责任，O 仅机制；同一业务不再有两个设备发令者或重试者",
+      "status": "LEGACY_ACTIVE"
+    },
+    "WU-08": {
+      "fact": "eUICC 通道、Profile 缓存和资源",
+      "packages": "P2/P4/P5",
+      "cutover_requirements": "普通/低优先级及清理统一资源资格，迟到 Close 不释放新租约，原双结果保留",
+      "status": "LEGACY_ACTIVE"
+    },
+    "WU-09": {
+      "fact": "回调、订阅、死亡清理、加载与重试标志",
+      "packages": "P1/P2/P4/P6",
+      "cutover_requirements": "关闭前后原通知/回调次数符合契约，旧 token/重试已回收或有正式接手责任",
+      "status": "LEGACY_ACTIVE"
+    }
+  },
+  "work_packages": {
+    "P1.1": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 100,
+        "tests": 3
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 150,
+        "tests": 6
+      },
+      "owner": "A",
+      "planned_slice": "原查询/目标解析；Store 单列 CRUD；未知身份原票恢复",
+      "dependencies": "M9 T/Store、Binding",
+      "product_evidence": "Provider 读写归因、权限",
+      "source_anchor": "`multi_sim_controller.cpp` 的 GetSimId/GetSlotId/GetTargetSimId、SimRdbHelper CRUD、MultiSimHelper 建行",
+      "target_directory": "`account/`：AccountRegistry、BindingIndex、TopologyService、AccountStoreAdapter",
+      "v2_1_total_budget": {
+        "net_loc": 250,
+        "ctd": "3/5/1"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-020",
+        "SIM-021",
+        "SIM-022",
+        "SIM-023",
+        "SIM-031",
+        "SIM-055"
+      ]
+    },
+    "P1.2": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 200,
+        "tests": 5
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 330,
+        "tests": 7
+      },
+      "owner": "A",
+      "planned_slice": "探测有/无行；缺卡展示；运营商字段接纳；未覆盖 Reload 分支",
+      "dependencies": "M8、P1.1；P2.1/P4.5 对应观察",
+      "product_evidence": "DataShare 查询因果、探测调用者",
+      "source_anchor": "Controller GetListFromDataBase/GetAllListFromDataBase、ForgetAllData、Monitor InitData/RefreshData、CardFileDetectManager",
+      "target_directory": "`account/discovery/`，复用根部 Registry/Store 与 DiscoveryObservationLedger",
+      "v2_1_total_budget": {
+        "net_loc": 530,
+        "ctd": "5/5/2"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 1,
+        "shared_case": "SIM021-ACCOUNT-RELOAD-FRESH-VIEWS"
+      },
+      "affected_sim": [
+        "SIM-020",
+        "SIM-021",
+        "SIM-022",
+        "SIM-031",
+        "SIM-056"
+      ]
+    },
+    "P1.3": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 400,
+        "tests": 5
+      },
+      "owner": "A",
+      "planned_slice": "在位/标签恢复；历史账户；eSIM 运营商名；已批准 IMS 仅回归",
+      "dependencies": "P1.1、已有 M6/M7A",
+      "product_evidence": "Provider、P5.2 原标签键",
+      "source_anchor": "Controller SetShowName、SetSimLabelIndexByIccId、InsertEsimData、UpdateSimPresent、Save/QueryImsSwitch",
+      "target_directory": "`account/profile/`（按实际职责从现有根部实现迁出，根部预算为净值）",
+      "v2_1_total_budget": {
+        "net_loc": 400,
+        "ctd": "2/2/1"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-023",
+        "SIM-031",
+        "SIM-045"
+      ]
+    },
+    "P1.4": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 280,
+        "tests": 8
+      },
+      "owner": "A",
+      "planned_slice": "初始化号码、读回退、原后台回写；真实 MSISDN 桥",
+      "dependencies": "M7B、P2.5/P2.6 对应记录能力",
+      "product_evidence": "EF/RIL/IMPU/Provider",
+      "source_anchor": "Controller SetShowNumber/SetShowNumberToDB/GetShowNumber/GetSimTelephoneNumber/InitShowNumber；SimFile UpdateMsisdnNumber",
+      "target_directory": "`account/number/`：已有 ShowNumber 用例、查询和 RuntimePort；卡侧写入归 P2",
+      "v2_1_total_budget": {
+        "net_loc": 280,
+        "ctd": "3/3/2"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-023"
+      ]
+    },
+    "P2.1": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 350,
+        "tests": 6
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 620,
+        "tests": 10
+      },
+      "owner": "B",
+      "planned_slice": "状态查询；锁因；可信拔卡/换卡；应用切换/映射",
+      "dependencies": "M9 SessionRegistry 与观察",
+      "product_evidence": "真卡态/映射协议",
+      "candidate_tests_to_credit": [
+        "AF2Discovery.ApplicationPrecedesIdentityAndStalePromotionCannotCreateBinding"
+      ],
+      "scope": "Verified Host pre-identity application admission only; planned slice remains open",
+      "source_anchor": "SimStateManager、SimStateHandle、IccState、SimFileManager 卡型切换、NotifySimSlotsMapping",
+      "target_directory": "`card/state/`：SessionRegistry 及真实卡状态实现",
+      "v2_1_total_budget": {
+        "net_loc": 970,
+        "ctd": "8/5/3"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-005",
+        "SIM-006",
+        "SIM-012",
+        "SIM-031"
+      ]
+    },
+    "P2.2": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 200,
+        "tests": 5
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 150,
+        "tests": 10
+      },
+      "owner": "G",
+      "planned_slice": "资源键证据；组申请；恢复及结束/复用；M9 已完成的仅回归",
+      "dependencies": "M9 唯一 ResourceBarrier",
+      "product_evidence": "RIL/HDI 真实共享资源",
+      "source_anchor": "RadioProtocolController、SimStateHandle、EsimFile 等实际共享执行路径",
+      "target_directory": "`device/resource/`：ResourceBarrier、ResourceRadioRuntime 现有机制",
+      "v2_1_total_budget": {
+        "net_loc": 350,
+        "ctd": "2/8/5"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-029",
+        "SIM-048",
+        "SIM-058"
+      ]
+    },
+    "P2.3": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 300,
+        "tests": 5
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 770,
+        "tests": 13
+      },
+      "owner": "B",
+      "planned_slice": "PIN2/PUK2；锁设置/查询；个性化锁；认证/SIM IO；剩余 PIN",
+      "dependencies": "M9 UnlockPin/会话/原请求，P2.1/P2.2 对应能力",
+      "product_evidence": "真实卡安全结果、状态通知",
+      "source_anchor": "SimStateManager/Handle UnlockPin/UnlockPuk、PIN2、UnlockSimLock、SimAuthentication、GetSimIO",
+      "target_directory": "`card/security/`，复用卡会话、原请求及设备资源",
+      "v2_1_total_budget": {
+        "net_loc": 1070,
+        "ctd": "10/4/4"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-007",
+        "SIM-008",
+        "SIM-009",
+        "SIM-010",
+        "SIM-011"
+      ]
+    },
+    "P2.4": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 100,
+        "tests": 2
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 800,
+        "tests": 6
+      },
+      "owner": "C",
+      "planned_slice": "字符、号码、PLMN、TLV 等纯算法，分文件机械迁移",
+      "dependencies": "M9 codec 样板；原字节 Golden",
+      "product_evidence": "原生编译/平台差异（如适用）",
+      "source_anchor": "SimFileParse、SimCharDecode、SimNumberDecode、SimUtils、TagService 等",
+      "target_directory": "`card/records/codec/`",
+      "v2_1_total_budget": {
+        "net_loc": 900,
+        "ctd": "3/5/0"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-014"
+      ]
+    },
+    "P2.5": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 350,
+        "tests": 3
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 1450,
+        "tests": 8
+      },
+      "owner": "C",
+      "planned_slice": "透明/线性文件；读取/写入；按现有 SIM/USIM/ISIM/RUIM/CSIM 路径扩展",
+      "dependencies": "M9 ICCID IO、P2.1/P2.2、相应 codec",
+      "product_evidence": "EF/AID/状态字/设备回包",
+      "source_anchor": "IccFileController、SimFileController、Usim/Isim/Ruim/CsimFileController、SimFileManager",
+      "target_directory": "`card/records/files/`",
+      "v2_1_total_budget": {
+        "net_loc": 1800,
+        "ctd": "5/4/2"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-011",
+        "SIM-012",
+        "SIM-013",
+        "SIM-016",
+        "SIM-017",
+        "SIM-018",
+        "SIM-019"
+      ]
+    },
+    "P2.6": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 400,
+        "tests": 5
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 1560,
+        "tests": 13
+      },
+      "owner": "C",
+      "planned_slice": "首次/锁定加载；局部 Refresh；IMSI/SPN/GID/PLMN；语音信箱/呼转/MSISDN",
+      "dependencies": "M9 LoadSession、P2.5 对应文件",
+      "product_evidence": "卡型 Records、原通知/EF 写入",
+      "source_anchor": "SimFile/IccFile/IsimFile/RuimFile、VoiceMailConstants、PlmnFile、MccPool 等",
+      "target_directory": "`card/records/` 根部：LoadSession、记录视图和原观察输出",
+      "v2_1_total_budget": {
+        "net_loc": 1960,
+        "ctd": "9/6/3"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0,
+        "new_rule_cases": 1,
+        "pure_rule_case": "ScopedRecordReadScenarios"
+      },
+      "affected_sim": [
+        "SIM-013",
+        "SIM-015",
+        "SIM-016",
+        "SIM-017",
+        "SIM-018",
+        "SIM-019"
+      ]
+    },
+    "P2.7": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": -620,
+        "tests": 0
+      },
+      "owner": "C+H",
+      "planned_slice": "runtime 接缝逐条迁出；按消费者删除，不单独造替代物",
+      "dependencies": "P2.1～P2.6 对应消费者、P1.4/P5 相关接线",
+      "product_evidence": "所有实际消费者及构建",
+      "source_anchor": "现有 `card/runtime/` 的 CardRuntime、观察及 MSISDN Runtime",
+      "target_directory": "将真实责任归入 state/records/security/esim，必要窄接缝保留并重新分配预算",
+      "v2_1_total_budget": {
+        "net_loc": -620,
+        "ctd": "0/0/0"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-006",
+        "SIM-012",
+        "SIM-013",
+        "SIM-015",
+        "SIM-016",
+        "SIM-058"
+      ]
+    },
+    "P3.1": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 650,
+        "tests": 15
+      },
+      "owner": "D",
+      "planned_slice": "普通激活/停用；force；卫星 Hook；失败进度",
+      "dependencies": "T active、P2.1/P2.2、P3.4 受控端口",
+      "product_evidence": "真设备激活/卫星/厂商",
+      "source_anchor": "MultiSimController::SetActiveSim/SetActiveCommonSim/SetActiveSimSatellite、MultiSimHelper、CoreServiceSim 激活入口",
+      "target_directory": "`account/activation/`：ActivateSimUseCase、ActivationProgress、Runtime/Hook 契约",
+      "v2_1_total_budget": {
+        "net_loc": 650,
+        "ctd": "7/5/3"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-024",
+        "SIM-057"
+      ]
+    },
+    "P3.2": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 3
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 50,
+        "tests": 6
+      },
+      "owner": "D",
+      "planned_slice": "写键台账；建行/重载/角色偏好接纳；独立写集并发",
+      "dependencies": "M9 A/T，P1.1/P1.2",
+      "product_evidence": "Provider 写域、Core/eSIM 键",
+      "source_anchor": "MultiSimController 默认角色、SimDataBuilder、CoreServiceSim 及 eSIM 偏好写入",
+      "target_directory": "`role_assignment/`：AssignmentService、AssignmentAggregate、StoreAdapter、AccountRoleProtocol",
+      "v2_1_total_budget": {
+        "net_loc": 50,
+        "ctd": "3/5/1"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-025",
+        "SIM-026",
+        "SIM-027",
+        "SIM-028",
+        "SIM-029",
+        "SIM-030"
+      ]
+    },
+    "P3.3": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 200,
+        "tests": 3
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 500,
+        "tests": 14
+      },
+      "owner": "D",
+      "planned_slice": "B 正式路径；C1 各 phase/重试；偏好恢复；DSDS/M0/M2",
+      "dependencies": "P3.2/P3.4 真实 Host 图，P2.2",
+      "product_evidence": "实际成员、设备效果、COMPLETE 门禁",
+      "source_anchor": "SetPrimarySlotId、Save/ResumePrimaryCardInfo、CheckIfNeedSwitchMainSlotId、RadioProtocolController；DSDS、M0/M2 原入口",
+      "target_directory": "`role_assignment/primary/`，复用现有计划和执行契约",
+      "v2_1_total_budget": {
+        "net_loc": 700,
+        "ctd": "7/6/4"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-028",
+        "SIM-029",
+        "SIM-030"
+      ]
+    },
+    "P3.4": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 300,
+        "tests": 3
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 700,
+        "tests": 13
+      },
+      "owner": "G",
+      "planned_slice": "成员/路由；逐成员交接；原生 Radio/Modem 适配",
+      "dependencies": "P2.2、M9 A 执行契约",
+      "product_evidence": "RIL/HDI 真实路由和复用",
+      "candidate_tests_to_credit": [
+        "TargetPrimaryB.ResourceSubmitMemberCannotDuplicateOrReleaseAnotherInSubmit",
+        "TargetRadioReceipt.EarlyDeliveryCannotOverwriteOriginalSubmitResult",
+        "TargetPrimaryB.C1InlineRepliesFinishWithoutAccessingRetiredRound"
+      ],
+      "scope": "Host negative/regression only; planned slice still open",
+      "source_anchor": "RadioProtocolController::Get/SetRadioProtocol、原 RIL 路由、激活和 DSDS/M0/M2 执行路径",
+      "target_directory": "`device/radio/`，复用 `device/resource/`",
+      "v2_1_total_budget": {
+        "net_loc": 1000,
+        "ctd": "5/6/5"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-024",
+        "SIM-029",
+        "SIM-030",
+        "SIM-057"
+      ]
+    },
+    "P3.5": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 450,
+        "tests": 6
+      },
+      "owner": "D",
+      "planned_slice": "Voice/SMS 清除回退；Data 初始化/恢复；查询通知",
+      "dependencies": "M4/M5、P3.2",
+      "product_evidence": "Provider/系统参数/Registry",
+      "source_anchor": "MultiSimController 各默认 setter/getter、参数初始化及原 Provider set_card/广播",
+      "target_directory": "`role_assignment/default_roles/`（按实际变化原因组织，复用 AssignmentService）",
+      "v2_1_total_budget": {
+        "net_loc": 450,
+        "ctd": "3/2/1"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-025",
+        "SIM-026",
+        "SIM-027"
+      ]
+    },
+    "P4.1": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 1900,
+        "tests": 15
+      },
+      "owner": "E",
+      "planned_slice": "ADN/FDN 基础；PBR/ANR/IAP；多 EF 部分写",
+      "dependencies": "P2.3 PIN2、P2.5/P2.6",
+      "product_evidence": "卡电话簿及真实 EF",
+      "source_anchor": "IccDiallingNumbersManager/Cache/Handler、UsimDiallingNumbersService",
+      "target_directory": "`card/phonebook/`",
+      "v2_1_total_budget": {
+        "net_loc": 1900,
+        "ctd": "8/4/3"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-037",
+        "SIM-038"
+      ]
+    },
+    "P4.2": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 400,
+        "tests": 7
+      },
+      "owner": "E",
+      "planned_slice": "卡短信读/容量；增删改；错误索引/满容量",
+      "dependencies": "P2.5/P2.6",
+      "product_evidence": "真卡短信 EF",
+      "source_anchor": "SimSmsManager、SimSmsController",
+      "target_directory": "`card/sms_storage/`",
+      "v2_1_total_budget": {
+        "net_loc": 400,
+        "ctd": "4/2/1"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-036"
+      ]
+    },
+    "P4.3": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 850,
+        "tests": 10
+      },
+      "owner": "E",
+      "planned_slice": "Envelope/Terminal Response；Call Setup；主动事件",
+      "dependencies": "P2.1、P6.4 事件端口",
+      "product_evidence": "STK/EXT、原通知",
+      "source_anchor": "StkManager、StkController 的 Envelope/TerminalResponse/CallSetup、ProcessEvent",
+      "target_directory": "`card/stk/`",
+      "v2_1_total_budget": {
+        "net_loc": 850,
+        "ctd": "5/3/2"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-039",
+        "SIM-040"
+      ]
+    },
+    "P4.4": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 850,
+        "tests": 10
+      },
+      "owner": "E",
+      "planned_slice": "配置加载缓存；APN 重试；IMS 芯片能力",
+      "dependencies": "Records 快照、P6.4 用户/重连事件",
+      "product_evidence": "原配置/APN/芯片能力",
+      "source_anchor": "SimAccountManager、OperatorConfigCache、PdpProfileRdbHelper",
+      "target_directory": "`card/carrier/config/`",
+      "v2_1_total_budget": {
+        "net_loc": 850,
+        "ctd": "5/3/2"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-041",
+        "SIM-044",
+        "SIM-045"
+      ]
+    },
+    "P4.5": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 900,
+        "tests": 10
+      },
+      "owner": "E",
+      "planned_slice": "规则解析；OpKey 匹配；卡参数和账户字段输出",
+      "dependencies": "P2.4/P2.6、P1.2 接纳",
+      "product_evidence": "真实配置/Provider、用户切换",
+      "source_anchor": "SimStateTracker、OperatorConfigLoader、OperatorMatchingRule、OperatorFileParser",
+      "target_directory": "`card/carrier/matching/`",
+      "v2_1_total_budget": {
+        "net_loc": 900,
+        "ctd": "5/3/2"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-019",
+        "SIM-042",
+        "SIM-056"
+      ]
+    },
+    "P4.6": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 450,
+        "tests": 9
+      },
+      "owner": "E",
+      "planned_slice": "证书/规则解析；ARA-M 通道及关闭",
+      "dependencies": "P2.4/P2.2，P5.1 共享通道接口（接口先行）",
+      "product_evidence": "真通道与权限/证书",
+      "source_anchor": "IccOperatorPrivilegeController、IccOperatorRule",
+      "target_directory": "`card/carrier/privilege/`",
+      "v2_1_total_budget": {
+        "net_loc": 450,
+        "ctd": "4/3/2"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-043"
+      ]
+    },
+    "P5.1": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 1000,
+        "tests": 16
+      },
+      "owner": "F",
+      "planned_slice": "开通道；APDU 分片；关通道、晚 Close；共享资格",
+      "dependencies": "P2.1/P2.2，P4.6 契约",
+      "product_evidence": "eUICC/ARA-M 真实资源关系",
+      "source_anchor": "EsimFile::ObtainChannelSuccessExclusive/SendApduData/SyncCloseChannel、普通/低优先级对象",
+      "target_directory": "`card/esim/channel/`",
+      "v2_1_total_budget": {
+        "net_loc": 1000,
+        "ctd": "6/6/4"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-048",
+        "SIM-052"
+      ]
+    },
+    "P5.2": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 1500,
+        "tests": 18
+      },
+      "owner": "F",
+      "planned_slice": "EID/库存/Port；Profile 读写；通知/地址/Reset",
+      "dependencies": "P5.1、P1.3/P3.2/P3.3 对应写权",
+      "product_evidence": "真 eUICC、标签/偏好协议",
+      "source_anchor": "EsimManager/EsimFile：EID、GetEuiccInfo2、GetEsimPortIndex、SwitchToProfile、DisableProfile、通知/Reset 等",
+      "target_directory": "`card/esim/profile/`",
+      "v2_1_total_budget": {
+        "net_loc": 1500,
+        "ctd": "9/5/4"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-047",
+        "SIM-051",
+        "SIM-052",
+        "SIM-053",
+        "SIM-054"
+      ]
+    },
+    "P5.3": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 1400,
+        "tests": 13
+      },
+      "owner": "F",
+      "planned_slice": "认证/Prepare；BPP 解析/分片安装；本地回执",
+      "dependencies": "P2.4、P5.1",
+      "product_evidence": "66250 唯一主编排和原生安装证据",
+      "source_anchor": "EsimFile::AuthenticateServer/PrepareDownload/ProcessLoadBoundProfilePackage、EsimController、StartOsuResultCallback",
+      "target_directory": "`card/esim/provisioning/`",
+      "v2_1_total_budget": {
+        "net_loc": 1400,
+        "ctd": "6/4/3"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-046",
+        "SIM-049",
+        "SIM-050",
+        "SIM-054"
+      ]
+    },
+    "P5.4": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 150,
+        "tests": 6
+      },
+      "owner": "F+H",
+      "planned_slice": "本地双返回；Profile 事件；外部 Hook 协作",
+      "dependencies": "P5.1～P5.3 对应能力、T/A/R 契约",
+      "product_evidence": "eSIM/vSIM/通信共享/EXT 外部调用者",
+      "source_anchor": "EsimManager 的双结果及事件入口、原 EXT/VSIM Hook、相关外仓调用者",
+      "target_directory": "`card/esim/` 根部，复用现有 LocalCardRequests/ProfileRequests/LegacyProfileResult；其他 Owner 修改归对应目录预算",
+      "v2_1_total_budget": {
+        "net_loc": 150,
+        "ctd": "2/3/1"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-047",
+        "SIM-048",
+        "SIM-049",
+        "SIM-050",
+        "SIM-051",
+        "SIM-052",
+        "SIM-053",
+        "SIM-054",
+        "SIM-057"
+      ]
+    },
+    "P6.1": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 200,
+        "tests": 4
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 200,
+        "tests": 10
+      },
+      "owner": "H",
+      "planned_slice": "逐业务装配；真实启动/关闭；驻留/重建",
+      "dependencies": "M9 H/O/R；各批真实入口",
+      "product_evidence": "Core/SA/共享 RIL/实际销毁",
+      "source_anchor": "SimManager::OnInit/InitBaseManager、CoreService::Init/OnStop、旧 Monitor/Manager 析构及共享 RIL",
+      "target_directory": "`infrastructure/assembly/`：SimModuleFactory、PrimaryHostLifecycle、HostPorts、SlotCatalog",
+      "v2_1_total_budget": {
+        "net_loc": 400,
+        "ctd": "3/6/5"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-001",
+        "SIM-002",
+        "SIM-003",
+        "SIM-004",
+        "SIM-034",
+        "SIM-059"
+      ]
+    },
+    "P6.2": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 30,
+        "tests": 1
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 30,
+        "tests": 2
+      },
+      "owner": "H",
+      "planned_slice": "条件源；库导出；构造/销毁/ABI",
+      "dependencies": "M9 独立源清单，已迁模块",
+      "product_evidence": "原生工具链/批准 G2b SO",
+      "source_anchor": "根 BUILD.gn、原 Core/CMI 装配与导出、已有库边界",
+      "target_directory": "`infrastructure/assembly/exports/`",
+      "v2_1_total_budget": {
+        "net_loc": 60,
+        "ctd": "0/1/2"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-001",
+        "SIM-059"
+      ]
+    },
+    "P6.3": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 100,
+        "tests": 2
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 720,
+        "tests": 12
+      },
+      "owner": "H",
+      "planned_slice": "查询/权限；业务兼容入口；EXT/SA/IPC 逐桥",
+      "dependencies": "各 P*.x 业务实现",
+      "product_evidence": "原 IPC、Provider/平台、Feature",
+      "source_anchor": "CoreServiceSim、CoreManagerInner、SimManager、既有 SA/IPC/EXT 入口",
+      "target_directory": "`infrastructure/compatibility/api/`：LegacySimFacade、各旧入口",
+      "v2_1_total_budget": {
+        "net_loc": 820,
+        "ctd": "6/3/5"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-003",
+        "SIM-004",
+        "SIM-022",
+        "SIM-032",
+        "SIM-046",
+        "SIM-057",
+        "SIM-059",
+        "SIM-061"
+      ]
+    },
+    "P6.4": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 100,
+        "tests": 3
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 340,
+        "tests": 10
+      },
+      "owner": "H",
+      "planned_slice": "各原通知出口；回调死亡；重连；诊断",
+      "dependencies": "各业务明确输出契约",
+      "product_evidence": "Registry/CES/Hub/SA",
+      "source_anchor": "MultiSimMonitor、DeathRecipient、Registry/CES/Hub、SimStateTracker、原事件与 dump",
+      "target_directory": "`infrastructure/compatibility/events/`",
+      "v2_1_total_budget": {
+        "net_loc": 440,
+        "ctd": "5/4/4"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-032",
+        "SIM-033",
+        "SIM-034",
+        "SIM-035",
+        "SIM-040",
+        "SIM-054",
+        "SIM-060"
+      ]
+    },
+    "P6.5": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 150,
+        "tests": 4
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 100,
+        "tests": 5
+      },
+      "owner": "H",
+      "planned_slice": "适用原生等待/定时器/投递；原效果收据",
+      "dependencies": "M9 请求与关闭机制，各业务原关联",
+      "product_evidence": "FFRT/Binder/真实回调",
+      "candidate_tests_to_credit": [
+        "TargetRadioReceipt.RefusedPostDoesNotRemoveAnotherRequestsReceipt"
+      ],
+      "scope": "Host negative/regression only; planned slice still open",
+      "source_anchor": "原 serial、事件、同步等待、FFRT/Owner 投递及超时调用链",
+      "target_directory": "`infrastructure/request/`：RuntimeOperationStore、RequestContext/Ref",
+      "v2_1_total_budget": {
+        "net_loc": 250,
+        "ctd": "1/7/1"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-058"
+      ]
+    },
+    "P6.6": {
+      "v2_1_before_handoff_reserve": {
+        "net_loc": 0,
+        "tests": 0
+      },
+      "v2_1_conditional_post_handoff": {
+        "net_loc": 20,
+        "tests": 1
+      },
+      "owner": "H",
+      "planned_slice": "纯类型检查；收敛不必要 ID/依赖",
+      "dependencies": "M9 纯值契约",
+      "product_evidence": "兼容 ABI 与原调用者",
+      "source_anchor": "原 slot/sim/card/label 等 ID 的实际消费者",
+      "target_directory": "`infrastructure/` 根部：sim_identity.h 等必要纯类型",
+      "v2_1_total_budget": {
+        "net_loc": 20,
+        "ctd": "0/1/0"
+      },
+      "foundation_credit": {
+        "new_production_loc": 0,
+        "new_business_tests": 0
+      },
+      "affected_sim": [
+        "SIM-004",
+        "SIM-022"
+      ]
+    }
+  },
+  "candidate": "b6f6c25eed8b690da53f5b86ef3e7883cbe46916",
+  "p7": [
+    "P7.1 capability reconciliation",
+    "P7.2 writer cutover and deletion",
+    "P7.3 full regression",
+    "P7.4 build and documentation cleanup"
+  ],
+  "foundation_note": "No new production C++ or completed PIN/ICCID feature is charged against P budgets. One shared Reload case and one pure scope case are recorded. Unproven equivalence and product paths remain open."
+}

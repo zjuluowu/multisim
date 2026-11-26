@@ -1,6 +1,6 @@
 # 多 SIM 源码导航
 
-AF-2 M9 的构建、样板和工程交接状态见[开发指导 v2.2](../../docs/SIM_Global_Code_Migration_and_Test_Plan_v2.2.md)。
+AF-2 M9 的构建、样板和架构基础交付状态见[开发指导 v2.2](../../docs/SIM_Global_Code_Migration_and_Test_Plan_v2.2.md)。
 
 从[开发文档入口](../../docs/README.md)找到设计和迁移路径。下图按[五组目录方案](../../docs/SIM重构代码目录结构设计方案.md)导航。逐文件与 GN 归属见[源码详细设计](../../docs/SIM_Multisim_Source_Architecture_Detailed_Design.md#source-tree)，实施和产品门禁见[执行状态](../../docs/SIM_Refactor_Execution_State.md#current-status)。
 

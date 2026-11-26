@@ -1,6 +1,6 @@
 # SIM 业务测试
 
-新建 Target 专属测试 CPP 可放在 `cases/target/`。下一次 Host 构建自动更新 GN 源表。可移植业务序列从 `cases/shared/` 复用，两个后端保持独立装配。参见 [M9 候选交接记录](../../../docs/AF2_M9_Developer_Handoff_Acceptance_Report.md)。
+新建 Target 专属测试 CPP 可放在 `cases/target/`。下一次 Host 构建自动更新 GN 源表。可移植业务序列从 `cases/shared/` 复用，两个后端保持独立装配。参见 [M9 架构基础记录](../../../docs/AF2_M9_Developer_Handoff_Acceptance_Report.md)。
 
 ## Legacy / Target 双后端
 
@@ -15,7 +15,7 @@ python3 -B "$TEST/scripts/test.py" run --backend both \
   --filter SIM028-LEGACY-C0-DUAL-PRIMARY0
 ```
 
-配置见 `config/test_backend.json`，支持矩阵见 `config/backend_capabilities.json`。两套实现独立构建/链接/进程：Legacy 使用 `services/sim`，Target 使用 `sim_target_production_host`。Target C0 已真实执行 `AssignmentService`、`AssignmentAggregate` 和 `PlanPrimarySwitch`；仍是 Host 组件闭环，不代表产品持久化、SA/IPC 或设备验收。详细审计、边界和迁移顺序见 [双后端架构](docs/Backend_Architecture.md)。
+配置见 `config/test_backend.json`，支持矩阵见 `config/backend_capabilities.json`。两套实现独立构建/链接/进程：Legacy 完整业务使用 `sim_legacy_production_host`，Target 使用 `sim_target_production_host`。Target C0 已真实执行 `AssignmentService`、`AssignmentAggregate` 和 `PlanPrimarySwitch`；仍是 Host 组件闭环，不代表产品持久化、SA/IPC 或设备验收。详细审计、边界和迁移顺序见 [双后端架构](docs/Backend_Architecture.md)。
 
 从 cases/sim_card_test.cpp 复制一条 `TEST_F`，只改准备、操作和断言：
 
@@ -61,3 +61,33 @@ python3 -B "$TEST/scripts/test.py" all --backend legacy --ci
 [完整依赖审计、前后对比、原始证据与设备限制](docs/Full_Replacement.md)。
 
 Testing 面板首次准备使用 `test.py editor`（VS Code 任务 `Prepare Testing Panel`）；源码定位及断点操作见[Host 使用说明](docs/Host_Usage.md#testing-面板源码定位和断点)。
+
+## 在独立工作区开发
+
+给每个 worktree 配置独立的 `--out`。在首次 build 时指定 [固定依赖](framework/internal/host/configs/dependency_lock.json)。
+切换到 `--debug-build` 后在同一构建根的 `debug/` 使用无 LTO 的 Developer 输出。
+
+```sh
+TEST=telephony_core_service/services/multisim/test
+SIM_BUILD=/tmp/sim-feature-build
+python3 -B "$TEST/scripts/test.py" build --backend both --out "$SIM_BUILD"
+python3 -B "$TEST/scripts/test.py" run --backend both --out "$SIM_BUILD" --filter SIM028-LEGACY-C0-DUAL-PRIMARY0
+python3 -B "$TEST/scripts/test.py" debug --backend target --debug-build --out "$SIM_BUILD"   --filter AF2ImsPreference.LegacyProviderContract --breakpoint 'OHOS::Telephony::MultiSim::SimModule::SaveImsSwitch'
+python3 -B "$TEST/scripts/test.py" debug --backend legacy --out "$SIM_BUILD"   --filter RealSimPrimary.DefaultVoiceProviderAndNotificationContract   --breakpoint 'OHOS::Telephony::MultiSimController::SetDefaultVoiceSlotId'
+python3 -B "$TEST/scripts/run_architecture.py" --with-gn --migration --output /tmp/sim-feature-arch
+```
+
+普通共用场景体放在 `cases/shared/`。只通过参数接收两端适配，保持一致的操作、输入和
+业务断言。Target 专属测试直接放在 `cases/target/`，增量构建自动发现新 CPP。
+新增 Target 生产 CPP 时更新所属逻辑 GN 目标，且在真实 Host 路径启用后更新
+`sim_target_sources.gni`。逻辑预留源需在 Host 源图检查中说明用途。运行失败时先打开
+该次 `result.json` 的单例记录，用其中的 GTest ID、XML 和日志定位具体断言。
+
+VS Code Remote WSL 的人工验证顺序为打开当前 worktree，执行 Prepare Testing Panel，
+用 `@doc` 定位测试，分别 Run 与 Debug 并确认生产断点命中。增加或修改用例后运行相应
+增量任务，刷新 Testing 面板，核对新用例源码位置。本批自动化枚举和 LLDB 已实测，GUI
+操作尚未执行。
+
+Legacy 的全业务 Host 调试使用 Verify ELF 携带的 DWARF。独立工作区实测无 LTO 的 Legacy
+全闭包会保留部分只在真实产品中定义的符号，如 Parcel、OS Account、TelProfileUtil 和 Registry。
+当前 Legacy 完整调试入口使用普通构建配置；Target 可使用独立的 `--debug-build`。

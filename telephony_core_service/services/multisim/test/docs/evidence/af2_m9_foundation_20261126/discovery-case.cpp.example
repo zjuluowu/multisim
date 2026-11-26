@@ -1,0 +1,11 @@
+#include <gtest/gtest.h>
+#include "infrastructure/assembly/slot_catalog.h"
+
+TEST(B05Discovery, NewCaseUsesProductionSlotCatalog)
+{
+    using namespace OHOS::Telephony::MultiSim;
+    SlotCatalog catalog({{{7}, EndpointKind::Physical, std::nullopt, std::nullopt,
+        VisibilityClass::Ordinary, false}}, {});
+    ASSERT_NE(catalog.Find({7}), nullptr);
+    EXPECT_EQ(catalog.Find({6}), nullptr);
+}

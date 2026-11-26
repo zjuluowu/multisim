@@ -209,6 +209,15 @@ Legacy SIM 已合成一个可复用的归档，Target 独立归档继续保留�
 未受影响 SPN 与邻卡读请求。该纯规则尚未装配至真实 EF 链路。
 [Both 结果](../services/multisim/test/docs/evidence/af2_m9_foundation_20261126/both.json.gz)
 
+**`M9_FOUNDATION_READY_FOR_DEEP_REVIEW`。** 全局继续为 `AF2_M9_IN_PROGRESS`。
+B01/B02/B05/B06 采用已验证的 Host 构建及调试路径，B07 已完成源构建归属、
+共用语义及未证条目的盘点，B08 已形成可执行反例输入。UnlockPin 和 ICCID EF 的
+Target 正式路径因卡会话、传输资源及关闭责任缺口隔离到下一阶段。两端新增连续 ID
+Reload 共用场景通过。Legacy 148/148、Target 174/174，12 个冻结共同契约共 24/24，
+差异为零。稀疏 ID 的历史缓存差异单独留证。原生产品和 GUI 仍未验证。
+[基础阶段证据、台账及待核对源点](../services/multisim/test/docs/evidence/af2_m9_foundation_20261126/README.md)
+
+
 
 
 <a id="af1-signoff-validation"></a>

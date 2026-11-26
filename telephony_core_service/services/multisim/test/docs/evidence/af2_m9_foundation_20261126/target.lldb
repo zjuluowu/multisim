@@ -1,0 +1,8 @@
+settings set target.disable-aslr false
+breakpoint set --name 'OHOS::Telephony::MultiSim::SimModule::SaveImsSwitch'
+run --gtest_filter=AF2ImsPreference.LegacyProviderContract
+frame variable
+thread step-over
+thread backtrace -c 6
+breakpoint disable 1
+continue

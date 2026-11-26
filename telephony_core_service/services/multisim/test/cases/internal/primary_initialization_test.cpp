@@ -5,6 +5,7 @@
 #include "../shared/ims_preference_scenario.h"
 #include "../shared/cellular_selection_scenario.h"
 #include "../shared/show_number_scenario.h"
+#include "../shared/account_reload_scenario.h"
 #include "sim_manager.h"
 #include "core_service_sim.h"
 #include "parameter_mock.h"
@@ -372,6 +373,47 @@ TEST_F(RealSimPrimary, ImsPreferencePreservesProviderReturnAndReadSource)
         {"writes", std::to_string(commonWrites)}, {"reads", std::to_string(commonReads)},
         {"notifications", std::to_string(notifications)}
     }));
+}
+
+TEST_F(RealSimPrimary, FreshAccountReloadKeepsViewsIndependent)
+{
+    using namespace SimGuard;
+    Sim028Host::PrimaryEnvironment rig;
+    Sim028Host::ProviderRow previous;
+    rig.row.cells[SimData::SIM_ID] = int64_t(kCurrentAccount);
+    rig.row.cells[SimData::SLOT_INDEX] = int64_t(1);
+    rig.row.cells[SimData::ICC_ID] = std::string(kCurrentReloadIccid);
+    previous.cells[SimData::SIM_ID] = int64_t(kHistoricalAccount);
+    previous.cells[SimData::SLOT_INDEX] = int64_t(-1);
+    previous.cells[SimData::IS_ACTIVE] = int64_t(0);
+    previous.cells[SimData::ICC_ID] = std::string(kHistoricalReloadIccid);
+    EXPECT_CALL(*rig.provider, Query(testing::_, testing::_, testing::_, testing::_)).WillRepeatedly(
+        [&](auto &, const auto &predicate, auto &, auto *) { return rig.row.Query(predicate, &previous); });
+
+    auto controller = std::make_shared<MultiSimController>(nullptr,
+        std::vector<std::shared_ptr<SimStateManager>>{}, std::vector<std::shared_ptr<SimFileManager>>{});
+    controller->Init();
+    ExerciseFreshAccountReload(
+        [&](const char16_t *current, const char16_t *historical) {
+            rig.row.cells[SimData::SHOW_NAME] = OHOS::Str16ToStr8(current);
+            previous.cells[SimData::SHOW_NAME] = OHOS::Str16ToStr8(historical);
+        },
+        [&](ReloadView view) {
+            return view == ReloadView::Current ?
+                controller->GetListFromDataBase(false) : controller->GetAllListFromDataBase(false);
+        },
+        [&](ReloadView view, int id) {
+            std::vector<IccAccountInfo> rows;
+            const auto result = view == ReloadView::Current ?
+                controller->GetActiveSimAccountInfoList(false, rows) :
+                controller->GetAllSimAccountInfoList(false, rows);
+            EXPECT_EQ(result, TELEPHONY_ERR_SUCCESS);
+            for (const auto &account : rows) {
+                if (account.simId == id) { return account.showName; }
+            }
+            return std::u16string{};
+        });
+    EXPECT_TRUE(controller->Shutdown());
 }
 
 TEST_F(RealSimPrimary, ShowNumberReadsAccountAfterMsisdnFailure)

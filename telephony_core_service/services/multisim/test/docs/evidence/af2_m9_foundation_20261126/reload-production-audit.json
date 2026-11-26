@@ -1,0 +1,55 @@
+{
+  "legacy": [
+    {
+      "method": "MultiSimController::GetListFromDataBase",
+      "count": 2,
+      "sources": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp"
+      ]
+    },
+    {
+      "method": "MultiSimController::GetAllListFromDataBase",
+      "count": 2,
+      "sources": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/multi_sim_controller.cpp"
+      ]
+    },
+    {
+      "method": "SimRdbHelper::QueryAllValidData",
+      "count": 2,
+      "sources": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp"
+      ]
+    },
+    {
+      "method": "SimRdbHelper::QueryAllData",
+      "count": 2,
+      "sources": [
+        "/mnt/e/github/multisim/telephony_core_service/services/sim/src/sim_rdb_helper.cpp"
+      ]
+    }
+  ],
+  "target": [
+    {
+      "method": "SimModule::ReloadAccounts",
+      "count": 4,
+      "sources": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ]
+    },
+    {
+      "method": "TopologyService::AcceptAccountReload",
+      "count": 4,
+      "sources": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/topology_service.cpp"
+      ]
+    },
+    {
+      "method": "AccountRegistry::AcceptReload",
+      "count": 4,
+      "sources": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/account_registry.cpp"
+      ]
+    }
+  ]
+}

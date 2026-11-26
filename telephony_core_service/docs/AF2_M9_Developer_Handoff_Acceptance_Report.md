@@ -1,4 +1,4 @@
-# AF-2 M9 开发工程交接验收记录
+# AF-2 M9 架构基础交付验收记录
 
 **实施检查点。** 输入 `bf7d0c689f7e12320c864a6866a2c8d92d0bd660`。
 初次 Radio／工程成果为 `7264a3940595fa206c61583315338caae4ba269b`。
@@ -17,7 +17,7 @@
 | M9.5 | 复用 CLI、构建、LLDB 与自动化围栏 | 人工和技术分别验收 |
 | M9.6 | 逐文件统计和 SIM/WU/P 候选台账 | 逐项证据、独立开发、正式签收未结 |
 
-## 十项门禁
+## 前批十项门禁记录
 
 | Gate | 结果 | 实际证据及剩余事项 | 验收责任 |
 |---|---|---|---|
@@ -63,7 +63,7 @@ LoadSession 资格逻辑仍待实际 EF 路径消费。遗漏源码负控另复�
 | 产品 H、C、构建 | Core/SA/IPC、共享 RIL、OHOS 构建、SO/ABI/CFI 及驻留 | Host 装配和构建可继续。WU-07、09 保留原重试及出口 |
 | eSIM／F、外部平台 | 66250、eSIM/vSIM、通信共享、卫星及 EXT | EF/codec 可独立开展。WU-08 按实际共享资源和调用端验收 |
 
-**负责人签收入口。** 在唯一执行状态记录冻结 SHA、H01～H10 的正反证据、真实 GUI、
+**前批记录的验收口径。** 在唯一执行状态记录冻结 SHA、H01～H10 的正反证据、真实 GUI、
 两项独立演练的 PR 与实际开发者、最终反审和负责人确认。
 
 
@@ -74,3 +74,42 @@ LoadSession 资格逻辑仍待实际 EF 路径消费。遗漏源码负控另复�
 生成 Host GN 图确认两个归档均为非 testonly。Legacy 和 Target 的 ELF 及代表生产符号
 已实际核对。产品根入口继续使用 Legacy，OHOS 原生构建仍缺匹配环境。
 [归档及 ELF](../services/multisim/test/docs/evidence/af2_m9_foundation_20261126/elf-and-archive.log)
+
+
+### 当前 B01～B08
+
+| 任务 | 证据和实际范围 | 当前结果 |
+|---|---|---|
+| B01 | Legacy 51 CPP 与 Target 25 CPP；独立 ELF、GN check、实际遗漏/恢复 | Host PASS；OHOS 产品 BLOCKED |
+| B02 | 八个共用源码业务路径；Both 12×2、Oracle 差异 0；Reload 两端正向通过 | 稀疏 ID 外部差异待产品核对 |
+| B03 | 原 PIN 接入点、状态/剩余次数契约，已有 Legacy 回归。Target 只有预身份会话 | 原 PIN 传输、资源及完成责任缺证，局部 BLOCKED |
+| B04 | 原 EF 解码链、LoadSession 纯规则、预身份发现 | 真实 EF 发令与 Records 接纳待接，局部 BLOCKED |
+| B05 | 独立 worktree、CLI、增量、自动定位及两端 LLDB | CLI PASS；GUI 未执行 |
+| B06 | 生产依赖、两端隔离、源码遗漏、实际链接、共用体依赖和冻结资产 | 静态 PASS |
+| B07 | 实际枚举、源码位置、编译与受审计的方法、SIM/WU/P 对账 | 未归类业务语义和剩余预算尚未冻结 |
+| B08 | B/C1、锁外交接、会话与 LoadScope、全图关闭和跨实例反例输入 | 已准备，组合验证未执行 |
+
+### Architecture Ready 当前技术检查
+
+| 检查 | 本批结果 |
+|---|---|
+| H01 | FAIL。正式 B/C1 成员/路由与 A 锁外交接待闭合 |
+| H02 | FAIL。卡安全/EF 的正式路径及全图关闭、跨实例组合未验收 |
+| H03 | BLOCKED。UnlockPin 和 ICCID EF 缺可运行 Target 样板，B/C1 只有组件路径 |
+| H04 | Host PASS。原生 OHOS 与产品库 BLOCKED |
+| H05 | 本批八个共用源码路径通过。12 个原 Oracle 场景通过，Reload 新增一项共用断言；全量语义去重仍开放 |
+| H06 | CLI、LLDB、自动枚举 PASS；GUI NOT_RUN |
+| H07 | 静态 PASS；实际 Refresh、全图关闭的运行时负控未完成 |
+| H08 | PARTIAL。实测工作包及源码入口已有台账，剩余语义和产品分支需实证 |
+| H09 | 产品边界已记录。原生 Provider、设备、Feature 矩阵及生产切换 BLOCKED |
+| H10 | BLOCKED。缺可供独立扩展的 PIN/ICCID 样板 |
+
+本批达到 `M9_FOUNDATION_READY_FOR_DEEP_REVIEW`。全局保持 `AF2_M9_IN_PROGRESS`。
+普通 Verify 已验证 Legacy 调试，Target 另有 Developer；Legacy 无 LTO 的产品专属符号、
+GUI 与原生产品均在其证据边界内。真实 PIN/EF 接入和全图时序需要下一阶段验证。
+
+最终候选全量 Legacy 148/148、Target 174/174。12 个冻结 Oracle 共 24/24，差异为零。
+另有一项连续 ID Reload 共用断言在两端通过。Legacy 稀疏历史 ID 的差异保留实测。
+Legacy CI（含变异与恢复）为新增 Reload 前的 147 登记基线。ASan/TSan 各 130/130
+为稀疏探针阶段专项。两个后端 LLDB、源码定位 322 个登记及归档遗漏负控已执行。
+[原始证据及下阶段反例](../services/multisim/test/docs/evidence/af2_m9_foundation_20261126/README.md)

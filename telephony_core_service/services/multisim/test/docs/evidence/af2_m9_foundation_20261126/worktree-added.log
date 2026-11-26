@@ -1,0 +1,4 @@
+host-build: PASS
+target-sim_test_target_host: PASS
+Report: /tmp/af2-m9-foundation/worktree-added/sim-vffp09b_/result.json
+new_cpp_seconds=5.68

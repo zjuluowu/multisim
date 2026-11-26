@@ -16,7 +16,15 @@
 - 同文件 ProcessEvent/GetSimCardData/ProcessIccCardState：事件解析和状态更新属于被测生产逻辑，不能用桩重写。
 - services/sim/src/multi_sim_controller.cpp:103–156：控制器构造/Init需要真实RadioProtocolController、SimRdbHelper、MultiSimHelper与平台参数。
 
-## 编译/链接探针
+## 当前可执行构建
+
+`sim_legacy_production_host` 为完整 Legacy SIM Host 归档，由 `sim_legacy_core_sources`
+提供生产源。受控外部平台和 Legacy 业务 ELF 两者分别编译。可运行业务验证使用
+`sim_primary_slot_real_test`、`sim_bootstrap_characterization`，测试程序链接同一归档。
+产品原生构建和 Legacy 无 LTO 全闭包缺平台符号的边界见
+[架构基础交付证据](../evidence/af2_m9_foundation_20261126/README.md)。
+
+## 历史编译/链接探针
 
 `sim_initialization_link_probe` 是仅用于依赖审计的可选目标，不是 GoogleTest、不执行或输出PASS。它沿用同Linux GN工具链，将当前生产BUILD.gn的无条件SIM源列表放在独立 `sim_initialization_production_host` target。列表复用此前静态候选清单，不宣称完整链接闭包。没有修改或复制生产源码；ESIM条件分支未启用。业务实现缺失必须添加真实源，不能以Mock实现替代。
 

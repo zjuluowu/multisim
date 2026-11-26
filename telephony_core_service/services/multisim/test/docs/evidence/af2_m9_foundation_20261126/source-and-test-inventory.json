@@ -1,0 +1,5855 @@
+{
+  "head": "d3443a3daef67cfb68385089f3e634419b5e329c",
+  "production": [
+    {
+      "path": "account/account_registry.cpp",
+      "size": {
+        "files": 1,
+        "physical": 614,
+        "code": 566
+      },
+      "build": "host-object",
+      "logical_owner": "topology_domain",
+      "audited_method_hits": [
+        {
+          "method": "AccountRegistry::Read",
+          "count": 963
+        },
+        {
+          "method": "AccountRegistry::AcceptDiscoveredAccount",
+          "count": 133
+        },
+        {
+          "method": "AccountRegistry::BeginReload",
+          "count": 39
+        },
+        {
+          "method": "AccountRegistry::AcceptReload",
+          "count": 611
+        },
+        {
+          "method": "AccountRegistry::AcceptReloadProjection",
+          "count": 42
+        }
+      ]
+    },
+    {
+      "path": "account/account_registry.h",
+      "size": {
+        "files": 1,
+        "physical": 149,
+        "code": 123
+      },
+      "build": "logical-gn",
+      "logical_owner": "topology_domain"
+    },
+    {
+      "path": "account/account_role_planning_port.h",
+      "size": {
+        "files": 1,
+        "physical": 43,
+        "code": 19
+      },
+      "build": "logical-gn",
+      "logical_owner": "topology_contracts"
+    },
+    {
+      "path": "account/account_store.h",
+      "size": {
+        "files": 1,
+        "physical": 140,
+        "code": 117
+      },
+      "build": "logical-gn",
+      "logical_owner": "topology_contracts"
+    },
+    {
+      "path": "account/account_store_adapter.cpp",
+      "size": {
+        "files": 1,
+        "physical": 103,
+        "code": 59
+      },
+      "build": "host-object",
+      "logical_owner": "topology_adapters",
+      "audited_method_hits": [
+        {
+          "method": "AccountStoreAdapter::LoadAccounts",
+          "count": 11
+        }
+      ]
+    },
+    {
+      "path": "account/account_store_adapter.h",
+      "size": {
+        "files": 1,
+        "physical": 93,
+        "code": 67
+      },
+      "build": "logical-gn",
+      "logical_owner": "topology_adapters"
+    },
+    {
+      "path": "account/account_types.h",
+      "size": {
+        "files": 1,
+        "physical": 56,
+        "code": 35
+      },
+      "build": "logical-gn",
+      "logical_owner": "topology_types"
+    },
+    {
+      "path": "account/activation/activate_sim_use_case.cpp",
+      "size": {
+        "files": 1,
+        "physical": 55,
+        "code": 10
+      },
+      "build": "logical-gn",
+      "logical_owner": "topology_cases",
+      "audited_method_hits": []
+    },
+    {
+      "path": "account/activation/activate_sim_use_case.h",
+      "size": {
+        "files": 1,
+        "physical": 48,
+        "code": 25
+      },
+      "build": "logical-gn",
+      "logical_owner": "topology_cases"
+    },
+    {
+      "path": "account/activation/activation_assignment_port.h",
+      "size": {
+        "files": 1,
+        "physical": 42,
+        "code": 19
+      },
+      "build": "logical-gn",
+      "logical_owner": "topology_contracts"
+    },
+    {
+      "path": "account/activation/activation_hook_adapter.h",
+      "size": {
+        "files": 1,
+        "physical": 35,
+        "code": 11
+      },
+      "build": "logical-gn",
+      "logical_owner": "topology_adapters"
+    },
+    {
+      "path": "account/activation/activation_progress.cpp",
+      "size": {
+        "files": 1,
+        "physical": 85,
+        "code": 61
+      },
+      "build": "host-object",
+      "logical_owner": "topology_protocols",
+      "audited_method_hits": []
+    },
+    {
+      "path": "account/activation/activation_progress.h",
+      "size": {
+        "files": 1,
+        "physical": 51,
+        "code": 29
+      },
+      "build": "logical-gn",
+      "logical_owner": "topology_protocols"
+    },
+    {
+      "path": "account/activation/activation_runtime_port.h",
+      "size": {
+        "files": 1,
+        "physical": 49,
+        "code": 24
+      },
+      "build": "logical-gn",
+      "logical_owner": "topology_contracts"
+    },
+    {
+      "path": "account/binding_index.cpp",
+      "size": {
+        "files": 1,
+        "physical": 142,
+        "code": 111
+      },
+      "build": "host-object",
+      "logical_owner": "topology_domain",
+      "audited_method_hits": [
+        {
+          "method": "BindingIndex::Find",
+          "count": 1609
+        }
+      ]
+    },
+    {
+      "path": "account/binding_index.h",
+      "size": {
+        "files": 1,
+        "physical": 58,
+        "code": 35
+      },
+      "build": "logical-gn",
+      "logical_owner": "topology_domain"
+    },
+    {
+      "path": "account/discovery/card_observation_port.h",
+      "size": {
+        "files": 1,
+        "physical": 37,
+        "code": 14
+      },
+      "build": "logical-gn",
+      "logical_owner": "topology_contracts"
+    },
+    {
+      "path": "account/discovery/discovery_observation_ledger.cpp",
+      "size": {
+        "files": 1,
+        "physical": 180,
+        "code": 156
+      },
+      "build": "host-object",
+      "logical_owner": "topology_protocols",
+      "audited_method_hits": [
+        {
+          "method": "DiscoveryObservationLedger::BeginStore",
+          "count": 289
+        },
+        {
+          "method": "DiscoveryObservationLedger::CompleteStored",
+          "count": 135
+        }
+      ]
+    },
+    {
+      "path": "account/discovery/discovery_observation_ledger.h",
+      "size": {
+        "files": 1,
+        "physical": 70,
+        "code": 48
+      },
+      "build": "logical-gn",
+      "logical_owner": "topology_protocols"
+    },
+    {
+      "path": "account/legacy_entry.h",
+      "size": {
+        "files": 1,
+        "physical": 33,
+        "code": 10
+      },
+      "build": "logical-gn",
+      "logical_owner": "topology_contracts"
+    },
+    {
+      "path": "account/number/number_query_host_port.h",
+      "size": {
+        "files": 1,
+        "physical": 43,
+        "code": 20
+      },
+      "build": "logical-gn",
+      "logical_owner": "topology_contracts"
+    },
+    {
+      "path": "account/number/set_show_number_use_case.cpp",
+      "size": {
+        "files": 1,
+        "physical": 97,
+        "code": 75
+      },
+      "build": "host-object",
+      "logical_owner": "topology_cases",
+      "audited_method_hits": []
+    },
+    {
+      "path": "account/number/set_show_number_use_case.h",
+      "size": {
+        "files": 1,
+        "physical": 58,
+        "code": 31
+      },
+      "build": "logical-gn",
+      "logical_owner": "topology_cases"
+    },
+    {
+      "path": "account/number/show_number_completion_port.h",
+      "size": {
+        "files": 1,
+        "physical": 40,
+        "code": 18
+      },
+      "build": "logical-gn",
+      "logical_owner": "topology_contracts"
+    },
+    {
+      "path": "account/number/show_number_plan.cpp",
+      "size": {
+        "files": 1,
+        "physical": 27,
+        "code": 8
+      },
+      "build": "logical-gn",
+      "logical_owner": "topology_protocols",
+      "audited_method_hits": []
+    },
+    {
+      "path": "account/number/show_number_plan.h",
+      "size": {
+        "files": 1,
+        "physical": 36,
+        "code": 13
+      },
+      "build": "logical-gn",
+      "logical_owner": "topology_protocols"
+    },
+    {
+      "path": "account/number/show_number_query.cpp",
+      "size": {
+        "files": 1,
+        "physical": 60,
+        "code": 40
+      },
+      "build": "host-object",
+      "logical_owner": "topology_cases",
+      "audited_method_hits": []
+    },
+    {
+      "path": "account/number/show_number_query.h",
+      "size": {
+        "files": 1,
+        "physical": 41,
+        "code": 19
+      },
+      "build": "logical-gn",
+      "logical_owner": "topology_cases"
+    },
+    {
+      "path": "account/number/show_number_runtime_port.h",
+      "size": {
+        "files": 1,
+        "physical": 62,
+        "code": 37
+      },
+      "build": "logical-gn",
+      "logical_owner": "topology_contracts"
+    },
+    {
+      "path": "account/topology_metadata.cpp",
+      "size": {
+        "files": 1,
+        "physical": 343,
+        "code": 304
+      },
+      "build": "host-object",
+      "logical_owner": "topology_cases",
+      "audited_method_hits": []
+    },
+    {
+      "path": "account/topology_requests.h",
+      "size": {
+        "files": 1,
+        "physical": 136,
+        "code": 114
+      },
+      "build": "logical-gn",
+      "logical_owner": "topology_contracts"
+    },
+    {
+      "path": "account/topology_service.cpp",
+      "size": {
+        "files": 1,
+        "physical": 654,
+        "code": 557
+      },
+      "build": "host-object",
+      "logical_owner": "topology_cases",
+      "audited_method_hits": [
+        {
+          "method": "TopologyService::ReadPrimaryTarget",
+          "count": 586
+        },
+        {
+          "method": "TopologyService::AcceptStoredDiscovery",
+          "count": 138
+        },
+        {
+          "method": "TopologyService::DiscoverAccount",
+          "count": 155
+        },
+        {
+          "method": "TopologyService::ReconcileDiscovery",
+          "count": 24
+        },
+        {
+          "method": "TopologyService::PrepareAccountReload",
+          "count": 39
+        },
+        {
+          "method": "TopologyService::AcceptAccountReload",
+          "count": 39
+        }
+      ]
+    },
+    {
+      "path": "account/topology_service.h",
+      "size": {
+        "files": 1,
+        "physical": 187,
+        "code": 160
+      },
+      "build": "logical-gn",
+      "logical_owner": "topology_cases"
+    },
+    {
+      "path": "card/esim/legacy_profile_result.h",
+      "size": {
+        "files": 1,
+        "physical": 28,
+        "code": 11
+      },
+      "build": "logical-gn",
+      "logical_owner": "compatibility_core"
+    },
+    {
+      "path": "card/esim/local_card_requests.cpp",
+      "size": {
+        "files": 1,
+        "physical": 49,
+        "code": 15
+      },
+      "build": "logical-gn",
+      "logical_owner": "runtime_cases",
+      "audited_method_hits": []
+    },
+    {
+      "path": "card/esim/local_card_requests.h",
+      "size": {
+        "files": 1,
+        "physical": 57,
+        "code": 29
+      },
+      "build": "logical-gn",
+      "logical_owner": "runtime_contracts"
+    },
+    {
+      "path": "card/esim/profile_requests.h",
+      "size": {
+        "files": 1,
+        "physical": 51,
+        "code": 29
+      },
+      "build": "logical-gn",
+      "logical_owner": "runtime_contracts"
+    },
+    {
+      "path": "card/records/ef_requests.h",
+      "size": {
+        "files": 1,
+        "physical": 29,
+        "code": 8
+      },
+      "build": "logical-gn",
+      "logical_owner": "runtime_contracts"
+    },
+    {
+      "path": "card/records/load_session.cpp",
+      "size": {
+        "files": 1,
+        "physical": 62,
+        "code": 39
+      },
+      "build": "logical-gn",
+      "logical_owner": "runtime_mechanisms",
+      "audited_method_hits": []
+    },
+    {
+      "path": "card/records/load_session.h",
+      "size": {
+        "files": 1,
+        "physical": 61,
+        "code": 36
+      },
+      "build": "logical-gn",
+      "logical_owner": "runtime_mechanisms"
+    },
+    {
+      "path": "card/runtime/card_observation_runtime.cpp",
+      "size": {
+        "files": 1,
+        "physical": 74,
+        "code": 63
+      },
+      "build": "host-object",
+      "logical_owner": "runtime_core",
+      "audited_method_hits": []
+    },
+    {
+      "path": "card/runtime/card_observation_runtime.h",
+      "size": {
+        "files": 1,
+        "physical": 35,
+        "code": 28
+      },
+      "build": "logical-gn",
+      "logical_owner": "runtime_core"
+    },
+    {
+      "path": "card/runtime/card_runtime.cpp",
+      "size": {
+        "files": 1,
+        "physical": 105,
+        "code": 38
+      },
+      "build": "logical-gn",
+      "logical_owner": "runtime_core",
+      "audited_method_hits": []
+    },
+    {
+      "path": "card/runtime/card_runtime.h",
+      "size": {
+        "files": 1,
+        "physical": 110,
+        "code": 77
+      },
+      "build": "logical-gn",
+      "logical_owner": "runtime_core"
+    },
+    {
+      "path": "card/runtime/msisdn_runtime.cpp",
+      "size": {
+        "files": 1,
+        "physical": 166,
+        "code": 152
+      },
+      "build": "host-object",
+      "logical_owner": "runtime_core",
+      "audited_method_hits": []
+    },
+    {
+      "path": "card/runtime/msisdn_runtime.h",
+      "size": {
+        "files": 1,
+        "physical": 72,
+        "code": 60
+      },
+      "build": "logical-gn",
+      "logical_owner": "runtime_core"
+    },
+    {
+      "path": "card/runtime/result_sinks.h",
+      "size": {
+        "files": 1,
+        "physical": 47,
+        "code": 29
+      },
+      "build": "logical-gn",
+      "logical_owner": "runtime_core"
+    },
+    {
+      "path": "card/security/pin_requests.h",
+      "size": {
+        "files": 1,
+        "physical": 29,
+        "code": 8
+      },
+      "build": "logical-gn",
+      "logical_owner": "runtime_contracts"
+    },
+    {
+      "path": "card/state/session_registry.cpp",
+      "size": {
+        "files": 1,
+        "physical": 188,
+        "code": 158
+      },
+      "build": "host-object",
+      "logical_owner": "runtime_mechanisms",
+      "audited_method_hits": []
+    },
+    {
+      "path": "card/state/session_registry.h",
+      "size": {
+        "files": 1,
+        "physical": 88,
+        "code": 62
+      },
+      "build": "logical-gn",
+      "logical_owner": "runtime_mechanisms"
+    },
+    {
+      "path": "device/resource/resource_barrier.cpp",
+      "size": {
+        "files": 1,
+        "physical": 213,
+        "code": 184
+      },
+      "build": "host-object",
+      "logical_owner": "runtime_mechanisms",
+      "audited_method_hits": []
+    },
+    {
+      "path": "device/resource/resource_barrier.h",
+      "size": {
+        "files": 1,
+        "physical": 96,
+        "code": 71
+      },
+      "build": "logical-gn",
+      "logical_owner": "runtime_mechanisms"
+    },
+    {
+      "path": "device/resource/resource_radio_runtime.cpp",
+      "size": {
+        "files": 1,
+        "physical": 499,
+        "code": 470
+      },
+      "build": "host-object",
+      "logical_owner": "runtime_mechanisms",
+      "audited_method_hits": [
+        {
+          "method": "ResourceRadioRuntime::SwitchPrimaryRadio",
+          "count": 91
+        },
+        {
+          "method": "ResourceRadioRuntime::AcceptDeviceResult",
+          "count": 148
+        },
+        {
+          "method": "ResourceRadioRuntime::Recover",
+          "count": 3
+        },
+        {
+          "method": "ResourceRadioRuntime::StopAccepting",
+          "count": 91
+        }
+      ]
+    },
+    {
+      "path": "device/resource/resource_radio_runtime.h",
+      "size": {
+        "files": 1,
+        "physical": 100,
+        "code": 89
+      },
+      "build": "logical-gn",
+      "logical_owner": "runtime_mechanisms"
+    },
+    {
+      "path": "infrastructure/assembly/exports/sim_host_ports.h",
+      "size": {
+        "files": 1,
+        "physical": 21,
+        "code": 4
+      },
+      "build": "logical-gn",
+      "logical_owner": "repository_exports"
+    },
+    {
+      "path": "infrastructure/assembly/exports/sim_module_factory.h",
+      "size": {
+        "files": 1,
+        "physical": 21,
+        "code": 4
+      },
+      "build": "logical-gn",
+      "logical_owner": "repository_exports"
+    },
+    {
+      "path": "infrastructure/assembly/host_ports.h",
+      "size": {
+        "files": 1,
+        "physical": 48,
+        "code": 21
+      },
+      "build": "logical-gn",
+      "logical_owner": "assembly_contracts"
+    },
+    {
+      "path": "infrastructure/assembly/manager_publication.h",
+      "size": {
+        "files": 1,
+        "physical": 82,
+        "code": 62
+      },
+      "build": "logical-gn",
+      "logical_owner": "assembly_contracts"
+    },
+    {
+      "path": "infrastructure/assembly/primary_host_lifecycle.cpp",
+      "size": {
+        "files": 1,
+        "physical": 82,
+        "code": 73
+      },
+      "build": "host-object",
+      "logical_owner": "assembly_core",
+      "audited_method_hits": [
+        {
+          "method": "PrimaryHostLifecycle::StopAcceptingAndDrain",
+          "count": 206
+        }
+      ]
+    },
+    {
+      "path": "infrastructure/assembly/primary_host_lifecycle.h",
+      "size": {
+        "files": 1,
+        "physical": 41,
+        "code": 32
+      },
+      "build": "logical-gn",
+      "logical_owner": "assembly_core"
+    },
+    {
+      "path": "infrastructure/assembly/sim_module.h",
+      "size": {
+        "files": 1,
+        "physical": 153,
+        "code": 123
+      },
+      "build": "logical-gn",
+      "logical_owner": "assembly_core"
+    },
+    {
+      "path": "infrastructure/assembly/sim_module_factory.cpp",
+      "size": {
+        "files": 1,
+        "physical": 512,
+        "code": 446
+      },
+      "build": "host-object",
+      "logical_owner": "assembly_core",
+      "audited_method_hits": [
+        {
+          "method": "SimModule::ReloadAccounts",
+          "count": 31
+        },
+        {
+          "method": "SimModule::ReadStoredAccountRoles",
+          "count": 8
+        }
+      ]
+    },
+    {
+      "path": "infrastructure/assembly/sim_module_factory.h",
+      "size": {
+        "files": 1,
+        "physical": 88,
+        "code": 52
+      },
+      "build": "logical-gn",
+      "logical_owner": "assembly_contracts"
+    },
+    {
+      "path": "infrastructure/assembly/slot_catalog.cpp",
+      "size": {
+        "files": 1,
+        "physical": 35,
+        "code": 15
+      },
+      "build": "host-object",
+      "logical_owner": "sim_values",
+      "audited_method_hits": []
+    },
+    {
+      "path": "infrastructure/assembly/slot_catalog.h",
+      "size": {
+        "files": 1,
+        "physical": 59,
+        "code": 35
+      },
+      "build": "logical-gn",
+      "logical_owner": "sim_values"
+    },
+    {
+      "path": "infrastructure/compatibility/api/legacy_account_entry.cpp",
+      "size": {
+        "files": 1,
+        "physical": 120,
+        "code": 94
+      },
+      "build": "host-object",
+      "logical_owner": "compatibility_core",
+      "audited_method_hits": []
+    },
+    {
+      "path": "infrastructure/compatibility/api/legacy_boundary_ports.h",
+      "size": {
+        "files": 1,
+        "physical": 80,
+        "code": 54
+      },
+      "build": "logical-gn",
+      "logical_owner": "compatibility_contracts"
+    },
+    {
+      "path": "infrastructure/compatibility/api/legacy_primary_entry.cpp",
+      "size": {
+        "files": 1,
+        "physical": 92,
+        "code": 79
+      },
+      "build": "host-object",
+      "logical_owner": "compatibility_core",
+      "audited_method_hits": []
+    },
+    {
+      "path": "infrastructure/compatibility/api/legacy_sim_facade.cpp",
+      "size": {
+        "files": 1,
+        "physical": 66,
+        "code": 27
+      },
+      "build": "logical-gn",
+      "logical_owner": "compatibility_core",
+      "audited_method_hits": []
+    },
+    {
+      "path": "infrastructure/compatibility/api/legacy_sim_facade.h",
+      "size": {
+        "files": 1,
+        "physical": 85,
+        "code": 62
+      },
+      "build": "logical-gn",
+      "logical_owner": "compatibility_core"
+    },
+    {
+      "path": "infrastructure/compatibility/api/real_sim_count_query.cpp",
+      "size": {
+        "files": 1,
+        "physical": 23,
+        "code": 7
+      },
+      "build": "logical-gn",
+      "logical_owner": "readonly_query",
+      "audited_method_hits": []
+    },
+    {
+      "path": "infrastructure/compatibility/api/real_sim_count_query.h",
+      "size": {
+        "files": 1,
+        "physical": 40,
+        "code": 18
+      },
+      "build": "logical-gn",
+      "logical_owner": "readonly_query"
+    },
+    {
+      "path": "infrastructure/compatibility/events/completion_cell.h",
+      "size": {
+        "files": 1,
+        "physical": 51,
+        "code": 30
+      },
+      "build": "logical-gn",
+      "logical_owner": "compatibility_core"
+    },
+    {
+      "path": "infrastructure/compatibility/events/legacy_completion.cpp",
+      "size": {
+        "files": 1,
+        "physical": 80,
+        "code": 57
+      },
+      "build": "host-object",
+      "logical_owner": "compatibility_core",
+      "audited_method_hits": []
+    },
+    {
+      "path": "infrastructure/compatibility/events/legacy_completion.h",
+      "size": {
+        "files": 1,
+        "physical": 49,
+        "code": 27
+      },
+      "build": "logical-gn",
+      "logical_owner": "compatibility_core"
+    },
+    {
+      "path": "infrastructure/compatibility/events/legacy_output_adapter.cpp",
+      "size": {
+        "files": 1,
+        "physical": 32,
+        "code": 3
+      },
+      "build": "logical-gn",
+      "logical_owner": "compatibility_core",
+      "audited_method_hits": []
+    },
+    {
+      "path": "infrastructure/compatibility/events/legacy_output_adapter.h",
+      "size": {
+        "files": 1,
+        "physical": 39,
+        "code": 18
+      },
+      "build": "logical-gn",
+      "logical_owner": "compatibility_core"
+    },
+    {
+      "path": "infrastructure/request/request_context.h",
+      "size": {
+        "files": 1,
+        "physical": 67,
+        "code": 43
+      },
+      "build": "logical-gn",
+      "logical_owner": "request_protocol"
+    },
+    {
+      "path": "infrastructure/request/request_ref.h",
+      "size": {
+        "files": 1,
+        "physical": 59,
+        "code": 38
+      },
+      "build": "logical-gn",
+      "logical_owner": "sim_values"
+    },
+    {
+      "path": "infrastructure/request/runtime_operation_store.cpp",
+      "size": {
+        "files": 1,
+        "physical": 90,
+        "code": 70
+      },
+      "build": "host-object",
+      "logical_owner": "request_mechanism",
+      "audited_method_hits": [
+        {
+          "method": "RuntimeOperationStore::AcceptResult",
+          "count": 121
+        },
+        {
+          "method": "RuntimeOperationStore::AcceptLateEvidence",
+          "count": 15
+        },
+        {
+          "method": "RuntimeOperationStore::ClaimCompletion",
+          "count": 206
+        },
+        {
+          "method": "RuntimeOperationStore::ClaimEarlyCompletion",
+          "count": 10
+        },
+        {
+          "method": "RuntimeOperationStore::TryMarkTerminal",
+          "count": 258
+        }
+      ]
+    },
+    {
+      "path": "infrastructure/request/runtime_operation_store.h",
+      "size": {
+        "files": 1,
+        "physical": 155,
+        "code": 125
+      },
+      "build": "logical-gn",
+      "logical_owner": "request_mechanism"
+    },
+    {
+      "path": "infrastructure/sim_identity.h",
+      "size": {
+        "files": 1,
+        "physical": 81,
+        "code": 55
+      },
+      "build": "logical-gn",
+      "logical_owner": "sim_values"
+    },
+    {
+      "path": "role_assignment/account_role_protocol.h",
+      "size": {
+        "files": 1,
+        "physical": 224,
+        "code": 204
+      },
+      "build": "logical-gn",
+      "logical_owner": "assignment_protocols"
+    },
+    {
+      "path": "role_assignment/assignment_aggregate.cpp",
+      "size": {
+        "files": 1,
+        "physical": 135,
+        "code": 105
+      },
+      "build": "host-object",
+      "logical_owner": "assignment_domain",
+      "audited_method_hits": []
+    },
+    {
+      "path": "role_assignment/assignment_aggregate.h",
+      "size": {
+        "files": 1,
+        "physical": 89,
+        "code": 67
+      },
+      "build": "logical-gn",
+      "logical_owner": "assignment_domain"
+    },
+    {
+      "path": "role_assignment/assignment_output_adapter.h",
+      "size": {
+        "files": 1,
+        "physical": 38,
+        "code": 13
+      },
+      "build": "logical-gn",
+      "logical_owner": "assignment_adapters"
+    },
+    {
+      "path": "role_assignment/assignment_requests.h",
+      "size": {
+        "files": 1,
+        "physical": 155,
+        "code": 134
+      },
+      "build": "logical-gn",
+      "logical_owner": "assignment_contracts"
+    },
+    {
+      "path": "role_assignment/assignment_service.cpp",
+      "size": {
+        "files": 1,
+        "physical": 1197,
+        "code": 1087
+      },
+      "build": "host-object",
+      "logical_owner": "assignment_cases",
+      "audited_method_hits": [
+        {
+          "method": "AssignmentService::PrepareAccountRoleFragment",
+          "count": 144
+        },
+        {
+          "method": "AssignmentService::AcceptDiscoveredRoleProjection",
+          "count": 141
+        },
+        {
+          "method": "AssignmentService::StillOwnsInitialRoleReservation",
+          "count": 144
+        },
+        {
+          "method": "AssignmentService::FinalizeInitialRoleReservation",
+          "count": 143
+        },
+        {
+          "method": "AssignmentService::AcceptReloadedRoleProjectionSet",
+          "count": 20
+        },
+        {
+          "method": "AssignmentService::AcceptRadioStep",
+          "count": 174
+        },
+        {
+          "method": "AssignmentService::AcceptPrimarySwitchTimeout",
+          "count": 6
+        },
+        {
+          "method": "AssignmentService::ScheduleC1Retry",
+          "count": 22
+        },
+        {
+          "method": "AssignmentService::AcceptScheduledC1Retry",
+          "count": 16
+        },
+        {
+          "method": "AssignmentService::StopAcceptingAndCancelScheduledRetries",
+          "count": 94
+        }
+      ]
+    },
+    {
+      "path": "role_assignment/assignment_service.h",
+      "size": {
+        "files": 1,
+        "physical": 175,
+        "code": 150
+      },
+      "build": "logical-gn",
+      "logical_owner": "assignment_cases"
+    },
+    {
+      "path": "role_assignment/assignment_store.h",
+      "size": {
+        "files": 1,
+        "physical": 90,
+        "code": 67
+      },
+      "build": "logical-gn",
+      "logical_owner": "assignment_contracts"
+    },
+    {
+      "path": "role_assignment/assignment_store_adapter.cpp",
+      "size": {
+        "files": 1,
+        "physical": 180,
+        "code": 151
+      },
+      "build": "host-object",
+      "logical_owner": "assignment_adapters",
+      "audited_method_hits": []
+    },
+    {
+      "path": "role_assignment/assignment_store_adapter.h",
+      "size": {
+        "files": 1,
+        "physical": 75,
+        "code": 52
+      },
+      "build": "logical-gn",
+      "logical_owner": "assignment_adapters"
+    },
+    {
+      "path": "role_assignment/assignment_types.h",
+      "size": {
+        "files": 1,
+        "physical": 27,
+        "code": 6
+      },
+      "build": "logical-gn",
+      "logical_owner": "assignment_types"
+    },
+    {
+      "path": "role_assignment/legacy_entry.h",
+      "size": {
+        "files": 1,
+        "physical": 33,
+        "code": 11
+      },
+      "build": "logical-gn",
+      "logical_owner": "assignment_contracts"
+    },
+    {
+      "path": "role_assignment/primary/primary_execution.h",
+      "size": {
+        "files": 1,
+        "physical": 33,
+        "code": 15
+      },
+      "build": "logical-gn",
+      "logical_owner": "assignment_types"
+    },
+    {
+      "path": "role_assignment/primary/primary_switch_plan.cpp",
+      "size": {
+        "files": 1,
+        "physical": 51,
+        "code": 33
+      },
+      "build": "host-object",
+      "logical_owner": "assignment_protocols",
+      "audited_method_hits": []
+    },
+    {
+      "path": "role_assignment/primary/primary_switch_plan.h",
+      "size": {
+        "files": 1,
+        "physical": 45,
+        "code": 26
+      },
+      "build": "logical-gn",
+      "logical_owner": "assignment_protocols"
+    },
+    {
+      "path": "role_assignment/primary/primary_topology_port.h",
+      "size": {
+        "files": 1,
+        "physical": 41,
+        "code": 18
+      },
+      "build": "logical-gn",
+      "logical_owner": "assignment_contracts"
+    },
+    {
+      "path": "role_assignment/primary/radio_execution_port.h",
+      "size": {
+        "files": 1,
+        "physical": 119,
+        "code": 93
+      },
+      "build": "logical-gn",
+      "logical_owner": "assignment_contracts"
+    },
+    {
+      "path": "role_assignment/profile_preference_port.h",
+      "size": {
+        "files": 1,
+        "physical": 33,
+        "code": 11
+      },
+      "build": "logical-gn",
+      "logical_owner": "assignment_contracts"
+    },
+    {
+      "path": "role_assignment/role_selection.h",
+      "size": {
+        "files": 1,
+        "physical": 36,
+        "code": 13
+      },
+      "build": "logical-gn",
+      "logical_owner": "assignment_domain"
+    }
+  ],
+  "production_by_directory": {
+    ".": {
+      "files": 101,
+      "physical": 11153,
+      "code": 8521
+    },
+    "account": {
+      "files": 33,
+      "physical": 3867,
+      "code": 2935
+    },
+    "account/activation": {
+      "files": 7,
+      "physical": 365,
+      "code": 179
+    },
+    "account/discovery": {
+      "files": 3,
+      "physical": 287,
+      "code": 218
+    },
+    "account/number": {
+      "files": 9,
+      "physical": 464,
+      "code": 261
+    },
+    "card": {
+      "files": 17,
+      "physical": 1251,
+      "code": 842
+    },
+    "card/esim": {
+      "files": 4,
+      "physical": 185,
+      "code": 84
+    },
+    "card/records": {
+      "files": 3,
+      "physical": 152,
+      "code": 83
+    },
+    "card/runtime": {
+      "files": 7,
+      "physical": 609,
+      "code": 447
+    },
+    "card/security": {
+      "files": 1,
+      "physical": 29,
+      "code": 8
+    },
+    "card/state": {
+      "files": 2,
+      "physical": 276,
+      "code": 220
+    },
+    "device": {
+      "files": 4,
+      "physical": 908,
+      "code": 814
+    },
+    "device/resource": {
+      "files": 4,
+      "physical": 908,
+      "code": 814
+    },
+    "infrastructure": {
+      "files": 28,
+      "physical": 2351,
+      "code": 1674
+    },
+    "infrastructure/assembly": {
+      "files": 11,
+      "physical": 1142,
+      "code": 867
+    },
+    "infrastructure/assembly/exports": {
+      "files": 2,
+      "physical": 42,
+      "code": 8
+    },
+    "infrastructure/compatibility": {
+      "files": 12,
+      "physical": 757,
+      "code": 476
+    },
+    "infrastructure/compatibility/api": {
+      "files": 7,
+      "physical": 506,
+      "code": 341
+    },
+    "infrastructure/compatibility/events": {
+      "files": 5,
+      "physical": 251,
+      "code": 135
+    },
+    "infrastructure/request": {
+      "files": 4,
+      "physical": 371,
+      "code": 276
+    },
+    "role_assignment": {
+      "files": 19,
+      "physical": 2776,
+      "code": 2256
+    },
+    "role_assignment/primary": {
+      "files": 5,
+      "physical": 289,
+      "code": 185
+    }
+  },
+  "tests_by_directory": {
+    ".": {
+      "files": 172,
+      "physical": 24102,
+      "code": 20112
+    },
+    "cases": {
+      "files": 43,
+      "physical": 10100,
+      "code": 9532
+    },
+    "cases/architecture": {
+      "files": 5,
+      "physical": 918,
+      "code": 805
+    },
+    "cases/internal": {
+      "files": 15,
+      "physical": 2206,
+      "code": 2101
+    },
+    "cases/internal/platform": {
+      "files": 6,
+      "physical": 588,
+      "code": 560
+    },
+    "cases/internal/protocol": {
+      "files": 1,
+      "physical": 76,
+      "code": 68
+    },
+    "cases/internal/query": {
+      "files": 3,
+      "physical": 110,
+      "code": 105
+    },
+    "cases/shared": {
+      "files": 6,
+      "physical": 270,
+      "code": 215
+    },
+    "cases/target": {
+      "files": 6,
+      "physical": 6138,
+      "code": 5856
+    },
+    "cases/target/architecture": {
+      "files": 1,
+      "physical": 23,
+      "code": 20
+    },
+    "cases/target/primary": {
+      "files": 5,
+      "physical": 6115,
+      "code": 5836
+    },
+    "framework": {
+      "files": 129,
+      "physical": 14002,
+      "code": 10580
+    },
+    "framework/internal": {
+      "files": 127,
+      "physical": 13847,
+      "code": 10437
+    },
+    "framework/internal/common": {
+      "files": 13,
+      "physical": 559,
+      "code": 529
+    },
+    "framework/internal/device": {
+      "files": 1,
+      "physical": 491,
+      "code": 486
+    },
+    "framework/internal/host": {
+      "files": 113,
+      "physical": 12797,
+      "code": 9422
+    },
+    "framework/internal/host/g2a_reference": {
+      "files": 4,
+      "physical": 1883,
+      "code": 1698
+    },
+    "framework/internal/host/primary": {
+      "files": 22,
+      "physical": 2312,
+      "code": 2119
+    },
+    "framework/internal/host/primary/include": {
+      "files": 5,
+      "physical": 58,
+      "code": 56
+    },
+    "framework/internal/host/primary/lifecycle": {
+      "files": 4,
+      "physical": 171,
+      "code": 162
+    },
+    "framework/internal/host/primary/provider": {
+      "files": 2,
+      "physical": 205,
+      "code": 78
+    },
+    "framework/internal/host/primary/provider/include": {
+      "files": 2,
+      "physical": 205,
+      "code": 78
+    },
+    "framework/internal/host/primary/runtime_include": {
+      "files": 1,
+      "physical": 16,
+      "code": 15
+    },
+    "framework/internal/host/probes": {
+      "files": 7,
+      "physical": 184,
+      "code": 176
+    },
+    "framework/internal/host/stubs": {
+      "files": 73,
+      "physical": 7676,
+      "code": 4715
+    },
+    "framework/internal/host/stubs/include": {
+      "files": 62,
+      "physical": 6664,
+      "code": 3759
+    },
+    "framework/internal/host/stubs/include/hilog": {
+      "files": 1,
+      "physical": 8,
+      "code": 5
+    }
+  },
+  "backend_registrations": {
+    "legacy": [
+      "AccountProviderHost.AdapterDoesNotTurnUnknownReadBackIntoSuccess",
+      "AccountProviderHost.AdapterFailedWriteWithMatchingReadBackStaysUnknown",
+      "AccountProviderHost.AdapterMatchDistinguishesFailureFromConfirmedNoRow",
+      "AccountProviderHost.AdapterUsesOneInsertThenReadBackIdentity",
+      "AccountProviderHost.LoadAccountsFailureIsNotReplaceableEmptySuccess",
+      "AccountProviderHost.LoadAccountsMapsCurrentAndHistoricalSourceSeparately",
+      "CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/0",
+      "CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/1",
+      "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/dual",
+      "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/malformed_atoi",
+      "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/negative_atoi",
+      "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/single",
+      "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/vendor_override",
+      "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/vendor_result_propagation",
+      "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/zero",
+      "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/dual",
+      "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/malformed_atoi",
+      "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/negative_atoi",
+      "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/single",
+      "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/vendor_override",
+      "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/vendor_result_propagation",
+      "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/zero",
+      "EventAdapter.SharedTypeSafety",
+      "EventAdapter.UniqueOwnership",
+      "EventAdapter.WeakLifetimeAndMetadata",
+      "ExternalData.EmptyCursorIsNotQueryFailure",
+      "ExternalData.ExplicitQueryResponses",
+      "ExternalData.OriginalBucketKeepsFirstPut",
+      "ExternalEvents.MissingProviderAndScopeCleanup",
+      "ExternalEvents.PublishPreservesEnvelopeAndFailure",
+      "NativePointerSubset.LocalCastRequiresImplementedInterface",
+      "NativePointerSubset.SharedOwnership",
+      "NativePointerSubset.WeakIdentityAndPromotion",
+      "PairingReview.AllThreeSlotsPublicDetach",
+      "PairingReview.DestroyThenReinitializeCardGraph",
+      "PairingReview.IccidObserverUnregisterReleasesSubscriber",
+      "PairingReview.PartialInitializationAndRepeatedUnregister",
+      "PairingReview.UnrelatedRuntimeWorkerIsBaseline",
+      "PinMemoryContract.FailedPinDoesNotPublishMemoryHook",
+      "PinMemoryContract.PinSuccessUsesOriginalSlotIdentityAndCredential",
+      "PinMemoryContract.PukSuccessUsesNewPinAndPinAlterOperation",
+      "PinMemoryContract.RemovalUsesAbsentResponseIdentityWithoutCredential",
+      "PrimaryEntry.ChangedExternalSystemAppDecisionRejectsExtendedSlot",
+      "PrimaryEntry.FailedPreferenceWriteStillDelegatesCurrentBehavior",
+      "PrimaryEntry.InactiveCardStopsBeforePreferenceAndSwitch",
+      "PrimaryEntry.ManagerFailureReturnedUnchangedAfterPreferenceWrite",
+      "PrimaryEntry.ManagerReplacementWaitsForAcceptedCallAndGetReturnsSnapshot",
+      "PrimaryEntry.MissingCardStopsBeforeActiveAndPreference",
+      "PrimaryEntry.NonSystemCallerPrecedesPermissionAndNullManager",
+      "PrimaryEntry.NullManagerPrecedesCapabilityRecheck",
+      "PrimaryEntry.PermissionDenialPrecedesNullManager",
+      "PrimaryEntry.PresenceQueryFailureWithFalseOutputReturnsNoCard",
+      "PrimaryEntry.PresenceQueryFailureWithTrueOutputStillDelegates",
+      "PrimaryEntry.ReadyCardWritesPreferenceBeforeDelegatingExactTarget",
+      "PrimaryEntry.StableSystemAppPassesExtendedSlotCapability",
+      "PrimaryEntry.StopDoesNotCrossAlreadyAcceptedParameterWrite",
+      "PrimaryEntry.StopDuringReplacementDoesNotReopenOldCloseGeneration",
+      "PrimaryEntry.StopReopensOnlyOnNewManagerGeneration",
+      "PrimaryEntry.StopSealsOldHandleBeforeParameterAndManagerWrite",
+      "ProductionEventTransport.CancelsPendingAndReapsWorker",
+      "ProductionEventTransport.DeliversFormalEnvelope",
+      "ProductionEventTransport.SolicitedResponseRetainsCorrelationAndPayloadOwnership",
+      "RealCardLifetime.InitializedStateUnregistersRilAndReleases",
+      "RealCardLifetime.MissingRilInitializationReleasesState",
+      "RealCardLifetime.PublicDetachReleasesRealStateFileAndRil",
+      "RealSimPrimary.AccountMetadataUsesLegacyPredicatesAndFieldCaches",
+      "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+      "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+      "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+      "RealSimPrimary.C0CoreToRealManagerAndController",
+      "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+      "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+      "RealSimPrimary.DefaultSmsProviderAndNotificationContract",
+      "RealSimPrimary.DefaultVoiceProviderAndNotificationContract",
+      "RealSimPrimary.FreshAccountReloadKeepsViewsIndependent",
+      "RealSimPrimary.ImsPreferencePreservesProviderReturnAndReadSource",
+      "RealSimPrimary.IndependentDefaultDataUsesOriginalManagerContract",
+      "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+      "RealSimPrimary.ShowNumberReadsAccountAfterMsisdnFailure",
+      "RealSimPrimary.UnknownIccidLabelCanSucceedWithoutChangingAccount",
+      "ResourceModel.FourIndependentResourcesDoNotImplyLegacyFourCardSupport",
+      "RilAdapter.FormalStatusResponse",
+      "RunnerLifetime.CallbackCannotSynchronouslyJoinItself",
+      "RunnerLifetime.ConcurrentStopIsIdempotent",
+      "RunnerLifetime.InFlightStopJoinsAndRejectsCallbackRepost",
+      "RunnerLifetime.NormalCompletionAndRepeatedStop",
+      "RunnerLifetime.PendingTaskCancelledAndCapturedOwnerReleased",
+      "SchedulerBoundary.DetachedCallableBarrierIncludesCaptureDestruction",
+      "SchedulerBoundary.IdleWaitDoesNotIgnoreDelayedOrRunningWork",
+      "SchedulerBoundary.IdleWaitDrainsCascadedQueues",
+      "SchedulerBoundary.IdleWaitExposesTaskFailure",
+      "SchedulerBoundary.JoinablePoolWorkerIsNotAnUnfinishedDetachedActor",
+      "SchedulerBoundary.ProductionGeneralTaskWaitsAndCleansUp",
+      "SchedulerBoundary.ReadyIdleDoesNotAcceptRunningInitialization",
+      "SchedulerBoundary.ReadyIdleLeavesFutureTimersAndDrainsCascades",
+      "SchedulerBoundary.RunningTaskCannotBeCancelled",
+      "SessionLifecycle.CALLBACK_002_MalformedThenRecovery",
+      "SessionLifecycle.CALLBACK_003_DroppedThenRecovery",
+      "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+      "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+      "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+      "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+      "SessionLifecycle.DUAL_002_PinWhileOtherCardRemoved",
+      "SessionLifecycle.INIT_001_SingleEnumeration",
+      "SessionLifecycle.INIT_002_MissingRilThenRecreate",
+      "SessionLifecycle.INIT_DUAL_002_ReversedEnumeration",
+      "SessionLifecycle.PUK_002_WrongThenSuccessfulUnlock",
+      "SessionLifecycle.RECREATE_001_DualCardReenumeration",
+      "SessionLifecycle.RECREATE_002_ReplacementWhileStopped",
+      "SessionLifecycle.REFRESH_001_ExplicitStatusQuery",
+      "ShutdownContract.ANormalPrimaryThenStop",
+      "ShutdownContract.BThreeSlotsThenStop",
+      "ShutdownContract.CPartialInitializationThenStop",
+      "ShutdownContract.DRepeatedStop",
+      "ShutdownContract.EInFlightSuccessCompletesBeforeRelease",
+      "ShutdownContract.FErrorReplyDuringStoppingKeepsOriginalResult",
+      "ShutdownContract.GDelayedDispatchAfterStop",
+      "ShutdownContract.HDestroyAndCreateNewGraph",
+      "ShutdownExtra.C1StopAtCheck",
+      "ShutdownExtra.C1StopAtComplete",
+      "ShutdownExtra.C1StopAtUpdate",
+      "ShutdownExtra.CoreCallbackMayRequestSealWithoutWaitingForSelf",
+      "ShutdownExtra.CoreEntrySealDrainsAcceptedIpcBeforeLegacyStop",
+      "ShutdownExtra.CoreLegacyHostCoordinatesRealManagerStop",
+      "ShutdownExtra.CoreLegacyHostRetainsManagerAfterStopFailureAndRetries",
+      "ShutdownExtra.CorePostTaskFailureReturnsNoCompletionOwnership",
+      "ShutdownExtra.FailedWatcherRemovalKeepsStoppingAndRetries",
+      "ShutdownExtra.ObserverReleaseOutsideLockAllowsReentrantDestruction",
+      "ShutdownExtra.OwnedTaskClosureDestructionIsPartOfStopBarrier",
+      "ShutdownExtra.PartialWatcherRegistration",
+      "ShutdownExtra.WatcherInFlightIsDrainedAndSelfStopIsRejected",
+      "ShutdownExtra.WatcherLateCallbackAfterOwnerDestruction",
+      "SimAdvancedTest.DEFECT_001_StaleReadyAfterRemoval",
+      "SimAdvancedTest.DUAL_001",
+      "SimAdvancedTest.PIN_001",
+      "SimAdvancedTest.PIN_002_CommandFailure",
+      "SimAdvancedTest.RIL_001_DuplicateAndError",
+      "SimCharacterization.BeforeInitialization",
+      "SimComponent.CapacityReadOnly",
+      "SimTest.DualSimPinUnlock",
+      "SimTest.DualSimPinUnlockAfterWrongPin",
+      "SimTest.ExistingCardQueriesAgreeWithoutControlledMutation",
+      "SimTest.LIFE_001",
+      "SimTest.LIFE_002",
+      "SimTest.PUK_001",
+      "SimTest.PukUnlockPublishesReadyAndRetainsNewPin",
+      "SimTest.UnlockingSecondLockedCardLeavesFirstLocked",
+      "SimTest.WrongUsimPinDoesNotBlockSimPeer"
+    ],
+    "target": [
+      "AF2AccountMetadata.FieldAndRowIsolationWhileOriginalWriteIsInFlight",
+      "AF2AccountMetadata.LegacyFieldContract",
+      "AF2AccountMetadata.LiveDualSimMetadataAndFourRoles",
+      "AF2AccountMetadata.PermissionAndHistoricalIdentityWithoutBinding",
+      "AF2AccountMetadata.ReplacementDoesNotReceiveTheOriginalSlotWrite",
+      "AF2AccountMetadata.UnknownRequiresExactOriginalEvidenceAfterStop",
+      "AF2Data.AuthorizationPrecedesMissingCardAndMissingBinding",
+      "AF2Data.CompletedParameterFailurePreservesLegacyResultAndKnownDisposition",
+      "AF2Data.LiveDualSimSetDefaultDataThroughLegacyEntry",
+      "AF2Data.PrimaryAndDataRejectCompetingSharedWriteInBothOrders",
+      "AF2Data.RepeatedSelectionAndMoveBackEachPublish",
+      "AF2Data.ReplacementDuringOriginalWritePreventsProjectionToNewBinding",
+      "AF2Data.StopWaitsForParameterAndAccountNotification",
+      "AF2Data.UnknownRetainsSharedWriteUntilOriginalEvidenceAfterStop",
+      "AF2Discovery.ApplicationPrecedesIdentityAndStalePromotionCannotCreateBinding",
+      "AF2Discovery.KnownCardReinsertKeepsIdentityAndRejectsDuplicateAndOldSource",
+      "AF2Discovery.LiveBindingsFeedExistingC0AndStaleTargetCannotAdvance",
+      "AF2Discovery.LiveCardDiscoveryCreatesAccountAndBinding",
+      "AF2Discovery.LostRoleReceiptIsReReadWithoutReplayingPublishOrWrite",
+      "AF2Discovery.SameSlotOriginalsRecoverIndependentlyInBothResultOrders",
+      "AF2Discovery.StopBeforeSendGrantSealsNewWork",
+      "AF2Discovery.StopWhileWriteExecutesWaitsForRealReturnAndAllowsOriginalDisposition",
+      "AF2Discovery.UnreturnedMatchKeepsOriginalAndNeverAuthorizesWrite",
+      "AF2Discovery.WrongProofAndPartialEvidenceKeepOriginalUntilAllColumnsAreProven",
+      "AF2ImsPreference.ConfirmedWriteAfterReplacementKeepsRawReturnWithoutAdvancingVersions",
+      "AF2ImsPreference.FieldIsolationAndStopDuringOriginalWrite",
+      "AF2ImsPreference.LegacyProviderContract",
+      "AF2ImsPreference.LiveDualSimSavesAndQueriesProviderPreference",
+      "AF2ImsPreference.MissingBindingDoesNotAddressEmptyIccid",
+      "AF2ImsPreference.ReplacementDuringQueryKeepsOriginalIccidAndOpenCall",
+      "AF2ImsPreference.UnknownKeepsTheExactOriginalWriteUntilEvidenceAfterStop",
+      "AF2Module.ConcurrentStopDuringCompletionSealsOldEntryAndKeepsOriginalFrame",
+      "AF2Module.DeviceBranchesAreRejectedBeforeAnyWriteOrCommand",
+      "AF2Module.FactoryPublishesRealTopologyAndRunsC0",
+      "AF2Module.MissingPortAndBadEvidenceNeverPublishAndReleasePartialGraph",
+      "AF2Module.SharedResourceAllowsOnlyOneCompetingOwner",
+      "AF2Module.UnknownParameterEffectRetainsOriginalResponsibility",
+      "AF2Primary.CompletedLegacyParameterErrorsReturnSuccessAndRetainOnlyIndeterminateEffects",
+      "AF2Primary.EntryPreservesPermissionSlotAndMissingBindingOrder",
+      "AF2Primary.IndependentRepeatedSelectionPreservesLegacyMainAnnouncementDeduplication",
+      "AF2Primary.InterruptedIccidWriteRetainsPrefixAndOnlyAcceptsOriginalEvidenceAfterStop",
+      "AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry",
+      "AF2Primary.ReplacementDuringPrimarySlotWriteRevokesRemainingKeys",
+      "AF2Primary.StopInFlightAndDuringOriginalNotificationRetainsCallUntilReturn",
+      "AF2Reload.AbsentMembershipRequiresCoverageAndTombstoneRejectsReappearance",
+      "AF2Reload.FreshAccountReloadKeepsViewsIndependent",
+      "AF2Reload.IndependentViewsValidateCompleteMembershipAndExactRoleIdentity",
+      "AF2Reload.LaterAttemptAndStopPreventAnInFlightReadFromPublishing",
+      "AF2Reload.LiveAccountsAndRolesSurviveStaleReload",
+      "AF2Reload.ReadWhileMetadataWriteIsUnresolved",
+      "AF2Reload.RoleReceiptCanBeReadAgainWithoutReapplying",
+      "AF2ShowNumber.BackwriteRejectsStaleNumberRevisionOnSameBinding",
+      "AF2ShowNumber.CardFailureAndReplacementDoNotPersist",
+      "AF2ShowNumber.EarlyReplyAndStoreFailurePreserveSeparateEffects",
+      "AF2ShowNumber.LiveCardNumberWriteUpdatesAccountAndCompletes",
+      "AF2ShowNumber.ProviderAccountFallbackAfterOriginalCardFailure",
+      "AF2ShowNumber.QueryUsesRealSourcesAndBackwritePinsOriginalAccount",
+      "AF2ShowNumber.QueueAdmissionAndExecutionPointUseLegacyOrder",
+      "AF2ShowNumber.TimeoutQuarantinesOriginalResourcesUntilCorrelatedProofAfterStop",
+      "AF2ShowNumber.UnresolvedStoreRetainsNumberFieldAndUsesOriginalEvidence",
+      "AF2VoiceSms.CurrentRoleVersionRejectsPreMutationReload",
+      "AF2VoiceSms.DefaultSmsProviderAndNotificationContract",
+      "AF2VoiceSms.DefaultVoiceProviderAndNotificationContract",
+      "AF2VoiceSms.InFlightVoiceOrdersOnlyIntersectingWriters",
+      "AF2VoiceSms.KnownPartialAndStaleAppliedNeverCommitCurrentRoles",
+      "AF2VoiceSms.LiveDualSimSelectsFourRolesThroughLegacyEntries",
+      "AF2VoiceSms.PermissionsAndBindingRejectBeforeProvider",
+      "AF2VoiceSms.StaleUnknownVoiceEffectRetainsOnlyItsOriginalWriteSet",
+      "TargetAdapterIntegration.C0DoesNotCompleteUnconfirmedWrites",
+      "TargetAdapterIntegration.C0PreservesLegacySuccessForCompletedParameterFailures",
+      "TargetAdapterIntegration.C0UsesRealAssignmentStoreAdapter",
+      "TargetAdapterIntegration.RestoreKeepsLegacyValidSlotAndConditionalIccidRules",
+      "TargetArchitecture.C0PrimaryPlanUsesNoDeviceSwitch",
+      "TargetPrimary.C0AssignmentServiceAlreadyPrimary",
+      "TargetPrimary.C0DifferentDomainsRejectNestedSharedRoleWrite",
+      "TargetPrimary.C0KeepsUnfinishedWritesUncommittedAndQualified",
+      "TargetPrimary.C0OperationAdmissionRejectsOldEpochStepAndDuplicateCompletion",
+      "TargetPrimary.C0OperationConsumesNotSentAndKeepsLateEvidenceSeparate",
+      "TargetPrimary.C0PreservesPartialEffectsWhenStoreWriteFails",
+      "TargetPrimary.C0RejectsConflictingRequestAndCanRestartAfterFailure",
+      "TargetPrimary.C0RejectsMissingInactiveOrChangedTopologyFacts",
+      "TargetPrimary.C0RejectsUnknownStaleOrDifferentRadioObservation",
+      "TargetPrimary.SharedWriteSetRejectsDifferentDomainButDisjointRoleAdvances",
+      "TargetPrimaryB.BErrorKeepsPreviousRolesAndCompletesOriginalFailure",
+      "TargetPrimaryB.BSuccessCommitsOnlyAfterMatchingReply",
+      "TargetPrimaryB.BTimeoutAt45000KeepsRolesAndRejectsLateReply",
+      "TargetPrimaryB.BindingChangeAndUnknownEffectsPreserveIsolation",
+      "TargetPrimaryB.C0ReentrantPrimaryNotificationCannotAdmitConflictingRequest",
+      "TargetPrimaryB.C1BackgroundRetryUsesControlledAsyncScheduler",
+      "TargetPrimaryB.C1BindingChangeRestoresPrewrittenPrimaryParameters",
+      "TargetPrimaryB.C1CheckFailureRestoresAndExhaustsFiveRetries",
+      "TargetPrimaryB.C1DestroyedOwnerRejectsQueuedRetryWithoutUaf",
+      "TargetPrimaryB.C1InlineRepliesFinishWithoutAccessingRetiredRound",
+      "TargetPrimaryB.C1RetryDueAndStopRaceDrainsCallbackBeforeResultDecision",
+      "TargetPrimaryB.C1RetrySchedulerRejectsDuplicateAndBindingChange",
+      "TargetPrimaryB.C1RetrySchedulerStopCancelsAndOldEpochCannotRun",
+      "TargetPrimaryB.C1SharedWriteQualificationBlocksC0InDifferentDomainUntilRelease",
+      "TargetPrimaryB.C1StopAndQueuedRadioCallbacksRemainOwnerSerialized",
+      "TargetPrimaryB.C1StopDuringActiveRoundCancelsRetryAfterConfirmedComplete",
+      "TargetPrimaryB.C1StopReportsDrainFailureUntilActiveDeviceResultEnds",
+      "TargetPrimaryB.C1ThreePhaseSuccessRejectsStaleSession",
+      "TargetPrimaryB.C1UnknownDoesNotScheduleRetry",
+      "TargetPrimaryB.HostLifecycleCancelsQueuedRetryAndOldEpochCannotRun",
+      "TargetPrimaryB.HostLifecycleCloseIntentRejectsStartBeforeOwnerSeal",
+      "TargetPrimaryB.HostLifecycleConcurrentStopCannotDrainBeforeSeals",
+      "TargetPrimaryB.HostLifecycleConcurrentStopHasOneCleaner",
+      "TargetPrimaryB.HostLifecycleDoesNotStopUnrelatedSharedRilConsumer",
+      "TargetPrimaryB.HostLifecycleHandoffUnknownKeepsDeviceResponsibility",
+      "TargetPrimaryB.HostLifecycleOldAndNewInstancesRemainIsolated",
+      "TargetPrimaryB.HostLifecycleOldHandleRejectedAndAcceptedRequestCompletes",
+      "TargetPrimaryB.HostLifecycleOwnerDispatchFailureIsNotDeviceDrain",
+      "TargetPrimaryB.HostLifecyclePostedSealOutlivesCoordinator",
+      "TargetPrimaryB.HostLifecycleQuarantinedResultIsNotDrained",
+      "TargetPrimaryB.HostLifecycleStopAndExternalResultRaceCompletesOnce",
+      "TargetPrimaryB.HostLifecycleStopAndLateEvidencePreserveOriginalCompletion",
+      "TargetPrimaryB.HostLifecycleStopDuringC1CheckPreservesMemberResponsibility",
+      "TargetPrimaryB.HostLifecycleStopOnEmptyHostIsIdempotent",
+      "TargetPrimaryB.HostLifecycleStopRequestedFromOwnerCallbackDoesNotJoinSelf",
+      "TargetPrimaryB.RejectsWrongAssociationAndDoesNotAdvanceNewRequest",
+      "TargetPrimaryB.ResourceBarrierBEndsBeforeResultIsDelivered",
+      "TargetPrimaryB.ResourceBarrierBTimeoutQuarantinesUntilRealRecovery",
+      "TargetPrimaryB.ResourceBarrierC1AutomaticallyRetriesOnlyAfterEachPhaseEnded",
+      "TargetPrimaryB.ResourceBarrierC1UpdateNotifyCannotCompleteWithoutReuseEvidence",
+      "TargetPrimaryB.ResourceBarrierCheckingBlocksSendUntilInitialRecovery",
+      "TargetPrimaryB.ResourceBarrierConfirmedNotSentReturnsAvailable",
+      "TargetPrimaryB.ResourceBarrierDoesNotScheduleRetryBeforeCompleteMembersEnd",
+      "TargetPrimaryB.ResourceBarrierIsNotAcquiredForC0",
+      "TargetPrimaryB.ResourceBarrierLateBResultRecoversOnlyWithCurrentStateProof",
+      "TargetPrimaryB.ResourceBarrierRejectsDuplicateMemberSubmission",
+      "TargetPrimaryB.ResourceBarrierRejectsWrongBindingWithoutReleasingLease",
+      "TargetPrimaryB.ResourceBarrierStopSeparatesOwnerAndDeviceDrain",
+      "TargetPrimaryB.ResourceC1ConcurrentMemberCallbacksStayOwnerSerialized",
+      "TargetPrimaryB.ResourceCallbackAfterOwnerDestructionCannotAccessDanglingSink",
+      "TargetPrimaryB.ResourceHandoffAcceptedRequiresExpectedSerial",
+      "TargetPrimaryB.ResourceRejectsOldSerialOnCurrentTransportToken",
+      "TargetPrimaryB.ResourceRequiresDispatcherBeforeProductSubmit",
+      "TargetPrimaryB.ResourceRetainsOwnerDeliveryWhenDispatchIsStopped",
+      "TargetPrimaryB.ResourceSubmitConfirmedNotSentRejectsContradictoryCallback",
+      "TargetPrimaryB.ResourceSubmitDuplicatesDeduplicateAndConflictsQuarantine",
+      "TargetPrimaryB.ResourceSubmitMemberCannotDuplicateOrReleaseAnotherInSubmit",
+      "TargetPrimaryB.ResourceSubmitResponseBeforeReturnIsBufferedUntilHandoffClassified",
+      "TargetPrimaryB.ResourceSubmitUnknownQuarantinesInsteadOfConfirmedCancel",
+      "TargetRadioReceipt.EarlyDeliveryCannotOverwriteOriginalSubmitResult",
+      "TargetRadioReceipt.RefusedPostDoesNotRemoveAnotherRequestsReceipt",
+      "TargetTopologyIntegration.BindingAbaAndAccountViewLifetimeProtectC0",
+      "TargetTopologyIntegration.BindingChangeDuringAssignmentReadRejectsOldRequest",
+      "TargetTopologyIntegration.C0RejectsUnboundInactiveChangedAndStaleIdentity",
+      "TargetTopologyIntegration.C0UsesRealRegistryBindingIndexAndTopologyService",
+      "TargetTopologyIntegration.T1ConcurrentInvalidationRejectsBlockedProviderReturn",
+      "TargetTopologyIntegration.T1ConfirmedNotAppliedDoesNotCreateBinding",
+      "TargetTopologyIntegration.T1DuplicateObservationDoesNotRepeatStore",
+      "TargetTopologyIntegration.T1KnownAccountAlreadyBoundCannotShadowMove",
+      "TargetTopologyIntegration.T1KnownIccidReusesIdentityWithoutNewInsertSemantics",
+      "TargetTopologyIntegration.T1MatchFailureBeforeWriteDoesNotReserveProviderEffect",
+      "TargetTopologyIntegration.T1NewDiscoveryExecutesOneProviderWriteAndAcceptsTARoles",
+      "TargetTopologyIntegration.T1ObservationInvalidatedDuringWriteKeepsEffectWithoutBinding",
+      "TargetTopologyIntegration.T1OldEpochCannotEnterNewTopology",
+      "TargetTopologyIntegration.T1PendingDiscoveryPreventsReloadedRoleReplacement",
+      "TargetTopologyIntegration.T1ProviderIdentityMismatchForKnownIccidIsRejected",
+      "TargetTopologyIntegration.T1ProviderIoDoesNotHoldTLockAcrossAReadWrite",
+      "TargetTopologyIntegration.T1ProviderReconnectRequiresFreshObservationNotCachedRetry",
+      "TargetTopologyIntegration.T1SameSlotNewCardDoesNotInheritOldCompletedWrite",
+      "TargetTopologyIntegration.T1UnknownStoreEffectIsNotRetriedByDuplicateObservation",
+      "TargetTopologyIntegration.T2AcceptedRoleReservationSurvivesLaterUnrelatedRoleMutation",
+      "TargetTopologyIntegration.T2C1InFlightDoesNotBlockUnrelatedDiscoveryReservation",
+      "TargetTopologyIntegration.T2FailedViewDoesNotClearOtherOrSameView",
+      "TargetTopologyIntegration.T2OlderReloadCannotOverwriteFieldUpdatedAfterAttempt",
+      "TargetTopologyIntegration.T2OutOfOrderAttemptsUseLatestOnly",
+      "TargetTopologyIntegration.T2RecoveryDoesNotReleaseRoleForMissingProviderRow",
+      "TargetTopologyIntegration.T2ReloadCurrentAndHistoricalAcceptIndependentAttempts",
+      "TargetTopologyIntegration.T2ReloadDoesNotRemovePostAttemptNewAccount",
+      "TargetTopologyIntegration.T2SameIccidDifferentSlotIsRejectedBeforeProviderWrite",
+      "TargetTopologyIntegration.T2StaleAppliedCanReconcileWithoutRestoringOldBinding",
+      "TargetTopologyIntegration.T2UnrelatedDiscoveryDoesNotSharePendingRoleReservation"
+    ],
+    "mapped_common_semantics": [
+      "SIM023-LEGACY-ACCOUNT-METADATA-DUAL",
+      "SIM023-LEGACY-SHOW-NUMBER-AFTER-CARD-FAILURE",
+      "SIM024-LEGACY-IMS-PREFERENCE-BOUND",
+      "SIM025-LEGACY-DEFAULT-VOICE-DUAL",
+      "SIM026-LEGACY-DEFAULT-SMS-DUAL",
+      "SIM027-LEGACY-DATA-INDEPENDENT-DUAL-PRIMARY0",
+      "SIM028-LEGACY-B-ERROR-DUAL-PRIMARY0",
+      "SIM028-LEGACY-B-SUCCESS-DUAL-PRIMARY0",
+      "SIM028-LEGACY-B-TIMEOUT-DUAL-PRIMARY0",
+      "SIM028-LEGACY-C0-DUAL-PRIMARY0",
+      "SIM028-LEGACY-C1-CHECK-ERROR-RETRY-DUAL-PRIMARY0",
+      "SIM028-LEGACY-C1-SUCCESS-STALE-DUAL-PRIMARY0"
+    ]
+  },
+  "semantic_inventory": {
+    "registrations": {
+      "legacy": [
+        {
+          "id": "AccountProviderHost.AdapterDoesNotTurnUnknownReadBackIntoSuccess",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 157
+            }
+          ]
+        },
+        {
+          "id": "AccountProviderHost.AdapterFailedWriteWithMatchingReadBackStaysUnknown",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 135
+            }
+          ]
+        },
+        {
+          "id": "AccountProviderHost.AdapterMatchDistinguishesFailureFromConfirmedNoRow",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 44
+            }
+          ]
+        },
+        {
+          "id": "AccountProviderHost.AdapterUsesOneInsertThenReadBackIdentity",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 109
+            }
+          ]
+        },
+        {
+          "id": "AccountProviderHost.LoadAccountsFailureIsNotReplaceableEmptySuccess",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 94
+            }
+          ]
+        },
+        {
+          "id": "AccountProviderHost.LoadAccountsMapsCurrentAndHistoricalSourceSeparately",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 73
+            }
+          ]
+        },
+        {
+          "id": "CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/0",
+          "category": "L",
+          "target": "sim_primary_slot_entry_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_entry_test.cpp",
+              "line": 191
+            }
+          ]
+        },
+        {
+          "id": "CallerKinds/NativeOrShell.SystemAppAndExtendedCapabilityUseRealTokenRules/1",
+          "category": "L",
+          "target": "sim_primary_slot_entry_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_entry_test.cpp",
+              "line": 191
+            }
+          ]
+        },
+        {
+          "id": "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/dual",
+          "category": "L",
+          "target": "sim_g2a_query_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/query/g2a_query_test.cpp",
+              "line": 9
+            }
+          ]
+        },
+        {
+          "id": "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/malformed_atoi",
+          "category": "L",
+          "target": "sim_g2a_query_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/query/g2a_query_test.cpp",
+              "line": 9
+            }
+          ]
+        },
+        {
+          "id": "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/negative_atoi",
+          "category": "L",
+          "target": "sim_g2a_query_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/query/g2a_query_test.cpp",
+              "line": 9
+            }
+          ]
+        },
+        {
+          "id": "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/single",
+          "category": "L",
+          "target": "sim_g2a_query_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/query/g2a_query_test.cpp",
+              "line": 9
+            }
+          ]
+        },
+        {
+          "id": "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/vendor_override",
+          "category": "L",
+          "target": "sim_g2a_query_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/query/g2a_query_test.cpp",
+              "line": 9
+            }
+          ]
+        },
+        {
+          "id": "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/vendor_result_propagation",
+          "category": "L",
+          "target": "sim_g2a_query_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/query/g2a_query_test.cpp",
+              "line": 9
+            }
+          ]
+        },
+        {
+          "id": "Configurations/G2aReadOnlyQuery.OriginalManagerAttachment/zero",
+          "category": "L",
+          "target": "sim_g2a_query_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/query/g2a_query_test.cpp",
+              "line": 9
+            }
+          ]
+        },
+        {
+          "id": "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/dual",
+          "category": "L",
+          "target": "sim_upstream_query_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/query/g2a_upstream_test.cpp",
+              "line": 11
+            }
+          ]
+        },
+        {
+          "id": "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/malformed_atoi",
+          "category": "L",
+          "target": "sim_upstream_query_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/query/g2a_upstream_test.cpp",
+              "line": 11
+            }
+          ]
+        },
+        {
+          "id": "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/negative_atoi",
+          "category": "L",
+          "target": "sim_upstream_query_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/query/g2a_upstream_test.cpp",
+              "line": 11
+            }
+          ]
+        },
+        {
+          "id": "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/single",
+          "category": "L",
+          "target": "sim_upstream_query_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/query/g2a_upstream_test.cpp",
+              "line": 11
+            }
+          ]
+        },
+        {
+          "id": "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/vendor_override",
+          "category": "L",
+          "target": "sim_upstream_query_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/query/g2a_upstream_test.cpp",
+              "line": 11
+            }
+          ]
+        },
+        {
+          "id": "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/vendor_result_propagation",
+          "category": "L",
+          "target": "sim_upstream_query_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/query/g2a_upstream_test.cpp",
+              "line": 11
+            }
+          ]
+        },
+        {
+          "id": "Configurations/UpstreamRealSimCount.OriginalCoreAndManager/zero",
+          "category": "L",
+          "target": "sim_upstream_query_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/query/g2a_upstream_test.cpp",
+              "line": 11
+            }
+          ]
+        },
+        {
+          "id": "EventAdapter.SharedTypeSafety",
+          "category": "F",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/platform/event_adapter_test.cpp",
+              "line": 5
+            }
+          ]
+        },
+        {
+          "id": "EventAdapter.UniqueOwnership",
+          "category": "F",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/platform/event_adapter_test.cpp",
+              "line": 17
+            }
+          ]
+        },
+        {
+          "id": "EventAdapter.WeakLifetimeAndMetadata",
+          "category": "F",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/platform/event_adapter_test.cpp",
+              "line": 32
+            }
+          ]
+        },
+        {
+          "id": "ExternalData.EmptyCursorIsNotQueryFailure",
+          "category": "F",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/platform/external_services_test.cpp",
+              "line": 7
+            }
+          ]
+        },
+        {
+          "id": "ExternalData.ExplicitQueryResponses",
+          "category": "F",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/platform/external_services_test.cpp",
+              "line": 24
+            }
+          ]
+        },
+        {
+          "id": "ExternalData.OriginalBucketKeepsFirstPut",
+          "category": "F",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/platform/external_services_test.cpp",
+              "line": 62
+            }
+          ]
+        },
+        {
+          "id": "ExternalEvents.MissingProviderAndScopeCleanup",
+          "category": "F",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/platform/external_services_test.cpp",
+              "line": 102
+            }
+          ]
+        },
+        {
+          "id": "ExternalEvents.PublishPreservesEnvelopeAndFailure",
+          "category": "F",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/platform/external_services_test.cpp",
+              "line": 78
+            }
+          ]
+        },
+        {
+          "id": "NativePointerSubset.LocalCastRequiresImplementedInterface",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/platform/native_pointer_test.cpp",
+              "line": 51
+            }
+          ]
+        },
+        {
+          "id": "NativePointerSubset.SharedOwnership",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/platform/native_pointer_test.cpp",
+              "line": 15
+            }
+          ]
+        },
+        {
+          "id": "NativePointerSubset.WeakIdentityAndPromotion",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/platform/native_pointer_test.cpp",
+              "line": 32
+            }
+          ]
+        },
+        {
+          "id": "PairingReview.AllThreeSlotsPublicDetach",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 175
+            }
+          ]
+        },
+        {
+          "id": "PairingReview.DestroyThenReinitializeCardGraph",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 227
+            }
+          ]
+        },
+        {
+          "id": "PairingReview.IccidObserverUnregisterReleasesSubscriber",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 192
+            }
+          ]
+        },
+        {
+          "id": "PairingReview.PartialInitializationAndRepeatedUnregister",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 210
+            }
+          ]
+        },
+        {
+          "id": "PairingReview.UnrelatedRuntimeWorkerIsBaseline",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 239
+            }
+          ]
+        },
+        {
+          "id": "PinMemoryContract.FailedPinDoesNotPublishMemoryHook",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/protocol/pin_memory_test.cpp",
+              "line": 51
+            }
+          ]
+        },
+        {
+          "id": "PinMemoryContract.PinSuccessUsesOriginalSlotIdentityAndCredential",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/protocol/pin_memory_test.cpp",
+              "line": 21
+            }
+          ]
+        },
+        {
+          "id": "PinMemoryContract.PukSuccessUsesNewPinAndPinAlterOperation",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/protocol/pin_memory_test.cpp",
+              "line": 37
+            }
+          ]
+        },
+        {
+          "id": "PinMemoryContract.RemovalUsesAbsentResponseIdentityWithoutCredential",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/protocol/pin_memory_test.cpp",
+              "line": 63
+            }
+          ]
+        },
+        {
+          "id": "PrimaryEntry.ChangedExternalSystemAppDecisionRejectsExtendedSlot",
+          "category": "L",
+          "target": "sim_primary_slot_entry_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_entry_test.cpp",
+              "line": 116
+            }
+          ]
+        },
+        {
+          "id": "PrimaryEntry.FailedPreferenceWriteStillDelegatesCurrentBehavior",
+          "category": "L",
+          "target": "sim_primary_slot_entry_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_entry_test.cpp",
+              "line": 155
+            }
+          ]
+        },
+        {
+          "id": "PrimaryEntry.InactiveCardStopsBeforePreferenceAndSwitch",
+          "category": "L",
+          "target": "sim_primary_slot_entry_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_entry_test.cpp",
+              "line": 131
+            }
+          ]
+        },
+        {
+          "id": "PrimaryEntry.ManagerFailureReturnedUnchangedAfterPreferenceWrite",
+          "category": "L",
+          "target": "sim_primary_slot_entry_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_entry_test.cpp",
+              "line": 147
+            }
+          ]
+        },
+        {
+          "id": "PrimaryEntry.ManagerReplacementWaitsForAcceptedCallAndGetReturnsSnapshot",
+          "category": "L",
+          "target": "sim_primary_slot_entry_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_entry_test.cpp",
+              "line": 34
+            }
+          ]
+        },
+        {
+          "id": "PrimaryEntry.MissingCardStopsBeforeActiveAndPreference",
+          "category": "L",
+          "target": "sim_primary_slot_entry_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_entry_test.cpp",
+              "line": 125
+            }
+          ]
+        },
+        {
+          "id": "PrimaryEntry.NonSystemCallerPrecedesPermissionAndNullManager",
+          "category": "L",
+          "target": "sim_primary_slot_entry_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_entry_test.cpp",
+              "line": 97
+            }
+          ]
+        },
+        {
+          "id": "PrimaryEntry.NullManagerPrecedesCapabilityRecheck",
+          "category": "L",
+          "target": "sim_primary_slot_entry_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_entry_test.cpp",
+              "line": 110
+            }
+          ]
+        },
+        {
+          "id": "PrimaryEntry.PermissionDenialPrecedesNullManager",
+          "category": "L",
+          "target": "sim_primary_slot_entry_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_entry_test.cpp",
+              "line": 104
+            }
+          ]
+        },
+        {
+          "id": "PrimaryEntry.PresenceQueryFailureWithFalseOutputReturnsNoCard",
+          "category": "L",
+          "target": "sim_primary_slot_entry_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_entry_test.cpp",
+              "line": 164
+            }
+          ]
+        },
+        {
+          "id": "PrimaryEntry.PresenceQueryFailureWithTrueOutputStillDelegates",
+          "category": "L",
+          "target": "sim_primary_slot_entry_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_entry_test.cpp",
+              "line": 171
+            }
+          ]
+        },
+        {
+          "id": "PrimaryEntry.ReadyCardWritesPreferenceBeforeDelegatingExactTarget",
+          "category": "L",
+          "target": "sim_primary_slot_entry_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_entry_test.cpp",
+              "line": 139
+            }
+          ]
+        },
+        {
+          "id": "PrimaryEntry.StableSystemAppPassesExtendedSlotCapability",
+          "category": "L",
+          "target": "sim_primary_slot_entry_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_entry_test.cpp",
+              "line": 180
+            }
+          ]
+        },
+        {
+          "id": "PrimaryEntry.StopDoesNotCrossAlreadyAcceptedParameterWrite",
+          "category": "L",
+          "target": "sim_primary_slot_entry_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_entry_test.cpp",
+              "line": 13
+            }
+          ]
+        },
+        {
+          "id": "PrimaryEntry.StopDuringReplacementDoesNotReopenOldCloseGeneration",
+          "category": "L",
+          "target": "sim_primary_slot_entry_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_entry_test.cpp",
+              "line": 60
+            }
+          ]
+        },
+        {
+          "id": "PrimaryEntry.StopReopensOnlyOnNewManagerGeneration",
+          "category": "L",
+          "target": "sim_primary_slot_entry_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_entry_test.cpp",
+              "line": 84
+            }
+          ]
+        },
+        {
+          "id": "PrimaryEntry.StopSealsOldHandleBeforeParameterAndManagerWrite",
+          "category": "L",
+          "target": "sim_primary_slot_entry_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_entry_test.cpp",
+              "line": 5
+            }
+          ]
+        },
+        {
+          "id": "ProductionEventTransport.CancelsPendingAndReapsWorker",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/platform/event_transport_test.cpp",
+              "line": 107
+            }
+          ]
+        },
+        {
+          "id": "ProductionEventTransport.DeliversFormalEnvelope",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/platform/event_transport_test.cpp",
+              "line": 82
+            }
+          ]
+        },
+        {
+          "id": "ProductionEventTransport.SolicitedResponseRetainsCorrelationAndPayloadOwnership",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/platform/event_transport_test.cpp",
+              "line": 14
+            }
+          ]
+        },
+        {
+          "id": "RealCardLifetime.InitializedStateUnregistersRilAndReleases",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/lifecycle_test.cpp",
+              "line": 101
+            }
+          ]
+        },
+        {
+          "id": "RealCardLifetime.MissingRilInitializationReleasesState",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/lifecycle_test.cpp",
+              "line": 91
+            }
+          ]
+        },
+        {
+          "id": "RealCardLifetime.PublicDetachReleasesRealStateFileAndRil",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/lifecycle_test.cpp",
+              "line": 115
+            }
+          ]
+        },
+        {
+          "id": "RealSimPrimary.AccountMetadataUsesLegacyPredicatesAndFieldCaches",
+          "category": "C",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_initialization_test.cpp",
+              "line": 204
+            }
+          ]
+        },
+        {
+          "id": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+          "category": "C",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/primary_protocol_test.cpp",
+              "line": 23
+            }
+          ]
+        },
+        {
+          "id": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+          "category": "C",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/primary_protocol_test.cpp",
+              "line": 6
+            }
+          ]
+        },
+        {
+          "id": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+          "category": "C",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/primary_protocol_test.cpp",
+              "line": 79
+            }
+          ]
+        },
+        {
+          "id": "RealSimPrimary.C0CoreToRealManagerAndController",
+          "category": "C",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/primary_test.cpp",
+              "line": 5
+            }
+          ]
+        },
+        {
+          "id": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+          "category": "C",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/primary_protocol_test.cpp",
+              "line": 96
+            }
+          ]
+        },
+        {
+          "id": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+          "category": "C",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/primary_protocol_test.cpp",
+              "line": 38
+            }
+          ]
+        },
+        {
+          "id": "RealSimPrimary.DefaultSmsProviderAndNotificationContract",
+          "category": "C",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_initialization_test.cpp",
+              "line": 199
+            }
+          ]
+        },
+        {
+          "id": "RealSimPrimary.DefaultVoiceProviderAndNotificationContract",
+          "category": "C",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_initialization_test.cpp",
+              "line": 194
+            }
+          ]
+        },
+        {
+          "id": "RealSimPrimary.FreshAccountReloadKeepsViewsIndependent",
+          "category": "C",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_initialization_test.cpp",
+              "line": 378
+            }
+          ]
+        },
+        {
+          "id": "RealSimPrimary.ImsPreferencePreservesProviderReturnAndReadSource",
+          "category": "C",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": "CD-02",
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_initialization_test.cpp",
+              "line": 293
+            }
+          ]
+        },
+        {
+          "id": "RealSimPrimary.IndependentDefaultDataUsesOriginalManagerContract",
+          "category": "C",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_initialization_test.cpp",
+              "line": 51
+            }
+          ]
+        },
+        {
+          "id": "RealSimPrimary.InitializesRealManagerAndControllerWithoutRil",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_initialization_test.cpp",
+              "line": 23
+            }
+          ]
+        },
+        {
+          "id": "RealSimPrimary.ShowNumberReadsAccountAfterMsisdnFailure",
+          "category": "C",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_initialization_test.cpp",
+              "line": 419
+            }
+          ]
+        },
+        {
+          "id": "RealSimPrimary.UnknownIccidLabelCanSucceedWithoutChangingAccount",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": "CD-01",
+          "source_candidates": [
+            {
+              "file": "cases/internal/primary_initialization_test.cpp",
+              "line": 263
+            }
+          ]
+        },
+        {
+          "id": "ResourceModel.FourIndependentResourcesDoNotImplyLegacyFourCardSupport",
+          "category": "F",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/platform/resource_catalog_test.cpp",
+              "line": 3
+            }
+          ]
+        },
+        {
+          "id": "RilAdapter.FormalStatusResponse",
+          "category": "F",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/platform/ril_adapter_test.cpp",
+              "line": 6
+            }
+          ]
+        },
+        {
+          "id": "RunnerLifetime.CallbackCannotSynchronouslyJoinItself",
+          "category": "F",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/lifecycle_test.cpp",
+              "line": 81
+            }
+          ]
+        },
+        {
+          "id": "RunnerLifetime.ConcurrentStopIsIdempotent",
+          "category": "F",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/lifecycle_test.cpp",
+              "line": 69
+            }
+          ]
+        },
+        {
+          "id": "RunnerLifetime.InFlightStopJoinsAndRejectsCallbackRepost",
+          "category": "F",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/lifecycle_test.cpp",
+              "line": 45
+            }
+          ]
+        },
+        {
+          "id": "RunnerLifetime.NormalCompletionAndRepeatedStop",
+          "category": "F",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/lifecycle_test.cpp",
+              "line": 22
+            }
+          ]
+        },
+        {
+          "id": "RunnerLifetime.PendingTaskCancelledAndCapturedOwnerReleased",
+          "category": "F",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/lifecycle_test.cpp",
+              "line": 32
+            }
+          ]
+        },
+        {
+          "id": "SchedulerBoundary.DetachedCallableBarrierIncludesCaptureDestruction",
+          "category": "F",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/platform/event_transport_test.cpp",
+              "line": 270
+            }
+          ]
+        },
+        {
+          "id": "SchedulerBoundary.IdleWaitDoesNotIgnoreDelayedOrRunningWork",
+          "category": "F",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/platform/event_transport_test.cpp",
+              "line": 191
+            }
+          ]
+        },
+        {
+          "id": "SchedulerBoundary.IdleWaitDrainsCascadedQueues",
+          "category": "F",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/platform/event_transport_test.cpp",
+              "line": 171
+            }
+          ]
+        },
+        {
+          "id": "SchedulerBoundary.IdleWaitExposesTaskFailure",
+          "category": "F",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/platform/event_transport_test.cpp",
+              "line": 215
+            }
+          ]
+        },
+        {
+          "id": "SchedulerBoundary.JoinablePoolWorkerIsNotAnUnfinishedDetachedActor",
+          "category": "F",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/platform/event_transport_test.cpp",
+              "line": 289
+            }
+          ]
+        },
+        {
+          "id": "SchedulerBoundary.ProductionGeneralTaskWaitsAndCleansUp",
+          "category": "F",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/platform/event_transport_test.cpp",
+              "line": 156
+            }
+          ]
+        },
+        {
+          "id": "SchedulerBoundary.ReadyIdleDoesNotAcceptRunningInitialization",
+          "category": "F",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/platform/event_transport_test.cpp",
+              "line": 252
+            }
+          ]
+        },
+        {
+          "id": "SchedulerBoundary.ReadyIdleLeavesFutureTimersAndDrainsCascades",
+          "category": "F",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/platform/event_transport_test.cpp",
+              "line": 232
+            }
+          ]
+        },
+        {
+          "id": "SchedulerBoundary.RunningTaskCannotBeCancelled",
+          "category": "F",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/platform/event_transport_test.cpp",
+              "line": 129
+            }
+          ]
+        },
+        {
+          "id": "SessionLifecycle.CALLBACK_002_MalformedThenRecovery",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/lifecycle_test.cpp",
+              "line": 60
+            }
+          ]
+        },
+        {
+          "id": "SessionLifecycle.CALLBACK_003_DroppedThenRecovery",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/lifecycle_test.cpp",
+              "line": 69
+            }
+          ]
+        },
+        {
+          "id": "SessionLifecycle.DEFECT_002_ReadyReplyFromReplacedCard",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/lifecycle_test.cpp",
+              "line": 129
+            }
+          ]
+        },
+        {
+          "id": "SessionLifecycle.DEFECT_003_GenericRilErrorIsNotWrongPassword",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/lifecycle_test.cpp",
+              "line": 143
+            }
+          ]
+        },
+        {
+          "id": "SessionLifecycle.DEFECT_004_PinReplyFromReplacedCard",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/lifecycle_test.cpp",
+              "line": 153
+            }
+          ]
+        },
+        {
+          "id": "SessionLifecycle.DEFECT_005_RefreshReturnContractConflict",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/lifecycle_test.cpp",
+              "line": 165
+            }
+          ]
+        },
+        {
+          "id": "SessionLifecycle.DUAL_002_PinWhileOtherCardRemoved",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/lifecycle_test.cpp",
+              "line": 115
+            }
+          ]
+        },
+        {
+          "id": "SessionLifecycle.INIT_001_SingleEnumeration",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/lifecycle_test.cpp",
+              "line": 36
+            }
+          ]
+        },
+        {
+          "id": "SessionLifecycle.INIT_002_MissingRilThenRecreate",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/lifecycle_test.cpp",
+              "line": 42
+            }
+          ]
+        },
+        {
+          "id": "SessionLifecycle.INIT_DUAL_002_ReversedEnumeration",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/lifecycle_test.cpp",
+              "line": 49
+            }
+          ]
+        },
+        {
+          "id": "SessionLifecycle.PUK_002_WrongThenSuccessfulUnlock",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/lifecycle_test.cpp",
+              "line": 78
+            }
+          ]
+        },
+        {
+          "id": "SessionLifecycle.RECREATE_001_DualCardReenumeration",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/lifecycle_test.cpp",
+              "line": 94
+            }
+          ]
+        },
+        {
+          "id": "SessionLifecycle.RECREATE_002_ReplacementWhileStopped",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/lifecycle_test.cpp",
+              "line": 106
+            }
+          ]
+        },
+        {
+          "id": "SessionLifecycle.REFRESH_001_ExplicitStatusQuery",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/lifecycle_test.cpp",
+              "line": 89
+            }
+          ]
+        },
+        {
+          "id": "ShutdownContract.ANormalPrimaryThenStop",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 272
+            }
+          ]
+        },
+        {
+          "id": "ShutdownContract.BThreeSlotsThenStop",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 285
+            }
+          ]
+        },
+        {
+          "id": "ShutdownContract.CPartialInitializationThenStop",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 300
+            }
+          ]
+        },
+        {
+          "id": "ShutdownContract.DRepeatedStop",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 308
+            }
+          ]
+        },
+        {
+          "id": "ShutdownContract.EInFlightSuccessCompletesBeforeRelease",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 346
+            }
+          ]
+        },
+        {
+          "id": "ShutdownContract.FErrorReplyDuringStoppingKeepsOriginalResult",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 348
+            }
+          ]
+        },
+        {
+          "id": "ShutdownContract.GDelayedDispatchAfterStop",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 350
+            }
+          ]
+        },
+        {
+          "id": "ShutdownContract.HDestroyAndCreateNewGraph",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 365
+            }
+          ]
+        },
+        {
+          "id": "ShutdownExtra.C1StopAtCheck",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 569
+            }
+          ]
+        },
+        {
+          "id": "ShutdownExtra.C1StopAtComplete",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 571
+            }
+          ]
+        },
+        {
+          "id": "ShutdownExtra.C1StopAtUpdate",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 570
+            }
+          ]
+        },
+        {
+          "id": "ShutdownExtra.CoreCallbackMayRequestSealWithoutWaitingForSelf",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 436
+            }
+          ]
+        },
+        {
+          "id": "ShutdownExtra.CoreEntrySealDrainsAcceptedIpcBeforeLegacyStop",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 414
+            }
+          ]
+        },
+        {
+          "id": "ShutdownExtra.CoreLegacyHostCoordinatesRealManagerStop",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 385
+            }
+          ]
+        },
+        {
+          "id": "ShutdownExtra.CoreLegacyHostRetainsManagerAfterStopFailureAndRetries",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 399
+            }
+          ]
+        },
+        {
+          "id": "ShutdownExtra.CorePostTaskFailureReturnsNoCompletionOwnership",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 453
+            }
+          ]
+        },
+        {
+          "id": "ShutdownExtra.FailedWatcherRemovalKeepsStoppingAndRetries",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 488
+            }
+          ]
+        },
+        {
+          "id": "ShutdownExtra.ObserverReleaseOutsideLockAllowsReentrantDestruction",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 500
+            }
+          ]
+        },
+        {
+          "id": "ShutdownExtra.OwnedTaskClosureDestructionIsPartOfStopBarrier",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 596
+            }
+          ]
+        },
+        {
+          "id": "ShutdownExtra.PartialWatcherRegistration",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 481
+            }
+          ]
+        },
+        {
+          "id": "ShutdownExtra.WatcherInFlightIsDrainedAndSelfStopIsRejected",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 573
+            }
+          ]
+        },
+        {
+          "id": "ShutdownExtra.WatcherLateCallbackAfterOwnerDestruction",
+          "category": "L",
+          "target": "sim_primary_slot_real_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/shutdown_test.cpp",
+              "line": 467
+            }
+          ]
+        },
+        {
+          "id": "SimAdvancedTest.DEFECT_001_StaleReadyAfterRemoval",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/response_test.cpp",
+              "line": 62
+            }
+          ]
+        },
+        {
+          "id": "SimAdvancedTest.DUAL_001",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/response_test.cpp",
+              "line": 34
+            }
+          ]
+        },
+        {
+          "id": "SimAdvancedTest.PIN_001",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/response_test.cpp",
+              "line": 5
+            }
+          ]
+        },
+        {
+          "id": "SimAdvancedTest.PIN_002_CommandFailure",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/response_test.cpp",
+              "line": 22
+            }
+          ]
+        },
+        {
+          "id": "SimAdvancedTest.RIL_001_DuplicateAndError",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/response_test.cpp",
+              "line": 48
+            }
+          ]
+        },
+        {
+          "id": "SimCharacterization.BeforeInitialization",
+          "category": "F",
+          "target": "sim_bootstrap_characterization",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/internal/bootstrap_test.cpp",
+              "line": 3
+            }
+          ]
+        },
+        {
+          "id": "SimComponent.CapacityReadOnly",
+          "category": "L",
+          "target": "sim_component_test",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/capacity_test.cpp",
+              "line": 7
+            }
+          ]
+        },
+        {
+          "id": "SimTest.DualSimPinUnlock",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/sim_card_test.cpp",
+              "line": 47
+            }
+          ]
+        },
+        {
+          "id": "SimTest.DualSimPinUnlockAfterWrongPin",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/developer_copy_test.cpp",
+              "line": 4
+            }
+          ]
+        },
+        {
+          "id": "SimTest.ExistingCardQueriesAgreeWithoutControlledMutation",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/query_test.cpp",
+              "line": 3
+            }
+          ]
+        },
+        {
+          "id": "SimTest.LIFE_001",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/sim_card_test.cpp",
+              "line": 4
+            }
+          ]
+        },
+        {
+          "id": "SimTest.LIFE_002",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/sim_card_test.cpp",
+              "line": 20
+            }
+          ]
+        },
+        {
+          "id": "SimTest.PUK_001",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/sim_card_test.cpp",
+              "line": 37
+            }
+          ]
+        },
+        {
+          "id": "SimTest.PukUnlockPublishesReadyAndRetainsNewPin",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/puk_test.cpp",
+              "line": 3
+            }
+          ]
+        },
+        {
+          "id": "SimTest.UnlockingSecondLockedCardLeavesFirstLocked",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/pin_independence_test.cpp",
+              "line": 3
+            }
+          ]
+        },
+        {
+          "id": "SimTest.WrongUsimPinDoesNotBlockSimPeer",
+          "category": "L",
+          "target": "sim_test_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/pin_failure_isolation_test.cpp",
+              "line": 3
+            }
+          ]
+        }
+      ],
+      "target": [
+        {
+          "id": "AF2AccountMetadata.FieldAndRowIsolationWhileOriginalWriteIsInFlight",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 2439
+            }
+          ]
+        },
+        {
+          "id": "AF2AccountMetadata.LegacyFieldContract",
+          "category": "C",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 2340
+            }
+          ]
+        },
+        {
+          "id": "AF2AccountMetadata.LiveDualSimMetadataAndFourRoles",
+          "category": "UNCLASSIFIED",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 2269
+            }
+          ]
+        },
+        {
+          "id": "AF2AccountMetadata.PermissionAndHistoricalIdentityWithoutBinding",
+          "category": "UNCLASSIFIED",
+          "target": "sim_test_target_host",
+          "approved_decision": "CD-01",
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 2398
+            }
+          ]
+        },
+        {
+          "id": "AF2AccountMetadata.ReplacementDoesNotReceiveTheOriginalSlotWrite",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 2511
+            }
+          ]
+        },
+        {
+          "id": "AF2AccountMetadata.UnknownRequiresExactOriginalEvidenceAfterStop",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 2478
+            }
+          ]
+        },
+        {
+          "id": "AF2Data.AuthorizationPrecedesMissingCardAndMissingBinding",
+          "category": "UNCLASSIFIED",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1840
+            }
+          ]
+        },
+        {
+          "id": "AF2Data.CompletedParameterFailurePreservesLegacyResultAndKnownDisposition",
+          "category": "UNCLASSIFIED",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1908
+            }
+          ]
+        },
+        {
+          "id": "AF2Data.LiveDualSimSetDefaultDataThroughLegacyEntry",
+          "category": "C",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1748
+            }
+          ]
+        },
+        {
+          "id": "AF2Data.PrimaryAndDataRejectCompetingSharedWriteInBothOrders",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1869
+            }
+          ]
+        },
+        {
+          "id": "AF2Data.RepeatedSelectionAndMoveBackEachPublish",
+          "category": "UNCLASSIFIED",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1821
+            }
+          ]
+        },
+        {
+          "id": "AF2Data.ReplacementDuringOriginalWritePreventsProjectionToNewBinding",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1969
+            }
+          ]
+        },
+        {
+          "id": "AF2Data.StopWaitsForParameterAndAccountNotification",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1998
+            }
+          ]
+        },
+        {
+          "id": "AF2Data.UnknownRetainsSharedWriteUntilOriginalEvidenceAfterStop",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1927
+            }
+          ]
+        },
+        {
+          "id": "AF2Discovery.ApplicationPrecedesIdentityAndStalePromotionCannotCreateBinding",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1204
+            }
+          ]
+        },
+        {
+          "id": "AF2Discovery.KnownCardReinsertKeepsIdentityAndRejectsDuplicateAndOldSource",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1252
+            }
+          ]
+        },
+        {
+          "id": "AF2Discovery.LiveBindingsFeedExistingC0AndStaleTargetCannotAdvance",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1439
+            }
+          ]
+        },
+        {
+          "id": "AF2Discovery.LiveCardDiscoveryCreatesAccountAndBinding",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1230
+            }
+          ]
+        },
+        {
+          "id": "AF2Discovery.LostRoleReceiptIsReReadWithoutReplayingPublishOrWrite",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1419
+            }
+          ]
+        },
+        {
+          "id": "AF2Discovery.SameSlotOriginalsRecoverIndependentlyInBothResultOrders",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1316
+            }
+          ]
+        },
+        {
+          "id": "AF2Discovery.StopBeforeSendGrantSealsNewWork",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1381
+            }
+          ]
+        },
+        {
+          "id": "AF2Discovery.StopWhileWriteExecutesWaitsForRealReturnAndAllowsOriginalDisposition",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1394
+            }
+          ]
+        },
+        {
+          "id": "AF2Discovery.UnreturnedMatchKeepsOriginalAndNeverAuthorizesWrite",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1362
+            }
+          ]
+        },
+        {
+          "id": "AF2Discovery.WrongProofAndPartialEvidenceKeepOriginalUntilAllColumnsAreProven",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1280
+            }
+          ]
+        },
+        {
+          "id": "AF2ImsPreference.ConfirmedWriteAfterReplacementKeepsRawReturnWithoutAdvancingVersions",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 2780
+            }
+          ]
+        },
+        {
+          "id": "AF2ImsPreference.FieldIsolationAndStopDuringOriginalWrite",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 2661
+            }
+          ]
+        },
+        {
+          "id": "AF2ImsPreference.LegacyProviderContract",
+          "category": "C",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 2591
+            }
+          ]
+        },
+        {
+          "id": "AF2ImsPreference.LiveDualSimSavesAndQueriesProviderPreference",
+          "category": "UNCLASSIFIED",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 2537
+            }
+          ]
+        },
+        {
+          "id": "AF2ImsPreference.MissingBindingDoesNotAddressEmptyIccid",
+          "category": "UNCLASSIFIED",
+          "target": "sim_test_target_host",
+          "approved_decision": "CD-02",
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 2639
+            }
+          ]
+        },
+        {
+          "id": "AF2ImsPreference.ReplacementDuringQueryKeepsOriginalIccidAndOpenCall",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 2702
+            }
+          ]
+        },
+        {
+          "id": "AF2ImsPreference.UnknownKeepsTheExactOriginalWriteUntilEvidenceAfterStop",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 2745
+            }
+          ]
+        },
+        {
+          "id": "AF2Module.ConcurrentStopDuringCompletionSealsOldEntryAndKeepsOriginalFrame",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 969
+            }
+          ]
+        },
+        {
+          "id": "AF2Module.DeviceBranchesAreRejectedBeforeAnyWriteOrCommand",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 950
+            }
+          ]
+        },
+        {
+          "id": "AF2Module.FactoryPublishesRealTopologyAndRunsC0",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 893
+            }
+          ]
+        },
+        {
+          "id": "AF2Module.MissingPortAndBadEvidenceNeverPublishAndReleasePartialGraph",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 920
+            }
+          ]
+        },
+        {
+          "id": "AF2Module.SharedResourceAllowsOnlyOneCompetingOwner",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1036
+            }
+          ]
+        },
+        {
+          "id": "AF2Module.UnknownParameterEffectRetainsOriginalResponsibility",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1009
+            }
+          ]
+        },
+        {
+          "id": "AF2Primary.CompletedLegacyParameterErrorsReturnSuccessAndRetainOnlyIndeterminateEffects",
+          "category": "UNCLASSIFIED",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1652
+            }
+          ]
+        },
+        {
+          "id": "AF2Primary.EntryPreservesPermissionSlotAndMissingBindingOrder",
+          "category": "UNCLASSIFIED",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1555
+            }
+          ]
+        },
+        {
+          "id": "AF2Primary.IndependentRepeatedSelectionPreservesLegacyMainAnnouncementDeduplication",
+          "category": "UNCLASSIFIED",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1726
+            }
+          ]
+        },
+        {
+          "id": "AF2Primary.InterruptedIccidWriteRetainsPrefixAndOnlyAcceptsOriginalEvidenceAfterStop",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1607
+            }
+          ]
+        },
+        {
+          "id": "AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry",
+          "category": "UNCLASSIFIED",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1526
+            }
+          ]
+        },
+        {
+          "id": "AF2Primary.ReplacementDuringPrimarySlotWriteRevokesRemainingKeys",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1580
+            }
+          ]
+        },
+        {
+          "id": "AF2Primary.StopInFlightAndDuringOriginalNotificationRetainsCallUntilReturn",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 1696
+            }
+          ]
+        },
+        {
+          "id": "AF2Reload.AbsentMembershipRequiresCoverageAndTombstoneRejectsReappearance",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 3395
+            }
+          ]
+        },
+        {
+          "id": "AF2Reload.FreshAccountReloadKeepsViewsIndependent",
+          "category": "C",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 3218
+            }
+          ]
+        },
+        {
+          "id": "AF2Reload.IndependentViewsValidateCompleteMembershipAndExactRoleIdentity",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 3356
+            }
+          ]
+        },
+        {
+          "id": "AF2Reload.LaterAttemptAndStopPreventAnInFlightReadFromPublishing",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 3430
+            }
+          ]
+        },
+        {
+          "id": "AF2Reload.LiveAccountsAndRolesSurviveStaleReload",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 3254
+            }
+          ]
+        },
+        {
+          "id": "AF2Reload.ReadWhileMetadataWriteIsUnresolved",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 3488
+            }
+          ]
+        },
+        {
+          "id": "AF2Reload.RoleReceiptCanBeReadAgainWithoutReapplying",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 3468
+            }
+          ]
+        },
+        {
+          "id": "AF2ShowNumber.BackwriteRejectsStaleNumberRevisionOnSameBinding",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": "CD-03",
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 3170
+            }
+          ]
+        },
+        {
+          "id": "AF2ShowNumber.CardFailureAndReplacementDoNotPersist",
+          "category": "UNCLASSIFIED",
+          "target": "sim_test_target_host",
+          "approved_decision": "CD-03",
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 3048
+            }
+          ]
+        },
+        {
+          "id": "AF2ShowNumber.EarlyReplyAndStoreFailurePreserveSeparateEffects",
+          "category": "UNCLASSIFIED",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 2990
+            }
+          ]
+        },
+        {
+          "id": "AF2ShowNumber.LiveCardNumberWriteUpdatesAccountAndCompletes",
+          "category": "UNCLASSIFIED",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 2908
+            }
+          ]
+        },
+        {
+          "id": "AF2ShowNumber.ProviderAccountFallbackAfterOriginalCardFailure",
+          "category": "C",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 3132
+            }
+          ]
+        },
+        {
+          "id": "AF2ShowNumber.QueryUsesRealSourcesAndBackwritePinsOriginalAccount",
+          "category": "UNCLASSIFIED",
+          "target": "sim_test_target_host",
+          "approved_decision": "CD-03",
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 2952
+            }
+          ]
+        },
+        {
+          "id": "AF2ShowNumber.QueueAdmissionAndExecutionPointUseLegacyOrder",
+          "category": "UNCLASSIFIED",
+          "target": "sim_test_target_host",
+          "approved_decision": "CD-03",
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 3105
+            }
+          ]
+        },
+        {
+          "id": "AF2ShowNumber.TimeoutQuarantinesOriginalResourcesUntilCorrelatedProofAfterStop",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": "CD-03",
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 3016
+            }
+          ]
+        },
+        {
+          "id": "AF2ShowNumber.UnresolvedStoreRetainsNumberFieldAndUsesOriginalEvidence",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": "CD-03",
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 3072
+            }
+          ]
+        },
+        {
+          "id": "AF2VoiceSms.CurrentRoleVersionRejectsPreMutationReload",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 2253
+            }
+          ]
+        },
+        {
+          "id": "AF2VoiceSms.DefaultSmsProviderAndNotificationContract",
+          "category": "C",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 2122
+            }
+          ]
+        },
+        {
+          "id": "AF2VoiceSms.DefaultVoiceProviderAndNotificationContract",
+          "category": "C",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 2117
+            }
+          ]
+        },
+        {
+          "id": "AF2VoiceSms.InFlightVoiceOrdersOnlyIntersectingWriters",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 2127
+            }
+          ]
+        },
+        {
+          "id": "AF2VoiceSms.KnownPartialAndStaleAppliedNeverCommitCurrentRoles",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 2205
+            }
+          ]
+        },
+        {
+          "id": "AF2VoiceSms.LiveDualSimSelectsFourRolesThroughLegacyEntries",
+          "category": "UNCLASSIFIED",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 2030
+            }
+          ]
+        },
+        {
+          "id": "AF2VoiceSms.PermissionsAndBindingRejectBeforeProvider",
+          "category": "UNCLASSIFIED",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 2230
+            }
+          ]
+        },
+        {
+          "id": "AF2VoiceSms.StaleUnknownVoiceEffectRetainsOnlyItsOriginalWriteSet",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 2165
+            }
+          ]
+        },
+        {
+          "id": "TargetAdapterIntegration.C0DoesNotCompleteUnconfirmedWrites",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_store_adapter_integration_test.cpp",
+              "line": 156
+            }
+          ]
+        },
+        {
+          "id": "TargetAdapterIntegration.C0PreservesLegacySuccessForCompletedParameterFailures",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_store_adapter_integration_test.cpp",
+              "line": 132
+            }
+          ]
+        },
+        {
+          "id": "TargetAdapterIntegration.C0UsesRealAssignmentStoreAdapter",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_store_adapter_integration_test.cpp",
+              "line": 112
+            }
+          ]
+        },
+        {
+          "id": "TargetAdapterIntegration.RestoreKeepsLegacyValidSlotAndConditionalIccidRules",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_store_adapter_integration_test.cpp",
+              "line": 181
+            }
+          ]
+        },
+        {
+          "id": "TargetArchitecture.C0PrimaryPlanUsesNoDeviceSwitch",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/architecture/primary_plan_test.cpp",
+              "line": 8
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimary.C0AssignmentServiceAlreadyPrimary",
+          "category": "C",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_assignment_service_test.cpp",
+              "line": 195
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimary.C0DifferentDomainsRejectNestedSharedRoleWrite",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_assignment_service_test.cpp",
+              "line": 346
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimary.C0KeepsUnfinishedWritesUncommittedAndQualified",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_assignment_service_test.cpp",
+              "line": 389
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimary.C0OperationAdmissionRejectsOldEpochStepAndDuplicateCompletion",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_assignment_service_test.cpp",
+              "line": 421
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimary.C0OperationConsumesNotSentAndKeepsLateEvidenceSeparate",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_assignment_service_test.cpp",
+              "line": 448
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimary.C0PreservesPartialEffectsWhenStoreWriteFails",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_assignment_service_test.cpp",
+              "line": 282
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimary.C0RejectsConflictingRequestAndCanRestartAfterFailure",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_assignment_service_test.cpp",
+              "line": 317
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimary.C0RejectsMissingInactiveOrChangedTopologyFacts",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_assignment_service_test.cpp",
+              "line": 232
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimary.C0RejectsUnknownStaleOrDifferentRadioObservation",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_assignment_service_test.cpp",
+              "line": 266
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimary.SharedWriteSetRejectsDifferentDomainButDisjointRoleAdvances",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_assignment_service_test.cpp",
+              "line": 477
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.BErrorKeepsPreviousRolesAndCompletesOriginalFailure",
+          "category": "C",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1327
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.BSuccessCommitsOnlyAfterMatchingReply",
+          "category": "C",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 574
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.BTimeoutAt45000KeepsRolesAndRejectsLateReply",
+          "category": "C",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1342
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.BindingChangeAndUnknownEffectsPreserveIsolation",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1367
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.C0ReentrantPrimaryNotificationCannotAdmitConflictingRequest",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1473
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.C1BackgroundRetryUsesControlledAsyncScheduler",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1511
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.C1BindingChangeRestoresPrewrittenPrimaryParameters",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1490
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.C1CheckFailureRestoresAndExhaustsFiveRetries",
+          "category": "C",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1696
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.C1DestroyedOwnerRejectsQueuedRetryWithoutUaf",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1604
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.C1InlineRepliesFinishWithoutAccessingRetiredRound",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 964
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.C1RetryDueAndStopRaceDrainsCallbackBeforeResultDecision",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1589
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.C1RetrySchedulerRejectsDuplicateAndBindingChange",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1549
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.C1RetrySchedulerStopCancelsAndOldEpochCannotRun",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1565
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.C1SharedWriteQualificationBlocksC0InDifferentDomainUntilRelease",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1447
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.C1StopAndQueuedRadioCallbacksRemainOwnerSerialized",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1651
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.C1StopDuringActiveRoundCancelsRetryAfterConfirmedComplete",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1638
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.C1StopReportsDrainFailureUntilActiveDeviceResultEnds",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1620
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.C1ThreePhaseSuccessRejectsStaleSession",
+          "category": "C",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1407
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.C1UnknownDoesNotScheduleRetry",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1678
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleCancelsQueuedRetryAndOldEpochCannotRun",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 747
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleCloseIntentRejectsStartBeforeOwnerSeal",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 643
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleConcurrentStopCannotDrainBeforeSeals",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 680
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleConcurrentStopHasOneCleaner",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 695
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleDoesNotStopUnrelatedSharedRilConsumer",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 780
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleHandoffUnknownKeepsDeviceResponsibility",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 894
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleOldAndNewInstancesRemainIsolated",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 799
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleOldHandleRejectedAndAcceptedRequestCompletes",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 619
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleOwnerDispatchFailureIsNotDeviceDrain",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 714
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecyclePostedSealOutlivesCoordinator",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 666
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleQuarantinedResultIsNotDrained",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 912
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleStopAndExternalResultRaceCompletesOnce",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 839
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleStopAndLateEvidencePreserveOriginalCompletion",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 867
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleStopDuringC1CheckPreservesMemberResponsibility",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 821
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleStopOnEmptyHostIsIdempotent",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 735
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.HostLifecycleStopRequestedFromOwnerCallbackDoesNotJoinSelf",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 762
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.RejectsWrongAssociationAndDoesNotAdvanceNewRequest",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1736
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.ResourceBarrierBEndsBeforeResultIsDelivered",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1089
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.ResourceBarrierBTimeoutQuarantinesUntilRealRecovery",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1148
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.ResourceBarrierC1AutomaticallyRetriesOnlyAfterEachPhaseEnded",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1231
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.ResourceBarrierC1UpdateNotifyCannotCompleteWithoutReuseEvidence",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1265
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.ResourceBarrierCheckingBlocksSendUntilInitialRecovery",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 592
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.ResourceBarrierConfirmedNotSentReturnsAvailable",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1079
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.ResourceBarrierDoesNotScheduleRetryBeforeCompleteMembersEnd",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1285
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.ResourceBarrierIsNotAcquiredForC0",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1069
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.ResourceBarrierLateBResultRecoversOnlyWithCurrentStateProof",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1164
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.ResourceBarrierRejectsDuplicateMemberSubmission",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1137
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.ResourceBarrierRejectsWrongBindingWithoutReleasingLease",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1107
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.ResourceBarrierStopSeparatesOwnerAndDeviceDrain",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1313
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.ResourceC1ConcurrentMemberCallbacksStayOwnerSerialized",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1208
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.ResourceCallbackAfterOwnerDestructionCannotAccessDanglingSink",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1300
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.ResourceHandoffAcceptedRequiresExpectedSerial",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 928
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.ResourceRejectsOldSerialOnCurrentTransportToken",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1123
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.ResourceRequiresDispatcherBeforeProductSubmit",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1197
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.ResourceRetainsOwnerDeliveryWhenDispatchIsStopped",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1180
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.ResourceSubmitConfirmedNotSentRejectsContradictoryCallback",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1016
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.ResourceSubmitDuplicatesDeduplicateAndConflictsQuarantine",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 988
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.ResourceSubmitMemberCannotDuplicateOrReleaseAnotherInSubmit",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 1030
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.ResourceSubmitResponseBeforeReturnIsBufferedUntilHandoffClassified",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 949
+            }
+          ]
+        },
+        {
+          "id": "TargetPrimaryB.ResourceSubmitUnknownQuarantinesInsteadOfConfirmedCancel",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/b_async_primary_test.cpp",
+              "line": 939
+            }
+          ]
+        },
+        {
+          "id": "TargetRadioReceipt.EarlyDeliveryCannotOverwriteOriginalSubmitResult",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/radio_receipt_test.cpp",
+              "line": 116
+            }
+          ]
+        },
+        {
+          "id": "TargetRadioReceipt.RefusedPostDoesNotRemoveAnotherRequestsReceipt",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/radio_receipt_test.cpp",
+              "line": 78
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.BindingAbaAndAccountViewLifetimeProtectC0",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 774
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.BindingChangeDuringAssignmentReadRejectsOldRequest",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 808
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.C0RejectsUnboundInactiveChangedAndStaleIdentity",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 748
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.C0UsesRealRegistryBindingIndexAndTopologyService",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 725
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T1ConcurrentInvalidationRejectsBlockedProviderReturn",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 422
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T1ConfirmedNotAppliedDoesNotCreateBinding",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 452
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T1DuplicateObservationDoesNotRepeatStore",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 397
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T1KnownAccountAlreadyBoundCannotShadowMove",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 384
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T1KnownIccidReusesIdentityWithoutNewInsertSemantics",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 373
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T1MatchFailureBeforeWriteDoesNotReserveProviderEffect",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 486
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T1NewDiscoveryExecutesOneProviderWriteAndAcceptsTARoles",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 334
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T1ObservationInvalidatedDuringWriteKeepsEffectWithoutBinding",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 408
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T1OldEpochCannotEnterNewTopology",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 716
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T1PendingDiscoveryPreventsReloadedRoleReplacement",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 461
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T1ProviderIdentityMismatchForKnownIccidIsRejected",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 476
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T1ProviderIoDoesNotHoldTLockAcrossAReadWrite",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 356
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T1ProviderReconnectRequiresFreshObservationNotCachedRetry",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 539
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T1SameSlotNewCardDoesNotInheritOldCompletedWrite",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 557
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T1UnknownStoreEffectIsNotRetriedByDuplicateObservation",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 441
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T2AcceptedRoleReservationSurvivesLaterUnrelatedRoleMutation",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 497
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T2C1InFlightDoesNotBlockUnrelatedDiscoveryReservation",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 595
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T2FailedViewDoesNotClearOtherOrSameView",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 653
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T2OlderReloadCannotOverwriteFieldUpdatedAfterAttempt",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 671
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T2OutOfOrderAttemptsUseLatestOnly",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 686
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T2RecoveryDoesNotReleaseRoleForMissingProviderRow",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 523
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T2ReloadCurrentAndHistoricalAcceptIndependentAttempts",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 633
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T2ReloadDoesNotRemovePostAttemptNewAccount",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 701
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T2SameIccidDifferentSlotIsRejectedBeforeProviderWrite",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 576
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T2StaleAppliedCanReconcileWithoutRestoringOldBinding",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 508
+            }
+          ]
+        },
+        {
+          "id": "TargetTopologyIntegration.T2UnrelatedDiscoveryDoesNotSharePendingRoleReservation",
+          "category": "T",
+          "target": "sim_test_target_host",
+          "approved_decision": null,
+          "source_candidates": [
+            {
+              "file": "cases/target/primary/c0_topology_integration_test.cpp",
+              "line": 609
+            }
+          ]
+        }
+      ]
+    },
+    "registration_counts": {
+      "legacy": {
+        "L": 110,
+        "F": 25,
+        "C": 13
+      },
+      "target": {
+        "T": 143,
+        "C": 13,
+        "UNCLASSIFIED": 18
+      }
+    },
+    "known_common_semantics": [
+      {
+        "id": "SIM028-LEGACY-C0-DUAL-PRIMARY0",
+        "legacy": "RealSimPrimary.C0CoreToRealManagerAndController",
+        "target": "TargetPrimary.C0AssignmentServiceAlreadyPrimary",
+        "validation": "frozen_oracle",
+        "shared_body": "cellular_selection_scenario.h"
+      },
+      {
+        "id": "SIM028-LEGACY-B-SUCCESS-DUAL-PRIMARY0",
+        "legacy": "RealSimPrimary.BDirectRilSuccessCommitsAfterReply",
+        "target": "TargetPrimaryB.BSuccessCommitsOnlyAfterMatchingReply",
+        "validation": "frozen_oracle",
+        "shared_body": null
+      },
+      {
+        "id": "SIM028-LEGACY-B-ERROR-DUAL-PRIMARY0",
+        "legacy": "RealSimPrimary.BDirectRilFailureKeepsPreviousPrimary",
+        "target": "TargetPrimaryB.BErrorKeepsPreviousRolesAndCompletesOriginalFailure",
+        "validation": "frozen_oracle",
+        "shared_body": null
+      },
+      {
+        "id": "SIM028-LEGACY-B-TIMEOUT-DUAL-PRIMARY0",
+        "legacy": "RealSimPrimary.BRealTimeoutKeepsPreviousPrimary",
+        "target": "TargetPrimaryB.BTimeoutAt45000KeepsRolesAndRejectsLateReply",
+        "validation": "frozen_oracle",
+        "shared_body": null
+      },
+      {
+        "id": "SIM028-LEGACY-C1-SUCCESS-STALE-DUAL-PRIMARY0",
+        "legacy": "RealSimPrimary.C1ThreePhasesWithStaleCheckResponseRejected",
+        "target": "TargetPrimaryB.C1ThreePhaseSuccessRejectsStaleSession",
+        "validation": "frozen_oracle",
+        "shared_body": null
+      },
+      {
+        "id": "SIM028-LEGACY-C1-CHECK-ERROR-RETRY-DUAL-PRIMARY0",
+        "legacy": "RealSimPrimary.C1CheckFailureRestoresParametersAndExhaustsFiveRetries",
+        "target": "TargetPrimaryB.C1CheckFailureRestoresAndExhaustsFiveRetries",
+        "validation": "frozen_oracle",
+        "shared_body": null
+      },
+      {
+        "id": "SIM027-LEGACY-DATA-INDEPENDENT-DUAL-PRIMARY0",
+        "legacy": "RealSimPrimary.IndependentDefaultDataUsesOriginalManagerContract",
+        "target": "AF2Data.LiveDualSimSetDefaultDataThroughLegacyEntry",
+        "validation": "frozen_oracle",
+        "shared_body": "cellular_selection_scenario.h"
+      },
+      {
+        "id": "SIM025-LEGACY-DEFAULT-VOICE-DUAL",
+        "legacy": "RealSimPrimary.DefaultVoiceProviderAndNotificationContract",
+        "target": "AF2VoiceSms.DefaultVoiceProviderAndNotificationContract",
+        "validation": "frozen_oracle",
+        "shared_body": "default_call_message_scenario.h"
+      },
+      {
+        "id": "SIM026-LEGACY-DEFAULT-SMS-DUAL",
+        "legacy": "RealSimPrimary.DefaultSmsProviderAndNotificationContract",
+        "target": "AF2VoiceSms.DefaultSmsProviderAndNotificationContract",
+        "validation": "frozen_oracle",
+        "shared_body": "default_call_message_scenario.h"
+      },
+      {
+        "id": "SIM023-LEGACY-ACCOUNT-METADATA-DUAL",
+        "legacy": "RealSimPrimary.AccountMetadataUsesLegacyPredicatesAndFieldCaches",
+        "target": "AF2AccountMetadata.LegacyFieldContract",
+        "validation": "frozen_oracle",
+        "shared_body": "account_metadata_scenario.h"
+      },
+      {
+        "id": "SIM024-LEGACY-IMS-PREFERENCE-BOUND",
+        "legacy": "RealSimPrimary.ImsPreferencePreservesProviderReturnAndReadSource",
+        "target": "AF2ImsPreference.LegacyProviderContract",
+        "validation": "frozen_oracle",
+        "shared_body": "ims_preference_scenario.h"
+      },
+      {
+        "id": "SIM023-LEGACY-SHOW-NUMBER-AFTER-CARD-FAILURE",
+        "legacy": "RealSimPrimary.ShowNumberReadsAccountAfterMsisdnFailure",
+        "target": "AF2ShowNumber.ProviderAccountFallbackAfterOriginalCardFailure",
+        "validation": "frozen_oracle",
+        "shared_body": "show_number_scenario.h"
+      },
+      {
+        "id": "SIM021-ACCOUNT-RELOAD-FRESH-VIEWS",
+        "legacy": "RealSimPrimary.FreshAccountReloadKeepsViewsIndependent",
+        "target": "AF2Reload.FreshAccountReloadKeepsViewsIndependent",
+        "validation": "same_source_assertions",
+        "shared_body": "account_reload_scenario.h"
+      }
+    ],
+    "device_gate_rows": [
+      {
+        "id": "SIM028-LEGACY-C0-DUAL-PRIMARY0",
+        "category": "D",
+        "legacy": "BLOCKED",
+        "target": "BLOCKED"
+      },
+      {
+        "id": "SIM028-LEGACY-B-SUCCESS-DUAL-PRIMARY0",
+        "category": "D",
+        "legacy": "BLOCKED",
+        "target": "BLOCKED"
+      },
+      {
+        "id": "SIM028-LEGACY-B-ERROR-DUAL-PRIMARY0",
+        "category": "D",
+        "legacy": "BLOCKED",
+        "target": "BLOCKED"
+      },
+      {
+        "id": "SIM028-LEGACY-B-TIMEOUT-DUAL-PRIMARY0",
+        "category": "D",
+        "legacy": "BLOCKED",
+        "target": "BLOCKED"
+      },
+      {
+        "id": "SIM028-LEGACY-C1-SUCCESS-STALE-DUAL-PRIMARY0",
+        "category": "D",
+        "legacy": "BLOCKED",
+        "target": "BLOCKED"
+      },
+      {
+        "id": "SIM028-LEGACY-C1-CHECK-ERROR-RETRY-DUAL-PRIMARY0",
+        "category": "D",
+        "legacy": "BLOCKED",
+        "target": "BLOCKED"
+      },
+      {
+        "id": "SIM027-LEGACY-DATA-INDEPENDENT-DUAL-PRIMARY0",
+        "category": "D",
+        "legacy": "BLOCKED",
+        "target": "BLOCKED"
+      },
+      {
+        "id": "SIM025-LEGACY-DEFAULT-VOICE-DUAL",
+        "category": "D",
+        "legacy": "BLOCKED",
+        "target": "BLOCKED"
+      },
+      {
+        "id": "SIM026-LEGACY-DEFAULT-SMS-DUAL",
+        "category": "D",
+        "legacy": "BLOCKED",
+        "target": "BLOCKED"
+      },
+      {
+        "id": "SIM023-LEGACY-ACCOUNT-METADATA-DUAL",
+        "category": "D",
+        "legacy": "BLOCKED",
+        "target": "BLOCKED"
+      },
+      {
+        "id": "SIM024-LEGACY-IMS-PREFERENCE-BOUND",
+        "category": "D",
+        "legacy": "BLOCKED",
+        "target": "BLOCKED"
+      },
+      {
+        "id": "SIM023-LEGACY-SHOW-NUMBER-AFTER-CARD-FAILURE",
+        "category": "D",
+        "legacy": "BLOCKED",
+        "target": "BLOCKED"
+      },
+      {
+        "id": "TARGET-C0-PLAN-NO-DEVICE",
+        "category": "D",
+        "legacy": "NOT_APPLICABLE",
+        "target": "NOT_APPLICABLE"
+      }
+    ],
+    "unresolved_semantic_deduplication": true
+  }
+}

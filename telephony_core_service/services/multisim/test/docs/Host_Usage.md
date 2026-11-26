@@ -14,6 +14,12 @@
 
 TestMate 在 Run 和 Debug 前执行该程序的任务。任务退出非零时操作中止，构建日志位于任务输出所指向的报告目录。每例使用单独进程及 `%p` profile。Legacy 的真实 Primary 和 Bootstrap 日常使用双槽、single-active 模型。需要双激活 C0 时选择 **SIM Legacy C0 (dual active)** 启动配置。调试启动默认使用本机 DWARF，关闭 LLDB 外部符号查询以避开网络等待。Target 常规 Debug 使用 DWARF，遇到优化后不可见的变量或内联函数时选择 **SIM Target (step-through)**，使用独立的 `.host-out/debug/build` 目录。
 
+Legacy 全业务需要普通 Verify 构建。该配置的 ELF 保留 DWARF，可用 **SIM Legacy C0 (dual active)**
+或 `test.py debug --backend legacy` 进入生产源码。Legacy 全闭包在无 LTO 的 Developer 配置
+中会引用未由 Host 提供的产品符号，实际链接结果见
+[基础阶段证据](evidence/af2_m9_foundation_20261126/legacy-developer-link-failure.log.gz)。
+
+
 首次枚举及 ELF 变更后，TestMate 用 GoogleTest XML 获取源码位置。已验证的 ELF 未更新时，TestMate 按 ELF 修改时间与发现配置复用 XML。新增、删除或改名 TEST 后先运行对应的 **Build Legacy Host** 或 **Build Target Host** 任务。Testing 面板仍显示旧条目时点刷新。新建普通 `cases/*.cpp` 自动更新源码清单；新增显式链接切片的 CPP 须加入对应 GN 源表。XML 检查记录在 Prepare 报告的 `editor/locations.json`。
 
 ## 随当前 CPP 文件筛选用例

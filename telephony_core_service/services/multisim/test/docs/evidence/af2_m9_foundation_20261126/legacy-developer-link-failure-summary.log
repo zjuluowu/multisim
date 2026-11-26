@@ -1,0 +1,5 @@
+host-build: FAIL
+Ninja exited with status 1; see /tmp/af2-m9-foundation/legacy-worktree-run/sim-td_oto_u/host-build.log
+Report: /tmp/af2-m9-foundation/legacy-worktree-run/sim-td_oto_u/result.json
+Command exited with non-zero status 1
+legacy_clean_worktree_seconds=268.54

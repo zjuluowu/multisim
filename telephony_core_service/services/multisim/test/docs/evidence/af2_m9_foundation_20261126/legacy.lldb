@@ -1,0 +1,7 @@
+settings set target.disable-aslr false
+breakpoint set --name 'OHOS::Telephony::MultiSimController::SetDefaultVoiceSlotId'
+run --gtest_filter=RealSimPrimary.DefaultVoiceProviderAndNotificationContract
+thread step-over
+thread backtrace -c 5
+breakpoint disable 1
+continue
