@@ -6,25 +6,12 @@
 #define OHOS_TELEPHONY_MULTISIM_MSISDN_RUNTIME_H
 
 #include "account/number/show_number_runtime_port.h"
-#include "card/runtime/card_observation_runtime.h"
-#include "device/resource/resource_barrier.h"
+#include "card/runtime/card_command_transport.h"
 
 namespace OHOS::Telephony::MultiSim {
-struct MsisdnTransportTicket {
-    StepRef step;
-    SessionRef session;
-    uint64_t fence;
-    bool operator==(const MsisdnTransportTicket &other) const
-    { return step == other.step && session == other.session && fence == other.fence; }
-};
-struct MsisdnTransportEvidence {
-    MsisdnTransportTicket ticket;
-    EffectKnowledge effect;
-    bool commandEnded;
-    bool resourceReusable;
-    bool legacyWaitSucceeded;
-    bool currentStateVerified {false};
-};
+using MsisdnTransportTicket = CardCommandTicket;
+using MsisdnTransportEvidence = CardCommandEvidence;
+
 class MsisdnPlatformPort {
 public:
     virtual ~MsisdnPlatformPort() = default;
@@ -42,31 +29,15 @@ public:
 // The number slice of CardRuntime. Uses H's session and physical-resource authorities.
 class MsisdnRuntime final : public ShowNumberRuntimePort {
 public:
-    MsisdnRuntime(CardObservationRuntime &card, ResourceBarrier &resources, MsisdnPlatformPort &platform);
+    MsisdnRuntime(CardObservationRuntime &card, CardCommandTransport &transport, MsisdnPlatformPort &platform);
     void BindNumberSink(MsisdnResultSink &sink) { sink_ = &sink; }
     std::optional<CardNumberView> ReadMsisdnCache(const SessionRef &session) const override;
     void WriteMsisdn(const MsisdnWriteRequest &request) override;
-    bool AcceptEvidence(const MsisdnTransportEvidence &evidence);
-    bool HasPending() const;
 private:
-    struct Pending {
-        MsisdnTransportTicket ticket;
-        ResourceLease lease;
-        CardNumberView written;
-        bool submitting {true};
-        bool delivering {false};
-        bool delivered {false};
-        bool quarantined {false};
-        EffectKnowledge effect {EffectKnowledge::Unknown};
-        std::vector<MsisdnTransportEvidence> early;
-    };
-    void DrainEvidence(RequestId request);
     CardObservationRuntime &card_;
-    ResourceBarrier &resources_;
+    CardCommandTransport &transport_;
     MsisdnPlatformPort &platform_;
     MsisdnResultSink *sink_ {nullptr};
-    mutable std::mutex mutex_;
-    std::map<RequestId, Pending> pending_;
 };
 } // namespace OHOS::Telephony::MultiSim
 #endif

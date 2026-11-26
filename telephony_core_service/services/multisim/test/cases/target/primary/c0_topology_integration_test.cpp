@@ -2968,6 +2968,15 @@ TEST(AF2ShowNumber, LiveCardNumberWriteUpdatesAccountAndCompletes)
     EXPECT_GT(command.ticket.fence, 0u);
     EXPECT_TRUE(f.db->Writes().empty());
     const auto reply = f.device->Applied(0);
+    auto wrongFence = reply;
+    ++wrongFence.ticket.fence;
+    EXPECT_FALSE(module->AcceptMsisdnEvidence(wrongFence));
+    auto wrongApplication = reply;
+    ++wrongApplication.ticket.session.bindingGeneration;
+    EXPECT_FALSE(module->AcceptMsisdnEvidence(wrongApplication));
+    EXPECT_TRUE(f.host->writes.empty());
+    EXPECT_TRUE(f.db->Writes().empty());
+    EXPECT_EQ(module->ReadPrimaryResourceState(), ResourceState::InFlight);
     EXPECT_TRUE(module->AcceptMsisdnEvidence(reply));
     EXPECT_FALSE(module->AcceptMsisdnEvidence(reply));
     ASSERT_EQ(f.db->Writes().size(), 1u);

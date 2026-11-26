@@ -1,0 +1,14 @@
+{
+  "baseline": "bfc1c0edf6ff2abdede79c95797469a538d4ac68",
+  "files": {
+    "BUILD.gn": "a57bff69fafbf0ac91210f6aea344afbd203fba054635ee6fb6c71004f8ca554",
+    "card/runtime/msisdn_runtime.cpp": "65544233893d6acbb3d20b736b5b32034644548e95a2d7093170a45209da4675",
+    "card/runtime/msisdn_runtime.h": "02d36299a4028640544062b033d6af3d55d6441b54b0124bd2a6c9676ec25530",
+    "infrastructure/assembly/sim_module.h": "b0ca62a11413f87e5cdcad43385790922c45ed612448580b163206475844d480",
+    "infrastructure/assembly/sim_module_factory.cpp": "104a3d9cacc60d725c14dd8f5cef889bfca72abe66bfc29d9ddc8e3c70d43741"
+  },
+  "added": {
+    "card/runtime/card_command_transport.cpp": "cb45b6c64ed31d2abff4937b8a27d9986fc72059cac2e3b8ca4327a7fb9f8f0c",
+    "card/runtime/card_command_transport.h": "4d9f09b10b22d8234a321318fba4ca79d29e77d1f26048b549967fc1132065b5"
+  }
+}

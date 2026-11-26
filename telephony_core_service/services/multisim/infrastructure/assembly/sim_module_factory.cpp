@@ -53,6 +53,7 @@ SimModule::SimModule(CoreSimModulePorts ports, std::shared_ptr<const SlotCatalog
       radio_(resources_, *ports_.radio, {primaryResource_}, ResourceRadioRuntime::Mode::ObserveOnly),
       sessions_(epoch_),
       topology_(*catalog_, *ports_.accountStore, epoch_), card_(*catalog_, sessions_, topology_, epoch_),
+      cardTransport_(card_, resources_),
       completion_(*ports_.completion, ports_.primaryHost.get(), ports_.numberHost.get()),
       assignment_(std::make_shared<AssignmentService>(*catalog_, *ports_.assignmentStore, radio_,
           *ports_.output, topology_, completion_, epoch_, AssignmentService::PrimaryScope::C0Only)),
@@ -66,7 +67,7 @@ SimModule::SimModule(CoreSimModulePorts ports, std::shared_ptr<const SlotCatalog
     radio_.BindResultSink(assignment_);
     radio_.BindOwnerDispatch(ports_.ownerDispatch);
     if (ports_.numberHost && ports_.msisdn && ports_.primaryHost) {
-        msisdn_.emplace(card_, resources_, *ports_.msisdn);
+        msisdn_.emplace(card_, cardTransport_, *ports_.msisdn);
         numbers_.emplace(topology_, *msisdn_, completion_, epoch_);
         numberQuery_.emplace(topology_, *msisdn_, *ports_.numberHost);
         msisdn_->BindNumberSink(*numbers_);
@@ -191,7 +192,7 @@ bool SimModule::AcceptMsisdnEvidence(const MsisdnTransportEvidence &evidence)
 {
     if (!msisdn_ || !AdmitModuleCall(true)) { return false; }
     const ModuleCall call {shared_from_this()};
-    return msisdn_->AcceptEvidence(evidence);
+    return cardTransport_.AcceptEvidence(evidence);
 }
 
 int32_t SimModule::SaveImsSwitch(int32_t slot, int32_t preference)
@@ -393,7 +394,7 @@ SimModule::DrainResult SimModule::StopAcceptingAndDrain()
         return DrainResult::DeviceEffectsUnresolved;
     }
     if (primaryCallActive_ || moduleCalls_) { return DrainResult::CallbacksStillInFlight; }
-    if (msisdn_ && msisdn_->HasPending()) { return DrainResult::DeviceEffectsUnresolved; }
+    if (cardTransport_.HasPending()) { return DrainResult::DeviceEffectsUnresolved; }
     if (HasPendingBusinessEffects()) {
         return DrainResult::BusinessEffectsUnresolved;
     }
@@ -425,7 +426,7 @@ bool SimModule::HasPendingBusinessEffects() const
 {
     return primaryEffectUnresolved_ || assignment_->ReadDataParameterReceipt() ||
         assignment_->ReadRoleProviderReceipt(DefaultRole::Voice) || assignment_->ReadRoleProviderReceipt(DefaultRole::Sms) ||
-        (msisdn_ && msisdn_->HasPending()) || topology_.PendingDiscoveryCount() || topology_.PendingMetadataCount() || assignment_->PendingDiscoveryRoles();
+        cardTransport_.HasPending() || topology_.PendingDiscoveryCount() || topology_.PendingMetadataCount() || assignment_->PendingDiscoveryRoles();
 }
 
 std::optional<SessionRef> SimModule::ObserveCardApplication(const CardApplicationTarget &application, uint64_t generation)

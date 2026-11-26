@@ -249,6 +249,11 @@ Target 全量 182/182，上一协议路由候选冻结 Both 24/24 与 Oracle 零
 共用卡传输、PIN/EF、Refresh 与全图关闭仍需实施，状态保持 `AF2_M9_IN_PROGRESS`。
 [运行时负控与阶段统计](../services/multisim/test/docs/evidence/af2_m9_d02_admission_20261126/README.md)
 
+**D02 共用卡命令传输检查点。** 正式模块的 MSISDN 已借同一传输机制核对应用资格、原票、
+交接分类、设备结束及资源复用，保留号码业务自己的缓存接纳和 Completion。Target 182/182，
+独立生产归档源码归属和 GN/迁移通过。后续接 PIN、EF 原始设备响应、LoadSession 及全图关闭。
+[D02 实现及实测证据](../services/multisim/test/docs/evidence/af2_m9_d02_transport_20261126/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）

@@ -45,7 +45,7 @@ def check_directory_migration(source, token_sequence, *, repo=None):
     outputs = [r['target'] for r in rows]
     from documentation_migration import documentation_moves, module_destinations
     moved_docs = documentation_moves(source)
-    from source_evolution import load_manifest, matches_prior_layout_delta, migration_inputs
+    from source_evolution import matches_prior_layout_delta, migration_inputs, source_additions
     inputs_before_m1 = migration_inputs(source, repo)
     from check_structure import module_files
     actual = {p.relative_to(source).as_posix() for p in module_files(source)} - {
@@ -57,7 +57,7 @@ def check_directory_migration(source, token_sequence, *, repo=None):
         'device/resource/resource_radio_runtime.h',
         'infrastructure/request/runtime_operation_store.cpp',
         'role_assignment/assignment_store_adapter.cpp',
-        'infrastructure/compatibility/api/legacy_primary_entry.cpp'} - set(load_manifest('af2_m6')['added']) - set(load_manifest('af2_m7b')['added'])
+        'infrastructure/compatibility/api/legacy_primary_entry.cpp'} - source_additions()
     if len(set(outputs)) != len(rows) or module_destinations(outputs, moved_docs) != actual:
         raise ValueError('Directory map destinations differ from actual module files')
     before = committed_inputs(repo, manifest['baseline'], prefix, names)

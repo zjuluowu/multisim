@@ -132,6 +132,7 @@ private:
     SessionRegistry sessions_;
     TopologyService topology_;
     CardObservationRuntime card_;
+    CardCommandTransport cardTransport_;
     LegacyCompletion completion_;
     std::optional<MsisdnRuntime> msisdn_;
     std::optional<SetShowNumberUseCase> numbers_;

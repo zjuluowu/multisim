@@ -10,6 +10,7 @@ sim_target_core_sources = [
   "$sim_target_root/account/number/show_number_query.cpp",
   "$sim_target_root/account/topology_metadata.cpp",
   "$sim_target_root/account/topology_service.cpp",
+  "$sim_target_root/card/runtime/card_command_transport.cpp",
   "$sim_target_root/card/runtime/card_observation_runtime.cpp",
   "$sim_target_root/card/runtime/msisdn_runtime.cpp",
   "$sim_target_root/card/state/session_registry.cpp",

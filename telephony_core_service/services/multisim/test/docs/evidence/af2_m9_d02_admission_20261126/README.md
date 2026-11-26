@@ -14,7 +14,7 @@ MSISDN 复用现有屏障、原票和结果路径。锁外 Submit 前由原登�
 源码恢复 SHA-256 为 `24a4027a77352da4aadd60b7c97edb4e107e391c17e09d1a6d3a7d2d16c0e326`。
 [负控](revoked-send-mutation.log.gz) · [恢复](revoked-send-restored.log.gz)。
 
-[Target 全量 182/182](target-full.json.gz)。上一提交协议路由候选的 静态、GN/Ninja [通过](architecture.log.gz)。
+[Target 全量 182/182](target-full.json.gz)。静态护栏及 [GN/Ninja](architecture.log.gz) 通过。上一提交协议路由候选的
 [Both 24/24](d01-both.json.gz) 与 [Oracle 差异 0](d01-differential.json) 一并保存。
 
 当前生产候选 101 个 C/C++ 文件、11,265 物理行、8,619 有效行。Legacy 149、Target 182 个实际登记，

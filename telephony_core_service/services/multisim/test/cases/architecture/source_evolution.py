@@ -8,6 +8,11 @@ def load_manifest(name):
     return json.loads(Path(__file__).with_name(name + '_source_evolution.json').read_text())
 
 
+def source_additions():
+    return {name for stage in ('af2_m6', 'af2_m7b', 'af2_m9_d02_transport')
+            for name in load_manifest(stage)['added']}
+
+
 def migration_inputs(source, repo):
     from check_directory_migration import committed_inputs
 
@@ -17,6 +22,7 @@ def migration_inputs(source, repo):
     prefix = 'telephony_core_service/services/multisim'
     before_m9 = {}
     for manifest, stage in (
+        ('af2_m9_d02_transport', 'AF2 M9 D02 transport'),
         ('af2_m9_d02_admission', 'AF2 M9 D02 admission'),
         ('af2_m9_d01_routing', 'AF2 M9 D01 routing'),
         ('af2_m9_d01', 'AF2 M9 D01'),
