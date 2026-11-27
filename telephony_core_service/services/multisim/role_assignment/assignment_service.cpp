@@ -24,6 +24,14 @@
 #include "role_assignment/legacy_entry.h"
 
 namespace OHOS::Telephony::MultiSim {
+namespace {
+bool C0EffectSettled(const C0ParameterOutcome &outcome)
+{
+    return outcome.call.callFinished && (outcome.effect == EffectKnowledge::ConfirmedApplied ||
+        outcome.effect == EffectKnowledge::ConfirmedNotApplied);
+}
+} // namespace
+
 RequestId StartLegacyPrimarySwitch(AssignmentService &entry, const SwitchPrimaryCommand &command)
 { return entry.StartPrimarySwitch(command); }
 
@@ -258,19 +266,48 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         return request;
     }
     if (c0Only) {
-        RunTrackedC0(request, command, *target, *facts, guard);
+        RunTrackedPrimaryParameters({request, 1, 0}, TransitionPhase::Admitted, command, *target, *facts, guard);
         return request;
     }
     if (plan->mode == PrimarySwitchMode::WithoutModemRestart) {
-        const auto preference = store_.WriteUserPrimaryPreference(command.userSet);
-        if (!preference.callFinished) {
-            assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
-                TransitionPhase::Admitted, TransitionPhase::Reconciling);
-            operations_.MarkTerminal(request, TerminalState::NeedsReconciliation);
-            return request;
+        StepRef step {request, 1, 0};
+        bool preferenceSettled = false;
+        if (store_.SupportsTrackedC0()) {
+            c0Receipt_.emplace(C0Receipt {request, C0Stage::Preference, facts->binding});
+            const bool returned = WriteTrackedParameter(C0ParameterKey::Preference, step, *facts, command.userSet, guard);
+            const auto &preference = c0Receipt_->writes[static_cast<size_t>(C0ParameterKey::Preference)];
+            if (!preference) {
+                c0Receipt_.reset();
+                assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
+                    TransitionPhase::Admitted, TransitionPhase::Failed);
+                CompleteOnce(request, command.completion, -1, TerminalState::Failed, &guard);
+                assignment_.ReleaseRoleWriteSet(request.value, kPrimaryRoleWriteSet);
+                operations_.RetireAfterEvidenceRetention(request, true);
+                return request;
+            }
+            if (!returned || !C0EffectSettled(preference->outcome)) {
+                assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
+                    TransitionPhase::Admitted, TransitionPhase::Reconciling);
+                operations_.MarkTerminal(request, TerminalState::NeedsReconciliation);
+                c0Receipt_->outstanding = C0Stage::Completion;
+                CompleteOnce(request, command.completion, 83886087, TerminalState::NeedsReconciliation, &guard);
+                c0Receipt_->outstanding = C0Stage::Preference;
+                return request;
+            }
+            preferenceSettled = true;
+            c0Receipt_.reset();
+        } else {
+            const auto preference = store_.WriteUserPrimaryPreference(command.userSet);
+            if (!preference.callFinished) {
+                assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
+                    TransitionPhase::Admitted, TransitionPhase::Reconciling);
+                operations_.MarkTerminal(request, TerminalState::NeedsReconciliation);
+                return request;
+            }
+            preferenceSettled = preference.parameterResult == 0;
         }
-        const StepRef sentStep {request, 2, 0};
-        if (!operations_.AdvanceStep({request, 1, 0}, 2, 0, std::nullopt) ||
+        const StepRef sentStep {request, step.step + 1, step.attempt};
+        if (!operations_.AdvanceStep(step, sentStep.step, sentStep.attempt, std::nullopt) ||
             !operations_.RecordRadioStep(sentStep) ||
             !assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
                 TransitionPhase::Admitted, TransitionPhase::DevicePending)) {
@@ -282,9 +319,15 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
             facts->iccid, command.userSet, command.completion, plan->mode, 0,
             nextProtocolSession_++, targetMember->nativeMember, {*targetMember}, {}, {},
             false, 0, false, false, false, 0, std::nullopt, std::nullopt});
-        output_.PublishPrimaryPhase(false, command.userSet);
         const RadioSwitchRequest device {sentStep, targetMember->route, *target->radioDomain, plan->mode,
             facts->binding, pendingPrimary_.at(request.value).protocolSession, 0, 1, targetMember};
+        guard.unlock();
+        try {
+            output_.PublishPrimaryPhase(false, command.userSet);
+        } catch (const std::exception &) {
+            // The original Radio admission and result remain independently owned.
+        }
+        guard.lock();
         const auto handoff = SubmitRadioOutsideCommit(device, *facts, guard);
         if (handoff != RadioSubmitDisposition::HandoffAccepted) {
             const auto pending = pendingPrimary_.find(request.value);
@@ -295,7 +338,7 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
             const bool waiting = operation->terminal == TerminalState::Open;
             const bool timedOut = operation->terminal == TerminalState::NeedsReconciliation &&
                 operation->wait == WaitState::TimedOut;
-            if (handoff == RadioSubmitDisposition::ConfirmedNotSent && preference.parameterResult == 0 &&
+            if (handoff == RadioSubmitDisposition::ConfirmedNotSent && preferenceSettled &&
                 (waiting || timedOut)) {
                 if (waiting) {
                     assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
@@ -389,12 +432,6 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
 }
 
 namespace {
-bool C0EffectSettled(const C0ParameterOutcome &outcome)
-{
-    return outcome.call.callFinished && (outcome.effect == EffectKnowledge::ConfirmedApplied ||
-        outcome.effect == EffectKnowledge::ConfirmedNotApplied);
-}
-
 using C0Stage = AssignmentService::C0Stage;
 C0Stage ParameterStage(C0ParameterKey key)
 {
@@ -438,13 +475,14 @@ bool AssignmentService::WriteTrackedParameter(C0ParameterKey key, StepRef &step,
     return outcome.call.callFinished;
 }
 
-void AssignmentService::RunTrackedC0(RequestId request, const SwitchPrimaryCommand &command,
+void AssignmentService::RunTrackedPrimaryParameters(StepRef step, TransitionPhase phase, const SwitchPrimaryCommand &command,
     const SlotDescriptor &target, const PrimaryTargetFacts &facts, std::unique_lock<std::recursive_mutex> &guard)
 {
-    c0Receipt_.emplace(C0Receipt {request, C0Stage::Preference, facts.binding});
+    const auto request = step.request;
+    const bool completedRadio = phase == TransitionPhase::DevicePending;
+    c0Receipt_.emplace(C0Receipt {request, completedRadio ? C0Stage::PrimaryParameters : C0Stage::Preference,
+        facts.binding});
     auto &receipt = *c0Receipt_;
-    auto phase = TransitionPhase::Admitted;
-    StepRef step {request, 1, 0};
     bool callDidNotReturn = false;
     const auto write = [&](C0ParameterKey key) {
         const bool returned = WriteTrackedParameter(key, step, facts, command.userSet, guard);
@@ -470,7 +508,7 @@ void AssignmentService::RunTrackedC0(RequestId request, const SwitchPrimaryComma
 
     bool announcePrimary = false;
     // C0 preserves the original order and the original treatment of completed parameter return codes.
-    const bool success = write(C0ParameterKey::Preference) && write(C0ParameterKey::PrimarySlot) &&
+    const bool success = (completedRadio || write(C0ParameterKey::Preference)) && write(C0ParameterKey::PrimarySlot) &&
         write(C0ParameterKey::PrimaryIccid) && publish(C0Stage::MainNotification, [&] {
             assignment_.AcceptPrimaryParameterProjection(target.slot);
             announcePrimary = assignment_.ClaimPrimaryAnnouncement(target.slot, facts.binding.subscription);
@@ -490,10 +528,22 @@ void AssignmentService::RunTrackedC0(RequestId request, const SwitchPrimaryComma
     const auto terminal = unsettled ? TerminalState::NeedsReconciliation :
         (success ? TerminalState::Succeeded : TerminalState::Failed);
 
-    const auto *sync = std::get_if<SynchronousCompletionRoute>(&command.completion.route);
-    if (!callDidNotReturn || (sync && sync->waiter.origin == SynchronousWaitRef::Origin::ModuleRole)) {
+    if (completedRadio) {
+        operations_.MarkTerminal(request, terminal);
         receipt.outstanding = C0Stage::Completion;
-        CompleteOnce(request, command.completion, success ? 0 : -1, terminal, &guard);
+        guard.unlock();
+        try {
+            output_.PublishPrimaryPhase(true, command.userSet);
+        } catch (const std::exception &) {
+            // A failure to notify must not prevent delivery of the original result.
+        }
+        guard.lock();
+    }
+    const auto *sync = std::get_if<SynchronousCompletionRoute>(&command.completion.route);
+    if (completedRadio || !callDidNotReturn || (sync && sync->waiter.origin == SynchronousWaitRef::Origin::ModuleRole)) {
+        receipt.outstanding = C0Stage::Completion;
+        const int32_t failure = completedRadio ? 83886087 : -1;
+        CompleteOnce(request, command.completion, success ? 0 : failure, terminal, &guard);
     } else {
         operations_.MarkTerminal(request, terminal);
     }
@@ -502,7 +552,7 @@ void AssignmentService::RunTrackedC0(RequestId request, const SwitchPrimaryComma
         return;
     }
     assignment_.ReleaseRoleWriteSet(request.value, kPrimaryRoleWriteSet);
-    operations_.RetireAfterEvidenceRetention(request);
+    operations_.RetireAfterEvidenceRetention(request, completedRadio);
     c0Receipt_.reset();
 }
 
@@ -933,6 +983,14 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
         currentFacts->binding.bindingRevision == pending->second.facts.binding.bindingRevision &&
         currentFacts->iccid == pending->second.facts.iccid;
     if (result.effect == EffectKnowledge::ConfirmedApplied && result.legacyResult == 0 && bindingCurrent) {
+        if (pending->second.mode == PrimarySwitchMode::WithoutModemRestart && store_.SupportsTrackedC0()) {
+            const SwitchPrimaryCommand command {{pending->second.target.slot}, pending->second.userSet,
+                pending->second.completion, std::nullopt, pending->second.facts.binding};
+            RunTrackedPrimaryParameters(result.step, TransitionPhase::DevicePending, command, pending->second.target,
+                pending->second.facts, guard);
+            pendingPrimary_.erase(pending);
+            return;
+        }
         const bool prewritten = pending->second.mode == PrimarySwitchMode::ThreePhaseProtocol;
         const auto primary = prewritten ? AssignmentParameterResult {0, true} :
             store_.WritePrimaryParameters(pending->second.target.slot, pending->second.iccid);
@@ -984,10 +1042,28 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
     assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(), result.step.request.value,
         TransitionPhase::DevicePending, needsReconciliation ? TransitionPhase::NeedsReconciliation :
         TransitionPhase::Failed);
-    output_.PublishPrimaryPhase(true, pending->second.userSet);
-    const int32_t legacyResult = result.effect == EffectKnowledge::Unknown ? 83886087 : result.legacyResult;
+    const bool dedicated = pending->second.mode == PrimarySwitchMode::WithoutModemRestart;
+    const bool userSet = pending->second.userSet;
+    const auto terminal = needsReconciliation ? TerminalState::NeedsReconciliation : TerminalState::Failed;
+    if (dedicated) {
+        if (needsReconciliation && result.effect != EffectKnowledge::Unknown && !pending->second.lateDeviceEffect) {
+            pending->second.lateDeviceEffect = result.effect;
+        }
+        operations_.MarkTerminal(result.step.request, terminal);
+        guard.unlock();
+        try {
+            output_.PublishPrimaryPhase(true, userSet);
+        } catch (const std::exception &) {
+            // Reporting the original result still owns its Completion.
+        }
+        guard.lock();
+    } else {
+        output_.PublishPrimaryPhase(true, userSet);
+    }
+    const int32_t legacyResult = result.effect == EffectKnowledge::Unknown ||
+        (dedicated && result.legacyResult == 0) ? 83886087 : result.legacyResult;
     CompleteOnce(result.step.request, pending->second.completion, legacyResult,
-        needsReconciliation ? TerminalState::NeedsReconciliation : TerminalState::Failed);
+        terminal, dedicated ? &guard : nullptr);
     if (!needsReconciliation) {
         assignment_.ReleaseRoleWriteSet(result.step.request.value, kPrimaryRoleWriteSet);
         pendingPrimary_.erase(pending);

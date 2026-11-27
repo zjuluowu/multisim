@@ -297,6 +297,12 @@ Target 215/215，Primary 与 Radio 专项 ASan/TSan 各 76/76。
 正式 B/C1、逐键 Store 和整轮处置仍待。状态保持 `AF2_M9_IN_PROGRESS`。
 [三类交接、超时反例与实际复验](../services/multisim/test/docs/evidence/af2_m9_d01_disposition_20261127/README.md)
 
+**D01 B 逐键参数检查点。** B 复用 A 的原 Store 收据登记偏好及设备成功后的参数写。
+原设备租约已归还时仍保留 ICCID 未决责任。独立审查发现换卡后原设备成功曾误报业务成功，
+已经用平台 End 屏障复现和修复。Target 218/218，Primary 与 Radio 专项 ASan/TSan 各 86/86。
+正式接线仍需用动态 A 收据覆盖异步原调用、排空及重建。状态保持 `AF2_M9_IN_PROGRESS`。
+[逐键 Store、换绑回归和实际负控](../services/multisim/test/docs/evidence/af2_m9_d01_b_store_20261127/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）

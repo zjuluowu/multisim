@@ -1,0 +1,20 @@
+Note: Google Test filter = TargetPrimaryB.DeviceSuccessDoesNotRetireUncertainPrimaryParameter
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.DeviceSuccessDoesNotRetireUncertainPrimaryParameter
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1494: Failure
+Value of: fixture.parameters.uncertainWrite
+  Actual: false
+Expected: true
+
+[  FAILED  ] TargetPrimaryB.DeviceSuccessDoesNotRetireUncertainPrimaryParameter (2 ms)
+[----------] 1 test from TargetPrimaryB (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TargetPrimaryB.DeviceSuccessDoesNotRetireUncertainPrimaryParameter
+
+ 1 FAILED TEST

@@ -1,0 +1,11 @@
+Note: Google Test filter = TargetPrimaryB.UncertainPreferenceRetainsOriginalStoreReceiptWithoutRadioCommand
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.UncertainPreferenceRetainsOriginalStoreReceiptWithoutRadioCommand
+[       OK ] TargetPrimaryB.UncertainPreferenceRetainsOriginalStoreReceiptWithoutRadioCommand (11 ms)
+[----------] 1 test from TargetPrimaryB (11 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (12 ms total)
+[  PASSED  ] 1 test.

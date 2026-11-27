@@ -1,0 +1,7 @@
+{
+  "baseline": "64a9964aa898bf1d7e9fb01acc1362ee629fdf36",
+  "files": {
+    "role_assignment/assignment_service.cpp": "1895b44264385abbdb9d0db62a1c4cc6f8c917a82ab791d97d7125286c0032e0",
+    "role_assignment/assignment_service.h": "2382e018ffef1aea4370abd4f35b0f3c2eba212091f8d5e3e04270e47de8de8e"
+  }
+}

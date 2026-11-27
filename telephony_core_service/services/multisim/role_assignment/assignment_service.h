@@ -105,8 +105,8 @@ private:
         TerminalState terminal, std::unique_lock<std::recursive_mutex> *commit = nullptr);
     bool WriteTrackedParameter(C0ParameterKey key, StepRef &step, const PrimaryTargetFacts &facts, bool userSet,
         std::unique_lock<std::recursive_mutex> &guard);
-    void RunTrackedC0(RequestId request, const SwitchPrimaryCommand &command, const SlotDescriptor &target,
-        const PrimaryTargetFacts &facts, std::unique_lock<std::recursive_mutex> &guard);
+    void RunTrackedPrimaryParameters(StepRef step, TransitionPhase phase, const SwitchPrimaryCommand &command,
+        const SlotDescriptor &target, const PrimaryTargetFacts &facts, std::unique_lock<std::recursive_mutex> &guard);
     bool ScheduleC1Retry(RequestId request, uint32_t attempt);
     struct RoleProviderReceipt {
         RoleProviderEvidence evidence;

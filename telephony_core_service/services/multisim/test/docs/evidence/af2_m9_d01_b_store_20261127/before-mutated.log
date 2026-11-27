@@ -1,0 +1,20 @@
+Note: Google Test filter = TargetPrimaryB.UncertainPreferenceRetainsOriginalStoreReceiptWithoutRadioCommand
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.UncertainPreferenceRetainsOriginalStoreReceiptWithoutRadioCommand
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1449: Failure
+Value of: fixture.parameters.uncertainWrite
+  Actual: false
+Expected: true
+
+[  FAILED  ] TargetPrimaryB.UncertainPreferenceRetainsOriginalStoreReceiptWithoutRadioCommand (8 ms)
+[----------] 1 test from TargetPrimaryB (8 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (9 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TargetPrimaryB.UncertainPreferenceRetainsOriginalStoreReceiptWithoutRadioCommand
+
+ 1 FAILED TEST

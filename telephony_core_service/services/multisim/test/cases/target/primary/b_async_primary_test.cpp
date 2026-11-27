@@ -48,10 +48,27 @@ class Parameters final : public AssignmentParameterPort {
 public:
     std::map<std::string,std::string> values {{kPrimary,"0"},{kData,"0"},{kIccid,kEncoded0},{kPreference,"false"}};
     std::vector<std::pair<std::string,std::string>> writes;
+    std::optional<C0ParameterKey> uncertainKey;
+    std::optional<C0ParameterOperation> uncertainWrite;
+    std::optional<C0ParameterEvidence> parameterEvidence;
     AssignmentParameterResult Read(const std::string &key,const std::string &fallback,std::string &value) override
     { value=values.count(key)?values[key]:fallback; return {0,true}; }
     AssignmentParameterResult Write(const std::string &key,const std::string &value) override
     { writes.emplace_back(key,value); values[key]=value; return {0,true}; }
+    C0ParameterOutcome WriteC0Parameter(const C0ParameterOperation &operation, const std::string &key,
+        const std::string &value) override
+    {
+        if (operation.key == uncertainKey) {
+            uncertainWrite = operation;
+            writes.emplace_back(key, value);
+            return {{-1, false}, EffectKnowledge::Unknown};
+        }
+        return AssignmentParameterPort::WriteC0Parameter(operation, key, value);
+    }
+    std::optional<C0ParameterEvidence> ReadC0ParameterEvidence(const C0ParameterOperation &) override
+    {
+        return parameterEvidence;
+    }
 };
 const std::vector<RadioProtocolMember> kControlledProtocolMembers {
     {100, {0}, 8}, {200, {1}, 9}
@@ -1156,6 +1173,8 @@ TEST(TargetPrimaryB,StopDuringTopologyQualificationDeniesFinalPermission)
         bool WithCurrentPrimaryTarget(const PrimaryTargetFacts &facts,
             const std::function<void()> &admit) const override
         {
+            // The preference has its own Store admission. Pause only the following Radio grant.
+            if (++qualifications_ == 1) { return source_.WithCurrentPrimaryTarget(facts, admit); }
             return source_.WithCurrentPrimaryTarget(facts, [&] {
                 entered.set_value();
                 resume_.wait();
@@ -1171,6 +1190,7 @@ TEST(TargetPrimaryB,StopDuringTopologyQualificationDeniesFinalPermission)
     private:
         TopologyService &source_;
         std::future<void> resume_;
+        mutable unsigned qualifications_ {0};
     };
     ResourceFixture fixture;
     PausingTopology topology(fixture.topology);
@@ -1419,6 +1439,104 @@ TEST(TargetPrimaryB,ResourceBarrierConfirmedNotSentReturnsAvailable)
     ASSERT_EQ(f.platform.requests.size(), 1u);
     EXPECT_TRUE(f.ResultAt(0, EffectKnowledge::ConfirmedApplied, 0));
     EXPECT_EQ(f.completion.results, (std::vector<int32_t> {kLegacyLocalPointerNull, 0}));
+}
+
+TEST(TargetPrimaryB,UncertainPreferenceRetainsOriginalStoreReceiptWithoutRadioCommand)
+{
+    ResourceFixture fixture;
+    fixture.parameters.uncertainKey = C0ParameterKey::Preference;
+    const auto original = fixture.Start(false);
+    ASSERT_TRUE(fixture.parameters.uncertainWrite);
+    const auto write = *fixture.parameters.uncertainWrite;
+    EXPECT_EQ(write.original.request, original);
+    EXPECT_EQ(write.key, C0ParameterKey::Preference);
+    EXPECT_TRUE(fixture.platform.requests.empty());
+    EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
+    EXPECT_EQ(fixture.completion.results, (std::vector<int32_t> {kLegacyLocalPointerNull}));
+    EXPECT_TRUE(fixture.service->ReadC0Receipt());
+
+    const auto next = [&] {
+        fixture.service->StartPrimarySwitch({SlotTarget{{1}}, true,
+            {SynchronousCompletionRoute{SynchronousWaitRef{62}}, false}, std::nullopt, fixture.target});
+    };
+    next();
+    EXPECT_EQ(fixture.parameters.writes.size(), 1u);
+    EXPECT_TRUE(fixture.platform.requests.empty());
+
+    auto wrong = write;
+    ++wrong.original.step;
+    fixture.parameters.parameterEvidence = C0ParameterEvidence {wrong, {{0, true}, EffectKnowledge::ConfirmedApplied}};
+    EXPECT_FALSE(fixture.service->ReconcileC0Parameter(write));
+    EXPECT_TRUE(fixture.service->ReadC0Receipt());
+
+    fixture.parameters.values[kPreference] = "true";
+    fixture.parameters.parameterEvidence = C0ParameterEvidence {write, {{0, true}, EffectKnowledge::ConfirmedApplied}};
+    EXPECT_TRUE(fixture.service->ReconcileC0Parameter(write));
+    EXPECT_FALSE(fixture.service->ReadC0Receipt());
+    EXPECT_TRUE(fixture.output.roles.empty());
+    EXPECT_EQ(fixture.completion.results, (std::vector<int32_t> {kLegacyLocalPointerNull, -1}));
+
+    fixture.parameters.uncertainKey.reset();
+    next();
+    ASSERT_EQ(fixture.platform.requests.size(), 1u);
+    EXPECT_TRUE(fixture.ResultAt(0, EffectKnowledge::ConfirmedApplied, 0));
+    EXPECT_EQ(fixture.completion.results, (std::vector<int32_t> {kLegacyLocalPointerNull, -1, 0}));
+}
+
+TEST(TargetPrimaryB,DeviceSuccessDoesNotRetireUncertainPrimaryParameter)
+{
+    ResourceFixture fixture;
+    fixture.parameters.uncertainKey = C0ParameterKey::PrimaryIccid;
+    const auto request = fixture.Start(false);
+    ASSERT_EQ(fixture.platform.requests.size(), 1u);
+    EXPECT_TRUE(fixture.ResultAt(0, EffectKnowledge::ConfirmedApplied, 0));
+
+    ASSERT_TRUE(fixture.parameters.uncertainWrite);
+    const auto write = *fixture.parameters.uncertainWrite;
+    EXPECT_EQ(write.original.request, request);
+    EXPECT_GT(write.original.step, fixture.platform.requests.front().second.step.step);
+    ASSERT_TRUE(fixture.service->ReadC0Receipt());
+    EXPECT_EQ(fixture.service->ReadC0Receipt()->outstanding, AssignmentService::C0Stage::PrimaryParameters);
+    EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
+    EXPECT_FALSE(fixture.service->HasPendingDeviceEffects());
+    EXPECT_TRUE(fixture.output.roles.empty());
+    EXPECT_EQ(fixture.completion.results, (std::vector<int32_t> {kLegacyLocalPointerNull}));
+    EXPECT_EQ(fixture.parameters.values[kData], "0");
+
+    fixture.service->RequestStopAccepting();
+    fixture.topology.AcceptCardRemoval(fixture.target);
+    EXPECT_FALSE(fixture.service->ReconcileC0Parameter(write));
+    fixture.parameters.values[kIccid] = kEncoded1;
+    fixture.parameters.parameterEvidence = C0ParameterEvidence {write, {{0, true}, EffectKnowledge::ConfirmedApplied}};
+    EXPECT_TRUE(fixture.service->ReconcileC0Parameter(write));
+    EXPECT_FALSE(fixture.service->ReadC0Receipt());
+    EXPECT_FALSE(fixture.service->ReadLegacyAssignment().lastPrimary);
+    EXPECT_TRUE(fixture.output.roles.empty());
+    EXPECT_EQ(fixture.completion.results, (std::vector<int32_t> {kLegacyLocalPointerNull}));
+}
+
+TEST(TargetPrimaryB,SuccessfulDeviceEndAfterBindingRemovalCannotReportBusinessSuccess)
+{
+    ResourceFixture fixture;
+    fixture.Start(false);
+    ASSERT_EQ(fixture.platform.requests.size(), 1u);
+    const auto original = fixture.platform.requests.front().second.step;
+    fixture.platform.beforeEnd = [&] {
+        fixture.topology.AcceptCardRemoval(fixture.target);
+        const auto replacement = fixture.topology.AcceptStoredDiscovery(Discovery(1, 3, "replacement-card"),
+            Account({9}, "replacement-card", {1}), Stored({9}));
+        EXPECT_TRUE(replacement);
+    };
+
+    EXPECT_TRUE(fixture.ResultAt(0, EffectKnowledge::ConfirmedApplied, 0));
+
+    ASSERT_EQ(fixture.parameters.writes.size(), 1u);
+    EXPECT_EQ(fixture.parameters.writes.front().first, kPreference);
+    EXPECT_TRUE(fixture.output.roles.empty());
+    EXPECT_FALSE(fixture.service->ReadLegacyAssignment().lastPrimary);
+    EXPECT_EQ(fixture.completion.results, (std::vector<int32_t> {kLegacyLocalPointerNull}));
+    EXPECT_EQ(fixture.service->ReadPrimaryDeviceEvidence(original), EffectKnowledge::ConfirmedApplied);
+    EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
 }
 
 TEST(TargetPrimaryB,ResourceBarrierBEndsBeforeResultIsDelivered)
@@ -1814,7 +1932,7 @@ TEST(TargetPrimaryB,BindingChangeAndUnknownEffectsPreserveIsolation)
         Account({9},"replacement-card",{1}),Stored({9}));
     ASSERT_TRUE(replacement.has_value());
     changed.service.AcceptRadioStep(Result(changed.radio.requests[0],EffectKnowledge::ConfirmedApplied,0));
-    EXPECT_EQ(changed.completion.results,(std::vector<int32_t>{0}));
+    EXPECT_EQ(changed.completion.results,(std::vector<int32_t>{kLegacyLocalPointerNull}));
     EXPECT_EQ(changed.parameters.values.at(kPrimary),"0");
     EXPECT_EQ(changed.parameters.values.at(kData),"0");
     EXPECT_TRUE(changed.output.roles.empty());
