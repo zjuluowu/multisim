@@ -28,7 +28,7 @@ public:
     void BindOwnerDispatch(const std::shared_ptr<RadioOwnerDispatchPort> &dispatch) { dispatch_ = dispatch; }
     bool Initialize(const ResourceKey &key, const InitialRecoveryEvidence &evidence);
     PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const override;
-    bool SwitchPrimaryRadio(const RadioSwitchRequest &request) override;
+    bool SwitchPrimaryRadio(const RadioSwitchRequest &request, const RadioSendQualification &qualify) override;
     void EndLegacySenseSwitch(const StepRef &owner, const RadioDomainId &domain) override;
     bool AcceptDeviceResult(const RadioDeviceResult &deviceResult);
     bool Recover(const StepRef &original, const RecoveryEvidence &evidence);
@@ -74,6 +74,7 @@ private:
         uint64_t fence;
         RadioSwitchRequest request;
         std::optional<int32_t> transportSerial;
+        bool sendPermitted {false};
     };
     struct BufferedSubmissionEvidence {
         RadioDeviceResult first;

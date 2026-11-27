@@ -86,6 +86,11 @@ public:
     virtual void AcceptRadioStep(const RadioSwitchResult &result) = 0;
     virtual void AcceptLateRadioEvidence(const RadioSwitchResult &result) = 0;
 };
+using RadioSendPermit = std::function<bool()>;
+// A validates the original business target and grants R a short, synchronous registration domain.
+// R evaluates stillAccepting at registration under its lock. It is a caller-safe A gate read.
+using RadioPermissionRegistration = std::function<bool(const RadioSendPermit &stillAccepting)>;
+using RadioSendQualification = std::function<bool(const RadioPermissionRegistration &registerPermission)>;
 // A消费；R复用三阶段控制器或原共享RIL专用命令，不反调旧混合Controller。
 class RadioExecutionPort {
 public:
@@ -93,7 +98,7 @@ public:
     virtual PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const = 0;
     // This invocation crossed the handoff boundary with a known transport association.
     // False also covers an unknown handoff and grants no permission to retry.
-    virtual bool SwitchPrimaryRadio(const RadioSwitchRequest &request) = 0;
+    virtual bool SwitchPrimaryRadio(const RadioSwitchRequest &request, const RadioSendQualification &qualify) = 0;
     virtual void EndLegacySenseSwitch(const StepRef &owner, const RadioDomainId &domain) = 0;
 };
 // Narrow platform seam below R. The platform reports an opaque transport token and
@@ -119,9 +124,10 @@ public:
     virtual PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const = 0;
     // For a routed request the adapter must verify the original native member,
     // endpoint and route revision in the same domain as irreversible send admission.
-    // An invalidated route must return ConfirmedNotSent unless the send already won.
+    // Call permit once, synchronously, in that domain, immediately before accepting the send.
+    // A denied permit or invalidated route requires ConfirmedNotSent. The adapter cannot retain permit.
     virtual RadioSubmitResult SubmitPrimaryRadio(const RadioSwitchRequest &request,
-        uint64_t transportToken) = 0;
+        uint64_t transportToken, const RadioSendPermit &permit) = 0;
     virtual void EndLegacySenseSwitch(const StepRef &owner, const RadioDomainId &domain) = 0;
 };
 class AssignmentOutputPort {

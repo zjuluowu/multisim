@@ -92,26 +92,27 @@ LoadSession 资格逻辑仍待实际 EF 路径消费。遗漏源码负控另复�
 ### Architecture Ready 当前技术检查
 
 执行 [AD-01～AD-04](SIM_Target_Architecture_Design_v1.2.md#architecture-ready-decisions)。
-下表保留基础工程阶段的实际证据边界，当前批进度见唯一执行状态。
+下表记录当前 Host 技术检查。早期基础工程验证保留在本节末，后续变更见唯一执行状态。
 
-| 检查 | Host 完成条件 | 基础批证据 |
+| 检查 | Host 完成条件 | 当前证据 |
 |---|---|---|
-| H01 | 正式 SimModule 对象图、核心职责和唯一写权，包括 B/C1、真实成员及锁外交接 | FAIL，正式 B/C1 尚未装配 |
-| H02 | 卡应用会话、公共请求与资源、Refresh、关闭收据和跨实例重建 | PARTIAL，已有组件机制及预身份会话 |
-| H03 | 九类样板通过正式生产入口执行 | PARTIAL，缺正式 B/C1、UnlockPin 和 ICCID EF |
-| H04 | 独立 Legacy/Target Host 生产库，源码归属、逻辑 GN 与真实链接核对 | PASS，基础候选归档和 ELF 已核对 |
-| H05 | 适用的业务测试共用，兼容差异契约独立，业务与机制用例可追溯 | PARTIAL，八个共用源码路径与 12 个冻结 Oracle 场景已验证 |
+| H01 | 正式 SimModule 对象图、核心职责和唯一写权，包括 B/C1、真实成员及锁外交接 | PARTIAL，组件有原生成员、锁外交接与 A/T/R 许可，正式 B/C1 未装配 |
+| H02 | 卡应用会话、公共请求与资源、Refresh、关闭收据和跨实例重建 | PARTIAL，正式 PIN、MSISDN、ICCID 共用传输。已有卡侧局部 Refresh、Stop 和重建，仍缺 Radio/Store 全图及同卡独立 EF |
+| H03 | 九类样板通过正式生产入口执行 | PARTIAL，正式 UnlockPin 和透明 ICCID EF 通过 Host 样板，正式 B/C1 待交付 |
+| H04 | 独立 Legacy/Target Host 生产库，源码归属、逻辑 GN 与真实链接核对 | PASS，已有独立归档和 ELF 证据，完整候选仍需复验 |
+| H05 | 适用的业务测试共用，兼容差异契约独立，业务与机制用例可追溯 | PARTIAL，新增共用 UnlockPin 断言及 CD-04 契约。正式 B/C1、EF 与扩展仍有未配对场景 |
 | H06 | 双端 CLI、精确单例、生产与测试源码发现、增量、LLDB 和 VS Code 指导 | PARTIAL，基础候选已实测 CLI、自动枚举及两端 LLDB，GUI_NOT_RUN |
-| H07 | GN、静态护栏及全图场景的确定性反例和运行时负控 | PARTIAL，静态与组件负控已验证 |
+| H07 | GN、静态护栏及全图场景的确定性反例和运行时负控 | PARTIAL，已验证卡会话、ICCID Refresh、Owner 重投、Radio 发令与超时锁序的负控 |
 | H08 | 剩余功能、源码及依赖、验收、代码与测试预算实质对账 | PARTIAL，已有候选台账及实测数据 |
 | H09 | 记载独立产品门禁及禁止提前切换条件 | PASS。原生 Provider、设备、Feature 矩阵及生产切换独立验证 |
-| H10 | 两项独立 Agent 扩展及同候选组合回归 | NOT_RUN，依赖稳定正式 PIN 和 ICCID EF 样板 |
+| H10 | 两项独立 Agent 扩展及同候选组合回归 | NOT_RUN，待全对象图稳定 |
 
-本批达到 `M9_FOUNDATION_READY_FOR_DEEP_REVIEW`。全局保持 `AF2_M9_IN_PROGRESS`。
+基础工程阶段达到 `M9_FOUNDATION_READY_FOR_DEEP_REVIEW`。全局保持 `AF2_M9_IN_PROGRESS`。
 普通 Verify 已验证 Legacy 调试，Target 另有 Developer；Legacy 无 LTO 的产品专属符号、
-GUI 与原生产品均在其证据边界内。真实 PIN/EF 接入和全图时序需要下一阶段验证。
+GUI 与原生产品均在其证据边界内。当前样板及剩余时序见
+[执行状态](SIM_Refactor_Execution_State.md#af2-m9-status)。
 
-最终候选全量 Legacy 148/148、Target 174/174。12 个冻结 Oracle 共 24/24，差异为零。
+基础工程候选全量 Legacy 148/148、Target 174/174。12 个冻结 Oracle 共 24/24，差异为零。
 另有一项连续 ID Reload 共用断言在两端通过。Legacy 稀疏历史 ID 的差异保留实测。
 Legacy CI（含变异与恢复）为新增 Reload 前的 147 登记基线。ASan/TSan 各 130/130
 为稀疏探针阶段专项。两个后端 LLDB、源码定位 322 个登记及归档遗漏负控已执行。

@@ -107,13 +107,13 @@ ResourceRadioRuntime::Group *ResourceRadioRuntime::FindGroup(const RadioSwitchRe
     return nullptr;
 }
 
-bool ResourceRadioRuntime::SwitchPrimaryRadio(const RadioSwitchRequest &request)
+bool ResourceRadioRuntime::SwitchPrimaryRadio(const RadioSwitchRequest &request, const RadioSendQualification &qualify)
 {
     uint64_t fence = 0;
     uint64_t transport = 0;
     {
         std::lock_guard<std::mutex> guard(lock_);
-        if (mode_ != Mode::Execute || stopping_ || sink_.expired() || dispatch_.expired() ||
+        if (mode_ != Mode::Execute || stopping_ || !qualify || sink_.expired() || dispatch_.expired() ||
             nextTransportToken_ == std::numeric_limits<uint64_t>::max() ||
             (request.member && !(request.member->route == request.target))) { return false; }
         Group *group = FindGroup(request);
@@ -140,7 +140,21 @@ bool ResourceRadioRuntime::SwitchPrimaryRadio(const RadioSwitchRequest &request)
     // A throwing platform call does not prove the original handoff was never entered.
     RadioSubmitResult handoff {RadioSubmitDisposition::HandoffUnknown, std::nullopt};
     try {
-        handoff = platform_.SubmitPrimaryRadio(request, transport);
+        handoff = platform_.SubmitPrimaryRadio(request, transport, [&] {
+            return qualify([&](const RadioSendPermit &stillAccepting) {
+                std::lock_guard<std::mutex> guard(lock_);
+                const auto original = transmissions_.find(transport);
+                const auto group = groups_.find(fence);
+                if (stopping_ || original == transmissions_.end() || group == groups_.end() ||
+                    !submittingTransmissions_.count(transport) || original->second.sendPermitted ||
+                    group->second.endRequested || group->second.quarantined || group->second.hasNotSentMember ||
+                    !stillAccepting()) {
+                    return false;
+                }
+                original->second.sendPermitted = true;
+                return true;
+            });
+        });
     } catch (const std::exception &) {
     }
 
@@ -170,10 +184,11 @@ bool ResourceRadioRuntime::SwitchPrimaryRadio(const RadioSwitchRequest &request)
                 group.sent = true;
             }
             ++submittedCommands_;
-            transmissions_.at(transport).transportSerial = handoff.transportSerial;
+            auto &transmission = transmissions_.at(transport);
+            transmission.transportSerial = handoff.transportSerial;
             group.submittedTransmissions.insert(transport);
             accepted = handoff.disposition == RadioSubmitDisposition::HandoffAccepted &&
-                handoff.transportSerial.has_value();
+                transmission.sendPermitted && handoff.transportSerial.has_value();
             if (group.endRequested || group.hasNotSentMember || !accepted) {
                 Quarantine(group, EffectKnowledge::Unknown);
             }

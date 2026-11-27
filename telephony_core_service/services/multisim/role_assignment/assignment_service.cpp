@@ -286,7 +286,7 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         output_.PublishPrimaryPhase(false, command.userSet);
         const RadioSwitchRequest device {sentStep, targetMember->route, *target->radioDomain, plan->mode,
             facts->binding, pendingPrimary_.at(request.value).protocolSession, 0, 1, targetMember};
-        if (!SubmitRadioOutsideCommit(device, guard)) {
+        if (!SubmitRadioOutsideCommit(device, *facts, guard)) {
             const auto pending = pendingPrimary_.find(request.value);
             const auto operation = operations_.Read(request);
             if (pending != pendingPrimary_.end() && pending->second.step == sentStep &&
@@ -843,7 +843,14 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
     const auto admission = operations_.AcceptResult(result.step, result.effect);
     if (admission != RuntimeOperationStore::ResultAdmission::Accepted) { return; }
     operations_.EndWait(result.step.request, WaitState::Delivered);
-    radio_.EndLegacySenseSwitch(pending->second.step, pending->second.target.radioDomain.value());
+    const auto domain = pending->second.target.radioDomain.value();
+    guard.unlock();
+    try {
+        radio_.EndLegacySenseSwitch(result.step, domain);
+    } catch (const std::exception &) {
+        // The original result owns this step. A failed platform notification is not a new result.
+    }
+    guard.lock();
     if (pending->second.mode == PrimarySwitchMode::ThreePhaseProtocol && pending->second.roundFailed) {
         const auto restored = store_.RestorePrimaryIfLegacyValid(pending->second.oldParameters);
         if (!restored.callFinished) {
@@ -1043,14 +1050,28 @@ bool AssignmentService::AcceptC1RetryDue(RequestId request, std::unique_lock<std
     return SubmitC1Round(pending->second, guard);
 }
 
-bool AssignmentService::SubmitRadioOutsideCommit(const RadioSwitchRequest &device,
+bool AssignmentService::SubmitRadioOutsideCommit(const RadioSwitchRequest &device, const PrimaryTargetFacts &facts,
     std::unique_lock<std::recursive_mutex> &guard)
 {
     // The original step and its write qualification are already registered.
     guard.unlock();
     bool accepted = false;
     try {
-        accepted = radio_.SwitchPrimaryRadio(device);
+        accepted = radio_.SwitchPrimaryRadio(device, [&](const RadioPermissionRegistration &registerPermission) {
+            std::lock_guard<std::recursive_mutex> commit(primaryCommitLock_);
+            const auto pending = pendingPrimary_.find(device.step.request.value);
+            const auto operation = operations_.Read(device.step.request);
+            if (stopping_ || pending == pendingPrimary_.end() || !(pending->second.step == device.step) ||
+                pending->second.protocolSession != device.protocolSession || pending->second.phase != device.phase ||
+                !operation || operation->terminal != TerminalState::Open ||
+                !assignment_.OwnsRoleWriteSet(device.step.request.value, kPrimaryRoleWriteSet)) {
+                return false;
+            }
+            bool permitted = false;
+            return topology_.WithCurrentPrimaryTarget(facts, [&] {
+                permitted = registerPermission([this] { return !IsStoppingPrimaryRequests(); });
+            }) && permitted;
+        });
     } catch (const std::exception &) {
         // Crossing the platform boundary may leave an unknown effect.
     }
@@ -1065,7 +1086,7 @@ bool AssignmentService::SubmitC1Round(const PendingPrimarySwitch &round,
     const StepRef step = round.step;
     const auto domain = round.target.radioDomain.value();
     const auto targetMember = round.targetMember;
-    const auto binding = round.facts.binding;
+    const auto facts = round.facts;
     const uint32_t protocolSession = round.protocolSession;
     const uint32_t phase = round.phase;
     const auto members = round.members;
@@ -1078,9 +1099,9 @@ bool AssignmentService::SubmitC1Round(const PendingPrimarySwitch &round,
     for (const auto &member : members) {
         if (!stillCurrent()) { return true; }
         const RadioSwitchRequest device {step, member.route, domain, PrimarySwitchMode::ThreePhaseProtocol,
-            member.nativeMember == targetMember ? std::optional<BindingRef>{binding} : std::nullopt,
+            member.nativeMember == targetMember ? std::optional<BindingRef>{facts.binding} : std::nullopt,
             protocolSession, phase, static_cast<uint32_t>(members.size()), member};
-        if (!SubmitRadioOutsideCommit(device, guard)) {
+        if (!SubmitRadioOutsideCommit(device, facts, guard)) {
             if (!stillCurrent()) { return true; }
             assignment_.AcceptTransitionPhase(domain, step.request.value, TransitionPhase::DevicePending,
                 TransitionPhase::NeedsReconciliation);
@@ -1093,22 +1114,39 @@ bool AssignmentService::SubmitC1Round(const PendingPrimarySwitch &round,
 
 bool AssignmentService::AcceptPrimarySwitchTimeout(RequestId request, uint64_t elapsedMilliseconds)
 {
-    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
+    std::unique_lock<std::recursive_mutex> guard(primaryCommitLock_);
     static constexpr uint64_t kLegacyPrimaryTimeoutMs = 45000;
     if (elapsedMilliseconds < kLegacyPrimaryTimeoutMs) { return false; }
     const auto pending = pendingPrimary_.find(request.value);
     if (pending == pendingPrimary_.end()) { return false; }
     const auto operation = operations_.Read(request);
+    const auto step = pending->second.step;
     if (!assignment_.OwnsRoleWriteSet(request.value, kPrimaryRoleWriteSet) ||
         !operation || operation->terminal != TerminalState::Open ||
-        !(pending->second.step.request == request)) { return false; }
+        !(step.request == request) ||
+        operations_.AcceptResult(step, EffectKnowledge::Unknown) != RuntimeOperationStore::ResultAdmission::Accepted) {
+        return false;
+    }
+    const auto domain = pending->second.target.radioDomain.value();
+    const auto completion = pending->second.completion;
+    const bool userSet = pending->second.userSet;
     operations_.EndWait(request, WaitState::TimedOut);
-    operations_.AcceptResult(pending->second.step, EffectKnowledge::Unknown);
-    assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(), request.value,
+    assignment_.AcceptTransitionPhase(domain, request.value,
         TransitionPhase::DevicePending, TransitionPhase::NeedsReconciliation);
-    radio_.EndLegacySenseSwitch(pending->second.step, pending->second.target.radioDomain.value());
-    output_.PublishPrimaryPhase(true, pending->second.userSet);
-    CompleteOnce(request, pending->second.completion, 83886087, TerminalState::NeedsReconciliation);
+    operations_.MarkTerminal(request, TerminalState::NeedsReconciliation);
+    const bool deliver = operations_.ClaimCompletion(request);
+    guard.unlock();
+    try {
+        radio_.EndLegacySenseSwitch(step, domain);
+    } catch (const std::exception &) {
+        // R retains the original resource/effect responsibility.
+    }
+    try {
+        output_.PublishPrimaryPhase(true, userSet);
+    } catch (const std::exception &) {
+        // Failure to publish the phase does not revoke the original timeout result.
+    }
+    if (deliver) { completion_.CompleteLegacyInt(completion, 83886087); }
     return true;
 }
 void AssignmentService::RetryPrimaryAfterReconciliation(RequestId)

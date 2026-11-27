@@ -275,6 +275,14 @@ R 在释放设备组责任之前登记正在进行的 Owner 投递，防止重�
 Target 207/207。正式模块 B/C1、A/T 发令许可和全图生命周期仍待。
 [原始结果与恢复复验](../services/multisim/test/docs/evidence/af2_m9_d04_radio_20261127/README.md)
 
+**D01 实际发令许可检查点。** 平台在原成员及路由核对处请求一次许可，A/T 核对原步骤、
+写权、Binding 和激活资格，R 在原租约和票据上登记。独立复查发现并修复 Stop 在 T
+核对与 R 登记间的竞态。超时先消费原步骤、锁外结束平台调用并单次交付结果。
+组件回归覆盖许可前撤权、许可后部分交接和 Stop 后无新 C1 阶段。
+正常 ACK 已排入 Owner、A 超时先接纳时的晚证据仍需修复；正式 B/C1、逐键 Store
+原效果核对和全图仍待。状态保持 `AF2_M9_IN_PROGRESS`。
+[许可、原始用例与负控](../services/multisim/test/docs/evidence/af2_m9_d01_permission_20261127/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）

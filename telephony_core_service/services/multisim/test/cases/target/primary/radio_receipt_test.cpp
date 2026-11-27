@@ -10,6 +10,9 @@ namespace OHOS::Telephony::MultiSim {
 namespace {
 constexpr RuntimeEpoch epoch{6,2};
 const ResourceKey key{"same-physical-modem"};
+const RadioSendQualification kOnlyRadioQualification = [](const RadioPermissionRegistration &permit) {
+    return permit([] { return true; });
+};
 struct Sink : RadioResultSink {
     std::vector<uint64_t> deliveries;
     std::function<void()> onDelivery;
@@ -51,8 +54,10 @@ struct Dispatcher : RadioOwnerDispatchPort {
 struct Device : RadioPlatformPort {
     std::function<RadioSubmitResult(const RadioSwitchRequest &, uint64_t)> onSubmit;
     PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const override { return {slot}; }
-    RadioSubmitResult SubmitPrimaryRadio(const RadioSwitchRequest &request, uint64_t token) override
+    RadioSubmitResult SubmitPrimaryRadio(const RadioSwitchRequest &request, uint64_t token,
+        const RadioSendPermit &permit) override
     {
+        if (!permit()) { return {RadioSubmitDisposition::ConfirmedNotSent, std::nullopt}; }
         if (onSubmit) { return onSubmit(request, token); }
         return {RadioSubmitDisposition::HandoffAccepted, static_cast<int32_t>(token)};
     }
@@ -86,7 +91,7 @@ TEST(TargetRadioReceipt, RefusedPostDoesNotRemoveAnotherRequestsReceipt)
     ASSERT_TRUE(runtime.Initialize(key, {epoch, true, true}));
     runtime.BindResultSink(sink);
     runtime.BindOwnerDispatch(dispatch);
-    runtime.SwitchPrimaryRadio(Request(1));
+    runtime.SwitchPrimaryRadio(Request(1), kOnlyRadioQualification);
     auto first = std::async(std::launch::async, [&]{ return runtime.AcceptDeviceResult(Reply(1)); });
     {
         std::unique_lock<std::mutex> lock(dispatch->mutex);
@@ -96,7 +101,7 @@ TEST(TargetRadioReceipt, RefusedPostDoesNotRemoveAnotherRequestsReceipt)
             FAIL() << "The first completion did not reach the dispatch boundary";
         }
     }
-    runtime.SwitchPrimaryRadio(Request(2));
+    runtime.SwitchPrimaryRadio(Request(2), kOnlyRadioQualification);
     const bool acceptedSecond = runtime.AcceptDeviceResult(Reply(2));
     std::function<void()> postedSecond;
     {
@@ -124,7 +129,7 @@ TEST(TargetRadioReceipt, FlushCannotRepostWhileOriginalPostIsStillInFlight)
     ASSERT_TRUE(runtime.Initialize(key, {epoch, true, true}));
     runtime.BindResultSink(sink);
     runtime.BindOwnerDispatch(dispatch);
-    ASSERT_TRUE(runtime.SwitchPrimaryRadio(Request(1)));
+    ASSERT_TRUE(runtime.SwitchPrimaryRadio(Request(1), kOnlyRadioQualification));
 
     auto accept = std::async(std::launch::async, [&] { return runtime.AcceptDeviceResult(Reply(1)); });
     {
@@ -180,9 +185,9 @@ TEST(TargetRadioReceipt, EarlyDeliveryCannotOverwriteOriginalSubmitResult)
         EXPECT_TRUE(runtime.AcceptDeviceResult(Reply(1)));
         return {RadioSubmitDisposition::HandoffAccepted, static_cast<int32_t>(token)};
     };
-    sink->onDelivery = [&] { EXPECT_FALSE(runtime.SwitchPrimaryRadio(Request(2))); };
+    sink->onDelivery = [&] { EXPECT_FALSE(runtime.SwitchPrimaryRadio(Request(2), kOnlyRadioQualification)); };
 
-    EXPECT_TRUE(runtime.SwitchPrimaryRadio(Request(1)));
+    EXPECT_TRUE(runtime.SwitchPrimaryRadio(Request(1), kOnlyRadioQualification));
     EXPECT_EQ(sink->deliveries, (std::vector<uint64_t>{1}));
     EXPECT_EQ(runtime.SubmittedCommands(), 1u);
     EXPECT_EQ(runtime.ReadResourceState(key), ResourceState::Available);

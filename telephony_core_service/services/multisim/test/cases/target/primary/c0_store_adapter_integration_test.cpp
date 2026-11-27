@@ -54,7 +54,8 @@ public:
     unsigned switches {0};
     PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const override
     { return {slot, 0, false, false, 9}; }
-    bool SwitchPrimaryRadio(const RadioSwitchRequest &) override { ++switches; return true; }
+    bool SwitchPrimaryRadio(const RadioSwitchRequest &, const RadioSendQualification &) override
+    { ++switches; return true; }
     void EndLegacySenseSwitch(const StepRef &, const RadioDomainId &) override { ++switches; }
 };
 class Output final : public AssignmentOutputPort {

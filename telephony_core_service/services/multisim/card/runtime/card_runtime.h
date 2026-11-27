@@ -76,7 +76,7 @@ public:
     void AcceptMsisdnWriteCompletion(const MsisdnWriteResult &result); // 原事件桥结果接纳点。
     void SetOrdinarySimActive(const ActivationDeviceRequest &request) override;
     PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId target) const override;
-    bool SwitchPrimaryRadio(const RadioSwitchRequest &request) override;
+    bool SwitchPrimaryRadio(const RadioSwitchRequest &request, const RadioSendQualification &qualify) override;
     void EndLegacySenseSwitch(const StepRef &origin, const RadioDomainId &domain) override;
     void VerifyPin(const VerifyPinRequest &request) override;
     void ReadElementaryFile(const ReadEfRequest &request) override;

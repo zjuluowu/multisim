@@ -56,6 +56,9 @@ public:
 const std::vector<RadioProtocolMember> kControlledProtocolMembers {
     {100, {0}, 8}, {200, {1}, 9}
 };
+const RadioSendQualification kOnlyRadioQualification = [](const RadioPermissionRegistration &permit) {
+    return permit([] { return true; });
+};
 
 class Radio final : public RadioExecutionPort {
 public:
@@ -65,7 +68,12 @@ public:
         return {slot, slot.legacySlotId == 0 ? 0 : 1, directSupported, false, 9, true,
             PrimaryProtocolRouting {slot.legacySlotId == 0 ? 100u : 200u, kControlledProtocolMembers}};
     }
-    bool SwitchPrimaryRadio(const RadioSwitchRequest &request) override { requests.push_back(request); return true; }
+    bool SwitchPrimaryRadio(const RadioSwitchRequest &request, const RadioSendQualification &qualify) override
+    {
+        if (!qualify([](const RadioSendPermit &stillAccepting) { return stillAccepting(); })) { return false; }
+        requests.push_back(request);
+        return true;
+    }
     void EndLegacySenseSwitch(const StepRef &, const RadioDomainId &) override { ++ended; }
     std::vector<RadioSwitchRequest> requests;
     unsigned ended {0};
@@ -393,11 +401,13 @@ public:
     RadioSubmitDisposition disposition {RadioSubmitDisposition::HandoffAccepted};
     std::function<void(const RadioSwitchRequest &)> beforeSendPermission;
     std::function<void(uint64_t,const RadioSwitchRequest &)> onSynchronousResponse;
-    RadioSubmitResult SubmitPrimaryRadio(const RadioSwitchRequest &request, uint64_t token) override
+    std::function<void()> beforeEnd;
+    RadioSubmitResult SubmitPrimaryRadio(const RadioSwitchRequest &request, uint64_t token,
+        const RadioSendPermit &permit) override
     {
         if (beforeSendPermission) { beforeSendPermission(request); }
-        if (request.member && std::find(protocolMembers.begin(), protocolMembers.end(), *request.member) ==
-            protocolMembers.end()) {
+        if ((request.member && std::find(protocolMembers.begin(), protocolMembers.end(), *request.member) ==
+            protocolMembers.end()) || !permit()) {
             return {RadioSubmitDisposition::ConfirmedNotSent, std::nullopt};
         }
         if (onSynchronousResponse) { onSynchronousResponse(token, request); }
@@ -409,7 +419,11 @@ public:
         return {disposition, omitSerial ? std::nullopt :
             std::make_optional(static_cast<int32_t>(token))};
     }
-    void EndLegacySenseSwitch(const StepRef &, const RadioDomainId &) override { ++ended; }
+    void EndLegacySenseSwitch(const StepRef &, const RadioDomainId &) override
+    {
+        ++ended;
+        if (beforeEnd) { beforeEnd(); }
+    }
     unsigned ended {0};
 };
 
@@ -627,7 +641,7 @@ TEST(TargetPrimaryB,ResourceBarrierCheckingBlocksSendUntilInitialRecovery)
     const RadioSwitchRequest request {{RequestId{1,{6,2},RequestOwner::Assignment},2,0},
         {1},{"m1"},PrimarySwitchMode::WithoutModemRestart,std::nullopt,1,0,1};
     EXPECT_EQ(radio.ReadResourceState(key),ResourceState::Checking);
-    radio.SwitchPrimaryRadio(request);
+    radio.SwitchPrimaryRadio(request, kOnlyRadioQualification);
     EXPECT_TRUE(platform.requests.empty());
     EXPECT_FALSE(radio.Initialize(key,{{6,2},false,true}));
     EXPECT_TRUE(radio.Initialize(key,{{6,2},true,true}));
@@ -949,7 +963,7 @@ TEST(TargetPrimaryB,ResourceHandoffAcceptedRequiresExpectedSerial)
     f.platform.omitSerial=true;
     const RadioSwitchRequest request {{RequestId{1,{6,2},RequestOwner::Assignment},2,0},
         {0},{"m1"},PrimarySwitchMode::WithoutModemRestart,std::nullopt,1,0,1};
-    EXPECT_FALSE(f.radio.SwitchPrimaryRadio(request));
+    EXPECT_FALSE(f.radio.SwitchPrimaryRadio(request, kOnlyRadioQualification));
     EXPECT_EQ(f.platform.requests.size(),1u);
     EXPECT_EQ(f.radio.ReadResourceState(f.key),ResourceState::Quarantined);
 }
@@ -1062,6 +1076,158 @@ TEST(TargetPrimaryB,RouteRevocationStopsUnsentMemberAndKeepsOriginalRound)
     EXPECT_TRUE(fixture.completion.results.empty());
 }
 
+TEST(TargetPrimaryB,RemovedBindingDeniesSendEvenWhenNativeRoutesStayCurrent)
+{
+    for (bool threePhase : {false, true}) {
+        SCOPED_TRACE(threePhase);
+        ResourceFixture fixture;
+        unsigned attempted = 0;
+        fixture.platform.beforeSendPermission = [&](const RadioSwitchRequest &) {
+            ++attempted;
+            EXPECT_EQ(fixture.radio.ReadResourceState(fixture.key), ResourceState::InFlight);
+            fixture.topology.AcceptCardRemoval(fixture.target);
+        };
+
+        fixture.Start(threePhase);
+
+        EXPECT_EQ(attempted, 1u);
+        EXPECT_EQ(fixture.platform.protocolMembers, kControlledProtocolMembers);
+        EXPECT_TRUE(fixture.platform.requests.empty());
+        EXPECT_EQ(fixture.radio.SubmittedCommands(), 0u);
+        EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
+        EXPECT_EQ(fixture.radio.ReadResourceState(fixture.key), ResourceState::Available);
+        EXPECT_TRUE(fixture.output.roles.empty());
+    }
+}
+
+TEST(TargetPrimaryB,RevocationAfterPermissionKeepsFirstMemberAndDeniesRemainingMembers)
+{
+    ResourceFixture fixture;
+    fixture.platform.onSynchronousResponse = [&](uint64_t, const RadioSwitchRequest &request) {
+        EXPECT_EQ(request.target, SlotId {0});
+        fixture.topology.AcceptCardRemoval(fixture.target);
+    };
+
+    fixture.Start(true);
+
+    ASSERT_EQ(fixture.platform.requests.size(), 1u);
+    EXPECT_EQ(fixture.radio.ReadResourceState(fixture.key), ResourceState::Quarantined);
+    EXPECT_FALSE(fixture.radio.DeviceResourcesDrained());
+    EXPECT_TRUE(fixture.ResultAt(0, EffectKnowledge::ConfirmedApplied, 0, false, true, true, true));
+    EXPECT_EQ(fixture.platform.requests.size(), 1u);
+    EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
+    EXPECT_TRUE(fixture.output.roles.empty());
+}
+
+TEST(TargetPrimaryB,C1StopWithCheckInFlightDoesNotAuthorizeAnotherPhase)
+{
+    ResourceFixture fixture;
+    fixture.Start(true);
+    ASSERT_EQ(fixture.platform.requests.size(), 2u);
+
+    EXPECT_FALSE(fixture.service->StopAcceptingAndCancelScheduledRetries());
+    for (size_t member = 0; member < 2; ++member) {
+        EXPECT_TRUE(fixture.ResultAt(member, EffectKnowledge::ConfirmedApplied, 0));
+    }
+
+    EXPECT_EQ(fixture.platform.requests.size(), 2u);
+    EXPECT_TRUE(fixture.service->HasPendingDeviceEffects());
+    EXPECT_FALSE(fixture.service->StopAcceptingAndCancelScheduledRetries());
+    EXPECT_TRUE(fixture.output.roles.empty());
+}
+
+TEST(TargetPrimaryB,StopDuringTopologyQualificationDeniesFinalPermission)
+{
+    class PausingTopology final : public PrimaryTopologyPort {
+    public:
+        explicit PausingTopology(TopologyService &source) : source_(source), resume_(release.get_future()) {}
+        std::optional<PrimaryTargetFacts> ReadPrimaryTarget(SlotId slot) const override
+        {
+            return source_.ReadPrimaryTarget(slot);
+        }
+        bool WithCurrentPrimaryTarget(const PrimaryTargetFacts &facts,
+            const std::function<void()> &admit) const override
+        {
+            return source_.WithCurrentPrimaryTarget(facts, [&] {
+                entered.set_value();
+                resume_.wait();
+                admit();
+            });
+        }
+        RequestId BeginRouteMapping(const StepRef &parent, SlotTarget target) override
+        {
+            return source_.BeginRouteMapping(parent, target);
+        }
+        mutable std::promise<void> entered;
+        std::promise<void> release;
+    private:
+        TopologyService &source_;
+        std::future<void> resume_;
+    };
+    ResourceFixture fixture;
+    PausingTopology topology(fixture.topology);
+    auto entered = topology.entered.get_future();
+    fixture.service = std::make_shared<AssignmentService>(fixture.catalog, fixture.store, fixture.radio,
+        fixture.output, topology, fixture.completion, RuntimeEpoch {6, 2});
+    fixture.radio.BindResultSink(fixture.service);
+    fixture.service->BindRetryScheduler(fixture.schedulerOwner);
+    auto start = std::async(std::launch::async, [&] { return fixture.Start(false); });
+    if (entered.wait_for(std::chrono::seconds(3)) != std::future_status::ready) {
+        topology.release.set_value();
+        FAIL() << "Submit did not reach the T qualification boundary";
+    }
+    fixture.service->RequestStopAccepting();
+    topology.release.set_value();
+    start.get();
+    fixture.service.reset();
+    EXPECT_TRUE(fixture.platform.requests.empty());
+    EXPECT_EQ(fixture.radio.SubmittedCommands(), 0u);
+    EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
+}
+
+TEST(TargetPrimaryB,TimeoutSealsPermissionBeforeBlockingInPlatformEnd)
+{
+    ResourceFixture fixture;
+    std::promise<RequestId> platformEntered;
+    auto entered = platformEntered.get_future();
+    std::promise<void> releasePermission;
+    auto permission = releasePermission.get_future();
+    std::promise<void> endEntered;
+    auto ending = endEntered.get_future();
+    std::promise<void> releaseEnd;
+    auto mayEnd = releaseEnd.get_future();
+    fixture.platform.beforeSendPermission = [&](const RadioSwitchRequest &request) {
+        platformEntered.set_value(request.step.request);
+        permission.wait();
+    };
+    fixture.platform.beforeEnd = [&] {
+        endEntered.set_value();
+        mayEnd.wait();
+    };
+    auto start = std::async(std::launch::async, [&] { return fixture.Start(false); });
+    if (entered.wait_for(std::chrono::seconds(3)) != std::future_status::ready) {
+        releasePermission.set_value();
+        releaseEnd.set_value();
+        FAIL() << "Submit did not reach the send permission boundary";
+    }
+    const auto original = entered.get();
+    auto timeout = std::async(std::launch::async,
+        [&] { return fixture.service->AcceptPrimarySwitchTimeout(original, 45000); });
+    const auto reachedEnd = ending.wait_for(std::chrono::seconds(3));
+    releasePermission.set_value();
+    const auto classified = start.wait_for(std::chrono::seconds(3));
+    releaseEnd.set_value();
+
+    EXPECT_EQ(reachedEnd, std::future_status::ready);
+    EXPECT_EQ(classified, std::future_status::ready)
+        << "Platform end held the Assignment commit lock needed by send permission";
+    EXPECT_EQ(start.get(), original);
+    EXPECT_TRUE(timeout.get());
+    EXPECT_TRUE(fixture.platform.requests.empty());
+    EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
+    EXPECT_EQ(fixture.completion.results, (std::vector<int32_t> {kLegacyLocalPointerNull}));
+}
+
 TEST(TargetPrimaryB,PlatformHandoffDoesNotHoldAssignmentCommitLock)
 {
     for (bool threePhase : {false, true}) {
@@ -1149,16 +1315,16 @@ TEST(TargetPrimaryB,ResourceSubmitMemberCannotDuplicateOrReleaseAnotherInSubmit)
         if (request.target == second.target) { ++secondCalls; return; }
         if (++firstCalls != 1) { return; }
 
-        f.radio.SwitchPrimaryRadio(first);
+        f.radio.SwitchPrimaryRadio(first, kOnlyRadioQualification);
         f.platform.disposition = RadioSubmitDisposition::ConfirmedNotSent;
-        f.radio.SwitchPrimaryRadio(second);
+        f.radio.SwitchPrimaryRadio(second, kOnlyRadioQualification);
         EXPECT_EQ(f.radio.ReadResourceState(f.key), ResourceState::InFlight);
         EXPECT_FALSE(f.radio.Recover(first.step, {first.step, EffectKnowledge::ConfirmedNotApplied,
             true, true, true}));
-        f.radio.SwitchPrimaryRadio(rival);
+        f.radio.SwitchPrimaryRadio(rival, kOnlyRadioQualification);
         f.platform.disposition = RadioSubmitDisposition::HandoffAccepted;
     };
-    f.radio.SwitchPrimaryRadio(first);
+    f.radio.SwitchPrimaryRadio(first, kOnlyRadioQualification);
     EXPECT_EQ(firstCalls, 1u);
     EXPECT_EQ(secondCalls, 1u);
     EXPECT_EQ(rivalCalls, 0u);
@@ -1181,10 +1347,10 @@ TEST(TargetPrimaryB,ResourceStopSealsUnsubmittedMembersAndRetainsOriginalTransmi
 
     fixture.platform.onSynchronousResponse = [&](uint64_t, const RadioSwitchRequest &) {
         EXPECT_FALSE(fixture.radio.StopAccepting());
-        EXPECT_FALSE(fixture.radio.SwitchPrimaryRadio(unsubmitted));
+        EXPECT_FALSE(fixture.radio.SwitchPrimaryRadio(unsubmitted, kOnlyRadioQualification));
         EXPECT_EQ(fixture.radio.ReadResourceState(fixture.key), ResourceState::InFlight);
     };
-    ASSERT_TRUE(fixture.radio.SwitchPrimaryRadio(original));
+    ASSERT_TRUE(fixture.radio.SwitchPrimaryRadio(original, kOnlyRadioQualification));
     ASSERT_EQ(fixture.platform.requests.size(), 1u);
     EXPECT_EQ(fixture.radio.ReadResourceState(fixture.key), ResourceState::Quarantined);
     const auto token = fixture.platform.requests.front().first;
@@ -1269,7 +1435,7 @@ TEST(TargetPrimaryB,ResourceBarrierRejectsDuplicateMemberSubmission)
     f.Start(true);
     ASSERT_EQ(f.platform.requests.size(),2u);
     const auto duplicate=f.platform.requests[0].second;
-    EXPECT_FALSE(f.radio.SwitchPrimaryRadio(duplicate));
+    EXPECT_FALSE(f.radio.SwitchPrimaryRadio(duplicate, kOnlyRadioQualification));
     EXPECT_EQ(f.platform.requests.size(),2u);
     EXPECT_EQ(f.radio.ReadResourceState(f.key),ResourceState::InFlight);
 }
@@ -1677,11 +1843,13 @@ TEST(TargetPrimaryB,C1BindingChangeRestoresPrewrittenPrimaryParameters)
     Fixture f; f.Start(true);
     ASSERT_EQ(f.radio.requests.size(),2u);
     EXPECT_EQ(f.parameters.values.at(kPrimary),"1");
-    f.topology.AcceptCardRemoval(f.target);
     for (size_t i=0;i<2;++i) { f.service.AcceptRadioStep(Result(f.radio.requests[i],
         EffectKnowledge::ConfirmedApplied,0)); }
+    ASSERT_EQ(f.radio.requests.size(),4u);
     for (size_t i=2;i<4;++i) { f.service.AcceptRadioStep(Result(f.radio.requests[i],
         EffectKnowledge::ConfirmedApplied,0,true)); }
+    ASSERT_EQ(f.radio.requests.size(),6u);
+    f.topology.AcceptCardRemoval(f.target);
     for (size_t i=4;i<6;++i) { f.service.AcceptRadioStep(Result(f.radio.requests[i],
         EffectKnowledge::ConfirmedApplied,0)); }
     EXPECT_EQ(f.parameters.values.at(kPrimary),"0");
@@ -1806,12 +1974,14 @@ TEST(TargetPrimaryB,C1StopReportsDrainFailureUntilActiveDeviceResultEnds)
 {
     AsyncFixture f;
     f.StartC1();
-    EXPECT_FALSE(f.StopAndDrain());
-    EXPECT_TRUE(f.service->HasPendingDeviceEffects());
     for (size_t i=0;i<2;++i) { f.service->AcceptRadioStep(Result(f.radio.requests[i],
         EffectKnowledge::ConfirmedApplied,0)); }
+    ASSERT_EQ(f.radio.requests.size(),4u);
     for (size_t i=2;i<4;++i) { f.service->AcceptRadioStep(Result(f.radio.requests[i],
         EffectKnowledge::ConfirmedApplied,0,true)); }
+    ASSERT_EQ(f.radio.requests.size(),6u);
+    EXPECT_FALSE(f.StopAndDrain());
+    EXPECT_TRUE(f.service->HasPendingDeviceEffects());
     for (size_t i=4;i<6;++i) { f.service->AcceptRadioStep(Result(f.radio.requests[i],
         EffectKnowledge::ConfirmedApplied,0)); }
     EXPECT_FALSE(f.service->HasPendingDeviceEffects());
@@ -1824,8 +1994,12 @@ TEST(TargetPrimaryB,C1StopDuringActiveRoundCancelsRetryAfterConfirmedComplete)
 {
     AsyncFixture f;
     f.StartC1();
+    for (size_t i=0;i<2;++i) { f.service->AcceptRadioStep(Result(f.radio.requests[i],
+        EffectKnowledge::ConfirmedNotApplied,kLegacyLocalPointerNull)); }
+    ASSERT_EQ(f.radio.requests.size(),4u);
     EXPECT_FALSE(f.service->StopAcceptingAndCancelScheduledRetries());
-    f.DeliverRound(0);
+    for (size_t i=2;i<4;++i) { f.service->AcceptRadioStep(Result(f.radio.requests[i],
+        EffectKnowledge::ConfirmedApplied,0)); }
     EXPECT_EQ(f.completion.results,(std::vector<int32_t>{kLegacyLocalPointerNull}));
     EXPECT_EQ(f.scheduler.Audit().scheduled,0u);
     EXPECT_FALSE(f.service->HasPendingDeviceEffects());
@@ -1837,25 +2011,28 @@ TEST(TargetPrimaryB,C1StopAndQueuedRadioCallbacksRemainOwnerSerialized)
 {
     AsyncFixture f;
     f.StartC1();
-    ASSERT_TRUE(f.scheduler.PostOwner([service=f.service] {
-        EXPECT_FALSE(service->StopAcceptingAndCancelScheduledRetries());
-    }));
     for (size_t i=0;i<2;++i) {
         ASSERT_TRUE(f.scheduler.PostOwner([&, request=f.radio.requests[i], service=f.service] {
             service->AcceptRadioStep(Result(request,EffectKnowledge::ConfirmedApplied,0));
         }));
     }
     ASSERT_TRUE(f.scheduler.WaitIdle());
+    ASSERT_EQ(f.radio.requests.size(),4u);
     for (size_t i=2;i<4;++i) {
         f.scheduler.OwnerCall([&, request=f.radio.requests[i], service=f.service] {
             service->AcceptRadioStep(Result(request,EffectKnowledge::ConfirmedApplied,0,true));
         });
     }
+    ASSERT_EQ(f.radio.requests.size(),6u);
+    ASSERT_TRUE(f.scheduler.PostOwner([service=f.service] {
+        EXPECT_FALSE(service->StopAcceptingAndCancelScheduledRetries());
+    }));
     for (size_t i=4;i<6;++i) {
-        f.scheduler.OwnerCall([&, request=f.radio.requests[i], service=f.service] {
+        ASSERT_TRUE(f.scheduler.PostOwner([&, request=f.radio.requests[i], service=f.service] {
             service->AcceptRadioStep(Result(request,EffectKnowledge::ConfirmedApplied,0));
-        });
+        }));
     }
+    ASSERT_TRUE(f.scheduler.WaitIdle());
     EXPECT_EQ(f.completion.results,(std::vector<int32_t>{0}));
     EXPECT_FALSE(f.service->HasPendingDeviceEffects());
 }

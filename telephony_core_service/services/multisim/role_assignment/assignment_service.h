@@ -163,7 +163,7 @@ private:
         std::optional<EffectKnowledge> lateDeviceEffect;
     };
     bool AcceptC1RetryDue(RequestId request, std::unique_lock<std::recursive_mutex> &guard);
-    bool SubmitRadioOutsideCommit(const RadioSwitchRequest &device,
+    bool SubmitRadioOutsideCommit(const RadioSwitchRequest &device, const PrimaryTargetFacts &facts,
         std::unique_lock<std::recursive_mutex> &guard);
     bool SubmitC1Round(const PendingPrimarySwitch &round, std::unique_lock<std::recursive_mutex> &guard);
     std::map<uint64_t, PendingPrimarySwitch> pendingPrimary_;

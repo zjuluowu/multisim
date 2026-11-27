@@ -1,0 +1,117 @@
+Note: Google Test filter = TargetPrimaryB.RemovedBindingDeniesSendEvenWhenNativeRoutesStayCurrent
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.RemovedBindingDeniesSendEvenWhenNativeRoutesStayCurrent
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1095: Failure
+Value of: fixture.platform.requests.empty()
+  Actual: false
+Expected: true
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1082: false
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1096: Failure
+Expected equality of these values:
+  fixture.radio.SubmittedCommands()
+    Which is: 1
+  0u
+    Which is: 0
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1082: false
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1097: Failure
+Value of: fixture.radio.DeviceResourcesDrained()
+  Actual: false
+Expected: true
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1082: false
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1098: Failure
+Expected equality of these values:
+  fixture.radio.ReadResourceState(fixture.key)
+    Which is: (4-byte object <02-00 00-00>)
+  ResourceState::Available
+    Which is: 4-byte object <01-00 00-00>
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1082: false
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1093: Failure
+Expected equality of these values:
+  attempted
+    Which is: 2
+  1u
+    Which is: 1
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1082: true
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1095: Failure
+Value of: fixture.platform.requests.empty()
+  Actual: false
+Expected: true
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1082: true
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1096: Failure
+Expected equality of these values:
+  fixture.radio.SubmittedCommands()
+    Which is: 2
+  0u
+    Which is: 0
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1082: true
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1097: Failure
+Value of: fixture.radio.DeviceResourcesDrained()
+  Actual: false
+Expected: true
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1082: true
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1098: Failure
+Expected equality of these values:
+  fixture.radio.ReadResourceState(fixture.key)
+    Which is: (4-byte object <02-00 00-00>)
+  ResourceState::Available
+    Which is: 4-byte object <01-00 00-00>
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1082: true
+
+[  FAILED  ] TargetPrimaryB.RemovedBindingDeniesSendEvenWhenNativeRoutesStayCurrent (2 ms)
+[----------] 1 test from TargetPrimaryB (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TargetPrimaryB.RemovedBindingDeniesSendEvenWhenNativeRoutesStayCurrent
+
+ 1 FAILED TEST
+Note: Google Test filter = TargetPrimaryB.RevocationAfterPermissionKeepsFirstMemberAndDeniesRemainingMembers
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.RevocationAfterPermissionKeepsFirstMemberAndDeniesRemainingMembers
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1107: Failure
+Expected equality of these values:
+  request.target
+    Which is: 4-byte object <01-00 00-00>
+  SlotId {0}
+    Which is: 4-byte object <00-00 00-00>
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1113: Failure
+Expected equality of these values:
+  fixture.platform.requests.size()
+    Which is: 2
+  1u
+    Which is: 1
+
+[  FAILED  ] TargetPrimaryB.RevocationAfterPermissionKeepsFirstMemberAndDeniesRemainingMembers (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TargetPrimaryB.RevocationAfterPermissionKeepsFirstMemberAndDeniesRemainingMembers
+
+ 1 FAILED TEST

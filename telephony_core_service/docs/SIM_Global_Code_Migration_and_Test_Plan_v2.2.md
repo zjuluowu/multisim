@@ -50,38 +50,39 @@ Host 两后端分别编译、链接和执行。Legacy 的 SIM 基础及 eSIM 条
 
 ## 候选实测范围
 
-以下为当前架构基础候选实测。目录行包含其子目录，生产 C/C++ 与前批相同。
+以下为本轮 Radio 发令许可检查点的实测。目录行包含其子目录。
 
 | 目录 | 文件 | 物理行 | 有效行 |
 |---|---:|---:|---:|
-| 生产合计 | 101 | 11,153 | 8,521 |
-| `account` | 33 | 3,867 | 2,935 |
+| 生产合计 | 107 | 12,212 | 9,441 |
+| `account` | 33 | 3,908 | 2,970 |
 | `account/activation` | 7 | 365 | 179 |
-| `account/discovery` | 3 | 287 | 218 |
+| `account/discovery` | 3 | 309 | 236 |
 | `account/number` | 9 | 464 | 261 |
-| `card` | 17 | 1,251 | 842 |
+| `card` | 23 | 1,930 | 1,424 |
 | `card/esim` | 4 | 185 | 84 |
-| `card/records` | 3 | 152 | 83 |
-| `card/runtime` | 7 | 609 | 447 |
-| `card/security` | 1 | 29 | 8 |
-| `card/state` | 2 | 276 | 220 |
-| `device` | 4 | 908 | 814 |
-| `device/resource` | 4 | 908 | 814 |
-| `infrastructure` | 28 | 2,351 | 1,674 |
-| `infrastructure/assembly` | 11 | 1,142 | 867 |
+| `card/records` | 5 | 426 | 321 |
+| `card/runtime` | 9 | 867 | 667 |
+| `card/security` | 3 | 137 | 98 |
+| `card/state` | 2 | 315 | 254 |
+| `device` | 4 | 991 | 888 |
+| `device/resource` | 4 | 991 | 888 |
+| `infrastructure` | 28 | 2,507 | 1,818 |
+| `infrastructure/assembly` | 11 | 1,249 | 966 |
 | `infrastructure/assembly/exports` | 2 | 42 | 8 |
-| `infrastructure/compatibility` | 12 | 757 | 476 |
-| `infrastructure/compatibility/api` | 7 | 506 | 341 |
-| `infrastructure/compatibility/events` | 5 | 251 | 135 |
-| `infrastructure/request` | 4 | 371 | 276 |
-| `role_assignment` | 19 | 2,776 | 2,256 |
-| `role_assignment/primary` | 5 | 289 | 185 |
+| `infrastructure/compatibility` | 12 | 799 | 514 |
+| `infrastructure/compatibility/api` | 7 | 518 | 353 |
+| `infrastructure/compatibility/events` | 5 | 281 | 161 |
+| `infrastructure/request` | 4 | 378 | 283 |
+| `role_assignment` | 19 | 2,876 | 2,341 |
+| `role_assignment/primary` | 5 | 316 | 204 |
 
-Target Host 归档有 25 个 CPP 对象。另有 8 个 CPP 只参与逻辑 GN，68 个头文件计声明资产。
-Target 174 个测试登记、Legacy 148 个，已验证 13 个共同语义，内含 12 个冻结 Oracle。
-测试 cases／framework 的 C/C++ 为 172 个文件、24,102 物理行、20,112 有效行。
-相对中心目标 33,500 物理行，候选差额为 22,347 行。该差额是实测对账，P 的净增分配和
-数量考核继续按原窗口及实际功能证据调整。
+Target Host 归档编入 29 个 CPP，另有 7 个 CPP 只参与逻辑 GN，71 个头文件计声明资产。
+Target 登记 212 个，最近 Legacy 全量登记 149 个。已证实 14 个共同语义，内含 12 个冻结 Oracle。
+测试 cases／framework 的 C/C++ 为 173 个文件、25,468 物理行、21,361 有效行。
+相对本轮输入，生产 C/C++ 净增 1,059 物理行。距原中心预算 33,500 行的差额为 21,288 行，
+实际业务和测试预算在按完成凭证核销后更新。
+[当前源码与测试统计](../services/multisim/test/docs/evidence/af2_m9_d01_permission_20261127/inventory.json.gz)
 
 ## 剩余任务和预算
 
@@ -93,7 +94,7 @@ SIM 条目按[迁移设计](migration/SIM_Architecture_Refactor_Design.md)和实
 | 包 | 责任田及并行条件 | v2.1 原预算 / 架构基础预留（净增 LOC，新增测试） | 候选边界 |
 |---|---|---|---|
 | P1 账户与绑定 | A。Provider 谓词、账户观察可分开，T 接线单点合入 | 1,460，34 / 300，8 | M2、M6～M8 有 Host 基线，产品 Provider、探测及号码桥需证 |
-| P2 卡状态、安全、EF、资源 | B、C、G。先固定应用来源、资源及请求契约，B 写安全，C 写 codec/Records | 6,430，86 / 1,700，26 | 会话前置、资源已有验证，PIN/ICCID 待完整链路 |
+| P2 卡状态、安全、EF、资源 | B、C、G。先固定应用来源、资源及请求契约，B 写安全，C 写 codec/Records | 6,430，86 / 1,700，26 | 正式 UnlockPin、透明 ICCID、共用传输已验证。其他卡型、同卡独立 EF 和扩展演练仍待 |
 | P3 激活、角色、Radio | D、G。成员规划由 G 提供，A Owner 单点接线 | 2,850，63 / 500，9 | C0 和四角色已验证，P3.4 新增成员交接负控，正式 B/C1 未结 |
 | P4 电话簿、短信、STK、运营商 | E。先取证及纯规则，写业务依赖 P2 对应 EF/会话 | 5,350，61 / 0，0 | 原设备及写权维持 |
 | P5 eSIM 卡侧 | F。通道、Profile、66250 和厂商口分开 | 4,050，53 / 0，0 | 原共享资源、协议、外部 Owner 逐项取证 |
@@ -110,7 +111,7 @@ UnlockPin 与 ICCID EF 具备稳定样板后，独立 Agent 从同一基线分�
 
 ## 架构基础交付续批
 
-Legacy 与 Target 的 Host 归档分别编入 51 和 25 个生产 CPP。完整 Legacy 归档在
+Legacy 与 Target 的 Host 归档分别编入 51 和 29 个生产 CPP。完整 Legacy 归档在
 Primary 和 Bootstrap 两个消费者中共用，容量探针保留窄闭包。源码增删后检查 GN
 归属及归档内容。条件 Feature 与产品原生构建待实际产品树验证。
 

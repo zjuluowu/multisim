@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/check_test_integrity.py", line 73, in <module>
+    if __name__=='__main__':check()
+                            ^^^^^^^
+  File "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/check_test_integrity.py", line 69, in check
+    public_check()
+  File "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/check_public_api.py", line 39, in check
+    shared = check_shared(TEST/'cases/shared')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/e/github/multisim/telephony_core_service/services/multisim/test/scripts/check_public_api.py", line 20, in check_shared
+    raise RuntimeError(f'Shared scenario depends on an implementation: {path}: {directive.strip()}')
+RuntimeError: Shared scenario depends on an implementation: /mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/shared/unlock_pin_scenario.h: "../../framework/internal/common/sim_types.h"

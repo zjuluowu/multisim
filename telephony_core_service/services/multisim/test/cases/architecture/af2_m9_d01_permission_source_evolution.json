@@ -1,0 +1,11 @@
+{
+  "baseline": "a83a77f2a16d324080bd6bd337ef97e9713fcf43",
+  "files": {
+    "card/runtime/card_runtime.h": "1aa4b4e95014d17847ed572aabea0c78ed25d003edba41c92adeac6338a24500",
+    "device/resource/resource_radio_runtime.cpp": "19da07b1e58e3973fa7572ee9a838ae357cdaccf15eb5646fb73cf00f6c0bf44",
+    "device/resource/resource_radio_runtime.h": "30f1eeada7019476290e29803bb0871747c9c03c9271ac1ce8f132576d3684db",
+    "role_assignment/assignment_service.cpp": "50ad63b4d58eb9ea194a754899179b5cb022c5282708150346db9f775fd4f07e",
+    "role_assignment/assignment_service.h": "adea8947aafca9c969b920f21113970d92252fc82c926d50e0e6de0e4c01f7df",
+    "role_assignment/primary/radio_execution_port.h": "ab2ccd0fbc5148f620a8f2eefa942c2214df44e0b1ecde01c8c35df91950c6e1"
+  }
+}

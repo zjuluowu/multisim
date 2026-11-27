@@ -1,4 +1,5 @@
 #include "../../../framework/internal/common/primary_observation.h"
+#include "../../../framework/sim_test.h"
 #include <gtest/gtest.h>
 #include "telephony_errors.h"
 #include "../../shared/account_metadata_scenario.h"
@@ -184,7 +185,8 @@ public:
         return {slot, 0, false, false, 9, true,
             PrimaryProtocolRouting {slot == SlotId {0} ? 100u : 200u, {{100, {0}, 8}, {200, {1}, 9}}}};
     }
-    bool SwitchPrimaryRadio(const RadioSwitchRequest &) override { ++switches; return true; }
+    bool SwitchPrimaryRadio(const RadioSwitchRequest &, const RadioSendQualification &) override
+    { ++switches; return true; }
     void EndLegacySenseSwitch(const StepRef &, const RadioDomainId &) override { ++switches; }
 };
 class RoleProvider final : public AssignmentRoleProviderPort {
@@ -831,7 +833,7 @@ public:
     unsigned commands {0};
     PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const override
     { return {slot, requiresDevice ? 1 : 0, requiresDevice, false, 7}; }
-    RadioSubmitResult SubmitPrimaryRadio(const RadioSwitchRequest &, uint64_t) override
+    RadioSubmitResult SubmitPrimaryRadio(const RadioSwitchRequest &, uint64_t, const RadioSendPermit &) override
     {
         ++commands;
         return {RadioSubmitDisposition::ConfirmedNotSent, std::nullopt};
