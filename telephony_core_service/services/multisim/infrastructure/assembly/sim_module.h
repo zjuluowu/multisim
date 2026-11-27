@@ -25,6 +25,7 @@
 #include "infrastructure/compatibility/events/legacy_completion.h"
 #include "card/runtime/card_observation_runtime.h"
 #include "card/records/iccid_records_runtime.h"
+#include "card/security/pin_unlock_runtime.h"
 #include "card/runtime/msisdn_runtime.h"
 #include "account/number/set_show_number_use_case.h"
 #include "account/number/show_number_query.h"
@@ -44,6 +45,8 @@ struct CoreSimModulePorts {
     std::shared_ptr<LegacyNumberHostPort> numberHost {};
     std::shared_ptr<MsisdnPlatformPort> msisdn {};
     std::shared_ptr<IccidIoPort> iccidIo {};
+    std::shared_ptr<PinIoPort> pinIo {};
+    std::shared_ptr<LegacyPinHostPort> pinHost {};
 };
 
 // Account and card facts confirmed by the startup source. M2 adds live observation and provider writes.
@@ -71,6 +74,10 @@ public:
     bool RefreshIccid(const SessionRef &session);
     std::optional<IccidRecords> ReadIccidRecords(const SessionRef &session);
     bool AcceptIccidIoEvidence(const CardCommandEvidence &evidence);
+    int32_t UnlockPin(int32_t slot, const std::u16string &pin, LegacyCallerRef caller, LegacyCallbackRef callback);
+    bool ObservePinLocked(const SessionRef &session);
+    std::optional<CardLockState> ReadLockState(const SessionRef &session);
+    bool AcceptPinIoEvidence(const CardCommandEvidence &evidence);
     int32_t SaveImsSwitch(int32_t slot, int32_t preference);
     int32_t QueryImsSwitch(int32_t slot, int32_t &preference);
     int32_t SetShowName(int32_t slot, const std::u16string &name, LegacyCallerRef caller);
@@ -107,7 +114,7 @@ private:
     SimModule(CoreSimModulePorts ports, std::shared_ptr<const SlotCatalog> catalog, RuntimeEpoch epoch);
     ~SimModule() = default;
     bool InitializeResources();
-    bool QueueNumberTask(std::function<void()> task);
+    bool QueueModuleTask(const std::function<bool(std::function<void()>)> &post, std::function<void()> task);
     int32_t QueueNumberEntry(SlotId slot, LegacyCallerRef caller, LegacyCallbackRef callback,
         const std::optional<std::u16string> &number);
     bool SeedAccount(const ConfirmedSlotAccount &confirmed);
@@ -142,6 +149,7 @@ private:
     LegacyCompletion completion_;
     std::optional<MsisdnRuntime> msisdn_;
     std::optional<IccidRecordsRuntime> iccidRecords_;
+    std::optional<PinUnlockRuntime> pinUnlock_;
     std::optional<SetShowNumberUseCase> numbers_;
     std::optional<ShowNumberQuery> numberQuery_;
     std::shared_ptr<AssignmentService> assignment_;

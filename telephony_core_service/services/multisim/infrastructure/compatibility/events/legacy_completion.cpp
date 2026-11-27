@@ -18,6 +18,7 @@
 
 #include "infrastructure/compatibility/events/legacy_completion.h"
 #include <limits>
+#include <stdexcept>
 
 namespace OHOS::Telephony::MultiSim {
 std::optional<SynchronousWaitRef> LegacyCompletion::RetainRoleWaiter()
@@ -62,6 +63,31 @@ void LegacyCompletion::CompleteLegacyInt(const CompletionPlan &plan, int32_t leg
     }
     if (legacyResult == 0 && plan.accountNotificationOnWholeSuccess) { output_->NotifyOriginalAccountChanged(); }
     output_->DeliverOriginalInt(plan.route, legacyResult);
+}
+
+void LegacyCompletion::CompletePin(CompletionId callback, const PinReply &result)
+{
+    if (!pin_) { return; }
+    // The legacy callback carries UNLOCK_OK or UNLOCK_INCORRECT only when API status is success.
+    if (result.status == PinReplyStatus::Unlocked || result.status == PinReplyStatus::Incorrect) {
+        pin_->TransferOriginalPinResult(callback, 0, result.status == PinReplyStatus::Unlocked ? 0 : -1,
+            result.remaining);
+        return;
+    }
+    auto error = LegacyPinError::RilFailure;
+    if (result.status == PinReplyStatus::TimedOut) { error = LegacyPinError::WaitExpired; }
+    if (result.status == PinReplyStatus::Unavailable) { error = LegacyPinError::Unavailable; }
+    pin_->TransferOriginalPinResult(callback, pin_->PinError(error), std::nullopt, 0);
+}
+
+void LegacyCompletion::PublishPinStateChange(const SessionRef &session)
+{
+    if (!pin_) { return; }
+    try {
+        pin_->NotifyPinStateChanged(session);
+    } catch (const std::exception &) {
+        // Failure to notify must not consume the original PIN result outlet.
+    }
 }
 
 void LegacyCompletion::CompleteShowNumber(const ShowNumberCompletion &completion)

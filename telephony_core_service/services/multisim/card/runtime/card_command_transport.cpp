@@ -10,11 +10,12 @@ namespace OHOS::Telephony::MultiSim {
 CardCommandTransport::CardCommandTransport(CardObservationRuntime &card, ResourceBarrier &resources,
     RuntimeEpoch epoch) : card_(card), resources_(resources), localRequests_(epoch, RequestOwner::LocalCard) {}
 
-std::optional<StepRef> CardCommandTransport::BeginLocalRequest(const SessionRef &session)
+std::optional<StepRef> CardCommandTransport::BeginLocalRequest(const SessionRef &session,
+    CompletionPlan completion)
 {
     std::lock_guard<std::mutex> guard(mutex_);
     if (!acceptingLocal_) { return std::nullopt; }
-    const auto request = localRequests_.Begin(session.application, {InternalCompletionRoute {{0}}, false});
+    const auto request = localRequests_.Begin(session.application, std::move(completion));
     if (!localRequests_.AdvanceStep({request, 0, 0}, 1, 0, std::nullopt)) { return std::nullopt; }
     return StepRef {request, 1, 0};
 }
@@ -58,13 +59,13 @@ void CardCommandTransport::Submit(const CardCommandExecution &execution, const H
     CardCommandHandlers handlers)
 {
     const auto reject = [&](const CardCommandHandlers &callbacks) {
-        callbacks.deliver({{execution.step, execution.session, 0}, EffectKnowledge::NotSent, false, false,
+        callbacks.deliver({{execution.step, execution.session, 0, execution.kind}, EffectKnowledge::NotSent, false, false,
             false}, EffectKnowledge::NotSent, true, true);
     };
     const auto callbacks = std::make_shared<const CardCommandHandlers>(std::move(handlers));
     const auto lease = resources_.Acquire(execution.resources, execution.step, execution.effectRequirement);
     if (!lease) { reject(*callbacks); return; }
-    const CardCommandTicket ticket {execution.step, execution.session, lease->fence};
+    const CardCommandTicket ticket {execution.step, execution.session, lease->fence, execution.kind};
     bool registered = false;
     bool duplicate = false;
     try {
@@ -140,7 +141,7 @@ bool CardCommandTransport::AcceptEvidence(const CardCommandEvidence &evidence)
             pending.contradictoryEvidence |= first.effect != evidence.effect ||
                 first.commandEnded != evidence.commandEnded || first.resourceReusable != evidence.resourceReusable ||
                 first.legacyWaitSucceeded != evidence.legacyWaitSucceeded ||
-                first.currentStateVerified != evidence.currentStateVerified || first.rawResponse != evidence.rawResponse;
+                first.currentStateVerified != evidence.currentStateVerified || !(first.response == evidence.response);
             return true;
         }
         pending.evidence.push_back(evidence);

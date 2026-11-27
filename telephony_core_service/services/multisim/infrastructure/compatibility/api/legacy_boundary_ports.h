@@ -67,6 +67,18 @@ public:
     virtual void TransferOriginalShowNumberResult(CompletionId completion, int32_t legacyResult) = 0;
     virtual void DeliverOriginalInt(const CompletionRoute &route, int32_t legacyResult) = 0;
 };
+enum class LegacyPinError { Unavailable, RilFailure, WaitExpired };
+class LegacyPinHostPort {
+public:
+    virtual ~LegacyPinHostPort() = default;
+    virtual std::optional<CompletionId> RetainPinCallback(LegacyCallbackRef callback) = 0;
+    virtual void ReleasePinCallback(CompletionId callback) = 0;
+    virtual bool PostPinTask(std::function<void()> task) = 0;
+    virtual int32_t PinError(LegacyPinError error) const = 0;
+    virtual void TransferOriginalPinResult(CompletionId callback, int32_t status,
+        std::optional<int32_t> unlockResult, int32_t remaining) = 0;
+    virtual void NotifyPinStateChanged(const SessionRef &session) = 0;
+};
 class LegacyNumberHostPort : public NumberQueryHostPort, public LegacyOutputPort {
 public:
     virtual std::optional<CompletionId> RetainNumberCallback(LegacyCallbackRef callback) = 0;

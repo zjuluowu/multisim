@@ -82,6 +82,28 @@ void SessionRegistry::WithdrawPublishedIdentity(const SessionRef &session)
     }
 }
 
+bool SessionRegistry::ObservePinLocked(const SessionRef &session)
+{
+    if (!StillCurrent(session)) { return false; }
+    sessions_.at({session.application.slot, session.application.applicationKey}).lockState = CardLockState::Locked;
+    return true;
+}
+
+std::optional<bool> SessionRegistry::AcceptPinUnlock(const SessionRef &session)
+{
+    if (!StillCurrent(session)) { return std::nullopt; }
+    auto &state = sessions_.at({session.application.slot, session.application.applicationKey}).lockState;
+    if (state != CardLockState::Locked) { return false; }
+    state = CardLockState::NotReady;
+    return true;
+}
+
+std::optional<CardLockState> SessionRegistry::ReadLockState(const SessionRef &session) const
+{
+    if (!StillCurrent(session)) { return std::nullopt; }
+    return sessions_.at({session.application.slot, session.application.applicationKey}).lockState;
+}
+
 bool SessionRegistry::PublishVerifiedSession(const SessionRef &session)
 {
     return PublishSession(session, true);

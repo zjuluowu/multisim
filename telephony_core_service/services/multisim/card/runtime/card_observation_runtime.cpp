@@ -51,6 +51,30 @@ std::optional<SessionRef> CardObservationRuntime::ObserveVerifiedCard(const Card
     return session;
 }
 
+std::optional<SessionRef> CardObservationRuntime::ReadCurrentApplication(const CardApplicationTarget &application)
+{
+    std::lock_guard<std::mutex> guard(mutex_);
+    return sessions_.Current(application);
+}
+
+bool CardObservationRuntime::ObservePinLocked(const SessionRef &session)
+{
+    std::lock_guard<std::mutex> guard(mutex_);
+    return sessions_.ObservePinLocked(session);
+}
+
+std::optional<bool> CardObservationRuntime::AcceptPinUnlock(const SessionRef &session)
+{
+    std::lock_guard<std::mutex> guard(mutex_);
+    return sessions_.AcceptPinUnlock(session);
+}
+
+std::optional<CardLockState> CardObservationRuntime::ReadLockState(const SessionRef &session)
+{
+    std::lock_guard<std::mutex> guard(mutex_);
+    return sessions_.ReadLockState(session);
+}
+
 bool CardObservationRuntime::StillCurrent(const SessionRef &session)
 {
     std::lock_guard<std::mutex> guard(mutex_);

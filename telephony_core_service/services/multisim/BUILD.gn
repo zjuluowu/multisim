@@ -342,6 +342,8 @@ source_set("runtime_core") {
   public_configs = [ ":skeleton_includes" ]
   sources = [
     "card/records/iccid_records_runtime.cpp",
+    "card/security/pin_unlock_runtime.cpp",
+    "card/security/pin_unlock_runtime.h",
     "card/records/iccid_records_runtime.h",
     "card/runtime/card_command_transport.cpp",
     "card/runtime/card_command_transport.h",
@@ -356,6 +358,7 @@ source_set("runtime_core") {
   public = [
     "card/records/iccid_records_runtime.h",
     "card/runtime/card_command_transport.h",
+    "card/security/pin_unlock_runtime.h",
     "card/runtime/card_observation_runtime.h",
     "card/runtime/card_runtime.h",
     "card/runtime/msisdn_runtime.h",

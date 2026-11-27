@@ -22,6 +22,7 @@ SHARED_BODIES = {
     'SIM024-LEGACY-IMS-PREFERENCE-BOUND': 'ims_preference_scenario.h',
     'SIM023-LEGACY-SHOW-NUMBER-AFTER-CARD-FAILURE': 'show_number_scenario.h',
     'SIM021-ACCOUNT-RELOAD-FRESH-VIEWS': 'account_reload_scenario.h',
+    'SIM007-UNLOCK-PIN-WRONG-THEN-SUCCESS': 'unlock_pin_scenario.h',
 }
 SHARED_ASSERTION_CASES = (
     {
@@ -30,12 +31,18 @@ SHARED_ASSERTION_CASES = (
         'target': {'test': 'AF2Reload.FreshAccountReloadKeepsViewsIndependent'},
         'validation': 'same_source_assertions',
     },
+    {
+        'id': 'SIM007-UNLOCK-PIN-WRONG-THEN-SUCCESS',
+        'legacy': {'test': 'SimAdvancedTest.PIN_001'},
+        'target': {'test': 'AF2UnlockPin.WrongThenSuccessfulUsesOriginalApiContract'},
+        'validation': 'same_source_assertions',
+    },
 )
 FRAMEWORK_SUITES = {'SchedulerBoundary', 'RunnerLifetime', 'EventAdapter', 'ExternalData',
                     'ExternalEvents', 'RilAdapter', 'ResourceModel', 'SimCharacterization'}
 TARGET_ARCHITECTURE_SUITES = {'TargetArchitecture', 'TargetTopologyIntegration', 'TargetPrimary',
                               'TargetPrimaryB', 'TargetRadioReceipt', 'TargetAdapterIntegration',
-                              'AF2Reload', 'AF2Module', 'AF2Discovery'}
+                              'AF2Reload', 'AF2Module', 'AF2Discovery', 'AF2CardComposition'}
 TARGET_INTERNAL_CASES = {
     'AF2AccountMetadata.FieldAndRowIsolationWhileOriginalWriteIsInFlight',
     'AF2AccountMetadata.ReplacementDoesNotReceiveTheOriginalSlotWrite',

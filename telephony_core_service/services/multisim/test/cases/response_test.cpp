@@ -1,4 +1,5 @@
 #include "sim_protocol_test.h"
+#include "shared/unlock_pin_scenario.h"
 namespace SimGuard {
 using SimAdvancedTest=SimTest; // Historical suite label, not a Framework Fixture.
 
@@ -7,14 +8,9 @@ TEST_F(SimAdvancedTest, PIN_001)
     StateProtocol protocol(*this);
     protocol.Start(1);
     protocol.Change(0, {State::Locked, CardKind::Usim, "fixture-A", Lock::Pin});
-    auto wrong = protocol.UnlockPin(0, "0000");
-    EXPECT_EQ(wrong.error, 0);
-    EXPECT_EQ(wrong.result, Unlock::Incorrect);
-    EXPECT_EQ(wrong.remaining, 2);
-    ExpectCard(protocol.Observe().cards.at(0), 0, State::Locked, CardKind::Usim);
-    auto ok = protocol.UnlockPin(0, "1234");
-    EXPECT_EQ(ok.error, 0);
-    EXPECT_EQ(ok.result, Unlock::Ok);
+    ExerciseWrongThenSuccessfulPin(
+        [&](const char *pin) { return protocol.UnlockPin(0, pin); },
+        [&] { ExpectCard(protocol.Observe().cards.at(0), 0, State::Locked, CardKind::Usim); });
     // Card readiness is established by a separate RIL state observation.
     protocol.Notify(0); protocol.Complete(); protocol.Observe("pin-success-status");
     ExpectCard(protocol.Observe().cards.at(0), 0, State::Ready, CardKind::Usim);

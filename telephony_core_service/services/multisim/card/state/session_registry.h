@@ -25,6 +25,8 @@
 #include "infrastructure/request/request_ref.h"
 
 namespace OHOS::Telephony::MultiSim {
+enum class CardLockState { Unknown, Locked, NotReady };
+
 enum class TransitionCause { OrdinaryActivation, ProfileSwitch, RadioSwitch, VerifiedRouteChange };
 struct ExpectedTransition {
     StepRef step;
@@ -58,6 +60,9 @@ public:
     bool MayPublishVerifiedSession(const SessionRef &session) const; // 替换前预检，旧观察不得先撤销当前会话。
     bool PublishApplicationSession(const SessionRef &session);
     bool IdentityPublished(const SessionRef &session) const;
+    bool ObservePinLocked(const SessionRef &session);
+    std::optional<bool> AcceptPinUnlock(const SessionRef &session);
+    std::optional<CardLockState> ReadLockState(const SessionRef &session) const;
     void WithdrawPublishedIdentity(const SessionRef &session);
     bool PublishVerifiedSession(const SessionRef &session); // 先交T旧会话失效，再正式暴露新会话。
     void InvalidateForVerifiedReplacement(const SessionRef &oldSession);
@@ -76,7 +81,11 @@ private:
             return slot < other.slot || (!(other.slot < slot) && application < other.application);
         }
     };
-    struct SessionEntry { SessionRef session; bool identityPublished; };
+    struct SessionEntry {
+        SessionRef session;
+        bool identityPublished;
+        CardLockState lockState {CardLockState::Unknown};
+    };
     bool PublishSession(const SessionRef &session, bool identityPublished);
     std::map<ApplicationKey, SessionEntry> sessions_;
     std::map<ApplicationKey, uint64_t> generations_; // 撤销也保留代次，不复活旧EF。

@@ -1,0 +1,4 @@
+Host production archive ownership: PASS
+libsim_target_production_host.iccid_records_runtime.o
+libsim_target_production_host.card_command_transport.o
+libsim_target_production_host.pin_unlock_runtime.o

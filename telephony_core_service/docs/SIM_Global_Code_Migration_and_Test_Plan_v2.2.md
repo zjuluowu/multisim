@@ -16,7 +16,7 @@
 | 四角色 | `AF2VoiceSms.LiveDualSimSelectsFourRolesThroughLegacyEntries` | M3～M5 正式入口，复用角色写集 |
 | B/C1 异步 | `TargetPrimaryB` 的 B、C1 和成员交接专项 | 组件已验证原生路由、成员去重、原步票和 A 锁外 Submit。正式组合根仍为 ObserveOnly／C0Only |
 | 号码组合 | `AF2ShowNumber.LiveCardNumberWriteUpdatesAccountAndCompletes` | M7B，原任务固定关系、原设备结果、Provider 写和回调 |
-| 卡安全短请求 | Legacy `SimStateManager::UnlockPin` | Target 需接卡应用会话、原返回、错误剩余次数、LOCKED→NOT_READY、厂商回调 |
+| 卡安全短请求 | Legacy `SimStateManager::UnlockPin`，Target `SimModule::UnlockPin` | Host 正式卡应用、原资源和回包、剩余次数、LOCKED→NOT_READY 已验证。等待由受控设备适配器报告。真实 RIL 及厂商回调独立验收 |
 | ICCID EF | Legacy `SimFile::ProcessGetIccIdDone`，Target `SimModule::LoadIccid` | Host 透明 EF 已执行原响应解码、Records、账户发现及绑定。其他卡型和产品路由独立验证 |
 
 账户加载见 [M8 Reload 调试](../services/multisim/test/docs/M8_Account_Reload_Debug.md)。

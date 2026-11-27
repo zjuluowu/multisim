@@ -11,16 +11,20 @@
 #include <mutex>
 #include <vector>
 #include "card/runtime/card_observation_runtime.h"
+#include "card/security/pin_requests.h"
 #include "device/resource/resource_barrier.h"
 #include "infrastructure/request/runtime_operation_store.h"
 
 namespace OHOS::Telephony::MultiSim {
+enum class CardCommandKind { WriteMsisdn, ReadIccid, UnlockPin };
+
 struct CardCommandTicket {
     StepRef step;
     SessionRef session;
     uint64_t fence;
+    CardCommandKind kind {CardCommandKind::WriteMsisdn};
     bool operator==(const CardCommandTicket &other) const
-    { return step == other.step && session == other.session && fence == other.fence; }
+    { return step == other.step && session == other.session && fence == other.fence && kind == other.kind; }
 };
 
 struct CardCommandEvidence {
@@ -30,7 +34,7 @@ struct CardCommandEvidence {
     bool resourceReusable;
     bool legacyWaitSucceeded;
     bool currentStateVerified {false};
-    std::optional<std::string> rawResponse {};
+    std::variant<std::monostate, std::string, PinReply> response {};
 };
 
 struct CardCommandExecution {
@@ -39,6 +43,7 @@ struct CardCommandExecution {
     std::vector<ResourceKey> resources;
     EffectRequirement effectRequirement;
     std::function<bool()> scopeCurrent {};
+    CardCommandKind kind {CardCommandKind::WriteMsisdn};
 };
 
 struct CardCommandHandlers {
@@ -51,7 +56,8 @@ struct CardCommandHandlers {
 class CardCommandTransport final {
 public:
     CardCommandTransport(CardObservationRuntime &card, ResourceBarrier &resources, RuntimeEpoch epoch);
-    std::optional<StepRef> BeginLocalRequest(const SessionRef &session);
+    std::optional<StepRef> BeginLocalRequest(const SessionRef &session,
+        CompletionPlan completion = {InternalCompletionRoute {{0}}, false});
     std::optional<StepRef> AdvanceLocalRequest(const StepRef &original);
     void CloseLocalRequest(const StepRef &original, EffectKnowledge evidence, bool transportEnded);
     void SealLocalCommands();

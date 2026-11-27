@@ -261,6 +261,13 @@ Target 全量 182/182，上一协议路由候选冻结 Both 24/24 与 Oracle 零
 全图关闭及其余技术验收仍待，状态保持 `AF2_M9_IN_PROGRESS`。
 [ICCID 测试、原始证据及开发断点](../services/multisim/test/docs/evidence/af2_m9_d03_iccid_20261126/README.md)
 
+**D03 UnlockPin 与 D04 卡侧组合检查点。** 正式 Host PIN 与 ICCID 共用原卡应用、卡传输、
+原请求台账和 ResourceBarrier。PIN 错误密码及剩余次数保留原 API 契约，成功只把原 LOCKED
+应用推进到 NOT_READY。两端错 PIN 后成功路径复用断言。Target 204/204，包含共享和独立资源、
+PIN 设备责任与 ICCID Store 责任分开结清、前驱证据不足禁建与旧 epoch 回包拒绝。
+正式 B/C1 及全对象图组合、独立扩展和最终反审仍待，状态保持 `AF2_M9_IN_PROGRESS`。
+[PIN、共用业务与组合用例证据](../services/multisim/test/docs/evidence/af2_m9_d03_pin_20261127/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）

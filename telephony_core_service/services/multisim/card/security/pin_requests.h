@@ -24,6 +24,18 @@
 
 namespace OHOS::Telephony::MultiSim {
 struct VerifyPinRequest { RequestContext context; CardApplicationTarget target; std::string pin; };
+enum class PinReplyStatus { Unlocked, Incorrect, Failed, TimedOut, Unavailable };
+struct PinReply {
+    PinReplyStatus status;
+    int32_t remaining;
+    bool operator==(const PinReply &other) const { return status == other.status && remaining == other.remaining; }
+};
+class PinCompletionPort {
+public:
+    virtual ~PinCompletionPort() = default;
+    virtual void CompletePin(CompletionId callback, const PinReply &result) = 0;
+    virtual void PublishPinStateChange(const SessionRef &session) = 0;
+};
 } // namespace OHOS::Telephony::MultiSim
 
 #endif // OHOS_TELEPHONY_MULTISIM_RUNTIME_STATE_PIN_REQUESTS_H

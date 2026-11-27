@@ -171,3 +171,26 @@ IMS Preference 的 Provider 直读、原码透传与换卡单步用例见 [M7A �
 SIM 号码的异步队列、卡会话、资源租约及账户回写单步见 [M7B 号码开发与调试](M7B_Show_Number_Debug.md)。
 
 账户初次恢复、Current/Historical 刷新、字段保护及 A 的整组回执见 [M8 账户加载与 Reload 调试](M8_Account_Reload_Debug.md)。
+
+
+## 调试卡安全和 ICCID EF
+
+从仓库根目录运行。按本页前文配置固定依赖和仓外构建输出。
+
+```sh
+TEST=telephony_core_service/services/multisim/test
+python3 -B "$TEST/scripts/test.py" run --backend legacy --filter SimAdvancedTest.PIN_001 --out "$SIM_VERIFY"
+python3 -B "$TEST/scripts/test.py" run --backend target --debug-build --out "$SIM_DEV" \
+  --filter AF2UnlockPin.WrongThenSuccessfulUsesOriginalApiContract
+python3 -B "$TEST/scripts/test.py" run --backend target --debug-build --out "$SIM_DEV" \
+  --filter AF2Iccid.PreIdentityApplicationReadsRawEfAndDiscoversOneAccount
+```
+
+在 `PinUnlockRuntime::Unlock` 看原卡应用和传输票；在 `LegacyCompletion::CompletePin` 核对 API 返回、
+业务结果及剩余次数。成功的安全请求可将原应用从 LOCKED 推进到 NOT_READY。
+在 `IccidRecordsRuntime::Submit` 观察原 GET RESPONSE 和 READ BINARY，在
+`IccidRecordsRuntime::AcceptRead` 和 `TopologyService::DiscoverAccount` 核对 Records 与账户发现。
+两个样板复用 `CardCommandTransport` 传输与租约，不要求预先建立账户。
+
+受控 Host 卡端口提供路由、原回包、等待结束和资源复用证据。实际 Windows Remote WSL GUI 为
+GUI_NOT_RUN。产品原生设备供证继续独立进行。

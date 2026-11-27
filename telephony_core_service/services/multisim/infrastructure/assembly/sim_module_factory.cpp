@@ -54,7 +54,7 @@ SimModule::SimModule(CoreSimModulePorts ports, std::shared_ptr<const SlotCatalog
       sessions_(epoch_),
       topology_(*catalog_, *ports_.accountStore, epoch_), card_(*catalog_, sessions_, topology_, epoch_),
       cardTransport_(card_, resources_, epoch_),
-      completion_(*ports_.completion, ports_.primaryHost.get(), ports_.numberHost.get()),
+      completion_(*ports_.completion, ports_.primaryHost.get(), ports_.numberHost.get(), ports_.pinHost.get()),
       assignment_(std::make_shared<AssignmentService>(*catalog_, *ports_.assignmentStore, radio_,
           *ports_.output, topology_, completion_, epoch_, AssignmentService::PrimaryScope::C0Only)),
       lifecycle_(assignment_, radio_, *ports_.scheduler, ports_.ownerDispatch)
@@ -64,6 +64,9 @@ SimModule::SimModule(CoreSimModulePorts ports, std::shared_ptr<const SlotCatalog
     }
     topology_.BindRolePlanner(*assignment_);
     if (ports_.iccidIo) { iccidRecords_.emplace(card_, cardTransport_, *ports_.iccidIo); }
+    if (ports_.pinIo && ports_.pinHost && ports_.primaryHost) {
+        pinUnlock_.emplace(card_, cardTransport_, *ports_.pinIo, completion_);
+    }
     assignment_->BindRetryScheduler(ports_.scheduler);
     radio_.BindResultSink(assignment_);
     radio_.BindOwnerDispatch(ports_.ownerDispatch);
@@ -86,6 +89,10 @@ bool SimModule::InitializeResources()
     if (ports_.iccidIo) {
         const auto cardKeys = ports_.iccidIo->InitialResources();
         keys.insert(cardKeys.begin(), cardKeys.end());
+    }
+    if (pinUnlock_) {
+        const auto pinKeys = ports_.pinIo->InitialResources();
+        keys.insert(pinKeys.begin(), pinKeys.end());
     }
     auto provider = std::move(ports_.initialEvidence);
     for (const auto &key : keys) {
@@ -130,12 +137,12 @@ std::optional<AccountView> SimModule::ReadAccount(SubscriptionId subscription, A
     return topology_.ReadAccount(subscription, view);
 }
 
-bool SimModule::QueueNumberTask(std::function<void()> task)
+bool SimModule::QueueModuleTask(const std::function<bool(std::function<void()>)> &post, std::function<void()> task)
 {
     if (!AdmitModuleCall()) { return false; }
     const auto lifetime = std::make_shared<ModuleCall>(shared_from_this());
     try {
-        return ports_.numberHost->PostNumberTask([lifetime, task = std::move(task)]() mutable {
+        return post([lifetime, task = std::move(task)]() mutable {
             const auto executing = std::move(lifetime);
             if (executing) { task(); }
         });
@@ -167,7 +174,8 @@ int32_t SimModule::QueueNumberEntry(SlotId slot, LegacyCallerRef caller, LegacyC
     const auto errors = LegacySimFacade::NumberErrors(*ports_.primaryHost);
     const auto receiver = ports_.numberHost->RetainNumberCallback(callback);
     if (!receiver) { return errors.unavailable; }
-    if (!QueueNumberTask([this, slot, receiver = *receiver, number, errors] {
+    const auto post = [this](auto task) { return ports_.numberHost->PostNumberTask(std::move(task)); };
+    if (!QueueModuleTask(post, [this, post, slot, receiver = *receiver, number, errors] {
         if (number) {
             const CompletionPlan plan {CallbackCompletionRoute {receiver}, true};
             if (!catalog_->Find(slot)) {
@@ -179,8 +187,8 @@ int32_t SimModule::QueueNumberEntry(SlotId slot, LegacyCallerRef caller, LegacyC
         }
         ShowNumberRead result {{}, NumberSource::Empty, errors.unavailable};
         if (catalog_->Find(slot)) {
-            result = numberQuery_->ReadAtLegacyExecutionPoint({slot}, errors, [this](NumberBackwrite backwrite) {
-                QueueNumberTask([this, backwrite = std::move(backwrite)] {
+            result = numberQuery_->ReadAtLegacyExecutionPoint({slot}, errors, [this, post](NumberBackwrite backwrite) {
+                QueueModuleTask(post, [this, backwrite = std::move(backwrite)] {
                     numberQuery_->RunIndependentBackwrite(backwrite);
                 });
             });
@@ -196,7 +204,7 @@ int32_t SimModule::QueueNumberEntry(SlotId slot, LegacyCallerRef caller, LegacyC
 bool SimModule::AcceptMsisdnEvidence(const MsisdnTransportEvidence &evidence)
 {
     if (!msisdn_ || evidence.ticket.step.request.owner != RequestOwner::ShowNumber ||
-        !AdmitModuleCall(true)) { return false; }
+        evidence.ticket.kind != CardCommandKind::WriteMsisdn || !AdmitModuleCall(true)) { return false; }
     const ModuleCall call {shared_from_this()};
     return cardTransport_.AcceptEvidence(evidence);
 }
@@ -225,7 +233,53 @@ std::optional<IccidRecords> SimModule::ReadIccidRecords(const SessionRef &sessio
 bool SimModule::AcceptIccidIoEvidence(const CardCommandEvidence &evidence)
 {
     if (!iccidRecords_ || evidence.ticket.step.request.owner != RequestOwner::LocalCard ||
-        !AdmitModuleCall(true)) { return false; }
+        evidence.ticket.kind != CardCommandKind::ReadIccid || !AdmitModuleCall(true)) { return false; }
+    const ModuleCall call {shared_from_this()};
+    return cardTransport_.AcceptEvidence(evidence);
+}
+
+int32_t SimModule::UnlockPin(int32_t slot, const std::u16string &pin, LegacyCallerRef caller,
+    LegacyCallbackRef callback)
+{
+    if (!ports_.primaryHost) { return -1; }
+    auto &host = *ports_.primaryHost;
+    const auto unavailable = host.PrimaryError(LegacyPrimaryError::Unavailable);
+    if (!AdmitModuleCall()) { return unavailable; }
+    const ModuleCall call {shared_from_this()};
+    if (!host.IsSystemCaller(caller)) { return host.PrimaryError(LegacyPrimaryError::NonSystemCaller); }
+    if (!host.CanSetTelephonyState(caller)) { return host.PrimaryError(LegacyPrimaryError::PermissionDenied); }
+    if (!pinUnlock_ || callback.token == 0) { return unavailable; }
+    if (!catalog_->Find({slot}) || !host.SupportsPrimarySlot({slot})) {
+        return host.PrimaryError(LegacyPrimaryError::InvalidSlot);
+    }
+    const auto receiver = ports_.pinHost->RetainPinCallback(callback);
+    if (!receiver) { return unavailable; }
+    if (!QueueModuleTask([this](auto task) { return ports_.pinHost->PostPinTask(std::move(task)); },
+        [this, slot, pin, receiver = *receiver] { pinUnlock_->Unlock({slot}, pin, receiver); })) {
+        ports_.pinHost->ReleasePinCallback(*receiver);
+        return unavailable;
+    }
+    return 0;
+}
+
+bool SimModule::ObservePinLocked(const SessionRef &session)
+{
+    if (!AdmitModuleCall()) { return false; }
+    const ModuleCall call {shared_from_this()};
+    return card_.ObservePinLocked(session);
+}
+
+std::optional<CardLockState> SimModule::ReadLockState(const SessionRef &session)
+{
+    if (!AdmitModuleCall()) { return std::nullopt; }
+    const ModuleCall call {shared_from_this()};
+    return card_.ReadLockState(session);
+}
+
+bool SimModule::AcceptPinIoEvidence(const CardCommandEvidence &evidence)
+{
+    if (!pinUnlock_ || evidence.ticket.step.request.owner != RequestOwner::LocalCard ||
+        evidence.ticket.kind != CardCommandKind::UnlockPin || !AdmitModuleCall(true)) { return false; }
     const ModuleCall call {shared_from_this()};
     return cardTransport_.AcceptEvidence(evidence);
 }

@@ -15,6 +15,7 @@ sim_target_core_sources = [
   "$sim_target_root/card/runtime/card_command_transport.cpp",
   "$sim_target_root/card/runtime/card_observation_runtime.cpp",
   "$sim_target_root/card/runtime/msisdn_runtime.cpp",
+  "$sim_target_root/card/security/pin_unlock_runtime.cpp",
   "$sim_target_root/card/state/session_registry.cpp",
   "$sim_target_root/device/resource/resource_barrier.cpp",
   "$sim_target_root/device/resource/resource_radio_runtime.cpp",

@@ -1,0 +1,23 @@
+{
+  "baseline": "0b6a9516dc3d03793529e29b095332d88d0a8825",
+  "files": {
+    "BUILD.gn": "1ad14c3cadfbe309fe27a53a52c1c7a54e9e1eec1da9132798e7abfefd79efe7",
+    "card/records/iccid_records_runtime.cpp": "f6086ce15e057fd8e2148f06ec72d5dd21360f922c4a60f28aaa3ba192f117ef",
+    "card/runtime/card_command_transport.cpp": "b1fc4debe20724b373c719d72cff206737334bfd7c63bc03d8b23be06c1f644a",
+    "card/runtime/card_command_transport.h": "de6b7703a230577ffe2c87125bcbec35afdca55d9ed4fad5f411973721e8cb8c",
+    "card/runtime/card_observation_runtime.cpp": "e702c95afe61e5213387abaae3af08d72c71946b4fe4c94f08e7c8398cbc645f",
+    "card/runtime/card_observation_runtime.h": "584ae7c0a5addc77bdf748a2bde0a807e34fd89ad3ede42bc63e9d24abbe72b1",
+    "card/security/pin_requests.h": "c0ffa03f06ba872df3687272e9e1d53ea013f610fb37c284478ee37f76ce2617",
+    "card/state/session_registry.cpp": "3500042ec90e24a506d57094b75a27083f0830502384ac7972e31bb430ae7257",
+    "card/state/session_registry.h": "0fedee73ab2f9f71a7114711be96d361bccfef3c24cd69c48171161c44edbe5b",
+    "infrastructure/assembly/sim_module.h": "e7a1c4cfef103be7c87141745d760cc11a1cf9a6e0af9e1f3c632e27a79c1cf6",
+    "infrastructure/assembly/sim_module_factory.cpp": "4ec3f6dba2d402e5dc66372d5990efdfd0a511a21a96a936a20f0e226870abd4",
+    "infrastructure/compatibility/api/legacy_boundary_ports.h": "1bf6c10c40c0ba8ce21c5a6947a2467107689917f3899321fb4cce99472a2527",
+    "infrastructure/compatibility/events/legacy_completion.cpp": "56244d43a37ac401dea47c356ed4c6057e6c1d37007ab8f5953815f7bc11df9e",
+    "infrastructure/compatibility/events/legacy_completion.h": "6582b72cfa8003f2a8c9f7d55486cf0faf24bb610cf33ec971d53d970a28838d"
+  },
+  "added": {
+    "card/security/pin_unlock_runtime.cpp": "19eef30524ecf5d149ea97174da555ebe96adf4994de0b8511ebac32b206a72c",
+    "card/security/pin_unlock_runtime.h": "404c61fcef0171fc6a7be36c0bbd751ea7ac5765072fa0957a4507b7ea891597"
+  }
+}

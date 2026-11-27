@@ -127,17 +127,17 @@ void IccidRecordsRuntime::Submit(const StepRef &step, const LoadToken &token, co
     transport_.Submit({step, token.session, route.resources, EffectRequirement::NoBusinessWrite, [this, &token] {
         const auto found = scopes_.find(ApplicationKey(token.session));
         return found != scopes_.end() && IsCurrentLoad(found->second, token);
-    }}, [&](const CardCommandTicket &ticket) { return io_.SubmitIccidIo(ticket, command); },
+    }, CardCommandKind::ReadIccid}, [&](const CardCommandTicket &ticket) { return io_.SubmitIccidIo(ticket, command); },
     {{}, [this, step, token, route, code, size](const CardCommandEvidence &evidence,
         EffectKnowledge effect, bool first, bool ended) {
         if (!first) {
             transport_.CloseLocalRequest(step, effect, ended);
             return;
         }
-        const bool validResponse = effect == EffectKnowledge::ConfirmedApplied && evidence.legacyWaitSucceeded &&
-            evidence.rawResponse.has_value();
+        const auto *raw = std::get_if<std::string>(&evidence.response);
+        const bool validResponse = effect == EffectKnowledge::ConfirmedApplied && evidence.legacyWaitSucceeded && raw;
         if (validResponse && code == IccidIoCommand::Code::GetResponse) {
-            const auto length = FileSize(*evidence.rawResponse);
+            const auto length = FileSize(*raw);
             const auto next = length ? transport_.AdvanceLocalRequest(step) : std::nullopt;
             if (next) {
                 Submit(*next, token, route, IccidIoCommand::Code::ReadBinary, *length);
@@ -147,10 +147,10 @@ void IccidRecordsRuntime::Submit(const StepRef &step, const LoadToken &token, co
 
         std::optional<IccidRecords> data;
         if (validResponse && code == IccidIoCommand::Code::ReadBinary &&
-            evidence.rawResponse->size() == static_cast<size_t>(size) * 2 &&
-            std::all_of(evidence.rawResponse->begin(), evidence.rawResponse->end(),
+            raw->size() == static_cast<size_t>(size) * 2 &&
+            std::all_of(raw->begin(), raw->end(),
                 [](char value) { return DecodeNibble(value) >= 0; })) {
-            data = DecodeIccid(*evidence.rawResponse);
+            data = DecodeIccid(*raw);
         }
         AcceptRead(token, data);
         transport_.CloseLocalRequest(step, effect, ended);

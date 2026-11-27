@@ -21,6 +21,10 @@ public:
     std::optional<SessionRef> ObserveVerifiedCard(const CardApplicationTarget &application, uint64_t generation,
         const std::string &iccid);
     bool StillCurrent(const SessionRef &session);
+    std::optional<SessionRef> ReadCurrentApplication(const CardApplicationTarget &application);
+    bool ObservePinLocked(const SessionRef &session);
+    std::optional<bool> AcceptPinUnlock(const SessionRef &session);
+    std::optional<CardLockState> ReadLockState(const SessionRef &session);
     // Only register local responsibilities here. The callback cannot invoke the platform or deliver results.
     bool WithCurrentApplication(const SessionRef &session, const std::function<bool()> &commit);
     bool PublishRecordIdentity(const SessionRef &session, const std::string &full, const std::string &decimal,

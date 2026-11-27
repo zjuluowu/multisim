@@ -1,0 +1,22 @@
+{
+  "PinUnlockRuntime::Unlock": {
+    "count": 1,
+    "symbol": "_ZN4OHOS9Telephony8MultiSim16PinUnlockRuntime6UnlockENS1_6SlotIdERKNSt7__cxx1112basic_stringIDsSt11char_traitsIDsESaIDsEEENS1_12CompletionIdE"
+  },
+  "CardCommandTransport::Submit": {
+    "count": 1,
+    "symbol": "_ZN4OHOS9Telephony8MultiSim20CardCommandTransport6SubmitERKNS1_20CardCommandExecutionERKSt8functionIFbRKNS1_17CardCommandTicketEEENS1_19CardCommandHandlersE"
+  },
+  "LegacyCompletion::CompletePin": {
+    "count": 1,
+    "symbol": "_ZN4OHOS9Telephony8MultiSim16LegacyCompletion11CompletePinENS1_12CompletionIdERKNS1_8PinReplyE"
+  },
+  "SessionRegistry::AcceptPinUnlock": {
+    "count": 1,
+    "symbol": "_ZN4OHOS9Telephony8MultiSim15SessionRegistry15AcceptPinUnlockERKNS1_10SessionRefE"
+  },
+  "SimModule::UnlockPin": {
+    "count": 1,
+    "symbol": "_ZN4OHOS9Telephony8MultiSim9SimModule9UnlockPinEiRKNSt7__cxx1112basic_stringIDsSt11char_traitsIDsESaIDsEEENS1_15LegacyCallerRefENS1_17LegacyCallbackRefE"
+  }
+}

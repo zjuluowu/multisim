@@ -24,22 +24,26 @@
 #include "infrastructure/compatibility/api/legacy_boundary_ports.h"
 #include "infrastructure/compatibility/events/completion_cell.h"
 #include "account/number/show_number_completion_port.h"
+#include "card/security/pin_requests.h"
 
 namespace OHOS::Telephony::MultiSim {
 // T号码完成端口的实现；只解释旧出口，不通过通知再写业务状态。
-class LegacyCompletion final : public ShowNumberCompletionPort, public LegacyIntCompletionPort {
+class LegacyCompletion final : public ShowNumberCompletionPort, public LegacyIntCompletionPort, public PinCompletionPort {
 public:
     explicit LegacyCompletion(LegacyOutputPort &output) : output_(&output) {}
-    LegacyCompletion(LegacyIntCompletionPort &fallback, LegacyPrimaryHostPort *primary, LegacyOutputPort *number = nullptr)
-        : output_(number), fallback_(&fallback), primary_(primary) {}
+    LegacyCompletion(LegacyIntCompletionPort &fallback, LegacyPrimaryHostPort *primary, LegacyOutputPort *number = nullptr,
+        LegacyPinHostPort *pin = nullptr) : output_(number), fallback_(&fallback), primary_(primary), pin_(pin) {}
     std::optional<SynchronousWaitRef> RetainRoleWaiter();
     std::optional<int32_t> TakeRoleResult(SynchronousWaitRef waiter);
+    void CompletePin(CompletionId callback, const PinReply &result) override;
+    void PublishPinStateChange(const SessionRef &session) override;
     void CompleteShowNumber(const ShowNumberCompletion &completion) override;
     void CompleteLegacyInt(const CompletionPlan &plan, int32_t legacyResult) override;
 private:
     LegacyOutputPort *output_ {nullptr};
     LegacyIntCompletionPort *fallback_ {nullptr};
     LegacyPrimaryHostPort *primary_ {nullptr};
+    LegacyPinHostPort *pin_ {nullptr};
     std::mutex waitersLock_;
     std::map<uint64_t, CompletionCell> roleWaiters_;
     uint64_t nextWaiter_ {1};

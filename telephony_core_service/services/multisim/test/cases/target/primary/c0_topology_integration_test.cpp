@@ -7,6 +7,7 @@
 #include "../../shared/cellular_selection_scenario.h"
 #include "../../shared/show_number_scenario.h"
 #include "../../shared/account_reload_scenario.h"
+#include "../../shared/unlock_pin_scenario.h"
 #include "core_service_errors.h"
 
 #include <algorithm>
@@ -1157,7 +1158,8 @@ struct LiveDiscoveryFixture {
         std::shared_ptr<SlotCatalog> catalog = {}, std::shared_ptr<RoleProvider> provider = {},
         std::shared_ptr<MetadataProvider> metadata = {},
         std::shared_ptr<LegacyNumberHostPort> numberHost = {}, std::shared_ptr<MsisdnPlatformPort> msisdn = {},
-        std::shared_ptr<IccidIoPort> iccidIo = {})
+        std::shared_ptr<IccidIoPort> iccidIo = {}, std::shared_ptr<PinIoPort> pinIo = {},
+        std::shared_ptr<LegacyPinHostPort> pinHost = {})
     {
         if (catalog) { input.catalog = std::move(catalog); }
         store->persistRows = true;
@@ -1172,7 +1174,9 @@ struct LiveDiscoveryFixture {
         ports.numberHost = std::move(numberHost);
         ports.msisdn = std::move(msisdn);
         ports.iccidIo = std::move(iccidIo);
-        if (ports.iccidIo) {
+        ports.pinIo = std::move(pinIo);
+        ports.pinHost = std::move(pinHost);
+        if (ports.iccidIo || ports.pinIo) {
             ports.initialEvidence = [](const ResourceKey &key, RuntimeEpoch epoch) {
                 EXPECT_TRUE(key.verifiedPhysicalDomain == "primary-shared" ||
                     key.verifiedPhysicalDomain == "other-card-ef");
@@ -1909,6 +1913,369 @@ struct PrimaryFixture {
     }
 };
 } // namespace
+
+namespace {
+class PinHost final : public LegacyPinHostPort {
+public:
+    struct Result {
+        uint64_t callback;
+        int32_t status;
+        std::optional<int32_t> unlockResult;
+        int32_t remaining;
+    };
+    std::optional<CompletionId> RetainPinCallback(LegacyCallbackRef callback) override
+    {
+        return callback.token == 0 ? std::nullopt : std::optional<CompletionId> {{callback.token}};
+    }
+    void ReleasePinCallback(CompletionId) override { ++released; }
+    bool PostPinTask(std::function<void()> task) override
+    {
+        if (!acceptTasks) { return false; }
+        tasks.push_back(std::move(task));
+        return true;
+    }
+    int32_t PinError(LegacyPinError error) const override
+    {
+        using namespace OHOS::Telephony;
+        switch (error) {
+            case LegacyPinError::Unavailable: return TELEPHONY_ERR_LOCAL_PTR_NULL;
+            case LegacyPinError::RilFailure: return TELEPHONY_ERR_RIL_CMD_FAIL;
+            case LegacyPinError::WaitExpired: return CORE_ERR_SIM_CARD_UPDATE_FAILED;
+        }
+        return TELEPHONY_ERR_FAIL;
+    }
+    void TransferOriginalPinResult(CompletionId callback, int32_t status,
+        std::optional<int32_t> unlockResult, int32_t remaining) override
+    { results.push_back({callback.value, status, unlockResult, remaining}); }
+    void NotifyPinStateChanged(const SessionRef &session) override { changed.push_back(session); }
+    void RunNext()
+    {
+        ASSERT_FALSE(tasks.empty());
+        auto task = std::move(tasks.front());
+        tasks.erase(tasks.begin());
+        task();
+    }
+
+    bool acceptTasks {true};
+    size_t released {0};
+    std::vector<std::function<void()>> tasks;
+    std::vector<Result> results;
+    std::vector<SessionRef> changed;
+};
+
+class PinDevice final : public PinIoPort {
+public:
+    std::vector<ResourceKey> InitialResources() const override
+    { return {{"primary-shared"}, {"other-card-ef"}}; }
+    std::optional<PinIoRoute> ResolvePinRoute(SlotId slot) override
+    {
+        return PinIoRoute {{slot, "USIM"}, {{slot == SlotId {1} ? "primary-shared" : "other-card-ef"}}};
+    }
+    bool SubmitUnlockPin(const CardCommandTicket &ticket, const std::u16string &pin) override
+    {
+        commands.emplace_back(ticket, pin);
+        if (onSubmit) { onSubmit(Reply(commands.size() - 1, PinReplyStatus::Unlocked, 3)); }
+        return true;
+    }
+    CardCommandEvidence Reply(size_t index, PinReplyStatus status, int32_t remaining) const
+    {
+        auto effect = status == PinReplyStatus::Unlocked ? EffectKnowledge::ConfirmedApplied :
+            status == PinReplyStatus::TimedOut ? EffectKnowledge::Unknown : EffectKnowledge::ConfirmedNotApplied;
+        const bool ended = status != PinReplyStatus::TimedOut;
+        return {commands.at(index).first, effect, ended, ended, ended, false, PinReply {status, remaining}};
+    }
+    std::vector<std::pair<CardCommandTicket, std::u16string>> commands;
+    std::function<void(const CardCommandEvidence &)> onSubmit;
+};
+
+struct PinFixture {
+    std::shared_ptr<PrimaryHost> permission = std::make_shared<PrimaryHost>();
+    std::shared_ptr<PinHost> host = std::make_shared<PinHost>();
+    std::shared_ptr<PinDevice> io = std::make_shared<PinDevice>();
+    LiveDiscoveryFixture live;
+
+    explicit PinFixture(std::shared_ptr<IccidIoPort> iccid = {})
+        : live(permission, {}, {}, {}, {}, {}, std::move(iccid), io, host) {}
+
+    std::optional<SessionRef> ObserveLocked(SlotId slot, uint64_t generation = 1)
+    {
+        auto session = live.module->ObserveCardApplication({slot, "USIM"}, generation);
+        EXPECT_TRUE(session && live.module->ObservePinLocked(*session));
+        return session;
+    }
+};
+} // namespace
+
+TEST(AF2UnlockPin, WrongThenSuccessfulUsesOriginalApiContract)
+{
+    using namespace SimGuard;
+    PinFixture fixture;
+    auto &module = fixture.live.module;
+    const auto session = fixture.ObserveLocked({0});
+    ASSERT_TRUE(session);
+    size_t call = 0;
+    ExerciseWrongThenSuccessfulPin([&](const char *pin) {
+        const std::string value(pin);
+        EXPECT_EQ(module->UnlockPin(0, std::u16string(value.begin(), value.end()), {7}, {40 + call}), 0);
+        fixture.host->RunNext();
+        const auto status = call == 0 ? PinReplyStatus::Incorrect : PinReplyStatus::Unlocked;
+        EXPECT_TRUE(module->AcceptPinIoEvidence(fixture.io->Reply(call, status, call == 0 ? 2 : 3)));
+        const auto &result = fixture.host->results.at(call++);
+        const auto legacy = !result.unlockResult ? Unlock::Failure :
+            *result.unlockResult == 0 ? Unlock::Ok : Unlock::Incorrect;
+        return UnlockResult {result.status, legacy, result.remaining};
+    }, [&] { EXPECT_EQ(module->ReadLockState(*session), CardLockState::Locked); });
+    EXPECT_EQ(module->ReadLockState(*session), CardLockState::NotReady);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2CardComposition, PinAndEfUseSharedResourceAndOriginalRequestNamespace)
+{
+    auto iccid = std::make_shared<IccidDevice>();
+    PinFixture fixture(iccid);
+    auto &module = fixture.live.module;
+    const auto locked = fixture.ObserveLocked({1});
+    const auto peer = module->ObserveCardApplication({{0}, "USIM"}, 1);
+    ASSERT_TRUE(locked && peer);
+    ASSERT_EQ(module->UnlockPin(1, u"1234", {7}, {31}), 0);
+    fixture.host->RunNext();
+    ASSERT_EQ(fixture.io->commands.size(), 1u);
+    const auto pinReply = fixture.io->Reply(0, PinReplyStatus::Unlocked, 3);
+    ASSERT_TRUE(module->LoadIccid(*locked));
+    EXPECT_TRUE(iccid->commands.empty());
+    const auto peerRequest = module->LoadIccid(*peer);
+    ASSERT_TRUE(peerRequest);
+    ASSERT_EQ(iccid->commands.size(), 1u);
+    EXPECT_NE(pinReply.ticket.step.request.value, peerRequest->value);
+    EXPECT_FALSE(module->AcceptIccidIoEvidence(pinReply));
+    EXPECT_FALSE(module->AcceptPinIoEvidence(iccid->Reply(0, kIccidMetadata)));
+
+    EXPECT_TRUE(module->RefreshIccid(*peer));
+    EXPECT_TRUE(module->AcceptIccidIoEvidence(iccid->Reply(0, kIccidMetadata)));
+    EXPECT_EQ(iccid->commands.size(), 1u);
+    EXPECT_TRUE(fixture.host->results.empty());
+    EXPECT_TRUE(module->AcceptPinIoEvidence(pinReply));
+    ASSERT_EQ(fixture.host->results.size(), 1u);
+    EXPECT_EQ(module->ReadLockState(*locked), CardLockState::NotReady);
+
+    ASSERT_TRUE(module->LoadIccid(*locked));
+    ASSERT_EQ(iccid->commands.size(), 2u);
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(iccid->Reply(1, kIccidMetadata)));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(iccid->Reply(2, kFirstRawIccid)));
+    EXPECT_TRUE(module->FindBinding({1}));
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2CardComposition, StopSeparatesPinDeviceAndIccidStoreEffects)
+{
+    auto iccid = std::make_shared<IccidDevice>();
+    PinFixture fixture(iccid);
+    auto &module = fixture.live.module;
+    const auto locked = fixture.ObserveLocked({1});
+    const auto peer = module->ObserveCardApplication({{0}, "USIM"}, 1);
+    ASSERT_TRUE(locked && peer);
+    fixture.live.store->stored = {-1, {}, false, true, EffectKnowledge::Unknown};
+
+    ASSERT_EQ(module->UnlockPin(1, u"1234", {7}, {31}), 0);
+    fixture.host->RunNext();
+    ASSERT_EQ(fixture.io->commands.size(), 1u);
+    ASSERT_TRUE(module->LoadIccid(*peer));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(iccid->Reply(0, kIccidMetadata)));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(iccid->Reply(1, kFirstRawIccid)));
+    ASSERT_TRUE(fixture.live.store->lastPlan);
+    const auto original = *fixture.live.store->lastPlan;
+    EXPECT_FALSE(module->FindBinding({0}));
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::DeviceEffectsUnresolved);
+
+    ASSERT_TRUE(module->AcceptPinIoEvidence(fixture.io->Reply(0, PinReplyStatus::Unlocked, 3)));
+    EXPECT_EQ(fixture.host->results.size(), 1u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::BusinessEffectsUnresolved);
+    fixture.live.store->ProveApplied(original, {41});
+    EXPECT_TRUE(module->ReconcileDiscovery(original.call));
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2CardComposition, RebuildRequiresPredecessorProofAndRejectsItsOldEfEvidence)
+{
+    IccidFixture previous;
+    auto &old = previous.live.module;
+    const auto oldSession = old->ObserveCardApplication({{1}, "USIM"}, 1);
+    ASSERT_TRUE(oldSession);
+    ASSERT_TRUE(old->LoadIccid(*oldSession));
+    ASSERT_TRUE(old->AcceptIccidIoEvidence(previous.io->Reply(0, kIccidMetadata)));
+    const auto oldReply = previous.io->Reply(1, kFirstRawIccid);
+    ASSERT_EQ(old->StopAcceptingAndDrain(), SimModule::DrainResult::DeviceEffectsUnresolved);
+
+    const auto io = std::make_shared<IccidDevice>();
+    const auto rebuild = [&] {
+        auto ports = previous.live.input.Ports();
+        ports.iccidIo = io;
+        ports.initialEvidence = [&](const ResourceKey &, RuntimeEpoch epoch) {
+            const bool predecessorEnded = old->StopAcceptingAndDrain() == SimModule::DrainResult::Drained;
+            return InitialRecoveryEvidence {epoch, predecessorEnded, predecessorEnded};
+        };
+        return CreateCoreSimModule(std::move(ports), previous.live.input.catalog, {});
+    };
+
+    const auto blocked = rebuild();
+    ASSERT_TRUE(std::holds_alternative<SimModuleInitFailure>(blocked));
+    EXPECT_EQ(std::get<SimModuleInitFailure>(blocked).stage, SimModuleInitFailure::Stage::InitializeResources);
+    EXPECT_TRUE(io->commands.empty());
+    EXPECT_EQ(old->StopAcceptingAndDrain(), SimModule::DrainResult::DeviceEffectsUnresolved);
+    ASSERT_TRUE(old->AcceptIccidIoEvidence(oldReply));
+    ASSERT_EQ(old->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+
+    auto created = rebuild();
+    ASSERT_TRUE(std::holds_alternative<CoreSimModuleHandle>(created));
+    auto current = std::get<CoreSimModuleHandle>(std::move(created));
+    ASSERT_NE(current->Epoch(), old->Epoch());
+    const auto currentSession = current->ObserveCardApplication({{1}, "USIM"}, 1);
+    ASSERT_TRUE(currentSession);
+    ASSERT_TRUE(current->LoadIccid(*currentSession));
+    ASSERT_TRUE(current->AcceptIccidIoEvidence(io->Reply(0, kIccidMetadata)));
+    const auto reply = io->Reply(1, "980000000000000000F2");
+    EXPECT_EQ(reply.ticket.fence, oldReply.ticket.fence);
+    EXPECT_EQ(reply.ticket.step.request.value, oldReply.ticket.step.request.value);
+    EXPECT_FALSE(current->AcceptIccidIoEvidence(oldReply));
+    EXPECT_EQ(current->ReadPrimaryResourceState(), ResourceState::InFlight);
+    EXPECT_FALSE(current->ReadIccidRecords(*currentSession));
+    EXPECT_FALSE(current->FindBinding({1}));
+
+    ASSERT_TRUE(current->AcceptIccidIoEvidence(reply));
+    const auto record = current->ReadIccidRecords(*currentSession);
+    ASSERT_TRUE(record);
+    EXPECT_EQ(record->decimal, "8900000000000000002");
+    EXPECT_TRUE(current->FindBinding({1}));
+    EXPECT_EQ(current->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2UnlockPin, PreIdentityApplicationCompletesInlineAndMovesOnlyToNotReady)
+{
+    PinFixture fixture;
+    auto &module = fixture.live.module;
+    const auto session = fixture.ObserveLocked({1});
+    ASSERT_TRUE(session);
+    ASSERT_FALSE(module->FindBinding({1}));
+    fixture.io->onSubmit = [&](const CardCommandEvidence &reply) {
+        EXPECT_TRUE(module->AcceptPinIoEvidence(reply));
+    };
+
+    ASSERT_EQ(module->UnlockPin(1, u"1234", {7}, {30}), 0);
+    EXPECT_TRUE(fixture.io->commands.empty());
+    fixture.host->RunNext();
+    ASSERT_EQ(fixture.io->commands.size(), 1u);
+    EXPECT_EQ(fixture.io->commands.front().first.session, *session);
+    EXPECT_EQ(fixture.io->commands.front().first.kind, CardCommandKind::UnlockPin);
+    EXPECT_EQ(fixture.io->commands.front().second, u"1234");
+
+    ASSERT_EQ(fixture.host->results.size(), 1u);
+    EXPECT_EQ(fixture.host->results[0].callback, 30u);
+    EXPECT_EQ(fixture.host->results[0].status, 0);
+    EXPECT_EQ(fixture.host->results[0].unlockResult, 0);
+    EXPECT_EQ(fixture.host->results[0].remaining, 3);
+    EXPECT_EQ(fixture.host->changed, std::vector<SessionRef> {*session});
+    EXPECT_EQ(module->ReadLockState(*session), CardLockState::NotReady);
+    EXPECT_FALSE(module->FindBinding({1}));
+    EXPECT_FALSE(module->AcceptPinIoEvidence(fixture.io->Reply(0, PinReplyStatus::Unlocked, 3)));
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2UnlockPin, WrongPasswordPreservesSuccessfulApiAndRemainingAttemptsAcrossTwoCards)
+{
+    PinFixture fixture;
+    auto &module = fixture.live.module;
+    const auto first = fixture.ObserveLocked({0});
+    const auto second = fixture.ObserveLocked({1});
+    ASSERT_TRUE(first && second);
+    ASSERT_EQ(module->UnlockPin(0, u"5678", {7}, {31}), 0);
+    ASSERT_EQ(module->UnlockPin(1, u"1234", {7}, {32}), 0);
+    fixture.host->RunNext();
+    fixture.host->RunNext();
+    ASSERT_EQ(fixture.io->commands.size(), 2u);
+
+    ASSERT_TRUE(module->AcceptPinIoEvidence(fixture.io->Reply(1, PinReplyStatus::Unlocked, 3)));
+    ASSERT_TRUE(module->AcceptPinIoEvidence(fixture.io->Reply(0, PinReplyStatus::Incorrect, 2)));
+    ASSERT_EQ(fixture.host->results.size(), 2u);
+    const auto wrong = fixture.host->results[1];
+    EXPECT_EQ(wrong.callback, 31u);
+    EXPECT_EQ(wrong.status, 0);
+    EXPECT_EQ(wrong.unlockResult, -1);
+    EXPECT_EQ(wrong.remaining, 2);
+    EXPECT_EQ(module->ReadLockState(*first), CardLockState::Locked);
+    EXPECT_EQ(module->ReadLockState(*second), CardLockState::NotReady);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2UnlockPin, TransportFailureAndWaitExpirationUseDistinctOriginalErrors)
+{
+    using namespace OHOS::Telephony;
+    PinFixture fixture;
+    auto &module = fixture.live.module;
+    const auto session = fixture.ObserveLocked({1});
+    ASSERT_TRUE(session);
+    ASSERT_EQ(module->UnlockPin(1, u"1234", {7}, {31}), 0);
+    fixture.host->RunNext();
+    ASSERT_TRUE(module->AcceptPinIoEvidence(fixture.io->Reply(0, PinReplyStatus::Failed, 0)));
+    ASSERT_EQ(fixture.host->results.size(), 1u);
+    EXPECT_EQ(fixture.host->results[0].status, TELEPHONY_ERR_RIL_CMD_FAIL);
+    EXPECT_FALSE(fixture.host->results[0].unlockResult);
+
+    ASSERT_EQ(module->UnlockPin(1, u"1234", {7}, {32}), 0);
+    fixture.host->RunNext();
+    ASSERT_TRUE(module->AcceptPinIoEvidence(fixture.io->Reply(1, PinReplyStatus::TimedOut, 0)));
+    ASSERT_EQ(fixture.host->results.size(), 2u);
+    EXPECT_EQ(fixture.host->results[1].status, CORE_ERR_SIM_CARD_UPDATE_FAILED);
+    EXPECT_FALSE(fixture.host->results[1].unlockResult);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::DeviceEffectsUnresolved);
+    auto late = fixture.io->Reply(1, PinReplyStatus::Unlocked, 3);
+    EXPECT_FALSE(module->AcceptPinIoEvidence(late));
+    late.currentStateVerified = true;
+    EXPECT_TRUE(module->AcceptPinIoEvidence(late));
+    EXPECT_EQ(fixture.host->results.size(), 2u);
+    EXPECT_TRUE(fixture.host->changed.empty());
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2UnlockPin, ReplacedApplicationKeepsItsOwnLockedState)
+{
+    using namespace OHOS::Telephony;
+    PinFixture fixture;
+    auto &module = fixture.live.module;
+    ASSERT_TRUE(fixture.ObserveLocked({1}));
+    ASSERT_EQ(module->UnlockPin(1, u"1234", {7}, {31}), 0);
+    fixture.host->RunNext();
+    const auto replacement = fixture.ObserveLocked({1}, 2);
+    ASSERT_TRUE(replacement);
+
+    ASSERT_TRUE(module->AcceptPinIoEvidence(fixture.io->Reply(0, PinReplyStatus::Unlocked, 3)));
+    ASSERT_EQ(fixture.host->results.size(), 1u);
+    EXPECT_EQ(fixture.host->results[0].status, TELEPHONY_ERR_RIL_CMD_FAIL);
+    EXPECT_EQ(module->ReadLockState(*replacement), CardLockState::Locked);
+    EXPECT_TRUE(fixture.host->changed.empty());
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2UnlockPin, PermissionsAndQueueRejectionPrecedeTransport)
+{
+    using namespace OHOS::Telephony;
+    PinFixture fixture;
+    auto &module = fixture.live.module;
+    fixture.permission->system = false;
+    EXPECT_EQ(module->UnlockPin(-1, u"1234", {7}, {0}), TELEPHONY_ERR_ILLEGAL_USE_OF_SYSTEM_API);
+    fixture.permission->system = true;
+    fixture.permission->permitted = false;
+    EXPECT_EQ(module->UnlockPin(-1, u"1234", {7}, {0}), TELEPHONY_ERR_PERMISSION_ERR);
+    fixture.permission->permitted = true;
+    EXPECT_EQ(module->UnlockPin(-1, u"1234", {7}, {0}), TELEPHONY_ERR_LOCAL_PTR_NULL);
+    EXPECT_EQ(module->UnlockPin(-1, u"1234", {7}, {31}), TELEPHONY_ERR_SLOTID_INVALID);
+    fixture.host->acceptTasks = false;
+    EXPECT_EQ(module->UnlockPin(1, u"1234", {7}, {31}), TELEPHONY_ERR_LOCAL_PTR_NULL);
+    EXPECT_EQ(fixture.host->released, 1u);
+    EXPECT_TRUE(fixture.io->commands.empty());
+    EXPECT_TRUE(fixture.host->results.empty());
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
 
 TEST(AF2Primary, LiveDualSimSetPrimaryThroughLegacyEntry)
 {
