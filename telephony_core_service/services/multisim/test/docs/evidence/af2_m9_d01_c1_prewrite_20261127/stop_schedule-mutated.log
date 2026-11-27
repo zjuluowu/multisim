@@ -1,0 +1,33 @@
+Note: Google Test filter = TargetPrimaryB.C1SchedulingTheOriginalRetryDoesNotHoldAssignmentCommitLock
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.C1SchedulingTheOriginalRetryDoesNotHoldAssignmentCommitLock
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:2452: Failure
+Expected equality of these values:
+  audit.pending
+    Which is: 1
+  stop ? 0u : 1u
+    Which is: 0
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:2419: true
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:2453: Failure
+Expected equality of these values:
+  audit.cancelled
+    Which is: 0
+  stop ? 1u : 0u
+    Which is: 1
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:2419: true
+
+[  FAILED  ] TargetPrimaryB.C1SchedulingTheOriginalRetryDoesNotHoldAssignmentCommitLock (6 ms)
+[----------] 1 test from TargetPrimaryB (6 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (6 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TargetPrimaryB.C1SchedulingTheOriginalRetryDoesNotHoldAssignmentCommitLock
+
+ 1 FAILED TEST

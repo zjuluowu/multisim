@@ -51,6 +51,7 @@ public:
         uint32_t writeSet {kPrimaryRoleWriteSet};
         bool storeCallInFlight {false};
         std::optional<PrimaryParameterSnapshot> restore {};
+        bool restoreAfterPrewrite {false};
     };
 
     AssignmentService(const SlotCatalog &catalog, AssignmentStore &store, RadioExecutionPort &radio,
@@ -106,14 +107,19 @@ private:
     void CompleteOnce(RequestId request, const CompletionPlan &plan, int32_t result,
         TerminalState terminal, std::unique_lock<std::recursive_mutex> *commit = nullptr);
     bool WriteTrackedParameter(C0ParameterKey key, StepRef &step, const PrimaryTargetFacts *facts, bool userSet,
-        std::unique_lock<std::recursive_mutex> &guard, const PrimaryParameterSnapshot *restore = nullptr);
+        std::unique_lock<std::recursive_mutex> &guard, const PrimaryParameterSnapshot *restore = nullptr,
+        bool requireOpenAdmission = false);
     bool RestoreTrackedPrimary(StepRef &step, const PrimaryTargetFacts &facts, const PrimaryParameterSnapshot &old,
         std::unique_lock<std::recursive_mutex> &guard);
+    bool PrepareTrackedC1Parameters(StepRef &step, const PrimaryTargetFacts &facts, const PrimaryParameterSnapshot &old,
+        std::optional<bool> preference, std::unique_lock<std::recursive_mutex> &guard);
+    void FailC1Preparation(RequestId request, const RadioDomainId &domain, TransitionPhase phase,
+        const CompletionPlan &completion, std::unique_lock<std::recursive_mutex> &guard);
     bool ContinuePrimaryRestore(StepRef &step, std::unique_lock<std::recursive_mutex> &guard);
     void AcceptRestoredPrimaryProjection(const PrimaryParameterSnapshot &old);
     void RunTrackedPrimaryParameters(StepRef step, TransitionPhase phase, const SwitchPrimaryCommand &command,
         const SlotDescriptor &target, const PrimaryTargetFacts &facts, std::unique_lock<std::recursive_mutex> &guard);
-    bool ScheduleC1Retry(RequestId request, uint32_t attempt);
+    bool ScheduleC1Retry(RequestId request, uint32_t attempt, std::unique_lock<std::recursive_mutex> &guard);
     struct RoleProviderReceipt {
         RoleProviderEvidence evidence;
         uint32_t writeSet;
@@ -175,6 +181,7 @@ private:
     RadioSubmitDisposition SubmitRadioOutsideCommit(const RadioSwitchRequest &device, const PrimaryTargetFacts &facts,
         std::unique_lock<std::recursive_mutex> &guard);
     void FinishPrimaryWithNoDeviceEffect(const StepRef &step);
+    void FinishUnsentC1(PendingPrimarySwitch &round, std::unique_lock<std::recursive_mutex> &guard);
     bool SubmitC1Round(const PendingPrimarySwitch &round, std::unique_lock<std::recursive_mutex> &guard);
     std::map<uint64_t, PendingPrimarySwitch> pendingPrimary_;
     std::weak_ptr<RetrySchedulerPort> retryScheduler_;

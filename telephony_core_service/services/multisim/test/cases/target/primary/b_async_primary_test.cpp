@@ -73,7 +73,9 @@ public:
             if (beforeTrackedWriteReturns) { beforeTrackedWriteReturns(operation); }
             return uncertainOutcome;
         }
-        return AssignmentParameterPort::WriteC0Parameter(operation, key, value);
+        const auto outcome = AssignmentParameterPort::WriteC0Parameter(operation, key, value);
+        if (beforeTrackedWriteReturns) { beforeTrackedWriteReturns(operation); }
+        return outcome;
     }
     std::optional<C0ParameterEvidence> ReadC0ParameterEvidence(const C0ParameterOperation &) override
     {
@@ -142,10 +144,12 @@ class ControlledRetryScheduler final : public RetrySchedulerPort, public RadioOw
 public:
     ControlledRetryScheduler() { worker_ = std::thread([this] { Worker(); }); }
     ~ControlledRetryScheduler() { StopAndJoin(); }
+    std::function<void()> beforeSchedule;
 
     std::optional<uint64_t> ScheduleRetry(const ScheduledRetryEvent &event, uint64_t delayMilliseconds,
         const std::weak_ptr<ScheduledRetrySink> &sink) override
     {
+        if (beforeSchedule) { beforeSchedule(); }
         std::lock_guard<std::mutex> guard(lock_);
         if (!accepting_) { ++audit_.rejected; return std::nullopt; }
         const uint64_t id = nextTask_++;
@@ -798,7 +802,9 @@ TEST(TargetPrimaryB,HostLifecycleStopOnEmptyHostIsIdempotent)
 {
     ResourceFixture f;
     PrimaryHostLifecycle lifecycle(f.service,f.radio,f.scheduler,f.schedulerOwner);
+    f.scheduler.BlockOwnerQueue();
     EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight);
+    f.scheduler.ReleaseOwnerQueue();
     ASSERT_TRUE(f.scheduler.WaitOwnerIdle());
     EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),PrimaryHostLifecycle::DrainResult::Drained);
     EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),PrimaryHostLifecycle::DrainResult::Drained);
@@ -813,7 +819,9 @@ TEST(TargetPrimaryB,HostLifecycleCancelsQueuedRetryAndOldEpochCannotRun)
     f.DeliverRound(0);
     EXPECT_EQ(f.scheduler.Audit().scheduled,1u);
     PrimaryHostLifecycle lifecycle(f.service,f.radio,f.scheduler,f.schedulerOwner);
+    f.scheduler.BlockOwnerQueue();
     EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight);
+    f.scheduler.ReleaseOwnerQueue();
     ASSERT_TRUE(f.scheduler.WaitOwnerIdle());
     EXPECT_EQ(lifecycle.StopAcceptingAndDrain(),PrimaryHostLifecycle::DrainResult::Drained);
     EXPECT_FALSE(f.scheduler.PostOwner([&] { ADD_FAILURE(); }));
@@ -1183,7 +1191,7 @@ TEST(TargetPrimaryB,StopDuringTopologyQualificationDeniesFinalPermission)
         bool WithCurrentPrimaryTarget(const PrimaryTargetFacts &facts,
             const std::function<void()> &admit) const override
         {
-            // The preference has its own Store admission. Pause only the following Radio grant.
+            // The second check owns the B send grant or the C1 first Store write.
             if (++qualifications_ == 1) { return source_.WithCurrentPrimaryTarget(facts, admit); }
             return source_.WithCurrentPrimaryTarget(facts, [&] {
                 entered.set_value();
@@ -1202,25 +1210,29 @@ TEST(TargetPrimaryB,StopDuringTopologyQualificationDeniesFinalPermission)
         std::future<void> resume_;
         mutable unsigned qualifications_ {0};
     };
-    ResourceFixture fixture;
-    PausingTopology topology(fixture.topology);
-    auto entered = topology.entered.get_future();
-    fixture.service = std::make_shared<AssignmentService>(fixture.catalog, fixture.store, fixture.radio,
-        fixture.output, topology, fixture.completion, RuntimeEpoch {6, 2});
-    fixture.radio.BindResultSink(fixture.service);
-    fixture.service->BindRetryScheduler(fixture.schedulerOwner);
-    auto start = std::async(std::launch::async, [&] { return fixture.Start(false); });
-    if (entered.wait_for(std::chrono::seconds(3)) != std::future_status::ready) {
+    for (const bool c1 : {false, true}) {
+        SCOPED_TRACE(c1);
+        ResourceFixture fixture;
+        PausingTopology topology(fixture.topology);
+        auto entered = topology.entered.get_future();
+        fixture.service = std::make_shared<AssignmentService>(fixture.catalog, fixture.store, fixture.radio,
+            fixture.output, topology, fixture.completion, RuntimeEpoch {6, 2});
+        fixture.radio.BindResultSink(fixture.service);
+        fixture.service->BindRetryScheduler(fixture.schedulerOwner);
+        auto start = std::async(std::launch::async, [&] { return fixture.Start(c1); });
+        if (entered.wait_for(std::chrono::seconds(3)) != std::future_status::ready) {
+            topology.release.set_value();
+            FAIL() << "The original write or send did not reach the T qualification boundary";
+        }
+        fixture.service->RequestStopAccepting();
         topology.release.set_value();
-        FAIL() << "Submit did not reach the T qualification boundary";
+        start.get();
+        fixture.service.reset();
+        EXPECT_EQ(fixture.parameters.writes.size(), c1 ? 0u : 1u);
+        EXPECT_TRUE(fixture.platform.requests.empty());
+        EXPECT_EQ(fixture.radio.SubmittedCommands(), 0u);
+        EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
     }
-    fixture.service->RequestStopAccepting();
-    topology.release.set_value();
-    start.get();
-    fixture.service.reset();
-    EXPECT_TRUE(fixture.platform.requests.empty());
-    EXPECT_EQ(fixture.radio.SubmittedCommands(), 0u);
-    EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
 }
 
 TEST(TargetPrimaryB,TimeoutSealsPermissionBeforeBlockingInPlatformEnd)
@@ -2203,6 +2215,79 @@ TEST(TargetPrimaryB,C1FailedSnapshotReadNeverActsLikeConfirmedEmptyOldValue)
     EXPECT_FALSE(fixture.service->HasPendingDeviceEffects());
 }
 
+TEST(TargetPrimaryB,C1UncertainPrewriteRetainsOriginalPrefixAndRestoresItAfterProof)
+{
+    ResourceFixture fixture;
+    fixture.parameters.uncertainKey = C0ParameterKey::PrimaryIccid;
+    const auto request = fixture.Start(true);
+    EXPECT_TRUE(fixture.platform.requests.empty());
+    EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
+    EXPECT_TRUE(fixture.output.phases.empty());
+    ASSERT_TRUE(fixture.parameters.uncertainWrite);
+    const auto first = *fixture.parameters.uncertainWrite;
+    EXPECT_EQ(first.original.request, request);
+    const auto receipt = fixture.service->ReadC0Receipt();
+    ASSERT_TRUE(receipt && receipt->restore && receipt->restoreAfterPrewrite);
+    EXPECT_EQ(receipt->restore->mainIccidText, kEncoded0);
+    EXPECT_EQ(fixture.parameters.values[kPrimary], "1");
+    EXPECT_FALSE(fixture.service->ReadLegacyAssignment().lastPrimary);
+    EXPECT_EQ(fixture.completion.results, (std::vector<int32_t>{kLegacyLocalPointerNull}));
+
+    fixture.parameters.uncertainKey.reset();
+    fixture.parameters.values[kIccid] = kEncoded1;
+    fixture.parameters.parameterEvidence =
+        C0ParameterEvidence {first, {{0, true}, EffectKnowledge::ConfirmedApplied}};
+    EXPECT_TRUE(fixture.service->ReconcileC0Parameter(first));
+    EXPECT_FALSE(fixture.service->ReadC0Receipt());
+    EXPECT_EQ(fixture.parameters.values[kPrimary], "0");
+    EXPECT_EQ(fixture.parameters.values[kIccid], kEncoded0);
+    EXPECT_EQ(fixture.service->ReadLegacyAssignment().lastPrimary, SlotId {0});
+    EXPECT_TRUE(fixture.platform.requests.empty());
+    EXPECT_EQ(fixture.scheduler.Audit().scheduled, 0u);
+    EXPECT_EQ(fixture.completion.results, (std::vector<int32_t>{kLegacyLocalPointerNull}));
+}
+
+TEST(TargetPrimaryB,C1BindingRevocationAfterSlotPrewriteRestoresOriginalKeysWithoutCheck)
+{
+    ResourceFixture fixture;
+    bool revoked = false;
+    fixture.parameters.beforeTrackedWriteReturns = [&](const C0ParameterOperation &operation) {
+        if (operation.key == C0ParameterKey::PrimarySlot && !revoked) {
+            revoked = true;
+            fixture.topology.AcceptCardRemoval(fixture.target);
+        }
+    };
+
+    fixture.Start(true);
+
+    EXPECT_TRUE(revoked);
+    EXPECT_TRUE(fixture.platform.requests.empty());
+    EXPECT_TRUE(fixture.output.phases.empty());
+    EXPECT_TRUE(fixture.output.roles.empty());
+    EXPECT_FALSE(fixture.service->ReadC0Receipt());
+    EXPECT_EQ(fixture.parameters.writes, (std::vector<std::pair<std::string, std::string>> {
+        {kPreference, "true"}, {kPrimary, "1"}, {kPrimary, "0"}, {kIccid, kEncoded0}}));
+    EXPECT_EQ(fixture.completion.results, (std::vector<int32_t>{kLegacyLocalPointerNull}));
+}
+
+TEST(TargetPrimaryB,C1ConfirmedUnsentFirstCheckRestoresOriginalPrewrite)
+{
+    ResourceFixture fixture;
+    fixture.platform.disposition = RadioSubmitDisposition::ConfirmedNotSent;
+    fixture.Start(true);
+
+    EXPECT_TRUE(fixture.platform.requests.empty());
+    EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
+    EXPECT_FALSE(fixture.service->HasPendingDeviceEffects());
+    EXPECT_FALSE(fixture.service->ReadC0Receipt());
+    EXPECT_EQ(fixture.parameters.values.at(kPrimary), "0");
+    EXPECT_EQ(fixture.parameters.values.at(kIccid), kEncoded0);
+    EXPECT_EQ(fixture.service->ReadLegacyAssignment().lastPrimary, SlotId {0});
+    EXPECT_EQ(fixture.output.phases,
+        (std::vector<std::pair<std::string, bool>> {{"start", false}, {"done", false}}));
+    EXPECT_EQ(fixture.completion.results, (std::vector<int32_t>{kLegacyLocalPointerNull}));
+}
+
 TEST(TargetPrimaryB,C1SnapshotDoesNotHoldAssignmentLockAndRechecksBinding)
 {
     ResourceFixture fixture;
@@ -2285,8 +2370,89 @@ TEST(TargetPrimaryB,C1RetrySchedulerRejectsDuplicateAndBindingChange)
     EXPECT_TRUE(f.scheduler.WaitIdle());
     EXPECT_EQ(f.radio.requests.size(),4u);
     EXPECT_EQ(f.completion.results.size(),1u);
-    EXPECT_TRUE(f.service->HasPendingDeviceEffects());
+    EXPECT_FALSE(f.service->HasPendingDeviceEffects());
     EXPECT_FALSE(f.scheduler.RedeliverLastOnOwner(f.service));
+}
+
+TEST(TargetPrimaryB,C1RetryFreezesFreshNativeRoutesOnlyForNewAttempt)
+{
+    ResourceFixture fixture;
+    const auto request = fixture.Start(true);
+    ASSERT_EQ(fixture.platform.requests.size(), 2u);
+    fixture.DeliverRound(0);
+    ASSERT_EQ(fixture.platform.requests.size(), 4u);
+    ASSERT_EQ(fixture.scheduler.Audit().scheduled, 1u);
+    const auto firstSession = fixture.platform.requests.front().second.protocolSession;
+
+    auto renewed = kControlledProtocolMembers;
+    ++renewed[0].routeRevision;
+    ++renewed[1].routeRevision;
+    fixture.platform.protocolMembers = renewed;
+    fixture.scheduler.Advance(1);
+    ASSERT_TRUE(fixture.scheduler.WaitIdle());
+
+    ASSERT_EQ(fixture.platform.requests.size(), 6u);
+    for (size_t member = 0; member < renewed.size(); ++member) {
+        const auto &frozen = fixture.platform.requests[member].second;
+        const auto &next = fixture.platform.requests[4 + member].second;
+        EXPECT_EQ(frozen.member, kControlledProtocolMembers[member]);
+        EXPECT_EQ(next.member, renewed[member]);
+        EXPECT_EQ(next.step.request, request);
+        EXPECT_EQ(next.step.attempt, 1u);
+        EXPECT_NE(next.protocolSession, firstSession);
+        EXPECT_TRUE(fixture.ResultAt(4 + member, EffectKnowledge::ConfirmedApplied, 0));
+    }
+    ASSERT_EQ(fixture.platform.requests.size(), 8u);
+    EXPECT_TRUE(fixture.ResultAt(6, EffectKnowledge::ConfirmedApplied, 0, true));
+    EXPECT_TRUE(fixture.ResultAt(7, EffectKnowledge::ConfirmedApplied, 0, true));
+    ASSERT_EQ(fixture.platform.requests.size(), 10u);
+    EXPECT_TRUE(fixture.ResultAt(8, EffectKnowledge::ConfirmedApplied, 0));
+    EXPECT_TRUE(fixture.ResultAt(9, EffectKnowledge::ConfirmedApplied, 0));
+    EXPECT_FALSE(fixture.service->HasPendingDeviceEffects());
+    EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
+    EXPECT_EQ(fixture.completion.results, (std::vector<int32_t>{kLegacyLocalPointerNull}));
+}
+
+TEST(TargetPrimaryB,C1SchedulingTheOriginalRetryDoesNotHoldAssignmentCommitLock)
+{
+    for (const bool stop : {false, true}) {
+        SCOPED_TRACE(stop);
+        ResourceFixture fixture;
+        fixture.Start(true);
+        ASSERT_EQ(fixture.platform.requests.size(), 2u);
+        EXPECT_TRUE(fixture.ResultAt(0, EffectKnowledge::ConfirmedNotApplied, kLegacyLocalPointerNull));
+        EXPECT_TRUE(fixture.ResultAt(1, EffectKnowledge::ConfirmedNotApplied, kLegacyLocalPointerNull));
+        ASSERT_EQ(fixture.platform.requests.size(), 4u);
+        EXPECT_TRUE(fixture.ResultAt(2, EffectKnowledge::ConfirmedApplied, 0));
+        std::promise<void> entered;
+        auto scheduling = entered.get_future();
+        std::promise<void> release;
+        auto mayReturn = release.get_future();
+        fixture.scheduler.beforeSchedule = [&] {
+            entered.set_value();
+            mayReturn.wait();
+        };
+        auto completion = std::async(std::launch::async,
+            [&] { return fixture.ResultAt(3, EffectKnowledge::ConfirmedApplied, 0); });
+        if (scheduling.wait_for(std::chrono::seconds(3)) != std::future_status::ready) {
+            release.set_value();
+            FAIL() << "The platform scheduler did not receive the original retry";
+        }
+        auto inspect = std::async(std::launch::async, [&] { return fixture.service->ReadLegacyAssignment(); });
+        const auto available = inspect.wait_for(std::chrono::seconds(3));
+        if (stop && available == std::future_status::ready) {
+            EXPECT_TRUE(fixture.service->StopAcceptingAndCancelScheduledRetries());
+        }
+        release.set_value();
+        EXPECT_TRUE(completion.get());
+        (void)inspect.get();
+        EXPECT_EQ(available, std::future_status::ready);
+        const auto audit = fixture.scheduler.Audit();
+        EXPECT_EQ(audit.scheduled, 1u);
+        EXPECT_EQ(audit.pending, stop ? 0u : 1u);
+        EXPECT_EQ(audit.cancelled, stop ? 1u : 0u);
+        EXPECT_EQ(fixture.completion.results, (std::vector<int32_t>{kLegacyLocalPointerNull}));
+    }
 }
 
 TEST(TargetPrimaryB,C1RetrySchedulerStopCancelsAndOldEpochCannotRun)

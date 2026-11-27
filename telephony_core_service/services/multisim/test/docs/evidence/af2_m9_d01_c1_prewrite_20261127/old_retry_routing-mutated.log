@@ -1,0 +1,22 @@
+Note: Google Test filter = TargetPrimaryB.C1RetryFreezesFreshNativeRoutesOnlyForNewAttempt
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.C1RetryFreezesFreshNativeRoutesOnlyForNewAttempt
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:2394: Failure
+Expected equality of these values:
+  fixture.platform.requests.size()
+    Which is: 4
+  6u
+    Which is: 6
+
+[  FAILED  ] TargetPrimaryB.C1RetryFreezesFreshNativeRoutesOnlyForNewAttempt (4 ms)
+[----------] 1 test from TargetPrimaryB (4 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (4 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TargetPrimaryB.C1RetryFreezesFreshNativeRoutesOnlyForNewAttempt
+
+ 1 FAILED TEST

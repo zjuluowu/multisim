@@ -1,0 +1,22 @@
+Note: Google Test filter = TargetPrimaryB.HostLifecycleCancelsQueuedRetryAndOldEpochCannotRun
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.HostLifecycleCancelsQueuedRetryAndOldEpochCannotRun
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:820: Failure
+Expected equality of these values:
+  lifecycle.StopAcceptingAndDrain()
+    Which is: 4-byte object <00-00 00-00>
+  PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight
+    Which is: 4-byte object <01-00 00-00>
+
+[  FAILED  ] TargetPrimaryB.HostLifecycleCancelsQueuedRetryAndOldEpochCannotRun (6 ms)
+[----------] 1 test from TargetPrimaryB (6 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (7 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TargetPrimaryB.HostLifecycleCancelsQueuedRetryAndOldEpochCannotRun
+
+ 1 FAILED TEST

@@ -317,6 +317,14 @@ Target 227/227，专项 ASan/TSan 各 95/95，四项负控和恢复复验通过�
 正式 C1 及全图仍待。状态保持 `AF2_M9_IN_PROGRESS`。
 [快照、原恢复步骤与反例实测](../services/multisim/test/docs/evidence/af2_m9_d01_c1_restore_20261127/README.md)
 
+**D01 C1 原预写、下一轮路由与 Stop 检查点。** C1 按原票逐键登记预写，保留未知效果及应恢复的前缀。
+首条 CHECK 确认全轮未发送时，按原快照恢复可恢复的主卡参数，交付一次失败结果。下一 attempt
+重新冻结当时有效的原生成员和路由，旧轮原票保持独立。重试登记在 A 锁外执行，Stop 与原登记之间的
+确定性交错覆盖撤权及迟返任务取消。正式 C1 尚待完成两层期限、协议载荷与终步提交。
+Target 232/232，专项 ASan/TSan 各 100/100，五项运行时负控、独立语法、逻辑 GN/Ninja 和冻结资产检查通过。
+状态保持 `AF2_M9_IN_PROGRESS`。
+[原预写、路由、Stop 与专项回归](../services/multisim/test/docs/evidence/af2_m9_d01_c1_prewrite_20261127/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）

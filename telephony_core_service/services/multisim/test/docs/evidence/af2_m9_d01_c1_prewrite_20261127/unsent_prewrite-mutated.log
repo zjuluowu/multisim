@@ -1,0 +1,54 @@
+Note: Google Test filter = TargetPrimaryB.C1ConfirmedUnsentFirstCheckRestoresOriginalPrewrite
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.C1ConfirmedUnsentFirstCheckRestoresOriginalPrewrite
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:2281: Failure
+Value of: fixture.service->HasPendingDeviceEffects()
+  Actual: true
+Expected: false
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:2283: Failure
+Expected equality of these values:
+  fixture.parameters.values.at(kPrimary)
+    Which is: "1"
+  "0"
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:2284: Failure
+Expected equality of these values:
+  fixture.parameters.values.at(kIccid)
+    Which is: "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+  kEncoded0
+    Which is: "5BC332BC693934EB3D0DEAED37C106D2DEFD6F9767721BFE2B1AC6E209D6B67D"
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:2285: Failure
+Expected equality of these values:
+  fixture.service->ReadLegacyAssignment().lastPrimary
+    Which is: (4-byte object <01-00 00-00>)
+  SlotId {0}
+    Which is: 4-byte object <00-00 00-00>
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:2287: Failure
+Expected equality of these values:
+  fixture.output.phases
+    Which is: { ("start", false) }
+  (std::vector<std::pair<std::string, bool>> {{"start", false}, {"done", false}})
+    Which is: { ("start", false), ("done", false) }
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:2288: Failure
+Expected equality of these values:
+  fixture.completion.results
+    Which is: {}
+  (std::vector<int32_t>{kLegacyLocalPointerNull})
+    Which is: { 83886087 }
+
+[  FAILED  ] TargetPrimaryB.C1ConfirmedUnsentFirstCheckRestoresOriginalPrewrite (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TargetPrimaryB.C1ConfirmedUnsentFirstCheckRestoresOriginalPrewrite
+
+ 1 FAILED TEST

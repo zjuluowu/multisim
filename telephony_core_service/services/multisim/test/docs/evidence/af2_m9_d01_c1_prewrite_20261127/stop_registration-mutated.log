@@ -1,0 +1,24 @@
+Note: Google Test filter = TargetPrimaryB.StopDuringTopologyQualificationDeniesFinalPermission
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.StopDuringTopologyQualificationDeniesFinalPermission
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1231: Failure
+Expected equality of these values:
+  fixture.parameters.writes.size()
+    Which is: 1
+  c1 ? 0u : 1u
+    Which is: 0
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1214: true
+
+[  FAILED  ] TargetPrimaryB.StopDuringTopologyQualificationDeniesFinalPermission (3 ms)
+[----------] 1 test from TargetPrimaryB (3 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TargetPrimaryB.StopDuringTopologyQualificationDeniesFinalPermission
+
+ 1 FAILED TEST
