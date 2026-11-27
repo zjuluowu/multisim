@@ -43,7 +43,8 @@ public:
     static int32_t SetPrimarySlotId(SlotId slot, LegacyCallerRef caller, const SlotCatalog &catalog,
         LegacyPrimaryHostPort &host, const PrimaryTopologyPort &topology, LegacyCompletion &completion,
         const std::function<bool(SlotId)> &hasVerifiedCard,
-        const std::function<void(const SwitchPrimaryCommand &)> &issue);
+        const std::function<RequestId(const SwitchPrimaryCommand &)> &issue,
+        const std::function<bool(RequestId, uint64_t)> &timeout = {});
     static int32_t SetDefaultCellularDataSlotId(SlotId slot, LegacyCallerRef caller, const SlotCatalog &catalog,
         LegacyPrimaryHostPort &host, const PrimaryTopologyPort &topology, LegacyCompletion &completion,
         AssignmentService &assignment, const std::function<bool(SlotId)> &hasVerifiedCard);

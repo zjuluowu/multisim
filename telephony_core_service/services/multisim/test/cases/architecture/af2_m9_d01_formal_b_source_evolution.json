@@ -1,0 +1,15 @@
+{
+  "baseline": "236655221bbab507f9371df64807f9d34313f106",
+  "files": {
+    "infrastructure/assembly/sim_module.h": "4d1bf360d068d81c628b6222539ddb988fcaf3564730d6d79d47fc38d6e6f1e7",
+    "infrastructure/assembly/sim_module_factory.cpp": "4f5fe5fe02a9a4d347e824609c27ed29fee35dc7515b14da7ad9ecc6c259e9c8",
+    "infrastructure/compatibility/api/legacy_boundary_ports.h": "a9c7474e937259b20315a085b79dd0d247178ec5fdae8fbf40137b2d8af247b2",
+    "infrastructure/compatibility/api/legacy_primary_entry.cpp": "7add570f2ee9be5a1af8aaabd2d6cea624f35d8d6832856315b3dc07a68be112",
+    "infrastructure/compatibility/api/legacy_sim_facade.h": "bf8bcf8489523eff38d28b9a2100293efccb85c0e53b034f084734ffac560d2e",
+    "infrastructure/compatibility/events/legacy_completion.cpp": "ca64257b4776f8f1bb26bd95eeebdec5e4ba68a1c479bab98dfafea4425cc9ac",
+    "infrastructure/compatibility/events/legacy_completion.h": "9ab7e7460882348ddd9d5277edd90233b5beb58ca56cfb5df78cca13548d2e4c",
+    "role_assignment/assignment_service.cpp": "d8bd70775b0994f503fd58342424e7e27fa7459e557b7fa557b83f9552939332",
+    "role_assignment/assignment_service.h": "9951776472de8f6fb1b5cb5ec5c8dc0ac8b70c37fe32d9d2ed39941b3e7fc361",
+    "role_assignment/primary/primary_execution.h": "3fccd20d6e5ab5f474303a23101f9a1e78292f12eda3c732638c77baae970f02"
+  }
+}

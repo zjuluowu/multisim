@@ -12,6 +12,7 @@
 #include "core_service_errors.h"
 
 #include <algorithm>
+#include <condition_variable>
 #include <future>
 #include <map>
 #include <optional>
@@ -832,12 +833,23 @@ public:
     bool requiresDevice {false};
     SlotId primaryEndpoint {1};
     unsigned commands {0};
+    RadioSubmitDisposition disposition {RadioSubmitDisposition::HandoffAccepted};
+    std::optional<PrimaryProtocolRouting> routing;
+    std::optional<std::pair<RadioSwitchRequest, uint64_t>> sent;
+    std::function<void()> beforeSubmitReturn;
     PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const override
-    { return {slot, slot == primaryEndpoint ? 0 : 1, requiresDevice, false, 7}; }
-    RadioSubmitResult SubmitPrimaryRadio(const RadioSwitchRequest &, uint64_t, const RadioSendPermit &) override
+    { return {slot, slot == primaryEndpoint ? 0 : 1, requiresDevice, false, 7, true, routing}; }
+    RadioSubmitResult SubmitPrimaryRadio(const RadioSwitchRequest &request, uint64_t token,
+        const RadioSendPermit &permit) override
     {
+        if (!routing || !request.member || std::find(routing->members.begin(), routing->members.end(),
+            *request.member) == routing->members.end() || !permit()) {
+            return {RadioSubmitDisposition::ConfirmedNotSent, std::nullopt};
+        }
         ++commands;
-        return {RadioSubmitDisposition::ConfirmedNotSent, std::nullopt};
+        sent.emplace(request, token);
+        if (beforeSubmitReturn) { beforeSubmitReturn(); }
+        return {disposition, static_cast<int32_t>(token)};
     }
     void EndLegacySenseSwitch(const StepRef &, const RadioDomainId &) override { ++commands; }
 };
@@ -1920,6 +1932,71 @@ public:
         return TELEPHONY_ERR_FAIL;
     }
 };
+
+class PrimaryWait final : public LegacyPrimaryWaitPort {
+public:
+    bool AwaitPrimaryResult(SynchronousWaitRef waiter, std::optional<uint64_t> budget,
+        const std::function<bool()> &ready) override
+    {
+        std::unique_lock<std::mutex> lock(lock_);
+        if (budget) {
+            EXPECT_EQ(*budget, LEGACY_DEDICATED_PRIMARY_WAIT_MS);
+            awaiting_ = waiter;
+            changed_.notify_all();
+        }
+        const bool signalled = changed_.wait_for(lock, std::chrono::seconds(5),
+            [&] { return ready() || (budget && expired_); });
+        EXPECT_TRUE(signalled) << "Host wait received neither the original completion nor the controlled deadline";
+        return ready();
+    }
+    void NotifyPrimaryResult(SynchronousWaitRef waiter) override
+    {
+        std::lock_guard<std::mutex> lock(lock_);
+        if (awaiting_) { EXPECT_EQ(waiter.value, awaiting_->value); }
+        changed_.notify_all();
+    }
+    bool WaitUntilCallerIsWaiting()
+    {
+        std::unique_lock<std::mutex> lock(lock_);
+        return changed_.wait_for(lock, std::chrono::seconds(3), [&] { return awaiting_.has_value(); });
+    }
+    void Expire()
+    {
+        std::lock_guard<std::mutex> lock(lock_);
+        expired_ = true;
+        changed_.notify_all();
+    }
+private:
+    std::mutex lock_;
+    std::condition_variable changed_;
+    std::optional<SynchronousWaitRef> awaiting_;
+    bool expired_ {false};
+};
+
+struct DedicatedPrimaryFixture {
+    ModuleInputs input;
+    std::shared_ptr<PrimaryHost> host = std::make_shared<PrimaryHost>();
+    std::shared_ptr<PrimaryWait> wait = std::make_shared<PrimaryWait>();
+    std::shared_ptr<RoleProvider> roles = std::make_shared<RoleProvider>();
+    CoreSimModuleHandle module;
+
+    DedicatedPrimaryFixture()
+    {
+        input.radio->requiresDevice = true;
+        input.radio->routing = PrimaryProtocolRouting {200, {{100, {0}, 7}, {200, {1}, 7}}};
+        auto ports = input.Ports(roles);
+        ports.primaryHost = host;
+        ports.primaryWait = wait;
+        module = std::get<CoreSimModuleHandle>(CreateCoreSimModule(std::move(ports), input.catalog, input.accounts));
+    }
+    RadioDeviceResult Reply(EffectKnowledge effect, int32_t result, bool currentStateVerified = false) const
+    {
+        const auto &[request, token] = input.radio->sent.value();
+        return {token, {request.step, request.target, request.expectedBinding, request.protocolSession,
+            request.phase, false, effect, result}, true, true, currentStateVerified, static_cast<int32_t>(token)};
+    }
+};
+
 struct PrimaryFixture {
     std::shared_ptr<PrimaryHost> host = std::make_shared<PrimaryHost>();
     explicit PrimaryFixture(std::shared_ptr<SlotCatalog> catalog = {}, std::shared_ptr<RoleProvider> provider = {},
@@ -1937,6 +2014,119 @@ struct PrimaryFixture {
     }
 };
 } // namespace
+
+TEST(AF2Primary, DedicatedSwitchAwaitsOriginalCompletionThroughFormalModule)
+{
+    DedicatedPrimaryFixture fixture;
+    const auto module = fixture.module;
+    auto caller = std::async(std::launch::async, [&] { return module->SetPrimarySlotId(1, {7}); });
+    if (!fixture.wait->WaitUntilCallerIsWaiting()) {
+        fixture.wait->Expire();
+        FAIL() << "The formal compatible Primary entry never awaited its original device result";
+    }
+    ASSERT_TRUE(fixture.input.radio->sent);
+    const auto &request = fixture.input.radio->sent->first;
+    EXPECT_EQ(request.mode, PrimarySwitchMode::WithoutModemRestart);
+    EXPECT_EQ(request.step.request.epoch, module->Epoch());
+    ASSERT_TRUE(request.member);
+    EXPECT_EQ(request.member->nativeMember, 200u);
+    EXPECT_EQ(request.target, SlotId {1});
+    EXPECT_EQ(module->ReadPrimaryResourceState(), ResourceState::InFlight);
+    EXPECT_FALSE(module->ReadAssignment().lastPrimary);
+    EXPECT_EQ(module->SetDefaultCellularDataSlotId(1, {7}), OHOS::Telephony::TELEPHONY_ERR_FAIL);
+    EXPECT_EQ(module->SetDefaultVoiceSlotId(0, {7}), 0);
+    EXPECT_EQ(module->ReadAssignment().defaultVoice, SubscriptionId {40});
+    const auto reply = fixture.Reply(EffectKnowledge::ConfirmedApplied, 0);
+    EXPECT_TRUE(module->AcceptRadioDeviceResult(reply));
+    EXPECT_EQ(caller.get(), 0);
+
+    EXPECT_EQ(fixture.host->accountsChanged, 2u);
+    EXPECT_EQ(module->ReadAssignment().lastPrimary, SlotId {1});
+    EXPECT_EQ(module->ReadAssignment().lastData, SlotId {1});
+    EXPECT_EQ(fixture.input.parameters->writes, (std::vector<std::pair<std::string, std::string>> {
+        {kPreference, "true"}, {kPrimary, "1"}, {kIccid, kEncoded1}, {kData, "1"}}));
+    EXPECT_FALSE(module->AcceptRadioDeviceResult(reply));
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Primary, FormalDedicatedSwitchRetainsStoreReceiptDiscoveredAfterStartReturns)
+{
+    DedicatedPrimaryFixture fixture;
+    const auto module = fixture.module;
+    const auto binding = module->FindBinding({1});
+    ASSERT_TRUE(binding);
+    fixture.input.parameters->writeResult = [](const std::string &key) {
+        return key == kIccid ? AssignmentParameterResult {-1, false} : AssignmentParameterResult {0, true};
+    };
+    const auto original = module->StartPrimarySwitch(Command(*binding));
+    ASSERT_TRUE(original);
+    EXPECT_FALSE(module->ReadC0Receipt());
+    ASSERT_TRUE(fixture.input.radio->sent);
+    EXPECT_TRUE(module->AcceptRadioDeviceResult(fixture.Reply(EffectKnowledge::ConfirmedApplied, 0)));
+    EXPECT_EQ(module->ReadPrimaryResourceState(), ResourceState::Available);
+
+    const auto receipt = module->ReadC0Receipt();
+    ASSERT_TRUE(receipt);
+    EXPECT_EQ(receipt->request, *original);
+    EXPECT_EQ(receipt->outstanding, AssignmentService::C0Stage::PrimaryParameters);
+    const auto write = receipt->writes[static_cast<size_t>(C0ParameterKey::PrimaryIccid)];
+    ASSERT_TRUE(write);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::BusinessEffectsUnresolved);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::BusinessEffectsUnresolved);
+    EXPECT_FALSE(module->StartPrimarySwitch(Command(*binding)));
+    EXPECT_FALSE(module->ReconcilePrimaryParameter(write->operation));
+
+    fixture.input.parameters->values[kIccid] = kEncoded1;
+    fixture.input.parameters->evidence = C0ParameterEvidence {write->operation,
+        {{0, true}, EffectKnowledge::ConfirmedApplied}};
+    EXPECT_TRUE(module->ReconcilePrimaryParameter(write->operation));
+    EXPECT_FALSE(module->ReadC0Receipt());
+    EXPECT_TRUE(fixture.input.output->events.empty());
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Primary, FormalDedicatedSwitchHandlesReplyBeforeSubmitReturns)
+{
+    DedicatedPrimaryFixture fixture;
+    const auto module = fixture.module;
+    fixture.input.radio->beforeSubmitReturn = [&] {
+        EXPECT_TRUE(module->AcceptRadioDeviceResult(fixture.Reply(EffectKnowledge::ConfirmedApplied, 0)));
+        EXPECT_EQ(fixture.input.parameters->writes.size(), 1u);
+        EXPECT_EQ(module->ReadPrimaryResourceState(), ResourceState::InFlight);
+    };
+
+    EXPECT_EQ(module->SetPrimarySlotId(1, {7}), 0);
+    EXPECT_EQ(fixture.host->accountsChanged, 1u);
+    EXPECT_EQ(module->ReadAssignment().lastPrimary, SlotId {1});
+    EXPECT_EQ(module->ReadPrimaryResourceState(), ResourceState::Available);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Primary, FormalDedicatedTimeoutClosesOnlyAfterOriginalDeviceRecovery)
+{
+    DedicatedPrimaryFixture fixture;
+    fixture.input.radio->disposition = RadioSubmitDisposition::HandoffUnknown;
+    const auto module = fixture.module;
+    auto caller = std::async(std::launch::async, [&] { return module->SetPrimarySlotId(1, {7}); });
+    if (!fixture.wait->WaitUntilCallerIsWaiting()) {
+        fixture.wait->Expire();
+        FAIL() << "The formal Primary entry never awaited the still unclassified device effect";
+    }
+    EXPECT_EQ(module->ReadPrimaryResourceState(), ResourceState::Quarantined);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
+    fixture.wait->Expire();
+    EXPECT_EQ(caller.get(), OHOS::Telephony::TELEPHONY_ERR_LOCAL_PTR_NULL);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::DeviceEffectsUnresolved);
+
+    ASSERT_TRUE(fixture.input.radio->sent);
+    const auto status = OHOS::Telephony::TELEPHONY_ERR_LOCAL_PTR_NULL;
+    EXPECT_FALSE(module->AcceptRadioDeviceResult(fixture.Reply(EffectKnowledge::ConfirmedNotApplied, status)));
+    EXPECT_TRUE(module->AcceptRadioDeviceResult(fixture.Reply(EffectKnowledge::ConfirmedNotApplied, status, true)));
+    EXPECT_EQ(module->ReadPrimaryResourceState(), ResourceState::Available);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+    EXPECT_EQ(fixture.host->accountsChanged, 0u);
+    EXPECT_EQ(fixture.input.parameters->writes.size(), 1u);
+}
 
 namespace {
 class PinHost final : public LegacyPinHostPort {

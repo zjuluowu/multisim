@@ -37,9 +37,28 @@ std::optional<int32_t> LegacyCompletion::TakeRoleResult(SynchronousWaitRef waite
     std::lock_guard<std::mutex> guard(waitersLock_);
     const auto found = roleWaiters_.find(waiter.value);
     if (found == roleWaiters_.end()) { return std::nullopt; }
-    const auto result = found->second.Result();
+    const auto result = found->second.ready ? found->second.cell.Result() : std::nullopt;
     roleWaiters_.erase(found);
     return result;
+}
+
+bool LegacyCompletion::AwaitPrimaryResult(SynchronousWaitRef waiter, std::optional<uint64_t> budgetMilliseconds)
+{
+    if (waiter.origin != SynchronousWaitRef::Origin::ModuleRole) { return false; }
+    {
+        std::lock_guard<std::mutex> guard(waitersLock_);
+        const auto original = roleWaiters_.find(waiter.value);
+        if (original == roleWaiters_.end()) { return false; }
+        if (original->second.ready) { return true; }
+        if (!primaryWait_) { return false; }
+        original->second.awaitingPrimary = true;
+    }
+    const auto ready = [&] {
+        std::lock_guard<std::mutex> guard(waitersLock_);
+        const auto original = roleWaiters_.find(waiter.value);
+        return original != roleWaiters_.end() && original->second.ready;
+    };
+    return primaryWait_->AwaitPrimaryResult(waiter, budgetMilliseconds, ready);
 }
 
 void LegacyCompletion::CompleteLegacyInt(const CompletionPlan &plan, int32_t legacyResult)
@@ -49,12 +68,24 @@ void LegacyCompletion::CompleteLegacyInt(const CompletionPlan &plan, int32_t leg
         {
             std::lock_guard<std::mutex> guard(waitersLock_);
             const auto found = roleWaiters_.find(route->waiter.value);
-            if (found == roleWaiters_.end() || !found->second.Deliver(legacyResult)) { return; }
+            if (found == roleWaiters_.end() || !found->second.cell.Deliver(legacyResult)) { return; }
         }
-        // The synchronous C0 call has not yet returned to the waiter. No lock spans notification.
-        if (primary_ && legacyResult == 0 && plan.accountNotificationOnWholeSuccess) {
-            primary_->NotifyOriginalAccountChanged();
+        try {
+            if (primary_ && legacyResult == 0 && plan.accountNotificationOnWholeSuccess) {
+                primary_->NotifyOriginalAccountChanged();
+            }
+        } catch (const std::exception &) {
+            // A notification failure does not discard the claimed original result.
         }
+        bool notify = false;
+        {
+            std::lock_guard<std::mutex> guard(waitersLock_);
+            const auto found = roleWaiters_.find(route->waiter.value);
+            if (found == roleWaiters_.end()) { return; }
+            found->second.ready = true;
+            notify = found->second.awaitingPrimary;
+        }
+        if (notify) { primaryWait_->NotifyPrimaryResult(route->waiter); }
         return;
     }
     if (fallback_) {

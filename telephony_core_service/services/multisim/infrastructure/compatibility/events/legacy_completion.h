@@ -32,20 +32,28 @@ class LegacyCompletion final : public ShowNumberCompletionPort, public LegacyInt
 public:
     explicit LegacyCompletion(LegacyOutputPort &output) : output_(&output) {}
     LegacyCompletion(LegacyIntCompletionPort &fallback, LegacyPrimaryHostPort *primary, LegacyOutputPort *number = nullptr,
-        LegacyPinHostPort *pin = nullptr) : output_(number), fallback_(&fallback), primary_(primary), pin_(pin) {}
+        LegacyPinHostPort *pin = nullptr, LegacyPrimaryWaitPort *primaryWait = nullptr)
+        : output_(number), fallback_(&fallback), primary_(primary), pin_(pin), primaryWait_(primaryWait) {}
     std::optional<SynchronousWaitRef> RetainRoleWaiter();
+    bool AwaitPrimaryResult(SynchronousWaitRef waiter, std::optional<uint64_t> budgetMilliseconds);
     std::optional<int32_t> TakeRoleResult(SynchronousWaitRef waiter);
     void CompletePin(CompletionId callback, const PinReply &result) override;
     void PublishPinStateChange(const SessionRef &session) override;
     void CompleteShowNumber(const ShowNumberCompletion &completion) override;
     void CompleteLegacyInt(const CompletionPlan &plan, int32_t legacyResult) override;
 private:
+    struct RoleWaiter {
+        CompletionCell cell;
+        bool ready {false};
+        bool awaitingPrimary {false};
+    };
     LegacyOutputPort *output_ {nullptr};
     LegacyIntCompletionPort *fallback_ {nullptr};
     LegacyPrimaryHostPort *primary_ {nullptr};
     LegacyPinHostPort *pin_ {nullptr};
+    LegacyPrimaryWaitPort *primaryWait_ {nullptr};
     std::mutex waitersLock_;
-    std::map<uint64_t, CompletionCell> roleWaiters_;
+    std::map<uint64_t, RoleWaiter> roleWaiters_;
     uint64_t nextWaiter_ {1};
 };
 } // namespace OHOS::Telephony::MultiSim

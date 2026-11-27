@@ -1,0 +1,29 @@
+Note: Google Test filter = AF2Primary.DedicatedSwitchAwaitsOriginalCompletionThroughFormalModule
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.DedicatedSwitchAwaitsOriginalCompletionThroughFormalModule
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:1955: Failure
+Expected equality of these values:
+  waiter.value
+    Which is: 2
+  awaiting_->value
+    Which is: 1
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:1955: Failure
+Expected equality of these values:
+  waiter.value
+    Which is: 3
+  awaiting_->value
+    Which is: 1
+
+[  FAILED  ] AF2Primary.DedicatedSwitchAwaitsOriginalCompletionThroughFormalModule (2 ms)
+[----------] 1 test from AF2Primary (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] AF2Primary.DedicatedSwitchAwaitsOriginalCompletionThroughFormalModule
+
+ 1 FAILED TEST

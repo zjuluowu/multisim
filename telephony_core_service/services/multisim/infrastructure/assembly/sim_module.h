@@ -47,6 +47,7 @@ struct CoreSimModulePorts {
     std::shared_ptr<IccidIoPort> iccidIo {};
     std::shared_ptr<PinIoPort> pinIo {};
     std::shared_ptr<LegacyPinHostPort> pinHost {};
+    std::shared_ptr<LegacyPrimaryWaitPort> primaryWait {};
 };
 
 // Account and card facts confirmed by the startup source. M2 adds live observation and provider writes.
@@ -57,7 +58,7 @@ struct ConfirmedSlotAccount {
     AccountDiscoveryStoreResult stored;
 };
 
-class SimModule final : public std::enable_shared_from_this<SimModule> {
+class SimModule final : public std::enable_shared_from_this<SimModule>, public RadioResultSink {
 public:
     enum class DrainResult { Drained, CallbacksStillInFlight, DeviceEffectsUnresolved, BusinessEffectsUnresolved };
     RuntimeEpoch Epoch() const { return epoch_; }
@@ -105,6 +106,9 @@ public:
     bool ReconcileDataParameter(const C0ParameterOperation &operation);
     int32_t SetPrimarySlotId(int32_t slot, LegacyCallerRef caller);
     std::optional<RequestId> StartPrimarySwitch(const SwitchPrimaryCommand &command);
+    bool AcceptRadioDeviceResult(const RadioDeviceResult &result);
+    bool AcceptPrimarySwitchTimeout(RequestId request, uint64_t elapsedMilliseconds);
+    bool FlushRadioOwnerDeliveries();
     DrainResult StopAcceptingAndDrain();
     std::optional<ResourceState> ReadPrimaryResourceState() const;
 private:
@@ -123,6 +127,9 @@ private:
     bool AdmitModuleCall(bool originalOnly = false);
     void ReturnModuleCall();
     bool HasPendingBusinessEffects() const;
+    void UpdateCloseHold();
+    void AcceptRadioStep(const RadioSwitchResult &result) override;
+    void AcceptLateRadioEvidence(const RadioSwitchResult &result) override;
     int32_t SetDefaultCallMessageRole(DefaultRole role, int32_t slot, LegacyCallerRef caller);
 
     struct ModuleCall {
@@ -157,7 +164,6 @@ private:
     std::mutex admissionMutex_;
     bool accepting_ {true};
     size_t moduleCalls_ {0};
-    bool primaryEffectUnresolved_ {false};
     bool primaryCallActive_ {false};
     bool joining_ {false};
     bool drained_ {false};

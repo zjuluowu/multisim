@@ -48,6 +48,15 @@ public:
     virtual int32_t PrimaryError(LegacyPrimaryError error) const = 0;
     virtual void NotifyOriginalAccountChanged() = 0;
 };
+// The host waits for the original Completion cell. It owns no result or request state.
+// With a budget, false means the platform clock reached the deadline.
+class LegacyPrimaryWaitPort {
+public:
+    virtual ~LegacyPrimaryWaitPort() = default;
+    virtual bool AwaitPrimaryResult(SynchronousWaitRef waiter, std::optional<uint64_t> budgetMilliseconds,
+        const std::function<bool()> &ready) = 0;
+    virtual void NotifyPrimaryResult(SynchronousWaitRef waiter) = 0;
+};
 class CallbackHostPort {
 public:
     virtual ~CallbackHostPort() = default;

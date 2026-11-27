@@ -1,0 +1,240 @@
+{
+  "scope": "Positive execution of selected target-formal-primary-b production methods; not full SIM coverage",
+  "methods": [
+    {
+      "owner": "SimModule",
+      "method": "SetPrimarySlotId",
+      "count": 10,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimModule",
+      "method": "AcceptRadioDeviceResult",
+      "count": 6,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimModule",
+      "method": "AcceptPrimarySwitchTimeout",
+      "count": 1,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimModule",
+      "method": "ReconcilePrimaryParameter",
+      "count": 2,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimModule",
+      "method": "StopAcceptingAndDrain",
+      "count": 8,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "LegacySimFacade",
+      "method": "SetPrimarySlotId",
+      "count": 3,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/compatibility/api/legacy_primary_entry.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "LegacyCompletion",
+      "method": "AwaitPrimaryResult",
+      "count": 9,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/compatibility/events/legacy_completion.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "LegacyCompletion",
+      "method": "CompleteLegacyInt",
+      "count": 6,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/compatibility/events/legacy_completion.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "LegacyCompletion",
+      "method": "TakeRoleResult",
+      "count": 5,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/compatibility/events/legacy_completion.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentService",
+      "method": "StartPrimarySwitch",
+      "count": 12,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_service.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentService",
+      "method": "SubmitRadioOutsideCommit",
+      "count": 16,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_service.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentService",
+      "method": "AcceptRadioStep",
+      "count": 3,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_service.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentService",
+      "method": "AcceptLateRadioEvidence",
+      "count": 2,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_service.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentService",
+      "method": "RunTrackedPrimaryParameters",
+      "count": 27,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_service.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentService",
+      "method": "WriteTrackedParameter",
+      "count": 24,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_service.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentService",
+      "method": "ReconcileC0Parameter",
+      "count": 2,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_service.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentStoreAdapter",
+      "method": "WriteC0Parameter",
+      "count": 12,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_store_adapter.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "AssignmentStoreAdapter",
+      "method": "ReadC0ParameterEvidence",
+      "count": 2,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/role_assignment/assignment_store_adapter.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "TopologyService",
+      "method": "WithCurrentPrimaryTarget",
+      "count": 22,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/topology_service.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "ResourceRadioRuntime",
+      "method": "ReadPrimaryRadioObservation",
+      "count": 4,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/device/resource/resource_radio_runtime.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "ResourceRadioRuntime",
+      "method": "SwitchPrimaryRadio",
+      "count": 12,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/device/resource/resource_radio_runtime.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "ResourceRadioRuntime",
+      "method": "AcceptDeviceResult",
+      "count": 11,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/device/resource/resource_radio_runtime.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "ResourceBarrier",
+      "method": "Acquire",
+      "count": 4,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/device/resource/resource_barrier.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "ResourceBarrier",
+      "method": "Complete",
+      "count": 3,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/device/resource/resource_barrier.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "ResourceBarrier",
+      "method": "AcceptRecoveryEvidence",
+      "count": 1,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/device/resource/resource_barrier.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "PrimaryHostLifecycle",
+      "method": "StopAcceptingAndDrain",
+      "count": 11,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/primary_host_lifecycle.cpp"
+      ],
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

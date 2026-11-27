@@ -40,7 +40,7 @@ class AssignmentService final : public RadioResultSink, public ProfilePreference
     public AccountRolePlanningPort, public ActivationAssignmentPort, public ScheduledRetrySink,
     public std::enable_shared_from_this<AssignmentService> {
 public:
-    enum class PrimaryScope { ExistingBranches, C0Only };
+    enum class PrimaryScope { ExistingBranches, C0Only, TrackedDedicated };
     enum class C0Stage { Preference, PrimaryParameters, MainNotification, DataParameters, DataNotification, Completion };
     struct C0Receipt {
         RequestId request;
@@ -163,12 +163,12 @@ private:
         std::optional<uint64_t> retrySchedulerTask;
         std::optional<EffectKnowledge> lateDeviceEffect;
         bool timeoutDeliveryInFlight {false};
-        bool handoffConfirmedNotSent {false};
+        bool noDeviceEffect {false};
     };
     bool AcceptC1RetryDue(RequestId request, std::unique_lock<std::recursive_mutex> &guard);
     RadioSubmitDisposition SubmitRadioOutsideCommit(const RadioSwitchRequest &device, const PrimaryTargetFacts &facts,
         std::unique_lock<std::recursive_mutex> &guard);
-    void FinishUnsentPrimary(const StepRef &step);
+    void FinishPrimaryWithNoDeviceEffect(const StepRef &step);
     bool SubmitC1Round(const PendingPrimarySwitch &round, std::unique_lock<std::recursive_mutex> &guard);
     std::map<uint64_t, PendingPrimarySwitch> pendingPrimary_;
     std::weak_ptr<RetrySchedulerPort> retryScheduler_;

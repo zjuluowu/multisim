@@ -13,7 +13,7 @@ REQUIRED = {
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--slice', choices=['state','primary','query','upstream','target-adapter','target-topology','target-primary-b','legacy-data','target-data','legacy-voice-sms','target-voice-sms','legacy-account-metadata','target-account-metadata','legacy-ims-preference','target-ims-preference','legacy-show-number','target-show-number'], default='state')
+    parser.add_argument('--slice', choices=['state','primary','query','upstream','target-adapter','target-topology','target-primary-b','target-formal-primary-b','legacy-data','target-data','legacy-voice-sms','target-voice-sms','legacy-account-metadata','target-account-metadata','legacy-ims-preference','target-ims-preference','legacy-show-number','target-show-number'], default='state')
     parser.add_argument('--binary', required=True, type=Path)
     parser.add_argument('--profiles', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
@@ -134,6 +134,19 @@ def main():
                                             'StopAccepting'],
                     'RuntimeOperationStore':['RecordSent', 'AcceptResult', 'AcceptLateEvidence',
                                              'ClaimCompletion', 'ClaimEarlyCompletion', 'TryMarkTerminal']}
+    elif args.slice == 'target-formal-primary-b':
+        required = {'SimModule': ['SetPrimarySlotId', 'AcceptRadioDeviceResult', 'AcceptPrimarySwitchTimeout',
+                                 'ReconcilePrimaryParameter', 'StopAcceptingAndDrain'],
+                    'LegacySimFacade': ['SetPrimarySlotId'],
+                    'LegacyCompletion': ['AwaitPrimaryResult', 'CompleteLegacyInt', 'TakeRoleResult'],
+                    'AssignmentService': ['StartPrimarySwitch', 'SubmitRadioOutsideCommit', 'AcceptRadioStep',
+                                          'AcceptLateRadioEvidence', 'RunTrackedPrimaryParameters',
+                                          'WriteTrackedParameter', 'ReconcileC0Parameter'],
+                    'AssignmentStoreAdapter': ['WriteC0Parameter', 'ReadC0ParameterEvidence'],
+                    'TopologyService': ['WithCurrentPrimaryTarget'],
+                    'ResourceRadioRuntime': ['ReadPrimaryRadioObservation', 'SwitchPrimaryRadio', 'AcceptDeviceResult'],
+                    'ResourceBarrier': ['Acquire', 'Complete', 'AcceptRecoveryEvidence'],
+                    'PrimaryHostLifecycle': ['StopAcceptingAndDrain']}
     else:
         required = {'CoreServiceSim':['GetRealSimCount'], 'SimManager':['GetRealSimCount'],
                     'TelephonyExtWrapper':['GetRealSimCountExt']}

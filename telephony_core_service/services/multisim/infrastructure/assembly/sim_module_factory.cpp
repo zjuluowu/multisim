@@ -50,13 +50,16 @@ bool ValidCatalog(const SlotCatalog &catalog)
 
 SimModule::SimModule(CoreSimModulePorts ports, std::shared_ptr<const SlotCatalog> catalog, RuntimeEpoch epoch)
     : ports_(std::move(ports)), catalog_(std::move(catalog)), epoch_(epoch), resources_(epoch_),
-      radio_(resources_, *ports_.radio, {primaryResource_}, ResourceRadioRuntime::Mode::ObserveOnly),
+      radio_(resources_, *ports_.radio, {primaryResource_},
+          ports_.primaryWait ? ResourceRadioRuntime::Mode::Execute : ResourceRadioRuntime::Mode::ObserveOnly),
       sessions_(epoch_),
       topology_(*catalog_, *ports_.accountStore, epoch_), card_(*catalog_, sessions_, topology_, epoch_),
       cardTransport_(card_, resources_, epoch_),
-      completion_(*ports_.completion, ports_.primaryHost.get(), ports_.numberHost.get(), ports_.pinHost.get()),
+      completion_(*ports_.completion, ports_.primaryHost.get(), ports_.numberHost.get(), ports_.pinHost.get(),
+          ports_.primaryWait.get()),
       assignment_(std::make_shared<AssignmentService>(*catalog_, *ports_.assignmentStore, radio_,
-          *ports_.output, topology_, completion_, epoch_, AssignmentService::PrimaryScope::C0Only)),
+          *ports_.output, topology_, completion_, epoch_, ports_.primaryWait ?
+              AssignmentService::PrimaryScope::TrackedDedicated : AssignmentService::PrimaryScope::C0Only)),
       lifecycle_(assignment_, radio_, *ports_.scheduler, ports_.ownerDispatch)
 {
     for (const auto &slot : catalog_->Slots()) {
@@ -68,7 +71,6 @@ SimModule::SimModule(CoreSimModulePorts ports, std::shared_ptr<const SlotCatalog
         pinUnlock_.emplace(card_, cardTransport_, *ports_.pinIo, completion_);
     }
     assignment_->BindRetryScheduler(ports_.scheduler);
-    radio_.BindResultSink(assignment_);
     radio_.BindOwnerDispatch(ports_.ownerDispatch);
     if (ports_.numberHost && ports_.msisdn && ports_.primaryHost) {
         msisdn_.emplace(card_, cardTransport_, *ports_.msisdn);
@@ -357,7 +359,8 @@ bool SimModule::AdmitPrimaryCall(bool originalOnly)
 {
     std::lock_guard<std::mutex> guard(admissionMutex_);
     if (drained_ || joining_ || primaryCallActive_) { return false; }
-    if (originalOnly ? !primaryEffectUnresolved_ : (!accepting_ || primaryEffectUnresolved_)) { return false; }
+    const bool primaryStoreOutstanding = assignment_->ReadC0Receipt().has_value();
+    if (originalOnly ? !primaryStoreOutstanding : (!accepting_ || primaryStoreOutstanding)) { return false; }
     primaryCallActive_ = true;
     return true;
 }
@@ -367,9 +370,15 @@ int32_t SimModule::SetPrimarySlotId(int32_t slot, LegacyCallerRef caller)
     if (!ports_.primaryHost) { return -1; }
     if (!AdmitPrimaryCall()) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
     const PrimaryCall call {shared_from_this()};
+    std::function<bool(RequestId, uint64_t)> timeout;
+    if (ports_.primaryWait) {
+        timeout = [this](RequestId request, uint64_t elapsed) {
+            return AcceptPrimarySwitchTimeout(request, elapsed);
+        };
+    }
     return LegacySimFacade::SetPrimarySlotId({slot}, caller, *catalog_, *ports_.primaryHost, topology_, completion_,
         [this](SlotId target) { return card_.HasVerifiedCard(target); },
-        [this](const SwitchPrimaryCommand &command) { (void)StartLegacyPrimarySwitch(*assignment_, command); });
+        [this](const SwitchPrimaryCommand &command) { return StartLegacyPrimarySwitch(*assignment_, command); }, timeout);
 }
 
 int32_t SimModule::SetDefaultCellularDataSlotId(int32_t slot, LegacyCallerRef caller)
@@ -432,6 +441,41 @@ std::optional<RequestId> SimModule::StartPrimarySwitch(const SwitchPrimaryComman
     return assignment_->StartPrimarySwitch(command);
 }
 
+bool SimModule::AcceptRadioDeviceResult(const RadioDeviceResult &result)
+{
+    if (!ports_.primaryWait || !AdmitModuleCall(true)) { return false; }
+    const ModuleCall call {shared_from_this()};
+    return radio_.AcceptDeviceResult(result);
+}
+
+bool SimModule::AcceptPrimarySwitchTimeout(RequestId request, uint64_t elapsedMilliseconds)
+{
+    if (!ports_.primaryWait || !AdmitModuleCall(true)) { return false; }
+    const ModuleCall call {shared_from_this()};
+    return assignment_->AcceptPrimarySwitchTimeout(request, elapsedMilliseconds);
+}
+
+bool SimModule::FlushRadioOwnerDeliveries()
+{
+    if (!ports_.primaryWait || !AdmitModuleCall(true)) { return false; }
+    const ModuleCall call {shared_from_this()};
+    return radio_.FlushOwnerDeliveries();
+}
+
+void SimModule::AcceptRadioStep(const RadioSwitchResult &result)
+{
+    if (!AdmitModuleCall(true)) { return; }
+    const ModuleCall call {shared_from_this()};
+    assignment_->AcceptRadioStep(result);
+}
+
+void SimModule::AcceptLateRadioEvidence(const RadioSwitchResult &result)
+{
+    if (!AdmitModuleCall(true)) { return; }
+    const ModuleCall call {shared_from_this()};
+    assignment_->AcceptLateRadioEvidence(result);
+}
+
 bool SimModule::ReconcilePrimaryParameter(const C0ParameterOperation &operation)
 {
     if (!AdmitPrimaryCall(true)) { return false; }
@@ -441,15 +485,9 @@ bool SimModule::ReconcilePrimaryParameter(const C0ParameterOperation &operation)
 
 void SimModule::ReturnPrimaryCall()
 {
-    const auto receipt = assignment_->ReadC0Receipt();
     std::lock_guard<std::mutex> guard(admissionMutex_);
-    primaryEffectUnresolved_ = receipt.has_value();
-    if (HasPendingBusinessEffects()) {
-        closeHold_ = shared_from_this();
-    } else if (accepting_) {
-        closeHold_.reset();
-    }
     primaryCallActive_ = false;
+    UpdateCloseHold();
 }
 
 SimModule::DrainResult SimModule::StopAcceptingAndDrain()
@@ -458,6 +496,7 @@ SimModule::DrainResult SimModule::StopAcceptingAndDrain()
     {
         std::lock_guard<std::mutex> guard(admissionMutex_);
         accepting_ = false;
+        if (ports_.primaryWait) { assignment_->RequestStopAccepting(); }
         cardTransport_.SealLocalCommands();
         topology_.SealDiscovery();
         topology_.SealReload();
@@ -505,7 +544,13 @@ void SimModule::ReturnModuleCall()
 {
     std::lock_guard<std::mutex> guard(admissionMutex_);
     --moduleCalls_;
-    if (HasPendingBusinessEffects()) {
+    UpdateCloseHold();
+}
+
+void SimModule::UpdateCloseHold()
+{
+    if (HasPendingBusinessEffects() || (ports_.primaryWait &&
+        (assignment_->HasPendingDeviceEffects() || !radio_.DeviceResourcesDrained()))) {
         closeHold_ = shared_from_this();
     } else if (accepting_) {
         closeHold_.reset();
@@ -514,7 +559,7 @@ void SimModule::ReturnModuleCall()
 
 bool SimModule::HasPendingBusinessEffects() const
 {
-    return primaryEffectUnresolved_ || assignment_->ReadDataParameterReceipt() ||
+    return assignment_->ReadC0Receipt() || assignment_->ReadDataParameterReceipt() ||
         assignment_->ReadRoleProviderReceipt(DefaultRole::Voice) || assignment_->ReadRoleProviderReceipt(DefaultRole::Sms) ||
         cardTransport_.HasPending() || topology_.PendingDiscoveryCount() || topology_.PendingMetadataCount() || assignment_->PendingDiscoveryRoles();
 }
@@ -585,6 +630,9 @@ CoreSimModuleCreationResult CreateCoreSimModule(CoreSimModulePorts ports,
             !ports.radio || !ports.scheduler || !ports.ownerDispatch || !ports.initialEvidence) {
             return SimModuleInitFailure {stage, -1};
         }
+        if (ports.primaryWait && (!ports.primaryHost || !ports.assignmentStore->SupportsTrackedC0())) {
+            return SimModuleInitFailure {stage, -1};
+        }
         stage = Stage::AllocateCore;
         const auto epoch = AllocateEpoch();
         if (!epoch) { return SimModuleInitFailure {stage, -1}; }
@@ -595,6 +643,7 @@ CoreSimModuleCreationResult CreateCoreSimModule(CoreSimModulePorts ports,
         for (const auto &account : accounts) {
             if (!module->SeedAccount(account)) { return SimModuleInitFailure {stage, -1}; }
         }
+        module->radio_.BindResultSink(module);
         return module;
     } catch (const std::exception &) {
         return SimModuleInitFailure {stage, -1};

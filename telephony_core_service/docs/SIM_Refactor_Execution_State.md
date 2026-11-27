@@ -303,6 +303,13 @@ Target 215/215，Primary 与 Radio 专项 ASan/TSan 各 76/76。
 正式接线仍需用动态 A 收据覆盖异步原调用、排空及重建。状态保持 `AF2_M9_IN_PROGRESS`。
 [逐键 Store、换绑回归和实际负控](../services/multisim/test/docs/evidence/af2_m9_d01_b_store_20261127/README.md)
 
+**D01 正式 Host B 检查点。** `CreateCoreSimModule` 接通兼容入口等待、A/T/R 原许可、
+设备回包、逐键 Store 和原 Completion。同步回包、独立 Voice 与 Data 冲突、异步 ACK 后生
+的 Store 收据、Stop 后原确认未应用回包均在正式对象图通过。Target 222/222，专项 ASan/TSan
+各 97/97，生产执行审计 26 项，LLDB 命中实际生产断点。C1 仍在组件图，正式全图、
+物理资源图和后续扩展仍待。状态保持 `AF2_M9_IN_PROGRESS`。
+[正式 B 样板、实际反例与回归](../services/multisim/test/docs/evidence/af2_m9_d01_formal_b_20261127/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）

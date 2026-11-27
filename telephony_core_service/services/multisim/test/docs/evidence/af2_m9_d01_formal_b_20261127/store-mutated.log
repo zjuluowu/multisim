@@ -1,0 +1,39 @@
+Note: Google Test filter = AF2Primary.FormalDedicatedSwitchRetainsStoreReceiptDiscoveredAfterStartReturns
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.FormalDedicatedSwitchRetainsStoreReceiptDiscoveredAfterStartReturns
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2074: Failure
+Expected equality of these values:
+  module->StopAcceptingAndDrain()
+    Which is: 4-byte object <00-00 00-00>
+  SimModule::DrainResult::BusinessEffectsUnresolved
+    Which is: 4-byte object <03-00 00-00>
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2075: Failure
+Expected equality of these values:
+  module->StopAcceptingAndDrain()
+    Which is: 4-byte object <00-00 00-00>
+  SimModule::DrainResult::BusinessEffectsUnresolved
+    Which is: 4-byte object <03-00 00-00>
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2082: Failure
+Value of: module->ReconcilePrimaryParameter(write->operation)
+  Actual: false
+Expected: true
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2083: Failure
+Value of: module->ReadC0Receipt()
+  Actual: true
+Expected: false
+
+[  FAILED  ] AF2Primary.FormalDedicatedSwitchRetainsStoreReceiptDiscoveredAfterStartReturns (0 ms)
+[----------] 1 test from AF2Primary (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] AF2Primary.FormalDedicatedSwitchRetainsStoreReceiptDiscoveredAfterStartReturns
+
+ 1 FAILED TEST

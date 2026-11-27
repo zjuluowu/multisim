@@ -1,0 +1,22 @@
+Note: Google Test filter = AF2Primary.FormalDedicatedTimeoutClosesOnlyAfterOriginalDeviceRecovery
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.FormalDedicatedTimeoutClosesOnlyAfterOriginalDeviceRecovery
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2126: Failure
+Expected equality of these values:
+  module->StopAcceptingAndDrain()
+    Which is: 4-byte object <02-00 00-00>
+  SimModule::DrainResult::Drained
+    Which is: 4-byte object <00-00 00-00>
+
+[  FAILED  ] AF2Primary.FormalDedicatedTimeoutClosesOnlyAfterOriginalDeviceRecovery (1 ms)
+[----------] 1 test from AF2Primary (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] AF2Primary.FormalDedicatedTimeoutClosesOnlyAfterOriginalDeviceRecovery
+
+ 1 FAILED TEST

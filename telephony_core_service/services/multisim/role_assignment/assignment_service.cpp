@@ -177,10 +177,11 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
 {
     std::unique_lock<std::recursive_mutex> guard(primaryCommitLock_);
     const bool c0Only = primaryScope_ == PrimaryScope::C0Only;
+    const bool trackedHost = primaryScope_ != PrimaryScope::ExistingBranches;
     const RequestId request = operations_.Begin(command.target, command.completion, command.parent);
     const auto fail = [&] {
-        CompleteOnce(request, command.completion, -1, TerminalState::Failed, c0Only ? &guard : nullptr);
-        if (c0Only) { operations_.RetireAfterEvidenceRetention(request); }
+        CompleteOnce(request, command.completion, -1, TerminalState::Failed, trackedHost ? &guard : nullptr);
+        if (trackedHost) { operations_.RetireAfterEvidenceRetention(request); }
     };
     if (stopping_) {
         fail();
@@ -240,6 +241,7 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
     const auto plan = PlanPrimarySwitch({*target, command.userSet, observed.dedicatedPrimaryRilSupported,
         alreadyOnPrimaryModem, observed.vendorMappingRequired});
     if (!plan || (c0Only && plan->mode != PrimarySwitchMode::AlreadyPrimary) ||
+        (trackedHost && plan->mode == PrimarySwitchMode::ThreePhaseProtocol) ||
         (!observed.ordinarySwitchAllowed && plan->mode != PrimarySwitchMode::WithoutModemRestart) ||
         (plan->mode != PrimarySwitchMode::AlreadyPrimary &&
         plan->mode != PrimarySwitchMode::WithoutModemRestart &&
@@ -265,7 +267,7 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         fail();
         return request;
     }
-    if (c0Only) {
+    if (trackedHost && plan->mode == PrimarySwitchMode::AlreadyPrimary) {
         RunTrackedPrimaryParameters({request, 1, 0}, TransitionPhase::Admitted, command, *target, *facts, guard);
         return request;
     }
@@ -355,7 +357,7 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
                     guard.lock();
                     CompleteOnce(request, command.completion, 83886087, TerminalState::Failed, &guard);
                 }
-                FinishUnsentPrimary(sentStep);
+                FinishPrimaryWithNoDeviceEffect(sentStep);
             } else if (waiting) {
                 assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
                     TransitionPhase::DevicePending, TransitionPhase::NeedsReconciliation);
@@ -641,7 +643,7 @@ AssignmentView AssignmentService::ReadLegacyAssignment() const
 int32_t AssignmentService::SetDefaultRole(const SetRoleCommand &command)
 {
     // Retain the old recording-store component tests. Formal and Provider graphs use original operations.
-    if (command.role == DefaultRole::Data || primaryScope_ == PrimaryScope::C0Only ||
+    if (command.role == DefaultRole::Data || primaryScope_ != PrimaryScope::ExistingBranches ||
         supportsRoleProvider_) { return -1; }
     const uint32_t members = command.role == DefaultRole::Voice ? kVoiceParameters : kSmsParameters;
     std::unique_lock<std::recursive_mutex> guard(primaryCommitLock_);
@@ -1101,6 +1103,10 @@ void AssignmentService::AcceptLateRadioEvidence(const RadioSwitchResult &result)
     if (!pending->second.lateDeviceEffect.has_value()) {
         pending->second.lateDeviceEffect = result.effect;
     }
+    if (operation->wait == WaitState::TimedOut && pending->second.mode == PrimarySwitchMode::WithoutModemRestart &&
+        store_.SupportsTrackedC0() && pending->second.lateDeviceEffect == EffectKnowledge::ConfirmedNotApplied) {
+        FinishPrimaryWithNoDeviceEffect(result.step);
+    }
 }
 
 std::optional<EffectKnowledge> AssignmentService::ReadPrimaryDeviceEvidence(const StepRef &original) const
@@ -1231,8 +1237,7 @@ bool AssignmentService::SubmitC1Round(const PendingPrimarySwitch &round,
 bool AssignmentService::AcceptPrimarySwitchTimeout(RequestId request, uint64_t elapsedMilliseconds)
 {
     std::unique_lock<std::recursive_mutex> guard(primaryCommitLock_);
-    static constexpr uint64_t kLegacyPrimaryTimeoutMs = 45000;
-    if (elapsedMilliseconds < kLegacyPrimaryTimeoutMs) { return false; }
+    if (elapsedMilliseconds < LEGACY_DEDICATED_PRIMARY_WAIT_MS) { return false; }
     const auto pending = pendingPrimary_.find(request.value);
     if (pending == pendingPrimary_.end()) { return false; }
     const auto operation = operations_.Read(request);
@@ -1278,17 +1283,19 @@ bool AssignmentService::AcceptPrimarySwitchTimeout(RequestId request, uint64_t e
     const auto original = pendingPrimary_.find(request.value);
     if (original != pendingPrimary_.end() && original->second.step == step) {
         original->second.timeoutDeliveryInFlight = false;
-        if (original->second.handoffConfirmedNotSent) { FinishUnsentPrimary(step); }
+        const bool verifiedNoEffect = original->second.mode == PrimarySwitchMode::WithoutModemRestart &&
+            store_.SupportsTrackedC0() && original->second.lateDeviceEffect == EffectKnowledge::ConfirmedNotApplied;
+        if (original->second.noDeviceEffect || verifiedNoEffect) { FinishPrimaryWithNoDeviceEffect(step); }
     }
     return true;
 }
 
-void AssignmentService::FinishUnsentPrimary(const StepRef &step)
+void AssignmentService::FinishPrimaryWithNoDeviceEffect(const StepRef &step)
 {
     const auto pending = pendingPrimary_.find(step.request.value);
     if (pending == pendingPrimary_.end() || !(pending->second.step == step)) { return; }
     if (pending->second.timeoutDeliveryInFlight) {
-        pending->second.handoffConfirmedNotSent = true;
+        pending->second.noDeviceEffect = true;
         return;
     }
     assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(), step.request.value,

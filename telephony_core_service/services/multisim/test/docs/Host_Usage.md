@@ -158,7 +158,9 @@ M2 的 `AF2Discovery.LiveBindingsFeedExistingC0AndStaleTargetCannotAdvance` 继�
 
 ## AF-2 M3 从兼容主卡入口单步
 
-在 WSL 中选择 `AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry` 调试。该用例先发现两张实体卡，再调用 `SimModule::SetPrimarySlotId(1, caller)`。沿 `LegacySimFacade::SetPrimarySlotId`、`AssignmentService::RunTrackedC0`、`AssignmentStoreAdapter::WriteC0Parameter`、`LegacyCompletion::CompleteLegacyInt` 观察兼容检查、目标资格、原步、逐键写入和同步取值。查看 `ReadAssignment()` 的 Primary/Data 投影及 `StopAcceptingAndDrain()`。前后端断点、参数及账户数据流、可复用的 Data/Voice/SMS 接线与 LLDB 实测见[M3 主卡调试对照](M3_Primary_Debug.md)。
+在 WSL 中选择 `AF2Primary.LiveDualSimSetPrimaryThroughLegacyEntry` 调试。该用例先发现两张实体卡，再调用 `SimModule::SetPrimarySlotId(1, caller)`。沿 `LegacySimFacade::SetPrimarySlotId`、`AssignmentService::RunTrackedPrimaryParameters`、`AssignmentStoreAdapter::WriteC0Parameter`、`LegacyCompletion::CompleteLegacyInt` 观察兼容检查、目标资格、原步、逐键写入和同步取值。查看 `ReadAssignment()` 的 Primary/Data 投影及 `StopAcceptingAndDrain()`。[M3 主卡调试对照](M3_Primary_Debug.md)
+
+正式 Host 专用 B 可用 `AF2Primary.FormalDedicatedSwitchHandlesReplyBeforeSubmitReturns` 进入生产代码。选择 Target 单步构建，在 `AssignmentService::SubmitRadioOutsideCommit` 设置断点，跟踪平台验证的成员和路由、原发令票、同步回包和原 Store 写。异步等待、并发 Voice、未决 Store 和关闭用例共用同一模块装配。[正式 B 入口和实测](evidence/af2_m9_d01_formal_b_20261127/README.md)
 
 独立默认数据卡的单例、写权和 LLDB 断点见 [M4 开发与调试](M4_Default_Data_Debug.md)。
 
