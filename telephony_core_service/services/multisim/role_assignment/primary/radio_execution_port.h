@@ -91,23 +91,24 @@ using RadioSendPermit = std::function<bool()>;
 // R evaluates stillAccepting at registration under its lock. It is a caller-safe A gate read.
 using RadioPermissionRegistration = std::function<bool(const RadioSendPermit &stillAccepting)>;
 using RadioSendQualification = std::function<bool(const RadioPermissionRegistration &registerPermission)>;
-// A消费；R复用三阶段控制器或原共享RIL专用命令，不反调旧混合Controller。
-class RadioExecutionPort {
-public:
-    virtual ~RadioExecutionPort() = default;
-    virtual PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const = 0;
-    // This invocation crossed the handoff boundary with a known transport association.
-    // False also covers an unknown handoff and grants no permission to retry.
-    virtual bool SwitchPrimaryRadio(const RadioSwitchRequest &request, const RadioSendQualification &qualify) = 0;
-    virtual void EndLegacySenseSwitch(const StepRef &owner, const RadioDomainId &domain) = 0;
-};
-// Narrow platform seam below R. The platform reports an opaque transport token and
-// does not make A/R business decisions. Real RIL serial can be retained by an adapter.
 enum class RadioSubmitDisposition {
     ConfirmedNotSent, // strict proof that the platform handoff boundary was not crossed
     HandoffAccepted,   // request+token entered the transport association table
     HandoffUnknown,    // return failed/ended without proof that the handoff did not occur
 };
+// A消费；R复用三阶段控制器或原共享RIL专用命令，不反调旧混合Controller。
+class RadioExecutionPort {
+public:
+    virtual ~RadioExecutionPort() = default;
+    virtual PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const = 0;
+    // ConfirmedNotSent closes the entire original group. If an earlier member may
+    // still have an effect, an unsent member returns HandoffUnknown instead.
+    virtual RadioSubmitDisposition SwitchPrimaryRadio(const RadioSwitchRequest &request,
+        const RadioSendQualification &qualify) = 0;
+    virtual void EndLegacySenseSwitch(const StepRef &owner, const RadioDomainId &domain) = 0;
+};
+// Narrow platform seam below R. The platform reports an opaque transport token and
+// does not make A/R business decisions. Real RIL serial can be retained by an adapter.
 struct RadioSubmitResult {
     RadioSubmitDisposition disposition;
     std::optional<int32_t> transportSerial;

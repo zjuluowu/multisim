@@ -1,0 +1,63 @@
+Note: Google Test filter = TargetPrimaryB.TimeoutSealsPermissionBeforeBlockingInPlatformEnd
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.TimeoutSealsPermissionBeforeBlockingInPlatformEnd
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1236: Failure
+Value of: fixture.service->HasPendingDeviceEffects()
+  Actual: false
+Expected: true
+Original timeout delivery is still active
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1239: Failure
+Expected equality of these values:
+  fixture.parameters.writes.size()
+    Which is: 2
+  writes
+    Which is: 1
+A released shared writes before original timeout delivery
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1240: Failure
+Value of: fixture.platform.requests.empty()
+  Actual: false
+Expected: true
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1249: Failure
+Value of: fixture.platform.requests.empty()
+  Actual: false
+Expected: true
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1250: Failure
+Value of: fixture.radio.DeviceResourcesDrained()
+  Actual: false
+Expected: true
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1251: Failure
+Value of: fixture.service->HasPendingDeviceEffects()
+  Actual: true
+Expected: false
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1252: Failure
+Expected equality of these values:
+  fixture.completion.results
+    Which is: { 83886087 }
+  (std::vector<int32_t> {-1, kLegacyLocalPointerNull})
+    Which is: { -1, 83886087 }
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1258: Failure
+Expected equality of these values:
+  fixture.completion.results
+    Which is: { 83886087, -1, 0 }
+  (std::vector<int32_t> {-1, kLegacyLocalPointerNull, 0})
+    Which is: { -1, 83886087, 0 }
+
+[  FAILED  ] TargetPrimaryB.TimeoutSealsPermissionBeforeBlockingInPlatformEnd (2 ms)
+[----------] 1 test from TargetPrimaryB (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TargetPrimaryB.TimeoutSealsPermissionBeforeBlockingInPlatformEnd
+
+ 1 FAILED TEST

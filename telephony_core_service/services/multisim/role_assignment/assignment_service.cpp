@@ -285,11 +285,35 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         output_.PublishPrimaryPhase(false, command.userSet);
         const RadioSwitchRequest device {sentStep, targetMember->route, *target->radioDomain, plan->mode,
             facts->binding, pendingPrimary_.at(request.value).protocolSession, 0, 1, targetMember};
-        if (!SubmitRadioOutsideCommit(device, *facts, guard)) {
+        const auto handoff = SubmitRadioOutsideCommit(device, *facts, guard);
+        if (handoff != RadioSubmitDisposition::HandoffAccepted) {
             const auto pending = pendingPrimary_.find(request.value);
             const auto operation = operations_.Read(request);
-            if (pending != pendingPrimary_.end() && pending->second.step == sentStep &&
-                operation && operation->terminal == TerminalState::Open) {
+            if (pending == pendingPrimary_.end() || !(pending->second.step == sentStep) || !operation) {
+                return request;
+            }
+            const bool waiting = operation->terminal == TerminalState::Open;
+            const bool timedOut = operation->terminal == TerminalState::NeedsReconciliation &&
+                operation->wait == WaitState::TimedOut;
+            if (handoff == RadioSubmitDisposition::ConfirmedNotSent && preference.parameterResult == 0 &&
+                (waiting || timedOut)) {
+                if (waiting) {
+                    assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
+                        TransitionPhase::DevicePending, TransitionPhase::Failed);
+                    operations_.AcceptResult(sentStep, EffectKnowledge::NotSent);
+                    operations_.EndWait(request, WaitState::Delivered);
+                    operations_.MarkTerminal(request, TerminalState::Failed);
+                    guard.unlock();
+                    try {
+                        output_.PublishPrimaryPhase(true, command.userSet);
+                    } catch (const std::exception &) {
+                        // The original completion remains deliverable.
+                    }
+                    guard.lock();
+                    CompleteOnce(request, command.completion, 83886087, TerminalState::Failed, &guard);
+                }
+                FinishUnsentPrimary(sentStep);
+            } else if (waiting) {
                 assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
                     TransitionPhase::DevicePending, TransitionPhase::NeedsReconciliation);
                 operations_.MarkTerminal(request, TerminalState::NeedsReconciliation);
@@ -1065,14 +1089,15 @@ bool AssignmentService::AcceptC1RetryDue(RequestId request, std::unique_lock<std
     return SubmitC1Round(pending->second, guard);
 }
 
-bool AssignmentService::SubmitRadioOutsideCommit(const RadioSwitchRequest &device, const PrimaryTargetFacts &facts,
+RadioSubmitDisposition AssignmentService::SubmitRadioOutsideCommit(const RadioSwitchRequest &device,
+    const PrimaryTargetFacts &facts,
     std::unique_lock<std::recursive_mutex> &guard)
 {
     // The original step and its write qualification are already registered.
     guard.unlock();
-    bool accepted = false;
+    auto handoff = RadioSubmitDisposition::HandoffUnknown;
     try {
-        accepted = radio_.SwitchPrimaryRadio(device, [&](const RadioPermissionRegistration &registerPermission) {
+        handoff = radio_.SwitchPrimaryRadio(device, [&](const RadioPermissionRegistration &registerPermission) {
             std::lock_guard<std::recursive_mutex> commit(primaryCommitLock_);
             const auto pending = pendingPrimary_.find(device.step.request.value);
             const auto operation = operations_.Read(device.step.request);
@@ -1091,7 +1116,7 @@ bool AssignmentService::SubmitRadioOutsideCommit(const RadioSwitchRequest &devic
         // Crossing the platform boundary may leave an unknown effect.
     }
     guard.lock();
-    return accepted;
+    return handoff;
 }
 
 bool AssignmentService::SubmitC1Round(const PendingPrimarySwitch &round,
@@ -1116,7 +1141,7 @@ bool AssignmentService::SubmitC1Round(const PendingPrimarySwitch &round,
         const RadioSwitchRequest device {step, member.route, domain, PrimarySwitchMode::ThreePhaseProtocol,
             member.nativeMember == targetMember ? std::optional<BindingRef>{facts.binding} : std::nullopt,
             protocolSession, phase, static_cast<uint32_t>(members.size()), member};
-        if (!SubmitRadioOutsideCommit(device, facts, guard)) {
+        if (SubmitRadioOutsideCommit(device, facts, guard) != RadioSubmitDisposition::HandoffAccepted) {
             if (!stillCurrent()) { return true; }
             assignment_.AcceptTransitionPhase(domain, step.request.value, TransitionPhase::DevicePending,
                 TransitionPhase::NeedsReconciliation);
@@ -1137,9 +1162,13 @@ bool AssignmentService::AcceptPrimarySwitchTimeout(RequestId request, uint64_t e
     const auto operation = operations_.Read(request);
     const auto step = pending->second.step;
     if (!assignment_.OwnsRoleWriteSet(request.value, kPrimaryRoleWriteSet) ||
-        !operation || operation->terminal != TerminalState::Open ||
-        !(step.request == request) ||
-        operations_.AcceptResult(step, EffectKnowledge::Unknown) != RuntimeOperationStore::ResultAdmission::Accepted) {
+        !operation || operation->wait != WaitState::Waiting || !(step.request == request)) {
+        return false;
+    }
+    if (operation->terminal == TerminalState::Open) {
+        if (operations_.AcceptResult(step, EffectKnowledge::Unknown) !=
+            RuntimeOperationStore::ResultAdmission::Accepted) { return false; }
+    } else if (operation->terminal != TerminalState::NeedsReconciliation) {
         return false;
     }
     const auto domain = pending->second.target.radioDomain.value();
@@ -1150,6 +1179,7 @@ bool AssignmentService::AcceptPrimarySwitchTimeout(RequestId request, uint64_t e
         TransitionPhase::DevicePending, TransitionPhase::NeedsReconciliation);
     operations_.MarkTerminal(request, TerminalState::NeedsReconciliation);
     const bool deliver = operations_.ClaimCompletion(request);
+    pending->second.timeoutDeliveryInFlight = true;
     guard.unlock();
     try {
         radio_.EndLegacySenseSwitch(step, domain);
@@ -1161,9 +1191,37 @@ bool AssignmentService::AcceptPrimarySwitchTimeout(RequestId request, uint64_t e
     } catch (const std::exception &) {
         // Failure to publish the phase does not revoke the original timeout result.
     }
-    if (deliver) { completion_.CompleteLegacyInt(completion, 83886087); }
+    if (deliver) {
+        try {
+            completion_.CompleteLegacyInt(completion, 83886087);
+        } catch (const std::exception &) {
+            // The original delivery was claimed already. A later call must not repeat it.
+        }
+    }
+    guard.lock();
+    const auto original = pendingPrimary_.find(request.value);
+    if (original != pendingPrimary_.end() && original->second.step == step) {
+        original->second.timeoutDeliveryInFlight = false;
+        if (original->second.handoffConfirmedNotSent) { FinishUnsentPrimary(step); }
+    }
     return true;
 }
+
+void AssignmentService::FinishUnsentPrimary(const StepRef &step)
+{
+    const auto pending = pendingPrimary_.find(step.request.value);
+    if (pending == pendingPrimary_.end() || !(pending->second.step == step)) { return; }
+    if (pending->second.timeoutDeliveryInFlight) {
+        pending->second.handoffConfirmedNotSent = true;
+        return;
+    }
+    assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(), step.request.value,
+        TransitionPhase::NeedsReconciliation, TransitionPhase::Failed);
+    assignment_.ReleaseRoleWriteSet(step.request.value, kPrimaryRoleWriteSet);
+    operations_.RetireAfterEvidenceRetention(step.request, true);
+    pendingPrimary_.erase(pending);
+}
+
 void AssignmentService::RetryPrimaryAfterReconciliation(RequestId)
 { throw std::logic_error("C0 Target component slice does not schedule retries"); }
 LegacyActivationWaitResult AssignmentService::WaitForLegacyPrimaryBeforeActivation(SlotId)

@@ -290,6 +290,13 @@ ACK 若在超时后才由 Owner 消费，按原步骤进入晚证据。同步回
 正式 B/C1、C1 整轮结束与原 Store 结清仍待。状态保持 `AF2_M9_IN_PROGRESS`。
 [独立反例、动态路由和三个负控](../services/multisim/test/docs/evidence/af2_m9_d04_radio_evidence_20261127/README.md)
 
+**D01 Radio 三类交接与 B 全未发检查点。** A 区分整组确认未发、已接纳和未知。
+B 的设备租约与原超时结束通知、Completion 分别结清。独立反审复现的写权空窗已修复，
+原超时出口仍在途时后继角色写被拒绝。Unknown 原等待可超时一次，设备效果继续隔离。
+Target 215/215，Primary 与 Radio 专项 ASan/TSan 各 76/76。
+正式 B/C1、逐键 Store 和整轮处置仍待。状态保持 `AF2_M9_IN_PROGRESS`。
+[三类交接、超时反例与实际复验](../services/multisim/test/docs/evidence/af2_m9_d01_disposition_20261127/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）

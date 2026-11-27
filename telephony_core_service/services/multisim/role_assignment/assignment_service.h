@@ -162,10 +162,13 @@ private:
         uint64_t retryScheduleGeneration {0};
         std::optional<uint64_t> retrySchedulerTask;
         std::optional<EffectKnowledge> lateDeviceEffect;
+        bool timeoutDeliveryInFlight {false};
+        bool handoffConfirmedNotSent {false};
     };
     bool AcceptC1RetryDue(RequestId request, std::unique_lock<std::recursive_mutex> &guard);
-    bool SubmitRadioOutsideCommit(const RadioSwitchRequest &device, const PrimaryTargetFacts &facts,
+    RadioSubmitDisposition SubmitRadioOutsideCommit(const RadioSwitchRequest &device, const PrimaryTargetFacts &facts,
         std::unique_lock<std::recursive_mutex> &guard);
+    void FinishUnsentPrimary(const StepRef &step);
     bool SubmitC1Round(const PendingPrimarySwitch &round, std::unique_lock<std::recursive_mutex> &guard);
     std::map<uint64_t, PendingPrimarySwitch> pendingPrimary_;
     std::weak_ptr<RetrySchedulerPort> retryScheduler_;

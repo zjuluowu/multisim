@@ -129,7 +129,7 @@ TEST(TargetRadioReceipt, FlushCannotRepostWhileOriginalPostIsStillInFlight)
     ASSERT_TRUE(runtime.Initialize(key, {epoch, true, true}));
     runtime.BindResultSink(sink);
     runtime.BindOwnerDispatch(dispatch);
-    ASSERT_TRUE(runtime.SwitchPrimaryRadio(Request(1), kOnlyRadioQualification));
+    ASSERT_EQ(runtime.SwitchPrimaryRadio(Request(1), kOnlyRadioQualification), RadioSubmitDisposition::HandoffAccepted);
 
     auto accept = std::async(std::launch::async, [&] { return runtime.AcceptDeviceResult(Reply(1)); });
     {
@@ -185,9 +185,12 @@ TEST(TargetRadioReceipt, EarlyDeliveryCannotOverwriteOriginalSubmitResult)
         EXPECT_TRUE(runtime.AcceptDeviceResult(Reply(1)));
         return {RadioSubmitDisposition::HandoffAccepted, static_cast<int32_t>(token)};
     };
-    sink->onDelivery = [&] { EXPECT_FALSE(runtime.SwitchPrimaryRadio(Request(2), kOnlyRadioQualification)); };
+    sink->onDelivery = [&] {
+        EXPECT_EQ(runtime.SwitchPrimaryRadio(Request(2), kOnlyRadioQualification),
+            RadioSubmitDisposition::ConfirmedNotSent);
+    };
 
-    EXPECT_TRUE(runtime.SwitchPrimaryRadio(Request(1), kOnlyRadioQualification));
+    EXPECT_EQ(runtime.SwitchPrimaryRadio(Request(1), kOnlyRadioQualification), RadioSubmitDisposition::HandoffAccepted);
     EXPECT_EQ(sink->deliveries, (std::vector<uint64_t>{1}));
     EXPECT_EQ(runtime.SubmittedCommands(), 1u);
     EXPECT_EQ(runtime.ReadResourceState(key), ResourceState::Available);

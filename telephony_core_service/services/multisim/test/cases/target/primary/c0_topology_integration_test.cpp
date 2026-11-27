@@ -185,8 +185,8 @@ public:
         return {slot, slot == SlotId {1} ? 0 : 1, false, false, 9, true,
             PrimaryProtocolRouting {slot == SlotId {0} ? 100u : 200u, {{100, {0}, 8}, {200, {1}, 9}}}};
     }
-    bool SwitchPrimaryRadio(const RadioSwitchRequest &, const RadioSendQualification &) override
-    { ++switches; return true; }
+    RadioSubmitDisposition SwitchPrimaryRadio(const RadioSwitchRequest &, const RadioSendQualification &) override
+    { ++switches; return RadioSubmitDisposition::HandoffAccepted; }
     void EndLegacySenseSwitch(const StepRef &, const RadioDomainId &) override { ++switches; }
 };
 class RoleProvider final : public AssignmentRoleProviderPort {
