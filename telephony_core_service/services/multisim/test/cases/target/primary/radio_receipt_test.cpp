@@ -113,6 +113,54 @@ TEST(TargetRadioReceipt, RefusedPostDoesNotRemoveAnotherRequestsReceipt)
     EXPECT_EQ(sink->deliveries, (std::vector<uint64_t> {2, 1}));
 }
 
+TEST(TargetRadioReceipt, FlushCannotRepostWhileOriginalPostIsStillInFlight)
+{
+    ResourceBarrier barrier{epoch};
+    Device device;
+    auto sink = std::make_shared<Sink>();
+    auto dispatch = std::make_shared<Dispatcher>();
+    ResourceRadioRuntime runtime{barrier, device, {key}, ResourceRadioRuntime::Mode::Execute};
+    ASSERT_TRUE(barrier.RegisterForInitialCheck(key));
+    ASSERT_TRUE(runtime.Initialize(key, {epoch, true, true}));
+    runtime.BindResultSink(sink);
+    runtime.BindOwnerDispatch(dispatch);
+    ASSERT_TRUE(runtime.SwitchPrimaryRadio(Request(1)));
+
+    auto accept = std::async(std::launch::async, [&] { return runtime.AcceptDeviceResult(Reply(1)); });
+    {
+        std::unique_lock<std::mutex> lock(dispatch->mutex);
+        if (!dispatch->changed.wait_for(lock, std::chrono::seconds(5), [&] { return dispatch->posts == 1; })) {
+            dispatch->releaseFirst = true;
+            dispatch->changed.notify_all();
+            FAIL() << "Original completion did not reach the dispatch boundary";
+        }
+    }
+    EXPECT_TRUE(runtime.DeviceResourcesDrained());
+    EXPECT_FALSE(runtime.OwnerCallbacksDrained());
+    EXPECT_FALSE(runtime.FlushOwnerDeliveries()) << "A second thread reposted an in-flight Owner receipt";
+    std::function<void()> reposted;
+    {
+        std::lock_guard<std::mutex> lock(dispatch->mutex);
+        EXPECT_EQ(dispatch->posts, 1u);
+        reposted = std::move(dispatch->second);
+        dispatch->releaseFirst = true;
+    }
+    dispatch->changed.notify_all();
+    EXPECT_FALSE(accept.get());
+    if (reposted) { reposted(); }
+
+    EXPECT_TRUE(runtime.FlushOwnerDeliveries());
+    std::function<void()> retry;
+    {
+        std::lock_guard<std::mutex> lock(dispatch->mutex);
+        retry = std::move(dispatch->second);
+    }
+    if (retry) { retry(); }
+    EXPECT_EQ(sink->deliveries, std::vector<uint64_t> {1});
+    EXPECT_TRUE(runtime.OwnerCallbacksDrained());
+    EXPECT_TRUE(runtime.StopAccepting());
+}
+
 TEST(TargetRadioReceipt, EarlyDeliveryCannotOverwriteOriginalSubmitResult)
 {
     ResourceBarrier barrier{epoch};

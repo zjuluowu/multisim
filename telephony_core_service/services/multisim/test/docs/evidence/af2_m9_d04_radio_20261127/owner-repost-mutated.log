@@ -1,0 +1,35 @@
+Note: Google Test filter = TargetRadioReceipt.FlushCannotRepostWhileOriginalPostIsStillInFlight
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetRadioReceipt
+[ RUN      ] TargetRadioReceipt.FlushCannotRepostWhileOriginalPostIsStillInFlight
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/radio_receipt_test.cpp:140: Failure
+Value of: runtime.FlushOwnerDeliveries()
+  Actual: true
+Expected: false
+A second thread reposted an in-flight Owner receipt
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/radio_receipt_test.cpp:144: Failure
+Expected equality of these values:
+  dispatch->posts
+    Which is: 2
+  1u
+    Which is: 1
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/radio_receipt_test.cpp:159: Failure
+Expected equality of these values:
+  sink->deliveries
+    Which is: { 1, 1 }
+  std::vector<uint64_t> {1}
+    Which is: { 1 }
+
+[  FAILED  ] TargetRadioReceipt.FlushCannotRepostWhileOriginalPostIsStillInFlight (1 ms)
+[----------] 1 test from TargetRadioReceipt (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TargetRadioReceipt.FlushCannotRepostWhileOriginalPostIsStillInFlight
+
+ 1 FAILED TEST

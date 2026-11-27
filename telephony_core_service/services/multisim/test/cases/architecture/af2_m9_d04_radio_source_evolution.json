@@ -1,0 +1,7 @@
+{
+  "baseline": "79b1470c5447cedd59c2716d42aa8094f595ad9b",
+  "files": {
+    "device/resource/resource_radio_runtime.cpp": "9d2fcbca5888e2bb11a03c0d13f53c5c34edc72615e66008829ed5efcdf4fdd4",
+    "device/resource/resource_radio_runtime.h": "a5b0ae80c1bbdc7d148fa8bf383f9614c25c8a22d3f59ea7457da4eafb2e166b"
+  }
+}

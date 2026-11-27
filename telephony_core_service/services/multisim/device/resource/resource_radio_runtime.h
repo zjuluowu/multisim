@@ -41,6 +41,19 @@ public:
     size_t RejectedStaleResults() const;
     std::optional<int32_t> ReadTransportSerial(uint64_t token) const;
 private:
+    // Holds the receipt responsibility across the R-to-Owner transfer, including
+    // the interval before the dispatcher accepts the callback.
+    class OwnerDeliveryFrame {
+    public:
+        explicit OwnerDeliveryFrame(ResourceRadioRuntime &owner) : owner_(owner) {}
+        ~OwnerDeliveryFrame();
+        void Begin(); // Called under R's lock, before the current receipt source is retired.
+        OwnerDeliveryFrame(const OwnerDeliveryFrame &) = delete;
+        OwnerDeliveryFrame &operator=(const OwnerDeliveryFrame &) = delete;
+    private:
+        ResourceRadioRuntime &owner_;
+        bool active_ {false};
+    };
     struct Group {
         ResourceLease lease;
         RadioSwitchRequest first;
@@ -55,6 +68,7 @@ private:
         bool sent {false};
         uint32_t submitting {0};
         bool hasNotSentMember {false};
+        bool endRequested {false};
     };
     struct Transmission {
         uint64_t fence;
@@ -94,6 +108,7 @@ private:
     std::vector<RadioSwitchResult> pendingNormalDeliveries_;
     std::vector<RadioSwitchResult> pendingLateDeliveries_;
     mutable std::vector<std::shared_ptr<OwnerDeliveryReceipt>> ownerDeliveryReceipts_;
+    size_t ownerDeliveryFrames_ {0};
 };
 } // namespace OHOS::Telephony::MultiSim
 

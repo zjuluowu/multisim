@@ -1290,6 +1290,62 @@ TEST(TargetPrimaryB,ResourceBarrierBTimeoutQuarantinesUntilRealRecovery)
     EXPECT_EQ(f.completion.results,(std::vector<int32_t>{kLegacyLocalPointerNull}));
 }
 
+TEST(TargetPrimaryB,ResourceTimeoutDuringSubmitReleasesOnlyAfterConfirmedNotSent)
+{
+    for (bool stopAfterTimeout : {false, true}) {
+        SCOPED_TRACE(stopAfterTimeout);
+        ResourceFixture fixture;
+        fixture.platform.disposition = RadioSubmitDisposition::ConfirmedNotSent;
+        std::optional<std::pair<uint64_t, RadioSwitchRequest>> original;
+        fixture.platform.onSynchronousResponse = [&](uint64_t token, const auto &request) {
+            original.emplace(token, request);
+            EXPECT_TRUE(fixture.service->AcceptPrimarySwitchTimeout(request.step.request, 45000));
+            EXPECT_EQ(fixture.radio.ReadResourceState(fixture.key), ResourceState::InFlight);
+            EXPECT_FALSE(fixture.radio.DeviceResourcesDrained());
+            if (stopAfterTimeout) { EXPECT_FALSE(fixture.radio.StopAccepting()); }
+        };
+
+        const auto request = fixture.Start(false);
+
+        ASSERT_TRUE(original);
+        EXPECT_EQ(fixture.platform.ended, 1u);
+        EXPECT_TRUE(fixture.platform.requests.empty());
+        EXPECT_EQ(fixture.radio.SubmittedCommands(), 0u);
+        EXPECT_EQ(fixture.radio.ReadResourceState(fixture.key), ResourceState::Available);
+        EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
+        EXPECT_FALSE(fixture.service->AcceptPrimarySwitchTimeout(request, 45000));
+        EXPECT_FALSE(fixture.radio.AcceptDeviceResult({original->first,
+            Result(original->second, EffectKnowledge::ConfirmedApplied, 0), true, true, true,
+            static_cast<int32_t>(original->first)}));
+        EXPECT_EQ(fixture.completion.results, (std::vector<int32_t> {kLegacyLocalPointerNull}));
+    }
+}
+
+TEST(TargetPrimaryB,ResourceTimeoutDuringSubmitRetainsAcceptedOrUnknownHandoff)
+{
+    for (auto disposition : {RadioSubmitDisposition::HandoffAccepted, RadioSubmitDisposition::HandoffUnknown}) {
+        SCOPED_TRACE(static_cast<int>(disposition));
+        ResourceFixture fixture;
+        fixture.platform.disposition = disposition;
+        fixture.platform.onSynchronousResponse = [&](uint64_t, const auto &request) {
+            EXPECT_FALSE(fixture.radio.StopAccepting());
+            EXPECT_TRUE(fixture.service->AcceptPrimarySwitchTimeout(request.step.request, 45000));
+            EXPECT_EQ(fixture.radio.ReadResourceState(fixture.key), ResourceState::InFlight);
+        };
+
+        fixture.Start(false);
+
+        ASSERT_EQ(fixture.platform.requests.size(), 1u);
+        EXPECT_EQ(fixture.radio.SubmittedCommands(), 1u);
+        EXPECT_EQ(fixture.radio.ReadResourceState(fixture.key), ResourceState::Quarantined);
+        EXPECT_FALSE(fixture.ResultAt(0, EffectKnowledge::ConfirmedNotApplied, kLegacyLocalPointerNull));
+        EXPECT_TRUE(fixture.ResultAt(0, EffectKnowledge::ConfirmedNotApplied, kLegacyLocalPointerNull,
+            false, true, true, true));
+        EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
+        EXPECT_EQ(fixture.completion.results, (std::vector<int32_t> {kLegacyLocalPointerNull}));
+    }
+}
+
 TEST(TargetPrimaryB,ResourceBarrierLateBResultRecoversOnlyWithCurrentStateProof)
 {
     ResourceFixture f;

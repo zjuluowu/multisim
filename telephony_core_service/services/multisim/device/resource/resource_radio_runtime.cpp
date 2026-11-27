@@ -20,13 +20,28 @@ bool ResourceRadioRuntime::Initialize(const ResourceKey &key, const InitialRecov
     return barrier_.AcceptInitialRecoveryEvidence(key, evidence);
 }
 
+void ResourceRadioRuntime::OwnerDeliveryFrame::Begin()
+{
+    ++owner_.ownerDeliveryFrames_;
+    active_ = true;
+}
+
+ResourceRadioRuntime::OwnerDeliveryFrame::~OwnerDeliveryFrame()
+{
+    if (active_) {
+        std::lock_guard<std::mutex> guard(owner_.lock_);
+        --owner_.ownerDeliveryFrames_;
+    }
+}
+
 bool ResourceRadioRuntime::OwnerCallbacksDrained() const
 {
     std::unique_lock<std::mutex> guard(lock_);
     ownerDeliveryReceipts_.erase(std::remove_if(ownerDeliveryReceipts_.begin(), ownerDeliveryReceipts_.end(),
         [](const auto &receipt) { return receipt->delivered.load(std::memory_order_acquire); }),
         ownerDeliveryReceipts_.end());
-    if (!pendingNormalDeliveries_.empty() || !pendingLateDeliveries_.empty() || !ownerDeliveryReceipts_.empty()) {
+    if (ownerDeliveryFrames_ || !pendingNormalDeliveries_.empty() || !pendingLateDeliveries_.empty() ||
+        !ownerDeliveryReceipts_.empty()) {
         return false;
     }
     const auto dispatch = dispatch_.lock();
@@ -110,7 +125,7 @@ bool ResourceRadioRuntime::SwitchPrimaryRadio(const RadioSwitchRequest &request)
                     {}, {}, {}, {}, {}, {}, false, false});
             group = &inserted.first->second;
         }
-        if (group->quarantined || group->admittedMembers.size() >= group->expected ||
+        if (group->endRequested || group->quarantined || group->admittedMembers.size() >= group->expected ||
             group->admittedMembers.find(request.target.legacySlotId) != group->admittedMembers.end()) {
             return false;
         }
@@ -159,7 +174,9 @@ bool ResourceRadioRuntime::SwitchPrimaryRadio(const RadioSwitchRequest &request)
             group.submittedTransmissions.insert(transport);
             accepted = handoff.disposition == RadioSubmitDisposition::HandoffAccepted &&
                 handoff.transportSerial.has_value();
-            if (group.hasNotSentMember || !accepted) { Quarantine(group, EffectKnowledge::Unknown); }
+            if (group.endRequested || group.hasNotSentMember || !accepted) {
+                Quarantine(group, EffectKnowledge::Unknown);
+            }
             if (callbackContradiction &&
                 (buffered->second.conflict || handoff.disposition == RadioSubmitDisposition::ConfirmedNotSent)) {
                 Quarantine(group, EffectKnowledge::Unknown);
@@ -185,12 +202,14 @@ void ResourceRadioRuntime::EndLegacySenseSwitch(const StepRef &owner, const Radi
     if (mode_ == Mode::ObserveOnly) { return; }
     {
         std::lock_guard<std::mutex> guard(lock_);
-        if (!stopping_) {
-            for (auto &entry : groups_) {
-                if (entry.second.lease.holder == owner && !entry.second.quarantined) {
-                    Quarantine(entry.second, EffectKnowledge::Unknown);
-                }
-            }
+        for (auto &[fence, group] : groups_) {
+            (void)fence;
+            if (!(group.lease.holder == owner)) { continue; }
+            // Close further admission immediately. While the original Submit is
+            // still being classified, a lease with no issued member must remain
+            // cancellable if all of its handoffs prove ConfirmedNotSent.
+            group.endRequested = true;
+            if (group.sent && !group.quarantined) { Quarantine(group, EffectKnowledge::Unknown); }
         }
     }
     platform_.EndLegacySenseSwitch(owner, domain);
@@ -207,6 +226,7 @@ bool ResourceRadioRuntime::AcceptDeviceResult(const RadioDeviceResult &deviceRes
     std::vector<RadioSwitchResult> normal;
     std::vector<RadioSwitchResult> late;
     bool accepted = false;
+    OwnerDeliveryFrame delivery(*this);
     std::shared_ptr<RadioResultSink> sink;
     std::shared_ptr<RadioOwnerDispatchPort> dispatch;
     {
@@ -324,6 +344,7 @@ bool ResourceRadioRuntime::AcceptDeviceResult(const RadioDeviceResult &deviceRes
                 }
             }
         }
+        if (!normal.empty() || !late.empty()) { delivery.Begin(); }
     }
     if (!sink) {
         std::lock_guard<std::mutex> guard(lock_);
@@ -380,6 +401,7 @@ bool ResourceRadioRuntime::AcceptDeviceResult(const RadioDeviceResult &deviceRes
 
 bool ResourceRadioRuntime::FlushOwnerDeliveries()
 {
+    OwnerDeliveryFrame delivery(*this);
     std::shared_ptr<RadioResultSink> sink;
     std::shared_ptr<RadioOwnerDispatchPort> dispatch;
     std::vector<RadioSwitchResult> normal;
@@ -388,7 +410,7 @@ bool ResourceRadioRuntime::FlushOwnerDeliveries()
         std::lock_guard<std::mutex> guard(lock_);
         sink = sink_.lock();
         dispatch = dispatch_.lock();
-        if (!sink || !dispatch) { return false; }
+        if (!sink || !dispatch || ownerDeliveryFrames_) { return false; }
         if (!dispatch->RadioOwnerCallbacksDrained()) { return false; }
         for (const auto &receipt : ownerDeliveryReceipts_) {
             if (receipt->delivered.load(std::memory_order_acquire)) { continue; }
@@ -398,6 +420,7 @@ bool ResourceRadioRuntime::FlushOwnerDeliveries()
         ownerDeliveryReceipts_.clear();
         normal.insert(normal.end(), pendingNormalDeliveries_.begin(), pendingNormalDeliveries_.end());
         late.insert(late.end(), pendingLateDeliveries_.begin(), pendingLateDeliveries_.end());
+        if (!normal.empty() || !late.empty()) { delivery.Begin(); }
         pendingNormalDeliveries_.clear();
         pendingLateDeliveries_.clear();
     }
@@ -480,7 +503,7 @@ bool ResourceRadioRuntime::StopAccepting()
         ownerDeliveryReceipts_.end());
     if (!groups_.empty() || !transmissions_.empty() || !submittingTransmissions_.empty() ||
         !pendingSubmissionResults_.empty() || !pendingNormalDeliveries_.empty() ||
-        !pendingLateDeliveries_.empty() || !ownerDeliveryReceipts_.empty()) { return false; }
+        !pendingLateDeliveries_.empty() || !ownerDeliveryReceipts_.empty() || ownerDeliveryFrames_) { return false; }
     for (const auto &resource : resources_) {
         const auto state = barrier_.ReadState(resource);
         if (!state || *state != ResourceState::Available) { return false; }

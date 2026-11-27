@@ -268,6 +268,13 @@ PIN 设备责任与 ICCID Store 责任分开结清、前驱证据不足禁建与
 正式 B/C1 及全对象图组合、独立扩展和最终反审仍待，状态保持 `AF2_M9_IN_PROGRESS`。
 [PIN、共用业务与组合用例证据](../services/multisim/test/docs/evidence/af2_m9_d03_pin_20261127/README.md)
 
+**D04 Radio 交接与 Owner 收据检查点。** Submit 尚未定案时，超时封闭原组的后续准入。
+若平台最终证明全未发，按原租约取消；已发或交接未知继续等待设备结束和资源复用证据。
+R 在释放设备组责任之前登记正在进行的 Owner 投递，防止重复重投或提前报告已排空。
+独立验证复现两项超时反例，修复后组件专项 66/66；投递变异实际消费原票两次，恢复后通过。
+Target 207/207。正式模块 B/C1、A/T 发令许可和全图生命周期仍待。
+[原始结果与恢复复验](../services/multisim/test/docs/evidence/af2_m9_d04_radio_20261127/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）
