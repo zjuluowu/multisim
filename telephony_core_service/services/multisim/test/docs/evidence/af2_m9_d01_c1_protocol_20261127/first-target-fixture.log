@@ -1,0 +1,18 @@
+Note: Google Test filter = TargetTopologyIntegration.T2C1InFlightDoesNotBlockUnrelatedDiscoveryReservation
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetTopologyIntegration
+[ RUN      ] TargetTopologyIntegration.T2C1InFlightDoesNotBlockUnrelatedDiscoveryReservation
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:609: Failure
+Expected: (f.radio.switches) > (0u), actual: 0 vs 0
+
+[  FAILED  ] TargetTopologyIntegration.T2C1InFlightDoesNotBlockUnrelatedDiscoveryReservation (0 ms)
+[----------] 1 test from TargetTopologyIntegration (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TargetTopologyIntegration.T2C1InFlightDoesNotBlockUnrelatedDiscoveryReservation
+
+ 1 FAILED TEST

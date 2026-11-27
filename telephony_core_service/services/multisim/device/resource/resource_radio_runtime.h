@@ -11,6 +11,7 @@
 #include <mutex>
 #include <optional>
 #include <set>
+#include <tuple>
 #include <vector>
 #include "device/resource/resource_barrier.h"
 #include "role_assignment/primary/radio_execution_port.h"
@@ -70,15 +71,19 @@ private:
         uint32_t submitting {0};
         bool hasNotSentMember {false};
         bool endRequested {false};
+        std::vector<uint64_t> closedUpdateTransmissions {};
     };
     struct Transmission {
         uint64_t fence;
         RadioSwitchRequest request;
         std::optional<int32_t> transportSerial;
         bool sendPermitted {false};
+        std::optional<int32_t> updateError {};
+        bool updateGroupEnded {false};
     };
     struct BufferedSubmissionEvidence {
         RadioDeviceResult first;
+        uint64_t order;
         bool conflict {false};
     };
     struct OwnerDeliveryReceipt {
@@ -90,6 +95,11 @@ private:
     static bool SameGroup(const RadioSwitchRequest &left, const RadioSwitchRequest &right);
     static bool SameBinding(const RadioSwitchRequest &request, const RadioSwitchResult &result);
     static bool SameCommand(const RadioSwitchRequest &request, const RadioSwitchResult &result);
+    std::optional<int32_t> CloseUpdateAssociations(const StepRef &owner);
+    bool AcceptDeviceResultLocked(const RadioDeviceResult &deviceResult, std::vector<RadioSwitchResult> &normal,
+        std::vector<RadioSwitchResult> &late);
+    bool DeliverDeviceResults(const std::vector<RadioSwitchResult> &normal, const std::vector<RadioSwitchResult> &late,
+        const std::shared_ptr<RadioResultSink> &sink, const std::shared_ptr<RadioOwnerDispatchPort> &dispatch);
     void Quarantine(Group &group, EffectKnowledge effect);
 
     mutable std::mutex lock_;
@@ -101,12 +111,14 @@ private:
     std::weak_ptr<RadioOwnerDispatchPort> dispatch_;
     bool stopping_ {false};
     uint64_t nextTransportToken_ {1};
+    uint64_t nextBufferedOrder_ {1};
     size_t submittedCommands_ {0};
     size_t rejectedStaleResults_ {0};
     std::map<uint64_t, Group> groups_;
     std::map<uint64_t, Transmission> transmissions_;
     std::set<uint64_t> submittingTransmissions_;
-    std::map<uint64_t, BufferedSubmissionEvidence> pendingSubmissionResults_;
+    using BufferedKey = std::tuple<uint64_t, bool, std::optional<int32_t>>;
+    std::map<BufferedKey, BufferedSubmissionEvidence> pendingSubmissionResults_;
     std::vector<RadioSwitchResult> pendingNormalDeliveries_;
     std::vector<RadioSwitchResult> pendingLateDeliveries_;
     mutable std::vector<std::shared_ptr<OwnerDeliveryReceipt>> ownerDeliveryReceipts_;

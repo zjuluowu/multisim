@@ -1,0 +1,67 @@
+Note: Google Test filter = TargetPrimaryB.C1LateUpdateErrorDoesNotRewriteSentComplete
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.C1LateUpdateErrorDoesNotRewriteSentComplete
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1223: Failure
+Expected equality of these values:
+  fixture.completion.results
+    Which is: { 0 }
+  (std::vector<int32_t>{kLegacyLocalPointerNull})
+    Which is: { 83886087 }
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1188: false
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1224: Failure
+Expected equality of these values:
+  fixture.parameters.values.at(kPrimary)
+    Which is: "1"
+  "0"
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1188: false
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1225: Failure
+Expected equality of these values:
+  fixture.parameters.values.at(kIccid)
+    Which is: "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+  kEncoded0
+    Which is: "5BC332BC693934EB3D0DEAED37C106D2DEFD6F9767721BFE2B1AC6E209D6B67D"
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1188: false
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1223: Failure
+Expected equality of these values:
+  fixture.completion.results
+    Which is: { 0 }
+  (std::vector<int32_t>{kLegacyLocalPointerNull})
+    Which is: { 83886087 }
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1188: true
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1224: Failure
+Expected equality of these values:
+  fixture.parameters.values.at(kPrimary)
+    Which is: "1"
+  "0"
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1188: true
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1225: Failure
+Expected equality of these values:
+  fixture.parameters.values.at(kIccid)
+    Which is: "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+  kEncoded0
+    Which is: "5BC332BC693934EB3D0DEAED37C106D2DEFD6F9767721BFE2B1AC6E209D6B67D"
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1188: true
+
+[  FAILED  ] TargetPrimaryB.C1LateUpdateErrorDoesNotRewriteSentComplete (5 ms)
+[----------] 1 test from TargetPrimaryB (6 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (6 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TargetPrimaryB.C1LateUpdateErrorDoesNotRewriteSentComplete
+
+ 1 FAILED TEST

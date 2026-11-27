@@ -1,0 +1,13 @@
+$ LLVM_PROFILE_FILE=/tmp/af2-m9-review-c1-C1UpdateErrorAckAndNotifyHaveIndependentResponsibilities-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=TargetPrimaryB.C1UpdateErrorAckAndNotifyHaveIndependentResponsibilities
+Note: Google Test filter = TargetPrimaryB.C1UpdateErrorAckAndNotifyHaveIndependentResponsibilities
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.C1UpdateErrorAckAndNotifyHaveIndependentResponsibilities
+[       OK ] TargetPrimaryB.C1UpdateErrorAckAndNotifyHaveIndependentResponsibilities (4 ms)
+[----------] 1 test from TargetPrimaryB (4 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (4 ms total)
+[  PASSED  ] 1 test.
+exit=0

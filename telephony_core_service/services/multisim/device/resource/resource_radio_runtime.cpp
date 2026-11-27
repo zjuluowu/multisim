@@ -9,6 +9,18 @@
 #include <limits>
 
 namespace OHOS::Telephony::MultiSim {
+namespace {
+bool IsUpdate(const RadioSwitchRequest &request)
+{
+    return request.mode == PrimarySwitchMode::ThreePhaseProtocol && request.phase == 2;
+}
+
+bool IsUpdateErrorAck(const RadioSwitchRequest &request, const RadioSwitchResult &result)
+{
+    return IsUpdate(request) && !result.notify && result.legacyResult != 0;
+}
+} // namespace
+
 ResourceRadioRuntime::ResourceRadioRuntime(ResourceBarrier &barrier, RadioPlatformPort &platform,
     std::vector<ResourceKey> primaryResources, Mode mode)
     : platform_(platform), resources_(std::move(primaryResources)), barrier_(barrier), mode_(mode)
@@ -92,10 +104,9 @@ bool ResourceRadioRuntime::SameBinding(const RadioSwitchRequest &request, const 
 
 bool ResourceRadioRuntime::SameCommand(const RadioSwitchRequest &request, const RadioSwitchResult &result)
 {
-    const bool notifyExpected = request.mode == PrimarySwitchMode::ThreePhaseProtocol && request.phase == 2;
     return result.step == request.step && result.memberSlot == request.target && SameBinding(request, result) &&
         result.protocolSession == request.protocolSession && result.phase == request.phase &&
-        result.notify == notifyExpected;
+        (result.notify == IsUpdate(request) || IsUpdateErrorAck(request, result));
 }
 
 ResourceRadioRuntime::Group *ResourceRadioRuntime::FindGroup(const RadioSwitchRequest &request)
@@ -162,7 +173,11 @@ RadioSubmitDisposition ResourceRadioRuntime::SwitchPrimaryRadio(const RadioSwitc
     }
 
     bool accepted = false;
-    std::vector<RadioDeviceResult> pending;
+    std::vector<RadioSwitchResult> normal;
+    std::vector<RadioSwitchResult> late;
+    OwnerDeliveryFrame delivery(*this);
+    std::shared_ptr<RadioResultSink> sink;
+    std::shared_ptr<RadioOwnerDispatchPort> dispatch;
     {
         std::lock_guard<std::mutex> guard(lock_);
         submittingTransmissions_.erase(transport);
@@ -173,9 +188,19 @@ RadioSubmitDisposition ResourceRadioRuntime::SwitchPrimaryRadio(const RadioSwitc
         }
         Group &group = found->second;
         --group.submitting;
-        const auto buffered = pendingSubmissionResults_.find(transport);
-        const bool callbackContradiction = buffered != pendingSubmissionResults_.end();
-        if (handoff.disposition == RadioSubmitDisposition::ConfirmedNotSent && !callbackContradiction) {
+        bool callbackSeen = false;
+        auto buffered = pendingSubmissionResults_.lower_bound({transport, false, std::nullopt});
+        while (buffered != pendingSubmissionResults_.end() && std::get<0>(buffered->first) == transport) {
+            const auto &result = buffered->second.first;
+            if (!result.result.notify && handoff.transportSerial && result.transportSerial != handoff.transportSerial) {
+                ++rejectedStaleResults_;
+                buffered = pendingSubmissionResults_.erase(buffered);
+            } else {
+                callbackSeen = true;
+                ++buffered;
+            }
+        }
+        if (handoff.disposition == RadioSubmitDisposition::ConfirmedNotSent && !callbackSeen) {
             transmissions_.erase(transport);
             group.hasNotSentMember = true;
             if (group.sent) {
@@ -198,23 +223,38 @@ RadioSubmitDisposition ResourceRadioRuntime::SwitchPrimaryRadio(const RadioSwitc
             if (group.endRequested || group.hasNotSentMember || !accepted) {
                 Quarantine(group, EffectKnowledge::Unknown);
             }
-            if (callbackContradiction &&
-                (buffered->second.conflict || handoff.disposition == RadioSubmitDisposition::ConfirmedNotSent)) {
+            if (callbackSeen && handoff.disposition == RadioSubmitDisposition::ConfirmedNotSent) {
                 Quarantine(group, EffectKnowledge::Unknown);
-                pendingSubmissionResults_.erase(buffered);
+                pendingSubmissionResults_.erase(
+                    pendingSubmissionResults_.lower_bound({transport, false, std::nullopt}), buffered);
             }
         }
         if (group.submitting == 0) {
+            std::vector<BufferedSubmissionEvidence> pending;
             for (const auto token : group.submittedTransmissions) {
-                const auto evidence = pendingSubmissionResults_.find(token);
-                if (evidence == pendingSubmissionResults_.end()) { continue; }
-                if (evidence->second.conflict) { Quarantine(group, EffectKnowledge::Unknown); }
-                else { pending.push_back(evidence->second.first); }
-                pendingSubmissionResults_.erase(evidence);
+                auto evidence = pendingSubmissionResults_.lower_bound({token, false, std::nullopt});
+                while (evidence != pendingSubmissionResults_.end() && std::get<0>(evidence->first) == token) {
+                    if (evidence->second.conflict) { Quarantine(group, EffectKnowledge::Unknown); }
+                    else { pending.push_back(evidence->second); }
+                    evidence = pendingSubmissionResults_.erase(evidence);
+                }
+            }
+            std::sort(pending.begin(), pending.end(), [](const auto &left, const auto &right) {
+                return left.order < right.order;
+            });
+            // Classify the original buffered callbacks before any live callback
+            // can overtake them. Release the lock before calling the Owner.
+            for (const auto &evidence : pending) {
+                (void)AcceptDeviceResultLocked(evidence.first, normal, late);
             }
         }
+        if (!normal.empty() || !late.empty()) {
+            delivery.Begin();
+            sink = sink_.lock();
+            dispatch = dispatch_.lock();
+        }
     }
-    for (const auto &evidence : pending) { (void)AcceptDeviceResult(evidence); }
+    if (!normal.empty() || !late.empty()) { (void)DeliverDeviceResults(normal, late, sink, dispatch); }
     return accepted ? RadioSubmitDisposition::HandoffAccepted : RadioSubmitDisposition::HandoffUnknown;
 }
 
@@ -223,6 +263,7 @@ void ResourceRadioRuntime::EndLegacySenseSwitch(const StepRef &owner, const Radi
     if (mode_ == Mode::ObserveOnly) { return; }
     {
         std::lock_guard<std::mutex> guard(lock_);
+        (void)CloseUpdateAssociations(owner);
         for (auto &[fence, group] : groups_) {
             (void)fence;
             if (!(group.lease.holder == owner)) { continue; }
@@ -242,6 +283,22 @@ void ResourceRadioRuntime::Quarantine(Group &group, EffectKnowledge effect)
     (void)barrier_.Quarantine(group.lease, effect);
 }
 
+std::optional<int32_t> ResourceRadioRuntime::CloseUpdateAssociations(const StepRef &owner)
+{
+    std::optional<int32_t> error;
+    for (auto entry = transmissions_.begin(); entry != transmissions_.end();) {
+        const auto &transmission = entry->second;
+        if (!transmission.updateGroupEnded || !(transmission.request.step.request == owner.request) ||
+            transmission.request.step.attempt != owner.attempt) {
+            ++entry;
+            continue;
+        }
+        if (!error && transmission.updateError) { error = transmission.updateError; }
+        entry = transmissions_.erase(entry);
+    }
+    return error;
+}
+
 bool ResourceRadioRuntime::AcceptDeviceResult(const RadioDeviceResult &deviceResult)
 {
     std::vector<RadioSwitchResult> normal;
@@ -252,126 +309,188 @@ bool ResourceRadioRuntime::AcceptDeviceResult(const RadioDeviceResult &deviceRes
     std::shared_ptr<RadioOwnerDispatchPort> dispatch;
     {
         std::lock_guard<std::mutex> guard(lock_);
+        accepted = AcceptDeviceResultLocked(deviceResult, normal, late);
+        if (!normal.empty() || !late.empty()) { delivery.Begin(); }
         sink = sink_.lock();
         dispatch = dispatch_.lock();
-        const auto original = transmissions_.find(deviceResult.transportToken);
-        const auto originalGroup = original == transmissions_.end() ? groups_.end() : groups_.find(original->second.fence);
-        if (submittingTransmissions_.count(deviceResult.transportToken) ||
-            (originalGroup != groups_.end() && originalGroup->second.quarantined && originalGroup->second.submitting)) {
-            auto found = pendingSubmissionResults_.find(deviceResult.transportToken);
-            if (found == pendingSubmissionResults_.end()) {
-                pendingSubmissionResults_[deviceResult.transportToken] = {deviceResult, false};
-                return true;
-            }
-            const auto &old = found->second.first;
-            const bool bindingEqual = (!old.result.expectedBinding && !deviceResult.result.expectedBinding) ||
-                (old.result.expectedBinding && deviceResult.result.expectedBinding &&
-                 old.result.expectedBinding->subscription == deviceResult.result.expectedBinding->subscription &&
-                 old.result.expectedBinding->slot == deviceResult.result.expectedBinding->slot &&
-                 old.result.expectedBinding->bindingRevision == deviceResult.result.expectedBinding->bindingRevision);
-            const bool identical = old.transportToken == deviceResult.transportToken &&
-                old.transportSerial == deviceResult.transportSerial && old.result.step == deviceResult.result.step &&
-                old.result.memberSlot == deviceResult.result.memberSlot && bindingEqual &&
-                old.result.protocolSession == deviceResult.result.protocolSession &&
-                old.result.phase == deviceResult.result.phase && old.result.notify == deviceResult.result.notify &&
-                old.result.effect == deviceResult.result.effect && old.result.legacyResult == deviceResult.result.legacyResult &&
-                old.commandEnded == deviceResult.commandEnded && old.resourceReusable == deviceResult.resourceReusable &&
-                old.currentStateVerified == deviceResult.currentStateVerified;
-            if (!identical) { found->second.conflict = true; }
+    }
+    if (normal.empty() && late.empty()) { return accepted; }
+    return DeliverDeviceResults(normal, late, sink, dispatch) && accepted;
+}
+
+bool ResourceRadioRuntime::AcceptDeviceResultLocked(const RadioDeviceResult &deviceResult,
+    std::vector<RadioSwitchResult> &normal, std::vector<RadioSwitchResult> &late)
+{
+    bool accepted = false;
+    const auto original = transmissions_.find(deviceResult.transportToken);
+    const auto originalGroup = original == transmissions_.end() ? groups_.end() : groups_.find(original->second.fence);
+    if (submittingTransmissions_.count(deviceResult.transportToken) ||
+        (originalGroup != groups_.end() && originalGroup->second.quarantined && originalGroup->second.submitting)) {
+        if (original == transmissions_.end() || !SameCommand(original->second.request, deviceResult.result) ||
+            (originalGroup != groups_.end() &&
+             originalGroup->second.acceptedMembers.count(deviceResult.result.memberSlot.legacySlotId))) {
+            ++rejectedStaleResults_;
+            return false;
+        }
+        const BufferedKey key {deviceResult.transportToken, deviceResult.result.notify,
+            deviceResult.result.notify ? std::nullopt : deviceResult.transportSerial};
+        auto found = pendingSubmissionResults_.find(key);
+        if (found == pendingSubmissionResults_.end()) {
+            pendingSubmissionResults_[key] = {deviceResult, nextBufferedOrder_++, false};
             return true;
         }
-        const auto transmission = transmissions_.find(deviceResult.transportToken);
-        if (transmission == transmissions_.end()) { ++rejectedStaleResults_; return false; }
-        const RadioSwitchRequest request = transmission->second.request;
-        if (!deviceResult.result.notify && transmission->second.transportSerial &&
-            (!deviceResult.transportSerial ||
-             *deviceResult.transportSerial != *transmission->second.transportSerial)) {
+        const auto &old = found->second.first;
+        const bool bindingEqual = (!old.result.expectedBinding && !deviceResult.result.expectedBinding) ||
+            (old.result.expectedBinding && deviceResult.result.expectedBinding &&
+             old.result.expectedBinding->subscription == deviceResult.result.expectedBinding->subscription &&
+             old.result.expectedBinding->slot == deviceResult.result.expectedBinding->slot &&
+             old.result.expectedBinding->bindingRevision == deviceResult.result.expectedBinding->bindingRevision);
+        const bool identical = old.transportToken == deviceResult.transportToken &&
+            old.transportSerial == deviceResult.transportSerial && old.result.step == deviceResult.result.step &&
+            old.result.memberSlot == deviceResult.result.memberSlot && bindingEqual &&
+            old.result.protocolSession == deviceResult.result.protocolSession &&
+            old.result.phase == deviceResult.result.phase && old.result.notify == deviceResult.result.notify &&
+            old.result.effect == deviceResult.result.effect && old.result.legacyResult == deviceResult.result.legacyResult &&
+            old.commandEnded == deviceResult.commandEnded && old.resourceReusable == deviceResult.resourceReusable &&
+            old.currentStateVerified == deviceResult.currentStateVerified;
+        if (!identical) { found->second.conflict = true; }
+        return true;
+    }
+    const auto transmission = transmissions_.find(deviceResult.transportToken);
+    if (transmission == transmissions_.end()) { ++rejectedStaleResults_; return false; }
+    const RadioSwitchRequest request = transmission->second.request;
+    if (!deviceResult.result.notify && transmission->second.transportSerial &&
+        (!deviceResult.transportSerial ||
+         *deviceResult.transportSerial != *transmission->second.transportSerial)) {
+        ++rejectedStaleResults_;
+        return false;
+    }
+    auto result = deviceResult.result;
+    if (!SameCommand(request, result)) { ++rejectedStaleResults_; return false; }
+    auto &updateError = transmission->second.updateError;
+    if (transmission->second.updateGroupEnded) {
+        if (!IsUpdateErrorAck(request, result) || updateError) { ++rejectedStaleResults_; return false; }
+        updateError = result.legacyResult;
+        return true;
+    }
+    const uint64_t fence = transmission->second.fence;
+    const auto groupFound = groups_.find(fence);
+    if (groupFound == groups_.end()) {
+        transmissions_.erase(transmission);
+        ++rejectedStaleResults_;
+        return false;
+    }
+    Group &group = groupFound->second;
+    if (IsUpdateErrorAck(request, result)) {
+        if (updateError || group.quarantined) { ++rejectedStaleResults_; return false; }
+        updateError = result.legacyResult;
+        // An error ACK is part of the original round's result. Only the
+        // member's NOTIFY certifies completion and consumes its command.
+        const auto notified = std::find_if(group.accepted.begin(), group.accepted.end(), [&](const auto &item) {
+            return item.memberSlot == request.target;
+        });
+        if (notified != group.accepted.end() && notified->legacyResult == 0) {
+            notified->legacyResult = *updateError;
+        }
+        return true;
+    }
+    if (group.acceptedMembers.count(result.memberSlot.legacySlotId)) {
+        ++rejectedStaleResults_;
+        return false;
+    }
+    if (updateError && result.legacyResult == 0) { result.legacyResult = *updateError; }
+    if (group.quarantined) {
+        if (group.submitting != 0) { return false; }
+        if (!group.submittedTransmissions.count(deviceResult.transportToken) ||
+            group.recoveredTransmissions.find(deviceResult.transportToken) !=
+                group.recoveredTransmissions.end() ||
+            !deviceResult.commandEnded || !deviceResult.resourceReusable ||
+            !deviceResult.currentStateVerified || result.effect == EffectKnowledge::Unknown) {
             ++rejectedStaleResults_;
             return false;
         }
-        const uint64_t fence = transmission->second.fence;
-        const auto groupFound = groups_.find(fence);
-        if (groupFound == groups_.end()) {
-            transmissions_.erase(transmission);
-            ++rejectedStaleResults_;
+        group.recoveredTransmissions.insert(deviceResult.transportToken);
+        group.recovered.push_back(result);
+        transmissions_.erase(transmission);
+        if (group.recoveredTransmissions.size() < group.submittedTransmissions.size()) { return true; }
+        EffectKnowledge effect = EffectKnowledge::ConfirmedApplied;
+        for (const auto &row : group.recovered) {
+            if (row.effect == EffectKnowledge::ConfirmedNotApplied || row.effect == EffectKnowledge::Rejected) {
+                effect = row.effect;
+                break;
+            }
+        }
+        if (!barrier_.AcceptRecoveryEvidence(group.lease,
+            {group.lease.holder, effect, true, true, true})) {
             return false;
         }
-        Group &group = groupFound->second;
-        const RadioSwitchResult &result = deviceResult.result;
-        if (!SameCommand(request, result)) { ++rejectedStaleResults_; return false; }
-        if (group.quarantined) {
-            if (group.submitting != 0) { return false; }
-            if (group.recoveredTransmissions.find(deviceResult.transportToken) !=
-                    group.recoveredTransmissions.end() ||
-                !deviceResult.commandEnded || !deviceResult.resourceReusable ||
-                !deviceResult.currentStateVerified || result.effect == EffectKnowledge::Unknown) {
-                ++rejectedStaleResults_;
-                return false;
-            }
-            group.recoveredTransmissions.insert(deviceResult.transportToken);
-            group.recovered.push_back(result);
-            transmissions_.erase(transmission);
-            if (group.recoveredTransmissions.size() < group.submittedTransmissions.size()) { return true; }
-            EffectKnowledge effect = EffectKnowledge::ConfirmedApplied;
-            for (const auto &row : group.recovered) {
-                if (row.effect == EffectKnowledge::ConfirmedNotApplied || row.effect == EffectKnowledge::Rejected) {
-                    effect = row.effect;
-                    break;
-                }
-            }
-            if (!barrier_.AcceptRecoveryEvidence(group.lease,
-                {group.lease.holder, effect, true, true, true})) {
-                return false;
-            }
-            late.insert(late.end(), group.accepted.begin(), group.accepted.end());
-            late.insert(late.end(), group.recovered.begin(), group.recovered.end());
-            groups_.erase(groupFound);
-            accepted = true;
+        late.insert(late.end(), group.accepted.begin(), group.accepted.end());
+        late.insert(late.end(), group.recovered.begin(), group.recovered.end());
+        for (const auto token : group.closedUpdateTransmissions) { transmissions_.erase(token); }
+        if (request.mode == PrimarySwitchMode::ThreePhaseProtocol && request.phase == 4) {
+            (void)CloseUpdateAssociations(request.step);
+        }
+        groups_.erase(groupFound);
+        accepted = true;
+    } else {
+        if (!deviceResult.commandEnded || !deviceResult.resourceReusable ||
+            result.effect == EffectKnowledge::Unknown) {
+            ++rejectedStaleResults_;
+            Quarantine(group, result.effect);
+            auto unresolved = result;
+            unresolved.effect = EffectKnowledge::Unknown;
+            normal.push_back(unresolved);
+            accepted = false;
         } else {
-            if (!deviceResult.commandEnded || !deviceResult.resourceReusable ||
-                result.effect == EffectKnowledge::Unknown) {
-                ++rejectedStaleResults_;
-                Quarantine(group, result.effect);
-                auto unresolved = result;
-                unresolved.effect = EffectKnowledge::Unknown;
-                normal.push_back(unresolved);
-                accepted = false;
+            if (IsUpdate(request)) {
+                group.closedUpdateTransmissions.push_back(deviceResult.transportToken);
             } else {
-                if (group.acceptedMembers.find(result.memberSlot.legacySlotId) != group.acceptedMembers.end()) {
-                    ++rejectedStaleResults_;
+                transmissions_.erase(transmission);
+            }
+            group.submittedTransmissions.erase(deviceResult.transportToken);
+            group.acceptedMembers.insert(result.memberSlot.legacySlotId);
+            group.accepted.push_back(result);
+            if (group.acceptedMembers.size() < group.expected) { accepted = true; }
+            else {
+                EffectKnowledge effect = EffectKnowledge::ConfirmedApplied;
+                for (const auto &row : group.accepted) {
+                    if (row.effect == EffectKnowledge::ConfirmedNotApplied ||
+                        row.effect == EffectKnowledge::Rejected) {
+                        effect = row.effect;
+                        break;
+                    }
+                }
+                if (!barrier_.Complete(group.lease, {group.lease.holder, effect, true, true})) {
+                    Quarantine(group, effect);
                     return false;
                 }
-                transmissions_.erase(transmission);
-                group.submittedTransmissions.erase(deviceResult.transportToken);
-                group.acceptedMembers.insert(result.memberSlot.legacySlotId);
-                group.accepted.push_back(result);
-                if (group.acceptedMembers.size() < group.expected) { accepted = true; }
-                else {
-                    EffectKnowledge effect = EffectKnowledge::ConfirmedApplied;
-                    for (const auto &row : group.accepted) {
-                        if (row.effect == EffectKnowledge::ConfirmedNotApplied ||
-                            row.effect == EffectKnowledge::Rejected) {
-                            effect = row.effect;
-                            break;
-                        }
-                    }
-                    if (!barrier_.Complete(group.lease, {group.lease.holder, effect, true, true})) {
-                        Quarantine(group, effect);
-                        return false;
-                    }
-                    normal.assign(group.accepted.begin(), group.accepted.end());
-                    groups_.erase(groupFound);
-                    accepted = true;
+                normal.assign(group.accepted.begin(), group.accepted.end());
+                for (const auto token : group.closedUpdateTransmissions) {
+                    transmissions_.at(token).updateGroupEnded = true;
                 }
+                if (request.mode == PrimarySwitchMode::ThreePhaseProtocol && request.phase == 4) {
+                    const auto updateFailure = CloseUpdateAssociations(request.step);
+                    if (updateFailure && normal.back().legacyResult == 0) {
+                        normal.back().legacyResult = *updateFailure;
+                    }
+                }
+                groups_.erase(groupFound);
+                accepted = true;
             }
         }
-        if (!normal.empty() || !late.empty()) { delivery.Begin(); }
     }
+    return accepted;
+}
+
+bool ResourceRadioRuntime::DeliverDeviceResults(const std::vector<RadioSwitchResult> &normal,
+    const std::vector<RadioSwitchResult> &late, const std::shared_ptr<RadioResultSink> &sink,
+    const std::shared_ptr<RadioOwnerDispatchPort> &dispatch)
+{
     if (!sink) {
         std::lock_guard<std::mutex> guard(lock_);
         pendingNormalDeliveries_.insert(pendingNormalDeliveries_.end(), normal.begin(), normal.end());
         pendingLateDeliveries_.insert(pendingLateDeliveries_.end(), late.begin(), late.end());
-        return accepted;
+        return true;
     }
     if (!dispatch) {
         std::lock_guard<std::mutex> guard(lock_);
@@ -417,7 +536,7 @@ bool ResourceRadioRuntime::AcceptDeviceResult(const RadioDeviceResult &deviceRes
             return false;
         }
     }
-    return accepted;
+    return true;
 }
 
 bool ResourceRadioRuntime::FlushOwnerDeliveries()
@@ -541,7 +660,9 @@ bool ResourceRadioRuntime::DeviceResourcesDrained() const
         const auto state = barrier_.ReadState(resource);
         if (!state || *state != ResourceState::Available) { return false; }
     }
-    return groups_.empty() && transmissions_.empty() && submittingTransmissions_.empty() &&
+    return groups_.empty() && submittingTransmissions_.empty() &&
+        std::all_of(transmissions_.begin(), transmissions_.end(),
+            [](const auto &entry) { return entry.second.updateGroupEnded; }) &&
         pendingSubmissionResults_.empty();
 }
 

@@ -1,0 +1,63 @@
+Note: Google Test filter = TargetPrimaryB.C1UpdateErrorAckAndNotifyHaveIndependentResponsibilities
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.C1UpdateErrorAckAndNotifyHaveIndependentResponsibilities
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1123: Failure
+Expected equality of these values:
+  fixture.radio.ReadResourceState(fixture.key)
+    Which is: (4-byte object <03-00 00-00>)
+  ResourceState::InFlight
+    Which is: 4-byte object <02-00 00-00>
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1113: true
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1129: Failure
+Value of: fixture.ResultAt(2, EffectKnowledge::ConfirmedNotApplied, kLegacyLocalPointerNull)
+  Actual: false
+Expected: true
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1113: true
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1132: Failure
+Value of: fixture.completion.results.empty()
+  Actual: false
+Expected: true
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1113: true
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1133: Failure
+Expected equality of these values:
+  fixture.radio.ReadResourceState(fixture.key)
+    Which is: (4-byte object <03-00 00-00>)
+  ResourceState::InFlight
+    Which is: 4-byte object <02-00 00-00>
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1113: true
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1135: Failure
+Value of: fixture.ResultAt(3, EffectKnowledge::ConfirmedApplied, 0, true)
+  Actual: false
+Expected: true
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1113: true
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1137: Failure
+Expected equality of these values:
+  fixture.platform.requests.size()
+    Which is: 4
+  6u
+    Which is: 6
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1113: true
+
+[  FAILED  ] TargetPrimaryB.C1UpdateErrorAckAndNotifyHaveIndependentResponsibilities (9 ms)
+[----------] 1 test from TargetPrimaryB (9 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (9 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TargetPrimaryB.C1UpdateErrorAckAndNotifyHaveIndependentResponsibilities
+
+ 1 FAILED TEST

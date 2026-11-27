@@ -20,6 +20,7 @@
 #include "role_assignment/primary/primary_switch_plan.h"
 
 #include <algorithm>
+#include <set>
 #include <stdexcept>
 #include "role_assignment/legacy_entry.h"
 
@@ -29,6 +30,22 @@ bool C0EffectSettled(const C0ParameterOutcome &outcome)
 {
     return outcome.call.callFinished && (outcome.effect == EffectKnowledge::ConfirmedApplied ||
         outcome.effect == EffectKnowledge::ConfirmedNotApplied);
+}
+
+bool CanPlanC1Capabilities(const PrimaryRadioObservation &observed, const RadioProtocolMember &target)
+{
+    if (!target.capability || target.capability->modemId <= 0 || !observed.currentModemId ||
+        target.capability->modemId != *observed.currentModemId || !observed.routing) {
+        return false;
+    }
+    std::set<int32_t> modems;
+    for (const auto &member : observed.routing->members) {
+        if (!member.capability || member.capability->modemId < 0 ||
+            !modems.insert(member.capability->modemId).second) {
+            return false;
+        }
+    }
+    return modems.count(0) == 1;
 }
 } // namespace
 
@@ -100,7 +117,7 @@ bool AssignmentService::ScheduleC1Retry(RequestId request, uint32_t attempt,
     std::optional<uint64_t> task;
     guard.unlock();
     try {
-        task = scheduler->ScheduleRetry(event, 1, sink);
+        task = scheduler->ScheduleRetry(event, LEGACY_PRIMARY_PROTOCOL_RETRY_MS, sink);
     } catch (const std::exception &) {
         // A still holds the original scheduling qualification.
     }
@@ -284,7 +301,8 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
                 [&](const auto &entry) { return entry.nativeMember == routing->targetMember; });
             if (member != routing->members.end()) { targetMember = *member; }
         }
-        if (!targetMember) {
+        if (!targetMember || (plan->mode == PrimarySwitchMode::ThreePhaseProtocol &&
+            !CanPlanC1Capabilities(observed, *targetMember))) {
             fail();
             return request;
         }
@@ -1367,7 +1385,9 @@ bool AssignmentService::AcceptC1RetryDue(RequestId request, std::unique_lock<std
     const auto &routing = *observed->routing;
     const auto targetMember = std::find_if(routing.members.begin(), routing.members.end(),
         [&](const auto &member) { return member.nativeMember == routing.targetMember; });
-    if (targetMember == routing.members.end()) { return stopBeforeNewRound(); }
+    if (targetMember == routing.members.end() || !CanPlanC1Capabilities(*observed, *targetMember)) {
+        return stopBeforeNewRound();
+    }
 
     StepRef step {request, previousStep.step + 1, round.attemptCount};
     if (!operations_.AdvanceStep(previousStep, step.step, step.attempt, std::nullopt)) { return false; }
@@ -1450,6 +1470,12 @@ bool AssignmentService::SubmitC1Round(const PendingPrimarySwitch &round,
     const uint32_t protocolSession = round.protocolSession;
     const uint32_t phase = round.phase;
     const auto members = round.members;
+    const auto primaryCapability = std::find_if(members.begin(), members.end(),
+        [](const RadioProtocolMember &member) { return member.capability->modemId == 0; })->capability.value();
+    const auto targetCapability = std::find_if(members.begin(), members.end(),
+        [&](const RadioProtocolMember &member) { return member.nativeMember == targetMember; })->capability.value();
+    const auto status = phase == 4 ? (round.roundFailed ? RadioProtocolStatus::Fail :
+        RadioProtocolStatus::Success) : RadioProtocolStatus::None;
     const auto stillCurrent = [&] {
         const auto active = pendingPrimary_.find(step.request.value);
         if (active == pendingPrimary_.end() || !(active->second.step == step)) { return false; }
@@ -1459,9 +1485,14 @@ bool AssignmentService::SubmitC1Round(const PendingPrimarySwitch &round,
     bool issued = false;
     for (const auto &member : members) {
         if (!stillCurrent()) { return true; }
+        auto capability = *member.capability;
+        if (phase == 2 || status == RadioProtocolStatus::Success) {
+            if (member.nativeMember == targetMember) { capability = primaryCapability; }
+            if (member.capability->modemId == 0) { capability = targetCapability; }
+        }
         const RadioSwitchRequest device {step, member.route, domain, PrimarySwitchMode::ThreePhaseProtocol,
             member.nativeMember == targetMember ? std::optional<BindingRef>{facts.binding} : std::nullopt,
-            protocolSession, phase, static_cast<uint32_t>(members.size()), member};
+            protocolSession, phase, static_cast<uint32_t>(members.size()), member, RadioProtocolPayload {capability, status}};
         const auto handoff = SubmitRadioOutsideCommit(device, facts, guard);
         if (handoff != RadioSubmitDisposition::HandoffAccepted) {
             if (!stillCurrent()) { return true; }

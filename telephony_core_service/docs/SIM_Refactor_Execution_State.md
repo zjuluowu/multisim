@@ -325,6 +325,13 @@ Target 232/232，专项 ASan/TSan 各 100/100，五项运行时负控、独立�
 状态保持 `AF2_M9_IN_PROGRESS`。
 [原预写、路由、Stop 与专项回归](../services/multisim/test/docs/evidence/af2_m9_d01_c1_prewrite_20261127/README.md)
 
+**D01 C1 协议载荷及 UPDATE 回执检查点。** Host A/R 已运行原能力 CHECK、交换能力 UPDATE、
+原能力失败 COMPLETE 与交换能力成功 COMPLETE。独立反查发现同步串序、错误 serial、迟 ACK
+和同成员重复 NOTIFY 可影响原轮，确定性回归已复验。原 C1 重试时钟按 1000 毫秒验收。
+Target 237/237，专项 ASan/TSan 各 106/106，六项运行时负控实际失败后恢复。C1 仍待正式
+等待和逐键终步装配，状态保持 `AF2_M9_IN_PROGRESS`。
+[协议载荷、回执顺序、负控和原始报告](../services/multisim/test/docs/evidence/af2_m9_d01_c1_protocol_20261127/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）

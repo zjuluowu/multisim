@@ -464,7 +464,7 @@ TopologyService构造后由H绑定AccountRolePlanningPort；它实现PrimaryTopo
 | AlreadyPrimary | WithoutDevice | 原已为M0分支不执行完整协议，仍保持原保存/Data节点 |
 | VendorRouteMapping | AfterDevice | 经T映射子请求和厂商能力，旧早返回与后续步骤分别保持 |
 
-**当前入口。** StartPrimarySwitch 在 A 自有 operations 登记原目标与完成出口。SlotCatalog 提供静态域；经 PrimaryTopologyPort 两读 BindingIndex 和 AccountRegistry 的 current 投影，中间读取 Radio 观察。A 对照原订阅、槽、绑定版本、ICCID 及 active 后选择分支，再经 AssignmentAggregate 的 AdmitTransitionWithRoleWriteSet 同时检查目标 radioDomain 和全部 Primary 写成员。C0 直接走参数与通知。B 登记 pending 后发一次专用命令。C1 先冻结 R 验证的原生协议成员及路由，再按原参数前缀执行 CHECK、UPDATE、COMPLETE（1、2、4）。B/C1 当前运行在 Host 组件闭包，正式 SimModule 仍封闭设备分支。VendorRouteMapping 尚未接入该入口。[用例源码](../services/multisim/role_assignment/assignment_service.cpp) · [分支计划](../services/multisim/role_assignment/primary/primary_switch_plan.cpp)
+**当前入口。** StartPrimarySwitch 在 A 自有 operations 登记原目标与完成出口。SlotCatalog 提供静态域。A 在 Radio 观察前后核对原订阅、槽、绑定版本、ICCID 及活跃状态，再按分支同时检查目标 radioDomain 和全部 Primary 写成员。C0 经参数及通知闭合。正式 Host SimModule 在具备兼容等待及逐键 Store 的装配中执行 B，先登记原请求，再发专用命令。C1 在 Host 组件中冻结 R 验证的成员、路由和协议能力，按原参数前缀执行 CHECK、UPDATE、COMPLETE（1、2、4）。C1 的独立协议期限及正式等待、终步提交和全图回归仍待。VendorRouteMapping 尚未接入该入口。[用例源码](../services/multisim/role_assignment/assignment_service.cpp) · [分支计划](../services/multisim/role_assignment/primary/primary_switch_plan.cpp)
 
 AssignmentStoreAdapter 在 Host 处理偏好、Primary 两键与 ICCID 散列、Data 原参数。AssignmentAggregate 的 roleWriteOwners_ 已按请求 token 登记 kPrimaryRoleWriteSet（偏好、Primary 参数/通知、Data 参数/通知）；正式 Host 的独立 Data 从 SimModule 经 LegacySimFacade 和 SetLegacyDefaultData 进入 A，
 使用 T 的原 Binding、A 的 Data 写集、原参数步骤和同步完成。Primary 与 Data 共用 Data
@@ -536,7 +536,7 @@ LocalCardRequests是具名短请求，不是新的业务上下文。SwitchProfil
 | 原生响应 → R → A | 将原生 protocolSession 映射到本地轮次。当前 Host 计数仅能关联 Host 发送。CHECK、COMPLETE 匹配原响应，UPDATE 只接受匹配原 session 的成员 NOTIFY。没有 serial 的原生通知按原协议关联，不能填造 serial。重复、错阶段、错成员、过期轮次不推进计数。R 判执行/资源证据，A 仅在冻结集合各成员满足该阶段时推进。 |
 | 重试、换路和缺成员 | 先核对旧轮设备与业务前缀，再按原预算取得新轮资格及关联。同一轮不更换成员，无路由的旁观端点不参与。必需路由缺失时仅在尚未发生本分支效果且保持旧时序时使用已验证旧路径，或按已批准契约拒绝。已发命令归原轮核对。 |
 
-当前 Host 组件由平台在 PrimaryRadioObservation 提供 `PrimaryProtocolRouting`。R 核验目标成员可定位、路由有效且互不冲突，合并完全相同的成员条目。A 将原生身份、路由及版本冻结到原轮次，B 选择原目标成员，C1 全阶段使用同一份成员表。平台接纳合同时必须在不可撤销发送点复核原路由。正式装配、目标撤权与资源准入的联合线性化、重试刷新及三值结果贯通仍待完成。[现有 Radio 端口](../services/multisim/role_assignment/primary/radio_execution_port.h) · [现有发送与匹配](../services/multisim/role_assignment/assignment_service.cpp)
+Host 平台在 PrimaryRadioObservation 提供 `PrimaryProtocolRouting`。R 核验目标成员、路由及版本，合并完全相同的成员条目。B 选择原目标成员。C1 在预写前冻结原生成员及各成员的逻辑 modem 和 technology。CHECK 与失败 COMPLETE 使用原能力，UPDATE 与成功 COMPLETE 使用冻结观察中交换后的能力。失败 COMPLETE 携带显式失败状态。每个新 attempt 重新取成员事实，同轮沿用原观察。平台在不可撤销发送点复核原路由。R 只凭原 NOTIFY 推进 UPDATE，匹配的原错误 ACK 参与原轮结果，并在 COMPLETE 接纳前保留关联。[Radio 端口](../services/multisim/role_assignment/primary/radio_execution_port.h) · [发送与匹配](../services/multisim/role_assignment/assignment_service.cpp) · [原设备接纳](../services/multisim/device/resource/resource_radio_runtime.cpp)
 
 <a id="af1-radio-plan"></a>
 

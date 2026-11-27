@@ -1,0 +1,58 @@
+Independent C1 component review
+ELF /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host size=39021448 modified=2026-11-27 19:53:58.947487459 +0800
+
+$ LLVM_PROFILE_FILE=/tmp/af2-m9-review-c1-C1LateUpdateErrorDoesNotRewriteSentComplete-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=TargetPrimaryB.C1LateUpdateErrorDoesNotRewriteSentComplete
+Note: Google Test filter = TargetPrimaryB.C1LateUpdateErrorDoesNotRewriteSentComplete
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.C1LateUpdateErrorDoesNotRewriteSentComplete
+[       OK ] TargetPrimaryB.C1LateUpdateErrorDoesNotRewriteSentComplete (4 ms)
+[----------] 1 test from TargetPrimaryB (4 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (4 ms total)
+[  PASSED  ] 1 test.
+exit=0
+
+$ LLVM_PROFILE_FILE=/tmp/af2-m9-review-c1-C1BuffersSynchronousUpdateErrorAndNotifySeparately-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=TargetPrimaryB.C1BuffersSynchronousUpdateErrorAndNotifySeparately
+Note: Google Test filter = TargetPrimaryB.C1BuffersSynchronousUpdateErrorAndNotifySeparately
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.C1BuffersSynchronousUpdateErrorAndNotifySeparately
+[       OK ] TargetPrimaryB.C1BuffersSynchronousUpdateErrorAndNotifySeparately (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 1 test.
+exit=0
+
+$ LLVM_PROFILE_FILE=/tmp/af2-m9-review-c1-C1RetainedUpdateAckCannotReplaceMissingMemberRecovery-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=TargetPrimaryB.C1RetainedUpdateAckCannotReplaceMissingMemberRecovery
+Note: Google Test filter = TargetPrimaryB.C1RetainedUpdateAckCannotReplaceMissingMemberRecovery
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.C1RetainedUpdateAckCannotReplaceMissingMemberRecovery
+[       OK ] TargetPrimaryB.C1RetainedUpdateAckCannotReplaceMissingMemberRecovery (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+exit=0
+
+$ LLVM_PROFILE_FILE=/tmp/af2-m9-review-c1-C1BackgroundRetryUsesControlledAsyncScheduler-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=TargetPrimaryB.C1BackgroundRetryUsesControlledAsyncScheduler
+Note: Google Test filter = TargetPrimaryB.C1BackgroundRetryUsesControlledAsyncScheduler
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.C1BackgroundRetryUsesControlledAsyncScheduler
+[       OK ] TargetPrimaryB.C1BackgroundRetryUsesControlledAsyncScheduler (5 ms)
+[----------] 1 test from TargetPrimaryB (5 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (5 ms total)
+[  PASSED  ] 1 test.
+exit=0

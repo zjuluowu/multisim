@@ -27,14 +27,21 @@
 #include "role_assignment/primary/primary_execution.h"
 
 namespace OHOS::Telephony::MultiSim {
+struct RadioProtocolCapability {
+    int32_t modemId;
+    int32_t technology;
+    bool operator==(const RadioProtocolCapability &other) const
+    { return modemId == other.modemId && technology == other.technology; }
+};
 struct RadioProtocolMember {
     uint32_t nativeMember;
     SlotId route;
     uint64_t routeRevision;
+    std::optional<RadioProtocolCapability> capability {};
+    bool MatchesRoute(const RadioProtocolMember &other) const
+    { return nativeMember == other.nativeMember && route == other.route && routeRevision == other.routeRevision; }
     bool operator==(const RadioProtocolMember &other) const
-    {
-        return nativeMember == other.nativeMember && route == other.route && routeRevision == other.routeRevision;
-    }
+    { return MatchesRoute(other) && capability == other.capability; }
 };
 // Platform routing facts. Target member describes a route for the requested endpoint.
 // Multiple endpoints can select the same native member.
@@ -51,6 +58,11 @@ struct PrimaryRadioObservation {
     bool ordinarySwitchAllowed {true};
     std::optional<PrimaryProtocolRouting> routing {};
 };
+enum class RadioProtocolStatus { None, Success, Fail };
+struct RadioProtocolPayload {
+    RadioProtocolCapability capability;
+    RadioProtocolStatus status;
+};
 struct RadioSwitchRequest {
     StepRef step;
     SlotId target;
@@ -61,6 +73,7 @@ struct RadioSwitchRequest {
     uint32_t phase;
     uint32_t memberCount {1};
     std::optional<RadioProtocolMember> member {};
+    std::optional<RadioProtocolPayload> payload {};
 };
 struct RadioSwitchResult {
     StepRef step;
@@ -68,7 +81,7 @@ struct RadioSwitchResult {
     std::optional<BindingRef> expectedBinding;
     uint32_t protocolSession;
     uint32_t phase;
-    bool notify; // R translated RadioProtocol NOTIFY; UPDATE has no separate ACK result.
+    bool notify; // R delivers UPDATE as a NOTIFY and can attach the original error ACK to legacyResult.
     EffectKnowledge effect;
     int32_t legacyResult;
 };

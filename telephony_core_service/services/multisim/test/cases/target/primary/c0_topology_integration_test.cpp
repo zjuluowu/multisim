@@ -184,7 +184,9 @@ public:
     {
         if (beforeRead) { const_cast<Radio *>(this)->beforeRead(); beforeRead = {}; }
         return {slot, slot == SlotId {1} ? 0 : 1, false, false, 9, true,
-            PrimaryProtocolRouting {slot == SlotId {0} ? 100u : 200u, {{100, {0}, 8}, {200, {1}, 9}}}};
+            PrimaryProtocolRouting {slot == SlotId {0} ? 100u : 200u,
+                {{100, {0}, 8, RadioProtocolCapability {1, 0x22}},
+                 {200, {1}, 9, RadioProtocolCapability {0, 0x11}}}}};
     }
     RadioSubmitDisposition SwitchPrimaryRadio(const RadioSwitchRequest &, const RadioSendQualification &) override
     { ++switches; return RadioSubmitDisposition::HandoffAccepted; }

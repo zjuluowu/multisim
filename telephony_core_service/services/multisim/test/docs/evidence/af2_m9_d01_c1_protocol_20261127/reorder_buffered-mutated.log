@@ -1,0 +1,51 @@
+Note: Google Test filter = TargetPrimaryB.C1LateUpdateErrorDoesNotRewriteSentComplete
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.C1LateUpdateErrorDoesNotRewriteSentComplete
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1218: Failure
+Expected equality of these values:
+  complete.payload->status
+    Which is: 4-byte object <02-00 00-00>
+  RadioProtocolStatus::Success
+    Which is: 4-byte object <01-00 00-00>
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1188: true
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1219: Failure
+Expected equality of these values:
+  complete.payload->capability
+    Which is: 8-byte object <00-00 00-00 11-00 00-00>
+  *kControlledProtocolMembers[1 - member].capability
+    Which is: 8-byte object <01-00 00-00 22-00 00-00>
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1188: true
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1218: Failure
+Expected equality of these values:
+  complete.payload->status
+    Which is: 4-byte object <02-00 00-00>
+  RadioProtocolStatus::Success
+    Which is: 4-byte object <01-00 00-00>
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1188: true
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1219: Failure
+Expected equality of these values:
+  complete.payload->capability
+    Which is: 8-byte object <01-00 00-00 22-00 00-00>
+  *kControlledProtocolMembers[1 - member].capability
+    Which is: 8-byte object <00-00 00-00 11-00 00-00>
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1188: true
+
+[  FAILED  ] TargetPrimaryB.C1LateUpdateErrorDoesNotRewriteSentComplete (3 ms)
+[----------] 1 test from TargetPrimaryB (3 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TargetPrimaryB.C1LateUpdateErrorDoesNotRewriteSentComplete
+
+ 1 FAILED TEST

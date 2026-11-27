@@ -1,0 +1,10 @@
+{
+  "baseline": "0d578e95313f406b7d3b4a37765444589406d312",
+  "files": {
+    "device/resource/resource_radio_runtime.cpp": "dee481a83a6b5461ea325032f6ab21653b957c6a42c5e39faccf2332ef03e0e9",
+    "device/resource/resource_radio_runtime.h": "8287a99564e162d603f7095d9ea80550f330a8ea2eacb6e0d37b6b5fbaec4989",
+    "role_assignment/assignment_service.cpp": "2e45b1d5c785ddd2a177a267b614ede783795ef306c0c5a753784a626ec85ec0",
+    "role_assignment/primary/primary_execution.h": "134d0419988b9d44b5239b891249435831ef048a6e7cbd04d26574eb6626f9ee",
+    "role_assignment/primary/radio_execution_port.h": "d217078586288424e84a6dd5fc56d1b8308c67f4d94a3f6985039787c572f6cf"
+  }
+}

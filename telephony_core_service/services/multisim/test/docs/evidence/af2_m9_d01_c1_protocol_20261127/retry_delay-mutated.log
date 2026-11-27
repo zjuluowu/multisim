@@ -1,0 +1,22 @@
+Note: Google Test filter = TargetPrimaryB.C1BackgroundRetryUsesControlledAsyncScheduler
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.C1BackgroundRetryUsesControlledAsyncScheduler
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:2497: Failure
+Expected equality of these values:
+  f.radio.requests.size()
+    Which is: 6
+  begin + 4
+    Which is: 4
+
+[  FAILED  ] TargetPrimaryB.C1BackgroundRetryUsesControlledAsyncScheduler (35 ms)
+[----------] 1 test from TargetPrimaryB (36 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (36 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TargetPrimaryB.C1BackgroundRetryUsesControlledAsyncScheduler
+
+ 1 FAILED TEST

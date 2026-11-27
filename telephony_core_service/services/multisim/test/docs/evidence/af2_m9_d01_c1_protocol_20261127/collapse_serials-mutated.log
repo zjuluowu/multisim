@@ -1,0 +1,36 @@
+Note: Google Test filter = TargetPrimaryB.C1BuffersSynchronousUpdateErrorAndNotifySeparately
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.C1BuffersSynchronousUpdateErrorAndNotifySeparately
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1178: Failure
+Expected equality of these values:
+  complete.payload->status
+    Which is: 4-byte object <01-00 00-00>
+  RadioProtocolStatus::Fail
+    Which is: 4-byte object <02-00 00-00>
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1178: Failure
+Expected equality of these values:
+  complete.payload->status
+    Which is: 4-byte object <01-00 00-00>
+  RadioProtocolStatus::Fail
+    Which is: 4-byte object <02-00 00-00>
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1181: Failure
+Expected equality of these values:
+  fixture.completion.results
+    Which is: { 0 }
+  (std::vector<int32_t>{kLegacyLocalPointerNull})
+    Which is: { 83886087 }
+
+[  FAILED  ] TargetPrimaryB.C1BuffersSynchronousUpdateErrorAndNotifySeparately (3 ms)
+[----------] 1 test from TargetPrimaryB (3 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TargetPrimaryB.C1BuffersSynchronousUpdateErrorAndNotifySeparately
+
+ 1 FAILED TEST
