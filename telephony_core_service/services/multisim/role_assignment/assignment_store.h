@@ -23,7 +23,15 @@
 #include "role_assignment/assignment_requests.h"
 
 namespace OHOS::Telephony::MultiSim {
-struct PrimaryParameterSnapshot { std::string slotText; std::string mainIccidText; };
+struct PrimaryParameterSnapshot {
+    std::string slotText;
+    std::string mainIccidText;
+    bool confirmed {true};
+    bool CanRestore() const
+    {
+        return confirmed && !slotText.empty() && slotText.find_first_not_of("0123456789") == std::string::npos;
+    }
+};
 struct AssignmentParameterResult {
     int32_t parameterResult;
     bool callFinished; // false: effect is unknown/unconfirmed; 0 must not be translated to success.
@@ -72,6 +80,8 @@ public:
     { return {}; }
     virtual std::optional<C0ParameterEvidence> ReadC0ParameterEvidence(const C0ParameterOperation &)
     { return std::nullopt; }
+    virtual C0ParameterOutcome RestorePrimaryParameter(const C0ParameterOperation &, const PrimaryParameterSnapshot &)
+    { return {}; }
     virtual bool SupportsRoleProvider() const { return false; }
     virtual bool HasIndependentRoleTransactions() const { return false; }
     virtual RoleProviderOutcome WriteDefaultRole(const RoleProviderOperation &) { return {}; }

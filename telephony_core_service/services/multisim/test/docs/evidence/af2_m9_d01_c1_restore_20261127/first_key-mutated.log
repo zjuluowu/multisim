@@ -1,0 +1,19 @@
+Note: Google Test filter = TargetPrimaryB.C1RecoveryOfFirstRestoreKeyContinuesOriginalIccidBeforeReleasing
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.C1RecoveryOfFirstRestoreKeyContinuesOriginalIccidBeforeReleasing
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:2149: Failure
+Failed
+Recovery of the first key did not enter the original ICCID write
+
+[  FAILED  ] TargetPrimaryB.C1RecoveryOfFirstRestoreKeyContinuesOriginalIccidBeforeReleasing (3001 ms)
+[----------] 1 test from TargetPrimaryB (3001 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3001 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TargetPrimaryB.C1RecoveryOfFirstRestoreKeyContinuesOriginalIccidBeforeReleasing
+
+ 1 FAILED TEST

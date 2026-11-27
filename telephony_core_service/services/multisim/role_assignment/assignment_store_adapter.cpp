@@ -78,14 +78,6 @@ std::string Sha256Hex(const std::string &input)
     for (uint32_t part : h) { out << std::setw(8) << part; }
     return out.str();
 }
-bool LegacySlotTextValid(const std::string &text)
-{
-    if (text.empty()) { return false; }
-    for (char digit : text) {
-        if (digit < '0' || digit > '9') { return false; }
-    }
-    return true;
-}
 } // namespace
 
 C0ParameterOutcome AssignmentParameterPort::WriteC0Parameter(const C0ParameterOperation &,
@@ -120,6 +112,19 @@ std::optional<C0ParameterEvidence> AssignmentStoreAdapter::ReadC0ParameterEviden
     return parameters_.ReadC0ParameterEvidence(operation);
 }
 
+C0ParameterOutcome AssignmentStoreAdapter::RestorePrimaryParameter(const C0ParameterOperation &operation,
+    const PrimaryParameterSnapshot &old)
+{
+    if (!old.CanRestore()) { return {{0, true}, EffectKnowledge::ConfirmedNotApplied}; }
+    if (operation.key == C0ParameterKey::PrimarySlot) {
+        return parameters_.WriteC0Parameter(operation, kPrimarySlot, old.slotText);
+    }
+    if (operation.key == C0ParameterKey::PrimaryIccid) {
+        return parameters_.WriteC0Parameter(operation, kPrimaryIccid, old.mainIccidText);
+    }
+    return {{-1, true}, EffectKnowledge::ConfirmedNotApplied};
+}
+
 RoleProviderOutcome AssignmentStoreAdapter::WriteDefaultRole(const RoleProviderOperation &operation)
 {
     if (!provider_ || operation.role == DefaultRole::Data) {
@@ -146,7 +151,7 @@ PrimaryParameterSnapshot AssignmentStoreAdapter::ReadPrimaryParameters()
     const auto slot = parameters_.Read(kPrimarySlot, "", result.slotText);
     const auto iccid = parameters_.Read(kPrimaryIccid, "", result.mainIccidText);
     if (!slot.callFinished || !iccid.callFinished || slot.parameterResult != 0 || iccid.parameterResult != 0) {
-        result = {};
+        result = {{}, {}, false};
     }
     return result;
 }
@@ -164,7 +169,7 @@ AssignmentParameterResult AssignmentStoreAdapter::WritePrimaryParameters(SlotId 
 
 AssignmentParameterResult AssignmentStoreAdapter::RestorePrimaryIfLegacyValid(const PrimaryParameterSnapshot &old)
 {
-    if (!LegacySlotTextValid(old.slotText)) { return {0, true}; }
+    if (!old.CanRestore()) { return {0, true}; }
     const auto slot = parameters_.Write(kPrimarySlot, old.slotText);
     if (!slot.callFinished) { return slot; }
     const auto iccid = parameters_.Write(kPrimaryIccid, old.mainIccidText);

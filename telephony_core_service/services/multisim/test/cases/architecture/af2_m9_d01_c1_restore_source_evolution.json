@@ -1,0 +1,11 @@
+{
+  "baseline": "740986291e98188a95d9aee0dd76b7e9540632be",
+  "files": {
+    "infrastructure/request/runtime_operation_store.h": "c9a6fc883ea317e021d2e197d24310c160398b0f324a05eca16503fa7ff0024a",
+    "role_assignment/assignment_service.cpp": "103e6b8be3768a0cf378144932c90d3f80b7be73ecd4e105b43a8150effd187c",
+    "role_assignment/assignment_service.h": "c8f4b804b26d72b4cc81632cb813de8bd9ebe03d906bee0b64a4831da0bef2f4",
+    "role_assignment/assignment_store.h": "123667d72ae071a10a7123c66d7c5fcdbd4dbe9eca81a43a445a7c5cb6fe7560",
+    "role_assignment/assignment_store_adapter.cpp": "ec6ee1259308913eee3948610d4a9b512ab5826285c8318b2e91bf323b749b91",
+    "role_assignment/assignment_store_adapter.h": "e4f7ead24ec4928c26f087f5579d66f4c2ffcd248fe680f2051a0ac86465ee21"
+  }
+}

@@ -51,8 +51,17 @@ public:
     std::optional<C0ParameterKey> uncertainKey;
     std::optional<C0ParameterOperation> uncertainWrite;
     std::optional<C0ParameterEvidence> parameterEvidence;
+    std::function<void(const std::string &)> beforeRead;
+    std::function<void(const C0ParameterOperation &)> beforeTrackedWriteReturns;
+    std::optional<std::string> unreadableKey;
+    C0ParameterOutcome uncertainOutcome {{-1, false}, EffectKnowledge::Unknown};
     AssignmentParameterResult Read(const std::string &key,const std::string &fallback,std::string &value) override
-    { value=values.count(key)?values[key]:fallback; return {0,true}; }
+    {
+        if (beforeRead) { beforeRead(key); }
+        if (key == unreadableKey) { return {-1, false}; }
+        value=values.count(key)?values[key]:fallback;
+        return {0,true};
+    }
     AssignmentParameterResult Write(const std::string &key,const std::string &value) override
     { writes.emplace_back(key,value); values[key]=value; return {0,true}; }
     C0ParameterOutcome WriteC0Parameter(const C0ParameterOperation &operation, const std::string &key,
@@ -61,7 +70,8 @@ public:
         if (operation.key == uncertainKey) {
             uncertainWrite = operation;
             writes.emplace_back(key, value);
-            return {{-1, false}, EffectKnowledge::Unknown};
+            if (beforeTrackedWriteReturns) { beforeTrackedWriteReturns(operation); }
+            return uncertainOutcome;
         }
         return AssignmentParameterPort::WriteC0Parameter(operation, key, value);
     }
@@ -2067,6 +2077,162 @@ TEST(TargetPrimaryB,C1BindingChangeRestoresPrewrittenPrimaryParameters)
     EXPECT_EQ(f.completion.results,(std::vector<int32_t>{0}));
     EXPECT_FALSE(f.service.ReadLegacyAssignment().primarySwitchInProgress);
     EXPECT_TRUE(f.output.roles.empty());
+}
+
+TEST(TargetPrimaryB,C1UncertainRollbackRetainsOriginalKeyAfterComplete)
+{
+    ResourceFixture fixture;
+    const auto request = fixture.Start(true);
+    ASSERT_EQ(fixture.platform.requests.size(), 2u);
+    ASSERT_EQ(fixture.parameters.values[kIccid], kEncoded1);
+    fixture.parameters.uncertainKey = C0ParameterKey::PrimaryIccid;
+
+    fixture.DeliverRound(0);
+
+    ASSERT_EQ(fixture.platform.requests.size(), 4u);
+    EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
+    ASSERT_TRUE(fixture.parameters.uncertainWrite);
+    const auto restore = *fixture.parameters.uncertainWrite;
+    EXPECT_EQ(restore.original.request, request);
+    EXPECT_GT(restore.original.step, fixture.platform.requests.back().second.step.step);
+    EXPECT_EQ(restore.key, C0ParameterKey::PrimaryIccid);
+    EXPECT_EQ(fixture.parameters.writes.back(), (std::pair<std::string, std::string>{kIccid, kEncoded0}));
+    EXPECT_EQ(fixture.parameters.values[kIccid], kEncoded1);
+    EXPECT_EQ(fixture.scheduler.Audit().scheduled, 0u);
+    ASSERT_TRUE(fixture.service->ReadC0Receipt());
+    EXPECT_EQ(fixture.service->ReadC0Receipt()->outstanding, AssignmentService::C0Stage::PrimaryParameters);
+    EXPECT_EQ(fixture.completion.results, (std::vector<int32_t>{kLegacyLocalPointerNull}));
+    EXPECT_EQ(fixture.output.phases,
+        (std::vector<std::pair<std::string, bool>> {{"start", false}, {"done", false}}));
+    EXPECT_FALSE(fixture.service->ReconcileC0Parameter(restore));
+
+    fixture.parameters.values[kIccid] = kEncoded0;
+    fixture.parameters.parameterEvidence =
+        C0ParameterEvidence {restore, {{0, true}, EffectKnowledge::ConfirmedApplied}};
+    EXPECT_TRUE(fixture.service->ReconcileC0Parameter(restore));
+    EXPECT_FALSE(fixture.service->ReadC0Receipt());
+    EXPECT_TRUE(fixture.output.roles.empty());
+    EXPECT_EQ(fixture.completion.results, (std::vector<int32_t>{kLegacyLocalPointerNull}));
+}
+
+TEST(TargetPrimaryB,C1RecoveryOfFirstRestoreKeyContinuesOriginalIccidBeforeReleasing)
+{
+    ResourceFixture fixture;
+    const auto request = fixture.Start(true);
+    ASSERT_EQ(fixture.platform.requests.size(), 2u);
+    fixture.parameters.uncertainKey = C0ParameterKey::PrimarySlot;
+    fixture.DeliverRound(0);
+    ASSERT_TRUE(fixture.parameters.uncertainWrite);
+    const auto restore = *fixture.parameters.uncertainWrite;
+    EXPECT_EQ(restore.original.request, request);
+    EXPECT_EQ(restore.key, C0ParameterKey::PrimarySlot);
+    EXPECT_EQ(fixture.parameters.values[kIccid], kEncoded1);
+    ASSERT_TRUE(fixture.service->ReadC0Receipt());
+    EXPECT_FALSE(fixture.service->ReadC0Receipt()->writes[static_cast<size_t>(C0ParameterKey::PrimaryIccid)]);
+    EXPECT_EQ(fixture.parameters.writes.back(), (std::pair<std::string, std::string>{kPrimary, "0"}));
+
+    fixture.parameters.values[kPrimary] = "0";
+    fixture.parameters.parameterEvidence =
+        C0ParameterEvidence {restore, {{0, true}, EffectKnowledge::ConfirmedApplied}};
+    fixture.parameters.uncertainKey = C0ParameterKey::PrimaryIccid;
+    std::promise<C0ParameterOperation> entered;
+    auto writingIccid = entered.get_future();
+    std::promise<void> release;
+    auto mayReturn = release.get_future();
+    fixture.parameters.beforeTrackedWriteReturns = [&](const C0ParameterOperation &operation) {
+        entered.set_value(operation);
+        mayReturn.wait();
+    };
+    auto first = std::async(std::launch::async, [&] { return fixture.service->ReconcileC0Parameter(restore); });
+    if (writingIccid.wait_for(std::chrono::seconds(3)) != std::future_status::ready) {
+        release.set_value();
+        FAIL() << "Recovery of the first key did not enter the original ICCID write";
+    }
+    const auto inFlight = writingIccid.get();
+    fixture.parameters.parameterEvidence =
+        C0ParameterEvidence {inFlight, {{0, true}, EffectKnowledge::ConfirmedApplied}};
+    EXPECT_FALSE(fixture.service->ReconcileC0Parameter(inFlight));
+    const auto duringWrite = fixture.service->ReadC0Receipt();
+    EXPECT_TRUE(duringWrite && duringWrite->storeCallInFlight);
+    release.set_value();
+    EXPECT_TRUE(first.get());
+    ASSERT_TRUE(fixture.parameters.uncertainWrite);
+    const auto restoreIccid = *fixture.parameters.uncertainWrite;
+    EXPECT_EQ(restoreIccid.original.request, request);
+    EXPECT_GT(restoreIccid.original.step, restore.original.step);
+    EXPECT_EQ(restoreIccid.key, C0ParameterKey::PrimaryIccid);
+    EXPECT_EQ(fixture.parameters.writes.back(), (std::pair<std::string, std::string>{kIccid, kEncoded0}));
+    EXPECT_TRUE(fixture.service->ReadC0Receipt());
+
+    fixture.parameters.values[kIccid] = kEncoded0;
+    fixture.parameters.parameterEvidence =
+        C0ParameterEvidence {restoreIccid, {{0, true}, EffectKnowledge::ConfirmedApplied}};
+    EXPECT_TRUE(fixture.service->ReconcileC0Parameter(restoreIccid));
+    EXPECT_FALSE(fixture.service->ReadC0Receipt());
+    EXPECT_EQ(fixture.service->ReadLegacyAssignment().lastPrimary, SlotId {0});
+    EXPECT_EQ(fixture.scheduler.Audit().scheduled, 0u);
+    EXPECT_EQ(fixture.completion.results, (std::vector<int32_t>{kLegacyLocalPointerNull}));
+}
+
+TEST(TargetPrimaryB,C1KnownUnappliedRestoreDoesNotProjectOldSlotOrRetry)
+{
+    ResourceFixture fixture;
+    fixture.Start(true);
+    ASSERT_EQ(fixture.platform.requests.size(), 2u);
+    fixture.parameters.uncertainKey = C0ParameterKey::PrimarySlot;
+    fixture.parameters.uncertainOutcome = {{-1, true}, EffectKnowledge::ConfirmedNotApplied};
+    fixture.DeliverRound(0);
+
+    ASSERT_TRUE(fixture.service->ReadC0Receipt());
+    EXPECT_EQ(fixture.service->ReadLegacyAssignment().lastPrimary, SlotId {1});
+    EXPECT_EQ(fixture.parameters.values[kPrimary], "1");
+    EXPECT_EQ(fixture.parameters.values[kIccid], kEncoded1);
+    EXPECT_EQ(fixture.scheduler.Audit().scheduled, 0u);
+    EXPECT_EQ(fixture.completion.results, (std::vector<int32_t>{kLegacyLocalPointerNull}));
+}
+
+TEST(TargetPrimaryB,C1FailedSnapshotReadNeverActsLikeConfirmedEmptyOldValue)
+{
+    ResourceFixture fixture;
+    fixture.parameters.unreadableKey = kPrimary;
+    fixture.Start(true);
+
+    EXPECT_TRUE(fixture.parameters.writes.empty());
+    EXPECT_TRUE(fixture.platform.requests.empty());
+    EXPECT_EQ(fixture.completion.results, (std::vector<int32_t>{-1}));
+    EXPECT_FALSE(fixture.service->HasPendingDeviceEffects());
+}
+
+TEST(TargetPrimaryB,C1SnapshotDoesNotHoldAssignmentLockAndRechecksBinding)
+{
+    ResourceFixture fixture;
+    std::promise<void> entered;
+    auto reading = entered.get_future();
+    std::promise<void> release;
+    auto mayReturn = release.get_future();
+    fixture.parameters.beforeRead = [&](const std::string &key) {
+        if (key == kPrimary) {
+            entered.set_value();
+            mayReturn.wait();
+        }
+    };
+    auto start = std::async(std::launch::async, [&] { return fixture.Start(true); });
+    if (reading.wait_for(std::chrono::seconds(3)) != std::future_status::ready) {
+        release.set_value();
+        FAIL() << "C1 did not reach the original parameter snapshot";
+    }
+    auto inspect = std::async(std::launch::async, [&] { return fixture.service->ReadLegacyAssignment(); });
+    const auto readable = inspect.wait_for(std::chrono::seconds(3));
+    fixture.topology.AcceptCardRemoval(fixture.target);
+    release.set_value();
+    start.get();
+    inspect.get();
+
+    EXPECT_EQ(readable, std::future_status::ready) << "The original Store read held Assignment's commit lock";
+    EXPECT_TRUE(fixture.parameters.writes.empty());
+    EXPECT_TRUE(fixture.platform.requests.empty());
+    EXPECT_EQ(fixture.completion.results, (std::vector<int32_t>{-1}));
+    EXPECT_FALSE(fixture.service->HasPendingDeviceEffects());
 }
 
 TEST(TargetPrimaryB,C1BackgroundRetryUsesControlledAsyncScheduler)

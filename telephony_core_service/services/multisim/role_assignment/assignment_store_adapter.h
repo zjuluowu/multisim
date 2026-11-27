@@ -60,6 +60,8 @@ public:
     C0ParameterOutcome WriteC0Parameter(const C0ParameterOperation &operation, SlotId slot,
         const std::string &rawIccid, bool userSet) override;
     std::optional<C0ParameterEvidence> ReadC0ParameterEvidence(const C0ParameterOperation &operation) override;
+    C0ParameterOutcome RestorePrimaryParameter(const C0ParameterOperation &operation,
+        const PrimaryParameterSnapshot &old) override;
     RoleStoreResult WriteDefaultRole(const SetRoleCommand &command) override;
     PrimaryParameterSnapshot ReadPrimaryParameters() override;
     AssignmentParameterResult WritePrimaryParameters(SlotId slot, const std::string &rawIccid) override;

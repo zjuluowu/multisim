@@ -276,7 +276,7 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         bool preferenceSettled = false;
         if (store_.SupportsTrackedC0()) {
             c0Receipt_.emplace(C0Receipt {request, C0Stage::Preference, facts->binding});
-            const bool returned = WriteTrackedParameter(C0ParameterKey::Preference, step, *facts, command.userSet, guard);
+            const bool returned = WriteTrackedParameter(C0ParameterKey::Preference, step, &*facts, command.userSet, guard);
             const auto &preference = c0Receipt_->writes[static_cast<size_t>(C0ParameterKey::Preference)];
             if (!preference) {
                 c0Receipt_.reset();
@@ -367,7 +367,23 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         return request;
     }
     if (plan->mode == PrimarySwitchMode::ThreePhaseProtocol) {
-        const PrimaryParameterSnapshot oldParameters = store_.ReadPrimaryParameters();
+        std::optional<PrimaryParameterSnapshot> oldParameters;
+        guard.unlock();
+        try {
+            oldParameters = store_.ReadPrimaryParameters();
+        } catch (const std::exception &) {
+            // No parameter or Radio effect was admitted for this request yet.
+        }
+        guard.lock();
+        if (!oldParameters || !oldParameters->confirmed || stopping_ ||
+            !topology_.WithCurrentPrimaryTarget(*facts, [] {})) {
+            assignment_.AcceptTransitionPhase(*target->radioDomain, request.value,
+                TransitionPhase::Admitted, TransitionPhase::Failed);
+            CompleteOnce(request, command.completion, -1, TerminalState::Failed, &guard);
+            assignment_.ReleaseRoleWriteSet(request.value, kPrimaryRoleWriteSet);
+            operations_.RetireAfterEvidenceRetention(request, true);
+            return request;
+        }
         const auto preference = store_.WriteUserPrimaryPreference(command.userSet);
         const auto primary = store_.WritePrimaryParameters(target->slot, facts->iccid);
         if (!preference.callFinished || !primary.callFinished) {
@@ -391,7 +407,7 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         }
         PendingPrimarySwitch pending {sentStep, *facts, *target, facts->iccid, command.userSet,
             command.completion, plan->mode, 1, nextProtocolSession_++, targetMember->nativeMember,
-            observed.routing->members, {}, oldParameters, false, 0, false, false, false, 0,
+            observed.routing->members, {}, *oldParameters, false, 0, false, false, false, 0,
             std::nullopt, std::nullopt};
         pendingPrimary_.emplace(request.value, std::move(pending));
         (void)SubmitC1Round(pendingPrimary_.at(request.value), guard);
@@ -451,30 +467,84 @@ std::optional<C0Stage> FirstUnresolved(const AssignmentService::C0Receipt &recei
 }
 } // namespace
 
-bool AssignmentService::WriteTrackedParameter(C0ParameterKey key, StepRef &step, const PrimaryTargetFacts &facts,
-    bool userSet, std::unique_lock<std::recursive_mutex> &guard)
+bool AssignmentService::WriteTrackedParameter(C0ParameterKey key, StepRef &step, const PrimaryTargetFacts *facts,
+    bool userSet, std::unique_lock<std::recursive_mutex> &guard, const PrimaryParameterSnapshot *restore)
 {
     auto &receipt = *c0Receipt_;
     auto &original = receipt.writes[static_cast<size_t>(key)];
-    topology_.WithCurrentPrimaryTarget(facts, [&] {
-        if (operations_.AdvanceStep(step, step.step + 1, 0, std::nullopt)) {
+    const auto registerWrite = [&] {
+        const bool registered = operations_.AdvanceStep(step, step.step + 1, step.attempt, std::nullopt) ||
+            (restore && operations_.AdvanceReconciliationStep(step, step.step + 1));
+        if (registered) {
             ++step.step;
             original.emplace(C0ParameterEvidence {{step, key}, {}});
             receipt.outstanding = ParameterStage(key);
         }
-    });
+    };
+    if (restore) {
+        if (assignment_.OwnsRoleWriteSet(step.request.value, kPrimaryRoleWriteSet)) { registerWrite(); }
+    } else if (facts) {
+        topology_.WithCurrentPrimaryTarget(*facts, registerWrite);
+    }
     if (!original) { return false; }
 
+    receipt.storeCallInFlight = true;
     guard.unlock();
     C0ParameterOutcome outcome;
     try {
-        outcome = store_.WriteC0Parameter(original->operation, facts.binding.slot, facts.iccid, userSet);
+        outcome = restore ? store_.RestorePrimaryParameter(original->operation, *restore) :
+            store_.WriteC0Parameter(original->operation, facts->binding.slot, facts->iccid, userSet);
     } catch (const std::exception &) {
         // The original call may have crossed the write point.
     }
     guard.lock();
     original->outcome = outcome;
+    receipt.storeCallInFlight = false;
     return outcome.call.callFinished;
+}
+
+bool AssignmentService::RestoreTrackedPrimary(StepRef &step, const PrimaryTargetFacts &facts,
+    const PrimaryParameterSnapshot &old, std::unique_lock<std::recursive_mutex> &guard)
+{
+    if (!old.CanRestore()) { return true; }
+    if (!store_.SupportsTrackedC0()) {
+        bool returned = false;
+        guard.unlock();
+        try {
+            returned = store_.RestorePrimaryIfLegacyValid(old).callFinished;
+        } catch (const std::exception &) {
+            // The original Store effect still requires reconciliation.
+        }
+        guard.lock();
+        return returned;
+    }
+    c0Receipt_.emplace(C0Receipt {step.request, C0Stage::PrimaryParameters, facts.binding});
+    c0Receipt_->restore = old;
+    if (!ContinuePrimaryRestore(step, guard)) { return false; }
+    c0Receipt_.reset();
+    return true;
+}
+
+bool AssignmentService::ContinuePrimaryRestore(StepRef &step, std::unique_lock<std::recursive_mutex> &guard)
+{
+    auto &receipt = *c0Receipt_;
+    for (const auto key : {C0ParameterKey::PrimarySlot, C0ParameterKey::PrimaryIccid}) {
+        const auto &write = receipt.writes[static_cast<size_t>(key)];
+        if (!write) { (void)WriteTrackedParameter(key, step, nullptr, false, guard, &*receipt.restore); }
+        if (!write || !C0EffectSettled(write->outcome) ||
+            write->outcome.effect != EffectKnowledge::ConfirmedApplied) { return false; }
+    }
+    return true;
+}
+
+void AssignmentService::AcceptRestoredPrimaryProjection(const PrimaryParameterSnapshot &old)
+{
+    for (const auto &slot : catalog_.Slots()) {
+        if (std::to_string(slot.slot.legacySlotId) == old.slotText) {
+            assignment_.AcceptPrimaryParameterProjection(slot.slot);
+            return;
+        }
+    }
 }
 
 void AssignmentService::RunTrackedPrimaryParameters(StepRef step, TransitionPhase phase, const SwitchPrimaryCommand &command,
@@ -487,7 +557,7 @@ void AssignmentService::RunTrackedPrimaryParameters(StepRef step, TransitionPhas
     auto &receipt = *c0Receipt_;
     bool callDidNotReturn = false;
     const auto write = [&](C0ParameterKey key) {
-        const bool returned = WriteTrackedParameter(key, step, facts, command.userSet, guard);
+        const bool returned = WriteTrackedParameter(key, step, &facts, command.userSet, guard);
         const auto &original = receipt.writes[static_cast<size_t>(key)];
         callDidNotReturn = original && !returned;
         return returned;
@@ -562,7 +632,7 @@ bool AssignmentService::ReconcileC0Parameter(const C0ParameterOperation &operati
 {
     std::unique_lock<std::recursive_mutex> guard(primaryCommitLock_);
     const auto index = static_cast<size_t>(operation.key);
-    if (!c0Receipt_ || c0Receipt_->outstanding == C0Stage::Completion ||
+    if (!c0Receipt_ || c0Receipt_->outstanding == C0Stage::Completion || c0Receipt_->storeCallInFlight ||
         index >= c0Receipt_->writes.size()) { return false; }
     const auto context = operations_.Read(operation.original.request);
     if (!context || context->terminal != TerminalState::NeedsReconciliation) { return false; }
@@ -576,7 +646,7 @@ bool AssignmentService::ReconcileC0Parameter(const C0ParameterOperation &operati
         return false;
     }
     guard.lock();
-    if (!c0Receipt_) { return false; }
+    if (!c0Receipt_ || c0Receipt_->outstanding == C0Stage::Completion || c0Receipt_->storeCallInFlight) { return false; }
     original = c0Receipt_->writes[index];
     if (!original || !(original->operation == operation) || C0EffectSettled(original->outcome)) { return false; }
     if (!evidence || !(evidence->operation == operation) || !C0EffectSettled(evidence->outcome)) { return false; }
@@ -584,6 +654,11 @@ bool AssignmentService::ReconcileC0Parameter(const C0ParameterOperation &operati
         return false;
     }
     c0Receipt_->writes[index]->outcome = evidence->outcome;
+    if (c0Receipt_->restore) {
+        auto step = context->context.step;
+        if (!ContinuePrimaryRestore(step, guard)) { return true; }
+        AcceptRestoredPrimaryProjection(*c0Receipt_->restore);
+    }
     const auto unsettled = FirstUnresolved(*c0Receipt_);
     if (unsettled) {
         c0Receipt_->outstanding = *unsettled;
@@ -687,7 +762,7 @@ void AssignmentService::SetDefaultRole(const SetRoleCommand &command, const Bind
 
     c0Receipt_.emplace(C0Receipt {request, C0Stage::DataParameters, binding, {}, false, kDefaultDataWriteSet});
     auto &receipt = *c0Receipt_;
-    const bool returned = WriteTrackedParameter(C0ParameterKey::DefaultData, step, *facts, false, guard);
+    const bool returned = WriteTrackedParameter(C0ParameterKey::DefaultData, step, &*facts, false, guard);
     bool success = returned && topology_.WithCurrentPrimaryTarget(*facts, [&] {
         assignment_.AcceptDataParameterProjection(binding.slot, binding.subscription);
         receipt.outstanding = C0Stage::DataNotification;
@@ -932,19 +1007,28 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
     }
     guard.lock();
     if (pending->second.mode == PrimarySwitchMode::ThreePhaseProtocol && pending->second.roundFailed) {
-        const auto restored = store_.RestorePrimaryIfLegacyValid(pending->second.oldParameters);
-        if (!restored.callFinished) {
+        if (!RestoreTrackedPrimary(pending->second.step, pending->second.facts, pending->second.oldParameters, guard)) {
             assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(), result.step.request.value,
-                TransitionPhase::DevicePending, TransitionPhase::NeedsReconciliation);
+                TransitionPhase::DevicePending, TransitionPhase::Reconciling);
             operations_.MarkTerminal(result.step.request, TerminalState::NeedsReconciliation);
+            if (c0Receipt_) {
+                const auto outstanding = c0Receipt_->outstanding;
+                c0Receipt_->outstanding = C0Stage::Completion;
+                guard.unlock();
+                try {
+                    output_.PublishPrimaryPhase(true, false);
+                } catch (const std::exception &) {
+                    // The failure Completion still owns its original outlet.
+                }
+                guard.lock();
+                CompleteOnce(result.step.request, pending->second.completion, 83886087,
+                    TerminalState::NeedsReconciliation, &guard);
+                c0Receipt_->outstanding = outstanding;
+                pendingPrimary_.erase(pending);
+            }
             return;
         }
-        for (const auto &slot : catalog_.Slots()) {
-            if (std::to_string(slot.slot.legacySlotId) == pending->second.oldParameters.slotText) {
-                assignment_.AcceptPrimaryParameterProjection(slot.slot);
-                break;
-            }
-        }
+        AcceptRestoredPrimaryProjection(pending->second.oldParameters);
         output_.PublishPrimaryPhase(true, false);
         if (pending->second.attemptCount == 0) {
             CompleteOnce(result.step.request, pending->second.completion, 83886087, TerminalState::Open);

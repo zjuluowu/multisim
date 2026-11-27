@@ -1,0 +1,23 @@
+Note: Google Test filter = TargetPrimaryB.C1SnapshotDoesNotHoldAssignmentLockAndRechecksBinding
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.C1SnapshotDoesNotHoldAssignmentLockAndRechecksBinding
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:2231: Failure
+Expected equality of these values:
+  readable
+    Which is: 4-byte object <01-00 00-00>
+  std::future_status::ready
+    Which is: 4-byte object <00-00 00-00>
+The original Store read held Assignment's commit lock
+
+[  FAILED  ] TargetPrimaryB.C1SnapshotDoesNotHoldAssignmentLockAndRechecksBinding (3002 ms)
+[----------] 1 test from TargetPrimaryB (3002 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3002 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TargetPrimaryB.C1SnapshotDoesNotHoldAssignmentLockAndRechecksBinding
+
+ 1 FAILED TEST

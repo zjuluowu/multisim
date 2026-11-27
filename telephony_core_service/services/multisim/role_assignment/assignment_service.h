@@ -49,6 +49,8 @@ public:
         std::array<std::optional<C0ParameterEvidence>, static_cast<size_t>(C0ParameterKey::Count)> writes {};
         bool businessSucceeded {false};
         uint32_t writeSet {kPrimaryRoleWriteSet};
+        bool storeCallInFlight {false};
+        std::optional<PrimaryParameterSnapshot> restore {};
     };
 
     AssignmentService(const SlotCatalog &catalog, AssignmentStore &store, RadioExecutionPort &radio,
@@ -103,8 +105,12 @@ private:
     mutable std::recursive_mutex primaryCommitLock_;
     void CompleteOnce(RequestId request, const CompletionPlan &plan, int32_t result,
         TerminalState terminal, std::unique_lock<std::recursive_mutex> *commit = nullptr);
-    bool WriteTrackedParameter(C0ParameterKey key, StepRef &step, const PrimaryTargetFacts &facts, bool userSet,
+    bool WriteTrackedParameter(C0ParameterKey key, StepRef &step, const PrimaryTargetFacts *facts, bool userSet,
+        std::unique_lock<std::recursive_mutex> &guard, const PrimaryParameterSnapshot *restore = nullptr);
+    bool RestoreTrackedPrimary(StepRef &step, const PrimaryTargetFacts &facts, const PrimaryParameterSnapshot &old,
         std::unique_lock<std::recursive_mutex> &guard);
+    bool ContinuePrimaryRestore(StepRef &step, std::unique_lock<std::recursive_mutex> &guard);
+    void AcceptRestoredPrimaryProjection(const PrimaryParameterSnapshot &old);
     void RunTrackedPrimaryParameters(StepRef step, TransitionPhase phase, const SwitchPrimaryCommand &command,
         const SlotDescriptor &target, const PrimaryTargetFacts &facts, std::unique_lock<std::recursive_mutex> &guard);
     bool ScheduleC1Retry(RequestId request, uint32_t attempt);

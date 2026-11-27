@@ -66,6 +66,11 @@ public:
     RequestId Begin(ResolvedTarget origin, CompletionPlan completion, std::optional<StepRef> parent = std::nullopt);
     bool AdvanceStep(StepRef expected, uint32_t nextStep, uint32_t attempt,
         std::optional<SessionRef> sentSession); // 同域推进，禁止外部直接改Context。
+    bool AdvanceReconciliationStep(StepRef expected, uint32_t nextStep)
+    {
+        return AdvanceStepAtTerminal(expected, nextStep, expected.attempt, std::nullopt,
+            TerminalState::NeedsReconciliation);
+    }
     bool RecordSent(StepRef expected, const SessionRef &sentSession)
     { return RegisterDeviceStep(expected, sentSession); }
     bool RecordRadioStep(StepRef expected)
@@ -98,6 +103,8 @@ public:
         }
     }
 private:
+    bool AdvanceStepAtTerminal(StepRef expected, uint32_t nextStep, uint32_t attempt,
+        std::optional<SessionRef> sentSession, TerminalState terminal);
     bool RegisterDeviceStep(StepRef expected, std::optional<SessionRef> sentSession)
     {
         const auto found = operations_.find(expected.request.value);
@@ -133,12 +140,18 @@ inline RequestId RuntimeOperationStore::Begin(ResolvedTarget origin, CompletionP
 inline bool RuntimeOperationStore::AdvanceStep(StepRef expected, uint32_t nextStep, uint32_t attempt,
     std::optional<SessionRef> sentSession)
 {
+    return AdvanceStepAtTerminal(expected, nextStep, attempt, std::move(sentSession), TerminalState::Open);
+}
+
+inline bool RuntimeOperationStore::AdvanceStepAtTerminal(StepRef expected, uint32_t nextStep, uint32_t attempt,
+    std::optional<SessionRef> sentSession, TerminalState terminal)
+{
     if (expected.request.epoch != epoch_ || expected.request.owner != owner_ || nextStep <= expected.step) {
         return false;
     }
     const auto found = operations_.find(expected.request.value);
     if (found == operations_.end() || !(found->second.context.step == expected) ||
-        found->second.terminal != TerminalState::Open) {
+        found->second.terminal != terminal) {
         return false;
     }
     found->second.context.step = StepRef {expected.request, nextStep, attempt};

@@ -310,6 +310,13 @@ Target 215/215，Primary 与 Radio 专项 ASan/TSan 各 76/76。
 物理资源图和后续扩展仍待。状态保持 `AF2_M9_IN_PROGRESS`。
 [正式 B 样板、实际反例与回归](../services/multisim/test/docs/evidence/af2_m9_d01_formal_b_20261127/README.md)
 
+**D01 C1 原参数快照与逐键恢复检查点。** C1 快照在 A 锁外读，按读结果和原 Binding
+判断前缀资格。失败轮次的原 COMPLETE 后，A 保留原快照、已登记键及尚需恢复的后继键。
+独立反审核对了提前释权、失败快照与未应用恢复三个反例，新增原 ICCID 恢复与并行核对。
+Target 227/227，专项 ASan/TSan 各 95/95，四项负控和恢复复验通过。
+正式 C1 及全图仍待。状态保持 `AF2_M9_IN_PROGRESS`。
+[快照、原恢复步骤与反例实测](../services/multisim/test/docs/evidence/af2_m9_d01_c1_restore_20261127/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）
