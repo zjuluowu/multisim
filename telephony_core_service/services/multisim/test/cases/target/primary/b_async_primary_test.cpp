@@ -1528,6 +1528,55 @@ TEST(TargetPrimaryB,ResourceBarrierLateBResultRecoversOnlyWithCurrentStateProof)
     EXPECT_FALSE(f.service->ReadLegacyAssignment().lastPrimary.has_value());
 }
 
+TEST(TargetPrimaryB,BQueuedNormalEvidenceRemainsAttributableWhenTimeoutWins)
+{
+    ResourceFixture fixture;
+    const auto request = fixture.Start(false);
+    ASSERT_EQ(fixture.platform.requests.size(), 1u);
+    const auto &[token, original] = fixture.platform.requests.front();
+    const auto effect = Result(original, EffectKnowledge::ConfirmedApplied, 0);
+    fixture.scheduler.BlockOwnerQueue();
+    EXPECT_TRUE(fixture.radio.AcceptDeviceResult({token, effect, true, true, false, static_cast<int32_t>(token)}));
+    EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
+    EXPECT_FALSE(fixture.radio.OwnerCallbacksDrained());
+    EXPECT_TRUE(fixture.service->AcceptPrimarySwitchTimeout(request, 45000));
+    EXPECT_FALSE(fixture.service->ReadPrimaryDeviceEvidence(original.step));
+    fixture.scheduler.ReleaseOwnerQueue();
+    ASSERT_TRUE(fixture.scheduler.WaitOwnerIdle());
+
+    EXPECT_EQ(fixture.service->ReadPrimaryDeviceEvidence(original.step), EffectKnowledge::ConfirmedApplied);
+    EXPECT_EQ(fixture.completion.results, (std::vector<int32_t> {kLegacyLocalPointerNull}));
+    EXPECT_TRUE(fixture.output.roles.empty());
+    EXPECT_FALSE(fixture.service->ReadLegacyAssignment().lastPrimary);
+    EXPECT_TRUE(fixture.radio.OwnerCallbacksDrained());
+}
+
+TEST(TargetPrimaryB,BSynchronousRecoveryBeforeUnknownHandoffReturnsPreservesEvidence)
+{
+    struct InlineOwner final : RadioOwnerDispatchPort {
+        bool PostRadioOwnerTask(std::function<void()> task) override { task(); return true; }
+        bool RadioOwnerCallbacksDrained() const override { return true; }
+    };
+    ResourceFixture fixture;
+    auto owner = std::make_shared<InlineOwner>();
+    fixture.radio.BindOwnerDispatch(owner);
+    fixture.platform.disposition = RadioSubmitDisposition::HandoffUnknown;
+    fixture.platform.onSynchronousResponse = [&](uint64_t token, const RadioSwitchRequest &original) {
+        const auto evidence = Result(original, EffectKnowledge::ConfirmedNotApplied, kLegacyLocalPointerNull);
+        EXPECT_TRUE(fixture.radio.AcceptDeviceResult({token, evidence, true, true, true, static_cast<int32_t>(token)}));
+    };
+    fixture.Start(false);
+    ASSERT_EQ(fixture.platform.requests.size(), 1u);
+    const auto step = fixture.platform.requests.front().second.step;
+
+    EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
+    EXPECT_EQ(fixture.service->ReadPrimaryDeviceEvidence(step), EffectKnowledge::ConfirmedNotApplied);
+    EXPECT_FALSE(fixture.service->ReadPrimaryDeviceEvidence({step.request, step.step + 1, step.attempt}));
+    EXPECT_TRUE(fixture.output.roles.empty());
+    EXPECT_TRUE(fixture.service->HasPendingDeviceEffects());
+    EXPECT_TRUE(fixture.completion.results.empty());
+}
+
 TEST(TargetPrimaryB,ResourceRetainsOwnerDeliveryWhenDispatchIsStopped)
 {
     ResourceFixture f;

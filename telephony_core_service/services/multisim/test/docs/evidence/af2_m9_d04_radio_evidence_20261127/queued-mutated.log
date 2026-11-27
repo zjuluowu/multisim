@@ -1,0 +1,22 @@
+Note: Google Test filter = TargetPrimaryB.BQueuedNormalEvidenceRemainsAttributableWhenTimeoutWins
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.BQueuedNormalEvidenceRemainsAttributableWhenTimeoutWins
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1547: Failure
+Expected equality of these values:
+  fixture.service->ReadPrimaryDeviceEvidence(original.step)
+    Which is: (nullopt)
+  EffectKnowledge::ConfirmedApplied
+    Which is: 4-byte object <02-00 00-00>
+
+[  FAILED  ] TargetPrimaryB.BQueuedNormalEvidenceRemainsAttributableWhenTimeoutWins (2 ms)
+[----------] 1 test from TargetPrimaryB (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TargetPrimaryB.BQueuedNormalEvidenceRemainsAttributableWhenTimeoutWins
+
+ 1 FAILED TEST

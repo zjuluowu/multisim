@@ -131,7 +131,7 @@ class BoundaryGuard(unittest.TestCase):
 
     def test_m9_role_source_drift(self):
         self.check_mapped_mutation("role_assignment/assignment_service.cpp", lambda s: s + '\n// drift\n',
-            "AF2 M9 D01 permission source input differs: role_assignment/assignment_service.cpp")
+            "AF2 M9 D04 Radio evidence source input differs: role_assignment/assignment_service.cpp")
 
     def test_m6_account_source_drift(self):
         self.check_mapped_mutation("infrastructure/request/request_ref.h", lambda s: s + '\n// drift\n',

@@ -222,14 +222,13 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
         return request;
     }
     const bool validObservation = observed.slot == command.target.slot && observed.observationRevision != 0 &&
-        observed.currentModemId.has_value() && target->rilInstance.has_value();
+        observed.currentModemId && *observed.currentModemId >= 0;
     if (!validObservation) {
         // An unknown current modem does not describe M0.
         fail();
         return request;
     }
-    const bool alreadyOnPrimaryModem = *observed.currentModemId == 0 &&
-        *target->rilInstance == *observed.currentModemId;
+    const bool alreadyOnPrimaryModem = *observed.currentModemId == 0;
     const auto plan = PlanPrimarySwitch({*target, command.userSet, observed.dedicatedPrimaryRilSupported,
         alreadyOnPrimaryModem, observed.vendorMappingRequired});
     if (!plan || (c0Only && plan->mode != PrimarySwitchMode::AlreadyPrimary) ||
@@ -788,11 +787,16 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
     if (pending == pendingPrimary_.end()) { return; }
     const auto operation = operations_.Read(result.step.request);
     if (!assignment_.OwnsRoleWriteSet(result.step.request.value, kPrimaryRoleWriteSet) ||
-        !operation || operation->terminal != TerminalState::Open ||
-        !(pending->second.step == result.step) || !operation->context.deviceStepRegistered ||
+        !operation || !(pending->second.step == result.step) || !operation->context.deviceStepRegistered ||
         result.protocolSession != pending->second.protocolSession) {
         return;
     }
+    if (operation->terminal == TerminalState::NeedsReconciliation && operation->wait == WaitState::TimedOut) {
+        // R may have queued normal, already verified device evidence just before A consumed the timeout.
+        AcceptLateRadioEvidence(result);
+        return;
+    }
+    if (operation->terminal != TerminalState::Open) { return; }
     if (pending->second.mode == PrimarySwitchMode::WithoutModemRestart) {
         if (!(result.memberSlot == pending->second.members.front().route) || !result.expectedBinding ||
             !(result.expectedBinding->subscription == pending->second.facts.binding.subscription) ||
@@ -977,23 +981,34 @@ void AssignmentService::AcceptLateRadioEvidence(const RadioSwitchResult &result)
     if (pending == pendingPrimary_.end() || !(pending->second.step == result.step)) { return; }
     const auto operation = operations_.Read(result.step.request);
     if (!assignment_.OwnsRoleWriteSet(result.step.request.value, kPrimaryRoleWriteSet) ||
-        !operation || operation->terminal != TerminalState::NeedsReconciliation) { return; }
+        !operation || !operation->context.deviceStepRegistered || result.effect == EffectKnowledge::Unknown) { return; }
+    const bool earlyHandoffEvidence = operation->terminal == TerminalState::Open &&
+        pending->second.mode == PrimarySwitchMode::WithoutModemRestart;
+    if (!earlyHandoffEvidence && operation->terminal != TerminalState::NeedsReconciliation) { return; }
     if (!result.expectedBinding ||
         !(result.expectedBinding->subscription == pending->second.facts.binding.subscription) ||
+        !(result.expectedBinding->slot == pending->second.facts.binding.slot) ||
         result.expectedBinding->bindingRevision != pending->second.facts.binding.bindingRevision ||
+        result.phase != pending->second.phase || result.notify != (pending->second.phase == 2) ||
         result.protocolSession != pending->second.protocolSession ||
         std::none_of(pending->second.members.begin(), pending->second.members.end(), [&](const auto &member) {
             return member.nativeMember == pending->second.targetMember && member.route == result.memberSlot;
         })) {
         return;
     }
-    // Late evidence is recorded separately from the original completion/step.
-    // It does not replay completion, role submission, notification, or commands.
-    if (!pending->second.lateDeviceEffect.has_value() &&
-        operations_.AcceptLateEvidence(result.step, result.effect)) {
+    // The pending original retains the evidence even if R recovered the transport
+    // before the original Submit returned. Store and role responsibility remain with A.
+    if (!pending->second.lateDeviceEffect.has_value()) {
         pending->second.lateDeviceEffect = result.effect;
-        operations_.RetireAfterEvidenceRetention(result.step.request);
     }
+}
+
+std::optional<EffectKnowledge> AssignmentService::ReadPrimaryDeviceEvidence(const StepRef &original) const
+{
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
+    const auto pending = pendingPrimary_.find(original.request.value);
+    if (pending == pendingPrimary_.end() || !(pending->second.step == original)) { return std::nullopt; }
+    return pending->second.lateDeviceEffect;
 }
 
 bool AssignmentService::AcceptC1RetryDue(RequestId request)

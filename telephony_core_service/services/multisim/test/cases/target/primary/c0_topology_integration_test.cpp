@@ -182,7 +182,7 @@ public:
     PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const override
     {
         if (beforeRead) { const_cast<Radio *>(this)->beforeRead(); beforeRead = {}; }
-        return {slot, 0, false, false, 9, true,
+        return {slot, slot == SlotId {1} ? 0 : 1, false, false, 9, true,
             PrimaryProtocolRouting {slot == SlotId {0} ? 100u : 200u, {{100, {0}, 8}, {200, {1}, 9}}}};
     }
     bool SwitchPrimaryRadio(const RadioSwitchRequest &, const RadioSendQualification &) override
@@ -830,9 +830,10 @@ namespace {
 class ModuleRadio final : public RadioPlatformPort {
 public:
     bool requiresDevice {false};
+    SlotId primaryEndpoint {1};
     unsigned commands {0};
     PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const override
-    { return {slot, requiresDevice ? 1 : 0, requiresDevice, false, 7}; }
+    { return {slot, slot == primaryEndpoint ? 0 : 1, requiresDevice, false, 7}; }
     RadioSubmitResult SubmitPrimaryRadio(const RadioSwitchRequest &, uint64_t, const RadioSendPermit &) override
     {
         ++commands;
@@ -920,6 +921,27 @@ TEST(AF2Module, FactoryPublishesRealTopologyAndRunsC0)
     const std::weak_ptr<SimModule> weak = module;
     module.reset();
     EXPECT_TRUE(weak.expired());
+}
+
+TEST(AF2Module, AlreadyPrimaryUsesLiveModemMappingAfterEndpointRemap)
+{
+    ModuleInputs input;
+    input.radio->primaryEndpoint = {0};
+    auto module = std::get<CoreSimModuleHandle>(CreateCoreSimModule(input.Ports(), input.catalog, input.accounts));
+    const auto current = module->FindBinding({0});
+    const auto previous = module->FindBinding({1});
+    ASSERT_TRUE(current && previous);
+    ASSERT_EQ(module->Catalog().Find({0})->rilInstance, 1);
+    ASSERT_EQ(module->Catalog().Find({1})->rilInstance, 0);
+
+    ASSERT_TRUE(module->StartPrimarySwitch(Command(*current)));
+    ASSERT_TRUE(module->StartPrimarySwitch(Command(*previous)));
+
+    EXPECT_EQ(input.completion->results, (std::vector<int32_t> {0, -1}));
+    EXPECT_EQ(input.radio->commands, 0u);
+    EXPECT_EQ(module->ReadAssignment().lastPrimary, SlotId {0});
+    EXPECT_EQ(input.parameters->values.at(kPrimary), "0");
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
 }
 
 TEST(AF2Module, MissingPortAndBadEvidenceNeverPublishAndReleasePartialGraph)
@@ -2505,6 +2527,7 @@ TEST(AF2Data, LiveDualSimSetDefaultDataThroughLegacyEntry)
 {
     using namespace OHOS::Telephony;
     PrimaryFixture f(PrimaryZeroCatalog());
+    f.live.input.radio->primaryEndpoint = {0};
     ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
     auto &module = f.live.module;
     const auto binding = module->FindBinding({1});
@@ -2627,6 +2650,7 @@ TEST(AF2Data, PrimaryAndDataRejectCompetingSharedWriteInBothOrders)
     using namespace OHOS::Telephony;
     for (const bool primaryFirst : {true, false}) {
         PrimaryFixture f(PrimaryZeroCatalog());
+        f.live.input.radio->primaryEndpoint = {0};
         ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
         auto &module = f.live.module;
         auto &parameters = *f.live.input.parameters;
@@ -2788,6 +2812,7 @@ TEST(AF2VoiceSms, LiveDualSimSelectsFourRolesThroughLegacyEntries)
     using namespace OHOS::Telephony;
     auto provider = std::make_shared<RoleProvider>();
     PrimaryFixture f(PrimaryZeroCatalog(), provider);
+    f.live.input.radio->primaryEndpoint = {0};
     ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
     auto &module = f.live.module;
     ASSERT_EQ(module->SetPrimarySlotId(0, {7}), TELEPHONY_ERR_SUCCESS);
@@ -2887,6 +2912,7 @@ TEST(AF2VoiceSms, InFlightVoiceOrdersOnlyIntersectingWriters)
         auto provider = std::make_shared<RoleProvider>();
         provider->independent = independent;
         PrimaryFixture f(PrimaryZeroCatalog(), provider);
+        f.live.input.radio->primaryEndpoint = {0};
         ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
         auto &module = f.live.module;
         std::promise<void> entered;
@@ -3028,6 +3054,7 @@ TEST(AF2AccountMetadata, LiveDualSimMetadataAndFourRoles)
     auto provider = std::make_shared<MetadataProvider>();
     auto roleProvider = std::make_shared<RoleProvider>();
     PrimaryFixture f(PrimaryZeroCatalog(), roleProvider, provider);
+    f.live.input.radio->primaryEndpoint = {0};
     auto &module = f.live.module;
     ASSERT_FALSE(module->FindBinding({0}));
     ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
@@ -4096,6 +4123,7 @@ TEST(AF2Reload, LiveAccountsAndRolesSurviveStaleReload)
     const auto metadata = std::make_shared<MetadataProvider>();
     const auto provider = std::make_shared<RoleProvider>();
     PrimaryFixture f(PrimaryZeroCatalog(), provider, metadata);
+    f.live.input.radio->primaryEndpoint = {0};
     auto &module = f.live.module;
     auto first = ReloadRow({40}, kRaw0, 0, u"Stored A");
     auto second = ReloadRow({41}, kRaw1, 1, u"Stored B");

@@ -64,6 +64,7 @@ public:
     RequestId StartPrimarySwitch(const SwitchPrimaryCommand &command);
     void AcceptRadioStep(const RadioSwitchResult &result) override;
     void AcceptLateRadioEvidence(const RadioSwitchResult &result) override;
+    std::optional<EffectKnowledge> ReadPrimaryDeviceEvidence(const StepRef &original) const;
     bool AcceptPrimarySwitchTimeout(RequestId request, uint64_t elapsedMilliseconds);
     bool AcceptC1RetryDue(RequestId request);
     void BindRetryScheduler(const std::shared_ptr<RetrySchedulerPort> &scheduler);

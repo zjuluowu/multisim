@@ -283,6 +283,13 @@ Target 207/207。正式模块 B/C1、A/T 发令许可和全图生命周期仍待
 原效果核对和全图仍待。状态保持 `AF2_M9_IN_PROGRESS`。
 [许可、原始用例与负控](../services/multisim/test/docs/evidence/af2_m9_d01_permission_20261127/README.md)
 
+**D04 B 原设备证据与动态 C0 检查点。** 独立实跑复现两处证据被丢弃。R 已接纳的正常
+ACK 若在超时后才由 Owner 消费，按原步骤进入晚证据。同步回包在 Submit 返回 Unknown 前
+证明原设备结束时，A 留存原证据。两个场景均保留单次结果与原业务责任。正式 C0 按设备端
+动态 modem 观察决定角色路径。Target 215/215，Radio 加动态 C0 专项 ASan/TSan 各 77/77。
+正式 B/C1、C1 整轮结束与原 Store 结清仍待。状态保持 `AF2_M9_IN_PROGRESS`。
+[独立反例、动态路由和三个负控](../services/multisim/test/docs/evidence/af2_m9_d04_radio_evidence_20261127/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）

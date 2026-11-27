@@ -1,0 +1,29 @@
+Note: Google Test filter = AF2Module.AlreadyPrimaryUsesLiveModemMappingAfterEndpointRemap
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Module
+[ RUN      ] AF2Module.AlreadyPrimaryUsesLiveModemMappingAfterEndpointRemap
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:940: Failure
+Expected equality of these values:
+  input.completion->results
+    Which is: { -1, -1 }
+  (std::vector<int32_t> {0, -1})
+    Which is: { 0, -1 }
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:942: Failure
+Expected equality of these values:
+  module->ReadAssignment().lastPrimary
+    Which is: (nullopt)
+  SlotId {0}
+    Which is: 4-byte object <00-00 00-00>
+
+[  FAILED  ] AF2Module.AlreadyPrimaryUsesLiveModemMappingAfterEndpointRemap (1 ms)
+[----------] 1 test from AF2Module (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] AF2Module.AlreadyPrimaryUsesLiveModemMappingAfterEndpointRemap
+
+ 1 FAILED TEST
