@@ -3,14 +3,13 @@
  * Licensed under the Apache License, Version 2.0.
  */
 #include "infrastructure/compatibility/api/legacy_sim_facade.h"
-#include "role_assignment/primary/primary_execution.h"
 #include <stdexcept>
 
 namespace OHOS::Telephony::MultiSim {
 int32_t LegacySimFacade::SetPrimarySlotId(SlotId slot, LegacyCallerRef caller, const SlotCatalog &catalog,
     LegacyPrimaryHostPort &host, const PrimaryTopologyPort &topology, LegacyCompletion &completion,
     const std::function<bool(SlotId)> &hasVerifiedCard,
-    const std::function<RequestId(const SwitchPrimaryCommand &)> &issue,
+    const std::function<PrimaryStart(const SwitchPrimaryCommand &)> &issue,
     const std::function<bool(RequestId, uint64_t)> &timeout)
 {
     if (!host.IsSystemCaller(caller)) { return host.PrimaryError(LegacyPrimaryError::NonSystemCaller); }
@@ -25,10 +24,11 @@ int32_t LegacySimFacade::SetPrimarySlotId(SlotId slot, LegacyCallerRef caller, c
     const auto waiter = completion.RetainRoleWaiter();
     if (!waiter) { return host.PrimaryError(LegacyPrimaryError::Failed); }
     try {
-        const auto request = issue({{slot}, true, {SynchronousCompletionRoute {*waiter}, true},
+        const auto started = issue({{slot}, true, {SynchronousCompletionRoute {*waiter}, true},
             std::nullopt, target->binding});
-        if (timeout && !completion.AwaitPrimaryResult(*waiter, LEGACY_DEDICATED_PRIMARY_WAIT_MS) &&
-            !timeout(request, LEGACY_DEDICATED_PRIMARY_WAIT_MS)) {
+        if (timeout && started.waitMilliseconds &&
+            !completion.AwaitPrimaryResult(*waiter, started.waitMilliseconds) &&
+            !timeout(started.request, *started.waitMilliseconds)) {
             // The device or Store result won the original deadline. Its publication can still be running.
             (void)completion.AwaitPrimaryResult(*waiter, std::nullopt);
         }

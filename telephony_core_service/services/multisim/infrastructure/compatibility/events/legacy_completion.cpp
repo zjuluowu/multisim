@@ -96,6 +96,17 @@ void LegacyCompletion::CompleteLegacyInt(const CompletionPlan &plan, int32_t leg
     output_->DeliverOriginalInt(plan.route, legacyResult);
 }
 
+void LegacyCompletion::NotifyRetriedPrimarySuccess()
+{
+    if (primary_) {
+        primary_->NotifyOriginalAccountChanged();
+    } else if (fallback_) {
+        fallback_->NotifyRetriedPrimarySuccess();
+    } else if (output_) {
+        output_->NotifyOriginalAccountChanged();
+    }
+}
+
 void LegacyCompletion::CompletePin(CompletionId callback, const PinReply &result)
 {
     if (!pin_) { return; }

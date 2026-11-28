@@ -40,10 +40,14 @@ public:
     ShowNumberRead GetShowNumberAtExecutionPoint(int32_t slotId);
     int32_t RunOrdinaryActivationAtExecutionPoint(const ActivateSimCommand &command);
     // The H lease covers validation, dispatch and taking the original synchronous result.
+    struct PrimaryStart {
+        RequestId request;
+        std::optional<uint64_t> waitMilliseconds;
+    };
     static int32_t SetPrimarySlotId(SlotId slot, LegacyCallerRef caller, const SlotCatalog &catalog,
         LegacyPrimaryHostPort &host, const PrimaryTopologyPort &topology, LegacyCompletion &completion,
         const std::function<bool(SlotId)> &hasVerifiedCard,
-        const std::function<RequestId(const SwitchPrimaryCommand &)> &issue,
+        const std::function<PrimaryStart(const SwitchPrimaryCommand &)> &issue,
         const std::function<bool(RequestId, uint64_t)> &timeout = {});
     static int32_t SetDefaultCellularDataSlotId(SlotId slot, LegacyCallerRef caller, const SlotCatalog &catalog,
         LegacyPrimaryHostPort &host, const PrimaryTopologyPort &topology, LegacyCompletion &completion,

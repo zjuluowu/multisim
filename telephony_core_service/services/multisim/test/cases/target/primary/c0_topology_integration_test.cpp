@@ -838,18 +838,22 @@ public:
     RadioSubmitDisposition disposition {RadioSubmitDisposition::HandoffAccepted};
     std::optional<PrimaryProtocolRouting> routing;
     std::optional<std::pair<RadioSwitchRequest, uint64_t>> sent;
+    std::vector<std::pair<RadioSwitchRequest, uint64_t>> history;
+    std::function<void(const RadioSwitchRequest &)> beforeSendPermit;
     std::function<void()> beforeSubmitReturn;
     PrimaryRadioObservation ReadPrimaryRadioObservation(SlotId slot) const override
     { return {slot, slot == primaryEndpoint ? 0 : 1, requiresDevice, false, 7, true, routing}; }
     RadioSubmitResult SubmitPrimaryRadio(const RadioSwitchRequest &request, uint64_t token,
         const RadioSendPermit &permit) override
     {
-        if (!routing || !request.member || std::find(routing->members.begin(), routing->members.end(),
-            *request.member) == routing->members.end() || !permit()) {
+        if (beforeSendPermit) { beforeSendPermit(request); }
+        if (!routing || !request.member || std::none_of(routing->members.begin(), routing->members.end(),
+            [&](const auto &member) { return member.MatchesRoute(*request.member); }) || !permit()) {
             return {RadioSubmitDisposition::ConfirmedNotSent, std::nullopt};
         }
         ++commands;
         sent.emplace(request, token);
+        history.emplace_back(request, token);
         if (beforeSubmitReturn) { beforeSubmitReturn(); }
         return {disposition, static_cast<int32_t>(token)};
     }
@@ -859,21 +863,97 @@ public:
 class ModuleDispatch final : public RetrySchedulerPort, public RadioOwnerDispatchPort {
 public:
     bool defer {false};
+    bool rejectRetryRegistration {false};
     std::function<void()> pending;
     unsigned seals {0};
     unsigned cancels {0};
-    std::optional<uint64_t> ScheduleRetry(const ScheduledRetryEvent &, uint64_t,
-        const std::weak_ptr<ScheduledRetrySink> &) override { return std::nullopt; }
-    bool CancelRetry(uint64_t) override { return false; }
-    size_t CancelAllForOwner(RuntimeEpoch, RequestOwner) override { ++cancels; return 0; }
-    void StopAcceptingAndCancel() override { ++seals; }
-    RetrySchedulerAudit Audit() const override { return {}; }
+    std::optional<uint64_t> ScheduleRetry(const ScheduledRetryEvent &event, uint64_t delay,
+        const std::weak_ptr<ScheduledRetrySink> &sink) override
+    {
+        std::lock_guard<std::mutex> guard(lock_);
+        if (!audit_.accepting || (rejectRetryRegistration && event.purpose == ScheduledRetryEvent::Purpose::Retry)) {
+            return std::nullopt;
+        }
+        const auto id = nextTask_++;
+        scheduled_.push_back({id, clock_ + delay, event, sink});
+        ++audit_.scheduled;
+        return id;
+    }
+    bool CancelRetry(uint64_t id) override
+    {
+        std::lock_guard<std::mutex> guard(lock_);
+        const auto found = std::find_if(scheduled_.begin(), scheduled_.end(), [id](const auto &task) {
+            return task.id == id;
+        });
+        if (found == scheduled_.end()) { return false; }
+        scheduled_.erase(found);
+        ++audit_.cancelled;
+        return true;
+    }
+    size_t CancelAllForOwner(RuntimeEpoch epoch, RequestOwner owner) override
+    {
+        std::lock_guard<std::mutex> guard(lock_);
+        ++cancels;
+        const auto old = scheduled_.size();
+        scheduled_.erase(std::remove_if(scheduled_.begin(), scheduled_.end(), [&](const auto &task) {
+            return task.event.request.epoch == epoch && task.event.request.owner == owner;
+        }), scheduled_.end());
+        audit_.cancelled += old - scheduled_.size();
+        return old - scheduled_.size();
+    }
+    void StopAcceptingAndCancel() override
+    {
+        std::lock_guard<std::mutex> guard(lock_);
+        ++seals;
+        audit_.accepting = false;
+        audit_.cancelled += scheduled_.size();
+        scheduled_.clear();
+    }
+    RetrySchedulerAudit Audit() const override
+    {
+        std::lock_guard<std::mutex> guard(lock_);
+        auto audit = audit_;
+        audit.pending = scheduled_.size();
+        return audit;
+    }
+    void Advance(uint64_t milliseconds)
+    {
+        std::unique_lock<std::mutex> guard(lock_);
+        clock_ += milliseconds;
+        for (;;) {
+            const auto due = std::find_if(scheduled_.begin(), scheduled_.end(), [&](const auto &task) {
+                return task.due <= clock_;
+            });
+            if (due == scheduled_.end()) { return; }
+            const auto task = *due;
+            scheduled_.erase(due);
+            ++audit_.running;
+            guard.unlock();
+            const auto sink = task.sink.lock();
+            const bool delivered = sink && sink->AcceptScheduledC1Retry(task.event);
+            guard.lock();
+            --audit_.running;
+            if (delivered) { ++audit_.delivered; } else { ++audit_.rejected; }
+        }
+    }
     bool PostRadioOwnerTask(std::function<void()> task) override
     {
         if (defer) { pending = std::move(task); } else { task(); }
         return true;
     }
     bool RadioOwnerCallbacksDrained() const override { return !pending; }
+private:
+    struct Task {
+        uint64_t id;
+        uint64_t due;
+        ScheduledRetryEvent event;
+        std::weak_ptr<ScheduledRetrySink> sink;
+    };
+    mutable std::mutex lock_;
+    std::vector<Task> scheduled_;
+    RetrySchedulerAudit audit_;
+    uint64_t nextTask_ {1};
+    uint64_t clock_ {0};
 };
 
 struct ModuleInputs {
@@ -1937,12 +2017,13 @@ public:
 
 class PrimaryWait final : public LegacyPrimaryWaitPort {
 public:
+    uint64_t expectedBudget {LEGACY_DEDICATED_PRIMARY_WAIT_MS};
     bool AwaitPrimaryResult(SynchronousWaitRef waiter, std::optional<uint64_t> budget,
         const std::function<bool()> &ready) override
     {
         std::unique_lock<std::mutex> lock(lock_);
         if (budget) {
-            EXPECT_EQ(*budget, LEGACY_DEDICATED_PRIMARY_WAIT_MS);
+            EXPECT_EQ(*budget, expectedBudget);
             awaiting_ = waiter;
             changed_.notify_all();
         }
@@ -1982,10 +2063,22 @@ struct DedicatedPrimaryFixture {
     std::shared_ptr<RoleProvider> roles = std::make_shared<RoleProvider>();
     CoreSimModuleHandle module;
 
-    DedicatedPrimaryFixture()
+    explicit DedicatedPrimaryFixture(bool threePhase = false)
     {
-        input.radio->requiresDevice = true;
-        input.radio->routing = PrimaryProtocolRouting {200, {{100, {0}, 7}, {200, {1}, 7}}};
+        input.radio->requiresDevice = !threePhase;
+        input.radio->routing = PrimaryProtocolRouting {200,
+            {{100, {0}, 7, RadioProtocolCapability {0, 0x11}},
+             {200, {1}, 7, RadioProtocolCapability {1, 0x22}}}};
+        if (threePhase) {
+            input.radio->primaryEndpoint = {0};
+            wait->expectedBudget = 60000;
+            input.catalog = std::make_shared<SlotCatalog>(std::vector<SlotDescriptor> {
+                {{0}, EndpointKind::Physical, 0, RadioDomainId {"m0"}, VisibilityClass::Ordinary, false},
+                {{1}, EndpointKind::Physical, 1, RadioDomainId {"m1"}, VisibilityClass::Ordinary, false},
+                {{2}, EndpointKind::Physical, 0, RadioDomainId {"m0"}, VisibilityClass::Ordinary, false},
+                {{3}, EndpointKind::Physical, 1, RadioDomainId {"m1"}, VisibilityClass::Ordinary, false}},
+                LegacyCapacityMeasures {2, 2, 2, 2, 2});
+        }
         auto ports = input.Ports(roles);
         ports.primaryHost = host;
         ports.primaryWait = wait;
@@ -1996,6 +2089,29 @@ struct DedicatedPrimaryFixture {
         const auto &[request, token] = input.radio->sent.value();
         return {token, {request.step, request.target, request.expectedBinding, request.protocolSession,
             request.phase, false, effect, result}, true, true, currentStateVerified, static_cast<int32_t>(token)};
+    }
+    RadioDeviceResult ReplyAt(size_t index, bool notify = false) const
+    {
+        const auto &[request, token] = input.radio->history.at(index);
+        return {token, {request.step, request.target, request.expectedBinding, request.protocolSession,
+            request.phase, notify, EffectKnowledge::ConfirmedApplied, 0}, true, true, false, static_cast<int32_t>(token)};
+    }
+    void FinishFailedCheck()
+    {
+        ASSERT_EQ(input.radio->history.size(), 2u);
+        for (size_t index = 0; index < 2; ++index) {
+            auto reply = ReplyAt(index);
+            reply.result.effect = EffectKnowledge::ConfirmedNotApplied;
+            reply.result.legacyResult = OHOS::Telephony::TELEPHONY_ERR_LOCAL_PTR_NULL;
+            EXPECT_TRUE(module->AcceptRadioDeviceResult(reply));
+        }
+        ASSERT_EQ(input.radio->history.size(), 4u);
+        for (size_t index = 2; index < 4; ++index) {
+            const auto &request = input.radio->history[index].first;
+            ASSERT_TRUE(request.payload);
+            EXPECT_EQ(request.payload->status, RadioProtocolStatus::Fail);
+            EXPECT_TRUE(module->AcceptRadioDeviceResult(ReplyAt(index)));
+        }
     }
 };
 
@@ -2016,6 +2132,251 @@ struct PrimaryFixture {
     }
 };
 } // namespace
+
+TEST(AF2Primary, FormalThreePhaseUsesTwoNativeMembersAndOriginalWait)
+{
+    DedicatedPrimaryFixture fixture(true);
+    const auto module = fixture.module;
+    auto caller = std::async(std::launch::async, [&] { return module->SetPrimarySlotId(1, {7}); });
+    if (!fixture.wait->WaitUntilCallerIsWaiting()) {
+        fixture.wait->Expire();
+        FAIL() << "The formal C1 entry did not retain its compatibility waiter";
+    }
+    EXPECT_EQ(module->Catalog().Slots().size(), 4u);
+    const auto &commands = fixture.input.radio->history;
+    ASSERT_EQ(commands.size(), 2u);
+    const auto original = commands.front().first.step.request;
+    const auto session = commands.front().first.protocolSession;
+    auto stale = fixture.ReplyAt(0);
+    ++stale.result.protocolSession;
+    EXPECT_FALSE(module->AcceptRadioDeviceResult(stale));
+    EXPECT_EQ(commands.size(), 2u);
+    EXPECT_EQ(fixture.input.dispatch->Audit().pending, 1u);
+
+    for (const uint32_t phase : {1u, 2u, 4u}) {
+        const size_t first = phase == 1 ? 0u : phase == 2 ? 2u : 4u;
+        ASSERT_EQ(commands.size(), first + 2);
+        for (size_t member = 0; member < 2; ++member) {
+            const auto request = commands[first + member].first;
+            EXPECT_EQ(request.step.request, original);
+            EXPECT_EQ(request.protocolSession, session);
+            EXPECT_EQ(request.mode, PrimarySwitchMode::ThreePhaseProtocol);
+            EXPECT_EQ(request.phase, phase);
+            ASSERT_TRUE(request.member);
+            EXPECT_EQ(request.member->nativeMember, member == 0 ? 100u : 200u);
+            ASSERT_TRUE(request.payload);
+            EXPECT_EQ(request.payload->status, phase == 4 ? RadioProtocolStatus::Success : RadioProtocolStatus::None);
+            const int32_t modem = static_cast<int32_t>(phase == 1 ? member : 1 - member);
+            EXPECT_EQ(request.payload->capability, (RadioProtocolCapability {modem, modem == 0 ? 0x11 : 0x22}));
+            EXPECT_TRUE(module->AcceptRadioDeviceResult(fixture.ReplyAt(first + member, phase == 2)));
+        }
+    }
+    EXPECT_EQ(caller.get(), 0);
+    EXPECT_EQ(commands.size(), 6u);
+    EXPECT_EQ(fixture.input.dispatch->Audit().cancelled, 1u);
+    EXPECT_EQ(fixture.input.dispatch->Audit().pending, 0u);
+    EXPECT_EQ(fixture.host->accountsChanged, 1u);
+    EXPECT_EQ(module->ReadAssignment().lastPrimary, SlotId {1});
+    EXPECT_EQ(module->ReadAssignment().lastData, SlotId {1});
+    EXPECT_FALSE(module->ReadC0Receipt());
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Primary, FormalThreePhaseDeadlineAndLegacyWaitDenyAPausedOriginalSend)
+{
+    for (const bool protocol : {true, false}) {
+        SCOPED_TRACE(protocol);
+        DedicatedPrimaryFixture fixture(true);
+        const auto module = fixture.module;
+        const auto previous = fixture.input.parameters->values;
+        std::promise<RequestId> reached;
+        auto original = reached.get_future();
+        std::promise<void> release;
+        auto permitCanRun = release.get_future();
+        fixture.input.radio->beforeSendPermit = [&](const RadioSwitchRequest &request) {
+            reached.set_value(request.step.request);
+            permitCanRun.wait();
+        };
+        auto caller = std::async(std::launch::async, [&] { return module->SetPrimarySlotId(1, {7}); });
+        if (original.wait_for(std::chrono::seconds(3)) != std::future_status::ready) {
+            release.set_value();
+            FAIL() << "The first C1 CHECK never reached the original platform permission boundary";
+        }
+        const auto request = original.get();
+        EXPECT_FALSE(module->AcceptPrimarySwitchTimeout(request, 45000));
+        EXPECT_FALSE(module->AcceptPrimarySwitchTimeout(request, 59999));
+        if (protocol) {
+            fixture.input.dispatch->Advance(44999);
+            EXPECT_EQ(fixture.input.dispatch->Audit().delivered, 0u);
+            EXPECT_EQ(fixture.input.dispatch->Audit().pending, 1u);
+            fixture.input.dispatch->Advance(1);
+            EXPECT_EQ(fixture.input.dispatch->Audit().delivered, 1u);
+        } else {
+            EXPECT_TRUE(module->AcceptPrimarySwitchTimeout(request, 60000));
+            EXPECT_EQ(fixture.input.dispatch->Audit().cancelled, 1u);
+        }
+        EXPECT_FALSE(module->AcceptPrimarySwitchTimeout(request, 60000));
+        release.set_value();
+        EXPECT_EQ(caller.get(), OHOS::Telephony::TELEPHONY_ERR_LOCAL_PTR_NULL);
+        EXPECT_TRUE(fixture.input.radio->history.empty());
+        EXPECT_EQ(fixture.input.parameters->values.at(kPrimary), previous.at(kPrimary));
+        EXPECT_EQ(fixture.input.parameters->values.at(kIccid), previous.at(kIccid));
+        EXPECT_EQ(fixture.input.parameters->values.at(kData), previous.at(kData));
+        EXPECT_EQ(fixture.host->accountsChanged, 0u);
+        EXPECT_EQ(module->ReadPrimaryResourceState(), ResourceState::Available);
+        EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+    }
+}
+
+TEST(AF2Primary, FormalC1WaitFallbackKeepsOriginalCheckGroupUntilRecoveryAfterStop)
+{
+    DedicatedPrimaryFixture fixture(true);
+    const auto module = fixture.module;
+    const auto previous = fixture.input.parameters->values;
+    auto caller = std::async(std::launch::async, [&] { return module->SetPrimarySlotId(1, {7}); });
+    if (!fixture.wait->WaitUntilCallerIsWaiting()) {
+        fixture.wait->Expire();
+        FAIL() << "The formal C1 caller did not enter its original wait";
+    }
+    ASSERT_EQ(fixture.input.radio->history.size(), 2u);
+    fixture.wait->Expire();
+    EXPECT_EQ(caller.get(), OHOS::Telephony::TELEPHONY_ERR_LOCAL_PTR_NULL);
+    EXPECT_EQ(fixture.input.dispatch->Audit().cancelled, 1u);
+    EXPECT_EQ(fixture.input.dispatch->Audit().delivered, 0u);
+    EXPECT_EQ(module->ReadPrimaryResourceState(), ResourceState::Quarantined);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::DeviceEffectsUnresolved);
+    for (size_t index = 0; index < 2; ++index) {
+        auto reply = fixture.ReplyAt(index);
+        reply.result.effect = EffectKnowledge::ConfirmedNotApplied;
+        reply.result.legacyResult = OHOS::Telephony::TELEPHONY_ERR_LOCAL_PTR_NULL;
+        EXPECT_FALSE(module->AcceptRadioDeviceResult(reply));
+        reply.currentStateVerified = true;
+        EXPECT_TRUE(module->AcceptRadioDeviceResult(reply));
+        EXPECT_FALSE(module->AcceptRadioDeviceResult(reply));
+        if (index == 0) {
+            EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::DeviceEffectsUnresolved);
+            EXPECT_EQ(fixture.input.parameters->values.at(kPrimary), "1");
+        }
+    }
+    EXPECT_EQ(fixture.input.parameters->values.at(kPrimary), previous.at(kPrimary));
+    EXPECT_EQ(fixture.input.parameters->values.at(kIccid), previous.at(kIccid));
+    EXPECT_EQ(fixture.input.radio->history.size(), 2u);
+    EXPECT_EQ(fixture.host->accountsChanged, 0u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Primary, FormalC1BackgroundSuccessNotifiesOnceAfterOriginalCallerFails)
+{
+    DedicatedPrimaryFixture fixture(true);
+    const auto module = fixture.module;
+    auto caller = std::async(std::launch::async, [&] { return module->SetPrimarySlotId(1, {7}); });
+    if (!fixture.wait->WaitUntilCallerIsWaiting()) {
+        fixture.wait->Expire();
+        FAIL() << "The formal C1 caller did not enter its original wait";
+    }
+    ASSERT_NO_FATAL_FAILURE(fixture.FinishFailedCheck());
+    EXPECT_EQ(caller.get(), OHOS::Telephony::TELEPHONY_ERR_LOCAL_PTR_NULL);
+    EXPECT_EQ(fixture.host->accountsChanged, 0u);
+    EXPECT_EQ(fixture.input.dispatch->Audit().pending, 1u);
+    fixture.input.radio->requiresDevice = true;
+    fixture.input.dispatch->Advance(999);
+    const auto &commands = fixture.input.radio->history;
+    ASSERT_EQ(commands.size(), 4u);
+    const auto initial = commands.front().first;
+    fixture.input.dispatch->Advance(1);
+    for (const uint32_t phase : {1u, 2u, 4u}) {
+        const size_t first = phase == 1 ? 4u : phase == 2 ? 6u : 8u;
+        ASSERT_EQ(commands.size(), first + 2);
+        for (size_t member = 0; member < 2; ++member) {
+            const auto request = commands[first + member].first;
+            EXPECT_EQ(request.mode, PrimarySwitchMode::ThreePhaseProtocol);
+            EXPECT_EQ(request.phase, phase);
+            EXPECT_EQ(request.step.request, initial.step.request);
+            EXPECT_EQ(request.step.attempt, 1u);
+            EXPECT_NE(request.protocolSession, initial.protocolSession);
+            EXPECT_TRUE(module->AcceptRadioDeviceResult(fixture.ReplyAt(first + member, phase == 2)));
+        }
+    }
+    EXPECT_EQ(fixture.host->accountsChanged, 1u);
+    EXPECT_EQ(module->ReadAssignment().lastPrimary, SlotId {1});
+    EXPECT_EQ(module->ReadAssignment().lastData, SlotId {1});
+    EXPECT_EQ(fixture.input.dispatch->Audit().pending, 0u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Primary, FormalC1RejectedRetryLeavesConfirmedOriginalRoundDrained)
+{
+    DedicatedPrimaryFixture fixture(true);
+    fixture.input.dispatch->rejectRetryRegistration = true;
+    const auto module = fixture.module;
+    auto caller = std::async(std::launch::async, [&] { return module->SetPrimarySlotId(1, {7}); });
+    if (!fixture.wait->WaitUntilCallerIsWaiting()) {
+        fixture.wait->Expire();
+        FAIL() << "The formal C1 caller did not enter its original wait";
+    }
+    ASSERT_NO_FATAL_FAILURE(fixture.FinishFailedCheck());
+    EXPECT_EQ(caller.get(), OHOS::Telephony::TELEPHONY_ERR_LOCAL_PTR_NULL);
+    EXPECT_EQ(fixture.input.dispatch->Audit().pending, 0u);
+    EXPECT_EQ(fixture.input.dispatch->Audit().scheduled, 1u);
+    fixture.input.dispatch->Advance(60000);
+    EXPECT_EQ(fixture.input.radio->history.size(), 4u);
+    EXPECT_EQ(fixture.host->accountsChanged, 0u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Primary, FormalC1ProtocolDeadlineCannotConsumeTheOriginalStoreRestore)
+{
+    DedicatedPrimaryFixture fixture(true);
+    const auto module = fixture.module;
+    auto caller = std::async(std::launch::async, [&] { return module->SetPrimarySlotId(1, {7}); });
+    if (!fixture.wait->WaitUntilCallerIsWaiting()) {
+        fixture.wait->Expire();
+        FAIL() << "The formal C1 caller did not enter its original wait";
+    }
+    ASSERT_NO_FATAL_FAILURE(fixture.FinishFailedCheck());
+    EXPECT_EQ(caller.get(), OHOS::Telephony::TELEPHONY_ERR_LOCAL_PTR_NULL);
+    fixture.input.dispatch->Advance(1000);
+    ASSERT_EQ(fixture.input.radio->history.size(), 6u);
+    for (size_t index = 4; index < 6; ++index) {
+        auto reply = fixture.ReplyAt(index);
+        reply.result.effect = EffectKnowledge::ConfirmedNotApplied;
+        reply.result.legacyResult = OHOS::Telephony::TELEPHONY_ERR_LOCAL_PTR_NULL;
+        EXPECT_TRUE(module->AcceptRadioDeviceResult(reply));
+    }
+    ASSERT_EQ(fixture.input.radio->history.size(), 8u);
+    EXPECT_TRUE(module->AcceptRadioDeviceResult(fixture.ReplyAt(6)));
+
+    std::promise<void> entered;
+    auto restoring = entered.get_future();
+    std::promise<void> release;
+    auto writeCanReturn = release.get_future();
+    bool blocked = false;
+    fixture.input.parameters->writeResult = [&](const std::string &key) {
+        if (key == kPrimary && !blocked) {
+            blocked = true;
+            entered.set_value();
+            writeCanReturn.wait();
+        }
+        return AssignmentParameterResult {0, true};
+    };
+    const auto end = fixture.ReplyAt(7);
+    auto response = std::async(std::launch::async, [&] { return module->AcceptRadioDeviceResult(end); });
+    if (restoring.wait_for(std::chrono::seconds(3)) != std::future_status::ready) {
+        release.set_value();
+        FAIL() << "The final C1 response never reached the original Store restoration";
+    }
+    EXPECT_EQ(fixture.input.dispatch->Audit().pending, 0u);
+    fixture.input.dispatch->Advance(45000);
+    EXPECT_EQ(fixture.input.dispatch->Audit().delivered, 1u);
+    release.set_value();
+    EXPECT_TRUE(response.get());
+    EXPECT_EQ(fixture.input.radio->history.size(), 8u);
+    EXPECT_EQ(fixture.input.parameters->values.at(kPrimary), "0");
+    EXPECT_EQ(fixture.input.dispatch->Audit().pending, 1u);
+    EXPECT_EQ(fixture.host->accountsChanged, 0u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
 
 TEST(AF2Primary, DedicatedSwitchAwaitsOriginalCompletionThroughFormalModule)
 {

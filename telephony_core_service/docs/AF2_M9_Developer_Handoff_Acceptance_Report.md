@@ -96,9 +96,9 @@ LoadSession 资格逻辑仍待实际 EF 路径消费。遗漏源码负控另复�
 
 | 检查 | Host 完成条件 | 当前证据 |
 |---|---|---|
-| H01 | 正式 SimModule 对象图、核心职责和唯一写权，包括 B/C1、真实成员及锁外交接 | PARTIAL，正式 Host B 已验证 A/T/R 许可、原等待及 Store。C1 组件已验证原预写、失败恢复、新轮路由与 Stop，正式 C1 仍待装配 |
+| H01 | 正式 SimModule 对象图、核心职责和唯一写权，包括 B/C1、真实成员及锁外交接 | PARTIAL，正式 Host B/C1 已执行，C1 已实测两个期限、两成员原恢复和后台重试。协议整轮物理资源和全图组合仍待 |
 | H02 | 卡应用会话、公共请求与资源、Refresh、关闭收据和跨实例重建 | PARTIAL，正式 PIN、MSISDN、ICCID 共用传输。已有卡侧局部 Refresh、Stop 和重建，仍缺 Radio/Store 全图及同卡独立 EF |
-| H03 | 九类样板通过正式生产入口执行 | PARTIAL，新增正式 B、UnlockPin 和透明 ICCID EF，C1 样板仍待 |
+| H03 | 九类样板通过正式生产入口执行 | PARTIAL，正式 B/C1、UnlockPin、透明 ICCID EF 已实测。同一最终候选的组合及共用业务回归仍待 |
 | H04 | 独立 Legacy/Target Host 生产库，源码归属、逻辑 GN 与真实链接核对 | PASS，已有独立归档和 ELF 证据，完整候选仍需复验 |
 | H05 | 适用的业务测试共用，兼容差异契约独立，业务与机制用例可追溯 | PARTIAL，新增共用 UnlockPin 断言及 CD-04 契约。正式 B/C1、EF 与扩展仍有未配对场景 |
 | H06 | 双端 CLI、精确单例、生产与测试源码发现、增量、LLDB 和 VS Code 指导 | PARTIAL，基础候选已实测 CLI、自动枚举及两端 LLDB，GUI_NOT_RUN |

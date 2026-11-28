@@ -41,6 +41,7 @@ public:
     void PublishPinStateChange(const SessionRef &session) override;
     void CompleteShowNumber(const ShowNumberCompletion &completion) override;
     void CompleteLegacyInt(const CompletionPlan &plan, int32_t legacyResult) override;
+    void NotifyRetriedPrimarySuccess() override;
 private:
     struct RoleWaiter {
         CompletionCell cell;

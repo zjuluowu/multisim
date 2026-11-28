@@ -339,6 +339,12 @@ Data 写入与公告、行为记录、Done、SenseSwitch 结束、原 Completion
 正式 C1 的双期限、正式入口和全图验证仍待，状态保持 `AF2_M9_IN_PROGRESS`。
 [终步发布、Store 收据及原始报告](../services/multisim/test/docs/evidence/af2_m9_d01_c1_completion_20261127/README.md)
 
+**D01 正式 Host C1 检查点（2026-11-28）。** 正式 `CreateCoreSimModule` 及 `SetPrimarySlotId`
+通过 A/T/R 执行四端点双栈。协议 45 秒和旧调用 60 秒使用同一原请求的不同入口。独立复跑了两类期限、
+完整原 CHECK 核对、后台重试成功通知、调度拒绝与 Store 恢复竞争。Target 全量 248/248。
+同一轮跨阶段的物理资源关闭、全对象图组合和跨实例验证仍待，状态保持 `AF2_M9_IN_PROGRESS`。
+[正式 C1、原始日志与反例](../services/multisim/test/docs/evidence/af2_m9_d01_formal_c1_20261128/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）

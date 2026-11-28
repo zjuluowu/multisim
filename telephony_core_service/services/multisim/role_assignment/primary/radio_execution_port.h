@@ -84,6 +84,7 @@ struct RadioSwitchResult {
     bool notify; // R delivers UPDATE as a NOTIFY and can attach the original error ACK to legacyResult.
     EffectKnowledge effect;
     int32_t legacyResult;
+    bool recoveryVerified {false}; // Set by R after accepting the original transport's state evidence.
 };
 struct RadioDeviceResult {
     uint64_t transportToken;

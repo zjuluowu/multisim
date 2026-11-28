@@ -1,0 +1,17 @@
+{
+  "baseline": "b98f0a777dc30170796a9158704281318b0991a5",
+  "files": {
+    "device/resource/resource_radio_runtime.cpp": "25d280fe98e3723fa40e7e46e337e949bec6b606e8ca2c60fe7c426c0a3b8da4",
+    "infrastructure/assembly/sim_module_factory.cpp": "8d3a401331e0837900c36a60ea6f707dccb2fcd8a29a16ddbeceb35a52a87c65",
+    "infrastructure/compatibility/api/legacy_primary_entry.cpp": "aa3061ac2c7f73478d4ff75ee7bb7a44f25a5a0b5cce2720d7ef2984dd36902a",
+    "infrastructure/compatibility/api/legacy_sim_facade.h": "f8408721db0b64df67a7e6befae4c94fd054aab4a48aeea3fd3a4851ead6ee0e",
+    "infrastructure/compatibility/events/legacy_completion.cpp": "c9c47fec78e07647cf0073a1501a338b86678d4c25f68bd253eaf28932830be7",
+    "infrastructure/compatibility/events/legacy_completion.h": "200fed6a28edd36200602486e87d7e68093a822591dc2a1ecb813e5027a73d98",
+    "infrastructure/request/request_context.h": "2939926304314e9808be2d2874ba80fa425b046f58e5bff1596151e061986400",
+    "infrastructure/request/runtime_operation_store.h": "5a9215c30b9c858414731d460dd351e9b42d44b73835b81cb3707e23ee255f93",
+    "role_assignment/assignment_service.cpp": "56327b52ffe0ab128960e0ee586e03dcd159ce1cdfe61ff2f815dc90a10b7c21",
+    "role_assignment/assignment_service.h": "ee4fe24c79143f11b2e60a9e28d7eb7657fa6ebde2885c30c554e18836d38d8b",
+    "role_assignment/primary/primary_execution.h": "67d51219dee4543168f18337f569c784bcfd1cc2bad7d90318c31e0e11c910c4",
+    "role_assignment/primary/radio_execution_port.h": "ddf1ba6c1b0611be8d4b9cae7bba8e9c84574f9cec7f56bf2e1011691e5e81ef"
+  }
+}

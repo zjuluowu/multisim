@@ -59,7 +59,7 @@ SimModule::SimModule(CoreSimModulePorts ports, std::shared_ptr<const SlotCatalog
           ports_.primaryWait.get()),
       assignment_(std::make_shared<AssignmentService>(*catalog_, *ports_.assignmentStore, radio_,
           *ports_.output, topology_, completion_, epoch_, ports_.primaryWait ?
-              AssignmentService::PrimaryScope::TrackedDedicated : AssignmentService::PrimaryScope::C0Only)),
+              AssignmentService::PrimaryScope::TrackedHost : AssignmentService::PrimaryScope::C0Only)),
       lifecycle_(assignment_, radio_, *ports_.scheduler, ports_.ownerDispatch)
 {
     for (const auto &slot : catalog_->Slots()) {
@@ -378,7 +378,10 @@ int32_t SimModule::SetPrimarySlotId(int32_t slot, LegacyCallerRef caller)
     }
     return LegacySimFacade::SetPrimarySlotId({slot}, caller, *catalog_, *ports_.primaryHost, topology_, completion_,
         [this](SlotId target) { return card_.HasVerifiedCard(target); },
-        [this](const SwitchPrimaryCommand &command) { return StartLegacyPrimarySwitch(*assignment_, command); }, timeout);
+        [this](const SwitchPrimaryCommand &command) {
+            const auto request = StartLegacyPrimarySwitch(*assignment_, command);
+            return LegacySimFacade::PrimaryStart {request, assignment_->ReadLegacyPrimaryWaitBudget(request)};
+        }, timeout);
 }
 
 int32_t SimModule::SetDefaultCellularDataSlotId(int32_t slot, LegacyCallerRef caller)

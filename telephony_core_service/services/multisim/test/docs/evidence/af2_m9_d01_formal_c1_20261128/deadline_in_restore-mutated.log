@@ -1,0 +1,22 @@
+Note: Google Test filter = AF2Primary.FormalC1ProtocolDeadlineCannotConsumeTheOriginalStoreRestore
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.FormalC1ProtocolDeadlineCannotConsumeTheOriginalStoreRestore
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2369: Failure
+Expected equality of these values:
+  fixture.input.dispatch->Audit().pending
+    Which is: 1
+  0u
+    Which is: 0
+
+[  FAILED  ] AF2Primary.FormalC1ProtocolDeadlineCannotConsumeTheOriginalStoreRestore (9 ms)
+[----------] 1 test from AF2Primary (9 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (9 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] AF2Primary.FormalC1ProtocolDeadlineCannotConsumeTheOriginalStoreRestore
+
+ 1 FAILED TEST

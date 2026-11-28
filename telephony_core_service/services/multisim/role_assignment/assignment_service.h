@@ -40,7 +40,7 @@ class AssignmentService final : public RadioResultSink, public ProfilePreference
     public AccountRolePlanningPort, public ActivationAssignmentPort, public ScheduledRetrySink,
     public std::enable_shared_from_this<AssignmentService> {
 public:
-    enum class PrimaryScope { ExistingBranches, C0Only, TrackedDedicated };
+    enum class PrimaryScope { ExistingBranches, C0Only, TrackedHost };
     enum class C0Stage { Preference, PrimaryParameters, MainNotification, DataParameters, DataNotification, Completion };
     struct C0Receipt {
         RequestId request;
@@ -68,6 +68,7 @@ public:
     void AcceptRadioStep(const RadioSwitchResult &result) override;
     void AcceptLateRadioEvidence(const RadioSwitchResult &result) override;
     std::optional<EffectKnowledge> ReadPrimaryDeviceEvidence(const StepRef &original) const;
+    std::optional<uint64_t> ReadLegacyPrimaryWaitBudget(RequestId request) const;
     bool AcceptPrimarySwitchTimeout(RequestId request, uint64_t elapsedMilliseconds);
     bool AcceptC1RetryDue(RequestId request);
     void BindRetryScheduler(const std::shared_ptr<RetrySchedulerPort> &scheduler);
@@ -128,6 +129,11 @@ private:
     void FinishC1Phase(const StepRef &step, const RadioDomainId &domain,
         std::unique_lock<std::recursive_mutex> &guard);
     bool ScheduleC1Retry(RequestId request, uint32_t attempt, std::unique_lock<std::recursive_mutex> &guard);
+    bool ArmC1ProtocolDeadline(const StepRef &step, std::unique_lock<std::recursive_mutex> &guard);
+    void CancelC1ProtocolDeadline(const StepRef &step, std::unique_lock<std::recursive_mutex> &guard);
+    void CancelScheduledTask(std::optional<uint64_t> task, std::unique_lock<std::recursive_mutex> &guard);
+    bool ExpirePrimarySwitch(RequestId request, bool protocolDeadline,
+        std::unique_lock<std::recursive_mutex> &guard);
     struct RoleProviderReceipt {
         RoleProviderEvidence evidence;
         uint32_t writeSet;
@@ -184,12 +190,17 @@ private:
         std::optional<EffectKnowledge> lateDeviceEffect;
         bool timeoutDeliveryInFlight {false};
         bool noDeviceEffect {false};
+        uint64_t protocolDeadlineGeneration {0};
+        std::optional<uint64_t> protocolDeadlineTask {};
+        std::map<SlotId, RadioSwitchResult> lateC1Evidence {};
     };
     bool AcceptC1RetryDue(RequestId request, std::unique_lock<std::recursive_mutex> &guard);
     RadioSubmitDisposition SubmitRadioOutsideCommit(const RadioSwitchRequest &device, const PrimaryTargetFacts &facts,
         std::unique_lock<std::recursive_mutex> &guard);
     void FinishPrimaryWithNoDeviceEffect(const StepRef &step);
-    void FinishUnsentC1(PendingPrimarySwitch &round, std::unique_lock<std::recursive_mutex> &guard);
+    void FinishC1WithNoDeviceEffect(PendingPrimarySwitch &round, std::unique_lock<std::recursive_mutex> &guard);
+    void AcceptLateRadioEvidenceLocked(const RadioSwitchResult &result, std::unique_lock<std::recursive_mutex> &guard);
+    bool SubmitC1Check(const StepRef &step, std::unique_lock<std::recursive_mutex> &guard);
     bool SubmitC1Round(const PendingPrimarySwitch &round, std::unique_lock<std::recursive_mutex> &guard);
     std::map<uint64_t, PendingPrimarySwitch> pendingPrimary_;
     std::weak_ptr<RetrySchedulerPort> retryScheduler_;

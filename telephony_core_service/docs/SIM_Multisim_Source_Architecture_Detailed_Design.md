@@ -464,7 +464,7 @@ TopologyService构造后由H绑定AccountRolePlanningPort；它实现PrimaryTopo
 | AlreadyPrimary | WithoutDevice | 原已为M0分支不执行完整协议，仍保持原保存/Data节点 |
 | VendorRouteMapping | AfterDevice | 经T映射子请求和厂商能力，旧早返回与后续步骤分别保持 |
 
-**当前入口。** StartPrimarySwitch 在 A 自有 operations 登记原目标与完成出口。SlotCatalog 提供静态域。A 在 Radio 观察前后核对原订阅、槽、绑定版本、ICCID 及活跃状态，再按分支同时检查目标 radioDomain 和全部 Primary 写成员。C0 经参数及通知闭合。正式 Host SimModule 在具备兼容等待及逐键 Store 的装配中执行 B，先登记原请求，再发专用命令。C1 在 Host 组件中冻结 R 验证的成员、路由和协议能力，按原参数前缀执行 CHECK、UPDATE、COMPLETE（1、2、4）。C1 的独立协议期限及正式等待、终步提交和全图回归仍待。VendorRouteMapping 尚未接入该入口。[用例源码](../services/multisim/role_assignment/assignment_service.cpp) · [分支计划](../services/multisim/role_assignment/primary/primary_switch_plan.cpp)
+**当前入口。** StartPrimarySwitch 在 A 自有 operations 登记原目标与完成出口。SlotCatalog 提供静态域。A 在 Radio 观察前后核对原订阅、槽、绑定版本、ICCID 及活跃状态，再按分支同时检查目标 radioDomain 和全部 Primary 写成员。C0 经参数及通知闭合。具备兼容等待及逐键 Store 的正式 Host SimModule 执行 B 和 C1。B 发专用命令。C1 冻结 R 验证的成员、路由和协议能力，按原参数前缀执行 CHECK、UPDATE、COMPLETE（1、2、4），独立登记每轮协议期限并保留兼容调用等待。全对象图关闭与整轮资源回收继续验证。VendorRouteMapping 尚未接入该入口。[用例源码](../services/multisim/role_assignment/assignment_service.cpp) · [分支计划](../services/multisim/role_assignment/primary/primary_switch_plan.cpp)
 
 AssignmentStoreAdapter 在 Host 处理偏好、Primary 两键与 ICCID 散列、Data 原参数。AssignmentAggregate 的 roleWriteOwners_ 已按请求 token 登记 kPrimaryRoleWriteSet（偏好、Primary 参数/通知、Data 参数/通知）；正式 Host 的独立 Data 从 SimModule 经 LegacySimFacade 和 SetLegacyDefaultData 进入 A，
 使用 T 的原 Binding、A 的 Data 写集、原参数步骤和同步完成。Primary 与 Data 共用 Data

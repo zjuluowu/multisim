@@ -1,0 +1,31 @@
+Note: Google Test filter = AF2Primary.FormalThreePhaseDeadlineAndLegacyWaitDenyAPausedOriginalSend
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.FormalThreePhaseDeadlineAndLegacyWaitDenyAPausedOriginalSend
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2213: Failure
+Expected equality of these values:
+  fixture.input.dispatch->Audit().delivered
+    Which is: 0
+  1u
+    Which is: 1
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2188: true
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2218: Failure
+Value of: module->AcceptPrimarySwitchTimeout(request, 60000)
+  Actual: true
+Expected: false
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2188: true
+
+[  FAILED  ] AF2Primary.FormalThreePhaseDeadlineAndLegacyWaitDenyAPausedOriginalSend (10 ms)
+[----------] 1 test from AF2Primary (10 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (10 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] AF2Primary.FormalThreePhaseDeadlineAndLegacyWaitDenyAPausedOriginalSend
+
+ 1 FAILED TEST

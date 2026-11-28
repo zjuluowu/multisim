@@ -366,6 +366,7 @@ bool ResourceRadioRuntime::AcceptDeviceResultLocked(const RadioDeviceResult &dev
         return false;
     }
     auto result = deviceResult.result;
+    result.recoveryVerified = false;
     if (!SameCommand(request, result)) { ++rejectedStaleResults_; return false; }
     auto &updateError = transmission->second.updateError;
     if (transmission->second.updateGroupEnded) {
@@ -410,6 +411,7 @@ bool ResourceRadioRuntime::AcceptDeviceResultLocked(const RadioDeviceResult &dev
             return false;
         }
         group.recoveredTransmissions.insert(deviceResult.transportToken);
+        result.recoveryVerified = true;
         group.recovered.push_back(result);
         transmissions_.erase(transmission);
         if (group.recoveredTransmissions.size() < group.submittedTransmissions.size()) { return true; }
@@ -449,6 +451,7 @@ bool ResourceRadioRuntime::AcceptDeviceResultLocked(const RadioDeviceResult &dev
             }
             group.submittedTransmissions.erase(deviceResult.transportToken);
             group.acceptedMembers.insert(result.memberSlot.legacySlotId);
+            result.recoveryVerified = deviceResult.currentStateVerified;
             group.accepted.push_back(result);
             if (group.acceptedMembers.size() < group.expected) { accepted = true; }
             else {

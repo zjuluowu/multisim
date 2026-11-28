@@ -1,0 +1,11 @@
+Note: Google Test filter = AF2Primary.FormalC1BackgroundSuccessNotifiesOnceAfterOriginalCallerFails
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.FormalC1BackgroundSuccessNotifiesOnceAfterOriginalCallerFails
+[       OK ] AF2Primary.FormalC1BackgroundSuccessNotifiesOnceAfterOriginalCallerFails (15 ms)
+[----------] 1 test from AF2Primary (15 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (16 ms total)
+[  PASSED  ] 1 test.

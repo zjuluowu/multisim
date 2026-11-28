@@ -1,0 +1,43 @@
+Note: Google Test filter = AF2Primary.FormalC1WaitFallbackKeepsOriginalCheckGroupUntilRecoveryAfterStop
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.FormalC1WaitFallbackKeepsOriginalCheckGroupUntilRecoveryAfterStop
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2261: Failure
+Expected equality of these values:
+  fixture.input.parameters->values.at(kPrimary)
+    Which is: "1"
+  previous.at(kPrimary)
+    Which is: "0"
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2262: Failure
+Expected equality of these values:
+  fixture.input.parameters->values.at(kIccid)
+    Which is: "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+  previous.at(kIccid)
+    Which is: "previous"
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2265: Failure
+Expected equality of these values:
+  module->StopAcceptingAndDrain()
+    Which is: 4-byte object <02-00 00-00>
+  SimModule::DrainResult::Drained
+    Which is: 4-byte object <00-00 00-00>
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2266: Failure
+Expected equality of these values:
+  module->StopAcceptingAndDrain()
+    Which is: 4-byte object <02-00 00-00>
+  SimModule::DrainResult::Drained
+    Which is: 4-byte object <00-00 00-00>
+
+[  FAILED  ] AF2Primary.FormalC1WaitFallbackKeepsOriginalCheckGroupUntilRecoveryAfterStop (10 ms)
+[----------] 1 test from AF2Primary (10 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (11 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] AF2Primary.FormalC1WaitFallbackKeepsOriginalCheckGroupUntilRecoveryAfterStop
+
+ 1 FAILED TEST

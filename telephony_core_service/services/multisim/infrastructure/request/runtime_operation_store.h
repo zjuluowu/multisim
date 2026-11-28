@@ -27,9 +27,11 @@
 
 namespace OHOS::Telephony::MultiSim {
 struct ScheduledRetryEvent {
+    enum class Purpose { Retry, ProtocolDeadline };
     RequestId request;
     uint64_t scheduleGeneration;
     uint32_t attempt;
+    Purpose purpose {Purpose::Retry};
 };
 struct RetrySchedulerAudit {
     uint64_t scheduled {0};

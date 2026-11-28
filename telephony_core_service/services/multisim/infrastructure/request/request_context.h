@@ -62,6 +62,7 @@ class LegacyIntCompletionPort {
 public:
     virtual ~LegacyIntCompletionPort() = default;
     virtual void CompleteLegacyInt(const CompletionPlan &plan, int32_t legacyResult) = 0;
+    virtual void NotifyRetriedPrimarySuccess() {}
 };
 } // namespace OHOS::Telephony::MultiSim
 

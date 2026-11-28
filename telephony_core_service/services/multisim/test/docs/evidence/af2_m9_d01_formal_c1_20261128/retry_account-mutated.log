@@ -1,0 +1,22 @@
+Note: Google Test filter = AF2Primary.FormalC1BackgroundSuccessNotifiesOnceAfterOriginalCallerFails
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.FormalC1BackgroundSuccessNotifiesOnceAfterOriginalCallerFails
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2301: Failure
+Expected equality of these values:
+  fixture.host->accountsChanged
+    Which is: 0
+  1u
+    Which is: 1
+
+[  FAILED  ] AF2Primary.FormalC1BackgroundSuccessNotifiesOnceAfterOriginalCallerFails (6 ms)
+[----------] 1 test from AF2Primary (6 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (6 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] AF2Primary.FormalC1BackgroundSuccessNotifiesOnceAfterOriginalCallerFails
+
+ 1 FAILED TEST

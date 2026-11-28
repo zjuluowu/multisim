@@ -126,15 +126,7 @@ bool AssignmentService::ScheduleC1Retry(RequestId request, uint32_t attempt,
     if (pending == pendingPrimary_.end() || !pending->second.retryScheduled ||
         pending->second.retryScheduleGeneration != generation) {
         // A callback or Stop consumed the original intent while registration was in flight.
-        if (task) {
-            guard.unlock();
-            try {
-                (void)scheduler->CancelRetry(*task);
-            } catch (const std::exception &) {
-                // The scheduler still owns any running or queued delivery in its audit.
-            }
-            guard.lock();
-        }
+        CancelScheduledTask(task, guard);
         return true;
     }
     if (!task) {
@@ -147,11 +139,76 @@ bool AssignmentService::ScheduleC1Retry(RequestId request, uint32_t attempt,
     return true;
 }
 
+void AssignmentService::CancelScheduledTask(std::optional<uint64_t> task,
+    std::unique_lock<std::recursive_mutex> &guard)
+{
+    if (!task) { return; }
+    const auto scheduler = retryScheduler_.lock();
+    if (!scheduler) { return; }
+    guard.unlock();
+    try {
+        (void)scheduler->CancelRetry(*task);
+    } catch (const std::exception &) {
+        // The scheduler audit still owns any queued or running callback.
+    }
+    guard.lock();
+}
+
+bool AssignmentService::ArmC1ProtocolDeadline(const StepRef &step, std::unique_lock<std::recursive_mutex> &guard)
+{
+    if (primaryScope_ != PrimaryScope::TrackedHost) { return true; }
+    const auto scheduler = retryScheduler_.lock();
+    const std::weak_ptr<ScheduledRetrySink> sink(weak_from_this());
+    if (!scheduler || sink.expired() || stopping_) { return false; }
+    const auto original = pendingPrimary_.find(step.request.value);
+    if (original == pendingPrimary_.end() || !(original->second.step == step)) { return false; }
+    const auto generation = nextRetryScheduleGeneration_++;
+    original->second.protocolDeadlineGeneration = generation;
+    const ScheduledRetryEvent event {step.request, generation, step.attempt,
+        ScheduledRetryEvent::Purpose::ProtocolDeadline};
+    std::optional<uint64_t> task;
+    guard.unlock();
+    try {
+        task = scheduler->ScheduleRetry(event, LEGACY_PRIMARY_PROTOCOL_DEADLINE_MS, sink);
+    } catch (const std::exception &) {
+        // CHECK stays outside the platform when its original deadline cannot be armed.
+    }
+    guard.lock();
+    const auto pending = pendingPrimary_.find(step.request.value);
+    if (pending == pendingPrimary_.end() || !(pending->second.step == step) ||
+        pending->second.protocolDeadlineGeneration != generation || stopping_) {
+        CancelScheduledTask(task, guard);
+        return false;
+    }
+    pending->second.protocolDeadlineTask = task;
+    return task.has_value();
+}
+
+void AssignmentService::CancelC1ProtocolDeadline(const StepRef &step, std::unique_lock<std::recursive_mutex> &guard)
+{
+    const auto pending = pendingPrimary_.find(step.request.value);
+    if (pending == pendingPrimary_.end() || !(pending->second.step.request == step.request) ||
+        pending->second.step.attempt != step.attempt) { return; }
+    pending->second.protocolDeadlineGeneration = 0;
+    const auto task = std::exchange(pending->second.protocolDeadlineTask, std::nullopt);
+    CancelScheduledTask(task, guard);
+}
+
 bool AssignmentService::AcceptScheduledC1Retry(const ScheduledRetryEvent &event)
 {
     std::unique_lock<std::recursive_mutex> guard(primaryCommitLock_);
     if (stopping_) { return false; }
     const auto pending = pendingPrimary_.find(event.request.value);
+    if (event.purpose == ScheduledRetryEvent::Purpose::ProtocolDeadline) {
+        if (pending == pendingPrimary_.end() || !(pending->second.step.request == event.request) ||
+            event.scheduleGeneration == 0 || pending->second.protocolDeadlineGeneration != event.scheduleGeneration ||
+            pending->second.step.attempt != event.attempt) {
+            return false;
+        }
+        pending->second.protocolDeadlineGeneration = 0;
+        pending->second.protocolDeadlineTask.reset();
+        return ExpirePrimarySwitch(event.request, true, guard);
+    }
     if (pending == pendingPrimary_.end() || !pending->second.retryScheduled ||
         pending->second.retryScheduleGeneration != event.scheduleGeneration ||
         pending->second.attemptCount != event.attempt || !(pending->second.step.request == event.request)) {
@@ -291,7 +348,6 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
     const auto plan = PlanPrimarySwitch({*target, command.userSet, observed.dedicatedPrimaryRilSupported,
         alreadyOnPrimaryModem, observed.vendorMappingRequired});
     if (!plan || (c0Only && plan->mode != PrimarySwitchMode::AlreadyPrimary) ||
-        (trackedHost && plan->mode == PrimarySwitchMode::ThreePhaseProtocol) ||
         (!observed.ordinarySwitchAllowed && plan->mode != PrimarySwitchMode::WithoutModemRestart) ||
         (plan->mode != PrimarySwitchMode::AlreadyPrimary &&
         plan->mode != PrimarySwitchMode::WithoutModemRestart &&
@@ -475,7 +531,7 @@ RequestId AssignmentService::StartPrimarySwitch(const SwitchPrimaryCommand &comm
             // A still owns the original parameters and Radio intent.
         }
         guard.lock();
-        (void)SubmitC1Round(pendingPrimary_.at(request.value), guard);
+        (void)SubmitC1Check(sentStep, guard);
         return request;
     }
 
@@ -771,6 +827,15 @@ void AssignmentService::RunTrackedPrimaryParameters(StepRef step, TransitionPhas
     if (completedRadio || !callDidNotReturn || (sync && sync->waiter.origin == SynchronousWaitRef::Origin::ModuleRole)) {
         receipt.outstanding = C0Stage::Completion;
         const int32_t failure = completedRadio ? 83886087 : -1;
+        if (prewritten && success && deviceStep.attempt != 0 && command.completion.accountNotificationOnWholeSuccess) {
+            guard.unlock();
+            try {
+                completion_.NotifyRetriedPrimarySuccess();
+            } catch (const std::exception &) {
+                // The successful background attempt's original notification was attempted once.
+            }
+            guard.lock();
+        }
         CompleteOnce(request, command.completion, success ? 0 : failure, terminal, &guard);
     } else {
         operations_.MarkTerminal(request, terminal);
@@ -787,6 +852,7 @@ void AssignmentService::RunTrackedPrimaryParameters(StepRef step, TransitionPhas
 void AssignmentService::FinishC1Phase(const StepRef &step, const RadioDomainId &domain,
     std::unique_lock<std::recursive_mutex> &guard)
 {
+    CancelC1ProtocolDeadline(step, guard);
     guard.unlock();
     try {
         output_.PublishPrimaryPhase(true, false);
@@ -1125,7 +1191,7 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
     }
     if (operation->terminal == TerminalState::NeedsReconciliation && operation->wait == WaitState::TimedOut) {
         // R may have queued normal, already verified device evidence just before A consumed the timeout.
-        AcceptLateRadioEvidence(result);
+        AcceptLateRadioEvidenceLocked(result, guard);
         return;
     }
     if (operation->terminal != TerminalState::Open) { return; }
@@ -1183,7 +1249,9 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
     operations_.EndWait(result.step.request, WaitState::Delivered);
     const auto domain = pending->second.target.radioDomain.value();
     const bool c1 = pending->second.mode == PrimarySwitchMode::ThreePhaseProtocol;
-    if (!c1) {
+    if (c1) {
+        CancelC1ProtocolDeadline(result.step, guard);
+    } else {
         guard.unlock();
         try {
             radio_.EndLegacySenseSwitch(result.step, domain);
@@ -1221,17 +1289,12 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
                 TransitionPhase::DevicePending, TransitionPhase::Reconciling);
             operations_.MarkTerminal(result.step.request, TerminalState::Open);
             if (!ScheduleC1Retry(result.step.request, pending->second.attemptCount, guard)) {
-                const bool stopCancelled = stopping_;
                 assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(),
-                    result.step.request.value, TransitionPhase::Reconciling,
-                    stopCancelled ? TransitionPhase::Failed : TransitionPhase::NeedsReconciliation);
-                operations_.MarkTerminal(result.step.request,
-                    stopCancelled ? TerminalState::Failed : TerminalState::NeedsReconciliation);
-                if (stopCancelled) {
-                    assignment_.ReleaseRoleWriteSet(result.step.request.value, kPrimaryRoleWriteSet);
-                    operations_.RetireAfterEvidenceRetention(result.step.request);
-                    pendingPrimary_.erase(pending);
-                }
+                    result.step.request.value, TransitionPhase::Reconciling, TransitionPhase::Failed);
+                operations_.MarkTerminal(result.step.request, TerminalState::Failed);
+                assignment_.ReleaseRoleWriteSet(result.step.request.value, kPrimaryRoleWriteSet);
+                operations_.RetireAfterEvidenceRetention(result.step.request);
+                pendingPrimary_.erase(pending);
             }
             return;
         }
@@ -1357,7 +1420,13 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
 
 void AssignmentService::AcceptLateRadioEvidence(const RadioSwitchResult &result)
 {
-    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
+    std::unique_lock<std::recursive_mutex> guard(primaryCommitLock_);
+    AcceptLateRadioEvidenceLocked(result, guard);
+}
+
+void AssignmentService::AcceptLateRadioEvidenceLocked(const RadioSwitchResult &result,
+    std::unique_lock<std::recursive_mutex> &guard)
+{
     const auto pending = pendingPrimary_.find(result.step.request.value);
     if (pending == pendingPrimary_.end() || !(pending->second.step == result.step)) { return; }
     const auto operation = operations_.Read(result.step.request);
@@ -1366,6 +1435,33 @@ void AssignmentService::AcceptLateRadioEvidence(const RadioSwitchResult &result)
     const bool earlyHandoffEvidence = operation->terminal == TerminalState::Open &&
         pending->second.mode == PrimarySwitchMode::WithoutModemRestart;
     if (!earlyHandoffEvidence && operation->terminal != TerminalState::NeedsReconciliation) { return; }
+    auto &round = pending->second;
+    if (round.mode == PrimarySwitchMode::ThreePhaseProtocol) {
+        const auto member = std::find_if(round.members.begin(), round.members.end(),
+            [&](const auto &entry) { return entry.route == result.memberSlot; });
+        if (member == round.members.end() || result.phase != round.phase ||
+            result.notify != (round.phase == 2) || result.protocolSession != round.protocolSession) {
+            return;
+        }
+        const auto &binding = result.expectedBinding;
+        const auto &expected = round.facts.binding;
+        if (member->nativeMember == round.targetMember ? (!binding || !(binding->subscription == expected.subscription) ||
+            !(binding->slot == expected.slot) || binding->bindingRevision != expected.bindingRevision) : binding.has_value()) {
+            return;
+        }
+        const auto [saved, inserted] = round.lateC1Evidence.emplace(result.memberSlot, result);
+        if (!inserted && result.recoveryVerified && !saved->second.recoveryVerified) {
+            saved->second = result;
+        }
+        if (round.phase == 1 && operation->wait == WaitState::TimedOut &&
+            round.lateC1Evidence.size() == round.members.size() &&
+            std::all_of(round.lateC1Evidence.begin(), round.lateC1Evidence.end(), [](const auto &entry) {
+                return entry.second.recoveryVerified && entry.second.effect == EffectKnowledge::ConfirmedNotApplied;
+            })) {
+            FinishC1WithNoDeviceEffect(round, guard);
+        }
+        return;
+    }
     if (!result.expectedBinding ||
         !(result.expectedBinding->subscription == pending->second.facts.binding.subscription) ||
         !(result.expectedBinding->slot == pending->second.facts.binding.slot) ||
@@ -1418,7 +1514,6 @@ bool AssignmentService::AcceptC1RetryDue(RequestId request, std::unique_lock<std
     const auto previousStep = pending->second.step;
     const auto target = pending->second.target;
     const auto facts = pending->second.facts;
-    const bool userSet = pending->second.userSet;
     pending->second.retryReady = false;
     std::optional<PrimaryRadioObservation> observed;
     guard.unlock();
@@ -1437,7 +1532,7 @@ bool AssignmentService::AcceptC1RetryDue(RequestId request, std::unique_lock<std
     };
     if (stopping_ || !observed || !(observed->slot == target.slot) || observed->observationRevision == 0 ||
         !observed->currentModemId || *observed->currentModemId <= 0 || observed->vendorMappingRequired ||
-        !observed->ordinarySwitchAllowed || (userSet && observed->dedicatedPrimaryRilSupported) ||
+        !observed->ordinarySwitchAllowed ||
         !observed->routing || !topology_.WithCurrentPrimaryTarget(facts, [] {})) {
         return stopBeforeNewRound();
     }
@@ -1478,6 +1573,7 @@ bool AssignmentService::AcceptC1RetryDue(RequestId request, std::unique_lock<std
     round.roundFailed = false;
     round.completedMembers.clear();
     round.lateDeviceEffect.reset();
+    round.lateC1Evidence.clear();
     guard.unlock();
     try {
         output_.PublishPrimaryPhase(false, false);
@@ -1485,7 +1581,7 @@ bool AssignmentService::AcceptC1RetryDue(RequestId request, std::unique_lock<std
         // The prepared round remains owned while the original phase notification unwinds.
     }
     guard.lock();
-    return SubmitC1Round(round, guard);
+    return SubmitC1Check(step, guard);
 }
 
 RadioSubmitDisposition AssignmentService::SubmitRadioOutsideCommit(const RadioSwitchRequest &device,
@@ -1554,11 +1650,14 @@ bool AssignmentService::SubmitC1Round(const PendingPrimarySwitch &round,
             protocolSession, phase, static_cast<uint32_t>(members.size()), member, RadioProtocolPayload {capability, status}};
         const auto handoff = SubmitRadioOutsideCommit(device, facts, guard);
         if (handoff != RadioSubmitDisposition::HandoffAccepted) {
-            if (!stillCurrent()) { return true; }
             if (!issued && phase == 1 && handoff == RadioSubmitDisposition::ConfirmedNotSent) {
-                FinishUnsentC1(pendingPrimary_.at(step.request.value), guard);
+                const auto original = pendingPrimary_.find(step.request.value);
+                if (original != pendingPrimary_.end() && original->second.step == step) {
+                    FinishC1WithNoDeviceEffect(original->second, guard);
+                }
                 return false;
             }
+            if (!stillCurrent()) { return true; }
             assignment_.AcceptTransitionPhase(domain, step.request.value, TransitionPhase::DevicePending,
                 TransitionPhase::NeedsReconciliation);
             operations_.MarkTerminal(step.request, TerminalState::NeedsReconciliation);
@@ -1569,37 +1668,78 @@ bool AssignmentService::SubmitC1Round(const PendingPrimarySwitch &round,
     return true;
 }
 
-void AssignmentService::FinishUnsentC1(PendingPrimarySwitch &round, std::unique_lock<std::recursive_mutex> &guard)
+bool AssignmentService::SubmitC1Check(const StepRef &step, std::unique_lock<std::recursive_mutex> &guard)
+{
+    const bool armed = ArmC1ProtocolDeadline(step, guard);
+    const auto original = pendingPrimary_.find(step.request.value);
+    if (original == pendingPrimary_.end() || !(original->second.step == step)) { return false; }
+    if (!armed) {
+        FinishC1WithNoDeviceEffect(original->second, guard);
+        return false;
+    }
+    return SubmitC1Round(original->second, guard);
+}
+
+void AssignmentService::FinishC1WithNoDeviceEffect(PendingPrimarySwitch &round,
+    std::unique_lock<std::recursive_mutex> &guard)
 {
     const auto original = round.step;
     const auto request = original.request;
     const auto domain = *round.target.radioDomain;
-    if (operations_.AcceptResult(round.step, EffectKnowledge::NotSent) !=
-        RuntimeOperationStore::ResultAdmission::Accepted) { return; }
-    operations_.EndWait(request, WaitState::Delivered);
+    const auto operation = operations_.Read(request);
+    const bool timedOut = operation && operation->terminal == TerminalState::NeedsReconciliation &&
+        operation->wait == WaitState::TimedOut;
+    if (timedOut && round.timeoutDeliveryInFlight) {
+        round.noDeviceEffect = true;
+        return;
+    }
+    if (!timedOut) {
+        if (operations_.AcceptResult(round.step, EffectKnowledge::NotSent) !=
+            RuntimeOperationStore::ResultAdmission::Accepted) { return; }
+        operations_.EndWait(request, WaitState::Delivered);
+    }
     const bool restored = RestoreTrackedPrimary(round.step, round.facts, round.oldParameters, guard);
     if (restored) { AcceptRestoredPrimaryProjection(round.oldParameters); }
-    FinishC1Phase(original, domain, guard);
+    if (!timedOut) { FinishC1Phase(original, domain, guard); }
     if (!restored && !c0Receipt_) {
         assignment_.AcceptTransitionPhase(domain, request.value, TransitionPhase::DevicePending,
             TransitionPhase::NeedsReconciliation);
         CompleteOnce(request, round.completion, 83886087, TerminalState::NeedsReconciliation, &guard);
         return;
     }
-    FailC1Preparation(request, domain, TransitionPhase::DevicePending, round.completion, guard);
+    FailC1Preparation(request, domain, timedOut ? TransitionPhase::NeedsReconciliation :
+        TransitionPhase::DevicePending, round.completion, guard);
     pendingPrimary_.erase(request.value);
+}
+
+std::optional<uint64_t> AssignmentService::ReadLegacyPrimaryWaitBudget(RequestId request) const
+{
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
+    const auto pending = pendingPrimary_.find(request.value);
+    if (pending == pendingPrimary_.end() || !(pending->second.step.request == request)) { return std::nullopt; }
+    return primaryScope_ == PrimaryScope::TrackedHost && pending->second.mode == PrimarySwitchMode::ThreePhaseProtocol ?
+        LEGACY_ORDINARY_PRIMARY_WAIT_MS : LEGACY_DEDICATED_PRIMARY_WAIT_MS;
 }
 
 bool AssignmentService::AcceptPrimarySwitchTimeout(RequestId request, uint64_t elapsedMilliseconds)
 {
     std::unique_lock<std::recursive_mutex> guard(primaryCommitLock_);
-    if (elapsedMilliseconds < LEGACY_DEDICATED_PRIMARY_WAIT_MS) { return false; }
+    const auto budget = ReadLegacyPrimaryWaitBudget(request);
+    return budget && elapsedMilliseconds >= *budget && ExpirePrimarySwitch(request, false, guard);
+}
+
+bool AssignmentService::ExpirePrimarySwitch(RequestId request, bool protocolDeadline,
+    std::unique_lock<std::recursive_mutex> &guard)
+{
     const auto pending = pendingPrimary_.find(request.value);
     if (pending == pendingPrimary_.end()) { return false; }
     const auto operation = operations_.Read(request);
     const auto step = pending->second.step;
+    const bool c1 = pending->second.mode == PrimarySwitchMode::ThreePhaseProtocol;
+    const bool retryDeadline = c1 && protocolDeadline && step.attempt != 0;
     if (!assignment_.OwnsRoleWriteSet(request.value, kPrimaryRoleWriteSet) ||
-        !operation || operation->wait != WaitState::Waiting || !(step.request == request)) {
+        !operation || !operation->context.deviceStepRegistered || !(step.request == request) ||
+        (operation->wait != WaitState::Waiting && !(retryDeadline && operation->wait == WaitState::Delivered))) {
         return false;
     }
     if (operation->terminal == TerminalState::Open) {
@@ -1617,16 +1757,19 @@ bool AssignmentService::AcceptPrimarySwitchTimeout(RequestId request, uint64_t e
     operations_.MarkTerminal(request, TerminalState::NeedsReconciliation);
     const bool deliver = operations_.ClaimCompletion(request);
     pending->second.timeoutDeliveryInFlight = true;
+    if (c1) { FinishC1Phase(step, domain, guard); }
     guard.unlock();
-    try {
-        radio_.EndLegacySenseSwitch(step, domain);
-    } catch (const std::exception &) {
-        // R retains the original resource/effect responsibility.
-    }
-    try {
-        output_.PublishPrimaryPhase(true, userSet);
-    } catch (const std::exception &) {
-        // Failure to publish the phase does not revoke the original timeout result.
+    if (!c1) {
+        try {
+            radio_.EndLegacySenseSwitch(step, domain);
+        } catch (const std::exception &) {
+            // R retains the original resource/effect responsibility.
+        }
+        try {
+            output_.PublishPrimaryPhase(true, userSet);
+        } catch (const std::exception &) {
+            // Failure to publish the phase does not revoke the original timeout result.
+        }
     }
     if (deliver) {
         try {
@@ -1639,6 +1782,10 @@ bool AssignmentService::AcceptPrimarySwitchTimeout(RequestId request, uint64_t e
     const auto original = pendingPrimary_.find(request.value);
     if (original != pendingPrimary_.end() && original->second.step == step) {
         original->second.timeoutDeliveryInFlight = false;
+        if (c1 && original->second.noDeviceEffect) {
+            FinishC1WithNoDeviceEffect(original->second, guard);
+            return true;
+        }
         const bool verifiedNoEffect = original->second.mode == PrimarySwitchMode::WithoutModemRestart &&
             store_.SupportsTrackedC0() && original->second.lateDeviceEffect == EffectKnowledge::ConfirmedNotApplied;
         if (original->second.noDeviceEffect || verifiedNoEffect) { FinishPrimaryWithNoDeviceEffect(step); }

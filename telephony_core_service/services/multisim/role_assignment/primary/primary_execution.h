@@ -22,6 +22,8 @@
 namespace OHOS::Telephony::MultiSim {
 enum class PrimarySwitchMode { ThreePhaseProtocol, WithoutModemRestart, AlreadyPrimary, VendorRouteMapping };
 inline constexpr uint64_t LEGACY_DEDICATED_PRIMARY_WAIT_MS = 45000;
+inline constexpr uint64_t LEGACY_PRIMARY_PROTOCOL_DEADLINE_MS = 45000;
+inline constexpr uint64_t LEGACY_ORDINARY_PRIMARY_WAIT_MS = 60000;
 inline constexpr uint64_t LEGACY_PRIMARY_PROTOCOL_RETRY_MS = 1000;
 enum class ParameterWritePosition { BeforeDevice, AfterDevice, WithoutDevice };
 struct PrimaryDecisionFacts {
