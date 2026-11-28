@@ -1,0 +1,262 @@
+Independent D04 complete-graph Host verification
+ELF /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host 43452784 2026-11-28 14:58:29.980033410 +0800
+ad8260eb350296e6124386c4e8165105f42deee582021744a4ddb692edd2f82c  /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host
+
+$ LLVM_PROFILE_FILE=/tmp/multisim-d04-complete-graph-review-single-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+Note: Google Test filter = AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[       OK ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild (2 ms)
+[----------] 1 test from AF2CardComposition (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 1 test.
+exit=0
+
+$ LLVM_PROFILE_FILE=/tmp/multisim-d04-complete-graph-review-repeat-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild --gtest_repeat=20
+
+Repeating all tests (iteration 1) . . .
+
+Note: Google Test filter = AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[       OK ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild (2 ms)
+[----------] 1 test from AF2CardComposition (2 ms total)
+
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 2) . . .
+
+Note: Google Test filter = AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[       OK ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild (1 ms)
+[----------] 1 test from AF2CardComposition (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 3) . . .
+
+Note: Google Test filter = AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[       OK ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild (1 ms)
+[----------] 1 test from AF2CardComposition (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 4) . . .
+
+Note: Google Test filter = AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[       OK ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild (1 ms)
+[----------] 1 test from AF2CardComposition (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 5) . . .
+
+Note: Google Test filter = AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[       OK ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild (1 ms)
+[----------] 1 test from AF2CardComposition (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 6) . . .
+
+Note: Google Test filter = AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[       OK ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild (1 ms)
+[----------] 1 test from AF2CardComposition (2 ms total)
+
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 7) . . .
+
+Note: Google Test filter = AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[       OK ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild (3 ms)
+[----------] 1 test from AF2CardComposition (3 ms total)
+
+[==========] 1 test from 1 test suite ran. (3 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 8) . . .
+
+Note: Google Test filter = AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[       OK ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild (1 ms)
+[----------] 1 test from AF2CardComposition (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 9) . . .
+
+Note: Google Test filter = AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[       OK ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild (1 ms)
+[----------] 1 test from AF2CardComposition (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 10) . . .
+
+Note: Google Test filter = AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[       OK ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild (1 ms)
+[----------] 1 test from AF2CardComposition (2 ms total)
+
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 11) . . .
+
+Note: Google Test filter = AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[       OK ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild (1 ms)
+[----------] 1 test from AF2CardComposition (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 12) . . .
+
+Note: Google Test filter = AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[       OK ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild (1 ms)
+[----------] 1 test from AF2CardComposition (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 13) . . .
+
+Note: Google Test filter = AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[       OK ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild (2 ms)
+[----------] 1 test from AF2CardComposition (2 ms total)
+
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 14) . . .
+
+Note: Google Test filter = AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[       OK ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild (2 ms)
+[----------] 1 test from AF2CardComposition (2 ms total)
+
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 15) . . .
+
+Note: Google Test filter = AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[       OK ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild (2 ms)
+[----------] 1 test from AF2CardComposition (2 ms total)
+
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 16) . . .
+
+Note: Google Test filter = AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[       OK ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild (1 ms)
+[----------] 1 test from AF2CardComposition (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 17) . . .
+
+Note: Google Test filter = AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[       OK ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild (1 ms)
+[----------] 1 test from AF2CardComposition (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 18) . . .
+
+Note: Google Test filter = AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[       OK ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild (1 ms)
+[----------] 1 test from AF2CardComposition (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 19) . . .
+
+Note: Google Test filter = AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[       OK ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild (1 ms)
+[----------] 1 test from AF2CardComposition (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 20) . . .
+
+Note: Google Test filter = AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[       OK ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild (1 ms)
+[----------] 1 test from AF2CardComposition (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+exit=0

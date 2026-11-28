@@ -2252,7 +2252,8 @@ struct DedicatedPrimaryFixture {
     std::shared_ptr<RoleProvider> roles = std::make_shared<RoleProvider>();
     CoreSimModuleHandle module;
 
-    explicit DedicatedPrimaryFixture(bool threePhase = false, const std::shared_ptr<EfDevice> &iccid = {})
+    explicit DedicatedPrimaryFixture(bool threePhase = false, const std::shared_ptr<EfDevice> &iccid = {},
+        const std::function<void(CoreSimModulePorts &)> &configure = {})
     {
         input.radio->requiresDevice = !threePhase;
         input.radio->routing = PrimaryProtocolRouting {200,
@@ -2280,6 +2281,7 @@ struct DedicatedPrimaryFixture {
                 return InitialRecoveryEvidence {epoch, true, true};
             };
         }
+        if (configure) { configure(ports); }
         module = std::get<CoreSimModuleHandle>(CreateCoreSimModule(std::move(ports), input.catalog, input.accounts));
     }
     RadioDeviceResult Reply(EffectKnowledge effect, int32_t result, bool currentStateVerified = false) const
@@ -3042,11 +3044,17 @@ public:
 
 class PinDevice final : public PinIoPort {
 public:
+    explicit PinDevice(std::optional<ResourceKey> resource = std::nullopt) : resource_(std::move(resource)) {}
     std::vector<ResourceKey> InitialResources() const override
-    { return {{"primary-shared"}, {"other-card-ef"}}; }
+    {
+        if (resource_) { return {*resource_}; }
+        return {{"primary-shared"}, {"other-card-ef"}};
+    }
     std::optional<PinIoRoute> ResolvePinRoute(SlotId slot) override
     {
-        return PinIoRoute {{slot, "USIM"}, {{slot == SlotId {1} ? "primary-shared" : "other-card-ef"}}};
+        const auto resource = resource_.value_or(ResourceKey {
+            slot == SlotId {1} ? "primary-shared" : "other-card-ef"});
+        return PinIoRoute {{slot, "USIM"}, {resource}};
     }
     bool SubmitUnlockPin(const CardCommandTicket &ticket, const std::u16string &pin) override
     {
@@ -3063,6 +3071,8 @@ public:
     }
     std::vector<std::pair<CardCommandTicket, std::u16string>> commands;
     std::function<void(const CardCommandEvidence &)> onSubmit;
+private:
+    const std::optional<ResourceKey> resource_;
 };
 
 struct PinFixture {
@@ -4752,6 +4762,7 @@ public:
 
 class NumberDevice final : public MsisdnPlatformPort {
 public:
+    explicit NumberDevice(std::string resource = "primary-shared") : resource_(std::move(resource)) {}
     struct Command {
         MsisdnTransportTicket ticket;
         std::u16string tag;
@@ -4761,7 +4772,7 @@ public:
     std::optional<ResourceKey> ResourceFor(SlotId slot) const override
     {
         if (onRouteLookup) { onRouteLookup(slot); }
-        return ResourceKey {"primary-shared"};
+        return ResourceKey {resource_};
     }
     std::optional<CardNumberView> ReadCachedNumber(const SessionRef &session) const override
     {
@@ -4790,6 +4801,8 @@ public:
     std::vector<CardNumberView> records;
     std::vector<Command> commands;
     std::function<void(const Command &)> onSubmit;
+private:
+    const std::string resource_;
 };
 
 struct NumberFixture {
@@ -5510,4 +5523,147 @@ TEST(AF2Reload, ReadWhileMetadataWriteIsUnresolved)
     EXPECT_EQ(module->ReadAccount({40})->displayName, before);
     EXPECT_EQ(metadata->Writes().size(), 1u);
     EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2CardComposition, MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild)
+{
+    using Drain = SimModule::DrainResult;
+    const auto store = std::make_shared<ControlledDiscoveryStore>();
+    const auto ef = std::make_shared<EfDevice>();
+    const auto pin = std::make_shared<PinDevice>(ResourceKey {"pin-domain"});
+    const auto pinHost = std::make_shared<PinHost>();
+    const auto number = std::make_shared<NumberDevice>("number-domain");
+    const auto numberHost = std::make_shared<NumberHost>();
+    DedicatedPrimaryFixture original(true, ef, [&](CoreSimModulePorts &ports) {
+        ports.accountStore = store;
+        ports.pinIo = pin;
+        ports.pinHost = pinHost;
+        ports.msisdn = number;
+        ports.numberHost = numberHost;
+        ports.initialEvidence = [](const ResourceKey &, RuntimeEpoch epoch) {
+            return InitialRecoveryEvidence {epoch, true, true};
+        };
+    });
+    auto &module = original.module;
+    const auto primary = module->FindBinding({1});
+    const auto efSession = module->ObserveCardApplication({{0}, "USIM"}, 1);
+    const auto pinSession = module->ObserveCardApplication({{2}, "USIM"}, 1);
+    ASSERT_TRUE(primary && efSession && pinSession);
+    ASSERT_TRUE(module->ObservePinLocked(*pinSession));
+
+    store->stored = {-1, {}, false, true, EffectKnowledge::Unknown};
+    ASSERT_TRUE(module->ObserveVerifiedCard({{3}, "USIM"}, 1, "89000000000000000043"));
+    ASSERT_TRUE(store->lastPlan);
+    const auto originalWrite = *store->lastPlan;
+    ASSERT_TRUE(module->ReadDiscoveryReceipt(originalWrite.call));
+    store->load = [&](const auto &request) {
+        return ReloadImage(request, 1, {ReloadRow({40}, kRaw0, 0, u"History"),
+            ReloadRow({41}, kRaw1, 1, u"Target")}, {});
+    };
+    EXPECT_TRUE(module->ReloadAccounts(AccountReadView::Historical).accounts.acceptedAttempt);
+    EXPECT_TRUE(module->ReadAccount({40}, AccountReadView::Historical));
+
+    ASSERT_TRUE(module->StartPrimarySwitch(Command(*primary)));
+    ASSERT_EQ(original.input.radio->history.size(), 2u);
+    ASSERT_EQ(module->UnlockPin(2, u"1234", {7}, {29}), 0);
+    pinHost->RunNext();
+    ASSERT_EQ(pin->commands.size(), 1u);
+    ASSERT_EQ(module->SetShowNumber(1, u"111", {7}, {30}), 0);
+    numberHost->RunNext();
+    ASSERT_EQ(number->commands.size(), 1u);
+    ASSERT_TRUE(module->LoadIccid(*efSession));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(ef->Reply(0, kIccidMetadata)));
+    ASSERT_EQ(ef->commands.size(), 2u);
+    const auto oldEf = ef->Reply(1, kFirstRawIccid);
+    const auto oldPin = pin->Reply(0, PinReplyStatus::Unlocked, 3);
+    const auto oldNumber = number->Applied(0);
+    ASSERT_TRUE(module->RefreshIccid(*efSession));
+    ASSERT_TRUE(module->ObserveCardApplication({{2}, "USIM"}, 2));
+    ASSERT_TRUE(module->ObserveCardApplication({{3}, "USIM"}, 2));
+
+    ModuleInputs successor;
+    successor.radio->requiresDevice = false;
+    successor.radio->primaryEndpoint = {1};
+    successor.radio->routing = original.input.radio->routing;
+    successor.radio->routing->targetMember = 100;
+    successor.radio->routing->members[0].capability->modemId = 1;
+    successor.radio->routing->members[1].capability->modemId = 0;
+    auto nextEf = std::make_shared<EfDevice>();
+    const auto createSuccessor = [&] {
+        auto ports = successor.Ports();
+        ports.primaryHost = std::make_shared<PrimaryHost>();
+        ports.primaryWait = std::make_shared<PrimaryWait>();
+        ports.efIo = nextEf;
+        ports.initialEvidence = [&](const ResourceKey &, RuntimeEpoch epoch) {
+            const bool ended = module->StopAcceptingAndDrain() == Drain::Drained;
+            return InitialRecoveryEvidence {epoch, ended, ended};
+        };
+        return CreateCoreSimModule(std::move(ports), original.input.catalog, successor.accounts);
+    };
+    original.input.dispatch->defer = true;
+    EXPECT_EQ(module->StopAcceptingAndDrain(), Drain::CallbacksStillInFlight);
+    EXPECT_TRUE(std::holds_alternative<SimModuleInitFailure>(createSuccessor()));
+    ASSERT_TRUE(module->AcceptRadioDeviceResult(original.ReplyAt(0)));
+    ASSERT_TRUE(module->AcceptRadioDeviceResult(original.ReplyAt(1)));
+    original.input.dispatch->RunOwnerTasks();
+    EXPECT_EQ(module->StopAcceptingAndDrain(), Drain::DeviceEffectsUnresolved);
+    EXPECT_FALSE(module->LoadIccid(*efSession));
+    EXPECT_FALSE(module->ReloadAccounts(AccountReadView::Historical).admitted);
+    EXPECT_FALSE(module->ObserveCardApplication({{2}, "USIM"}, 3));
+
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(oldEf));
+    EXPECT_FALSE(module->AcceptIccidIoEvidence(oldEf));
+    ASSERT_TRUE(module->AcceptPinIoEvidence(oldPin));
+    ASSERT_EQ(pinHost->results.size(), 1u);
+    EXPECT_NE(pinHost->results[0].status, 0);
+    ASSERT_TRUE(module->AcceptMsisdnEvidence(oldNumber));
+    ASSERT_EQ(numberHost->writes.size(), 1u);
+    EXPECT_EQ(numberHost->writes[0].first, 30u);
+    EXPECT_EQ(numberHost->writes[0].second, OHOS::Telephony::TELEPHONY_ERR_DATABASE_WRITE_FAIL);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), Drain::DeviceEffectsUnresolved);
+    ASSERT_TRUE(module->AcceptRadioC1RoundRecovery(original.VerifyAbortedRound()));
+    EXPECT_EQ(module->StopAcceptingAndDrain(), Drain::CallbacksStillInFlight);
+    original.input.dispatch->RunOwnerTasks();
+    EXPECT_EQ(module->StopAcceptingAndDrain(), Drain::BusinessEffectsUnresolved);
+    EXPECT_TRUE(std::holds_alternative<SimModuleInitFailure>(createSuccessor()));
+
+    store->ProveApplied(originalWrite, {43});
+    ASSERT_TRUE(module->ReconcileDiscovery(originalWrite.call));
+    EXPECT_FALSE(module->FindBinding({3}));
+    ASSERT_EQ(module->StopAcceptingAndDrain(), Drain::Drained);
+    EXPECT_EQ(original.input.completion->results.size(), 1u);
+
+    auto created = createSuccessor();
+    ASSERT_TRUE(std::holds_alternative<CoreSimModuleHandle>(created));
+    auto current = std::get<CoreSimModuleHandle>(std::move(created));
+    ASSERT_NE(current->Epoch(), module->Epoch());
+    const auto nextBinding = current->FindBinding({0});
+    const auto nextSession = current->ObserveCardApplication({{0}, "USIM"}, 1);
+    ASSERT_TRUE(nextBinding && nextSession);
+    ASSERT_TRUE(current->StartPrimarySwitch(Command(*nextBinding)));
+    ASSERT_EQ(successor.radio->history.size(), 2u);
+    ASSERT_TRUE(current->LoadIccid(*nextSession));
+    ASSERT_TRUE(current->AcceptIccidIoEvidence(nextEf->Reply(0, kIccidMetadata)));
+    const auto assignmentBeforeOldEvidence = current->ReadAssignment();
+    EXPECT_FALSE(current->AcceptRadioDeviceResult(original.ReplyAt(1)));
+    EXPECT_FALSE(current->AcceptRadioC1RoundRecovery(original.VerifyAbortedRound()));
+    EXPECT_FALSE(current->AcceptIccidIoEvidence(oldEf));
+    EXPECT_FALSE(current->ReadIccidRecords(*nextSession));
+    EXPECT_EQ(current->ReadPrimaryResourceState(), ResourceState::InFlight);
+    EXPECT_EQ(current->ReadAssignment().lastPrimary, assignmentBeforeOldEvidence.lastPrimary);
+    EXPECT_EQ(current->ReadAssignment().lastData, assignmentBeforeOldEvidence.lastData);
+    ASSERT_TRUE(current->AcceptIccidIoEvidence(nextEf->Reply(1, "980000000000000000F0")));
+    const auto newRecords = current->ReadIccidRecords(*nextSession);
+    ASSERT_TRUE(newRecords);
+    EXPECT_EQ(newRecords->decimal, kRaw0);
+    for (size_t index = 0; index < 6; ++index) {
+        ASSERT_LT(index, successor.radio->history.size());
+        const auto [request, token] = successor.radio->history[index];
+        ASSERT_TRUE(current->AcceptRadioDeviceResult({token,
+            {request.step, request.target, request.expectedBinding, request.protocolSession, request.phase,
+                request.phase == 2, EffectKnowledge::ConfirmedApplied, 0}, true, true, false,
+            static_cast<int32_t>(token)}));
+    }
+    EXPECT_EQ(current->ReadAssignment().lastPrimary, SlotId {0});
+    EXPECT_EQ(current->StopAcceptingAndDrain(), Drain::Drained);
 }

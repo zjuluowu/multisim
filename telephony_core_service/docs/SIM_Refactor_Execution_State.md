@@ -379,6 +379,13 @@ Owner 收尾任务只在根门成功后提交一次。逐项关闭清单、C1 �
 完整组合重建、逐项关闭清单、其余整轮结果和独立扩展仍待，状态为 `AF2_M9_IN_PROGRESS`。
 [正式整轮恢复、独立复跑及运行时负控](../services/multisim/test/docs/evidence/af2_m9_d04_c1_recovery_20261128/README.md)
 
+**D04 正式混合对象图重建检查点（2026-11-28）。** 同一正式图实跑 C1、PIN、ICCID READ BINARY、
+MSISDN、Historical Reload、账户 Store Unknown、局部 Refresh 与换卡。原 Owner、设备和 Store 收据分开结清。
+未取得前驱证明的重建失败，旧效果结清后实际创建新图。新图的角色和 Records 在原 epoch 回包重放时保持稳定，
+并通过各自新证据完成。Target 全量 264/264，ASan/TSan 组合专项各 18/18，正式用例独立复跑及重复验证通过。
+逐项关闭清单、其余 C1 结果、独立扩展与最终收口仍待，全局保持 `AF2_M9_IN_PROGRESS`。
+[正式对象图、重建及负控](../services/multisim/test/docs/evidence/af2_m9_d04_mixed_graph_20261128/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）
