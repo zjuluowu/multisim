@@ -38,25 +38,46 @@ bool PrimaryHostLifecycle::CloseObservation::SameSchedulerActivity(const CloseOb
 PrimaryHostLifecycle::CloseObservation PrimaryHostLifecycle::ObserveClose()
 {
     bool sealGates = false;
-    bool postClose = false;
+    bool sealScheduler = false;
     {
         std::lock_guard<std::mutex> guard(state_->mutex);
-        state_->stopping = true;
-        if (!state_->closePosted) { state_->closePosted = true; postClose = true; }
-        if (!state_->gateSealStarted && !state_->gatesSealed) {
-            state_->gateSealStarted = true; sealGates = true;
+        if (state_->gateSealStarted) { return {DrainResult::CallbacksStillInFlight}; }
+        if (!state_->gatesSealed) {
+            state_->gateSealStarted = true;
+            sealGates = true;
+            sealScheduler = !state_->schedulerSealed;
         }
     }
     if (sealGates) {
-        // New admission is closed on caller-safe gates before any Owner mutation
-        // is posted. The Owner task below is only the serial A commit/cancel step.
-        const auto assignment = assignment_.lock();
-        if (!assignment) { return {DrainResult::CallbacksStillInFlight}; }
-        assignment->RequestStopAccepting();
-        scheduler_.StopAcceptingAndCancel();
-        (void)radio_.StopAccepting();
+        bool sealed = false;
+        try {
+            if (const auto assignment = assignment_.lock()) {
+                assignment->RequestStopAccepting();
+                if (sealScheduler) {
+                    scheduler_.StopAcceptingAndCancel();
+                    std::lock_guard<std::mutex> guard(state_->mutex);
+                    state_->schedulerSealed = true;
+                }
+                (void)radio_.StopAccepting();
+                sealed = true;
+            }
+        } catch (const std::exception &) {
+            // The module's new admission remains closed. A later observer retries
+            // the unacknowledged gate before offering any work to the Owner.
+        }
         std::lock_guard<std::mutex> guard(state_->mutex);
-        state_->gatesSealed = true;
+        state_->gateSealStarted = false;
+        state_->gatesSealed = sealed;
+        if (!sealed) { return {DrainResult::CallbacksStillInFlight}; }
+    }
+
+    bool postClose = false;
+    {
+        std::lock_guard<std::mutex> guard(state_->mutex);
+        if (!state_->closePosted) {
+            state_->closePosted = true;
+            postClose = true;
+        }
     }
     if (postClose) {
         const auto dispatch = ownerDispatch_.lock();

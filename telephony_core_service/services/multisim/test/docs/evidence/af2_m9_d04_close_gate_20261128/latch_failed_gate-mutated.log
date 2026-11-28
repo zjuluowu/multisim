@@ -1,0 +1,57 @@
+Note: Google Test filter = AF2Module.StopRetriesAReportedSchedulerSealFailureBeforePostingOwnerClose
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Module
+[ RUN      ] AF2Module.StopRetriesAReportedSchedulerSealFailureBeforePostingOwnerClose
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:1079: Failure
+Expected equality of these values:
+  input.dispatch->seals
+    Which is: 0
+  1u
+    Which is: 1
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:1080: Failure
+Expected equality of these values:
+  input.dispatch->PendingOwnerTasks()
+    Which is: 0
+  1u
+    Which is: 1
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:1082: Failure
+Expected equality of these values:
+  module->StopAcceptingAndDrain()
+    Which is: 4-byte object <01-00 00-00>
+  Drain::Drained
+    Which is: 4-byte object <00-00 00-00>
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:1083: Failure
+Expected equality of these values:
+  module->StopAcceptingAndDrain()
+    Which is: 4-byte object <01-00 00-00>
+  Drain::Drained
+    Which is: 4-byte object <00-00 00-00>
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:1084: Failure
+Expected equality of these values:
+  input.dispatch->seals
+    Which is: 0
+  1u
+    Which is: 1
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:1085: Failure
+Expected equality of these values:
+  input.dispatch->cancels
+    Which is: 0
+  1u
+    Which is: 1
+
+[  FAILED  ] AF2Module.StopRetriesAReportedSchedulerSealFailureBeforePostingOwnerClose (1 ms)
+[----------] 1 test from AF2Module (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] AF2Module.StopRetriesAReportedSchedulerSealFailureBeforePostingOwnerClose
+
+ 1 FAILED TEST

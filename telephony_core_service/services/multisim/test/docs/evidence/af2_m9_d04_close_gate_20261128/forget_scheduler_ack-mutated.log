@@ -1,0 +1,22 @@
+Note: Google Test filter = AF2Module.StopRetainsAcknowledgedSchedulerSealWhenRadioAuditFails
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Module
+[ RUN      ] AF2Module.StopRetainsAcknowledgedSchedulerSealWhenRadioAuditFails
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:1100: Failure
+Expected equality of these values:
+  input.dispatch->seals
+    Which is: 2
+  1u
+    Which is: 1
+
+[  FAILED  ] AF2Module.StopRetainsAcknowledgedSchedulerSealWhenRadioAuditFails (0 ms)
+[----------] 1 test from AF2Module (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] AF2Module.StopRetainsAcknowledgedSchedulerSealWhenRadioAuditFails
+
+ 1 FAILED TEST

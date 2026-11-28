@@ -23,6 +23,7 @@ def migration_inputs(source, repo):
     prefix = 'telephony_core_service/services/multisim'
     before_m9 = {}
     for manifest, stage in (
+        ('af2_m9_d04_close_gate', 'AF2 M9 D04 close gates'),
         ('af2_m9_d04_close_observation', 'AF2 M9 D04 close observation'),
         ('af2_m9_d04_ef', 'AF2 M9 D04 EF'),
         ('af2_m9_d04_c1_round', 'AF2 M9 D04 C1 round'),

@@ -35,10 +35,10 @@ private:
     std::weak_ptr<RadioOwnerDispatchPort> ownerDispatch_;
     struct State {
         std::mutex mutex;
-        bool stopping {false};
         bool sealsComplete {false};
         bool closePosted {false};
         bool gateSealStarted {false};
+        bool schedulerSealed {false};
         bool gatesSealed {false};
         bool stopped {false};
     };

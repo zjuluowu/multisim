@@ -865,6 +865,8 @@ class ModuleDispatch final : public RetrySchedulerPort, public RadioOwnerDispatc
 public:
     bool defer {false};
     bool rejectRetryRegistration {false};
+    bool failNextSeal {false};
+    mutable bool failNextOwnerAudit {false};
     std::function<void()> afterAudit;
     unsigned seals {0};
     unsigned cancels {0};
@@ -905,6 +907,7 @@ public:
     void StopAcceptingAndCancel() override
     {
         std::lock_guard<std::mutex> guard(lock_);
+        if (std::exchange(failNextSeal, false)) { throw std::runtime_error("scheduler seal not completed"); }
         ++seals;
         audit_.accepting = false;
         audit_.cancelled += scheduled_.size();
@@ -946,7 +949,11 @@ public:
         if (defer) { ownerTasks_.push_back(std::move(task)); } else { task(); }
         return true;
     }
-    bool RadioOwnerCallbacksDrained() const override { return ownerTasks_.empty() && ownerRunning_ == 0; }
+    bool RadioOwnerCallbacksDrained() const override
+    {
+        if (std::exchange(failNextOwnerAudit, false)) { throw std::runtime_error("Owner audit unavailable"); }
+        return ownerTasks_.empty() && ownerRunning_ == 0;
+    }
     size_t PendingOwnerTasks() const { return ownerTasks_.size(); }
     void RunOwnerTasks()
     {
@@ -1054,6 +1061,44 @@ TEST(AF2Module, AlreadyPrimaryUsesLiveModemMappingAfterEndpointRemap)
     EXPECT_EQ(module->ReadAssignment().lastPrimary, SlotId {0});
     EXPECT_EQ(input.parameters->values.at(kPrimary), "0");
     EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Module, StopRetriesAReportedSchedulerSealFailureBeforePostingOwnerClose)
+{
+    ModuleInputs input;
+    input.dispatch->failNextSeal = true;
+    input.dispatch->defer = true;
+    auto module = std::get<CoreSimModuleHandle>(CreateCoreSimModule(input.Ports(), input.catalog, input.accounts));
+    using Drain = SimModule::DrainResult;
+
+    EXPECT_EQ(module->StopAcceptingAndDrain(), Drain::CallbacksStillInFlight);
+    EXPECT_FALSE(module->StartPrimarySwitch(Command(*module->FindBinding({1}))));
+    EXPECT_EQ(input.dispatch->seals, 0u);
+    EXPECT_EQ(input.dispatch->PendingOwnerTasks(), 0u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), Drain::CallbacksStillInFlight);
+    EXPECT_EQ(input.dispatch->seals, 1u);
+    EXPECT_EQ(input.dispatch->PendingOwnerTasks(), 1u);
+    input.dispatch->RunOwnerTasks();
+    EXPECT_EQ(module->StopAcceptingAndDrain(), Drain::Drained);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), Drain::Drained);
+    EXPECT_EQ(input.dispatch->seals, 1u);
+    EXPECT_EQ(input.dispatch->cancels, 1u);
+}
+
+TEST(AF2Module, StopRetainsAcknowledgedSchedulerSealWhenRadioAuditFails)
+{
+    ModuleInputs input;
+    auto module = std::get<CoreSimModuleHandle>(CreateCoreSimModule(input.Ports(), input.catalog, input.accounts));
+    input.dispatch->failNextOwnerAudit = true;
+    using Drain = SimModule::DrainResult;
+
+    EXPECT_EQ(module->StopAcceptingAndDrain(), Drain::CallbacksStillInFlight);
+    EXPECT_EQ(input.dispatch->seals, 1u);
+    EXPECT_EQ(input.dispatch->cancels, 0u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), Drain::Drained);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), Drain::Drained);
+    EXPECT_EQ(input.dispatch->seals, 1u);
+    EXPECT_EQ(input.dispatch->cancels, 1u);
 }
 
 TEST(AF2Module, MissingPortAndBadEvidenceNeverPublishAndReleasePartialGraph)

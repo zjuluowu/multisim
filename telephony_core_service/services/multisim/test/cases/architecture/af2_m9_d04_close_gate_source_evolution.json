@@ -1,0 +1,7 @@
+{
+  "baseline": "662e5b16fdd68eac6118c0992fff31802d80ee59",
+  "files": {
+    "infrastructure/assembly/primary_host_lifecycle.cpp": "4d7487575ee92954848abd7aecae43a642b7249d53b97e7b5151b6042411b1d4",
+    "infrastructure/assembly/primary_host_lifecycle.h": "58b07947574c281ea99535de723c676652689e5cd896e3c7d8c67ac241a361cb"
+  }
+}

@@ -366,6 +366,12 @@ Target 全量 253/253，专项 ASan/TSan 各 52/52，冻结契约双端 24/24、
 恢复、全图跨实例组合和独立扩展待完成。全局保持 `AF2_M9_IN_PROGRESS`。
 [正式关闭观察与独立反例](../services/multisim/test/docs/evidence/af2_m9_d04_close_observation_20261128/README.md)
 
+**D04 关闭封口失败恢复检查点（2026-11-28）。** Scheduler 封口失败维持新入口封闭和旧责任保留，
+后续 Stop 重新执行未确认的封口。R 查询 Owner 失败时保留 Scheduler 已确认的封口收据。
+Owner 收尾任务只在根门成功后提交一次。逐项关闭清单、C1 整轮恢复、组合重建与独立扩展仍待，
+状态为 `AF2_M9_IN_PROGRESS`。
+[正式从失败恢复的原始验证](../services/multisim/test/docs/evidence/af2_m9_d04_close_gate_20261128/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）
