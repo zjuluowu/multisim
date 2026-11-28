@@ -175,7 +175,7 @@ SIM 号码的异步队列、卡会话、资源租约及账户回写单步见 [M7
 账户初次恢复、Current/Historical 刷新、字段保护及 A 的整组回执见 [M8 账户加载与 Reload 调试](M8_Account_Reload_Debug.md)。
 
 
-## 调试卡安全和 ICCID EF
+## 调试卡安全、ICCID 和独立 EF
 
 从仓库根目录运行。按本页前文配置固定依赖和仓外构建输出。
 
@@ -186,13 +186,21 @@ python3 -B "$TEST/scripts/test.py" run --backend target --debug-build --out "$SI
   --filter AF2UnlockPin.WrongThenSuccessfulUsesOriginalApiContract
 python3 -B "$TEST/scripts/test.py" run --backend target --debug-build --out "$SIM_DEV" \
   --filter AF2Iccid.PreIdentityApplicationReadsRawEfAndDiscoversOneAccount
+python3 -B "$TEST/scripts/test.py" run --backend target --debug-build --out "$SIM_DEV" \
+  --filter AF2EfRecords.RefreshIccidLeavesSameCardGid1AndNeighbourInFlight
 ```
 
 在 `PinUnlockRuntime::Unlock` 看原卡应用和传输票；在 `LegacyCompletion::CompletePin` 核对 API 返回、
 业务结果及剩余次数。成功的安全请求可将原应用从 LOCKED 推进到 NOT_READY。
-在 `IccidRecordsRuntime::Submit` 观察原 GET RESPONSE 和 READ BINARY，在
-`IccidRecordsRuntime::AcceptRead` 和 `TopologyService::DiscoverAccount` 核对 Records 与账户发现。
-两个样板复用 `CardCommandTransport` 传输与租约，不要求预先建立账户。
+在 `EfRecordsRuntime::Submit` 观察原路由、GET RESPONSE 和 READ BINARY。在
+`EfRecordsRuntime::AcceptRead` 核对原字段作用域及回包，在 `TopologyService::DiscoverAccount`
+核对 ICCID 可信身份和账户发现。GID1 保留原响应的十六进制值，按自身字段独立提交。
+卡安全与透明 EF 复用 `CardCommandTransport` 传输和租约，支持尚未建立账户的应用。
 
-受控 Host 卡端口提供路由、原回包、等待结束和资源复用证据。实际 Windows Remote WSL GUI 为
+将新生产 CPP 放入本模块五个既有目录中的所属业务目录，在本模块 `BUILD.gn` 登记逻辑归属。
+运行上述 Host 入口会自动刷新 Target 生产源清单并重新生成所需构建图。新测试 CPP 由同一入口发现。
+未增删源码时保留 GN 清单的时间戳。七个逻辑 GN 专属单元及其当前职责见
+[归档检查](../scripts/host_build_contract.py)。
+
+受控 Host 卡端口提供路由及版本、原回包、等待结束和资源复用证据。实际 Windows Remote WSL GUI 为
 GUI_NOT_RUN。产品原生设备供证继续独立进行。

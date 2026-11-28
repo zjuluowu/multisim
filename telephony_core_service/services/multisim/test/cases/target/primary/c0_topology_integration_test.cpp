@@ -1286,7 +1286,7 @@ struct LiveDiscoveryFixture {
         std::shared_ptr<SlotCatalog> catalog = {}, std::shared_ptr<RoleProvider> provider = {},
         std::shared_ptr<MetadataProvider> metadata = {},
         std::shared_ptr<LegacyNumberHostPort> numberHost = {}, std::shared_ptr<MsisdnPlatformPort> msisdn = {},
-        std::shared_ptr<IccidIoPort> iccidIo = {}, std::shared_ptr<PinIoPort> pinIo = {},
+        std::shared_ptr<EfIoPort> efIo = {}, std::shared_ptr<PinIoPort> pinIo = {},
         std::shared_ptr<LegacyPinHostPort> pinHost = {})
     {
         if (catalog) { input.catalog = std::move(catalog); }
@@ -1301,13 +1301,13 @@ struct LiveDiscoveryFixture {
         ports.primaryHost = std::move(primaryHost);
         ports.numberHost = std::move(numberHost);
         ports.msisdn = std::move(msisdn);
-        ports.iccidIo = std::move(iccidIo);
+        ports.efIo = std::move(efIo);
         ports.pinIo = std::move(pinIo);
         ports.pinHost = std::move(pinHost);
-        if (ports.iccidIo || ports.pinIo) {
+        if (ports.efIo || ports.pinIo) {
             ports.initialEvidence = [](const ResourceKey &key, RuntimeEpoch epoch) {
                 EXPECT_TRUE(key.verifiedPhysicalDomain == "primary-shared" ||
-                    key.verifiedPhysicalDomain == "other-card-ef");
+                    key.verifiedPhysicalDomain == "other-card-ef" || key.verifiedPhysicalDomain == "same-card-gid1");
                 return InitialRecoveryEvidence {epoch, true, true};
             };
         }
@@ -1373,44 +1373,167 @@ TEST(AF2Discovery, ApplicationPrecedesIdentityAndStalePromotionCannotCreateBindi
 namespace {
 constexpr auto kIccidMetadata = "0000000A0000040000000000000000";
 constexpr auto kFirstRawIccid = "980000000000000000F1";
+constexpr auto kGid1Metadata = "000000020000040000000000000000";
 
-class IccidDevice final : public IccidIoPort {
+class EfDevice final : public EfIoPort {
 public:
-    std::vector<ResourceKey> InitialResources() const override
-    { return {{"primary-shared"}, {"other-card-ef"}}; }
+    explicit EfDevice(bool withGid1 = false) : withGid1_(withGid1) {}
 
-    std::optional<IccidIoRoute> ResolveIccidRoute(const SessionRef &session) override
+    std::vector<ResourceKey> InitialResources() const override
     {
-        const char *domain = session.application.slot == SlotId {0} ? "other-card-ef" : "primary-shared";
-        return IccidIoRoute {{{domain}}, "3F00"};
+        std::vector<ResourceKey> keys {{"primary-shared"}, {"other-card-ef"}};
+        if (withGid1_) { keys.push_back({"same-card-gid1"}); }
+        return keys;
     }
 
-    bool SubmitIccidIo(const CardCommandTicket &ticket, const IccidIoCommand &command) override
+    std::optional<EfIoRoute> ResolveEfRoute(const SessionRef &session, EfField field) override
     {
+        if (field == EfField::Gid1) {
+            if (!withGid1_) { return std::nullopt; }
+            const char *path = session.application.applicationKey == "SIM" ? "3F007F20" : "3F007FFF";
+            return EfIoRoute {{{"same-card-gid1"}}, path, routeRevision};
+        }
+        const char *domain = session.application.slot == SlotId {0} ? "other-card-ef" : "primary-shared";
+        return EfIoRoute {{{domain}}, "3F00", routeRevision};
+    }
+
+    bool SubmitEfIo(const CardCommandTicket &ticket, const EfIoRoute &route, const EfIoCommand &command) override
+    {
+        const auto current = ResolveEfRoute(ticket.session, static_cast<EfField>(command.fileId));
+        if (!current || current->revision != route.revision || current->path != route.path ||
+            command.path != route.path ||
+            !std::equal(current->resources.begin(), current->resources.end(), route.resources.begin(),
+                route.resources.end(), [](const auto &left, const auto &right) {
+                    return left.verifiedPhysicalDomain == right.verifiedPhysicalDomain;
+                })) {
+            return false;
+        }
         commands.emplace_back(ticket, command);
         if (replyInline) {
             auto reply = Reply(commands.size() - 1,
-                command.code == IccidIoCommand::Code::GetResponse ? kIccidMetadata : kFirstRawIccid);
+                command.code == EfIoCommand::Code::GetResponse ? kIccidMetadata : kFirstRawIccid);
             replyInline(reply);
         }
         return handoffAccepted;
     }
 
     bool handoffAccepted {true};
+    uint64_t routeRevision {1};
     CardCommandEvidence Reply(size_t index, const std::string &hex) const
     {
         return {commands.at(index).first, EffectKnowledge::ConfirmedApplied, true, true, true, false, hex};
     }
 
-    std::vector<std::pair<CardCommandTicket, IccidIoCommand>> commands;
+    std::vector<std::pair<CardCommandTicket, EfIoCommand>> commands;
     std::function<void(const CardCommandEvidence &)> replyInline;
+private:
+    bool withGid1_;
 };
 
 struct IccidFixture {
-    std::shared_ptr<IccidDevice> io = std::make_shared<IccidDevice>();
+    std::shared_ptr<EfDevice> io = std::make_shared<EfDevice>();
     LiveDiscoveryFixture live {{}, {}, {}, {}, {}, {}, io};
 };
 } // namespace
+
+TEST(AF2EfRecords, RefreshIccidLeavesSameCardGid1AndNeighbourInFlight)
+{
+    const auto io = std::make_shared<EfDevice>(true);
+    LiveDiscoveryFixture fixture {{}, {}, {}, {}, {}, {}, io};
+    const auto module = fixture.module;
+    const auto current = module->ObserveCardApplication({{1}, "USIM"}, 1);
+    const auto neighbour = module->ObserveCardApplication({{0}, "SIM"}, 1);
+    ASSERT_TRUE(current && neighbour);
+    fixture.store->produceStore = [](const auto &plan) {
+        return Stored({plan.accountFields.legacyPosition.legacySlotId == 0 ? 40 : 41});
+    };
+    ASSERT_TRUE(module->LoadIccid(*current));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(io->Reply(0, kIccidMetadata)));
+    ASSERT_TRUE(module->LoadGid1(*current));
+    ASSERT_TRUE(module->AcceptGid1IoEvidence(io->Reply(2, kGid1Metadata)));
+    ASSERT_TRUE(module->LoadIccid(*neighbour));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(io->Reply(4, kIccidMetadata)));
+    ASSERT_EQ(io->commands.size(), 6u);
+    EXPECT_EQ(io->commands[1].first.session, *current);
+    EXPECT_EQ(io->commands[3].first.session, *current);
+    EXPECT_EQ(io->commands[5].first.session, *neighbour);
+    EXPECT_EQ(io->commands[3].second.code, EfIoCommand::Code::ReadBinary);
+    EXPECT_EQ(io->commands[3].second.fileId, 0x6f3e);
+    EXPECT_EQ(io->commands[3].second.path, "3F007FFF");
+    EXPECT_EQ(io->commands[3].second.size, 2u);
+    EXPECT_EQ(fixture.store->writes, 0u);
+
+    ASSERT_TRUE(module->RefreshIccid(*current));
+    const auto gid = io->Reply(3, "A0fe");
+    EXPECT_FALSE(module->AcceptIccidIoEvidence(gid));
+    EXPECT_TRUE(module->AcceptGid1IoEvidence(gid));
+    EXPECT_EQ(module->ReadGid1Records(*current), "A0fe");
+    EXPECT_FALSE(module->ReadGid1Records(*neighbour));
+    EXPECT_EQ(fixture.store->writes, 0u);
+
+    EXPECT_TRUE(module->AcceptIccidIoEvidence(io->Reply(5, "980000000000000000F2")));
+    ASSERT_TRUE(module->ReadIccidRecords(*neighbour));
+    EXPECT_EQ(module->ReadIccidRecords(*neighbour)->decimal, "8900000000000000002");
+    EXPECT_TRUE(module->FindBinding({0}));
+    const auto obsolete = io->Reply(1, kFirstRawIccid);
+    EXPECT_TRUE(module->AcceptIccidIoEvidence(obsolete));
+    EXPECT_FALSE(module->AcceptIccidIoEvidence(obsolete));
+    EXPECT_FALSE(module->ReadIccidRecords(*current));
+    EXPECT_FALSE(module->FindBinding({1}));
+
+    ASSERT_TRUE(module->LoadIccid(*current));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(io->Reply(6, kIccidMetadata)));
+    const auto malformed = io->Reply(7, "ZZ");
+    EXPECT_TRUE(module->AcceptIccidIoEvidence(malformed));
+    EXPECT_FALSE(module->AcceptIccidIoEvidence(malformed));
+    EXPECT_FALSE(module->ReadIccidRecords(*current));
+    EXPECT_FALSE(module->FindBinding({1}));
+    EXPECT_EQ(module->ReadGid1Records(*current), "A0fe");
+
+    ASSERT_TRUE(module->LoadIccid(*current));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(io->Reply(8, kIccidMetadata)));
+    ASSERT_TRUE(module->AcceptIccidIoEvidence(io->Reply(9, kFirstRawIccid)));
+    EXPECT_EQ(fixture.store->writes, 2u);
+    EXPECT_TRUE(module->FindBinding({1}));
+    EXPECT_EQ(module->ReadGid1Records(*current), "A0fe");
+    EXPECT_TRUE(module->RefreshGid1(*current));
+    EXPECT_FALSE(module->ReadGid1Records(*current));
+    EXPECT_TRUE(module->ReadIccidRecords(*current));
+    EXPECT_TRUE(module->ReadIccidRecords(*neighbour));
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2EfRecords, OriginalRouteRevisionGatesReadBinaryAndGid1FailureClearsItsField)
+{
+    const auto io = std::make_shared<EfDevice>(true);
+    LiveDiscoveryFixture fixture {{}, {}, {}, {}, {}, {}, io};
+    const auto module = fixture.module;
+    const auto session = module->ObserveCardApplication({{1}, "SIM"}, 1);
+    ASSERT_TRUE(session);
+    ASSERT_TRUE(module->LoadGid1(*session));
+    ASSERT_EQ(io->commands.size(), 1u);
+    EXPECT_EQ(io->commands.front().second.path, "3F007F20");
+    ++io->routeRevision;
+    EXPECT_TRUE(module->AcceptGid1IoEvidence(io->Reply(0, kGid1Metadata)));
+    EXPECT_EQ(io->commands.size(), 1u);
+    EXPECT_FALSE(module->ReadGid1Records(*session));
+
+    ASSERT_TRUE(module->LoadGid1(*session));
+    ASSERT_TRUE(module->AcceptGid1IoEvidence(io->Reply(1, kGid1Metadata)));
+    ASSERT_TRUE(module->AcceptGid1IoEvidence(io->Reply(2, "ABc0")));
+    EXPECT_EQ(module->ReadGid1Records(*session), "ABc0");
+    ASSERT_TRUE(module->LoadGid1(*session));
+    ASSERT_TRUE(module->AcceptGid1IoEvidence(io->Reply(3, kGid1Metadata)));
+    auto failure = io->Reply(4, "");
+    failure.effect = EffectKnowledge::ConfirmedNotApplied;
+    failure.legacyWaitSucceeded = false;
+    EXPECT_TRUE(module->AcceptGid1IoEvidence(failure));
+    EXPECT_FALSE(module->AcceptGid1IoEvidence(failure));
+    EXPECT_FALSE(module->ReadGid1Records(*session));
+    EXPECT_FALSE(module->FindBinding({1}));
+    EXPECT_EQ(fixture.store->writes, 0u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
 
 TEST(AF2Iccid, PreIdentityApplicationReadsRawEfAndDiscoversOneAccount)
 {
@@ -1425,7 +1548,7 @@ TEST(AF2Iccid, PreIdentityApplicationReadsRawEfAndDiscoversOneAccount)
     const auto [getTicket, getCommand] = fixture.io->commands.front();
     EXPECT_EQ(getTicket.step.request, *request);
     EXPECT_EQ(getTicket.session, *session);
-    EXPECT_EQ(getCommand.code, IccidIoCommand::Code::GetResponse);
+    EXPECT_EQ(getCommand.code, EfIoCommand::Code::GetResponse);
     EXPECT_EQ(getCommand.fileId, 0x2fe2);
     EXPECT_EQ(getCommand.path, "3F00");
     EXPECT_EQ(getCommand.size, 15);
@@ -1436,7 +1559,7 @@ TEST(AF2Iccid, PreIdentityApplicationReadsRawEfAndDiscoversOneAccount)
     const auto [readTicket, readCommand] = fixture.io->commands.back();
     EXPECT_EQ(readTicket.step.request, *request);
     EXPECT_NE(readTicket.fence, getTicket.fence);
-    EXPECT_EQ(readCommand.code, IccidIoCommand::Code::ReadBinary);
+    EXPECT_EQ(readCommand.code, EfIoCommand::Code::ReadBinary);
     EXPECT_EQ(readCommand.size, 10);
     EXPECT_FALSE(module->ReadIccidRecords(*session));
     EXPECT_FALSE(module->AcceptIccidIoEvidence(metadata));
@@ -2073,7 +2196,7 @@ struct DedicatedPrimaryFixture {
     std::shared_ptr<RoleProvider> roles = std::make_shared<RoleProvider>();
     CoreSimModuleHandle module;
 
-    explicit DedicatedPrimaryFixture(bool threePhase = false, const std::shared_ptr<IccidDevice> &iccid = {})
+    explicit DedicatedPrimaryFixture(bool threePhase = false, const std::shared_ptr<EfDevice> &iccid = {})
     {
         input.radio->requiresDevice = !threePhase;
         input.radio->routing = PrimaryProtocolRouting {200,
@@ -2093,7 +2216,7 @@ struct DedicatedPrimaryFixture {
         ports.primaryHost = host;
         ports.primaryWait = wait;
         if (iccid) {
-            ports.iccidIo = iccid;
+            ports.efIo = iccid;
             ports.initialEvidence = [](const ResourceKey &key, RuntimeEpoch epoch) -> std::optional<InitialRecoveryEvidence> {
                 if (key.verifiedPhysicalDomain != "primary-shared" && key.verifiedPhysicalDomain != "other-card-ef") {
                     return std::nullopt;
@@ -2203,7 +2326,7 @@ TEST(AF2Primary, FormalThreePhaseUsesTwoNativeMembersAndOriginalWait)
 
 TEST(AF2Primary, FormalC1RetainsSharedCardResourceAcrossOwnerStageGaps)
 {
-    const auto iccid = std::make_shared<IccidDevice>();
+    const auto iccid = std::make_shared<EfDevice>();
     DedicatedPrimaryFixture fixture(true, iccid);
     const auto module = fixture.module;
     const auto shared = module->ObserveCardApplication({{1}, "USIM"}, 1);
@@ -2635,7 +2758,7 @@ struct PinFixture {
     std::shared_ptr<PinDevice> io = std::make_shared<PinDevice>();
     LiveDiscoveryFixture live;
 
-    explicit PinFixture(std::shared_ptr<IccidIoPort> iccid = {})
+    explicit PinFixture(std::shared_ptr<EfIoPort> iccid = {})
         : live(permission, {}, {}, {}, {}, {}, std::move(iccid), io, host) {}
 
     std::optional<SessionRef> ObserveLocked(SlotId slot, uint64_t generation = 1)
@@ -2672,7 +2795,7 @@ TEST(AF2UnlockPin, WrongThenSuccessfulUsesOriginalApiContract)
 
 TEST(AF2CardComposition, PinAndEfUseSharedResourceAndOriginalRequestNamespace)
 {
-    auto iccid = std::make_shared<IccidDevice>();
+    auto iccid = std::make_shared<EfDevice>();
     PinFixture fixture(iccid);
     auto &module = fixture.live.module;
     const auto locked = fixture.ObserveLocked({1});
@@ -2709,7 +2832,7 @@ TEST(AF2CardComposition, PinAndEfUseSharedResourceAndOriginalRequestNamespace)
 
 TEST(AF2CardComposition, StopSeparatesPinDeviceAndIccidStoreEffects)
 {
-    auto iccid = std::make_shared<IccidDevice>();
+    auto iccid = std::make_shared<EfDevice>();
     PinFixture fixture(iccid);
     auto &module = fixture.live.module;
     const auto locked = fixture.ObserveLocked({1});
@@ -2748,10 +2871,10 @@ TEST(AF2CardComposition, RebuildRequiresPredecessorProofAndRejectsItsOldEfEviden
     const auto oldReply = previous.io->Reply(1, kFirstRawIccid);
     ASSERT_EQ(old->StopAcceptingAndDrain(), SimModule::DrainResult::DeviceEffectsUnresolved);
 
-    const auto io = std::make_shared<IccidDevice>();
+    const auto io = std::make_shared<EfDevice>();
     const auto rebuild = [&] {
         auto ports = previous.live.input.Ports();
-        ports.iccidIo = io;
+        ports.efIo = io;
         ports.initialEvidence = [&](const ResourceKey &, RuntimeEpoch epoch) {
             const bool predecessorEnded = old->StopAcceptingAndDrain() == SimModule::DrainResult::Drained;
             return InitialRecoveryEvidence {epoch, predecessorEnded, predecessorEnded};

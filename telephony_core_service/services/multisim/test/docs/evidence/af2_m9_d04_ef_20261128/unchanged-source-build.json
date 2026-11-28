@@ -1,0 +1,63 @@
+{
+  "requested_targets": [
+    "sim_test_target_host"
+  ],
+  "dependencies": {
+    "googletest_inventory": 0.00818624603562057,
+    "googletest": {
+      "seconds": 0.0028580159414559603,
+      "reused": true,
+      "files": 247
+    },
+    "platform_headers": {
+      "seconds": 0.2187340350355953,
+      "reused": true,
+      "files": 21
+    }
+  },
+  "lock_wait_seconds": 8.699949830770493e-06,
+  "source_manifest": {
+    "seconds": 0.17603069404140115,
+    "changed": false,
+    "inventory_reused": true,
+    "case_sources": 36
+  },
+  "target_source_manifest": {
+    "seconds": 0.4665002338588238,
+    "changed": false,
+    "production_sources": 30
+  },
+  "gn": {
+    "seconds_including_compile_database": 6.00004568696022e-07,
+    "count": 0,
+    "reason": null
+  },
+  "compile_database_changed": false,
+  "compile_database_seconds": null,
+  "targets": [
+    "sim_test_target_host"
+  ],
+  "route_seconds": 7.699942216277122e-06,
+  "configuration_changed": false,
+  "ninja": {
+    "seconds": 0.5059807570651174,
+    "count": 1,
+    "actions": {
+      "CXX": 0,
+      "LINK": 0,
+      "SOLINK": 0,
+      "AR": 0,
+      "Regenerating": 0
+    }
+  },
+  "binary_identities": {
+    "sim_test_target_host": [
+      2096,
+      470246,
+      42517664,
+      1795830716461166859,
+      1795830716549167379
+    ]
+  },
+  "lock_hold_seconds": 1.4771701421122998
+}

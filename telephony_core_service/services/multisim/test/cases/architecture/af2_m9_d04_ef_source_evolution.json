@@ -1,0 +1,15 @@
+{
+  "baseline": "6af154358f7fe215a2c39d24b33f1bc3598856ab",
+  "files": {
+    "BUILD.gn": "462fd43047725246a062822e9c642bd9a485474b65206e77de4949de95f5b380",
+    "card/records/iccid_records_runtime.cpp": "d23e147de53bad0ac238e819c8cfe1925ea1c3b25934cc47abcf744e46ae2dba",
+    "card/records/iccid_records_runtime.h": "2b7003964fdaa820bb833d9729eb608f6ef4e454abdfcc37beb51c60e1c07b71",
+    "card/runtime/card_command_transport.h": "81ecf3c4a83f5b40ec6be1f169b0a878cc54b054a8cfc9e373a3888fd7487fd8",
+    "infrastructure/assembly/sim_module.h": "1872c6d73f5f4d8e9631af6c626490ed2413855b037869ce3ff21ca0b14751bd",
+    "infrastructure/assembly/sim_module_factory.cpp": "68886ea3a37fe144857b7149d831063fe5dc17ea5e6af1e18b79bc0a8d85ff31"
+  },
+  "added": {
+    "card/records/ef_records_runtime.cpp": "ecfd5b948b349e4d2b56c671b06765972cae2eec9a3fa0af175b1cf7a59a8821",
+    "card/records/ef_records_runtime.h": "2ccbf99b95da669dc04b5f14242a841098e1514e7c08efc7795142d27e405a57"
+  }
+}

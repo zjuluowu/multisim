@@ -1,0 +1,27 @@
+Note: Google Test filter = AF2EfRecords.OriginalRouteRevisionGatesReadBinaryAndGid1FailureClearsItsField
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2EfRecords
+[ RUN      ] AF2EfRecords.OriginalRouteRevisionGatesReadBinaryAndGid1FailureClearsItsField
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:1518: Failure
+Expected equality of these values:
+  io->commands.size()
+    Which is: 2
+  1u
+    Which is: 1
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:1521: Failure
+Value of: module->LoadGid1(*session)
+  Actual: false
+Expected: true
+
+[  FAILED  ] AF2EfRecords.OriginalRouteRevisionGatesReadBinaryAndGid1FailureClearsItsField (0 ms)
+[----------] 1 test from AF2EfRecords (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] AF2EfRecords.OriginalRouteRevisionGatesReadBinaryAndGid1FailureClearsItsField
+
+ 1 FAILED TEST

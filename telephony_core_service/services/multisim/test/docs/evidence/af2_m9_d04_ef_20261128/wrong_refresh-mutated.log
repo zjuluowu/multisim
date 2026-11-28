@@ -1,0 +1,56 @@
+Note: Google Test filter = AF2EfRecords.RefreshIccidLeavesSameCardGid1AndNeighbourInFlight
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2EfRecords
+[ RUN      ] AF2EfRecords.RefreshIccidLeavesSameCardGid1AndNeighbourInFlight
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:1470: Failure
+Expected equality of these values:
+  module->ReadGid1Records(*current)
+    Which is: (nullopt)
+  "A0fe"
+    Which is: 0x5897234a2caa
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:1481: Failure
+Value of: module->ReadIccidRecords(*current)
+  Actual: true
+Expected: false
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:1482: Failure
+Value of: module->FindBinding({1})
+  Actual: true
+Expected: false
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:1489: Failure
+Value of: module->ReadIccidRecords(*current)
+  Actual: true
+Expected: false
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:1490: Failure
+Value of: module->FindBinding({1})
+  Actual: true
+Expected: false
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:1491: Failure
+Expected equality of these values:
+  module->ReadGid1Records(*current)
+    Which is: (nullopt)
+  "A0fe"
+    Which is: 0x5897234a2caa
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:1498: Failure
+Expected equality of these values:
+  module->ReadGid1Records(*current)
+    Which is: (nullopt)
+  "A0fe"
+    Which is: 0x5897234a2caa
+
+[  FAILED  ] AF2EfRecords.RefreshIccidLeavesSameCardGid1AndNeighbourInFlight (1 ms)
+[----------] 1 test from AF2EfRecords (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] AF2EfRecords.RefreshIccidLeavesSameCardGid1AndNeighbourInFlight
+
+ 1 FAILED TEST

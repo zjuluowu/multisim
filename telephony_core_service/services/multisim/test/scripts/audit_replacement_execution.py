@@ -13,7 +13,7 @@ REQUIRED = {
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--slice', choices=['state','primary','query','upstream','target-adapter','target-topology','target-primary-b','target-formal-primary-b','target-formal-c1','legacy-data','target-data','legacy-voice-sms','target-voice-sms','legacy-account-metadata','target-account-metadata','legacy-ims-preference','target-ims-preference','legacy-show-number','target-show-number'], default='state')
+    parser.add_argument('--slice', choices=['state','primary','query','upstream','target-adapter','target-topology','target-primary-b','target-formal-primary-b','target-formal-c1','target-ef-refresh','legacy-data','target-data','legacy-voice-sms','target-voice-sms','legacy-account-metadata','target-account-metadata','legacy-ims-preference','target-ims-preference','legacy-show-number','target-show-number'], default='state')
     parser.add_argument('--binary', required=True, type=Path)
     parser.add_argument('--profiles', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
@@ -166,6 +166,18 @@ def main():
             'ResourceBarrier': ['Acquire', 'MarkSent', 'Complete', 'AcceptRecoveryEvidence', 'CancelConfirmedNotSent'],
             'PrimaryHostLifecycle': ['StopAcceptingAndDrain'],
         }
+    elif args.slice == 'target-ef-refresh':
+        required = {
+            'SimModule': ['LoadIccid', 'LoadGid1', 'RefreshIccid', 'RefreshGid1', 'AcceptEfIoEvidence',
+                          'ReadIccidRecords', 'ReadGid1Records', 'StopAcceptingAndDrain'],
+            'EfRecordsRuntime': ['Load', 'Refresh', 'Submit', 'AcceptRead', 'ReadIccid', 'ReadGid1'],
+            'LoadSession': ['TryConsumeRead', 'InvalidateAffectedReadMembers'],
+            'CardCommandTransport': ['BeginLocalRequest', 'AdvanceLocalRequest', 'Submit', 'AcceptEvidence',
+                                     'CloseLocalRequest'],
+            'CardObservationRuntime': ['PublishRecordIdentity', 'RefreshRecordIdentity'],
+            'TopologyService': ['DiscoverAccount'],
+            'ResourceBarrier': ['Acquire', 'Complete', 'CancelConfirmedNotSent'],
+        }
     else:
         required = {'CoreServiceSim':['GetRealSimCount'], 'SimManager':['GetRealSimCount'],
                     'TelephonyExtWrapper':['GetRealSimCountExt']}
@@ -175,7 +187,7 @@ def main():
             # Itanium C++ symbols can place a libstdc++ ABI tag before the member-name terminator.
             names = (stem + 'E', stem + 'B5cxx11E')
             matched = [f for f in functions if any(name in f['name'] for name in names) and any(
-                ('/frameworks/native/src/' in name or '/services/multisim/infrastructure/compatibility/events/' in name or '/services/sim/src/' in name or '/services/core/src/' in name or '/framework/internal/host/g2a_reference/' in name or '/services/multisim/infrastructure/compatibility/api/' in name or '/services/multisim/role_assignment/' in name or '/services/multisim/account/' in name or '/services/multisim/infrastructure/request/' in name or '/services/multisim/card/runtime/' in name or '/services/multisim/device/resource/' in name or '/services/multisim/infrastructure/assembly/' in name or '/services/telephony_ext_wrapper/src/' in name) for name in f['filenames'])]
+                ('/frameworks/native/src/' in name or '/services/multisim/infrastructure/compatibility/events/' in name or '/services/sim/src/' in name or '/services/core/src/' in name or '/framework/internal/host/g2a_reference/' in name or '/services/multisim/infrastructure/compatibility/api/' in name or '/services/multisim/role_assignment/' in name or '/services/multisim/account/' in name or '/services/multisim/infrastructure/request/' in name or '/services/multisim/card/runtime/' in name or '/services/multisim/card/records/' in name or '/services/multisim/device/resource/' in name or '/services/multisim/infrastructure/assembly/' in name or '/services/telephony_ext_wrapper/src/' in name) for name in f['filenames'])]
             count = sum(f['count'] for f in matched)
             rows.append({'owner': owner, 'method': method, 'count': count,
                          'files': sorted({name for f in matched for name in f['filenames']}),

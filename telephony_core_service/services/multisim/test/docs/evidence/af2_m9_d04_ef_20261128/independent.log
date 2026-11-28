@@ -1,0 +1,31 @@
+2026-11-28T09:54:58+08:00
+6af154358f7fe215a2c39d24b33f1bc3598856ab
+59689eae0f38adb07d8ba68bccb863bcfec498ee88e48c83d5150e0055b1dd90  /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host
+
+LLVM_PROFILE_FILE=/tmp/multisim-d04-ef-profile.0iIgm5TQ/%p.profraw timeout 45s /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=AF2EfRecords.RefreshIccidLeavesSameCardGid1AndNeighbourInFlight
+Note: Google Test filter = AF2EfRecords.RefreshIccidLeavesSameCardGid1AndNeighbourInFlight
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2EfRecords
+[ RUN      ] AF2EfRecords.RefreshIccidLeavesSameCardGid1AndNeighbourInFlight
+[       OK ] AF2EfRecords.RefreshIccidLeavesSameCardGid1AndNeighbourInFlight (1 ms)
+[----------] 1 test from AF2EfRecords (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+exit=0
+
+LLVM_PROFILE_FILE=/tmp/multisim-d04-ef-profile.0iIgm5TQ/%p.profraw timeout 45s /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=AF2EfRecords.OriginalRouteRevisionGatesReadBinaryAndGid1FailureClearsItsField
+Note: Google Test filter = AF2EfRecords.OriginalRouteRevisionGatesReadBinaryAndGid1FailureClearsItsField
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2EfRecords
+[ RUN      ] AF2EfRecords.OriginalRouteRevisionGatesReadBinaryAndGid1FailureClearsItsField
+[       OK ] AF2EfRecords.OriginalRouteRevisionGatesReadBinaryAndGid1FailureClearsItsField (1 ms)
+[----------] 1 test from AF2EfRecords (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+exit=0

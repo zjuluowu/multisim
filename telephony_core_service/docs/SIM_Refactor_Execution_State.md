@@ -352,6 +352,14 @@ Target 251/251，专项 ASan/TSan 各 136/136，三个用例独立复跑及四�
 全图两遍关闭、字段 Refresh 和跨实例组合保持待验证，状态为 `AF2_M9_IN_PROGRESS`。
 [正式图反例与证据](../services/multisim/test/docs/evidence/af2_m9_d04_c1_round_20261128/README.md)
 
+**D04 真实字段 Refresh 检查点（2026-11-28）。** 正式卡图在同卡 ICCID、同卡 GID1、邻卡 ICCID
+三条 READ BINARY 在途时实现局部 Refresh。旧 ICCID 保留原设备责任，原证不得修改 Records 或产生身份观察，
+新轮仍能经账户发现建立 Binding。两条 EF 命令核对同一原路由版本。Host 自动发现新增 Target 生产 CPP。
+Target 全量 253/253，专项 ASan/TSan 各 52/52，冻结契约双端 24/24、Oracle 差分 0。
+独立运行两项正式用例，四项运行时变异命中预期断言并恢复通过。
+全图两遍关闭、跨阶段恢复、正式组合重建及独立扩展仍待，状态为 `AF2_M9_IN_PROGRESS`。
+[字段 Refresh、构建记录及反例](../services/multisim/test/docs/evidence/af2_m9_d04_ef_20261128/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）

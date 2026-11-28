@@ -24,7 +24,7 @@
 #include "account/topology_service.h"
 #include "infrastructure/compatibility/events/legacy_completion.h"
 #include "card/runtime/card_observation_runtime.h"
-#include "card/records/iccid_records_runtime.h"
+#include "card/records/ef_records_runtime.h"
 #include "card/security/pin_unlock_runtime.h"
 #include "card/runtime/msisdn_runtime.h"
 #include "account/number/set_show_number_use_case.h"
@@ -44,7 +44,7 @@ struct CoreSimModulePorts {
     std::shared_ptr<LegacyPrimaryHostPort> primaryHost {};
     std::shared_ptr<LegacyNumberHostPort> numberHost {};
     std::shared_ptr<MsisdnPlatformPort> msisdn {};
-    std::shared_ptr<IccidIoPort> iccidIo {};
+    std::shared_ptr<EfIoPort> efIo {};
     std::shared_ptr<PinIoPort> pinIo {};
     std::shared_ptr<LegacyPinHostPort> pinHost {};
     std::shared_ptr<LegacyPrimaryWaitPort> primaryWait {};
@@ -75,6 +75,10 @@ public:
     bool RefreshIccid(const SessionRef &session);
     std::optional<IccidRecords> ReadIccidRecords(const SessionRef &session);
     bool AcceptIccidIoEvidence(const CardCommandEvidence &evidence);
+    std::optional<RequestId> LoadGid1(const SessionRef &session);
+    bool RefreshGid1(const SessionRef &session);
+    std::optional<std::string> ReadGid1Records(const SessionRef &session);
+    bool AcceptGid1IoEvidence(const CardCommandEvidence &evidence);
     int32_t UnlockPin(int32_t slot, const std::u16string &pin, LegacyCallerRef caller, LegacyCallbackRef callback);
     bool ObservePinLocked(const SessionRef &session);
     std::optional<CardLockState> ReadLockState(const SessionRef &session);
@@ -112,6 +116,7 @@ public:
     DrainResult StopAcceptingAndDrain();
     std::optional<ResourceState> ReadPrimaryResourceState() const;
 private:
+    bool AcceptEfIoEvidence(const CardCommandEvidence &evidence, CardCommandKind kind);
     friend CoreSimModuleCreationResult CreateCoreSimModule(CoreSimModulePorts ports,
         std::shared_ptr<const SlotCatalog> catalog, const std::vector<ConfirmedSlotAccount> &accounts);
     friend struct SimModuleDeleter;
@@ -155,7 +160,7 @@ private:
     CardCommandTransport cardTransport_;
     LegacyCompletion completion_;
     std::optional<MsisdnRuntime> msisdn_;
-    std::optional<IccidRecordsRuntime> iccidRecords_;
+    std::optional<EfRecordsRuntime> efRecords_;
     std::optional<PinUnlockRuntime> pinUnlock_;
     std::optional<SetShowNumberUseCase> numbers_;
     std::optional<ShowNumberQuery> numberQuery_;

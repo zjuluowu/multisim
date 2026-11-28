@@ -16,7 +16,7 @@
 #include "infrastructure/request/runtime_operation_store.h"
 
 namespace OHOS::Telephony::MultiSim {
-enum class CardCommandKind { WriteMsisdn, ReadIccid, UnlockPin };
+enum class CardCommandKind { WriteMsisdn, ReadIccid, UnlockPin, ReadGid1 };
 
 struct CardCommandTicket {
     StepRef step;

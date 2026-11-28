@@ -279,6 +279,41 @@ class BackendSelectorTest(unittest.TestCase):
         self.assertNotIn('services/sim', target)
         self.assertNotIn('sim_production_host', target)
 
+    def test_target_production_manifest_discovers_added_and_removed_cpp(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest = root / 'target.gni'
+            first = root / 'account/first.cpp'
+            first.parent.mkdir()
+            first.touch()
+            logical_only = root / 'card/runtime/card_runtime.cpp'
+            logical_only.parent.mkdir(parents=True)
+            logical_only.touch()
+            ignored = root / 'test/test_only.cpp'
+            ignored.parent.mkdir()
+            ignored.touch()
+            trace = {}
+
+            build.update_target_sources(root, manifest, trace)
+            self.assertIn('account/first.cpp', manifest.read_text())
+            self.assertNotIn('card_runtime.cpp', manifest.read_text())
+            self.assertNotIn('test_only.cpp', manifest.read_text())
+            self.assertEqual(trace['target_source_manifest']['production_sources'], 1)
+            timestamp = manifest.stat().st_mtime_ns
+            build.update_target_sources(root, manifest, trace)
+            self.assertFalse(trace['target_source_manifest']['changed'])
+            self.assertEqual(manifest.stat().st_mtime_ns, timestamp)
+
+            second = root / 'card/runtime/second.cpp'
+            second.touch()
+            build.update_target_sources(root, manifest, trace)
+            self.assertTrue(trace['target_source_manifest']['changed'])
+            self.assertEqual(trace['target_source_manifest']['production_sources'], 2)
+            first.unlink()
+            build.update_target_sources(root, manifest, trace)
+            self.assertNotIn('account/first.cpp', manifest.read_text())
+            self.assertIn('card/runtime/second.cpp', manifest.read_text())
+
     def test_host_graph_detects_missing_sources_and_contaminated_links(self):
         legacy = 'sim_manager.cpp'
         target = 'account/account_registry.cpp'

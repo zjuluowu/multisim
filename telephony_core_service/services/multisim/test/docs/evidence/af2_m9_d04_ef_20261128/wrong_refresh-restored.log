@@ -1,0 +1,11 @@
+Note: Google Test filter = AF2EfRecords.RefreshIccidLeavesSameCardGid1AndNeighbourInFlight
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2EfRecords
+[ RUN      ] AF2EfRecords.RefreshIccidLeavesSameCardGid1AndNeighbourInFlight
+[       OK ] AF2EfRecords.RefreshIccidLeavesSameCardGid1AndNeighbourInFlight (1 ms)
+[----------] 1 test from AF2EfRecords (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.

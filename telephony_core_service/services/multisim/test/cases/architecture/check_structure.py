@@ -88,6 +88,8 @@ SOURCE_GROUPS = {'readonly_query': ('infrastructure/compatibility/api/real_sim_c
                        'card/security/pin_requests.h'),
  'runtime_core': ('card/security/pin_unlock_runtime.cpp',
                   'card/security/pin_unlock_runtime.h',
+                  'card/records/ef_records_runtime.cpp',
+                  'card/records/ef_records_runtime.h',
                   'card/records/iccid_records_runtime.cpp',
                   'card/records/iccid_records_runtime.h',
                   'card/runtime/card_command_transport.cpp',

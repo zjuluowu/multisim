@@ -1,0 +1,249 @@
+{
+  "scope": "Positive execution of selected target-ef-refresh production methods; not full SIM coverage",
+  "methods": [
+    {
+      "owner": "SimModule",
+      "method": "LoadIccid",
+      "count": 4,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimModule",
+      "method": "LoadGid1",
+      "count": 4,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimModule",
+      "method": "RefreshIccid",
+      "count": 1,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimModule",
+      "method": "RefreshGid1",
+      "count": 1,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimModule",
+      "method": "AcceptEfIoEvidence",
+      "count": 19,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimModule",
+      "method": "ReadIccidRecords",
+      "count": 6,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimModule",
+      "method": "ReadGid1Records",
+      "count": 8,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "SimModule",
+      "method": "StopAcceptingAndDrain",
+      "count": 2,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/infrastructure/assembly/sim_module_factory.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "EfRecordsRuntime",
+      "method": "Load",
+      "count": 16,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/card/records/ef_records_runtime.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "EfRecordsRuntime",
+      "method": "Refresh",
+      "count": 5,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/card/records/ef_records_runtime.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "EfRecordsRuntime",
+      "method": "Submit",
+      "count": 132,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/card/records/ef_records_runtime.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "EfRecordsRuntime",
+      "method": "AcceptRead",
+      "count": 24,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/card/records/ef_records_runtime.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "EfRecordsRuntime",
+      "method": "ReadIccid",
+      "count": 6,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/card/records/ef_records_runtime.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "EfRecordsRuntime",
+      "method": "ReadGid1",
+      "count": 8,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/card/records/ef_records_runtime.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "LoadSession",
+      "method": "TryConsumeRead",
+      "count": 7,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/card/records/load_session.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "LoadSession",
+      "method": "InvalidateAffectedReadMembers",
+      "count": 2,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/card/records/load_session.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "CardCommandTransport",
+      "method": "BeginLocalRequest",
+      "count": 8,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/card/runtime/card_command_transport.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "CardCommandTransport",
+      "method": "AdvanceLocalRequest",
+      "count": 8,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/card/runtime/card_command_transport.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "CardCommandTransport",
+      "method": "Submit",
+      "count": 33,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/card/runtime/card_command_transport.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "CardCommandTransport",
+      "method": "AcceptEvidence",
+      "count": 18,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/card/runtime/card_command_transport.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "CardCommandTransport",
+      "method": "CloseLocalRequest",
+      "count": 8,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/card/runtime/card_command_transport.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "CardObservationRuntime",
+      "method": "PublishRecordIdentity",
+      "count": 3,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/card/runtime/card_observation_runtime.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "CardObservationRuntime",
+      "method": "RefreshRecordIdentity",
+      "count": 1,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/card/runtime/card_observation_runtime.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "TopologyService",
+      "method": "DiscoverAccount",
+      "count": 2,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/account/topology_service.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "ResourceBarrier",
+      "method": "Acquire",
+      "count": 16,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/device/resource/resource_barrier.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "ResourceBarrier",
+      "method": "Complete",
+      "count": 15,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/device/resource/resource_barrier.cpp"
+      ],
+      "status": "PASS"
+    },
+    {
+      "owner": "ResourceBarrier",
+      "method": "CancelConfirmedNotSent",
+      "count": 1,
+      "files": [
+        "/mnt/e/github/multisim/telephony_core_service/services/multisim/device/resource/resource_barrier.cpp"
+      ],
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

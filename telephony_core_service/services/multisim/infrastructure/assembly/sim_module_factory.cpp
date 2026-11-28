@@ -66,7 +66,7 @@ SimModule::SimModule(CoreSimModulePorts ports, std::shared_ptr<const SlotCatalog
         (void)topology_.AcceptSlotAssembly(slot.slot, true);
     }
     topology_.BindRolePlanner(*assignment_);
-    if (ports_.iccidIo) { iccidRecords_.emplace(card_, cardTransport_, *ports_.iccidIo); }
+    if (ports_.efIo) { efRecords_.emplace(card_, cardTransport_, *ports_.efIo); }
     if (ports_.pinIo && ports_.pinHost && ports_.primaryHost) {
         pinUnlock_.emplace(card_, cardTransport_, *ports_.pinIo, completion_);
     }
@@ -88,8 +88,8 @@ bool SimModule::InitializeResources()
             if (const auto key = ports_.msisdn->ResourceFor(slot.slot)) { keys.insert(*key); }
         }
     }
-    if (ports_.iccidIo) {
-        const auto cardKeys = ports_.iccidIo->InitialResources();
+    if (ports_.efIo) {
+        const auto cardKeys = ports_.efIo->InitialResources();
         keys.insert(cardKeys.begin(), cardKeys.end());
     }
     if (pinUnlock_) {
@@ -213,29 +213,60 @@ bool SimModule::AcceptMsisdnEvidence(const MsisdnTransportEvidence &evidence)
 
 std::optional<RequestId> SimModule::LoadIccid(const SessionRef &session)
 {
-    if (!iccidRecords_ || !AdmitModuleCall()) { return std::nullopt; }
+    if (!efRecords_ || !AdmitModuleCall()) { return std::nullopt; }
     const ModuleCall call {shared_from_this()};
-    return iccidRecords_->Load(session);
+    return efRecords_->Load(session, EfField::Iccid);
 }
 
 bool SimModule::RefreshIccid(const SessionRef &session)
 {
-    if (!iccidRecords_ || !AdmitModuleCall()) { return false; }
+    if (!efRecords_ || !AdmitModuleCall()) { return false; }
     const ModuleCall call {shared_from_this()};
-    return iccidRecords_->Refresh(session);
+    return efRecords_->Refresh(session, EfField::Iccid);
 }
 
 std::optional<IccidRecords> SimModule::ReadIccidRecords(const SessionRef &session)
 {
-    if (!iccidRecords_ || !AdmitModuleCall()) { return std::nullopt; }
+    if (!efRecords_ || !AdmitModuleCall()) { return std::nullopt; }
     const ModuleCall call {shared_from_this()};
-    return iccidRecords_->Read(session);
+    return efRecords_->ReadIccid(session);
 }
 
 bool SimModule::AcceptIccidIoEvidence(const CardCommandEvidence &evidence)
 {
-    if (!iccidRecords_ || evidence.ticket.step.request.owner != RequestOwner::LocalCard ||
-        evidence.ticket.kind != CardCommandKind::ReadIccid || !AdmitModuleCall(true)) { return false; }
+    return AcceptEfIoEvidence(evidence, CardCommandKind::ReadIccid);
+}
+
+std::optional<RequestId> SimModule::LoadGid1(const SessionRef &session)
+{
+    if (!efRecords_ || !AdmitModuleCall()) { return std::nullopt; }
+    const ModuleCall call {shared_from_this()};
+    return efRecords_->Load(session, EfField::Gid1);
+}
+
+bool SimModule::RefreshGid1(const SessionRef &session)
+{
+    if (!efRecords_ || !AdmitModuleCall()) { return false; }
+    const ModuleCall call {shared_from_this()};
+    return efRecords_->Refresh(session, EfField::Gid1);
+}
+
+std::optional<std::string> SimModule::ReadGid1Records(const SessionRef &session)
+{
+    if (!efRecords_ || !AdmitModuleCall()) { return std::nullopt; }
+    const ModuleCall call {shared_from_this()};
+    return efRecords_->ReadGid1(session);
+}
+
+bool SimModule::AcceptGid1IoEvidence(const CardCommandEvidence &evidence)
+{
+    return AcceptEfIoEvidence(evidence, CardCommandKind::ReadGid1);
+}
+
+bool SimModule::AcceptEfIoEvidence(const CardCommandEvidence &evidence, CardCommandKind kind)
+{
+    if (!efRecords_ || evidence.ticket.step.request.owner != RequestOwner::LocalCard ||
+        evidence.ticket.kind != kind || !AdmitModuleCall(true)) { return false; }
     const ModuleCall call {shared_from_this()};
     return cardTransport_.AcceptEvidence(evidence);
 }

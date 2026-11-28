@@ -1,0 +1,64 @@
+{
+  "requested_targets": [
+    "sim_test_target_host"
+  ],
+  "dependencies": {
+    "googletest_inventory": 0.007336143869906664,
+    "googletest": {
+      "seconds": 0.0031346180476248264,
+      "reused": true,
+      "files": 247
+    },
+    "platform_headers": {
+      "seconds": 0.1333241870161146,
+      "reused": true,
+      "files": 21
+    }
+  },
+  "lock_wait_seconds": 5.7998113334178925e-06,
+  "source_manifest": {
+    "seconds": 0.24721055896952748,
+    "changed": false,
+    "inventory_reused": true,
+    "case_sources": 36
+  },
+  "target_source_manifest": {
+    "seconds": 0.32045589084737003,
+    "changed": true,
+    "production_sources": 30
+  },
+  "gn": {
+    "seconds_including_compile_database": 0.11553108179941773,
+    "count": 1,
+    "reason": "changed_graph_input:../../../../../mnt/e/github/multisim/telephony_core_service/sim_target_sources.gni"
+  },
+  "compile_database_changed": true,
+  "compile_database_seconds": 0.002,
+  "targets": [
+    "sim_test_target_host"
+  ],
+  "route_seconds": 6.400048732757568e-06,
+  "configuration_changed": false,
+  "ninja": {
+    "seconds": 5.550839185947552,
+    "count": 1,
+    "actions": {
+      "CXX": 1,
+      "LINK": 1,
+      "SOLINK": 0,
+      "AR": 0,
+      "Regenerating": 0
+    }
+  },
+  "archive_ownership": "PASS",
+  "binary_identities": {
+    "sim_test_target_host": [
+      2096,
+      470246,
+      42517664,
+      1795830716461166859,
+      1795830716549167379
+    ]
+  },
+  "lock_hold_seconds": 6.556222219020128
+}
