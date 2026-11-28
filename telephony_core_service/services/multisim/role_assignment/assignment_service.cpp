@@ -204,6 +204,12 @@ bool AssignmentService::HasPendingDeviceEffects() const
     return !pendingPrimary_.empty();
 }
 
+AssignmentService::PrimaryCloseEffects AssignmentService::ReadPrimaryCloseEffects() const
+{
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
+    return {!pendingPrimary_.empty(), c0Receipt_ && c0Receipt_->writeSet == kPrimaryRoleWriteSet};
+}
+
 std::optional<AssignmentService::C0Receipt> AssignmentService::ReadC0Receipt() const
 {
     std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
@@ -632,8 +638,8 @@ bool AssignmentService::PrepareTrackedC1Parameters(StepRef &step, const PrimaryT
         if (stopping_) { return false; }
         (void)WriteTrackedParameter(key, step, &facts, preference.value_or(false), guard, nullptr, true);
         const auto &original = c0Receipt_->writes[static_cast<size_t>(key)];
-        return original && C0EffectSettled(original->outcome) &&
-            (key == C0ParameterKey::Preference || original->outcome.effect == EffectKnowledge::ConfirmedApplied);
+        // Legacy SavePrimaryCardInfo proceeds after completed parameter calls regardless of their return codes.
+        return original && C0EffectSettled(original->outcome);
     };
     const bool ready = (!preference || write(C0ParameterKey::Preference)) &&
         write(C0ParameterKey::PrimarySlot) && write(C0ParameterKey::PrimaryIccid) &&
@@ -676,9 +682,12 @@ void AssignmentService::FailC1Preparation(RequestId request, const RadioDomainId
 }
 
 void AssignmentService::RunTrackedPrimaryParameters(StepRef step, TransitionPhase phase, const SwitchPrimaryCommand &command,
-    const SlotDescriptor &target, const PrimaryTargetFacts &facts, std::unique_lock<std::recursive_mutex> &guard)
+    const SlotDescriptor &target, const PrimaryTargetFacts &facts, std::unique_lock<std::recursive_mutex> &guard,
+    const PrimaryParameterSnapshot *c1Prewrite)
 {
     const auto request = step.request;
+    const auto deviceStep = step;
+    const bool prewritten = c1Prewrite != nullptr;
     const bool completedRadio = phase == TransitionPhase::DevicePending;
     c0Receipt_.emplace(C0Receipt {request, completedRadio ? C0Stage::PrimaryParameters : C0Stage::Preference,
         facts.binding});
@@ -688,7 +697,7 @@ void AssignmentService::RunTrackedPrimaryParameters(StepRef step, TransitionPhas
         const bool returned = WriteTrackedParameter(key, step, &facts, command.userSet, guard);
         const auto &original = receipt.writes[static_cast<size_t>(key)];
         callDidNotReturn = original && !returned;
-        return returned;
+        return returned && (!prewritten || (original && C0EffectSettled(original->outcome)));
     };
     const auto publish = [&](C0Stage stage, const auto &commit, const auto &notify) {
         if (!topology_.WithCurrentPrimaryTarget(facts, [&] {
@@ -707,9 +716,12 @@ void AssignmentService::RunTrackedPrimaryParameters(StepRef step, TransitionPhas
     };
 
     bool announcePrimary = false;
-    // C0 preserves the original order and the original treatment of completed parameter return codes.
-    const bool success = (completedRadio || write(C0ParameterKey::Preference)) && write(C0ParameterKey::PrimarySlot) &&
-        write(C0ParameterKey::PrimaryIccid) && publish(C0Stage::MainNotification, [&] {
+    bool mainAdmitted = false;
+    // Preserve the original treatment of completed parameter return codes.
+    const bool success = (completedRadio || write(C0ParameterKey::Preference)) &&
+        (prewritten || (write(C0ParameterKey::PrimarySlot) && write(C0ParameterKey::PrimaryIccid))) &&
+        publish(C0Stage::MainNotification, [&] {
+            mainAdmitted = true;
             assignment_.AcceptPrimaryParameterProjection(target.slot);
             announcePrimary = assignment_.ClaimPrimaryAnnouncement(target.slot, facts.binding.subscription);
             assignment_.AcceptTransitionPhase(*target.radioDomain, request.value, phase,
@@ -720,7 +732,19 @@ void AssignmentService::RunTrackedPrimaryParameters(StepRef step, TransitionPhas
         }) &&
         write(C0ParameterKey::DefaultData) && publish(C0Stage::DataNotification,
             [&] { assignment_.AcceptDataParameterProjection(target.slot, facts.binding.subscription); },
-            [&] { output_.PublishDefaultDataChanged(target.slot, facts.binding.subscription); });
+            [&] {
+                output_.PublishDefaultDataChanged(target.slot, facts.binding.subscription);
+                if (prewritten) { output_.ReportDefaultDataSelection(target.slot); }
+            });
+    if (prewritten && !mainAdmitted) {
+        c0Receipt_.reset();
+        if (RestoreTrackedPrimary(step, facts, *c1Prewrite, guard)) {
+            AcceptRestoredPrimaryProjection(*c1Prewrite);
+        }
+        FinishC1Phase(deviceStep, *target.radioDomain, guard);
+        FailC1Preparation(request, *target.radioDomain, phase, command.completion, guard);
+        return;
+    }
     receipt.businessSucceeded = success;
     const auto unsettled = FirstUnresolved(receipt);
     assignment_.AcceptTransitionPhase(*target.radioDomain, request.value, phase, unsettled ?
@@ -731,13 +755,17 @@ void AssignmentService::RunTrackedPrimaryParameters(StepRef step, TransitionPhas
     if (completedRadio) {
         operations_.MarkTerminal(request, terminal);
         receipt.outstanding = C0Stage::Completion;
-        guard.unlock();
-        try {
-            output_.PublishPrimaryPhase(true, command.userSet);
-        } catch (const std::exception &) {
-            // A failure to notify must not prevent delivery of the original result.
+        if (prewritten) {
+            FinishC1Phase(deviceStep, *target.radioDomain, guard);
+        } else {
+            guard.unlock();
+            try {
+                output_.PublishPrimaryPhase(true, command.userSet);
+            } catch (const std::exception &) {
+                // A failure to notify must not prevent delivery of the original result.
+            }
+            guard.lock();
         }
-        guard.lock();
     }
     const auto *sync = std::get_if<SynchronousCompletionRoute>(&command.completion.route);
     if (completedRadio || !callDidNotReturn || (sync && sync->waiter.origin == SynchronousWaitRef::Origin::ModuleRole)) {
@@ -754,6 +782,23 @@ void AssignmentService::RunTrackedPrimaryParameters(StepRef step, TransitionPhas
     assignment_.ReleaseRoleWriteSet(request.value, kPrimaryRoleWriteSet);
     operations_.RetireAfterEvidenceRetention(request, completedRadio);
     c0Receipt_.reset();
+}
+
+void AssignmentService::FinishC1Phase(const StepRef &step, const RadioDomainId &domain,
+    std::unique_lock<std::recursive_mutex> &guard)
+{
+    guard.unlock();
+    try {
+        output_.PublishPrimaryPhase(true, false);
+    } catch (const std::exception &) {
+        // The original phase still owns the SenseSwitch end.
+    }
+    try {
+        radio_.EndLegacySenseSwitch(step, domain);
+    } catch (const std::exception &) {
+        // The reporting failure does not replace the original result.
+    }
+    guard.lock();
 }
 
 bool AssignmentService::ReconcileC0Parameter(const C0ParameterOperation &operation)
@@ -1103,13 +1148,15 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
     }
     if (pending->second.mode == PrimarySwitchMode::ThreePhaseProtocol) {
         if (result.effect == EffectKnowledge::Unknown) {
-            operations_.AcceptResult(result.step, result.effect);
+            if (operations_.AcceptResult(result.step, result.effect) !=
+                RuntimeOperationStore::ResultAdmission::Accepted) { return; }
             operations_.EndWait(result.step.request, WaitState::Delivered);
             assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(), result.step.request.value,
                 TransitionPhase::DevicePending, TransitionPhase::NeedsReconciliation);
-            output_.PublishPrimaryPhase(true, false);
+            operations_.MarkTerminal(result.step.request, TerminalState::NeedsReconciliation);
+            FinishC1Phase(result.step, *pending->second.target.radioDomain, guard);
             CompleteOnce(result.step.request, pending->second.completion, 83886087,
-                TerminalState::NeedsReconciliation);
+                TerminalState::NeedsReconciliation, &guard);
             return;
         }
         pending->second.roundFailed |= result.effect != EffectKnowledge::ConfirmedApplied || result.legacyResult != 0;
@@ -1135,14 +1182,17 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
     if (admission != RuntimeOperationStore::ResultAdmission::Accepted) { return; }
     operations_.EndWait(result.step.request, WaitState::Delivered);
     const auto domain = pending->second.target.radioDomain.value();
-    guard.unlock();
-    try {
-        radio_.EndLegacySenseSwitch(result.step, domain);
-    } catch (const std::exception &) {
-        // The original result owns this step. A failed platform notification is not a new result.
+    const bool c1 = pending->second.mode == PrimarySwitchMode::ThreePhaseProtocol;
+    if (!c1) {
+        guard.unlock();
+        try {
+            radio_.EndLegacySenseSwitch(result.step, domain);
+        } catch (const std::exception &) {
+            // The original result owns this step. A failed platform notification is not a new result.
+        }
+        guard.lock();
     }
-    guard.lock();
-    if (pending->second.mode == PrimarySwitchMode::ThreePhaseProtocol && pending->second.roundFailed) {
+    if (c1 && pending->second.roundFailed) {
         if (!RestoreTrackedPrimary(pending->second.step, pending->second.facts, pending->second.oldParameters, guard)) {
             assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(), result.step.request.value,
                 TransitionPhase::DevicePending, TransitionPhase::Reconciling);
@@ -1150,13 +1200,7 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
             if (c0Receipt_) {
                 const auto outstanding = c0Receipt_->outstanding;
                 c0Receipt_->outstanding = C0Stage::Completion;
-                guard.unlock();
-                try {
-                    output_.PublishPrimaryPhase(true, false);
-                } catch (const std::exception &) {
-                    // The failure Completion still owns its original outlet.
-                }
-                guard.lock();
+                FinishC1Phase(result.step, domain, guard);
                 CompleteOnce(result.step.request, pending->second.completion, 83886087,
                     TerminalState::NeedsReconciliation, &guard);
                 c0Receipt_->outstanding = outstanding;
@@ -1165,9 +1209,9 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
             return;
         }
         AcceptRestoredPrimaryProjection(pending->second.oldParameters);
-        output_.PublishPrimaryPhase(true, false);
+        FinishC1Phase(result.step, domain, guard);
         if (pending->second.attemptCount == 0) {
-            CompleteOnce(result.step.request, pending->second.completion, 83886087, TerminalState::Open);
+            CompleteOnce(result.step.request, pending->second.completion, 83886087, TerminalState::Open, &guard);
             pending->second.completionDelivered = true;
             operations_.EndWait(result.step.request, WaitState::Delivered);
         }
@@ -1198,14 +1242,23 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
         pendingPrimary_.erase(pending);
         return;
     }
+    const bool deviceSucceeded = result.effect == EffectKnowledge::ConfirmedApplied && result.legacyResult == 0;
+    if (c1 && deviceSucceeded && store_.SupportsTrackedC0()) {
+        const SwitchPrimaryCommand command {{pending->second.target.slot}, pending->second.userSet,
+            pending->second.completion, std::nullopt, pending->second.facts.binding};
+        RunTrackedPrimaryParameters(result.step, TransitionPhase::DevicePending, command, pending->second.target,
+            pending->second.facts, guard, &pending->second.oldParameters);
+        pendingPrimary_.erase(pending);
+        return;
+    }
     const auto currentFacts = topology_.ReadPrimaryTarget(pending->second.target.slot);
     const bool bindingCurrent = currentFacts && currentFacts->active &&
         currentFacts->binding.subscription == pending->second.facts.binding.subscription &&
         currentFacts->binding.slot == pending->second.facts.binding.slot &&
         currentFacts->binding.bindingRevision == pending->second.facts.binding.bindingRevision &&
         currentFacts->iccid == pending->second.facts.iccid;
-    if (result.effect == EffectKnowledge::ConfirmedApplied && result.legacyResult == 0 && bindingCurrent) {
-        if (pending->second.mode == PrimarySwitchMode::WithoutModemRestart && store_.SupportsTrackedC0()) {
+    if (deviceSucceeded && bindingCurrent) {
+        if (store_.SupportsTrackedC0()) {
             const SwitchPrimaryCommand command {{pending->second.target.slot}, pending->second.userSet,
                 pending->second.completion, std::nullopt, pending->second.facts.binding};
             RunTrackedPrimaryParameters(result.step, TransitionPhase::DevicePending, command, pending->second.target,
@@ -1238,8 +1291,11 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
             pending->second.facts.binding.subscription);
         assignment_.AcceptTransitionPhase(pending->second.target.radioDomain.value(),
             result.step.request.value, TransitionPhase::DevicePending, TransitionPhase::Completed);
-        output_.PublishPrimaryPhase(true,
-            pending->second.mode == PrimarySwitchMode::ThreePhaseProtocol ? false : pending->second.userSet);
+        if (c1) {
+            FinishC1Phase(result.step, domain, guard);
+        } else {
+            output_.PublishPrimaryPhase(true, pending->second.userSet);
+        }
         CompleteOnce(result.step.request, pending->second.completion, 0, TerminalState::Succeeded);
         assignment_.ReleaseRoleWriteSet(result.step.request.value, kPrimaryRoleWriteSet);
         pendingPrimary_.erase(pending);
@@ -1279,13 +1335,16 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
             // Reporting the original result still owns its Completion.
         }
         guard.lock();
+    } else if (c1) {
+        operations_.MarkTerminal(result.step.request, terminal);
+        FinishC1Phase(result.step, domain, guard);
     } else {
         output_.PublishPrimaryPhase(true, userSet);
     }
     const int32_t legacyResult = result.effect == EffectKnowledge::Unknown ||
-        (dedicated && result.legacyResult == 0) ? 83886087 : result.legacyResult;
+        result.legacyResult == 0 ? 83886087 : result.legacyResult;
     CompleteOnce(result.step.request, pending->second.completion, legacyResult,
-        terminal, dedicated ? &guard : nullptr);
+        terminal, dedicated || c1 ? &guard : nullptr);
     if (!needsReconciliation) {
         assignment_.ReleaseRoleWriteSet(result.step.request.value, kPrimaryRoleWriteSet);
         pendingPrimary_.erase(pending);
@@ -1512,20 +1571,15 @@ bool AssignmentService::SubmitC1Round(const PendingPrimarySwitch &round,
 
 void AssignmentService::FinishUnsentC1(PendingPrimarySwitch &round, std::unique_lock<std::recursive_mutex> &guard)
 {
-    const auto request = round.step.request;
+    const auto original = round.step;
+    const auto request = original.request;
     const auto domain = *round.target.radioDomain;
     if (operations_.AcceptResult(round.step, EffectKnowledge::NotSent) !=
         RuntimeOperationStore::ResultAdmission::Accepted) { return; }
     operations_.EndWait(request, WaitState::Delivered);
     const bool restored = RestoreTrackedPrimary(round.step, round.facts, round.oldParameters, guard);
     if (restored) { AcceptRestoredPrimaryProjection(round.oldParameters); }
-    guard.unlock();
-    try {
-        output_.PublishPrimaryPhase(true, false);
-    } catch (const std::exception &) {
-        // The original no-send result remains deliverable.
-    }
-    guard.lock();
+    FinishC1Phase(original, domain, guard);
     if (!restored && !c0Receipt_) {
         assignment_.AcceptTransitionPhase(domain, request.value, TransitionPhase::DevicePending,
             TransitionPhase::NeedsReconciliation);

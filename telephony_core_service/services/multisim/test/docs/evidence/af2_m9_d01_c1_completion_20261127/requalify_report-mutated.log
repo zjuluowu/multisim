@@ -1,0 +1,22 @@
+Note: Google Test filter = TargetPrimaryB.C1DataReportUsesTheAlreadyAdmittedPublication
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.C1DataReportUsesTheAlreadyAdmittedPublication
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1361: Failure
+Expected equality of these values:
+  events
+    Which is: { "start", "main", "data", "done" }
+  (std::vector<std::string> {"start", "main", "data", "report-data", "done"})
+    Which is: { "start", "main", "data", "report-data", "done" }
+
+[  FAILED  ] TargetPrimaryB.C1DataReportUsesTheAlreadyAdmittedPublication (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TargetPrimaryB.C1DataReportUsesTheAlreadyAdmittedPublication
+
+ 1 FAILED TEST

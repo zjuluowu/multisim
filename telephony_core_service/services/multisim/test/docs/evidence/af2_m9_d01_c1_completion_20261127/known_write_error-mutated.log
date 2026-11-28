@@ -1,0 +1,26 @@
+Note: Google Test filter = TargetPrimaryB.C1CompletedPrewriteErrorKeepsLegacyReturnSemantics
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.C1CompletedPrewriteErrorKeepsLegacyReturnSemantics
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:561: Failure
+Expected equality of these values:
+  platform.requests.size()
+    Which is: 0
+  2u
+    Which is: 2
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1399: Failure
+Expected: fixture.DeliverSuccessfulCheckAndUpdate() doesn't generate new fatal failures in the current thread.
+  Actual: it does.
+
+[  FAILED  ] TargetPrimaryB.C1CompletedPrewriteErrorKeepsLegacyReturnSemantics (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TargetPrimaryB.C1CompletedPrewriteErrorKeepsLegacyReturnSemantics
+
+ 1 FAILED TEST

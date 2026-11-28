@@ -115,19 +115,38 @@ public:
     std::vector<std::pair<std::string,bool>> phases;
     std::vector<std::string> roles;
     std::function<void()> onPrimaryRole;
-    void PublishPrimaryPhase(bool done,bool user) override { phases.emplace_back(done?"done":"start",user); }
+    std::function<void(const char *)> onEvent;
+    void PublishPrimaryPhase(bool done,bool user) override
+    {
+        const auto *event = done ? "done" : "start";
+        phases.emplace_back(event,user);
+        if (onEvent) { onEvent(event); }
+    }
     void PublishMainCardChanged(SlotId) override
     {
         roles.emplace_back("primary");
+        if (onEvent) { onEvent("main"); }
         if (onPrimaryRole) { auto action = std::move(onPrimaryRole); action(); }
     }
-    void ReportDefaultDataSelection(SlotId) override {}
-    void PublishDefaultDataChanged(SlotId,SubscriptionId) override { roles.emplace_back("data"); }
+    void ReportDefaultDataSelection(SlotId) override
+    {
+        if (onEvent) { onEvent("report-data"); }
+    }
+    void PublishDefaultDataChanged(SlotId,SubscriptionId) override
+    {
+        roles.emplace_back("data");
+        if (onEvent) { onEvent("data"); }
+    }
 };
 class Completion final : public LegacyIntCompletionPort {
 public:
     std::vector<int32_t> results;
-    void CompleteLegacyInt(const CompletionPlan &,int32_t result) override { results.push_back(result); }
+    std::function<void()> onComplete;
+    void CompleteLegacyInt(const CompletionPlan &,int32_t result) override
+    {
+        results.push_back(result);
+        if (onComplete) { onComplete(); }
+    }
 };
 
 AccountRecord Account(SubscriptionId id,const std::string &iccid,SlotId slot)
@@ -536,6 +555,16 @@ struct ResourceFixture {
         for (size_t i=begin+2;i<begin+4;++i) {
             EXPECT_TRUE(ResultAt(i,EffectKnowledge::ConfirmedApplied,0));
         }
+    }
+    void DeliverSuccessfulCheckAndUpdate()
+    {
+        ASSERT_EQ(platform.requests.size(), 2u);
+        EXPECT_TRUE(ResultAt(0, EffectKnowledge::ConfirmedApplied, 0));
+        EXPECT_TRUE(ResultAt(1, EffectKnowledge::ConfirmedApplied, 0));
+        ASSERT_EQ(platform.requests.size(), 4u);
+        EXPECT_TRUE(ResultAt(2, EffectKnowledge::ConfirmedApplied, 0, true));
+        EXPECT_TRUE(ResultAt(3, EffectKnowledge::ConfirmedApplied, 0, true));
+        ASSERT_EQ(platform.requests.size(), 6u);
     }
     bool ResultAt(size_t index, EffectKnowledge effect, int32_t legacyResult, bool notify=false,
         bool ended=true, bool reusable=true, bool verified=false)
@@ -1252,6 +1281,129 @@ TEST(TargetPrimaryB,C1RetainedUpdateAckCannotReplaceMissingMemberRecovery)
     EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
     EXPECT_EQ(fixture.platform.requests.size(), 4u);
     EXPECT_EQ(fixture.completion.results, (std::vector<int32_t>{kLegacyLocalPointerNull}));
+}
+
+TEST(TargetPrimaryB,C1FinalStoreFollowsOriginalPublicationOrder)
+{
+    ResourceFixture fixture;
+    std::vector<std::string> events;
+    fixture.output.onEvent = [&](const char *event) { events.emplace_back(event); };
+    fixture.parameters.beforeTrackedWriteReturns = [&](const C0ParameterOperation &operation) {
+        if (operation.key == C0ParameterKey::DefaultData) { events.emplace_back("write-data"); }
+    };
+    fixture.platform.beforeEnd = [&] { events.emplace_back("end-sense"); };
+    fixture.completion.onComplete = [&] { events.emplace_back("complete"); };
+    fixture.Start(true);
+    ASSERT_NO_FATAL_FAILURE(fixture.DeliverSuccessfulCheckAndUpdate());
+    EXPECT_TRUE(fixture.ResultAt(4, EffectKnowledge::ConfirmedApplied, 0));
+    EXPECT_EQ(events, (std::vector<std::string> {"start"}));
+    EXPECT_TRUE(fixture.ResultAt(5, EffectKnowledge::ConfirmedApplied, 0));
+
+    EXPECT_EQ(events, (std::vector<std::string> {
+        "start", "main", "write-data", "data", "report-data", "done", "end-sense", "complete"}));
+    EXPECT_EQ(fixture.parameters.writes, (std::vector<std::pair<std::string, std::string>> {
+        {kPreference, "true"}, {kPrimary, "1"}, {kIccid, kEncoded1}, {kData, "1"}}));
+    EXPECT_EQ(fixture.service->ReadLegacyAssignment().lastPrimary, SlotId {1});
+    EXPECT_EQ(fixture.service->ReadLegacyAssignment().lastData, SlotId {1});
+    EXPECT_EQ(fixture.completion.results, (std::vector<int32_t> {0}));
+    EXPECT_FALSE(fixture.service->HasPendingDeviceEffects());
+}
+
+TEST(TargetPrimaryB,C1FinalUnknownDataRetainsOriginalStoreResponsibility)
+{
+    for (const bool callFinished : {false, true}) {
+        SCOPED_TRACE(callFinished);
+        ResourceFixture fixture;
+        fixture.parameters.uncertainKey = C0ParameterKey::DefaultData;
+        fixture.parameters.uncertainOutcome = {{-1, callFinished}, EffectKnowledge::Unknown};
+        const auto request = fixture.Start(true);
+        ASSERT_NO_FATAL_FAILURE(fixture.DeliverSuccessfulCheckAndUpdate());
+        EXPECT_TRUE(fixture.ResultAt(4, EffectKnowledge::ConfirmedApplied, 0));
+        EXPECT_TRUE(fixture.ResultAt(5, EffectKnowledge::ConfirmedApplied, 0));
+        ASSERT_TRUE(fixture.parameters.uncertainWrite);
+        const auto original = *fixture.parameters.uncertainWrite;
+        EXPECT_EQ(original.original.request, request);
+        EXPECT_TRUE(fixture.service->ReadC0Receipt());
+        EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
+        const auto effects = fixture.service->ReadPrimaryCloseEffects();
+        EXPECT_FALSE(effects.device);
+        EXPECT_TRUE(effects.store);
+        EXPECT_EQ(fixture.output.roles, (std::vector<std::string> {"primary"}));
+        EXPECT_EQ(fixture.completion.results, (std::vector<int32_t> {kLegacyLocalPointerNull}));
+
+        PrimaryHostLifecycle lifecycle(fixture.service, fixture.radio, fixture.scheduler, fixture.schedulerOwner);
+        fixture.scheduler.BlockOwnerQueue();
+        EXPECT_EQ(lifecycle.StopAcceptingAndDrain(), PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight);
+        fixture.scheduler.ReleaseOwnerQueue();
+        ASSERT_TRUE(fixture.scheduler.WaitOwnerIdle());
+        EXPECT_EQ(lifecycle.StopAcceptingAndDrain(), PrimaryHostLifecycle::DrainResult::BusinessEffectsUnresolved);
+        fixture.parameters.parameterEvidence = C0ParameterEvidence {original, {{0, true}, EffectKnowledge::ConfirmedApplied}};
+        EXPECT_TRUE(fixture.service->ReconcileC0Parameter(original));
+        EXPECT_EQ(lifecycle.StopAcceptingAndDrain(), PrimaryHostLifecycle::DrainResult::Drained);
+        EXPECT_EQ(fixture.output.roles, (std::vector<std::string> {"primary"}));
+        EXPECT_EQ(fixture.completion.results, (std::vector<int32_t> {kLegacyLocalPointerNull}));
+    }
+}
+
+TEST(TargetPrimaryB,C1DataReportUsesTheAlreadyAdmittedPublication)
+{
+    ResourceFixture fixture;
+    std::vector<std::string> events;
+    fixture.output.onEvent = [&](const char *event) {
+        events.emplace_back(event);
+        if (events.back() == "data") { fixture.topology.AcceptCardRemoval(fixture.target); }
+    };
+    fixture.Start(true);
+    ASSERT_NO_FATAL_FAILURE(fixture.DeliverSuccessfulCheckAndUpdate());
+    EXPECT_TRUE(fixture.ResultAt(4, EffectKnowledge::ConfirmedApplied, 0));
+    EXPECT_TRUE(fixture.ResultAt(5, EffectKnowledge::ConfirmedApplied, 0));
+    EXPECT_FALSE(fixture.topology.FindBinding({1}));
+    EXPECT_EQ(events, (std::vector<std::string> {"start", "main", "data", "report-data", "done"}));
+    EXPECT_EQ(fixture.parameters.values.at(kData), "1");
+    EXPECT_EQ(fixture.completion.results, (std::vector<int32_t> {0}));
+    const auto effects = fixture.service->ReadPrimaryCloseEffects();
+    EXPECT_FALSE(effects.device);
+    EXPECT_FALSE(effects.store);
+}
+
+TEST(TargetPrimaryB,C1RevokedBindingCannotAcceptSuccessfulCompleteAsBusinessSuccess)
+{
+    ResourceFixture fixture;
+    fixture.Start(true);
+    ASSERT_NO_FATAL_FAILURE(fixture.DeliverSuccessfulCheckAndUpdate());
+    EXPECT_TRUE(fixture.ResultAt(4, EffectKnowledge::ConfirmedApplied, 0));
+    fixture.topology.AcceptCardRemoval(fixture.target);
+    const std::string replacement = "8900000000000000002";
+    const auto rebound = fixture.topology.AcceptStoredDiscovery(Discovery(1, 3, replacement),
+        Account({22}, replacement, {1}), Stored({22}));
+    ASSERT_TRUE(rebound);
+    EXPECT_TRUE(fixture.ResultAt(5, EffectKnowledge::ConfirmedApplied, 0));
+
+    ASSERT_TRUE(fixture.topology.FindBinding({1}));
+    EXPECT_EQ(fixture.topology.FindBinding({1})->subscription, SubscriptionId {22});
+    EXPECT_EQ(fixture.parameters.values.at(kPrimary), "0");
+    EXPECT_EQ(fixture.parameters.values.at(kIccid), kEncoded0);
+    EXPECT_EQ(fixture.parameters.values.at(kData), "0");
+    EXPECT_TRUE(fixture.output.roles.empty());
+    EXPECT_EQ(fixture.completion.results, (std::vector<int32_t> {kLegacyLocalPointerNull}));
+    EXPECT_FALSE(fixture.service->HasPendingDeviceEffects());
+    EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
+}
+
+TEST(TargetPrimaryB,C1CompletedPrewriteErrorKeepsLegacyReturnSemantics)
+{
+    ResourceFixture fixture;
+    fixture.parameters.uncertainKey = C0ParameterKey::PrimarySlot;
+    fixture.parameters.uncertainOutcome = {{-1, true}, EffectKnowledge::ConfirmedNotApplied};
+    fixture.Start(true);
+    ASSERT_NO_FATAL_FAILURE(fixture.DeliverSuccessfulCheckAndUpdate());
+    EXPECT_TRUE(fixture.ResultAt(4, EffectKnowledge::ConfirmedApplied, 0));
+    EXPECT_TRUE(fixture.ResultAt(5, EffectKnowledge::ConfirmedApplied, 0));
+    EXPECT_EQ(fixture.parameters.values.at(kPrimary), "0");
+    EXPECT_EQ(fixture.parameters.values.at(kIccid), kEncoded1);
+    EXPECT_EQ(fixture.parameters.values.at(kData), "1");
+    EXPECT_EQ(fixture.service->ReadLegacyAssignment().lastPrimary, SlotId {1});
+    EXPECT_EQ(fixture.completion.results, (std::vector<int32_t> {0}));
 }
 
 TEST(TargetPrimaryB,ConflictingNativeMemberRoutesRejectBeforeStoreAndSubmit)
@@ -2253,7 +2405,7 @@ TEST(TargetPrimaryB,C1BindingChangeRestoresPrewrittenPrimaryParameters)
     EXPECT_EQ(f.parameters.values.at(kIccid),kEncoded0);
     EXPECT_EQ(f.parameters.values.at(kData),"0");
     EXPECT_EQ(f.service.ReadLegacyAssignment().lastPrimary, std::make_optional(SlotId {0}));
-    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{0}));
+    EXPECT_EQ(f.completion.results,(std::vector<int32_t>{kLegacyLocalPointerNull}));
     EXPECT_FALSE(f.service.ReadLegacyAssignment().primarySwitchInProgress);
     EXPECT_TRUE(f.output.roles.empty());
 }

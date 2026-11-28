@@ -1,0 +1,22 @@
+Note: Google Test filter = TargetPrimaryB.C1FinalStoreFollowsOriginalPublicationOrder
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.C1FinalStoreFollowsOriginalPublicationOrder
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:1303: Failure
+Expected equality of these values:
+  events
+    Which is: { "start", "main", "write-data", "data", "report-data", "end-sense", "done", "complete" }
+  (std::vector<std::string> { "start", "main", "write-data", "data", "report-data", "done", "end-sense", "complete"})
+    Which is: { "start", "main", "write-data", "data", "report-data", "done", "end-sense", "complete" }
+
+[  FAILED  ] TargetPrimaryB.C1FinalStoreFollowsOriginalPublicationOrder (4 ms)
+[----------] 1 test from TargetPrimaryB (4 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (5 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TargetPrimaryB.C1FinalStoreFollowsOriginalPublicationOrder
+
+ 1 FAILED TEST

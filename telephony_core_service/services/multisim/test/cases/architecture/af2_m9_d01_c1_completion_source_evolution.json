@@ -1,0 +1,10 @@
+{
+  "baseline": "b3f9d52c96ce88d4cce2094a937e6b1b43ae106c",
+  "files": {
+    "infrastructure/assembly/primary_host_lifecycle.cpp": "cbd510bc5eece965b06aaf5f476b01d28c78c9dd156383d174f8db9b1e3babba",
+    "infrastructure/assembly/primary_host_lifecycle.h": "94f81a552dd50021d1b38e3a7136acee1938b3689de2cd79031da97eacc18f06",
+    "infrastructure/assembly/sim_module_factory.cpp": "c132d88a5fef9a1fc8378946b810f3f118c8119ac37fcd5ca6623a168d83ca5f",
+    "role_assignment/assignment_service.cpp": "7a7e6a7ec88de648867603cf69e561ad3764157891c1b9cd87575ca2308dfdd1",
+    "role_assignment/assignment_service.h": "630bd3adc8972c0a986edea2f2cef6570bb803325fc97817fb9e31472760eb17"
+  }
+}

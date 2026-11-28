@@ -15,7 +15,7 @@ namespace OHOS::Telephony::MultiSim {
 // It does not own Core, shared RIL, public Manager API, or device shutdown.
 class PrimaryHostLifecycle final {
 public:
-    enum class DrainResult { Drained, CallbacksStillInFlight, DeviceEffectsUnresolved };
+    enum class DrainResult { Drained, CallbacksStillInFlight, DeviceEffectsUnresolved, BusinessEffectsUnresolved };
     PrimaryHostLifecycle(const std::shared_ptr<AssignmentService> &assignment, ResourceRadioRuntime &radio,
         RetrySchedulerPort &scheduler, const std::shared_ptr<RadioOwnerDispatchPort> &ownerDispatch);
     DrainResult StopAcceptingAndDrain();

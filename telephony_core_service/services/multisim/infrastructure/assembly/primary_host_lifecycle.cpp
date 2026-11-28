@@ -64,9 +64,12 @@ PrimaryHostLifecycle::DrainResult PrimaryHostLifecycle::StopAcceptingAndDrain()
         return DrainResult::CallbacksStillInFlight;
     }
     const auto assignment = assignment_.lock();
-    if (!assignment || !radio_.DeviceResourcesDrained() || assignment->HasPendingDeviceEffects()) {
+    if (!assignment || !radio_.DeviceResourcesDrained()) {
         return DrainResult::DeviceEffectsUnresolved;
     }
+    const auto effects = assignment->ReadPrimaryCloseEffects();
+    if (effects.device) { return DrainResult::DeviceEffectsUnresolved; }
+    if (effects.store) { return DrainResult::BusinessEffectsUnresolved; }
     {
         std::lock_guard<std::mutex> guard(state_->mutex);
         state_->stopped = true;

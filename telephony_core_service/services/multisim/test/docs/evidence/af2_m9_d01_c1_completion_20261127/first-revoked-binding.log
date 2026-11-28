@@ -1,0 +1,22 @@
+Note: Google Test filter = TargetPrimaryB.C1BindingChangeRestoresPrewrittenPrimaryParameters
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.C1BindingChangeRestoresPrewrittenPrimaryParameters
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/b_async_primary_test.cpp:2381: Failure
+Expected equality of these values:
+  f.completion.results
+    Which is: { 83886087 }
+  (std::vector<int32_t>{0})
+    Which is: { 0 }
+
+[  FAILED  ] TargetPrimaryB.C1BindingChangeRestoresPrewrittenPrimaryParameters (9 ms)
+[----------] 1 test from TargetPrimaryB (9 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (10 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TargetPrimaryB.C1BindingChangeRestoresPrewrittenPrimaryParameters
+
+ 1 FAILED TEST

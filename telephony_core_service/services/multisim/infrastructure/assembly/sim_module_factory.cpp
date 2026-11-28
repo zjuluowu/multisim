@@ -524,7 +524,7 @@ SimModule::DrainResult SimModule::StopAcceptingAndDrain()
     }
     if (primaryCallActive_ || moduleCalls_) { return DrainResult::CallbacksStillInFlight; }
     if (cardTransport_.HasPending()) { return DrainResult::DeviceEffectsUnresolved; }
-    if (HasPendingBusinessEffects()) {
+    if (primary == PrimaryHostLifecycle::DrainResult::BusinessEffectsUnresolved || HasPendingBusinessEffects()) {
         return DrainResult::BusinessEffectsUnresolved;
     }
     drained_ = true;

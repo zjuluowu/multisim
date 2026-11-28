@@ -76,6 +76,11 @@ public:
     bool StopAcceptingAndCancelScheduledRetries();
     bool IsStoppingPrimaryRequests() const;
     bool HasPendingDeviceEffects() const;
+    struct PrimaryCloseEffects {
+        bool device;
+        bool store;
+    };
+    PrimaryCloseEffects ReadPrimaryCloseEffects() const;
     std::optional<C0Receipt> ReadC0Receipt() const;
     bool ReconcileC0Parameter(const C0ParameterOperation &operation);
     void RetryPrimaryAfterReconciliation(RequestId request);
@@ -118,7 +123,10 @@ private:
     bool ContinuePrimaryRestore(StepRef &step, std::unique_lock<std::recursive_mutex> &guard);
     void AcceptRestoredPrimaryProjection(const PrimaryParameterSnapshot &old);
     void RunTrackedPrimaryParameters(StepRef step, TransitionPhase phase, const SwitchPrimaryCommand &command,
-        const SlotDescriptor &target, const PrimaryTargetFacts &facts, std::unique_lock<std::recursive_mutex> &guard);
+        const SlotDescriptor &target, const PrimaryTargetFacts &facts, std::unique_lock<std::recursive_mutex> &guard,
+        const PrimaryParameterSnapshot *c1Prewrite = nullptr);
+    void FinishC1Phase(const StepRef &step, const RadioDomainId &domain,
+        std::unique_lock<std::recursive_mutex> &guard);
     bool ScheduleC1Retry(RequestId request, uint32_t attempt, std::unique_lock<std::recursive_mutex> &guard);
     struct RoleProviderReceipt {
         RoleProviderEvidence evidence;

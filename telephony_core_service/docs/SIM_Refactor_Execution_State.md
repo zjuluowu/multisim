@@ -332,6 +332,13 @@ Target 237/237，专项 ASan/TSan 各 106/106，六项运行时负控实际失�
 等待和逐键终步装配，状态保持 `AF2_M9_IN_PROGRESS`。
 [协议载荷、回执顺序、负控和原始报告](../services/multisim/test/docs/evidence/af2_m9_d01_c1_protocol_20261127/README.md)
 
+**D01 C1 终步与 Primary Store 关闭检查点。** 原 COMPLETE 后复用逐键 Data 收据，按 Main、
+Data 写入与公告、行为记录、Done、SenseSwitch 结束、原 Completion 的顺序完成。T 的实际 Main 准入
+拒绝旧 Binding 时恢复原预写，已接纳的 Data 公告与行为记录共用原资格。主卡关闭在同一短锁内观察
+设备与 Store 责任，保留各自未决结果。Target 242/242，专项 ASan/TSan 各 111/111。
+正式 C1 的双期限、正式入口和全图验证仍待，状态保持 `AF2_M9_IN_PROGRESS`。
+[终步发布、Store 收据及原始报告](../services/multisim/test/docs/evidence/af2_m9_d01_c1_completion_20261127/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）
