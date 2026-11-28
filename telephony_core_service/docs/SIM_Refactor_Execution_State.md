@@ -386,6 +386,13 @@ MSISDN、Historical Reload、账户 Store Unknown、局部 Refresh 与换卡。�
 逐项关闭清单、其余 C1 结果、独立扩展与最终收口仍待，全局保持 `AF2_M9_IN_PROGRESS`。
 [正式对象图、重建及负控](../services/multisim/test/docs/evidence/af2_m9_d04_mixed_graph_20261128/README.md)
 
+**D04 逐项关闭收据检查点（2026-11-28）。** 正式模块按原 epoch 列出已接纳执行帧、A 原角色与逐键 Store、
+T 发现及元数据、卡传输和 R 设备与 Owner 回执，从各责任方已有状态读取。R 在锁外取据期间若有原工作进入并
+返回，本次观察仍失效。H 两遍纳入 R 活动和原 Scheduler 审计。Target 265/265，组合专项 ASan/TSan 各
+33/33，独立正例 4/4。正常 COMPLETE 已被 R 接纳但 Owner 消费前发生业务超时的反例已复现，仍待修复。
+独立扩展和最终收口尚待，全局保持 `AF2_M9_IN_PROGRESS`。
+[逐项收据、原始验证及反例](../services/multisim/test/docs/evidence/af2_m9_d04_close_receipts_20261128/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）

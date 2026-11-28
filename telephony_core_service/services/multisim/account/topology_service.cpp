@@ -421,9 +421,25 @@ std::optional<TopologyService::DiscoveryReceipt> TopologyService::ReadDiscoveryR
     std::lock_guard<std::recursive_mutex> guard(commitLock_);
     const auto found = pendingDiscoveries_.find(call.admission);
     if (call.epoch != discoveryEpoch_ || found == pendingDiscoveries_.end()) { return std::nullopt; }
-    const auto &pending = found->second;
+    return MakeDiscoveryReceipt(call, found->second);
+}
+
+TopologyService::DiscoveryReceipt TopologyService::MakeDiscoveryReceipt(DiscoveryCallRef call,
+    const PendingDiscovery &pending)
+{
     return DiscoveryReceipt {call, pending.phase, pending.executing, pending.applied, pending.notApplied,
         pending.rolePlan ? std::make_optional(pending.rolePlan->reservation.token) : std::nullopt, pending.published};
+}
+
+std::vector<TopologyService::DiscoveryReceipt> TopologyService::ReadPendingDiscoveries() const
+{
+    std::lock_guard<std::recursive_mutex> guard(commitLock_);
+    std::vector<DiscoveryReceipt> receipts;
+    receipts.reserve(pendingDiscoveries_.size());
+    for (const auto &[admission, pending] : pendingDiscoveries_) {
+        receipts.push_back(MakeDiscoveryReceipt({discoveryEpoch_, admission}, pending));
+    }
+    return receipts;
 }
 
 void TopologyService::AcceptCardSessionInvalidation(const CardSessionInvalidation &invalidation)

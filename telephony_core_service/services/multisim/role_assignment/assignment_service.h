@@ -83,6 +83,20 @@ public:
         bool store;
     };
     PrimaryCloseEffects ReadPrimaryCloseEffects() const;
+    struct PendingPrimaryWork {
+        StepRef current;
+        std::optional<StepRef> originalCheck;
+        uint32_t protocolSession;
+        std::optional<uint64_t> retryTask;
+        std::optional<uint64_t> protocolDeadline;
+    };
+    struct CloseReceipt {
+        std::vector<PendingPrimaryWork> primary;
+        std::optional<C0Receipt> parameterWrites;
+        std::vector<RoleProviderEvidence> providerWrites;
+        std::vector<AccountRoleFragment> discoveryRoles;
+    };
+    CloseReceipt ReadCloseReceipt() const;
     std::optional<C0Receipt> ReadC0Receipt() const;
     bool ReconcileC0Parameter(const C0ParameterOperation &operation);
     void RetryPrimaryAfterReconciliation(RequestId request);

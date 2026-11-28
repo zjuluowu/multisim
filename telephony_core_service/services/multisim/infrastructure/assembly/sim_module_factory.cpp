@@ -118,8 +118,8 @@ bool SimModule::SeedAccount(const ConfirmedSlotAccount &confirmed)
 
 ReloadResult SimModule::ReloadAccounts(AccountReadView view)
 {
-    if (!AdmitModuleCall()) { return {}; }
-    ModuleCall call(shared_from_this());
+    const auto call = AdmitModuleCall();
+    if (!call) { return {}; }
     return topology_.ReloadAccounts(view);
 }
 
@@ -141,12 +141,15 @@ std::optional<AccountView> SimModule::ReadAccount(SubscriptionId subscription, A
 
 bool SimModule::QueueModuleTask(const std::function<bool(std::function<void()>)> &post, std::function<void()> task)
 {
-    if (!AdmitModuleCall()) { return false; }
-    const auto lifetime = std::make_shared<ModuleCall>(shared_from_this());
+    auto call = AdmitModuleCall();
+    if (!call) { return false; }
+    const auto lifetime = std::make_shared<ModuleCall>(std::move(*call));
     try {
         return post([lifetime, task = std::move(task)]() mutable {
             const auto executing = std::move(lifetime);
-            if (executing) { task(); }
+            if (!executing) { return; }
+            auto work = std::move(task);
+            work();
         });
     } catch (const std::exception &) {
         return false;
@@ -168,8 +171,8 @@ int32_t SimModule::QueueNumberEntry(SlotId slot, LegacyCallerRef caller, LegacyC
     const std::optional<std::u16string> &number)
 {
     if (!ports_.primaryHost) { return -1; }
-    if (!AdmitModuleCall()) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
-    const ModuleCall call {shared_from_this()};
+    const auto call = AdmitModuleCall();
+    if (!call) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
     const auto checked = LegacySimFacade::CheckNumberEntry(slot, caller, callback, number.has_value(),
         numberQuery_.has_value(), *ports_.primaryHost);
     if (checked != 0) { return checked; }
@@ -206,29 +209,33 @@ int32_t SimModule::QueueNumberEntry(SlotId slot, LegacyCallerRef caller, LegacyC
 bool SimModule::AcceptMsisdnEvidence(const MsisdnTransportEvidence &evidence)
 {
     if (!msisdn_ || evidence.ticket.step.request.owner != RequestOwner::ShowNumber ||
-        evidence.ticket.kind != CardCommandKind::WriteMsisdn || !AdmitModuleCall(true)) { return false; }
-    const ModuleCall call {shared_from_this()};
+        evidence.ticket.kind != CardCommandKind::WriteMsisdn) { return false; }
+    const auto call = AdmitModuleCall(true);
+    if (!call) { return false; }
     return cardTransport_.AcceptEvidence(evidence);
 }
 
 std::optional<RequestId> SimModule::LoadIccid(const SessionRef &session)
 {
-    if (!efRecords_ || !AdmitModuleCall()) { return std::nullopt; }
-    const ModuleCall call {shared_from_this()};
+    if (!efRecords_) { return std::nullopt; }
+    const auto call = AdmitModuleCall();
+    if (!call) { return std::nullopt; }
     return efRecords_->Load(session, EfField::Iccid);
 }
 
 bool SimModule::RefreshIccid(const SessionRef &session)
 {
-    if (!efRecords_ || !AdmitModuleCall()) { return false; }
-    const ModuleCall call {shared_from_this()};
+    if (!efRecords_) { return false; }
+    const auto call = AdmitModuleCall();
+    if (!call) { return false; }
     return efRecords_->Refresh(session, EfField::Iccid);
 }
 
 std::optional<IccidRecords> SimModule::ReadIccidRecords(const SessionRef &session)
 {
-    if (!efRecords_ || !AdmitModuleCall()) { return std::nullopt; }
-    const ModuleCall call {shared_from_this()};
+    if (!efRecords_) { return std::nullopt; }
+    const auto call = AdmitModuleCall();
+    if (!call) { return std::nullopt; }
     return efRecords_->ReadIccid(session);
 }
 
@@ -239,22 +246,25 @@ bool SimModule::AcceptIccidIoEvidence(const CardCommandEvidence &evidence)
 
 std::optional<RequestId> SimModule::LoadGid1(const SessionRef &session)
 {
-    if (!efRecords_ || !AdmitModuleCall()) { return std::nullopt; }
-    const ModuleCall call {shared_from_this()};
+    if (!efRecords_) { return std::nullopt; }
+    const auto call = AdmitModuleCall();
+    if (!call) { return std::nullopt; }
     return efRecords_->Load(session, EfField::Gid1);
 }
 
 bool SimModule::RefreshGid1(const SessionRef &session)
 {
-    if (!efRecords_ || !AdmitModuleCall()) { return false; }
-    const ModuleCall call {shared_from_this()};
+    if (!efRecords_) { return false; }
+    const auto call = AdmitModuleCall();
+    if (!call) { return false; }
     return efRecords_->Refresh(session, EfField::Gid1);
 }
 
 std::optional<std::string> SimModule::ReadGid1Records(const SessionRef &session)
 {
-    if (!efRecords_ || !AdmitModuleCall()) { return std::nullopt; }
-    const ModuleCall call {shared_from_this()};
+    if (!efRecords_) { return std::nullopt; }
+    const auto call = AdmitModuleCall();
+    if (!call) { return std::nullopt; }
     return efRecords_->ReadGid1(session);
 }
 
@@ -266,8 +276,9 @@ bool SimModule::AcceptGid1IoEvidence(const CardCommandEvidence &evidence)
 bool SimModule::AcceptEfIoEvidence(const CardCommandEvidence &evidence, CardCommandKind kind)
 {
     if (!efRecords_ || evidence.ticket.step.request.owner != RequestOwner::LocalCard ||
-        evidence.ticket.kind != kind || !AdmitModuleCall(true)) { return false; }
-    const ModuleCall call {shared_from_this()};
+        evidence.ticket.kind != kind) { return false; }
+    const auto call = AdmitModuleCall(true);
+    if (!call) { return false; }
     return cardTransport_.AcceptEvidence(evidence);
 }
 
@@ -277,8 +288,8 @@ int32_t SimModule::UnlockPin(int32_t slot, const std::u16string &pin, LegacyCall
     if (!ports_.primaryHost) { return -1; }
     auto &host = *ports_.primaryHost;
     const auto unavailable = host.PrimaryError(LegacyPrimaryError::Unavailable);
-    if (!AdmitModuleCall()) { return unavailable; }
-    const ModuleCall call {shared_from_this()};
+    const auto call = AdmitModuleCall();
+    if (!call) { return unavailable; }
     if (!host.IsSystemCaller(caller)) { return host.PrimaryError(LegacyPrimaryError::NonSystemCaller); }
     if (!host.CanSetTelephonyState(caller)) { return host.PrimaryError(LegacyPrimaryError::PermissionDenied); }
     if (!pinUnlock_ || callback.token == 0) { return unavailable; }
@@ -297,31 +308,32 @@ int32_t SimModule::UnlockPin(int32_t slot, const std::u16string &pin, LegacyCall
 
 bool SimModule::ObservePinLocked(const SessionRef &session)
 {
-    if (!AdmitModuleCall()) { return false; }
-    const ModuleCall call {shared_from_this()};
+    const auto call = AdmitModuleCall();
+    if (!call) { return false; }
     return card_.ObservePinLocked(session);
 }
 
 std::optional<CardLockState> SimModule::ReadLockState(const SessionRef &session)
 {
-    if (!AdmitModuleCall()) { return std::nullopt; }
-    const ModuleCall call {shared_from_this()};
+    const auto call = AdmitModuleCall();
+    if (!call) { return std::nullopt; }
     return card_.ReadLockState(session);
 }
 
 bool SimModule::AcceptPinIoEvidence(const CardCommandEvidence &evidence)
 {
     if (!pinUnlock_ || evidence.ticket.step.request.owner != RequestOwner::LocalCard ||
-        evidence.ticket.kind != CardCommandKind::UnlockPin || !AdmitModuleCall(true)) { return false; }
-    const ModuleCall call {shared_from_this()};
+        evidence.ticket.kind != CardCommandKind::UnlockPin) { return false; }
+    const auto call = AdmitModuleCall(true);
+    if (!call) { return false; }
     return cardTransport_.AcceptEvidence(evidence);
 }
 
 int32_t SimModule::SaveImsSwitch(int32_t slot, int32_t preference)
 {
     if (!ports_.primaryHost) { return -1; }
-    if (!AdmitModuleCall()) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
-    const ModuleCall call {shared_from_this()};
+    const auto call = AdmitModuleCall();
+    if (!call) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
     return LegacySimFacade::SaveImsSwitch({slot}, *catalog_, *ports_.primaryHost, completion_,
         [&](const CompletionPlan &plan) { return topology_.SaveImsPreference({{slot}}, preference, plan); });
 }
@@ -329,8 +341,8 @@ int32_t SimModule::SaveImsSwitch(int32_t slot, int32_t preference)
 int32_t SimModule::QueryImsSwitch(int32_t slot, int32_t &preference)
 {
     if (!ports_.primaryHost) { return -1; }
-    if (!AdmitModuleCall()) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
-    const ModuleCall call {shared_from_this()};
+    const auto call = AdmitModuleCall();
+    if (!call) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
     return LegacySimFacade::QueryImsSwitch({slot}, *catalog_, *ports_.primaryHost,
         [&] { return topology_.QueryImsPreference({{slot}}, preference); });
 }
@@ -338,8 +350,8 @@ int32_t SimModule::QueryImsSwitch(int32_t slot, int32_t &preference)
 int32_t SimModule::SetShowName(int32_t slot, const std::u16string &name, LegacyCallerRef caller)
 {
     if (!ports_.primaryHost) { return -1; }
-    if (!AdmitModuleCall()) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
-    const ModuleCall call {shared_from_this()};
+    const auto call = AdmitModuleCall();
+    if (!call) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
     return LegacySimFacade::SetShowName({slot}, caller, *catalog_, *ports_.primaryHost, completion_,
         [this](SlotId target) { return card_.HasVerifiedCard(target); },
         [&](const CompletionPlan &plan) { return topology_.SetDisplayName({{slot}}, name, plan); });
@@ -348,8 +360,8 @@ int32_t SimModule::SetShowName(int32_t slot, const std::u16string &name, LegacyC
 int32_t SimModule::GetShowName(int32_t slot, std::u16string &name, LegacyCallerRef caller)
 {
     if (!ports_.primaryHost) { return -1; }
-    if (!AdmitModuleCall()) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
-    const ModuleCall call {shared_from_this()};
+    const auto call = AdmitModuleCall();
+    if (!call) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
     return LegacySimFacade::GetShowName({slot}, caller, *catalog_, *ports_.primaryHost, name,
         [this](SlotId target) { return card_.HasVerifiedCard(target); },
         [&] { return topology_.ReadAccountAtSlot({{slot}}); });
@@ -358,16 +370,16 @@ int32_t SimModule::GetShowName(int32_t slot, std::u16string &name, LegacyCallerR
 int32_t SimModule::SetSimLabelIndexByIccId(const std::string &iccid, int32_t label)
 {
     if (!ports_.primaryHost) { return -1; }
-    if (!AdmitModuleCall()) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
-    const ModuleCall call {shared_from_this()};
+    const auto call = AdmitModuleCall();
+    if (!call) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
     return LegacySimFacade::SetSimLabelIndexByIccId(*ports_.primaryHost, completion_,
         [&](const CompletionPlan &plan) { return topology_.SetSimLabel(iccid, label, plan); });
 }
 
 bool SimModule::ReconcileAccountMetadata(const AccountMetadataOperation &operation)
 {
-    if (!AdmitModuleCall(true)) { return false; }
-    const ModuleCall call {shared_from_this()};
+    const auto call = AdmitModuleCall(true);
+    if (!call) { return false; }
     return topology_.ReconcileMetadata(operation);
 }
 
@@ -386,22 +398,22 @@ std::optional<ResourceState> SimModule::ReadPrimaryResourceState() const
     return resources_.ReadState(primaryResource_);
 }
 
-bool SimModule::AdmitPrimaryCall(bool originalOnly)
+std::optional<SimModule::ModuleCall> SimModule::AdmitPrimaryCall(bool originalOnly)
 {
     std::lock_guard<std::mutex> guard(admissionMutex_);
-    if (drained_ || primaryCallActive_) { return false; }
+    if (drained_ || primaryCall_ || nextFrame_ == std::numeric_limits<uint64_t>::max()) { return std::nullopt; }
     const bool primaryStoreOutstanding = assignment_->ReadC0Receipt().has_value();
-    if (originalOnly ? !primaryStoreOutstanding : (!accepting_ || primaryStoreOutstanding)) { return false; }
-    primaryCallActive_ = true;
+    if (originalOnly ? !primaryStoreOutstanding : (!accepting_ || primaryStoreOutstanding)) { return std::nullopt; }
+    primaryCall_ = nextFrame_++;
     if (joining_) { admissionChangedDuringJoin_ = true; }
-    return true;
+    return ModuleCall {shared_from_this(), *primaryCall_, true};
 }
 
 int32_t SimModule::SetPrimarySlotId(int32_t slot, LegacyCallerRef caller)
 {
     if (!ports_.primaryHost) { return -1; }
-    if (!AdmitPrimaryCall()) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
-    const PrimaryCall call {shared_from_this()};
+    const auto call = AdmitPrimaryCall();
+    if (!call) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
     std::function<bool(RequestId, uint64_t)> timeout;
     if (ports_.primaryWait) {
         timeout = [this](RequestId request, uint64_t elapsed) {
@@ -419,8 +431,8 @@ int32_t SimModule::SetPrimarySlotId(int32_t slot, LegacyCallerRef caller)
 int32_t SimModule::SetDefaultCellularDataSlotId(int32_t slot, LegacyCallerRef caller)
 {
     if (!ports_.primaryHost) { return -1; }
-    if (!AdmitModuleCall()) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
-    const ModuleCall call {shared_from_this()};
+    const auto call = AdmitModuleCall();
+    if (!call) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
     return LegacySimFacade::SetDefaultCellularDataSlotId({slot}, caller, *catalog_, *ports_.primaryHost, topology_,
         completion_, *assignment_, [this](SlotId target) { return card_.HasVerifiedCard(target); });
 }
@@ -438,8 +450,8 @@ int32_t SimModule::SetDefaultSmsSlotId(int32_t slot, LegacyCallerRef caller)
 int32_t SimModule::SetDefaultCallMessageRole(DefaultRole role, int32_t slot, LegacyCallerRef caller)
 {
     if (!ports_.primaryHost) { return -1; }
-    if (!AdmitModuleCall()) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
-    const ModuleCall call {shared_from_this()};
+    const auto call = AdmitModuleCall();
+    if (!call) { return ports_.primaryHost->PrimaryError(LegacyPrimaryError::Unavailable); }
     return LegacySimFacade::SetDefaultCallMessageRole(role, {slot}, caller, *catalog_, *ports_.primaryHost,
         topology_, completion_, *assignment_, [this](SlotId target) { return card_.HasVerifiedCard(target); });
 }
@@ -451,8 +463,8 @@ std::optional<RoleProviderEvidence> SimModule::ReadRoleProviderReceipt(DefaultRo
 
 bool SimModule::ReconcileRoleProvider(const RoleProviderOperation &operation)
 {
-    if (!AdmitModuleCall(true)) { return false; }
-    const ModuleCall call {shared_from_this()};
+    const auto call = AdmitModuleCall(true);
+    if (!call) { return false; }
     return assignment_->ReconcileRoleProvider(operation);
 }
 
@@ -463,80 +475,77 @@ std::optional<C0ParameterEvidence> SimModule::ReadDataParameterReceipt() const
 
 bool SimModule::ReconcileDataParameter(const C0ParameterOperation &operation)
 {
-    if (!AdmitModuleCall(true)) { return false; }
-    const ModuleCall call {shared_from_this()};
+    const auto call = AdmitModuleCall(true);
+    if (!call) { return false; }
     const auto receipt = assignment_->ReadDataParameterReceipt();
     return receipt && receipt->operation == operation && assignment_->ReconcileC0Parameter(operation);
 }
 
 std::optional<RequestId> SimModule::StartPrimarySwitch(const SwitchPrimaryCommand &command)
 {
-    if (!AdmitPrimaryCall()) { return std::nullopt; }
-    const PrimaryCall call {shared_from_this()};
+    const auto call = AdmitPrimaryCall();
+    if (!call) { return std::nullopt; }
     return assignment_->StartPrimarySwitch(command);
 }
 
 bool SimModule::AcceptRadioDeviceResult(const RadioDeviceResult &result)
 {
-    if (!ports_.primaryWait || !AdmitModuleCall(true)) { return false; }
-    const ModuleCall call {shared_from_this()};
+    if (!ports_.primaryWait) { return false; }
+    const auto call = AdmitModuleCall(true);
+    if (!call) { return false; }
     return radio_.AcceptDeviceResult(result);
 }
 
 bool SimModule::AcceptRadioC1RoundRecovery(const RadioC1RoundRecovery &evidence)
 {
-    if (!ports_.primaryWait || !AdmitModuleCall(true)) { return false; }
-    const ModuleCall call {shared_from_this()};
+    if (!ports_.primaryWait) { return false; }
+    const auto call = AdmitModuleCall(true);
+    if (!call) { return false; }
     return radio_.RecoverC1Round(evidence);
 }
 
 bool SimModule::AcceptPrimarySwitchTimeout(RequestId request, uint64_t elapsedMilliseconds)
 {
-    if (!ports_.primaryWait || !AdmitModuleCall(true)) { return false; }
-    const ModuleCall call {shared_from_this()};
+    if (!ports_.primaryWait) { return false; }
+    const auto call = AdmitModuleCall(true);
+    if (!call) { return false; }
     return assignment_->AcceptPrimarySwitchTimeout(request, elapsedMilliseconds);
 }
 
 bool SimModule::FlushRadioOwnerDeliveries()
 {
-    if (!ports_.primaryWait || !AdmitModuleCall(true)) { return false; }
-    const ModuleCall call {shared_from_this()};
+    if (!ports_.primaryWait) { return false; }
+    const auto call = AdmitModuleCall(true);
+    if (!call) { return false; }
     return radio_.FlushOwnerDeliveries();
 }
 
 void SimModule::AcceptRadioStep(const RadioSwitchResult &result)
 {
-    if (!AdmitModuleCall(true)) { return; }
-    const ModuleCall call {shared_from_this()};
+    const auto call = AdmitModuleCall(true);
+    if (!call) { return; }
     assignment_->AcceptRadioStep(result);
 }
 
 void SimModule::AcceptLateRadioEvidence(const RadioSwitchResult &result)
 {
-    if (!AdmitModuleCall(true)) { return; }
-    const ModuleCall call {shared_from_this()};
+    const auto call = AdmitModuleCall(true);
+    if (!call) { return; }
     assignment_->AcceptLateRadioEvidence(result);
 }
 
 void SimModule::AcceptC1RoundRecovery(const RadioC1RoundRecovery &evidence)
 {
-    if (!AdmitModuleCall(true)) { return; }
-    const ModuleCall call {shared_from_this()};
+    const auto call = AdmitModuleCall(true);
+    if (!call) { return; }
     assignment_->AcceptC1RoundRecovery(evidence);
 }
 
 bool SimModule::ReconcilePrimaryParameter(const C0ParameterOperation &operation)
 {
-    if (!AdmitPrimaryCall(true)) { return false; }
-    const PrimaryCall call {shared_from_this()};
+    const auto call = AdmitPrimaryCall(true);
+    if (!call) { return false; }
     return assignment_->ReconcileC0Parameter(operation);
-}
-
-void SimModule::ReturnPrimaryCall()
-{
-    std::lock_guard<std::mutex> guard(admissionMutex_);
-    primaryCallActive_ = false;
-    UpdateCloseHold();
 }
 
 SimModule::DrainResult SimModule::StopAcceptingAndDrain()
@@ -553,7 +562,7 @@ SimModule::DrainResult SimModule::StopAcceptingAndDrain()
             topology_.SealDiscovery();
             topology_.SealReload();
         }
-        if (primaryCallActive_ || moduleCalls_ || joining_) { return DrainResult::CallbacksStillInFlight; }
+        if (primaryCall_ || !moduleCalls_.empty() || joining_) { return DrainResult::CallbacksStillInFlight; }
         joining_ = true;
         admissionChangedDuringJoin_ = false;
     }
@@ -573,7 +582,7 @@ SimModule::DrainResult SimModule::StopAcceptingAndDrain()
         joining_ = false;
         const auto status = ReadCloseStatus(second.result);
         if (status != DrainResult::Drained) { return status; }
-        if (!first.SameSchedulerActivity(second)) { return DrainResult::CallbacksStillInFlight; }
+        if (!first.SameActivity(second)) { return DrainResult::CallbacksStillInFlight; }
         drained_ = true;
         closeHold_.reset();
         return DrainResult::Drained;
@@ -588,7 +597,7 @@ SimModule::DrainResult SimModule::ReadCloseStatus(PrimaryHostLifecycle::DrainRes
 {
     // Called with the admission lock. An original frame can both enter and
     // return between observations, leaving the in-flight counters at zero.
-    if (admissionChangedDuringJoin_ || primaryCallActive_ || moduleCalls_ ||
+    if (admissionChangedDuringJoin_ || primaryCall_ || !moduleCalls_.empty() ||
         primary == PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight) {
         return DrainResult::CallbacksStillInFlight;
     }
@@ -602,20 +611,46 @@ SimModule::DrainResult SimModule::ReadCloseStatus(PrimaryHostLifecycle::DrainRes
     return DrainResult::Drained;
 }
 
-bool SimModule::AdmitModuleCall(bool originalOnly)
+std::optional<SimModule::ModuleCall> SimModule::AdmitModuleCall(bool originalOnly)
 {
     std::lock_guard<std::mutex> guard(admissionMutex_);
-    if (drained_ || (!originalOnly && !accepting_)) { return false; }
-    ++moduleCalls_;
+    if (drained_ || (!originalOnly && !accepting_) || nextFrame_ == std::numeric_limits<uint64_t>::max()) {
+        return std::nullopt;
+    }
+    const auto frame = nextFrame_++;
+    moduleCalls_.insert(frame);
     if (joining_) { admissionChangedDuringJoin_ = true; }
-    return true;
+    return ModuleCall {shared_from_this(), frame, false};
 }
 
-void SimModule::ReturnModuleCall()
+void SimModule::ReturnCall(uint64_t frame, bool primary)
 {
     std::lock_guard<std::mutex> guard(admissionMutex_);
-    --moduleCalls_;
+    if (primary) {
+        if (primaryCall_ == frame) { primaryCall_.reset(); }
+    } else {
+        moduleCalls_.erase(frame);
+    }
     UpdateCloseHold();
+}
+
+SimModule::CloseReceipt SimModule::ReadCloseReceipt() const
+{
+    CloseReceipt receipt {};
+    receipt.epoch = epoch_;
+    {
+        std::lock_guard<std::mutex> guard(admissionMutex_);
+        receipt.sealed = !accepting_;
+        receipt.drained = drained_;
+        receipt.primaryFrame = primaryCall_;
+        receipt.moduleFrames.assign(moduleCalls_.begin(), moduleCalls_.end());
+    }
+    receipt.assignment = assignment_->ReadCloseReceipt();
+    receipt.radio = radio_.ReadCloseReceipt();
+    receipt.card = cardTransport_.ReadCloseEffects();
+    receipt.discoveries = topology_.ReadPendingDiscoveries();
+    receipt.metadata = topology_.ReadPendingMetadata();
+    return receipt;
 }
 
 void SimModule::UpdateCloseHold()
@@ -637,33 +672,30 @@ bool SimModule::HasPendingBusinessEffects() const
 
 std::optional<SessionRef> SimModule::ObserveCardApplication(const CardApplicationTarget &application, uint64_t generation)
 {
-    if (!AdmitModuleCall()) { return std::nullopt; }
-    const ModuleCall call {shared_from_this()};
+    const auto call = AdmitModuleCall();
+    if (!call) { return std::nullopt; }
     return card_.ObserveCardApplication(application, generation);
 }
 
 std::optional<SessionRef> SimModule::ObserveVerifiedCard(const CardApplicationTarget &application,
     uint64_t generation, const std::string &iccid)
 {
-    const auto self = shared_from_this();
-    if (!AdmitModuleCall()) { return std::nullopt; }
-    const ModuleCall call {self};
+    const auto call = AdmitModuleCall();
+    if (!call) { return std::nullopt; }
     return card_.ObserveVerifiedCard(application, generation, iccid);
 }
 
 bool SimModule::InvalidateVerifiedCard(const SessionRef &session)
 {
-    const auto self = shared_from_this();
-    if (!AdmitModuleCall(true)) { return false; }
-    const ModuleCall call {self};
+    const auto call = AdmitModuleCall(true);
+    if (!call) { return false; }
     return card_.InvalidateVerifiedCard(session);
 }
 
 bool SimModule::ReconcileDiscovery(DiscoveryCallRef original)
 {
-    const auto self = shared_from_this();
-    if (!AdmitModuleCall(true)) { return false; }
-    const ModuleCall call {self};
+    const auto call = AdmitModuleCall(true);
+    if (!call) { return false; }
     return topology_.ReconcileDiscovery(original);
 }
 

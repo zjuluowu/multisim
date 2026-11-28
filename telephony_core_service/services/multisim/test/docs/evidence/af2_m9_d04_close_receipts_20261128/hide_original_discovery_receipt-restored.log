@@ -1,0 +1,11 @@
+Note: Google Test filter = AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[       OK ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild (4 ms)
+[----------] 1 test from AF2CardComposition (4 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (5 ms total)
+[  PASSED  ] 1 test.

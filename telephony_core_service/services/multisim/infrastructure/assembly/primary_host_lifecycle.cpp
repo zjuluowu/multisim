@@ -28,9 +28,10 @@ PrimaryHostLifecycle::DrainResult PrimaryHostLifecycle::StopAcceptingAndDrain()
     return observation.result;
 }
 
-bool PrimaryHostLifecycle::CloseObservation::SameSchedulerActivity(const CloseObservation &other) const
+bool PrimaryHostLifecycle::CloseObservation::SameActivity(const CloseObservation &other) const
 {
-    return std::tie(scheduler.scheduled, scheduler.delivered, scheduler.cancelled, scheduler.rejected) ==
+    return radioOwnerActivity == other.radioOwnerActivity &&
+        std::tie(scheduler.scheduled, scheduler.delivered, scheduler.cancelled, scheduler.rejected) ==
         std::tie(other.scheduler.scheduled, other.scheduler.delivered, other.scheduler.cancelled,
             other.scheduler.rejected);
 }
@@ -99,7 +100,8 @@ PrimaryHostLifecycle::CloseObservation PrimaryHostLifecycle::ObserveClose()
             return {DrainResult::CallbacksStillInFlight};
         }
     }
-    if (!radio_.OwnerCallbacksDrained()) {
+    uint64_t radioOwnerActivity = 0;
+    if (!radio_.OwnerCallbacksDrained(&radioOwnerActivity)) {
         return {DrainResult::CallbacksStillInFlight};
     }
     const auto scheduler = scheduler_.Audit();
@@ -113,7 +115,7 @@ PrimaryHostLifecycle::CloseObservation PrimaryHostLifecycle::ObserveClose()
     const auto effects = assignment->ReadPrimaryCloseEffects();
     if (effects.device) { return {DrainResult::DeviceEffectsUnresolved, scheduler}; }
     if (effects.store) { return {DrainResult::BusinessEffectsUnresolved, scheduler}; }
-    return {DrainResult::Drained, scheduler};
+    return {DrainResult::Drained, scheduler, radioOwnerActivity};
 }
 
 bool PrimaryHostLifecycle::IsStopped() const

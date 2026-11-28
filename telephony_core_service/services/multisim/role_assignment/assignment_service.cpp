@@ -267,6 +267,24 @@ AssignmentService::PrimaryCloseEffects AssignmentService::ReadPrimaryCloseEffect
     return {!pendingPrimary_.empty(), c0Receipt_ && c0Receipt_->writeSet == kPrimaryRoleWriteSet};
 }
 
+AssignmentService::CloseReceipt AssignmentService::ReadCloseReceipt() const
+{
+    std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);
+    CloseReceipt receipt;
+    receipt.primary.reserve(pendingPrimary_.size());
+    for (const auto &entry : pendingPrimary_) {
+        const auto &pending = entry.second;
+        receipt.primary.push_back({pending.step, pending.originalC1Check, pending.protocolSession,
+            pending.retrySchedulerTask, pending.protocolDeadlineTask});
+    }
+    receipt.parameterWrites = c0Receipt_;
+    for (const auto &provider : providerReceipts_) {
+        if (provider) { receipt.providerWrites.push_back(provider->evidence); }
+    }
+    receipt.discoveryRoles = accountRoles_.ReadPendingDiscoveryRoles();
+    return receipt;
+}
+
 std::optional<AssignmentService::C0Receipt> AssignmentService::ReadC0Receipt() const
 {
     std::lock_guard<std::recursive_mutex> guard(primaryCommitLock_);

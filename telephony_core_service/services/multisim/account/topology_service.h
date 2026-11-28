@@ -66,6 +66,7 @@ public:
     AccountMetadataResult SetDisplayName(SlotTarget origin, const std::u16string &name, const CompletionPlan &completion);
     AccountMetadataResult SetSimLabel(const std::string &iccid, int32_t legacyLabel, const CompletionPlan &completion);
     size_t PendingMetadataCount() const;
+    std::vector<AccountMetadataEvidence> ReadPendingMetadata() const;
     bool ReconcileMetadata(const AccountMetadataOperation &operation);
     int32_t SaveImsPreference(SlotTarget origin, int32_t preference, const CompletionPlan &completion);
     int32_t QueryImsPreference(SlotTarget origin, int32_t &preference);
@@ -98,6 +99,7 @@ public:
         std::optional<BindingRef> published;
     };
     std::optional<DiscoveryReceipt> ReadDiscoveryReceipt(DiscoveryCallRef call) const;
+    std::vector<DiscoveryReceipt> ReadPendingDiscoveries() const;
     void AcceptCardSessionInvalidation(const CardSessionInvalidation &invalidation) override;
     // Application ingress after the original provider write is confirmed. It does not
     // allocate identities or expose the private registries.
@@ -172,6 +174,7 @@ private:
         std::optional<BindingRef> published {};
         std::optional<StorePosition> position {};
     };
+    static DiscoveryReceipt MakeDiscoveryReceipt(DiscoveryCallRef call, const PendingDiscovery &pending);
     const RuntimeEpoch discoveryEpoch_;
     bool acceptingDiscovery_ {true};
     std::map<uint64_t, PendingDiscovery> pendingDiscoveries_;

@@ -1,0 +1,22 @@
+Note: Google Test filter = AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:5656: Failure
+Expected equality of these values:
+  ownerPending.radio.owner.size()
+    Which is: 0
+  1u
+    Which is: 1
+
+[  FAILED  ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild (2 ms)
+[----------] 1 test from AF2CardComposition (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+
+ 1 FAILED TEST

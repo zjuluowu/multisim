@@ -309,6 +309,15 @@ size_t TopologyService::PendingMetadataCount() const
     return pendingMetadata_.size();
 }
 
+std::vector<AccountMetadataEvidence> TopologyService::ReadPendingMetadata() const
+{
+    std::lock_guard<std::recursive_mutex> guard(commitLock_);
+    std::vector<AccountMetadataEvidence> receipts;
+    receipts.reserve(pendingMetadata_.size());
+    for (const auto &entry : pendingMetadata_) { receipts.push_back(entry.second.evidence); }
+    return receipts;
+}
+
 bool TopologyService::ReconcileMetadata(const AccountMetadataOperation &operation)
 {
     std::unique_lock<std::recursive_mutex> guard(commitLock_);

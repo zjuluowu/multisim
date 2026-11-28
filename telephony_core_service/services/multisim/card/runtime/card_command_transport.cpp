@@ -222,4 +222,17 @@ bool CardCommandTransport::HasPending() const
     std::lock_guard<std::mutex> guard(mutex_);
     return !pending_.empty();
 }
+
+std::vector<CardCommandTransport::CloseEffect> CardCommandTransport::ReadCloseEffects() const
+{
+    std::lock_guard<std::mutex> guard(mutex_);
+    std::vector<CloseEffect> effects;
+    effects.reserve(pending_.size());
+    for (const auto &entry : pending_) {
+        const auto &pending = entry.second;
+        effects.push_back({pending.ticket, pending.lease.resources, pending.effect, pending.submitting,
+            pending.delivering, pending.delivered, pending.quarantined});
+    }
+    return effects;
+}
 } // namespace OHOS::Telephony::MultiSim

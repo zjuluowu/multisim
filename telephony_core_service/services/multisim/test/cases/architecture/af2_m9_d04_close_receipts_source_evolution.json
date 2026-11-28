@@ -1,0 +1,19 @@
+{
+  "baseline": "9489d5d58d1134f8475fb66ebc92f12eabb3eceb",
+  "files": {
+    "account/topology_metadata.cpp": "289240404a491299aed53c7a108279e071855c3e2847f58c5e78d551b101df8f",
+    "account/topology_service.cpp": "da29c68aadbb3fe29e8f38fa15de6f68104e7d789873cc5448a98d986a699b96",
+    "account/topology_service.h": "35191e8f5ee31e193cfb6a60470958c913d1e33cbef5ffa8269412059820d3ff",
+    "card/runtime/card_command_transport.cpp": "1558be92b19ad7ccb769b90977b36a346d5c83af160ddde14f088e17ebe31504",
+    "card/runtime/card_command_transport.h": "c1cb15c832d16c1185a16487c9900d5be960568af5119d84acb65a7664b53b58",
+    "device/resource/resource_radio_runtime.cpp": "ba19cac4fd2766d96b3ae34c2e6f350624098d0daacfe4f0d8d31417a7a6ce96",
+    "device/resource/resource_radio_runtime.h": "c77a2800366fd43bdd2a8607de5cfe386953bc74ce4387181bfea21945a9caed",
+    "infrastructure/assembly/primary_host_lifecycle.cpp": "a6d41cdf6edca04ea975fbcfde2aee45e9a712907ab7d454b2f47180bb649fe4",
+    "infrastructure/assembly/primary_host_lifecycle.h": "f6d650a24f11338a5ff4f573528b6d2a9a7378af4762e90614ebc4b7065a093d",
+    "infrastructure/assembly/sim_module.h": "65bc074808427ebaf665b29d909a4ee2c57093be5a34337c7e8e3f42420ba785",
+    "infrastructure/assembly/sim_module_factory.cpp": "2cb2462e81aab1cdce42411dab91cd53328e1f1a2bf1686acc41454de2c3292b",
+    "role_assignment/account_role_protocol.h": "9f00fe43ae03c8507659ee5e50f9f253c3b678c121114fef12c5896cff7b6e9c",
+    "role_assignment/assignment_service.cpp": "013c3772ac169321d5ef0e0d0607368adf71050003afadd41994940072ace5af",
+    "role_assignment/assignment_service.h": "5199b4f2528825e94d8f66938fbed9e7d95e6961c201ca720aea35b4c5c7cff1"
+  }
+}

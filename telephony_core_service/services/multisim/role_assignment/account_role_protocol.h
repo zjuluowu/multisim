@@ -102,6 +102,13 @@ public:
         return row == confirmedDiscoveryRoles_.end() ? std::nullopt : std::make_optional(row->second);
     }
     size_t PendingDiscoveryRoles() const { return reservations_.size(); }
+    std::vector<AccountRoleFragment> ReadPendingDiscoveryRoles() const
+    {
+        std::vector<AccountRoleFragment> parts;
+        parts.reserve(reservations_.size());
+        for (const auto &entry : reservations_) { parts.push_back(entry.second.plan); }
+        return parts;
+    }
     uint64_t Revision(bool historical) const { return historical ? historical_.revision : current_.revision; }
     bool AcceptReloadSet(const std::vector<StoredAccountRoleFragment> &rows, uint64_t attempt,
         uint64_t expectedRevision, bool historical)

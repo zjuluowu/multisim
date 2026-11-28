@@ -65,6 +65,16 @@ public:
     void Submit(const CardCommandExecution &execution, const Handoff &handoff, CardCommandHandlers handlers);
     bool AcceptEvidence(const CardCommandEvidence &evidence);
     bool HasPending() const;
+    struct CloseEffect {
+        CardCommandTicket original;
+        std::vector<ResourceKey> resources;
+        EffectKnowledge effect;
+        bool submitting;
+        bool delivering;
+        bool businessResultOffered;
+        bool quarantined;
+    };
+    std::vector<CloseEffect> ReadCloseEffects() const;
 private:
     struct Pending {
         CardCommandTicket ticket;

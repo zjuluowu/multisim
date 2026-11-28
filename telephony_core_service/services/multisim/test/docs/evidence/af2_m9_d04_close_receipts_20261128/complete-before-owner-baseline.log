@@ -1,0 +1,27 @@
+Note: Google Test filter = AF2Primary.FormalC1CompleteReceiptedBeforeTimeoutStillAcceptsOriginalWholeRoundProof
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.FormalC1CompleteReceiptedBeforeTimeoutStillAcceptsOriginalWholeRoundProof
+/tmp/multisim-d04-c1-ended-before-owner.cpp:2715: Failure
+Expected equality of these values:
+  module->StopAcceptingAndDrain()
+    Which is: 4-byte object <02-00 00-00>
+  SimModule::DrainResult::BusinessEffectsUnresolved
+    Which is: 4-byte object <03-00 00-00>
+
+/tmp/multisim-d04-c1-ended-before-owner.cpp:2716: Failure
+Value of: module->AcceptRadioC1RoundRecovery(fixture.VerifyAbortedRound())
+  Actual: false
+Expected: true
+
+[  FAILED  ] AF2Primary.FormalC1CompleteReceiptedBeforeTimeoutStillAcceptsOriginalWholeRoundProof (1 ms)
+[----------] 1 test from AF2Primary (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] AF2Primary.FormalC1CompleteReceiptedBeforeTimeoutStillAcceptsOriginalWholeRoundProof
+
+ 1 FAILED TEST

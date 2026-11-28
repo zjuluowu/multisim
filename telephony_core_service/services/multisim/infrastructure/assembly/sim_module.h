@@ -19,6 +19,7 @@
 #ifndef OHOS_TELEPHONY_MULTISIM_ASSEMBLY_SIM_MODULE_H
 #define OHOS_TELEPHONY_MULTISIM_ASSEMBLY_SIM_MODULE_H
 
+#include <set>
 #include "infrastructure/assembly/sim_module_factory.h"
 #include "infrastructure/assembly/primary_host_lifecycle.h"
 #include "account/topology_service.h"
@@ -115,6 +116,19 @@ public:
     bool AcceptPrimarySwitchTimeout(RequestId request, uint64_t elapsedMilliseconds);
     bool FlushRadioOwnerDeliveries();
     DrainResult StopAcceptingAndDrain();
+    struct CloseReceipt {
+        RuntimeEpoch epoch;
+        bool sealed;
+        bool drained;
+        std::vector<uint64_t> moduleFrames;
+        std::optional<uint64_t> primaryFrame;
+        AssignmentService::CloseReceipt assignment;
+        ResourceRadioRuntime::CloseReceipt radio;
+        std::vector<CardCommandTransport::CloseEffect> card;
+        std::vector<TopologyService::DiscoveryReceipt> discoveries;
+        std::vector<AccountMetadataEvidence> metadata;
+    };
+    CloseReceipt ReadCloseReceipt() const;
     std::optional<ResourceState> ReadPrimaryResourceState() const;
 private:
     bool AcceptEfIoEvidence(const CardCommandEvidence &evidence, CardCommandKind kind);
@@ -128,10 +142,6 @@ private:
     int32_t QueueNumberEntry(SlotId slot, LegacyCallerRef caller, LegacyCallbackRef callback,
         const std::optional<std::u16string> &number);
     bool SeedAccount(const ConfirmedSlotAccount &confirmed);
-    bool AdmitPrimaryCall(bool originalOnly = false);
-    void ReturnPrimaryCall();
-    bool AdmitModuleCall(bool originalOnly = false);
-    void ReturnModuleCall();
     DrainResult ReadCloseStatus(PrimaryHostLifecycle::DrainResult primary) const;
     bool HasPendingBusinessEffects() const;
     void UpdateCloseHold();
@@ -141,15 +151,18 @@ private:
     int32_t SetDefaultCallMessageRole(DefaultRole role, int32_t slot, LegacyCallerRef caller);
 
     struct ModuleCall {
-        explicit ModuleCall(CoreSimModuleHandle owner) : module(std::move(owner)) {}
+        ModuleCall(CoreSimModuleHandle owner, uint64_t frameId, bool primaryCall)
+            : module(std::move(owner)), frame(frameId), primary(primaryCall) {}
+        ModuleCall(ModuleCall &&) = default;
+        ModuleCall(const ModuleCall &) = delete;
+        ~ModuleCall() { if (module) { module->ReturnCall(frame, primary); } }
         CoreSimModuleHandle module;
-        ~ModuleCall() { module->ReturnModuleCall(); }
+        uint64_t frame;
+        bool primary;
     };
-
-    struct PrimaryCall {
-        CoreSimModuleHandle module;
-        ~PrimaryCall() { module->ReturnPrimaryCall(); }
-    };
+    std::optional<ModuleCall> AdmitPrimaryCall(bool originalOnly = false);
+    std::optional<ModuleCall> AdmitModuleCall(bool originalOnly = false);
+    void ReturnCall(uint64_t frame, bool primary);
 
     CoreSimModulePorts ports_;
     const std::shared_ptr<const SlotCatalog> catalog_;
@@ -169,10 +182,11 @@ private:
     std::optional<ShowNumberQuery> numberQuery_;
     std::shared_ptr<AssignmentService> assignment_;
     PrimaryHostLifecycle lifecycle_;
-    std::mutex admissionMutex_;
+    mutable std::mutex admissionMutex_;
     bool accepting_ {true};
-    size_t moduleCalls_ {0};
-    bool primaryCallActive_ {false};
+    uint64_t nextFrame_ {1};
+    std::set<uint64_t> moduleCalls_;
+    std::optional<uint64_t> primaryCall_;
     bool joining_ {false};
     bool admissionChangedDuringJoin_ {false};
     bool drained_ {false};

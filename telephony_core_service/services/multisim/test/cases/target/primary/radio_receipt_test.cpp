@@ -169,6 +169,34 @@ TEST(TargetRadioReceipt, NewDeliveryDuringOwnerAuditPreventsDrainAndRepost)
     }
 }
 
+TEST(TargetRadioReceipt, FinishedDeliveryDuringOwnerAuditInvalidatesTheOriginalObservation)
+{
+    ResourceBarrier barrier {epoch};
+    Device device;
+    const auto sink = std::make_shared<Sink>();
+    const auto dispatch = std::make_shared<InlineDispatch>();
+    ResourceRadioRuntime runtime {barrier, device, {key}, ResourceRadioRuntime::Mode::Execute};
+    ASSERT_TRUE(barrier.RegisterForInitialCheck(key));
+    ASSERT_TRUE(runtime.Initialize(key, {epoch, true, true}));
+    runtime.BindResultSink(sink);
+    runtime.BindOwnerDispatch(dispatch);
+    ASSERT_EQ(runtime.SwitchPrimaryRadio(Request(1), kOnlyRadioQualification),
+        RadioSubmitDisposition::HandoffAccepted);
+    const auto earlier = runtime.ReadCloseReceipt().ownerActivity;
+    dispatch->onAudit = [&] {
+        EXPECT_TRUE(runtime.AcceptDeviceResult(Reply(1)));
+        EXPECT_EQ(sink->deliveries, std::vector<uint64_t> {1});
+        return true;
+    };
+    uint64_t observed = earlier;
+    EXPECT_FALSE(runtime.OwnerCallbacksDrained(&observed));
+    EXPECT_EQ(observed, earlier);
+    dispatch->onAudit = {};
+    ASSERT_TRUE(runtime.OwnerCallbacksDrained(&observed));
+    EXPECT_GT(observed, earlier);
+    EXPECT_EQ(runtime.ReadCloseReceipt().ownerActivity, observed);
+}
+
 TEST(TargetRadioReceipt, RefusedPostDoesNotRemoveAnotherRequestsReceipt)
 {
     ResourceBarrier barrier{epoch};

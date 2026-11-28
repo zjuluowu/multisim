@@ -25,7 +25,8 @@ private:
     struct CloseObservation {
         DrainResult result;
         RetrySchedulerAudit scheduler {};
-        bool SameSchedulerActivity(const CloseObservation &other) const;
+        uint64_t radioOwnerActivity {0};
+        bool SameActivity(const CloseObservation &other) const;
     };
     CloseObservation ObserveClose();
 

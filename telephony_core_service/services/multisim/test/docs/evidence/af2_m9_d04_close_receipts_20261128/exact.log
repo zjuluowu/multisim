@@ -1,0 +1,33 @@
+Note: Google Test filter = AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[       OK ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild (14 ms)
+[----------] 1 test from AF2CardComposition (15 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (15 ms total)
+[  PASSED  ] 1 test.
+Note: Google Test filter = TargetRadioReceipt.FinishedDeliveryDuringOwnerAuditInvalidatesTheOriginalObservation
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetRadioReceipt
+[ RUN      ] TargetRadioReceipt.FinishedDeliveryDuringOwnerAuditInvalidatesTheOriginalObservation
+[       OK ] TargetRadioReceipt.FinishedDeliveryDuringOwnerAuditInvalidatesTheOriginalObservation (0 ms)
+[----------] 1 test from TargetRadioReceipt (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+Note: Google Test filter = AF2CardComposition.OriginalPinCompletionDuringCloseInvalidatesFirstReceipt
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.OriginalPinCompletionDuringCloseInvalidatesFirstReceipt
+[       OK ] AF2CardComposition.OriginalPinCompletionDuringCloseInvalidatesFirstReceipt (25 ms)
+[----------] 1 test from AF2CardComposition (25 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (25 ms total)
+[  PASSED  ] 1 test.

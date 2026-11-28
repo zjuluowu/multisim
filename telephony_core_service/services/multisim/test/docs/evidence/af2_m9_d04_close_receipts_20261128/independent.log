@@ -1,0 +1,59 @@
+Independent D04 close-receipt Host verification
+ELF /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host 44251792 2026-11-28 15:11:58.658277521 +0800
+66bc739d86fe5b8836aef8c23837619ea9b8567213e11c7fb52e8b47d36aeb35  /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host
+
+$ LLVM_PROFILE_FILE=/tmp/multisim-d04-close-receipt-review-AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+Note: Google Test filter = AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild
+[       OK ] AF2CardComposition.MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild (4 ms)
+[----------] 1 test from AF2CardComposition (4 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (4 ms total)
+[  PASSED  ] 1 test.
+exit=0
+
+$ LLVM_PROFILE_FILE=/tmp/multisim-d04-close-receipt-review-TargetRadioReceipt.FinishedDeliveryDuringOwnerAuditInvalidatesTheOriginalObservation-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=TargetRadioReceipt.FinishedDeliveryDuringOwnerAuditInvalidatesTheOriginalObservation
+Note: Google Test filter = TargetRadioReceipt.FinishedDeliveryDuringOwnerAuditInvalidatesTheOriginalObservation
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetRadioReceipt
+[ RUN      ] TargetRadioReceipt.FinishedDeliveryDuringOwnerAuditInvalidatesTheOriginalObservation
+[       OK ] TargetRadioReceipt.FinishedDeliveryDuringOwnerAuditInvalidatesTheOriginalObservation (0 ms)
+[----------] 1 test from TargetRadioReceipt (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+exit=0
+
+$ LLVM_PROFILE_FILE=/tmp/multisim-d04-close-receipt-review-AF2CardComposition.OriginalPinCompletionDuringCloseInvalidatesFirstReceipt-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=AF2CardComposition.OriginalPinCompletionDuringCloseInvalidatesFirstReceipt
+Note: Google Test filter = AF2CardComposition.OriginalPinCompletionDuringCloseInvalidatesFirstReceipt
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.OriginalPinCompletionDuringCloseInvalidatesFirstReceipt
+[       OK ] AF2CardComposition.OriginalPinCompletionDuringCloseInvalidatesFirstReceipt (0 ms)
+[----------] 1 test from AF2CardComposition (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+exit=0
+
+$ LLVM_PROFILE_FILE=/tmp/multisim-d04-close-receipt-review-AF2Primary.OriginalStoreReceiptCanBeReconciledDuringCloseObservation-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=AF2Primary.OriginalStoreReceiptCanBeReconciledDuringCloseObservation
+Note: Google Test filter = AF2Primary.OriginalStoreReceiptCanBeReconciledDuringCloseObservation
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.OriginalStoreReceiptCanBeReconciledDuringCloseObservation
+[       OK ] AF2Primary.OriginalStoreReceiptCanBeReconciledDuringCloseObservation (1 ms)
+[----------] 1 test from AF2Primary (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+exit=0

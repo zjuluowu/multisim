@@ -37,13 +37,34 @@ public:
     bool Recover(const StepRef &original, const RecoveryEvidence &evidence);
     bool RecoverC1Round(const RadioC1RoundRecovery &evidence);
     bool StopAccepting();
-    bool OwnerCallbacksDrained() const;
+    bool OwnerCallbacksDrained(uint64_t *observedActivity = nullptr) const;
     bool FlushOwnerDeliveries();
     bool DeviceResourcesDrained() const;
     std::optional<ResourceState> ReadResourceState(const ResourceKey &key) const;
     size_t SubmittedCommands() const;
     size_t RejectedStaleResults() const;
     std::optional<int32_t> ReadTransportSerial(uint64_t token) const;
+    struct PendingDeviceWork {
+        ResourceLease lease;
+        StepRef current;
+        uint32_t protocolSession;
+        std::vector<RadioProtocolMember> members;
+        std::vector<uint64_t> transmissions;
+        bool quarantined;
+    };
+    struct PendingOwnerWork {
+        StepRef original;
+        std::optional<SlotId> member;
+        uint32_t protocolSession;
+        bool late;
+    };
+    struct CloseReceipt {
+        uint64_t ownerActivity;
+        size_t ownerFrames;
+        std::vector<PendingDeviceWork> device;
+        std::vector<PendingOwnerWork> owner;
+    };
+    CloseReceipt ReadCloseReceipt() const;
 private:
     // Holds the receipt responsibility across the R-to-Owner transfer, including
     // the interval before the dispatcher accepts the callback.
@@ -93,6 +114,7 @@ private:
         std::variant<RadioSwitchResult, RadioC1RoundRecovery> evidence;
         bool late {false};
         void Deliver(RadioResultSink &sink) const;
+        PendingOwnerWork ReadReceipt() const;
     };
     struct OwnerDeliveryReceipt {
         explicit OwnerDeliveryReceipt(const OwnerDelivery &value) : delivery(value) {}

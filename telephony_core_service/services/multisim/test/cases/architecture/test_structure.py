@@ -127,11 +127,11 @@ class BoundaryGuard(unittest.TestCase):
 
     def test_m8_role_source_drift(self):
         self.check_mapped_mutation("role_assignment/account_role_protocol.h", lambda s: s + '\n// drift\n',
-                                  "AF2 M8 source input differs: role_assignment/account_role_protocol.h")
+                                  "AF2 M9 D04 close receipts source input differs: role_assignment/account_role_protocol.h")
 
     def test_m9_role_source_drift(self):
         self.check_mapped_mutation("role_assignment/assignment_service.cpp", lambda s: s + '\n// drift\n',
-            "AF2 M9 D04 C1 recovery source input differs: role_assignment/assignment_service.cpp")
+            "AF2 M9 D04 close receipts source input differs: role_assignment/assignment_service.cpp")
 
     def test_m6_account_source_drift(self):
         self.check_mapped_mutation("infrastructure/request/request_ref.h", lambda s: s + '\n// drift\n',

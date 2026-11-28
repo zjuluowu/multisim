@@ -60,7 +60,9 @@ bool ResourceRadioRuntime::Initialize(const ResourceKey &key, const InitialRecov
 void ResourceRadioRuntime::OwnerDeliveryFrame::Begin()
 {
     ++owner_.ownerDeliveryFrames_;
-    ++owner_.ownerDeliveryRevision_;
+    if (owner_.ownerDeliveryRevision_ != std::numeric_limits<uint64_t>::max()) {
+        ++owner_.ownerDeliveryRevision_;
+    }
     active_ = true;
 }
 
@@ -80,15 +82,43 @@ bool ResourceRadioRuntime::LocalOwnerCallbacksDrained() const
     return ownerDeliveryFrames_ == 0 && pendingOwnerDeliveries_.empty() && ownerDeliveryReceipts_.empty();
 }
 
-bool ResourceRadioRuntime::OwnerCallbacksDrained() const
+bool ResourceRadioRuntime::OwnerCallbacksDrained(uint64_t *observedActivity) const
 {
     std::unique_lock<std::mutex> guard(lock_);
-    if (!LocalOwnerCallbacksDrained()) { return false; }
+    if (ownerDeliveryRevision_ == std::numeric_limits<uint64_t>::max() || !LocalOwnerCallbacksDrained()) {
+        return false;
+    }
     const auto dispatch = dispatch_.lock();
+    const auto activity = ownerDeliveryRevision_;
     guard.unlock();
     if (!dispatch || !dispatch->RadioOwnerCallbacksDrained()) { return false; }
     guard.lock();
-    return dispatch_.lock() == dispatch && LocalOwnerCallbacksDrained();
+    if (dispatch_.lock() != dispatch || activity != ownerDeliveryRevision_ || !LocalOwnerCallbacksDrained()) {
+        return false;
+    }
+    if (observedActivity) { *observedActivity = activity; }
+    return true;
+}
+
+ResourceRadioRuntime::CloseReceipt ResourceRadioRuntime::ReadCloseReceipt() const
+{
+    std::lock_guard<std::mutex> guard(lock_);
+    CloseReceipt receipt {ownerDeliveryRevision_, ownerDeliveryFrames_, {}, {}};
+    for (const auto &[fence, group] : groups_) {
+        PendingDeviceWork work {group.lease, group.first.step, group.first.protocolSession,
+            group.first.roundMembers, {}, group.quarantined};
+        for (const auto &[token, command] : transmissions_) {
+            if (command.fence == fence && !command.updateGroupEnded) { work.transmissions.push_back(token); }
+        }
+        receipt.device.push_back(std::move(work));
+    }
+    for (const auto &delivery : pendingOwnerDeliveries_) { receipt.owner.push_back(delivery.ReadReceipt()); }
+    for (const auto &delivery : ownerDeliveryReceipts_) {
+        if (!delivery->delivered.load(std::memory_order_acquire)) {
+            receipt.owner.push_back(delivery->delivery.ReadReceipt());
+        }
+    }
+    return receipt;
 }
 
 PrimaryRadioObservation ResourceRadioRuntime::ReadPrimaryRadioObservation(SlotId slot) const
@@ -576,6 +606,15 @@ void ResourceRadioRuntime::OwnerDelivery::Deliver(RadioResultSink &sink) const
     }
 }
 
+ResourceRadioRuntime::PendingOwnerWork ResourceRadioRuntime::OwnerDelivery::ReadReceipt() const
+{
+    if (const auto *round = std::get_if<RadioC1RoundRecovery>(&evidence)) {
+        return {round->originalCheck, std::nullopt, round->protocolSession, true};
+    }
+    const auto &result = std::get<RadioSwitchResult>(evidence);
+    return {result.step, result.memberSlot, result.protocolSession, late};
+}
+
 bool ResourceRadioRuntime::DeliverDeviceResults(const std::vector<RadioSwitchResult> &normal,
     const std::vector<RadioSwitchResult> &late, const std::shared_ptr<RadioResultSink> &sink,
     const std::shared_ptr<RadioOwnerDispatchPort> &dispatch)
@@ -625,7 +664,8 @@ bool ResourceRadioRuntime::FlushOwnerDeliveries()
         std::unique_lock<std::mutex> guard(lock_);
         sink = sink_.lock();
         dispatch = dispatch_.lock();
-        if (!sink || !dispatch || ownerDeliveryFrames_) { return false; }
+        if (!sink || !dispatch || ownerDeliveryFrames_ ||
+            ownerDeliveryRevision_ == std::numeric_limits<uint64_t>::max()) { return false; }
         const auto revision = ownerDeliveryRevision_;
         guard.unlock();
         if (!dispatch->RadioOwnerCallbacksDrained()) { return false; }

@@ -5563,10 +5563,21 @@ TEST(AF2CardComposition, MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild)
     EXPECT_TRUE(module->ReloadAccounts(AccountReadView::Historical).accounts.acceptedAttempt);
     EXPECT_TRUE(module->ReadAccount({40}, AccountReadView::Historical));
 
+    std::optional<uint64_t> primaryFrame;
+    original.input.radio->beforeSubmitReturn = [&] {
+        const auto observed = module->ReadCloseReceipt();
+        ASSERT_TRUE(observed.primaryFrame);
+        if (primaryFrame) { EXPECT_EQ(observed.primaryFrame, primaryFrame); }
+        primaryFrame = observed.primaryFrame;
+    };
     ASSERT_TRUE(module->StartPrimarySwitch(Command(*primary)));
+    ASSERT_TRUE(primaryFrame);
+    EXPECT_FALSE(module->ReadCloseReceipt().primaryFrame);
     ASSERT_EQ(original.input.radio->history.size(), 2u);
     ASSERT_EQ(module->UnlockPin(2, u"1234", {7}, {29}), 0);
+    ASSERT_EQ(module->ReadCloseReceipt().moduleFrames.size(), 1u);
     pinHost->RunNext();
+    EXPECT_TRUE(module->ReadCloseReceipt().moduleFrames.empty());
     ASSERT_EQ(pin->commands.size(), 1u);
     ASSERT_EQ(module->SetShowNumber(1, u"111", {7}, {30}), 0);
     numberHost->RunNext();
@@ -5577,6 +5588,23 @@ TEST(AF2CardComposition, MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild)
     const auto oldEf = ef->Reply(1, kFirstRawIccid);
     const auto oldPin = pin->Reply(0, PinReplyStatus::Unlocked, 3);
     const auto oldNumber = number->Applied(0);
+    const auto inFlight = module->ReadCloseReceipt();
+    EXPECT_EQ(inFlight.epoch, module->Epoch());
+    EXPECT_FALSE(inFlight.sealed);
+    ASSERT_EQ(inFlight.radio.device.size(), 1u);
+    ASSERT_EQ(inFlight.assignment.primary.size(), 1u);
+    const auto &check = original.input.radio->history.front().first;
+    EXPECT_EQ(inFlight.radio.device.front().lease.holder, check.step);
+    EXPECT_EQ(inFlight.radio.device.front().members, check.roundMembers);
+    EXPECT_EQ(inFlight.radio.device.front().transmissions.size(), 2u);
+    EXPECT_EQ(inFlight.assignment.primary.front().originalCheck, check.step);
+    EXPECT_TRUE(inFlight.assignment.primary.front().protocolDeadline);
+    ASSERT_EQ(inFlight.card.size(), 3u);
+    for (const auto &ticket : {oldEf.ticket, oldPin.ticket, oldNumber.ticket}) {
+        EXPECT_TRUE(std::any_of(inFlight.card.begin(), inFlight.card.end(), [&](const auto &entry) {
+            return entry.original == ticket && entry.resources.size() == 1 && !entry.businessResultOffered;
+        }));
+    }
     ASSERT_TRUE(module->RefreshIccid(*efSession));
     ASSERT_TRUE(module->ObserveCardApplication({{2}, "USIM"}, 2));
     ASSERT_TRUE(module->ObserveCardApplication({{3}, "USIM"}, 2));
@@ -5622,15 +5650,34 @@ TEST(AF2CardComposition, MixedGraphDrainsOriginalOwnersBeforeConflictingRebuild)
     EXPECT_EQ(numberHost->writes[0].second, OHOS::Telephony::TELEPHONY_ERR_DATABASE_WRITE_FAIL);
     EXPECT_EQ(module->StopAcceptingAndDrain(), Drain::DeviceEffectsUnresolved);
     ASSERT_TRUE(module->AcceptRadioC1RoundRecovery(original.VerifyAbortedRound()));
+    const auto ownerPending = module->ReadCloseReceipt();
+    EXPECT_TRUE(ownerPending.sealed);
+    EXPECT_TRUE(ownerPending.radio.device.empty());
+    ASSERT_EQ(ownerPending.radio.owner.size(), 1u);
+    EXPECT_EQ(ownerPending.radio.owner.front().original, check.step);
+    EXPECT_EQ(ownerPending.radio.owner.front().protocolSession, check.protocolSession);
+    EXPECT_FALSE(ownerPending.radio.owner.front().member);
     EXPECT_EQ(module->StopAcceptingAndDrain(), Drain::CallbacksStillInFlight);
     original.input.dispatch->RunOwnerTasks();
     EXPECT_EQ(module->StopAcceptingAndDrain(), Drain::BusinessEffectsUnresolved);
+    const auto storePending = module->ReadCloseReceipt();
+    ASSERT_EQ(storePending.discoveries.size(), 1u);
+    EXPECT_EQ(storePending.discoveries.front().call, originalWrite.call);
+    EXPECT_TRUE(storePending.radio.owner.empty());
+    EXPECT_TRUE(storePending.card.empty());
+    ASSERT_EQ(storePending.assignment.discoveryRoles.size(), 1u);
+    EXPECT_EQ(storePending.assignment.discoveryRoles.front().discoveryCall, originalWrite.call);
     EXPECT_TRUE(std::holds_alternative<SimModuleInitFailure>(createSuccessor()));
 
     store->ProveApplied(originalWrite, {43});
     ASSERT_TRUE(module->ReconcileDiscovery(originalWrite.call));
     EXPECT_FALSE(module->FindBinding({3}));
     ASSERT_EQ(module->StopAcceptingAndDrain(), Drain::Drained);
+    const auto drained = module->ReadCloseReceipt();
+    EXPECT_TRUE(drained.drained);
+    EXPECT_EQ(drained.epoch, inFlight.epoch);
+    EXPECT_TRUE(drained.discoveries.empty());
+    EXPECT_TRUE(drained.assignment.discoveryRoles.empty());
     EXPECT_EQ(original.input.completion->results.size(), 1u);
 
     auto created = createSuccessor();
