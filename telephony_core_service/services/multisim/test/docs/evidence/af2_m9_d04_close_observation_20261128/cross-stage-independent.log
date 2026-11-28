@@ -1,0 +1,72 @@
+ELF /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host 42545712 2026-11-28 14:11:09.952928391 +0800
+90f624fd22190abd9775eb594b8c32c4d726cae1433d74f9019ec5dc9e7d0006  /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host
+
+$ LLVM_PROFILE_FILE=/tmp/multisim-d04-AF2Primary.FormalC1RetainsSharedCardResourceAcrossOwnerStageGaps-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=AF2Primary.FormalC1RetainsSharedCardResourceAcrossOwnerStageGaps
+Note: Google Test filter = AF2Primary.FormalC1RetainsSharedCardResourceAcrossOwnerStageGaps
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.FormalC1RetainsSharedCardResourceAcrossOwnerStageGaps
+[       OK ] AF2Primary.FormalC1RetainsSharedCardResourceAcrossOwnerStageGaps (1 ms)
+[----------] 1 test from AF2Primary (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+exit=0
+
+$ LLVM_PROFILE_FILE=/tmp/multisim-d04-AF2Primary.FormalC1WaitFallbackKeepsOriginalCheckGroupUntilRecoveryAfterStop-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=AF2Primary.FormalC1WaitFallbackKeepsOriginalCheckGroupUntilRecoveryAfterStop
+Note: Google Test filter = AF2Primary.FormalC1WaitFallbackKeepsOriginalCheckGroupUntilRecoveryAfterStop
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.FormalC1WaitFallbackKeepsOriginalCheckGroupUntilRecoveryAfterStop
+[       OK ] AF2Primary.FormalC1WaitFallbackKeepsOriginalCheckGroupUntilRecoveryAfterStop (0 ms)
+[----------] 1 test from AF2Primary (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+exit=0
+
+$ LLVM_PROFILE_FILE=/tmp/multisim-d04-TargetPrimaryB.HostLifecycleStopDuringC1CheckPreservesMemberResponsibility-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=TargetPrimaryB.HostLifecycleStopDuringC1CheckPreservesMemberResponsibility
+Note: Google Test filter = TargetPrimaryB.HostLifecycleStopDuringC1CheckPreservesMemberResponsibility
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.HostLifecycleStopDuringC1CheckPreservesMemberResponsibility
+[       OK ] TargetPrimaryB.HostLifecycleStopDuringC1CheckPreservesMemberResponsibility (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+exit=0
+
+$ LLVM_PROFILE_FILE=/tmp/multisim-d04-TargetPrimaryB.C1StopWithCheckInFlightDoesNotAuthorizeAnotherPhase-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=TargetPrimaryB.C1StopWithCheckInFlightDoesNotAuthorizeAnotherPhase
+Note: Google Test filter = TargetPrimaryB.C1StopWithCheckInFlightDoesNotAuthorizeAnotherPhase
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.C1StopWithCheckInFlightDoesNotAuthorizeAnotherPhase
+[       OK ] TargetPrimaryB.C1StopWithCheckInFlightDoesNotAuthorizeAnotherPhase (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+exit=0
+
+$ LLVM_PROFILE_FILE=/tmp/multisim-d04-TargetPrimaryB.C1RetainedUpdateAckCannotReplaceMissingMemberRecovery-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=TargetPrimaryB.C1RetainedUpdateAckCannotReplaceMissingMemberRecovery
+Note: Google Test filter = TargetPrimaryB.C1RetainedUpdateAckCannotReplaceMissingMemberRecovery
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.C1RetainedUpdateAckCannotReplaceMissingMemberRecovery
+[       OK ] TargetPrimaryB.C1RetainedUpdateAckCannotReplaceMissingMemberRecovery (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+exit=0

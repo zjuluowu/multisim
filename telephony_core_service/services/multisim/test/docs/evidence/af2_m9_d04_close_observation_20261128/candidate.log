@@ -1,0 +1,22 @@
+Note: Google Test filter = AF2CardComposition.OriginalPinCompletionDuringCloseInvalidatesFirstReceipt
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.OriginalPinCompletionDuringCloseInvalidatesFirstReceipt
+[       OK ] AF2CardComposition.OriginalPinCompletionDuringCloseInvalidatesFirstReceipt (1 ms)
+[----------] 1 test from AF2CardComposition (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+Note: Google Test filter = AF2Primary.OriginalStoreReceiptCanBeReconciledDuringCloseObservation
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.OriginalStoreReceiptCanBeReconciledDuringCloseObservation
+[       OK ] AF2Primary.OriginalStoreReceiptCanBeReconciledDuringCloseObservation (5 ms)
+[----------] 1 test from AF2Primary (5 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (5 ms total)
+[  PASSED  ] 1 test.

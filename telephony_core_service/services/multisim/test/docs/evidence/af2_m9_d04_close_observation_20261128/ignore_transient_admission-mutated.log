@@ -1,0 +1,37 @@
+Note: Google Test filter = AF2CardComposition.OriginalPinCompletionDuringCloseInvalidatesFirstReceipt
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.OriginalPinCompletionDuringCloseInvalidatesFirstReceipt
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2886: Failure
+Expected equality of these values:
+  module->StopAcceptingAndDrain()
+    Which is: 4-byte object <00-00 00-00>
+  SimModule::DrainResult::CallbacksStillInFlight
+    Which is: 4-byte object <01-00 00-00>
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2898: Failure
+Expected equality of these values:
+  module->StopAcceptingAndDrain()
+    Which is: 4-byte object <00-00 00-00>
+  SimModule::DrainResult::CallbacksStillInFlight
+    Which is: 4-byte object <01-00 00-00>
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2899: Failure
+Value of: duplicateReachedSecondObservation
+  Actual: false
+Expected: true
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2904: Failure
+Expected: (audits - auditsBeforeRetry) >= (2u), actual: 0 vs 2
+
+[  FAILED  ] AF2CardComposition.OriginalPinCompletionDuringCloseInvalidatesFirstReceipt (1 ms)
+[----------] 1 test from AF2CardComposition (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] AF2CardComposition.OriginalPinCompletionDuringCloseInvalidatesFirstReceipt
+
+ 1 FAILED TEST

@@ -4,6 +4,8 @@
  */
 #include "infrastructure/assembly/primary_host_lifecycle.h"
 
+#include <tuple>
+
 namespace OHOS::Telephony::MultiSim {
 PrimaryHostLifecycle::PrimaryHostLifecycle(const std::shared_ptr<AssignmentService> &assignment,
     ResourceRadioRuntime &radio, RetrySchedulerPort &scheduler,
@@ -14,11 +16,31 @@ PrimaryHostLifecycle::PrimaryHostLifecycle(const std::shared_ptr<AssignmentServi
 
 PrimaryHostLifecycle::DrainResult PrimaryHostLifecycle::StopAcceptingAndDrain()
 {
+    {
+        std::lock_guard<std::mutex> guard(state_->mutex);
+        if (state_->stopped) { return DrainResult::Drained; }
+    }
+    const auto observation = ObserveClose();
+    if (observation.result == DrainResult::Drained) {
+        std::lock_guard<std::mutex> guard(state_->mutex);
+        state_->stopped = true;
+    }
+    return observation.result;
+}
+
+bool PrimaryHostLifecycle::CloseObservation::SameSchedulerActivity(const CloseObservation &other) const
+{
+    return std::tie(scheduler.scheduled, scheduler.delivered, scheduler.cancelled, scheduler.rejected) ==
+        std::tie(other.scheduler.scheduled, other.scheduler.delivered, other.scheduler.cancelled,
+            other.scheduler.rejected);
+}
+
+PrimaryHostLifecycle::CloseObservation PrimaryHostLifecycle::ObserveClose()
+{
     bool sealGates = false;
     bool postClose = false;
     {
         std::lock_guard<std::mutex> guard(state_->mutex);
-        if (state_->stopped) { return DrainResult::Drained; }
         state_->stopping = true;
         if (!state_->closePosted) { state_->closePosted = true; postClose = true; }
         if (!state_->gateSealStarted && !state_->gatesSealed) {
@@ -29,7 +51,7 @@ PrimaryHostLifecycle::DrainResult PrimaryHostLifecycle::StopAcceptingAndDrain()
         // New admission is closed on caller-safe gates before any Owner mutation
         // is posted. The Owner task below is only the serial A commit/cancel step.
         const auto assignment = assignment_.lock();
-        if (!assignment) { return DrainResult::CallbacksStillInFlight; }
+        if (!assignment) { return {DrainResult::CallbacksStillInFlight}; }
         assignment->RequestStopAccepting();
         scheduler_.StopAcceptingAndCancel();
         (void)radio_.StopAccepting();
@@ -47,34 +69,30 @@ PrimaryHostLifecycle::DrainResult PrimaryHostLifecycle::StopAcceptingAndDrain()
         })) {
             std::lock_guard<std::mutex> guard(state_->mutex);
             state_->closePosted = false;
-            return DrainResult::CallbacksStillInFlight;
+            return {DrainResult::CallbacksStillInFlight};
         }
     }
     {
         std::lock_guard<std::mutex> guard(state_->mutex);
         if (!state_->gatesSealed || !state_->sealsComplete) {
-            return DrainResult::CallbacksStillInFlight;
+            return {DrainResult::CallbacksStillInFlight};
         }
     }
     if (!radio_.OwnerCallbacksDrained()) {
-        return DrainResult::CallbacksStillInFlight;
+        return {DrainResult::CallbacksStillInFlight};
     }
     const auto scheduler = scheduler_.Audit();
-    if (scheduler.pending != 0 || scheduler.running != 0) {
-        return DrainResult::CallbacksStillInFlight;
+    if (scheduler.accepting || scheduler.pending != 0 || scheduler.running != 0) {
+        return {DrainResult::CallbacksStillInFlight, scheduler};
     }
     const auto assignment = assignment_.lock();
     if (!assignment || !radio_.DeviceResourcesDrained()) {
-        return DrainResult::DeviceEffectsUnresolved;
+        return {DrainResult::DeviceEffectsUnresolved, scheduler};
     }
     const auto effects = assignment->ReadPrimaryCloseEffects();
-    if (effects.device) { return DrainResult::DeviceEffectsUnresolved; }
-    if (effects.store) { return DrainResult::BusinessEffectsUnresolved; }
-    {
-        std::lock_guard<std::mutex> guard(state_->mutex);
-        state_->stopped = true;
-    }
-    return DrainResult::Drained;
+    if (effects.device) { return {DrainResult::DeviceEffectsUnresolved, scheduler}; }
+    if (effects.store) { return {DrainResult::BusinessEffectsUnresolved, scheduler}; }
+    return {DrainResult::Drained, scheduler};
 }
 
 bool PrimaryHostLifecycle::IsStopped() const

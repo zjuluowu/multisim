@@ -1,0 +1,37 @@
+Note: Google Test filter = AF2Primary.OriginalStoreReceiptCanBeReconciledDuringCloseObservation
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.OriginalStoreReceiptCanBeReconciledDuringCloseObservation
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:3233: Failure
+Value of: module->ReconcilePrimaryParameter(original)
+  Actual: false
+Expected: true
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:3236: Failure
+Expected equality of these values:
+  module->StopAcceptingAndDrain()
+    Which is: 4-byte object <03-00 00-00>
+  SimModule::DrainResult::CallbacksStillInFlight
+    Which is: 4-byte object <01-00 00-00>
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:3238: Failure
+Value of: module->ReadC0Receipt()
+  Actual: true
+Expected: false
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:3239: Failure
+Value of: module->ReconcilePrimaryParameter(original)
+  Actual: true
+Expected: false
+
+[  FAILED  ] AF2Primary.OriginalStoreReceiptCanBeReconciledDuringCloseObservation (8 ms)
+[----------] 1 test from AF2Primary (8 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (8 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] AF2Primary.OriginalStoreReceiptCanBeReconciledDuringCloseObservation
+
+ 1 FAILED TEST

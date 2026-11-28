@@ -360,6 +360,12 @@ Target 全量 253/253，专项 ASan/TSan 各 52/52，冻结契约双端 24/24、
 全图两遍关闭、跨阶段恢复、正式组合重建及独立扩展仍待，状态为 `AF2_M9_IN_PROGRESS`。
 [字段 Refresh、构建记录及反例](../services/multisim/test/docs/evidence/af2_m9_d04_ef_20261128/README.md)
 
+**D04 正式模块关闭观察检查点（2026-11-28）。** 原 PIN 在取据期间完成和退出会使本次关闭观察失效；
+原 Store 票在同一窗口继续核对。正式模块以两次完整观察和调度活动核对判定 Drained，重复 Stop
+复用封口状态。两个正式基线反例已修复并独立复跑。进一步的逐项关闭清单、异常封口重试、C1 跨阶段整轮
+恢复、全图跨实例组合和独立扩展待完成。全局保持 `AF2_M9_IN_PROGRESS`。
+[正式关闭观察与独立反例](../services/multisim/test/docs/evidence/af2_m9_d04_close_observation_20261128/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）

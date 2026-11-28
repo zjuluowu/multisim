@@ -21,6 +21,14 @@ public:
     DrainResult StopAcceptingAndDrain();
     bool IsStopped() const;
 private:
+    friend class SimModule;
+    struct CloseObservation {
+        DrainResult result;
+        RetrySchedulerAudit scheduler {};
+        bool SameSchedulerActivity(const CloseObservation &other) const;
+    };
+    CloseObservation ObserveClose();
+
     std::weak_ptr<AssignmentService> assignment_;
     ResourceRadioRuntime &radio_;
     RetrySchedulerPort &scheduler_;

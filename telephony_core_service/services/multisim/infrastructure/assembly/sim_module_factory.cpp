@@ -389,10 +389,11 @@ std::optional<ResourceState> SimModule::ReadPrimaryResourceState() const
 bool SimModule::AdmitPrimaryCall(bool originalOnly)
 {
     std::lock_guard<std::mutex> guard(admissionMutex_);
-    if (drained_ || joining_ || primaryCallActive_) { return false; }
+    if (drained_ || primaryCallActive_) { return false; }
     const bool primaryStoreOutstanding = assignment_->ReadC0Receipt().has_value();
     if (originalOnly ? !primaryStoreOutstanding : (!accepting_ || primaryStoreOutstanding)) { return false; }
     primaryCallActive_ = true;
+    if (joining_) { admissionChangedDuringJoin_ = true; }
     return true;
 }
 
@@ -529,40 +530,61 @@ SimModule::DrainResult SimModule::StopAcceptingAndDrain()
     const auto self = shared_from_this();
     {
         std::lock_guard<std::mutex> guard(admissionMutex_);
-        accepting_ = false;
-        if (ports_.primaryWait) { assignment_->RequestStopAccepting(); }
-        cardTransport_.SealLocalCommands();
-        topology_.SealDiscovery();
-        topology_.SealReload();
         if (drained_) { return DrainResult::Drained; }
-        closeHold_ = self;
+        if (accepting_) {
+            accepting_ = false;
+            closeHold_ = self;
+            if (ports_.primaryWait) { assignment_->RequestStopAccepting(); }
+            cardTransport_.SealLocalCommands();
+            topology_.SealDiscovery();
+            topology_.SealReload();
+        }
         if (primaryCallActive_ || moduleCalls_ || joining_) { return DrainResult::CallbacksStillInFlight; }
         joining_ = true;
+        admissionChangedDuringJoin_ = false;
     }
 
-    PrimaryHostLifecycle::DrainResult primary;
     try {
-        primary = lifecycle_.StopAcceptingAndDrain();
+        const auto first = lifecycle_.ObserveClose();
+        {
+            std::lock_guard<std::mutex> guard(admissionMutex_);
+            const auto status = ReadCloseStatus(first.result);
+            if (status != DrainResult::Drained) {
+                joining_ = false;
+                return status;
+            }
+        }
+        const auto second = lifecycle_.ObserveClose();
+        std::lock_guard<std::mutex> guard(admissionMutex_);
+        joining_ = false;
+        const auto status = ReadCloseStatus(second.result);
+        if (status != DrainResult::Drained) { return status; }
+        if (!first.SameSchedulerActivity(second)) { return DrainResult::CallbacksStillInFlight; }
+        drained_ = true;
+        closeHold_.reset();
+        return DrainResult::Drained;
     } catch (const std::exception &) {
         std::lock_guard<std::mutex> guard(admissionMutex_);
         joining_ = false;
         return DrainResult::CallbacksStillInFlight;
     }
-    std::lock_guard<std::mutex> guard(admissionMutex_);
-    joining_ = false;
-    if (primary == PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight) {
+}
+
+SimModule::DrainResult SimModule::ReadCloseStatus(PrimaryHostLifecycle::DrainResult primary) const
+{
+    // Called with the admission lock. An original frame can both enter and
+    // return between observations, leaving the in-flight counters at zero.
+    if (admissionChangedDuringJoin_ || primaryCallActive_ || moduleCalls_ ||
+        primary == PrimaryHostLifecycle::DrainResult::CallbacksStillInFlight) {
         return DrainResult::CallbacksStillInFlight;
     }
     if (primary == PrimaryHostLifecycle::DrainResult::DeviceEffectsUnresolved) {
         return DrainResult::DeviceEffectsUnresolved;
     }
-    if (primaryCallActive_ || moduleCalls_) { return DrainResult::CallbacksStillInFlight; }
     if (cardTransport_.HasPending()) { return DrainResult::DeviceEffectsUnresolved; }
     if (primary == PrimaryHostLifecycle::DrainResult::BusinessEffectsUnresolved || HasPendingBusinessEffects()) {
         return DrainResult::BusinessEffectsUnresolved;
     }
-    drained_ = true;
-    closeHold_.reset();
     return DrainResult::Drained;
 }
 
@@ -571,6 +593,7 @@ bool SimModule::AdmitModuleCall(bool originalOnly)
     std::lock_guard<std::mutex> guard(admissionMutex_);
     if (drained_ || (!originalOnly && !accepting_)) { return false; }
     ++moduleCalls_;
+    if (joining_) { admissionChangedDuringJoin_ = true; }
     return true;
 }
 

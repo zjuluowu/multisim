@@ -865,6 +865,7 @@ class ModuleDispatch final : public RetrySchedulerPort, public RadioOwnerDispatc
 public:
     bool defer {false};
     bool rejectRetryRegistration {false};
+    std::function<void()> afterAudit;
     unsigned seals {0};
     unsigned cancels {0};
     std::optional<uint64_t> ScheduleRetry(const ScheduledRetryEvent &event, uint64_t delay,
@@ -911,9 +912,13 @@ public:
     }
     RetrySchedulerAudit Audit() const override
     {
-        std::lock_guard<std::mutex> guard(lock_);
-        auto audit = audit_;
-        audit.pending = scheduled_.size();
+        RetrySchedulerAudit audit;
+        {
+            std::lock_guard<std::mutex> guard(lock_);
+            audit = audit_;
+            audit.pending = scheduled_.size();
+        }
+        if (afterAudit) { afterAudit(); }
         return audit;
     }
     void Advance(uint64_t milliseconds)
@@ -2860,6 +2865,48 @@ TEST(AF2CardComposition, StopSeparatesPinDeviceAndIccidStoreEffects)
     EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
 }
 
+TEST(AF2CardComposition, OriginalPinCompletionDuringCloseInvalidatesFirstReceipt)
+{
+    PinFixture fixture;
+    auto &module = fixture.live.module;
+    const auto &dispatch = fixture.live.input.dispatch;
+    ASSERT_TRUE(fixture.ObserveLocked({1}));
+    ASSERT_EQ(module->UnlockPin(1, u"1234", {7}, {31}), 0);
+    fixture.host->RunNext();
+    ASSERT_EQ(fixture.io->commands.size(), 1u);
+    const auto reply = fixture.io->Reply(0, PinReplyStatus::Unlocked, 3);
+    unsigned audits = 0;
+    dispatch->afterAudit = [&] {
+        if (++audits == 1) {
+            EXPECT_TRUE(module->AcceptPinIoEvidence(reply));
+            EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
+        }
+    };
+
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
+    EXPECT_FALSE(module->AcceptPinIoEvidence(reply));
+    ASSERT_EQ(fixture.host->results.size(), 1u);
+    EXPECT_EQ(fixture.host->results.front().callback, 31u);
+    const auto auditsBeforeSecondClose = audits;
+    bool duplicateReachedSecondObservation = false;
+    dispatch->afterAudit = [&] {
+        if (++audits == auditsBeforeSecondClose + 2) {
+            duplicateReachedSecondObservation = true;
+            EXPECT_FALSE(module->AcceptPinIoEvidence(reply));
+        }
+    };
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
+    EXPECT_TRUE(duplicateReachedSecondObservation);
+    EXPECT_EQ(fixture.host->results.size(), 1u);
+
+    const auto auditsBeforeRetry = audits;
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+    EXPECT_GE(audits - auditsBeforeRetry, 2u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+    EXPECT_EQ(dispatch->seals, 1u);
+    EXPECT_EQ(dispatch->cancels, 1u);
+}
+
 TEST(AF2CardComposition, RebuildRequiresPredecessorProofAndRejectsItsOldEfEvidence)
 {
     IccidFixture previous;
@@ -3165,6 +3212,33 @@ TEST(AF2Primary, InterruptedIccidWriteRetainsPrefixAndOnlyAcceptsOriginalEvidenc
     EXPECT_TRUE(f.live.input.output->events.empty());
     EXPECT_EQ(f.host->accountsChanged, 0u);
     EXPECT_EQ(f.live.module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Primary, OriginalStoreReceiptCanBeReconciledDuringCloseObservation)
+{
+    PrimaryFixture f;
+    ASSERT_NO_FATAL_FAILURE(f.DiscoverBoth());
+    auto &module = f.live.module;
+    auto &parameters = *f.live.input.parameters;
+    parameters.writeResult = [](const std::string &key) {
+        return key == kIccid ? AssignmentParameterResult {-1, false} : AssignmentParameterResult {0, true};
+    };
+    EXPECT_EQ(module->SetPrimarySlotId(1, {7}), OHOS::Telephony::TELEPHONY_ERR_FAIL);
+    const auto receipt = module->ReadC0Receipt();
+    ASSERT_TRUE(receipt && receipt->writes[2]);
+    const auto original = receipt->writes[2]->operation;
+    parameters.evidence = C0ParameterEvidence {original, {{0, true}, EffectKnowledge::ConfirmedApplied}};
+    bool called = false;
+    f.live.input.dispatch->afterAudit = [&] {
+        if (!std::exchange(called, true)) { EXPECT_TRUE(module->ReconcilePrimaryParameter(original)); }
+    };
+
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
+    EXPECT_TRUE(called);
+    EXPECT_FALSE(module->ReadC0Receipt());
+    EXPECT_FALSE(module->ReconcilePrimaryParameter(original));
+    EXPECT_TRUE(f.live.input.output->events.empty());
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
 }
 
 TEST(AF2Primary, CompletedLegacyParameterErrorsReturnSuccessAndRetainOnlyIndeterminateEffects)

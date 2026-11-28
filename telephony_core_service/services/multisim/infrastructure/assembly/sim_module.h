@@ -131,6 +131,7 @@ private:
     void ReturnPrimaryCall();
     bool AdmitModuleCall(bool originalOnly = false);
     void ReturnModuleCall();
+    DrainResult ReadCloseStatus(PrimaryHostLifecycle::DrainResult primary) const;
     bool HasPendingBusinessEffects() const;
     void UpdateCloseHold();
     void AcceptRadioStep(const RadioSwitchResult &result) override;
@@ -171,6 +172,7 @@ private:
     size_t moduleCalls_ {0};
     bool primaryCallActive_ {false};
     bool joining_ {false};
+    bool admissionChangedDuringJoin_ {false};
     bool drained_ {false};
     // A non-drained graph and its external ports stay alive until a subsequent accurate drain result.
     CoreSimModuleHandle closeHold_;

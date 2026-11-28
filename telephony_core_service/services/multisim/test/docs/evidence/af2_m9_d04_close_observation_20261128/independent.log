@@ -1,0 +1,30 @@
+ELF /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host 42640216 2026-11-28 14:13:56.841933249 +0800
+c647141dfeb55089c3220967dd05a390349396a5ad071aa932a1e55cb51a3962  /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host
+
+$ LLVM_PROFILE_FILE=/tmp/multisim-d04-close-AF2CardComposition.OriginalPinCompletionDuringCloseInvalidatesFirstReceipt-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=AF2CardComposition.OriginalPinCompletionDuringCloseInvalidatesFirstReceipt
+Note: Google Test filter = AF2CardComposition.OriginalPinCompletionDuringCloseInvalidatesFirstReceipt
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2CardComposition
+[ RUN      ] AF2CardComposition.OriginalPinCompletionDuringCloseInvalidatesFirstReceipt
+[       OK ] AF2CardComposition.OriginalPinCompletionDuringCloseInvalidatesFirstReceipt (1 ms)
+[----------] 1 test from AF2CardComposition (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3 ms total)
+[  PASSED  ] 1 test.
+exit=0
+
+$ LLVM_PROFILE_FILE=/tmp/multisim-d04-close-AF2Primary.OriginalStoreReceiptCanBeReconciledDuringCloseObservation-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=AF2Primary.OriginalStoreReceiptCanBeReconciledDuringCloseObservation
+Note: Google Test filter = AF2Primary.OriginalStoreReceiptCanBeReconciledDuringCloseObservation
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.OriginalStoreReceiptCanBeReconciledDuringCloseObservation
+[       OK ] AF2Primary.OriginalStoreReceiptCanBeReconciledDuringCloseObservation (1 ms)
+[----------] 1 test from AF2Primary (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+exit=0

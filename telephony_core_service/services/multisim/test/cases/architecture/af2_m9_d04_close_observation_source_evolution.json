@@ -1,0 +1,9 @@
+{
+  "baseline": "86550cbb25d75d1af45dcf615d053f92f34ba7df",
+  "files": {
+    "infrastructure/assembly/primary_host_lifecycle.cpp": "2c2bd9c6be435b1de41380da6c87f145eeb98cdb2c7c4b2e4a53d12326a0eab6",
+    "infrastructure/assembly/primary_host_lifecycle.h": "ef7ee4d464e2b221469546a978227cd229fbad9727bf5fcafefcb403501f96ab",
+    "infrastructure/assembly/sim_module.h": "ff8de3f3fa55c8c618c461ff6f8122a304e02a91db92c9c92e21611de73cfe41",
+    "infrastructure/assembly/sim_module_factory.cpp": "e5aef626c175fcfc93ea04291ea4f0085c181e4e05bc2a074c4fd62e1476d61a"
+  }
+}
