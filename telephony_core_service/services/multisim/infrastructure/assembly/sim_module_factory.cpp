@@ -483,6 +483,13 @@ bool SimModule::AcceptRadioDeviceResult(const RadioDeviceResult &result)
     return radio_.AcceptDeviceResult(result);
 }
 
+bool SimModule::AcceptRadioC1RoundRecovery(const RadioC1RoundRecovery &evidence)
+{
+    if (!ports_.primaryWait || !AdmitModuleCall(true)) { return false; }
+    const ModuleCall call {shared_from_this()};
+    return radio_.RecoverC1Round(evidence);
+}
+
 bool SimModule::AcceptPrimarySwitchTimeout(RequestId request, uint64_t elapsedMilliseconds)
 {
     if (!ports_.primaryWait || !AdmitModuleCall(true)) { return false; }
@@ -509,6 +516,13 @@ void SimModule::AcceptLateRadioEvidence(const RadioSwitchResult &result)
     if (!AdmitModuleCall(true)) { return; }
     const ModuleCall call {shared_from_this()};
     assignment_->AcceptLateRadioEvidence(result);
+}
+
+void SimModule::AcceptC1RoundRecovery(const RadioC1RoundRecovery &evidence)
+{
+    if (!AdmitModuleCall(true)) { return; }
+    const ModuleCall call {shared_from_this()};
+    assignment_->AcceptC1RoundRecovery(evidence);
 }
 
 bool SimModule::ReconcilePrimaryParameter(const C0ParameterOperation &operation)

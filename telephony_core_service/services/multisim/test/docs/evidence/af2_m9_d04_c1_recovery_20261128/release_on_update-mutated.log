@@ -1,0 +1,27 @@
+Note: Google Test filter = AF2Primary.FormalC1PartialUpdateAfterStopRetainsWholeRoundAndRepublishesOriginalReceipt
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.FormalC1PartialUpdateAfterStopRetainsWholeRoundAndRepublishesOriginalReceipt
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2548: Failure
+Expected equality of these values:
+  module->ReadPrimaryResourceState()
+    Which is: (4-byte object <01-00 00-00>)
+  ResourceState::Quarantined
+    Which is: 4-byte object <03-00 00-00>
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2552: Failure
+Value of: module->AcceptRadioC1RoundRecovery(evidence)
+  Actual: false
+Expected: true
+
+[  FAILED  ] AF2Primary.FormalC1PartialUpdateAfterStopRetainsWholeRoundAndRepublishesOriginalReceipt (2 ms)
+[----------] 1 test from AF2Primary (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] AF2Primary.FormalC1PartialUpdateAfterStopRetainsWholeRoundAndRepublishesOriginalReceipt
+
+ 1 FAILED TEST

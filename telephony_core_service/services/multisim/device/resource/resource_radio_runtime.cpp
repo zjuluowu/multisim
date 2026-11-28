@@ -32,6 +32,18 @@ bool SameC1Round(const RadioSwitchRequest &left, const RadioSwitchRequest &right
         left.protocolSession == right.protocolSession && left.domain.key == right.domain.key &&
         left.memberCount == right.memberCount;
 }
+
+bool ValidC1MemberSet(const RadioSwitchRequest &request)
+{
+    if (request.roundMembers.size() != request.memberCount || !request.member) { return false; }
+    std::set<uint32_t> nativeIds;
+    std::set<SlotId> routes;
+    for (const auto &member : request.roundMembers) {
+        if (!nativeIds.insert(member.nativeMember).second || !routes.insert(member.route).second) { return false; }
+    }
+    return std::find(request.roundMembers.begin(), request.roundMembers.end(), *request.member) !=
+        request.roundMembers.end();
+}
 } // namespace
 
 ResourceRadioRuntime::ResourceRadioRuntime(ResourceBarrier &barrier, RadioPlatformPort &platform,
@@ -65,8 +77,7 @@ bool ResourceRadioRuntime::LocalOwnerCallbacksDrained() const
     ownerDeliveryReceipts_.erase(std::remove_if(ownerDeliveryReceipts_.begin(), ownerDeliveryReceipts_.end(),
         [](const auto &receipt) { return receipt->delivered.load(std::memory_order_acquire); }),
         ownerDeliveryReceipts_.end());
-    return ownerDeliveryFrames_ == 0 && pendingNormalDeliveries_.empty() && pendingLateDeliveries_.empty() &&
-        ownerDeliveryReceipts_.empty();
+    return ownerDeliveryFrames_ == 0 && pendingOwnerDeliveries_.empty() && ownerDeliveryReceipts_.empty();
 }
 
 bool ResourceRadioRuntime::OwnerCallbacksDrained() const
@@ -141,10 +152,8 @@ bool ResourceRadioRuntime::AdvanceC1Phase(Group &group, const RadioSwitchRequest
     const auto &previous = group.first;
     const bool nextPhase = (previous.phase == 1 && (request.phase == 2 || request.phase == 4)) ||
         (previous.phase == 2 && request.phase == 4);
-    const auto member = group.c1Members.find(request.target);
     if (!group.awaitingC1Phase || group.quarantined || group.endRequested ||
-        !nextPhase || request.step.step != previous.step.step + 1 || member == group.c1Members.end() ||
-        !(member->second == request.member)) {
+        !nextPhase || request.step.step != previous.step.step + 1) {
         return false;
     }
     group.first = request;
@@ -164,13 +173,15 @@ RadioSubmitDisposition ResourceRadioRuntime::SwitchPrimaryRadio(const RadioSwitc
     {
         std::lock_guard<std::mutex> guard(lock_);
         Group *group = FindGroup(request);
+        const bool c1 = request.mode == PrimarySwitchMode::ThreePhaseProtocol;
         if (mode_ != Mode::Execute || stopping_ || !qualify || sink_.expired() || dispatch_.expired() ||
             nextTransportToken_ == std::numeric_limits<uint64_t>::max() ||
-            (request.member && !(request.member->route == request.target))) {
+            (request.member && !(request.member->route == request.target)) ||
+            (c1 && (!ValidC1MemberSet(request) || (group && request.roundMembers != group->first.roundMembers)))) {
             return group ? RadioSubmitDisposition::HandoffUnknown : RadioSubmitDisposition::ConfirmedNotSent;
         }
         if (!group) {
-            if (request.mode == PrimarySwitchMode::ThreePhaseProtocol && (request.phase == 2 || request.phase == 4)) {
+            if (c1 && request.phase != 1) {
                 return RadioSubmitDisposition::ConfirmedNotSent;
             }
             const auto lease = barrier_.Acquire(resources_, request.step);
@@ -182,12 +193,6 @@ RadioSubmitDisposition ResourceRadioRuntime::SwitchPrimaryRadio(const RadioSwitc
         } else if (!SameGroup(group->first, request) && !AdvanceC1Phase(*group, request)) {
             return RadioSubmitDisposition::HandoffUnknown;
         }
-        if (request.mode == PrimarySwitchMode::ThreePhaseProtocol && request.phase > 1) {
-            const auto member = group->c1Members.find(request.target);
-            if (member == group->c1Members.end() || !(member->second == request.member)) {
-                return RadioSubmitDisposition::HandoffUnknown;
-            }
-        }
         if (group->endRequested || group->quarantined || group->admittedMembers.size() >= group->expected ||
             group->admittedMembers.find(request.target.legacySlotId) != group->admittedMembers.end()) {
             return RadioSubmitDisposition::HandoffUnknown;
@@ -197,9 +202,6 @@ RadioSubmitDisposition ResourceRadioRuntime::SwitchPrimaryRadio(const RadioSwitc
         transmissions_[transport] = {fence, request, std::nullopt};
         submittingTransmissions_.insert(transport);
         group->admittedMembers.insert(request.target.legacySlotId);
-        if (request.mode == PrimarySwitchMode::ThreePhaseProtocol && request.phase == 1) {
-            group->c1Members.emplace(request.target, request.member);
-        }
         ++group->submitting;
     }
 
@@ -469,6 +471,20 @@ bool ResourceRadioRuntime::AcceptDeviceResultLocked(const RadioDeviceResult &dev
         result.recoveryVerified = true;
         group.recovered.push_back(result);
         transmissions_.erase(transmission);
+        if (request.mode == PrimarySwitchMode::ThreePhaseProtocol) {
+            const bool allMembersSettled = group.accepted.size() + group.recovered.size() == group.expected;
+            const auto noEffect = [](const auto &member) {
+                return member.recoveryVerified && member.effect == EffectKnowledge::ConfirmedNotApplied;
+            };
+            const bool provenCheckAbort = request.phase == 1 && allMembersSettled &&
+                std::all_of(group.accepted.begin(), group.accepted.end(), noEffect) &&
+                std::all_of(group.recovered.begin(), group.recovered.end(), noEffect);
+            if (!provenCheckAbort) {
+                // Settling a command cannot certify the end of a C1 session.
+                late.push_back(result);
+                return true;
+            }
+        }
         if (group.recoveredTransmissions.size() < group.submittedTransmissions.size()) { return true; }
         EffectKnowledge effect = EffectKnowledge::ConfirmedApplied;
         for (const auto &row : group.recovered) {
@@ -549,57 +565,50 @@ bool ResourceRadioRuntime::AcceptDeviceResultLocked(const RadioDeviceResult &dev
     return accepted;
 }
 
+void ResourceRadioRuntime::OwnerDelivery::Deliver(RadioResultSink &sink) const
+{
+    if (const auto *round = std::get_if<RadioC1RoundRecovery>(&evidence)) {
+        sink.AcceptC1RoundRecovery(*round);
+    } else if (late) {
+        sink.AcceptLateRadioEvidence(std::get<RadioSwitchResult>(evidence));
+    } else {
+        sink.AcceptRadioStep(std::get<RadioSwitchResult>(evidence));
+    }
+}
+
 bool ResourceRadioRuntime::DeliverDeviceResults(const std::vector<RadioSwitchResult> &normal,
     const std::vector<RadioSwitchResult> &late, const std::shared_ptr<RadioResultSink> &sink,
     const std::shared_ptr<RadioOwnerDispatchPort> &dispatch)
 {
-    if (!sink) {
+    std::vector<OwnerDelivery> deliveries;
+    deliveries.reserve(normal.size() + late.size());
+    for (const auto &result : normal) { deliveries.push_back({result}); }
+    for (const auto &result : late) { deliveries.push_back({result, true}); }
+    return DeliverOwnerResults(deliveries, sink, dispatch);
+}
+
+bool ResourceRadioRuntime::DeliverOwnerResults(const std::vector<OwnerDelivery> &deliveries,
+    const std::shared_ptr<RadioResultSink> &sink, const std::shared_ptr<RadioOwnerDispatchPort> &dispatch)
+{
+    if (!sink || !dispatch) {
         std::lock_guard<std::mutex> guard(lock_);
-        pendingNormalDeliveries_.insert(pendingNormalDeliveries_.end(), normal.begin(), normal.end());
-        pendingLateDeliveries_.insert(pendingLateDeliveries_.end(), late.begin(), late.end());
-        return true;
+        pendingOwnerDeliveries_.insert(pendingOwnerDeliveries_.end(), deliveries.begin(), deliveries.end());
+        return !sink;
     }
-    if (!dispatch) {
-        std::lock_guard<std::mutex> guard(lock_);
-        pendingNormalDeliveries_.insert(pendingNormalDeliveries_.end(), normal.begin(), normal.end());
-        pendingLateDeliveries_.insert(pendingLateDeliveries_.end(), late.begin(), late.end());
-        return false;
-    }
-    for (size_t i = 0; i < normal.size(); ++i) {
-        auto receipt = std::make_shared<OwnerDeliveryReceipt>();
-        receipt->result = normal[i];
+    for (auto item = deliveries.begin(); item != deliveries.end(); ++item) {
+        auto receipt = std::make_shared<OwnerDeliveryReceipt>(*item);
         {
             std::lock_guard<std::mutex> guard(lock_);
             ownerDeliveryReceipts_.push_back(receipt);
         }
-        if (!dispatch->PostRadioOwnerTask([sink, result = normal[i], receipt] {
-            sink->AcceptRadioStep(result);
+        if (!dispatch->PostRadioOwnerTask([sink, receipt] {
+            receipt->delivery.Deliver(*sink);
             receipt->delivered.store(true, std::memory_order_release);
         })) {
             std::lock_guard<std::mutex> guard(lock_);
             ownerDeliveryReceipts_.erase(std::remove(ownerDeliveryReceipts_.begin(),
                 ownerDeliveryReceipts_.end(), receipt), ownerDeliveryReceipts_.end());
-            pendingNormalDeliveries_.insert(pendingNormalDeliveries_.end(), normal.begin() + i, normal.end());
-            pendingLateDeliveries_.insert(pendingLateDeliveries_.end(), late.begin(), late.end());
-            return false;
-        }
-    }
-    for (size_t i = 0; i < late.size(); ++i) {
-        auto receipt = std::make_shared<OwnerDeliveryReceipt>();
-        receipt->result = late[i];
-        receipt->late = true;
-        {
-            std::lock_guard<std::mutex> guard(lock_);
-            ownerDeliveryReceipts_.push_back(receipt);
-        }
-        if (!dispatch->PostRadioOwnerTask([sink, result = late[i], receipt] {
-            sink->AcceptLateRadioEvidence(result);
-            receipt->delivered.store(true, std::memory_order_release);
-        })) {
-            std::lock_guard<std::mutex> guard(lock_);
-            ownerDeliveryReceipts_.erase(std::remove(ownerDeliveryReceipts_.begin(),
-                ownerDeliveryReceipts_.end(), receipt), ownerDeliveryReceipts_.end());
-            pendingLateDeliveries_.insert(pendingLateDeliveries_.end(), late.begin() + i, late.end());
+            pendingOwnerDeliveries_.insert(pendingOwnerDeliveries_.end(), item, deliveries.end());
             return false;
         }
     }
@@ -611,8 +620,7 @@ bool ResourceRadioRuntime::FlushOwnerDeliveries()
     OwnerDeliveryFrame delivery(*this);
     std::shared_ptr<RadioResultSink> sink;
     std::shared_ptr<RadioOwnerDispatchPort> dispatch;
-    std::vector<RadioSwitchResult> normal;
-    std::vector<RadioSwitchResult> late;
+    std::vector<OwnerDelivery> deliveries;
     {
         std::unique_lock<std::mutex> guard(lock_);
         sink = sink_.lock();
@@ -627,56 +635,14 @@ bool ResourceRadioRuntime::FlushOwnerDeliveries()
             return false;
         }
         for (const auto &receipt : ownerDeliveryReceipts_) {
-            if (receipt->delivered.load(std::memory_order_acquire)) { continue; }
-            if (receipt->late) { late.push_back(receipt->result); }
-            else { normal.push_back(receipt->result); }
+            if (!receipt->delivered.load(std::memory_order_acquire)) { deliveries.push_back(receipt->delivery); }
         }
         ownerDeliveryReceipts_.clear();
-        normal.insert(normal.end(), pendingNormalDeliveries_.begin(), pendingNormalDeliveries_.end());
-        late.insert(late.end(), pendingLateDeliveries_.begin(), pendingLateDeliveries_.end());
-        if (!normal.empty() || !late.empty()) { delivery.Begin(); }
-        pendingNormalDeliveries_.clear();
-        pendingLateDeliveries_.clear();
+        deliveries.insert(deliveries.end(), pendingOwnerDeliveries_.begin(), pendingOwnerDeliveries_.end());
+        if (!deliveries.empty()) { delivery.Begin(); }
+        pendingOwnerDeliveries_.clear();
     }
-    for (size_t i = 0; i < normal.size(); ++i) {
-        auto receipt = std::make_shared<OwnerDeliveryReceipt>();
-        receipt->result = normal[i];
-        {
-            std::lock_guard<std::mutex> guard(lock_);
-            ownerDeliveryReceipts_.push_back(receipt);
-        }
-        if (!dispatch->PostRadioOwnerTask([sink, result = normal[i], receipt] {
-            sink->AcceptRadioStep(result);
-            receipt->delivered.store(true, std::memory_order_release);
-        })) {
-            std::lock_guard<std::mutex> guard(lock_);
-            ownerDeliveryReceipts_.erase(std::remove(ownerDeliveryReceipts_.begin(),
-                ownerDeliveryReceipts_.end(), receipt), ownerDeliveryReceipts_.end());
-            pendingNormalDeliveries_.insert(pendingNormalDeliveries_.begin(), normal.begin() + i, normal.end());
-            pendingLateDeliveries_.insert(pendingLateDeliveries_.begin(), late.begin(), late.end());
-            return false;
-        }
-    }
-    for (size_t i = 0; i < late.size(); ++i) {
-        auto receipt = std::make_shared<OwnerDeliveryReceipt>();
-        receipt->result = late[i];
-        receipt->late = true;
-        {
-            std::lock_guard<std::mutex> guard(lock_);
-            ownerDeliveryReceipts_.push_back(receipt);
-        }
-        if (!dispatch->PostRadioOwnerTask([sink, result = late[i], receipt] {
-            sink->AcceptLateRadioEvidence(result);
-            receipt->delivered.store(true, std::memory_order_release);
-        })) {
-            std::lock_guard<std::mutex> guard(lock_);
-            ownerDeliveryReceipts_.erase(std::remove(ownerDeliveryReceipts_.begin(),
-                ownerDeliveryReceipts_.end(), receipt), ownerDeliveryReceipts_.end());
-            pendingLateDeliveries_.insert(pendingLateDeliveries_.begin(), late.begin() + i, late.end());
-            return false;
-        }
-    }
-    return true;
+    return DeliverOwnerResults(deliveries, sink, dispatch);
 }
 
 bool ResourceRadioRuntime::Recover(const StepRef &original, const RecoveryEvidence &evidence)
@@ -684,7 +650,8 @@ bool ResourceRadioRuntime::Recover(const StepRef &original, const RecoveryEviden
     std::lock_guard<std::mutex> guard(lock_);
     if (!(original == evidence.original)) { return false; }
     for (auto found = groups_.begin(); found != groups_.end();) {
-        if (found->second.lease.holder == original && found->second.submitting == 0 &&
+        if (found->second.first.mode != PrimarySwitchMode::ThreePhaseProtocol &&
+            found->second.lease.holder == original && found->second.submitting == 0 &&
             found->second.submittedTransmissions.empty() &&
             barrier_.AcceptRecoveryEvidence(found->second.lease, evidence)) {
             for (auto tx = transmissions_.begin(); tx != transmissions_.end();) {
@@ -697,6 +664,39 @@ bool ResourceRadioRuntime::Recover(const StepRef &original, const RecoveryEviden
         ++found;
     }
     return false;
+}
+
+bool ResourceRadioRuntime::RecoverC1Round(const RadioC1RoundRecovery &evidence)
+{
+    if (evidence.effect != EffectKnowledge::ConfirmedNotApplied) { return false; }
+    OwnerDeliveryFrame delivery(*this);
+    std::shared_ptr<RadioResultSink> sink;
+    std::shared_ptr<RadioOwnerDispatchPort> dispatch;
+    {
+        std::lock_guard<std::mutex> guard(lock_);
+        const auto found = std::find_if(groups_.begin(), groups_.end(), [&](const auto &entry) {
+            const auto &group = entry.second;
+            return group.first.mode == PrimarySwitchMode::ThreePhaseProtocol && group.quarantined &&
+                group.lease.holder == evidence.originalCheck && group.first.protocolSession == evidence.protocolSession;
+        });
+        if (found == groups_.end()) { return false; }
+        const auto &group = found->second;
+        const auto &members = group.first.roundMembers;
+        if (group.submitting || evidence.members.size() != members.size() ||
+            !std::is_permutation(members.begin(), members.end(), evidence.members.begin()) ||
+            !barrier_.AcceptRecoveryEvidence(group.lease, {evidence.originalCheck, evidence.effect,
+                evidence.oldRoundEnded, evidence.currentStateVerified, evidence.resourcesReusable})) { return false; }
+        delivery.Begin();
+        sink = sink_.lock();
+        dispatch = dispatch_.lock();
+        for (auto tx = transmissions_.begin(); tx != transmissions_.end();) {
+            if (tx->second.fence == found->first) { tx = transmissions_.erase(tx); }
+            else { ++tx; }
+        }
+        groups_.erase(found);
+    }
+    (void)DeliverOwnerResults({{evidence}}, sink, dispatch);
+    return true;
 }
 
 bool ResourceRadioRuntime::StopAccepting()

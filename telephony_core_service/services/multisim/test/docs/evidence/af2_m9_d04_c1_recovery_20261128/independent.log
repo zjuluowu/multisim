@@ -1,0 +1,388 @@
+Independent D04 C1 whole-round recovery final verification
+ELF /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host 43274016 2026-11-28 14:47:31.263662732 +0800
+9f129b03939a9a7b6171362298212063bc74ccc0ff6b23232f145da78de00b84  /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host
+
+$ LLVM_PROFILE_FILE=/tmp/multisim-d04-c1-final-review-AF2Primary.FormalC1StopBeforeCheckOwnerConsumptionRequiresOriginalWholeRoundEvidence-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=AF2Primary.FormalC1StopBeforeCheckOwnerConsumptionRequiresOriginalWholeRoundEvidence
+Note: Google Test filter = AF2Primary.FormalC1StopBeforeCheckOwnerConsumptionRequiresOriginalWholeRoundEvidence
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.FormalC1StopBeforeCheckOwnerConsumptionRequiresOriginalWholeRoundEvidence
+[       OK ] AF2Primary.FormalC1StopBeforeCheckOwnerConsumptionRequiresOriginalWholeRoundEvidence (2 ms)
+[----------] 1 test from AF2Primary (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 1 test.
+exit=0
+
+$ LLVM_PROFILE_FILE=/tmp/multisim-d04-c1-final-review-AF2Primary.FormalC1StopBeforeFirstUpdatePermitRecoversTheOriginalCheck-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=AF2Primary.FormalC1StopBeforeFirstUpdatePermitRecoversTheOriginalCheck
+Note: Google Test filter = AF2Primary.FormalC1StopBeforeFirstUpdatePermitRecoversTheOriginalCheck
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.FormalC1StopBeforeFirstUpdatePermitRecoversTheOriginalCheck
+[       OK ] AF2Primary.FormalC1StopBeforeFirstUpdatePermitRecoversTheOriginalCheck (1 ms)
+[----------] 1 test from AF2Primary (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+exit=0
+
+$ LLVM_PROFILE_FILE=/tmp/multisim-d04-c1-final-review-AF2Primary.FormalC1PartialUpdateAfterStopRetainsWholeRoundAndRepublishesOriginalReceipt-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=AF2Primary.FormalC1PartialUpdateAfterStopRetainsWholeRoundAndRepublishesOriginalReceipt
+Note: Google Test filter = AF2Primary.FormalC1PartialUpdateAfterStopRetainsWholeRoundAndRepublishesOriginalReceipt
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.FormalC1PartialUpdateAfterStopRetainsWholeRoundAndRepublishesOriginalReceipt
+[       OK ] AF2Primary.FormalC1PartialUpdateAfterStopRetainsWholeRoundAndRepublishesOriginalReceipt (1 ms)
+[----------] 1 test from AF2Primary (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 1 test.
+exit=0
+
+$ LLVM_PROFILE_FILE=/tmp/multisim-d04-c1-final-review-AF2Primary.FormalC1SynchronousFirstCheckTimeoutRetainsFrozenUnsentMembers-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=AF2Primary.FormalC1SynchronousFirstCheckTimeoutRetainsFrozenUnsentMembers
+Note: Google Test filter = AF2Primary.FormalC1SynchronousFirstCheckTimeoutRetainsFrozenUnsentMembers
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.FormalC1SynchronousFirstCheckTimeoutRetainsFrozenUnsentMembers
+[       OK ] AF2Primary.FormalC1SynchronousFirstCheckTimeoutRetainsFrozenUnsentMembers (1 ms)
+[----------] 1 test from AF2Primary (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 1 test.
+exit=0
+
+$ LLVM_PROFILE_FILE=/tmp/multisim-d04-c1-final-review-AF2Primary.FormalC1RecoveryProtectsOriginalStoreReceiptUntilCompletion-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=AF2Primary.FormalC1RecoveryProtectsOriginalStoreReceiptUntilCompletion
+Note: Google Test filter = AF2Primary.FormalC1RecoveryProtectsOriginalStoreReceiptUntilCompletion
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.FormalC1RecoveryProtectsOriginalStoreReceiptUntilCompletion
+[       OK ] AF2Primary.FormalC1RecoveryProtectsOriginalStoreReceiptUntilCompletion (1 ms)
+[----------] 1 test from AF2Primary (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+exit=0
+
+$ LLVM_PROFILE_FILE=/tmp/multisim-d04-c1-final-review-TargetPrimaryB.ResourceBarrierC1UpdateNotifyCannotCompleteWithoutReuseEvidence-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=TargetPrimaryB.ResourceBarrierC1UpdateNotifyCannotCompleteWithoutReuseEvidence
+Note: Google Test filter = TargetPrimaryB.ResourceBarrierC1UpdateNotifyCannotCompleteWithoutReuseEvidence
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.ResourceBarrierC1UpdateNotifyCannotCompleteWithoutReuseEvidence
+[       OK ] TargetPrimaryB.ResourceBarrierC1UpdateNotifyCannotCompleteWithoutReuseEvidence (2 ms)
+[----------] 1 test from TargetPrimaryB (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 1 test.
+exit=0
+
+$ LLVM_PROFILE_FILE=/tmp/multisim-d04-c1-final-review-TargetPrimaryB.ResourceStopSealsUnsubmittedMembersAndRetainsOriginalTransmission-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=TargetPrimaryB.ResourceStopSealsUnsubmittedMembersAndRetainsOriginalTransmission
+Note: Google Test filter = TargetPrimaryB.ResourceStopSealsUnsubmittedMembersAndRetainsOriginalTransmission
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.ResourceStopSealsUnsubmittedMembersAndRetainsOriginalTransmission
+[       OK ] TargetPrimaryB.ResourceStopSealsUnsubmittedMembersAndRetainsOriginalTransmission (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+exit=0
+
+$ LLVM_PROFILE_FILE=/tmp/multisim-d04-c1-final-review-AF2Primary.FormalC1LateFailedCompleteDoesNotConsumeWholeRoundRecovery-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=AF2Primary.FormalC1LateFailedCompleteDoesNotConsumeWholeRoundRecovery
+Note: Google Test filter = AF2Primary.FormalC1LateFailedCompleteDoesNotConsumeWholeRoundRecovery
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.FormalC1LateFailedCompleteDoesNotConsumeWholeRoundRecovery
+[       OK ] AF2Primary.FormalC1LateFailedCompleteDoesNotConsumeWholeRoundRecovery (1 ms)
+[----------] 1 test from AF2Primary (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+exit=0
+
+$ LLVM_PROFILE_FILE=/tmp/multisim-d04-c1-final-review-TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+Note: Google Test filter = TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[       OK ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound (2 ms)
+[----------] 1 test from TargetPrimaryB (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 1 test.
+exit=0
+
+$ LLVM_PROFILE_FILE=/tmp/multisim-d04-c1-final-review-TargetPrimaryB.RevocationAfterPermissionKeepsFirstMemberAndDeniesRemainingMembers-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=TargetPrimaryB.RevocationAfterPermissionKeepsFirstMemberAndDeniesRemainingMembers
+Note: Google Test filter = TargetPrimaryB.RevocationAfterPermissionKeepsFirstMemberAndDeniesRemainingMembers
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.RevocationAfterPermissionKeepsFirstMemberAndDeniesRemainingMembers
+[       OK ] TargetPrimaryB.RevocationAfterPermissionKeepsFirstMemberAndDeniesRemainingMembers (2 ms)
+[----------] 1 test from TargetPrimaryB (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 1 test.
+exit=0
+
+$ LLVM_PROFILE_FILE=/tmp/multisim-d04-c1-final-review-route-repeat-%p.profraw /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound --gtest_repeat=20
+
+Repeating all tests (iteration 1) . . .
+
+Note: Google Test filter = TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[       OK ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound (3 ms)
+[----------] 1 test from TargetPrimaryB (3 ms total)
+
+[==========] 1 test from 1 test suite ran. (3 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 2) . . .
+
+Note: Google Test filter = TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[       OK ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 3) . . .
+
+Note: Google Test filter = TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[       OK ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 4) . . .
+
+Note: Google Test filter = TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[       OK ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 5) . . .
+
+Note: Google Test filter = TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[       OK ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 6) . . .
+
+Note: Google Test filter = TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[       OK ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 7) . . .
+
+Note: Google Test filter = TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[       OK ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 8) . . .
+
+Note: Google Test filter = TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[       OK ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 9) . . .
+
+Note: Google Test filter = TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[       OK ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 10) . . .
+
+Note: Google Test filter = TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[       OK ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 11) . . .
+
+Note: Google Test filter = TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[       OK ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 12) . . .
+
+Note: Google Test filter = TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[       OK ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound (2 ms)
+[----------] 1 test from TargetPrimaryB (2 ms total)
+
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 13) . . .
+
+Note: Google Test filter = TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[       OK ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 14) . . .
+
+Note: Google Test filter = TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[       OK ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 15) . . .
+
+Note: Google Test filter = TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[       OK ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound (0 ms)
+[----------] 1 test from TargetPrimaryB (0 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 16) . . .
+
+Note: Google Test filter = TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[       OK ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 17) . . .
+
+Note: Google Test filter = TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[       OK ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 18) . . .
+
+Note: Google Test filter = TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[       OK ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 19) . . .
+
+Note: Google Test filter = TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[       OK ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound (1 ms)
+[----------] 1 test from TargetPrimaryB (1 ms total)
+
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+
+Repeating all tests (iteration 20) . . .
+
+Note: Google Test filter = TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[==========] Running 1 test from 1 test suite.
+[----------] 1 test from TargetPrimaryB
+[ RUN      ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound
+[       OK ] TargetPrimaryB.RouteRevocationStopsUnsentMemberAndKeepsOriginalRound (2 ms)
+[----------] 1 test from TargetPrimaryB (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 1 test.
+exit=0

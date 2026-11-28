@@ -372,6 +372,13 @@ Owner 收尾任务只在根门成功后提交一次。逐项关闭清单、C1 �
 状态为 `AF2_M9_IN_PROGRESS`。
 [正式从失败恢复的原始验证](../services/multisim/test/docs/evidence/af2_m9_d04_close_gate_20261128/README.md)
 
+**D04 正式 C1 跨阶段整轮恢复检查点（2026-11-28）。** 正式图已按首条 CHECK、原协议会话及冻结
+全体接纳受控平台的整轮未应用证明。部分 CHECK、UPDATE 及隔离后的失败 COMPLETE 只结各自设备命令，
+原整轮租约保留至可归因证明。原 Owner 回执可重投。Store 回写 Unknown 时原 Completion 保持唯一，
+关闭继续列为业务责任未结。Target 全量 263/263，专项 ASan/TSan 各 127/127，独立正例 10/10。
+完整组合重建、逐项关闭清单、其余整轮结果和独立扩展仍待，状态为 `AF2_M9_IN_PROGRESS`。
+[正式整轮恢复、独立复跑及运行时负控](../services/multisim/test/docs/evidence/af2_m9_d04_c1_recovery_20261128/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）

@@ -1278,6 +1278,11 @@ TEST(TargetPrimaryB,C1RetainedUpdateAckCannotReplaceMissingMemberRecovery)
     EXPECT_FALSE(fixture.ResultAt(2, EffectKnowledge::ConfirmedApplied, 0, true, true, true, true));
     EXPECT_FALSE(fixture.radio.DeviceResourcesDrained());
     EXPECT_TRUE(fixture.ResultAt(3, EffectKnowledge::ConfirmedApplied, 0, true, true, true, true));
+    EXPECT_FALSE(fixture.radio.DeviceResourcesDrained());
+    const auto &first = fixture.platform.requests[0].second;
+    const auto &second = fixture.platform.requests[1].second;
+    ASSERT_TRUE(fixture.radio.RecoverC1Round({first.step, first.protocolSession, {*first.member, *second.member},
+        EffectKnowledge::ConfirmedNotApplied, true, true, true}));
     EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
     EXPECT_EQ(fixture.platform.requests.size(), 4u);
     EXPECT_EQ(fixture.completion.results, (std::vector<int32_t>{kLegacyLocalPointerNull}));
@@ -1433,9 +1438,15 @@ TEST(TargetPrimaryB,RouteRevocationStopsUnsentMemberAndKeepsOriginalRound)
     EXPECT_EQ(fixture.radio.ReadResourceState(fixture.key), ResourceState::Quarantined);
     EXPECT_FALSE(fixture.ResultAt(0, EffectKnowledge::ConfirmedApplied, 0, false, true, true, false));
     EXPECT_TRUE(fixture.ResultAt(0, EffectKnowledge::ConfirmedApplied, 0, false, true, true, true));
+    EXPECT_FALSE(fixture.radio.DeviceResourcesDrained());
+    EXPECT_TRUE(fixture.completion.results.empty());
+    const auto &first = fixture.platform.requests.front().second;
+    ASSERT_TRUE(fixture.radio.RecoverC1Round({first.step, first.protocolSession, first.roundMembers,
+        EffectKnowledge::ConfirmedNotApplied, true, true, true}));
     EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
     EXPECT_EQ(fixture.platform.requests.size(), 1u);
-    EXPECT_TRUE(fixture.completion.results.empty());
+    ASSERT_TRUE(fixture.scheduler.WaitOwnerIdle());
+    EXPECT_EQ(fixture.completion.results, (std::vector<int32_t> {kLegacyLocalPointerNull}));
 }
 
 TEST(TargetPrimaryB,RemovedBindingDeniesSendEvenWhenNativeRoutesStayCurrent)
@@ -1477,6 +1488,10 @@ TEST(TargetPrimaryB,RevocationAfterPermissionKeepsFirstMemberAndDeniesRemainingM
     EXPECT_FALSE(fixture.radio.DeviceResourcesDrained());
     EXPECT_TRUE(fixture.ResultAt(0, EffectKnowledge::ConfirmedApplied, 0, false, true, true, true));
     EXPECT_EQ(fixture.platform.requests.size(), 1u);
+    EXPECT_FALSE(fixture.radio.DeviceResourcesDrained());
+    const auto &first = fixture.platform.requests.front().second;
+    ASSERT_TRUE(fixture.radio.RecoverC1Round({first.step, first.protocolSession, first.roundMembers,
+        EffectKnowledge::ConfirmedNotApplied, true, true, true}));
     EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
     EXPECT_TRUE(fixture.output.roles.empty());
 }
@@ -1693,9 +1708,11 @@ TEST(TargetPrimaryB,ResourceSubmitMemberCannotDuplicateOrReleaseAnotherInSubmit)
 {
     ResourceFixture f;
     const RadioSwitchRequest first {{RequestId{1,{6,2},RequestOwner::Assignment},2,0},
-        {0},{"m1"},PrimarySwitchMode::ThreePhaseProtocol,std::nullopt,1,0,2};
+        {0},{"m1"},PrimarySwitchMode::ThreePhaseProtocol,std::nullopt,1,1,2,
+        f.platform.protocolMembers.front(), std::nullopt, f.platform.protocolMembers};
     auto second = first;
     second.target = {1};
+    second.member = f.platform.protocolMembers.back();
     auto rival = first;
     rival.step.request.value = 2;
     unsigned firstCalls = 0;
@@ -1725,6 +1742,9 @@ TEST(TargetPrimaryB,ResourceSubmitMemberCannotDuplicateOrReleaseAnotherInSubmit)
     EXPECT_EQ(f.radio.ReadTransportSerial(token), static_cast<int32_t>(token));
     EXPECT_TRUE(f.radio.AcceptDeviceResult({token, Result(first, EffectKnowledge::ConfirmedApplied, 0),
         true, true, true, static_cast<int32_t>(token)}));
+    EXPECT_EQ(f.radio.ReadResourceState(f.key), ResourceState::Quarantined);
+    ASSERT_TRUE(f.radio.RecoverC1Round({first.step, first.protocolSession, first.roundMembers,
+        EffectKnowledge::ConfirmedNotApplied, true, true, true}));
     EXPECT_EQ(f.radio.ReadResourceState(f.key), ResourceState::Available);
 }
 
@@ -1732,9 +1752,11 @@ TEST(TargetPrimaryB,ResourceStopSealsUnsubmittedMembersAndRetainsOriginalTransmi
 {
     ResourceFixture fixture;
     const RadioSwitchRequest original {{RequestId {1, {6, 2}, RequestOwner::Assignment}, 2, 0},
-        {0}, {"m1"}, PrimarySwitchMode::ThreePhaseProtocol, std::nullopt, 1, 1, 2};
+        {0}, {"m1"}, PrimarySwitchMode::ThreePhaseProtocol, std::nullopt, 1, 1, 2,
+        fixture.platform.protocolMembers.front(), std::nullopt, fixture.platform.protocolMembers};
     auto unsubmitted = original;
     unsubmitted.target = {1};
+    unsubmitted.member = fixture.platform.protocolMembers.back();
 
     fixture.platform.onSynchronousResponse = [&](uint64_t, const RadioSwitchRequest &) {
         EXPECT_FALSE(fixture.radio.StopAccepting());
@@ -1750,6 +1772,9 @@ TEST(TargetPrimaryB,ResourceStopSealsUnsubmittedMembersAndRetainsOriginalTransmi
     const auto result = Result(original, EffectKnowledge::ConfirmedApplied, 0);
     EXPECT_FALSE(fixture.radio.AcceptDeviceResult({token, result, true, true, false, static_cast<int32_t>(token)}));
     EXPECT_TRUE(fixture.radio.AcceptDeviceResult({token, result, true, true, true, static_cast<int32_t>(token)}));
+    EXPECT_FALSE(fixture.radio.DeviceResourcesDrained());
+    ASSERT_TRUE(fixture.radio.RecoverC1Round({original.step, original.protocolSession, original.roundMembers,
+        EffectKnowledge::ConfirmedNotApplied, true, true, true}));
     EXPECT_TRUE(fixture.radio.DeviceResourcesDrained());
     EXPECT_EQ(fixture.radio.ReadResourceState(fixture.key), ResourceState::Available);
 }
@@ -2177,6 +2202,10 @@ TEST(TargetPrimaryB,ResourceBarrierC1UpdateNotifyCannotCompleteWithoutReuseEvide
     EXPECT_TRUE(f.ResultAt(3,EffectKnowledge::ConfirmedApplied,0,true,true,true,true));
     EXPECT_EQ(f.radio.ReadResourceState(f.key),ResourceState::Quarantined);
     EXPECT_TRUE(f.ResultAt(2,EffectKnowledge::ConfirmedApplied,0,true,true,true,true));
+    EXPECT_EQ(f.radio.ReadResourceState(f.key),ResourceState::Quarantined);
+    const auto &first = f.platform.requests.front().second;
+    ASSERT_TRUE(f.radio.RecoverC1Round({first.step, first.protocolSession, first.roundMembers,
+        EffectKnowledge::ConfirmedNotApplied, true, true, true}));
     EXPECT_EQ(f.radio.ReadResourceState(f.key),ResourceState::Available);
     EXPECT_EQ(f.platform.requests.size(),4u);
     EXPECT_EQ(f.completion.results.size(),1u);

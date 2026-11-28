@@ -852,6 +852,12 @@ void AssignmentService::RunTrackedPrimaryParameters(StepRef step, TransitionPhas
 void AssignmentService::FinishC1Phase(const StepRef &step, const RadioDomainId &domain,
     std::unique_lock<std::recursive_mutex> &guard)
 {
+    if (const auto pending = pendingPrimary_.find(step.request.value);
+        pending != pendingPrimary_.end() && pending->second.step.request == step.request &&
+        pending->second.step.attempt == step.attempt) {
+        if (pending->second.c1PhaseEndStarted) { return; }
+        pending->second.c1PhaseEndStarted = true;
+    }
     CancelC1ProtocolDeadline(step, guard);
     guard.unlock();
     try {
@@ -1232,6 +1238,12 @@ void AssignmentService::AcceptRadioStep(const RadioSwitchResult &result)
     if (pending->second.mode == PrimarySwitchMode::ThreePhaseProtocol) {
         pending->second.completedMembers.clear();
         if (pending->second.phase != 4) {
+            if (IsStoppingPrimaryRequests()) {
+                assignment_.AcceptTransitionPhase(*pending->second.target.radioDomain, result.step.request.value,
+                    TransitionPhase::DevicePending, TransitionPhase::NeedsReconciliation);
+                operations_.MarkTerminal(result.step.request, TerminalState::NeedsReconciliation);
+                return;
+            }
             const uint32_t nextPhase = pending->second.roundFailed ? 4 :
                 pending->second.phase == 1 ? 2 : 4;
             const uint32_t nextStep = pending->second.step.step + 1;
@@ -1422,6 +1434,25 @@ void AssignmentService::AcceptLateRadioEvidence(const RadioSwitchResult &result)
 {
     std::unique_lock<std::recursive_mutex> guard(primaryCommitLock_);
     AcceptLateRadioEvidenceLocked(result, guard);
+}
+
+void AssignmentService::AcceptC1RoundRecovery(const RadioC1RoundRecovery &evidence)
+{
+    std::unique_lock<std::recursive_mutex> guard(primaryCommitLock_);
+    const auto request = evidence.originalCheck.request;
+    const auto pending = pendingPrimary_.find(request.value);
+    const auto operation = operations_.Read(request);
+    if (pending == pendingPrimary_.end() || !operation || !operation->context.deviceStepRegistered ||
+        (operation->terminal != TerminalState::Open && operation->terminal != TerminalState::NeedsReconciliation) ||
+        !assignment_.OwnsRoleWriteSet(request.value, kPrimaryRoleWriteSet)) { return; }
+    auto &round = pending->second;
+    if (round.mode != PrimarySwitchMode::ThreePhaseProtocol ||
+        !round.originalC1Check || !(*round.originalC1Check == evidence.originalCheck) ||
+        round.protocolSession != evidence.protocolSession || round.members.size() != evidence.members.size() ||
+        !std::is_permutation(round.members.begin(), round.members.end(), evidence.members.begin()) ||
+        evidence.effect != EffectKnowledge::ConfirmedNotApplied || !evidence.oldRoundEnded ||
+        !evidence.currentStateVerified || !evidence.resourcesReusable) { return; }
+    FinishC1WithNoDeviceEffect(round, guard, true);
 }
 
 void AssignmentService::AcceptLateRadioEvidenceLocked(const RadioSwitchResult &result,
@@ -1647,7 +1678,8 @@ bool AssignmentService::SubmitC1Round(const PendingPrimarySwitch &round,
         }
         const RadioSwitchRequest device {step, member.route, domain, PrimarySwitchMode::ThreePhaseProtocol,
             member.nativeMember == targetMember ? std::optional<BindingRef>{facts.binding} : std::nullopt,
-            protocolSession, phase, static_cast<uint32_t>(members.size()), member, RadioProtocolPayload {capability, status}};
+            protocolSession, phase, static_cast<uint32_t>(members.size()), member, RadioProtocolPayload {capability, status},
+            members};
         const auto handoff = SubmitRadioOutsideCommit(device, facts, guard);
         if (handoff != RadioSubmitDisposition::HandoffAccepted) {
             if (!issued && phase == 1 && handoff == RadioSubmitDisposition::ConfirmedNotSent) {
@@ -1670,6 +1702,10 @@ bool AssignmentService::SubmitC1Round(const PendingPrimarySwitch &round,
 
 bool AssignmentService::SubmitC1Check(const StepRef &step, std::unique_lock<std::recursive_mutex> &guard)
 {
+    const auto pending = pendingPrimary_.find(step.request.value);
+    if (pending == pendingPrimary_.end() || !(pending->second.step == step)) { return false; }
+    pending->second.originalC1Check = step;
+    pending->second.c1PhaseEndStarted = false;
     const bool armed = ArmC1ProtocolDeadline(step, guard);
     const auto original = pendingPrimary_.find(step.request.value);
     if (original == pendingPrimary_.end() || !(original->second.step == step)) { return false; }
@@ -1681,33 +1717,48 @@ bool AssignmentService::SubmitC1Check(const StepRef &step, std::unique_lock<std:
 }
 
 void AssignmentService::FinishC1WithNoDeviceEffect(PendingPrimarySwitch &round,
-    std::unique_lock<std::recursive_mutex> &guard)
+    std::unique_lock<std::recursive_mutex> &guard, bool wholeRoundVerified)
 {
     const auto original = round.step;
     const auto request = original.request;
     const auto domain = *round.target.radioDomain;
     const auto operation = operations_.Read(request);
-    const bool timedOut = operation && operation->terminal == TerminalState::NeedsReconciliation &&
-        operation->wait == WaitState::TimedOut;
+    const bool reconciling = operation && operation->terminal == TerminalState::NeedsReconciliation;
+    const bool timedOut = reconciling && operation->wait == WaitState::TimedOut;
     if (timedOut && round.timeoutDeliveryInFlight) {
         round.noDeviceEffect = true;
         return;
     }
-    if (!timedOut) {
-        if (operations_.AcceptResult(round.step, EffectKnowledge::NotSent) !=
+    if (reconciling && !timedOut) {
+        if (!wholeRoundVerified || !operations_.AcceptLateEvidence(original, EffectKnowledge::ConfirmedNotApplied)) {
+            return;
+        }
+        operations_.EndWait(request, WaitState::Delivered);
+    } else if (!reconciling) {
+        if (operations_.AcceptResult(round.step, wholeRoundVerified ? EffectKnowledge::ConfirmedNotApplied :
+            EffectKnowledge::NotSent) !=
             RuntimeOperationStore::ResultAdmission::Accepted) { return; }
         operations_.EndWait(request, WaitState::Delivered);
     }
     const bool restored = RestoreTrackedPrimary(round.step, round.facts, round.oldParameters, guard);
     if (restored) { AcceptRestoredPrimaryProjection(round.oldParameters); }
+    std::optional<C0Stage> outstanding;
+    if (!restored && c0Receipt_ && c0Receipt_->request == request) {
+        outstanding = c0Receipt_->outstanding;
+        c0Receipt_->outstanding = C0Stage::Completion;
+    }
     if (!timedOut) { FinishC1Phase(original, domain, guard); }
+    if (outstanding) { c0Receipt_->outstanding = *outstanding; }
     if (!restored && !c0Receipt_) {
         assignment_.AcceptTransitionPhase(domain, request.value, TransitionPhase::DevicePending,
             TransitionPhase::NeedsReconciliation);
         CompleteOnce(request, round.completion, 83886087, TerminalState::NeedsReconciliation, &guard);
         return;
     }
-    FailC1Preparation(request, domain, timedOut ? TransitionPhase::NeedsReconciliation :
+    if (reconciling && !timedOut && !c0Receipt_) {
+        CompleteOnce(request, round.completion, 83886087, TerminalState::NeedsReconciliation, &guard);
+    }
+    FailC1Preparation(request, domain, reconciling ? TransitionPhase::NeedsReconciliation :
         TransitionPhase::DevicePending, round.completion, guard);
     pendingPrimary_.erase(request.value);
 }

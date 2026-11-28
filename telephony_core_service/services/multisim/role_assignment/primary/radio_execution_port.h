@@ -74,6 +74,7 @@ struct RadioSwitchRequest {
     uint32_t memberCount {1};
     std::optional<RadioProtocolMember> member {};
     std::optional<RadioProtocolPayload> payload {};
+    std::vector<RadioProtocolMember> roundMembers {};
 };
 struct RadioSwitchResult {
     StepRef step;
@@ -94,11 +95,24 @@ struct RadioDeviceResult {
     bool currentStateVerified {false};
     std::optional<int32_t> transportSerial {std::nullopt};
 };
+// Platform evidence for a stopped C1 protocol session and its complete original
+// member set. Individual CHECK acknowledgments and UPDATE notifications carry
+// no claim about the end or reuse of the whole session.
+struct RadioC1RoundRecovery {
+    StepRef originalCheck;
+    uint32_t protocolSession;
+    std::vector<RadioProtocolMember> members;
+    EffectKnowledge effect;
+    bool oldRoundEnded;
+    bool currentStateVerified;
+    bool resourcesReusable;
+};
 class RadioResultSink {
 public:
     virtual ~RadioResultSink() = default;
     virtual void AcceptRadioStep(const RadioSwitchResult &result) = 0;
     virtual void AcceptLateRadioEvidence(const RadioSwitchResult &result) = 0;
+    virtual void AcceptC1RoundRecovery(const RadioC1RoundRecovery &) {}
 };
 using RadioSendPermit = std::function<bool()>;
 // A validates the original business target and grants R a short, synchronous registration domain.

@@ -67,6 +67,7 @@ public:
     RequestId StartPrimarySwitch(const SwitchPrimaryCommand &command);
     void AcceptRadioStep(const RadioSwitchResult &result) override;
     void AcceptLateRadioEvidence(const RadioSwitchResult &result) override;
+    void AcceptC1RoundRecovery(const RadioC1RoundRecovery &evidence) override;
     std::optional<EffectKnowledge> ReadPrimaryDeviceEvidence(const StepRef &original) const;
     std::optional<uint64_t> ReadLegacyPrimaryWaitBudget(RequestId request) const;
     bool AcceptPrimarySwitchTimeout(RequestId request, uint64_t elapsedMilliseconds);
@@ -193,12 +194,15 @@ private:
         uint64_t protocolDeadlineGeneration {0};
         std::optional<uint64_t> protocolDeadlineTask {};
         std::map<SlotId, RadioSwitchResult> lateC1Evidence {};
+        std::optional<StepRef> originalC1Check {};
+        bool c1PhaseEndStarted {false};
     };
     bool AcceptC1RetryDue(RequestId request, std::unique_lock<std::recursive_mutex> &guard);
     RadioSubmitDisposition SubmitRadioOutsideCommit(const RadioSwitchRequest &device, const PrimaryTargetFacts &facts,
         std::unique_lock<std::recursive_mutex> &guard);
     void FinishPrimaryWithNoDeviceEffect(const StepRef &step);
-    void FinishC1WithNoDeviceEffect(PendingPrimarySwitch &round, std::unique_lock<std::recursive_mutex> &guard);
+    void FinishC1WithNoDeviceEffect(PendingPrimarySwitch &round, std::unique_lock<std::recursive_mutex> &guard,
+        bool wholeRoundVerified = false);
     void AcceptLateRadioEvidenceLocked(const RadioSwitchResult &result, std::unique_lock<std::recursive_mutex> &guard);
     bool SubmitC1Check(const StepRef &step, std::unique_lock<std::recursive_mutex> &guard);
     bool SubmitC1Round(const PendingPrimarySwitch &round, std::unique_lock<std::recursive_mutex> &guard);

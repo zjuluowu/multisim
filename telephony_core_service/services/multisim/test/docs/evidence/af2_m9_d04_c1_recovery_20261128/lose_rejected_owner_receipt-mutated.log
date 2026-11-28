@@ -1,0 +1,50 @@
+Note: Google Test filter = AF2Primary.FormalC1PartialUpdateAfterStopRetainsWholeRoundAndRepublishesOriginalReceipt
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.FormalC1PartialUpdateAfterStopRetainsWholeRoundAndRepublishesOriginalReceipt
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2555: Failure
+Expected equality of these values:
+  module->StopAcceptingAndDrain()
+    Which is: 4-byte object <02-00 00-00>
+  SimModule::DrainResult::CallbacksStillInFlight
+    Which is: 4-byte object <01-00 00-00>
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2558: Failure
+Expected equality of these values:
+  input.parameters->values.at(kPrimary)
+    Which is: "1"
+  oldSlot
+    Which is: "0"
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2559: Failure
+Expected equality of these values:
+  input.parameters->values.at(kIccid)
+    Which is: "AB2FA72FFEABDAB4E56CB9230C9A119AB236ECE269144D4E335A36E2D26558F2"
+  oldIccid
+    Which is: "previous"
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2560: Failure
+Expected equality of these values:
+  input.completion->results
+    Which is: {}
+  std::vector<int32_t> {OHOS::Telephony::TELEPHONY_ERR_LOCAL_PTR_NULL}
+    Which is: { 83886087 }
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2562: Failure
+Expected equality of these values:
+  module->StopAcceptingAndDrain()
+    Which is: 4-byte object <02-00 00-00>
+  SimModule::DrainResult::Drained
+    Which is: 4-byte object <00-00 00-00>
+
+[  FAILED  ] AF2Primary.FormalC1PartialUpdateAfterStopRetainsWholeRoundAndRepublishesOriginalReceipt (5 ms)
+[----------] 1 test from AF2Primary (5 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (5 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] AF2Primary.FormalC1PartialUpdateAfterStopRetainsWholeRoundAndRepublishesOriginalReceipt
+
+ 1 FAILED TEST

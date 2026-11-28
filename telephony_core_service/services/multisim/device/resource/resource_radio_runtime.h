@@ -12,6 +12,7 @@
 #include <optional>
 #include <set>
 #include <tuple>
+#include <variant>
 #include <vector>
 #include "device/resource/resource_barrier.h"
 #include "role_assignment/primary/radio_execution_port.h"
@@ -34,6 +35,7 @@ public:
     void EndLegacySenseSwitch(const StepRef &owner, const RadioDomainId &domain) override;
     bool AcceptDeviceResult(const RadioDeviceResult &deviceResult);
     bool Recover(const StepRef &original, const RecoveryEvidence &evidence);
+    bool RecoverC1Round(const RadioC1RoundRecovery &evidence);
     bool StopAccepting();
     bool OwnerCallbacksDrained() const;
     bool FlushOwnerDeliveries();
@@ -73,7 +75,6 @@ private:
         bool endRequested {false};
         std::vector<uint64_t> closedUpdateTransmissions {};
         bool awaitingC1Phase {false};
-        std::map<SlotId, std::optional<RadioProtocolMember>> c1Members {};
     };
     struct Transmission {
         uint64_t fence;
@@ -88,9 +89,14 @@ private:
         uint64_t order;
         bool conflict {false};
     };
-    struct OwnerDeliveryReceipt {
-        RadioSwitchResult result;
+    struct OwnerDelivery {
+        std::variant<RadioSwitchResult, RadioC1RoundRecovery> evidence;
         bool late {false};
+        void Deliver(RadioResultSink &sink) const;
+    };
+    struct OwnerDeliveryReceipt {
+        explicit OwnerDeliveryReceipt(const OwnerDelivery &value) : delivery(value) {}
+        OwnerDelivery delivery;
         std::atomic<bool> delivered {false};
     };
     Group *FindGroup(const RadioSwitchRequest &request);
@@ -103,6 +109,8 @@ private:
         std::vector<RadioSwitchResult> &late);
     bool DeliverDeviceResults(const std::vector<RadioSwitchResult> &normal, const std::vector<RadioSwitchResult> &late,
         const std::shared_ptr<RadioResultSink> &sink, const std::shared_ptr<RadioOwnerDispatchPort> &dispatch);
+    bool DeliverOwnerResults(const std::vector<OwnerDelivery> &deliveries, const std::shared_ptr<RadioResultSink> &sink,
+        const std::shared_ptr<RadioOwnerDispatchPort> &dispatch);
     bool LocalOwnerCallbacksDrained() const;
     void Quarantine(Group &group, EffectKnowledge effect);
 
@@ -123,8 +131,7 @@ private:
     std::set<uint64_t> submittingTransmissions_;
     using BufferedKey = std::tuple<uint64_t, bool, std::optional<int32_t>>;
     std::map<BufferedKey, BufferedSubmissionEvidence> pendingSubmissionResults_;
-    std::vector<RadioSwitchResult> pendingNormalDeliveries_;
-    std::vector<RadioSwitchResult> pendingLateDeliveries_;
+    std::vector<OwnerDelivery> pendingOwnerDeliveries_;
     mutable std::vector<std::shared_ptr<OwnerDeliveryReceipt>> ownerDeliveryReceipts_;
     size_t ownerDeliveryFrames_ {0};
     uint64_t ownerDeliveryRevision_ {0};

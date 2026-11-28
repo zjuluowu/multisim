@@ -111,6 +111,7 @@ public:
     int32_t SetPrimarySlotId(int32_t slot, LegacyCallerRef caller);
     std::optional<RequestId> StartPrimarySwitch(const SwitchPrimaryCommand &command);
     bool AcceptRadioDeviceResult(const RadioDeviceResult &result);
+    bool AcceptRadioC1RoundRecovery(const RadioC1RoundRecovery &evidence);
     bool AcceptPrimarySwitchTimeout(RequestId request, uint64_t elapsedMilliseconds);
     bool FlushRadioOwnerDeliveries();
     DrainResult StopAcceptingAndDrain();
@@ -136,6 +137,7 @@ private:
     void UpdateCloseHold();
     void AcceptRadioStep(const RadioSwitchResult &result) override;
     void AcceptLateRadioEvidence(const RadioSwitchResult &result) override;
+    void AcceptC1RoundRecovery(const RadioC1RoundRecovery &evidence) override;
     int32_t SetDefaultCallMessageRole(DefaultRole role, int32_t slot, LegacyCallerRef caller);
 
     struct ModuleCall {

@@ -162,6 +162,12 @@ M2 的 `AF2Discovery.LiveBindingsFeedExistingC0AndStaleTargetCannotAdvance` 继�
 
 正式 Host 专用 B 可用 `AF2Primary.FormalDedicatedSwitchHandlesReplyBeforeSubmitReturns` 进入生产代码。选择 Target 单步构建，在 `AssignmentService::SubmitRadioOutsideCommit` 设置断点，跟踪平台验证的成员和路由、原发令票、同步回包和原 Store 写。异步等待、并发 Voice、未决 Store 和关闭用例共用同一模块装配。[正式 B 入口和实测](evidence/af2_m9_d01_formal_b_20261127/README.md)
 
+正式 Host C1 的关闭恢复可运行 `AF2Primary.FormalC1StopBeforeFirstUpdatePermitRecoversTheOriginalCheck`。
+先在 `ResourceRadioRuntime::RecoverC1Round` 设置断点，核对首条 CHECK 的原票、协议会话和完整成员。随后在
+`AssignmentService::AcceptC1RoundRecovery` 查看 Owner 对原预写的核对和 Completion。要复现原 Store 回执在
+结束通知中的重入，运行 `AF2Primary.FormalC1RecoveryProtectsOriginalStoreReceiptUntilCompletion`。两个用例的整轮证据
+由受控 Host 适配器提供，RIL/HDI 的真实整轮证明仍通过产品门禁验证。
+
 独立默认数据卡的单例、写权和 LLDB 断点见 [M4 开发与调试](M4_Default_Data_Debug.md)。
 
 默认 Voice、SMS 和四角色组合的单例、断点及 Provider 契约见 [M5 开发与调试](M5_Voice_SMS_Debug.md)。

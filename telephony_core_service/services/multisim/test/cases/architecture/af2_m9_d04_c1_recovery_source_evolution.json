@@ -1,0 +1,12 @@
+{
+  "baseline": "8db0e65aa6cbc00ba143fded465157b7486a0b50",
+  "files": {
+    "device/resource/resource_radio_runtime.cpp": "730380fecdb302d83525e1aa3e0f401724c77d540d933e8fd631a0ce55230ec8",
+    "device/resource/resource_radio_runtime.h": "3ca15effce43e35a42b663e25647bdf495a95bbf865c5bf44dc5a120ff9ec10f",
+    "infrastructure/assembly/sim_module.h": "5bdb0b92e800b93fafb4d22c1714e1443987237429c4a85ac5de134755890d95",
+    "infrastructure/assembly/sim_module_factory.cpp": "2ab7fa192fc7c0cc0bc1c1b9e9be3814ac3ddbcf8a03342221dfb5dffa8c2caf",
+    "role_assignment/assignment_service.cpp": "e698d2c7e6d5ce8a1a60dfb02c30e18da21740351a0669550fa56fcf2eeeed1e",
+    "role_assignment/assignment_service.h": "69473a84e6ec550d5ac1b49ea38ca8de8c2f9bd72138a7d9befeb7fad37ec84e",
+    "role_assignment/primary/radio_execution_port.h": "7577dbdd56ee170c79ad666a01f61be02fbb062a4739c965433240f6bdea0b56"
+  }
+}

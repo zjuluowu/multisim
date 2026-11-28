@@ -232,7 +232,11 @@ public:
     std::vector<std::string> events;
     std::vector<std::pair<SlotId, SubscriptionId>> mainChanges;
     std::vector<std::pair<SlotId, SubscriptionId>> dataChanges;
-    void PublishPrimaryPhase(bool, bool) override {}
+    std::function<void()> onPrimaryPhaseDone;
+    void PublishPrimaryPhase(bool done, bool) override
+    {
+        if (done && onPrimaryPhaseDone) { onPrimaryPhaseDone(); }
+    }
     void PublishMainCardChanged(SlotId) override { events.emplace_back("primary"); }
     void PublishMainCardChanged(SlotId slot, SubscriptionId subscription) override
     {
@@ -864,6 +868,7 @@ public:
 class ModuleDispatch final : public RetrySchedulerPort, public RadioOwnerDispatchPort {
 public:
     bool defer {false};
+    bool rejectOwnerPost {false};
     bool rejectRetryRegistration {false};
     bool failNextSeal {false};
     mutable bool failNextOwnerAudit {false};
@@ -946,6 +951,7 @@ public:
     }
     bool PostRadioOwnerTask(std::function<void()> task) override
     {
+        if (rejectOwnerPost) { return false; }
         if (defer) { ownerTasks_.push_back(std::move(task)); } else { task(); }
         return true;
     }
@@ -2288,6 +2294,16 @@ struct DedicatedPrimaryFixture {
         return {token, {request.step, request.target, request.expectedBinding, request.protocolSession,
             request.phase, notify, EffectKnowledge::ConfirmedApplied, 0}, true, true, false, static_cast<int32_t>(token)};
     }
+    RadioC1RoundRecovery VerifyAbortedRound() const
+    {
+        // The controlled platform verifies the original CHECK command set
+        // ended, the original effect is absent and its physical domains are reusable.
+        const auto &first = input.radio->history.at(0).first;
+        EXPECT_EQ(first.phase, 1u);
+        EXPECT_EQ(first.roundMembers, input.radio->routing->members);
+        return {first.step, first.protocolSession, input.radio->routing->members,
+            EffectKnowledge::ConfirmedNotApplied, true, true, true};
+    }
     void FinishFailedCheck()
     {
         ASSERT_EQ(input.radio->history.size(), 2u);
@@ -2416,6 +2432,253 @@ TEST(AF2Primary, FormalC1RetainsSharedCardResourceAcrossOwnerStageGaps)
     }
     fixture.input.dispatch->defer = false;
     EXPECT_EQ(caller.get(), 0);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Primary, FormalC1StopBeforeCheckOwnerConsumptionRequiresOriginalWholeRoundEvidence)
+{
+    DedicatedPrimaryFixture fixture(true);
+    const auto &module = fixture.module;
+    const auto &input = fixture.input;
+    const auto oldSlot = input.parameters->values.at(kPrimary);
+    const auto oldIccid = input.parameters->values.at(kIccid);
+    const auto binding = module->FindBinding({1});
+    ASSERT_TRUE(binding);
+    input.dispatch->defer = true;
+    ASSERT_TRUE(module->StartPrimarySwitch(Command(*binding)));
+    ASSERT_EQ(input.radio->history.size(), 2u);
+    ASSERT_TRUE(module->AcceptRadioDeviceResult(fixture.ReplyAt(0)));
+    ASSERT_TRUE(module->AcceptRadioDeviceResult(fixture.ReplyAt(1)));
+    ASSERT_EQ(input.dispatch->PendingOwnerTasks(), 2u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
+    EXPECT_EQ(module->ReadPrimaryResourceState(), ResourceState::Quarantined);
+    auto evidence = fixture.VerifyAbortedRound();
+    auto invalid = evidence;
+    ++invalid.protocolSession;
+    EXPECT_FALSE(module->AcceptRadioC1RoundRecovery(invalid));
+    invalid = evidence;
+    ++invalid.originalCheck.request.epoch[1];
+    EXPECT_FALSE(module->AcceptRadioC1RoundRecovery(invalid));
+    invalid = evidence;
+    invalid.members[1] = invalid.members[0];
+    EXPECT_FALSE(module->AcceptRadioC1RoundRecovery(invalid));
+    invalid = evidence;
+    invalid.resourcesReusable = false;
+    EXPECT_FALSE(module->AcceptRadioC1RoundRecovery(invalid));
+    EXPECT_FALSE(module->AcceptRadioDeviceResult(fixture.ReplyAt(1)));
+    ASSERT_EQ(module->ReadPrimaryResourceState(), ResourceState::Quarantined);
+
+    ASSERT_TRUE(module->AcceptRadioC1RoundRecovery(evidence));
+    EXPECT_EQ(module->ReadPrimaryResourceState(), ResourceState::Available);
+    EXPECT_TRUE(input.completion->results.empty());
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
+    input.dispatch->RunOwnerTasks();
+    EXPECT_EQ(input.radio->history.size(), 2u);
+    EXPECT_EQ(input.parameters->values.at(kPrimary), oldSlot);
+    EXPECT_EQ(input.parameters->values.at(kIccid), oldIccid);
+    EXPECT_EQ(input.completion->results, std::vector<int32_t> {OHOS::Telephony::TELEPHONY_ERR_LOCAL_PTR_NULL});
+    EXPECT_FALSE(module->AcceptRadioC1RoundRecovery(evidence));
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Primary, FormalC1StopBeforeFirstUpdatePermitRecoversTheOriginalCheck)
+{
+    DedicatedPrimaryFixture fixture(true);
+    const auto &module = fixture.module;
+    const auto &input = fixture.input;
+    const auto oldSlot = input.parameters->values.at(kPrimary);
+    const auto oldIccid = input.parameters->values.at(kIccid);
+    const auto binding = module->FindBinding({1});
+    ASSERT_TRUE(binding);
+    ASSERT_TRUE(module->StartPrimarySwitch(Command(*binding)));
+    ASSERT_EQ(input.radio->history.size(), 2u);
+    const auto evidence = fixture.VerifyAbortedRound();
+    bool paused = false;
+    input.radio->beforeSendPermit = [&](const RadioSwitchRequest &request) {
+        if (request.phase == 2) {
+            paused = true;
+            EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
+            EXPECT_FALSE(module->AcceptRadioC1RoundRecovery(evidence));
+        }
+    };
+    ASSERT_TRUE(module->AcceptRadioDeviceResult(fixture.ReplyAt(0)));
+    ASSERT_TRUE(module->AcceptRadioDeviceResult(fixture.ReplyAt(1)));
+    ASSERT_TRUE(paused);
+    ASSERT_EQ(input.radio->history.size(), 2u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::DeviceEffectsUnresolved);
+    auto updateStep = evidence;
+    ++updateStep.originalCheck.step;
+    EXPECT_FALSE(module->AcceptRadioC1RoundRecovery(updateStep));
+    ASSERT_TRUE(module->AcceptRadioC1RoundRecovery(evidence));
+    EXPECT_EQ(input.radio->history.size(), 2u);
+    EXPECT_EQ(input.parameters->values.at(kPrimary), oldSlot);
+    EXPECT_EQ(input.parameters->values.at(kIccid), oldIccid);
+    EXPECT_EQ(input.completion->results, std::vector<int32_t> {OHOS::Telephony::TELEPHONY_ERR_LOCAL_PTR_NULL});
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Primary, FormalC1PartialUpdateAfterStopRetainsWholeRoundAndRepublishesOriginalReceipt)
+{
+    DedicatedPrimaryFixture fixture(true);
+    const auto &module = fixture.module;
+    const auto &input = fixture.input;
+    const auto oldSlot = input.parameters->values.at(kPrimary);
+    const auto oldIccid = input.parameters->values.at(kIccid);
+    const auto binding = module->FindBinding({1});
+    ASSERT_TRUE(binding);
+    ASSERT_TRUE(module->StartPrimarySwitch(Command(*binding)));
+    ASSERT_EQ(input.radio->history.size(), 2u);
+    const auto evidence = fixture.VerifyAbortedRound();
+    bool paused = false;
+    input.radio->beforeSendPermit = [&](const RadioSwitchRequest &request) {
+        if (request.phase == 2 && request.target == SlotId {1}) {
+            paused = true;
+            EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
+            EXPECT_FALSE(module->AcceptRadioC1RoundRecovery(evidence));
+        }
+    };
+    ASSERT_TRUE(module->AcceptRadioDeviceResult(fixture.ReplyAt(0)));
+    ASSERT_TRUE(module->AcceptRadioDeviceResult(fixture.ReplyAt(1)));
+    ASSERT_TRUE(paused);
+    ASSERT_EQ(input.radio->history.size(), 3u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::DeviceEffectsUnresolved);
+    auto update = fixture.ReplyAt(2, true);
+    update.currentStateVerified = true;
+    ASSERT_TRUE(module->AcceptRadioDeviceResult(update));
+    EXPECT_EQ(module->ReadPrimaryResourceState(), ResourceState::Quarantined);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::DeviceEffectsUnresolved);
+
+    input.dispatch->rejectOwnerPost = true;
+    ASSERT_TRUE(module->AcceptRadioC1RoundRecovery(evidence));
+    EXPECT_EQ(module->ReadPrimaryResourceState(), ResourceState::Available);
+    EXPECT_TRUE(input.completion->results.empty());
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
+    input.dispatch->rejectOwnerPost = false;
+    ASSERT_TRUE(module->FlushRadioOwnerDeliveries());
+    EXPECT_EQ(input.parameters->values.at(kPrimary), oldSlot);
+    EXPECT_EQ(input.parameters->values.at(kIccid), oldIccid);
+    EXPECT_EQ(input.completion->results, std::vector<int32_t> {OHOS::Telephony::TELEPHONY_ERR_LOCAL_PTR_NULL});
+    EXPECT_FALSE(module->AcceptRadioDeviceResult(update));
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+    EXPECT_EQ(input.radio->history.size(), 3u);
+}
+
+TEST(AF2Primary, FormalC1SynchronousFirstCheckTimeoutRetainsFrozenUnsentMembers)
+{
+    DedicatedPrimaryFixture fixture(true);
+    const auto &module = fixture.module;
+    const auto &input = fixture.input;
+    const auto oldSlot = input.parameters->values.at(kPrimary);
+    const auto oldIccid = input.parameters->values.at(kIccid);
+    const auto binding = module->FindBinding({1});
+    ASSERT_TRUE(binding);
+    input.radio->beforeSubmitReturn = [&] {
+        if (input.radio->history.size() == 1) {
+            EXPECT_TRUE(module->AcceptPrimarySwitchTimeout(input.radio->history[0].first.step.request, 60000));
+        }
+    };
+    ASSERT_TRUE(module->StartPrimarySwitch(Command(*binding)));
+    ASSERT_EQ(input.radio->history.size(), 1u);
+    ASSERT_EQ(input.radio->history[0].first.roundMembers.size(), 2u);
+    ASSERT_EQ(input.completion->results.size(), 1u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::DeviceEffectsUnresolved);
+
+    auto check = fixture.ReplyAt(0);
+    check.currentStateVerified = true;
+    ASSERT_TRUE(module->AcceptRadioDeviceResult(check));
+    EXPECT_EQ(module->ReadPrimaryResourceState(), ResourceState::Quarantined);
+    auto evidence = fixture.VerifyAbortedRound();
+    std::reverse(evidence.members.begin(), evidence.members.end());
+    ASSERT_TRUE(module->AcceptRadioC1RoundRecovery(evidence));
+    EXPECT_EQ(input.parameters->values.at(kPrimary), oldSlot);
+    EXPECT_EQ(input.parameters->values.at(kIccid), oldIccid);
+    EXPECT_EQ(input.completion->results, std::vector<int32_t> {OHOS::Telephony::TELEPHONY_ERR_LOCAL_PTR_NULL});
+    EXPECT_EQ(input.radio->history.size(), 1u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Primary, FormalC1RecoveryProtectsOriginalStoreReceiptUntilCompletion)
+{
+    DedicatedPrimaryFixture fixture(true);
+    const auto &module = fixture.module;
+    const auto &input = fixture.input;
+    auto &parameters = *input.parameters;
+    const auto oldSlot = parameters.values.at(kPrimary);
+    const auto oldIccid = parameters.values.at(kIccid);
+    const auto binding = module->FindBinding({1});
+    ASSERT_TRUE(binding);
+    ASSERT_TRUE(module->StartPrimarySwitch(Command(*binding)));
+    input.radio->beforeSendPermit = [&](const RadioSwitchRequest &request) {
+        if (request.phase == 2) {
+            EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
+        }
+    };
+    ASSERT_TRUE(module->AcceptRadioDeviceResult(fixture.ReplyAt(0)));
+    ASSERT_TRUE(module->AcceptRadioDeviceResult(fixture.ReplyAt(1)));
+    ASSERT_EQ(input.radio->history.size(), 2u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::DeviceEffectsUnresolved);
+    parameters.writeResult = [](const std::string &key) {
+        return key == kPrimary ? AssignmentParameterResult {-1, false} : AssignmentParameterResult {0, true};
+    };
+    std::optional<C0ParameterOperation> originalWrite;
+    input.output->onPrimaryPhaseDone = [&] {
+        const auto receipt = module->ReadC0Receipt();
+        ASSERT_TRUE(receipt && receipt->writes[1]);
+        originalWrite = receipt->writes[1]->operation;
+        parameters.values[kPrimary] = oldSlot;
+        parameters.evidence = C0ParameterEvidence {*originalWrite, {{0, true}, EffectKnowledge::ConfirmedApplied}};
+        EXPECT_FALSE(module->ReconcilePrimaryParameter(*originalWrite));
+        EXPECT_TRUE(input.completion->results.empty());
+    };
+
+    ASSERT_TRUE(module->AcceptRadioC1RoundRecovery(fixture.VerifyAbortedRound()));
+    ASSERT_TRUE(originalWrite);
+    EXPECT_EQ(parameters.evidenceReads, 0u);
+    EXPECT_EQ(input.completion->results, std::vector<int32_t> {OHOS::Telephony::TELEPHONY_ERR_LOCAL_PTR_NULL});
+    EXPECT_EQ(module->ReadPrimaryResourceState(), ResourceState::Available);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::BusinessEffectsUnresolved);
+    EXPECT_TRUE(module->ReconcilePrimaryParameter(*originalWrite));
+    EXPECT_EQ(parameters.values.at(kPrimary), oldSlot);
+    EXPECT_EQ(parameters.values.at(kIccid), oldIccid);
+    EXPECT_EQ(input.completion->results.size(), 1u);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Primary, FormalC1LateFailedCompleteDoesNotConsumeWholeRoundRecovery)
+{
+    DedicatedPrimaryFixture fixture(true);
+    const auto &module = fixture.module;
+    const auto &input = fixture.input;
+    const auto oldSlot = input.parameters->values.at(kPrimary);
+    const auto oldIccid = input.parameters->values.at(kIccid);
+    const auto binding = module->FindBinding({1});
+    ASSERT_TRUE(binding);
+    const auto request = module->StartPrimarySwitch(Command(*binding));
+    ASSERT_TRUE(request);
+    for (size_t index = 0; index < 2; ++index) {
+        auto response = fixture.ReplyAt(index);
+        response.result.effect = EffectKnowledge::ConfirmedNotApplied;
+        response.result.legacyResult = OHOS::Telephony::TELEPHONY_ERR_LOCAL_PTR_NULL;
+        ASSERT_TRUE(module->AcceptRadioDeviceResult(response));
+    }
+    ASSERT_EQ(input.radio->history.size(), 4u);
+    ASSERT_TRUE(module->AcceptPrimarySwitchTimeout(*request, 60000));
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::DeviceEffectsUnresolved);
+    for (size_t index = 2; index < 4; ++index) {
+        const auto &sent = input.radio->history[index].first;
+        ASSERT_EQ(sent.phase, 4u);
+        ASSERT_TRUE(sent.payload);
+        EXPECT_EQ(sent.payload->status, RadioProtocolStatus::Fail);
+        auto response = fixture.ReplyAt(index);
+        response.currentStateVerified = true;
+        ASSERT_TRUE(module->AcceptRadioDeviceResult(response));
+    }
+    EXPECT_EQ(module->ReadPrimaryResourceState(), ResourceState::Quarantined);
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::DeviceEffectsUnresolved);
+    ASSERT_TRUE(module->AcceptRadioC1RoundRecovery(fixture.VerifyAbortedRound()));
+    EXPECT_EQ(input.parameters->values.at(kPrimary), oldSlot);
+    EXPECT_EQ(input.parameters->values.at(kIccid), oldIccid);
+    EXPECT_EQ(input.completion->results, std::vector<int32_t> {OHOS::Telephony::TELEPHONY_ERR_LOCAL_PTR_NULL});
     EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
 }
 
