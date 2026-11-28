@@ -1,0 +1,11 @@
+Note: Google Test filter = TargetRadioReceipt.OwnerAuditLetsAnotherThreadReadTheOriginalResource
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetRadioReceipt
+[ RUN      ] TargetRadioReceipt.OwnerAuditLetsAnotherThreadReadTheOriginalResource
+[       OK ] TargetRadioReceipt.OwnerAuditLetsAnotherThreadReadTheOriginalResource (3 ms)
+[----------] 1 test from TargetRadioReceipt (3 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3 ms total)
+[  PASSED  ] 1 test.

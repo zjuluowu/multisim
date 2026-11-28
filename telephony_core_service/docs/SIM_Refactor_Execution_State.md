@@ -345,6 +345,13 @@ Data 写入与公告、行为记录、Done、SenseSwitch 结束、原 Completion
 同一轮跨阶段的物理资源关闭、全对象图组合和跨实例验证仍待，状态保持 `AF2_M9_IN_PROGRESS`。
 [正式 C1、原始日志与反例](../services/multisim/test/docs/evidence/af2_m9_d01_formal_c1_20261128/README.md)
 
+**D04 整轮 Radio 租约与 Owner 检查点（2026-11-28）。** 正式 C1 在 CHECK 与 UPDATE 的 Owner
+间隙持有同一原租约。共享域 ICCID 无发令，邻卡独立域正常发令。COMPLETE 全组结束可释放物理域，
+原 Owner 回执仍独立持有。R 锁外查询 Owner 并复核新增回执，过期查询不能触发重复投递。
+Target 251/251，专项 ASan/TSan 各 136/136，三个用例独立复跑及四项变异恢复均通过。
+全图两遍关闭、字段 Refresh 和跨实例组合保持待验证，状态为 `AF2_M9_IN_PROGRESS`。
+[正式图反例与证据](../services/multisim/test/docs/evidence/af2_m9_d04_c1_round_20261128/README.md)
+
 <a id="af1-signoff-validation"></a>
 
 ### 签收同步检查（2026-11-24）

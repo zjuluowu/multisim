@@ -1,0 +1,51 @@
+Note: Google Test filter = AF2Primary.FormalC1RetainsSharedCardResourceAcrossOwnerStageGaps
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.FormalC1RetainsSharedCardResourceAcrossOwnerStageGaps
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2230: Failure
+Expected equality of these values:
+  module->ReadPrimaryResourceState()
+    Which is: (4-byte object <01-00 00-00>)
+  phase == 4 ? ResourceState::Available : ResourceState::InFlight
+    Which is: 4-byte object <02-00 00-00>
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2223: 1
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2234: Failure
+Expected equality of these values:
+  iccid->commands.size()
+    Which is: 1
+  before + (phase == 4 ? 1 : 0)
+    Which is: 0
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2223: 1
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2230: Failure
+Expected equality of these values:
+  module->ReadPrimaryResourceState()
+    Which is: (4-byte object <01-00 00-00>)
+  phase == 4 ? ResourceState::Available : ResourceState::InFlight
+    Which is: 4-byte object <02-00 00-00>
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2223: 2
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2234: Failure
+Expected equality of these values:
+  iccid->commands.size()
+    Which is: 3
+  before + (phase == 4 ? 1 : 0)
+    Which is: 2
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/c0_topology_integration_test.cpp:2223: 2
+
+[  FAILED  ] AF2Primary.FormalC1RetainsSharedCardResourceAcrossOwnerStageGaps (1 ms)
+[----------] 1 test from AF2Primary (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] AF2Primary.FormalC1RetainsSharedCardResourceAcrossOwnerStageGaps
+
+ 1 FAILED TEST

@@ -64,8 +64,14 @@ struct Device : RadioPlatformPort {
     void EndLegacySenseSwitch(const StepRef &, const RadioDomainId &) override {}
 };
 struct InlineDispatch final : RadioOwnerDispatchPort {
-    bool PostRadioOwnerTask(std::function<void()> task) override { task(); return true; }
-    bool RadioOwnerCallbacksDrained() const override { return true; }
+    std::function<void(std::function<void()>)> onPost;
+    std::function<bool()> onAudit;
+    bool PostRadioOwnerTask(std::function<void()> task) override
+    {
+        if (onPost) { onPost(std::move(task)); } else { task(); }
+        return true;
+    }
+    bool RadioOwnerCallbacksDrained() const override { return !onAudit || onAudit(); }
 };
 RadioSwitchRequest Request(uint64_t id)
 {
@@ -79,6 +85,89 @@ RadioDeviceResult Reply(uint64_t id)
         EffectKnowledge::ConfirmedApplied, 0}, true, true, true, static_cast<int32_t>(id)};
 }
 } // namespace
+
+TEST(TargetRadioReceipt, OwnerAuditLetsAnotherThreadReadTheOriginalResource)
+{
+    for (const int operation : {0, 1, 2}) {
+        SCOPED_TRACE(operation);
+        ResourceBarrier barrier{epoch};
+        Device device;
+        auto sink = std::make_shared<Sink>();
+        auto dispatch = std::make_shared<InlineDispatch>();
+        ResourceRadioRuntime runtime{barrier, device, {key}, ResourceRadioRuntime::Mode::Execute};
+        ASSERT_TRUE(barrier.RegisterForInitialCheck(key));
+        ASSERT_TRUE(runtime.Initialize(key, {epoch, true, true}));
+        runtime.BindResultSink(sink);
+        runtime.BindOwnerDispatch(dispatch);
+        std::promise<void> read;
+        auto start = read.get_future();
+        auto caller = std::async(std::launch::async, [&] {
+            start.wait();
+            return runtime.ReadResourceState(key);
+        });
+        bool readBeforeReturning = false;
+        dispatch->onAudit = [&] {
+            read.set_value();
+            readBeforeReturning = caller.wait_for(std::chrono::seconds(2)) == std::future_status::ready;
+            return true;
+        };
+
+        const bool drained = operation == 0 ? runtime.OwnerCallbacksDrained() :
+            operation == 1 ? runtime.FlushOwnerDeliveries() : runtime.StopAccepting();
+        EXPECT_TRUE(drained);
+        EXPECT_TRUE(readBeforeReturning);
+        EXPECT_EQ(caller.get(), ResourceState::Available);
+    }
+}
+
+TEST(TargetRadioReceipt, NewDeliveryDuringOwnerAuditPreventsDrainAndRepost)
+{
+    for (const bool flush : {false, true}) {
+        SCOPED_TRACE(flush);
+        ResourceBarrier barrier{epoch};
+        Device device;
+        auto sink = std::make_shared<Sink>();
+        auto dispatch = std::make_shared<InlineDispatch>();
+        ResourceRadioRuntime runtime{barrier, device, {key}, ResourceRadioRuntime::Mode::Execute};
+        ASSERT_TRUE(barrier.RegisterForInitialCheck(key));
+        ASSERT_TRUE(runtime.Initialize(key, {epoch, true, true}));
+        runtime.BindResultSink(sink);
+        runtime.BindOwnerDispatch(dispatch);
+        ASSERT_EQ(runtime.SwitchPrimaryRadio(Request(1), kOnlyRadioQualification),
+            RadioSubmitDisposition::HandoffAccepted);
+        std::vector<std::function<void()>> posted;
+        dispatch->onPost = [&](std::function<void()> task) { posted.push_back(std::move(task)); };
+        std::promise<void> entered;
+        auto auditing = entered.get_future();
+        std::promise<void> release;
+        auto mayReturn = release.get_future();
+        dispatch->onAudit = [&] {
+            entered.set_value();
+            mayReturn.wait();
+            return true;
+        };
+        auto audit = std::async(std::launch::async, [&] {
+            return flush ? runtime.FlushOwnerDeliveries() : runtime.OwnerCallbacksDrained();
+        });
+        if (auditing.wait_for(std::chrono::seconds(3)) != std::future_status::ready) {
+            release.set_value();
+            FAIL() << "The runtime did not query the Owner";
+        }
+        auto incoming = std::async(std::launch::async, [&] { return runtime.AcceptDeviceResult(Reply(1)); });
+        const auto receivedBeforeAuditReturned = incoming.wait_for(std::chrono::seconds(2));
+        release.set_value();
+        EXPECT_EQ(receivedBeforeAuditReturned, std::future_status::ready);
+        EXPECT_TRUE(incoming.get());
+        EXPECT_FALSE(audit.get());
+        EXPECT_TRUE(runtime.DeviceResourcesDrained());
+        ASSERT_EQ(posted.size(), 1u);
+        EXPECT_TRUE(sink->deliveries.empty());
+        posted.front()();
+        dispatch->onAudit = {};
+        EXPECT_TRUE(runtime.OwnerCallbacksDrained());
+        EXPECT_EQ(sink->deliveries, std::vector<uint64_t> {1});
+    }
+}
 
 TEST(TargetRadioReceipt, RefusedPostDoesNotRemoveAnotherRequestsReceipt)
 {

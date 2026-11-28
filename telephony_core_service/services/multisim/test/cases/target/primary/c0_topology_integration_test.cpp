@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <condition_variable>
+#include <deque>
 #include <future>
 #include <map>
 #include <optional>
@@ -864,7 +865,6 @@ class ModuleDispatch final : public RetrySchedulerPort, public RadioOwnerDispatc
 public:
     bool defer {false};
     bool rejectRetryRegistration {false};
-    std::function<void()> pending;
     unsigned seals {0};
     unsigned cancels {0};
     std::optional<uint64_t> ScheduleRetry(const ScheduledRetryEvent &event, uint64_t delay,
@@ -938,10 +938,21 @@ public:
     }
     bool PostRadioOwnerTask(std::function<void()> task) override
     {
-        if (defer) { pending = std::move(task); } else { task(); }
+        if (defer) { ownerTasks_.push_back(std::move(task)); } else { task(); }
         return true;
     }
-    bool RadioOwnerCallbacksDrained() const override { return !pending; }
+    bool RadioOwnerCallbacksDrained() const override { return ownerTasks_.empty() && ownerRunning_ == 0; }
+    size_t PendingOwnerTasks() const { return ownerTasks_.size(); }
+    void RunOwnerTasks()
+    {
+        while (!ownerTasks_.empty()) {
+            auto task = std::move(ownerTasks_.front());
+            ownerTasks_.pop_front();
+            ++ownerRunning_;
+            task();
+            --ownerRunning_;
+        }
+    }
 private:
     struct Task {
         uint64_t id;
@@ -954,6 +965,8 @@ private:
     RetrySchedulerAudit audit_;
     uint64_t nextTask_ {1};
     uint64_t clock_ {0};
+    std::deque<std::function<void()>> ownerTasks_;
+    size_t ownerRunning_ {0};
 };
 
 struct ModuleInputs {
@@ -1116,11 +1129,8 @@ TEST(AF2Module, ConcurrentStopDuringCompletionSealsOldEntryAndKeepsOriginalFrame
     input.dispatch->defer = true;
     EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
     EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::CallbacksStillInFlight);
-    auto pending = std::move(input.dispatch->pending);
-    ASSERT_TRUE(pending);
-    pending();
-    pending = {};
-    input.dispatch->pending = {};
+    ASSERT_EQ(input.dispatch->PendingOwnerTasks(), 1u);
+    input.dispatch->RunOwnerTasks();
     EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
     EXPECT_EQ(input.dispatch->seals, 1u);
     EXPECT_EQ(input.dispatch->cancels, 1u);
@@ -2063,7 +2073,7 @@ struct DedicatedPrimaryFixture {
     std::shared_ptr<RoleProvider> roles = std::make_shared<RoleProvider>();
     CoreSimModuleHandle module;
 
-    explicit DedicatedPrimaryFixture(bool threePhase = false)
+    explicit DedicatedPrimaryFixture(bool threePhase = false, const std::shared_ptr<IccidDevice> &iccid = {})
     {
         input.radio->requiresDevice = !threePhase;
         input.radio->routing = PrimaryProtocolRouting {200,
@@ -2082,6 +2092,15 @@ struct DedicatedPrimaryFixture {
         auto ports = input.Ports(roles);
         ports.primaryHost = host;
         ports.primaryWait = wait;
+        if (iccid) {
+            ports.iccidIo = iccid;
+            ports.initialEvidence = [](const ResourceKey &key, RuntimeEpoch epoch) -> std::optional<InitialRecoveryEvidence> {
+                if (key.verifiedPhysicalDomain != "primary-shared" && key.verifiedPhysicalDomain != "other-card-ef") {
+                    return std::nullopt;
+                }
+                return InitialRecoveryEvidence {epoch, true, true};
+            };
+        }
         module = std::get<CoreSimModuleHandle>(CreateCoreSimModule(std::move(ports), input.catalog, input.accounts));
     }
     RadioDeviceResult Reply(EffectKnowledge effect, int32_t result, bool currentStateVerified = false) const
@@ -2179,6 +2198,51 @@ TEST(AF2Primary, FormalThreePhaseUsesTwoNativeMembersAndOriginalWait)
     EXPECT_EQ(module->ReadAssignment().lastPrimary, SlotId {1});
     EXPECT_EQ(module->ReadAssignment().lastData, SlotId {1});
     EXPECT_FALSE(module->ReadC0Receipt());
+    EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
+}
+
+TEST(AF2Primary, FormalC1RetainsSharedCardResourceAcrossOwnerStageGaps)
+{
+    const auto iccid = std::make_shared<IccidDevice>();
+    DedicatedPrimaryFixture fixture(true, iccid);
+    const auto module = fixture.module;
+    const auto shared = module->ObserveCardApplication({{1}, "USIM"}, 1);
+    const auto independent = module->ObserveCardApplication({{0}, "USIM"}, 1);
+    ASSERT_TRUE(shared && independent);
+    auto caller = std::async(std::launch::async, [&] { return module->SetPrimarySlotId(1, {7}); });
+    if (!fixture.wait->WaitUntilCallerIsWaiting()) {
+        fixture.wait->Expire();
+        FAIL() << "The formal C1 entry did not retain its compatibility waiter";
+    }
+    fixture.input.dispatch->defer = true;
+    auto releaseEf = [&](const SessionRef &session, size_t index) {
+        EXPECT_TRUE(module->RefreshIccid(session));
+        EXPECT_TRUE(module->AcceptIccidIoEvidence(iccid->Reply(index, kIccidMetadata)));
+    };
+    for (const uint32_t phase : {1u, 2u, 4u}) {
+        SCOPED_TRACE(phase);
+        const size_t first = phase == 1 ? 0u : phase == 2 ? 2u : 4u;
+        ASSERT_EQ(fixture.input.radio->history.size(), first + 2);
+        EXPECT_TRUE(module->AcceptRadioDeviceResult(fixture.ReplyAt(first, phase == 2)));
+        EXPECT_TRUE(module->AcceptRadioDeviceResult(fixture.ReplyAt(first + 1, phase == 2)));
+        EXPECT_EQ(fixture.input.dispatch->PendingOwnerTasks(), 2u);
+        EXPECT_EQ(fixture.input.radio->history.size(), first + 2);
+        EXPECT_EQ(module->ReadPrimaryResourceState(), phase == 4 ? ResourceState::Available : ResourceState::InFlight);
+
+        const auto before = iccid->commands.size();
+        EXPECT_TRUE(module->LoadIccid(*shared));
+        EXPECT_EQ(iccid->commands.size(), before + (phase == 4 ? 1 : 0));
+        if (iccid->commands.size() == before + 1) { releaseEf(*shared, before); }
+        if (phase == 1) {
+            const auto independentBefore = iccid->commands.size();
+            EXPECT_TRUE(module->LoadIccid(*independent));
+            ASSERT_EQ(iccid->commands.size(), independentBefore + 1);
+            releaseEf(*independent, independentBefore);
+        }
+        fixture.input.dispatch->RunOwnerTasks();
+    }
+    fixture.input.dispatch->defer = false;
+    EXPECT_EQ(caller.get(), 0);
     EXPECT_EQ(module->StopAcceptingAndDrain(), SimModule::DrainResult::Drained);
 }
 

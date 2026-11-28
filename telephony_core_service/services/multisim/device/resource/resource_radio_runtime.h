@@ -72,6 +72,8 @@ private:
         bool hasNotSentMember {false};
         bool endRequested {false};
         std::vector<uint64_t> closedUpdateTransmissions {};
+        bool awaitingC1Phase {false};
+        std::map<SlotId, std::optional<RadioProtocolMember>> c1Members {};
     };
     struct Transmission {
         uint64_t fence;
@@ -92,6 +94,7 @@ private:
         std::atomic<bool> delivered {false};
     };
     Group *FindGroup(const RadioSwitchRequest &request);
+    static bool AdvanceC1Phase(Group &group, const RadioSwitchRequest &request);
     static bool SameGroup(const RadioSwitchRequest &left, const RadioSwitchRequest &right);
     static bool SameBinding(const RadioSwitchRequest &request, const RadioSwitchResult &result);
     static bool SameCommand(const RadioSwitchRequest &request, const RadioSwitchResult &result);
@@ -100,6 +103,7 @@ private:
         std::vector<RadioSwitchResult> &late);
     bool DeliverDeviceResults(const std::vector<RadioSwitchResult> &normal, const std::vector<RadioSwitchResult> &late,
         const std::shared_ptr<RadioResultSink> &sink, const std::shared_ptr<RadioOwnerDispatchPort> &dispatch);
+    bool LocalOwnerCallbacksDrained() const;
     void Quarantine(Group &group, EffectKnowledge effect);
 
     mutable std::mutex lock_;
@@ -123,6 +127,7 @@ private:
     std::vector<RadioSwitchResult> pendingLateDeliveries_;
     mutable std::vector<std::shared_ptr<OwnerDeliveryReceipt>> ownerDeliveryReceipts_;
     size_t ownerDeliveryFrames_ {0};
+    uint64_t ownerDeliveryRevision_ {0};
 };
 } // namespace OHOS::Telephony::MultiSim
 

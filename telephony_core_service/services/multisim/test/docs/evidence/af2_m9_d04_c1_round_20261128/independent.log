@@ -1,0 +1,45 @@
+2026-11-28T09:38:54+08:00
+b96b91d3e16d4ae368c241bf8af59e93aef97a72
+138120aaf96f36d8607fb3fa74423d686dcd2e9ecc1687c983baeeed3f39ef64  /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host
+
+LLVM_PROFILE_FILE=/tmp/multisim-d04-independent-profile.QOGoCgq3/%p.profraw timeout 45s /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=AF2Primary.FormalC1RetainsSharedCardResourceAcrossOwnerStageGaps
+Note: Google Test filter = AF2Primary.FormalC1RetainsSharedCardResourceAcrossOwnerStageGaps
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from AF2Primary
+[ RUN      ] AF2Primary.FormalC1RetainsSharedCardResourceAcrossOwnerStageGaps
+[       OK ] AF2Primary.FormalC1RetainsSharedCardResourceAcrossOwnerStageGaps (2 ms)
+[----------] 1 test from AF2Primary (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (2 ms total)
+[  PASSED  ] 1 test.
+exit=0
+
+LLVM_PROFILE_FILE=/tmp/multisim-d04-independent-profile.QOGoCgq3/%p.profraw timeout 45s /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=TargetRadioReceipt.OwnerAuditLetsAnotherThreadReadTheOriginalResource
+Note: Google Test filter = TargetRadioReceipt.OwnerAuditLetsAnotherThreadReadTheOriginalResource
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetRadioReceipt
+[ RUN      ] TargetRadioReceipt.OwnerAuditLetsAnotherThreadReadTheOriginalResource
+[       OK ] TargetRadioReceipt.OwnerAuditLetsAnotherThreadReadTheOriginalResource (0 ms)
+[----------] 1 test from TargetRadioReceipt (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+exit=0
+
+LLVM_PROFILE_FILE=/tmp/multisim-d04-independent-profile.QOGoCgq3/%p.profraw timeout 45s /tmp/af2-m9-foundation/dev/debug/build/sim_test_target_host --gtest_filter=TargetRadioReceipt.NewDeliveryDuringOwnerAuditPreventsDrainAndRepost
+Note: Google Test filter = TargetRadioReceipt.NewDeliveryDuringOwnerAuditPreventsDrainAndRepost
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetRadioReceipt
+[ RUN      ] TargetRadioReceipt.NewDeliveryDuringOwnerAuditPreventsDrainAndRepost
+[       OK ] TargetRadioReceipt.NewDeliveryDuringOwnerAuditPreventsDrainAndRepost (1 ms)
+[----------] 1 test from TargetRadioReceipt (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (1 ms total)
+[  PASSED  ] 1 test.
+exit=0

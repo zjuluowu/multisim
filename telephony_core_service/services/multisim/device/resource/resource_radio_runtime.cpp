@@ -19,6 +19,19 @@ bool IsUpdateErrorAck(const RadioSwitchRequest &request, const RadioSwitchResult
 {
     return IsUpdate(request) && !result.notify && result.legacyResult != 0;
 }
+
+bool IsC1IntermediatePhase(const RadioSwitchRequest &request)
+{
+    return request.mode == PrimarySwitchMode::ThreePhaseProtocol && (request.phase == 1 || request.phase == 2);
+}
+
+bool SameC1Round(const RadioSwitchRequest &left, const RadioSwitchRequest &right)
+{
+    return left.mode == PrimarySwitchMode::ThreePhaseProtocol && right.mode == left.mode &&
+        left.step.request == right.step.request && left.step.attempt == right.step.attempt &&
+        left.protocolSession == right.protocolSession && left.domain.key == right.domain.key &&
+        left.memberCount == right.memberCount;
+}
 } // namespace
 
 ResourceRadioRuntime::ResourceRadioRuntime(ResourceBarrier &barrier, RadioPlatformPort &platform,
@@ -35,6 +48,7 @@ bool ResourceRadioRuntime::Initialize(const ResourceKey &key, const InitialRecov
 void ResourceRadioRuntime::OwnerDeliveryFrame::Begin()
 {
     ++owner_.ownerDeliveryFrames_;
+    ++owner_.ownerDeliveryRevision_;
     active_ = true;
 }
 
@@ -46,20 +60,24 @@ ResourceRadioRuntime::OwnerDeliveryFrame::~OwnerDeliveryFrame()
     }
 }
 
-bool ResourceRadioRuntime::OwnerCallbacksDrained() const
+bool ResourceRadioRuntime::LocalOwnerCallbacksDrained() const
 {
-    std::unique_lock<std::mutex> guard(lock_);
     ownerDeliveryReceipts_.erase(std::remove_if(ownerDeliveryReceipts_.begin(), ownerDeliveryReceipts_.end(),
         [](const auto &receipt) { return receipt->delivered.load(std::memory_order_acquire); }),
         ownerDeliveryReceipts_.end());
-    if (ownerDeliveryFrames_ || !pendingNormalDeliveries_.empty() || !pendingLateDeliveries_.empty() ||
-        !ownerDeliveryReceipts_.empty()) {
-        return false;
-    }
+    return ownerDeliveryFrames_ == 0 && pendingNormalDeliveries_.empty() && pendingLateDeliveries_.empty() &&
+        ownerDeliveryReceipts_.empty();
+}
+
+bool ResourceRadioRuntime::OwnerCallbacksDrained() const
+{
+    std::unique_lock<std::mutex> guard(lock_);
+    if (!LocalOwnerCallbacksDrained()) { return false; }
     const auto dispatch = dispatch_.lock();
-    // ObserveOnly cannot produce a new Radio delivery after this check.
-    if (mode_ == Mode::ObserveOnly) { guard.unlock(); }
-    return dispatch && dispatch->RadioOwnerCallbacksDrained();
+    guard.unlock();
+    if (!dispatch || !dispatch->RadioOwnerCallbacksDrained()) { return false; }
+    guard.lock();
+    return dispatch_.lock() == dispatch && LocalOwnerCallbacksDrained();
 }
 
 PrimaryRadioObservation ResourceRadioRuntime::ReadPrimaryRadioObservation(SlotId slot) const
@@ -112,10 +130,30 @@ bool ResourceRadioRuntime::SameCommand(const RadioSwitchRequest &request, const 
 ResourceRadioRuntime::Group *ResourceRadioRuntime::FindGroup(const RadioSwitchRequest &request)
 {
     for (auto &[fence, group] : groups_) {
-        if (SameGroup(group.first, request)) { return &group; }
+        if (SameGroup(group.first, request) || SameC1Round(group.first, request)) { return &group; }
         (void)fence;
     }
     return nullptr;
+}
+
+bool ResourceRadioRuntime::AdvanceC1Phase(Group &group, const RadioSwitchRequest &request)
+{
+    const auto &previous = group.first;
+    const bool nextPhase = (previous.phase == 1 && (request.phase == 2 || request.phase == 4)) ||
+        (previous.phase == 2 && request.phase == 4);
+    const auto member = group.c1Members.find(request.target);
+    if (!group.awaitingC1Phase || group.quarantined || group.endRequested ||
+        !nextPhase || request.step.step != previous.step.step + 1 || member == group.c1Members.end() ||
+        !(member->second == request.member)) {
+        return false;
+    }
+    group.first = request;
+    group.awaitingC1Phase = false;
+    group.admittedMembers.clear();
+    group.acceptedMembers.clear();
+    group.accepted.clear();
+    group.closedUpdateTransmissions.clear();
+    return true;
 }
 
 RadioSubmitDisposition ResourceRadioRuntime::SwitchPrimaryRadio(const RadioSwitchRequest &request,
@@ -132,12 +170,23 @@ RadioSubmitDisposition ResourceRadioRuntime::SwitchPrimaryRadio(const RadioSwitc
             return group ? RadioSubmitDisposition::HandoffUnknown : RadioSubmitDisposition::ConfirmedNotSent;
         }
         if (!group) {
+            if (request.mode == PrimarySwitchMode::ThreePhaseProtocol && (request.phase == 2 || request.phase == 4)) {
+                return RadioSubmitDisposition::ConfirmedNotSent;
+            }
             const auto lease = barrier_.Acquire(resources_, request.step);
             if (!lease) { return RadioSubmitDisposition::ConfirmedNotSent; }
             auto inserted = groups_.emplace(lease->fence,
                 Group {*lease, request, request.memberCount == 0 ? 1u : request.memberCount,
                     {}, {}, {}, {}, {}, {}, false, false});
             group = &inserted.first->second;
+        } else if (!SameGroup(group->first, request) && !AdvanceC1Phase(*group, request)) {
+            return RadioSubmitDisposition::HandoffUnknown;
+        }
+        if (request.mode == PrimarySwitchMode::ThreePhaseProtocol && request.phase > 1) {
+            const auto member = group->c1Members.find(request.target);
+            if (member == group->c1Members.end() || !(member->second == request.member)) {
+                return RadioSubmitDisposition::HandoffUnknown;
+            }
         }
         if (group->endRequested || group->quarantined || group->admittedMembers.size() >= group->expected ||
             group->admittedMembers.find(request.target.legacySlotId) != group->admittedMembers.end()) {
@@ -148,6 +197,9 @@ RadioSubmitDisposition ResourceRadioRuntime::SwitchPrimaryRadio(const RadioSwitc
         transmissions_[transport] = {fence, request, std::nullopt};
         submittingTransmissions_.insert(transport);
         group->admittedMembers.insert(request.target.legacySlotId);
+        if (request.mode == PrimarySwitchMode::ThreePhaseProtocol && request.phase == 1) {
+            group->c1Members.emplace(request.target, request.member);
+        }
         ++group->submitting;
     }
 
@@ -266,7 +318,9 @@ void ResourceRadioRuntime::EndLegacySenseSwitch(const StepRef &owner, const Radi
         (void)CloseUpdateAssociations(owner);
         for (auto &[fence, group] : groups_) {
             (void)fence;
-            if (!(group.lease.holder == owner)) { continue; }
+            const bool c1Round = group.first.mode == PrimarySwitchMode::ThreePhaseProtocol &&
+                group.first.step.request == owner.request && group.first.step.attempt == owner.attempt;
+            if (!c1Round && !(group.lease.holder == owner)) { continue; }
             // Close further admission immediately. While the original Submit is
             // still being classified, a lease with no issued member must remain
             // cancellable if all of its handoffs prove ConfirmedNotSent.
@@ -325,7 +379,8 @@ bool ResourceRadioRuntime::AcceptDeviceResultLocked(const RadioDeviceResult &dev
     const auto original = transmissions_.find(deviceResult.transportToken);
     const auto originalGroup = original == transmissions_.end() ? groups_.end() : groups_.find(original->second.fence);
     if (submittingTransmissions_.count(deviceResult.transportToken) ||
-        (originalGroup != groups_.end() && originalGroup->second.quarantined && originalGroup->second.submitting)) {
+        (originalGroup != groups_.end() && !original->second.updateGroupEnded &&
+         originalGroup->second.quarantined && originalGroup->second.submitting)) {
         if (original == transmissions_.end() || !SameCommand(original->second.request, deviceResult.result) ||
             (originalGroup != groups_.end() &&
              originalGroup->second.acceptedMembers.count(deviceResult.result.memberSlot.legacySlotId))) {
@@ -463,7 +518,8 @@ bool ResourceRadioRuntime::AcceptDeviceResultLocked(const RadioDeviceResult &dev
                         break;
                     }
                 }
-                if (!barrier_.Complete(group.lease, {group.lease.holder, effect, true, true})) {
+                const bool intermediateC1 = IsC1IntermediatePhase(request);
+                if (!intermediateC1 && !barrier_.Complete(group.lease, {group.lease.holder, effect, true, true})) {
                     Quarantine(group, effect);
                     return false;
                 }
@@ -477,7 +533,15 @@ bool ResourceRadioRuntime::AcceptDeviceResultLocked(const RadioDeviceResult &dev
                         normal.back().legacyResult = *updateFailure;
                     }
                 }
-                groups_.erase(groupFound);
+                if (intermediateC1) {
+                    group.awaitingC1Phase = true;
+                    if (stopping_) {
+                        group.endRequested = true;
+                        Quarantine(group, EffectKnowledge::Unknown);
+                    }
+                } else {
+                    groups_.erase(groupFound);
+                }
                 accepted = true;
             }
         }
@@ -550,11 +614,18 @@ bool ResourceRadioRuntime::FlushOwnerDeliveries()
     std::vector<RadioSwitchResult> normal;
     std::vector<RadioSwitchResult> late;
     {
-        std::lock_guard<std::mutex> guard(lock_);
+        std::unique_lock<std::mutex> guard(lock_);
         sink = sink_.lock();
         dispatch = dispatch_.lock();
         if (!sink || !dispatch || ownerDeliveryFrames_) { return false; }
+        const auto revision = ownerDeliveryRevision_;
+        guard.unlock();
         if (!dispatch->RadioOwnerCallbacksDrained()) { return false; }
+        guard.lock();
+        if (sink_.lock() != sink || dispatch_.lock() != dispatch ||
+            ownerDeliveryFrames_ || ownerDeliveryRevision_ != revision) {
+            return false;
+        }
         for (const auto &receipt : ownerDeliveryReceipts_) {
             if (receipt->delivered.load(std::memory_order_acquire)) { continue; }
             if (receipt->late) { late.push_back(receipt->result); }
@@ -634,26 +705,21 @@ bool ResourceRadioRuntime::StopAccepting()
     stopping_ = true;
     for (auto &[fence, group] : groups_) {
         (void)fence;
-        if (group.admittedMembers.size() < group.expected) {
+        if (group.awaitingC1Phase || group.admittedMembers.size() < group.expected) {
             // No remaining member can cross the gate. Already admitted transmissions
             // keep their original responsibility, including calls still in Submit.
             group.hasNotSentMember = true;
             if (group.sent) { Quarantine(group, EffectKnowledge::Unknown); }
         }
     }
-    ownerDeliveryReceipts_.erase(std::remove_if(ownerDeliveryReceipts_.begin(), ownerDeliveryReceipts_.end(),
-        [](const auto &receipt) { return receipt->delivered.load(std::memory_order_acquire); }),
-        ownerDeliveryReceipts_.end());
     if (!groups_.empty() || !transmissions_.empty() || !submittingTransmissions_.empty() ||
-        !pendingSubmissionResults_.empty() || !pendingNormalDeliveries_.empty() ||
-        !pendingLateDeliveries_.empty() || !ownerDeliveryReceipts_.empty() || ownerDeliveryFrames_) { return false; }
+        !pendingSubmissionResults_.empty() || !LocalOwnerCallbacksDrained()) { return false; }
     for (const auto &resource : resources_) {
         const auto state = barrier_.ReadState(resource);
         if (!state || *state != ResourceState::Available) { return false; }
     }
-    const auto dispatch = dispatch_.lock();
-    if (mode_ == Mode::ObserveOnly) { guard.unlock(); }
-    return dispatch && dispatch->RadioOwnerCallbacksDrained();
+    guard.unlock();
+    return OwnerCallbacksDrained();
 }
 
 bool ResourceRadioRuntime::DeviceResourcesDrained() const

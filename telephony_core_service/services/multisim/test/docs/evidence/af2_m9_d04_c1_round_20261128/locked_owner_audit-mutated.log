@@ -1,0 +1,29 @@
+Note: Google Test filter = TargetRadioReceipt.OwnerAuditLetsAnotherThreadReadTheOriginalResource
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from TargetRadioReceipt
+[ RUN      ] TargetRadioReceipt.OwnerAuditLetsAnotherThreadReadTheOriginalResource
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/radio_receipt_test.cpp:118: Failure
+Value of: readBeforeReturning
+  Actual: false
+Expected: true
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/radio_receipt_test.cpp:92: 0
+
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/radio_receipt_test.cpp:118: Failure
+Value of: readBeforeReturning
+  Actual: false
+Expected: true
+Google Test trace:
+/mnt/e/github/multisim/telephony_core_service/services/multisim/test/cases/target/primary/radio_receipt_test.cpp:92: 2
+
+[  FAILED  ] TargetRadioReceipt.OwnerAuditLetsAnotherThreadReadTheOriginalResource (4001 ms)
+[----------] 1 test from TargetRadioReceipt (4001 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (4001 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] TargetRadioReceipt.OwnerAuditLetsAnotherThreadReadTheOriginalResource
+
+ 1 FAILED TEST
